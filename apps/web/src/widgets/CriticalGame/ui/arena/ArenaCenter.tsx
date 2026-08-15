@@ -1,10 +1,11 @@
 'use client';
 
+import './../styles/hud.scss';
+
 import { TurnBanner } from '../TurnBanner';
 import { ThreatStrip } from '../ThreatStrip';
 import { FlashBanner } from '../FlashBanner';
 import { FlashHistory } from '../FlashHistory';
-import { HudStyles } from '../HudStyles';
 import { ComboCard, type ComboKind } from './ComboCard';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
 
@@ -63,7 +64,6 @@ export function ArenaCenter({
       className="flex flex-col flex-1 items-center justify-center gap-2 relative"
       data-testid="arena-center"
     >
-      <HudStyles />
       <div
         className="flex flex-col absolute top-[8px] left-0 right-0 items-center pointer-events-none z-[500]"
         data-testid="arena-flash-slot"

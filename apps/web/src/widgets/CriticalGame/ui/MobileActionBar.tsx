@@ -1,7 +1,6 @@
 import React from 'react';
 import type { GameVariant } from '@arcadeum/ui';
 import { ActionBar, ActionButton } from './styles';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface MobileActionBarProps {
   isMyTurn: boolean;
@@ -26,8 +25,6 @@ export function MobileActionBar({
   onDraw,
   onPlayNope,
 }: MobileActionBarProps) {
-  const media = useMediaQuery();
-  if (!media.sm) return null;
   if (isGameOver) return null;
   if (!isMyTurn && !canPlayNope) return null;
 
@@ -45,7 +42,7 @@ export function MobileActionBar({
     ].includes(actionBusy ?? '');
 
   return (
-    <ActionBar data-testid="action-bar">
+    <ActionBar data-testid="action-bar" className="hidden max-[800px]:flex">
       {isMyTurn && (
         <ActionButton
           accent={variant}

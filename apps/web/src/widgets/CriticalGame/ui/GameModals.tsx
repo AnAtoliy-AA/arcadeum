@@ -20,13 +20,6 @@ const GiveFavorModal = dynamic(() => import('./modals/GiveFavorModal'), {
 const DefuseModal = dynamic(() => import('./modals/DefuseModal'), {
   ssr: false,
 });
-const RematchModal = dynamic(() => import('./modals/RematchModal'), {
-  ssr: false,
-});
-const RematchInvitationModal = dynamic(
-  () => import('./modals/RematchInvitationModal'),
-  { ssr: false },
-);
 const OmniscienceModal = dynamic(() => import('./OmniscienceModal'), {
   ssr: false,
 });
@@ -43,32 +36,6 @@ type SeeTheFutureModalState = {
 } | null;
 
 export interface GameModalsProps {
-  // Rematch Modal
-  showRematchModal: boolean;
-  players: Array<{ playerId: string; displayName: string; alive: boolean }>;
-  currentUserId: string | null;
-  rematchLoading: boolean;
-  onCloseRematchModal: () => void;
-  onConfirmRematch: (
-    participantIds: string[],
-    message?: string,
-  ) => Promise<void>;
-
-  // Rematch Invitation
-  invitation: {
-    newRoomId: string;
-    hostId: string;
-    hostName: string;
-    message?: string;
-    timeout: number;
-  } | null;
-  invitationTimeLeft: number;
-  onAcceptInvitation: () => void;
-  onDeclineInvitation: () => void;
-  onBlockRematch?: (roomId: string) => void;
-  onBlockUser?: (userId: string) => void;
-  isAcceptingInvitation: boolean;
-
   // Event Combo Modal
   eventComboModal: EventComboModalState | null;
   onCloseEventComboModal: () => void;
@@ -123,6 +90,7 @@ export interface GameModalsProps {
   resolveDisplayName: (playerId?: string, fallback?: string) => string;
   t: (key: string, params?: Record<string, unknown>) => string;
   cardVariant?: string;
+  currentUserId: string | null;
   // Theft Pack Modals
   stashModal: boolean;
   onCloseStashModal: () => void;
@@ -145,23 +113,7 @@ export interface GameModalsProps {
 }
 
 export function GameModals({
-  // Rematch Modal
-  showRematchModal,
-  players,
   currentUserId,
-  rematchLoading,
-  onCloseRematchModal,
-  onConfirmRematch,
-
-  // Rematch Invitation
-  invitation,
-  invitationTimeLeft,
-  onAcceptInvitation,
-  onDeclineInvitation,
-  onBlockRematch,
-  onBlockUser,
-  isAcceptingInvitation,
-
   // Event Combo Modal
   eventComboModal,
   onCloseEventComboModal,
@@ -234,35 +186,6 @@ export function GameModals({
 }: GameModalsProps) {
   return (
     <>
-      {/* Rematch Modal */}
-      <RematchModal
-        isOpen={showRematchModal}
-        players={players}
-        currentUserId={currentUserId}
-        rematchLoading={rematchLoading}
-        onClose={onCloseRematchModal}
-        onConfirm={onConfirmRematch}
-        t={t as (key: string) => string}
-        cardVariant={cardVariant}
-      />
-
-      {/* Rematch Invitation Modal */}
-      <RematchInvitationModal
-        isOpen={!!invitation}
-        hostId={invitation?.hostId}
-        roomId={invitation?.newRoomId}
-        hostName={invitation?.hostName || ''}
-        message={invitation?.message}
-        timeLeft={invitationTimeLeft}
-        onAccept={onAcceptInvitation}
-        onDecline={onDeclineInvitation}
-        onBlockRematch={onBlockRematch}
-        onBlockUser={onBlockUser}
-        accepting={isAcceptingInvitation}
-        t={t as (key: string) => string}
-        cardVariant={cardVariant}
-      />
-
       {/* Event Combo Modal */}
       <ComboModal
         isOpen={!!eventComboModal}

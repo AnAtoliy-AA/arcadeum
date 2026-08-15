@@ -142,7 +142,9 @@ export function AppThemeProvider({
       doc.style.setProperty('--background', themeTokensValue.background.base);
       doc.style.setProperty('--foreground', themeTokensValue.text.primary);
       doc.style.setProperty('--muted-foreground', themeTokensValue.text.muted);
-      doc.style.setProperty('--primary', themeTokensValue.text.accent);
+      // NOTE: `--primary` is deliberately NOT overridden here — it comes from
+      // themeDefinitions, which darkens it to #0369a1 for WCAG AA 4.5:1
+      // contrast with white button text (see themeDefinitions.ts).
       doc.style.setProperty('--glassBg', themeTokensValue.glass.background);
       doc.style.setProperty('--glassBorder', themeTokensValue.glass.border);
 

@@ -2,28 +2,21 @@ import type React from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 
 /**
- * Horizontal flex row on desktop (≥1150px), vertical stack on mobile/tablet.
- * Wraps GameWrapper + ChatPanel side by side. The caller derives
- * `flexDirection` from `useMediaQuery().gtMd`, so the prop is applied
- * directly as the source of truth at every viewport.
+ * Horizontal flex row on desktop (≥1150px), vertical stack below.
+ * Wraps GameWrapper + ChatPanel side by side.
  */
 export function GameRow({
-  flexDirection,
   className,
-  style,
   ...props
 }: {
-  flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cx(
-        'flex flex-1 items-stretch gap-4 relative min-h-0',
-        flexDirection === 'row' ? 'flex-row' : 'flex-col',
+        'flex flex-row flex-1 items-stretch gap-4 relative min-h-0 max-[1150px]:flex-col',
         className,
       )}
-      style={style}
       {...props}
     />
   );

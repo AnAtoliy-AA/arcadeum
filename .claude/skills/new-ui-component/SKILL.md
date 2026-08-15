@@ -5,7 +5,7 @@ description: Add a new shared UI component to the @arcadeum/ui package (packages
 
 > **Related skill**: `ui-ux-design` — comprehensive UI/UX guide with priority-based rules for design decisions, interaction patterns, and visual quality.
 
-The shared UI library (`packages/ui`) uses Tamagui as the component foundation and is consumed by both `apps/web` and `apps/mobile` via `@arcadeum/ui`.
+The shared UI library (`packages/ui`) is a plain React + Tailwind component library, consumed by `apps/web` via `@arcadeum/ui`. `apps/mobile` does NOT consume `@arcadeum/ui` — mobile uses React Native primitives.
 
 ## Structure
 
@@ -20,9 +20,9 @@ packages/ui/src/components/
 ## Steps
 
 1. **Create component** in `packages/ui/src/components/<Name>/<Name>.tsx`:
-   - Use Tamagui primitives (`YStack`, `XStack`, `Text`, `Stack`, etc.)
+   - Build with plain React elements + Tailwind classes (see `/tailwind-pro` for the token → class map; tokens are CSS vars from `packages/ui/src/themeDefinitions.ts`)
    - Export named: `export const <Name> = ...`
-   - Accept typed props extending Tamagui's component props where appropriate
+   - Accept and merge a `className` prop via `cx` from `@arcadeum/ui/utils/cx`
 
 2. **Create `index.ts`** re-export:
    ```ts

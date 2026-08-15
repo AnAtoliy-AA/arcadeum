@@ -45,7 +45,7 @@ export default {
         'hero-overlay-mobile':
           'radial-gradient(circle at 50% 50%, transparent 40%, var(--background) 110%), linear-gradient(to bottom, transparent 60%, var(--background) 100%)',
         'hero-glow':
-          'radial-gradient(circle at 20% 25%, var(--backgroundRadialStart) 0%, transparent 45%), radial-gradient(circle at 80% 75%, var(--backgroundRadialStart) 0%, transparent 45%), radial-gradient(circle at 50% 50%, var(--primary-gradient-start) 0%, transparent 50%)',
+          'radial-gradient(circle at 20% 25%, var(--backgroundRadialStart) 0%, transparent 45%), radial-gradient(circle at 80% 75%, var(--backgroundRadialStart) 0%, transparent 45%), radial-gradient(circle at 50% 50%, var(--primaryGradientStart) 0%, transparent 50%)',
         'hero-noise':
           "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
         'featured-cover':

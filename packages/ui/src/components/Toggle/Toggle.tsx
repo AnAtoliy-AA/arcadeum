@@ -1,6 +1,7 @@
 'use client';
 
 import { memo } from 'react';
+import { cx } from '../../utils/cx';
 
 export interface ToggleProps {
   checked: boolean;
@@ -32,63 +33,32 @@ export const Toggle = memo(function Toggle({
       disabled={disabled}
       data-testid={testId}
       onClick={() => onCheckedChange(!checked)}
-      style={{
-        position: 'relative',
-        width: 60,
-        height: 30,
-        borderRadius: 999,
-        border: '1px solid',
-        borderColor: checked ? '#3b82f6' : 'rgba(148,163,184,0.4)',
-        backgroundColor: checked ? '#2563eb' : 'rgba(15,23,42,0.6)',
-        padding: 0,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.5 : 1,
-        transition: 'background-color 120ms ease, border-color 120ms ease',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: checked ? 'flex-end' : 'flex-start',
-        boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.2)',
-      }}
+      className={cx(
+        'relative inline-flex w-[60px] h-[30px] items-center rounded-full border p-0 cursor-pointer shadow-[inset_0_0_0_1px_rgba(0,0,0,0.2)] transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed',
+        checked
+          ? 'justify-end border-[var(--primary)] bg-[var(--primary)]'
+          : 'justify-start border-[rgba(148,163,184,0.4)] bg-[rgba(15,23,42,0.6)]',
+      )}
     >
       <span
         aria-hidden
-        style={{
-          position: 'absolute',
-          left: 8,
-          fontSize: 9,
-          fontWeight: 700,
-          letterSpacing: '1px',
-          color: checked ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0)',
-          pointerEvents: 'none',
-        }}
+        className={cx(
+          'absolute left-2 top-1/2 -translate-y-1/2 text-[9px] font-bold tracking-[1px] pointer-events-none',
+          checked ? 'text-[rgba(255,255,255,0.9)]' : 'text-transparent',
+        )}
       >
         {onLabel}
       </span>
       <span
         aria-hidden
-        style={{
-          position: 'absolute',
-          right: 8,
-          fontSize: 9,
-          fontWeight: 700,
-          letterSpacing: '1px',
-          color: checked ? 'rgba(0,0,0,0)' : 'rgba(203,213,225,0.85)',
-          pointerEvents: 'none',
-        }}
+        className={cx(
+          'absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-bold tracking-[1px] pointer-events-none',
+          checked ? 'text-transparent' : 'text-[rgba(203,213,225,0.85)]',
+        )}
       >
         {offLabel}
       </span>
-      <span
-        style={{
-          width: 24,
-          height: 24,
-          margin: 2,
-          borderRadius: '50%',
-          backgroundColor: '#ffffff',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.5)',
-          transition: 'transform 120ms ease',
-        }}
-      />
+      <span className="m-0.5 h-6 w-6 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
     </button>
   );
 });

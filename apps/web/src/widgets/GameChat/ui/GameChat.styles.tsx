@@ -86,7 +86,7 @@ export function Tab({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'flex flex-1 cursor-pointer flex-row items-center justify-center gap-1.5 rounded-full px-2.5 py-1.25 hover:bg-[var(--backgroundHover)]',
+        'flex flex-1 cursor-pointer flex-row items-center justify-center gap-1.5 rounded-full px-2.5 py-[5px] hover:bg-[var(--backgroundHover)]',
         className,
       )}
       {...props}
@@ -290,7 +290,7 @@ export function SysWrap({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'flex flex-row items-center gap-2 rounded-[10px] border-l-2 border-l-[rgba(255,255,255,0.18)] px-2.5 py-1.75',
+        'flex flex-row items-center gap-2 rounded-[10px] border-l-2 border-l-[rgba(255,255,255,0.18)] px-2.5 py-[7px]',
         className,
       )}
       {...props}

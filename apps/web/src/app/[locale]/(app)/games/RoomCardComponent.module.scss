@@ -30,23 +30,6 @@
   }
 }
 
-.roomCard.gridView {
-  overflow: hidden;
-}
-
-.roomCard.gridView > .roomHeader {
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 0.5rem;
-}
-
-.roomCard.gridView > .actionsCol {
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(122, 215, 255, 0.1);
-  width: 100%;
-}
-
 .roomCard::before {
   content: '';
   position: absolute;
@@ -263,12 +246,6 @@
     gap: 0.5rem;
   }
 
-  .listGrid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
   .roomCard.listView > .roomHeader {
     max-width: 100%;
   }
@@ -277,20 +254,7 @@
     justify-self: start;
   }
 
-  .roomCard.listView > .roomHeader {
-    max-width: 100%;
-  }
-
   .roomCard.listView > .metaCol {
     min-width: 0;
-  }
-
-  .roomCard.gridView > .roomHeader {
-    margin-bottom: 0;
-  }
-
-  .roomCard.gridView > .actionsCol {
-    border-top: none;
-    padding-top: 0;
   }
 }

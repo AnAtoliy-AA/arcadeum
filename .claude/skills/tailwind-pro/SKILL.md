@@ -24,8 +24,7 @@ This project uses **Tailwind CSS v3** for all web UI (`apps/web` + `@arcadeum/ui
 
 - Themed token → `var(--name)`: `bg-[var(--glassBg)]`, `text-[var(--primary)]`, `border-[var(--borderColor)]`, `bg-[var(--success)]`, `text-[var(--mythicAccent)]`
 - `--background` / `--foreground` are also minted (used by `tokens.scss`): `bg-[var(--background)]`, `text-[var(--foreground)]`
-- Static tokens (genre palettes, role colors, gold shades, radix scales) → **hex literals** from `apps/web/src/shared/lib/theme-tokens.ts` (e.g. `rolePremium` → `#fbbf24`, `cyberpunkPrimary` → `#06b6d4`)
-- Runtime token strings (`$red9`-style values from data modules) → resolve via `resolveThemeColor()` in `apps/web/src/shared/lib/theme-tokens.ts`
+- Static tokens (genre palettes, role colors, gold shades) → **hex literals**. Role colors live in `ROLE_COLORS` at `apps/web/src/features/admin-users/lib/roleColors.ts` (e.g. `ROLE_COLORS.vip.fg` → `#ffd644`)
 - `body` already sets `color: var(--foreground)` — bare `<span>` inherits text color; only set `text-*` when it must differ
 
 ## Quick reference — "What's wrong?"
@@ -56,23 +55,18 @@ This project uses **Tailwind CSS v3** for all web UI (`apps/web` + `@arcadeum/ui
 
 **zIndex** — `$1`=100 → `z-[100]` … `$5`=500 → `z-[500]`.
 
-**Responsive variants** (from the old Tamagui media config):
+**Responsive variants** — `apps/web/tailwind.config.ts` defines NO custom screens, so Tailwind defaults apply: `md:` = 768px, `lg:` = 1024px, `xl:` = 1280px, `2xl:` = 1536px. The app also uses arbitrary `max-[...]:` variants matching the `useMediaQuery` breakpoints (`@/shared/hooks/useMediaQuery`: `sm` = max-width 800px, `md` = max-width 1150px):
 
-| Breakpoint | Variant |
-|---|---|
-| `$xs` (≤660px) | `max-[660px]:` |
-| `$sm` (≤800px) | `max-[800px]:` |
-| `$tablet` (≤1023px) | `max-[1023px]:` |
-| `$md` (≤1150px) | `max-[1150px]:` |
-| `$lg` (≤1280px) | `max-[1280px]:` |
-| `$xl` (≤1420px) | `max-[1420px]:` |
-| `$gtSm` (≥801px) | `md:` |
-| `$gtTablet` (≥1024px) | `lg:` |
-| `$gtMd` (≥1151px) | `xl:` |
-| `$gtLg` (≥1281px) | `2xl:` |
-| `$short` / `$tall` | `[@media(max-height:480px)]:` / `[@media(min-height:820px)]:` |
+| Variant | Breakpoint | Use for |
+|---|---|---|
+| `max-[800px]:` | ≤800px | matches `useMediaQuery().sm` |
+| `max-[1150px]:` | ≤1150px | matches `useMediaQuery().md` |
+| `md:` | ≥768px (default) | tablet-up |
+| `lg:` | ≥1024px (default) | desktop |
+| `xl:` | ≥1280px (default) | wide desktop |
+| `2xl:` | ≥1536px (default) | ultrawide |
 
-For JS-driven breakpoints use `useMediaQuery()` from `@/shared/hooks/useMediaQuery` (same shape as the old Tamagui `useMedia()`: `media.sm`, `media.gtMd`, …).
+For JS-driven breakpoints use `useMediaQuery()` from `@/shared/hooks/useMediaQuery` (`media.sm` = ≤800px, `media.md` = ≤1150px).
 
 ## Class composition patterns
 

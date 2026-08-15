@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { PageLoading } from '@/shared/ui/Loading/PageLoading';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 
 const RoadmapPageDynamic = dynamic(() => import('./RoadmapPageContent'), {
   ssr: false,

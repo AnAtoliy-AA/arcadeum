@@ -50,7 +50,7 @@ const ROLE_BORDER: Record<CardRole, string> = {
   special: '#f472b6',
 };
 
-// Glow colours are now CSS-attribute-keyed in `HudStyles.tsx` (§4.1) —
+// Glow colours are now CSS-attribute-keyed in `styles/hud.scss` (§4.1) —
 // the ::after pseudo-element reads `data-role` and `data-selected` and
 // drives box-shadow + radius via custom properties. No JS payload.
 

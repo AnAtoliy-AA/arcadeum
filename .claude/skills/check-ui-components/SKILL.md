@@ -56,7 +56,6 @@ Read `packages/ui/src/index.ts` to get the full list of exported components. The
 | `Footer` | `links`, `socials` | App footer |
 | `MobileLoginIndicator` | — | Mobile auth status |
 | `DownloadButtons` | `platform` | App store download CTAs |
-| `XStack`, `YStack`, `ZStack`, `ScrollView`, `ThemeableStack` | (Tamagui layout) | Layout primitives |
 
 ## Step 2 — Decide: reuse or create
 
@@ -68,7 +67,7 @@ Read `packages/ui/src/index.ts` to get the full list of exported components. The
 **If no existing component fits** (genuinely new pattern):
 - The component MUST be created in `packages/ui`, not inline in the app.
 - Follow the `/new-ui-component` skill to add it:
-  1. `packages/ui/src/components/<Name>/<Name>.tsx` — Tamagui-based implementation
+  1. `packages/ui/src/components/<Name>/<Name>.tsx` — plain React + Tailwind implementation
   2. `packages/ui/src/components/<Name>/index.ts` — re-export
   3. `packages/ui/src/components/<Name>/<Name>.stories.tsx` — Storybook story (required)
   4. Register in `packages/ui/src/index.ts`
@@ -77,7 +76,7 @@ Read `packages/ui/src/index.ts` to get the full list of exported components. The
 ## Step 3 — Extending an existing component
 
 If the existing component almost fits but needs a new variant or prop:
-1. Read the component's `.tsx` and its `types.ts`/`StyledComponent` to understand its variant system
+1. Read the component's `.tsx` and its `types.ts` to understand its variant system
 2. Add the new variant/prop to `packages/ui/src/components/<Name>/<Name>.tsx`
 3. Export the updated type from `index.ts`
 4. Add a Storybook story for the new variant in `<Name>.stories.tsx`

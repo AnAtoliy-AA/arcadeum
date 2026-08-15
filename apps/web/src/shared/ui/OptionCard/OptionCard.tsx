@@ -8,8 +8,6 @@ export interface OptionCardProps {
   label: ReactNode;
   description?: ReactNode;
   isActive?: boolean;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
   onClick?: () => void;
   icon?: ReactNode;
   'data-testid'?: string;
@@ -33,7 +31,6 @@ export function OptionCard({
   label,
   description,
   isActive,
-  onPress,
   onClick,
   icon,
   'data-testid': dataTestId,
@@ -55,11 +52,9 @@ export function OptionCard({
         ...style,
       }}
       type="button"
-      onClick={onClick ?? onPress}
+      onClick={onClick}
       data-testid={dataTestId}
       aria-pressed={isActive ? 'true' : 'false'}
-      role="button"
-      tabIndex={0}
       {...rest}
     >
       <ActiveIndicator visible={isActive} />

@@ -18,7 +18,6 @@ import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
 import { fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layout-styles';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface GamePageLayoutProps {
   roomId: string;
@@ -67,8 +66,6 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     ?.teamMode;
 
   const { t } = useTranslation();
-  const media = useMediaQuery();
-  const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const { isFullscreen, toggleFullscreen, exitFullscreen } = useFullscreen(
     gameContainerRef,
@@ -77,17 +74,16 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     },
   );
 
-  // Chat visibility — wide screens default visible, narrow hidden
-  const [showChat, setShowChat] = useState(false);
+  // Chat visibility — visible by default on wide screens, hidden on narrow.
+  // The initial value is read once from matchMedia; the user can toggle it.
+  const [showChat, setShowChat] = useState(() =>
+    typeof window === 'undefined'
+      ? true
+      : window.matchMedia('(min-width: 1151px)').matches,
+  );
   const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
 
   const { activeEmotes, sendEmote } = useEmotes();
-
-  useEffect(() => {
-    queueMicrotask(() => {
-      setShowChat(media.gtMd);
-    });
-  }, [media.gtMd]);
 
   const resolveDisplayName = useCallback(
     (id?: string, fallback?: string): string | undefined => {
@@ -259,7 +255,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           rematchLoading={rematchLoading}
         />
 
-        <GameRow flexDirection={roomFlexDirection}>
+        <GameRow>
           <ActiveEmotesProvider
             value={{
               emotes: activeEmotes,

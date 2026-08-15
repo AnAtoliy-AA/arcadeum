@@ -64,40 +64,27 @@ const darkTokens = {
 - Lighter variants reduce eye strain
 - Maintain WCAG contrast ratios (4.5:1 for text)
 
-## Tamagui Theme Implementation
+## Theme Implementation (CSS Variables)
 
 ### Theme Setup
 
 ```tsx
-// Themes are token maps in packages/ui/src/themeDefinitions.ts; ThemeContext
-// mints them as CSS variables on <html>. data-theme switches the tokens.
-export const themes = {
-  light: {
-    background: '#FFFFFF',
-    surface: '#F8FAFC',
-    text: '#0F172A',
-    textSecondary: '#64748B',
-    border: '#E2E8F0',
-    primary: '#2563EB',
-    primaryHover: '#1D4ED8',
-  },
-  dark: {
-    background: '#0F172A',
-    surface: '#1E293B',
-    text: '#F8FAFC',
-    textSecondary: '#94A3B8',
-    border: '#334155',
-    primary: '#60A5FA',
-    primaryHover: '#93C5FD',
-  },
-};
+// Token maps live in packages/ui/src/themeDefinitions.ts. AppThemeProvider
+// (apps/web/src/app/theme/ThemeContext.tsx) mints each key as a CSS variable
+// on <html> (`--<key>` and `--color-<key>`), plus the layout aliases
+// --background / --foreground / --muted-foreground / --glassBg /
+// --glassBorder. Theme switching works by swapping the `data-theme`
+// attribute on <html>; Tailwind classes stay identical.
+//
+// Minted tokens include: --background, --foreground, --muted-foreground,
+// --primary, --color, --textSecondary, --borderColor, --backgroundHover,
+// --glassBg, --glassBorder, --error, --success, --warning, --info, --accent.
+// NOT minted: --border, --surface, --text — always use the real names above.
 
-// App wrapper
-<ThemeProvider>
-  <Theme name={isDark ? 'dark' : 'light'}>
-    <App />
-  </Theme>
-</ThemeProvider>
+// App wrapper (from apps/web/src/app/theme/ThemeContext.tsx)
+<AppThemeProvider initialTheme="dark">
+  <App />
+</AppThemeProvider>
 ```
 
 ### Using Tokens in Components
@@ -106,13 +93,13 @@ export const themes = {
 // Tailwind classes read the CSS variables (var(--x)) minted from the token maps
 const Card = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={`box-border rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 ${className ?? ''}`}
+    className={`box-border rounded-lg border border-[var(--borderColor)] bg-[var(--glassBg)] p-4 ${className ?? ''}`}
     {...props}
   />
 );
 
 const Heading = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h2 className={`text-[24px] font-bold text-[var(--text)] ${className ?? ''}`} {...props} />
+  <h2 className={`text-[24px] font-bold text-[var(--color)] ${className ?? ''}`} {...props} />
 );
 
 const Body = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
@@ -169,39 +156,23 @@ const ThemeToggle = () => {
 ### Theme-Aware Card
 
 ```tsx
-const ThemedCard = ({ children }) => {
-  const theme = useTheme();
-
-  return (
-    <YStack
-      backgroundColor={theme.surface}
-      borderColor={theme.border}
-      borderWidth={1}
-      borderRadius="$lg"
-      padding="$4"
-    >
-      {children}
-    </YStack>
-  );
-};
+const ThemedCard = ({ children }) => (
+  <div className="box-border rounded-2xl border border-[var(--borderColor)] bg-[var(--glassBg)] p-4">
+    {children}
+  </div>
+);
 ```
 
 ### Theme-Aware Input
 
 ```tsx
-const ThemedInput = ({ error, ...props }) => {
-  const theme = useTheme();
-
-  return (
-    <Input
-      backgroundColor={theme.surface}
-      borderColor={error ? theme.error : theme.border}
-      color={theme.text}
-      placeholderTextColor={theme.textSecondary}
-      {...props}
-    />
-  );
-};
+// @arcadeum/ui Input is already theme-aware: bg-[var(--background)],
+// text-[var(--color)] and the `error` prop swap the border to
+// border-[var(--error)] (see packages/ui/src/utils/fieldClasses.ts).
+// No custom theming needed.
+const ThemedInput = ({ error, ...props }) => (
+  <Input error={error} {...props} />
+);
 ```
 
 ## Common Dark Mode Issues
@@ -226,10 +197,10 @@ const ThemedInput = ({ error, ...props }) => {
 
 ```tsx
 // Bad
-<Stack borderColor="#E2E8F0" /> // Invisible in dark
+<div className="border border-[#E2E8F0]" /> // Invisible in dark
 
 // Good
-<Stack borderColor="$border" /> // Adapts to theme
+<div className="border border-[var(--borderColor)]" /> // Adapts to theme
 ```
 
 ### 3. Shadows Too Dark
@@ -267,8 +238,10 @@ const ThemedInput = ({ error, ...props }) => {
 // Bad
 <View style={{ backgroundColor: '#FFFFFF' }} />
 
-// Good
-<View style={{ backgroundColor: theme.background }} />
+// Good (mobile: useThemedStyles palette)
+const styles = useThemedStyles((palette) =>
+  StyleSheet.create({ surface: { backgroundColor: palette.background } }),
+);
 ```
 
 ## Accessibility Checklist

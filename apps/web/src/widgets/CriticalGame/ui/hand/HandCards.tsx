@@ -58,7 +58,7 @@ export function HandCards({
       data-testid="hand-cards"
     >
       {cards.map((card, i) => {
-        // §4.4 — fan transform lives in CSS now (see `HudStyles.tsx`);
+        // §4.4 — fan transform lives in CSS now (see `styles/hud.scss`);
         // we only set the index/count custom properties here. JS does
         // not compute the transform per render. CSS reads `--hand-index`
         // / `--hand-count` and produces the rotate + translateY.

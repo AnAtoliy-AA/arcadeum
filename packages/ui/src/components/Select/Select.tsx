@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect, useMemo, useRef, useState, Children, isValidElement } from 'react';
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState, Children, isValidElement } from 'react';
 import type { ReactNode } from 'react';
 import { cx } from '../../utils/cx';
 import { fieldBorderClasses } from '../../utils/fieldClasses';
@@ -97,7 +97,9 @@ export const Select = memo(function Select({
   // Index of the option highlighted by keyboard navigation.
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const listboxId = `${id ?? 'select'}-listbox`;
+  // useId guarantees unique listbox ids even for id-less instances.
+  const generatedId = useId();
+  const listboxId = `${id ?? generatedId}-listbox`;
   const activeOptionId = `${listboxId}-option-${optionList[activeIndex]?.value ?? ''}`;
 
   // Sync highlight with the selected value whenever the dropdown opens.

@@ -338,7 +338,6 @@ export function ActiveGameView({
               aliveOpponents={aliveOpponents}
               currentPlayer={currentPlayer}
               actions={actions}
-              rematch={rematch}
               modals={{
                 eventComboModal,
                 selectedMode,

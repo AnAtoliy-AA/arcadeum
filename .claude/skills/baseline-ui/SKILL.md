@@ -74,7 +74,7 @@ Enforces an opinionated UI baseline to prevent AI-generated interface slop.
 - Never use gradients unless explicitly requested
 - Never use purple or multicolor gradients
 - Never use glow effects as primary affordances
-- Use Tamagui shadow scale unless explicitly requested
+- Use Tailwind shadow utilities (`shadow-sm`/`shadow-md`/`shadow-lg`/`shadow-xl`) unless explicitly requested
 - Give empty states one clear next action
 - Limit accent color usage to one per view
 - Use existing theme tokens before introducing new ones

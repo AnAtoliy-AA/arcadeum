@@ -124,7 +124,7 @@ describe('ThreatStrip', () => {
   });
 
   it('exposes a data-pulse flag instead of inlining an animation rule', () => {
-    // The keyframes live in HudStyles and are gated on prefers-reduced-motion.
+    // The keyframes live in styles/hud.scss and are gated on prefers-reduced-motion.
     // ThreatStrip only signals "should pulse" via a data attribute; inlining
     // an animation rule would bypass that gate.
     const { rerender } = render(<ThreatStrip hand={['strike']} deck={[]} />);

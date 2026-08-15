@@ -1,20 +1,3 @@
-'use client';
-
-/**
- * Single mount-point for HUD CSS — keyframes, the hand-card glow ::after,
- * the CSS-driven hand fan, and the @property-based threat pulse. Mounted
- * once by `ArenaCenter` (inside the widget's arena column) so a fresh
- * `<style>` tag isn't emitted on every re-render of its consumers.
- *
- * Re-mounting from another component would emit a duplicate `<style>`
- * block — guard via `useId()` + dedupe if multiple mount points are ever
- * needed.
- *
- * All motion-bearing rules are gated on
- * `@media (prefers-reduced-motion: no-preference)` so users with
- * motion-reduce settings never receive the pulse or the glow transition.
- */
-const HUD_KEYFRAMES_CSS = `
 @media (prefers-reduced-motion: no-preference) {
   /* The old threatPulse keyframes used to live here; the @property
      block below replaces them so the pulse value interpolates on the
@@ -189,8 +172,3 @@ const HUD_KEYFRAMES_CSS = `
   }
 }
 
-`;
-
-export function HudStyles() {
-  return <style dangerouslySetInnerHTML={{ __html: HUD_KEYFRAMES_CSS }} />;
-}

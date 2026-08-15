@@ -2,49 +2,6 @@ import type React from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Button, type ButtonProps } from '@arcadeum/ui';
 
-export const settingsStyles = `
-  .settings-toggle-input {
-    appearance: none;
-    width: 3.5rem;
-    height: 2rem;
-    background: var(--color-backgroundHover, #32353d);
-    border-radius: 999px;
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-    border: 2px solid var(--color-borderColor, rgba(50, 53, 61, 0.8));
-    flex-shrink: 0;
-  }
-
-  .settings-toggle-input:checked {
-    background: var(--color-primary, #7ad7ff);
-    border-color: var(--color-primary, #7ad7ff);
-    box-shadow: 0 0 12px var(--color-primary, rgba(122, 215, 255, 0.25));
-  }
-
-  .settings-toggle-input::after {
-    content: '';
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    width: calc(2rem - 12px);
-    height: calc(2rem - 12px);
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-
-  .settings-toggle-input:checked::after {
-    transform: translateX(1.5rem);
-  }
-
-  .settings-toggle-input:focus-visible {
-    outline: 2px solid var(--color-borderColorFocus, #7ad7ff);
-    outline-offset: 2px;
-  }
-`;
-
 export function Container({
   className,
   ...props
@@ -165,7 +122,18 @@ export function ToggleLabel({
 export function ToggleInput(
   props: React.InputHTMLAttributes<HTMLInputElement>,
 ) {
-  return <input type="checkbox" className="settings-toggle-input" {...props} />;
+  return (
+    <input
+      type="checkbox"
+      className={cx(
+        'appearance-none relative w-14 h-8 shrink-0 rounded-full border-2 border-[var(--borderColor)] bg-[var(--backgroundHover)] cursor-pointer transition-all duration-300',
+        'after:content-[""] after:absolute after:top-1 after:left-1 after:w-[20px] after:h-[20px] after:rounded-full after:bg-white after:shadow-[0_2px_4px_rgba(0,0,0,0.2)] after:transition-transform after:duration-300',
+        'checked:border-[var(--primary)] checked:bg-[var(--primary)] checked:shadow-[0_0_12px_var(--primary)] checked:after:translate-x-6',
+        'focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-[color:var(--borderColorFocus)]',
+      )}
+      {...props}
+    />
+  );
 }
 
 export function BlockedUserRow({

@@ -14,7 +14,6 @@ export const buttonBase = [
   'flex-row',
   'items-center',
   'justify-center',
-  '',
   'cursor-pointer',
   'overflow-hidden',
   'select-none',

@@ -58,27 +58,28 @@ const LoginForm = () => {
   };
 
   return (
-    <YStack gap="$4" padding="$4">
+    <div className="box-border flex flex-col gap-4 p-4">
       <FormField
         label="Email"
         value={email}
-        onChangeText={setEmail}
+        onChange={setEmail}
         error={errors.email}
-        keyboardType="email-address"
-        autoCapitalize="none"
+        type="email"
+        autoComplete="email"
       />
       <FormField
         label="Password"
         value={password}
-        onChangeText={setPassword}
+        onChange={setPassword}
         error={errors.password}
-        secureTextEntry
+        type="password"
+        autoComplete="current-password"
       />
       {errors.submit && <ErrorMessage message={errors.submit} />}
-      <Button onPress={handleSubmit} disabled={loading}>
+      <Button onClick={handleSubmit} disabled={loading}>
         {loading ? 'Signing in...' : 'Sign in'}
       </Button>
-    </YStack>
+    </div>
   );
 };
 ```
@@ -89,7 +90,7 @@ const LoginForm = () => {
 const FormField = ({
   label,
   value,
-  onChangeText,
+  onChange,
   error,
   hint,
   required,
@@ -101,32 +102,32 @@ const FormField = ({
   const hintId = `${fieldId}-hint`;
 
   return (
-    <YStack gap="$1">
-      <Label htmlFor={fieldId}>
+    <div className="box-border flex flex-col gap-1">
+      <label htmlFor={fieldId}>
         {label}
-        {required && <Text color="$error">*</Text>}
-      </Label>
+        {required && <span className="text-[var(--error)]">*</span>}
+      </label>
       <Input
         id={fieldId}
         value={value}
-        onChangeText={onChangeText}
+        onChange={onChange}
         aria-invalid={!!error}
         aria-describedby={error ? errorId : hint ? hintId : undefined}
         disabled={disabled}
-        borderColor={error ? '$error' : '$border'}
+        className={error ? 'border-[var(--error)]' : undefined}
         {...inputProps}
       />
       {hint && !error && (
-        <Text id={hintId} color="$textSecondary" fontSize="$sm">
+        <p id={hintId} className="text-sm text-[var(--textSecondary)]">
           {hint}
-        </Text>
+        </p>
       )}
       {error && (
-        <Text id={errorId} color="$error" fontSize="$sm" role="alert">
+        <p id={errorId} className="text-sm text-[var(--error)]" role="alert">
           {error}
-        </Text>
+        </p>
       )}
-    </YStack>
+    </div>
   );
 };
 ```
@@ -190,11 +191,11 @@ const handleEmailChange = async (email) => {
 
 <Input
   value={email}
-  onChangeText={handleEmailChange}
+  onChange={handleEmailChange}
   rightIcon={
     emailStatus === 'checking' && <Spinner size="small" />
-    emailStatus === 'taken' && <Text color="$error">Taken</Text>
-    emailStatus === 'available' && <Text color="$success">Available</Text>
+    emailStatus === 'taken' && <span className="text-sm text-[var(--error)]">Taken</span>
+    emailStatus === 'available' && <span className="text-sm text-[var(--success)]">Available</span>
   }
 />
 ```
@@ -222,7 +223,7 @@ const handleEmailChange = async (email) => {
 // Summary at top (for multiple errors)
 {hasErrors && (
   <Alert type="error">
-    <Text>Please fix the following errors:</Text>
+    <p>Please fix the following errors:</p>
     <List>
       {Object.entries(errors).map(([field, error]) => (
         <ListItem key={field}>
@@ -242,14 +243,14 @@ const handleEmailChange = async (email) => {
   aria-describedby="email-error"
   aria-invalid={!!error}
 />
-<Text id="email-error" role="alert">
+<p id="email-error" className="text-sm text-[var(--error)]" role="alert">
   {error}
-</Text>
+</p>
 
 // Live region for dynamic errors
-<View aria-live="polite">
-  {error && <Text role="alert">{error}</Text>}
-</View>
+<div aria-live="polite">
+  {error && <p role="alert">{error}</p>}
+</div>
 ```
 
 ## Progressive Disclosure
@@ -266,16 +267,16 @@ const steps = [
 ];
 
 return (
-  <YStack>
+  <div className="box-border flex flex-col gap-2">
     <StepIndicator current={step} total={steps.length} />
     <FormStep step={steps[step - 1]} />
-    <YStack direction="horizontal">
-      {step > 1 && <Button onPress={() => setStep(step - 1)}>Back</Button>}
-      <Button onPress={() => setStep(step + 1)}>
+    <div className="box-border flex flex-row gap-2">
+      {step > 1 && <Button onClick={() => setStep(step - 1)}>Back</Button>}
+      <Button onClick={() => setStep(step + 1)}>
         {step === steps.length ? 'Submit' : 'Next'}
       </Button>
-    </YStack>
-  </YStack>
+    </div>
+  </div>
 );
 ```
 
@@ -293,7 +294,7 @@ const [accountType, setAccountType] = useState('personal');
   <FormField
     label="Company Name"
     value={companyName}
-    onChangeText={setCompanyName}
+    onChange={setCompanyName}
   />
 )}
 ```
@@ -306,7 +307,7 @@ const [showAdvanced, setShowAdvanced] = useState(false);
 <BasicFields />
 
 <Collapsible>
-  <Button onPress={() => setShowAdvanced(!showAdvanced)}>
+  <Button onClick={() => setShowAdvanced(!showAdvanced)}>
     {showAdvanced ? 'Hide' : 'Show'} Advanced Options
   </Button>
 </Collapsible>
@@ -322,23 +323,23 @@ const [showAdvanced, setShowAdvanced] = useState(false);
 
 ```tsx
 // Always visible label
-<Label htmlFor="email">Email</Label>
+<label htmlFor="email">Email</label>
 <Input id="email" />
 
 // Or floating label
-<FloatingLabel
+<FloatingLabelInput
   label="Email"
   value={email}
-  onChangeText={setEmail}
+  onChange={setEmail}
 />
 ```
 
 ### Required Fields
 
 ```tsx
-<Label>
-  Email <Text color="$error" aria-hidden>*</Text>
-</Label>
+<label>
+  Email <span className="text-[var(--error)]" aria-hidden>*</span>
+</label>
 <Input
   required
   aria-required="true"
@@ -351,7 +352,7 @@ const [showAdvanced, setShowAdvanced] = useState(false);
 <Input
   disabled
   aria-disabled="true"
-  opacity={0.5}
+  className="opacity-50"
 />
 ```
 

@@ -9,7 +9,7 @@ import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
 import { FloatingLabelTextArea } from '@arcadeum/ui/components/FloatingLabelTextArea';
 import { LaunchButton } from '@arcadeum/ui/components/LaunchButton';
 import { ContactAvatars } from './ContactAvatars';
-import { getContactStyles } from './contactTokens';
+import { contactStyles } from './contactTokens';
 import { submitContactAction, type ContactActionState } from './actions';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
@@ -48,7 +48,7 @@ function SubmitButton({
 }
 
 export function ContactForm({ form }: ContactFormProps) {
-  const s = getContactStyles();
+  const s = contactStyles;
 
   const [actionState, formAction] = useActionState(
     submitContactAction,

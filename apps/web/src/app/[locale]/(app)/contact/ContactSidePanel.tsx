@@ -4,7 +4,7 @@ import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { GithubIcon } from './ContactView.icons';
 import { ContactAvatars } from './ContactAvatars';
-import { getContactStyles } from './contactTokens';
+import { contactStyles } from './contactTokens';
 import { appConfig } from '@/shared/config/app-config';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
@@ -22,7 +22,7 @@ export function ContactSidePanel({
   side,
   workingHours,
 }: ContactSidePanelProps) {
-  const s = getContactStyles();
+  const s = contactStyles;
   return (
     <div
       className="flex flex-col items-stretch flex-1 min-w-0"

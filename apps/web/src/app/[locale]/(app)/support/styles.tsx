@@ -58,7 +58,7 @@ export function AnimatedGlassCard({
     <GlassCard
       className={`support-animated-card ${className || ''}`}
       style={{
-        ...((style as object | undefined) ?? {}),
+        ...(style ?? {}),
         animationDelay: delay || '0s',
       }}
       {...props}
@@ -111,7 +111,7 @@ export function SectionTitle({
   id?: string;
 }) {
   return (
-    <h2 className="support-section-title" style={{ color: 'inherit' }} id={id}>
+    <h2 className="support-section-title" id={id}>
       {children}
     </h2>
   );

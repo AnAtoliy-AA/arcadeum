@@ -223,26 +223,13 @@ const TURN_TEXT_CLASSES: Record<TurnStatusVariant, string> = {
   default: 'text-[var(--color)] opacity-[0.7]',
 };
 
-function tokenSpacingClass(
-  value: string | undefined,
-  prefix: 'gap' | 'pl',
-): string | undefined {
-  if (!value) return undefined;
-  const match = /^\$(\d+)$/.exec(value);
-  return match ? `${prefix}-${match[1]}` : undefined;
-}
-
 export const TurnStatusPill = ({
   status = 'default',
-  gap,
-  paddingLeft,
   className,
   children,
   ...props
 }: {
   status?: TurnStatusVariant;
-  gap?: string;
-  paddingLeft?: string;
   className?: string;
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>) => (
@@ -250,8 +237,6 @@ export const TurnStatusPill = ({
     className={cx(
       'flex flex-row items-center rounded-[20px] px-3 py-1 border shrink-0',
       TURN_PILL_CLASSES[status],
-      tokenSpacingClass(gap, 'gap'),
-      tokenSpacingClass(paddingLeft, 'pl'),
       className,
     )}
     {...props}

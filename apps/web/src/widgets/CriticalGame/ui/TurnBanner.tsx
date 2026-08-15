@@ -13,8 +13,8 @@ interface TurnBannerProps {
   pendingDraws?: number;
 }
 
-// `turnBannerDotPulse` keyframes live in `HudStyles.tsx`
-// (HUD_KEYFRAMES_CSS) — `ArenaCenter` mounts `<HudStyles />` once for
+// `turnBannerDotPulse` keyframes live in `./styles/hud.scss`
+// — `ArenaCenter` imports the stylesheet once for
 // the whole widget, so the rule is already in the document by the time
 // this banner paints.
 

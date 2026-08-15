@@ -11,7 +11,6 @@ import {
 
 import { GAME_VARIANT } from '../lib/constants';
 import type { GameVariant } from '@arcadeum/ui';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface TableStatsProps {
   deckCount: number;
@@ -26,10 +25,11 @@ export const TableStats: React.FC<TableStatsProps> = ({
   pendingDraws,
   cardVariant,
 }) => {
-  const media = useMediaQuery();
-  if (media.sm) return null;
   return (
-    <TableInfo variant={cardVariant as GameVariant}>
+    <TableInfo
+      variant={cardVariant as GameVariant}
+      className="hidden max-[800px]:block"
+    >
       {(cardVariant as string) === GAME_VARIANT.UNDERWATER && (
         <>
           <SonarRadar />

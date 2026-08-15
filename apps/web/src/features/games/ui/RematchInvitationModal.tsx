@@ -18,6 +18,13 @@ interface RematchInvitationModalProps {
   message?: string;
   onAccept: () => void;
   onDecline: () => void;
+  hostId?: string;
+  roomId?: string;
+  timeLeft?: number;
+  onBlockRematch?: (roomId: string) => void;
+  onBlockUser?: (hostId: string) => void;
+  accepting?: boolean;
+  cardVariant?: string;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
@@ -59,6 +66,13 @@ export function RematchInvitationModal({
   message,
   onAccept,
   onDecline,
+  hostId,
+  roomId,
+  timeLeft,
+  onBlockRematch,
+  onBlockUser,
+  accepting = false,
+  cardVariant,
   t,
 }: RematchInvitationModalProps) {
   const isClient = useSyncExternalStore(
@@ -71,7 +85,7 @@ export function RematchInvitationModal({
 
   return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onDecline()}>
-      <ModalContent>
+      <ModalContent variant={cardVariant}>
         <div className="flex flex-col items-center -mb-4">
           <span className="text-[60px]">🔄</span>
         </div>
@@ -94,10 +108,27 @@ export function RematchInvitationModal({
           </div>
         ) : null}
 
+        {typeof timeLeft === 'number' && (
+          <div className="mb-8 flex flex-col items-center gap-1">
+            <span
+              className={cx(
+                'text-[40px] font-bold',
+                timeLeft <= 10 ? 'text-[#ef4444]' : 'text-[#6366f1]',
+              )}
+            >
+              {timeLeft}s
+            </span>
+            <span className="text-[16px] opacity-[0.6]">
+              {t('games.table.rematch.toDecide' as TranslationKey)}
+            </span>
+          </div>
+        )}
+
         <ModalActions>
           <ModalButton
             variant="secondary"
             onClick={onDecline}
+            disabled={accepting}
             data-testid="decline-rematch-button"
           >
             {t('games.table.rematch.invitation.decline' as TranslationKey)}
@@ -105,11 +136,43 @@ export function RematchInvitationModal({
           <ModalButton
             variant="primary"
             onClick={onAccept}
+            disabled={accepting}
             data-testid="accept-rematch-button"
           >
-            {t('games.table.rematch.invitation.accept' as TranslationKey)}
+            {accepting
+              ? t('games.table.rematch.joining' as TranslationKey)
+              : t('games.table.rematch.invitation.accept' as TranslationKey)}
           </ModalButton>
         </ModalActions>
+
+        {(onBlockRematch || onBlockUser) && (
+          <div className="mt-4 flex flex-col items-center gap-1">
+            {onBlockRematch && roomId && (
+              <button
+                type="button"
+                className="mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
+                onClick={() => onBlockRematch(roomId)}
+                disabled={accepting}
+              >
+                <span className="underline">
+                  {t('games.table.rematch.blockThisRematch' as TranslationKey)}
+                </span>
+              </button>
+            )}
+            {onBlockUser && hostId && (
+              <button
+                type="button"
+                className="mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
+                onClick={() => onBlockUser(hostId)}
+                disabled={accepting}
+              >
+                <span className="underline">
+                  {t('games.table.rematch.blockInvitations' as TranslationKey)}
+                </span>
+              </button>
+            )}
+          </div>
+        )}
 
         <ModalButton
           className="flex-1 mt-4 p-2"

@@ -37,7 +37,6 @@ const DELETE_STYLE: React.CSSProperties = {
   fontSize: 12,
   lineHeight: '20px',
   cursor: 'pointer',
-  opacity: 0,
   transition: 'opacity 120ms ease',
   display: 'flex',
   alignItems: 'center',
@@ -54,13 +53,11 @@ function DeleteButton({
 }) {
   return (
     <button
-      className="chat-delete-btn"
+      className="chat-delete-btn opacity-0 transition-opacity duration-150 group-hover:opacity-100"
       onClick={() => onDelete(messageId)}
       title="Delete message"
       aria-label="Delete message"
       style={DELETE_STYLE}
-      onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-      onMouseLeave={(e) => (e.currentTarget.style.opacity = '0')}
     >
       ×
     </button>
@@ -78,7 +75,6 @@ export function ChatLogItem({
   isHost,
   onDeleteMessage,
 }: ChatLogItemProps) {
-
   if (log.type === 'system' || log.type === 'action') {
     const moveCell = parseMoveCell(log.message);
     if (moveCell) {
@@ -131,7 +127,7 @@ export function ChatLogItem({
 
   if (emote) {
     return (
-      <div className="chat-msg-row" style={{ position: 'relative' }}>
+      <div className="chat-msg-row group" style={{ position: 'relative' }}>
         <GameChatEmoteRow
           emoji={emote.emoji}
           senderName={senderName}
@@ -147,7 +143,7 @@ export function ChatLogItem({
   }
 
   return (
-    <div className="chat-msg-row" style={{ position: 'relative' }}>
+    <div className="chat-msg-row group" style={{ position: 'relative' }}>
       <GameChatRow
         senderId={log.senderId ?? null}
         senderName={log.senderId ? senderName : undefined}
@@ -159,9 +155,11 @@ export function ChatLogItem({
         isOwn={isOwn}
         resolveEquipped={resolveEquipped}
       />
-      {canDelete && onDeleteMessage && (log.type === 'message' || log.type === 'action') && (
-        <DeleteButton messageId={log.id} onDelete={onDeleteMessage} />
-      )}
+      {canDelete &&
+        onDeleteMessage &&
+        (log.type === 'message' || log.type === 'action') && (
+          <DeleteButton messageId={log.id} onDelete={onDeleteMessage} />
+        )}
     </div>
   );
 }

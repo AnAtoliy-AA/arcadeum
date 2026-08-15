@@ -2,7 +2,7 @@
 
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { getContactStyles } from './contactTokens';
+import { contactStyles } from './contactTokens';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 type TipsCopy = NonNullable<NonNullable<ContactMessages['sections']>['tips']>;
@@ -12,7 +12,7 @@ export type ContactTipsProps = {
 };
 
 export function ContactTips({ tips }: ContactTipsProps) {
-  const s = getContactStyles();
+  const s = contactStyles;
   const items = [
     tips?.orderId ??
       'Include your order ID for refund or payment questions — we can pull the receipt instantly.',

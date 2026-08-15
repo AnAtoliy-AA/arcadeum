@@ -123,8 +123,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
         {headerProps.turn ? (
           <TurnStatusPill
             status={pillStatus}
-            gap="$2"
-            paddingLeft="$1"
+            className="gap-2 pl-1"
             data-testid="turn-status-pill"
           >
             <TurnIndicator turn={headerProps.turn} />
@@ -132,8 +131,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
         ) : (
           <TurnStatusPill
             status={pillStatus}
-            gap={headerProps.turnAvatar ? '$2' : undefined}
-            paddingLeft={headerProps.turnAvatar ? '$1' : undefined}
+            className={headerProps.turnAvatar ? 'gap-2 pl-1' : undefined}
             data-testid="turn-status-pill"
           >
             {headerProps.turnAvatar}

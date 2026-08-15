@@ -321,3 +321,5 @@ export function getContactStyles() {
 }
 
 export type ContactStyles = ReturnType<typeof getContactStyles>;
+
+export const contactStyles = getContactStyles();

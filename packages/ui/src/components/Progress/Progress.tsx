@@ -1,7 +1,7 @@
 import { memo } from 'react';
 
-import { GameVariant } from '../Game/GameContainer';
 import { GAME_ACCENT_COLORS } from '../Game/gamePalette';
+import type { GameVariant } from '../Button/types';
 
 export type ProgressBarProps = {
   value: number;

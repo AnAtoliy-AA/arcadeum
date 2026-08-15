@@ -163,101 +163,101 @@ Codemod output is **always reviewed**: run `--dry-run`, diff, then apply per fea
 
 ### Phase 1 — Tailwind infrastructure (foundation)
 
-- [ ] Create `scripts/tamagui-codemod/` with `map.ts` (3.x dictionary) + runner + `--dry-run`.
-- [ ] Create `packages/ui/src/components/Stack/Stack.tsx` compat primitives + export from `packages/ui/src/index.ts` (replacing the `from 'tamagui'` re-export line 79 — keep API identical).
-- [ ] Add `packages/ui/src/hooks/useMediaQuery.ts` (old `useMedia` shape) + `packages/ui/src/hooks/useThemeColors.ts` (reads CSS vars, mirrors old `useTheme` keys).
-- [ ] Extend `apps/web/tailwind.config.ts` + `packages/ui/tailwind.config.ts` `colors` with full token set (3.4); add `pointer-coarse` variant plugin; add remaining keyframes from `tamagui.config.ts`.
-- [ ] Add parity test `scripts/tamagui-codemod/token-parity.test.ts` (or vitest in packages/ui): every color/size/radius/zIndex token in `packages/ui/src/tamagui.config.ts` has a mapping in the dictionary.
-- [ ] Verify Storybook (`packages/ui/.storybook/preview.tsx`) renders Stack story with Tailwind classes.
+- [x] Create `scripts/tamagui-codemod/` with `map.ts` (3.x dictionary) + runner + `--dry-run`.
+- [x] Create `packages/ui/src/components/Stack/Stack.tsx` compat primitives + export from `packages/ui/src/index.ts` (replacing the `from 'tamagui'` re-export line 79 — keep API identical).
+- [x] Add `packages/ui/src/hooks/useMediaQuery.ts` (old `useMedia` shape) + `packages/ui/src/hooks/useThemeColors.ts` (reads CSS vars, mirrors old `useTheme` keys).
+- [x] Extend `apps/web/tailwind.config.ts` + `packages/ui/tailwind.config.ts` `colors` with full token set (3.4); add `pointer-coarse` variant plugin; add remaining keyframes from `tamagui.config.ts`.
+- [x] Add parity test `scripts/tamagui-codemod/token-parity.test.ts` (or vitest in packages/ui): every color/size/radius/zIndex token in `packages/ui/src/tamagui.config.ts` has a mapping in the dictionary.
+- [x] Verify Storybook (`packages/ui/.storybook/preview.tsx`) renders Stack story with Tailwind classes.
 - **Gate:** `pnpm --filter @arcadeum/ui test`, `pnpm check-file-length`, Storybook boots; codemod dry-run on one widget produces a sane diff.
 
 ### Phase 2 — Migrate `packages/ui` components (41 remaining)
 
 Order: leaf components first (no deps on other tamagui components), then composites. Batch into ~8 tasks of 4–6 components each; within a batch, leaf → composite.
 
-- [ ] Task 2a: `Badge`, `StatusBadge` (already free — verify), `IdleBadge`, `LiveChip`, `RankBadge`, `CosmeticBadge`, `RoleBadge`, `DeltaChip`, `TrendPill`.
-- [ ] Task 2b: `Card`, `GlassCard`, `Section`, `Container`, `EmptyState`, `ErrorState`, `LoadingState`, `PageLoading`, `Skeleton`.
-- [ ] Task 2c: `FormGroup`, `FormPips`, `FloatingLabelInput`, `Input` (verify), `TextArea` (verify), `Select` (verify), `FloatingLabelTextArea`.
-- [ ] Task 2d: `Progress`, `EnergyBar`, `StatTile`, `ActivityTicker`, `EventTicker`, `CountdownClock`, `ModeTab`, `FilterChip`.
-- [ ] Task 2e: `ChatHeader`, `ChatMessage`, `ChannelTile`, `ConnectionOverlay`, `ServerLoadingNotice`.
-- [ ] Task 2f: `CollapsibleSection`, `ShopItemCard`, `RarityBorder`, `RewardTier`, `RunnerUpCard`, `MythicPortrait`, `MythicSpotlight`, `HeroBackdrop`.
-- [ ] Task 2g: `PageTitle`, `PageLayout`, `Footer` (verify), `DownloadButtons`, `LaunchButton`, `Header/LogoInner`, `ProfileMenu`, `MobileLoginIndicator`.
-- [ ] Task 2h: `Game/GameContainer`, `Game/GameLayout`, `Game/TurnIndicator`.
-- [ ] Remove `TamaguiProvider` self-wrappers from migrated components; update their tests (`packages/ui` 10+ test files) to render without provider; delete `packages/ui/src/config/tamagui.test.config.ts`.
-- [ ] Remove `tamagui` import + `'./tamagui.config'` side-effect from `packages/ui/src/index.ts` (keep Stack exports).
+- [x] Task 2a: `Badge`, `StatusBadge` (already free — verify), `IdleBadge`, `LiveChip`, `RankBadge`, `CosmeticBadge`, `RoleBadge`, `DeltaChip`, `TrendPill`.
+- [x] Task 2b: `Card`, `GlassCard`, `Section`, `Container`, `EmptyState`, `ErrorState`, `LoadingState`, `PageLoading`, `Skeleton`.
+- [x] Task 2c: `FormGroup`, `FormPips`, `FloatingLabelInput`, `Input` (verify), `TextArea` (verify), `Select` (verify), `FloatingLabelTextArea`.
+- [x] Task 2d: `Progress`, `EnergyBar`, `StatTile`, `ActivityTicker`, `EventTicker`, `CountdownClock`, `ModeTab`, `FilterChip`.
+- [x] Task 2e: `ChatHeader`, `ChatMessage`, `ChannelTile`, `ConnectionOverlay`, `ServerLoadingNotice`.
+- [x] Task 2f: `CollapsibleSection`, `ShopItemCard`, `RarityBorder`, `RewardTier`, `RunnerUpCard`, `MythicPortrait`, `MythicSpotlight`, `HeroBackdrop`.
+- [x] Task 2g: `PageTitle`, `PageLayout`, `Footer` (verify), `DownloadButtons`, `LaunchButton`, `Header/LogoInner`, `ProfileMenu`, `MobileLoginIndicator`.
+- [x] Task 2h: `Game/GameContainer`, `Game/GameLayout`, `Game/TurnIndicator`.
+- [x] Remove `TamaguiProvider` self-wrappers from migrated components; update their tests (`packages/ui` 10+ test files) to render without provider; delete `packages/ui/src/config/tamagui.test.config.ts`.
+- [x] Remove `tamagui` import + `'./tamagui.config'` side-effect from `packages/ui/src/index.ts` (keep Stack exports).
 - **Gate:** `pnpm --filter @arcadeum/ui test && lint && typecheck`; Storybook visual pass of all components on dark + light; grep confirms 0 tamagui imports left in `packages/ui/src` (except `tamagui.config.ts` itself + Stack compat props that reference the dictionary only).
 
 ### Phase 3 — Web config & runtime removal (independent of component sweep)
 
-- [ ] `apps/web/next.config.ts`: drop `withTamagui`, tamagui entries from `transpilePackages`, `turbopack.resolveAlias`, `optimizePackageImports`. Keep `@arcadeum/ui` in transpile/optimize.
-- [ ] Delete `apps/web/src/app/TamaguiConfig.tsx`, `apps/web/src/shared/config/tamagui-css-injected.ts`, `apps/web/tamagui.config.ts`.
-- [ ] `vitest.config.mts`: remove `server.deps.inline` tamagui workaround. `vitest.setup.ts`: remove tamagui config import + matchMedia mock if only needed by tamagui.
-- [ ] `.storybook/preview.tsx` (web + ui): remove TamaguiProvider wrappers; keep theme toolbar (now sets `data-theme`/CSS vars only).
-- [ ] Verify `ThemeContext` mints all 7 themes' vars identically pre/post removal (compare `getComputedStyle(document.documentElement)` snapshots for each theme before and after).
-- [ ] `apps/web/src/app/layout.tsx`: remove `t_${theme}` class if ThemeContext doesn't need it; keep `data-theme`.
+- [x] `apps/web/next.config.ts`: drop `withTamagui`, tamagui entries from `transpilePackages`, `turbopack.resolveAlias`, `optimizePackageImports`. Keep `@arcadeum/ui` in transpile/optimize.
+- [x] Delete `apps/web/src/app/TamaguiConfig.tsx`, `apps/web/src/shared/config/tamagui-css-injected.ts`, `apps/web/tamagui.config.ts`.
+- [x] `vitest.config.mts`: remove `server.deps.inline` tamagui workaround. `vitest.setup.ts`: remove tamagui config import + matchMedia mock if only needed by tamagui.
+- [x] `.storybook/preview.tsx` (web + ui): remove TamaguiProvider wrappers; keep theme toolbar (now sets `data-theme`/CSS vars only).
+- [x] Verify `ThemeContext` mints all 7 themes' vars identically pre/post removal (compare `getComputedStyle(document.documentElement)` snapshots for each theme before and after).
+- [x] `apps/web/src/app/layout.tsx`: remove `t_${theme}` class if ThemeContext doesn't need it; keep `data-theme`.
 - **Gate:** `pnpm --filter web build` succeeds without tamagui plugin; home page + one themed page SSR and hydrate with no warnings; theme switch works across 7 themes.
 
 ### Phase 4 — Migrate `apps/web` shared + app shell (61 files under `app/` incl. tests)
 
-- [ ] Migrate `app/[locale]/layout.tsx`, `app/[locale]/(app)/layout.tsx`, header/nav/footer shell files, root pages.
-- [ ] Migrate `shared/` tamagui files (4) — theme, layout helpers.
-- [ ] Update the 51 web test files that wrap `TamaguiProvider` → remove wrapper (render plain); delete `TamaguiProvider`/config imports.
+- [x] Migrate `app/[locale]/layout.tsx`, `app/[locale]/(app)/layout.tsx`, header/nav/footer shell files, root pages.
+- [x] Migrate `shared/` tamagui files (4) — theme, layout helpers.
+- [x] Update the 51 web test files that wrap `TamaguiProvider` → remove wrapper (render plain); delete `TamaguiProvider`/config imports.
 - **Gate:** `pnpm --filter web test` green; `pnpm dev` boots and key pages render.
 
 ### Phase 5 — Migrate `features/` (100 files) in ~8 batches by domain
 
-- [ ] Task 5a: auth, profile, header-adjacent features.
-- [ ] Task 5b: games/catalog, game-lobby, matchmaking.
-- [ ] Task 5c: chat, notifications, friends.
-- [ ] Task 5d: admin-* (admin-payments, blocked-ips, tournaments, moderation).
-- [ ] Task 5e: leaderboards, stats, developers, help, contact.
-- [ ] Task 5f: solana-pay, wallet, shop/storefront.
-- [ ] Task 5g: home/landing, marketing pages.
-- [ ] Task 5h: remaining stragglers (grep `tamagui` per file).
+- [x] Task 5a: auth, profile, header-adjacent features.
+- [x] Task 5b: games/catalog, game-lobby, matchmaking.
+- [x] Task 5c: chat, notifications, friends.
+- [x] Task 5d: admin-* (admin-payments, blocked-ips, tournaments, moderation).
+- [x] Task 5e: leaderboards, stats, developers, help, contact.
+- [x] Task 5f: solana-pay, wallet, shop/storefront.
+- [x] Task 5g: home/landing, marketing pages.
+- [x] Task 5h: remaining stragglers (grep `tamagui` per file).
 - Each task: codemod dry-run → review → apply → manual pass for `styled()`/`useMedia`/`useTheme`/`animation` → component tests updated → run affected vitest files.
 - **Gate:** per-batch `pnpm --filter web test -- <affected>`, typecheck; after 5h: **0 files in `features/` import tamagui** (grep).
 
 ### Phase 6 — Migrate `widgets/` (129 files) in ~10 batches (largest area)
 
-- [ ] Task 6a: GameChat + Chat-related widgets.
-- [ ] Task 6b: SeaBattleGame (ShipPlacementBoard 495 lines — watch the 500 limit, split if needed).
-- [ ] Task 6c: ChessGame (Game.tsx 477 lines).
-- [ ] Task 6d: CriticalGame (ui/styles/* huge `styled()` cluster — biggest single job; split `styles/` modules if they cross 500 lines).
-- [ ] Task 6e: CascadeGame, TicTacToeGame, other turn-based games.
-- [ ] Task 6f: ArcadeGame / action games.
-- [ ] Task 6g: GameCard/GameList/GameHubs widgets.
-- [ ] Task 6h: header widget (header-stable.scss — keep SCSS where already class-based; migrate only tamagui parts).
-- [ ] Task 6i: tournament, events, rewards widgets.
-- [ ] Task 6j: remaining widgets + `useAudioPlayer` (498 lines — split if it grows).
+- [x] Task 6a: GameChat + Chat-related widgets.
+- [x] Task 6b: SeaBattleGame (ShipPlacementBoard 495 lines — watch the 500 limit, split if needed).
+- [x] Task 6c: ChessGame (Game.tsx 477 lines).
+- [x] Task 6d: CriticalGame (ui/styles/* huge `styled()` cluster — biggest single job; split `styles/` modules if they cross 500 lines).
+- [x] Task 6e: CascadeGame, TicTacToeGame, other turn-based games.
+- [x] Task 6f: ArcadeGame / action games.
+- [x] Task 6g: GameCard/GameList/GameHubs widgets.
+- [x] Task 6h: header widget (header-stable.scss — keep SCSS where already class-based; migrate only tamagui parts).
+- [x] Task 6i: tournament, events, rewards widgets.
+- [x] Task 6j: remaining widgets + `useAudioPlayer` (498 lines — split if it grows).
 - **Gate:** grep shows **0 tamagui imports in `widgets/`**; Playwright widget specs green (see Phase 9).
 
 ### Phase 7 — Full sweep & compat-layer retirement
 
-- [ ] `grep -rn "tamagui" apps/web/src packages/ui/src apps/mobile` → 0 hits (excluding lockfile residue before prune).
-- [ ] Sweep `// TAMAGUI-COMPAT` inline-style flags from Phase 4.1 → convert to proper Tailwind arbitrary values.
-- [ ] Delete `packages/ui/src/components/Stack` compat primitives; remove Stack exports from `index.ts`; update last consumers.
-- [ ] Re-check the 124 formerly-tamagui Server Components — remove any accidental `'use client'` added during migration; keep client directive only where hooks/handlers exist (AGENTS.md rule).
+- [x] `grep -rn "tamagui" apps/web/src packages/ui/src apps/mobile` → 0 hits (excluding lockfile residue before prune).
+- [x] Sweep `// TAMAGUI-COMPAT` inline-style flags from Phase 4.1 → convert to proper Tailwind arbitrary values.
+- [x] Delete `packages/ui/src/components/Stack` compat primitives; remove Stack exports from `index.ts`; update last consumers.
+- [x] Re-check the 124 formerly-tamagui Server Components — remove any accidental `'use client'` added during migration; keep client directive only where hooks/handlers exist (AGENTS.md rule).
 - **Gate:** `pnpm typecheck` + `pnpm lint` green; `grep -ri tamagui apps packages` clean.
 
 ### Phase 8 — Dependency & config purge
 
-- [ ] Root `package.json`: delete tamagui `pnpm.overrides` block; delete `scripts/patch-tamagui-token-init.mjs` + postinstall reference.
-- [ ] `apps/web/package.json`: remove `tamagui`, `@tamagui/config`, `@tamagui/shorthands`, `@tamagui/next-plugin`, `@tamagui/avatar`, `react-native-web` (if nothing else uses it).
-- [ ] `packages/ui/package.json`: remove tamagui peerDeps/devDeps; re-check `tailwindcss`/`autoprefixer`/`postcss` are regular devDeps.
-- [ ] `apps/mobile/package.json`: remove unused `tamagui`, `@tamagui/config`, `@arcadeum/ui` deps.
-- [ ] `pnpm install` → verify lockfile has **zero** `tamagui|@tamagui` entries.
-- [ ] Delete `packages/ui/src/tamagui.config.ts`, `apps/web/src/shared/config/tamagui.config.ts`, `packages/ui/src/config/tamagui.test.config.ts`, `scripts/tamagui-codemod` (after final use), `docs/plans/tamagui-token-map.md` if it duplicated the dictionary (or keep as reference).
+- [x] Root `package.json`: delete tamagui `pnpm.overrides` block; delete `scripts/patch-tamagui-token-init.mjs` + postinstall reference.
+- [x] `apps/web/package.json`: remove `tamagui`, `@tamagui/config`, `@tamagui/shorthands`, `@tamagui/next-plugin`, `@tamagui/avatar`, `react-native-web` (if nothing else uses it).
+- [x] `packages/ui/package.json`: remove tamagui peerDeps/devDeps; re-check `tailwindcss`/`autoprefixer`/`postcss` are regular devDeps.
+- [x] `apps/mobile/package.json`: remove unused `tamagui`, `@tamagui/config`, `@arcadeum/ui` deps.
+- [x] `pnpm install` → verify lockfile has **zero** `tamagui|@tamagui` entries.
+- [x] Delete `packages/ui/src/tamagui.config.ts`, `apps/web/src/shared/config/tamagui.config.ts`, `packages/ui/src/config/tamagui.test.config.ts`, `scripts/tamagui-codemod` (after final use), `docs/plans/tamagui-token-map.md` if it duplicated the dictionary (or keep as reference).
 - **Gate:** fresh `pnpm install && pnpm build` from clean lockfile; `pnpm lint && pnpm test` full suite.
 
 ### Phase 9 — Verification & visual QA
 
-- [ ] `pnpm check-file-length` (all files < 500 lines; split any grown files).
-- [ ] Full `pnpm test` (ui vitest, web vitest, BE jest unaffected, mobile jest unaffected).
+- [x] `pnpm check-file-length` (all files < 500 lines; split any grown files).
+- [x] Full `pnpm test` (ui vitest, web vitest, BE jest unaffected, mobile jest unaffected).
 - [ ] Playwright e2e suite (30 specs) — all green; `NEXT_PUBLIC_E2E` shimmer behavior unchanged (Button already class-based).
 - [ ] Manual visual pass across **7 themes × dark/light** on: home, a game lobby, active Critical game, chat, leaderboards, admin table, forms (Input/Select errors), mobile widths (375/768/1280).
-- [ ] Contrast spot-check on text/buttons (themeDefinitions already encodes AA-safe values — confirm no regression).
-- [ ] Hydration check: `next build && next start` on prod build, console clean on first paint + theme switch.
-- [ ] Performance: record `next build` bundle-size delta (expect a significant drop — note in PR description).
+- [x] Contrast spot-check on text/buttons (themeDefinitions already encodes AA-safe values — confirm no regression).
+- [x] Hydration check: `next build && next start` on prod build, console clean on first paint + theme switch.
+- [x] Performance: record `next build` bundle-size delta (expect a significant drop — note in PR description).
 
 ---
 

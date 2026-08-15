@@ -231,14 +231,7 @@ export function GameResultModal({
           <p className="sr-only">Showing your game performance and options</p>
         </div>
 
-        <ContentWrapper
-          className="animate-entrance"
-          style={{
-            padding: media.sm ? '20px' : '40px',
-            borderRadius: media.sm ? 24 : 40,
-            width: media.sm ? '95%' : 520,
-          }}
-        >
+        <ContentWrapper className="animate-entrance max-[800px]:p-5 max-[800px]:rounded-[24px] max-[800px]:w-[95%]">
           {onClose && (
             <div className="flex flex-row items-stretch absolute">
               <CloseButton onClick={onClose} data-testid="modal-close-button">
@@ -248,11 +241,13 @@ export function GameResultModal({
           )}
 
           <div className="flex flex-col items-center gap-2 -mb-6">
-            <span className="text-[80px] -mb-2 float">{emoji}</span>
+            <span className="text-[80px] -mb-2 animate-[float_3s_ease-in-out_infinite]">
+              {emoji}
+            </span>
             <ResultTitleText
               tone={result}
               data-testid="game-result-title"
-              className={isVictory ? 'pulse' : undefined}
+              className={isVictory ? 'animate-pulse' : undefined}
             >
               {title}
             </ResultTitleText>
@@ -271,9 +266,7 @@ export function GameResultModal({
                 disabled={rematchLoading}
                 data-testid="rematch-button"
                 showShimmer={isVictory}
-                {...(isVictory
-                  ? { animation: 'quick', pressStyle: { scale: 0.95 } }
-                  : {})}
+                className={isVictory ? 'active:scale-[0.95]' : undefined}
               >
                 {rematchLoading
                   ? t('games.table.rematch.loading' as TranslationKey)

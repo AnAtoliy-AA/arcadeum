@@ -207,7 +207,6 @@ export function GameChat({
 
   return (
     <Panel data-testid="game-chat-panel">
-      <style>{`.chat-msg-row:hover .chat-delete-btn { opacity: 1 !important; }`}</style>
       <Head>
         <HeadRow>
           <TitleDot />

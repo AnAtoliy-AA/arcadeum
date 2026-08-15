@@ -1,6 +1,6 @@
 ---
 name: ui-ux-design
-description: UI/UX design intelligence for web and mobile. Use when designing, building, or reviewing UI: pages, components, color schemes, typography, layout, accessibility, animation, or data visualization. Covers 10 rule categories with priority-based recommendations across React, Next.js, React Native, and Tamagui.
+description: UI/UX design intelligence for web and mobile. Use when designing, building, or reviewing UI: pages, components, color schemes, typography, layout, accessibility, animation, or data visualization. Covers 10 rule categories with priority-based recommendations across React, Next.js, React Native, and Tailwind.
 ---
 
 # UI/UX Design Skill
@@ -373,11 +373,11 @@ Before creating any UI component, check the shared library:
 **Web (Next.js):**
 - Use Server Components by default; `'use client'` only when needed
 - Prefer `next/image` for images, `next/font` for fonts
-- Use Tailwind or CSS Modules for styling alongside Tamagui
+- Style with Tailwind classes and design tokens (see `/tailwind-pro`)
 
 **Mobile (React Native/Expo):**
-- Use Tamagui primitives (`YStack`, `XStack`, `Text`, `Stack`)
-- Avoid direct `react-native` imports; use Tamagui equivalents
+- Use React Native primitives (`View`, `Text`, `Pressable`, `FlatList`) with `StyleSheet`
+- Use `useThemedStyles` from `@/hooks/useThemedStyles` for theme-aware styles (no `@arcadeum/ui` on mobile)
 - Respect safe areas with `useSafeAreaInsets()`
 - Test on both iOS and Android
 

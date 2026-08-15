@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.19] - 2026-08-15
+
+### Added
+- footer dropdowns open by default on desktop (ARC-912) (ARC-912)
+- port home page to tailwind utility classes (ARC-912) (ARC-912)
+
+### Fixed
+- resolve CodeQL warnings in Modal component (ARC-912) (ARC-912)
+- add modal focus management and select keyboard navigation (ARC-912) (ARC-912)
+- restore custom dropdown behavior in Select for e2e (ARC-912) (ARC-912)
+- restore dialog role and data-state on modal (ARC-912) (ARC-912)
+- restore dialog role on Modal and remove Tamagui from OfflineView (ARC-912) (ARC-912)
+- theme-aware filter chips and footer line-height (ARC-912) (ARC-912)
+- fix footer breakpoints and convert games filter chips to tailwind (ARC-912) (ARC-912)
+- fix light theme contrast for header nav and button variants (ARC-912) (ARC-912)
+- make icon and circle button padding win over size padding (ARC-912) (ARC-912)
+- use important modifiers for active mobile nav link (ARC-912) (ARC-912)
+- strip button animations in e2e and fix tailwind class override order (ARC-912) (ARC-912)
+
+### Improved
+- drop tamagui from home route bundle and self-host font (ARC-912) (ARC-912)
+
+### Refactored
+- dedupe hero variant data, fix hero locale, clean dead code (ARC-912) (ARC-912)
+- port button to tailwind and trim redundant props and variants (ARC-912) (ARC-912)
+
+
 ## [1.25.18] - 2026-08-13
 
 ### Added

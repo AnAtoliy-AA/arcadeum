@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.23] - 2026-08-15
+
+### Added
+- format post result social platform list with checkmarks (ARC-201) (ARC-201)
+
+### Fixed
+- add emoji definition in sendResultMessage (ARC-201) (ARC-201)
+- fix TikTok Postiz settings properties for successful posting (ARC-201) (ARC-201)
+
+
 ## [1.25.22] - 2026-08-15
 
 ### Improved

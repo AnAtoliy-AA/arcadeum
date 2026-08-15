@@ -2,7 +2,6 @@
 
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import Link from 'next/link';
-import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
@@ -97,7 +96,7 @@ export function AuthFormCredentials({
       data-mode={isRegisterMode ? 'register' : 'login'}
       data-testid="auth-credentials-form"
     >
-      <YStack gap="$4">
+      <div className="box-border flex flex-col items-stretch gap-4">
         <FieldWithMessage
           error={emailErrorMessage}
           description={emailDescription}
@@ -138,12 +137,12 @@ export function AuthFormCredentials({
             data-testid="auth-password-input"
           />
           <button
+            className={'"auth-pw-toggle"'}
+            style={passwordToggleStyle}
             type="button"
-            className="auth-pw-toggle"
             onClick={() => setShowPassword((s) => !s)}
             aria-label={showPassword ? form.hidePassword : form.showPassword}
             data-testid="auth-password-toggle"
-            style={passwordToggleStyle}
           >
             {showPassword ? form.hidePassword : form.showPassword}
           </button>
@@ -173,7 +172,7 @@ export function AuthFormCredentials({
         )}
 
         {!isRegisterMode && (
-          <XStack alignItems="center" justifyContent="space-between" gap="$3">
+          <div className="box-border flex flex-row items-center justify-space-between gap-3">
             <RememberMeCheckbox
               checked={rememberMe}
               onChange={setRememberMe}
@@ -189,7 +188,7 @@ export function AuthFormCredentials({
                 {form.forgotPassword}
               </Typography>
             </Link>
-          </XStack>
+          </div>
         )}
 
         {localError && (
@@ -212,45 +211,34 @@ export function AuthFormCredentials({
           loading={localLoading}
           data-testid="auth-submit-button"
         >
-          <XStack gap="$2" alignItems="center" justifyContent="center">
+          <div className="box-border flex flex-row gap-2 items-center justify-center">
             <Typography color="inherit" uiSize="md" weight="600">
               {submitLabel}
             </Typography>
             <ArrowGlyph size={14} />
-          </XStack>
+          </div>
         </Button>
 
         {!isRegisterMode && (
-          <XStack
-            alignItems="center"
-            justifyContent="center"
-            gap="$2"
-            flexWrap="wrap"
-            marginTop="$1"
-          >
+          <div className="box-border flex flex-row items-center justify-center gap-2 flex-wrap -mt-1">
             <Typography variant="body" uiSize="sm" color="$colorMuted">
               {form.magicLinkPrompt}
             </Typography>
             <button
+              className={'"auth-magic-cta"'}
+              style={magicLinkCtaStyle}
               type="button"
-              className="auth-magic-cta"
               onClick={() => onRequestMagicLink(email)}
               disabled={!canSendMagicLink}
               data-testid="auth-magic-link-cta"
-              style={magicLinkCtaStyle}
             >
               <MailGlyph size={14} />
               {form.magicLinkCta}
             </button>
-          </XStack>
+          </div>
         )}
 
-        <YStack
-          paddingTop="$4"
-          marginTop="$2"
-          borderTopWidth={1}
-          borderColor="$glassBorder"
-        >
+        <div className="box-border flex flex-col items-stretch pt-4 -mt-2 border-t border-[var(--glassBorder)]">
           <Typography
             variant="caption"
             uiSize="xs"
@@ -281,8 +269,8 @@ export function AuthFormCredentials({
             </Link>
             {form.legalSuffix}
           </Typography>
-        </YStack>
-      </YStack>
+        </div>
+      </div>
     </form>
   );
 }
@@ -297,7 +285,7 @@ function FieldWithMessage({
   children: React.ReactNode;
 }) {
   return (
-    <YStack gap="$1">
+    <div className="box-border flex flex-col items-stretch gap-1">
       {children}
       {error ? (
         <Typography variant="body" uiSize="xs" color="$danger">
@@ -308,7 +296,7 @@ function FieldWithMessage({
           {description}
         </Typography>
       ) : null}
-    </YStack>
+    </div>
   );
 }
 

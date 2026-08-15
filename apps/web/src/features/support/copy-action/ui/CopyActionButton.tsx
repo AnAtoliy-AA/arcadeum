@@ -77,9 +77,9 @@ export function CopyActionButton({
   return (
     <div className={cx(className, wrapperClassName) || undefined}>
       <Button
+        className={buttonClassName}
         type="button"
         variant="secondary"
-        className={buttonClassName}
         onClick={handleClick}
       >
         {label}

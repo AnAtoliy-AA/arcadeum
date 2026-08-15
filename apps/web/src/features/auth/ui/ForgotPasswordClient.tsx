@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
@@ -71,12 +70,8 @@ export default function ForgotPasswordClient() {
 
   if (status === 'success') {
     return (
-      <YStack
-        maxWidth={460}
-        marginHorizontal="auto"
-        paddingVertical="$8"
-        paddingHorizontal="$5"
-        gap="$4"
+      <div
+        className="box-border flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4"
         data-testid="forgot-password-success"
       >
         <Typography variant="heading" uiSize="lg" weight="700">
@@ -94,18 +89,12 @@ export default function ForgotPasswordClient() {
             {copy.backToSignIn}
           </Button>
         </Link>
-      </YStack>
+      </div>
     );
   }
 
   return (
-    <YStack
-      maxWidth={460}
-      marginHorizontal="auto"
-      paddingVertical="$8"
-      paddingHorizontal="$5"
-      gap="$4"
-    >
+    <div className="box-border flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4">
       <Typography variant="heading" uiSize="lg" weight="700">
         {copy.title}
       </Typography>
@@ -113,7 +102,7 @@ export default function ForgotPasswordClient() {
         {copy.description}
       </Typography>
       <form onSubmit={onSubmit} noValidate>
-        <YStack gap="$4">
+        <div className="box-border flex flex-col items-stretch gap-4">
           <FloatingLabelInput
             type="email"
             label={copy.emailLabel}
@@ -148,9 +137,9 @@ export default function ForgotPasswordClient() {
               {copy.backToSignIn}
             </Typography>
           </Link>
-        </YStack>
+        </div>
       </form>
-    </YStack>
+    </div>
   );
 }
 

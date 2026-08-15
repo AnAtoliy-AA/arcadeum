@@ -78,7 +78,7 @@ export const LobbyTitle = styled(H2, {
 export const LobbyEmptyText = styled(Text, {
   name: 'LobbyEmptyText',
   fontSize: '$3',
-  color: '$textMuted',
+  color: 'rgba(180,180,200,0.7)',
   textAlign: 'center',
   paddingTop: '$5',
   lineHeight: '$none',

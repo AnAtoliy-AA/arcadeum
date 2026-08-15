@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../../shared/config/tamagui.config';
 import { AuthBrandPanel } from './AuthBrandPanel';
 import type { AuthBrandLabels } from '../types';
 
@@ -26,11 +24,7 @@ const labels: AuthBrandLabels = {
 };
 
 function renderPanel() {
-  render(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      <AuthBrandPanel brand={labels} />
-    </TamaguiProvider>,
-  );
+  render(<AuthBrandPanel brand={labels} />);
 }
 
 describe('AuthBrandPanel', () => {

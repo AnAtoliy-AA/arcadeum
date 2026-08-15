@@ -85,39 +85,22 @@ export const ModalContent = ({
     <StyledModalFrame variant={variant as unknown as 'cyberpunk'} {...props}>
       {variant === 'cyberpunk' && (
         <>
-          <YStack
-            position="absolute"
-            top={-2}
-            left={-2}
-            width={20}
-            height={20}
-            borderTopWidth={2}
-            borderLeftWidth={2}
-            borderColor={VARIANT_COLORS.cyberpunk.primary}
-            pointerEvents="none"
+          <div
+            className={
+              '"box-border flex flex-col items-stretch absolute top-[-2px] left-[-2px] w-[20px] h-[20px] border-t-[2px] border-l-[2px] pointer-events-none"'
+            }
+            style={{ borderColor: VARIANT_COLORS.cyberpunk.primary }}
           />
-          <YStack
-            position="absolute"
-            bottom={-2}
-            right={-2}
-            width={20}
-            height={20}
-            borderBottomWidth={2}
-            borderRightWidth={2}
-            borderColor={VARIANT_COLORS.cyberpunk.primary}
-            pointerEvents="none"
+          <div
+            className={
+              '"box-border flex flex-col items-stretch absolute bottom-[-2px] right-[-2px] w-[20px] h-[20px] border-b-[2px] border-r-[2px] pointer-events-none"'
+            }
+            style={{ borderColor: VARIANT_COLORS.cyberpunk.primary }}
           />
         </>
       )}
       {variant === 'underwater' && (
-        <YStack
-          position="absolute"
-          inset={4}
-          borderWidth={1}
-          borderColor="rgba(34, 211, 238, 0.2)"
-          borderRadius={20}
-          pointerEvents="none"
-        />
+        <div className="box-border flex flex-col items-stretch absolute inset-[4px] border border-[rgba(34,_211,_238,_0.2)] rounded-[20px] pointer-events-none" />
       )}
       <StyledScrollArea>{children}</StyledScrollArea>
     </StyledModalFrame>
@@ -176,10 +159,10 @@ interface CloseButtonProps extends ComponentProps<typeof Button> {
 
 export const CloseButton = ({ $variant, ...props }: CloseButtonProps) => (
   <Button
+    className={'hover:rotate-[180deg] hover:scale-[1.1]'}
     variant="icon"
     size="sm"
     data-testid="modal-close-button"
-    className="hover:rotate-[180deg] hover:scale-[1.1]"
     gameVariant={$variant as GameVariant}
     {...props}
   />

@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import type { EffectiveShopItem } from '@/features/shop/server/shop.types';
 import type { adminShopEn } from '@/shared/i18n/messages/pages/admin-shop/en';
 import { AdminShopEditDialog } from './AdminShopEditDialog';
@@ -25,11 +24,14 @@ export function AdminShopTable({ catalog, labels }: Props) {
 
   if (catalog.length === 0) {
     return (
-      <YStack padding="$4" data-testid="admin-shop-empty">
-        <Text fontSize="$3" color="$gray11">
+      <div
+        className="box-border flex flex-col items-stretch p-4"
+        data-testid="admin-shop-empty"
+      >
+        <span className="box-border text-[16px] text-[#94a3b8]">
           {labels.empty}
-        </Text>
-      </YStack>
+        </span>
+      </div>
     );
   }
 
@@ -40,21 +42,17 @@ export function AdminShopTable({ catalog, labels }: Props) {
 
   return (
     <>
-      <XStack
-        justifyContent="space-between"
-        alignItems="center"
-        marginBottom="$3"
-      >
-        <Text fontSize="$4" fontWeight="600">
+      <div className="box-border flex flex-row justify-space-between items-center -mb-3">
+        <span className="box-border text-[18px] font-semibold">
           {catalog.length} items
-        </Text>
+        </span>
         <Button
           onClick={() => openGrantForItem(undefined)}
           data-testid="admin-shop-grant-open"
         >
           {labels.buttons.grant}
         </Button>
-      </XStack>
+      </div>
 
       <div
         style={{
@@ -95,7 +93,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
                   }}
                 >
                   <Td>
-                    <XStack alignItems="center" gap="$2">
+                    <div className="box-border flex flex-row items-center gap-2">
                       <AdminShopItemPreview
                         size={32}
                         colorValue={item.colorValue}
@@ -103,7 +101,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
                         itemId={item.id}
                       />
                       <code>{item.id}</code>
-                    </XStack>
+                    </div>
                   </Td>
                   <Td>{labels.category[item.category]}</Td>
                   <Td>{labels.rarity[item.rarity]}</Td>
@@ -138,7 +136,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
                     )}
                   </Td>
                   <Td>
-                    <XStack gap="$2">
+                    <div className="box-border flex flex-row items-stretch gap-2">
                       <RowActionButton
                         onClick={() => setEditing(item)}
                         data-testid={`admin-shop-edit-${item.id}`}
@@ -151,7 +149,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
                       >
                         {labels.buttons.grant}
                       </RowActionButton>
-                    </XStack>
+                    </div>
                   </Td>
                 </tr>
               );

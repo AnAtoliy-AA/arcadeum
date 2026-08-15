@@ -54,14 +54,14 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
             const active = value === theme.id;
             return (
               <button
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+                style={{ '--theme-color': theme.color } as CSSProperties}
                 key={theme.id}
                 type="button"
                 role="radio"
                 aria-checked={active}
                 data-testid={`theme-${theme.id}`}
                 onClick={() => onChange(theme.id)}
-                style={{ '--theme-color': theme.color } as CSSProperties}
-                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
               >
                 <div className={s.themeArt}>
                   <CriticalThumbnail theme={theme} />
@@ -97,14 +97,14 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
             const active = value === theme.id;
             return (
               <button
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+                style={{ '--theme-color': theme.color } as CSSProperties}
                 key={theme.id}
                 type="button"
                 role="radio"
                 aria-checked={active}
                 data-testid={`theme-${theme.id}`}
                 onClick={() => onChange(theme.id)}
-                style={{ '--theme-color': theme.color } as CSSProperties}
-                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
               >
                 <div className={s.themeArt}>
                   <SeaBattleThumbnail theme={theme} />
@@ -140,14 +140,14 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
             const active = value === theme.id;
             return (
               <button
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+                style={{ '--theme-color': theme.color } as CSSProperties}
                 key={theme.id}
                 type="button"
                 role="radio"
                 aria-checked={active}
                 data-testid={`theme-${theme.id}`}
                 onClick={() => onChange(theme.id)}
-                style={{ '--theme-color': theme.color } as CSSProperties}
-                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
               >
                 <div className={s.themeArt}>
                   <TicTacToeThumbnail theme={theme} />
@@ -183,14 +183,14 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
             const active = value === theme.id;
             return (
               <button
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+                style={{ '--theme-color': theme.color } as CSSProperties}
                 key={theme.id}
                 type="button"
                 role="radio"
                 aria-checked={active}
                 data-testid={`theme-${theme.id}`}
                 onClick={() => onChange(theme.id)}
-                style={{ '--theme-color': theme.color } as CSSProperties}
-                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
               >
                 <div className={s.themeArt}>
                   <CascadeThumbnail theme={theme} />
@@ -226,14 +226,14 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
             const active = value === theme.id;
             return (
               <button
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+                style={{ '--theme-color': theme.color } as CSSProperties}
                 key={theme.id}
                 type="button"
                 role="radio"
                 aria-checked={active}
                 data-testid={`theme-${theme.id}`}
                 onClick={() => onChange(theme.id)}
-                style={{ '--theme-color': theme.color } as CSSProperties}
-                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
               >
                 <div className={s.themeArt}>
                   <ChessThumbnail theme={theme} />
@@ -269,14 +269,14 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
             const active = value === theme.id;
             return (
               <button
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+                style={{ '--theme-color': theme.color } as CSSProperties}
                 key={theme.id}
                 type="button"
                 role="radio"
                 aria-checked={active}
                 data-testid={`theme-${theme.id}`}
                 onClick={() => onChange(theme.id)}
-                style={{ '--theme-color': theme.color } as CSSProperties}
-                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
               >
                 <div className={s.themeArt}>
                   <CheckersThumbnail theme={theme} />
@@ -312,14 +312,14 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
             const active = value === theme.id;
             return (
               <button
+                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
+                style={{ '--theme-color': theme.color } as CSSProperties}
                 key={theme.id}
                 type="button"
                 role="radio"
                 aria-checked={active}
                 data-testid={`theme-${theme.id}`}
                 onClick={() => onChange(theme.id)}
-                style={{ '--theme-color': theme.color } as CSSProperties}
-                className={`${s.themeCard} ${active ? s.themeCardActive : ''}`}
               >
                 <div className={s.themeArt}>
                   <CatDashThumbnail theme={theme} />

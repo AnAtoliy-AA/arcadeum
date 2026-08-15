@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { YStack, Typography, Button } from '@arcadeum/ui';
+import { Typography, Button } from '@arcadeum/ui';
 import { SolanaPayQR } from '@/features/solana-pay/ui/SolanaPayQR';
 import { apiClient } from '@/shared/lib/api-client';
 
@@ -51,8 +51,8 @@ export function BuyGemsWithArc({
 
   if (step === 'done') {
     return (
-      <YStack alignItems="center" padding="$4" gap="$3">
-        <Typography variant="body" fontSize={24}>
+      <div className="box-border flex flex-col items-center p-4 gap-3">
+        <Typography className="text-[24px]" variant="body">
           ✓
         </Typography>
         <Typography variant="body" alpha="high">
@@ -61,30 +61,30 @@ export function BuyGemsWithArc({
         <Button onClick={onCancel} variant="secondary">
           Close
         </Button>
-      </YStack>
+      </div>
     );
   }
 
   if (step === 'error') {
     return (
-      <YStack alignItems="center" padding="$4" gap="$3">
-        <Typography variant="body" color="$red10">
+      <div className="box-border flex flex-col items-center p-4 gap-3">
+        <Typography className="text-[#dc2626]" variant="body">
           {error}
         </Typography>
         <Button onClick={onCancel} variant="secondary">
           Close
         </Button>
-      </YStack>
+      </div>
     );
   }
 
   if (step === 'confirming') {
     return (
-      <YStack alignItems="center" padding="$4">
+      <div className="box-border flex flex-col items-center p-4">
         <Typography variant="body" alpha="medium">
           Verifying payment...
         </Typography>
-      </YStack>
+      </div>
     );
   }
 

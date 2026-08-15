@@ -1,7 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { YStack, Text, Paragraph, styled, Dialog } from 'tamagui';
+import { Paragraph, styled, Dialog } from 'tamagui';
 import { ModalButton } from '@arcadeum/ui';
 import {
   Modal,
@@ -56,9 +56,9 @@ export function RematchInvitationModal({
       <Dialog.Portal>
         <Dialog.Overlay key="overlay" backgroundColor="black" />
         <ModalContent>
-          <YStack alignItems="center" marginBottom="$4">
-            <Text fontSize={60}>🔄</Text>
-          </YStack>
+          <div className="box-border flex flex-col items-center -mb-4">
+            <span className="box-border text-[60px]">🔄</span>
+          </div>
 
           <TitleText>
             {t('games.table.rematch.invitation.title' as TranslationKey)}
@@ -71,24 +71,11 @@ export function RematchInvitationModal({
           </MessageText>
 
           {message && message.trim().length > 0 ? (
-            <YStack
-              alignSelf="stretch"
-              marginBottom="$5"
-              padding="$3"
-              borderRadius="$3"
-              borderWidth={1}
-              borderColor="rgba(255, 255, 255, 0.12)"
-              backgroundColor="rgba(255, 255, 255, 0.04)"
-            >
-              <Paragraph
-                fontSize="$3"
-                lineHeight="$3"
-                color="rgba(255, 255, 255, 0.9)"
-                fontStyle="italic"
-              >
+            <div className="box-border flex flex-col items-stretch self-stretch -mb-5 p-3 rounded-xl border border-[rgba(255,_255,_255,_0.12)] bg-[rgba(255,_255,_255,_0.04)]">
+              <span className="box-border text-[16px] leading-[20px] text-[rgba(255,_255,_255,_0.9)] italic">
                 “{message}”
-              </Paragraph>
-            </YStack>
+              </span>
+            </div>
           ) : null}
 
           <ModalActions>
@@ -109,9 +96,9 @@ export function RematchInvitationModal({
           </ModalActions>
 
           <ModalButton
+            className={'flex-1 mt-4 p-2'}
             variant="ghost"
             onClick={onDecline}
-            className="flex-1 mt-4 p-2"
           >
             {t('games.table.modals.common.close' as TranslationKey)}
           </ModalButton>

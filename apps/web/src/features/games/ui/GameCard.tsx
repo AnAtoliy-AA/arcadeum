@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { styled, YStack, XStack, H3, Paragraph, Text } from 'tamagui';
+import { styled, YStack, XStack } from 'tamagui';
 import { useRouter } from 'next/navigation';
 import {
   useTranslation,
@@ -129,18 +129,17 @@ export function GameCard({
 
   return (
     <StyledCard
-      className={className}
+      className={`p-4 ${className}`}
       onClick={handleClick}
       disabled={disabled}
-      padding="$4"
     >
       <CardGlow disabled={disabled} />
 
-      <XStack position="absolute" top="$3" right="$3">
+      <div className="box-border flex flex-row items-stretch absolute">
         <Badge variant={getStatusVariant(game.status)} size="sm">
           {game.status}
         </Badge>
-      </XStack>
+      </div>
 
       <GameImage
         {...(game.thumbnail
@@ -150,61 +149,60 @@ export function GameCard({
           : {})}
       >
         {!game.thumbnail && (
-          <Text fontSize="$6" color="$color">
+          <span className="box-border text-[24px] text-[var(--color)]">
             {game.name.charAt(0)}
-          </Text>
+          </span>
         )}
       </GameImage>
 
-      <H3 fontSize="$5" fontWeight="600" marginBottom="$2">
+      <span className="box-border text-[20px] font-bold leading-[28px] text-[20px] font-semibold -mb-2">
         {t(`games.${game.slug}.name` as TranslationKey) || game.name}
-      </H3>
+      </span>
 
       {showDetails && (
-        <YStack gap="$3">
-          <Paragraph fontSize="$3" color="$textSecondary" numberOfLines={2}>
+        <div className="box-border flex flex-col items-stretch gap-3">
+          <span className="box-border text-[16px] text-[var(--textSecondary)] line-clamp-2">
             {t(`games.${game.slug}.description` as TranslationKey) ||
               game.description}
-          </Paragraph>
+          </span>
 
-          <XStack flexWrap="wrap" gap="$2">
+          <div className="box-border flex flex-row items-stretch flex-wrap gap-2">
             <MetaTag>
-              <Text fontSize="$1">
+              <span className="box-border text-[12px]">
                 👥 {game.minPlayers}-{game.maxPlayers}
-              </Text>
+              </span>
             </MetaTag>
             {game.estimatedDuration && (
               <MetaTag>
-                <Text fontSize="$1">⏱️ {game.estimatedDuration}m</Text>
+                <span className="box-border text-[12px]">
+                  ⏱️ {game.estimatedDuration}m
+                </span>
               </MetaTag>
             )}
             {game.complexity && (
               <MetaTag>
-                <Text fontSize="$1">🧠 {game.complexity}/5</Text>
+                <span className="box-border text-[12px]">
+                  🧠 {game.complexity}/5
+                </span>
               </MetaTag>
             )}
-          </XStack>
+          </div>
 
           {game.tags && game.tags.length > 0 && (
-            <XStack flexWrap="wrap" gap="$1">
+            <div className="box-border flex flex-row items-stretch flex-wrap gap-1">
               {game.tags.map((tag) => (
-                <XStack
+                <div
+                  className="box-border flex flex-row items-stretch bg-[var(--backgroundHover)] px-2 py-1 rounded-[8px] border border-[var(--borderColor)]"
                   key={tag}
-                  backgroundColor="$backgroundHover"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius={8}
-                  borderWidth={1}
-                  borderColor="$borderColor"
                 >
-                  <Text fontSize={10} color="$textSecondary">
+                  <span className="box-border text-[48px] text-[var(--textSecondary)]">
                     {tag}
-                  </Text>
-                </XStack>
+                  </span>
+                </div>
               ))}
-            </XStack>
+            </div>
           )}
-        </YStack>
+        </div>
       )}
     </StyledCard>
   );

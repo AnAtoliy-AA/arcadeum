@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { XStack, YStack, Text, View } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import {
   useTranslation,
@@ -65,76 +64,56 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
   };
 
   return (
-    <YStack
-      gap="$5"
-      padding="$4"
-      maxWidth={1100}
-      marginHorizontal="auto"
-      width="100%"
-    >
-      <YStack gap="$2">
-        <XStack alignItems="center" gap="$3" flexWrap="wrap">
-          <Text fontSize="$9" fontWeight="900">
+    <div className="box-border flex flex-col items-stretch gap-5 p-4 max-w-[1100px] w-full">
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <div className="box-border flex flex-row items-center gap-3 flex-wrap">
+          <span className="box-border text-[40px] font-black">
             {t('battlePass.title' as TranslationKey)}
-          </Text>
+          </span>
           {isPremium ? (
-            <View
-              paddingHorizontal={10}
-              paddingVertical={4}
-              borderRadius={999}
-              backgroundColor="rgba(251,191,36,0.15)"
-              borderWidth={1}
-              borderColor="rgba(251,191,36,0.4)"
-            >
-              <Text fontSize="$2" fontWeight="800" color="#fbbf24">
+            <div className="box-border px-10 py-4 rounded-[999px] bg-[rgba(251,191,36,0.15)] border border-[rgba(251,191,36,0.4)]">
+              <span className="box-border text-[14px] font-extrabold text-[#fbbf24]">
                 👑 {t('battlePass.premiumActive' as TranslationKey)}
-              </Text>
-            </View>
+              </span>
+            </div>
           ) : null}
-        </XStack>
-        <Text fontSize="$4" opacity={0.75}>
+        </div>
+        <span className="box-border text-[18px] opacity-[0.75]">
           {t('battlePass.subtitle' as TranslationKey)}
-        </Text>
-        <Text fontSize="$3" opacity={0.6}>
+        </span>
+        <span className="box-border text-[16px] opacity-[0.6]">
           {season.title} · {endsLabel}
-        </Text>
-      </YStack>
+        </span>
+      </div>
 
       {/* XP progress to next tier */}
-      <YStack gap="$2" role="status" aria-live="polite">
-        <Text fontSize="$2" opacity={0.7}>
+      <div
+        className="box-border flex flex-col items-stretch gap-2"
+        role="status"
+        aria-live="polite"
+      >
+        <span className="box-border text-[14px] opacity-[0.7]">
           {maxed
             ? t('battlePass.maxedOut' as TranslationKey)
             : t('battlePass.progress' as TranslationKey, { xp, next })}
-        </Text>
-        <View
-          height={10}
-          borderRadius={999}
-          backgroundColor="rgba(255,255,255,0.08)"
-          overflow="hidden"
-        >
-          <View
-            height="100%"
-            width={`${progressPct}%`}
-            borderRadius={999}
-            style={{
-              background: 'linear-gradient(90deg, #38bdf8, #a78bfa)',
-            }}
+        </span>
+        <div className="box-border h-[10px] rounded-[999px] bg-[rgba(255,255,255,0.08)] overflow-hidden">
+          <div
+            className={'"box-border h-full rounded-[999px]"'}
+            style={{ width: `${progressPct}%` }}
           />
-        </View>
-      </YStack>
+        </div>
+      </div>
 
       {!isPremium ? (
-        <Text fontSize="$2" opacity={0.6}>
+        <span className="box-border text-[14px] opacity-[0.6]">
           🔒 {t('battlePass.unlockHint' as TranslationKey)}
-        </Text>
+        </span>
       ) : null}
 
       {/* Tier rail */}
-      <XStack
-        gap="$3"
-        overflow="scroll"
-        paddingVertical="$2"
+      <div
+        className="box-border flex flex-row items-stretch gap-3 overflow-scroll py-2"
         data-testid="battle-pass-rail"
       >
         {season.tiers.map((tierDef) => {
@@ -143,23 +122,22 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
           const busy = isPending && pendingTier === tierDef.tier;
 
           return (
-            <YStack
-              key={tierDef.tier}
-              minWidth={160}
-              gap="$3"
-              padding="$3"
-              borderRadius="$5"
-              borderWidth={1}
-              borderColor={
-                unlocked ? 'rgba(56,189,248,0.4)' : 'rgba(255,255,255,0.08)'
+            <div
+              className={
+                '"box-border flex flex-col items-stretch min-w-[160px] gap-3 p-3 rounded-3xl border bg-[rgba(15,23,42,0.55)]"'
               }
-              backgroundColor="rgba(15,23,42,0.55)"
-              opacity={unlocked ? 1 : 0.6}
+              style={{
+                borderColor: unlocked
+                  ? 'rgba(56,189,248,0.4)'
+                  : 'rgba(255,255,255,0.08)',
+                opacity: unlocked ? 1 : 0.6,
+              }}
+              key={tierDef.tier}
               data-testid={`battle-pass-tier-${tierDef.tier}`}
             >
-              <Text fontSize="$3" fontWeight="800" letterSpacing={1}>
+              <span className="box-border text-[16px] font-extrabold tracking-[1px]">
                 {t('battlePass.tier' as TranslationKey, { tier: tierDef.tier })}
-              </Text>
+              </span>
 
               <RewardNode
                 label={t('battlePass.free' as TranslationKey)}
@@ -192,11 +170,11 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
                   🔒 {t('battlePass.locked' as TranslationKey)}
                 </Button>
               )}
-            </YStack>
+            </div>
           );
         })}
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }
 
@@ -212,29 +190,31 @@ function RewardNode({
   accent?: boolean;
 }) {
   return (
-    <YStack
-      gap={2}
-      padding="$2"
-      borderRadius="$3"
-      backgroundColor={
-        accent ? 'rgba(251,191,36,0.08)' : 'rgba(255,255,255,0.03)'
+    <div
+      className={
+        '"box-border flex flex-col items-stretch gap-2 p-2 rounded-xl border"'
       }
-      borderWidth={1}
-      borderColor={accent ? 'rgba(251,191,36,0.25)' : 'rgba(255,255,255,0.06)'}
-      opacity={dimmed ? 0.45 : 1}
+      style={{
+        backgroundColor: accent
+          ? 'rgba(251,191,36,0.08)'
+          : 'rgba(255,255,255,0.03)',
+        borderColor: accent
+          ? 'rgba(251,191,36,0.25)'
+          : 'rgba(255,255,255,0.06)',
+        opacity: dimmed ? 0.45 : 1,
+      }}
     >
-      <Text
-        fontSize={10}
-        textTransform="uppercase"
-        letterSpacing={1}
-        opacity={0.6}
-        color={accent ? '#fbbf24' : '$gray11'}
+      <span
+        className={
+          '"box-border text-[48px] uppercase tracking-[1px] opacity-[0.6]"'
+        }
+        style={{ color: accent ? '#fbbf24' : '$gray11' }}
       >
         {label}
-      </Text>
-      <Text fontSize="$3" fontWeight="700">
+      </span>
+      <span className="box-border text-[16px] font-bold">
         {rewardLabel(reward)}
-      </Text>
-    </YStack>
+      </span>
+    </div>
   );
 }

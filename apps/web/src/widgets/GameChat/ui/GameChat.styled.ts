@@ -86,7 +86,7 @@ export const TabLabel = styled(Text, {
   name: 'GameChatTabLabel',
   fontSize: 11.5,
   fontWeight: '600',
-  color: '$colorMuted',
+  color: 'rgba(180,180,200,0.7)',
 });
 
 export const TabCount = styled(Text, {
@@ -97,7 +97,7 @@ export const TabCount = styled(Text, {
   paddingHorizontal: 4,
   paddingVertical: 1,
   borderRadius: 999,
-  color: '$colorMuted',
+  color: 'rgba(180,180,200,0.7)',
   backgroundColor: '$backgroundHover',
 });
 
@@ -127,7 +127,7 @@ export const DividerLabel = styled(Text, {
   fontSize: 9.5,
   fontWeight: '700',
   letterSpacing: 1.2,
-  color: '$colorMuted',
+  color: 'rgba(180,180,200,0.7)',
   textTransform: 'uppercase',
   paddingHorizontal: 10,
 });
@@ -204,7 +204,7 @@ export const MetaText = styled(Text, {
   fontSize: 9.5,
   letterSpacing: 0.8,
   textTransform: 'uppercase',
-  color: '$colorMuted',
+  color: 'rgba(180,180,200,0.7)',
 });
 
 export const CollapsedShell = styled(XStack, {
@@ -225,7 +225,7 @@ export const CollapsedShell = styled(XStack, {
 export const CollapsedPreview = styled(Text, {
   name: 'GameChatCollapsedPreview',
   fontSize: 12,
-  color: '$colorMuted',
+  color: 'rgba(180,180,200,0.7)',
   flex: 1,
   numberOfLines: 1,
 });
@@ -262,5 +262,5 @@ export const SysText = styled(Text, {
 export const SysTime = styled(Text, {
   name: 'GameChatSysTime',
   fontSize: 10,
-  color: '$colorMuted',
+  color: 'rgba(180,180,200,0.7)',
 });

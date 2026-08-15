@@ -69,6 +69,9 @@ const STATIC_COLORS = {
   goldHover: '#fff07a', goldPress: '#ffb500',
   successBorder: 'rgba(4, 120, 87, 0.4)', successBgSoft: 'rgba(4, 120, 87, 0.1)',
   warningBorder: 'rgba(146, 64, 14, 0.4)', warningBgSoft: 'rgba(146, 64, 14, 0.1)',
+  colorMuted: 'rgba(180, 180, 200, 0.7)', textMuted: 'rgba(180, 180, 200, 0.7)',
+  warningBg: 'rgba(146, 64, 14, 0.1)', red3: '#4c1d1d', orange10: '#f76b15',
+
   dangerBorder: 'rgba(185, 28, 28, 0.4)', dangerBgSoft: 'rgba(185, 28, 28, 0.1)',
   infoBorder: 'rgba(37, 99, 235, 0.4)', infoBgSoft: 'rgba(37, 99, 235, 0.1)',
   neutralBorder: 'rgba(142, 145, 150, 0.4)', neutralBgSoft: 'rgba(142, 145, 150, 0.1)',
@@ -707,6 +710,7 @@ function transformFile(sourceText) {
 
     let attrClasses = '';
     let classNameValue = '';
+    let classNameIsExpr = false;
     const keptAttrs = [];
     const dynamicStyles = [];
     let existingStyleExpr = null;
@@ -738,6 +742,7 @@ function transformFile(sourceText) {
         // unquote literal class strings so they merge cleanly into the new attribute
         const init = attr.initializer;
         const isLiteral = init && !ts.isJsxExpression(init);
+        if (!isLiteral) classNameIsExpr = true;
         classNameValue = isLiteral ? unquote(rawValue) : (rawValue ?? '');
         continue;
       }
@@ -789,7 +794,11 @@ function transformFile(sourceText) {
       return classNameValue ? merged + ' ' + classNameValue : merged;
     })();
     const newAttrs = [];
-    if (mergedClass) newAttrs.push(`className="${mergedClass}"`);
+    if (mergedClass) {
+      newAttrs.push(classNameIsExpr
+        ? `className={\`${mergeBaseAndExplicit(baseClasses, attrClasses)} \${${classNameValue}}\`}`
+        : `className="${mergedClass}"`);
+    }
     if (onClickAttr) newAttrs.push(`onClick={${onClickAttr}}`);
     for (const attr of keptAttrs) newAttrs.push(attr.getText());
 

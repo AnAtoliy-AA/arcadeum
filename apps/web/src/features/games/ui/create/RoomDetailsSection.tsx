@@ -8,7 +8,6 @@ import { TextArea } from '@arcadeum/ui/components/TextArea/TextArea';
 import { FormGroup } from '@arcadeum/ui/components/FormGroup/FormGroup';
 import { Row } from '@/features/games/ui/create/styles';
 import { gamesCatalog } from '@/features/games/ui/create/constants';
-import { YStack, XStack } from 'tamagui';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
 type RoomDetailsSectionProps = {
@@ -71,7 +70,7 @@ export function RoomDetailsSection({
           label={t('games.create.fieldMaxPlayers') || 'Max Players (optional)'}
           htmlFor="max-players"
         >
-          <XStack gap="$2" alignItems="flex-start">
+          <div className="box-border flex flex-row gap-2 items-start">
             <Input
               key="max-players-input"
               id="max-players"
@@ -94,7 +93,7 @@ export function RoomDetailsSection({
               size="lg"
             />
             {maxPlayers ? (
-              <YStack flexShrink={0} width={150} justifyContent="center">
+              <div className="box-border flex flex-col items-stretch shrink-0 w-[150px] justify-center">
                 <Button
                   type="button"
                   variant="secondary"
@@ -106,9 +105,9 @@ export function RoomDetailsSection({
                 >
                   {t('games.create.autoButton') || 'Auto'}
                 </Button>
-              </YStack>
+              </div>
             ) : null}
-          </XStack>
+          </div>
         </FormGroup>
 
         <FormGroup

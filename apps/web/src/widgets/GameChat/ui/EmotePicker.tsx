@@ -58,7 +58,7 @@ const EmoteLabel = styled(Text, {
   name: 'EmotePickerLabel',
   fontSize: 9,
   fontWeight: '600',
-  color: '$colorMuted',
+  color: 'rgba(180,180,200,0.7)',
   textAlign: 'center',
   numberOfLines: 1,
 });

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { YStack, XStack, Text } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 
 interface LobbyOptionSectionProps {
@@ -16,23 +15,17 @@ export function LobbyOptionSection({
   hint,
 }: LobbyOptionSectionProps) {
   return (
-    <YStack gap="$2">
-      <Text
-        fontSize="$2"
-        fontWeight="600"
-        textTransform="uppercase"
-        letterSpacing={0.5}
-        color="$textSecondary"
-      >
+    <div className="box-border flex flex-col items-stretch gap-2">
+      <span className="box-border text-[14px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
         {title}
-      </Text>
+      </span>
       {children}
       {hint && (
-        <Text fontSize="$1" color="$textMuted" opacity={0.7}>
+        <span className="box-border text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
           {hint}
-        </Text>
+        </span>
       )}
-    </YStack>
+    </div>
   );
 }
 
@@ -62,19 +55,12 @@ export function LobbyChipGroup({
   testIdPrefix = 'chip',
 }: LobbyChipGroupProps) {
   return (
-    <XStack gap="$2" flexWrap="wrap">
+    <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
       {options.map((option) => {
         const isActive = value === option.id;
         const isDisabled = disabled || option.comingSoon;
         return (
           <Button
-            key={option.id}
-            variant="chip"
-            size="sm"
-            data-testid={`${testIdPrefix}-${option.id}`}
-            data-active={isActive ? 'on' : undefined}
-            disabled={isDisabled}
-            onClick={() => !isDisabled && onChange(option.id)}
             className={`rounded-[10px] font-medium text-[13px] ${
               isActive
                 ? `bg-[${accentColor}20] border-[${accentColor}80] text-[${accentColor}] hover:bg-[${accentColor}30]`
@@ -86,18 +72,27 @@ export function LobbyChipGroup({
                   ? 'opacity-[0.5]'
                   : ''
             }`}
+            key={option.id}
+            variant="chip"
+            size="sm"
+            data-testid={`${testIdPrefix}-${option.id}`}
+            data-active={isActive ? 'on' : undefined}
+            disabled={isDisabled}
+            onClick={() => !isDisabled && onChange(option.id)}
           >
-            {option.emoji && <Text marginRight={2}>{option.emoji}</Text>}
+            {option.emoji && (
+              <span className="box-border -mr-2">{option.emoji}</span>
+            )}
             {option.label}
             {option.comingSoon && (
-              <Text marginLeft={2} fontSize={10} opacity={0.85}>
+              <span className="box-border -ml-2 text-[48px] opacity-[0.85]">
                 Coming Soon
-              </Text>
+              </span>
             )}
           </Button>
         );
       })}
-    </XStack>
+    </div>
   );
 }
 
@@ -117,8 +112,8 @@ export function LobbyToggle({
   hint,
 }: LobbyToggleProps) {
   return (
-    <YStack gap="$1">
-      <XStack alignItems="center" gap="$3">
+    <div className="box-border flex flex-col items-stretch gap-1">
+      <div className="box-border flex flex-row items-center gap-3">
         <input
           type="checkbox"
           checked={checked}
@@ -131,19 +126,18 @@ export function LobbyToggle({
             cursor: disabled ? 'not-allowed' : 'pointer',
           }}
         />
-        <Text
-          fontSize="$3"
-          fontWeight="500"
-          color={disabled ? '$textMuted' : '$color'}
+        <span
+          className={'"box-border text-[16px] font-medium"'}
+          style={{ color: disabled ? 'rgba(180,180,200,0.7)' : '$color' }}
         >
           {label}
-        </Text>
-      </XStack>
+        </span>
+      </div>
       {hint && (
-        <Text fontSize="$1" color="$textMuted" opacity={0.7} marginLeft={28}>
+        <span className="box-border text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
           {hint}
-        </Text>
+        </span>
       )}
-    </YStack>
+    </div>
   );
 }

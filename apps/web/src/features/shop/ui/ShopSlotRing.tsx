@@ -1,7 +1,6 @@
 'use client';
 
-import { XStack, YStack } from '@arcadeum/ui';
-import { Text, styled, YStack as Stack } from 'tamagui';
+import { styled, YStack as Stack } from 'tamagui';
 import {
   useTranslation,
   type TranslationKey,
@@ -88,8 +87,11 @@ export function ShopSlotRing({
   const { t } = useTranslation();
 
   return (
-    <YStack gap="$2" data-testid="shop-slot-ring">
-      <XStack flexWrap="wrap" gap="$2">
+    <div
+      className="box-border flex flex-col items-stretch gap-2"
+      data-testid="shop-slot-ring"
+    >
+      <div className="box-border flex flex-row items-stretch flex-wrap gap-2">
         {SLOT_ORDER.map((slot) => {
           const slotLabels = labels[slot];
           const item = preview[slot] ?? null;
@@ -113,48 +115,27 @@ export function ShopSlotRing({
               width="48%"
               $sm={{ width: '100%' }}
             >
-              <Stack
-                width={40}
-                height={40}
-                borderRadius="$2"
-                alignItems="center"
-                justifyContent="center"
-                backgroundColor="rgba(0,0,0,0.30)"
-                borderWidth={1}
-                borderColor="rgba(255,255,255,0.10)"
-                overflow="hidden"
-              >
+              <div className="box-border flex flex-col w-[40px] h-[40px] rounded-lg items-center justify-center bg-[rgba(0,0,0,0.30)] border border-[rgba(255,255,255,0.10)] overflow-hidden">
                 {item ? (
                   <ItemAsset item={item} size={32} />
                 ) : (
-                  <Text fontSize={20} color="$gray10">
+                  <span className="box-border text-[20px] text-[#6b7280]">
                     ·
-                  </Text>
+                  </span>
                 )}
-              </Stack>
-              <YStack flex={1} minWidth={0} gap={2}>
-                <Text
-                  fontSize={9}
-                  letterSpacing={1.2}
-                  textTransform="uppercase"
-                  fontWeight="800"
-                  color="$gray11"
-                >
+              </div>
+              <div className="box-border flex flex-col items-stretch flex-1 min-w-0 gap-2">
+                <span className="box-border text-[40px] tracking-[1.2px] uppercase font-extrabold text-[#94a3b8]">
                   {slotLabels.label}
-                </Text>
-                <Text
-                  fontSize={12}
-                  fontWeight="700"
-                  color="$white"
-                  numberOfLines={1}
-                >
+                </span>
+                <span className="box-border text-[12px] font-bold text-[#f5f7ff] line-clamp-1">
                   {itemName}
-                </Text>
-              </YStack>
+                </span>
+              </div>
             </SlotTile>
           );
         })}
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

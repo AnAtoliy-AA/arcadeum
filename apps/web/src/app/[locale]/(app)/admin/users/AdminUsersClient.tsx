@@ -287,7 +287,7 @@ export default function AdminUsersClient({
           )}
           {errorMsg && (
             <div
-              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[$red3]"
+              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[#4c1d1d]"
               data-testid="admin-users-error"
             >
               {errorMsg}

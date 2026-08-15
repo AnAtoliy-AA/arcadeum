@@ -1,7 +1,6 @@
 'use client';
 
 import { memo } from 'react';
-import { Text, XStack } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useGameChatStore } from '@/widgets/GameChat';
 import { InGameAvatar } from './InGameAvatar';
@@ -83,7 +82,10 @@ export const TurnIndicator = memo(function TurnIndicator({
   const showAvatar = !!onClockUserId && !isGameOver;
 
   return (
-    <XStack alignItems="center" gap="$2" data-testid={testId}>
+    <div
+      className="box-border flex flex-row items-center gap-2"
+      data-testid={testId}
+    >
       {showAvatar && resolvedName ? (
         <InGameAvatar
           playerId={onClockUserId}
@@ -92,16 +94,16 @@ export const TurnIndicator = memo(function TurnIndicator({
           data-testid="turn-indicator-avatar"
         />
       ) : null}
-      <Text
-        fontSize={14}
-        fontWeight="600"
-        color={STATUS_COLOR[status]}
-        opacity={status === 'default' ? 0.7 : 1}
-        numberOfLines={1}
+      <span
+        className={'"box-border text-[14px] font-semibold line-clamp-1"'}
+        style={{
+          color: STATUS_COLOR[status],
+          opacity: status === 'default' ? 0.7 : 1,
+        }}
         data-testid="turn-indicator-label"
       >
         {label}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 });

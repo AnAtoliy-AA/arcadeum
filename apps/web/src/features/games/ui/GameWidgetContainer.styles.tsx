@@ -261,8 +261,8 @@ export const FullscreenButton = (
   props: React.ComponentProps<typeof IconButton>,
 ) => (
   <IconButton
+    className={'p-2 active:bg-[rgba(255,255,255,0.2)]'}
     size="sm"
-    className="p-2 active:bg-[rgba(255,255,255,0.2)]"
     {...props}
   />
 );

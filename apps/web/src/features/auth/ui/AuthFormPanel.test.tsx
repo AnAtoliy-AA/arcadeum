@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../../shared/config/tamagui.config';
 import { AuthFormPanel } from './AuthFormPanel';
 import type { AuthLabels } from '../hooks/useAuthLabels';
 import type { UseAuthFormResult } from '../hooks/useAuthForm';
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 const baseFormLabels: AuthLabels['form'] = {
   tabSignIn: 'Sign in',

@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Typography, XStack } from '@arcadeum/ui';
+import { Button, Typography } from '@arcadeum/ui';
 import { MIN_TEAM_SIZE, TEAM_DEFAULT_COLORS } from './team-mode.types';
 
 interface ColorPaletteProps {
@@ -10,7 +10,10 @@ interface ColorPaletteProps {
 
 export function ColorPalette({ color, onChange }: ColorPaletteProps) {
   return (
-    <XStack gap="$1" data-testid="color-palette">
+    <div
+      className="box-border flex flex-row items-stretch gap-1"
+      data-testid="color-palette"
+    >
       {TEAM_DEFAULT_COLORS.map((c) => {
         const selected = c === color;
         return (
@@ -35,7 +38,7 @@ export function ColorPalette({ color, onChange }: ColorPaletteProps) {
           />
         );
       })}
-    </XStack>
+    </div>
   );
 }
 
@@ -47,7 +50,10 @@ interface SizeStepperProps {
 
 export function SizeStepper({ value, onChange, max }: SizeStepperProps) {
   return (
-    <XStack alignItems="center" gap="$1" data-testid="size-stepper">
+    <div
+      className="box-border flex flex-row items-center gap-1"
+      data-testid="size-stepper"
+    >
       <Button
         size="sm"
         variant="secondary"
@@ -72,6 +78,6 @@ export function SizeStepper({ value, onChange, max }: SizeStepperProps) {
       >
         +
       </Button>
-    </XStack>
+    </div>
   );
 }

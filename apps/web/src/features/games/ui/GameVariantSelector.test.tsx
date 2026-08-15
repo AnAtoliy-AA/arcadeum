@@ -1,9 +1,7 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
 import { GameVariantSelector } from './GameVariantSelector';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
-import { config } from '@/shared/config/tamagui.config';
 
 const mockEmit = vi.fn();
 vi.mock('@/shared/lib/socket', () => ({
@@ -84,9 +82,7 @@ vi.mock('@arcadeum/ui', () => ({
 const render = (ui: React.ReactElement) => {
   return rtlRender(
     <LanguageProvider locale="en" initialMessages={{}}>
-      <TamaguiProvider config={config} defaultTheme="dark">
-        {ui}
-      </TamaguiProvider>
+      {ui}
     </LanguageProvider>,
   );
 };

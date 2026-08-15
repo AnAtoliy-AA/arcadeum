@@ -248,7 +248,7 @@ export const ExpandablePackHeader = styled(Button, {
 export const ExpandToggle = styled(Text, {
   name: 'ExpandToggle',
   fontSize: '$2',
-  color: '$textMuted',
+  color: 'rgba(180,180,200,0.7)',
 
   variants: {
     expanded: {

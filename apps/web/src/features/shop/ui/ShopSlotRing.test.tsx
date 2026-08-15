@@ -1,9 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../../shared/config/tamagui.config';
 import { ShopSlotRing, type ShopSlotRingLabels } from './ShopSlotRing';
 import type { EffectiveShopItem, ShopCategory } from '../server/shop.types';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <TamaguiProvider config={config} defaultTheme="dark">

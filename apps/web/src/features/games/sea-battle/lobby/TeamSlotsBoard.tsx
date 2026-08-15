@@ -1,15 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  Input,
-  Typography,
-  XStack,
-  YStack,
-} from '@arcadeum/ui';
+import { Badge, Button, Card, Input, Typography } from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
@@ -121,7 +113,10 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
   };
 
   return (
-    <XStack gap="$3" flexWrap="wrap" data-testid="team-slots-board">
+    <div
+      className="box-border flex flex-row items-stretch gap-3 flex-wrap"
+      data-testid="team-slots-board"
+    >
       {teams.map((team) => {
         const draft = drafts.find((d) => d.id === team.id) ?? {
           id: team.id,
@@ -138,7 +133,6 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
           <Card
             key={team.id}
             variant="outlined"
-            padding="md"
             data-testid={`team-card-${team.id}`}
             style={{
               borderLeftWidth: 4,
@@ -147,17 +141,14 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
               flex: 1,
             }}
           >
-            <YStack gap="$2">
+            <div className="box-border flex flex-col items-stretch gap-2">
               {isHost ? (
-                <XStack
-                  gap="$2"
-                  alignItems="center"
-                  flexWrap="wrap"
+                <div
+                  className="box-border flex flex-row gap-2 items-center flex-wrap"
                   data-testid={`team-row-${team.id}`}
                 >
                   <Input
-                    flex={1}
-                    minWidth={120}
+                    className="flex-1 min-w-[120px]"
                     type="text"
                     value={draft.name}
                     placeholder={t(
@@ -193,7 +184,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                       ×
                     </Button>
                   )}
-                </XStack>
+                </div>
               ) : (
                 <Typography
                   variant="heading"
@@ -211,11 +202,9 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                 const member = members.find((m) => m.userId === id);
 
                 return (
-                  <XStack
+                  <div
+                    className="box-border flex flex-row gap-2 items-center justify-space-between"
                     key={id}
-                    gap="$2"
-                    alignItems="center"
-                    justifyContent="space-between"
                     data-testid={`team-slot-${team.id}-${id}`}
                   >
                     <TeamMemberIdentity
@@ -259,7 +248,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                     )}
 
                     {isHost && !isViewer && !memberIsBot && (
-                      <XStack gap="$1" flexWrap="wrap">
+                      <div className="box-border flex flex-row items-stretch gap-1 flex-wrap">
                         {teams
                           .filter((other) => other.id !== team.id)
                           .map((other) => (
@@ -303,9 +292,9 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                               {other.name}
                             </Button>
                           ))}
-                      </XStack>
+                      </div>
                     )}
-                  </XStack>
+                  </div>
                 );
               })}
 
@@ -336,11 +325,11 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                   {t('games.sea_battle_v1.teamMode.setup.addBot')}
                 </Button>
               )}
-            </YStack>
+            </div>
           </Card>
         );
       })}
-    </XStack>
+    </div>
   );
 }
 
@@ -365,7 +354,7 @@ function TeamMemberIdentity({
   });
   const nameProps = nameColorRenderProps(nameColor);
   return (
-    <XStack gap="$2" alignItems="center" flex={1}>
+    <div className="box-border flex flex-row gap-2 items-center flex-1">
       <EquippedPlayerAvatar
         size="sm"
         name={display}
@@ -390,6 +379,6 @@ function TeamMemberIdentity({
           {botLabel}
         </Badge>
       ) : null}
-    </XStack>
+    </div>
   );
 }

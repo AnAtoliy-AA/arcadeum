@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, Typography, XStack, YStack } from '@arcadeum/ui';
+import { Button, Card, Typography } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { emitSetTeamConfig } from './team-mode.api';
 import {
@@ -55,8 +55,11 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
   };
 
   return (
-    <YStack gap="$2" data-testid="team-setup-panel">
-      <XStack gap="$3" alignItems="center" flexWrap="wrap">
+    <div
+      className="box-border flex flex-col items-stretch gap-2"
+      data-testid="team-setup-panel"
+    >
+      <div className="box-border flex flex-row gap-3 items-center flex-wrap">
         <Button
           variant="secondary"
           size="sm"
@@ -72,11 +75,11 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
             max: maxTotalPlayers,
           })}
         </Typography>
-      </XStack>
+      </div>
 
       {hasErrors && (
-        <Card variant="error" padding="sm" data-testid="team-setup-validation">
-          <YStack gap="$1">
+        <Card variant="error" data-testid="team-setup-validation">
+          <div className="box-border flex flex-col items-stretch gap-1">
             {isOverCap && (
               <Typography variant="caption" uiSize="sm">
                 {t('games.sea_battle_v1.teamMode.errors.roomFull')}
@@ -92,9 +95,9 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
                 {t('games.sea_battle_v1.teamMode.setup.minSizeHint')}
               </Typography>
             )}
-          </YStack>
+          </div>
         </Card>
       )}
-    </YStack>
+    </div>
   );
 }

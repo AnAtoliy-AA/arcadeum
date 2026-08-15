@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { TamaguiProvider } from 'tamagui';
-import config from '../../../shared/config/tamagui.config';
+import config from '@/shared/config/tamagui.config';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn() }),

@@ -45,7 +45,6 @@ import {
   StickyMobileCta,
 } from '@/features/games/ui/create/styles';
 import { GameSelectorSection } from './GameSelectorSection';
-import { Text } from 'tamagui';
 
 // Filter out hidden games for display
 const visibleGames = gamesCatalog.filter((game) => !game.isHidden);
@@ -349,7 +348,7 @@ export default function CreateGameRoomPage() {
 
             {error && (
               <Card variant="error" padding="sm">
-                <Text>{error}</Text>
+                <span className="box-border">{error}</span>
               </Card>
             )}
 

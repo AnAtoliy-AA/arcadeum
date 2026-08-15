@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, YStack, XStack } from 'tamagui';
+import { styled, YStack } from 'tamagui';
 import type { GameSessionSummary } from '@/shared/types/games';
 import { Card, Badge, Avatar, Typography } from '@arcadeum/ui';
 
@@ -80,11 +80,11 @@ export function PlayerList({
       <List className={className}>
         <StyledPlayerItem>
           <Avatar name="?" size="sm" />
-          <YStack flex={1} marginLeft="$3">
-            <Typography fontWeight="600" fontSize="$2">
+          <div className="box-border flex flex-col items-stretch flex-1 -ml-3">
+            <Typography className="font-semibold text-[14px]">
               No players
             </Typography>
-          </YStack>
+          </div>
         </StyledPlayerItem>
       </List>
     );
@@ -129,13 +129,11 @@ export function PlayerList({
               : {})}
           />
 
-          <YStack flex={1} marginLeft="$3">
-            <XStack alignItems="center" gap="$2" marginBottom="$1">
+          <div className="box-border flex flex-col items-stretch flex-1 -ml-3">
+            <div className="box-border flex flex-row items-center gap-2 -mb-1">
               <Typography
-                fontWeight="600"
-                fontSize="$2"
+                className="font-semibold text-[14px] line-clamp-1"
                 ellipsizeMode="tail"
-                numberOfLines={1}
               >
                 {player.name}
               </Typography>
@@ -144,17 +142,17 @@ export function PlayerList({
                   Host
                 </Badge>
               )}
-            </XStack>
+            </div>
 
-            <XStack alignItems="center" gap="$2">
+            <div className="box-border flex flex-row items-center gap-2">
               {showStatus && <StatusIndicator status={player.status} />}
               {showScore && (
-                <Typography fontSize="$1" color="$textSecondary">
+                <Typography className="text-[12px] text-[var(--textSecondary)]">
                   {player.score} pts
                 </Typography>
               )}
-            </XStack>
-          </YStack>
+            </div>
+          </div>
         </StyledPlayerItem>
       ))}
     </List>

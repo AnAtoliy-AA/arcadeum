@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { styled, YStack, XStack, H1, Paragraph, Text, useMedia } from 'tamagui';
+import { styled, YStack, H1, Paragraph } from 'tamagui';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { useSyncExternalStore } from 'react';
 import { TranslationKey } from '@/shared/lib/useTranslation';
@@ -9,6 +9,7 @@ import { useSound } from '@/shared/lib/sound';
 import { Modal, CloseButton } from './SharedModalStyles';
 import { Dialog, VisuallyHidden } from 'tamagui';
 import { VictoryCelebration } from './VictoryCelebration';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 // --- Types ---
 
@@ -132,8 +133,8 @@ const HomeLink = ({
   ...props
 }: React.ComponentProps<typeof LinkButton>) => (
   <LinkButton
-    variant="secondary"
     className={['mt-2 w-full', className].filter(Boolean).join(' ')}
+    variant="secondary"
     {...props}
   >
     {children}
@@ -198,7 +199,7 @@ export function GameResultModal({
     () => false,
   );
 
-  const media = useMedia();
+  const media = useMediaQuery();
   const { play } = useSound();
   // Play the result sting once when the modal opens (not on every re-render).
   const playedForRef = useRef<GameResultKind | null>(null);
@@ -238,23 +239,25 @@ export function GameResultModal({
           </VisuallyHidden>
 
           <ContentWrapper
-            className="animate-entrance"
-            padding={media.sm ? '$5' : '$10'}
-            borderRadius={media.sm ? 24 : 40}
-            width={media.sm ? '95%' : 520}
+            className={'"animate-entrance"'}
+            style={{
+              padding: media.sm ? '20px' : '40px',
+              borderRadius: media.sm ? 24 : 40,
+              width: media.sm ? '95%' : 520,
+            }}
           >
             {onClose && (
-              <XStack position="absolute" top="$4" right="$4">
+              <div className="box-border flex flex-row items-stretch absolute">
                 <CloseButton onClick={onClose} data-testid="modal-close-button">
                   <CloseIcon size={20} />
                 </CloseButton>
-              </XStack>
+              </div>
             )}
 
-            <YStack alignItems="center" gap="$2" marginBottom="$6">
-              <Text fontSize={80} marginBottom="$2" className="float">
+            <div className="box-border flex flex-col items-center gap-2 -mb-6">
+              <span className="box-border text-[80px] -mb-2 float">
                 {emoji}
-              </Text>
+              </span>
               <ResultTitleText
                 tone={result}
                 data-testid="game-result-title"
@@ -262,7 +265,7 @@ export function GameResultModal({
               >
                 {title}
               </ResultTitleText>
-            </YStack>
+            </div>
 
             <ResultMessage className="animate-fade-in-up-delay-2">
               {body}

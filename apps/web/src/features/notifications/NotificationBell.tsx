@@ -95,7 +95,7 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
             aria-live="polite"
             data-testid="notification-bell-badge"
           >
-            <Typography className="text-[10px] font-bold" color="#f5f7ff">
+            <Typography className={'text-[10px] font-bold' + ' text-[#f5f7ff]'}>
               {unreadCount > 99 ? '99+' : unreadCount}
             </Typography>
           </span>
@@ -150,7 +150,7 @@ const NotificationPopover = memo(function NotificationPopover({
           alignItems: 'center',
         }}
       >
-        <Typography fontSize={20} fontWeight="700">
+        <Typography className="text-[20px] font-bold">
           {t('notifications.bell.title')}
         </Typography>
         <Button
@@ -162,7 +162,10 @@ const NotificationPopover = memo(function NotificationPopover({
         </Button>
       </div>
       {items.length === 0 ? (
-        <Typography color="var(--colorMuted)" className="py-5 text-center">
+        <Typography
+          className={'py-5 text-center'}
+          style={{ color: 'var(--colorMuted)' }}
+        >
           {t('notifications.bell.empty')}
         </Typography>
       ) : (
@@ -235,7 +238,10 @@ const NotificationRow = memo(function NotificationRow({
         <Typography fontWeight={item.read ? '500' : '700'} uiSize="sm">
           {title}
         </Typography>
-        <Typography color="var(--colorMuted)" className="line-clamp-2">
+        <Typography
+          className={'line-clamp-2'}
+          style={{ color: 'var(--colorMuted)' }}
+        >
           {body}
         </Typography>
       </div>

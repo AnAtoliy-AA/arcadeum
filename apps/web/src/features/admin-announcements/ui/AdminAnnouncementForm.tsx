@@ -1,7 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import {
   ANNOUNCEMENT_AUDIENCES,
   ANNOUNCEMENT_LOCALES,
@@ -189,22 +188,16 @@ export function AdminAnnouncementForm({
   const active = state.content[state.activeLocale];
 
   return (
-    <YStack
-      gap="$3"
-      padding="$3"
-      borderRadius="$4"
-      borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="$background"
-      maxWidth={720}
+    <div
+      className="box-border flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] max-w-[720px]"
       data-testid="announcement-form"
     >
-      <Text fontWeight="700" fontSize="$5">
+      <span className="box-border font-bold text-[20px]">
         {labels.sections.settings}
-      </Text>
+      </span>
 
-      <XStack gap="$3" alignItems="center" flexWrap="wrap">
-        <Text>{labels.severity}</Text>
+      <div className="box-border flex flex-row gap-3 items-center flex-wrap">
+        <span className="box-border">{labels.severity}</span>
         <select
           data-testid="form-severity"
           value={state.severity}
@@ -223,7 +216,7 @@ export function AdminAnnouncementForm({
           ))}
         </select>
 
-        <Text>{labels.audience}</Text>
+        <span className="box-border">{labels.audience}</span>
         <select
           data-testid="form-audience"
           value={state.audience}
@@ -241,13 +234,13 @@ export function AdminAnnouncementForm({
             </option>
           ))}
         </select>
-      </XStack>
+      </div>
 
-      <XStack gap="$3" alignItems="center" flexWrap="wrap">
-        <YStack>
-          <Text fontSize="$1" opacity={0.7}>
+      <div className="box-border flex flex-row gap-3 items-center flex-wrap">
+        <div className="box-border flex flex-col items-stretch">
+          <span className="box-border text-[12px] opacity-[0.7]">
             {labels.startsAt}
-          </Text>
+          </span>
           <input
             type="datetime-local"
             data-testid="form-startsAt"
@@ -257,11 +250,11 @@ export function AdminAnnouncementForm({
             }
             style={INPUT_STYLE}
           />
-        </YStack>
-        <YStack>
-          <Text fontSize="$1" opacity={0.7}>
+        </div>
+        <div className="box-border flex flex-col items-stretch">
+          <span className="box-border text-[12px] opacity-[0.7]">
             {labels.endsAt}
-          </Text>
+          </span>
           <input
             type="datetime-local"
             data-testid="form-endsAt"
@@ -271,14 +264,14 @@ export function AdminAnnouncementForm({
             }
             style={INPUT_STYLE}
           />
-        </YStack>
-      </XStack>
+        </div>
+      </div>
 
-      <Text fontWeight="700" fontSize="$5" marginTop="$2">
+      <span className="box-border font-bold text-[20px] -mt-2">
         {labels.sections.content}
-      </Text>
+      </span>
 
-      <XStack gap="$2" flexWrap="wrap">
+      <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
         {ANNOUNCEMENT_LOCALES.map((loc) => (
           <button
             key={loc}
@@ -301,13 +294,13 @@ export function AdminAnnouncementForm({
             {labels.tabs[loc]}
           </button>
         ))}
-      </XStack>
+      </div>
 
-      <YStack gap="$2">
-        <Text fontSize="$1" opacity={0.7}>
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border text-[12px] opacity-[0.7]">
           {labels.title}
           {state.activeLocale === 'en' ? ' *' : ''}
-        </Text>
+        </span>
         <input
           data-testid={`form-title-${state.activeLocale}`}
           value={active.title}
@@ -317,9 +310,9 @@ export function AdminAnnouncementForm({
           style={INPUT_STYLE}
           maxLength={120}
         />
-        <Text fontSize="$1" opacity={0.7}>
+        <span className="box-border text-[12px] opacity-[0.7]">
           {labels.body}
-        </Text>
+        </span>
         <textarea
           data-testid={`form-body-${state.activeLocale}`}
           value={active.body ?? ''}
@@ -330,11 +323,11 @@ export function AdminAnnouncementForm({
           maxLength={500}
           style={{ ...INPUT_STYLE, fontFamily: 'inherit' }}
         />
-        <XStack gap="$3">
-          <YStack flex={1}>
-            <Text fontSize="$1" opacity={0.7}>
+        <div className="box-border flex flex-row items-stretch gap-3">
+          <div className="box-border flex flex-col items-stretch flex-1">
+            <span className="box-border text-[12px] opacity-[0.7]">
               {labels.ctaLabel}
-            </Text>
+            </span>
             <input
               data-testid={`form-ctaLabel-${state.activeLocale}`}
               value={active.ctaLabel ?? ''}
@@ -344,11 +337,11 @@ export function AdminAnnouncementForm({
               style={INPUT_STYLE}
               maxLength={60}
             />
-          </YStack>
-          <YStack flex={2}>
-            <Text fontSize="$1" opacity={0.7}>
+          </div>
+          <div className="box-border flex flex-col items-stretch flex-[2]">
+            <span className="box-border text-[12px] opacity-[0.7]">
               {labels.ctaHref}
-            </Text>
+            </span>
             <input
               data-testid={`form-ctaHref-${state.activeLocale}`}
               value={active.ctaHref ?? ''}
@@ -357,26 +350,27 @@ export function AdminAnnouncementForm({
               }
               style={INPUT_STYLE}
             />
-          </YStack>
-        </XStack>
-      </YStack>
+          </div>
+        </div>
+      </div>
 
       {errors.length > 0 && (
-        <YStack
-          padding="$2"
-          borderRadius="$2"
-          backgroundColor="$errorBgSoft"
+        <div
+          className="box-border flex flex-col items-stretch p-2 rounded-lg bg-[var(--errorBgSoft)]"
           data-testid="form-errors"
         >
           {errors.map((err) => (
-            <Text key={err} fontSize="$1" color="$errorText">
+            <span
+              className="box-border text-[12px] text-[var(--errorText)]"
+              key={err}
+            >
               • {err}
-            </Text>
+            </span>
           ))}
-        </YStack>
+        </div>
       )}
 
-      <XStack gap="$3" justifyContent="flex-end" paddingTop="$2">
+      <div className="box-border flex flex-row items-stretch gap-3 justify-end pt-2">
         <Button variant="outline" onClick={onCancel} data-testid="form-cancel">
           {labels.cancel}
         </Button>
@@ -387,7 +381,7 @@ export function AdminAnnouncementForm({
         >
           {labels.save}
         </Button>
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

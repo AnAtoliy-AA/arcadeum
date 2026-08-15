@@ -64,7 +64,7 @@ export default function BlockedIpsClient() {
           <PageTitle size="lg">{t?.title ?? 'Blocked IPs'}</PageTitle>
           {errorMsg && (
             <div
-              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[$red3]"
+              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[#4c1d1d]"
               data-testid="blocked-ips-error"
             >
               {errorMsg}

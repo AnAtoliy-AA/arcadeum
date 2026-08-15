@@ -99,7 +99,7 @@ export default function GeoBlockClient() {
 
           {error && (
             <div
-              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[$red3]"
+              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[#4c1d1d]"
               data-testid="geo-block-error"
             >
               <Typography className="text-[#dc2626]">{error}</Typography>

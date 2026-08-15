@@ -1,7 +1,6 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 
 interface AuthFormTabsProps {
@@ -34,14 +33,12 @@ export function AuthFormTabs({
   };
 
   return (
-    <YStack
+    <div
+      className="box-border flex flex-col items-stretch border-b border-[var(--glassBorder)] relative"
       role="tablist"
       aria-label="Authentication mode"
-      borderBottomWidth={1}
-      borderColor="$glassBorder"
-      position="relative"
     >
-      <XStack>
+      <div className="box-border flex flex-row items-stretch">
         <TabButton
           isActive={!isRegisterMode}
           label={signInLabel}
@@ -54,9 +51,9 @@ export function AuthFormTabs({
           onClick={onSelectRegister}
           testId="auth-tab-register"
         />
-      </XStack>
+      </div>
       <div style={indicatorStyle} aria-hidden="true" />
-    </YStack>
+    </div>
   );
 }
 
@@ -92,7 +89,7 @@ function TabButton({
         variant="heading"
         uiSize="md"
         weight="600"
-        color={isActive ? '$colorStrong' : '$colorMuted'}
+        color={isActive ? '$colorStrong' : 'rgba(180,180,200,0.7)'}
       >
         {label}
       </Typography>

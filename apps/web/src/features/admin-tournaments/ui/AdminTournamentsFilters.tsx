@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { XStack } from 'tamagui';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import {
   TOURNAMENT_GAME_TYPES,
@@ -60,7 +59,7 @@ export function AdminTournamentsFilters({
   }, [debouncedQ]);
 
   return (
-    <XStack gap="$3" alignItems="center" flexWrap="wrap">
+    <div className="box-border flex flex-row gap-3 items-center flex-wrap">
       <input
         placeholder={labels.searchPlaceholder}
         value={localQ}
@@ -114,7 +113,7 @@ export function AdminTournamentsFilters({
           </option>
         ))}
       </select>
-      <XStack flex={1} />
+      <div className="box-border flex flex-row items-stretch flex-1" />
       <button
         type="button"
         onClick={onNewClick}
@@ -131,6 +130,6 @@ export function AdminTournamentsFilters({
       >
         {labels.newButton}
       </button>
-    </XStack>
+    </div>
   );
 }

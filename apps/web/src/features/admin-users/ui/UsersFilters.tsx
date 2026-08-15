@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { XStack } from 'tamagui';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { USER_ROLES, type UserRole } from '@/entities/session/model/types';
 import type { AdminUserStatus } from '../api';
@@ -50,7 +49,7 @@ export function UsersFilters({
   }, [debouncedQ]);
 
   return (
-    <XStack gap="$3" alignItems="center" flexWrap="wrap">
+    <div className="box-border flex flex-row gap-3 items-center flex-wrap">
       <input
         placeholder={labels.searchPlaceholder}
         value={localQ}
@@ -117,6 +116,6 @@ export function UsersFilters({
           </option>
         ))}
       </select>
-    </XStack>
+    </div>
   );
 }

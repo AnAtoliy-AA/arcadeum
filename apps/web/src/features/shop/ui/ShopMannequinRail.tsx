@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { YStack } from '@arcadeum/ui';
 import { styled, YStack as Stack } from 'tamagui';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { track } from '@/shared/lib/analytics';
@@ -170,7 +169,7 @@ export function ShopMannequinRail({
         labels={labels.slots as ShopSlotRingLabels}
         onSlotClick={onSlotClick}
       />
-      <YStack>
+      <div className="box-border flex flex-col items-stretch">
         <ShopActionPanel
           hoverItem={hoverItem}
           activeSlot={activeSlot}
@@ -184,7 +183,7 @@ export function ShopMannequinRail({
           walletLabels={labels.wallet}
           sellLabels={sellLabels}
         />
-      </YStack>
+      </div>
     </RailHost>
   );
 }

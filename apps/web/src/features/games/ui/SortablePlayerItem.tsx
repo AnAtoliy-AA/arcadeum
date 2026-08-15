@@ -3,7 +3,6 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GameRoomMemberSummary } from '@/shared/types/games';
 import { Button, Badge } from '@arcadeum/ui';
-import { XStack } from 'tamagui';
 import {
   PlayerItem,
   LobbyPlayerAvatar,
@@ -93,8 +92,9 @@ export function SortablePlayerItem({
           )}
         </PlayerInfo>
         {isHost && totalCount > 1 && (
-          <XStack gap="$1">
+          <div className="box-border flex flex-row items-stretch gap-1">
             <Button
+              className={'py-1 px-2 min-w-[auto]'}
               variant="ghost"
               size="sm"
               onClick={(e: { stopPropagation: () => void }) => {
@@ -102,11 +102,11 @@ export function SortablePlayerItem({
                 onMoveUp();
               }}
               disabled={index === 0}
-              className="py-1 px-2 min-w-[auto]"
             >
               ↑
             </Button>
             <Button
+              className={'py-1 px-2 min-w-[auto]'}
               variant="ghost"
               size="sm"
               onClick={(e: { stopPropagation: () => void }) => {
@@ -114,14 +114,14 @@ export function SortablePlayerItem({
                 onMoveDown();
               }}
               disabled={index === totalCount - 1}
-              className="py-1 px-2 min-w-[auto]"
             >
               ↓
             </Button>
-          </XStack>
+          </div>
         )}
         {onKick && !isRoomHost && (
           <Button
+            className={'py-1 px-2 min-w-[auto]'}
             variant="danger"
             ghost
             size="sm"
@@ -129,7 +129,6 @@ export function SortablePlayerItem({
               e.stopPropagation();
               onKick();
             }}
-            className="py-1 px-2 min-w-[auto]"
           >
             ✕
           </Button>

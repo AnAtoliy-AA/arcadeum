@@ -198,9 +198,9 @@ export function RematchModal({
               >
                 <CheckboxCircle selected={selectedPlayers.has(player.playerId)}>
                   {selectedPlayers.has(player.playerId) && (
-                    <Text color="white" fontSize={12}>
+                    <span className="box-border text-[white] text-[12px]">
                       ✓
-                    </Text>
+                    </span>
                   )}
                 </CheckboxCircle>
                 <PlayerName>
@@ -225,14 +225,9 @@ export function RematchModal({
           />
 
           {rematchError && (
-            <Text
-              color="$red10"
-              fontSize="$3"
-              textAlign="center"
-              marginBottom="$3"
-            >
+            <span className="box-border text-[#dc2626] text-[16px] text-center -mb-3">
               {rematchError}
-            </Text>
+            </span>
           )}
 
           <ModalActions>

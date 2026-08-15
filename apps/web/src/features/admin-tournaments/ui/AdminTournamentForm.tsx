@@ -1,7 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import {
   TOURNAMENT_GAME_TYPES,
   TOURNAMENT_LOCALES,
@@ -185,22 +184,16 @@ export function AdminTournamentForm({
   const active = state.content[state.activeLocale];
 
   return (
-    <YStack
-      gap="$3"
-      padding="$3"
-      borderRadius="$4"
-      borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="$background"
-      maxWidth={720}
+    <div
+      className="box-border flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] max-w-[720px]"
       data-testid="tournament-form"
     >
-      <Text fontWeight="700" fontSize="$5">
+      <span className="box-border font-bold text-[20px]">
         {labels.sections.settings}
-      </Text>
+      </span>
 
-      <XStack gap="$3" alignItems="center" flexWrap="wrap">
-        <Text>{labels.gameType}</Text>
+      <div className="box-border flex flex-row gap-3 items-center flex-wrap">
+        <span className="box-border">{labels.gameType}</span>
         <select
           data-testid="form-gameType"
           value={state.gameType}
@@ -219,7 +212,7 @@ export function AdminTournamentForm({
           ))}
         </select>
 
-        <Text>{labels.maxPlayers}</Text>
+        <span className="box-border">{labels.maxPlayers}</span>
         <input
           type="number"
           data-testid="form-maxPlayers"
@@ -232,7 +225,7 @@ export function AdminTournamentForm({
           style={{ ...INPUT_STYLE, width: 100 }}
         />
 
-        <Text>{labels.entryFeeLabel}</Text>
+        <span className="box-border">{labels.entryFeeLabel}</span>
         <input
           type="number"
           data-testid="form-entryFeeCoins"
@@ -245,7 +238,7 @@ export function AdminTournamentForm({
           style={{ ...INPUT_STYLE, width: 120 }}
         />
 
-        <Text>{labels.prizePoolLabel}</Text>
+        <span className="box-border">{labels.prizePoolLabel}</span>
         <input
           type="number"
           data-testid="form-prizePoolCoins"
@@ -257,13 +250,13 @@ export function AdminTournamentForm({
           }
           style={{ ...INPUT_STYLE, width: 120 }}
         />
-      </XStack>
+      </div>
 
-      <XStack gap="$3" flexWrap="wrap">
-        <YStack>
-          <Text fontSize="$1" opacity={0.7}>
+      <div className="box-border flex flex-row items-stretch gap-3 flex-wrap">
+        <div className="box-border flex flex-col items-stretch">
+          <span className="box-border text-[12px] opacity-[0.7]">
             {labels.scheduledAt}
-          </Text>
+          </span>
           <input
             type="datetime-local"
             data-testid="form-scheduledAt"
@@ -273,11 +266,11 @@ export function AdminTournamentForm({
             }
             style={INPUT_STYLE}
           />
-        </YStack>
-        <YStack>
-          <Text fontSize="$1" opacity={0.7}>
+        </div>
+        <div className="box-border flex flex-col items-stretch">
+          <span className="box-border text-[12px] opacity-[0.7]">
             {labels.registrationOpensAt} ({labels.optional})
-          </Text>
+          </span>
           <input
             type="datetime-local"
             data-testid="form-registrationOpensAt"
@@ -290,11 +283,11 @@ export function AdminTournamentForm({
             }
             style={INPUT_STYLE}
           />
-        </YStack>
-        <YStack>
-          <Text fontSize="$1" opacity={0.7}>
+        </div>
+        <div className="box-border flex flex-col items-stretch">
+          <span className="box-border text-[12px] opacity-[0.7]">
             {labels.registrationClosesAt} ({labels.optional})
-          </Text>
+          </span>
           <input
             type="datetime-local"
             data-testid="form-registrationClosesAt"
@@ -307,13 +300,13 @@ export function AdminTournamentForm({
             }
             style={INPUT_STYLE}
           />
-        </YStack>
-      </XStack>
+        </div>
+      </div>
 
-      <YStack gap="$2">
-        <Text fontSize="$1" opacity={0.7}>
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border text-[12px] opacity-[0.7]">
           {labels.prizeDescription} ({labels.optional})
-        </Text>
+        </span>
         <textarea
           data-testid="form-prizeDescription"
           value={state.prizeDescription}
@@ -324,13 +317,13 @@ export function AdminTournamentForm({
           maxLength={500}
           style={{ ...INPUT_STYLE, fontFamily: 'inherit' }}
         />
-      </YStack>
+      </div>
 
-      <Text fontWeight="700" fontSize="$5" marginTop="$2">
+      <span className="box-border font-bold text-[20px] -mt-2">
         {labels.sections.content}
-      </Text>
+      </span>
 
-      <XStack gap="$2" flexWrap="wrap">
+      <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
         {TOURNAMENT_LOCALES.map((loc) => (
           <button
             key={loc}
@@ -353,13 +346,13 @@ export function AdminTournamentForm({
             {labels.tabs[loc]}
           </button>
         ))}
-      </XStack>
+      </div>
 
-      <YStack gap="$2">
-        <Text fontSize="$1" opacity={0.7}>
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border text-[12px] opacity-[0.7]">
           {labels.name}
           {state.activeLocale === 'en' ? ' *' : ''}
-        </Text>
+        </span>
         <input
           data-testid={`form-name-${state.activeLocale}`}
           value={active.name}
@@ -369,9 +362,9 @@ export function AdminTournamentForm({
           style={INPUT_STYLE}
           maxLength={120}
         />
-        <Text fontSize="$1" opacity={0.7}>
+        <span className="box-border text-[12px] opacity-[0.7]">
           {labels.description}
-        </Text>
+        </span>
         <textarea
           data-testid={`form-description-${state.activeLocale}`}
           value={active.description ?? ''}
@@ -382,24 +375,25 @@ export function AdminTournamentForm({
           maxLength={1000}
           style={{ ...INPUT_STYLE, fontFamily: 'inherit' }}
         />
-      </YStack>
+      </div>
 
       {errors.length > 0 && (
-        <YStack
-          padding="$2"
-          borderRadius="$2"
-          backgroundColor="$errorBgSoft"
+        <div
+          className="box-border flex flex-col items-stretch p-2 rounded-lg bg-[var(--errorBgSoft)]"
           data-testid="form-errors"
         >
           {errors.map((err) => (
-            <Text key={err} fontSize="$1" color="$errorText">
+            <span
+              className="box-border text-[12px] text-[var(--errorText)]"
+              key={err}
+            >
               • {err}
-            </Text>
+            </span>
           ))}
-        </YStack>
+        </div>
       )}
 
-      <XStack gap="$3" justifyContent="flex-end" paddingTop="$2">
+      <div className="box-border flex flex-row items-stretch gap-3 justify-end pt-2">
         <Button variant="outline" onClick={onCancel} data-testid="form-cancel">
           {labels.cancel}
         </Button>
@@ -410,7 +404,7 @@ export function AdminTournamentForm({
         >
           {labels.save}
         </Button>
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

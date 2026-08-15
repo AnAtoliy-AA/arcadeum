@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Button, XStack, YStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 
 export interface ShopSignInBannerLabels {
   title: string;
@@ -16,28 +15,21 @@ export interface ShopSignInBannerProps {
 
 export function ShopSignInBanner({ labels }: ShopSignInBannerProps) {
   return (
-    <YStack
-      gap={6}
-      padding="$4"
-      borderRadius="$4"
-      borderWidth={1}
-      borderColor="rgba(96,165,250,0.35)"
-      backgroundColor="rgba(59,130,246,0.08)"
+    <div
+      className="box-border flex flex-col items-stretch gap-6 p-4 rounded-2xl border border-[rgba(96,165,250,0.35)] bg-[rgba(59,130,246,0.08)]"
       data-testid="shop-signin-banner"
     >
-      <Text fontSize="$5" fontWeight="700">
-        {labels.title}
-      </Text>
-      <Text fontSize="$3" color="$gray11">
+      <span className="box-border text-[20px] font-bold">{labels.title}</span>
+      <span className="box-border text-[16px] text-[#94a3b8]">
         {labels.body}
-      </Text>
-      <XStack>
+      </span>
+      <div className="box-border flex flex-row items-stretch">
         <Link href="/auth">
           <Button variant="primary" data-testid="shop-signin-cta">
             {labels.cta}
           </Button>
         </Link>
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

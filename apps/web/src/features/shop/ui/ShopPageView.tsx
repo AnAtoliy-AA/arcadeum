@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { XStack, YStack } from '@arcadeum/ui';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import {
   useTranslation,
@@ -200,14 +199,7 @@ export function ShopPageView({
 
   return (
     <PageLayout>
-      <YStack
-        maxWidth={1280}
-        marginHorizontal="auto"
-        paddingHorizontal="$4"
-        paddingVertical="$5"
-        gap="$5"
-        width="100%"
-      >
+      <div className="box-border flex flex-col items-stretch max-w-[1280px] px-4 py-5 gap-5 w-full">
         <ShopTopBar balance={balance} labels={labels.topBar} />
 
         {!isAuthenticated ? <ShopSignInBanner labels={labels.signIn} /> : null}
@@ -216,12 +208,7 @@ export function ShopPageView({
           <ShopCatalogEmpty labels={labels.empty} />
         ) : null}
 
-        <XStack
-          gap="$5"
-          width="100%"
-          alignItems="flex-start"
-          $sm={{ flexDirection: 'column' }}
-        >
+        <div className="box-border flex flex-row gap-5 w-full items-start max-[800px]:flex-column">
           <ShopMannequinRail
             catalog={catalog}
             inventory={inventory}
@@ -232,13 +219,7 @@ export function ShopPageView({
             sellLabels={labels.sell}
           />
 
-          <YStack
-            flex={1}
-            width="100%"
-            gap="$5"
-            minWidth={0}
-            $sm={{ flexGrow: 0, flexBasis: 'auto' }}
-          >
+          <div className="box-border flex flex-col items-stretch flex-1 w-full gap-5 min-w-0 max-[800px]:grow-[0] max-[800px]:basis-[auto]">
             {featuredItem ? (
               <ShopHero
                 item={featuredItem}
@@ -358,8 +339,8 @@ export function ShopPageView({
               priorityCount={2}
               onPurchaseFallback={(item) => setPurchaseTarget(item)}
             />
-          </YStack>
-        </XStack>
+          </div>
+        </div>
 
         <PurchaseConfirmDialog
           item={purchaseTarget}
@@ -371,7 +352,7 @@ export function ShopPageView({
           onSuccess={() => setPurchaseTarget(null)}
           labels={labels.purchase}
         />
-      </YStack>
+      </div>
     </PageLayout>
   );
 }

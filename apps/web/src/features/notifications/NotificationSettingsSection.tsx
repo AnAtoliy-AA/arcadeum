@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useSyncExternalStore } from 'react';
-import { YStack, XStack, Text, View } from 'tamagui';
 import { Section } from '@arcadeum/ui/components/Section/Section';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -66,43 +65,29 @@ export function NotificationSettingsSection() {
       title={t('notifications.settings.title')}
       data-testid="notifications-settings-section"
     >
-      <YStack gap="$3">
-        <Text color="$colorMuted" fontSize="$3">
+      <div className="box-border flex flex-col items-stretch gap-3">
+        <span className="box-border text-[rgba(180,180,200,0.7)] text-[16px]">
           {t('notifications.settings.description')}
-        </Text>
+        </span>
 
         {iosHint ? (
-          <View
-            padding="$3"
-            borderRadius="$2"
-            backgroundColor="$backgroundHover"
-            borderColor="$borderColor"
-            borderWidth={1}
-          >
-            <Text fontSize="$3">
+          <div className="box-border p-3 rounded-lg bg-[var(--backgroundHover)] border-[var(--borderColor)] border">
+            <span className="box-border text-[16px]">
               {t('notifications.settings.iosInstallHint')}
-            </Text>
-          </View>
+            </span>
+          </div>
         ) : (
-          <XStack
-            padding="$3"
-            borderRadius="$2"
-            backgroundColor="$backgroundHover"
-            borderColor="$borderColor"
-            borderWidth={1}
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Text fontSize="$3">{permissionLabel}</Text>
+          <div className="box-border flex flex-row p-3 rounded-lg bg-[var(--backgroundHover)] border-[var(--borderColor)] border items-center justify-space-between">
+            <span className="box-border text-[16px]">{permissionLabel}</span>
             {permission === 'denied' && error && (
-              <Text fontSize="$2" color="$error">
+              <span className="box-border text-[14px] text-[var(--error)]">
                 {error}
-              </Text>
+              </span>
             )}
-          </XStack>
+          </div>
         )}
 
-        <YStack gap="$2">
+        <div className="box-border flex flex-col items-stretch gap-2">
           {NOTIFICATION_CATEGORIES.map((category) => (
             <CategoryToggle
               key={category}
@@ -116,8 +101,8 @@ export function NotificationSettingsSection() {
               disabledByPermission={iosHint || permission === 'denied'}
             />
           ))}
-        </YStack>
-      </YStack>
+        </div>
+      </div>
     </Section>
   );
 }
@@ -141,12 +126,12 @@ function CategoryToggle({
   const descKey = `notifications.categories.${category}.description`;
   return (
     <ToggleRow data-testid={`notification-toggle-${category}`}>
-      <YStack flex={1} gap="$1">
+      <div className="box-border flex flex-col items-stretch flex-1 gap-1">
         <ToggleLabel>{t(labelKey)}</ToggleLabel>
-        <Text color="$colorMuted" fontSize="$2">
+        <span className="box-border text-[rgba(180,180,200,0.7)] text-[14px]">
           {t(descKey)}
-        </Text>
-      </YStack>
+        </span>
+      </div>
       <ToggleInput
         type="checkbox"
         checked={checked}

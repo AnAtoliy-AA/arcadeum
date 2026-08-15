@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { act, render, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../../shared/config/tamagui.config';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn() }),
@@ -18,6 +16,9 @@ import { ShopHero, type ShopHeroLabels } from './ShopHero';
 import { equipItemAction, unequipItemAction } from '../server/shop.actions';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import type { EffectiveShopItem, ShopCategory } from '../server/shop.types';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <TamaguiProvider config={config} defaultTheme="dark">

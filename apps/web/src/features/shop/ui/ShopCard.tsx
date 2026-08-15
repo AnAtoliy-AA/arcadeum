@@ -2,8 +2,6 @@
 
 import { useCallback, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { XStack, YStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
 import {
   useTranslation,
   type TranslationKey,
@@ -238,92 +236,60 @@ export function ShopCard({
       >
         <ItemAsset item={item} size={small ? 64 : 96} priority={priority} />
 
-        <XStack
-          position="absolute"
-          top={8}
-          right={8}
-          gap={4}
-          pointerEvents="none"
-        >
+        <div className="box-border flex flex-row items-stretch absolute top-[8px] right-[8px] gap-4 pointer-events-none">
           {equipped ? (
             <Chip backgroundColor={`${accent}1f`} borderColor={`${accent}66`}>
-              <Text
-                fontSize={9}
-                letterSpacing={1}
-                textTransform="uppercase"
-                fontWeight="800"
-                color={accent}
-              >
+              <span className="box-border text-[40px] tracking-[1px] uppercase font-extrabold text-[accent]">
                 {labels.equipped}
-              </Text>
+              </span>
             </Chip>
           ) : owned ? (
             <Chip
               backgroundColor="rgba(255,255,255,0.06)"
               borderColor="rgba(255,255,255,0.18)"
             >
-              <Text
-                fontSize={9}
-                letterSpacing={1}
-                textTransform="uppercase"
-                fontWeight="700"
-                color="$gray11"
-              >
+              <span className="box-border text-[40px] tracking-[1px] uppercase font-bold text-[#94a3b8]">
                 {labels.owned}
-              </Text>
+              </span>
             </Chip>
           ) : null}
-        </XStack>
+        </div>
       </ArtBox>
 
-      <YStack paddingHorizontal="$3" paddingVertical="$2" gap={6}>
-        <Text
-          fontSize={small ? 12 : 13}
-          fontWeight="700"
-          color="$white"
-          numberOfLines={1}
+      <div className="box-border flex flex-col items-stretch px-3 py-2 gap-6">
+        <span
+          className={'"box-border font-bold text-[#f5f7ff] line-clamp-1"'}
+          style={{ fontSize: small ? 12 : 13 }}
         >
           {name}
-        </Text>
-        <XStack alignItems="center" justifyContent="space-between" gap={6}>
-          <YStack
-            flexDirection="row"
-            alignItems="center"
-            gap={4}
-            paddingHorizontal={6}
-            paddingVertical={2}
-            borderRadius="$2"
-            backgroundColor={`${accent}14`}
-            borderWidth={1}
-            borderColor={`${accent}44`}
+        </span>
+        <div className="box-border flex flex-row items-center justify-space-between gap-6">
+          <div
+            className={
+              '"box-border flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"'
+            }
+            style={{
+              backgroundColor: `${accent}14`,
+              borderColor: `${accent}44`,
+            }}
           >
-            <YStack
-              width={6}
-              height={6}
-              borderRadius={3}
-              backgroundColor={accent}
-            />
-            <Text
-              fontSize={9}
-              letterSpacing={1}
-              textTransform="uppercase"
-              fontWeight="800"
-              color={accent}
-            >
+            <div className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl bg-[accent]" />
+            <span className="box-border text-[40px] tracking-[1px] uppercase font-extrabold text-[accent]">
               {item.rarity}
-            </Text>
-          </YStack>
-          <XStack alignItems="center" gap={4}>
-            <Text fontSize={12}>{CURRENCY_GLYPH[item.priceCurrency]}</Text>
-            <Text
-              fontSize={12}
-              fontWeight="800"
-              color={CURRENCY_COLOR[item.priceCurrency]}
+            </span>
+          </div>
+          <div className="box-border flex flex-row items-center gap-4">
+            <span className="box-border text-[12px]">
+              {CURRENCY_GLYPH[item.priceCurrency]}
+            </span>
+            <span
+              className={'"box-border text-[12px] font-extrabold"'}
+              style={{ color: CURRENCY_COLOR[item.priceCurrency] }}
             >
               {formatNumber(item.priceAmount, locale)}
-            </Text>
-          </XStack>
-        </XStack>
+            </span>
+          </div>
+        </div>
 
         <ActionButton
           intent={action}
@@ -339,15 +305,9 @@ export function ShopCard({
           data-testid={`shop-card-action-${item.id}`}
           data-affordable={affordable ? 'true' : 'false'}
         >
-          <Text
-            fontSize={11}
-            letterSpacing={0.8}
-            textTransform="uppercase"
-            fontWeight="800"
-            color="$white"
-          >
+          <span className="box-border text-[11px] tracking-[0.8px] uppercase font-extrabold text-[#f5f7ff]">
             {actionLabel}
-          </Text>
+          </span>
         </ActionButton>
 
         {/* ARC payment option */}
@@ -368,15 +328,9 @@ export function ShopCard({
                 borderColor: 'rgba(34,197,94,0.45)',
               }}
             >
-              <Text
-                fontSize={11}
-                letterSpacing={0.8}
-                textTransform="uppercase"
-                fontWeight="800"
-                color="#22c55e"
-              >
+              <span className="box-border text-[11px] tracking-[0.8px] uppercase font-extrabold text-[#22c55e]">
                 {formatNumber(arcPrice, locale)} ARC
-              </Text>
+              </span>
             </ActionButton>
           )}
 
@@ -405,17 +359,9 @@ export function ShopCard({
         !item.starter &&
         !equipped &&
         onSellRequest ? (
-          <Text
-            fontSize={10}
-            letterSpacing={1}
-            textTransform="uppercase"
-            fontWeight="700"
-            color="$gray11"
-            cursor="pointer"
-            paddingVertical="$1"
-            textAlign="center"
-            hoverStyle={{ color: '$red11' }}
-            onPress={() => {
+          <span
+            className="box-border text-[48px] tracking-[1px] uppercase font-bold text-[#94a3b8] cursor-pointer py-1 text-center hover:text-[#ef4444]"
+            onClick={() => {
               track('shop.sell.click', {
                 itemId: item.id,
                 source: 'card',
@@ -425,9 +371,9 @@ export function ShopCard({
             data-testid={`shop-card-sell-${item.id}`}
           >
             {labels.sell}
-          </Text>
+          </span>
         ) : null}
-      </YStack>
+      </div>
     </CardFrame>
   );
 }

@@ -1,8 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { XStack, YStack } from '@arcadeum/ui';
-import { Text, styled, YStack as Stack } from 'tamagui';
+import { styled, YStack as Stack } from 'tamagui';
 import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { ShopCard, type ShopCardLabels, type ShopCardMode } from './ShopCard';
@@ -132,7 +131,9 @@ export function ShopRow({
   const liveRowByItemId = useMemo(
     () =>
       new Map(
-        inventory.filter((row) => row.soldAt === null).map((row) => [row.itemId, row]),
+        inventory
+          .filter((row) => row.soldAt === null)
+          .map((row) => [row.itemId, row]),
       ),
     [inventory],
   );
@@ -156,59 +157,42 @@ export function ShopRow({
   const expandLabel = expanded ? labels.collapse : labels.viewAll;
 
   return (
-    <YStack
-      id={id}
-      gap="$3"
-      width="100%"
+    <div
+      className={'"box-border flex flex-col items-stretch gap-3 w-full"'}
       style={{ scrollMarginTop: 32 }}
+      id={id}
       data-testid={`shop-row-${id}`}
       data-section={sectionKey ?? ''}
       data-active={isActive ? 'true' : 'false'}
     >
       <RowHost active={isActive} highlight={highlight}>
-        <XStack
-          width="100%"
-          alignItems="flex-end"
-          justifyContent="space-between"
-          marginBottom="$3"
-        >
-          <YStack gap={2}>
-            <Text
-              fontSize={10}
-              letterSpacing={2}
-              textTransform="uppercase"
-              color="$gray11"
-            >
+        <div className="box-border flex flex-row w-full items-end justify-space-between -mb-3">
+          <div className="box-border flex flex-col items-stretch gap-2">
+            <span className="box-border text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
               {labels.eyebrow.replace('{count}', String(items.length))}
-            </Text>
-            <Text fontSize="$6" fontWeight="800" letterSpacing={-0.3}>
+            </span>
+            <span className="box-border text-[24px] font-extrabold tracking-[-0.3px]">
               {labels.title}
-            </Text>
-          </YStack>
-          <Text
-            fontSize={11}
-            letterSpacing={1}
-            textTransform="uppercase"
-            fontWeight="700"
-            color="$gray11"
-            cursor="pointer"
+            </span>
+          </div>
+          <span
+            className="box-border text-[11px] tracking-[1px] uppercase font-bold text-[#94a3b8] cursor-pointer hover:text-[#f5f7ff]"
+            onClick={toggleExpanded}
             role="button"
             tabIndex={0}
             aria-expanded={expanded}
-            onPress={toggleExpanded}
             onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 toggleExpanded();
               }
             }}
-            hoverStyle={{ color: '$white' }}
             data-testid={`shop-row-${id}-toggle`}
             data-expanded={expanded ? 'true' : 'false'}
           >
             {expandLabel}
-          </Text>
-        </XStack>
+          </span>
+        </div>
 
         <Scroller expanded={expanded}>
           {items.map((item, index) => (
@@ -233,6 +217,6 @@ export function ShopRow({
           ))}
         </Scroller>
       </RowHost>
-    </YStack>
+    </div>
   );
 }

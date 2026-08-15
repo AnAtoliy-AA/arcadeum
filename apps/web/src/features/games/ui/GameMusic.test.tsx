@@ -6,8 +6,6 @@ import {
   screen,
   act,
 } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import { config } from '@/shared/config/tamagui.config';
 import { GameMusic } from './GameMusic';
 import { trackIndexForGame, FALLBACK_TRACKS } from './GameMusicUtils';
 
@@ -19,12 +17,7 @@ vi.mock('./GameMusicUtils', async (importOriginal) => {
   };
 });
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 // Controllable mock of the music setting.
 let musicEnabled = false;

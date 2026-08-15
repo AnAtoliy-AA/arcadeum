@@ -1,12 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
 import {
   AdminAnnouncementsTable,
   type AdminAnnouncementsTableLabels,
 } from './AdminAnnouncementsTable';
 import type { AdminAnnouncementItem } from '../api';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 vi.mock('@/shared/i18n/context', () => ({
   useLanguage: () => ({ locale: 'en-US', messages: {}, isReady: true }),

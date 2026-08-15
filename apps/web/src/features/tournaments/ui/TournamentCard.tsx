@@ -1,6 +1,5 @@
 'use client';
-import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button, GlassCard } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatDateTime, formatNumber } from '@/shared/i18n/formatters';
 import {
@@ -76,9 +75,9 @@ export function TournamentCard({
     cta = null;
   } else if (!isAuthenticated) {
     cta = (
-      <Text fontSize="$1" opacity={0.7}>
+      <span className="box-border text-[12px] opacity-[0.7]">
         {labels.signInToRegister}
-      </Text>
+      </span>
     );
   } else if (item.isRegistered) {
     cta = (
@@ -105,20 +104,18 @@ export function TournamentCard({
     );
   } else {
     cta = (
-      <Text fontSize="$1" opacity={0.7}>
+      <span className="box-border text-[12px] opacity-[0.7]">
         {labels.registrationClosed}
-      </Text>
+      </span>
     );
   }
 
   return (
-    <GlassCard p="$4" gap="$3" data-testid={`tournament-card-${item.id}`}>
-      <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
-        <YStack flex={1} gap="$1">
-          <Text fontSize="$5" fontWeight="700">
-            {item.name}
-          </Text>
-          <Text fontSize="$1" opacity={0.7}>
+    <GlassCard className="p-4 gap-3" data-testid={`tournament-card-${item.id}`}>
+      <div className="box-border flex flex-row items-start justify-space-between gap-2">
+        <div className="box-border flex flex-col items-stretch flex-1 gap-1">
+          <span className="box-border text-[20px] font-bold">{item.name}</span>
+          <span className="box-border text-[12px] opacity-[0.7]">
             {labels.gameType[item.gameType]} ·{' '}
             {formatDateTime(item.scheduledAt, locale, {
               weekday: 'short',
@@ -127,58 +124,65 @@ export function TournamentCard({
               hour: '2-digit',
               minute: '2-digit',
             })}
-          </Text>
-        </YStack>
-        <XStack
-          paddingHorizontal="$2"
-          paddingVertical="$1"
-          borderRadius="$2"
-          backgroundColor={STATUS_BG[item.effectiveStatus]}
+          </span>
+        </div>
+        <div
+          className={
+            '"box-border flex flex-row items-stretch px-2 py-1 rounded-lg"'
+          }
+          style={{ backgroundColor: STATUS_BG[item.effectiveStatus] }}
         >
-          <Text fontSize="$1" fontWeight="700">
+          <span className="box-border text-[12px] font-bold">
             {labels.effectiveStatus[item.effectiveStatus]}
-          </Text>
-        </XStack>
-      </XStack>
+          </span>
+        </div>
+      </div>
 
       {item.description && (
-        <Text fontSize="$2" opacity={0.85}>
+        <span className="box-border text-[14px] opacity-[0.85]">
           {item.description}
-        </Text>
+        </span>
       )}
 
       {item.prizeDescription && (
-        <Text fontSize="$2">
-          <Text fontWeight="700">{labels.prize}:</Text> {item.prizeDescription}
-        </Text>
+        <span className="box-border text-[14px]">
+          <span className="box-border font-bold">{labels.prize}:</span>{' '}
+          {item.prizeDescription}
+        </span>
       )}
 
       {(item.entryFeeCoins > 0 || item.prizePoolCoins > 0) && (
-        <XStack gap="$3" flexWrap="wrap">
+        <div className="box-border flex flex-row items-stretch gap-3 flex-wrap">
           {item.entryFeeCoins > 0 && (
-            <Text fontSize="$2" data-testid={`entry-fee-${item.id}`}>
-              <Text fontWeight="700">{labels.entryFee}:</Text>{' '}
+            <span
+              className="box-border text-[14px]"
+              data-testid={`entry-fee-${item.id}`}
+            >
+              <span className="box-border font-bold">{labels.entryFee}:</span>{' '}
               {formatNumber(item.entryFeeCoins, locale)}
-            </Text>
+            </span>
           )}
           {item.prizePoolCoins > 0 && (
-            <Text fontSize="$2" data-testid={`prize-pool-${item.id}`}>
-              <Text fontWeight="700">{labels.prizePool}:</Text>{' '}
+            <span
+              className="box-border text-[14px]"
+              data-testid={`prize-pool-${item.id}`}
+            >
+              <span className="box-border font-bold">{labels.prizePool}:</span>{' '}
               {formatNumber(item.prizePoolCoins, locale)}
-            </Text>
+            </span>
           )}
-        </XStack>
+        </div>
       )}
 
-      <XStack alignItems="center" justifyContent="space-between">
-        <Text fontSize="$1" opacity={0.7}>
+      <div className="box-border flex flex-row items-center justify-space-between">
+        <span className="box-border text-[12px] opacity-[0.7]">
           {labels.registered
             .replace('{count}', String(item.registeredCount))
             .replace('{max}', String(item.maxPlayers))}
           {item.waitlistCount > 0 ? ` (+${item.waitlistCount})` : ''}
-        </Text>
+        </span>
         {cta}
-      </XStack>
+      </div>
     </GlassCard>
   );
 }

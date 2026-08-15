@@ -86,28 +86,26 @@ export function GameStatus({
   return (
     <StatusContainer className={className}>
       <StatusItem>
-        <Typography fontSize="$2">{getStatusIcon()}</Typography>
-        <Typography fontSize="$2" fontWeight="500">
+        <Typography className="text-[14px]">{getStatusIcon()}</Typography>
+        <Typography className="text-[14px] font-medium">
           {getStatusText()}
         </Typography>
       </StatusItem>
 
       {showPlayerCount && (
         <StatusItem>
-          <Typography fontSize="$2">👥</Typography>
-          <Typography fontSize="$2" fontWeight="600" color="$color">
+          <Typography className="text-[14px]">👥</Typography>
+          <Typography className="text-[14px] font-semibold text-[var(--color)]">
             {room.playerCount} / {room.maxPlayers}
           </Typography>
-          <Typography fontSize="$2" fontWeight="500">
-            players
-          </Typography>
+          <Typography className="text-[14px] font-medium">players</Typography>
         </StatusItem>
       )}
 
       {session && showGameTime && (
         <StatusItem>
-          <Typography fontSize="$2">⏱️</Typography>
-          <Typography fontSize="$2" fontWeight="500">
+          <Typography className="text-[14px]">⏱️</Typography>
+          <Typography className="text-[14px] font-medium">
             {formatTime(elapsedTime)}
           </Typography>
         </StatusItem>

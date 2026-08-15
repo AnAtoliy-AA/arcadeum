@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { XStack, YStack } from '@arcadeum/ui';
 import { Text, styled, YStack as Stack } from 'tamagui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
@@ -101,36 +100,24 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
   // suffix so the locale prefix doesn't have to be threaded in.
   const isInventory = pathname.endsWith('/shop/inventory');
   const isShop =
-    !isInventory &&
-    (pathname.endsWith('/shop') || pathname.includes('/shop/'));
+    !isInventory && (pathname.endsWith('/shop') || pathname.includes('/shop/'));
 
   return (
-    <XStack
-      width="100%"
-      alignItems="center"
-      justifyContent="space-between"
-      gap="$4"
-      flexWrap="wrap"
+    <div
+      className="box-border flex flex-row w-full items-center justify-space-between gap-4 flex-wrap"
       data-testid="shop-top-bar"
     >
-      <YStack gap={2}>
-        <Text
-          fontSize={10}
-          letterSpacing={2}
-          textTransform="uppercase"
-          color="$gray11"
-        >
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
           {labels.eyebrow}
-        </Text>
-        <Text fontSize="$9" fontWeight="900" letterSpacing={-0.5}>
+        </span>
+        <span className="box-border text-[40px] font-black tracking-[-0.5px]">
           {labels.title}
-        </Text>
-      </YStack>
+        </span>
+      </div>
 
-      <XStack
-        gap="$1"
-        alignItems="center"
-        $sm={{ display: 'none' }}
+      <div
+        className="box-border flex flex-row gap-1 items-center max-[800px]:hidden"
         data-testid="shop-top-bar-nav"
       >
         <Link href={routes.shop} style={{ textDecoration: 'none' }}>
@@ -154,30 +141,39 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         <Link href={routes.wallet} style={{ textDecoration: 'none' }}>
           <NavLink data-testid="shop-nav-wallet">{labels.nav.wallet}</NavLink>
         </Link>
-      </XStack>
+      </div>
 
-      <XStack gap="$2" alignItems="center">
+      <div className="box-border flex flex-row gap-2 items-center">
         <BalanceChip currency="coins" data-testid="shop-balance-coins">
-          <Text fontSize={16}>{COIN_GLYPH}</Text>
-          <Text fontSize="$4" fontWeight="700" color={COIN_COLOR}>
+          <span className="box-border text-[16px]">{COIN_GLYPH}</span>
+          <span
+            className={'"box-border text-[18px] font-bold"'}
+            style={{ color: COIN_COLOR }}
+          >
             {formatNumber(coins, locale)}
-          </Text>
+          </span>
         </BalanceChip>
         <BalanceChip currency="gems" data-testid="shop-balance-gems">
-          <Text fontSize={16}>{GEM_GLYPH}</Text>
-          <Text fontSize="$4" fontWeight="700" color={GEM_COLOR}>
+          <span className="box-border text-[16px]">{GEM_GLYPH}</span>
+          <span
+            className={'"box-border text-[18px] font-bold"'}
+            style={{ color: GEM_COLOR }}
+          >
             {formatNumber(gems, locale)}
-          </Text>
+          </span>
         </BalanceChip>
         <TopUpBtn onPress={handleTopUp} role="button" data-testid="shop-top-up">
-          <Text fontSize="$3" fontWeight="700" color={GEM_COLOR}>
+          <span
+            className={'"box-border text-[16px] font-bold"'}
+            style={{ color: GEM_COLOR }}
+          >
             +
-          </Text>
-          <Text fontSize="$2" fontWeight="700" letterSpacing={0.5}>
+          </span>
+          <span className="box-border text-[14px] font-bold tracking-[0.5px]">
             {labels.topUp}
-          </Text>
+          </span>
         </TopUpBtn>
-      </XStack>
-    </XStack>
+      </div>
+    </div>
   );
 }

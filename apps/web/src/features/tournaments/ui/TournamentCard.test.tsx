@@ -1,7 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
 
 vi.mock('@/shared/i18n/context', () => ({
   useLanguage: () => ({ locale: 'en', messages: {} }),
@@ -9,6 +7,9 @@ vi.mock('@/shared/i18n/context', () => ({
 
 import { TournamentCard, type TournamentCardLabels } from './TournamentCard';
 import type { PublicTournamentItem } from '../api';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <TamaguiProvider config={config} defaultTheme="dark">

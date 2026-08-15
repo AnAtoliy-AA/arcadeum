@@ -121,13 +121,15 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           </div>
           <div className="min-w-0 flex-1 gap-[1px] overflow-hidden">
             <Typography
-              className="game-music-title block truncate text-[13px] font-semibold"
+              className={
+                'game-music-title block truncate text-[13px] font-semibold'
+              }
               style={{ color: 'rgba(255,255,255,0.95)' }}
             >
               {player.track?.title}
             </Typography>
             <Typography
-              className="block truncate text-[10px]"
+              className={'block truncate text-[10px]'}
               style={{ color: 'rgba(255,255,255,0.55)' }}
             >
               Arcadeum
@@ -178,8 +180,8 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
 
         {player.error && (
           <Typography
+            className={'mt-1 px-2'}
             uiSize="xs"
-            className="mt-1 px-2"
             style={{ color: '#f87171' }}
           >
             {player.error}
@@ -231,7 +233,9 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         {player.miniMode && (
           <div className="flex flex-col items-center gap-2">
             <Typography
-              className="game-music-title max-w-[140px] truncate text-[10px] font-medium"
+              className={
+                'game-music-title max-w-[140px] truncate text-[10px] font-medium'
+              }
               style={{ color: 'rgba(255,255,255,0.7)' }}
             >
               {player.track?.title}

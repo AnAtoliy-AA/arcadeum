@@ -71,11 +71,6 @@ export const MusicBtn = ({
   className?: string;
 }) => (
   <button
-    type="button"
-    onClick={onClick}
-    data-testid={testId}
-    aria-label={ariaLabel}
-    title={title || ariaLabel}
     className={`game-music-btn ${className}`}
     style={{
       display: 'flex',
@@ -90,6 +85,11 @@ export const MusicBtn = ({
       boxShadow:
         'inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 4px rgba(0,0,0,0.04)',
     }}
+    type="button"
+    onClick={onClick}
+    data-testid={testId}
+    aria-label={ariaLabel}
+    title={title || ariaLabel}
   >
     {children}
   </button>
@@ -109,12 +109,7 @@ export const PlayBtn = ({
   children: React.ReactNode;
 }) => (
   <button
-    type="button"
-    onClick={onClick}
-    data-testid={testId}
-    aria-label={ariaLabel}
-    title={title || ariaLabel}
-    className="game-music-btn game-music-play-btn"
+    className={'"game-music-btn game-music-play-btn"'}
     style={{
       display: 'flex',
       alignItems: 'center',
@@ -128,6 +123,11 @@ export const PlayBtn = ({
       boxShadow:
         'inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 10px rgba(0,0,0,0.04)',
     }}
+    type="button"
+    onClick={onClick}
+    data-testid={testId}
+    aria-label={ariaLabel}
+    title={title || ariaLabel}
   >
     {children}
   </button>

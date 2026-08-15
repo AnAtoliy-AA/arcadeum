@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import type { TournamentStatus } from '@/features/admin-tournaments/api';
@@ -97,36 +96,34 @@ export function UnregisterConfirm({
   return (
     <div style={OVERLAY_STYLE} data-testid="unregister-confirm-dialog">
       <div style={DIALOG_STYLE}>
-        <YStack gap="$3">
-          <Text fontWeight="700" fontSize="$5">
+        <div className="box-border flex flex-col items-stretch gap-3">
+          <span className="box-border font-bold text-[20px]">
             {labels.title}
-          </Text>
+          </span>
 
-          <Text fontSize="$2" opacity={0.85}>
+          <span className="box-border text-[14px] opacity-[0.85]">
             {labels.body}
-          </Text>
+          </span>
 
           {showRefund && (
-            <Text
-              fontSize="$2"
-              color="$successText"
+            <span
+              className="box-border text-[14px] text-[var(--successText)]"
               data-testid="refund-notice"
             >
               {refundText}
-            </Text>
+            </span>
           )}
 
           {errorMsg && (
-            <Text
-              fontSize="$1"
-              color="$errorText"
+            <span
+              className="box-border text-[12px] text-[var(--errorText)]"
               data-testid="unregister-confirm-error"
             >
               {errorMsg}
-            </Text>
+            </span>
           )}
 
-          <XStack gap="$3" justifyContent="flex-end" paddingTop="$2">
+          <div className="box-border flex flex-row items-stretch gap-3 justify-end pt-2">
             <Button
               variant="outline"
               onClick={onClose}
@@ -142,8 +139,8 @@ export function UnregisterConfirm({
             >
               {isPending ? '…' : labels.confirm}
             </Button>
-          </XStack>
-        </YStack>
+          </div>
+        </div>
       </div>
     </div>
   );

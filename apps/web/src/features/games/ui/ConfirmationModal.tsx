@@ -41,7 +41,9 @@ export function ConfirmationModal({
           <ModalTitle>{title}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <Typography color="$textSecondary">{message}</Typography>
+          <Typography className="text-[var(--textSecondary)]">
+            {message}
+          </Typography>
         </ModalBody>
         <ModalFooter>
           <Button

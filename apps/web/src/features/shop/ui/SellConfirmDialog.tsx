@@ -2,8 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { DialogShell } from './dialogShell';
@@ -71,19 +70,20 @@ export function SellConfirmDialog({
 
   return (
     <DialogShell open={open} onClose={onClose} testId="sell-confirm-dialog">
-      <YStack gap="$3">
-        <Text fontSize="$6" fontWeight="700">
-          {labels.title}
-        </Text>
-        <Text fontSize="$4">
+      <div className="box-border flex flex-col items-stretch gap-3">
+        <span className="box-border text-[24px] font-bold">{labels.title}</span>
+        <span className="box-border text-[18px]">
           {labels.refund.replace('{amount}', formatNumber(refundCoins, locale))}
-        </Text>
+        </span>
         {errorMsg ? (
-          <Text color="$danger" fontSize="$2" data-testid="sell-error">
+          <span
+            className="box-border text-[var(--danger)] text-[14px]"
+            data-testid="sell-error"
+          >
             {errorMsg}
-          </Text>
+          </span>
         ) : null}
-        <XStack gap="$3" justifyContent="flex-end">
+        <div className="box-border flex flex-row items-stretch gap-3 justify-end">
           <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
@@ -94,8 +94,8 @@ export function SellConfirmDialog({
           >
             {labels.sell.replace('{amount}', formatNumber(refundCoins, locale))}
           </Button>
-        </XStack>
-      </YStack>
+        </div>
+      </div>
     </DialogShell>
   );
 }

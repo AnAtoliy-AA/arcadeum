@@ -52,7 +52,7 @@ export default async function HomeRoute({
       {videoJsonLd ? <JsonLd data={videoJsonLd} /> : null}
       <JsonLd id="json-ld-home-breadcrumb" data={breadcrumbJsonLd} />
       <Suspense fallback={<PageLoading layout="home" />}>
-        <HomePage />
+        <HomePage locale={safeLocale} />
       </Suspense>
     </>
   );

@@ -16,19 +16,16 @@ interface ScopeOptionProps extends Omit<ButtonProps, 'variant'> {
 
 export const ScopeOption = ({
   isActive,
-  $active,
   variant,
-  $variant,
   ...props
-}: ScopeOptionProps & { $active?: boolean; $variant?: string }) => (
+}: ScopeOptionProps) => (
   <Button
-    variant={isActive || $active ? 'primary' : 'secondary'}
+    variant={isActive ? 'primary' : 'secondary'}
     size="sm"
-    isActive={isActive || $active}
-    gameVariant={(variant || $variant) as GameVariant}
-    flex={1}
-    minWidth={120}
-    $xs={{ minWidth: 80 }}
+    active={isActive}
+    gameVariant={variant as GameVariant}
+    className="min-w-[120px] max-[480px]:min-w-[80px]"
+    style={{ flex: 1 }}
     {...props}
   />
 );
@@ -107,13 +104,12 @@ export const ChatTurnStatus = styled(Text, {
 
 export const ChatSendButton = ({
   variant,
-  $variant,
   ...props
-}: ButtonProps & { variant?: string; $variant?: string }) => (
+}: ButtonProps & { variant?: string }) => (
   <Button
     variant="primary"
     size="sm"
-    gameVariant={(variant || $variant) as GameVariant}
+    gameVariant={variant as GameVariant}
     {...props}
   />
 );

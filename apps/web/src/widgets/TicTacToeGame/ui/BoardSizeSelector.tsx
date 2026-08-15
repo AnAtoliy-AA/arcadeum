@@ -85,29 +85,17 @@ export function BoardSizeSelector({
               size="md"
               data-testid={`ttt-board-size-${size}`}
               disabled={disabled}
-              data-active={isActive}
-              backgroundColor={
-                isActive ? 'var(--primary, #3b82f6)' : 'transparent'
-              }
-              borderColor={
+              data-active={isActive ? 'on' : undefined}
+              className={`rounded-[10px] font-semibold min-w-[72px] overflow-hidden ${
                 isActive
-                  ? 'var(--primary, #3b82f6)'
-                  : 'var(--borderColor, #cbd5e1)'
-              }
-              color={isActive ? '#fff' : 'inherit'}
-              hoverStyle={{
-                backgroundColor: isActive
-                  ? 'var(--primary, #3b82f6)'
-                  : 'rgba(255, 255, 255, 0.05)',
+                  ? 'bg-[var(--primary,#3b82f6)] border-[var(--primary,#3b82f6)] hover:bg-[var(--primary,#3b82f6)]'
+                  : 'bg-[transparent] border-[var(--borderColor,#cbd5e1)] hover:bg-[rgba(255,255,255,0.05)]'
+              } ${disabled ? 'opacity-60' : 'opacity-100'}`}
+              style={{
+                color: isActive ? '#fff' : 'inherit',
+                height: 'auto',
+                flex: 0,
               }}
-              borderRadius={10}
-              fontWeight={600}
-              opacity={disabled ? 0.6 : 1}
-              minWidth={72}
-              height="auto"
-              paddingVertical="$3"
-              flex={0}
-              overflow="hidden"
               onClick={() => handlePick(size)}
             >
               <YStack alignItems="center" gap={2}>
@@ -151,25 +139,13 @@ export function BoardSizeSelector({
                     size="sm"
                     data-testid={`ttt-margin-${margin}`}
                     disabled={disabled}
-                    data-active={isActive}
-                    backgroundColor={
-                      isActive ? 'var(--primary, #3b82f6)' : 'transparent'
-                    }
-                    borderColor={
+                    data-active={isActive ? 'on' : undefined}
+                    className={`rounded-[8px] font-semibold text-[13px] ${
                       isActive
-                        ? 'var(--primary, #3b82f6)'
-                        : 'var(--borderColor, #cbd5e1)'
-                    }
-                    color={isActive ? '#fff' : 'inherit'}
-                    hoverStyle={{
-                      backgroundColor: isActive
-                        ? 'var(--primary, #3b82f6)'
-                        : 'rgba(255, 255, 255, 0.05)',
-                    }}
-                    borderRadius={8}
-                    fontWeight={600}
-                    fontSize={13}
-                    opacity={disabled ? 0.6 : 1}
+                        ? 'bg-[var(--primary,#3b82f6)] border-[var(--primary,#3b82f6)] hover:bg-[var(--primary,#3b82f6)]'
+                        : 'bg-[transparent] border-[var(--borderColor,#cbd5e1)] hover:bg-[rgba(255,255,255,0.05)]'
+                    } ${disabled ? 'opacity-60' : 'opacity-100'}`}
+                    style={{ color: isActive ? '#fff' : 'inherit' }}
                     onClick={() => handleMarginChange(margin)}
                   >
                     {margin}
@@ -193,25 +169,13 @@ export function BoardSizeSelector({
                     size="sm"
                     data-testid={`ttt-win-length-${winLen}`}
                     disabled={disabled}
-                    data-active={isActive}
-                    backgroundColor={
-                      isActive ? 'var(--primary, #3b82f6)' : 'transparent'
-                    }
-                    borderColor={
+                    data-active={isActive ? 'on' : undefined}
+                    className={`rounded-[8px] font-semibold text-[13px] ${
                       isActive
-                        ? 'var(--primary, #3b82f6)'
-                        : 'var(--borderColor, #cbd5e1)'
-                    }
-                    color={isActive ? '#fff' : 'inherit'}
-                    hoverStyle={{
-                      backgroundColor: isActive
-                        ? 'var(--primary, #3b82f6)'
-                        : 'rgba(255, 255, 255, 0.05)',
-                    }}
-                    borderRadius={8}
-                    fontWeight={600}
-                    fontSize={13}
-                    opacity={disabled ? 0.6 : 1}
+                        ? 'bg-[var(--primary,#3b82f6)] border-[var(--primary,#3b82f6)] hover:bg-[var(--primary,#3b82f6)]'
+                        : 'bg-[transparent] border-[var(--borderColor,#cbd5e1)] hover:bg-[rgba(255,255,255,0.05)]'
+                    } ${disabled ? 'opacity-60' : 'opacity-100'}`}
+                    style={{ color: isActive ? '#fff' : 'inherit' }}
                     onClick={() => handleWinLengthChange(winLen)}
                   >
                     {t('games.tic_tac_toe_v1.lobby.inARow', {

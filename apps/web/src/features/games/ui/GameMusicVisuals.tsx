@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { XStack } from 'tamagui';
 
 export const PlaylistIcon = ({ size = 20 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -22,11 +21,14 @@ export const MaximizeIcon = ({ size = 20 }: { size?: number }) => (
 );
 
 export const PlayingBars = () => (
-  <XStack alignItems="flex-end" gap={1.5} height={12} marginLeft={4}>
+  <div
+    className="flex items-end"
+    style={{ gap: 1.5, height: 12, marginLeft: 4 }}
+  >
     <span className="playing-bar playing-bar-1" />
     <span className="playing-bar playing-bar-2" />
     <span className="playing-bar playing-bar-3" />
-  </XStack>
+  </div>
 );
 
 export const EqualizerVisualization = ({

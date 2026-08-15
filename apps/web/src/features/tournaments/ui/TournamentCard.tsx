@@ -85,7 +85,7 @@ export function TournamentCard({
       <Button
         variant="outline"
         size="sm"
-        onPress={() => onUnregister(item.id)}
+        onClick={() => onUnregister(item.id)}
         disabled={isPending}
         data-testid={`unregister-${item.id}`}
       >
@@ -96,7 +96,7 @@ export function TournamentCard({
     cta = (
       <Button
         size="sm"
-        onPress={() => onRegister(item.id)}
+        onClick={() => onRegister(item.id)}
         disabled={isPending}
         data-testid={`register-${item.id}`}
       >

@@ -189,7 +189,7 @@ export function AdminTournamentsTable({
                 <Button
                   size="sm"
                   variant="outline"
-                  onPress={() => onEdit(item)}
+                  onClick={() => onEdit(item)}
                   data-testid={`edit-${item.id}`}
                 >
                   {labels.edit}
@@ -198,7 +198,7 @@ export function AdminTournamentsTable({
                   <Button
                     size="sm"
                     variant="outline"
-                    onPress={() => onTransition(item)}
+                    onClick={() => onTransition(item)}
                     data-testid={`transition-${item.id}`}
                   >
                     {labels.transition}
@@ -208,7 +208,7 @@ export function AdminTournamentsTable({
                   <Button
                     size="sm"
                     variant="outline"
-                    onPress={() => onMarkComplete(item)}
+                    onClick={() => onMarkComplete(item)}
                     data-testid={`mark-complete-${item.id}`}
                   >
                     {labels.markComplete}
@@ -218,7 +218,7 @@ export function AdminTournamentsTable({
                   <Button
                     size="sm"
                     variant="outline"
-                    onPress={() => onDelete(item)}
+                    onClick={() => onDelete(item)}
                     data-testid={`delete-${item.id}`}
                   >
                     {labels.delete}
@@ -239,7 +239,7 @@ export function AdminTournamentsTable({
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page - 1)}
+          onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
         >
           {labels.pagination.prev}
@@ -252,7 +252,7 @@ export function AdminTournamentsTable({
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page + 1)}
+          onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
         >
           {labels.pagination.next}

@@ -112,9 +112,8 @@ export default function CriticalCreationConfig({
           <Button
             variant="link"
             size="sm"
-            mb="$4"
             type="button"
-            color="$accent"
+            className="mb-4 text-[var(--accent)]"
             onClick={() => setShowRules(true)}
             data-testid="view-rules-button"
           >

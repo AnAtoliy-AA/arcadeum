@@ -377,11 +377,11 @@ export function AdminAnnouncementForm({
       )}
 
       <XStack gap="$3" justifyContent="flex-end" paddingTop="$2">
-        <Button variant="outline" onPress={onCancel} data-testid="form-cancel">
+        <Button variant="outline" onClick={onCancel} data-testid="form-cancel">
           {labels.cancel}
         </Button>
         <Button
-          onPress={handleSubmit}
+          onClick={handleSubmit}
           disabled={!canSubmit}
           data-testid="form-submit"
         >

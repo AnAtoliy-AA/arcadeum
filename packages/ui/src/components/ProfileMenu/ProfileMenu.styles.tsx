@@ -1,159 +1,142 @@
 'use client';
 
-import { styled, XStack, YStack } from 'tamagui';
 import { Typography } from '../Typography/Typography';
 import React from 'react';
 import Link from 'next/link';
+import { cx } from '../../utils/cx';
 
-export const ProfileMenuContainer = styled(YStack, {
-  name: 'ProfileMenuContainer',
-  position: 'relative',
-  zIndex: 100,
-  $sm: {
-    display: 'none',
-  },
-});
-
-export const UserName = styled(Typography, {
-  name: 'UserName',
-  uiSize: 'sm',
-  weight: '500',
-  maxWidth: 140,
-});
-
-export const UserNameEllipsis = styled(UserName, {
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  weight: '800',
-});
-
-export const ProfileDropdown = styled(YStack, {
-  name: 'ProfileDropdown',
-  position: 'absolute',
-  right: 0,
-  minWidth: 240,
-  backgroundColor: 'rgba(12, 14, 15, 0.98)',
-  borderColor: '$glassBorder',
-  borderWidth: 1,
-  borderRadius: 20,
-  zIndex: 1000,
-  top: 'calc(100% + 12px)',
-  backdropFilter: 'blur(32px) saturate(160%)',
-  boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-  transformOrigin: 'right top',
-  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-
-  variants: {
-    isOpen: {
-      true: {
-        opacity: 1,
-        pointerEvents: 'auto',
-        visibility: 'visible',
-        transform: 'translateY(0) scale(1)',
-      },
-      false: {
-        opacity: 0,
-        pointerEvents: 'none',
-        visibility: 'hidden',
-        transform: 'translateY(-10px) scale(0.96)',
-      },
-    },
-  } as const,
-});
-
-const ProfileDropdownScroll = styled(YStack, {
-  name: 'ProfileDropdownScroll',
-  paddingVertical: '$4',
-  maxHeight: 'calc(100dvh - 110px)',
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  // Subtle scrollbar so it doesn't fight the glass aesthetic
-  style: {
-    scrollbarWidth: 'thin',
-    scrollbarColor: 'rgba(255,255,255,0.15) transparent',
-  },
-});
-
-export const ProfileDropdownWrapper = ProfileDropdown.styleable(
-  ({ isOpen, children, onPress, onClick, ...props }, ref) => {
-    return (
-      <ProfileDropdown
-        ref={ref}
-        isOpen={isOpen}
-        {...props}
-        onClick={(onClick || onPress || undefined) as React.MouseEventHandler}
-        data-testid="profile-dropdown"
-        borderRadius={20}
-      >
-        {/* Top Glow Edge — outside scroll area so it stays pinned */}
-        <YStack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          height={2}
-          pointerEvents="none"
-          background="linear-gradient(90deg, transparent, var(--primary), transparent)"
-          opacity={0.5}
-          zIndex={2}
-        />
-        {/* Glass Highlight Shine — outside scroll area, covers visible bounds */}
-        <YStack
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          pointerEvents="none"
-          background="linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%)"
-        />
-        <ProfileDropdownScroll data-testid="profile-dropdown-scroll">
-          {children}
-        </ProfileDropdownScroll>
-      </ProfileDropdown>
-    );
-  },
+export const ProfileMenuContainer = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx('relative z-[100] hidden sm:block', className)}
+    {...rest}
+  />
 );
 
-export const DropdownItem = styled(XStack, {
-  name: 'DropdownItem',
-  alignItems: 'center',
-  gap: '$4',
-  height: 54,
-  paddingHorizontal: '$5',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  position: 'relative',
+export const UserName = ({ children, ...rest }: React.ComponentProps<typeof Typography>) => (
+  <Typography uiSize="sm" weight="500" style={{ maxWidth: 140 }} {...rest}>
+    {children}
+  </Typography>
+);
 
-  hoverStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
+export const UserNameEllipsis = ({
+  children,
+  ...rest
+}: React.ComponentProps<typeof Typography>) => (
+  <Typography
+    uiSize="sm"
+    weight="800"
+    style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}
+    {...rest}
+  >
+    {children}
+  </Typography>
+);
 
-  pressStyle: {
-    opacity: 0.8,
-  },
-});
+type ProfileDropdownProps = {
+  isOpen?: boolean;
+  children: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  'data-testid'?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  [key: string]: unknown;
+};
 
-const DropdownAccent = styled(YStack, {
-  position: 'absolute',
-  left: 0,
-  top: 12,
-  bottom: 12,
-  width: 2,
-  borderRadius: 2,
-  backgroundColor: '$primary',
-  opacity: 0,
-  transition: 'all 0.2s ease',
+export const ProfileDropdownWrapper = ({
+  isOpen = false,
+  children,
+  onClick,
+  className,
+  style,
+}: ProfileDropdownProps) => (
+  <div
+    data-testid="profile-dropdown"
+    onClick={onClick}
+    style={{
+      position: 'absolute',
+      right: 0,
+      minWidth: 240,
+      top: 'calc(100% + 12px)',
+      transformOrigin: 'right top',
+      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+      opacity: isOpen ? 1 : 0,
+      pointerEvents: isOpen ? 'auto' : 'none',
+      visibility: isOpen ? 'visible' : 'hidden',
+      transform: isOpen ? 'translateY(0) scale(1)' : 'translateY(-10px) scale(0.96)',
+      ...style,
+    }}
+    className={cx(
+      'rounded-[20px] border border-[var(--glassBorder)] bg-[rgba(12,14,15,0.98)]',
+      'z-[1000] overflow-hidden backdrop-blur-[32px]',
+      'shadow-[0_20px_50px_rgba(0,0,0,0.5)]',
+      className,
+    )}
+  >
+    {/* Top Glow Edge */}
+    <div
+      className="pointer-events-none absolute left-0 right-0 top-0 z-[2] h-[2px] opacity-50"
+      style={{ background: 'linear-gradient(90deg, transparent, var(--primary), transparent)' }}
+    />
+    {/* Glass Highlight Shine */}
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%)',
+      }}
+    />
+    <div
+      data-testid="profile-dropdown-scroll"
+      className="max-h-[calc(100dvh-110px)] overflow-y-auto overflow-x-hidden py-4"
+      style={{
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'rgba(255,255,255,0.15) transparent',
+      }}
+    >
+      {children}
+    </div>
+  </div>
+);
 
-  variants: {
-    active: {
-      true: {
-        opacity: 1,
-      },
-    },
-  } as const,
-});
+export const DropdownItem = ({
+  children,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  className,
+  'data-testid': dataTestId,
+}: {
+  children: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
+  className?: string;
+  'data-testid'?: string;
+}) => (
+  <div
+    data-testid={dataTestId}
+    onClick={onClick}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+    className={cx(
+      'relative flex h-[54px] cursor-pointer items-center gap-4 px-5',
+      'transition-all duration-200 hover:bg-[rgba(255,255,255,0.05)] active:opacity-80',
+      className,
+    )}
+  >
+    {children}
+  </div>
+);
+
+const DropdownAccent = ({ active }: { active?: boolean }) => (
+  <span
+    aria-hidden
+    className="absolute bottom-3 left-0 top-3 w-[2px] rounded-[2px] bg-[var(--primary)] transition-all duration-200"
+    style={{ opacity: active ? 1 : 0 }}
+  />
+);
 
 export function DropdownLink({
   href,
@@ -182,12 +165,12 @@ export function DropdownLink({
     >
       <DropdownItem>
         <DropdownAccent active={isHovered} />
-        <XStack alignItems="center" gap={20}>
+        <span className="flex items-center gap-5">
           {icon}
-          <Typography uiSize="sm" weight="800" color="$color">
+          <Typography uiSize="sm" weight="800" color="var(--color)">
             {children}
           </Typography>
-        </XStack>
+        </span>
       </DropdownItem>
     </Link>
   );
@@ -214,13 +197,12 @@ export function DropdownButton({
       data-testid={dataTestId}
     >
       <DropdownAccent active={isHovered} />
-      <XStack alignItems="center" gap={20}>
+      <span className="flex items-center gap-5">
         {icon}
-        <Typography uiSize="sm" weight="800" color="$color">
+        <Typography uiSize="sm" weight="800" color="var(--color)">
           {children}
         </Typography>
-      </XStack>
+      </span>
     </DropdownItem>
   );
 }
-

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, lazy, Suspense } from 'react';
+import { Button } from '@arcadeum/ui';
 
 const GamePickerModal = lazy(() =>
   import('@/features/games/ui/GamePickerModal').then((m) => ({
@@ -17,14 +18,14 @@ export function HeroPlayVsAiButton({ label }: Props) {
 
   return (
     <>
-      <button
+      <Button
+        variant="secondary"
+        size="lg"
         data-testid="hero-play-vs-ai-button"
-        className="home-link-button home-link-button-ghost"
         onClick={() => setOpen(true)}
-        type="button"
       >
         {label}
-      </button>
+      </Button>
       {open && (
         <Suspense fallback={null}>
           <GamePickerModal open={open} onClose={() => setOpen(false)} />

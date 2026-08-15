@@ -7,12 +7,6 @@ import {
   type ChangeEvent,
   type CSSProperties,
 } from 'react';
-import {
-  TextArea as TamaguiTextArea,
-  YStack,
-  styled,
-  useTheme,
-} from 'tamagui';
 
 export type FloatingLabelTextAreaProps = {
   id?: string;
@@ -30,45 +24,6 @@ export type FloatingLabelTextAreaProps = {
   rows?: number;
   'data-testid'?: string;
 };
-
-const Wrapper = styled(YStack, {
-  name: 'FloatingLabelTextAreaWrapper',
-  position: 'relative',
-  variants: {
-    fullWidth: {
-      true: { width: '100%' },
-    },
-  } as const,
-});
-
-const StyledFlTextArea = styled(TamaguiTextArea, {
-  name: 'FloatingLabelTextAreaField',
-  paddingTop: 24,
-  paddingBottom: 28,
-  paddingHorizontal: 14,
-  borderRadius: '$3',
-  borderWidth: 1,
-  backgroundColor: '$background',
-  borderColor: '$borderColor',
-  color: '$color',
-  fontSize: 15,
-  width: '100%',
-  minHeight: 200,
-  hoverStyle: { borderColor: '$primary' },
-  focusStyle: {
-    borderColor: '$accent',
-    borderWidth: 2,
-    outlineColor: 'transparent',
-  },
-  variants: {
-    error: {
-      true: {
-        borderColor: '$danger',
-        focusStyle: { borderColor: '$danger' },
-      },
-    },
-  } as const,
-});
 
 const baseLabelStyle: CSSProperties = {
   position: 'absolute',
@@ -102,7 +57,6 @@ export const FloatingLabelTextArea = forwardRef<
   },
   ref,
 ) {
-  const theme = useTheme();
   const generatedId = useId();
   const id = idProp ?? generatedId;
   const isControlled = valueProp !== undefined;
@@ -111,10 +65,10 @@ export const FloatingLabelTextArea = forwardRef<
   const [focused, setFocused] = useState(false);
   const filled = (value ?? '').length > 0;
 
-  const accent = theme.accent?.get?.() ?? '#38bdf8';
-  const background = theme.background?.get?.() ?? '#06011b';
-  const textSecondary = theme.textSecondary?.get?.() ?? '#8e9196';
-  const warning = theme.warning?.get?.() ?? '#f59e0b';
+  const accent = 'var(--accent)';
+  const background = 'var(--background)';
+  const textSecondary = 'var(--textSecondary)';
+  const warning = 'var(--warning)';
 
   const isFloated = focused || filled;
   const labelStyle: CSSProperties = isFloated
@@ -155,23 +109,55 @@ export const FloatingLabelTextArea = forwardRef<
   };
 
   return (
-    <Wrapper fullWidth={fullWidth}>
-      <StyledFlTextArea
-        ref={ref as never}
+    <div
+      style={{ position: 'relative', width: fullWidth ? '100%' : undefined }}
+    >
+      <textarea
+        ref={ref}
         id={id}
         name={name}
         value={value ?? ''}
-        onChange={handleChange as never}
+        onChange={handleChange}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         required={required}
         disabled={disabled}
-        error={error}
         rows={rows}
         minLength={minLength}
         maxLength={maxLength}
         placeholder=" "
         data-testid={testId}
+        style={{
+          paddingTop: 24,
+          paddingBottom: 28,
+          paddingLeft: 14,
+          paddingRight: 14,
+          borderRadius: 12,
+          borderWidth: 1,
+          borderStyle: 'solid',
+          backgroundColor: 'var(--background)',
+          borderColor: error ? 'var(--danger)' : 'var(--borderColor)',
+          color: 'var(--color)',
+          fontSize: 15,
+          width: '100%',
+          minHeight: 200,
+          outline: 'none',
+          transition: 'border-color 160ms ease',
+        }}
+        onMouseEnter={(e) => {
+          if (!error) e.currentTarget.style.borderColor = 'var(--primary)';
+        }}
+        onMouseLeave={(e) => {
+          if (!error && !focused) {
+            e.currentTarget.style.borderColor = 'var(--borderColor)';
+          }
+        }}
+        onFocusCapture={(e) => {
+          if (!error) e.currentTarget.style.borderColor = 'var(--accent)';
+        }}
+        onBlurCapture={(e) => {
+          if (!error) e.currentTarget.style.borderColor = 'var(--borderColor)';
+        }}
       />
       <label htmlFor={id} style={labelStyle}>
         {label}
@@ -184,7 +170,7 @@ export const FloatingLabelTextArea = forwardRef<
           {length} / {maxLength}
         </span>
       ) : null}
-    </Wrapper>
+    </div>
   );
 });
 

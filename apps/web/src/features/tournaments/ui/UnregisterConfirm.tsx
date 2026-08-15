@@ -129,14 +129,14 @@ export function UnregisterConfirm({
           <XStack gap="$3" justifyContent="flex-end" paddingTop="$2">
             <Button
               variant="outline"
-              onPress={onClose}
+              onClick={onClose}
               disabled={isPending}
               data-testid="unregister-confirm-cancel"
             >
               {labels.cancelButton}
             </Button>
             <Button
-              onPress={handleConfirm}
+              onClick={handleConfirm}
               disabled={isPending}
               data-testid="unregister-confirm-submit"
             >

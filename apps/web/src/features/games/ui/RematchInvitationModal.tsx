@@ -111,8 +111,7 @@ export function RematchInvitationModal({
           <ModalButton
             variant="ghost"
             onClick={onDecline}
-            marginTop="$4"
-            padding="$2"
+            className="flex-1 mt-4 p-2"
           >
             {t('games.table.modals.common.close' as TranslationKey)}
           </ModalButton>

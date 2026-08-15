@@ -64,7 +64,7 @@ export const CustomContent: Story = {
         <Typography variant="heading" uiSize="3xl" color="$primary">
           Premium Experience
         </Typography>
-        <Typography variant="body" uiSize="sm" textAlign="center">
+        <Typography variant="body" uiSize="sm" className="text-center">
           Custom padding and centered content demonstration.
         </Typography>
       </YStack>

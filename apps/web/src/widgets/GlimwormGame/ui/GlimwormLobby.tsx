@@ -192,28 +192,13 @@ export function GlimwormLobby({
             variant="chip"
             size="sm"
             disabled={!isHost}
-            data-active={powerupsEnabled}
-            backgroundColor={
+            data-active={powerupsEnabled ? 'on' : undefined}
+            onClick={() => isHost && setPowerupsEnabled((p) => !p)}
+            className={`rounded-[20px] font-medium text-[13px] ${
               powerupsEnabled
-                ? 'rgba(177,94,255,0.20)'
-                : 'rgba(255,255,255,0.04)'
-            }
-            borderColor={
-              powerupsEnabled
-                ? 'rgba(177,94,255,0.6)'
-                : 'rgba(255,255,255,0.10)'
-            }
-            color={powerupsEnabled ? '#d4a8ff' : '#cbd5e1'}
-            hoverStyle={{
-              backgroundColor: powerupsEnabled
-                ? 'rgba(177,94,255,0.25)'
-                : 'rgba(255,255,255,0.08)',
-            }}
-            borderRadius={20}
-            fontWeight={500}
-            fontSize={13}
-            opacity={isHost ? 1 : 0.7}
-            onPress={() => isHost && setPowerupsEnabled((p) => !p)}
+                ? 'bg-[rgba(177,94,255,0.20)] border-[rgba(177,94,255,0.6)] text-[#d4a8ff] hover:bg-[rgba(177,94,255,0.25)]'
+                : 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.10)] text-[#cbd5e1] hover:bg-[rgba(255,255,255,0.08)]'
+            } ${isHost ? 'opacity-100' : 'opacity-[0.7]'}`}
           >
             {powerupsEnabled
               ? `✓ ${t('games.glimworm_v1.lobby.powerupsOn')}`
@@ -231,22 +216,23 @@ export function GlimwormLobby({
                   key={color}
                   variant="chip"
                   size="sm"
-                  padding={0}
-                  width={32}
-                  height={32}
-                  borderRadius={16}
-                  backgroundColor={color}
-                  borderWidth={isSelected ? 3 : 2}
-                  borderColor={isSelected ? '#fff' : 'rgba(255,255,255,0.18)'}
-                  disabled={isTaken}
-                  opacity={isTaken ? 0.3 : 1}
-                  hoverStyle={{
-                    opacity: isTaken ? 0.3 : 0.8,
+                  className={`w-[32px] h-[32px] rounded-[16px] ${
+                    isSelected ? 'border-[3px]' : 'border-2'
+                  } ${
+                    isTaken
+                      ? 'opacity-[0.3] hover:opacity-[0.3]'
+                      : 'opacity-100 hover:opacity-[0.8]'
+                  }`}
+                  style={{
+                    backgroundColor: color,
+                    padding: 0,
+                    borderColor: isSelected ? '#fff' : 'rgba(255,255,255,0.18)',
                   }}
+                  disabled={isTaken}
                   aria-label={color}
                   aria-pressed={isSelected}
                   title={isTaken ? 'Taken by another player' : color}
-                  onPress={() => !isTaken && handleColor(color)}
+                  onClick={() => !isTaken && handleColor(color)}
                 />
               );
             })}

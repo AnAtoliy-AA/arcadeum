@@ -168,7 +168,7 @@ export function AdminWalletForm({
           variant="outline"
           size="sm"
           disabled={!canSubmit}
-          onPress={() => handleSubmit('grant')}
+          onClick={() => handleSubmit('grant')}
           data-testid="wallet-form-grant"
         >
           {isPending ? labels.submitting : labels.grant}
@@ -176,7 +176,7 @@ export function AdminWalletForm({
         <Button
           size="sm"
           disabled={!canSubmit}
-          onPress={() => handleSubmit('deduct')}
+          onClick={() => handleSubmit('deduct')}
           data-testid="wallet-form-deduct"
         >
           {isPending ? labels.submitting : labels.deduct}

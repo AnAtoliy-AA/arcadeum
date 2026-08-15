@@ -55,10 +55,9 @@ const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
           {cards.map((card, index) => (
             <OptionButton
               key={`${card}-${index}`}
-              $selected={false}
-              $variant={cardVariant as GameVariant}
-              padding={0}
-              height="auto"
+              active={false}
+              gameVariant={cardVariant as GameVariant}
+              style={{ padding: 0, height: 'auto' }}
             >
               <YStack alignItems="center" width={100} gap="$2" padding="$2">
                 <Text fontSize="$2" opacity={0.7}>

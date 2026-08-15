@@ -43,11 +43,7 @@ export const HandControls = styled(XStack, {
 
 export const HandToggleButton = (props: ActionButtonProps) => (
   <ActionButton
-    paddingVertical="$2"
-    paddingHorizontal="$4"
-    fontSize={12}
-    minWidth="auto"
-    width="auto"
+    className="py-2 px-4 text-[12px] min-w-[auto] w-auto"
     {...props}
   />
 );
@@ -63,13 +59,11 @@ export const DropdownContainer = styled(YStack, {
 
 export const DropdownTrigger = ({
   variant,
-  $variant,
   isOpen,
   $isOpen,
   ...props
 }: {
   variant?: GameVariant;
-  $variant?: GameVariant;
   isOpen?: boolean;
   $isOpen?: boolean;
   [key: string]: unknown;
@@ -77,10 +71,9 @@ export const DropdownTrigger = ({
   <Button
     variant="chip"
     size="sm"
-    minWidth={120}
-    justifyContent="flex-start"
-    isActive={isOpen || $isOpen}
-    gameVariant={(variant || $variant) as GameVariant}
+    className="min-w-[120px] justify-start"
+    active={isOpen || $isOpen}
+    gameVariant={variant as GameVariant}
     {...props}
   />
 );
@@ -117,20 +110,18 @@ export const DropdownItem = ({
   isActive,
   $isActive,
   variant,
-  $variant,
   ...props
 }: {
   isActive?: boolean;
   $isActive?: boolean;
   variant?: GameVariant;
-  $variant?: GameVariant;
   [key: string]: unknown;
 }) => (
   <Button
     variant="listItem"
     size="sm"
-    isActive={isActive || $isActive}
-    gameVariant={(variant || $variant) as GameVariant}
+    active={isActive || $isActive}
+    gameVariant={variant as GameVariant}
     {...props}
   />
 );

@@ -155,7 +155,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       <Button
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         data-testid="fullscreen-button"
         onClick={toggleFullscreen}
         aria-label={
@@ -178,8 +178,8 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       <Button
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
-        isActive={soundEnabled}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+        active={soundEnabled}
         aria-pressed={soundEnabled}
         onClick={() => setSoundEnabled(!soundEnabled)}
         aria-label={t('settings.soundLabel')}
@@ -193,8 +193,8 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       <Button
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
-        isActive={musicEnabled}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+        active={musicEnabled}
         aria-pressed={musicEnabled}
         onClick={() => setMusicEnabled(!musicEnabled)}
         aria-label={t('settings.musicLabel')}
@@ -209,7 +209,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         <Button
           variant="glass"
           size="sm"
-          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
           onClick={onShowRules}
           aria-label={t('games.table.controlPanel.rules') || 'Game Rules'}
           title={t('games.table.controlPanel.rules') || 'Game Rules'}
@@ -226,7 +226,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         <Button
           variant="glass"
           size="sm"
-          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
           onClick={onToggleChat}
           data-testid="toggle-chat-button"
           aria-label={
@@ -256,8 +256,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           <Button
             variant="glass"
             size="sm"
-            p="$1"
-            minWidth={32}
+            className="p-[4px] min-w-[32px]"
             onClick={() => handleMove('up')}
             title={t('games.table.controlPanel.moveControls.shortcuts.up')}
             data-testid="move-up-button"
@@ -269,8 +268,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
               <Button
                 variant="glass"
                 size="sm"
-                p="$1"
-                minWidth={32}
+                className="p-[4px] min-w-[32px]"
                 onClick={() => handleMove('left')}
                 title={t(
                   'games.table.controlPanel.moveControls.shortcuts.left',
@@ -282,8 +280,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
               <Button
                 variant="glass"
                 size="sm"
-                p="$1"
-                minWidth={32}
+                className="p-[4px] min-w-[32px]"
                 onClick={() => handleCenterView()}
                 title={t(
                   'games.table.controlPanel.moveControls.shortcuts.center',
@@ -295,8 +292,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
               <Button
                 variant="glass"
                 size="sm"
-                p="$1"
-                minWidth={32}
+                className="p-[4px] min-w-[32px]"
                 onClick={() => handleMove('right')}
                 title={t(
                   'games.table.controlPanel.moveControls.shortcuts.right',
@@ -310,8 +306,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           <Button
             variant="glass"
             size="sm"
-            p="$1"
-            minWidth={32}
+            className="p-[4px] min-w-[32px]"
             onClick={() => handleMove('down')}
             title={t('games.table.controlPanel.moveControls.shortcuts.down')}
             data-testid="move-down-button"
@@ -327,12 +322,10 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         <Button
           variant="primary"
           size="sm"
-          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2 active:scale-[0.95]"
           onClick={onRematch}
           disabled={rematchLoading}
           data-testid="rematch-button"
-          animation="quick"
-          pressStyle={{ scale: 0.95 }}
         >
           🔄
           <Text $sm={{ display: 'none' }}>
@@ -351,7 +344,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       <Button
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         onClick={handleExitRoom}
         aria-label={t('games.table.controlPanel.exitRoom') || 'Exit'}
         title={
@@ -370,7 +363,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         <Button
           variant="danger"
           size="sm"
-          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
           onClick={handleLeaveGame}
           aria-label={t('games.table.controlPanel.leaveRoom')}
           title={
@@ -421,18 +414,18 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
               <Button
                 variant="secondary"
                 size="lg"
-                flex={1}
+                className="rounded-[12px]"
+                style={{ flex: 1 }}
                 onClick={() => setShowLeaveConfirm(false)}
-                borderRadius={12}
               >
                 {t('games.common.cancel') || 'Cancel'}
               </Button>
               <Button
                 variant="danger"
                 size="lg"
-                flex={1}
+                className="rounded-[12px]"
+                style={{ flex: 1 }}
                 onClick={handleConfirmLeave}
-                borderRadius={12}
               >
                 {t('games.table.controlPanel.leaveRoom')}
               </Button>

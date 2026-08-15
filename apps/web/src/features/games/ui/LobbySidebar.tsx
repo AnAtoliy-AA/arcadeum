@@ -275,7 +275,8 @@ export function LobbySidebar({
                   </PlayerInfo>
                   {onKickPlayer && !isRoomHost && (
                     <Button
-                      variant="ghost"
+                      variant="danger"
+                      ghost
                       size="sm"
                       onClick={() =>
                         setKickTarget({
@@ -283,10 +284,7 @@ export function LobbySidebar({
                           name: member.displayName,
                         })
                       }
-                      paddingVertical="$1"
-                      paddingHorizontal="$2"
-                      minWidth="auto"
-                      style={{ color: '#ef4444' }}
+                      className="py-1 px-2 min-w-[auto]"
                     >
                       ✕
                     </Button>
@@ -362,7 +360,7 @@ export function LobbySidebar({
                       variant="ghost"
                       size="sm"
                       onClick={() => onReinvite?.([u.id])}
-                      marginLeft="$2"
+                      className="ml-2"
                     >
                       {reinviteLabel}
                     </Button>
@@ -412,12 +410,8 @@ export function LobbySidebar({
       {isHost && onDeleteRoom && (
         <DeleteButton
           onClick={onDeleteRoom}
-          marginTop="$2"
-          width="100%"
           size="md"
-          shadowRadius={0}
-          shadowColor="transparent"
-          shadowOffset={{ width: 0, height: 0 }}
+          style={{ marginTop: 8, boxShadow: '0 0px 0px transparent' }}
         >
           {deleteRoomLabel}
         </DeleteButton>
@@ -426,12 +420,8 @@ export function LobbySidebar({
       {!isHost && onLeaveRoom && (
         <DeleteButton
           onClick={() => setShowLeaveConfirm(true)}
-          marginTop="$2"
-          width="100%"
           size="md"
-          shadowRadius={0}
-          shadowColor="transparent"
-          shadowOffset={{ width: 0, height: 0 }}
+          style={{ marginTop: 8, boxShadow: '0 0px 0px transparent' }}
         >
           {labels.leaveRoomLabel || t('games.common.leaveRoom.button')}
         </DeleteButton>

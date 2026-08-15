@@ -207,8 +207,7 @@ export function AuthFormCredentials({
           type="submit"
           variant="primary"
           fullWidth
-          borderRadius={14}
-          className="auth-submit-btn"
+          className="auth-submit-btn rounded-[14px]"
           disabled={localSubmitDisabled}
           loading={localLoading}
           data-testid="auth-submit-button"

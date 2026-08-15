@@ -1,5 +1,4 @@
 import { memo, useState } from 'react';
-import { XStack, styled, View } from 'tamagui';
 import { Input } from '../Input/Input';
 import { Button } from '../Button/Button';
 import { SendIcon } from '../Icons';
@@ -12,22 +11,6 @@ export type ChatInputProps = {
   placeholder?: string;
   sendText?: string;
 };
-
-const InputContainer = styled(XStack, {
-  name: 'ChatInputContainer',
-  padding: '$3 $4',
-  backgroundColor: '$glassBg',
-  borderTopWidth: 1,
-  borderTopColor: '$glassBorder',
-  gap: '$3',
-  ai: 'center',
-  backdropFilter: 'blur(20px)',
-  zIndex: 10,
-  
-  hoverStyle: {
-    backgroundColor: '$glassBgHover',
-  },
-});
 
 export const ChatInput = memo(function ChatInput({
   value,
@@ -46,10 +29,27 @@ export const ChatInput = memo(function ChatInput({
   };
 
   return (
-    <InputContainer 
-      borderColor={isFocused ? '$primary' : '$glassBorder'}
+    <div
+      style={{
+        padding: '12px 16px',
+        backgroundColor: 'var(--glassBg)',
+        borderTopWidth: 1,
+        borderTopStyle: 'solid',
+        borderTopColor: 'var(--glassBorder)',
+        display: 'flex',
+        gap: 12,
+        alignItems: 'center',
+        backdropFilter: 'blur(20px)',
+        zIndex: 10,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--glassBgHover)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--glassBg)';
+      }}
     >
-      <View flex={1}>
+      <div style={{ flex: 1 }}>
         <Input
           value={value}
           onChangeText={onChange}
@@ -57,26 +57,29 @@ export const ChatInput = memo(function ChatInput({
           placeholder={placeholder}
           disabled={disabled}
           fullWidth
-          unstyled
-          paddingVertical="$2"
-          fontSize="$4"
-          backgroundColor="transparent"
-          borderWidth={0}
+          style={{
+            padding: '8px 0',
+            fontSize: 16,
+            backgroundColor: 'transparent',
+            borderWidth: 0,
+            borderStyle: 'none',
+            boxShadow: 'none',
+          }}
+          className="border-0 bg-transparent focus:border-0 focus:ring-0"
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />
-      </View>
+      </div>
       <Button
         onClick={onSend}
         disabled={disabled || !value.trim()}
         variant="primary"
         size="sm"
-        circular
+        shape="circle"
         icon={<SendIcon size={18} />}
         aria-label="Send"
-        hoverStyle={{ scale: 1.1 }}
-        pressStyle={{ scale: 0.9 }}
+        className="hover:scale-[1.1] active:scale-[0.9]"
       />
-    </InputContainer>
+    </div>
   );
 });

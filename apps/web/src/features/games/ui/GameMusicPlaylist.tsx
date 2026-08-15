@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
+import { Typography } from '@arcadeum/ui';
 import {
   DndContext,
   closestCenter,
@@ -19,7 +20,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Text, XStack, YStack } from 'tamagui';
 import {
   type MusicTrack,
   formatTime,
@@ -68,11 +68,9 @@ function SortableTrackItem({
 
   return (
     <div ref={setNodeRef} style={style}>
-      <XStack
-        className={`game-music-track${isActive ? ' active' : ''}`}
-        alignItems="center"
-        gap="$2"
-        opacity={isEnabled ? 1 : 0.35}
+      <div
+        className={`flex items-center gap-[8px] game-music-track${isActive ? ' active' : ''}`}
+        style={{ opacity: isEnabled ? 1 : 0.35 }}
         onDoubleClick={() => onPlay(index)}
       >
         <div
@@ -131,45 +129,38 @@ function SortableTrackItem({
             }}
           />
         ) : (
-          <Text
-            fontSize={10}
-            color={
-              isActive ? 'rgba(165,180,252,0.9)' : 'rgba(255,255,255,0.45)'
-            }
-            minWidth={16}
-            fontWeight="500"
+          <Typography
+            uiSize="xs"
+            className="min-w-[16px] font-medium"
+            style={{
+              color: isActive
+                ? 'rgba(165,180,252,0.9)'
+                : 'rgba(255,255,255,0.45)',
+            }}
           >
             {String(index + 1).padStart(2, '0')}
-          </Text>
+          </Typography>
         )}
-        <Text
-          flex={1}
-          fontSize={12}
-          color={
-            isActive
+        <Typography
+          className={`flex-1 truncate text-[12px] ${isActive ? 'font-semibold' : 'font-normal'}`}
+          style={{
+            color: isActive
               ? '#c4d0fc'
               : isEnabled
                 ? 'rgba(255,255,255,0.85)'
-                : 'rgba(255,255,255,0.5)'
-          }
-          fontWeight={isActive ? '600' : '400'}
-          numberOfLines={1}
-          overflow="hidden"
-          textOverflow="ellipsis"
-          whiteSpace="nowrap"
+                : 'rgba(255,255,255,0.5)',
+          }}
         >
           {track.title}
-        </Text>
+        </Typography>
         {duration > 0 && (
-          <Text
-            fontSize={10}
-            color="rgba(255,255,255,0.35)"
-            minWidth={32}
-            textAlign="right"
-            flexShrink={0}
+          <Typography
+            uiSize="xs"
+            className="min-w-[32px] shrink-0 text-right"
+            style={{ color: 'rgba(255,255,255,0.35)' }}
           >
             {formatTime(duration)}
-          </Text>
+          </Typography>
         )}
         {isActive && isPlaying ? (
           <PlayingBars />
@@ -210,7 +201,7 @@ function SortableTrackItem({
             </svg>
           </button>
         )}
-      </XStack>
+      </div>
     </div>
   );
 }
@@ -227,11 +218,7 @@ interface PlaylistProps {
 }
 
 type SortMode =
-  | 'default'
-  | 'title-asc'
-  | 'title-desc'
-  | 'duration-asc'
-  | 'duration-desc';
+  'default' | 'title-asc' | 'title-desc' | 'duration-asc' | 'duration-desc';
 
 export function Playlist({
   tracks,
@@ -308,30 +295,24 @@ export function Playlist({
   );
 
   return (
-    <YStack
-      testID="game-music-playlist"
-      className="game-music-playlist"
-      gap={4}
-      paddingBottom="$1.5"
-      marginBottom="$1"
-      borderBottomWidth={1}
-      borderBottomColor="rgba(255,255,255,0.08)"
+    <div
+      data-testid="game-music-playlist"
+      className="flex flex-col gap-[4px] pb-[6px] mb-[4px] border-b game-music-playlist"
+      style={{ borderBottomColor: 'rgba(255,255,255,0.08)' }}
     >
-      <XStack alignItems="center" gap="$2" paddingHorizontal="$1">
-        <Text
-          fontSize={10}
-          fontWeight="600"
-          color="rgba(255,255,255,0.6)"
-          letterSpacing={0.5}
-          textTransform="uppercase"
+      <div className="flex items-center gap-[8px] px-[4px]">
+        <Typography
+          uiSize="xs"
+          className="font-semibold uppercase tracking-[0.5px]"
+          style={{ color: 'rgba(255,255,255,0.6)' }}
         >
           Playlist
-        </Text>
-        <Text fontSize={10} color="rgba(255,255,255,0.35)">
+        </Typography>
+        <Typography uiSize="xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
           {filteredTracks.length}/{tracks.length}
-        </Text>
-      </XStack>
-      <XStack gap="$2" paddingHorizontal="$1">
+        </Typography>
+      </div>
+      <div className="flex items-center gap-[8px] px-[4px]">
         <input
           type="text"
           placeholder="Search..."
@@ -368,7 +349,7 @@ export function Playlist({
           <option value="duration-asc">Duration ↑</option>
           <option value="duration-desc">Duration ↓</option>
         </select>
-      </XStack>
+      </div>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -399,6 +380,6 @@ export function Playlist({
           })}
         </SortableContext>
       </DndContext>
-    </YStack>
+    </div>
   );
 }

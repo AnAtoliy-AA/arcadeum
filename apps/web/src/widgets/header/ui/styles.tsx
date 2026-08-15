@@ -1,14 +1,12 @@
 'use client';
 
-import { HEADER_HEIGHT } from '@/shared/config/layout';
 import React from 'react';
 import Link from 'next/link';
-import { styled, XStack, YStack } from 'tamagui';
-import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
-
-// ─── Header Inner ─────────────────────────────────────────────────────────────
-// (Using plain HTML in HeaderLayout for hydration safety)
+import {
+  LinkButton,
+  type LinkButtonProps,
+} from '@arcadeum/ui/components/Button/LinkButton';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 // ─── Logo ─────────────────────────────────────────────────────────────────────
 
@@ -29,166 +27,155 @@ export function Logo({
 }
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
-// (Using plain HTML in HeaderInteractive for hydration safety)
 
-// ─── Actions ──────────────────────────────────────────────────────────────────
-// (Using plain HTML in HeaderInteractive for hydration safety)
-// ─── Navigation Link ──────────────────────────────────────────────────────────
+export const NavLinkWrapper = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'relative flex h-[72px] items-center justify-center',
+      className,
+    )}
+    {...rest}
+  />
+);
 
-export const NavLinkWrapper = styled(XStack, {
-  name: 'NavLinkWrapper',
-  position: 'relative',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: 72,
-});
+/** Visible from md (768px) up only. */
+export const DesktopOnly = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx('hidden items-center gap-2 md:flex', className)}
+    {...rest}
+  />
+);
 
-export const DesktopOnly = styled(XStack, {
-  name: 'DesktopOnly',
-  alignItems: 'center',
-  gap: '$2',
-  $md: { display: 'none' },
-});
+/** Hidden at narrow widths — used to move a header action into the mobile menu. */
+export const HeaderMobileHidden = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={cx('hidden items-center sm:flex', className)} {...rest} />
+);
 
-// Hidden at narrow widths — used to move a header action into the mobile menu.
-export const HeaderMobileHidden = styled(XStack, {
-  name: 'HeaderMobileHidden',
-  alignItems: 'center',
-  $sm: { display: 'none' },
-});
+export const NavHeaderLink = ({
+  isActive,
+  accent,
+  className,
+  children,
+  ...props
+}: LinkButtonProps & { accent?: boolean; isActive?: boolean }) => (
+  <LinkButton
+    className={cx(
+      'overflow-visible rounded-[16px] hover:bg-[var(--backgroundHover)] hover:-translate-y-[1px] active:translate-y-[1px]',
+      isActive && '!bg-[rgba(87,195,255,0.12)] text-[var(--primary)] font-bold',
+      accent && 'font-bold',
+      className,
+    )}
+    style={accent ? { color: 'var(--accent)' } : undefined}
+    {...props}
+  >
+    {children}
+  </LinkButton>
+);
 
 // ─── Mobile Menu ──────────────────────────────────────────────────────────────
 
-export const MobileMenuContainer = styled(XStack, {
-  name: 'MobileMenuContainer',
-});
+export const MobileMenuContainer = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={className} {...rest} />
+);
 
-export const MobileNav = styled(YStack, {
-  name: 'MobileNav',
-  position: 'fixed',
-  // Track the responsive header height defined in header-stable.css so the
-  // drawer always starts flush against the header (no transparent gap at
-  // <=480px when the header shrinks to 56px).
-  top: `var(--header-height, ${HEADER_HEIGHT}px)` as unknown as number,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  width: '100%',
-  maxWidth: '100vw',
-  zIndex: '$1',
-  // Fully opaque so the page never shows through the empty gaps above the
-  // user card or below the last menu item.
-  backgroundColor: '$background',
-  borderTopWidth: 1,
-  borderTopColor: '$glassBorder',
-  paddingHorizontal: '$5',
-  paddingTop: '$4',
-  paddingBottom: '$4',
-  gap: '$1',
-  height: '100dvh',
-  overflowY: 'auto',
-});
+export const MobileNav = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'fixed bottom-0 left-0 right-0 top-[var(--header-height,64px)] z-[1] flex h-[100dvh] w-full max-w-[100vw] flex-col gap-1 overflow-y-auto border-t border-[var(--glassBorder)] bg-[var(--background)] px-5 pb-4 pt-4',
+      className,
+    )}
+    {...rest}
+  />
+);
 
-export const MobileVersionText = styled(Typography, {
-  name: 'MobileVersionText',
-  uiSize: 'xs',
-  alpha: 'medium',
-  textCenter: true,
-  marginTop: 'auto',
-  paddingVertical: '$4',
-  paddingHorizontal: '$2',
-});
+export const MobileVersionText = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'mt-auto px-2 py-4 text-center text-[12px] leading-[16px] opacity-80',
+      className,
+    )}
+    {...rest}
+  />
+);
 
-export const MobileUserInfo = styled(XStack, {
-  name: 'MobileUserInfo',
-  paddingVertical: '$4',
-  paddingHorizontal: '$2',
-  alignItems: 'center',
-  gap: '$3',
-  flexWrap: 'wrap',
-});
+export const MobileUserCard = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-wrap items-center gap-3 rounded-[16px] border border-[var(--glassBorder)] bg-[rgba(255,255,255,0.04)] p-3',
+      className,
+    )}
+    {...rest}
+  />
+);
 
-export const MobileUserCard = styled(XStack, {
-  name: 'MobileUserCard',
-  alignItems: 'center',
-  gap: '$3',
-  padding: '$3',
-  borderRadius: '$4',
-  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-  borderWidth: 1,
-  borderColor: '$glassBorder',
-  flexWrap: 'wrap',
-});
+export const MobileSection = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={cx('flex flex-col gap-1', className)} {...rest} />
+);
 
-export const MobileSection = styled(YStack, {
-  name: 'MobileSection',
-  gap: '$1',
-});
+export const MobileSectionLabel = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'px-4 pb-1 pt-3 text-[12px] font-bold leading-[16px] tracking-[3px] opacity-80',
+      className,
+    )}
+    {...rest}
+  />
+);
 
-export const MobileSectionLabel = styled(Typography, {
-  name: 'MobileSectionLabel',
-  uiSize: 'xs',
-  weight: '700',
-  tracking: 'xl',
-  alpha: 'medium',
-  paddingHorizontal: '$4',
-  paddingTop: '$3',
-  paddingBottom: '$1',
-});
+export const MobileBottomBar = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'mt-auto flex flex-wrap items-center justify-between gap-3 px-2 py-3',
+      className,
+    )}
+    {...rest}
+  />
+);
 
-export const MobileBottomBar = styled(XStack, {
-  name: 'MobileBottomBar',
-  marginTop: 'auto',
-  paddingVertical: '$3',
-  paddingHorizontal: '$2',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '$3',
-  flexWrap: 'wrap',
-});
-
-export const NavHeaderLink = styled(LinkButton, {
-  name: 'NavHeaderLink',
-  borderRadius: '$4',
-  overflow: 'visible',
-  hoverStyle: {
-    backgroundColor: '$backgroundHover',
-    transform: 'translateY(-1px)',
-  },
-  pressStyle: {
-    transform: 'translateY(1px)',
-  },
-  variants: {
-    isActive: {
-      true: {
-        backgroundColor: 'rgba(87, 195, 255, 0.12)',
-        color: '$primary',
-        fontWeight: '700',
-      },
-    },
-    accent: {
-      true: {
-        color: '$accent',
-        fontWeight: '700',
-      },
-    },
-  } as const,
-});
-
-export const NavMobileLink = styled(LinkButton, {
-  name: 'NavMobileLink',
-  paddingVertical: '$3',
-  paddingHorizontal: '$4',
-  justifyContent: 'flex-start',
-  hoverStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  variants: {
-    isActive: {
-      true: {
-        backgroundColor: 'rgba(255, 255, 255, 0.08)',
-        color: '$primary',
-      },
-    },
-  } as const,
-});
+export const NavMobileLink = ({
+  isActive,
+  className,
+  children,
+  ...props
+}: LinkButtonProps & { isActive?: boolean }) => (
+  <LinkButton
+    className={cx(
+      'justify-start px-4 py-3 hover:bg-[rgba(255,255,255,0.05)]',
+      isActive && '!bg-[rgba(255,255,255,0.08)] !text-[var(--primary)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </LinkButton>
+);

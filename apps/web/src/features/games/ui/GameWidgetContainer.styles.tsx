@@ -262,8 +262,7 @@ export const FullscreenButton = (
 ) => (
   <IconButton
     size="sm"
-    padding="$2"
-    pressStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+    className="p-2 active:bg-[rgba(255,255,255,0.2)]"
     {...props}
   />
 );

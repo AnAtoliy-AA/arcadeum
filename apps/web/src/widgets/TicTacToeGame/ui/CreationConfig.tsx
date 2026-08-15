@@ -48,7 +48,7 @@ export default function TicTacToeCreationConfig({
                 key={bs.value}
                 variant="secondary"
                 size="sm"
-                isActive={(options.boardSize ?? 3) === bs.value}
+                active={(options.boardSize ?? 3) === bs.value}
                 onClick={() => handleUpdate({ boardSize: bs.value })}
                 data-testid={`board-size-${bs.value}`}
               >
@@ -75,7 +75,7 @@ export default function TicTacToeCreationConfig({
                     key={margin}
                     variant="secondary"
                     size="sm"
-                    isActive={(options.expansionMargin ?? 3) === margin}
+                    active={(options.expansionMargin ?? 3) === margin}
                     onClick={() => handleUpdate({ expansionMargin: margin })}
                     data-testid={`expansion-margin-${margin}`}
                   >
@@ -95,7 +95,7 @@ export default function TicTacToeCreationConfig({
                     key={winLen}
                     variant="secondary"
                     size="sm"
-                    isActive={(options.infinityWinLength ?? 5) === winLen}
+                    active={(options.infinityWinLength ?? 5) === winLen}
                     onClick={() => handleUpdate({ infinityWinLength: winLen })}
                     data-testid={`infinity-win-length-${winLen}`}
                   >

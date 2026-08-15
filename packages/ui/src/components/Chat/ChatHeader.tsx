@@ -57,7 +57,12 @@ export const ChatHeader = memo(function ChatHeader({
         </PageTitle>
         <XStack ai="center" gap="$2" opacity={0.8}>
           <StatusDot connected={isConnected} />
-          <Typography uiSize="xs" weight="600" alpha="medium" textTransform="uppercase" letterSpacing={1}>
+          <Typography
+            uiSize="xs"
+            weight="600"
+            alpha="medium"
+            className="uppercase tracking-[1px]"
+          >
             {statusText}
           </Typography>
         </XStack>

@@ -75,7 +75,7 @@ export function AuthFormPanel({
         </YStack>
         <Button
           variant="secondary"
-          borderRadius={14}
+          className="rounded-[14px]"
           onClick={resetMagicLink}
           data-testid="auth-magic-link-back"
         >
@@ -225,10 +225,9 @@ function ActiveSessionCard({
       </YStack>
       <Button
         variant="secondary"
-        borderRadius={14}
+        className="rounded-[14px] self-start"
         onClick={() => void logoutLocal()}
         disabled={localLoading}
-        alignSelf="flex-start"
       >
         {labels.signOutLabel}
       </Button>

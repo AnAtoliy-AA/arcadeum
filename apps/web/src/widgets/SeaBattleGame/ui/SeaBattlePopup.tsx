@@ -103,7 +103,7 @@ export function SeaBattlePopup({
         </Text>
         <Button
           size="sm"
-          width="100%"
+          className="w-full"
           onClick={handleChallenge}
           data-testid="challenge-button"
           aria-label={

@@ -149,14 +149,14 @@ export function MarkCompleteDialog({
           <XStack gap="$3" justifyContent="flex-end" paddingTop="$2">
             <Button
               variant="outline"
-              onPress={onClose}
+              onClick={onClose}
               disabled={isPending}
               data-testid="mark-complete-cancel"
             >
               {labels.dialog.cancel}
             </Button>
             <Button
-              onPress={handleConfirm}
+              onClick={handleConfirm}
               disabled={
                 isPending || !selectedUserId || registrations.length === 0
               }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { XStack, YStack, Text } from 'tamagui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useActiveAnnouncement } from '../hooks/useActiveAnnouncement';
 import { addDismissed } from '../lib/dismissedStorage';
@@ -15,9 +14,9 @@ interface BannerLabels {
 }
 
 const SEVERITY_BG: Record<AnnouncementSeverity, string> = {
-  info: '$infoBgSoft',
-  warning: '$warningBgSoft',
-  critical: '$errorBgSoft',
+  info: 'var(--infoBgSoft)',
+  warning: 'var(--warningBgSoft)',
+  critical: 'var(--errorBgSoft)',
 };
 const SEVERITY_ICON: Record<AnnouncementSeverity, string> = {
   info: 'ℹ',
@@ -63,27 +62,22 @@ export function AnnouncementBanner(): React.ReactElement | null {
     ctaHref?.startsWith('https://') || ctaHref?.startsWith('http://');
 
   return (
-    <YStack
+    <div
       role={role}
-      backgroundColor={SEVERITY_BG[severity]}
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      borderBottomWidth={1}
-      borderColor="$borderColor"
       data-testid="announcement-banner"
+      className="border-b border-[var(--borderColor)] px-3 py-2"
+      style={{ backgroundColor: SEVERITY_BG[severity] }}
     >
-      <XStack alignItems="center" gap="$3" flexWrap="wrap">
-        <Text fontSize="$5" aria-hidden>
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="text-[20px]" aria-hidden>
           {SEVERITY_ICON[severity]}
-        </Text>
+        </span>
 
-        <Text
-          fontSize="$3"
-          fontWeight="600"
-          flex={1}
-          minWidth={0}
-          cursor={hasBody ? 'pointer' : 'default'}
-          onPress={hasBody ? toggleBody : undefined}
+        <span
+          className="min-w-0 flex-1 cursor-default text-[16px] font-semibold"
+          style={hasBody ? { cursor: 'pointer' } : undefined}
+          onClick={hasBody ? toggleBody : undefined}
+          role={hasBody ? 'button' : undefined}
           aria-expanded={hasBody ? expanded : undefined}
           aria-label={
             hasBody
@@ -94,7 +88,7 @@ export function AnnouncementBanner(): React.ReactElement | null {
           }
         >
           {title}
-        </Text>
+        </span>
 
         {showCta && ctaHref && (
           <a
@@ -132,18 +126,16 @@ export function AnnouncementBanner(): React.ReactElement | null {
             ×
           </button>
         )}
-      </XStack>
+      </div>
 
       {hasBody && expanded && (
-        <Text
-          marginTop="$2"
-          fontSize="$2"
-          opacity={0.85}
+        <p
+          className="mt-2 text-[14px] opacity-85"
           data-testid="announcement-body"
         >
           {body}
-        </Text>
+        </p>
       )}
-    </YStack>
+    </div>
   );
 }

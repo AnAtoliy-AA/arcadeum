@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Text, XStack, YStack } from 'tamagui';
+import { Typography } from '@arcadeum/ui';
 import type { RepeatMode } from './GameMusicUtils';
 import { PlaylistIcon, MinimizeIcon, MaximizeIcon } from './GameMusicVisuals';
 import { VolumeIcon, MusicBtn, PlayBtn } from './GameMusicButtons';
@@ -37,7 +37,7 @@ function TransportRow({
   const gap = size === 'sm' ? 4 : 6;
 
   return (
-    <XStack alignItems="center" justifyContent="center" gap={gap}>
+    <div className="flex items-center justify-center" style={{ gap }}>
       <MusicBtn
         onClick={onPrev}
         testId="game-music-prev"
@@ -107,7 +107,7 @@ function TransportRow({
           </svg>
         </MusicBtn>
       )}
-    </XStack>
+    </div>
   );
 }
 
@@ -169,17 +169,14 @@ export function TransportControls({
   labels,
 }: TransportControlsProps) {
   return (
-    <YStack gap={10}>
-      <XStack alignItems="center" gap="$2" paddingHorizontal={4}>
-        <XStack
-          className="game-music-volume-icon"
-          flexShrink={0}
-          minWidth={32}
-          justifyContent="flex-start"
+    <div className="flex flex-col gap-[10px]">
+      <div className="flex items-center gap-[14px] px-1">
+        <div
+          className="game-music-volume-icon flex shrink-0 min-w-[32px] justify-start"
           style={{ color: 'rgba(255,255,255,0.6)' }}
         >
           <VolumeIcon level={volume} />
-        </XStack>
+        </div>
         <input
           className="game-music-volume"
           data-testid="game-music-volume"
@@ -195,17 +192,10 @@ export function TransportControls({
             background: `linear-gradient(to right, rgba(129,140,248,0.8) 0%, rgba(129,140,248,0.8) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) 100%)`,
           }}
         />
-        <Text
-          fontSize={10}
-          className="game-music-time"
-          color="rgba(255,255,255,0.55)"
-          minWidth={32}
-          fontWeight="500"
-          textAlign="right"
-        >
+        <Typography className="game-music-time min-w-[32px] text-right text-[10px] font-medium text-[rgba(255,255,255,0.55)]">
           {Math.round(volume * 100)}%
-        </Text>
-      </XStack>
+        </Typography>
+      </div>
 
       <TransportRow
         isPlaying={isPlaying}
@@ -216,12 +206,8 @@ export function TransportControls({
         labels={labels}
       />
 
-      <XStack
-        alignItems="center"
-        justifyContent="space-between"
-        paddingHorizontal={2}
-      >
-        <XStack alignItems="center" gap={4}>
+      <div className="flex items-center justify-between px-0.5">
+        <div className="flex items-center gap-[4px]">
           <MusicBtn
             onClick={onToggleShuffle}
             testId="game-music-shuffle"
@@ -340,8 +326,8 @@ export function TransportControls({
               </svg>
             )}
           </MusicBtn>
-        </XStack>
-        <XStack alignItems="center" gap={4}>
+        </div>
+        <div className="flex items-center gap-[4px]">
           <MusicBtn
             onClick={onTogglePlaylist}
             testId="game-music-playlist-toggle"
@@ -358,9 +344,9 @@ export function TransportControls({
           >
             <MinimizeIcon size={14} />
           </MusicBtn>
-        </XStack>
-      </XStack>
-    </YStack>
+        </div>
+      </div>
+    </div>
   );
 }
 interface MiniControlsProps {
@@ -390,7 +376,7 @@ export function MiniControls({
   labels,
 }: MiniControlsProps) {
   return (
-    <XStack alignItems="center" gap={4}>
+    <div className="flex items-center gap-[4px]">
       <TransportRow
         isPlaying={isPlaying}
         onPrev={onPrev}
@@ -409,7 +395,7 @@ export function MiniControls({
       >
         <MaximizeIcon size={14} />
       </MusicBtn>
-    </XStack>
+    </div>
   );
 }
 
@@ -459,16 +445,10 @@ export function ProgressBar({
   };
   const pct = duration > 0 ? (smoothTime / duration) * 100 : 0;
   return (
-    <XStack width="100%" alignItems="center" gap="$2" paddingHorizontal={4}>
-      <Text
-        fontSize={10}
-        className="game-music-time"
-        color="rgba(255,255,255,0.55)"
-        minWidth={32}
-        fontWeight="500"
-      >
+    <div className="flex w-full items-center gap-[14px] px-1">
+      <Typography className="game-music-time min-w-[32px] text-[10px] font-medium text-[rgba(255,255,255,0.55)]">
         {formatTime(smoothTime)}
-      </Text>
+      </Typography>
       <input
         className="game-music-progress"
         data-testid="game-music-progress"
@@ -484,16 +464,9 @@ export function ProgressBar({
           background: `linear-gradient(to right, #818cf8 ${pct}%, rgba(255,255,255,0.12) ${pct}%)`,
         }}
       />
-      <Text
-        fontSize={10}
-        className="game-music-time"
-        color="rgba(255,255,255,0.55)"
-        minWidth={32}
-        fontWeight="500"
-        textAlign="right"
-      >
+      <Typography className="game-music-time min-w-[32px] text-right text-[10px] font-medium text-[rgba(255,255,255,0.55)]">
         {formatTime(duration)}
-      </Text>
-    </XStack>
+      </Typography>
+    </div>
   );
 }

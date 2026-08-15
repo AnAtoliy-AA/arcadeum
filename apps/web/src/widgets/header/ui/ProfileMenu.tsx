@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useCallback, useEffect } from 'react';
-import { XStack, YStack } from 'tamagui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { Divider } from '@arcadeum/ui/components/Divider/Divider';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
@@ -98,23 +97,14 @@ export default function ProfileMenu() {
       <Button
         variant="chip"
         size="md"
-        gap="$3"
+        className="gap-3 h-[56px] py-[4px] px-[12px] overflow-visible hover:bg-[rgba(255,255,255,0.08)] hover:scale-[1.01] active:scale-[0.98]"
         // `chip` variant hard-codes height: 28 — override per-instance so the
         // header chip can host the md (48px) avatar with breathing room.
         // 56px sits comfortably below the 72px header.
-        height={56}
-        paddingVertical={4}
-        paddingHorizontal="$3"
         // Equipped avatars render aura/frame overlays that extend slightly
         // outside the 48px avatar box; keep overflow visible so they aren't
         // clipped by the chip's rounded edges.
-        overflow="visible"
         onClick={toggleMenu}
-        hoverStyle={{
-          backgroundColor: 'rgba(255, 255, 255, 0.08)',
-          scale: 1.01,
-        }}
-        pressStyle={{ scale: 0.98 }}
         style={{ transition: 'all 0.2s ease' }}
       >
         <EquippedPlayerAvatar
@@ -145,11 +135,8 @@ export default function ProfileMenu() {
       </Button>
 
       <ProfileDropdownWrapper isOpen={isOpen}>
-        <XStack
-          paddingHorizontal="$5"
-          paddingBottom="$3"
-          gap="$3"
-          alignItems="center"
+        <div
+          className="flex items-center gap-3 px-5 pb-3"
           data-testid="profile-identity-card"
         >
           <EquippedPlayerAvatar
@@ -163,7 +150,7 @@ export default function ProfileMenu() {
             equippedBannerId={snapshot.equippedBannerId}
             equippedGameSkinId={snapshot.equippedGameSkinId}
           />
-          <YStack flex={1} minWidth={120} gap="$1">
+          <div className="flex min-w-[120px] flex-1 flex-col gap-1">
             <UserNameEllipsis
               {...(nameColorProps.color ? { color: nameColorProps.color } : {})}
               {...(nameColorProps.style ? { style: nameColorProps.style } : {})}
@@ -171,17 +158,17 @@ export default function ProfileMenu() {
               {displayName}
             </UserNameEllipsis>
             {(role !== 'free' || showBadgesRow) && (
-              <XStack gap="$1" flexWrap="wrap" alignItems="center">
+              <div className="flex flex-wrap items-center gap-1">
                 {role !== 'free' && (
                   <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
                 )}
                 {cosmeticBadges?.map((badgeId) => (
                   <CosmeticBadge key={badgeId} badgeId={badgeId} />
                 ))}
-              </XStack>
+              </div>
             )}
-          </YStack>
-        </XStack>
+          </div>
+        </div>
         <Divider spacing="sm" />
 
         {role === 'admin' && (

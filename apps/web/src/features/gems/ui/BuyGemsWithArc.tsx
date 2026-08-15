@@ -58,7 +58,7 @@ export function BuyGemsWithArc({
         <Typography variant="body" alpha="high">
           Payment confirmed! Gems added to your account.
         </Typography>
-        <Button onPress={onCancel} variant="secondary">
+        <Button onClick={onCancel} variant="secondary">
           Close
         </Button>
       </YStack>
@@ -71,7 +71,7 @@ export function BuyGemsWithArc({
         <Typography variant="body" color="$red10">
           {error}
         </Typography>
-        <Button onPress={onCancel} variant="secondary">
+        <Button onClick={onCancel} variant="secondary">
           Close
         </Button>
       </YStack>

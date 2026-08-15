@@ -154,8 +154,7 @@ function SenderName({
       uiSize="xs"
       weight="600"
       {...(color ? { color } : { alpha: 'medium' })}
-      letterSpacing={0.5}
-      textTransform="uppercase"
+      className="uppercase tracking-[0.5px]"
       numberOfLines={1}
       style={{ ...NAME_STYLE, ...nameStyle }}
     >
@@ -221,7 +220,7 @@ export const ChatMessage = memo(function ChatMessage({
                 <Typography
                   uiSize="sm"
                   color={isOwn ? 'white' : '$color'}
-                  textAlign="left"
+                  className="text-left"
                 >
                   {isEncrypted ? '[Encrypted Message]' : (contentNode ?? content)}
                 </Typography>
@@ -230,8 +229,8 @@ export const ChatMessage = memo(function ChatMessage({
                     uiSize="xs"
                     alpha="low"
                     color={isOwn ? 'white' : '$color'}
-                    mt="$1"
-                    opacity={0.7}
+                    className="mt-1"
+                    style={{ opacity: 0.7 }}
                   >
                     {timestamp}
                   </Typography>
@@ -251,15 +250,14 @@ export const ChatMessage = memo(function ChatMessage({
           <Typography
             uiSize="xs"
             color={isOwn ? 'white' : '$color'}
-            textAlign="center"
-            fontStyle="italic"
+            className="text-center italic"
           >
             {senderName && !isEncrypted ? (
               <>
                 <Typography
                   uiSize="xs"
                   weight="700"
-                  fontStyle="normal"
+                  className="not-italic"
                   {...(senderColor ? { color: senderColor } : {})}
                 >
                   {senderName}
@@ -270,7 +268,7 @@ export const ChatMessage = memo(function ChatMessage({
                     <Typography
                       uiSize="xs"
                       weight="700"
-                      fontStyle="normal"
+                      className="not-italic"
                       {...(targetColor ? { color: targetColor } : {})}
                     >
                       {targetName}

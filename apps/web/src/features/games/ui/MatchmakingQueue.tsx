@@ -3,9 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { YStack, Text } from 'tamagui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
-import { Button } from '@arcadeum/ui';
 import { gameSocket, emitEncrypted, useSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getAnonymousIdWithSignature } from '@/shared/lib/api-client';
@@ -191,42 +189,33 @@ export function MatchmakingQueueModal() {
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
         }}
       >
-        <YStack alignItems="center" gap="$4">
+        <div className="flex flex-col items-center gap-4">
           <Spinner size="large" color="#d946ef" />
-          <Text
-            fontSize="$6"
-            fontWeight="700"
-            color="#f8fafc"
-            textAlign="center"
-          >
+          <p className="m-0 text-center text-[24px] font-bold text-[#f8fafc]">
             Searching for Opponent
-          </Text>
-          <Text fontSize="$3" color="#94a3b8" textAlign="center">
+          </p>
+          <p className="m-0 text-center text-[16px] text-[#94a3b8]">
             Finding a match for{' '}
             {gameId
               ? gameId.replace('_v1', '').replace('_', ' ').toUpperCase()
               : 'game'}
             ...
-          </Text>
-          <Text
+          </p>
+          <p
             data-testid="matchmaking-timer"
-            fontSize="$7"
-            fontWeight="800"
-            color="#38bdf8"
-            fontFamily="$body"
+            className="m-0 text-center text-[28px] font-extrabold text-[#38bdf8]"
           >
             {formatTime(elapsed)}
-          </Text>
-          <Button
-            variant="primary"
-            backgroundColor="#dc2626"
-            hoverStyle={{ backgroundColor: '#b91c1c' }}
+          </p>
+          <button
+            type="button"
             onClick={leaveQueue}
-            style={{ width: '100%', marginTop: 10 }}
+            className="mt-2.5 w-full rounded-[10px] border-none px-4 py-3 text-center text-[15px] font-semibold text-white transition-colors duration-150 hover:bg-[#b91c1c]"
+            style={{ backgroundColor: '#dc2626' }}
           >
             Cancel Matchmaking
-          </Button>
-        </YStack>
+          </button>
+        </div>
       </div>
     </>,
     document.body,

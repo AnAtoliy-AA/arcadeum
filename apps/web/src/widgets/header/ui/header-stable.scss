@@ -68,7 +68,7 @@
 
 .logo-text-bottom {
   align-self: flex-end;
-  color: #a1a1aa; /* sleek slate-gray */
+  color: var(--muted-foreground);
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
@@ -83,11 +83,11 @@
 }
 
 .nav-styled a {
-  color: #e2e8f0;
+  color: var(--color);
 }
 
 .nav-styled a:hover {
-  color: #ffffff;
+  color: var(--primary);
 }
 
 .actions-styled {
@@ -127,11 +127,11 @@
 
 .link-no-decoration {
   text-decoration: none;
-  color: #e2e8f0;
+  color: var(--color);
 }
 
 .link-no-decoration:hover {
-  color: #ffffff;
+  color: var(--primary);
 }
 
 .gear-icon-wrapper {

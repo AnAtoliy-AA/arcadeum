@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 function trim(value?: string | null): string | undefined {
   if (!value) {
@@ -74,11 +75,7 @@ export function CopyActionButton({
   };
 
   return (
-    <div
-      className={
-        [className, wrapperClassName].filter(Boolean).join(' ') || undefined
-      }
-    >
+    <div className={cx(className, wrapperClassName) || undefined}>
       <Button
         type="button"
         variant="secondary"

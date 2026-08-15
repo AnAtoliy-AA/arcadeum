@@ -133,7 +133,7 @@ function PurchaseConfirmDialogInner({
               itemName,
             )}
           </Text>
-          <Button onPress={onClose} data-testid="purchase-success-close">
+          <Button onClick={onClose} data-testid="purchase-success-close">
             {labels.close ?? labels.cancel}
           </Button>
         </YStack>
@@ -173,11 +173,11 @@ function PurchaseConfirmDialogInner({
           </Text>
         ) : null}
         <XStack gap="$3" justifyContent="flex-end">
-          <Button variant="outline" onPress={onClose} disabled={isPending}>
+          <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
           <Button
-            onPress={handleConfirm}
+            onClick={handleConfirm}
             disabled={!hasFunds || isPending}
             data-testid="purchase-confirm-button"
           >

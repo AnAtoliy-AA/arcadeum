@@ -1,8 +1,8 @@
 'use client';
 
 import { memo, useState } from 'react';
-import { View, Text, YStack, XStack } from 'tamagui';
 import Link from 'next/link';
+import { Typography } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -55,24 +55,15 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
   if (!token) return null;
 
   return (
-    <View position="relative">
+    <div style={{ position: 'relative' }}>
       <Button
         variant="icon"
         size="md"
         aria-label={t('notifications.bell.aria') as string}
         data-testid={testId}
-        onHoverIn={ensureLoaded}
+        onMouseEnter={ensureLoaded}
         onFocus={ensureLoaded}
-        hoverStyle={{
-          transform: 'scale(1.1)',
-          backgroundColor: 'rgba(255, 255, 255, 0.15)',
-          borderColor: 'rgba(255, 255, 255, 0.25)',
-          shadowColor: 'rgba(0,0,0,0.3)',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 1,
-          shadowRadius: 10,
-        }}
-        onPress={() => {
+        onClick={() => {
           setOpen((o) => {
             const next = !o;
             if (next) {
@@ -82,34 +73,38 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
             return next;
           });
         }}
+        className="hover:scale-[1.1] hover:bg-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.25)] hover:shadow-[0_4px_10px_rgba(0,0,0,0.3)]"
       >
         <BellIcon size={20} />
         {unreadCount > 0 && (
-          <View
-            position="absolute"
-            top={2}
-            right={2}
-            minWidth={16}
-            height={16}
-            paddingHorizontal={4}
-            borderRadius={8}
-            backgroundColor="$error"
-            alignItems="center"
-            justifyContent="center"
+          <span
+            style={{
+              position: 'absolute',
+              top: 2,
+              right: 2,
+              minWidth: 16,
+              height: 16,
+              padding: '0 4px',
+              borderRadius: 8,
+              backgroundColor: 'var(--error)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
             role="status"
             aria-live="polite"
             data-testid="notification-bell-badge"
           >
-            <Text fontSize={10} fontWeight="700" color="$white">
+            <Typography className="text-[10px] font-bold" color="#f5f7ff">
               {unreadCount > 99 ? '99+' : unreadCount}
-            </Text>
-          </View>
+            </Typography>
+          </span>
         )}
       </Button>
       {open && (
         <NotificationPopover token={token} onClose={() => setOpen(false)} />
       )}
-    </View>
+    </div>
   );
 }
 
@@ -126,43 +121,59 @@ const NotificationPopover = memo(function NotificationPopover({
   const markAllRead = useNotificationsStore((s) => s.markAllRead);
 
   return (
-    <YStack
-      position="absolute"
-      top="100%"
-      right={0}
-      marginTop="$2"
-      width={360}
-      maxHeight={480}
-      backgroundColor="$background"
-      borderColor="$borderColor"
-      borderWidth={1}
-      borderRadius="$3"
-      padding="$3"
-      gap="$3"
-      zIndex={100}
-      shadowColor="rgba(0,0,0,0.4)"
-      shadowRadius={20}
-      shadowOffset={{ width: 0, height: 8 }}
+    <div
       data-testid="notification-popover"
+      style={{
+        position: 'absolute',
+        top: '100%',
+        right: 0,
+        marginTop: 8,
+        width: 360,
+        maxHeight: 480,
+        backgroundColor: 'var(--background)',
+        borderColor: 'var(--borderColor)',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderRadius: 12,
+        padding: 12,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        zIndex: 100,
+        boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
+      }}
     >
-      <XStack justifyContent="space-between" alignItems="center">
-        <Text fontSize="$5" fontWeight="700">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Typography fontSize={20} fontWeight="700">
           {t('notifications.bell.title')}
-        </Text>
+        </Typography>
         <Button
           variant="outline"
           size="sm"
-          onPress={() => void markAllRead(token)}
+          onClick={() => void markAllRead(token)}
         >
           {t('notifications.bell.markAllRead')}
         </Button>
-      </XStack>
+      </div>
       {items.length === 0 ? (
-        <Text color="$colorMuted" textAlign="center" paddingVertical="$5">
+        <Typography color="var(--colorMuted)" className="py-5 text-center">
           {t('notifications.bell.empty')}
-        </Text>
+        </Typography>
       ) : (
-        <YStack gap="$2" overflow="scroll">
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+            overflow: 'scroll',
+          }}
+        >
           {items.map((item) => (
             <NotificationRow
               key={item.id}
@@ -171,9 +182,9 @@ const NotificationPopover = memo(function NotificationPopover({
               token={token}
             />
           ))}
-        </YStack>
+        </div>
       )}
-    </YStack>
+    </div>
   );
 });
 
@@ -201,22 +212,33 @@ const NotificationRow = memo(function NotificationRow({
       }}
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
-      <YStack
-        padding="$3"
-        borderRadius="$2"
-        backgroundColor={item.read ? 'transparent' : '$backgroundHover'}
-        hoverStyle={{ backgroundColor: '$backgroundPress' }}
-        gap="$1"
+      <div
         data-testid="notification-row"
         data-unread={item.read ? undefined : 'true'}
+        style={{
+          padding: 12,
+          borderRadius: 8,
+          backgroundColor: item.read ? 'transparent' : 'var(--backgroundHover)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'var(--backgroundPress)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = item.read
+            ? 'transparent'
+            : 'var(--backgroundHover)';
+        }}
       >
-        <Text fontWeight={item.read ? '500' : '700'} fontSize="$3">
+        <Typography fontWeight={item.read ? '500' : '700'} uiSize="sm">
           {title}
-        </Text>
-        <Text color="$colorMuted" fontSize="$2" numberOfLines={2}>
+        </Typography>
+        <Typography color="var(--colorMuted)" className="line-clamp-2">
           {body}
-        </Text>
-      </YStack>
+        </Typography>
+      </div>
     </Link>
   );
 });

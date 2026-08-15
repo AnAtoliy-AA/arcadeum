@@ -106,9 +106,8 @@ export default function SeaBattleCreationConfig({
           <Button
             variant="link"
             size="sm"
-            mb="$4"
             type="button"
-            color="$accent"
+            className="mb-4 text-[var(--accent)]"
             onClick={() => setShowRules(true)}
           >
             📖 {t('games.rules.button') || 'View Game Rules'}
@@ -179,7 +178,7 @@ export default function SeaBattleCreationConfig({
                   key={gs.value}
                   variant="secondary"
                   size="sm"
-                  isActive={(options.gridSize ?? 10) === gs.value}
+                  active={(options.gridSize ?? 10) === gs.value}
                   disabled={!!ruleComingSoon.get('gridSize')}
                   onClick={() =>
                     !ruleComingSoon.get('gridSize') &&
@@ -208,7 +207,7 @@ export default function SeaBattleCreationConfig({
                   key={count}
                   variant="secondary"
                   size="sm"
-                  isActive={
+                  active={
                     (options.shipCount ??
                       getDefaultShipCount(options.gridSize ?? 10)) === count
                   }

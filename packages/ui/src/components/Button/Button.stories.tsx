@@ -14,16 +14,28 @@ const meta: Meta<typeof Button> = {
         'danger',
         'ghost',
         'glass',
-        'neutral',
-        'success',
-        'warning',
-        'info',
         'icon',
+        'icon glass',
         'link',
         'chip',
         'listItem',
+        'outline',
+        'victory',
       ],
-      description: 'Visual style variant',
+      description: 'Visual style variant — pass an array to compose',
+    },
+    shape: {
+      control: 'select',
+      options: ['rectangle', 'round', 'square', 'circle'],
+      description: 'Corner shape (overrides size radius)',
+    },
+    active: {
+      control: 'boolean',
+      description: 'Selected state — chip becomes gold-tinted, others get a primary highlight',
+    },
+    rotatable: {
+      control: 'boolean',
+      description: '180° hover spin (icon / "icon glass")',
     },
     gameVariant: {
       control: 'select',
@@ -33,10 +45,6 @@ const meta: Meta<typeof Button> = {
     pulse: {
       control: 'boolean',
       description: 'Enable pulse animation',
-    },
-    isActive: {
-      control: 'boolean',
-      description: 'Active state for toggles',
     },
     size: {
       control: 'select',
@@ -116,7 +124,7 @@ export const Chip: Story = {
   args: {
     variant: 'chip',
     children: 'Chip Button',
-    isActive: false,
+    active: false,
     loading: false,
   },
 };
@@ -267,16 +275,16 @@ export const AllVariants: Story = {
       <Button variant="danger">Danger</Button>
       <Button variant="ghost">Ghost</Button>
       <Button variant="glass">Glass</Button>
-      <Button variant="neutral">Neutral</Button>
-      <Button variant="success">Success</Button>
-      <Button variant="warning">Warning</Button>
-      <Button variant="info">Info</Button>
       <Button variant="link">Link</Button>
       <Button variant="chip">Chip</Button>
-      <Button variant="chip" isActive>
-        Active Chip
+      <Button variant="chip" active>
+        Gold Chip
       </Button>
       <Button variant="icon">🔍</Button>
+      <Button variant="icon" rotatable>
+        🔄
+      </Button>
+      <Button variant="icon glass">▶</Button>
     </div>
   ),
 };

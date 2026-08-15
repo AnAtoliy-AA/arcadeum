@@ -134,7 +134,7 @@ export function SolanaPayQR({
           {error}
         </Typography>
         {onCancel && (
-          <Button onPress={onCancel} variant="secondary">
+          <Button onClick={onCancel} variant="secondary">
             Cancel
           </Button>
         )}
@@ -213,7 +213,7 @@ export function SolanaPayQR({
           {request.recipient}
         </Typography>
         <Button
-          onPress={() => copyToClipboard(request.recipient, 'address')}
+          onClick={() => copyToClipboard(request.recipient, 'address')}
           variant="ghost"
           size="sm"
         >
@@ -223,22 +223,19 @@ export function SolanaPayQR({
 
       <YStack gap="$2" width="100%">
         <Button
-          onPress={() => {
+          onClick={() => {
             const url = `https://phantom.app/ul/${encodeURIComponent(request.solanaPayUrl)}`;
             window.open(url, '_blank');
           }}
-          backgroundColor="#ab9ff2"
-          color="white"
-          fontWeight="bold"
-          borderRadius="$3"
+          className="bg-[#ab9ff2] text-white font-bold rounded-[12px]"
           size="sm"
         >
           Open in Phantom
         </Button>
         <Button
-          onPress={() => copyToClipboard(request.solanaPayUrl, 'amount')}
+          onClick={() => copyToClipboard(request.solanaPayUrl, 'amount')}
           variant="secondary"
-          borderRadius="$3"
+          className="rounded-[12px]"
           size="sm"
         >
           {copied === 'amount' ? 'Copied!' : 'Copy Payment Link'}
@@ -255,7 +252,7 @@ export function SolanaPayQR({
       </Typography>
 
       {onCancel && (
-        <Button onPress={onCancel} variant="ghost" size="sm" marginTop="$2">
+        <Button onClick={onCancel} variant="ghost" size="sm" className="mt-2">
           Cancel
         </Button>
       )}

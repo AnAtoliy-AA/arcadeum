@@ -23,12 +23,16 @@ export default function InstallAppCta() {
   return (
     <section
       data-testid="download-cta-section"
-      className="download-cta-section-main"
+      className="mx-auto flex w-full max-w-[1400px] flex-col items-center py-12 [content-visibility:auto] [contain-intrinsic-size:auto_400px]"
     >
-      <div className="download-card-main">
-        <h2 className="download-title-main">{title}</h2>
-        <p className="download-description-main">{description}</p>
-        <div style={{ marginTop: 'var(--t-space-4)', width: '100%' }}>
+      <div className="flex w-full max-w-[700px] flex-col items-center gap-5 rounded-[24px] border border-glass-border bg-glass-bg p-8">
+        <h2 className="m-0 text-center text-[24px] font-semibold text-color">
+          {title}
+        </h2>
+        <p className="m-0 max-w-[500px] text-center text-[18px] leading-5 text-color opacity-70">
+          {description}
+        </p>
+        <div className="mt-4 w-full">
           <StaticDownloadButtons
             onInstall={onInstall}
             onShowInstructions={onShowInstructions}

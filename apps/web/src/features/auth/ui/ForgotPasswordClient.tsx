@@ -88,7 +88,7 @@ export default function ForgotPasswordClient() {
         <Link href="/auth" style={{ textDecoration: 'none' }}>
           <Button
             variant="primary"
-            uiSize="md"
+            size="md"
             data-testid="forgot-password-back"
           >
             {copy.backToSignIn}
@@ -134,7 +134,7 @@ export default function ForgotPasswordClient() {
           <Button
             type="submit"
             variant="primary"
-            uiSize="md"
+            size="md"
             disabled={status === 'submitting'}
             data-testid="forgot-password-submit"
           >

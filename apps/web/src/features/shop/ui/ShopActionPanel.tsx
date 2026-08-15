@@ -240,7 +240,7 @@ export function ShopActionPanel({
         {canSell && equippedRow ? (
           <Button
             variant="danger"
-            onPress={() => {
+            onClick={() => {
               track('shop.sell.click', {
                 itemId: equippedRow.itemId,
                 refundCoins: refundForRow(equippedRow, gemToCoinRate),

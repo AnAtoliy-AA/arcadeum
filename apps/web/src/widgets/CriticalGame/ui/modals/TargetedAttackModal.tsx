@@ -78,8 +78,8 @@ const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
             {aliveOpponents.map((opponent) => (
               <OptionButton
                 key={opponent.playerId}
-                $selected={selectedTarget === opponent.playerId}
-                $variant={cardVariant as GameVariant}
+                active={selectedTarget === opponent.playerId}
+                gameVariant={cardVariant as GameVariant}
                 onClick={() => onSelectTarget(opponent.playerId)}
                 disabled={
                   opponent.hand.length === 0 &&

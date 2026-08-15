@@ -134,7 +134,7 @@ const ComboModal: React.FC<ComboModalProps> = ({
               {t('games.table.modals.eventCombo.selectType')}
             </SectionLabel>
             <OptionGrid>
-              <OptionButton $selected={false} onClick={() => {}}>
+              <OptionButton active={false} onClick={() => {}}>
                 <Text fontSize="$6">🎴🎴</Text>
                 <Text>{t('games.table.modals.eventCombo.pairTrio')}</Text>
                 <Text fontSize="$2" opacity={0.7}>
@@ -142,7 +142,7 @@ const ComboModal: React.FC<ComboModalProps> = ({
                 </Text>
               </OptionButton>
               <OptionButton
-                $selected={inFiverMode}
+                active={inFiverMode}
                 onClick={() => onSelectMode('fiver')}
               >
                 <Text fontSize="$6">🃏🃏🃏🃏🃏</Text>
@@ -165,11 +165,10 @@ const ComboModal: React.FC<ComboModalProps> = ({
               {availableComboCards.map(({ card, availableModes }) => (
                 <OptionButton
                   key={card}
-                  $selected={selectedComboCard === card}
-                  $variant={cardVariant as GameVariant}
+                  active={selectedComboCard === card}
+                  gameVariant={cardVariant as GameVariant}
                   onClick={() => onSelectComboCard(card)}
-                  padding={0}
-                  height="auto"
+                  style={{ padding: 0, height: 'auto' }}
                 >
                   <YStack alignItems="center" width={100} gap="$2" padding="$2">
                     <Card
@@ -217,8 +216,8 @@ const ComboModal: React.FC<ComboModalProps> = ({
             <OptionGrid>
               {currentComboData.availableModes.includes('pair') && (
                 <OptionButton
-                  $selected={selectedMode === 'pair'}
-                  $variant={cardVariant as GameVariant}
+                  active={selectedMode === 'pair'}
+                  gameVariant={cardVariant as GameVariant}
                   onClick={() => onSelectMode('pair')}
                 >
                   <Text fontSize="$6">🎴🎴</Text>
@@ -230,8 +229,8 @@ const ComboModal: React.FC<ComboModalProps> = ({
               )}
               {currentComboData.availableModes.includes('trio') && (
                 <OptionButton
-                  $selected={selectedMode === 'trio'}
-                  $variant={cardVariant as GameVariant}
+                  active={selectedMode === 'trio'}
+                  gameVariant={cardVariant as GameVariant}
                   onClick={() => onSelectMode('trio')}
                 >
                   <Text fontSize="$6">🎴🎴🎴</Text>
@@ -262,12 +261,14 @@ const ComboModal: React.FC<ComboModalProps> = ({
                 return (
                   <OptionButton
                     key={`${card}-${idx}`}
-                    $selected={isSelected}
-                    $variant={cardVariant as GameVariant}
+                    active={isSelected}
+                    gameVariant={cardVariant as GameVariant}
                     onClick={() => canSelect && onToggleFiverCard(card)}
-                    opacity={canSelect ? 1 : 0.5}
-                    padding={0}
-                    height="auto"
+                    style={{
+                      padding: 0,
+                      height: 'auto',
+                      opacity: canSelect ? 1 : 0.5,
+                    }}
                   >
                     <YStack
                       alignItems="center"
@@ -315,11 +316,10 @@ const ComboModal: React.FC<ComboModalProps> = ({
                 {discardPile.map((card, idx) => (
                   <OptionButton
                     key={`discard-${card}-${idx}`}
-                    $selected={selectedDiscardCard === card}
-                    $variant={cardVariant as GameVariant}
+                    active={selectedDiscardCard === card}
+                    gameVariant={cardVariant as GameVariant}
                     onClick={() => onSelectDiscardCard(card)}
-                    padding={0}
-                    height="auto"
+                    style={{ padding: 0, height: 'auto' }}
                   >
                     <YStack
                       alignItems="center"
@@ -364,8 +364,8 @@ const ComboModal: React.FC<ComboModalProps> = ({
               {aliveOpponents.map((opponent) => (
                 <OptionButton
                   key={opponent.playerId}
-                  $selected={selectedTarget === opponent.playerId}
-                  $variant={cardVariant as GameVariant}
+                  active={selectedTarget === opponent.playerId}
+                  gameVariant={cardVariant as GameVariant}
                   onClick={() => onSelectTarget(opponent.playerId)}
                 >
                   <Text fontSize="$6">🎮</Text>
@@ -397,8 +397,8 @@ const ComboModal: React.FC<ComboModalProps> = ({
               {Array.from({ length: targetHandSize }, (_, index) => (
                 <OptionButton
                   key={index}
-                  $selected={selectedIndex === index}
-                  $variant={cardVariant as GameVariant}
+                  active={selectedIndex === index}
+                  gameVariant={cardVariant as GameVariant}
                   onClick={() => onSelectIndex(index)}
                 >
                   <Text fontSize="$6">🎴</Text>
@@ -424,11 +424,10 @@ const ComboModal: React.FC<ComboModalProps> = ({
                 (card) => (
                   <OptionButton
                     key={card}
-                    $selected={selectedCard === card}
-                    $variant={cardVariant as GameVariant}
+                    active={selectedCard === card}
+                    gameVariant={cardVariant as GameVariant}
                     onClick={() => onSelectCard(card as CriticalCard)}
-                    padding={0}
-                    height="auto"
+                    style={{ padding: 0, height: 'auto' }}
                   >
                     <YStack
                       alignItems="center"

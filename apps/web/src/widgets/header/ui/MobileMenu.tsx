@@ -18,7 +18,6 @@ import {
   MobileVersionText,
   NavMobileLink,
 } from './styles';
-import { XStack, YStack } from 'tamagui';
 import { UserNameEllipsis } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
@@ -134,21 +133,21 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
             equippedBannerId={snapshot.equippedBannerId}
             equippedGameSkinId={snapshot.equippedGameSkinId}
           />
-          <YStack flex={1} minWidth={120} gap="$1">
-            <XStack alignItems="center" gap="$2" flexWrap="wrap">
+          <div className="flex min-w-[120px] flex-1 flex-col gap-1">
+            <div className="flex flex-wrap items-center gap-2">
               <UserNameEllipsis>{displayName}</UserNameEllipsis>
               {role !== 'free' && (
                 <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
               )}
-            </XStack>
+            </div>
             {cosmeticBadges?.length ? (
-              <XStack gap="$1" flexWrap="wrap">
+              <div className="flex flex-wrap gap-1">
                 {cosmeticBadges.map((badgeId) => (
                   <CosmeticBadge key={badgeId} badgeId={badgeId} />
                 ))}
-              </XStack>
+              </div>
             ) : null}
-          </YStack>
+          </div>
         </MobileUserCard>
       ) : (
         <LinkButton
@@ -157,7 +156,7 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
           size="md"
           fullWidth
           icon={<LoginIcon size={18} />}
-          gap="$2"
+          className="gap-2"
           data-testid="mobile-login-button"
         >
           {t('common.actions.login')}
@@ -187,7 +186,6 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
                   <>{item.icon}</>
                 ) : undefined
               }
-              gap="$3"
               onClick={item.onClick}
             >
               {item.label}
@@ -211,7 +209,6 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
               isActive={pathname === href}
               fullWidth
               icon={<Icon size={18} />}
-              gap="$3"
             >
               {label}
             </NavMobileLink>
@@ -230,55 +227,50 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
           isActive={pathname === routes.support}
           fullWidth
           icon={<SupportIcon size={18} />}
-          gap="$3"
         >
           {t('common.actions.support')}
         </NavMobileLink>
       </MobileSection>
 
       {isAuthenticated && (
-        <YStack marginTop="$3">
+        <div className="mt-3">
           <Divider spacing="sm" />
           <Button
-            variant="ghost"
+            variant="danger"
+            ghost
             size="md"
-            color="$danger"
-            justifyContent="flex-start"
+            className="justify-start gap-3"
             data-testid="mobile-logout-button"
             onClick={handleLogout}
             icon={<LogoutIcon size={18} />}
-            gap="$3"
           >
             {t('common.actions.logout')}
           </Button>
-        </YStack>
+        </div>
       )}
 
       {pwa?.canInstall && (
-        <YStack marginTop="$3">
+        <div className="mt-3">
           <Button
             variant="secondary"
             size="md"
             fullWidth
-            justifyContent="flex-start"
+            className="justify-start gap-3"
             data-testid="mobile-install-pwa-button"
             onClick={pwa.openModal}
             icon={<SmartphoneIcon size={18} />}
-            gap="$3"
           >
             {t('pwa.install.button')}
           </Button>
-        </YStack>
+        </div>
       )}
 
-      <YStack marginTop="$3" gap="$3" paddingHorizontal="$2">
+      <div className="mt-3 flex flex-col gap-3 px-2">
         <LanguagePills data-testid="mobile-language-switcher" />
-      </YStack>
+      </div>
 
       <MobileBottomBar>
-        <MobileVersionText marginTop={0} paddingVertical={0}>
-          v{appConfig.appVersion}
-        </MobileVersionText>
+        <MobileVersionText>v{appConfig.appVersion}</MobileVersionText>
       </MobileBottomBar>
     </MobileNav>
   );

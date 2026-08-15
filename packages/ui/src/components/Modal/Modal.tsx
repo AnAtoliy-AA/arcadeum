@@ -1,7 +1,6 @@
 'use client';
 
-import { Dialog, YStack, XStack, styled, GetProps, TamaguiComponent } from 'tamagui';
-import { memo, useCallback } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { CloseIcon } from '../Icons';
 import { Button } from '../Button/Button';
@@ -28,77 +27,85 @@ export type ModalTitleProps = BaseModalProps;
 export type ModalBodyProps = BaseModalProps;
 export type ModalFooterProps = BaseModalProps;
 
-const dialogContentConfig = {
-  name: 'ModalContent',
-  backgroundColor: '$background',
-  borderRadius: '$5',
-  padding: 0,
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  elevation: '$large',
-  width: '95%',
-  maxWidth: 600,
-  animation: 'medium',
-  enterStyle: { x: 0, y: -20, opacity: 0, scale: 0.9 },
-  exitStyle: { x: 0, y: 10, opacity: 0, scale: 0.95 },
-} as const;
-
-const StyledDialogContent: TamaguiComponent = styled(Dialog.Content, dialogContentConfig);
-
-const dialogOverlayConfig = {
-  name: 'ModalOverlay',
-  backgroundColor: '$overlayBg',
-  animation: 'medium',
-  enterStyle: { opacity: 0 },
-  exitStyle: { opacity: 0 },
-} as const;
-
-const StyledDialogOverlay = styled(Dialog.Overlay, dialogOverlayConfig);
-
-const StyledTitle = styled(Dialog.Title, {
-  name: 'ModalTitle',
-  fontSize: '$5',
-  fontWeight: '700',
-  color: '$color',
-});
-
 export const Modal = memo(function Modal({ open, onClose, children }: ModalProps) {
-  const handleOpenChange = useCallback(
-    (val: boolean) => {
-      if (!val) {
-        onClose?.();
-      }
-    },
-    [onClose]
-  );
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Lock body scroll while open.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  // Move focus into the dialog on open and restore it to the trigger on close.
+  useEffect(() => {
+    if (!open) return;
+    const previouslyFocused = document.activeElement;
+    const dialog = dialogRef.current;
+    if (
+      dialog &&
+      previouslyFocused instanceof HTMLElement &&
+      !dialog.contains(previouslyFocused)
+    ) {
+      dialog.focus();
+    }
+    return () => {
+      if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose?.();
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <Dialog.Portal>
-        <StyledDialogOverlay data-testid="modal-overlay" onClick={onClose} key="overlay" />
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
+      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose?.();
+      }}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        tabIndex={-1}
+        data-state="open"
+      >
         {children}
-      </Dialog.Portal>
-    </Dialog>
+      </div>
+    </div>
   );
 });
 
 export const ModalContent = memo(function ModalContent({ maxWidth = 600, children, 'data-testid': dataTestId }: ModalContentProps) {
   return (
-    <StyledDialogContent maxWidth={maxWidth} data-testid={dataTestId}>
+    <div
+      data-testid={dataTestId}
+      className="w-[95%] rounded-[20px] border border-[var(--borderColor)] bg-[var(--background)] p-0 shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+      style={{ maxWidth }}
+    >
       {children}
-    </StyledDialogContent>
+    </div>
   );
 });
 
 export const ModalHeader = memo(function ModalHeader({ children, onClose, 'data-testid': dataTestId }: ModalHeaderProps) {
   return (
-    <XStack
-      padding="$5"
-      justifyContent="space-between"
-      alignItems="center"
-      borderBottomWidth={1}
-      borderBottomColor="$borderColor"
+    <div
       data-testid={dataTestId}
+      className="flex items-center justify-between gap-4 border-b border-[var(--borderColor)] p-5"
     >
       {children}
       {onClose && (
@@ -112,26 +119,33 @@ export const ModalHeader = memo(function ModalHeader({ children, onClose, 'data-
           <CloseIcon size={20} />
         </Button>
       )}
-    </XStack>
+    </div>
   );
 });
 
 export const ModalTitle = memo(function ModalTitle({ children, 'data-testid': dataTestId }: ModalTitleProps) {
-  return <StyledTitle data-testid={dataTestId}>{children}</StyledTitle>;
+  return (
+    <span data-testid={dataTestId} className="text-[17px] font-bold text-[var(--color)]">
+      {children}
+    </span>
+  );
 });
 
 export const ModalBody = memo(function ModalBody({ children, 'data-testid': dataTestId }: ModalBodyProps) {
   return (
-    <YStack padding="$5" maxHeight="80vh" overflowY="auto" data-testid={dataTestId}>
+    <div data-testid={dataTestId} className="max-h-[80vh] overflow-y-auto p-5">
       {children}
-    </YStack>
+    </div>
   );
 });
 
 export const ModalFooter = memo(function ModalFooter({ children, 'data-testid': dataTestId }: ModalFooterProps) {
   return (
-    <XStack padding="$5" gap="$3" justifyContent="flex-end" borderTopWidth={1} borderTopColor="$borderColor" data-testid={dataTestId}>
+    <div
+      data-testid={dataTestId}
+      className="flex items-center justify-end gap-3 border-t border-[var(--borderColor)] p-5"
+    >
       {children}
-    </XStack>
+    </div>
   );
 });

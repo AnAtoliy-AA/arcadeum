@@ -1,6 +1,5 @@
 'use client';
 
-import { XStack, Paragraph, Text } from 'tamagui';
 import {
   Avatar,
   Modal,
@@ -38,52 +37,62 @@ export function InstallPWAModalContent() {
           <ModalTitle>{t('pwa.install.title')}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <XStack justifyContent="center" marginBottom="$5">
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: 20,
+            }}
+          >
             <Avatar
               src="/icon-192x192.png"
               name="Arcadeum"
               size="xl"
               alt="Arcadeum app icon"
             />
-          </XStack>
-          <Paragraph
-            textAlign="center"
-            color="$color"
-            opacity={0.7}
-            fontSize="1rem"
-            lineHeight="$multiplier16"
-            margin={0}
+          </div>
+          <p
+            style={{
+              textAlign: 'center',
+              color: 'var(--color)',
+              opacity: 0.7,
+              fontSize: '1rem',
+              lineHeight: 32,
+              margin: 0,
+            }}
           >
             {t('pwa.install.description')}
-          </Paragraph>
+          </p>
 
           <PWAFeaturesList>
             <PWAFeatureItem>
               <PWAFeatureIcon>⚡</PWAFeatureIcon>
-              <Text>{t('pwa.install.features.fast')}</Text>
+              <span>{t('pwa.install.features.fast')}</span>
             </PWAFeatureItem>
             <PWAFeatureItem>
               <PWAFeatureIcon>🔔</PWAFeatureIcon>
-              <Text>{t('pwa.install.features.notifications')}</Text>
+              <span>{t('pwa.install.features.notifications')}</span>
             </PWAFeatureItem>
           </PWAFeaturesList>
 
           {!isPromptAvailable && (
             <PWAManualInstructions>
-              <Paragraph
-                textAlign="left"
-                color="$color"
-                opacity={0.7}
-                fontSize="0.85rem"
-                lineHeight="$normal"
-                margin={0}
+              <p
+                style={{
+                  textAlign: 'left',
+                  color: 'var(--color)',
+                  opacity: 0.7,
+                  fontSize: '0.85rem',
+                  lineHeight: 22,
+                  margin: 0,
+                }}
               >
                 <strong>{t('pwa.install.manual.title')}:</strong>
                 <br />
                 {isIos
                   ? t('pwa.install.manual.ios', { icon: '⎙', plus: '⊞' })
                   : t('pwa.install.manual.generic')}
-              </Paragraph>
+              </p>
             </PWAManualInstructions>
           )}
         </ModalBody>

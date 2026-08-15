@@ -29,6 +29,6 @@ describe('TextArea', () => {
 
   it('renders in disabled state', () => {
     render(<TextArea disabled />);
-    expect(screen.getByRole('textbox')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('textbox')).toBeDisabled();
   });
 });

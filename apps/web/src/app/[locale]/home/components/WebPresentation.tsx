@@ -146,7 +146,7 @@ export function WebPresentation() {
                 src={slide.image}
                 alt={slide.title}
                 fill
-                priority={index === 0}
+                loading={index === 0 ? 'lazy' : undefined}
                 quality={70}
                 sizes="(max-width: 768px) 85vw, (max-width: 1200px) 70vw, 800px"
                 style={{

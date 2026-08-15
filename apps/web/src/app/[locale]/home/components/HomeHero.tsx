@@ -138,6 +138,7 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
                   }
                   key={card.id}
                   href={`${routes.gameCreate}?variant=${card.id}`}
+                  prefetch={false}
                   data-testid={`hero-card-${index}`}
                 >
                   <Image

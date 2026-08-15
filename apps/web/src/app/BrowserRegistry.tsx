@@ -1,7 +1,6 @@
 'use client';
 
 import { ReactNode, useEffect } from 'react';
-import { disconnectSockets } from '@/shared/lib/socket';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 
 interface BrowserRegistryProps {
@@ -10,8 +9,16 @@ interface BrowserRegistryProps {
 
 export default function BrowserRegistry({ children }: BrowserRegistryProps) {
   useEffect(() => {
+    // Lazy-load the socket module only for pagehide cleanup. A static
+    // import would pull socket.io-client into the initial bundle of
+    // every page (the home page never opens a socket connection).
+    let disconnect: (() => void) | undefined;
+    void import('@/shared/lib/socket').then((mod) => {
+      disconnect = mod.disconnectSockets;
+    });
+
     const handlePageHide = () => {
-      disconnectSockets();
+      disconnect?.();
     };
 
     window.addEventListener('pagehide', handlePageHide);

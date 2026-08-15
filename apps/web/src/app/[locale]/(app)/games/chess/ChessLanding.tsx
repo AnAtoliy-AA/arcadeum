@@ -45,7 +45,7 @@ export default function ChessLanding({
   ];
 
   return (
-    <main className={styles.root}>
+    <div className={styles.root}>
       <ChessHero
         title={landing.hero.title}
         subtitle={landing.hero.subtitle}
@@ -114,6 +114,6 @@ export default function ChessLanding({
         <span aria-hidden> / </span>
         <span>{landing?.hero?.title ?? 'Chess'}</span>
       </nav>
-    </main>
+    </div>
   );
 }

@@ -32,7 +32,7 @@ export function Page({
   ...props
 }: PageProps) {
   return (
-    <main
+    <div
       className={cx(
         'flex flex-col items-stretch relative w-full',
         fixedHeight ? 'overflow-y-auto' : 'overflow-y-visible',

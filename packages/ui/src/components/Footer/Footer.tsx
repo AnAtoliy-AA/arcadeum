@@ -49,6 +49,9 @@ export type FooterProps = {
   sections?: FooterSection[];
   craftedWithLoveLabel?: string;
   stableReleaseLabel?: string;
+  /** Extra classes applied to the <footer> element (e.g. responsive padding). */
+  className?: string;
+  'data-testid'?: string;
 };
 
 const SOCIAL_MAPPING = [
@@ -109,6 +112,8 @@ export const Footer = memo(function Footer({
   sections,
   craftedWithLoveLabel = 'Crafted with passion for gamers worldwide.',
   stableReleaseLabel = 'STABLE RELEASE',
+  className,
+  'data-testid': dataTestId,
 }: FooterProps) {
   const socialLinks = useMemo(() => {
     if (customSocialLinks) return customSocialLinks;
@@ -175,7 +180,7 @@ export const Footer = memo(function Footer({
   const footerSections = sections || defaultSections;
 
   return (
-    <footer className="w-full">
+    <footer className={cx('w-full', className)} data-testid={dataTestId}>
       <div
         className="relative w-full pb-10 pt-12 backdrop-blur-[32px] backdrop-saturate-[1.8] max-[800px]:pb-8 max-[800px]:pt-10"
         style={{ backgroundColor: 'var(--glassBg)' }}

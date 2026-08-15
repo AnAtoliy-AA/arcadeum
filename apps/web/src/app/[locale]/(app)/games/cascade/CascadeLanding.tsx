@@ -55,7 +55,7 @@ export default function CascadeLanding({
   return (
     <PageLayout>
       <Container>
-        <main className={styles.root}>
+        <div className={styles.root}>
           <CascadeHero
             title={landing.hero.title}
             subtitle={landing.hero.subtitle}
@@ -137,7 +137,7 @@ export default function CascadeLanding({
             <span aria-hidden> / </span>
             <span>Cascade</span>
           </nav>
-        </main>
+        </div>
       </Container>
     </PageLayout>
   );

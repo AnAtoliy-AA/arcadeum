@@ -17,6 +17,10 @@ body {
   color: var(--foreground);
   min-height: 100dvh;
   font-family: var(--font-geist-sans), sans-serif;
+  /* Sticky-footer column layout: header / main / footer are direct body
+     children, main grows via .layout-main { flex: 1 }. */
+  display: flex;
+  flex-direction: column;
 }
 
 a {

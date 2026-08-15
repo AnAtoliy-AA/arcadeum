@@ -357,6 +357,11 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     qualities: [40, 55, 70, 75, 80, 85],
+    // Smaller `imageSizes` so size-constrained images (hero cards at
+    // ~240-280px render width) load at 512w instead of the 640w minimum
+    // deviceSizes entry — ~35% fewer bytes for the same look. 64 stays
+    // first so fixed-size images (logo) keep their 1x srcset small.
+    imageSizes: [64, 128, 256, 384, 512],
     minimumCacheTTL: 3600,
   },
 };

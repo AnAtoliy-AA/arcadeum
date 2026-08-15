@@ -8,13 +8,7 @@ import { AnnouncementBanner } from '@/widgets/AnnouncementBanner/ui/Announcement
 import { LayoutFooter } from '@/widgets/footer';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa/PWAContext';
-import dynamic from 'next/dynamic';
-
-const WalletLiveBridge = dynamic(() =>
-  import('@/features/wallet/ui/WalletLiveBridge').then(
-    (m) => m.WalletLiveBridge,
-  ),
-);
+import { RootModals } from './RootModals';
 import { SoundProvider } from '@/shared/lib/sound';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import {
@@ -102,12 +96,6 @@ export async function generateMetadata({
   };
 }
 
-const MatchmakingQueueModal = dynamic(() =>
-  import('@/features/games/ui/MatchmakingQueue').then(
-    (m) => m.MatchmakingQueueModal,
-  ),
-);
-
 export default async function LocaleLayout({
   children,
   params,
@@ -180,8 +168,7 @@ export default async function LocaleLayout({
               </main>
               <LayoutFooter />
             </LayoutShell>
-            {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
-            <MatchmakingQueueModal />
+            <RootModals authToken={authToken} />
           </SoundProvider>
         </PWAProvider>
       </LanguageProvider>

@@ -89,21 +89,21 @@ export default function AppFooter() {
   }
 
   return (
-    <div data-testid="app-footer" className="sm:px-2">
-      <Footer
-        appName={appName}
-        socialLinks={socialLinks}
-        copyrightLabel={t('home.footerRights', {
-          year: 2026,
-          appName,
-        })}
-        versionLabel={appVersion}
-        description={t('home.footerDescription')}
-        followUsLabel={t('home.footerFollowUs')}
-        sections={sections}
-        stableReleaseLabel={t('home.footerStableRelease')}
-        craftedWithLoveLabel={t('home.footerCraftedWithLove')}
-      />
-    </div>
+    <Footer
+      className="sm:px-2"
+      data-testid="app-footer"
+      appName={appName}
+      socialLinks={socialLinks}
+      copyrightLabel={t('home.footerRights', {
+        year: 2026,
+        appName,
+      })}
+      versionLabel={appVersion}
+      description={t('home.footerDescription')}
+      followUsLabel={t('home.footerFollowUs')}
+      sections={sections}
+      stableReleaseLabel={t('home.footerStableRelease')}
+      craftedWithLoveLabel={t('home.footerCraftedWithLove')}
+    />
   );
 }

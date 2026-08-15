@@ -316,7 +316,7 @@ export function GameCreateView() {
 
   return (
     <PageLayout>
-      <main className={s.page}>
+      <div className={s.page}>
         <Container size="lg">
           <div className={s.container}>
             <header className={`${s.head} ${s.fade}`}>
@@ -404,7 +404,7 @@ export function GameCreateView() {
             </div>
           </div>
         </Container>
-      </main>
+      </div>
     </PageLayout>
   );
 }

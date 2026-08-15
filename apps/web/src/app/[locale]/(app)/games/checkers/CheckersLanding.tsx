@@ -49,7 +49,7 @@ export default function CheckersLanding({
   return (
     <PageLayout>
       <Container>
-        <main className={styles.root}>
+        <div className={styles.root}>
           <CheckersHero
             title={landing.hero.title}
             subtitle={landing.hero.subtitle}
@@ -131,7 +131,7 @@ export default function CheckersLanding({
             <span aria-hidden> / </span>
             <span>Checkers</span>
           </nav>
-        </main>
+        </div>
       </Container>
     </PageLayout>
   );

@@ -49,7 +49,7 @@ export default function TicTacToeLanding({
   return (
     <PageLayout>
       <Container>
-        <main className={styles.root}>
+        <div className={styles.root}>
           <TicTacToeHero
             title={landing.hero.title}
             subtitle={landing.hero.subtitle}
@@ -129,7 +129,7 @@ export default function TicTacToeLanding({
             <span aria-hidden> / </span>
             <span>Tic-Tac-Toe</span>
           </nav>
-        </main>
+        </div>
       </Container>
     </PageLayout>
   );

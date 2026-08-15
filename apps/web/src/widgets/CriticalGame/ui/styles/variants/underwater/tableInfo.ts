@@ -16,10 +16,8 @@ export const tableInfoStyles = {
     background: 'rgba(2, 6, 23, 0.4)',
     borderRadius: '12px',
     border: `1px solid ${VARIANT_COLORS.underwater.primary}26`,
-    hoverStyle: {
-      background: 'rgba(2, 6, 23, 0.6)',
-      borderColor: VARIANT_COLORS.underwater.primary,
-      transform: [{ scale: 1.05 }],
-    },
+    '--stat-hover-bg': 'rgba(2, 6, 23, 0.6)',
+    '--stat-hover-border': VARIANT_COLORS.underwater.primary,
+    '--stat-hover-transform': 'scale(1.05)',
   }),
 };

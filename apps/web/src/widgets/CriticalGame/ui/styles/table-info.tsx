@@ -2,7 +2,6 @@ import type { CSSProperties, HTMLAttributes } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 import { getVariantStyles } from './variants';
-import { resolveVariantStyles, usePseudoStyles } from './variant-styles';
 
 type VariantProp = { variant?: string };
 
@@ -14,7 +13,6 @@ export function TableInfo({
 }: { className?: string; style?: CSSProperties } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
   const config = getVariantStyles(variant).tableInfo;
-  const variantStyles = resolveVariantStyles(config.getStyles?.());
   return (
     <div
       className={cx(
@@ -29,7 +27,7 @@ export function TableInfo({
         borderColor: config.getBorder(),
         boxShadow: config.getShadow(),
         backdropFilter: 'blur(12px)',
-        ...variantStyles.style,
+        ...config.getStyles?.(),
         ...style,
       }}
       {...props}
@@ -44,23 +42,14 @@ export function TableStat({
   ...props
 }: { className?: string; style?: CSSProperties } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
-  const config = getVariantStyles(variant).tableInfo;
-  const variantStyles = resolveVariantStyles(config.getTableStatStyles?.());
-  const { style: hoverStyle, handlers } = usePseudoStyles(
-    variantStyles.hoverStyle,
-  );
-  const hasDynamicHover = !!variantStyles.hoverStyle;
+  const statStyles = getVariantStyles(variant).tableInfo.getTableStatStyles?.();
   return (
     <div
       className={cx(
-        'flex flex-row items-center gap-3 py-2 px-3 rounded-[10px] bg-[rgba(255,255,255,0.05)] max-[800px]:flex-1 max-[800px]:justify-center max-[800px]:gap-[6px] max-[800px]:py-[6px] max-[800px]:px-2',
-        hasDynamicHover
-          ? ''
-          : 'transition-transform duration-150 hover:bg-[rgba(255,255,255,0.1)] hover:-translate-x-[2px]',
+        'flex flex-row items-center gap-3 py-2 px-3 rounded-[10px] bg-[rgba(255,255,255,0.05)] transition-transform duration-150 hover:bg-[var(--stat-hover-bg,rgba(255,255,255,0.1))] hover:border-[var(--stat-hover-border,rgba(255,255,255,0.1))] hover:[transform:var(--stat-hover-transform,-translateX(-2px))] max-[800px]:flex-1 max-[800px]:justify-center max-[800px]:gap-[6px] max-[800px]:py-[6px] max-[800px]:px-2',
         className,
       )}
-      style={{ ...variantStyles.style, ...hoverStyle, ...style }}
-      {...handlers}
+      style={{ ...statStyles, ...style }}
       {...props}
     />
   );

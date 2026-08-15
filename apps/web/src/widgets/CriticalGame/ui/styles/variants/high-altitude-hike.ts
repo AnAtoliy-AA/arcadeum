@@ -11,70 +11,12 @@ export const highAltitudeHikeVariantStyles: Partial<VariantStyleConfig> = {
     getShadow: () => '0 12px 32px rgba(0, 0, 0, 0.4)',
     getTextGlow: () => COLORS.primary,
     getStatValueColor: (isWarning) => (isWarning ? '#ef4444' : COLORS.primary),
-    getStyles: () => ({
-      before: {
-        content: '""',
-        position: 'absolute',
-        inset: 0,
-        borderRadius: 12,
-        padding: 1,
-        background: `linear-gradient(
-          135deg,
-          ${COLORS.primary}99,
-          ${COLORS.secondary}66
-        )`,
-        WebkitMask:
-          'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-        mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-        WebkitMaskComposite: 'xor',
-        maskComposite: 'exclude',
-      },
-    }),
   },
   cards: {
     glowEffect: `0 0 30px ${COLORS.primary}99`,
     borderEffect: `2px solid ${COLORS.primary}`,
     deckBorderColor: COLORS.primary,
-    getHoverGlow: () => `0 0 24px ${COLORS.primary}cc`,
-    getCardNameColor: () => COLORS.accent,
     getCardSpriteUrl: () => '/images/cards/high_altitude_hike_sprites.png',
-    getCardNameStyles: () => ({
-      fontFamily: '"Inter", sans-serif',
-      fontWeight: 900,
-      letterSpacing: '1px',
-      color: COLORS.accent,
-      textShadow: `0 0 10px ${COLORS.primary}`,
-      padding: '0.1rem 0',
-
-      before: {
-        content: '""',
-        position: 'absolute',
-        top: -1,
-        left: '20%',
-        right: '20%',
-        height: 2,
-        background: `linear-gradient(90deg, transparent, ${COLORS.accent}, transparent)`,
-        pointerEvents: 'none',
-      },
-    }),
-    getCardInnerStyles: () => ({
-      after: {
-        content: '""',
-        position: 'absolute',
-        inset: 0,
-        background: `linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.1) 20%,
-          rgba(255, 255, 255, 0.2) 50%,
-          rgba(255, 255, 255, 0.1) 80%,
-          transparent
-        )`,
-        animation: 'icyShimmer 4s ease-in-out infinite',
-        pointerEvents: 'none',
-        zIndex: 5,
-      },
-    }),
   },
   scene: {
     ...baseVariantStyles.scene,

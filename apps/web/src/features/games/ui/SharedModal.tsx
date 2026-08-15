@@ -1,27 +1,19 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import type {
+  ComponentProps,
+  CSSProperties,
+  HTMLAttributes,
+  ReactNode,
+} from 'react';
 import { Button, type GameVariant } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-
-// Simplified constants/types to avoid external deps
-const VARIANT_COLORS = {
-  cyberpunk: {
-    background: 'rgba(20, 0, 30, 0.95)',
-    primary: '#06b6d4',
-    accent: '#d946ef',
-  },
-  underwater: {
-    background: 'rgba(8, 51, 68, 0.85)',
-    primary: '#22d3ee',
-    accent: '#22d3ee',
-  },
-};
 
 export type ModalProps = {
   open: boolean;
   onOpenChange?: (open: boolean) => void;
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
 };
 
@@ -78,9 +70,9 @@ function resolveModalVariant(variant?: string): ModalVariant {
 export type ModalFrameProps = {
   variant?: ModalVariant;
   className?: string;
-  style?: React.CSSProperties;
-  children?: React.ReactNode;
-} & Omit<React.HTMLAttributes<HTMLDivElement>, 'className' | 'style'>;
+  style?: CSSProperties;
+  children?: ReactNode;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style'>;
 
 const FRAME_VARIANT_CLASSES: Record<ModalVariant, string> = {
   default:
@@ -118,8 +110,8 @@ export const ScrollArea = ({
   ...props
 }: {
   className?: string;
-  children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLDivElement>) => (
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
       'flex flex-col items-stretch w-full h-full p-5 overflow-y-auto',
@@ -142,9 +134,9 @@ export const ModalContent = ({
   variant?: string;
   maxWidth?: string | number;
   className?: string;
-  style?: React.CSSProperties;
-  children?: React.ReactNode;
-} & Omit<React.HTMLAttributes<HTMLDivElement>, 'className' | 'style'>) => {
+  style?: CSSProperties;
+  children?: ReactNode;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style'>) => {
   const resolvedVariant = resolveModalVariant(variant);
 
   return (
@@ -158,11 +150,11 @@ export const ModalContent = ({
         <>
           <div
             className="absolute top-[-2px] left-[-2px] w-[20px] h-[20px] border-t-[2px] border-l-[2px] pointer-events-none"
-            style={{ borderColor: VARIANT_COLORS.cyberpunk.primary }}
+            style={{ borderColor: '#06b6d4' }}
           />
           <div
             className="absolute bottom-[-2px] right-[-2px] w-[20px] h-[20px] border-b-[2px] border-r-[2px] pointer-events-none"
-            style={{ borderColor: VARIANT_COLORS.cyberpunk.primary }}
+            style={{ borderColor: '#06b6d4' }}
           />
         </>
       )}
@@ -182,8 +174,8 @@ export const ModalHeader = ({
 }: {
   variant?: string;
   className?: string;
-  children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLDivElement>) => (
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
       'flex flex-row items-center justify-between mb-4 pb-3 border-b-2 border-b-[var(--borderColor)]',
@@ -212,8 +204,8 @@ export const ModalTitle = ({
 }: {
   variant?: string;
   className?: string;
-  children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLSpanElement>) => {
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => {
   const resolvedVariant = resolveModalVariant(variant);
 
   return (
@@ -230,7 +222,7 @@ export const ModalTitle = ({
   );
 };
 
-interface CloseButtonProps extends React.ComponentProps<typeof Button> {
+interface CloseButtonProps extends ComponentProps<typeof Button> {
   accent?: string;
 }
 
@@ -251,8 +243,8 @@ export const ModalActions = ({
   ...props
 }: {
   className?: string;
-  children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLDivElement>) => (
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx('flex flex-row items-stretch gap-3 mt-5', className)}
     {...props}
@@ -267,8 +259,8 @@ export const ModalSection = ({
   ...props
 }: {
   className?: string;
-  children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLDivElement>) => (
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
   <div className={cx('flex flex-col items-stretch mb-4', className)} {...props}>
     {children}
   </div>
@@ -288,8 +280,8 @@ export const SectionLabel = ({
 }: {
   variant?: string;
   className?: string;
-  children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLSpanElement>) => {
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => {
   const resolvedVariant = resolveModalVariant(variant);
 
   return (
@@ -312,8 +304,8 @@ export const RulesText = ({
   ...props
 }: {
   className?: string;
-  children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLSpanElement>) => (
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
   <span
     className={cx('text-[16px] leading-[20px] opacity-[0.9]', className)}
     {...props}
@@ -328,8 +320,8 @@ export const RulesTextPre = ({
   ...props
 }: {
   className?: string;
-  children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLSpanElement>) => (
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
   <RulesText className={cx('whitespace-pre-line', className)} {...props}>
     {children}
   </RulesText>

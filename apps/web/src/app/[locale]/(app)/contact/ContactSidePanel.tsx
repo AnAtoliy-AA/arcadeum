@@ -4,7 +4,6 @@ import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { GithubIcon } from './ContactView.icons';
 import { ContactAvatars } from './ContactAvatars';
-import { contactStyles } from './contactTokens';
 import { appConfig } from '@/shared/config/app-config';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
@@ -18,18 +17,17 @@ export type ContactSidePanelProps = {
   workingHours: string;
 };
 
+const LABEL_CHIP_CLASS =
+  'text-[11px] font-semibold tracking-[1.4px] uppercase text-[var(--textSecondary)]';
+
 export function ContactSidePanel({
   side,
   workingHours,
 }: ContactSidePanelProps) {
-  const s = contactStyles;
   return (
-    <div
-      className="flex flex-col items-stretch flex-1 min-w-0"
-      style={s.sideStackStyle}
-    >
+    <div className="flex flex-col flex-1 min-w-0 gap-4">
       <GlassCard>
-        <span style={s.labelChipStyle}>
+        <span className={LABEL_CHIP_CLASS}>
           {side?.onCall ?? 'On call right now'}
         </span>
         <div className="flex flex-row items-center gap-3 -mt-2">
@@ -44,9 +42,12 @@ export function ContactSidePanel({
             </Typography>
           </div>
         </div>
-        <hr style={s.ruleStyle} aria-hidden="true" />
+        <hr
+          className="border-0 h-px bg-[var(--glassBorder)] my-3"
+          aria-hidden="true"
+        />
         <div className="flex flex-col items-stretch gap-2">
-          <div style={s.sideRowStyle}>
+          <div className="flex justify-between items-center text-[13.5px]">
             <Typography alpha="medium">
               {side?.medianFirstReply ?? 'Median first reply'}
             </Typography>
@@ -54,13 +55,13 @@ export function ContactSidePanel({
               {side?.medianFirstReplyValue ?? '4 hr'}
             </Typography>
           </div>
-          <div style={s.sideRowStyle}>
+          <div className="flex justify-between items-center text-[13.5px]">
             <Typography alpha="medium">
               {side?.workingHours ?? 'Working hours'}
             </Typography>
             <Typography weight="700">{workingHours}</Typography>
           </div>
-          <div style={s.sideRowStyle}>
+          <div className="flex justify-between items-center text-[13.5px]">
             <Typography alpha="medium">
               {side?.coverage ?? 'Coverage'}
             </Typography>
@@ -72,7 +73,7 @@ export function ContactSidePanel({
       </GlassCard>
 
       <GlassCard>
-        <span style={s.labelChipStyle}>
+        <span className={LABEL_CHIP_CLASS}>
           {side?.devsLabel ?? 'For developers'}
         </span>
         <Typography variant="heading" uiSize="md" className="mt-2">
@@ -88,7 +89,7 @@ export function ContactSidePanel({
               href={appConfig.social.github}
               target="_blank"
               rel="noopener noreferrer"
-              style={s.externalIssueLinkStyle}
+              className="inline-flex items-center justify-center gap-2 w-full px-[14px] py-[10px] rounded-[12px] border border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] no-underline text-[14px] font-medium"
             >
               <GithubIcon />
               <span>{side?.openIssue ?? 'Open an issue'}</span>
@@ -98,13 +99,13 @@ export function ContactSidePanel({
       </GlassCard>
 
       <GlassCard>
-        <span style={s.labelChipStyle}>
+        <span className={LABEL_CHIP_CLASS}>
           {side?.press ?? 'Press & partnerships'}
         </span>
         <Typography weight="700" className="mt-2">
           <a
             href={`mailto:${side?.pressEmail ?? 'hello@arcadeum.games'}`}
-            style={{ color: s.tokens.accent, textDecoration: 'underline' }}
+            className="text-[var(--accent)] underline"
           >
             {side?.pressEmail ?? 'hello@arcadeum.games'}
           </a>
@@ -115,19 +116,16 @@ export function ContactSidePanel({
       </GlassCard>
 
       <GlassCard>
-        <span style={s.labelChipStyle}>
+        <span className={LABEL_CHIP_CLASS}>
           {side?.statusLabel ?? 'System status'}
         </span>
         <div className="flex flex-row items-center gap-2 -mt-2">
           <span
             aria-hidden="true"
+            className="h-[9px] w-[9px] rounded-full shrink-0"
             style={{
-              width: 9,
-              height: 9,
-              borderRadius: '50%',
               background: '#34d399',
               boxShadow: '0 0 8px #34d399',
-              flexShrink: 0,
             }}
           />
           <Typography weight="700">

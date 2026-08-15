@@ -10,35 +10,11 @@ export const baseVariantStyles: VariantStyleConfig = {
       '0 12px 32px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2)',
     getTextGlow: () => 'inherit',
     getStatValueColor: (isWarning) => (isWarning ? '#DC2626' : 'inherit'),
-    getStyles: () => ({
-      before: {
-        content: '""',
-        position: 'absolute',
-        inset: 0,
-        borderRadius: 16,
-        padding: 1,
-        background: `linear-gradient(
-          135deg,
-          rgba(99, 102, 241, 0.6),
-          rgba(168, 85, 247, 0.4),
-          rgba(236, 72, 153, 0.3),
-          rgba(99, 102, 241, 0.6)
-        )`,
-        WebkitMask:
-          'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-        mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-        WebkitMaskComposite: 'xor',
-        maskComposite: 'exclude',
-        animation: 'shimmer 3s ease-in-out infinite',
-      },
-    }),
   },
   cards: {
     glowEffect: `${VARIANT_COLORS.default.primary}`,
     borderEffect: `2px solid ${VARIANT_COLORS.default.primary}`,
     deckBorderColor: VARIANT_COLORS.default.primary,
-    getHoverGlow: () => `0 0 24px ${VARIANT_COLORS.default.primary}cc`,
-    getCardNameColor: () => 'rgba(255, 255, 255, 0.9)',
     getCardSpriteUrl: (variant) => {
       if (variant === GAME_VARIANT.CRIME)
         return '/images/cards/crime_sprites.png';

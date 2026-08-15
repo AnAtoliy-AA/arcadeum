@@ -4,7 +4,6 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import { Button, type ButtonProps, type GameVariant } from '@arcadeum/ui';
 import { Card as BaseCard, CARD_SURFACE_CLASS } from './cards-base';
 import { getVariantStyles } from './variants';
-import { resolveVariantStyles } from './variant-styles';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 export * from './cards-base';
@@ -48,9 +47,7 @@ export function LastPlayedCard({
   children?: ReactNode;
 } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
-  const config = getVariantStyles(variant).cards;
-  const borderColor = config.borderEffect.split(' ')[2] || config.borderEffect;
-  const variantStyles = resolveVariantStyles(config.getCardStyles?.());
+  const cards = getVariantStyles(variant).cards;
   return (
     <div
       className={cx(
@@ -58,7 +55,7 @@ export function LastPlayedCard({
         className,
       )}
       style={{
-        boxShadow: `0 10px 30px rgba(0,0,0,0.5), ${config.glowEffect}`,
+        boxShadow: `0 10px 30px rgba(0,0,0,0.5), ${cards.glowEffect}`,
         ...style,
       }}
       {...props}
@@ -69,10 +66,8 @@ export function LastPlayedCard({
           'w-full h-full bg-[var(--background)]',
         )}
         style={{
-          borderColor,
-          borderWidth: 2,
+          border: cards.borderEffect,
           transform: isAnimating ? 'rotateY(180deg) scale(1.1)' : undefined,
-          ...variantStyles.style,
         }}
       >
         {children}
@@ -119,7 +114,6 @@ export function DeckCard({
 }: { className?: string; style?: CSSProperties } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
   const config = getVariantStyles(variant).cards;
-  const variantStyles = resolveVariantStyles(config.getDeckStyles?.());
   return (
     <BaseCard
       className={cx(
@@ -132,7 +126,6 @@ export function DeckCard({
           '--card-press-scale': '1',
           borderColor: config.deckBorderColor,
           boxShadow: `3px 3px 0 ${config.deckBorderColor}40, 6px 6px 0 ${config.deckBorderColor}20`,
-          ...variantStyles.style,
           ...style,
         } as CSSProperties
       }

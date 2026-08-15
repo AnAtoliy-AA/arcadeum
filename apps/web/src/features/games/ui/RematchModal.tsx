@@ -4,12 +4,7 @@ import { useState, useMemo, useCallback, useSyncExternalStore } from 'react';
 import type { HTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'react';
 import { ModalButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import {
-  Modal,
-  ModalContent,
-  ModalTitle,
-  ModalActions,
-} from './SharedModalStyles';
+import { Modal, ModalContent, ModalTitle, ModalActions } from './SharedModal';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface PlayerInfo {

@@ -1,3 +1,18 @@
+import type { CSSProperties } from 'react';
+
+/**
+ * Custom props consumed by TableStat's Tailwind hover: classes
+ * (see styles/table-info.tsx). Variants set them to get per-variant
+ * hover colors/transforms without JS event handlers.
+ */
+export type StatHoverVars = {
+  '--stat-hover-bg'?: string;
+  '--stat-hover-border'?: string;
+  '--stat-hover-transform'?: string;
+};
+
+export type TableStatStyles = CSSProperties & StatHoverVars;
+
 export interface VariantStyleConfig {
   tableInfo: {
     getBackground: () => string;
@@ -5,28 +20,14 @@ export interface VariantStyleConfig {
     getShadow: () => string;
     getTextGlow: () => string;
     getStatValueColor: (isWarning?: boolean) => string;
-    getStyles?: () => Record<string, unknown>;
-    getTableStatStyles?: () => Record<string, unknown>;
+    getStyles?: () => CSSProperties;
+    getTableStatStyles?: () => TableStatStyles;
   };
   cards: {
     glowEffect: string;
     borderEffect: string;
     deckBorderColor?: string;
-    getDecorationBackground?: () => string;
-    getDecorationBorder?: () => string;
-    getDecorationEffects?: () => Record<string, unknown>;
-    getDisabledOverlay?: () => string;
-    getActionButtonsStyles?: () => Record<string, unknown>;
-    getCardNameStyles?: () => Record<string, unknown>;
-    getCardDescriptionStyles?: () => Record<string, unknown>;
-    getCardInnerStyles?: () => Record<string, unknown>;
-
-    // sprite support
     getCardSpriteUrl?: (variant?: string) => string | undefined;
-    getDeckStyles?: () => Record<string, unknown>;
-    getCardStyles?: () => Record<string, unknown>;
-    getHoverGlow?: () => string; // box-shadow string for card hover
-    getCardNameColor?: () => string; // color for name label overlay
   };
   scene: VariantScenePalette;
 }

@@ -18,10 +18,8 @@ export const tableInfoStyles = {
     background: 'rgba(12, 10, 9, 0.4)',
     borderRadius: 8,
     border: `1px solid ${C.primary}26`,
-    hoverStyle: {
-      background: 'rgba(12, 10, 9, 0.6)',
-      borderColor: C.primary,
-      transform: [{ scale: 1.05 }],
-    },
+    '--stat-hover-bg': 'rgba(12, 10, 9, 0.6)',
+    '--stat-hover-border': C.primary,
+    '--stat-hover-transform': 'scale(1.05)',
   }),
 };

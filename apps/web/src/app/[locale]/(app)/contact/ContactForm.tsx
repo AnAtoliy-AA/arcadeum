@@ -9,7 +9,6 @@ import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
 import { FloatingLabelTextArea } from '@arcadeum/ui/components/FloatingLabelTextArea';
 import { LaunchButton } from '@arcadeum/ui/components/LaunchButton';
 import { ContactAvatars } from './ContactAvatars';
-import { contactStyles } from './contactTokens';
 import { submitContactAction, type ContactActionState } from './actions';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
@@ -47,9 +46,15 @@ function SubmitButton({
   );
 }
 
-export function ContactForm({ form }: ContactFormProps) {
-  const s = contactStyles;
+const LABEL_CHIP_CLASS =
+  'text-[11px] font-semibold tracking-[1.4px] uppercase text-[var(--textSecondary)]';
 
+const HELP_LINK_CLASS =
+  'inline-flex items-center gap-2 px-[14px] py-2 rounded-[12px] border border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] no-underline text-[13.5px]';
+
+const ERROR_TEXT_CLASS = 'text-xs text-[#ef4444] mt-1 leading-[1.3]';
+
+export function ContactForm({ form }: ContactFormProps) {
   const [actionState, formAction] = useActionState(
     submitContactAction,
     initialContactActionState,
@@ -82,10 +87,10 @@ export function ContactForm({ form }: ContactFormProps) {
 
   return (
     <GlassCard>
-      <div style={s.formCardInnerStyle}>
-        <div style={s.formHeaderStyle}>
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex flex-col items-stretch gap-2">
-            <span style={s.labelChipStyle}>
+            <span className={LABEL_CHIP_CLASS}>
               {form?.subtitle ?? 'Direct message'}
             </span>
             <Typography variant="heading" uiSize="xl">
@@ -99,11 +104,17 @@ export function ContactForm({ form }: ContactFormProps) {
             </Typography>
           </div>
         </div>
-        <hr style={s.ruleStyle} aria-hidden="true" />
+        <hr
+          className="border-0 h-px bg-[var(--glassBorder)] my-3"
+          aria-hidden="true"
+        />
         {showSuccess ? (
           <Card variant="glass" data-testid="contact-success-message">
-            <div style={s.successCardStyle}>
-              <div aria-hidden="true" style={s.burstStyle}>
+            <div className="text-center px-6 py-10">
+              <div
+                aria-hidden="true"
+                className="text-[28px] text-[var(--accent)] mb-2"
+              >
                 ✦
               </div>
               <Typography variant="heading" uiSize="lg">
@@ -114,7 +125,11 @@ export function ContactForm({ form }: ContactFormProps) {
                   'Expect a reply within 4 hours. We sent a copy to your email.'}
               </Typography>
               <div className="flex flex-col items-center -mt-4">
-                <button type="button" onClick={reset} style={s.helpLinkStyle}>
+                <button
+                  type="button"
+                  onClick={reset}
+                  className={HELP_LINK_CLASS}
+                >
                   {form?.sendAnother ?? 'Send another'}
                 </button>
               </div>
@@ -122,7 +137,7 @@ export function ContactForm({ form }: ContactFormProps) {
           </Card>
         ) : errorState ? (
           <Card variant="glass" data-testid="contact-error-message">
-            <div style={s.successCardStyle}>
+            <div className="text-center px-6 py-10">
               <Typography variant="heading" uiSize="lg">
                 {form?.errorTitle ?? "We couldn't send your message"}
               </Typography>
@@ -133,12 +148,16 @@ export function ContactForm({ form }: ContactFormProps) {
               <div className="flex flex-col items-center gap-3 -mt-4">
                 <a
                   href={errorState.fallbackMailto}
-                  style={s.helpLinkStyle}
+                  className={HELP_LINK_CLASS}
                   data-testid="contact-fallback-mailto"
                 >
                   {form?.openMail ?? 'Open in your mail app'}
                 </a>
-                <button type="button" onClick={reset} style={s.helpLinkStyle}>
+                <button
+                  type="button"
+                  onClick={reset}
+                  className={HELP_LINK_CLASS}
+                >
                   {form?.tryAgain ?? 'Try again'}
                 </button>
               </div>
@@ -147,7 +166,7 @@ export function ContactForm({ form }: ContactFormProps) {
         ) : (
           <form key={formKey} action={formAction}>
             <div className="flex flex-col items-stretch gap-4">
-              <div style={s.formGridStyle}>
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
                 <div>
                   <FloatingLabelInput
                     id="contact-name"
@@ -160,7 +179,7 @@ export function ContactForm({ form }: ContactFormProps) {
                     data-testid="contact-name-input"
                   />
                   {fieldErrors?.name && (
-                    <span style={s.errorTextStyle} role="alert">
+                    <span className={ERROR_TEXT_CLASS} role="alert">
                       {fieldErrors.name}
                     </span>
                   )}
@@ -177,7 +196,7 @@ export function ContactForm({ form }: ContactFormProps) {
                     data-testid="contact-email-input"
                   />
                   {fieldErrors?.email && (
-                    <span style={s.errorTextStyle} role="alert">
+                    <span className={ERROR_TEXT_CLASS} role="alert">
                       {fieldErrors.email}
                     </span>
                   )}
@@ -194,7 +213,7 @@ export function ContactForm({ form }: ContactFormProps) {
                   data-testid="contact-subject-input"
                 />
                 {fieldErrors?.subject && (
-                  <span style={s.errorTextStyle} role="alert">
+                  <span className={ERROR_TEXT_CLASS} role="alert">
                     {fieldErrors.subject}
                   </span>
                 )}
@@ -211,7 +230,7 @@ export function ContactForm({ form }: ContactFormProps) {
                   data-testid="contact-message-textarea"
                 />
                 {fieldErrors?.message && (
-                  <span style={s.errorTextStyle} role="alert">
+                  <span className={ERROR_TEXT_CLASS} role="alert">
                     {fieldErrors.message}
                   </span>
                 )}
@@ -232,8 +251,8 @@ export function ContactForm({ form }: ContactFormProps) {
                 name="formMountedAt"
                 value={String(formMountedAt)}
               />
-              <div style={s.submitRowStyle}>
-                <span style={s.privacyStyle}>
+              <div className="flex flex-wrap-reverse items-center justify-between gap-3 mt-1">
+                <span className="inline-flex items-center gap-1.5 text-[12.5px] text-[var(--textSecondary)]">
                   <span aria-hidden="true">🔒</span>
                   {form?.privacy ?? 'Private — we never share your email.'}
                 </span>

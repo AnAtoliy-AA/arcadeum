@@ -46,7 +46,7 @@ export function CardInner({
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch flex-1 w-full items-center justify-center relative rounded-[12px] overflow-hidden',
+        'flex flex-col flex-1 w-full items-center justify-center relative rounded-[12px] overflow-hidden',
         className,
       )}
       {...props}

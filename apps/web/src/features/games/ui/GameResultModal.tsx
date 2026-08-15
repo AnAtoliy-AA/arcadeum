@@ -1,13 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useSyncExternalStore } from 'react';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { useSound } from '@/shared/lib/sound';
-import { Modal, CloseButton } from './SharedModalStyles';
+import { Modal, CloseButton } from './SharedModal';
 import { VictoryCelebration } from './VictoryCelebration';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
@@ -32,7 +30,7 @@ interface GameResultModalProps {
   messages?: { title: string; message?: string };
 }
 
-// --- Internal Styled Components ---
+// --- Tone (result) styles ---
 
 const TONE_BACKDROP_CLASSES: Record<GameResultKind, string> = {
   victory:
@@ -42,144 +40,13 @@ const TONE_BACKDROP_CLASSES: Record<GameResultKind, string> = {
   draw: 'bg-[radial-gradient(circle_at_center,rgba(148,163,184,0.1)_0%,rgba(0,0,0,0.95)_100%)]',
 };
 
-const Backdrop = ({
-  tone,
-  className,
-  ...props
-}: {
-  tone: GameResultKind;
-  className?: string;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx(
-      'fixed top-0 left-0 w-screen h-[100dvh] z-[1199] backdrop-blur-[12px]',
-      TONE_BACKDROP_CLASSES[tone],
-      className,
-    )}
-    {...props}
-  />
-);
-
-const ContentWrapper = ({
-  className,
-  style,
-  children,
-  ...props
-}: {
-  className?: string;
-  style?: React.CSSProperties;
-  children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx(
-      'flex flex-col items-center p-10 bg-[rgba(255,255,255,0.03)] backdrop-blur-[40px] rounded-[40px] border border-[rgba(255,255,255,0.1)] border-t-[rgba(255,255,255,0.2)] border-l-[rgba(255,255,255,0.15)] shadow-[0_40px_100px_rgba(0,0,0,0.8)] max-w-[90%] w-[520px] max-h-[90dvh] overflow-y-auto relative',
-      className,
-    )}
-    style={style}
-    {...props}
-  >
-    {children}
-  </div>
-);
-
 const TONE_TITLE_CLASSES: Record<GameResultKind, string> = {
   victory: 'text-[#FFD700] [text-shadow:0_0_20px_rgba(255,215,0,0.4)]',
   defeat: 'text-[#ff4d4d] [text-shadow:0_0_20px_rgba(255,77,77,0.4)]',
   draw: 'text-[#cbd5e1] [text-shadow:0_0_20px_rgba(148,163,184,0.4)]',
 };
 
-const ResultTitleText = ({
-  tone,
-  className,
-  children,
-  ...props
-}: {
-  tone: GameResultKind;
-  className?: string;
-  children?: ReactNode;
-  'data-testid'?: string;
-} & HTMLAttributes<HTMLHeadingElement>) => (
-  <h1
-    className={cx(
-      'text-[56px] font-extrabold text-center uppercase tracking-[2px]',
-      TONE_TITLE_CLASSES[tone],
-      className,
-    )}
-    {...props}
-  >
-    {children}
-  </h1>
-);
-
-const ResultMessage = ({
-  className,
-  children,
-  ...props
-}: {
-  className?: string;
-  children?: ReactNode;
-} & HTMLAttributes<HTMLParagraphElement>) => (
-  <p
-    className={cx(
-      'text-[20px] leading-[24px] text-center mb-8 text-[rgba(255,255,255,0.8)]',
-      className,
-    )}
-    {...props}
-  >
-    {children}
-  </p>
-);
-
-const ActionsContainer = ({
-  className,
-  children,
-  ...props
-}: {
-  className?: string;
-  children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx('flex flex-col items-stretch gap-5 w-full', className)}
-    {...props}
-  >
-    {children}
-  </div>
-);
-
-const HomeLink = ({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof LinkButton>) => (
-  <LinkButton
-    className={['mt-2 w-full', className].filter(Boolean).join(' ')}
-    variant="secondary"
-    {...props}
-  >
-    {children}
-  </LinkButton>
-);
-
 // --- Main Component ---
-
-const ResultContent = ({
-  className,
-  children,
-  ...props
-}: {
-  className?: string;
-  children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx(
-      'fixed top-0 left-0 w-screen h-[100dvh] z-[1200] flex items-center justify-center',
-      className,
-    )}
-    {...props}
-  >
-    {children}
-  </div>
-);
 
 export function GameResultModal({
   isOpen,
@@ -224,14 +91,14 @@ export function GameResultModal({
 
   return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
-      <Backdrop tone={result} />
-      <ResultContent key="content">
-        <div className="sr-only">
-          <h2 className="sr-only">Game Result</h2>
-          <p className="sr-only">Showing your game performance and options</p>
-        </div>
-
-        <ContentWrapper className="animate-entrance max-[800px]:p-5 max-[800px]:rounded-[24px] max-[800px]:w-[95%]">
+      <div
+        className={cx(
+          'fixed top-0 left-0 w-screen h-[100dvh] z-[1199] backdrop-blur-[12px]',
+          TONE_BACKDROP_CLASSES[result],
+        )}
+      />
+      <div className="fixed top-0 left-0 w-screen h-[100dvh] z-[1200] flex items-center justify-center">
+        <div className="animate-entrance flex flex-col items-center p-10 bg-[rgba(255,255,255,0.03)] backdrop-blur-[40px] rounded-[40px] border border-[rgba(255,255,255,0.1)] border-t-[rgba(255,255,255,0.2)] border-l-[rgba(255,255,255,0.15)] shadow-[0_40px_100px_rgba(0,0,0,0.8)] max-w-[90%] w-[520px] max-h-[90dvh] overflow-y-auto relative max-[800px]:p-5 max-[800px]:rounded-[24px] max-[800px]:w-[95%]">
           {onClose && (
             <div className="flex flex-row items-stretch absolute">
               <CloseButton onClick={onClose} data-testid="modal-close-button">
@@ -244,20 +111,23 @@ export function GameResultModal({
             <span className="text-[80px] -mb-2 animate-[float_3s_ease-in-out_infinite]">
               {emoji}
             </span>
-            <ResultTitleText
-              tone={result}
+            <h1
               data-testid="game-result-title"
-              className={isVictory ? 'animate-pulse' : undefined}
+              className={cx(
+                'text-[56px] font-extrabold text-center uppercase tracking-[2px]',
+                TONE_TITLE_CLASSES[result],
+                isVictory && 'animate-pulse',
+              )}
             >
               {title}
-            </ResultTitleText>
+            </h1>
           </div>
 
-          <ResultMessage className="animate-fade-in-up-delay-2">
+          <p className="animate-fade-in-up-delay-2 text-[20px] leading-[24px] text-center mb-8 text-[rgba(255,255,255,0.8)]">
             {body}
-          </ResultMessage>
+          </p>
 
-          <ActionsContainer className="animate-fade-in-up-delay-4">
+          <div className="animate-fade-in-up-delay-4 flex flex-col items-stretch gap-5 w-full">
             {onRematch && (
               <Button
                 variant={isVictory ? 'primary' : 'secondary'}
@@ -274,9 +144,9 @@ export function GameResultModal({
               </Button>
             )}
 
-            <HomeLink href="/">
+            <LinkButton href="/" className="mt-2 w-full" variant="secondary">
               {t('games.common.actions.backToHome' as TranslationKey)}
-            </HomeLink>
+            </LinkButton>
 
             {onClose && (
               <Button
@@ -287,9 +157,9 @@ export function GameResultModal({
                 {t('games.table.modals.common.close' as TranslationKey)}
               </Button>
             )}
-          </ActionsContainer>
-        </ContentWrapper>
-      </ResultContent>
+          </div>
+        </div>
+      </div>
 
       <VictoryCelebration tone={result} />
     </Modal>

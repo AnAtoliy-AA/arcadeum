@@ -29,10 +29,8 @@ export const tableInfoStyles = {
     padding: '0.3rem 0.5rem',
     gap: '0.5rem',
 
-    hoverStyle: {
-      background: `${VARIANT_COLORS.cyberpunk.primary}1a`,
-      borderColor: `${VARIANT_COLORS.cyberpunk.primary}99`,
-      transform: [{ translateX: -2 }],
-    },
+    '--stat-hover-bg': `${VARIANT_COLORS.cyberpunk.primary}1a`,
+    '--stat-hover-border': `${VARIANT_COLORS.cyberpunk.primary}99`,
+    '--stat-hover-transform': 'translateX(-2px)',
   }),
 };

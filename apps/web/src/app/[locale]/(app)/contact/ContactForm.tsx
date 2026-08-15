@@ -8,7 +8,6 @@ import { Card } from '@arcadeum/ui/components/Card/Card';
 import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
 import { FloatingLabelTextArea } from '@arcadeum/ui/components/FloatingLabelTextArea';
 import { LaunchButton } from '@arcadeum/ui/components/LaunchButton';
-import { XStack, YStack } from 'tamagui';
 import { ContactAvatars } from './ContactAvatars';
 import { useContactStyles } from './useContactStyles';
 import { submitContactAction, type ContactActionState } from './actions';
@@ -85,20 +84,20 @@ export function ContactForm({ form }: ContactFormProps) {
     <GlassCard>
       <div style={s.formCardInnerStyle}>
         <div style={s.formHeaderStyle}>
-          <YStack gap={2}>
+          <div className="box-border flex flex-col items-stretch gap-2">
             <span style={s.labelChipStyle}>
               {form?.subtitle ?? 'Direct message'}
             </span>
             <Typography variant="heading" uiSize="xl">
               {form?.title ?? 'Send the team a message'}
             </Typography>
-          </YStack>
-          <XStack alignItems="center" gap="$2">
+          </div>
+          <div className="box-border flex flex-row items-center gap-2">
             <ContactAvatars count={3} size={26} />
             <Typography variant="caption" alpha="medium">
               {form?.repliesNote ?? 'Replies hit your email'}
             </Typography>
-          </XStack>
+          </div>
         </div>
         <hr style={s.ruleStyle} aria-hidden="true" />
         {showSuccess ? (
@@ -114,11 +113,11 @@ export function ContactForm({ form }: ContactFormProps) {
                 {form?.successBody ??
                   'Expect a reply within 4 hours. We sent a copy to your email.'}
               </Typography>
-              <YStack alignItems="center" marginTop="$4">
+              <div className="box-border flex flex-col items-center -mt-4">
                 <button type="button" onClick={reset} style={s.helpLinkStyle}>
                   {form?.sendAnother ?? 'Send another'}
                 </button>
-              </YStack>
+              </div>
             </div>
           </Card>
         ) : errorState ? (
@@ -131,7 +130,7 @@ export function ContactForm({ form }: ContactFormProps) {
                 {form?.errorBody ??
                   'Something went wrong on our end. You can try again, or open your mail app to send directly.'}
               </Typography>
-              <YStack alignItems="center" gap="$3" marginTop="$4">
+              <div className="box-border flex flex-col items-center gap-3 -mt-4">
                 <a
                   href={errorState.fallbackMailto}
                   style={s.helpLinkStyle}
@@ -142,12 +141,12 @@ export function ContactForm({ form }: ContactFormProps) {
                 <button type="button" onClick={reset} style={s.helpLinkStyle}>
                   {form?.tryAgain ?? 'Try again'}
                 </button>
-              </YStack>
+              </div>
             </div>
           </Card>
         ) : (
           <form key={formKey} action={formAction}>
-            <YStack gap="$4">
+            <div className="box-border flex flex-col items-stretch gap-4">
               <div style={s.formGridStyle}>
                 <div>
                   <FloatingLabelInput
@@ -243,7 +242,7 @@ export function ContactForm({ form }: ContactFormProps) {
                   sendingLabel={form?.submitting ?? 'Sending…'}
                 />
               </div>
-            </YStack>
+            </div>
           </form>
         )}
       </div>

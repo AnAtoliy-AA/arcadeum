@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Button, GlassCard, Input, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button, GlassCard, Input } from '@arcadeum/ui';
 import { sendBulkRewardsAction } from '@/features/admin-bulk-rewards/server/admin-bulk-rewards.actions';
 import type { BulkRewardResult } from '@/features/admin-bulk-rewards/server/admin-bulk-rewards.actions';
 import type { adminBulkRewardsEn } from '@/shared/i18n/messages/pages/admin-bulk-rewards/en';
@@ -66,34 +65,31 @@ export function AdminBulkRewardsView({ labels }: Props) {
   };
 
   return (
-    <YStack gap="$4">
+    <div className="box-border flex flex-col items-stretch gap-4">
       {confirmOpen && (
-        <GlassCard
-          padding="$4"
-          borderWidth={1}
-          borderColor="$warning"
-          backgroundColor="$warningBg"
-        >
-          <Text fontWeight="600" marginBottom="$2">
+        <GlassCard className="p-4 border border-[var(--warning)] bg-[$warningBg]">
+          <span className="box-border font-semibold -mb-2">
             {labels.confirm.title}
-          </Text>
-          <Text marginBottom="$4">
+          </span>
+          <span className="box-border -mb-4">
             {labels.confirm.message
               .replace('{amount}', amount)
               .replace('{type}', rewardType)}
-          </Text>
-          <XStack gap="$2">
+          </span>
+          <div className="box-border flex flex-row items-stretch gap-2">
             <Button onClick={confirmSubmit}>{labels.confirm.confirm}</Button>
             <Button onClick={() => setConfirmOpen(false)} variant="outline">
               {labels.confirm.cancel}
             </Button>
-          </XStack>
+          </div>
         </GlassCard>
       )}
 
-      <YStack gap="$3">
-        <YStack gap="$1">
-          <Text fontWeight="600">{labels.form.type.label}</Text>
+      <div className="box-border flex flex-col items-stretch gap-3">
+        <div className="box-border flex flex-col items-stretch gap-1">
+          <span className="box-border font-semibold">
+            {labels.form.type.label}
+          </span>
           <select
             value={rewardType}
             onChange={(e) => setRewardType(e.target.value as RewardType)}
@@ -111,10 +107,12 @@ export function AdminBulkRewardsView({ labels }: Props) {
             <option value="arcadeum">{labels.form.type.arcadeumLabel}</option>
             <option value="item">{labels.form.type.itemLabel}</option>
           </select>
-        </YStack>
+        </div>
 
-        <YStack gap="$1">
-          <Text fontWeight="600">{labels.form.amount.label}</Text>
+        <div className="box-border flex flex-col items-stretch gap-1">
+          <span className="box-border font-semibold">
+            {labels.form.amount.label}
+          </span>
           <Input
             type="number"
             value={amount}
@@ -123,83 +121,92 @@ export function AdminBulkRewardsView({ labels }: Props) {
             min={1}
             max={1000000}
           />
-        </YStack>
+        </div>
 
         {rewardType === 'item' && (
-          <YStack gap="$1">
-            <Text fontWeight="600">{labels.form.itemId.label}</Text>
+          <div className="box-border flex flex-col items-stretch gap-1">
+            <span className="box-border font-semibold">
+              {labels.form.itemId.label}
+            </span>
             <Input
               value={itemId}
               onChangeText={setItemId}
               placeholder={labels.form.itemId.placeholder}
             />
-          </YStack>
+          </div>
         )}
 
-        <YStack gap="$1">
-          <Text fontWeight="600">{labels.form.reason.label}</Text>
+        <div className="box-border flex flex-col items-stretch gap-1">
+          <span className="box-border font-semibold">
+            {labels.form.reason.label}
+          </span>
           <Input
             value={reason}
             onChangeText={setReason}
             placeholder={labels.form.reason.placeholder}
           />
-        </YStack>
+        </div>
 
         {error && (
-          <Text color="$error" fontSize="$2">
+          <span className="box-border text-[var(--error)] text-[14px]">
             {error}
-          </Text>
+          </span>
         )}
 
         <Button onClick={handleSubmit} disabled={isPending} fullWidth>
           {isPending ? labels.form.submitting : labels.form.submit}
         </Button>
-      </YStack>
+      </div>
 
       {result && (
         <GlassCard
-          padding="$4"
-          borderWidth={1}
-          borderColor={result.failedRewards > 0 ? '$warning' : '$success'}
-          backgroundColor={
-            result.failedRewards > 0 ? '$warningBg' : '$successBg'
-          }
+          className="p-4 border"
+          style={{
+            borderColor: result.failedRewards > 0 ? '$warning' : '$success',
+            backgroundColor:
+              result.failedRewards > 0 ? '$warningBg' : '$successBg',
+          }}
         >
-          <Text fontWeight="600" marginBottom="$2">
+          <span className="box-border font-semibold -mb-2">
             {result.failedRewards > 0
               ? labels.result.partial
               : labels.result.success}
-          </Text>
-          <YStack gap="$1">
-            <Text>
+          </span>
+          <div className="box-border flex flex-col items-stretch gap-1">
+            <span className="box-border">
               {labels.result.total}: {result.totalUsers}
-            </Text>
-            <Text color="$success">
+            </span>
+            <span className="box-border text-[var(--success)]">
               {labels.result.successful}: {result.successfulRewards}
-            </Text>
+            </span>
             {result.failedRewards > 0 && (
-              <Text color="$warning">
+              <span className="box-border text-[var(--warning)]">
                 {labels.result.failed}: {result.failedRewards}
-              </Text>
+              </span>
             )}
             {result.errors.length > 0 && (
-              <YStack gap="$1" marginTop="$2">
-                <Text fontWeight="600">{labels.result.errors}:</Text>
+              <div className="box-border flex flex-col items-stretch gap-1 -mt-2">
+                <span className="box-border font-semibold">
+                  {labels.result.errors}:
+                </span>
                 {result.errors.slice(0, 5).map((err, i) => (
-                  <Text key={i} fontSize="$2" color="$gray11">
+                  <span
+                    className="box-border text-[14px] text-[#94a3b8]"
+                    key={i}
+                  >
                     {err}
-                  </Text>
+                  </span>
                 ))}
                 {result.errors.length > 5 && (
-                  <Text fontSize="$2" color="$gray11">
+                  <span className="box-border text-[14px] text-[#94a3b8]">
                     ...and {result.errors.length - 5} more
-                  </Text>
+                  </span>
                 )}
-              </YStack>
+              </div>
             )}
-          </YStack>
+          </div>
         </GlassCard>
       )}
-    </YStack>
+    </div>
   );
 }

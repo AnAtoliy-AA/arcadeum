@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { ErrorContainer, LoginLink } from './styles';
 
@@ -16,7 +15,7 @@ export function GameRoomError({
 
   return (
     <ErrorContainer>
-      <Text>{error}</Text>
+      <span className="box-border">{error}</span>
       {isPrivateRoomError && (
         <>
           <br />

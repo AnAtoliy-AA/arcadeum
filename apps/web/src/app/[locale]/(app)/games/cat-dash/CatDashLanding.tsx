@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, Text } from 'tamagui';
 import { CatDashHero } from './CatDashHero';
 import { CatDashThemesGrid } from './CatDashThemesGrid';
 import { CatDashFinalCtaButtons } from './CatDashFinalCtaButtons';
@@ -35,7 +34,7 @@ export default function CatDashLanding({
 
   return (
     <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 16px' }}>
-      <YStack gap="$8" paddingVertical="$8">
+      <div className="box-border flex flex-col items-stretch gap-8 py-8">
         <CatDashHero
           title={hero?.title ?? 'Cat Dash'}
           subtitle={hero?.subtitle ?? 'Race your cat to victory!'}
@@ -47,10 +46,10 @@ export default function CatDashLanding({
         />
 
         {highlights && (
-          <YStack gap="$3">
-            <Text fontSize={24} fontWeight="bold">
+          <div className="box-border flex flex-col items-stretch gap-3">
+            <span className="box-border text-[24px] font-bold">
               Why Cat Dash?
-            </Text>
+            </span>
             <div
               style={{
                 display: 'grid',
@@ -80,14 +79,14 @@ export default function CatDashLanding({
                 </div>
               ))}
             </div>
-          </YStack>
+          </div>
         )}
 
         {steps && (
-          <YStack gap="$3">
-            <Text fontSize={24} fontWeight="bold">
+          <div className="box-border flex flex-col items-stretch gap-3">
+            <span className="box-border text-[24px] font-bold">
               How to Play
-            </Text>
+            </span>
             <div
               style={{
                 display: 'grid',
@@ -134,29 +133,30 @@ export default function CatDashLanding({
                 </div>
               ))}
             </div>
-          </YStack>
+          </div>
         )}
 
         {variants && (
-          <YStack gap="$3">
-            <Text fontSize={24} fontWeight="bold">
+          <div className="box-border flex flex-col items-stretch gap-3">
+            <span className="box-border text-[24px] font-bold">
               Pick a Track
-            </Text>
-            <Text fontSize={14} color="#94a3b8">
+            </span>
+            <span className="box-border text-[14px] text-[#94a3b8]">
               Each theme gives the track a unique visual style.
-            </Text>
+            </span>
             <CatDashThemesGrid
               variants={variants as never}
               baseHref={createRoomHref}
             />
-          </YStack>
+          </div>
         )}
 
         {faq && (
-          <YStack gap="$3" id="faq">
-            <Text fontSize={24} fontWeight="bold">
-              FAQ
-            </Text>
+          <div
+            className="box-border flex flex-col items-stretch gap-3"
+            id="faq"
+          >
+            <span className="box-border text-[24px] font-bold">FAQ</span>
             {Object.values(faq).map((item, i) => (
               <div
                 key={i}
@@ -174,13 +174,13 @@ export default function CatDashLanding({
                 </div>
               </div>
             ))}
-          </YStack>
+          </div>
         )}
 
-        <YStack gap="$3" alignItems="center" paddingVertical="$4">
-          <Text fontSize={20} fontWeight="bold" textAlign="center">
+        <div className="box-border flex flex-col gap-3 items-center py-4">
+          <span className="box-border text-[20px] font-bold text-center">
             Ready to Race?
-          </Text>
+          </span>
           <CatDashFinalCtaButtons
             gameId={gameId}
             roomsHref={roomsHref}
@@ -189,8 +189,8 @@ export default function CatDashLanding({
             ctaQuickplayErrorLabel={hero?.ctaQuickplayError ?? 'Try again'}
             browseRoomsLabel={hero?.browseRooms ?? 'Browse rooms'}
           />
-        </YStack>
-      </YStack>
+        </div>
+      </div>
     </div>
   );
 }

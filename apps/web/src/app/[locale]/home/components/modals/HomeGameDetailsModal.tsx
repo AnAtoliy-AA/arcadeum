@@ -181,24 +181,24 @@ export function HomeGameDetailsModal({
               role="tablist"
             >
               <Button
+                className="px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]"
                 variant="chip"
                 active={activeTab === 'rules'}
                 shape="round"
                 role="tab"
                 aria-selected={activeTab === 'rules'}
                 onClick={() => startTransition(() => setActiveTab('rules'))}
-                className="px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]"
               >
                 {homeCopy.rulesTab ?? 'Rules'}
               </Button>
               <Button
+                className="px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]"
                 variant="chip"
                 active={activeTab === 'info'}
                 shape="round"
                 role="tab"
                 aria-selected={activeTab === 'info'}
                 onClick={() => startTransition(() => setActiveTab('info'))}
-                className="px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]"
               >
                 {homeCopy.infoTab ?? 'Game Themes'}
               </Button>

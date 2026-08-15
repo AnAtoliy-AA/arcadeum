@@ -1,4 +1,4 @@
-import { Typography, YStack, XStack, Button } from '@arcadeum/ui';
+import { Typography, Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 interface PaymentPresetsProps {
@@ -21,8 +21,8 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
   ];
 
   return (
-    <XStack
-      gap="$4"
+    <div
+      className="box-border flex flex-row items-stretch gap-4"
       {...({
         display: 'grid',
         gridTemplateColumns: 'repeat(2, 1fr)',
@@ -35,37 +35,37 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
         const isActive = amount === preset.value;
         return (
           <Button
-            key={preset.value}
-            type="button"
-            variant="glass"
-            size="lg"
-            active={isActive}
             className={`h-auto min-h-[130px] p-4 flex-col gap-3 border-[1.5px] hover:-translate-y-[5px] hover:scale-[1.02] hover:bg-[var(--glassBgHover)] ${
               isActive
                 ? 'border-[var(--primary)] bg-[var(--glassBgHover)] hover:border-[var(--accent)]'
                 : 'border-[var(--glassBorder)] bg-[var(--glassBg)] hover:border-[var(--glassBorderHover)]'
             }`}
+            key={preset.value}
+            type="button"
+            variant="glass"
+            size="lg"
+            active={isActive}
             onClick={() => onSelect(preset.value)}
           >
-            <Typography fontSize={38} marginBottom="$1">
+            <Typography className="text-[38px] -mb-1">
               {preset.emoji}
             </Typography>
-            <YStack ai="center" gap="$1">
+            <div className="box-border flex flex-col items-center gap-1">
               <Typography variant="label" uiSize="xs" alpha="medium" textCenter>
                 {preset.label}
               </Typography>
               <Typography
+                className="font-extrabold"
                 variant="heading"
                 uiSize="xl"
-                fontWeight="800"
                 textCenter
               >
                 ${preset.value}
               </Typography>
-            </YStack>
+            </div>
           </Button>
         );
       })}
-    </XStack>
+    </div>
   );
 }

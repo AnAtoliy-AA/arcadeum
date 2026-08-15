@@ -9,8 +9,6 @@ import {
   PageTitle,
   Typography,
   Section,
-  XStack,
-  YStack,
 } from '@arcadeum/ui';
 
 interface HelpPageContentProps {
@@ -41,32 +39,32 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
 
         {t?.features && (
           <Section variant="legal">
-            <XStack flexWrap="wrap" gap="$4" marginHorizontal="$-2">
+            <div className="box-border flex flex-row items-stretch flex-wrap gap-4">
               {(
                 t.features as ({ title: string; description: string } | null)[]
               ).map((feature, index: number) => {
                 if (!feature) return null;
                 return (
                   <GlassCard
+                    className="flex-1 min-w-[280px] p-4 border border-[var(--borderColor)]"
                     key={index}
-                    flex={1}
-                    minWidth={280}
-                    p="$4"
-                    borderWidth={1}
-                    borderColor="$borderColor"
                   >
-                    <YStack gap="$2">
-                      <Typography variant="label" uiSize="md" fontWeight="700">
+                    <div className="box-border flex flex-col items-stretch gap-2">
+                      <Typography
+                        className="font-bold"
+                        variant="label"
+                        uiSize="md"
+                      >
                         {feature.title}
                       </Typography>
                       <Typography variant="body" uiSize="sm" alpha="medium">
                         {feature.description}
                       </Typography>
-                    </YStack>
+                    </div>
                   </GlassCard>
                 );
               })}
-            </XStack>
+            </div>
           </Section>
         )}
 
@@ -91,34 +89,35 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                * (Tamagui's emitted class names hash) so Google Assistant
                * can locate the block reliably.
                */}
-              <YStack id="faq" gap="$3">
-                <Typography variant="label" uiSize="lg" fontWeight="700">
+              <div
+                className="box-border flex flex-col items-stretch gap-3"
+                id="faq"
+              >
+                <Typography className="font-bold" variant="label" uiSize="lg">
                   {faq?.heading}
                 </Typography>
-                <YStack gap="$2">
+                <div className="box-border flex flex-col items-stretch gap-2">
                   {items.map((item, index) => (
                     <GlassCard
+                      className="p-4 border border-[var(--borderColor)]"
                       key={index}
-                      p="$4"
-                      borderWidth={1}
-                      borderColor="$borderColor"
                     >
-                      <YStack gap="$1">
+                      <div className="box-border flex flex-col items-stretch gap-1">
                         <Typography
+                          className="font-bold"
                           variant="label"
                           uiSize="md"
-                          fontWeight="700"
                         >
                           {item.question}
                         </Typography>
                         <Typography variant="body" uiSize="sm" alpha="medium">
                           {item.answer}
                         </Typography>
-                      </YStack>
+                      </div>
                     </GlassCard>
                   ))}
-                </YStack>
-              </YStack>
+                </div>
+              </div>
             </Section>
           );
         })()}

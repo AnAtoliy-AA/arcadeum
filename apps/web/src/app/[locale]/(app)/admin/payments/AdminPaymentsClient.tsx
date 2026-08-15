@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Container, PageLayout, PageTitle, YStack } from '@arcadeum/ui';
+import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useAdminPaymentNotes } from '@/features/admin-payments/hooks';
 import type { AdminNotesVisibility } from '@/features/admin-payments/api';
@@ -89,7 +89,7 @@ export default function AdminPaymentsClient() {
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$3">
+        <div className="box-border flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t?.title ?? 'Payments'}</PageTitle>
           {filtersLabels && (
             <AdminPaymentsFilters
@@ -111,7 +111,7 @@ export default function AdminPaymentsClient() {
               labels={tableLabels}
             />
           )}
-        </YStack>
+        </div>
       </Container>
     </PageLayout>
   );

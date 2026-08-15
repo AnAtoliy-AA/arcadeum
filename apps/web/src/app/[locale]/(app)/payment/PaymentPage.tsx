@@ -7,7 +7,6 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { isValidPaymentUrl, parseAmount } from '@/shared/config/payment-config';
 import { paymentApi } from '@/features/payment/api';
-import { XStack, YStack } from 'tamagui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
@@ -175,7 +174,7 @@ export default function PaymentPage() {
         <Section>
           <PaymentHeader />
 
-          <XStack jc="center" mb="$6" gap="$4">
+          <div className="box-border flex flex-row items-stretch justify-center -mb-6 gap-4">
             <Button
               variant={mode === 'payment' ? 'primary' : 'secondary'}
               onClick={() => setLocalMode('payment')}
@@ -188,13 +187,13 @@ export default function PaymentPage() {
             >
               {t('payments.modes.recurring') || 'Recurring'}
             </Button>
-          </XStack>
+          </div>
 
           <GlassCard>
-            <YStack gap="$8">
+            <div className="box-border flex flex-col items-stretch gap-8">
               <form onSubmit={handleSubmit}>
                 {mode === 'subscription' && (
-                  <XStack jc="center" mb="$4" gap="$2">
+                  <div className="box-border flex flex-row items-stretch justify-center -mb-4 gap-2">
                     <Button
                       variant={interval === 'MONTHLY' ? 'secondary' : 'ghost'}
                       size="sm"
@@ -215,7 +214,7 @@ export default function PaymentPage() {
                     >
                       {t('payments.intervals.yearly') || 'Yearly'}
                     </Button>
-                  </XStack>
+                  </div>
                 )}
 
                 <FormGroup
@@ -318,10 +317,10 @@ export default function PaymentPage() {
                     : t('payments.submit') || 'Continue to Checkout'}
                 </Button>
               </form>
-            </YStack>
+            </div>
           </GlassCard>
 
-          <XStack jc="center" ai="center" gap="$2" opacity={0.5} mt="$8">
+          <div className="box-border flex flex-row justify-center items-center gap-2 opacity-[0.5] -mt-8">
             <span role="img" aria-label="secure">
               🔒
             </span>
@@ -329,7 +328,7 @@ export default function PaymentPage() {
               {t('payments.secureInfo') ||
                 'Payments are 256-bit encrypted and secure.'}
             </Typography>
-          </XStack>
+          </div>
         </Section>
       </Container>
     </PageLayout>

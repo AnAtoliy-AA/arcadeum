@@ -1,6 +1,6 @@
 'use client';
-import { XStack, YStack, Text, Input, styled } from 'tamagui';
-import { Button } from '@arcadeum/ui';
+import { Button, Input } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import type { ChangeEvent } from 'react';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
@@ -18,28 +18,28 @@ const SCOPES: Scope[] = [
 ];
 const RANGES: Range[] = ['today', 'week', 'month', 'season'];
 
-const SegBtn = styled(XStack, {
-  name: 'SegBtn',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$2',
-  borderWidth: 1,
-  cursor: 'pointer',
-  alignItems: 'center',
-  hoverStyle: { backgroundColor: 'rgba(255,255,255,0.04)' },
-  variants: {
-    active: {
-      true: {
-        borderColor: '$mythicAccent',
-        backgroundColor: 'rgba(236,72,153,0.12)',
-      },
-      false: {
-        borderColor: '$borderColor',
-        backgroundColor: 'rgba(255,255,255,0.02)',
-      },
-    },
-  } as const,
-});
+function SegBtn({
+  active,
+  className,
+  ...props
+}: {
+  active?: boolean;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      role="tab"
+      className={cx(
+        'box-border flex flex-row items-center cursor-pointer rounded-lg border px-3 py-2 hover:bg-[rgba(255,255,255,0.04)]',
+        active
+          ? 'border-[var(--mythicAccent)] bg-[rgba(236,72,153,0.12)]'
+          : 'border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export function LeaderboardControls({
   scope,
@@ -64,15 +64,9 @@ export function LeaderboardControls({
   const ranges = (tt.ranges as Record<string, string>) ?? {};
 
   return (
-    <XStack
-      justifyContent="space-between"
-      gap="$3"
-      flexWrap="wrap"
-      alignItems="center"
-    >
-      <XStack
-        gap="$2"
-        flexWrap="wrap"
+    <div className="box-border flex flex-row items-center gap-3 justify-between flex-wrap">
+      <div
+        className="box-border flex flex-row items-stretch gap-2 flex-wrap"
         role="tablist"
         aria-label="Leaderboard scope"
       >
@@ -80,24 +74,26 @@ export function LeaderboardControls({
           <SegBtn
             key={s}
             active={scope === (s as never)}
-            role="tab"
             aria-selected={scope === s}
             tabIndex={scope === s ? 0 : -1}
-            onPress={() => onScopeChange(s)}
-            testID={`scope-${s}`}
+            onClick={() => onScopeChange(s)}
+            data-testid={`scope-${s}`}
           >
-            <Text
-              fontSize="$2"
-              fontWeight={scope === s ? '700' : '500'}
-              color={scope === s ? '$mythicAccent' : undefined}
+            <span
+              className={cx(
+                'box-border text-[14px]',
+                scope === s
+                  ? 'font-bold text-[var(--mythicAccent)]'
+                  : 'font-medium',
+              )}
             >
               {(tt[s] as string) ?? s}
-            </Text>
+            </span>
           </SegBtn>
         ))}
-      </XStack>
-      <XStack gap="$2" flexWrap="wrap" alignItems="center">
-        <YStack>
+      </div>
+      <div className="box-border flex flex-row gap-2 flex-wrap items-center">
+        <div className="box-border flex flex-col items-stretch">
           <select
             value={range}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
@@ -120,9 +116,9 @@ export function LeaderboardControls({
               </option>
             ))}
           </select>
-        </YStack>
+        </div>
         <Input
-          width={200}
+          className="w-[200px]"
           placeholder={(tt.searchPlaceholder as string) ?? 'Find player…'}
           value={search}
           onChangeText={onSearchChange}
@@ -138,7 +134,7 @@ export function LeaderboardControls({
             {(tt.jumpToMe as string) ?? '↓ Jump to me'}
           </Button>
         ) : null}
-      </XStack>
-    </XStack>
+      </div>
+    </div>
   );
 }

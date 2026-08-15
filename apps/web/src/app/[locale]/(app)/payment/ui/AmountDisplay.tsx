@@ -1,4 +1,3 @@
-import { XStack } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 interface AmountDisplayProps {
@@ -43,7 +42,7 @@ export function AmountDisplay({ amount, onChange }: AmountDisplayProps) {
   return (
     <>
       <style>{amountInputStyles}</style>
-      <XStack ai="center" jc="center" position="relative" my="$4">
+      <div className="box-border flex flex-row items-center justify-center relative -my-4">
         <span
           style={{
             fontSize: '2.5rem',
@@ -68,7 +67,7 @@ export function AmountDisplay({ amount, onChange }: AmountDisplayProps) {
           aria-label={t('payments.amountAria') || 'Payment amount'}
           className="amount-input"
         />
-      </XStack>
+      </div>
     </>
   );
 }

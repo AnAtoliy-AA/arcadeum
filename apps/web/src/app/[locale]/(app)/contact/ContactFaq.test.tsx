@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
+import { ContactFaq, getFaqItems, type FaqItem } from './ContactFaq';
+
 import { TamaguiProvider } from 'tamagui';
 import config from '@/shared/config/tamagui.config';
-import { ContactFaq, getFaqItems, type FaqItem } from './ContactFaq';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <TamaguiProvider config={config} defaultTheme="dark">

@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { XStack } from 'tamagui';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import type { AdminNotesVisibility } from '../api';
 
@@ -36,7 +35,7 @@ export function AdminPaymentsFilters({
   }, [debouncedQ]);
 
   return (
-    <XStack gap="$3" alignItems="center" flexWrap="wrap">
+    <div className="box-border flex flex-row gap-3 items-center flex-wrap">
       <input
         placeholder={labels.searchPlaceholder}
         value={localQ}
@@ -71,6 +70,6 @@ export function AdminPaymentsFilters({
         <option value="public">{labels.visibilityPublic}</option>
         <option value="private">{labels.visibilityPrivate}</option>
       </select>
-    </XStack>
+    </div>
   );
 }

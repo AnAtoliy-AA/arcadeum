@@ -1,7 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { YStack, XStack, Text, ScrollView } from 'tamagui';
 import {
   Button,
   Card,
@@ -169,33 +168,33 @@ export default function FriendsPageContent({
     pending.outgoing.length > 0;
 
   return (
-    <ScrollView padding="$4" maxWidth={640} mx="auto" width="100%">
-      <YStack gap="$5">
-        <XStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="$7" fontWeight="800">
+    <div className="box-border overflow-auto p-4 max-w-[640px] w-full">
+      <div className="box-border flex flex-col items-stretch gap-5">
+        <div className="box-border flex flex-row justify-space-between items-center">
+          <span className="box-border text-[28px] font-extrabold">
             {tt.title ?? 'Friends'}
-          </Text>
+          </span>
           {friends.length > 0 && (
             <Badge variant="neutral" size="sm">
               {friends.length}
             </Badge>
           )}
-        </XStack>
+        </div>
 
-        <Card variant="elevated" padding="md">
-          <YStack gap="$3">
-            <Text fontSize="$3" fontWeight="600" color="$gray11">
+        <Card variant="elevated">
+          <div className="box-border flex flex-col items-stretch gap-3">
+            <span className="box-border text-[16px] font-semibold text-[#94a3b8]">
               Add Friend
-            </Text>
-            <XStack gap="$2" alignItems="center">
+            </span>
+            <div className="box-border flex flex-row gap-2 items-center">
               <Input
-                flex={1}
+                className="flex-1"
                 size="md"
                 placeholder={tt.addFriend?.placeholder ?? 'Enter username'}
                 value={username}
                 onChangeText={setUsername}
                 onSubmitEditing={handleSendRequest}
-                testID="add-friend-input"
+                data-testid="add-friend-input"
               />
               <Button
                 variant="primary"
@@ -208,34 +207,34 @@ export default function FriendsPageContent({
                   ? (tt.addFriend?.sending ?? 'Sending…')
                   : (tt.addFriend?.button ?? 'Add Friend')}
               </Button>
-            </XStack>
-          </YStack>
+            </div>
+          </div>
         </Card>
 
         {error && (
-          <Card variant="error" padding="sm">
-            <Text color="$danger" fontSize="$3">
+          <Card variant="error">
+            <span className="box-border text-[var(--danger)] text-[16px]">
               {error}
-            </Text>
+            </span>
           </Card>
         )}
 
         {loading ? (
-          <YStack alignItems="center" padding="$8" gap="$3">
+          <div className="box-border flex flex-col items-center p-8 gap-3">
             <Spinner size="md" />
-            <Text color="$gray10" fontSize="$3">
+            <span className="box-border text-[#6b7280] text-[16px]">
               Loading friends...
-            </Text>
-          </YStack>
+            </span>
+          </div>
         ) : !token ? (
-          <YStack alignItems="center" padding="$8" gap="$4">
-            <Text color="$gray10" fontSize="$3" textAlign="center">
+          <div className="box-border flex flex-col items-center p-8 gap-4">
+            <span className="box-border text-[#6b7280] text-[16px] text-center">
               {tt.loginPrompt ?? 'Log in to manage your friends list.'}
-            </Text>
+            </span>
             <LinkButton variant="primary" href={routes.auth}>
               {tt.loginButton ?? 'Log In'}
             </LinkButton>
-          </YStack>
+          </div>
         ) : !hasAnyContent ? (
           <EmptyState
             message={
@@ -246,27 +245,27 @@ export default function FriendsPageContent({
         ) : (
           <>
             {pending.incoming.length > 0 && (
-              <YStack gap="$3">
-                <XStack alignItems="center" gap="$2">
-                  <Text fontSize="$4" fontWeight="700">
+              <div className="box-border flex flex-col items-stretch gap-3">
+                <div className="box-border flex flex-row items-center gap-2">
+                  <span className="box-border text-[18px] font-bold">
                     {tt.requests?.incoming ?? 'Incoming Requests'}
-                  </Text>
+                  </span>
                   <Badge variant="info" size="sm">
                     {pending.incoming.length}
                   </Badge>
-                </XStack>
+                </div>
                 {pending.incoming.map((req) => (
-                  <Card key={req.id} variant="default" padding="md">
-                    <XStack gap="$3" alignItems="center">
+                  <Card key={req.id} variant="default">
+                    <div className="box-border flex flex-row gap-3 items-center">
                       <EquippedPlayerAvatar
                         name={req.displayName ?? req.username}
                         equippedAvatarId={req.equippedAvatarId}
                         equippedBadgeId={null}
                         size="sm"
                       />
-                      <Text flex={1} fontSize="$3" fontWeight="500">
+                      <span className="box-border flex-1 text-[16px] font-medium">
                         {req.displayName ?? req.username}
-                      </Text>
+                      </span>
                       <Button
                         variant="primary"
                         size="sm"
@@ -283,62 +282,62 @@ export default function FriendsPageContent({
                       >
                         {tt.requests?.decline ?? 'Decline'}
                       </Button>
-                    </XStack>
+                    </div>
                   </Card>
                 ))}
-              </YStack>
+              </div>
             )}
 
             {pending.outgoing.length > 0 && (
-              <YStack gap="$3">
-                <XStack alignItems="center" gap="$2">
-                  <Text fontSize="$4" fontWeight="700">
+              <div className="box-border flex flex-col items-stretch gap-3">
+                <div className="box-border flex flex-row items-center gap-2">
+                  <span className="box-border text-[18px] font-bold">
                     {tt.requests?.outgoing ?? 'Outgoing Requests'}
-                  </Text>
+                  </span>
                   <Badge variant="warning" size="sm">
                     {pending.outgoing.length}
                   </Badge>
-                </XStack>
+                </div>
                 {pending.outgoing.map((req) => (
-                  <Card key={req.id} variant="default" padding="md">
-                    <XStack gap="$3" alignItems="center">
+                  <Card key={req.id} variant="default">
+                    <div className="box-border flex flex-row gap-3 items-center">
                       <EquippedPlayerAvatar
                         name={req.displayName ?? req.username}
                         equippedAvatarId={req.equippedAvatarId}
                         equippedBadgeId={null}
                         size="sm"
                       />
-                      <Text flex={1} fontSize="$3" fontWeight="500">
+                      <span className="box-border flex-1 text-[16px] font-medium">
                         {req.displayName ?? req.username}
-                      </Text>
+                      </span>
                       <Badge variant="warning" size="sm">
                         {tt.requests?.pending ?? 'Pending'}
                       </Badge>
-                    </XStack>
+                    </div>
                   </Card>
                 ))}
-              </YStack>
+              </div>
             )}
 
             {friends.length > 0 && (
-              <YStack gap="$3">
-                <Text fontSize="$4" fontWeight="700">
+              <div className="box-border flex flex-col items-stretch gap-3">
+                <span className="box-border text-[18px] font-bold">
                   {tt.title ?? 'Friends'}
-                </Text>
+                </span>
                 {friends.map((friend) => (
-                  <Card key={friend.id} variant="default" padding="md">
-                    <XStack gap="$3" alignItems="center">
+                  <Card key={friend.id} variant="default">
+                    <div className="box-border flex flex-row gap-3 items-center">
                       <EquippedPlayerAvatar
                         name={friend.displayName ?? friend.username}
                         equippedAvatarId={friend.equippedAvatarId}
                         equippedBadgeId={null}
                         size="sm"
                       />
-                      <YStack flex={1} gap="$1">
-                        <Text fontSize="$3" fontWeight="600">
+                      <div className="box-border flex flex-col items-stretch flex-1 gap-1">
+                        <span className="box-border text-[16px] font-semibold">
                           {friend.displayName ?? friend.username}
-                        </Text>
-                        <XStack alignItems="center" gap="$2">
+                        </span>
+                        <div className="box-border flex flex-row items-center gap-2">
                           <Badge
                             variant={friend.online ? 'success' : 'neutral'}
                             size="sm"
@@ -347,8 +346,8 @@ export default function FriendsPageContent({
                               ? (tt.online ?? 'Online')
                               : (tt.offline ?? 'Offline')}
                           </Badge>
-                        </XStack>
-                      </YStack>
+                        </div>
+                      </div>
                       <Button
                         variant="primary"
                         size="sm"
@@ -365,14 +364,14 @@ export default function FriendsPageContent({
                       >
                         {tt.removeFriend ?? 'Remove'}
                       </Button>
-                    </XStack>
+                    </div>
                   </Card>
                 ))}
-              </YStack>
+              </div>
             )}
           </>
         )}
-      </YStack>
+      </div>
 
       <Modal open={!!removeTarget} onClose={() => setRemoveTarget(null)}>
         <ModalContent maxWidth={400}>
@@ -380,10 +379,10 @@ export default function FriendsPageContent({
             <ModalTitle>{tt.removeFriend ?? 'Remove Friend'}</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <Text fontSize="$3">
+            <span className="box-border text-[16px]">
               Remove {removeTarget?.displayName ?? removeTarget?.username} from
               your friends?
-            </Text>
+            </span>
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" onClick={() => setRemoveTarget(null)}>
@@ -399,6 +398,6 @@ export default function FriendsPageContent({
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </ScrollView>
+    </div>
   );
 }

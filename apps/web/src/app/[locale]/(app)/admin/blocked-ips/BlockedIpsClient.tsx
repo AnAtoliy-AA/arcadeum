@@ -1,6 +1,6 @@
 'use client';
 
-import { Container, PageLayout, PageTitle, YStack } from '@arcadeum/ui';
+import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   useBlockedIps,
@@ -60,17 +60,15 @@ export default function BlockedIpsClient() {
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$3">
+        <div className="box-border flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t?.title ?? 'Blocked IPs'}</PageTitle>
           {errorMsg && (
-            <YStack
-              padding="$3"
-              borderRadius="$3"
-              backgroundColor="$red3"
+            <div
+              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[$red3]"
               data-testid="blocked-ips-error"
             >
               {errorMsg}
-            </YStack>
+            </div>
           )}
           {labels && (
             <BlockedIpsTable
@@ -82,7 +80,7 @@ export default function BlockedIpsClient() {
               pendingIp={pendingIp}
             />
           )}
-        </YStack>
+        </div>
       </Container>
     </PageLayout>
   );

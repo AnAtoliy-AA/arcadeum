@@ -103,7 +103,11 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
               <StatCell>{game.totalGames}</StatCell>
               <StatCell>{game.wins}</StatCell>
               <WinRateCell>
-                <ProgressBar value={game.winRate} height={8} showLabel />
+                <ProgressBar
+                  className="h-[8px]"
+                  value={game.winRate}
+                  showLabel
+                />
               </WinRateCell>
             </div>
           ))}

@@ -109,13 +109,15 @@ export default function HomeGames() {
       >
         {categories.map((cat) => (
           <Button
+            className={
+              "whitespace-nowrap font-['JetBrains_Mono',ui-monospace,SFMono-Regular,monospace] text-[11px] uppercase tracking-[0.18em]"
+            }
             key={cat}
             variant="chip"
             active={activeCategory === cat}
             shape="round"
             aria-pressed={activeCategory === cat}
             onClick={() => setActiveCategory(cat)}
-            className="whitespace-nowrap font-['JetBrains_Mono',ui-monospace,SFMono-Regular,monospace] text-[11px] uppercase tracking-[0.18em]"
           >
             {cat}
           </Button>
@@ -128,17 +130,17 @@ export default function HomeGames() {
         data-reveal-delay="2"
       >
         <div
-          ref={sliderRef}
           className="slider-track slider-track-main flex gap-8 overflow-x-auto pb-7 pt-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[640px]:gap-3 max-[640px]:pl-2 max-[640px]:pr-2"
+          style={{
+            cursor: isDragging ? 'grabbing' : 'grab',
+            userSelect: isDragging ? 'none' : 'auto',
+          }}
+          ref={sliderRef}
           onScroll={checkScroll}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          style={{
-            cursor: isDragging ? 'grabbing' : 'grab',
-            userSelect: isDragging ? 'none' : 'auto',
-          }}
         >
           {filteredGames.map((game) => (
             <div

@@ -2,7 +2,6 @@
 
 import { useRef, useEffect, useCallback } from 'react';
 import { useInfiniteQuery } from '@/shared/hooks/useInfiniteQuery';
-import { XStack, YStack, Text } from 'tamagui';
 
 import {
   PageLayout,
@@ -70,36 +69,26 @@ export default function NotesPage({ initialData }: NotesPageProps) {
 
   return (
     <PageLayout>
-      <Container size="lg" paddingTop="$12" paddingBottom="$16">
-        <YStack ai="center" mb="$12">
+      <Container className="pt-12" size="lg">
+        <div className="box-border flex flex-col items-center -mb-12">
           <PageTitle size="lg">
             {t('payments.notes.title') || 'Supporter Notes'}
           </PageTitle>
-          <Text
-            color="rgba(236,239,238,0.7)"
-            fontSize="$5"
-            maxWidth={600}
-            mt="$4"
-            lineHeight="$7"
-            textAlign="center"
-          >
+          <span className="box-border text-[rgba(236,239,238,0.7)] text-[20px] max-w-[600px] -mt-4 leading-[34px] text-center">
             {t('payments.notes.subtitle') ||
               'Messages of support from our amazing community. Thank you for keeping us going!'}
-          </Text>
-        </YStack>
+          </span>
+        </div>
 
         {isLoading && !initialData ? (
-          <XStack flexWrap="wrap" gap="$6">
+          <div className="box-border flex flex-row items-stretch flex-wrap gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <Skeleton
+                className="h-[140px] min-w-[300px] flex-1 rounded-[16px]"
                 key={i}
-                height={140}
-                minWidth={300}
-                flex={1}
-                borderRadius={16}
               />
             ))}
-          </XStack>
+          </div>
         ) : allNotes.length === 0 ? (
           <EmptyState
             message={
@@ -109,75 +98,44 @@ export default function NotesPage({ initialData }: NotesPageProps) {
           />
         ) : (
           <>
-            <XStack flexWrap="wrap" gap="$6" minHeight={200}>
+            <div className="box-border flex flex-row items-stretch flex-wrap gap-6 min-h-[200px]">
               {allNotes.map((note) => (
-                <GlassCard key={note.id} minWidth={300} flex={1}>
-                  <Text
-                    color="$color"
-                    fontSize="$4"
-                    lineHeight="$7"
-                    mb="$4"
-                    display="block"
-                  >
+                <GlassCard className="min-w-[300px] flex-1" key={note.id}>
+                  <span className="box-border text-[var(--color)] text-[18px] leading-[34px] -mb-4 block">
                     {note.note}
-                  </Text>
-                  <XStack
-                    jc="space-between"
-                    ai="flex-end"
-                    gap="$4"
-                    flexWrap="wrap"
-                  >
-                    <YStack gap="$1">
+                  </span>
+                  <div className="box-border flex flex-row justify-space-between items-end gap-4 flex-wrap">
+                    <div className="box-border flex flex-col items-stretch gap-1">
                       {note.displayName ? (
-                        <Text
-                          color="$primaryGradientStart"
-                          fontWeight="600"
-                          fontSize="$4"
-                        >
+                        <span className="box-border text-[var(--primaryGradientStart)] font-semibold text-[18px]">
                           {note.displayName}
-                        </Text>
+                        </span>
                       ) : (
-                        <Text
-                          color="rgba(236,239,238,0.45)"
-                          fontStyle="italic"
-                          fontSize="$4"
-                        >
+                        <span className="box-border text-[rgba(236,239,238,0.45)] text-[18px] italic">
                           {t('payments.notes.anonymous') ||
                             'Anonymous Supporter'}
-                        </Text>
+                        </span>
                       )}
-                      <Text color="rgba(236,239,238,0.45)" fontSize="$2">
+                      <span className="box-border text-[rgba(236,239,238,0.45)] text-[14px]">
                         {formatDate(note.createdAt, locale, {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric',
                         })}
-                      </Text>
-                    </YStack>
-                    <XStack
-                      backgroundColor="rgba(122,215,255,0.1)"
-                      borderWidth={1}
-                      borderColor="rgba(122,215,255,0.3)"
-                      paddingVertical="$1"
-                      paddingHorizontal="$3"
-                      borderRadius="$4"
-                      alignSelf="flex-end"
-                    >
-                      <Text
-                        color="$primaryGradientStart"
-                        fontSize="$3"
-                        fontWeight="600"
-                      >
+                      </span>
+                    </div>
+                    <div className="box-border flex flex-row items-stretch bg-[rgba(122,215,255,0.1)] border border-[rgba(122,215,255,0.3)] py-1 px-3 rounded-2xl self-end">
+                      <span className="box-border text-[var(--primaryGradientStart)] text-[16px] font-semibold">
                         {formatCurrency(note.amount, locale, note.currency, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 2,
                         })}
-                      </Text>
-                    </XStack>
-                  </XStack>
+                      </span>
+                    </div>
+                  </div>
                 </GlassCard>
               ))}
-            </XStack>
+            </div>
 
             <div
               ref={loadTriggerRef}
@@ -185,11 +143,11 @@ export default function NotesPage({ initialData }: NotesPageProps) {
             />
 
             {isFetchingNextPage && (
-              <XStack jc="center" py="$8">
-                <Text color="rgba(236,239,238,0.45)">
+              <div className="box-border flex flex-row items-stretch justify-center py-8">
+                <span className="box-border text-[rgba(236,239,238,0.45)]">
                   {t('payments.notes.loading') || 'Loading...'}
-                </Text>
-              </XStack>
+                </span>
+              </div>
             )}
           </>
         )}

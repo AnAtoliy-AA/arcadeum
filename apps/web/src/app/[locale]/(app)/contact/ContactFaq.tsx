@@ -3,7 +3,6 @@
 import { useState, type ReactNode } from 'react';
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { YStack } from 'tamagui';
 import { ChevronIcon } from './ContactView.icons';
 import { useContactStyles } from './useContactStyles';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
@@ -72,14 +71,14 @@ export function ContactFaq({
   return (
     <GlassCard>
       <div style={s.faqHeaderRowStyle}>
-        <YStack gap={2}>
+        <div className="box-border flex flex-col items-stretch gap-2">
           <span style={s.labelChipStyle}>
             {questionsLabel ?? 'Common questions'}
           </span>
           <Typography variant="heading" uiSize="xl">
             {title ?? 'Maybe we already answered this'}
           </Typography>
-        </YStack>
+        </div>
         <a
           href="https://help.arcadeum.games"
           target="_blank"
@@ -89,7 +88,7 @@ export function ContactFaq({
           {browseLabel ?? 'Browse help center'}
         </a>
       </div>
-      <YStack>
+      <div className="box-border flex flex-col items-stretch">
         {items.map((it) => {
           const open = openKey === it.key;
           return (
@@ -117,7 +116,7 @@ export function ContactFaq({
             </div>
           );
         })}
-      </YStack>
+      </div>
     </GlassCard>
   );
 }

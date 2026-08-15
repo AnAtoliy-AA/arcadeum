@@ -1,5 +1,4 @@
 'use client';
-import { XStack, YStack, Text, View, styled } from 'tamagui';
 import {
   RankBadge,
   FormPips,
@@ -7,42 +6,58 @@ import {
   EnergyBar,
   LiveChip,
 } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import type { LeaderboardPlayer } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 
-const Row = styled(XStack, {
-  name: 'LbRow',
-  alignItems: 'center',
-  paddingHorizontal: '$3',
-  paddingVertical: '$3',
-  borderBottomWidth: 1,
-  borderColor: '$borderColor',
-  gap: '$3',
-  hoverStyle: { backgroundColor: 'rgba(255,255,255,0.03)' },
-});
+const rowBase =
+  'box-border flex flex-row items-center gap-3 border-b border-[var(--borderColor)]';
 
-const HeaderRow = styled(XStack, {
-  name: 'LbHeader',
-  alignItems: 'center',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderBottomWidth: 1,
-  borderColor: '$borderColor',
-  gap: '$3',
-});
+function Row({
+  className,
+  minHeight,
+  ...props
+}: {
+  className?: string;
+  minHeight?: number;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        rowBase,
+        'px-3 py-3 hover:bg-[rgba(255,255,255,0.03)]',
+        className,
+      )}
+      style={minHeight ? { minHeight } : undefined}
+      {...props}
+    />
+  );
+}
 
-const TagPill = styled(XStack, {
-  name: 'GameTag',
-  paddingHorizontal: 8,
-  paddingVertical: 2,
-  borderRadius: 999,
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: 'rgba(255,255,255,0.02)',
-});
+function HeaderRow({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cx(rowBase, 'px-3 py-2', className)} {...props} />;
+}
+
+function TagPill({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch rounded-full border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] px-2 py-0.5',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export function RankTable({
   rows,
@@ -69,108 +84,48 @@ export function RankTable({
   const max = topRating ?? rows[0]?.rating ?? 1;
 
   return (
-    <YStack
-      borderRadius="$4"
-      borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="rgba(255,255,255,0.02)"
-      overflow="hidden"
-      testID="leaderboard-table"
+    <div
+      className="box-border flex flex-col items-stretch rounded-2xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] overflow-hidden"
+      data-testid="leaderboard-table"
     >
       <HeaderRow>
-        <Text width={56} fontSize="$1" opacity={0.6} textTransform="uppercase">
+        <span className="box-border w-[56px] text-[12px] opacity-[0.6] uppercase">
           {labels.rank ?? '#'}
-        </Text>
-        <Text flex={1} fontSize="$1" opacity={0.6} textTransform="uppercase">
+        </span>
+        <span className="box-border flex-1 text-[12px] opacity-[0.6] uppercase">
           {labels.player ?? 'Player'}
-        </Text>
-        <Text width={80} fontSize="$1" opacity={0.6} textTransform="uppercase">
+        </span>
+        <span className="box-border w-[80px] text-[12px] opacity-[0.6] uppercase">
           {labels.region ?? 'Region'}
-        </Text>
-        <Text
-          width={240}
-          fontSize="$1"
-          opacity={0.6}
-          textTransform="uppercase"
-          $sm={{ display: 'none' }}
-        >
+        </span>
+        <span className="box-border w-[240px] text-[12px] opacity-[0.6] uppercase max-[800px]:hidden">
           {labels.rating ?? 'Rating'}
-        </Text>
-        <Text
-          width={140}
-          fontSize="$1"
-          opacity={0.6}
-          textTransform="uppercase"
-          $sm={{ display: 'none' }}
-        >
+        </span>
+        <span className="box-border w-[140px] text-[12px] opacity-[0.6] uppercase max-[800px]:hidden">
           {labels.form ?? 'Form'}
-        </Text>
-        <Text
-          width={120}
-          fontSize="$1"
-          opacity={0.6}
-          textTransform="uppercase"
-          $md={{ display: 'none' }}
-        >
+        </span>
+        <span className="box-border w-[120px] text-[12px] opacity-[0.6] uppercase max-[1150px]:hidden">
           Tags
-        </Text>
-        <Text width={72} fontSize="$1" opacity={0.6} textTransform="uppercase">
+        </span>
+        <span className="box-border w-[72px] text-[12px] opacity-[0.6] uppercase">
           {labels.trend ?? 'Trend'}
-        </Text>
+        </span>
       </HeaderRow>
 
       {loading
         ? Array.from({ length: 8 }).map((_, i) => (
             <Row key={`sk_${i}`} minHeight={56}>
-              <View width={56} alignItems="flex-start">
-                <View
-                  width={36}
-                  height={22}
-                  backgroundColor="rgba(255,255,255,0.06)"
-                  borderRadius={4}
-                />
-              </View>
-              <YStack flex={1} gap={4}>
-                <View
-                  width="60%"
-                  height={16}
-                  backgroundColor="rgba(255,255,255,0.06)"
-                  borderRadius={4}
-                />
-              </YStack>
-              <View
-                width={80}
-                height={14}
-                backgroundColor="rgba(255,255,255,0.04)"
-                borderRadius={4}
-              />
-              <View
-                width={240}
-                height={22}
-                backgroundColor="rgba(255,255,255,0.06)"
-                borderRadius={11}
-                $sm={{ display: 'none' }}
-              />
-              <View
-                width={140}
-                height={16}
-                backgroundColor="rgba(255,255,255,0.04)"
-                borderRadius={4}
-                $sm={{ display: 'none' }}
-              />
-              <View
-                width={120}
-                height={20}
-                backgroundColor="rgba(255,255,255,0.04)"
-                borderRadius={10}
-                $md={{ display: 'none' }}
-              />
-              <View
-                width={72}
-                height={20}
-                backgroundColor="rgba(255,255,255,0.04)"
-                borderRadius={10}
-              />
+              <div className="box-border w-[56px] items-start">
+                <div className="box-border w-[36px] h-[22px] bg-[rgba(255,255,255,0.06)] rounded-2xl" />
+              </div>
+              <div className="box-border flex flex-col items-stretch flex-1 gap-4">
+                <div className="box-border w-[60%] h-[16px] bg-[rgba(255,255,255,0.06)] rounded-2xl" />
+              </div>
+              <div className="box-border w-[80px] h-[14px] bg-[rgba(255,255,255,0.04)] rounded-2xl" />
+              <div className="box-border w-[240px] h-[22px] bg-[rgba(255,255,255,0.06)] rounded-[11px] max-[800px]:hidden" />
+              <div className="box-border w-[140px] h-[16px] bg-[rgba(255,255,255,0.04)] rounded-2xl max-[800px]:hidden" />
+              <div className="box-border w-[120px] h-[20px] bg-[rgba(255,255,255,0.04)] rounded-[10px] max-[1150px]:hidden" />
+              <div className="box-border w-[72px] h-[20px] bg-[rgba(255,255,255,0.04)] rounded-[10px]" />
             </Row>
           ))
         : rows.map((p, i) => (
@@ -184,7 +139,7 @@ export function RankTable({
               priority={i === 0}
             />
           ))}
-    </YStack>
+    </div>
   );
 }
 
@@ -216,14 +171,14 @@ function RankRow({
   const nameProps = nameColorRenderProps(nameColor);
   return (
     <Row
-      testID={`leaderboard-row-${p.rank}`}
+      data-testid={`leaderboard-row-${p.rank}`}
       {...(isSelf ? { 'data-self': 'true' } : {})}
     >
-      <View width={56}>
+      <div className="box-border w-[56px]">
         <RankBadge tier={p.tier as never}>{`#${p.rank}`}</RankBadge>
-      </View>
-      <YStack flex={1} gap={2}>
-        <XStack gap="$2" alignItems="center" flexWrap="wrap">
+      </div>
+      <div className="box-border flex flex-col items-stretch flex-1 gap-2">
+        <div className="box-border flex flex-row gap-2 items-center flex-wrap">
           <EquippedPlayerAvatar
             size="sm"
             name={p.name}
@@ -239,62 +194,55 @@ function RankRow({
             data-testid={`leaderboard-row-${p.rank}-avatar`}
           />
           {flag ? (
-            <Text fontSize="$3" aria-label={p.countryCode}>
+            <span className="box-border text-[16px]" aria-label={p.countryCode}>
               {flag}
-            </Text>
+            </span>
           ) : null}
-          <Text
-            fontWeight="700"
-            numberOfLines={1}
-            {...(nameProps.color ? { color: nameProps.color } : {})}
-            {...(nameProps.style ? { style: nameProps.style } : {})}
+          <span
+            className="box-border font-bold line-clamp-1"
+            style={
+              nameProps.color ? { color: nameProps.color } : nameProps.style
+            }
           >
             {p.name}
-          </Text>
+          </span>
           {p.isOnline ? (
-            <View
-              width={8}
-              height={8}
-              borderRadius={4}
-              backgroundColor="$success"
-            />
+            <div className="box-border w-[8px] h-[8px] rounded-2xl bg-[var(--success)]" />
           ) : null}
           {p.streak && p.streak >= 3 ? (
-            <Text fontSize="$2">🔥 {p.streak}</Text>
+            <span className="box-border text-[14px]">🔥 {p.streak}</span>
           ) : null}
           {live ? (
-            <View testID="row-live-chip">
+            <div className="box-border" data-testid="row-live-chip">
               <LiveChip label={liveLabel} />
-            </View>
+            </div>
           ) : null}
           {p.elo ? (
-            <Text fontSize="$1" opacity={0.5} letterSpacing={1}>
+            <span className="box-border text-[12px] opacity-[0.5] tracking-[1px]">
               {p.elo} ELO
-            </Text>
+            </span>
           ) : null}
-        </XStack>
-      </YStack>
-      <Text width={80} fontSize="$2" opacity={0.8} numberOfLines={1}>
+        </div>
+      </div>
+      <span className="box-border w-[80px] text-[14px] opacity-[0.8] line-clamp-1">
         {regionLabels[p.region] ?? p.region.toUpperCase()}
-      </Text>
-      <View width={240} $sm={{ display: 'none' }}>
+      </span>
+      <div className="box-border w-[240px] max-[800px]:hidden">
         <EnergyBar value={p.rating} max={max} />
-      </View>
-      <View width={140} $sm={{ display: 'none' }}>
+      </div>
+      <div className="box-border w-[140px] max-[800px]:hidden">
         <FormPips results={p.recentForm} max={8} variant="letter" />
-      </View>
-      <YStack width={120} gap={4} $md={{ display: 'none' }}>
+      </div>
+      <div className="box-border flex flex-col items-stretch w-[120px] gap-4 max-[1150px]:hidden">
         {(p.gameTags ?? []).slice(0, 2).map((tag) => (
           <TagPill key={tag}>
-            <Text fontSize="$1" opacity={0.85}>
-              {tag}
-            </Text>
+            <span className="box-border text-[12px] opacity-[0.85]">{tag}</span>
           </TagPill>
         ))}
-      </YStack>
-      <View width={72}>
+      </div>
+      <div className="box-border w-[72px]">
         <TrendPill rank={p.rank} prevRank={p.prevRank} />
-      </View>
+      </div>
     </Row>
   );
 }

@@ -1,31 +1,25 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import {
-  PageLayout,
-  Container,
-  GlassCard,
-  Skeleton,
-  YStack,
-} from '@arcadeum/ui';
+import { PageLayout, Container, GlassCard, Skeleton } from '@arcadeum/ui';
 
 const LoadingSkeleton = () => (
   <PageLayout>
     <Container size="md">
       <GlassCard>
-        <YStack marginBottom="$4">
-          <Skeleton height={60} width="60%" />
-        </YStack>
-        <Skeleton height={20} width="30%" />
+        <div className="box-border flex flex-col items-stretch -mb-4">
+          <Skeleton className="h-[60px] w-[60%]" />
+        </div>
+        <Skeleton className="h-[20px] w-[30%]" />
       </GlassCard>
-      <YStack gap="$6" marginTop="$8">
+      <div className="box-border flex flex-col items-stretch gap-6 -mt-8">
         {[1, 2, 3].map((i) => (
-          <YStack key={i} gap="$3">
-            <Skeleton height={30} width="40%" />
-            <Skeleton height={100} width="100%" />
-          </YStack>
+          <div className="box-border flex flex-col items-stretch gap-3" key={i}>
+            <Skeleton className="h-[30px] w-[40%]" />
+            <Skeleton className="h-[100px] w-full" />
+          </div>
         ))}
-      </YStack>
+      </div>
     </Container>
   </PageLayout>
 );

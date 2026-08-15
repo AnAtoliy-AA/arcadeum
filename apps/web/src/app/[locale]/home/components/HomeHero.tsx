@@ -126,8 +126,6 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
 
               return (
                 <Link
-                  key={card.id}
-                  href={`${routes.gameCreate}?variant=${card.id}`}
                   className="hero-card-main absolute isolate h-[380px] min-h-[48px] min-w-[48px] w-[280px] cursor-pointer touch-manipulation overflow-hidden rounded-3xl border border-white/[0.06] bg-[rgba(20,22,26,0.92)] text-inherit shadow-card no-underline [transform:var(--card-transform)]"
                   style={
                     {
@@ -138,6 +136,8 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
                       transition: HERO_CARD_TRANSITION,
                     } as React.CSSProperties
                   }
+                  key={card.id}
+                  href={`${routes.gameCreate}?variant=${card.id}`}
                   data-testid={`hero-card-${index}`}
                 >
                   <Image

@@ -1,15 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import {
-  PageLayout,
-  Container,
-  Typography,
-  Section,
-  XStack,
-  YStack,
-} from '@arcadeum/ui';
-import { View } from 'tamagui';
+import { PageLayout, Container, Typography, Section } from '@arcadeum/ui';
 import type { ChangelogEntry } from './page';
 
 const SECTION_COLORS: Record<string, string> = {
@@ -41,9 +33,8 @@ function VersionCard({
   );
 
   return (
-    <YStack
-      borderRadius="$4"
-      overflow="hidden"
+    <div
+      className="box-border flex flex-col items-stretch rounded-2xl overflow-hidden"
       style={{
         background: isExpanded
           ? 'rgba(255,255,255,0.03)'
@@ -54,155 +45,119 @@ function VersionCard({
           : 'rgba(255,255,255,0.04)',
       }}
     >
-      <YStack
-        pressStyle={{ opacity: 0.8 }}
-        cursor="pointer"
-        onPress={onToggle}
-        p="$4"
+      <div
+        className="box-border flex flex-col items-stretch active:opacity-[0.8] cursor-pointer p-4"
+        onClick={onToggle}
       >
-        <XStack justifyContent="space-between" alignItems="center">
-          <XStack gap="$3" alignItems="center" flex={1}>
-            <View
-              px="$3"
-              py="$1.5"
-              borderRadius={9999}
-              backgroundColor="rgba(99,102,241,0.15)"
-              borderWidth={1}
-              borderColor="rgba(99,102,241,0.3)"
-            >
+        <div className="box-border flex flex-row justify-space-between items-center">
+          <div className="box-border flex flex-row gap-3 items-center flex-1">
+            <div className="box-border px-3 rounded-[9999px] bg-[rgba(99,102,241,0.15)] border border-[rgba(99,102,241,0.3)]">
               <Typography
+                className="font-bold text-[#6366f1]"
                 variant="label"
                 uiSize="sm"
-                fontWeight="700"
-                color="#6366f1"
               >
                 v{entry.version}
               </Typography>
-            </View>
+            </div>
             {entry.date && (
               <Typography variant="caption" alpha="medium" uiSize="sm">
                 {entry.date}
               </Typography>
             )}
             {isReleased && (
-              <View
-                px="$2"
-                py="$1"
-                borderRadius={9999}
-                backgroundColor="rgba(34,197,94,0.15)"
-                borderWidth={1}
-                borderColor="rgba(34,197,94,0.3)"
-              >
+              <div className="box-border px-2 py-1 rounded-[9999px] bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)]">
                 <Typography
+                  className="font-bold text-[#22c55e]"
                   variant="label"
                   uiSize="xs"
-                  fontWeight="700"
-                  color="#22c55e"
                 >
                   Released
                 </Typography>
-              </View>
+              </div>
             )}
-          </XStack>
-          <XStack gap="$2" alignItems="center">
-            <View
-              px="$2"
-              py="$0.5"
-              borderRadius={9999}
-              backgroundColor="rgba(255,255,255,0.05)"
-            >
+          </div>
+          <div className="box-border flex flex-row gap-2 items-center">
+            <div className="box-border px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
               <Typography variant="caption" uiSize="xs" alpha="medium">
                 {totalChanges} changes
               </Typography>
-            </View>
-            <View
-              width={28}
-              height={28}
-              borderRadius={9999}
-              backgroundColor="rgba(255,255,255,0.05)"
-              alignItems="center"
-              justifyContent="center"
-            >
+            </div>
+            <div className="box-border w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
               <Typography
+                className="font-bold"
                 variant="body"
                 uiSize="sm"
                 alpha="medium"
-                fontWeight="700"
               >
                 {isExpanded ? '−' : '+'}
               </Typography>
-            </View>
-          </XStack>
-        </XStack>
-      </YStack>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {isExpanded && (
-        <YStack gap="$0">
-          <View
-            mx="$4"
-            borderBottomWidth={1}
-            borderBottomColor="rgba(255,255,255,0.06)"
-          />
-          <YStack p="$4" gap="$4">
+        <div className="box-border flex flex-col items-stretch gap-0">
+          <div className="box-border -mx-4 border-b border-b-[rgba(255,255,255,0.06)]" />
+          <div className="box-border flex flex-col items-stretch p-4 gap-4">
             {entry.sections.map((section) => (
-              <YStack key={section.type} gap="$2">
-                <XStack alignItems="center" gap="$2">
-                  <View
-                    width={8}
-                    height={8}
-                    borderRadius={9999}
-                    backgroundColor={SECTION_COLORS[section.type] || '#6b7280'}
+              <div
+                className="box-border flex flex-col items-stretch gap-2"
+                key={section.type}
+              >
+                <div className="box-border flex flex-row items-center gap-2">
+                  <div
+                    className="box-border w-[8px] h-[8px] rounded-[9999px]"
+                    style={{
+                      backgroundColor:
+                        SECTION_COLORS[section.type] || '#6b7280',
+                    }}
                   />
                   <Typography
+                    className="font-bold"
+                    style={{ color: SECTION_COLORS[section.type] || '#6b7280' }}
                     variant="label"
                     uiSize="sm"
-                    fontWeight="700"
-                    color={SECTION_COLORS[section.type] || '#6b7280'}
                   >
                     {section.type}
                   </Typography>
-                  <View
-                    px="$1.5"
-                    py="$0.5"
-                    borderRadius={9999}
-                    backgroundColor="rgba(255,255,255,0.05)"
-                  >
+                  <div className="box-border rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
                     <Typography variant="caption" uiSize="xs" alpha="medium">
                       {section.items.length}
                     </Typography>
-                  </View>
-                </XStack>
-                <YStack pl="$5" gap="$1.5">
+                  </div>
+                </div>
+                <div className="box-border flex flex-col items-stretch pl-5 gap-null">
                   {section.items.map((item, idx) => (
-                    <XStack key={idx} gap="$2" alignItems="flex-start">
-                      <View
-                        mt="$1.5"
-                        width={4}
-                        height={4}
-                        borderRadius={9999}
-                        backgroundColor={
-                          SECTION_COLORS[section.type] || '#6b7280'
-                        }
-                        opacity={0.4}
-                        flexShrink={0}
+                    <div
+                      className="box-border flex flex-row gap-2 items-start"
+                      key={idx}
+                    >
+                      <div
+                        className="box-border w-[4px] h-[4px] rounded-[9999px] opacity-[0.4] shrink-0"
+                        style={{
+                          backgroundColor:
+                            SECTION_COLORS[section.type] || '#6b7280',
+                        }}
                       />
                       <Typography
+                        className="flex-1"
                         variant="body"
                         uiSize="sm"
                         alpha="high"
-                        flex={1}
                       >
                         {item}
                       </Typography>
-                    </XStack>
+                    </div>
                   ))}
-                </YStack>
-              </YStack>
+                </div>
+              </div>
             ))}
-          </YStack>
-        </YStack>
+          </div>
+        </div>
       )}
-    </YStack>
+    </div>
   );
 }
 
@@ -238,52 +193,40 @@ export default function ChangelogView({
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$6">
-          <YStack
-            p="$8"
-            borderRadius="$4"
+        <div className="box-border flex flex-col items-stretch gap-6">
+          <div
+            className="box-border flex flex-col items-stretch p-8 rounded-2xl border border-[rgba(99,102,241,0.2)] gap-3"
             style={{
               background:
                 'linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(168,85,247,0.15) 50%, rgba(236,72,153,0.1) 100%)',
             }}
-            borderWidth={1}
-            borderColor="rgba(99,102,241,0.2)"
-            gap="$3"
           >
             <Typography
+              className="font-extrabold"
               variant="heading"
               uiSize="3xl"
-              fontWeight="800"
               gradient="primary"
             >
               Changelog
             </Typography>
             <Typography
+              className="max-w-[500px]"
               variant="body"
               uiSize="md"
               alpha="medium"
-              maxWidth={500}
             >
               All notable changes to Arcadeum are documented here. Follow
               Semantic Versioning.
             </Typography>
-            <View
-              px="$3"
-              py="$1"
-              borderRadius={9999}
-              backgroundColor="rgba(255,255,255,0.06)"
-              borderWidth={1}
-              borderColor="rgba(255,255,255,0.1)"
-              alignSelf="flex-start"
-            >
+            <div className="box-border px-3 py-1 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] self-start">
               <Typography variant="caption" uiSize="xs" alpha="medium">
                 {entries.length} releases
               </Typography>
-            </View>
-          </YStack>
+            </div>
+          </div>
 
           <Section variant="legal">
-            <YStack gap="$3">
+            <div className="box-border flex flex-col items-stretch gap-3">
               {visibleEntries.map((entry) => (
                 <VersionCard
                   key={entry.version}
@@ -297,34 +240,26 @@ export default function ChangelogView({
                   }
                 />
               ))}
-            </YStack>
+            </div>
           </Section>
 
           {!showAll && entries.length > 10 && (
-            <XStack justifyContent="center">
-              <View
-                px="$6"
-                py="$3"
-                borderRadius="$3"
-                cursor="pointer"
-                pressStyle={{ opacity: 0.8 }}
-                onPress={() => setShowAll(true)}
-                backgroundColor="rgba(99,102,241,0.15)"
-                borderWidth={1}
-                borderColor="rgba(99,102,241,0.3)"
+            <div className="box-border flex flex-row items-stretch justify-center">
+              <div
+                className="box-border px-6 py-3 rounded-xl cursor-pointer active:opacity-[0.8] bg-[rgba(99,102,241,0.15)] border border-[rgba(99,102,241,0.3)]"
+                onClick={() => setShowAll(true)}
               >
                 <Typography
+                  className="text-[#6366f1] font-semibold"
                   variant="label"
                   uiSize="sm"
-                  color="#6366f1"
-                  fontWeight="600"
                 >
                   Show all {entries.length} releases
                 </Typography>
-              </View>
-            </XStack>
+              </div>
+            </div>
           )}
-        </YStack>
+        </div>
       </Container>
     </PageLayout>
   );

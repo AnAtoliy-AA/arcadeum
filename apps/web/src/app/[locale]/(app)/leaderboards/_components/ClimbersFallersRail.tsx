@@ -1,5 +1,4 @@
 'use client';
-import { XStack, YStack, Text } from 'tamagui';
 import { DeltaChip } from '@arcadeum/ui';
 import type { ClimberFaller } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
@@ -14,7 +13,7 @@ export function ClimbersFallersRail({
   t?: PageTranslations;
 }) {
   return (
-    <XStack gap="$4" flexWrap="wrap">
+    <div className="box-border flex flex-row items-stretch gap-4 flex-wrap">
       <Column
         title={(t?.climbers as { title?: string })?.title ?? 'Top climbers'}
         rows={climbers}
@@ -25,7 +24,7 @@ export function ClimbersFallersRail({
         rows={fallers}
         accent="$danger"
       />
-    </XStack>
+    </div>
   );
 }
 
@@ -39,41 +38,30 @@ function Column({
   accent: '$success' | '$danger';
 }) {
   return (
-    <YStack
-      flex={1}
-      minWidth={280}
-      gap="$3"
-      padding="$4"
-      borderRadius="$4"
-      borderWidth={1}
-      borderTopWidth={2}
-      borderTopColor={accent}
-      borderColor="$borderColor"
-      backgroundColor="rgba(255,255,255,0.02)"
+    <div
+      className="box-border flex flex-col items-stretch flex-1 min-w-[280px] gap-3 p-4 rounded-2xl border border-t-[2px] border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]"
+      style={{
+        borderTopColor: accent.startsWith('$')
+          ? `var(--${accent.slice(1)})`
+          : accent,
+      }}
     >
-      <Text
-        fontSize="$2"
-        letterSpacing={2}
-        opacity={0.7}
-        textTransform="uppercase"
-      >
+      <span className="box-border text-[14px] tracking-[2px] opacity-[0.7] uppercase">
         {title}
-      </Text>
-      <YStack gap="$2">
+      </span>
+      <div className="box-border flex flex-col items-stretch gap-2">
         {rows.map(({ player, fromRank, toRank }) => (
-          <XStack
+          <div
+            className="box-border flex flex-row items-center justify-space-between gap-3"
             key={player.id}
-            alignItems="center"
-            justifyContent="space-between"
-            gap="$3"
           >
-            <Text fontWeight="600" numberOfLines={1} flex={1}>
+            <span className="box-border font-semibold line-clamp-1 flex-1">
               {player.name}
-            </Text>
+            </span>
             <DeltaChip from={fromRank} to={toRank} />
-          </XStack>
+          </div>
         ))}
-      </YStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

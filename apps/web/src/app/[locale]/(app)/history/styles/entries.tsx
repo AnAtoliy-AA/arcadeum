@@ -53,10 +53,10 @@ export const EntryGameName = ({
   ...props
 }: { title?: string } & React.ComponentProps<typeof Typography>) => (
   <Typography
+    className={entryTextClasses}
     uiSize="lg"
     weight="600"
     title={title}
-    className={entryTextClasses}
     {...props}
   >
     {children}
@@ -69,10 +69,10 @@ export const EntryRoomName = ({
   ...props
 }: { title?: string } & React.ComponentProps<typeof Typography>) => (
   <Typography
+    className={entryTextClasses}
     uiSize="sm"
     alpha="medium"
     title={title}
-    className={entryTextClasses}
     {...props}
   >
     {children}
@@ -83,7 +83,12 @@ export const EntryStatus = ({
   children,
   ...props
 }: WithGetProps<typeof Badge>) => (
-  <Badge variant="info" size="sm" borderRadius={999} flexShrink={0} {...props}>
+  <Badge
+    className="rounded-[999px] shrink-0"
+    variant="info"
+    size="sm"
+    {...props}
+  >
     {children}
   </Badge>
 );

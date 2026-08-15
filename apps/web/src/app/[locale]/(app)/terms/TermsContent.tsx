@@ -12,7 +12,6 @@ import {
   PageTitle,
   Typography,
   Section,
-  YStack,
 } from '@arcadeum/ui';
 import type { TermsMessages, ContactMessages } from '@/shared/i18n/types';
 
@@ -77,7 +76,7 @@ export default function TermsContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {formatMessage(s?.services?.intro, { appName: APP_NAME })}
           </Typography>
-          <YStack paddingLeft="$5" gap="$2">
+          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -93,14 +92,14 @@ export default function TermsContent({
                 </li>
               ))}
             </ul>
-          </YStack>
+          </div>
         </Section>
 
         <Section variant="legal" title={s?.accounts?.title}>
           <Typography variant="body" uiSize="md" alpha="high">
             {formatMessage(s?.accounts?.intro, { appName: APP_NAME })}
           </Typography>
-          <YStack paddingLeft="$5" gap="$2">
+          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -116,7 +115,7 @@ export default function TermsContent({
                 </li>
               ))}
             </ul>
-          </YStack>
+          </div>
         </Section>
 
         <Section variant="legal" title={s?.delivery?.title}>
@@ -135,7 +134,7 @@ export default function TermsContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.refund?.intro}
           </Typography>
-          <YStack paddingLeft="$5" gap="$2">
+          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -164,11 +163,11 @@ export default function TermsContent({
                 </Typography>
               </li>
             </ul>
-          </YStack>
-          <Typography variant="body" uiSize="md" alpha="high" marginTop="$4">
+          </div>
+          <Typography className="-mt-4" variant="body" uiSize="md" alpha="high">
             {s?.refund?.contact}{' '}
             <Link href={routes.contact}>
-              <Typography color="$primary" textDecorationLine="underline">
+              <Typography className="text-[var(--primary)] underline">
                 {contactT?.title}
               </Typography>
             </Link>
@@ -180,7 +179,7 @@ export default function TermsContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.acceptableUse?.intro}
           </Typography>
-          <YStack paddingLeft="$5" gap="$2">
+          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -196,7 +195,7 @@ export default function TermsContent({
                 </li>
               ))}
             </ul>
-          </YStack>
+          </div>
         </Section>
 
         <Section variant="legal" title={s?.intellectualProperty?.title}>
@@ -226,7 +225,7 @@ export default function TermsContent({
             <Typography variant="body" uiSize="md" alpha="high">
               {s?.arcPayments?.content}
             </Typography>
-            <YStack paddingLeft="$5" gap="$2">
+            <div className="box-border flex flex-col items-stretch pl-5 gap-2">
               <ul
                 style={{
                   listStyleType: 'disc',
@@ -242,7 +241,7 @@ export default function TermsContent({
                   </li>
                 ))}
               </ul>
-            </YStack>
+            </div>
           </Section>
         )}
 
@@ -267,7 +266,7 @@ export default function TermsContent({
             <Typography variant="body" uiSize="md" alpha="high">
               {s?.taxes?.content}
             </Typography>
-            <YStack paddingLeft="$5" gap="$2">
+            <div className="box-border flex flex-col items-stretch pl-5 gap-2">
               <ul
                 style={{
                   listStyleType: 'disc',
@@ -283,25 +282,18 @@ export default function TermsContent({
                   </li>
                 ))}
               </ul>
-            </YStack>
+            </div>
             {s?.taxes?.important && (
-              <YStack
-                marginTop="$4"
-                padding="$4"
-                borderRadius="$2"
-                backgroundColor="rgba(234, 179, 8, 0.15)"
-                borderLeftWidth={4}
-                borderLeftColor="#eab308"
-              >
+              <div className="box-border flex flex-col items-stretch -mt-4 p-4 rounded-lg bg-[rgba(234,_179,_8,_0.15)] border-l-[4px] border-l-[#eab308]">
                 <Typography
+                  className="font-bold"
                   variant="body"
                   uiSize="md"
                   alpha="high"
-                  fontWeight="bold"
                 >
                   {s?.taxes?.important}
                 </Typography>
-              </YStack>
+              </div>
             )}
           </Section>
         )}

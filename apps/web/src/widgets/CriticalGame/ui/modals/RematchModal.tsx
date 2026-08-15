@@ -1,14 +1,8 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import {
-  YStack,
-  XStack,
-  Text,
-  TextArea,
-  Checkbox as TamaCheckbox,
-  styled,
-} from 'tamagui';
+import { TextArea } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   Modal,
   ModalContent,
@@ -35,80 +29,77 @@ interface RematchModalProps {
   cardVariant?: string;
 }
 
-const ModalDescription = styled(Text, {
-  name: 'ModalDescription',
-  fontSize: '$3',
-  marginBottom: '$4',
-  opacity: 0.8,
-});
+function ModalDescription({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="box-border text-[16px] leading-[20px] opacity-[0.8] mb-4">
+      {children}
+    </div>
+  );
+}
 
-const PlayerList = styled(YStack, {
-  name: 'PlayerList',
-  gap: '$2',
-  marginBottom: '$4',
-});
+function PlayerList({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="box-border flex flex-col items-stretch gap-2 mb-4">
+      {children}
+    </div>
+  );
+}
 
-const PlayerItem = styled(XStack, {
-  name: 'PlayerItem',
-  alignItems: 'center',
-  gap: '$3',
-  padding: '$3',
-  borderRadius: '$4',
-  cursor: 'pointer',
-  borderWidth: 1,
+function PlayerItem({
+  selected,
+  className,
+  ...props
+}: {
+  selected?: boolean;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center gap-3 p-3 rounded-2xl border cursor-pointer hover:bg-[rgba(255,255,255,0.1)]',
+        selected
+          ? 'bg-[rgba(99,102,241,0.2)] border-[rgba(99,102,241,0.5)]'
+          : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  variants: {
-    selected: {
-      true: {
-        backgroundColor: 'rgba(99, 102, 241, 0.2)',
-        borderColor: 'rgba(99, 102, 241, 0.5)',
-      },
-      false: {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-      },
-    },
-  } as const,
+function PlayerName({ children }: { children?: React.ReactNode }) {
+  return (
+    <span className="box-border flex-1 text-[18px] leading-[24px]">
+      {children}
+    </span>
+  );
+}
 
-  hoverStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-});
+function EliminatedBadge({ children }: { children?: React.ReactNode }) {
+  return (
+    <span className="box-border text-[14px] leading-[18px] ml-2">
+      {children}
+    </span>
+  );
+}
 
-const PlayerName = styled(Text, {
-  name: 'PlayerName',
-  fontSize: '$4',
-  flex: 1,
-});
+function EmptyMessage({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="box-border text-center p-4 opacity-[0.6]">{children}</div>
+  );
+}
 
-const EliminatedBadge = styled(Text, {
-  name: 'EliminatedBadge',
-  fontSize: '$2',
-});
-
-const EmptyMessage = styled(Text, {
-  name: 'EmptyMessage',
-  padding: '$4',
-  textAlign: 'center',
-  opacity: 0.6,
-});
-
-const StyledMessageInput = styled(TextArea, {
-  name: 'MessageInput',
-  width: '100%',
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  borderColor: 'rgba(255, 255, 255, 0.1)',
-  borderRadius: '$4',
-  color: '$color',
-  minHeight: 80,
-  fontSize: '$3',
-  marginBottom: '$4',
-
-  focusStyle: {
-    borderColor: '#6366f1',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-  },
-});
+function StyledMessageInput(props: React.ComponentProps<typeof TextArea>) {
+  return (
+    <TextArea
+      {...props}
+      className={cx(
+        'box-border w-full min-h-[80px] text-[16px] rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] mb-4 text-[var(--color)] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
+        props.className,
+      )}
+    />
+  );
+}
 
 export default function RematchModal({
   isOpen,
@@ -179,19 +170,17 @@ export default function RematchModal({
               onClick={() => togglePlayer(player.playerId)}
               selected={selectedPlayers.has(player.playerId)}
             >
-              <TamaCheckbox
+              <input
+                type="checkbox"
                 id={player.playerId}
-                size="$4"
                 checked={selectedPlayers.has(player.playerId)}
-                onCheckedChange={() => togglePlayer(player.playerId)}
-              >
-                <TamaCheckbox.Indicator>
-                  <Text color="#6366f1">✓</Text>
-                </TamaCheckbox.Indicator>
-              </TamaCheckbox>
+                onChange={() => togglePlayer(player.playerId)}
+                aria-label={player.displayName}
+                className="box-border w-4 h-4 cursor-pointer accent-[#6366f1]"
+              />
               <PlayerName>
                 {player.displayName}
-                {!player.alive && <EliminatedBadge ml="$2">💀</EliminatedBadge>}
+                {!player.alive && <EliminatedBadge>💀</EliminatedBadge>}
               </PlayerName>
             </PlayerItem>
           ))}

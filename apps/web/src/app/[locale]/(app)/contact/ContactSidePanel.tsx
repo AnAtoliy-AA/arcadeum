@@ -2,7 +2,6 @@
 
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { XStack, YStack } from 'tamagui';
 import { GithubIcon } from './ContactView.icons';
 import { ContactAvatars } from './ContactAvatars';
 import { useContactStyles } from './useContactStyles';
@@ -25,14 +24,17 @@ export function ContactSidePanel({
 }: ContactSidePanelProps) {
   const s = useContactStyles();
   return (
-    <YStack flex={1} minWidth={0} style={s.sideStackStyle}>
+    <div
+      className="box-border flex flex-col items-stretch flex-1 min-w-0"
+      style={s.sideStackStyle}
+    >
       <GlassCard>
         <span style={s.labelChipStyle}>
           {side?.onCall ?? 'On call right now'}
         </span>
-        <XStack alignItems="center" gap="$3" marginTop="$2">
+        <div className="box-border flex flex-row items-center gap-3 -mt-2">
           <ContactAvatars count={4} size={32} />
-          <YStack gap={2}>
+          <div className="box-border flex flex-col items-stretch gap-2">
             <Typography fontWeight="700">
               {formatMessage(side?.onCallTeam, { extra: '2' }) ??
                 'Maria, Anatoliy +2'}
@@ -40,10 +42,10 @@ export function ContactSidePanel({
             <Typography variant="caption" alpha="medium">
               {side?.onCallRegion ?? 'Support · EU + LATAM'}
             </Typography>
-          </YStack>
-        </XStack>
+          </div>
+        </div>
         <hr style={s.ruleStyle} aria-hidden="true" />
-        <YStack gap="$2">
+        <div className="box-border flex flex-col items-stretch gap-2">
           <div style={s.sideRowStyle}>
             <Typography alpha="medium">
               {side?.medianFirstReply ?? 'Median first reply'}
@@ -66,7 +68,7 @@ export function ContactSidePanel({
               {side?.coverageValue ?? 'GMT-5 → GMT+8'}
             </Typography>
           </div>
-        </YStack>
+        </div>
       </GlassCard>
 
       <GlassCard>
@@ -81,7 +83,7 @@ export function ContactSidePanel({
             'Reproducible bugs, API issues, and SDK questions are tracked in GitHub. We triage within 24 hours.'}
         </Typography>
         {appConfig.social.github ? (
-          <YStack marginTop="$3">
+          <div className="box-border flex flex-col items-stretch -mt-3">
             <a
               href={appConfig.social.github}
               target="_blank"
@@ -91,7 +93,7 @@ export function ContactSidePanel({
               <GithubIcon />
               <span>{side?.openIssue ?? 'Open an issue'}</span>
             </a>
-          </YStack>
+          </div>
         ) : null}
       </GlassCard>
 
@@ -116,7 +118,7 @@ export function ContactSidePanel({
         <span style={s.labelChipStyle}>
           {side?.statusLabel ?? 'System status'}
         </span>
-        <XStack alignItems="center" gap="$2" marginTop="$2">
+        <div className="box-border flex flex-row items-center gap-2 -mt-2">
           <span
             aria-hidden="true"
             style={{
@@ -131,13 +133,13 @@ export function ContactSidePanel({
           <Typography fontWeight="700">
             {side?.statusTitle ?? 'All systems operational'}
           </Typography>
-        </XStack>
+        </div>
         <Typography variant="caption" alpha="medium" marginTop="$1">
           {side?.statusBody ?? '99.98% uptime over the last 30 days.'}
         </Typography>
         {/* TODO(ARC-575): restore status-page CTA once status.arcadeum.games
             is live. */}
       </GlassCard>
-    </YStack>
+    </div>
   );
 }

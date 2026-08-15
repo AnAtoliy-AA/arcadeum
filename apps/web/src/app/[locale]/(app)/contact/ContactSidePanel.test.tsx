@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
+import { ContactSidePanel } from './ContactSidePanel';
+
 import { TamaguiProvider } from 'tamagui';
 import config from '@/shared/config/tamagui.config';
-import { ContactSidePanel } from './ContactSidePanel';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <TamaguiProvider config={config} defaultTheme="dark">

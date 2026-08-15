@@ -1,12 +1,12 @@
 'use client';
 
-import { useTheme } from 'tamagui';
 import { buildContactStyles, type ContactStyles } from './ContactView.styles';
+import { useThemeColors } from '@/shared/hooks/useThemeColors';
 
 type ThemeRecord = Record<string, { val?: string; get?: () => string }>;
 
 export function useContactStyles(): ContactStyles {
-  const theme = useTheme() as unknown as ThemeRecord;
+  const theme = useThemeColors() as unknown as ThemeRecord;
   const get = (key: string, fallback: string): string => {
     const entry = theme[key];
     return entry?.val ?? entry?.get?.() ?? fallback;

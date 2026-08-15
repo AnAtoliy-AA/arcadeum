@@ -1,7 +1,6 @@
 'use client';
 
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
-import { YStack } from 'tamagui';
 
 import { PageTitle } from '@arcadeum/ui';
 import type {
@@ -174,10 +173,10 @@ export function SupportPage({
                         </LinkedInButton>
                       )}
                     </TeamHeader>
-                    <YStack gap="$1">
+                    <div className="box-border flex flex-col items-stretch gap-1">
                       <TeamName>{member.name}</TeamName>
                       <TeamRole>{member.role}</TeamRole>
-                    </YStack>
+                    </div>
                     <TeamBio>{member.bio}</TeamBio>
                   </TeamCardInner>
                 </AnimatedGlassCard>

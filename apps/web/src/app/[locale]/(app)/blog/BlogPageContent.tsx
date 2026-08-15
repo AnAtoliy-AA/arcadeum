@@ -8,8 +8,6 @@ import {
   PageTitle,
   Typography,
   Section,
-  XStack,
-  YStack,
 } from '@arcadeum/ui';
 
 export interface BlogFeature {
@@ -53,30 +51,30 @@ export default function BlogPageContent({ t: initialT }: BlogPageContentProps) {
 
         {t?.features && (
           <Section variant="legal">
-            <XStack flexWrap="wrap" gap="$4" marginHorizontal="$-2">
+            <div className="box-border flex flex-row items-stretch flex-wrap gap-4">
               {t.features.map((feature: BlogFeature | null, index: number) => {
                 if (!feature) return null;
                 return (
                   <GlassCard
+                    className="flex-1 min-w-[280px] p-4 border border-[var(--borderColor)]"
                     key={index}
-                    flex={1}
-                    minWidth={280}
-                    p="$4"
-                    borderWidth={1}
-                    borderColor="$borderColor"
                   >
-                    <YStack gap="$2">
-                      <Typography variant="label" uiSize="md" fontWeight="700">
+                    <div className="box-border flex flex-col items-stretch gap-2">
+                      <Typography
+                        className="font-bold"
+                        variant="label"
+                        uiSize="md"
+                      >
                         {feature.title}
                       </Typography>
                       <Typography variant="body" uiSize="sm" alpha="medium">
                         {feature.description}
                       </Typography>
-                    </YStack>
+                    </div>
                   </GlassCard>
                 );
               })}
-            </XStack>
+            </div>
           </Section>
         )}
 

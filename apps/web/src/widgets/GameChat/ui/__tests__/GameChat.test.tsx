@@ -1,12 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '@/shared/config/tamagui.config';
 
 import { GameChat } from '../GameChat';
 import { useGameChatStore } from '../../store/gameChatStore';
 import type { ChatLogEntry } from '../../store/gameChatStore';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 vi.mock('@/shared/ui/PlayerAvatar', () => ({
   EquippedPlayerAvatar: ({ name }: { name?: string }) =>
@@ -19,7 +20,7 @@ vi.mock('@/features/shop/hooks/useEquippedCosmetics', () => ({
 
 function renderChat(ui: React.ReactElement) {
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+    <TamaguiProvider config={config} defaultTheme="dark">
       {ui}
     </TamaguiProvider>,
   );

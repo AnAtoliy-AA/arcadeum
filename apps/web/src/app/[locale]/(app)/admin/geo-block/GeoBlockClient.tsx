@@ -5,7 +5,6 @@ import {
   Container,
   PageLayout,
   PageTitle,
-  YStack,
   Button,
   Input,
   Typography,
@@ -95,45 +94,36 @@ export default function GeoBlockClient() {
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$4">
+        <div className="box-border flex flex-col items-stretch gap-4">
           <PageTitle size="lg">Geo Block Management</PageTitle>
 
           {error && (
-            <YStack
-              padding="$3"
-              borderRadius="$3"
-              backgroundColor="$red3"
+            <div
+              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[$red3]"
               data-testid="geo-block-error"
             >
-              <Typography color="$red10">{error}</Typography>
-            </YStack>
+              <Typography className="text-[#dc2626]">{error}</Typography>
+            </div>
           )}
 
-          <YStack
-            padding="$4"
-            borderRadius="$3"
-            backgroundColor="rgba(255,255,255,0.03)"
-            borderWidth={1}
-            borderColor="rgba(255,255,255,0.1)"
-            gap="$3"
-          >
-            <Typography variant="body" fontWeight="bold">
+          <div className="box-border flex flex-col items-stretch p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] gap-3">
+            <Typography className="font-bold" variant="body">
               Add Country
             </Typography>
-            <YStack flexDirection="row" gap="$2">
+            <div className="box-border flex items-stretch flex-row gap-2">
               <Input
+                className="w-[120px]"
                 placeholder="Country code (e.g., US)"
                 value={newCountryCode}
                 onChangeText={setNewCountryCode}
                 maxLength={2}
-                width={120}
                 data-testid="geo-block-country-input"
               />
               <Input
+                className="flex-1"
                 placeholder="Reason (optional)"
                 value={newReason}
                 onChangeText={setNewReason}
-                flex={1}
                 data-testid="geo-block-reason-input"
               />
               <Button
@@ -143,21 +133,14 @@ export default function GeoBlockClient() {
               >
                 {adding ? 'Adding...' : 'Add'}
               </Button>
-            </YStack>
-          </YStack>
+            </div>
+          </div>
 
-          <YStack
-            padding="$4"
-            borderRadius="$3"
-            backgroundColor="rgba(255,255,255,0.03)"
-            borderWidth={1}
-            borderColor="rgba(255,255,255,0.1)"
-            gap="$3"
-          >
-            <Typography variant="body" fontWeight="bold">
+          <div className="box-border flex flex-col items-stretch p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] gap-3">
+            <Typography className="font-bold" variant="body">
               Quick Add (Common Restricted Countries)
             </Typography>
-            <YStack flexDirection="row" flexWrap="wrap" gap="$2">
+            <div className="box-border flex items-stretch flex-row flex-wrap gap-2">
               {COMMON_COUNTRIES.map((country) => (
                 <Button
                   key={country.code}
@@ -178,18 +161,11 @@ export default function GeoBlockClient() {
                   {country.name} {blockedCodes.has(country.code) ? '✓' : '+'}
                 </Button>
               ))}
-            </YStack>
-          </YStack>
+            </div>
+          </div>
 
-          <YStack
-            padding="$4"
-            borderRadius="$3"
-            backgroundColor="rgba(255,255,255,0.03)"
-            borderWidth={1}
-            borderColor="rgba(255,255,255,0.1)"
-            gap="$3"
-          >
-            <Typography variant="body" fontWeight="bold">
+          <div className="box-border flex flex-col items-stretch p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] gap-3">
+            <Typography className="font-bold" variant="body">
               Blocked Countries ({countries.filter((c) => c.active).length})
             </Typography>
 
@@ -202,24 +178,17 @@ export default function GeoBlockClient() {
                 No countries blocked. ARC payments are available worldwide.
               </Typography>
             ) : (
-              <YStack gap="$2">
+              <div className="box-border flex flex-col items-stretch gap-2">
                 {countries
                   .filter((c) => c.active)
                   .map((country) => (
-                    <YStack
+                    <div
+                      className="box-border flex flex-row items-center justify-space-between p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)]"
                       key={country.countryCode}
-                      flexDirection="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      padding="$3"
-                      borderRadius="$2"
-                      backgroundColor="rgba(239,68,68,0.1)"
-                      borderWidth={1}
-                      borderColor="rgba(239,68,68,0.3)"
                       data-testid={`blocked-country-${country.countryCode}`}
                     >
-                      <YStack gap="$1">
-                        <Typography variant="body" fontWeight="bold">
+                      <div className="box-border flex flex-col items-stretch gap-1">
+                        <Typography className="font-bold" variant="body">
                           {country.countryCode}
                         </Typography>
                         {country.reason && (
@@ -227,7 +196,7 @@ export default function GeoBlockClient() {
                             {country.reason}
                           </Typography>
                         )}
-                      </YStack>
+                      </div>
                       <Button
                         size="sm"
                         variant="secondary"
@@ -236,12 +205,12 @@ export default function GeoBlockClient() {
                       >
                         Remove
                       </Button>
-                    </YStack>
+                    </div>
                   ))}
-              </YStack>
+              </div>
             )}
-          </YStack>
-        </YStack>
+          </div>
+        </div>
       </Container>
     </PageLayout>
   );

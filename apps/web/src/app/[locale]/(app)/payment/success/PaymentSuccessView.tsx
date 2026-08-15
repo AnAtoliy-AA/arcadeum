@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { XStack, YStack, Typography } from '@arcadeum/ui';
+import { Typography } from '@arcadeum/ui';
 import {
   PageLayout,
   Container,
@@ -163,15 +163,14 @@ function SuccessContent() {
         </div>
 
         <div>
-          <YStack mb="$4">
+          <div className="box-border flex flex-col items-stretch -mb-4">
             <PageTitle size="lg" gradient>
               {t('payments.successPage.title') || 'Payment Successful!'}
             </PageTitle>
-          </YStack>
+          </div>
           <Typography
+            className="max-w-[480px] leading-[30px]"
             uiSize="lg"
-            maxWidth={480}
-            lineHeight="$6"
             textCenter
             alpha="high"
           >
@@ -182,12 +181,10 @@ function SuccessContent() {
 
         {(paymentId || token) && (
           <Card
-            padding="md"
-            className="detail-card"
-            backgroundColor="rgba(255,255,255,0.03)"
-            borderColor="rgba(255,255,255,0.08)"
-            maxWidth={420}
-            width="100%"
+            className={
+              'detail-card' +
+              ' bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.08)] max-w-[420px] w-full'
+            }
             style={{
               margin: '0 auto',
               animation: 'fadeIn 0.6s ease-out 0.3s backwards',
@@ -223,9 +220,8 @@ function SuccessContent() {
           </Card>
         )}
 
-        <XStack
-          gap="$6"
-          mt="$6"
+        <div
+          className="box-border flex flex-row items-stretch gap-6 -mt-6"
           style={{ animation: 'fadeIn 0.6s ease-out 0.4s backwards' }}
         >
           <LinkButton href="/" size="lg" variant="primary">
@@ -234,7 +230,7 @@ function SuccessContent() {
           <LinkButton href="/payment" size="lg" variant="ghost">
             {t('payments.successPage.supportAgain') || 'Support Again'}
           </LinkButton>
-        </XStack>
+        </div>
       </Container>
     </>
   );

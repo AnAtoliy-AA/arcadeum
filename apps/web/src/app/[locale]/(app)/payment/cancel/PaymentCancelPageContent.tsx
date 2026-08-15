@@ -2,7 +2,6 @@
 
 import { PageLayout, Container, PageTitle, LinkButton } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { Paragraph } from 'tamagui';
 
 const cancelStyles = `
   @keyframes cancelFadeIn {
@@ -56,23 +55,20 @@ export default function PaymentCancelPageContent() {
     <>
       <style>{cancelStyles}</style>
       <PageLayout>
-        <Container size="sm" className="cancel-container">
+        <Container className="cancel-container" size="sm">
           <div className="cancel-icon-wrapper">✕</div>
 
           <div>
             <PageTitle size="lg">
               {t('payments.cancelPage.title') || 'Payment Cancelled'}
             </PageTitle>
-            <Paragraph
-              color="$color"
-              opacity={0.7}
-              fontSize="1rem"
-              lineHeight="$multiplier16"
-              maxWidth={400}
+            <span
+              className="box-border text-[var(--color)] opacity-[0.7] max-w-[400px]"
+              style={{ fontSize: '1rem', lineHeight: '$multiplier16' }}
             >
               {t('payments.cancelPage.message') ||
                 "No worries! No charges were made to your account. You can always try again when you're ready—we'll be here."}
-            </Paragraph>
+            </span>
           </div>
 
           <div className="cancel-button-group">

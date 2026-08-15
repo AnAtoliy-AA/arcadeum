@@ -30,7 +30,6 @@ import {
 } from './room-card.styles';
 import { LinkButton } from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
-import { XStack, YStack } from 'tamagui';
 
 import { useRoutes } from '@/shared/config/useRoutes';
 
@@ -122,7 +121,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
         }
       >
         <StyledRoomHeader className={cardStyles.roomHeader}>
-          <YStack gap="$1" minWidth={0}>
+          <div className="box-border flex flex-col items-stretch gap-1 min-w-0">
             <h3 className={cardStyles.roomTitle} title={room.name}>
               {room.name}
             </h3>
@@ -134,7 +133,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             >
               {gameName}
             </StyledGameName>
-          </YStack>
+          </div>
 
           {room.gameOptions?.idleTimerEnabled && (
             <FastBadge>
@@ -145,11 +144,11 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
         </StyledRoomHeader>
 
         {viewMode === 'list' && (
-          <XStack alignItems="center" justifyContent="center">
+          <div className="box-border flex flex-row items-center justify-center">
             <StyledStatusBadge status={room.status}>
               {t(`games.rooms.status.${room.status}`) || room.status}
             </StyledStatusBadge>
-          </XStack>
+          </div>
         )}
 
         {viewMode === 'grid' ? (
@@ -157,27 +156,27 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             <MetaGrid>
               <MetaRow>
                 <MetaIcon>👑</MetaIcon>
-                <YStack>
+                <div className="box-border flex flex-col items-stretch">
                   <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
                   <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
-                </YStack>
+                </div>
               </MetaRow>
               <MetaRow>
                 <MetaIcon>👥</MetaIcon>
-                <YStack>
+                <div className="box-border flex flex-col items-stretch">
                   <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
                   <MetaValue>
                     {room.maxPlayers
                       ? `${room.playerCount}/${room.maxPlayers}`
                       : `${room.playerCount}`}
                   </MetaValue>
-                </YStack>
+                </div>
               </MetaRow>
               <MetaRow>
                 <MetaIcon>
                   {room.visibility === 'private' ? '🔒' : '🌐'}
                 </MetaIcon>
-                <YStack>
+                <div className="box-border flex flex-col items-stretch">
                   <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
                   <MetaValue>
                     {room.visibility === 'private'
@@ -185,25 +184,25 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                       : t('games.rooms.visibility.public')}
                     {room.hasPassword ? ' 🔑' : ''}
                   </MetaValue>
-                </YStack>
+                </div>
               </MetaRow>
               <MetaRow>
                 <MetaIcon>⏱️</MetaIcon>
-                <YStack>
+                <div className="box-border flex flex-col items-stretch">
                   <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
                   <StyledStatusBadge status={room.status}>
                     {t(`games.rooms.status.${room.status}`) || room.status}
                   </StyledStatusBadge>
-                </YStack>
+                </div>
               </MetaRow>
             </MetaGrid>
 
             {room.members && room.members.length > 0 && (
-              <YStack gap="$2">
+              <div className="box-border flex flex-col items-stretch gap-2">
                 <ParticipantsLabel>
                   {t('games.rooms.participants')}
                 </ParticipantsLabel>
-                <XStack className={cardStyles.participantAvatars}>
+                <div className="box-border flex flex-row items-stretch cardStyles.participantAvatars">
                   {room.members
                     .slice(0, MAX_VISIBLE_PARTICIPANTS)
                     .map((member) => (
@@ -226,14 +225,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                     ))}
                   {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
                     <div className={cardStyles.avatarOverlap}>
-                      <YStack
-                        width={32}
-                        height={32}
-                        borderRadius={16}
-                        backgroundColor="$backgroundFocus"
-                        alignItems="center"
-                        justifyContent="center"
-                      >
+                      <div className="box-border flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
                         <MetaLabel
                           style={{
                             opacity: 1,
@@ -243,20 +235,16 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                         >
                           +{room.members.length - MAX_VISIBLE_PARTICIPANTS}
                         </MetaLabel>
-                      </YStack>
+                      </div>
                     </div>
                   )}
-                </XStack>
-              </YStack>
+                </div>
+              </div>
             )}
           </RoomMeta>
         ) : (
           <>
-            <XStack
-              className={cardStyles.metaCol}
-              gap="$1.5"
-              alignItems="center"
-            >
+            <div className="box-border flex flex-row gap-null items-center cardStyles.metaCol">
               {room.members
                 ?.slice(0, MAX_VISIBLE_PARTICIPANTS)
                 .map((member) => (
@@ -280,35 +268,28 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               {room.members &&
                 room.members.length > MAX_VISIBLE_PARTICIPANTS && (
                   <div className={cardStyles.avatarOverlap}>
-                    <YStack
-                      width={32}
-                      height={32}
-                      borderRadius={16}
-                      backgroundColor="$backgroundFocus"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
+                    <div className="box-border flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
                       <MetaLabel
                         style={{ opacity: 1, fontSize: 10, fontWeight: '700' }}
                       >
                         +{room.members.length - MAX_VISIBLE_PARTICIPANTS}
                       </MetaLabel>
-                    </YStack>
+                    </div>
                   </div>
                 )}
-            </XStack>
+            </div>
             <MetaRow className={cardStyles.metaCol}>
-              <YStack gap="$0.5">
+              <div className="box-border flex flex-col items-stretch gap-null">
                 <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
                 <MetaValue>
                   {room.maxPlayers
                     ? `${room.playerCount}/${room.maxPlayers}`
                     : room.playerCount}
                 </MetaValue>
-              </YStack>
+              </div>
             </MetaRow>
             <MetaRow className={cardStyles.metaCol}>
-              <YStack gap="$0.5">
+              <div className="box-border flex flex-col items-stretch gap-null">
                 <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
                 <MetaValue>
                   {room.visibility === 'private'
@@ -316,13 +297,13 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                     : t('games.rooms.visibility.public')}
                   {room.hasPassword ? ' 🔑' : ''}
                 </MetaValue>
-              </YStack>
+              </div>
             </MetaRow>
             <MetaRow className={cardStyles.metaCol}>
-              <YStack gap="$0.5">
+              <div className="box-border flex flex-col items-stretch gap-null">
                 <MetaLabel>{t('games.rooms.createdLabel')}</MetaLabel>
                 <MetaValue>{createdAgo}</MetaValue>
-              </YStack>
+              </div>
             </MetaRow>
           </>
         )}

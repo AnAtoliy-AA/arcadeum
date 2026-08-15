@@ -2,7 +2,6 @@
 
 import '@/features/games/ui/scrollbar.scss';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
@@ -19,6 +18,7 @@ import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
 import { Container, fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface GamePageLayoutProps {
   roomId: string;
@@ -67,7 +67,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     ?.teamMode;
 
   const { t } = useTranslation();
-  const media = useMedia();
+  const media = useMediaQuery();
   const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const { isFullscreen, toggleFullscreen, exitFullscreen } = useFullscreen(

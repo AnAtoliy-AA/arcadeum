@@ -1,5 +1,4 @@
 'use client';
-import { XStack, YStack, Text, View } from 'tamagui';
 import { RankBadge, FormPips, EnergyBar, Button } from '@arcadeum/ui';
 import type { LeaderboardPlayer } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
@@ -23,12 +22,8 @@ export function PinnedSelfRow({
   const isAnon = player.id === 'anon';
   const max = topRating ?? player.rating;
   return (
-    <View
-      backgroundColor="rgba(15,12,25,0.92)"
-      borderTopWidth={1}
-      borderColor="$mythicAccent"
-      paddingHorizontal="$4"
-      paddingVertical="$3"
+    <div
+      className="box-border bg-[rgba(15,12,25,0.92)] border-t border-[var(--mythicAccent)] px-4 py-3"
       style={{
         position: 'fixed',
         left: 0,
@@ -41,42 +36,31 @@ export function PinnedSelfRow({
         // browsers that don't support env().
         paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
       }}
-      testID="leaderboard-self-row"
+      data-testid="leaderboard-self-row"
     >
-      <XStack alignItems="center" gap="$3" flexWrap="nowrap">
-        <Text
-          fontSize="$1"
-          letterSpacing={2}
-          opacity={0.6}
-          textTransform="uppercase"
-          $sm={{ display: 'none' }}
-        >
+      <div className="box-border flex flex-row items-center gap-3 flex-nowrap">
+        <span className="box-border text-[12px] tracking-[2px] opacity-[0.6] uppercase max-[800px]:hidden">
           {tt.pinned ?? 'Your rank'}
-        </Text>
+        </span>
         {isAnon ? (
-          <Text fontSize="$3" opacity={0.85} flex={1} numberOfLines={1}>
+          <span className="box-border text-[16px] opacity-[0.85] flex-1 line-clamp-1">
             {tt.unranked ?? 'Unranked — play 5 ranked games to appear'}
-          </Text>
+          </span>
         ) : (
           <>
             <RankBadge tier={player.tier as never}>
               {`#${player.rank}`}
             </RankBadge>
-            <Text fontWeight="700" numberOfLines={1}>
+            <span className="box-border font-bold line-clamp-1">
               {player.name}
-            </Text>
+            </span>
             {/* Hide rating viz on small screens so the row stays one line */}
-            <View
-              flex={1}
-              minWidth={120}
-              maxWidth={320}
-              $sm={{ display: 'none' }}
-            >
+            <div className="box-border flex-1 min-w-[120px] max-w-[320px] max-[800px]:hidden">
               <EnergyBar value={player.rating} max={max} />
-            </View>
-            <YStack alignItems="flex-end" $sm={{ display: 'none' }}>
+            </div>
+            <div className="box-border flex flex-col items-end max-[800px]:hidden">
               <FormPips results={player.recentForm} max={8} variant="letter" />
-            </YStack>
+            </div>
           </>
         )}
         {onShare && !isAnon ? (
@@ -89,7 +73,7 @@ export function PinnedSelfRow({
             ⤴ {tt.share ?? 'Share'}
           </Button>
         ) : null}
-      </XStack>
-    </View>
+      </div>
+    </div>
   );
 }

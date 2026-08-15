@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { useTheme } from 'tamagui';
+import { useThemeColors } from '@/shared/hooks/useThemeColors';
 
 const palettes = [
   'linear-gradient(135deg,#5eead4,#818cf8)',
@@ -50,7 +50,7 @@ export function ContactAvatars({
   size = 24,
   borderColor,
 }: ContactAvatarsProps) {
-  const theme = useTheme() as unknown as ThemeRecord;
+  const theme = useThemeColors() as unknown as ThemeRecord;
   const resolvedBorder =
     borderColor ??
     theme.background?.val ??

@@ -2,7 +2,6 @@
 
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { XStack, YStack } from 'tamagui';
 import { useContactStyles } from './useContactStyles';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
@@ -37,9 +36,9 @@ export function ContactTips({ tips }: ContactTipsProps) {
       <Typography variant="heading" uiSize="md" marginTop="$2">
         {tips?.title ?? 'Help us help you faster'}
       </Typography>
-      <YStack gap="$3" marginTop="$3">
+      <div className="box-border flex flex-col items-stretch gap-3 -mt-3">
         {items.map((item, i) => (
-          <XStack key={i} gap="$3" alignItems="flex-start">
+          <div className="box-border flex flex-row gap-3 items-start" key={i}>
             <span
               aria-hidden="true"
               style={{
@@ -51,9 +50,9 @@ export function ContactTips({ tips }: ContactTipsProps) {
             <Typography variant="body" alpha="medium">
               {item}
             </Typography>
-          </XStack>
+          </div>
         ))}
-      </YStack>
+      </div>
       <hr
         style={{ ...s.ruleStyle, marginTop: 16, marginBottom: 12 }}
         aria-hidden="true"

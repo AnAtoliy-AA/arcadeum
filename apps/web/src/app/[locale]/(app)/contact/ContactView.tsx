@@ -9,7 +9,6 @@ import { appConfig } from '@/shared/config/app-config';
 import { ActivityTicker } from '@arcadeum/ui/components/ActivityTicker';
 import { ChannelTile } from '@arcadeum/ui/components/ChannelTile';
 import { StatTile } from '@arcadeum/ui/components/StatTile';
-import { XStack, YStack } from 'tamagui';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 import {
@@ -153,7 +152,7 @@ export default function ContactView({
   return (
     <PageLayout>
       <Container size="lg" maxWidth={1120}>
-        <YStack gap="$8">
+        <div className="box-border flex flex-col items-stretch gap-8">
           <div style={s.heroWrapStyle}>
             <span
               aria-hidden="true"
@@ -168,8 +167,8 @@ export default function ContactView({
               aria-hidden="true"
               style={s.orbStyle(320, '-100px', '70%', 'rgba(244,114,182,0.45)')}
             />
-            <YStack gap="$4" position="relative" zIndex={1}>
-              <XStack flexWrap="wrap" alignItems="center" gap="$3">
+            <div className="box-border flex flex-col items-stretch gap-4 relative z-[100]">
+              <div className="box-border flex flex-row flex-wrap items-center gap-3">
                 <span style={s.eyebrowStyle}>
                   <span aria-hidden="true" style={s.eyebrowDotStyle} />
                   {hero?.eyebrow ?? 'Player support'}
@@ -177,13 +176,13 @@ export default function ContactView({
                 <Typography variant="caption" alpha="medium">
                   arcadeum.games / contact
                 </Typography>
-              </XStack>
+              </div>
               <h1 style={s.heroTitleStyle}>
                 {titleHead ? `${titleHead} ` : ''}
                 <span style={s.titleAccentStyle}>{lastWord}</span>
               </h1>
               <p style={s.heroTaglineStyle}>{hero?.tagline ?? t?.tagline}</p>
-              <XStack flexWrap="wrap" gap="$3" marginTop="$3">
+              <div className="box-border flex flex-row items-stretch flex-wrap gap-3 -mt-3">
                 <HeroPill pillStyle={s.pillStyle}>
                   <span
                     aria-hidden="true"
@@ -210,11 +209,11 @@ export default function ContactView({
                   {formatMessage(hero?.languages, { count: '5' }) ??
                     '5 languages'}
                 </HeroPill>
-              </XStack>
-              <YStack marginTop="$4">
+              </div>
+              <div className="box-border flex flex-col items-stretch -mt-4">
                 <ActivityTicker items={tickerItems} label={ticker?.label} />
-              </YStack>
-            </YStack>
+              </div>
+            </div>
           </div>
 
           <div style={s.statStripStyle}>
@@ -275,7 +274,7 @@ export default function ContactView({
             browseLabel={faq?.browse}
             questionsLabel={sections?.common?.questionsLabel}
           />
-        </YStack>
+        </div>
       </Container>
     </PageLayout>
   );

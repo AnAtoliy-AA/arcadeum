@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Container, PageLayout, PageTitle, YStack } from '@arcadeum/ui';
+import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   useAdminUsers,
@@ -274,7 +274,7 @@ export default function AdminUsersClient({
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$3">
+        <div className="box-border flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t?.title ?? 'Users'}</PageTitle>
           {filtersLabels && (
             <UsersFilters
@@ -286,14 +286,12 @@ export default function AdminUsersClient({
             />
           )}
           {errorMsg && (
-            <YStack
-              padding="$3"
-              borderRadius="$3"
-              backgroundColor="$red3"
+            <div
+              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[$red3]"
               data-testid="admin-users-error"
             >
               {errorMsg}
-            </YStack>
+            </div>
           )}
           {labels && (
             <UsersTable
@@ -317,7 +315,7 @@ export default function AdminUsersClient({
               labels={labels}
             />
           )}
-        </YStack>
+        </div>
       </Container>
       {walletDrawerLabels && (
         <AdminWalletDrawer

@@ -104,7 +104,7 @@ export function MobileHandBar({
     border: '1px solid rgba(255,255,255,0.10)',
     fontSize: 11,
     fontWeight: 800,
-    letterSpacing: 0.4,
+    letterSpacing: '0.4px',
     color: '#e2e8f0',
     background: 'rgba(255,255,255,0.04)',
     whiteSpace: 'nowrap',
@@ -141,7 +141,7 @@ export function MobileHandBar({
       color: opts.primary && opts.enabled ? '#0b0b0b' : '#ffffff',
       fontSize: 12,
       fontWeight: 800,
-      letterSpacing: 0.3,
+      letterSpacing: '0.3px',
       textTransform: 'uppercase',
       opacity: opts.enabled ? 1 : 0.6,
       cursor: opts.enabled ? 'pointer' : 'default',
@@ -184,7 +184,7 @@ export function MobileHandBar({
     color: '#e2e8f0',
     fontSize: 12,
     fontWeight: 700,
-    letterSpacing: 0.3,
+    letterSpacing: '0.3px',
     cursor: 'pointer',
   };
 

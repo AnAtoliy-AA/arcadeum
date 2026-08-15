@@ -57,7 +57,7 @@ export const Toggle = memo(function Toggle({
           left: 8,
           fontSize: 9,
           fontWeight: 700,
-          letterSpacing: 1,
+          letterSpacing: '1px',
           color: checked ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0)',
           pointerEvents: 'none',
         }}
@@ -71,7 +71,7 @@ export const Toggle = memo(function Toggle({
           right: 8,
           fontSize: 9,
           fontWeight: 700,
-          letterSpacing: 1,
+          letterSpacing: '1px',
           color: checked ? 'rgba(0,0,0,0)' : 'rgba(203,213,225,0.85)',
           pointerEvents: 'none',
         }}

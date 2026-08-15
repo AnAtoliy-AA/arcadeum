@@ -176,7 +176,7 @@ export function renderSeaBattleOgImage(): ImageResponse {
           style={{
             display: 'flex',
             fontSize: 24,
-            letterSpacing: 6,
+            letterSpacing: '6px',
             color: '#ff9500',
             fontWeight: 700,
             marginBottom: 18,
@@ -192,7 +192,7 @@ export function renderSeaBattleOgImage(): ImageResponse {
             fontWeight: 900,
             color: 'white',
             marginBottom: 26,
-            letterSpacing: -3,
+            letterSpacing: '-3px',
             whiteSpace: 'nowrap',
           }}
         >
@@ -328,7 +328,7 @@ export function renderSeaBattleOgImage(): ImageResponse {
             background: 'rgba(255, 85, 48, 0.92)',
             fontSize: 18,
             fontWeight: 800,
-            letterSpacing: 1.5,
+            letterSpacing: '1.5px',
             color: 'white',
             boxShadow: '0 4px 14px rgba(255, 85, 48, 0.45)',
           }}

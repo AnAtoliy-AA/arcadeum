@@ -34,7 +34,7 @@ const avatarStyle = (
   fontSize: Math.max(9, Math.round(size * 0.36)),
   fontWeight: 700,
   color: '#0b1018',
-  letterSpacing: 0.3,
+  letterSpacing: '0.3px',
 });
 
 export type ContactAvatarsProps = {

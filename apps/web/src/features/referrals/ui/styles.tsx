@@ -84,7 +84,7 @@ function CodeText({
       className={`box-border flex-1 text-[20px] leading-[28px] font-bold text-[var(--accent)] ${className ?? ''}`}
       style={{
         fontFamily: "'SF Mono','Fira Code','Courier New',monospace",
-        letterSpacing: 2,
+        letterSpacing: '2px',
       }}
       {...props}
     />

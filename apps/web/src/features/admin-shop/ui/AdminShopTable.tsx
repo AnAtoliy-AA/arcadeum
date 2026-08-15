@@ -185,7 +185,7 @@ function Th({ children }: { children: React.ReactNode }) {
         color: 'var(--colorPress)',
         fontSize: 12,
         textTransform: 'uppercase',
-        letterSpacing: 0.6,
+        letterSpacing: '0.6px',
       }}
     >
       {children}

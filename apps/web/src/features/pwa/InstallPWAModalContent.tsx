@@ -57,7 +57,7 @@ export function InstallPWAModalContent() {
               color: 'var(--color)',
               opacity: 0.7,
               fontSize: '1rem',
-              lineHeight: 32,
+              lineHeight: '32px',
               margin: 0,
             }}
           >
@@ -83,7 +83,7 @@ export function InstallPWAModalContent() {
                   color: 'var(--color)',
                   opacity: 0.7,
                   fontSize: '0.85rem',
-                  lineHeight: 22,
+                  lineHeight: '22px',
                   margin: 0,
                 }}
               >

@@ -91,7 +91,7 @@ export function InventoryPageView({
 
         {!isAuthenticated ? <ShopSignInBanner labels={labels.signIn} /> : null}
 
-        <div className="box-border flex flex-row gap-5 w-full items-start max-[800px]:flex-column">
+        <div className="box-border flex flex-row gap-5 w-full items-start max-[800px]:flex-col">
           <ShopMannequinRail
             catalog={catalog}
             inventory={inventory}

@@ -11,7 +11,7 @@ export function CardFrame({
   return (
     <div
       className={cx(
-        'box-border relative flex flex-col items-stretch overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
+        'box-border relative flex flex-col items-stretch shrink-0 overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
         small ? 'w-[144px]' : 'w-[200px]',
         className,
       )}

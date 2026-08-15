@@ -108,7 +108,7 @@ function BrandHero({
         <Typography
           variant="heading"
           weight="800"
-          style={{ fontSize: 80, lineHeight: 84, letterSpacing: '-0.02em' }}
+          style={{ fontSize: 80, lineHeight: '84px', letterSpacing: '-0.02em' }}
         >
           {brand.headlinePrefix}{' '}
           <Typography
@@ -116,7 +116,7 @@ function BrandHero({
             weight="800"
             style={{
               fontSize: 80,
-              lineHeight: 84,
+              lineHeight: '84px',
               letterSpacing: '-0.02em',
               backgroundImage:
                 'linear-gradient(120deg, #38bdf8 0%, #a78bfa 55%, #ff6af7 100%)',

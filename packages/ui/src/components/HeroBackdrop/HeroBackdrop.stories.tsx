@@ -16,7 +16,7 @@ export const Default: Story = {
         <span
           style={{
             fontSize: 14,
-            letterSpacing: 2,
+            letterSpacing: '2px',
             opacity: 0.7,
             color: 'var(--mythicAccent)',
           }}

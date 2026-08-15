@@ -142,7 +142,7 @@ export const ShopItemCard = memo(function ShopItemCard({
                 justifyContent: 'center',
                 fontSize: 28,
                 fontWeight: 800,
-                letterSpacing: 1,
+                letterSpacing: '1px',
                 backgroundImage: colorValue.startsWith('linear-gradient')
                   ? colorValue
                   : undefined,

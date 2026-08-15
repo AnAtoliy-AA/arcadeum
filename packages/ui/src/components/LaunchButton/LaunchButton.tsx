@@ -38,7 +38,7 @@ const buttonStyle = (
   color: 'var(--primaryText, #ffffff)',
   fontSize: 15,
   fontWeight: 600,
-  letterSpacing: 0.2,
+  letterSpacing: '0.2px',
   boxShadow:
     '0 8px 24px rgba(56, 189, 248, 0.25), 0 2px 6px rgba(56, 189, 248, 0.30)',
   transition:

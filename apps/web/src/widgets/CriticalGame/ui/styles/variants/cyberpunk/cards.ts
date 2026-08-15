@@ -14,7 +14,7 @@ export const cardsStyles = {
   getDisabledOverlay: (): string => `${VARIANT_COLORS.cyberpunk.background}b3`,
   getCardNameStyles: () => ({
     fontFamily: '"Courier New", monospace',
-    letterSpacing: 2,
+    letterSpacing: '2px',
     color: VARIANT_COLORS.cyberpunk.accent,
     textShadow: `0 0 10px ${VARIANT_COLORS.cyberpunk.secondary}`,
     padding: '0.1rem 0',

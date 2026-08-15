@@ -51,7 +51,7 @@ export default function OpengraphImage() {
           zIndex: 1,
         }}
       >
-        <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: 2 }}>
+        <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: '2px' }}>
           ARCADEUM
         </div>
         <div

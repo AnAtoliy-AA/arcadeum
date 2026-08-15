@@ -24,7 +24,7 @@ export function HistoryFilters({
   };
 
   return (
-    <div className="box-border flex flex-row flex-wrap gap-4 items-center max-[660px]:flex-column">
+    <div className="box-border flex flex-row flex-wrap gap-4 items-center max-[660px]:flex-col">
       <Input
         className={'flex-1 min-w-[250px]'}
         type="text"

@@ -23,7 +23,7 @@ export const StatusBadge = memo(function StatusBadge({
       style={{
         fontSize: 10,
         fontWeight: 700,
-        letterSpacing: 1,
+        letterSpacing: '1px',
         textTransform: 'uppercase',
         padding: '4px 10px',
         borderRadius: 999,

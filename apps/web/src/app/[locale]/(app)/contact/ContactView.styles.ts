@@ -48,7 +48,7 @@ export const buildContactStyles = (t: ContactStyleTokens) => {
     borderRadius: 999,
     fontSize: 12,
     fontWeight: 600,
-    letterSpacing: 1.2,
+    letterSpacing: '1.2px',
     textTransform: 'uppercase',
     color: t.accent,
     border: `1px solid ${t.glassBorder}`,
@@ -140,7 +140,7 @@ export const buildContactStyles = (t: ContactStyleTokens) => {
   const labelChipStyle: CSSProperties = {
     fontSize: 11,
     fontWeight: 600,
-    letterSpacing: 1.4,
+    letterSpacing: '1.4px',
     textTransform: 'uppercase',
     color: t.textSecondary,
   };

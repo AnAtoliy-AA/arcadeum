@@ -87,7 +87,7 @@ export function DiscardPile({
                 textAlign: 'center',
                 color: 'rgba(226, 232, 240, 0.92)',
                 fontWeight: 600,
-                letterSpacing: 0.2,
+                letterSpacing: '0.2px',
               }}
               title={description}
             >

@@ -178,7 +178,9 @@ export function GlimwormHud(
             border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
-          <div style={{ fontWeight: 700, letterSpacing: 0.4, marginBottom: 6 }}>
+          <div
+            style={{ fontWeight: 700, letterSpacing: '0.4px', marginBottom: 6 }}
+          >
             {t('games.glimworm_v1.hud.score')}
           </div>
           {top5.map((w) => (
@@ -251,7 +253,7 @@ export function GlimwormHud(
               fontFamily: 'inherit',
               boxShadow: '0 6px 16px rgba(124,92,255,0.35)',
               backdropFilter: 'blur(4px)',
-              letterSpacing: 0.3,
+              letterSpacing: '0.3px',
             }}
           >
             <span style={{ fontSize: 16, lineHeight: 1 }}>↻</span>

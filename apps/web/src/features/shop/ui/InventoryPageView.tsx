@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { XStack, YStack } from '@arcadeum/ui';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
-import { Text } from 'tamagui';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { ShopTopBar } from './ShopTopBar';
 import { ShopRow } from './ShopRow';
@@ -88,24 +86,12 @@ export function InventoryPageView({
 
   return (
     <PageLayout>
-      <YStack
-        maxWidth={1280}
-        marginHorizontal="auto"
-        paddingHorizontal="$4"
-        paddingVertical="$5"
-        gap="$5"
-        width="100%"
-      >
+      <div className="flex flex-col items-stretch max-w-[1280px] px-4 py-5 gap-5 w-full">
         <ShopTopBar balance={balance} labels={labels.topBar} />
 
         {!isAuthenticated ? <ShopSignInBanner labels={labels.signIn} /> : null}
 
-        <XStack
-          gap="$5"
-          width="100%"
-          alignItems="flex-start"
-          $sm={{ flexDirection: 'column' }}
-        >
+        <div className="flex flex-row gap-5 w-full items-start max-[800px]:flex-col">
           <ShopMannequinRail
             catalog={catalog}
             inventory={inventory}
@@ -116,38 +102,28 @@ export function InventoryPageView({
             sellLabels={labels.sell}
           />
 
-          <YStack flex={1} width="100%" gap="$5" minWidth={0}>
-            <YStack gap={2}>
-              <Text
-                fontSize={10}
-                letterSpacing={2}
-                textTransform="uppercase"
-                color="$gray11"
-              >
+          <div className="flex flex-col items-stretch flex-1 w-full gap-5 min-w-0">
+            <div className="flex flex-col items-stretch gap-2">
+              <span className="text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
                 {labels.inventory.eyebrow.replace(
                   '{count}',
                   String(totalOwned),
                 )}
-              </Text>
-              <Text fontSize="$9" fontWeight="900" letterSpacing={-0.5}>
+              </span>
+              <span className="text-[40px] font-black tracking-[-0.5px]">
                 {labels.inventory.title}
-              </Text>
-            </YStack>
+              </span>
+            </div>
 
             {totalOwned === 0 ? (
-              <YStack
-                padding="$5"
-                borderRadius="$4"
-                borderWidth={1}
-                borderColor="rgba(255,255,255,0.08)"
-                backgroundColor="rgba(255,255,255,0.02)"
-                alignItems="center"
+              <div
+                className="flex flex-col p-5 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] items-center"
                 data-testid="inventory-empty"
               >
-                <Text fontSize="$4" color="$gray11" textAlign="center">
+                <span className="text-[18px] text-[#94a3b8] text-center">
                   {labels.inventory.empty}
-                </Text>
-              </YStack>
+                </span>
+              </div>
             ) : (
               (Object.keys(ownedRows) as ShopCategory[])
                 .filter((cat) => ownedRows[cat].length > 0)
@@ -168,8 +144,8 @@ export function InventoryPageView({
                   />
                 ))
             )}
-          </YStack>
-        </XStack>
+          </div>
+        </div>
 
         <PurchaseConfirmDialog
           item={purchaseTarget}
@@ -190,7 +166,7 @@ export function InventoryPageView({
           onSuccess={() => setSellTarget(null)}
           labels={labels.sell}
         />
-      </YStack>
+      </div>
     </PageLayout>
   );
 }

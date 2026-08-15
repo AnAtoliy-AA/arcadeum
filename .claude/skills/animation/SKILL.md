@@ -1,11 +1,11 @@
 ---
 name: animation
-description: Implement smooth, performant animations using Tamagui transitions, spring physics, and scroll-based effects. Use when adding motion to UI, creating page transitions, or implementing scroll animations. Trigger on keywords like animation, motion, transition, spring, scroll reveal, GSAP.
+description: Implement smooth, performant animations using CSS transitions, Tailwind keyframes, and spring-like easing. Use when adding motion to UI, creating page transitions, or implementing scroll animations. Trigger on keywords like animation, motion, transition, spring, scroll reveal, GSAP.
 ---
 
 # Animation Skill
 
-Implement smooth, performant animations using Tamagui transitions, spring physics, and scroll-based effects.
+Implement smooth, performant animations using CSS transitions, Tailwind keyframes, and scroll-based effects.
 
 ## When to Use
 
@@ -22,9 +22,23 @@ Implement smooth, performant animations using Tamagui transitions, spring physic
 3. **Accessible** — Respect `prefers-reduced-motion`
 4. **Consistent** — Use the same timing and easing throughout
 
-## Tamagui Animation
+## Transitions
 
-### Basic Transitions
+### Web — Tailwind Transition Classes
+
+```tsx
+// Hover/press feedback: duration + easing utilities with hover:/active: variants
+<div className="box-border transition-all duration-150 ease-out hover:scale-[1.02] hover:opacity-[0.9] active:scale-[0.98]">
+  <Card />
+</div>
+
+// Press feedback on buttons/links
+<button className="box-border transition-transform duration-150 ease-out active:scale-95">
+  Press me
+</button>
+```
+
+### React Native — Animated
 
 ```tsx
 import { Animated } from 'react-native';
@@ -32,46 +46,21 @@ import { Animated } from 'react-native';
 // Fade in
 <Animated.View style={{ opacity: fadeAnim }} />
 
-// Scale on press
+// Scale on press (avoid onPressIn/onPressOut; derive from the pressed state)
 <Pressable
-  onPressIn={() => {
-    Animated.spring(scale, { toValue: 0.95, useNativeDriver: true }).start();
-  }}
-  onPressOut={() => {
-    Animated.spring(scale, { toValue: 1, useNativeDriver: true }).start();
-  }}
+  style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.95 : 1 }] })}
 >
-  <Animated.View style={{ transform: [{ scale }] }}>
-    <Button>Press me</Button>
-  </Animated.View>
+  <Button>Press me</Button>
 </Pressable>
 ```
 
-### Tamagui Animated Props
+### Duration Tokens
 
 ```tsx
-import { YStack } from 'tamagui';
-
-// Hover effect
-<YStack
-  hoverStyle={{ scale: 1.02, opacity: 0.9 }}
-  pressStyle={{ scale: 0.98 }}
-  animation="quick"
-  transition={{}}
->
-  <Card />
-</YStack>
-```
-
-### Animation Tokens
-
-```tsx
-// Tamagui animation presets
-animation="quick"      // 150ms
-animation="medium"     // 300ms
-animation="slow"       // 500ms
-animation="bouncy"     // Spring with bounce
-animation="lazy"       // Slow spring
+// Legacy Tamagui animation presets map to Tailwind duration utilities
+duration-150   // "quick"  — micro-interactions (button press, toggle)
+duration-300   // "medium" — standard UI transitions
+duration-500   // "slow"   — complex reveals (never exceed)
 ```
 
 ## Spring Physics
@@ -123,19 +112,16 @@ transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 ### Button Press Feedback
 
 ```tsx
+// Web: Tailwind active:/hover: variants — no JS or state needed
+<button className="box-border transition-transform duration-150 ease-out hover:scale-[1.02] active:scale-95">
+  Click me
+</button>
+
+// React Native: Pressable style function
 <Pressable
-  onPressIn={() => scale.setValue(0.95)}
-  onPressOut={() => {
-    Animated.spring(scale, {
-      toValue: 1,
-      tension: 100,
-      friction: 5,
-    }).start();
-  }}
+  style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.95 : 1 }] })}
 >
-  <Animated.View style={{ transform: [{ scale }] }}>
-    <Button>Click me</Button>
-  </Animated.View>
+  <Button>Click me</Button>
 </Pressable>
 ```
 

@@ -6,7 +6,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import s from './GameCreateView.module.scss';
 import type { GameId } from './data/themes';
 
-// Both rules modals are Tamagui-heavy and only needed once the user
+// Both rules modals are client-rendered and only needed once the user
 // actually opens them. Defer loading until the button is clicked.
 const SeaBattleRulesModal = dynamic(
   () =>

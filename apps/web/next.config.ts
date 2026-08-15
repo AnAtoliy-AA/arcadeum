@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next';
 import path from 'path';
 import withPWAInit from '@ducanh2912/next-pwa';
-import { withTamagui } from '@tamagui/next-plugin';
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import packageJson from './package.json';
 import {
@@ -321,37 +320,14 @@ const nextConfig: NextConfig = {
   // loopback hosts so e2e logs stay clean.
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
   reactCompiler: true,
-  transpilePackages: [
-    'tamagui',
-    '@tamagui/core',
-    '@tamagui/web',
-    '@tamagui/shorthands',
-    '@tamagui/config',
-    '@tamagui/lucide-icons',
-    '@tamagui/font-inter',
-    'react-native-web',
-    '@arcadeum/ui',
-  ],
+  transpilePackages: ['@arcadeum/ui'],
   experimental: {
     inlineCss: true,
-    optimizePackageImports: [
-      'tamagui',
-      '@tamagui/core',
-      '@tamagui/web',
-      '@tamagui/shorthands',
-      '@tamagui/config',
-      '@tamagui/lucide-icons',
-      'lucide-react',
-      '@arcadeum/ui',
-    ],
+    optimizePackageImports: ['lucide-react', '@arcadeum/ui'],
   },
+  // Needed so Turbopack accepts the PWA plugin's webpack config in Next 16.
   turbopack: {
     root: path.resolve(__dirname, '../../'),
-    resolveAlias: {
-      tamagui: '../../node_modules/tamagui',
-      '@tamagui/core': '../../node_modules/@tamagui/core',
-      '@tamagui/web': '../../node_modules/@tamagui/web',
-    },
   },
   productionBrowserSourceMaps: false,
   trailingSlash: false,
@@ -385,10 +361,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-const tamaguiPlugin = withTamagui({
-  config: path.resolve(__dirname, '../../packages/ui/src/tamagui.config.ts'),
-  components: ['tamagui', '@arcadeum/ui'],
-  appDir: true,
-});
-
-export default bundleAnalyzer(tamaguiPlugin(withPWA(nextConfig)));
+export default bundleAnalyzer(withPWA(nextConfig));

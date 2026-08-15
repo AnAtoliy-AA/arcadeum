@@ -1,23 +1,27 @@
-import { styled, XStack } from 'tamagui';
+import type { CSSProperties, HTMLAttributes } from 'react';
 
-export const ActionBar = styled(XStack, {
-  name: 'CriticalActionBar',
-  position: 'sticky',
-  bottom: 0,
-  zIndex: 40,
-  paddingVertical: '$2',
-  paddingHorizontal: '$3',
-  gap: '$2',
-  backgroundColor: 'rgba(15,17,22,0.85)',
-  backdropFilter: 'blur(12px)',
-  borderTopWidth: 1,
-  borderTopColor: '$glassBorder',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  flexShrink: 0,
-  width: '100%',
+import { cx } from '@arcadeum/ui/utils/cx';
 
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
+export function ActionBar({
+  className,
+  style,
+  ...props
+}: {
+  className?: string;
+  style?: CSSProperties;
+} & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-row items-stretch sticky bottom-0 z-[40] py-2 px-3 gap-2 border-t border-t-[var(--glassBorder)] items-center justify-end shrink-0 w-full',
+        className,
+      )}
+      style={{
+        backgroundColor: 'rgba(15,17,22,0.85)',
+        backdropFilter: 'blur(12px)',
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}

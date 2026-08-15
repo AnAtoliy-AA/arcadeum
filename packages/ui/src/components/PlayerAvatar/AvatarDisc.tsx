@@ -52,7 +52,7 @@ export function AvatarDisc({
         }
       : {
           backgroundColor: `${frameColor}33`,
-          borderColor: frameColor as string,
+          borderColor: frameColor,
         }
     : {
         // No frame equipped: still paint a base disc (slate fill + faint ring)
@@ -179,9 +179,8 @@ export function AvatarDisc({
       ) : (
         <Typography
           color="#f5f7ff"
-          fontWeight="700"
-          fontSize={Math.max(12, Math.round(disc * 0.34))}
-          style={{ zIndex: 1 }}
+          weight="700"
+          style={{ zIndex: 1, fontSize: Math.max(12, Math.round(disc * 0.34)) }}
         >
           {getInitials(name)}
         </Typography>
@@ -220,7 +219,7 @@ export function AvatarDisc({
             />
           ) : (
             <img
-              src={badgeUrl as string}
+              src={badgeUrl}
               alt=""
               width={Math.round(badge * 0.75)}
               height={Math.round(badge * 0.75)}

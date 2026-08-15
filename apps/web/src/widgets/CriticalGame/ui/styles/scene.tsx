@@ -1,61 +1,109 @@
 'use client';
 
-import { styled, YStack } from 'tamagui';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, HTMLAttributes } from 'react';
 
-export const SceneShell = styled(YStack, {
-  name: 'CriticalSceneShell',
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  overflow: 'hidden',
-  pointerEvents: 'none',
-  zIndex: 0,
-});
+import { cx } from '@arcadeum/ui/utils/cx';
 
-export const SceneGridFloor = styled(YStack, {
-  name: 'CriticalSceneGridFloor',
-  position: 'absolute',
-  left: '-50%',
-  right: '-50%',
-  bottom: '-40%',
-  height: '120%',
-});
+const SCENE_LAYER_BASE = 'flex flex-col items-stretch';
 
-export const SceneHorizon = styled(YStack, { name: 'CriticalSceneHorizon' });
+export function SceneShell({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        SCENE_LAYER_BASE,
+        'absolute top-0 left-0 right-0 bottom-0 overflow-hidden pointer-events-none z-[0]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const SceneBacklight = styled(YStack, {
-  name: 'CriticalSceneBacklight',
-});
+export function SceneGridFloor({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        SCENE_LAYER_BASE,
+        'absolute left-[-50%] right-[-50%] bottom-[-40%] h-[120%]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const SceneScanlines = styled(YStack, {
-  name: 'CriticalSceneScanlines',
-});
+export function SceneHorizon({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+}
 
-export const SceneVignette = styled(YStack, { name: 'CriticalSceneVignette' });
-export const SceneAmbientGlow = styled(YStack, {
-  name: 'CriticalSceneAmbientGlow',
-});
+export function SceneBacklight({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+}
 
-export const SceneBackgroundImage = styled(YStack, {
-  name: 'CriticalSceneBackgroundImage',
-  position: 'absolute',
-  inset: 0,
-  zIndex: -1,
-  opacity: 0.6,
-});
+export function SceneScanlines({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+}
 
-export const SceneParticles = styled(YStack, {
-  name: 'CriticalSceneParticles',
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  pointerEvents: 'none',
-});
+export function SceneVignette({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+}
+
+export function SceneAmbientGlow({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+}
+
+export function SceneBackgroundImage({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        SCENE_LAYER_BASE,
+        'absolute inset-0 z-[-1] opacity-[0.6]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function SceneParticles({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        SCENE_LAYER_BASE,
+        'absolute top-0 left-0 right-0 bottom-0 pointer-events-none',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export function makeGridFloorStyle(a: string, b: string): CSSProperties {
   return {

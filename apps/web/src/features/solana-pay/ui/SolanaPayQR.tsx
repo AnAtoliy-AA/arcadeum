@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
-import { YStack, Typography, Button } from '@arcadeum/ui';
+import { Typography, Button } from '@arcadeum/ui';
 import {
   createSolanaPayRequest,
   getSolanaPayStatus,
@@ -119,18 +119,18 @@ export function SolanaPayQR({
 
   if (loading) {
     return (
-      <YStack alignItems="center" padding="$4">
+      <div className="flex flex-col items-center p-4">
         <Typography variant="body" alpha="medium">
           Creating payment request...
         </Typography>
-      </YStack>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <YStack alignItems="center" padding="$4" gap="$3">
-        <Typography variant="body" color="$red10">
+      <div className="flex flex-col items-center p-4 gap-3">
+        <Typography className={'text-[#dc2626]'} variant="body">
           {error}
         </Typography>
         {onCancel && (
@@ -138,45 +138,38 @@ export function SolanaPayQR({
             Cancel
           </Button>
         )}
-      </YStack>
+      </div>
     );
   }
 
   if (!request) return null;
 
   return (
-    <YStack
-      alignItems="center"
-      padding="$4"
-      gap="$3"
+    <div
+      className="flex flex-col items-center p-4 gap-3"
       style={{ minHeight: '100%' }}
     >
-      <Typography variant="body" alpha="high" fontSize={16} fontWeight="bold">
+      <Typography
+        className={'text-[16px] font-bold'}
+        variant="body"
+        alpha="high"
+      >
         Send ARC to pay
       </Typography>
 
-      <YStack alignItems="center" gap="$1">
+      <div className="flex flex-col items-center gap-1">
         <Typography variant="caption" alpha="medium">
           Amount
         </Typography>
         <Typography
+          className={'text-[24px] font-bold text-[#22c55e]'}
           variant="body"
-          fontSize={24}
-          fontWeight="bold"
-          color="#22c55e"
         >
           {request.amount} ARC
         </Typography>
-      </YStack>
+      </div>
 
-      <YStack
-        padding="$2"
-        backgroundColor="white"
-        borderRadius="$3"
-        alignItems="center"
-        width="100%"
-        maxWidth={200}
-      >
+      <div className="flex flex-col p-2 bg-[white] rounded-xl items-center w-full max-w-[200px]">
         <Image
           src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(request.solanaPayUrl)}&color=000000&bgcolor=FFFFFF&format=svg`}
           alt="Solana Pay QR Code"
@@ -185,30 +178,20 @@ export function SolanaPayQR({
           style={{ display: 'block', width: '100%', height: 'auto' }}
           unoptimized
         />
-      </YStack>
+      </div>
 
-      <YStack
-        alignItems="center"
-        gap="$2"
-        padding="$2"
-        borderRadius="$3"
-        backgroundColor="rgba(255,255,255,0.06)"
-        borderWidth={1}
-        borderColor="rgba(255,255,255,0.12)"
-        width="100%"
-      >
-        <Typography variant="caption" alpha="medium" fontSize={11}>
+      <div className="flex flex-col items-center gap-2 p-2 rounded-xl bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.12)] w-full">
+        <Typography className={'text-[11px]'} variant="caption" alpha="medium">
           Recipient
         </Typography>
         <Typography
-          variant="body"
-          fontSize={11}
-          color="$white"
+          className="text-[11px] text-[#f5f7ff]"
           style={{
             wordBreak: 'break-all',
             textAlign: 'center',
             fontFamily: 'monospace',
           }}
+          variant="body"
         >
           {request.recipient}
         </Typography>
@@ -219,43 +202,42 @@ export function SolanaPayQR({
         >
           {copied === 'address' ? 'Copied!' : 'Copy Address'}
         </Button>
-      </YStack>
+      </div>
 
-      <YStack gap="$2" width="100%">
+      <div className="flex flex-col items-stretch gap-2 w-full">
         <Button
+          className="bg-[#ab9ff2] text-white font-bold rounded-[12px]"
           onClick={() => {
             const url = `https://phantom.app/ul/${encodeURIComponent(request.solanaPayUrl)}`;
             window.open(url, '_blank');
           }}
-          className="bg-[#ab9ff2] text-white font-bold rounded-[12px]"
           size="sm"
         >
           Open in Phantom
         </Button>
         <Button
+          className="rounded-[12px]"
           onClick={() => copyToClipboard(request.solanaPayUrl, 'amount')}
           variant="secondary"
-          className="rounded-[12px]"
           size="sm"
         >
           {copied === 'amount' ? 'Copied!' : 'Copy Payment Link'}
         </Button>
-      </YStack>
+      </div>
 
       <Typography
+        className={'text-center text-[11px]'}
         variant="caption"
         alpha="low"
-        textAlign="center"
-        fontSize={11}
       >
         Scan the QR code or copy the address to send {request.amount} ARC
       </Typography>
 
       {onCancel && (
-        <Button onClick={onCancel} variant="ghost" size="sm" className="mt-2">
+        <Button className="mt-2" onClick={onCancel} variant="ghost" size="sm">
           Cancel
         </Button>
       )}
-    </YStack>
+    </div>
   );
 }

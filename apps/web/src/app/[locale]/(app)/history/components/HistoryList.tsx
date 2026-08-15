@@ -6,7 +6,6 @@ import { LoadingState, EmptyState, ErrorState, Spinner } from '@arcadeum/ui';
 import type { HistorySummary, HistoryParticipant } from '../types';
 import { HistoryCard } from './HistoryCard';
 import { EntriesGrid, PaginationSpinner, EndOfListText } from '../styles';
-import { TamaguiElement } from 'tamagui';
 
 interface HistoryListProps {
   entries: HistorySummary[];
@@ -40,7 +39,7 @@ export function HistoryList({
   formatDate,
 }: HistoryListProps) {
   const { t } = useTranslation();
-  const observerTarget = useRef<TamaguiElement & Element>(null);
+  const observerTarget = useRef<HTMLDivElement & Element>(null);
 
   useEffect(() => {
     const element = observerTarget.current;

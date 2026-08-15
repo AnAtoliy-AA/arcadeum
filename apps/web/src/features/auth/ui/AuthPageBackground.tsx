@@ -1,15 +1,8 @@
-import { YStack } from 'tamagui';
-
 export function AuthPageBackground() {
   return (
     <>
-      <YStack
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        pointerEvents="none"
+      <div
+        className="flex flex-col items-stretch absolute top-0 left-0 right-0 bottom-0 pointer-events-none"
         style={{
           background: [
             'radial-gradient(42% 42% at 14% 18%, color-mix(in srgb, var(--accent, #38bdf8) 28%, transparent), transparent 70%)',
@@ -17,13 +10,8 @@ export function AuthPageBackground() {
           ].join(', '),
         }}
       />
-      <YStack
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        pointerEvents="none"
+      <div
+        className="flex flex-col items-stretch absolute top-0 left-0 right-0 bottom-0 pointer-events-none"
         style={{
           backgroundImage:
             'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0)',

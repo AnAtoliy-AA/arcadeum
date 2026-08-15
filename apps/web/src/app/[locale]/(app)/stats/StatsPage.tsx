@@ -8,11 +8,9 @@ import React, {
   startTransition,
 } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { styled, XStack, YStack, Text } from 'tamagui';
 import {
   Button,
   PageLayout,
-  Container as SharedContainer,
   Select,
   ErrorState,
   EmptyState,
@@ -264,9 +262,9 @@ export default function StatsPage({
           ) : hasLocalStats ? (
             <>
               <LocalStatsBanner>
-                <Text fontSize="$2" color="rgba(236,239,238,0.6)">
+                <span className="text-[14px] text-[rgba(236,239,238,0.6)]">
                   {t('stats.localStatsNotice')}
-                </Text>
+                </span>
               </LocalStatsBanner>
               <StatsOverview
                 stats={{
@@ -296,7 +294,7 @@ export default function StatsPage({
                 }}
                 loading={false}
               />
-              <YStack ai="center" gap="$3" mt="$4">
+              <div className="flex flex-col items-center gap-3 -mt-4">
                 <Button
                   variant="primary"
                   size="md"
@@ -304,10 +302,10 @@ export default function StatsPage({
                 >
                   {t('stats.syncToAccount')}
                 </Button>
-              </YStack>
+              </div>
             </>
           ) : (
-            <YStack ai="center" gap="$5" p="$10">
+            <div className="flex flex-col items-center gap-5 p-10">
               <EmptyState icon="📊" message={t('stats.noLocalStats')} />
               <Button
                 variant="primary"
@@ -316,7 +314,7 @@ export default function StatsPage({
               >
                 {t('stats.logInToTrack')}
               </Button>
-            </YStack>
+            </div>
           )
         ) : (
           <>
@@ -343,18 +341,29 @@ export default function StatsPage({
   );
 }
 
-const Container = styled(SharedContainer, {
-  name: 'StatsPageContainer',
-  maxWidth: 1200,
-  flexDirection: 'column',
-  gap: '$5',
-} as unknown as Record<string, unknown>);
+function Container({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-col items-stretch gap-5 max-w-[1200px] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const TabGroup = styled(XStack, {
-  name: 'StatsTabGroup',
-  gap: '$3',
-  flexWrap: 'wrap',
-} as unknown as Record<string, unknown>);
+function TabGroup({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-stretch gap-3 flex-wrap ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
 interface TabButtonProps {
   isActive?: boolean;
@@ -366,45 +375,48 @@ interface TabButtonProps {
 
 const TabButton = ({ isActive, children, ...props }: TabButtonProps) => (
   <Button
+    className={'min-w-[120px] justify-center'}
     variant={isActive ? 'primary' : 'chip'}
     size="md"
     active={isActive}
-    className="min-w-[120px] justify-center"
     {...props}
   >
     {children}
   </Button>
 );
 
-const FilterContainer = styled(XStack, {
-  name: 'StatsFilterContainer',
-  alignItems: 'center',
-  gap: '$4',
-  padding: '$4',
-  paddingHorizontal: '$5',
-  backgroundColor: '$background',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: 16,
-} as unknown as Record<string, unknown>);
+function FilterContainer({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center gap-4 p-4 px-5 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const FilterLabel = styled(Text, {
-  name: 'StatsFilterLabel',
-  tag: 'label',
-  fontSize: '$3',
-  fontWeight: '600',
-  color: '$color',
-  letterSpacing: 0.5,
-  userSelect: 'none',
-} as unknown as Record<string, unknown>);
+function FilterLabel({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[16px] leading-[20px] font-semibold tracking-[0.5px] select-none text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const LocalStatsBanner = styled(XStack, {
-  name: 'LocalStatsBanner',
-  padding: '$4',
-  paddingHorizontal: '$5',
-  backgroundColor: 'rgba(255,200,50,0.08)',
-  borderWidth: 1,
-  borderColor: 'rgba(255,200,50,0.2)',
-  borderRadius: 12,
-  alignItems: 'center',
-} as unknown as Record<string, unknown>);
+function LocalStatsBanner({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center p-4 px-5 rounded-xl border border-[rgba(255,200,50,0.2)] bg-[rgba(255,200,50,0.08)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}

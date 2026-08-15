@@ -147,30 +147,28 @@ From a reference image, identify:
 }
 ```
 
-## Tamagui Token Mapping
+## Mapping to Tailwind Classes
 
-Convert extracted CSS to Tamagui tokens:
+Convert extracted values to Tailwind utilities:
 
 ```tsx
-// Tamagui config
-export default {
-  tokens: {
-    colors: {
-      primary: extractedColor,
-      background: extractedBg,
-    },
-    space: {
-      sm: extractedSmSpacing,
-      md: extractedMdSpacing,
-      lg: extractedLgSpacing,
-    },
-    fontSize: {
-      sm: extractedSmSize,
-      base: extractedBaseSize,
-      lg: extractedLgSize,
-    },
-  },
-}
+// Arbitrary values for one-off extracted colors
+<div className="bg-[#123456] text-[#abcdef]" />
+
+// Prefer theme tokens (CSS variables) when the value matches a minted token
+// — see packages/ui/src/themeDefinitions.ts and /tailwind-pro for the map:
+<div className="bg-[var(--background)] text-[var(--textSecondary)]" />
+
+// Spacing: extracted px → Tailwind scale (4px base)
+// 4px → p-1, 8px → p-2, 16px → p-4, 24px → p-6, 32px → p-8
+
+// Font sizes: extracted px → closest Tailwind size or arbitrary text-[Npx]
+// 12px → text-xs, 14px → text-sm, 16px → text-base, 20px → text-lg, 24px → text-xl
+
+// Radius: 4px → rounded, 8px → rounded-lg, 12px → rounded-xl, 16px → rounded-2xl
+
+// Shadows: Tailwind shadow utilities (shadow-sm/md/lg/xl) or arbitrary values
+shadow-[0_4px_6px_rgba(0,0,0,0.1)]
 ```
 
 ## Checklist
@@ -181,4 +179,4 @@ export default {
 - [ ] Border radius values noted
 - [ ] Shadow styles captured
 - [ ] Layout grid system identified
-- [ ] Tokens mapped to Tamagui config
+- [ ] Colors mapped to Tailwind arbitrary values or theme tokens (`var(--x)`)

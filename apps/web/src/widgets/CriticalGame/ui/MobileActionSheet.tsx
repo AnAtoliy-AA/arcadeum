@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { YStack, XStack, Text, styled } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useScenePalette } from './ScenePaletteContext';
 
@@ -17,22 +16,17 @@ export interface MobileActionSheetProps {
   cancelLabel?: string;
 }
 
-const Sheet = styled(YStack, {
-  name: 'MobileActionSheet',
-  position: 'fixed' as unknown as 'absolute',
-  left: 0,
-  right: 0,
-  bottom: 0,
-  padding: '$4',
-  gap: '$3',
-  borderTopLeftRadius: 24,
-  borderTopRightRadius: 24,
-  backgroundColor: 'rgba(15, 23, 42, 0.95)',
-  backdropFilter: 'blur(16px)',
-  borderTopWidth: 1,
-  borderColor: 'rgba(255, 255, 255, 0.14)',
-  zIndex: 200,
-});
+function Sheet({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-col items-stretch fixed left-0 right-0 bottom-0 gap-3 rounded-t-[24px] border-t border-[rgba(255,255,255,0.14)] bg-[rgba(15,23,42,0.95)] p-4 backdrop-blur-[16px] z-[200] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
 export function MobileActionSheet({
   isOpen,
@@ -59,14 +53,12 @@ export function MobileActionSheet({
       aria-modal={true}
       style={{ boxShadow: `0 -8px 32px ${palette.opponentTurnHaloColor}` }}
     >
-      <Text fontSize={18} fontWeight="700" color="$color">
-        {title}
-      </Text>
-      <Text fontSize={13} opacity={0.75} color="$color">
+      <span className="text-[18px] font-bold text-[var(--color)]">{title}</span>
+      <span className="text-[13px] opacity-[0.75] text-[var(--color)]">
         {description}
-      </Text>
+      </span>
 
-      <YStack gap="$2">
+      <div className="flex flex-col items-stretch gap-2">
         {liveOpponents.map((opp) => {
           const isSelected = selectedTarget === opp.playerId;
           return (
@@ -81,9 +73,9 @@ export function MobileActionSheet({
             </Button>
           );
         })}
-      </YStack>
+      </div>
 
-      <XStack gap="$2" justifyContent="flex-end">
+      <div className="flex flex-row items-stretch gap-2 justify-end">
         <Button variant="secondary" size="md" onClick={onCancel}>
           {cancelLabel}
         </Button>
@@ -95,7 +87,7 @@ export function MobileActionSheet({
         >
           {confirmLabel}
         </Button>
-      </XStack>
+      </div>
     </Sheet>
   );
 }

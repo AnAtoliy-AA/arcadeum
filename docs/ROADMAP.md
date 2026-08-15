@@ -133,7 +133,7 @@ Extend the existing `gameOptions` system with per-game structured configs.
 
 **Effort: Easy (1 day)**
 
-- Use Tamagui's built-in theme system (already configured in `tamagui.config.ts`)
+- Use the existing CSS-variable theme system (`ThemeContext` + `packages/ui/src/themeDefinitions.ts`) — `data-theme` on `<html>` swaps the `--*` tokens Tailwind classes read
 - Toggle between light/dark themes in settings
 - Persist preference in `localStorage` (existing pattern)
 - System default detection via `prefers-color-scheme`
@@ -879,7 +879,7 @@ Let community members define simple custom games.
 Port web game widgets to the Expo mobile app.
 
 - Reuse `IGameEngine` backend (no changes needed)
-- Port each game widget to React Native + Tamagui
+- Port each game widget to React Native (StyleSheet + useThemedStyles)
 - Touch-optimized board interactions (drag, tap, pinch-to-zoom)
 - Offline support via Expo's background fetch
 - Push notifications via Expo Push Service

@@ -16,8 +16,8 @@ description: Build cross-platform mobile apps with React Native and Expo. Use wh
 ## Project Conventions
 
 - Use Expo Router for navigation
-- Use Tamagui for UI components
-- Use `@arcadeum/ui` shared components
+- Use React Native primitives (`View`, `Text`, `Pressable`, `FlatList`) with `StyleSheet`
+- Use `useThemedStyles` from `@/hooks/useThemedStyles` for theme-aware styles
 - Follow Expo SDK patterns
 
 ## Code Examples
@@ -26,18 +26,23 @@ description: Build cross-platform mobile apps with React Native and Expo. Use wh
 
 ```tsx
 import { Stack } from 'expo-router';
-import { YStack, Text } from 'tamagui';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function GameScreen() {
   return (
     <Stack>
       <Stack.Screen options={{ title: 'Game' }} />
-      <YStack padding="$4" gap="$4">
-        <Text fontSize="$2xl" fontWeight="bold">Game</Text>
-      </YStack>
+      <View style={styles.container}>
+        <Text style={styles.title}>Game</Text>
+      </View>
     </Stack>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { padding: 16, gap: 16 },
+  title: { fontSize: 24, fontWeight: 'bold' },
+});
 ```
 
 ### Platform-Specific Code
@@ -88,7 +93,12 @@ function AnimatedCard() {
 
   return (
     <Animated.View style={animatedStyle}>
-      <Card onPress={() => { scale.value = withSpring(0.95); }} />
+      <Pressable
+        onPress={() => { scale.value = withSpring(0.95); }}
+        style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+      >
+        <Text>Tap me</Text>
+      </Pressable>
     </Animated.View>
   );
 }
@@ -165,7 +175,7 @@ function Button() {
     // Do something
   };
 
-  return <Button onPress={handlePress} />;
+  return <Pressable onPress={handlePress} accessibilityLabel="Trigger haptic feedback" />;
 }
 ```
 
@@ -173,7 +183,7 @@ function Button() {
 
 ### MUST DO
 - Use Expo Router for navigation
-- Use Tamagui for UI components
+- Use React Native primitives + `StyleSheet` for UI components
 - Handle safe areas properly
 - Use `useCallback`/`useMemo` for performance
 - Test on both iOS and Android
@@ -181,7 +191,7 @@ function Button() {
 
 ### MUST NOT DO
 - Use `any` type
-- Import from `react-native` directly (use Tamagui)
+- Import `@arcadeum/ui` or Tailwind classes in `apps/mobile` — mobile uses RN primitives only
 - Use `console.log` in production
 - Hardcode dimensions (use responsive units)
 - Ignore platform differences

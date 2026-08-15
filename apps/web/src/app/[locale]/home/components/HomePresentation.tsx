@@ -99,9 +99,9 @@ export default function HomePresentation() {
             <div className="absolute inset-0 z-[1] bg-video-overlay" />
             <div className="absolute z-[1] h-[90px] w-[90px] animate-pulse-ring rounded-full border-[2.5px] border-white/50 pointer-events-none" />
             <Button
+              className={'absolute z-[2] !h-[90px] !w-[90px]'}
               variant="icon glass"
               size="lg"
-              className="absolute z-[2] !h-[90px] !w-[90px]"
               onClick={handlePlayClick}
               onKeyDown={handlePlayKeyDown}
               aria-label="Play video"

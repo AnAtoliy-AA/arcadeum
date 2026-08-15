@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import HomePage from './home/HomePage';
-import { PageLoading } from '@/shared/ui/Loading/PageLoading';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 import type { Metadata } from 'next';
 import { appConfig } from '@/shared/config/app-config';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';

@@ -1,7 +1,6 @@
 'use client';
 
-import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button, GlassCard } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { BlockedIp } from '../api';
 
@@ -47,30 +46,29 @@ export function BlockedIpsTable({
 }: BlockedIpsTableProps) {
   if (isLoading && items.length === 0) {
     return (
-      <YStack alignItems="center" padding="$5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
-      </YStack>
+      </div>
     );
   }
 
   if (!isLoading && items.length === 0) {
     return (
-      <GlassCard p="$5" alignItems="center" data-testid="blocked-ips-empty">
-        <Text opacity={0.7}>{labels.empty}</Text>
+      <GlassCard className={'p-5 items-center'} data-testid="blocked-ips-empty">
+        <span className="opacity-[0.7]">{labels.empty}</span>
       </GlassCard>
     );
   }
 
   return (
-    <YStack gap="$3" data-testid="blocked-ips-table">
-      <XStack
-        alignItems="center"
-        justifyContent="space-between"
-        paddingHorizontal="$1"
-      >
-        <Text opacity={0.7} fontSize="$1">
+    <div
+      className="flex flex-col items-stretch gap-3"
+      data-testid="blocked-ips-table"
+    >
+      <div className="flex flex-row items-center justify-between px-1">
+        <span className="opacity-[0.7] text-[12px]">
           {labels.totalLabel.replace('{total}', String(items.length))}
-        </Text>
+        </span>
         <Button
           variant="outline"
           size="sm"
@@ -79,55 +77,45 @@ export function BlockedIpsTable({
         >
           {labels.clearAll}
         </Button>
-      </XStack>
+      </div>
 
-      <GlassCard p="$0" overflow="hidden">
-        <XStack
-          gap="$3"
-          alignItems="center"
-          paddingVertical="$2"
-          paddingHorizontal="$3"
-          backgroundColor="$backgroundFocus"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
+      <GlassCard className={'p-0 overflow-hidden'}>
+        <div
+          className="flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
           data-testid="blocked-ips-header"
         >
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.ip}
-          </Text>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.reason}
-          </Text>
-          <Text width={120} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="w-[120px] font-bold text-[12px] opacity-[0.85]">
             {labels.table.expiresAt}
-          </Text>
-          <Text width={100} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="w-[100px] font-bold text-[12px] opacity-[0.85]">
             {labels.table.actions}
-          </Text>
-        </XStack>
+          </span>
+        </div>
 
         {items.map((item, i) => (
-          <XStack
+          <div
+            className="flex flex-row gap-3 items-center py-2 px-3 border-b border-[var(--borderColor)]"
+            style={{
+              backgroundColor:
+                i % 2 === 1 ? 'var(--backgroundFocus)' : undefined,
+              opacity: pendingIp === item.ip ? 0.5 : 1,
+            }}
             key={item.ip}
-            gap="$3"
-            alignItems="center"
-            paddingVertical="$2"
-            paddingHorizontal="$3"
-            backgroundColor={i % 2 === 1 ? '$backgroundFocus' : undefined}
-            borderBottomWidth={1}
-            borderColor="$borderColor"
-            opacity={pendingIp === item.ip ? 0.5 : 1}
             data-testid={`blocked-ip-row-${item.ip}`}
           >
-            <Text flex={1} fontSize="$2">
-              {item.ip}
-            </Text>
-            <Text flex={1} fontSize="$2" opacity={0.8}>
+            <span className="flex-1 text-[14px]">{item.ip}</span>
+            <span className="flex-1 text-[14px] opacity-[0.8]">
               {item.reason}
-            </Text>
-            <Text width={120} fontSize="$2" opacity={0.7}>
+            </span>
+            <span className="w-[120px] text-[14px] opacity-[0.7]">
               {formatExpiry(item.expiresAt)}
-            </Text>
+            </span>
             <Button
               variant="outline"
               size="sm"
@@ -137,9 +125,9 @@ export function BlockedIpsTable({
             >
               {labels.unblock}
             </Button>
-          </XStack>
+          </div>
         ))}
       </GlassCard>
-    </YStack>
+    </div>
   );
 }

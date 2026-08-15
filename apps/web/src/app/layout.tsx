@@ -11,7 +11,11 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 
 import BrowserRegistry from './BrowserRegistry';
-import { ThemeName, ThemePreference } from '@/shared/config/theme';
+import {
+  DEFAULT_THEME_NAME,
+  ThemeName,
+  ThemePreference,
+} from '@/shared/config/theme';
 import { DEFAULT_LOCALE, isLocale } from '@/shared/i18n';
 import { AppThemeProvider } from '@/app/theme/ThemeContext';
 import { LazySessionRoleSync } from '@/shared/ui/LazySessionRoleSync';
@@ -81,7 +85,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const theme = (cookieStore.get('app-theme')?.value as ThemeName) || 'dark';
+  const theme =
+    (cookieStore.get('app-theme')?.value as ThemeName) || DEFAULT_THEME_NAME;
   const themePreference =
     (cookieStore.get('app-theme-preference')?.value as ThemePreference) ||
     'dark';
@@ -128,7 +133,6 @@ export default async function RootLayout({
   return (
     <html
       lang={htmlLang}
-      className={`t_${theme}`}
       data-theme={theme}
       data-theme-preference={themePreference}
     >

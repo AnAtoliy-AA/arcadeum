@@ -2,7 +2,6 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
 import { Section } from '@arcadeum/ui/components/Section/Section';
 import { Button } from '@arcadeum/ui/components/Button/Button';
-import { YStack, XStack, Text } from 'tamagui';
 
 interface TicTacToeOptions {
   variant?: string;
@@ -37,12 +36,12 @@ export default function TicTacToeCreationConfig({
 
   return (
     <Section title={t('games.create.sectionHouseRules')}>
-      <YStack gap="$3">
-        <YStack gap="$1">
-          <Text fontSize="$4" fontWeight="600">
+      <div className="flex flex-col items-stretch gap-3">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[18px] font-semibold">
             {t('games.create.tttBoardSize')}
-          </Text>
-          <XStack gap="$2" flexWrap="wrap">
+          </span>
+          <div className="flex flex-row items-stretch gap-2 flex-wrap">
             {BOARD_SIZES.map((bs) => (
               <Button
                 key={bs.value}
@@ -55,21 +54,16 @@ export default function TicTacToeCreationConfig({
                 {bs.label}
               </Button>
             ))}
-          </XStack>
-        </YStack>
+          </div>
+        </div>
 
         {isInfinity && (
-          <YStack
-            gap="$3"
-            padding="$3"
-            backgroundColor="rgba(99,102,241,0.08)"
-            borderRadius={10}
-          >
-            <YStack gap="$1">
-              <Text fontSize="$3" fontWeight="600">
+          <div className="flex flex-col items-stretch gap-3 p-3 bg-[rgba(99,102,241,0.08)] rounded-[10px]">
+            <div className="flex flex-col items-stretch gap-1">
+              <span className="text-[16px] font-semibold">
                 {t('games.tic_tac_toe_v1.lobby.expansionMargin')}
-              </Text>
-              <XStack gap="$2" flexWrap="wrap">
+              </span>
+              <div className="flex flex-row items-stretch gap-2 flex-wrap">
                 {MARGIN_OPTIONS.map((margin) => (
                   <Button
                     key={margin}
@@ -82,14 +76,14 @@ export default function TicTacToeCreationConfig({
                     {margin}
                   </Button>
                 ))}
-              </XStack>
-            </YStack>
+              </div>
+            </div>
 
-            <YStack gap="$1">
-              <Text fontSize="$3" fontWeight="600">
+            <div className="flex flex-col items-stretch gap-1">
+              <span className="text-[16px] font-semibold">
                 {t('games.tic_tac_toe_v1.lobby.winCondition')}
-              </Text>
-              <XStack gap="$2" flexWrap="wrap">
+              </span>
+              <div className="flex flex-row items-stretch gap-2 flex-wrap">
                 {WIN_LENGTH_OPTIONS.map((winLen) => (
                   <Button
                     key={winLen}
@@ -104,11 +98,11 @@ export default function TicTacToeCreationConfig({
                     })}
                   </Button>
                 ))}
-              </XStack>
-            </YStack>
-          </YStack>
+              </div>
+            </div>
+          </div>
         )}
-      </YStack>
+      </div>
     </Section>
   );
 }

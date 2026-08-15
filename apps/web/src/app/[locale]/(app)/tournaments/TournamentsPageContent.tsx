@@ -1,13 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
-import {
-  PageLayout,
-  Container,
-  PageTitle,
-  Typography,
-  YStack,
-} from '@arcadeum/ui';
+import { PageLayout, Container, PageTitle, Typography } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import {
@@ -82,8 +76,8 @@ export default function TournamentsPageContent() {
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$4">
-          <YStack gap="$1">
+        <div className="flex flex-col items-stretch gap-4">
+          <div className="flex flex-col items-stretch gap-1">
             <PageTitle size="xl" gradient>
               {t?.title}
             </PageTitle>
@@ -92,24 +86,24 @@ export default function TournamentsPageContent() {
                 {t.subtitle}
               </Typography>
             )}
-          </YStack>
+          </div>
 
           {isLoading && (
-            <YStack alignItems="center" padding="$5">
+            <div className="flex flex-col items-center p-5">
               <Spinner />
-            </YStack>
+            </div>
           )}
 
           {showEmpty && (
-            <YStack alignItems="center" padding="$5">
+            <div className="flex flex-col items-center p-5">
               <Typography variant="body" alpha="medium">
                 {listT?.empty ?? t?.comingSoon ?? 'No tournaments yet.'}
               </Typography>
-            </YStack>
+            </div>
           )}
 
           {listT && items.length > 0 && (
-            <YStack gap="$3">
+            <div className="flex flex-col items-stretch gap-3">
               {items.map((item) => (
                 <TournamentCard
                   key={item.id}
@@ -121,7 +115,7 @@ export default function TournamentsPageContent() {
                   labels={listT.card}
                 />
               ))}
-            </YStack>
+            </div>
           )}
 
           {pendingRegister && listT && (
@@ -152,7 +146,7 @@ export default function TournamentsPageContent() {
               labels={listT.card.confirmUnregister}
             />
           )}
-        </YStack>
+        </div>
       </Container>
     </PageLayout>
   );

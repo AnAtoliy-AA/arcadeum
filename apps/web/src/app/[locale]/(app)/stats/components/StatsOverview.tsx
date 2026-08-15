@@ -1,5 +1,4 @@
 import React from 'react';
-import { styled, YStack, Text } from 'tamagui';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Card, SkeletonText, ProgressCircle } from '@arcadeum/ui';
@@ -37,8 +36,12 @@ export function StatsOverview({
         <style>{statsOverviewCSS}</style>
         <div className="stats-overview-grid">
           {[1, 2, 3, 4].map((i) => (
-            <Card key={i} variant="glass" cardPadding="md">
-              <SkeletonText width="60%" height="14px" delay={i * 0.1} />
+            <Card key={i} variant="glass" padding="md">
+              <SkeletonText
+                className={'w-[60%]'}
+                style={{ height: '14px' }}
+                delay={i * 0.1}
+              />
               <SkeletonText
                 width="100px"
                 height="32px"
@@ -57,36 +60,38 @@ export function StatsOverview({
     <>
       <style>{statsOverviewCSS}</style>
       <div className="stats-overview-grid">
-        <Card variant="glass" cardPadding="md">
+        <Card variant="glass" padding="md">
           <StatLabel>{t('stats.totalGames')}</StatLabel>
           <StatValue data-testid="stats-total-games">
             {stats.totalGames}
           </StatValue>
         </Card>
-        <Card variant="glass" cardPadding="md">
+        <Card variant="glass" padding="md">
           <StatLabel>{t('stats.wins')}</StatLabel>
-          <StatValue data-testid="stats-wins" color="$success">
+          <StatValue data-testid="stats-wins" color="var(--success)">
             {stats.wins}
           </StatValue>
         </Card>
-        <Card variant="glass" cardPadding="md">
+        <Card variant="glass" padding="md">
           <StatLabel>{t('stats.losses')}</StatLabel>
-          <StatValue data-testid="stats-losses" color="$danger">
+          <StatValue data-testid="stats-losses" color="var(--danger)">
             {stats.losses}
           </StatValue>
         </Card>
-        <Card variant="glass" cardPadding="md">
+        <Card variant="glass" padding="md">
           <WinRateCardContent>
             <StatLabel>{t('stats.winRate')}</StatLabel>
             <ProgressCircle value={stats.winRate} size={80} strokeWidth={8} />
           </WinRateCardContent>
         </Card>
         {currentStreak != null && currentStreak > 0 && (
-          <Card variant="glass" cardPadding="md">
+          <Card variant="glass" padding="md">
             <StatLabel>{t('stats.currentStreak')}</StatLabel>
             <StatValue
               data-testid="stats-current-streak"
-              color={currentStreakType === 'won' ? '$success' : '$danger'}
+              color={
+                currentStreakType === 'won' ? 'var(--success)' : 'var(--danger)'
+              }
             >
               {currentStreak}
               <StreakSuffix>
@@ -96,29 +101,29 @@ export function StatsOverview({
           </Card>
         )}
         {bestWinStreak != null && bestWinStreak > 0 && (
-          <Card variant="glass" cardPadding="md">
+          <Card variant="glass" padding="md">
             <StatLabel>{t('stats.bestWinStreak')}</StatLabel>
-            <StatValue data-testid="stats-best-win-streak" color="$success">
+            <StatValue
+              data-testid="stats-best-win-streak"
+              color="var(--success)"
+            >
               {bestWinStreak}
               <StreakSuffix>W</StreakSuffix>
             </StatValue>
           </Card>
         )}
         {favoriteGame && (
-          <Card variant="glass" cardPadding="md">
+          <Card variant="glass" padding="md">
             <StatLabel>{t('stats.favoriteGame')}</StatLabel>
-            <StatValue data-testid="stats-favorite-game" fontSize="$7">
+            <StatValue
+              data-testid="stats-favorite-game"
+              className="text-[28px] leading-[34px]"
+            >
               🎯
             </StatValue>
-            <Text
-              fontSize="$3"
-              fontWeight="600"
-              color="$color"
-              mt="$1"
-              textAlign="center"
-            >
+            <span className="text-[16px] font-semibold text-[var(--color)] -mt-1 text-center">
               {favoriteGame}
-            </Text>
+            </span>
           </Card>
         )}
       </div>
@@ -126,35 +131,55 @@ export function StatsOverview({
   );
 }
 
-const StatLabel = styled(Text, {
-  name: 'StatsOverviewStatLabel',
-  fontSize: '$2',
-  color: 'rgba(236,239,238,0.45)',
-  textTransform: 'uppercase',
-  letterSpacing: 1.2,
-  fontWeight: '500',
-});
+function StatLabel({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[14px] leading-[18px] uppercase tracking-[1.2px] font-medium text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const StatValue = styled(Text, {
-  name: 'StatsOverviewStatValue',
-  fontSize: '$10',
-  fontWeight: '800',
-  color: '$primaryGradientStart',
-  lineHeight: '$none',
-  letterSpacing: -0.5,
-});
+function StatValue({
+  color,
+  className,
+  ...props
+}: {
+  color?: string;
+  className?: string;
+} & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[48px] font-extrabold leading-none tracking-[-0.5px] text-[var(--primaryGradientStart)] ${className ?? ''}`}
+      style={color ? { color } : undefined}
+      {...props}
+    />
+  );
+}
 
-const WinRateCardContent = styled(YStack, {
-  name: 'StatsOverviewWinRateContent',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '$4',
-});
+function WinRateCardContent({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-col items-center justify-center gap-4 ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const StreakSuffix = styled(Text, {
-  name: 'StatsOverviewStreakSuffix',
-  fontSize: '$5',
-  fontWeight: '600',
-  color: '$colorMuted',
-  marginLeft: 2,
-});
+function StreakSuffix({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[20px] font-semibold leading-[28px] ml-0.5 text-[var(--colorMuted, rgba(180,180,200,0.7))] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}

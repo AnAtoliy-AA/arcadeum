@@ -1,6 +1,5 @@
 'use client';
 
-import { XStack, YStack } from 'tamagui';
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { Button } from '@arcadeum/ui/components/Button/Button';
@@ -38,23 +37,12 @@ export function AuthFormPanel({
   if (magicLinkSent) {
     return (
       <GlassCard
-        width="100%"
-        maxWidth={maxWidth}
-        borderRadius={24}
-        padding="$7"
-        gap="$5"
-        alignItems="center"
-        className="auth-card-enter"
+        className="w-full rounded-[24px] p-7 gap-5 items-center"
+        style={{ maxWidth: maxWidth }}
         data-testid="auth-magic-link-success"
       >
-        <YStack
-          width={64}
-          height={64}
-          borderRadius={999}
-          alignItems="center"
-          justifyContent="center"
-          marginBottom="$1"
-          borderWidth={1}
+        <div
+          className="flex flex-col w-[64px] h-[64px] rounded-[999px] items-center justify-center -mb-1 border"
           style={{
             color: 'var(--accent, #38bdf8)',
             background:
@@ -64,15 +52,20 @@ export function AuthFormPanel({
           }}
         >
           <MailGlyph size={30} />
-        </YStack>
-        <YStack gap="$2" alignItems="center">
+        </div>
+        <div className="flex flex-col gap-2 items-center">
           <Typography variant="heading" uiSize="lg" weight="700" textCenter>
             {form.magicLinkSentTitle}
           </Typography>
-          <Typography variant="body" uiSize="sm" color="$colorMuted" textCenter>
+          <Typography
+            variant="body"
+            uiSize="sm"
+            color="var(--textSecondary)"
+            textCenter
+          >
             {form.magicLinkSentBody.replace('{{email}}', magicLinkEmail)}
           </Typography>
-        </YStack>
+        </div>
         <Button
           variant="secondary"
           className="rounded-[14px]"
@@ -93,13 +86,8 @@ export function AuthFormPanel({
 
   return (
     <GlassCard
-      width="100%"
-      maxWidth={maxWidth}
-      borderRadius={24}
-      paddingHorizontal="$6"
-      paddingVertical="$7"
-      gap="$5"
-      className="auth-card-enter"
+      className="w-full rounded-[24px] px-6 py-7 gap-5"
+      style={{ maxWidth: maxWidth }}
       data-testid="auth-form-panel"
     >
       <AuthFormTabs
@@ -114,7 +102,7 @@ export function AuthFormPanel({
         }}
       />
 
-      <YStack gap="$2">
+      <div className="flex flex-col items-stretch gap-2">
         <Typography
           variant="heading"
           uiSize="2xl"
@@ -123,10 +111,10 @@ export function AuthFormPanel({
         >
           {isRegisterMode ? form.headingRegister : form.headingSignIn}
         </Typography>
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {isRegisterMode ? form.subRegister : form.subSignIn}
         </Typography>
-      </YStack>
+      </div>
 
       <AuthFormOAuthRow
         providers={providers}
@@ -149,19 +137,19 @@ export function AuthFormPanel({
 
 function OrDivider({ label }: { label: string }) {
   return (
-    <XStack alignItems="center" gap="$3">
-      <YStack flex={1} height={1} backgroundColor="$glassBorder" />
+    <div className="flex flex-row items-center gap-3">
+      <div className="flex flex-col items-stretch flex-1 h-[1px] bg-[var(--glassBorder)]" />
       <Typography
         variant="caption"
         uiSize="xs"
-        color="$colorMuted"
+        color="var(--textSecondary)"
         weight="600"
         style={{ textTransform: 'uppercase', letterSpacing: '0.16em' }}
       >
         {label}
       </Typography>
-      <YStack flex={1} height={1} backgroundColor="$glassBorder" />
-    </XStack>
+      <div className="flex flex-col items-stretch flex-1 h-[1px] bg-[var(--glassBorder)]" />
+    </div>
   );
 }
 
@@ -183,46 +171,35 @@ function ActiveSessionCard({
   } = auth;
   return (
     <GlassCard
-      width="100%"
-      maxWidth={maxWidth}
-      borderRadius={24}
-      padding="$7"
-      gap="$4"
-      className="auth-card-enter"
+      className="w-full rounded-[24px] p-7 gap-4"
+      style={{ maxWidth: maxWidth }}
       data-testid="auth-active-session"
     >
-      <YStack gap="$1">
+      <div className="flex flex-col items-stretch gap-1">
         <Typography variant="heading" uiSize="lg" weight="700">
           {labels.statusActiveMessage}
         </Typography>
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {labels.statusDescription}
         </Typography>
-      </YStack>
-      <YStack
-        gap="$1.5"
-        padding="$4"
-        borderRadius={16}
-        borderWidth={1}
-        borderColor="$successBorder"
-        backgroundColor="$successBgSoft"
-      >
+      </div>
+      <div className="flex flex-col items-stretch p-4 rounded-[16px] border border-[rgba(4,_120,_87,_0.4)] bg-[rgba(4,_120,_87,_0.1)]">
         {storedDisplayName && (
           <Typography variant="body" uiSize="sm">
             {labels.sessionDetailLabels.displayName}: {storedDisplayName}
           </Typography>
         )}
         {storedEmail && (
-          <Typography variant="body" uiSize="sm" color="$colorMuted">
+          <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
             {labels.emailLabel}: {storedEmail}
           </Typography>
         )}
         {storedUsername && (
-          <Typography variant="body" uiSize="sm" color="$colorMuted">
+          <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
             {labels.usernameLabel}: {storedUsername}
           </Typography>
         )}
-      </YStack>
+      </div>
       <Button
         variant="secondary"
         className="rounded-[14px] self-start"

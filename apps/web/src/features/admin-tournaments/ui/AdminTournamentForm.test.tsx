@@ -1,17 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
 import {
   AdminTournamentForm,
   type AdminTournamentFormLabels,
 } from './AdminTournamentForm';
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <TamaguiProvider config={config} defaultTheme="dark">
-    {children}
-  </TamaguiProvider>
-);
+const Wrapper = ({ children }: { children: React.ReactNode }) => children;
 
 const labels: AdminTournamentFormLabels = {
   sections: { settings: 'Settings', content: 'Content' },

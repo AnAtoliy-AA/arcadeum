@@ -1,21 +1,11 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { styled, YStack } from 'tamagui';
 
 export type CelebrationTone = 'victory' | 'defeat' | 'draw';
 
-const Layer = styled(YStack, {
-  name: 'VictoryCelebrationLayer',
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  width: '100vw',
-  height: '100dvh',
-  pointerEvents: 'none',
-  overflow: 'hidden',
-  zIndex: 0,
-});
+const LAYER_CLASSES =
+  'flex flex-col items-stretch fixed top-0 left-0 w-screen h-[100dvh] pointer-events-none overflow-hidden z-0';
 
 // Gold-weighted palette for wins; muted cool flecks for losses.
 const VICTORY_COLORS = [
@@ -101,7 +91,11 @@ export function VictoryCelebration({ tone }: { tone: CelebrationTone }) {
   );
 
   return (
-    <Layer aria-hidden testID="victory-celebration">
+    <div
+      className={LAYER_CLASSES}
+      aria-hidden
+      data-testid="victory-celebration"
+    >
       {/* Breathing radial bloom behind the card. */}
       <div
         style={{
@@ -170,6 +164,6 @@ export function VictoryCelebration({ tone }: { tone: CelebrationTone }) {
           }}
         />
       ))}
-    </Layer>
+    </div>
   );
 }

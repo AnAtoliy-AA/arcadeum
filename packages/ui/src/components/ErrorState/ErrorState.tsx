@@ -1,7 +1,9 @@
+'use client';
 import { memo } from 'react';
 import type { ReactElement } from 'react';
 import { Button } from '../Button/Button';
 import { Typography } from '../Typography/Typography';
+import { cx } from '../../utils/cx';
 
 export type ErrorStateProps = {
   message: string;
@@ -9,6 +11,7 @@ export type ErrorStateProps = {
   onRetry?: () => void;
   retryLabel?: string;
   'data-testid'?: string;
+  className?: string;
 };
 
 export const ErrorState = memo(function ErrorState({
@@ -17,11 +20,15 @@ export const ErrorState = memo(function ErrorState({
   onRetry,
   retryLabel = 'Try Again',
   'data-testid': dataTestId,
+  className,
 }: ErrorStateProps): ReactElement {
   return (
     <div
       data-testid={dataTestId}
-      className="flex flex-col items-center justify-center gap-4 p-8"
+      className={cx(
+        'flex flex-col items-center justify-center gap-4 p-8',
+        className,
+      )}
       style={{ backgroundColor: 'var(--background)' }}
     >
       <span style={{ fontSize: 32 }}>⚠️</span>

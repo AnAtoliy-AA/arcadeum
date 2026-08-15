@@ -1,5 +1,4 @@
-import { XStack, View, Text, styled } from 'tamagui';
-import type { ComponentProps } from 'react';
+import { cx } from '../../utils/cx';
 
 export type FormResult = 'W' | 'L' | 'D';
 
@@ -8,94 +7,75 @@ export type FormPipsProps = {
   max?: number;
   size?: number;
   variant?: 'dot' | 'letter';
-} & Omit<ComponentProps<typeof XStack>, 'children'>;
+  className?: string;
+} & Omit<React.HTMLAttributes<HTMLDivElement>, 'children' | 'results'>;
 
-const Pip = styled(View, {
-  name: 'FormPip',
-  width: 10,
-  height: 10,
-  borderRadius: 5,
-  borderWidth: 1,
-  borderColor: 'transparent',
-  variants: {
-    result: {
-      W: { backgroundColor: '$success' },
-      L: { backgroundColor: '$danger' },
-      D: { backgroundColor: '$neutral', borderColor: '$borderColor' },
-    },
-  } as const,
-});
+const pipResultClasses: Record<FormResult, string> = {
+  W: 'border-transparent bg-[var(--success)]',
+  L: 'border-transparent bg-[var(--danger)]',
+  D: 'border-[var(--borderColor)] bg-[var(--neutral)]',
+};
 
-const LetterTile = styled(View, {
-  name: 'FormPipLetter',
-  width: 16,
-  height: 16,
-  borderRadius: 4,
-  borderWidth: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  variants: {
-    result: {
-      W: {
-        backgroundColor: 'rgba(52,211,153,0.18)',
-        borderColor: 'rgba(52,211,153,0.4)',
-      },
-      L: {
-        backgroundColor: 'rgba(239,68,68,0.18)',
-        borderColor: 'rgba(239,68,68,0.4)',
-      },
-      D: {
-        backgroundColor: 'rgba(255,255,255,0.06)',
-        borderColor: '$borderColor',
-      },
-    },
-  } as const,
-});
+const letterTileClasses: Record<FormResult, string> = {
+  W: 'border-[rgba(52,211,153,0.4)] bg-[rgba(52,211,153,0.18)]',
+  L: 'border-[rgba(239,68,68,0.4)] bg-[rgba(239,68,68,0.18)]',
+  D: 'border-[var(--borderColor)] bg-[rgba(255,255,255,0.06)]',
+};
 
-const LetterText = styled(Text, {
-  name: 'FormPipLetterText',
-  fontSize: 10,
-  fontWeight: '700',
-  letterSpacing: 1,
-  variants: {
-    result: {
-      W: { color: '$success' },
-      L: { color: '$danger' },
-      D: { color: '$textSecondary' },
-    },
-  } as const,
-});
+const letterTextClasses: Record<FormResult, string> = {
+  W: 'text-[var(--success)]',
+  L: 'text-[var(--danger)]',
+  D: 'text-[var(--textSecondary)]',
+};
 
 export function FormPips({
   results,
   max = 7,
   size,
   variant = 'dot',
+  className,
   ...rest
 }: FormPipsProps) {
   const sliced = results.slice(-max);
+  const dotSize = size ?? 10;
+
   return (
-    <XStack
-      gap={4}
-      alignItems="center"
+    <div
+      className={cx('flex items-center gap-1', className)}
       aria-label="Recent form"
       {...rest}
     >
       {sliced.map((r, i) =>
         variant === 'letter' ? (
-          <LetterTile key={i} result={r}>
-            <LetterText result={r}>{r}</LetterText>
-          </LetterTile>
-        ) : (
-          <Pip
+          <span
             key={i}
-            result={r}
-            width={size ?? 10}
-            height={size ?? 10}
-            borderRadius={(size ?? 10) / 2}
+            className={cx(
+              'flex h-4 w-4 items-center justify-center rounded-[4px] border',
+              letterTileClasses[r],
+            )}
+          >
+            <span
+              className={cx(
+                'text-[10px] font-bold tracking-[1px]',
+                letterTextClasses[r],
+              )}
+            >
+              {r}
+            </span>
+          </span>
+        ) : (
+          <span
+            key={i}
+            data-testid="form-pip"
+            className={cx('border', pipResultClasses[r])}
+            style={{
+              width: dotSize,
+              height: dotSize,
+              borderRadius: dotSize / 2,
+            }}
           />
         ),
       )}
-    </XStack>
+    </div>
   );
 }

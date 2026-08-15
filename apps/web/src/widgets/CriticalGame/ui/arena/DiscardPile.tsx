@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalCard } from '../../types';
 import { LastPlayedCardDisplay } from '../LastPlayedCardDisplay';
@@ -26,11 +25,9 @@ export function DiscardPile({
   const description = lastCard ? t(getCardDescriptionKey(lastCard)) : '';
 
   return (
-    <YStack
+    <div
+      className="flex flex-col items-center gap-1 shrink-0"
       data-testid="arena-discard-pile"
-      alignItems="center"
-      gap="$1"
-      flexShrink={0}
     >
       {/* `LastPlayedCardDisplay` renders `LastPlayedCard`, which is
           `position: absolute` with width/height 100%. Without a sized,
@@ -38,9 +35,11 @@ export function DiscardPile({
           ancestor and dominates the arena. `CardSlot` is what the legacy
           table layout uses for the same component. */}
       <CardSlot
-        $role="lastPlayed"
-        width={isNarrow ? 80 : 140}
-        height={isNarrow ? 112 : 196}
+        role="lastPlayed"
+        style={{
+          width: isNarrow ? 80 : 140,
+          height: isNarrow ? 112 : 196,
+        }}
       >
         <LastPlayedCardDisplay
           discardPile={pile}
@@ -88,7 +87,7 @@ export function DiscardPile({
                 textAlign: 'center',
                 color: 'rgba(226, 232, 240, 0.92)',
                 fontWeight: 600,
-                letterSpacing: 0.2,
+                letterSpacing: '0.2px',
               }}
               title={description}
             >
@@ -97,15 +96,12 @@ export function DiscardPile({
           </div>
         )}
       </CardSlot>
-      <Text
+      <span
+        className="text-[12px] font-extrabold tracking-[0.4px] opacity-[0.85]"
         data-testid="arena-discard-pile-count"
-        fontSize={12}
-        fontWeight="800"
-        letterSpacing={0.4}
-        opacity={0.85}
       >
         {t('games.table.state.discard')} · {count}
-      </Text>
-    </YStack>
+      </span>
+    </div>
   );
 }

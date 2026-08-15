@@ -1,8 +1,8 @@
 /**
- * Plain theme token maps (no Tamagui imports) — shared between the Tamagui
- * config (packages/ui) and the web theme provider, which mints these values
- * as CSS variables on <html>. Keeping this module Tamagui-free lets the
- * Tailwind home page theme without loading the Tamagui runtime.
+ * Theme token maps. The web theme provider mints these values as CSS
+ * variables on <html>; Tailwind classes read them via var(--x). Keeping this
+ * module dependency-free lets any consumer (web, Storybook) theme without
+ * loading a styling runtime.
  */
 
 export const themeBase = {
@@ -28,12 +28,9 @@ export const themeBase = {
   primaryText: '#ffffff',
   secondary: '#4338ca',
   danger: '#b91c1c',
-  // Alias the danger palette under the `$error*` namespace so components
-  // that follow the standard form-validation naming (Input, FormGroup,
-  // TextArea, Select, admin/tournaments error banners) resolve their
-  // tokens at SSR. A missing token here causes Tamagui to emit inline
-  // style fallbacks server-side and atomic classes client-side, which
-  // triggers hydration mismatches on any page using these components.
+  // Form-validation components (Input, FormGroup, TextArea, Select, admin
+  // error banners) read the danger palette via var(--error*) — aliased here
+  // so error styling stays theme-consistent.
   error: '#b91c1c',
   errorText: '#ffffff',
   errorBg: 'rgba(220, 38, 38, 0.15)',

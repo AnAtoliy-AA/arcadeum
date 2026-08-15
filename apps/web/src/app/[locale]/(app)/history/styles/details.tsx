@@ -1,51 +1,80 @@
-import { styled, XStack, YStack } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { Typography } from '@arcadeum/ui';
 import type { ReactNode } from 'react';
 
-export const DetailTimestamp = styled(Typography, {
-  uiSize: 'sm',
-  alpha: 'medium',
-  padding: '$3',
-  paddingHorizontal: '$4',
-  borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: '$backgroundStrong',
-} as Record<string, unknown>);
+export function DetailTimestamp({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <Typography
+      className={cx(
+        'border rounded-2xl px-4 py-3 border-[var(--borderColor)] bg-[var(--backgroundHover)]',
+        className,
+      )}
+      uiSize="sm"
+      alpha="medium"
+    >
+      {children}
+    </Typography>
+  );
+}
 
-export const Section = styled(YStack, {
-  gap: '$4',
-  padding: '$6',
-  borderRadius: '$5',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: '$backgroundStrong',
-});
+export function Section({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cx(
+        'flex flex-col items-stretch gap-4 p-6 rounded-3xl border border-[var(--borderColor)] bg-[var(--backgroundHover)]',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
 
 // SectionTitle replaces ::before pseudo-element with a real accent bar element.
 // Used 4 times in HistoryDetailModal — must stay as a named export.
 export function SectionTitle({ children }: { children: ReactNode }) {
   return (
-    <XStack ai="center" gap="$2">
-      <YStack
-        width={4}
-        height={18}
-        borderRadius={2}
-        // Use inline style for gradient — Tamagui's background prop doesn't support linear-gradient strings
+    <div className="flex flex-row items-center gap-2">
+      <div
+        className="flex flex-col items-stretch w-[4px] h-[18px] rounded-lg"
         style={{
           background:
             'linear-gradient(180deg, var(--color-primary, #6366f1) 0%, var(--color-primary-dark, #4f46e5) 100%)',
         }}
       />
-      <Typography uiSize="lg" weight="600" margin={0}>
+      <Typography uiSize="lg" weight="600">
         {children}
       </Typography>
-    </XStack>
+    </div>
   );
 }
 
-export const SectionDescription = styled(Typography, {
-  uiSize: 'sm',
-  alpha: 'medium',
-  lineHeight: '$5',
-} as Record<string, unknown>);
+export function SectionDescription({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <Typography
+      className={cx('leading-[28px]', className)}
+      uiSize="sm"
+      alpha="medium"
+    >
+      {children}
+    </Typography>
+  );
+}

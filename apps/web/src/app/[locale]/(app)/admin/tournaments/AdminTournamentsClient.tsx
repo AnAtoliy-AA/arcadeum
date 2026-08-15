@@ -1,14 +1,6 @@
 'use client';
 import { useState } from 'react';
-import {
-  Container,
-  PageLayout,
-  PageTitle,
-  YStack,
-  XStack,
-  Button,
-} from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Container, PageLayout, PageTitle, Button } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   useAdminTournaments,
@@ -245,7 +237,7 @@ export default function AdminTournamentsClient() {
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$3">
+        <div className="flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t.title}</PageTitle>
 
           <AdminTournamentsFilters
@@ -283,22 +275,17 @@ export default function AdminTournamentsClient() {
           )}
 
           {pendingDelete && (
-            <YStack
-              padding="$3"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              backgroundColor="$background"
+            <div
+              className="flex flex-col items-stretch p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] gap-3"
               data-testid="delete-confirm"
-              gap="$3"
             >
-              <Text>
+              <span className="">
                 {t.confirm.delete.replace(
                   '{name}',
                   pendingDelete.content.en.name,
                 )}
-              </Text>
-              <XStack gap="$3" justifyContent="flex-end">
+              </span>
+              <div className="flex flex-row items-stretch gap-3 justify-end">
                 <Button
                   variant="outline"
                   onClick={() => setPendingDelete(null)}
@@ -306,8 +293,8 @@ export default function AdminTournamentsClient() {
                   {t.actions.cancel}
                 </Button>
                 <Button onClick={confirmDelete}>{t.actions.delete}</Button>
-              </XStack>
-            </YStack>
+              </div>
+            </div>
           )}
 
           {markCompleteItem && (
@@ -324,23 +311,18 @@ export default function AdminTournamentsClient() {
           )}
 
           {pendingTransition && (
-            <YStack
-              padding="$3"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              backgroundColor="$background"
+            <div
+              className="flex flex-col items-stretch p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] gap-3"
               data-testid="transition-confirm"
-              gap="$3"
             >
-              <Text fontWeight="700">
+              <span className="font-bold">
                 {t.transitionPrompt.title.replace(
                   '{name}',
                   pendingTransition.item.content.en.name,
                 )}
-              </Text>
+              </span>
 
-              <XStack gap="$2" flexWrap="wrap">
+              <div className="flex flex-row items-stretch gap-2 flex-wrap">
                 {nextStatuses(pendingTransition.item.status).map((s) => (
                   <Button
                     key={s}
@@ -355,13 +337,13 @@ export default function AdminTournamentsClient() {
                     {t.status[s]}
                   </Button>
                 ))}
-              </XStack>
+              </div>
 
               {pendingTransition.to === 'completed' && (
-                <YStack gap="$1">
-                  <Text fontSize="$1" opacity={0.7}>
+                <div className="flex flex-col items-stretch gap-1">
+                  <span className="text-[12px] opacity-[0.7]">
                     {t.transitionPrompt.resultLabel}
-                  </Text>
+                  </span>
                   <textarea
                     value={resultText}
                     onChange={(e) => setResultText(e.target.value)}
@@ -377,10 +359,10 @@ export default function AdminTournamentsClient() {
                       fontFamily: 'inherit',
                     }}
                   />
-                </YStack>
+                </div>
               )}
 
-              <XStack gap="$3" justifyContent="flex-end">
+              <div className="flex flex-row items-stretch gap-3 justify-end">
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -393,10 +375,10 @@ export default function AdminTournamentsClient() {
                 <Button onClick={confirmTransition}>
                   {t.transitionPrompt.confirm}
                 </Button>
-              </XStack>
-            </YStack>
+              </div>
+            </div>
           )}
-        </YStack>
+        </div>
       </Container>
     </PageLayout>
   );

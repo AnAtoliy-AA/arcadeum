@@ -1,7 +1,5 @@
 'use client';
 
-import { XStack, YStack } from '@arcadeum/ui';
-import { Text, View } from 'tamagui';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
@@ -55,25 +53,22 @@ export function ChatMessageBubble({
 
   if (type === 'system' || type === 'action') {
     return (
-      <XStack paddingVertical="$2" paddingHorizontal="$3" opacity={0.7}>
-        <Text fontSize="$3" fontStyle="italic" color="$colorSubtle">
+      <div className="flex flex-row items-stretch py-2 px-3 opacity-[0.7]">
+        <span className="text-[16px] italic text-[$colorSubtle]">
           {message}
-        </Text>
-      </XStack>
+        </span>
+      </div>
     );
   }
 
   const displayName = senderName ?? senderId ?? '?';
 
   return (
-    <XStack
-      gap="$2"
-      paddingVertical="$2"
-      paddingHorizontal="$3"
-      flexDirection={isOwn ? 'row-reverse' : 'row'}
-      alignItems="flex-start"
+    <div
+      className="flex flex-row gap-2 py-2 px-3 items-start"
+      style={{ flexDirection: isOwn ? 'row-reverse' : 'row' }}
     >
-      <View flexShrink={0}>
+      <div className="shrink-0">
         <EquippedPlayerAvatar
           name={displayName}
           size="sm"
@@ -84,35 +79,20 @@ export function ChatMessageBubble({
           equippedAuraId={senderEquippedAuraId}
           equippedBannerId={senderEquippedBannerId}
         />
-      </View>
-      <YStack
-        flex={1}
-        gap="$1"
-        backgroundColor="rgba(15,23,42,0.8)"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="rgba(99,102,241,0.3)"
-        paddingHorizontal="$3"
-        paddingVertical="$2"
-      >
+      </div>
+      <div className="flex flex-col items-stretch flex-1 gap-1 bg-[rgba(15,23,42,0.8)] rounded-2xl border border-[rgba(99,102,241,0.3)] px-3 py-2">
         {senderName && (
-          <XStack alignItems="center" gap="$2">
-            <Text
-              fontSize="$2"
-              fontWeight="600"
-              textTransform="uppercase"
-              color={nameColorProps.color ?? '#a5b4fc'}
-              style={nameColorProps.style}
-              letterSpacing={0.5}
+          <div className="flex flex-row items-center gap-2">
+            <span
+              className="text-[14px] font-semibold uppercase tracking-[0.5px]"
+              style={{ color: nameColorProps.color ?? '#a5b4fc' }}
             >
               {senderName}
-            </Text>
-          </XStack>
+            </span>
+          </div>
         )}
-        <Text fontSize="$4" color="$color">
-          {message}
-        </Text>
-      </YStack>
-    </XStack>
+        <span className="text-[18px] text-[var(--color)]">{message}</span>
+      </div>
+    </div>
   );
 }

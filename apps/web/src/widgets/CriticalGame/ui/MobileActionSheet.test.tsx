@@ -1,7 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../shared/config/tamagui.config';
 import { MobileActionSheet } from './MobileActionSheet';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { getVariantStyles } from './styles/variants';
@@ -18,20 +16,18 @@ function setup(overrides: Record<string, unknown> = {}) {
   const onConfirm = vi.fn();
   const onCancel = vi.fn();
   render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <ScenePaletteProvider palette={palette}>
-        <MobileActionSheet
-          isOpen
-          title="Attack"
-          description="Play Attack on which player?"
-          opponents={opponents}
-          resolveDisplayName={(id) => id.toUpperCase()}
-          onConfirm={onConfirm}
-          onCancel={onCancel}
-          {...overrides}
-        />
-      </ScenePaletteProvider>
-    </TamaguiProvider>,
+    <ScenePaletteProvider palette={palette}>
+      <MobileActionSheet
+        isOpen
+        title="Attack"
+        description="Play Attack on which player?"
+        opponents={opponents}
+        resolveDisplayName={(id) => id.toUpperCase()}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+        {...overrides}
+      />
+    </ScenePaletteProvider>,
   );
   return { onConfirm, onCancel };
 }
@@ -59,8 +55,6 @@ describe('MobileActionSheet', () => {
 
   it('does not render when isOpen is false', () => {
     setup({ isOpen: false });
-    expect(
-      screen.queryByTestId('mobile-action-sheet'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mobile-action-sheet')).not.toBeInTheDocument();
   });
 });

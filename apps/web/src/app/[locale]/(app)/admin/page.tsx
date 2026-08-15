@@ -11,7 +11,7 @@ export default async function AdminPage() {
   const t = messages.pages?.admin as AdminTranslations | undefined;
 
   return (
-    <GlassCard p="$4" data-testid="admin-dashboard">
+    <GlassCard className={'p-4'} data-testid="admin-dashboard">
       <PageTitle size="lg" gradient>
         {t?.welcome ?? 'Welcome to the admin area'}
       </PageTitle>

@@ -232,26 +232,30 @@ export function ReusableGameLobby({
       <GameHeader>
         <GameInfo>
           <GameTitleText
-            background={theme.titleGradient}
             className={
               theme.titleGradient ? 'text-gradient shimmer-animated' : undefined
             }
-            style={theme.titleGradient ? { backgroundSize: '200% auto' } : {}}
+            style={{
+              background: theme.titleGradient,
+              ...(theme.titleGradient ? { backgroundSize: '200% auto' } : {}),
+            }}
           >
             {gameName}
             {variantName && (
               <>
                 {' '}
                 <VariantText
-                  background={theme.variantGradient}
                   className={
                     theme.variantGradient
                       ? 'text-gradient shimmer-animated'
                       : undefined
                   }
-                  style={
-                    theme.variantGradient ? { backgroundSize: '200% auto' } : {}
-                  }
+                  style={{
+                    background: theme.variantGradient,
+                    ...(theme.variantGradient
+                      ? { backgroundSize: '200% auto' }
+                      : {}),
+                  }}
                 >
                   : {variantName}
                 </VariantText>

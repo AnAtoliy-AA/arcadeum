@@ -9,7 +9,6 @@ const meta: Meta<typeof ChatInput> = {
     value: { control: 'text' },
     disabled: { control: 'boolean' },
     placeholder: { control: 'text' },
-    sendText: { control: 'text' },
     onChange: { action: 'onChange' },
     onSend: { action: 'onSend' },
   },
@@ -25,7 +24,6 @@ export const Default: Story = {
   args: {
     value: '',
     placeholder: 'Type a message...',
-    sendText: 'Send',
   },
 };
 

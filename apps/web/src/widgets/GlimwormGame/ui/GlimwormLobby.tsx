@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { YStack, XStack, Text } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import {
   ReusableGameLobby,
@@ -165,7 +164,7 @@ export function GlimwormLobby({
 
   const optionsSlot =
     room.status === 'lobby' ? (
-      <YStack gap="$4" padding="$3" borderRadius="$3">
+      <div className="flex flex-col items-stretch gap-4 p-3 rounded-xl">
         <LobbyOptionSection title={t('games.glimworm_v1.lobby.variant')}>
           <LobbyChipGroup
             options={variantOptions}
@@ -176,29 +175,24 @@ export function GlimwormLobby({
             testIdPrefix="glimworm-variant"
           />
           {!isHost && (
-            <Text
-              marginTop={2}
-              fontSize="$1"
-              color="$textMuted"
-              fontStyle="italic"
-            >
+            <span className="-mt-2 text-[12px] text-[rgba(180,_180,_200,_0.7)] italic">
               Host chooses the variant.
-            </Text>
+            </span>
           )}
         </LobbyOptionSection>
 
         <LobbyOptionSection title={t('games.glimworm_v1.lobby.powerups')}>
           <Button
-            variant="chip"
-            size="sm"
-            disabled={!isHost}
-            data-active={powerupsEnabled ? 'on' : undefined}
-            onClick={() => isHost && setPowerupsEnabled((p) => !p)}
             className={`rounded-[20px] font-medium text-[13px] ${
               powerupsEnabled
                 ? 'bg-[rgba(177,94,255,0.20)] border-[rgba(177,94,255,0.6)] text-[#d4a8ff] hover:bg-[rgba(177,94,255,0.25)]'
                 : 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.10)] text-[#cbd5e1] hover:bg-[rgba(255,255,255,0.08)]'
             } ${isHost ? 'opacity-100' : 'opacity-[0.7]'}`}
+            variant="chip"
+            size="sm"
+            disabled={!isHost}
+            data-active={powerupsEnabled ? 'on' : undefined}
+            onClick={() => isHost && setPowerupsEnabled((p) => !p)}
           >
             {powerupsEnabled
               ? `✓ ${t('games.glimworm_v1.lobby.powerupsOn')}`
@@ -207,15 +201,12 @@ export function GlimwormLobby({
         </LobbyOptionSection>
 
         <LobbyOptionSection title={t('games.glimworm_v1.lobby.pickColor')}>
-          <XStack gap={2} flexWrap="wrap">
+          <div className="flex flex-row items-stretch gap-2 flex-wrap">
             {PALETTE.map((color) => {
               const isSelected = color === effectiveSelectedColor;
               const isTaken = takenColors.has(color) && !isSelected;
               return (
                 <Button
-                  key={color}
-                  variant="chip"
-                  size="sm"
                   className={`w-[32px] h-[32px] rounded-[16px] ${
                     isSelected ? 'border-[3px]' : 'border-2'
                   } ${
@@ -228,6 +219,9 @@ export function GlimwormLobby({
                     padding: 0,
                     borderColor: isSelected ? '#fff' : 'rgba(255,255,255,0.18)',
                   }}
+                  key={color}
+                  variant="chip"
+                  size="sm"
                   disabled={isTaken}
                   aria-label={color}
                   aria-pressed={isSelected}
@@ -236,22 +230,15 @@ export function GlimwormLobby({
                 />
               );
             })}
-          </XStack>
+          </div>
         </LobbyOptionSection>
 
         {error && (
-          <Text
-            fontSize="$2"
-            paddingVertical={6}
-            paddingHorizontal={10}
-            borderRadius={4}
-            backgroundColor="rgba(255,94,94,0.12)"
-            color="#ffb0b0"
-          >
+          <span className="text-[14px] py-6 px-10 rounded-2xl bg-[rgba(255,94,94,0.12)] text-[#ffb0b0]">
             {error}
-          </Text>
+          </span>
         )}
-      </YStack>
+      </div>
     ) : null;
 
   return (

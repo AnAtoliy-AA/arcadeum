@@ -3,15 +3,12 @@ import { useRouter } from 'next/navigation';
 import {
   PageLayout,
   Container,
-  YStack,
-  XStack,
   Button,
   RankBadge,
   FormPips,
   EnergyBar,
   EmptyState,
 } from '@arcadeum/ui';
-import { Text, View } from 'tamagui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import type { PlayerProfile } from '@/entities/leaderboard/model/types';
@@ -50,11 +47,9 @@ export default function PlayerProfileClient({
   return (
     <PageLayout>
       <Container size="md">
-        <YStack
-          gap="$5"
-          paddingVertical="$8"
-          alignItems="flex-start"
-          testID={`player-profile-${id}`}
+        <div
+          className="flex flex-col gap-5 py-8 items-start"
+          data-testid={`player-profile-${id}`}
         >
           <Button
             variant="ghost"
@@ -65,9 +60,9 @@ export default function PlayerProfileClient({
             ← {backLabel}
           </Button>
           {loading ? (
-            <Text fontSize="$3" opacity={0.6}>
+            <span className="text-[16px] opacity-[0.6]">
               {profileT.loading ?? 'Loading…'}
-            </Text>
+            </span>
           ) : missing || !profile ? (
             <EmptyState message={profileT.notFound ?? 'Player not found.'} />
           ) : (
@@ -77,7 +72,7 @@ export default function PlayerProfileClient({
               placeholder={placeholder}
             />
           )}
-        </YStack>
+        </div>
       </Container>
     </PageLayout>
   );
@@ -118,16 +113,11 @@ function Profile({
   });
   const nameProps = nameColorRenderProps(nameColor);
   return (
-    <YStack gap="$4" width="100%">
-      <Text
-        fontSize="$2"
-        letterSpacing={2}
-        opacity={0.6}
-        textTransform="uppercase"
-      >
+    <div className="flex flex-col items-stretch gap-4 w-full">
+      <span className="text-[14px] tracking-[2px] opacity-[0.6] uppercase">
         {eyebrow}
-      </Text>
-      <XStack alignItems="center" gap="$3" flexWrap="wrap">
+      </span>
+      <div className="flex flex-row items-center gap-3 flex-wrap">
         <EquippedPlayerAvatar
           name={player.name}
           size="md"
@@ -141,29 +131,27 @@ function Profile({
           fallbackAvatarUrl={player.avatarUrl}
           data-testid="player-profile-avatar"
         />
-        <YStack gap="$1">
-          <XStack alignItems="center" gap="$2" flexWrap="wrap">
-            <Text
-              fontSize="$9"
-              fontWeight="800"
-              letterSpacing={-0.5}
+        <div className="flex flex-col items-stretch gap-1">
+          <div className="flex flex-row items-center gap-2 flex-wrap">
+            <span
+              className="text-[40px] font-extrabold tracking-[-0.5px]"
               {...(nameProps.color ? { color: nameProps.color } : {})}
               {...(nameProps.style ? { style: nameProps.style } : {})}
             >
               {player.name}
-            </Text>
-          </XStack>
-          <XStack alignItems="center" gap="$2">
+            </span>
+          </div>
+          <div className="flex flex-row items-center gap-2">
             <RankBadge
               tier={player.tier as never}
             >{`#${player.rank}`}</RankBadge>
             {player.streak && player.streak >= 3 ? (
-              <Text fontSize="$3">🔥 {player.streak}</Text>
+              <span className="text-[16px]">🔥 {player.streak}</span>
             ) : null}
-          </XStack>
-        </YStack>
-      </XStack>
-      <XStack gap="$3" flexWrap="wrap">
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-row items-stretch gap-3 flex-wrap">
         <Stat label="Rating" value={formatNumber(player.rating, locale)} />
         <Stat label="Wins" value={String(player.wins)} />
         <Stat label="Winrate" value={`${Math.round(player.winrate * 100)}%`} />
@@ -171,113 +159,64 @@ function Profile({
           <Stat label="ELO" value={formatNumber(player.elo, locale)} />
         ) : null}
         <Stat label="Region" value={player.region.toUpperCase()} />
-      </XStack>
-      <YStack gap="$2" width="100%" maxWidth={520}>
-        <Text
-          fontSize="$1"
-          letterSpacing={2}
-          opacity={0.6}
-          textTransform="uppercase"
-        >
+      </div>
+      <div className="flex flex-col items-stretch gap-2 w-full max-w-[520px]">
+        <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
           Recent form
-        </Text>
+        </span>
         <FormPips results={player.recentForm} max={12} variant="letter" />
-      </YStack>
-      <YStack gap="$3" width="100%">
-        <Text
-          fontSize="$1"
-          letterSpacing={2}
-          opacity={0.6}
-          textTransform="uppercase"
-        >
+      </div>
+      <div className="flex flex-col items-stretch gap-3 w-full">
+        <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
           Per-mode ranks
-        </Text>
-        <YStack gap="$2">
+        </span>
+        <div className="flex flex-col items-stretch gap-2">
           {modeRanks.map((m) => (
-            <XStack
+            <div
+              className="flex flex-row items-center gap-3 p-3 rounded-xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]"
               key={m.mode}
-              alignItems="center"
-              gap="$3"
-              padding="$3"
-              borderRadius="$3"
-              borderWidth={1}
-              borderColor="$borderColor"
-              backgroundColor="rgba(255,255,255,0.02)"
               data-testid={`profile-mode-${m.mode}`}
             >
-              <Text
-                width={96}
-                fontSize="$2"
-                letterSpacing={1}
-                textTransform="capitalize"
-              >
+              <span className="w-[96px] text-[14px] tracking-[1px] capitalize">
                 {m.mode}
-              </Text>
+              </span>
               <RankBadge tier={player.tier as never}>{`#${m.rank}`}</RankBadge>
-              <View flex={1} minWidth={140}>
+              <div className="flex-1 min-w-[140px]">
                 <EnergyBar value={m.rating} max={max} />
-              </View>
-            </XStack>
+              </div>
+            </div>
           ))}
-        </YStack>
-      </YStack>
+        </div>
+      </div>
       {squad ? (
-        <YStack gap="$2">
-          <Text
-            fontSize="$1"
-            letterSpacing={2}
-            opacity={0.6}
-            textTransform="uppercase"
-          >
+        <div className="flex flex-col items-stretch gap-2">
+          <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
             Squad
-          </Text>
-          <XStack
-            alignItems="center"
-            gap="$3"
-            padding="$3"
-            borderRadius="$3"
-            borderWidth={1}
-            borderColor="$borderColor"
-            backgroundColor="rgba(255,255,255,0.02)"
-          >
-            <Text fontWeight="700" letterSpacing={1} color="$mythicAccent">
+          </span>
+          <div className="flex flex-row items-center gap-3 p-3 rounded-xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]">
+            <span className="font-bold tracking-[1px] text-[var(--mythicAccent)]">
               [{squad.tag}]
-            </Text>
-            <Text fontWeight="600">{squad.name}</Text>
-            <Text fontSize="$2" opacity={0.7}>
-              #{squad.rank}
-            </Text>
-            <Text fontSize="$2" opacity={0.85} letterSpacing={1}>
+            </span>
+            <span className="font-semibold">{squad.name}</span>
+            <span className="text-[14px] opacity-[0.7]">#{squad.rank}</span>
+            <span className="text-[14px] opacity-[0.85] tracking-[1px]">
               {formatNumber(squad.rating, locale)}
-            </Text>
-          </XStack>
-        </YStack>
+            </span>
+          </div>
+        </div>
       ) : null}
-      <Text fontSize="$2" opacity={0.6} maxWidth={520}>
+      <span className="text-[14px] opacity-[0.6] max-w-[520px]">
         {placeholder}
-      </Text>
-    </YStack>
+      </span>
+    </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <YStack
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      borderRadius="$2"
-      borderWidth={1}
-      borderColor="$borderColor"
-      backgroundColor="rgba(255,255,255,0.02)"
-      gap={2}
-      minWidth={96}
-    >
-      <Text fontSize="$1" opacity={0.6} textTransform="uppercase">
-        {label}
-      </Text>
-      <Text fontSize="$4" fontWeight="700" letterSpacing={1}>
-        {value}
-      </Text>
-    </YStack>
+    <div className="flex flex-col items-stretch px-3 py-2 rounded-lg border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] gap-2 min-w-[96px]">
+      <span className="text-[12px] opacity-[0.6] uppercase">{label}</span>
+      <span className="text-[18px] font-bold tracking-[1px]">{value}</span>
+    </div>
   );
 }

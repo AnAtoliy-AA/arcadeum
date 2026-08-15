@@ -161,12 +161,12 @@ test.describe('Sea Battle 6 Players Layout', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    // Verify layout is vertical (YStack uses column)
+    // Verify layout is vertical (flex column)
     const container = page.getByTestId('sea-battle-grids-container');
     const display = await container.evaluate(
       (el) => window.getComputedStyle(el).display,
     );
-    // Tamagui YStack is flex by default
+    // The grid container is flex by default
     expect(display).toBe('flex');
     const flexDirection = await container.evaluate(
       (el) => window.getComputedStyle(el).flexDirection,

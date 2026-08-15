@@ -5,7 +5,6 @@ import {
   Badge,
   Card,
   ArrowLeftIcon,
-  XStack,
   Modal,
   ModalContent,
   ModalHeader,
@@ -101,13 +100,13 @@ export function HistoryDetailModal({
             <ArrowLeftIcon size={16} />
             {t('history.detail.backToList')}
           </Button>
-          <XStack ai="center" gap="$3">
+          <div className="flex flex-row items-center gap-3">
             <ModalTitle>{selectedEntry.roomName}</ModalTitle>
             <EntryStatus data-testid="history-status">
               {t(`history.status.${selectedEntry.status}`) ||
                 selectedEntry.status}
             </EntryStatus>
-          </XStack>
+          </div>
         </ModalHeader>
 
         <ModalBody>
@@ -191,9 +190,7 @@ export function HistoryDetailModal({
               <Section>
                 <SectionTitle>{t('history.detail.logsTitle')}</SectionTitle>
                 {detail.logs.length === 0 ? (
-                  <Card variant="outlined" padding="md">
-                    {t('history.detail.noLogs')}
-                  </Card>
+                  <Card variant="outlined">{t('history.detail.noLogs')}</Card>
                 ) : (
                   detail.logs.map((log) => (
                     <LogItem key={log.id}>
@@ -229,7 +226,7 @@ export function HistoryDetailModal({
                   </Badge>
                 )}
                 {showRemoveConfirm ? (
-                  <XStack gap="$4">
+                  <div className="flex flex-row items-stretch gap-4">
                     <Button
                       style={{ flex: 1 }}
                       variant="secondary"
@@ -248,7 +245,7 @@ export function HistoryDetailModal({
                         ? t('history.detail.removeRemoving')
                         : t('history.detail.removeConfirm')}
                     </Button>
-                  </XStack>
+                  </div>
                 ) : (
                   <Button
                     variant="danger"

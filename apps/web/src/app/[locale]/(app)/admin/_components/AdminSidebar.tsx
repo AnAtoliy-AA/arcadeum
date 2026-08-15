@@ -1,7 +1,6 @@
 'use client';
 
-import { GlassCard, Typography, XStack, YStack } from '@arcadeum/ui';
-import { View } from 'tamagui';
+import { GlassCard, Typography } from '@arcadeum/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ADMIN_SIDEBAR_ITEMS, type AdminSidebarItem } from './sidebarItems';
@@ -25,34 +24,33 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <YStack gap="$2" width="100%" data-testid="admin-sidebar">
+    <div
+      className="flex flex-col items-stretch gap-2 w-full"
+      data-testid="admin-sidebar"
+    >
       {ADMIN_SIDEBAR_ITEMS.map((item) => {
         const active = isActive(item.href, pathname);
         const card = (
           <GlassCard
-            p="$3"
-            opacity={item.enabled ? 1 : 0.55}
-            borderWidth={1}
-            borderColor={active ? '$primary' : '$borderColor'}
-            backgroundColor={active ? '$primaryBgSoft' : undefined}
-            cursor={item.enabled ? 'pointer' : 'default'}
+            className={'p-3 border'}
+            style={{
+              opacity: item.enabled ? 1 : 0.55,
+              borderColor: active ? 'var(--primary)' : 'var(--borderColor)',
+              backgroundColor: active ? 'rgba(87,195,255,0.1)' : undefined,
+              cursor: item.enabled ? 'pointer' : 'default',
+            }}
             data-testid={`admin-nav-${item.id}`}
             data-active={active ? 'true' : undefined}
           >
-            <XStack alignItems="center" gap="$2">
+            <div className="flex flex-row items-center gap-2">
               {active && (
-                <View
-                  width={3}
-                  height={16}
-                  borderRadius={2}
-                  backgroundColor="$primary"
-                />
+                <div className="w-[3px] h-[16px] rounded-lg bg-[var(--primary)]" />
               )}
-              <YStack flex={1}>
+              <div className="flex flex-col items-stretch flex-1">
                 <Typography
                   variant="label"
                   uiSize="md"
-                  fontWeight={active ? '800' : '700'}
+                  weight={active ? '800' : '700'}
                 >
                   {labels.items[item.id] ?? item.id}
                 </Typography>
@@ -61,8 +59,8 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
                     {labels.comingSoon}
                   </Typography>
                 )}
-              </YStack>
-            </XStack>
+              </div>
+            </div>
           </GlassCard>
         );
         if (item.enabled && item.href) {
@@ -79,6 +77,6 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
         }
         return <div key={item.id}>{card}</div>;
       })}
-    </YStack>
+    </div>
   );
 }

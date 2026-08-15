@@ -1,6 +1,5 @@
 'use client';
 
-import { XStack, Text } from 'tamagui';
 import { InGameAvatar } from '@/features/games/ui';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
 import type { CheckersPlayer } from '../types';
@@ -26,17 +25,13 @@ export function TurnBadge({
     resolveName?.(player?.playerId) ?? player?.playerId ?? currentTurnUserId;
 
   return (
-    <XStack
+    <div
+      className="flex flex-row py-2 px-3 rounded-[999px] border-[var(--borderColor)] self-center items-center gap-2"
+      style={{
+        backgroundColor: myTurn ? '#3fd386' : 'var(--backgroundHover)',
+        borderWidth: myTurn ? 0 : 1,
+      }}
       data-testid="checkers-turn-badge"
-      paddingVertical="$2"
-      paddingHorizontal="$3"
-      borderRadius={999}
-      backgroundColor={myTurn ? '$green10' : '$backgroundHover'}
-      borderWidth={myTurn ? 0 : 1}
-      borderColor="$borderColor"
-      alignSelf="center"
-      alignItems="center"
-      gap="$2"
     >
       <InGameAvatar
         playerId={currentTurnUserId}
@@ -44,9 +39,12 @@ export function TurnBadge({
         size="sm"
         data-testid="checkers-turn-avatar"
       />
-      <Text fontWeight="700" color={myTurn ? '$white' : theme.textColor}>
+      <span
+        className="font-bold"
+        style={{ color: myTurn ? '#f5f7ff' : theme.textColor }}
+      >
         {myTurn ? 'Your turn' : `${display}'s turn`}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 }

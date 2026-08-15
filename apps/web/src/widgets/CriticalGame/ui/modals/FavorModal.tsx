@@ -1,5 +1,4 @@
 import React from 'react';
-import { YStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -48,23 +47,23 @@ const FavorModal: React.FC<FavorModalProps> = ({
     <Modal open={isOpen}>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
       >
-        <ModalHeader $variant={cardVariant as GameVariant}>
-          <ModalTitle $variant={cardVariant as GameVariant}>
+        <ModalHeader variant={cardVariant as GameVariant}>
+          <ModalTitle variant={cardVariant as GameVariant}>
             🤝 {t('games.table.modals.favor.title')}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
+          <CloseButton onClick={onClose} variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel $variant={cardVariant as GameVariant}>
+          <SectionLabel variant={cardVariant as GameVariant}>
             {t('games.table.modals.favor.selectPlayer')}
           </SectionLabel>
-          <Text fontSize="$3" opacity={0.8} marginBottom="$4">
+          <span className="text-[16px] opacity-[0.8] -mb-4">
             {t('games.table.modals.favor.description')}
-          </Text>
+          </span>
           <OptionGrid>
             {aliveOpponents.map((opponent) => (
               <OptionButton
@@ -74,21 +73,21 @@ const FavorModal: React.FC<FavorModalProps> = ({
                 onClick={() => onSelectTarget(opponent.playerId)}
                 disabled={opponent.hand.length === 0}
               >
-                <Text fontSize="$6">🎮</Text>
-                <YStack>
-                  <Text>
+                <span className="text-[24px]">🎮</span>
+                <div className="flex flex-col items-stretch">
+                  <span className="">
                     {resolveDisplayName(
                       opponent.playerId,
                       `Player ${opponent.playerId.slice(0, 8)}`,
                     )}
-                  </Text>
-                  <Text fontSize="$2" opacity={0.7}>
+                  </span>
+                  <span className="text-[14px] opacity-[0.7]">
                     {t('games.table.modals.favor.cardsCount').replace(
                       '{count}',
                       opponent.hand.length.toString(),
                     )}
-                  </Text>
-                </YStack>
+                  </span>
+                </div>
               </OptionButton>
             ))}
           </OptionGrid>

@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, Button, PageTitle } from '@arcadeum/ui';
+import { Button, PageTitle } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 interface HistoryHeaderProps {
@@ -24,7 +24,7 @@ export function HistoryHeader({
           to { transform: rotate(360deg); }
         }
       `}</style>
-      <XStack jc="space-between" ai="center" mb="$8">
+      <div className="flex flex-row justify-between items-center -mb-8">
         <PageTitle size="xl" gradient>
           {t('navigation.historyTab')}
         </PageTitle>
@@ -49,7 +49,7 @@ export function HistoryHeader({
             <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
           </svg>
         </Button>
-      </XStack>
+      </div>
     </>
   );
 }

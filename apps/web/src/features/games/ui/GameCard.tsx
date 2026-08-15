@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { styled, YStack, XStack, H3, Paragraph, Text } from 'tamagui';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   useTranslation,
@@ -9,6 +9,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import type { GameMetadata } from '../types';
 import { Card as SharedCard, Badge } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 interface GameCardProps {
   game: GameMetadata;
@@ -18,81 +19,93 @@ interface GameCardProps {
   disabled?: boolean;
 }
 
-const StyledCard = styled(SharedCard, {
-  name: 'GameCard',
-  cursor: 'pointer',
-  position: 'relative',
-  overflow: 'hidden',
-  borderWidth: 1,
-  borderColor: '$borderColor',
+const Card = ({
+  disabled = false,
+  className,
+  children,
+  onClick,
+  ...props
+}: {
+  disabled?: boolean;
+  className?: string;
+  children?: ReactNode;
+  onClick?: () => void;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick'>) => (
+  <SharedCard
+    className={cx(
+      'transition-all duration-300 ease-out',
+      disabled
+        ? 'opacity-60 cursor-not-allowed'
+        : 'cursor-pointer hover:-translate-y-[2px] hover:shadow-[0_0_25px_rgba(0,0,0,0.15)] hover:border-[var(--primary)] active:translate-y-0 active:scale-[0.98]',
+      className,
+    )}
+    onClick={onClick}
+    {...props}
+  >
+    {children}
+  </SharedCard>
+);
 
-  hoverStyle: {
-    y: -2,
-    shadowColor: 'rgba(0, 0, 0, 0.15)',
-    shadowRadius: 25,
-    borderColor: '$primary',
-  },
+const CardGlow = ({
+  disabled = false,
+  className,
+  ...props
+}: {
+  disabled?: boolean;
+  className?: string;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'absolute top-0 left-0 right-0 h-[3px]',
+      disabled
+        ? 'bg-[var(--outlineColor)]'
+        : 'bg-[linear-gradient(90deg,var(--primary),var(--secondary))]',
+      className,
+    )}
+    {...props}
+  />
+);
 
-  pressStyle: {
-    y: 0,
-    scale: 0.98,
-  },
+const GameImage = ({
+  background,
+  className,
+  children,
+  ...props
+}: {
+  background?: string;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'w-[60px] h-[60px] rounded-[8px] bg-[var(--backgroundFocus)] border-2 border-[var(--borderColor)] mb-3 flex items-center justify-center',
+      className,
+    )}
+    style={background ? { background } : undefined}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-  variants: {
-    disabled: {
-      true: {
-        opacity: 0.6,
-        cursor: 'not-allowed',
-        hoverStyle: {
-          y: 0,
-          shadowRadius: 0,
-          borderColor: '$borderColor',
-        },
-      },
-    },
-  } as const,
-});
-
-const CardGlow = styled(YStack, {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: 3,
-  variants: {
-    disabled: {
-      true: {
-        backgroundColor: '$outlineColor',
-      },
-      false: {
-        background: 'linear-gradient(90deg, $primary, $secondary)',
-      },
-    },
-  } as const,
-});
-
-const GameImage = styled(YStack, {
-  width: 60,
-  height: 60,
-  borderRadius: 8,
-  backgroundColor: '$backgroundFocus',
-  borderWidth: 2,
-  borderColor: '$borderColor',
-  marginBottom: '$3',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const MetaTag = styled(XStack, {
-  backgroundColor: '$backgroundFocus',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: 12,
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  alignItems: 'center',
-  gap: '$1',
-});
+const MetaTag = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-center gap-1 bg-[var(--backgroundFocus)] px-2 py-1 rounded-[12px] border border-[var(--borderColor)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 function getStatusVariant(
   status: string,
@@ -128,19 +141,18 @@ export function GameCard({
   };
 
   return (
-    <StyledCard
-      className={className}
+    <Card
+      className={`p-4 ${className}`}
       onClick={handleClick}
       disabled={disabled}
-      padding="$4"
     >
       <CardGlow disabled={disabled} />
 
-      <XStack position="absolute" top="$3" right="$3">
+      <div className="flex flex-row items-stretch absolute">
         <Badge variant={getStatusVariant(game.status)} size="sm">
           {game.status}
         </Badge>
-      </XStack>
+      </div>
 
       <GameImage
         {...(game.thumbnail
@@ -150,62 +162,59 @@ export function GameCard({
           : {})}
       >
         {!game.thumbnail && (
-          <Text fontSize="$6" color="$color">
+          <span className="text-[24px] text-[var(--color)]">
             {game.name.charAt(0)}
-          </Text>
+          </span>
         )}
       </GameImage>
 
-      <H3 fontSize="$5" fontWeight="600" marginBottom="$2">
+      <span className="text-[20px] font-bold leading-[28px] text-[20px] font-semibold -mb-2">
         {t(`games.${game.slug}.name` as TranslationKey) || game.name}
-      </H3>
+      </span>
 
       {showDetails && (
-        <YStack gap="$3">
-          <Paragraph fontSize="$3" color="$textSecondary" numberOfLines={2}>
+        <div className="flex flex-col items-stretch gap-3">
+          <span className="text-[16px] text-[var(--textSecondary)] line-clamp-2">
             {t(`games.${game.slug}.description` as TranslationKey) ||
               game.description}
-          </Paragraph>
+          </span>
 
-          <XStack flexWrap="wrap" gap="$2">
+          <div className="flex flex-row items-stretch flex-wrap gap-2">
             <MetaTag>
-              <Text fontSize="$1">
+              <span className="text-[12px]">
                 👥 {game.minPlayers}-{game.maxPlayers}
-              </Text>
+              </span>
             </MetaTag>
             {game.estimatedDuration && (
               <MetaTag>
-                <Text fontSize="$1">⏱️ {game.estimatedDuration}m</Text>
+                <span className="text-[12px]">
+                  ⏱️ {game.estimatedDuration}m
+                </span>
               </MetaTag>
             )}
             {game.complexity && (
               <MetaTag>
-                <Text fontSize="$1">🧠 {game.complexity}/5</Text>
+                <span className="text-[12px]">🧠 {game.complexity}/5</span>
               </MetaTag>
             )}
-          </XStack>
+          </div>
 
           {game.tags && game.tags.length > 0 && (
-            <XStack flexWrap="wrap" gap="$1">
+            <div className="flex flex-row items-stretch flex-wrap gap-1">
               {game.tags.map((tag) => (
-                <XStack
+                <div
+                  className="flex flex-row items-stretch bg-[var(--backgroundHover)] px-2 py-1 rounded-[8px] border border-[var(--borderColor)]"
                   key={tag}
-                  backgroundColor="$backgroundHover"
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius={8}
-                  borderWidth={1}
-                  borderColor="$borderColor"
                 >
-                  <Text fontSize={10} color="$textSecondary">
+                  <span className="text-[48px] text-[var(--textSecondary)]">
                     {tag}
-                  </Text>
-                </XStack>
+                  </span>
+                </div>
               ))}
-            </XStack>
+            </div>
           )}
-        </YStack>
+        </div>
       )}
-    </StyledCard>
+    </Card>
   );
 }

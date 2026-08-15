@@ -113,7 +113,7 @@ export function ThreatStrip({
     color: '#fff',
     fontSize: 11,
     fontWeight: 700,
-    letterSpacing: 0.4,
+    letterSpacing: '0.4px',
     textTransform: 'uppercase',
   };
 

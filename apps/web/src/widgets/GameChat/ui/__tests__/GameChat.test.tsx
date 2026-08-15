@@ -1,8 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '@/shared/config/tamagui.config';
 
 import { GameChat } from '../GameChat';
 import { useGameChatStore } from '../../store/gameChatStore';
@@ -18,11 +16,7 @@ vi.mock('@/features/shop/hooks/useEquippedCosmetics', () => ({
 }));
 
 function renderChat(ui: React.ReactElement) {
-  return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+  return render(ui);
 }
 
 vi.mock('@arcadeum/ui', async () => {
@@ -38,9 +32,6 @@ vi.mock('@arcadeum/ui', async () => {
     onClick?: () => void;
   }) => React.createElement('button', { onClick }, children);
   return {
-    XStack: passthrough('XStack'),
-    YStack: passthrough('YStack'),
-    ScrollView: passthrough('ScrollView'),
     Button: button,
     IconButton: button,
     GlassCard: passthrough('GlassCard'),

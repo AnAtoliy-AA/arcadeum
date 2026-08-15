@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  YStack,
-  XStack,
-  Text,
-  Checkbox as TamaCheckbox,
-  styled,
-} from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import type { UseAutoplayReturn } from '../hooks/useAutoplay';
 
 interface AutoplayControlsProps {
@@ -13,95 +7,106 @@ interface AutoplayControlsProps {
   autoplayState: UseAutoplayReturn;
 }
 
-const Container = styled(YStack, {
-  position: 'relative',
-  zIndex: 50,
-});
+function Container({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-col items-stretch relative z-[50] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const Header = styled(XStack, {
-  alignItems: 'center',
-  gap: '$2',
-  cursor: 'pointer',
-  padding: '$2 $3',
-  userSelect: 'none',
-  borderWidth: 1,
-  borderColor: 'rgba(99, 102, 241, 0.3)',
-  borderRadius: '$4',
+function Header({
+  expanded,
+  className,
+  ...props
+}: {
+  expanded?: boolean;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-row items-center gap-2 cursor-pointer select-none rounded-2xl border border-[rgba(99,102,241,0.3)] px-3 py-2 hover:bg-[rgba(99,102,241,0.2)]',
+        expanded ? 'bg-[rgba(99,102,241,0.2)]' : 'bg-[rgba(99,102,241,0.1)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  hoverStyle: {
-    backgroundColor: 'rgba(99, 102, 241, 0.2)',
-  },
+function HeaderText({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[16px] leading-[20px] font-semibold text-[rgba(255,255,255,0.95)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-  variants: {
-    expanded: {
-      true: {
-        backgroundColor: 'rgba(99, 102, 241, 0.2)',
-      },
-      false: {
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-      },
-    },
-  } as const,
-});
+function Toggle({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[14px] leading-[18px] text-[rgba(255,255,255,0.7)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const HeaderText = styled(Text, {
-  color: 'rgba(255, 255, 255, 0.95)',
-  fontSize: '$3',
-  fontWeight: '600',
-});
+function DropdownMenu({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-col items-stretch absolute top-full right-0 mt-2 w-[280px] gap-1 overflow-hidden rounded-2xl border border-[rgba(99,102,241,0.3)] bg-[#1e1e2e] p-2 ${className ?? ''}`}
+      style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)' }}
+      {...props}
+    />
+  );
+}
 
-const Toggle = styled(Text, {
-  color: 'rgba(255, 255, 255, 0.7)',
-  fontSize: '$2',
-});
+function Label({
+  secondary,
+  className,
+  ...props
+}: {
+  secondary?: boolean;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-row items-center gap-3 cursor-pointer rounded-lg px-3 py-2 hover:bg-[rgba(255,255,255,0.05)]',
+        secondary && 'pl-6 opacity-[0.9]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const DropdownMenu = styled(YStack, {
-  position: 'absolute',
-  top: '100%',
-  // Anchor to the right edge of the trigger so the 280px menu doesn't
-  // overflow the viewport when the autoplay button sits in the
-  // right-aligned widget header bar.
-  right: 0,
-  marginTop: '$2',
-  width: 280,
-  backgroundColor: '#1e1e2e',
-  borderWidth: 1,
-  borderColor: 'rgba(99, 102, 241, 0.3)',
-  borderRadius: '$4',
-  shadowColor: 'rgba(0, 0, 0, 0.2)',
-  shadowOffset: { width: 0, height: 4 },
-  shadowRadius: 6,
-  padding: '$2',
-  gap: '$1',
-  overflow: 'hidden',
-});
-
-const Label = styled(XStack, {
-  alignItems: 'center',
-  gap: '$3',
-  cursor: 'pointer',
-  padding: '$2 $3',
-  borderRadius: '$2',
-
-  hoverStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-
-  variants: {
-    secondary: {
-      true: {
-        paddingLeft: '$6',
-        opacity: 0.9,
-      },
-    },
-  } as const,
-});
-
-const ControlText = styled(Text, {
-  color: 'rgba(255, 255, 255, 0.9)',
-  fontSize: '$3',
-  fontWeight: '500',
-});
+function ControlText({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[16px] leading-[20px] font-medium text-[rgba(255,255,255,0.9)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
 interface CheckboxItemProps {
   checked: boolean;
@@ -120,23 +125,19 @@ const CheckboxItem: React.FC<CheckboxItemProps> = ({
 }) => (
   <Label
     secondary={secondary}
-    opacity={disabled ? 0.5 : 1}
     onClick={() => !disabled && onCheckedChange(!checked)}
+    style={disabled ? { opacity: 0.5 } : undefined}
   >
-    <TamaCheckbox
+    <input
+      type="checkbox"
       id={label}
-      size="$4"
       checked={checked}
-      onCheckedChange={onCheckedChange}
+      onChange={(e) => onCheckedChange(e.target.checked)}
       disabled={disabled}
-      borderColor="rgba(99, 102, 241, 0.5)"
-      backgroundColor="rgba(99, 102, 241, 0.1)"
-    >
-      <TamaCheckbox.Indicator>
-        <Text color="#6366f1">✓</Text>
-      </TamaCheckbox.Indicator>
-    </TamaCheckbox>
-    <ControlText ml="$2">{label}</ControlText>
+      aria-label={label}
+      className="w-4 h-4 cursor-pointer accent-[#6366f1]"
+    />
+    <ControlText className="ml-2">{label}</ControlText>
   </Label>
 );
 

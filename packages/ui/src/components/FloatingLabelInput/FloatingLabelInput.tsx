@@ -7,7 +7,7 @@ import {
   type ChangeEvent,
   type CSSProperties,
 } from 'react';
-import { Input as TamaguiInput, YStack, styled, useTheme } from 'tamagui';
+import { cx } from '../../utils/cx';
 
 export type FloatingLabelInputProps = {
   id?: string;
@@ -24,47 +24,13 @@ export type FloatingLabelInputProps = {
   fullWidth?: boolean;
   error?: boolean;
   maxLength?: number;
+  className?: string;
   'data-testid'?: string;
 };
 
-const Wrapper = styled(YStack, {
-  name: 'FloatingLabelInputWrapper',
-  position: 'relative',
-  variants: {
-    fullWidth: {
-      true: { width: '100%' },
-    },
-  } as const,
-});
-
-const StyledFlInput = styled(TamaguiInput, {
-  name: 'FloatingLabelInputField',
-  paddingTop: 22,
-  paddingBottom: 10,
-  paddingHorizontal: 14,
-  borderRadius: '$3',
-  borderWidth: 1,
-  backgroundColor: '$background',
-  borderColor: '$borderColor',
-  color: '$color',
-  fontSize: 15,
-  width: '100%',
-  height: 56,
-  hoverStyle: { borderColor: '$primary' },
-  focusStyle: {
-    borderColor: '$accent',
-    borderWidth: 2,
-    outlineColor: 'transparent',
-  },
-  variants: {
-    error: {
-      true: {
-        borderColor: '$danger',
-        focusStyle: { borderColor: '$danger' },
-      },
-    },
-  } as const,
-});
+const accent = 'var(--accent)';
+const background = 'var(--background)';
+const textSecondary = 'var(--textSecondary)';
 
 const baseLabelStyle: CSSProperties = {
   position: 'absolute',
@@ -95,11 +61,11 @@ export const FloatingLabelInput = forwardRef<
     fullWidth = true,
     error,
     maxLength,
+    className,
     'data-testid': testId,
   },
   ref,
 ) {
-  const theme = useTheme();
   const generatedId = useId();
   const id = idProp ?? generatedId;
   const isControlled = valueProp !== undefined;
@@ -107,10 +73,6 @@ export const FloatingLabelInput = forwardRef<
   const value = isControlled ? valueProp : internal;
   const [focused, setFocused] = useState(false);
   const filled = (value ?? '').length > 0;
-
-  const accent = theme.accent?.get?.() ?? '#38bdf8';
-  const background = theme.background?.get?.() ?? '#06011b';
-  const textSecondary = theme.textSecondary?.get?.() ?? '#8e9196';
 
   const isFloated = focused || filled;
   const labelStyle: CSSProperties = isFloated
@@ -139,14 +101,16 @@ export const FloatingLabelInput = forwardRef<
   };
 
   return (
-    <Wrapper fullWidth={fullWidth}>
-      <StyledFlInput
-        ref={ref as never}
+    <div
+      className={cx('relative', fullWidth && 'w-full', className)}
+    >
+      <input
+        ref={ref}
         id={id}
         name={name}
         type={type}
         value={value ?? ''}
-        onChange={handleChange as never}
+        onChange={handleChange}
         onFocus={() => setFocused(true)}
         onBlur={() => {
           setFocused(false);
@@ -155,10 +119,15 @@ export const FloatingLabelInput = forwardRef<
         required={required}
         disabled={disabled}
         autoComplete={autoComplete}
-        error={error}
         maxLength={maxLength}
         placeholder=" "
         data-testid={testId}
+        className={cx(
+          'h-[56px] w-full rounded-[12px] border bg-[var(--background)] px-3.5 pb-[10px] pt-[22px] text-[15px] text-[var(--color)] outline-none transition-[border-color] duration-150',
+          error
+            ? 'border-[var(--danger)] focus:border-[2px] focus:border-[var(--danger)]'
+            : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[2px] focus:border-[var(--accent)]',
+        )}
       />
       <label htmlFor={id} style={labelStyle}>
         {label}
@@ -166,7 +135,7 @@ export const FloatingLabelInput = forwardRef<
           <span style={{ color: accent, marginLeft: 2 }}> *</span>
         ) : null}
       </label>
-    </Wrapper>
+    </div>
   );
 });
 

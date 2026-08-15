@@ -21,9 +21,9 @@ interface Props {
 }
 
 // Client-only renderer for the real Critical card fan. Imported via
-// `dynamic({ ssr: false })` so the Tamagui-rendered `<HandCard>`s never
+// `dynamic({ ssr: false })` so the client-rendered `<HandCard>`s never
 // participate in SSR — that mismatch is what triggers React hydration
-// warnings (Tamagui SSR emits longhand `background-image` while the client
+// warnings (client-rendered SSR emits longhand `background-image` while the client
 // uses the `background` shorthand).
 export default function CriticalCardClusterReal({ cards, themeId }: Props) {
   return (

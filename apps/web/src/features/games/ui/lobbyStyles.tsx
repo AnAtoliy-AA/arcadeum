@@ -1,4 +1,6 @@
-import { styled, YStack, XStack, H2, Text, Paragraph } from 'tamagui';
+import { forwardRef } from 'react';
+import type { HTMLAttributes, ReactNode, Ref } from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 export {
   Button,
   type ButtonProps,
@@ -10,302 +12,463 @@ export {
 } from '@arcadeum/ui';
 
 // Layout
-export const LobbyContent = styled(XStack, {
-  name: 'LobbyContent',
-  gap: '$5',
-  flex: 1,
-  minHeight: 0,
-  padding: '$5',
-  paddingBottom: 96,
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  alignItems: 'flex-start',
-  $tablet: {
-    flexDirection: 'column',
-    flex: 1,
-    minHeight: 0,
-    overflowY: 'visible',
-    overflowX: 'hidden',
-    padding: '$3',
-    paddingBottom: 96,
-    gap: '$4',
-    alignItems: 'stretch',
-  },
-});
+export const LobbyContent = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-start gap-5 flex-1 min-h-0 p-5 pb-[96px] overflow-y-auto overflow-x-hidden max-[1023px]:flex-col max-[1023px]:flex-1 max-[1023px]:min-h-0 max-[1023px]:overflow-y-visible max-[1023px]:overflow-x-hidden max-[1023px]:p-3 max-[1023px]:pb-[96px] max-[1023px]:gap-4 max-[1023px]:items-stretch',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 // Main Center Section
-export const CenterSection = styled(YStack, {
-  name: 'CenterSection',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '$5',
-  flex: 1,
-  minHeight: '100%',
-  $tablet: {
-    flex: 0,
-    minHeight: 'unset',
-    width: '100%',
-    justifyContent: 'flex-start',
-    gap: '$4',
-  },
-  $sm: {
-    flex: 0,
-    minHeight: 'unset',
-    justifyContent: 'flex-start',
-  },
-});
+export const CenterSection = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-col items-center justify-center gap-5 flex-1 min-h-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:justify-start max-[1023px]:gap-4 max-[800px]:flex-[0] max-[800px]:min-h-[unset] max-[800px]:justify-start',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const GameIcon = styled(Text, {
-  name: 'GameIcon',
-  fontSize: 80,
-  lineHeight: 96,
-  filter: 'drop-shadow(0 8px 24px rgba(99, 102, 241, 0.3))',
-  $sm: {
-    fontSize: 60,
-    lineHeight: 72,
-  },
-});
+export const GameIcon = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'text-[80px] leading-[96px] [filter:drop-shadow(0_8px_24px_rgba(99,102,241,0.3))] max-[800px]:text-[60px] max-[800px]:leading-[72px]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-export const LobbyTitle = styled(H2, {
-  name: 'LobbyTitle',
-  fontSize: '$8',
-  fontWeight: '700',
-  textAlign: 'center',
-  margin: 0,
-  // Shimmer logic via background gradient
-});
+export const LobbyTitle = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLHeadingElement>) => (
+  <h2 className={cx('text-[32px] font-bold text-center', className)} {...props}>
+    {children}
+  </h2>
+);
 
-export const LobbyEmptyText = styled(Text, {
-  name: 'LobbyEmptyText',
-  fontSize: '$3',
-  color: '$textMuted',
-  textAlign: 'center',
-  paddingTop: '$5',
-  lineHeight: '$none',
-});
+export const LobbyEmptyText = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'text-[16px] text-[rgba(180,180,200,0.7)] text-center pt-5 leading-[1]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-export const LobbySubtitle = styled(Paragraph, {
-  name: 'LobbySubtitle',
-  fontSize: '$4',
-  color: '$textSecondary',
-  textAlign: 'center',
-  margin: 0,
-  maxWidth: 400,
-});
+export const LobbySubtitle = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLParagraphElement>) => (
+  <p
+    className={cx(
+      'text-[18px] text-[var(--textSecondary)] text-center max-w-[400px]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </p>
+);
 
 // Room Name Badge
-export const RoomNameBadge = styled(XStack, {
-  name: 'RoomNameBadge',
-  alignItems: 'center',
-  gap: '$2',
-  paddingVertical: '$2',
-  paddingHorizontal: '$4',
-  backgroundColor: 'rgba(16, 185, 129, 0.12)',
-  borderWidth: 1,
-  borderColor: 'rgba(16, 185, 129, 0.2)',
-  borderRadius: 20,
-  maxWidth: '100%',
-  overflow: 'hidden',
-});
+export const RoomNameBadge = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-center gap-2 py-2 px-4 bg-[rgba(16,185,129,0.12)] border border-[rgba(16,185,129,0.2)] rounded-[20px] max-w-full overflow-hidden',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const RoomNameIcon = styled(Text, {
-  name: 'RoomNameIcon',
-  fontSize: '$4',
-  display: 'inline-flex',
-});
+export const RoomNameIcon = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span className={cx('text-[18px] inline-flex', className)} {...props}>
+    {children}
+  </span>
+);
 
-export const RoomNameText = styled(Text, {
-  name: 'RoomNameText',
-  fontSize: '$5',
-  fontWeight: '600',
-  color: '$color',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-});
+export const RoomNameText = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'text-[20px] font-semibold text-[var(--color)] overflow-hidden truncate',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
 // Progress Bar
-export const ProgressWrapper = styled(YStack, {
-  name: 'ProgressWrapper',
-  width: '100%',
-  maxWidth: 300,
-});
+export const ProgressWrapper = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-col items-stretch w-full max-w-[300px]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const ProgressLabel = styled(XStack, {
-  name: 'ProgressLabel',
-  justifyContent: 'space-between',
-  marginBottom: '$2',
-});
+export const ProgressLabel = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-stretch justify-between mb-2',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const ProgressBar = styled(YStack, {
-  name: 'ProgressBar',
-  height: 8,
-  backgroundColor: 'rgba(99, 102, 241, 0.15)',
-  borderRadius: 4,
-  overflow: 'hidden',
-});
+export const ProgressBar = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-col items-stretch h-2 bg-[rgba(99,102,241,0.15)] rounded-[4px] overflow-hidden',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const ProgressFill = styled(YStack, {
-  name: 'ProgressFill',
-  height: '100%',
-  borderRadius: 4,
-  backgroundColor: '#6366f1',
-});
+export const ProgressFill = ({
+  width,
+  className,
+  ...props
+}: {
+  width?: string | number;
+  className?: string;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx('h-full rounded-[4px] bg-[#6366f1]', className)}
+    style={width !== undefined ? { width } : undefined}
+    {...props}
+  />
+);
 
 // Host Controls
-export const HostControls = styled(YStack, {
-  name: 'HostControls',
-  alignItems: 'center',
-  gap: '$4',
-  padding: '$5',
-  backgroundColor: 'rgba(99, 102, 241, 0.1)',
-  borderWidth: 1,
-  borderColor: 'rgba(99, 102, 241, 0.2)',
-  borderRadius: 16,
-});
+export const HostControls = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-col items-center gap-4 p-5 bg-[rgba(99,102,241,0.1)] border border-[rgba(99,102,241,0.2)] rounded-[16px]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const HostLabel = styled(Text, {
-  name: 'HostLabel',
-  fontSize: 11,
-  fontWeight: '600',
-  textTransform: 'uppercase',
-  letterSpacing: 1,
-  color: '#6366f1',
-});
+export const HostLabel = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'text-[11px] font-semibold uppercase tracking-[1px] text-[#6366f1]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-export const LobbyStickyStart = styled(YStack, {
-  name: 'LobbyStickyStart',
-  alignItems: 'center',
-  paddingVertical: '$3',
-  paddingHorizontal: '$5',
-  overflow: 'hidden',
-  $sm: {
-    position: 'fixed' as unknown as 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    padding: '$3',
-    paddingHorizontal: '$5',
-    paddingBottom:
-      'calc(env(safe-area-inset-bottom, 0px) + 12px)' as unknown as number,
-    backgroundColor: 'rgba(15, 23, 42, 0.92)',
-    backdropFilter: 'blur(16px)',
-    borderTopWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    zIndex: 150,
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-} as unknown as Record<string, unknown>);
+export const LobbyStickyStart = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-col items-center py-3 px-5 overflow-hidden max-[800px]:fixed max-[800px]:left-0 max-[800px]:right-0 max-[800px]:bottom-0 max-[800px]:p-3 max-[800px]:px-5 max-[800px]:pb-[calc(env(safe-area-inset-bottom,0px)+12px)] max-[800px]:bg-[rgba(15,23,42,0.92)] max-[800px]:backdrop-blur-[16px] max-[800px]:border-t max-[800px]:border-[rgba(255,255,255,0.12)] max-[800px]:z-[150] max-[800px]:items-center max-[800px]:overflow-hidden',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 // Sidebar re-exports
 export * from './lobbySidebarStyles';
 
 // Waiting Animation
-export const WaitingDots = styled(XStack, {
-  name: 'WaitingDots',
-  gap: '$2',
-});
+export const WaitingDots = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx('flex flex-row items-stretch gap-2', className)}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const Dot = styled(YStack, {
-  name: 'Dot',
-  width: 8,
-  height: 8,
-  borderRadius: 4,
-  backgroundColor: '#6366f1',
-  opacity: 0.6,
-});
+export const Dot = ({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'w-2 h-2 rounded-[4px] bg-[#6366f1] opacity-[0.6]',
+      className,
+    )}
+    {...props}
+  />
+);
 
-export const VariantSelectorWrapper = styled(XStack, {
-  name: 'VariantSelectorWrapper',
-  position: 'relative',
-  alignItems: 'center',
-  marginLeft: '$2',
-});
+export const VariantSelectorWrapper = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx('flex flex-row items-center relative ml-2', className)}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 // ============ Container Components ============
 
-export const GameContainer = styled(YStack, {
-  name: 'GameContainer',
-  flex: 1,
-  minHeight: 0,
-  width: '100%',
-  maxWidth: '100%',
-  overflowX: 'hidden',
-  backgroundColor: '$background',
+export type GameContainerStylesProps = {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>;
 
-  $tablet: {
-    minHeight: 0,
-    flex: 1,
+export const GameContainer = forwardRef<unknown, GameContainerStylesProps>(
+  function GameContainer({ className, children, ...props }, ref) {
+    return (
+      <div
+        // legacy consumers may pass HTMLElement refs
+        ref={ref as Ref<HTMLDivElement>}
+        className={cx(
+          'flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-x-hidden bg-[var(--background)] max-[1023px]:min-h-0 max-[1023px]:flex-1',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
   },
-});
+);
 
-export const GameHeader = styled(XStack, {
-  name: 'GameHeader',
-  padding: '$4 $5',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  borderBottomWidth: 1,
-  borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  flexWrap: 'wrap',
-  gap: '$3',
-  minWidth: 0,
-  $tablet: {
-    padding: '$3',
-  },
-  $sm: {
-    padding: '$2 $3',
-  },
-});
+export const GameHeader = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-center justify-between flex-wrap gap-3 min-w-0 px-5 py-4 border-b border-[rgba(255,255,255,0.1)] max-[1023px]:p-3 max-[800px]:px-3 max-[800px]:py-2',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const GameInfo = styled(XStack, {
-  name: 'GameInfo',
-  alignItems: 'center',
-  gap: '$4',
-  flexWrap: 'wrap',
-  minWidth: 0,
-  flex: 1,
-  $sm: {
-    gap: '$2',
-  },
-});
+export const GameInfo = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-center gap-4 flex-wrap min-w-0 flex-1 max-[800px]:gap-2',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const GameTitleText = styled(H2, {
-  name: 'GameTitleText',
-  fontSize: '$6',
-  fontWeight: '700',
-  margin: 0,
-});
+export const GameTitleText = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLHeadingElement>) => (
+  <h2 className={cx('text-[24px] font-bold', className)} {...props}>
+    {children}
+  </h2>
+);
 
-export const VariantText = styled(Text, {
-  name: 'VariantText',
-  fontSize: '$4',
-  fontWeight: '600',
-});
+export const VariantText = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span className={cx('text-[18px] font-semibold', className)} {...props}>
+    {children}
+  </span>
+);
 
-export const HeaderActions = styled(XStack, {
-  name: 'HeaderActions',
-  alignItems: 'center',
-  gap: '$3',
-});
+export const HeaderActions = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div className={cx('flex flex-row items-center gap-3', className)} {...props}>
+    {children}
+  </div>
+);
 
-export const BotCountSelector = styled(YStack, {
-  name: 'BotCountSelector',
-  alignItems: 'center',
-  gap: '$2',
-  marginBottom: '$2',
-});
+export const BotCountSelector = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx('flex flex-col items-center gap-2 mb-2', className)}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const BotCountLabel = styled(Text, {
-  name: 'BotCountLabel',
-  fontSize: '$2',
-  fontWeight: '500',
-  color: '$textSecondary',
-  textTransform: 'uppercase',
-  letterSpacing: 0.5,
-});
-
-export const BotCountButtons = styled(XStack, {
-  name: 'BotCountButtons',
-  gap: '$2',
-});
+export { BotCountLabel, BotCountButtons } from './lobbyStyles-botcount';

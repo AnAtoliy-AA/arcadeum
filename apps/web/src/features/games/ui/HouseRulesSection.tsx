@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 interface HouseRulesSectionProps {
@@ -39,10 +38,10 @@ export function HouseRulesSection({
   );
 
   return (
-    <YStack gap="$3" paddingTop="$2">
-      <Text fontSize="$4" fontWeight="600">
+    <div className="flex flex-col items-stretch gap-3 pt-2">
+      <span className="text-[18px] font-semibold">
         {t('games.create.sectionHouseRules') || 'House Rules'}
-      </Text>
+      </span>
 
       <label style={labelStyle(!!ruleComingSoon.get('idle'))}>
         <input
@@ -56,13 +55,13 @@ export function HouseRulesSection({
           }}
           style={checkboxStyle}
         />
-        <Text fontSize="$3">
+        <span className="text-[16px]">
           {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
-        </Text>
+        </span>
         {ruleComingSoon.get('idle') && (
-          <Text fontSize={10} color="#f59e0b" fontWeight="600">
+          <span className="text-[48px] text-[#f59e0b] font-semibold">
             {t('games.create.comingSoon') || 'Coming Soon'}
-          </Text>
+          </span>
         )}
       </label>
 
@@ -78,20 +77,20 @@ export function HouseRulesSection({
           }}
           style={checkboxStyle}
         />
-        <Text fontSize="$3">
+        <span className="text-[16px]">
           {t('games.create.rules.spectators.title') || 'Allow spectators'}
-        </Text>
+        </span>
         {ruleComingSoon.get('spectators') && (
-          <Text fontSize={10} color="#f59e0b" fontWeight="600">
+          <span className="text-[48px] text-[#f59e0b] font-semibold">
             {t('games.create.comingSoon') || 'Coming Soon'}
-          </Text>
+          </span>
         )}
       </label>
 
-      <YStack gap="$1">
-        <Text fontSize="$3" fontWeight="500">
+      <div className="flex flex-col items-stretch gap-1">
+        <span className="text-[16px] font-medium">
           {t('games.create.rules.firstPlayer.title')}
-        </Text>
+        </span>
         <select
           value={
             optFirstPlayer ??
@@ -121,7 +120,7 @@ export function HouseRulesSection({
             {t('games.create.rules.firstPlayer.random')}
           </option>
         </select>
-      </YStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

@@ -1,4 +1,3 @@
-import { YStack } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -46,24 +45,24 @@ export default function OmniscienceModal({
     <Modal>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
       >
-        <ModalHeader $variant={cardVariant as GameVariant}>
-          <ModalTitle $variant={cardVariant as GameVariant}>
+        <ModalHeader variant={cardVariant as GameVariant}>
+          <ModalTitle variant={cardVariant as GameVariant}>
             👁️ {t('games.table.cards.omniscience') || 'Omniscience'}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
+          <CloseButton onClick={onClose} variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
 
         {omniscienceModal.hands.map((hand) => (
           <ModalSection key={hand.playerId}>
-            <SectionLabel $variant={cardVariant as GameVariant}>
+            <SectionLabel variant={cardVariant as GameVariant}>
               {resolveDisplayName(hand.playerId, 'Player')}
             </SectionLabel>
             {hand.cards.length === 0 ? (
-              <Typography uiSize="sm" alpha="medium" textAlign="center">
+              <Typography className={'text-center'} uiSize="sm" alpha="medium">
                 {t('games.table.modals.omniscience.emptyHand') ||
                   'No cards in hand.'}
               </Typography>
@@ -76,23 +75,17 @@ export default function OmniscienceModal({
                     gameVariant={cardVariant as GameVariant}
                     style={{ padding: 0, height: 'auto' }}
                   >
-                    <YStack
-                      alignItems="center"
-                      width={100}
-                      gap="$2"
-                      padding="$2"
-                    >
+                    <div className="flex flex-col items-center w-[100px] gap-2 p-2">
                       <Card
-                        $cardType={card}
-                        $variant={cardVariant as GameVariant}
-                        width="100%"
-                        cursor="default"
+                        cardType={card}
+                        variant={cardVariant as GameVariant}
+                        className="w-full cursor-default"
                       >
-                        <CardCorner $position="tl" $variant={cardVariant} />
-                        <CardCorner $position="tr" $variant={cardVariant} />
-                        <CardCorner $position="bl" $variant={cardVariant} />
-                        <CardCorner $position="br" $variant={cardVariant} />
-                        <CardFrame $variant={cardVariant} />
+                        <CardCorner position="tl" variant={cardVariant} />
+                        <CardCorner position="tr" variant={cardVariant} />
+                        <CardCorner position="bl" variant={cardVariant} />
+                        <CardCorner position="br" variant={cardVariant} />
+                        <CardFrame variant={cardVariant} />
                         <CardImage
                           variant={cardVariant ?? ''}
                           cardType={card}
@@ -100,14 +93,12 @@ export default function OmniscienceModal({
                         <GradientScrim />
                       </Card>
                       <Typography
+                        className={'text-center w-full line-clamp-1'}
                         uiSize="xs"
-                        textAlign="center"
-                        width="100%"
-                        numberOfLines={1}
                       >
                         {t(getCardTranslationKey(card, cardVariant)) || card}
                       </Typography>
-                    </YStack>
+                    </div>
                   </OptionButton>
                 ))}
               </OptionGrid>

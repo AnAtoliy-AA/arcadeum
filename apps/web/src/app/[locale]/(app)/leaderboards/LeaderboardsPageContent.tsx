@@ -17,8 +17,6 @@ import { useDebounce } from '@/shared/hooks/useDebounce';
 import {
   PageLayout,
   Container,
-  YStack,
-  XStack,
   Button,
   EmptyState,
   ErrorState,
@@ -27,7 +25,6 @@ import {
   MythicSpotlight,
   RunnerUpCard,
 } from '@arcadeum/ui';
-import { Text, View } from 'tamagui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { useLeaderboard } from '@/entities/leaderboard/model/useLeaderboard';
 import type {
@@ -257,7 +254,7 @@ export default function LeaderboardsPageContent({
     return (
       <PageLayout>
         <Container size="lg">
-          <YStack paddingVertical="$8">
+          <div className="flex flex-col items-stretch py-8">
             <ErrorState
               title={errorT.title ?? "Couldn't load leaderboard"}
               message={error.message}
@@ -265,7 +262,7 @@ export default function LeaderboardsPageContent({
               onRetry={refetch}
               data-testid="leaderboard-error-state"
             />
-          </YStack>
+          </div>
         </Container>
       </PageLayout>
     );
@@ -286,35 +283,27 @@ export default function LeaderboardsPageContent({
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$6" paddingBottom={paddingBottom}>
-          <HeroBackdrop testID="leaderboard-hero">
-            <YStack gap="$3" maxWidth={680}>
-              <Text
-                fontSize="$2"
-                letterSpacing={2}
-                opacity={0.7}
-                textTransform="uppercase"
-                color="$mythicAccent"
-              >
+        <div
+          className="flex flex-col items-stretch gap-6"
+          style={{ paddingBottom: paddingBottom }}
+        >
+          <HeroBackdrop data-testid="leaderboard-hero">
+            <div className="flex flex-col items-stretch gap-3 max-w-[680px]">
+              <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase text-[var(--mythicAccent)]">
                 {heroT.eyebrow ?? 'Live · Season 4'}
-              </Text>
-              <Text
-                fontSize="$10"
-                fontWeight="900"
-                letterSpacing={-1}
-                $sm={{ fontSize: '$8' }}
-              >
+              </span>
+              <span className="text-[48px] font-black tracking-[-1px] max-[800px]:text-[32px]">
                 {heroT.title ?? 'Race the leaderboard.'}
-              </Text>
-              <Text fontSize="$4" opacity={0.85}>
+              </span>
+              <span className="text-[18px] opacity-[0.85]">
                 {heroT.tagline ??
                   'Updated every 30 seconds. Top 100 players gear up for the Champions Cup.'}
-              </Text>
-            </YStack>
+              </span>
+            </div>
             <EventTicker
               events={data?.tickerEvents ?? []}
               liveLabel={tickerT.live ?? 'Live'}
-              testID="leaderboard-ticker"
+              data-testid="leaderboard-ticker"
             />
           </HeroBackdrop>
 
@@ -326,8 +315,8 @@ export default function LeaderboardsPageContent({
           <CupCountdown cup={data?.cup ?? null} t={t} />
 
           {mythic ? (
-            <XStack gap="$4" flexWrap="wrap" alignItems="stretch">
-              <View flex={2} minWidth={360} position="relative">
+            <div className="flex flex-row gap-4 flex-wrap items-stretch">
+              <div className="flex-[2] min-w-[360px] relative">
                 <MythicBloom />
                 <MythicSpotlight
                   rank={mythic.rank}
@@ -361,17 +350,14 @@ export default function LeaderboardsPageContent({
                     mythicLabels.leadOver ?? '+{delta} over #2'
                   ).replace('{delta}', String(mythic.ratingDelta))}
                   recentLabel={mythicLabels.recentLabel ?? 'Last 12 matches'}
-                  // Bug #8: until the three CTAs do distinct things,
-                  // expose only "View profile" so we don't train users to
-                  // ignore the toolbar.
                   challengeLabel={mythicLabels.cta ?? 'View profile'}
                   onChallenge={() => {
                     router.push(`/players/${mythic.id}`);
                   }}
                 />
-              </View>
+              </div>
               {second ? (
-                <YStack flex={1} minWidth={220} gap="$3">
+                <div className="flex flex-col items-stretch flex-1 min-w-[220px] gap-3">
                   <RunnerUpCard
                     place={2}
                     name={second.name}
@@ -424,20 +410,20 @@ export default function LeaderboardsPageContent({
                       }
                     />
                   ) : null}
-                </YStack>
+                </div>
               ) : null}
-            </XStack>
+            </div>
           ) : null}
 
           <GameModeTabs value={mode} onChange={handleModeChange} t={t} />
-          <XStack gap="$4" flexWrap="wrap">
+          <div className="flex flex-row items-stretch gap-4 flex-wrap">
             <ClimbersFallersRail
               climbers={data?.climbers ?? []}
               fallers={data?.fallers ?? []}
               t={t}
             />
             <SquadStrip squads={data?.squads ?? []} t={t} />
-          </XStack>
+          </div>
 
           <RewardLadder rewards={data?.rewards ?? []} t={t} />
           <LeaderboardControls
@@ -464,7 +450,7 @@ export default function LeaderboardsPageContent({
                 t={t}
               />
               {canLoadMore ? (
-                <XStack justifyContent="center">
+                <div className="flex flex-row items-stretch justify-center">
                   <Button
                     variant="ghost"
                     onClick={() => setPage((p) => p + 1)}
@@ -472,23 +458,23 @@ export default function LeaderboardsPageContent({
                   >
                     {loadMoreLabel}
                   </Button>
-                </XStack>
+                </div>
               ) : null}
             </>
           )}
 
           <RegionStrip regions={data?.regions ?? []} t={t} />
-        </YStack>
+        </div>
       </Container>
       {data?.self ? (
-        <View ref={selfRowMountRef as never}>
+        <div className="" ref={selfRowMountRef as never}>
           <PinnedSelfRow
             player={data.self}
             topRating={maxRating}
             onShare={handleShare}
             t={t}
           />
-        </View>
+        </div>
       ) : null}
     </PageLayout>
   );

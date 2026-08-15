@@ -1,6 +1,6 @@
 'use client';
 
-import { PageLoading } from '@/shared/ui/Loading/PageLoading';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 
 export default function ChatsLoading() {
   return <PageLoading layout="standard" />;

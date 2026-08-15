@@ -25,10 +25,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@arcadeum/ui": ["../../packages/ui/src"],
-      "@arcadeum/ui/*": ["../../packages/ui/src/*"],
-      "tamagui": ["../../node_modules/tamagui"],
-      "@tamagui/core": ["../../node_modules/@tamagui/core"],
-      "@tamagui/web": ["../../node_modules/@tamagui/web"]
+      "@arcadeum/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": [

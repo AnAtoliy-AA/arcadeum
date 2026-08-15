@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../shared/config/tamagui.config';
 import { SceneBackdrop } from './SceneBackdrop';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { getVariantStyles } from './styles/variants';
@@ -10,11 +8,9 @@ const palette = getVariantStyles('cyberpunk').scene;
 
 function renderWithPalette() {
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <ScenePaletteProvider palette={palette}>
-        <SceneBackdrop />
-      </ScenePaletteProvider>
-    </TamaguiProvider>,
+    <ScenePaletteProvider palette={palette}>
+      <SceneBackdrop />
+    </ScenePaletteProvider>,
   );
 }
 

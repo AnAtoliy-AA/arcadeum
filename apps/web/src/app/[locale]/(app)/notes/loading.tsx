@@ -1,6 +1,6 @@
 'use client';
 
-import { PageLoading } from '@/shared/ui/Loading/PageLoading';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 
 export default function NotesLoading() {
   return <PageLoading layout="standard" />;

@@ -1,5 +1,4 @@
 'use client';
-import { XStack } from 'tamagui';
 import type { KeyboardEvent } from 'react';
 import { ModeTab } from '@arcadeum/ui';
 import type { GameMode } from '@/entities/leaderboard/model/types';
@@ -54,7 +53,7 @@ export function GameModeTabs({
   }
 
   return (
-    <XStack gap="$3" flexWrap="wrap" role="tablist">
+    <div className="flex flex-row items-stretch gap-3 flex-wrap" role="tablist">
       {MODES.map((m) => {
         const meta = modeLabels[m] ?? {};
         return (
@@ -71,6 +70,6 @@ export function GameModeTabs({
           />
         );
       })}
-    </XStack>
+    </div>
   );
 }

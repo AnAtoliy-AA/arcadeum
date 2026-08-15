@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { XStack } from 'tamagui';
 import { OpponentTile } from './OpponentTile';
 import { useIsNarrow } from '../../lib/useNarrowViewport';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
@@ -49,7 +48,7 @@ export function OpponentsRow({
   resolveDisplayName,
   logs,
 }: OpponentsRowProps) {
-  // Use the ≤480px hook (not tamagui's `sm`) so tablet portrait keeps
+  // Use the ≤480px hook (not the legacy `sm` breakpoint) so tablet portrait keeps
   // the desktop layout. Mobile picks up scroll-snap + smaller tiles.
   // Value comes from `NarrowViewportProvider` at the widget root.
   const isMobile = useIsNarrow(480);
@@ -62,25 +61,8 @@ export function OpponentsRow({
   const idleSet = useMemo(() => new Set(idlePlayers), [idlePlayers]);
 
   return (
-    <XStack
-      data-testid="opponents-row"
-      data-mode={isDuel ? 'duel' : 'ffa'}
-      data-count={opponents.length}
-      width="100%"
-      gap="$3"
-      paddingHorizontal="$2"
-      paddingVertical="$2"
-      justifyContent="center"
-      flexWrap="nowrap"
-      // Don't let the column layout (MatchWidgetGrid) shrink this row when
-      // vertical space is tight. Without this the row compresses below its
-      // content height, the tiles collapse to a thin bar, and the avatars +
-      // names overflow downward — colliding with the arena / turn banner.
-      flexShrink={0}
-      // Mobile: horizontal scroll with scroll-snap so each tile lands on
-      // a fixed stop instead of free-floating. Desktop: tiles flex-grow
-      // evenly with a max width so 2-/3-/4-up rows look balanced rather
-      // than space-between-clumped.
+    <div
+      className="flex flex-row items-stretch w-full gap-3 px-2 py-2 justify-center flex-nowrap shrink-0 max-[800px]:gap-2"
       style={
         isMobile
           ? {
@@ -90,7 +72,9 @@ export function OpponentsRow({
             }
           : { overflow: 'visible' }
       }
-      $sm={{ gap: '$2' }}
+      data-testid="opponents-row"
+      data-mode={isDuel ? 'duel' : 'ffa'}
+      data-count={opponents.length}
     >
       {opponents.map((opponent) => (
         <OpponentTile
@@ -110,6 +94,6 @@ export function OpponentsRow({
           logs={logs}
         />
       ))}
-    </XStack>
+    </div>
   );
 }

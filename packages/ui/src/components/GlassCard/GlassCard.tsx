@@ -1,63 +1,55 @@
-'use client';
-import { YStack, styled, GetProps } from 'tamagui';
+import { forwardRef } from 'react';
 import type { ReactNode } from 'react';
+import { cx } from '../../utils/cx';
 
-export type GlassCardProps = GetProps<typeof YStack> & {
+export type GlassCardProps = {
   children: ReactNode;
+  /** Enable subtle entrance transition. */
   animated?: boolean;
-};
+  className?: string;
+  style?: React.CSSProperties;
+} & React.HTMLAttributes<HTMLDivElement>;
 
-export const StyledGlassCard = styled(YStack, {
-  name: 'GlassCard',
-  backgroundColor: '$glassBg',
-  borderColor: '$glassBorder',
-  borderWidth: 1,
-  borderRadius: '$6',
-  padding: '$7',
-  gap: '$5',
-  position: 'relative',
-  overflow: 'hidden',
-
-  variants: {
-    animated: {
-      true: {
-        animation: 'slow',
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    animated: true,
+/**
+ * Glassmorphic card. Themed tokens resolve to runtime CSS vars minted by the
+ * theme providers, so it keeps working across web light/dark/neon/purple.
+ */
+export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
+  function GlassCard(
+    { children, animated = true, className, ...rest },
+    ref,
+  ) {
+    return (
+      <div
+        ref={ref}
+        className={cx(
+          'relative',
+          'overflow-hidden',
+          'flex',
+          'flex-col',
+          'gap-5',
+          'rounded-[24px]',
+          'border',
+          'border-[var(--glassBorder)]',
+          'bg-[var(--glassBg)]',
+          'p-7',
+          animated && 'transition-all duration-500 ease-out',
+          className,
+        )}
+        {...rest}
+      >
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-px"
+          style={{
+            background:
+              'linear-gradient(90deg, transparent 0%, var(--glassBorderHover) 50%, transparent 100%)',
+          }}
+        />
+        {children}
+      </div>
+    );
   },
-});
+);
 
-const TopLine = styled(YStack, {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: 1,
-  pointerEvents: 'none',
-  background: 'linear-gradient(90deg, transparent 0%, $glassBorderHover 50%, transparent 100%)',
-});
-
-export interface GlassCardInnerProps extends GlassCardProps {
-  // Destructure props that might leak
-  $visible?: boolean;
-  $position?: 'top' | 'bottom' | 'left' | 'right';
-  isHost?: boolean;
-}
-
-export type GlassCardExtraProps = {
-  $visible?: boolean;
-  $position?: 'top' | 'bottom' | 'left' | 'right';
-  isHost?: boolean;
-  animated?: boolean;
-};
-
-export const GlassCard = StyledGlassCard.styleable<GlassCardExtraProps>(({ children, $visible, $position, isHost, ...props }, ref) => (
-  <StyledGlassCard {...props} ref={ref}>
-    <TopLine />
-    {children}
-  </StyledGlassCard>
-));
+GlassCard.displayName = 'GlassCard';

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { XStack } from 'tamagui';
 import { ShopItemCard } from './ShopItemCard';
 
 const meta: Meta<typeof ShopItemCard> = {
@@ -11,14 +10,9 @@ export default meta;
 type Story = StoryObj<typeof ShopItemCard>;
 
 const Frame = ({ children }: { children: React.ReactNode }) => (
-  <XStack
-    padding="$4"
-    backgroundColor="$background"
-    gap="$3"
-    flexWrap="wrap"
-  >
+  <div className="flex flex-wrap gap-3 p-4 bg-[var(--background)]">
     {children}
-  </XStack>
+  </div>
 );
 
 export const CommonCoins: Story = {

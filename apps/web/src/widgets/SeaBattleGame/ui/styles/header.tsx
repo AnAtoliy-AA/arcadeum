@@ -1,46 +1,43 @@
-import { styled, XStack, YStack } from 'tamagui';
+import React from 'react';
 
-export const CompactHeaderContainer = styled(XStack, {
-  name: 'CompactHeaderContainer',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  width: '100%',
-  gap: '$4',
-  paddingVertical: '$2',
-  paddingBottom: '$3',
-  zIndex: 100,
-  backgroundColor: '$background',
-  borderBottomWidth: 1,
-  borderBottomColor: '$glassBorder',
+import { cx } from '@arcadeum/ui/utils/cx';
 
-  $sm: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '$2',
-  },
-});
+type CommonProps = React.HTMLAttributes<HTMLDivElement> & {
+  className?: string;
+};
 
-export const HeaderTitleArea = styled(YStack, {
-  name: 'HeaderTitleArea',
-  minWidth: 0,
-  flex: 1,
+export const CompactHeaderContainer = ({
+  className,
+  ...props
+}: CommonProps) => (
+  <div
+    className={cx(
+      'flex flex-row items-center justify-between w-full gap-4 py-2 pb-3 z-[100] bg-[var(--background)] border-b border-b-[var(--glassBorder)]',
+      'max-[800px]:flex-col max-[800px]:items-center max-[800px]:gap-2',
+      className,
+    )}
+    {...props}
+  />
+);
 
-  $sm: {
-    alignItems: 'center',
-  },
-});
+export const HeaderTitleArea = ({ className, ...props }: CommonProps) => (
+  <div
+    className={cx(
+      'flex flex-col items-stretch min-w-0 flex-1',
+      'max-[800px]:items-center',
+      className,
+    )}
+    {...props}
+  />
+);
 
-export const PlacementHeader = styled(XStack, {
-  name: 'PlacementHeader',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: '$4',
-  marginBottom: '$5',
-
-  $sm: {
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    gap: '$2',
-    marginBottom: '$3',
-  },
-});
+export const PlacementHeader = ({ className, ...props }: CommonProps) => (
+  <div
+    className={cx(
+      'flex flex-row items-center justify-between gap-4 mb-5',
+      'max-[800px]:flex-col max-[800px]:items-stretch max-[800px]:gap-2 max-[800px]:mb-3',
+      className,
+    )}
+    {...props}
+  />
+);

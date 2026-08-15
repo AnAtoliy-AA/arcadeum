@@ -17,7 +17,7 @@ export async function generateMetadata({
 /**
  * Rewards Page
  * Fetches translations on the server and passes them to RewardsClient.
- * Use RewardsClient for client-side only rendering to avoid Tamagui hydration issues.
+ * Use RewardsClient for client-side only rendering to avoid SSR/client hydration mismatch.
  */
 export default async function RewardsPage({
   params,

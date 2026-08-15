@@ -91,7 +91,7 @@ export function FloatingBubbleLabel({
         fontSize: 12,
         fontWeight: 800,
         textShadow: `0 0 8px ${accentColor}, 0 2px 10px rgba(0,0,0,0.8)`,
-        letterSpacing: 1,
+        letterSpacing: '1px',
         padding: '3px 10px',
         borderRadius: 8,
         backgroundColor: bgColor,
@@ -99,7 +99,13 @@ export function FloatingBubbleLabel({
         opacity: 0,
       }}
     >
-      <span style={{ display: 'inline-flex', transform: 'scale(0.7)', transformOrigin: 'center' }}>
+      <span
+        style={{
+          display: 'inline-flex',
+          transform: 'scale(0.7)',
+          transformOrigin: 'center',
+        }}
+      >
         <EquippedPlayerAvatar
           name={senderName}
           size="icon"

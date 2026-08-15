@@ -1,6 +1,5 @@
 'use client';
 
-import { XStack, Text } from 'tamagui';
 import { InGameAvatar } from '@/features/games/ui';
 import { useTicTacToeTheme } from '../lib/TicTacToeThemeContext';
 import type { TicTacToePlayer, TicTacToeTeam } from '../types';
@@ -46,17 +45,13 @@ export function TurnBadge({
   const shooterId = teamMode ? currentShooterId : currentEntryId;
 
   return (
-    <XStack
+    <div
+      className="flex flex-row py-2 px-3 rounded-[999px] border-[var(--borderColor)] self-center items-center gap-2"
+      style={{
+        backgroundColor: myTurn ? '#3fd386' : 'var(--backgroundHover)',
+        borderWidth: myTurn ? 0 : 1,
+      }}
       data-testid="ttt-turn-badge"
-      paddingVertical="$2"
-      paddingHorizontal="$3"
-      borderRadius={999}
-      backgroundColor={myTurn ? '$green10' : '$backgroundHover'}
-      borderWidth={myTurn ? 0 : 1}
-      borderColor="$borderColor"
-      alignSelf="center"
-      alignItems="center"
-      gap="$2"
     >
       {shooterId ? (
         <InGameAvatar
@@ -66,9 +61,14 @@ export function TurnBadge({
           data-testid="ttt-turn-avatar"
         />
       ) : null}
-      <Text fontWeight="700" color={myTurn ? '$white' : theme.textColor}>
+      <span
+        className="font-bold"
+        style={{
+          color: myTurn ? '#f5f7ff' : theme.textColor,
+        }}
+      >
         {myTurn ? 'Your turn' : `${display}'s turn`}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 }

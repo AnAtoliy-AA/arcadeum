@@ -1,64 +1,80 @@
 'use client';
-
-import { YStack, styled, GetProps } from 'tamagui';
 import { memo, useMemo } from 'react';
+import { cx } from '../../utils/cx';
 
-export type SkeletonProps = GetProps<typeof YStack> & {
+export type SkeletonProps = {
   width?: string | number;
   height?: string | number;
   variant?: 'rectangular' | 'circular' | 'text';
   animation?: 'shimmer' | 'pulse' | 'none';
   delay?: number | string;
   'data-testid'?: string;
+  className?: string;
+  style?: React.CSSProperties;
+} & React.HTMLAttributes<HTMLDivElement>;
+
+/**
+ * Keyframes for the shimmer effect. Injected via a <style> tag (same pattern
+ * as PageLoading) so the component is self-contained and works in any host
+ * app without config changes.
+ */
+const SKIMMER_KEYFRAMES =
+  '@keyframes arcadeum-sk-shimmer{0%{background-position:150% 0}100%{background-position:-150% 0}}';
+
+const variantClasses: Record<NonNullable<SkeletonProps['variant']>, string> = {
+  rectangular: 'rounded-lg',
+  circular: 'rounded-full',
+  text: 'rounded',
 };
 
-const StyledSkeleton = styled(YStack, {
-  name: 'Skeleton',
-  backgroundColor: '$borderColor',
-  opacity: 0.5,
-
-  variants: {
-    variant: {
-      rectangular: { borderRadius: '$2' },
-      circular: { borderRadius: 1000 },
-      text: { borderRadius: '$1', height: 16 },
-    },
-    animation: {
-      shimmer: { animation: 'slow' },
-      pulse: { animation: 'slow' },
-      none: {},
-    },
-  } as const,
-
-  defaultVariants: {
-    variant: 'rectangular',
-    animation: 'shimmer',
-  },
-});
+const animationClasses: Record<NonNullable<SkeletonProps['animation']>, string> = {
+  shimmer:
+    'animate-[arcadeum-sk-shimmer_2s_linear_infinite] [background-image:linear-gradient(90deg,var(--borderColor),rgba(255,255,255,0.18),var(--borderColor))] [background-size:200%_100%]',
+  pulse: 'animate-pulse',
+  none: '',
+};
 
 export const Skeleton = memo(function Skeleton({
-  width = '100%',
-  height = 20,
+  width,
+  height,
   variant = 'rectangular',
   animation = 'shimmer',
   delay,
   'data-testid': dataTestId,
+  className,
+  style: styleProp,
   ...rest
 }: SkeletonProps) {
-  const style = useMemo(
-    () => (delay ? { animationDelay: typeof delay === 'number' ? `${delay}s` : delay } : undefined),
-    [delay]
-  );
+  const style = useMemo(() => {
+    const s: React.CSSProperties = { ...styleProp };
+    if (width !== undefined) s.width = width;
+    if (height !== undefined) s.height = height;
+    if (width === undefined && height === undefined && !className) {
+      s.width = '100%';
+      s.height = variant === 'text' ? 16 : 20;
+    }
+    if (delay) {
+      s.animationDelay = typeof delay === 'number' ? `${delay}s` : delay;
+    }
+    return s;
+  }, [width, height, delay, variant, className, styleProp]);
+
   return (
-    <StyledSkeleton
-      width={width}
-      height={height}
-      variant={variant}
-      animation={animation}
-      style={style}
-      data-testid={dataTestId}
-      {...rest}
-    />
+    <>
+      {animation === 'shimmer' && <style>{SKIMMER_KEYFRAMES}</style>}
+      <div
+        className={cx(
+          'bg-[var(--borderColor)]',
+          'opacity-50',
+          variantClasses[variant],
+          animationClasses[animation],
+          className,
+        )}
+        style={style}
+        data-testid={dataTestId}
+        {...rest}
+      />
+    </>
   );
 });
 
@@ -86,10 +102,10 @@ export const SkeletonTableRow = memo(function SkeletonTableRow({ columns, delay 
     [columns]
   );
   return (
-    <YStack gap="$2" flexDirection="row" width="100%">
+    <div className="flex w-full flex-row gap-2">
       {cells.map(({ key, width }) => (
         <Skeleton key={key} width={width} height={16} variant="text" delay={delay} />
       ))}
-    </YStack>
+    </div>
   );
 });

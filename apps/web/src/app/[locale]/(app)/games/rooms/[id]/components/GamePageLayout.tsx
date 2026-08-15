@@ -2,7 +2,6 @@
 
 import '@/features/games/ui/scrollbar.scss';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
@@ -17,8 +16,8 @@ import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
-import { Container, fullscreenStyles } from './styles';
-import { GameRow, ChatPanel } from './layoutStyles';
+import { fullscreenStyles } from './styles';
+import { GameRow, ChatPanel } from './layout-styles';
 
 interface GamePageLayoutProps {
   roomId: string;
@@ -67,8 +66,6 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     ?.teamMode;
 
   const { t } = useTranslation();
-  const media = useMedia();
-  const roomFlexDirection = media.gtMd ? 'row' : 'column';
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const { isFullscreen, toggleFullscreen, exitFullscreen } = useFullscreen(
     gameContainerRef,
@@ -77,17 +74,16 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     },
   );
 
-  // Chat visibility — wide screens default visible, narrow hidden
-  const [showChat, setShowChat] = useState(false);
+  // Chat visibility — visible by default on wide screens, hidden on narrow.
+  // The initial value is read once from matchMedia; the user can toggle it.
+  const [showChat, setShowChat] = useState(() =>
+    typeof window === 'undefined'
+      ? true
+      : window.matchMedia('(min-width: 1151px)').matches,
+  );
   const handleToggleChat = useCallback(() => setShowChat((v) => !v), []);
 
   const { activeEmotes, sendEmote } = useEmotes();
-
-  useEffect(() => {
-    queueMicrotask(() => {
-      setShowChat(media.gtMd);
-    });
-  }, [media.gtMd]);
 
   const resolveDisplayName = useCallback(
     (id?: string, fallback?: string): string | undefined => {
@@ -215,10 +211,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   return (
     <>
       <style>{fullscreenStyles}</style>
-      <Container
-        ref={gameContainerRef as React.RefObject<never>}
-        className="games-room-container"
-      >
+      <div ref={gameContainerRef} className="games-room-container">
         {/* Drops out of fullscreen shortly after the game finishes so the
             player returns to the normal page chrome (header, rematch, nav). */}
         <AutoExitFullscreenOnFinish
@@ -262,7 +255,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           rematchLoading={rematchLoading}
         />
 
-        <GameRow flexDirection={roomFlexDirection}>
+        <GameRow>
           <ActiveEmotesProvider
             value={{
               emotes: activeEmotes,
@@ -288,7 +281,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
             />
           </ChatPanel>
         </GameRow>
-      </Container>
+      </div>
     </>
   );
 }

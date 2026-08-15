@@ -10,7 +10,6 @@ import {
 import { useQuery } from '@/shared/hooks/useQuery';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { XStack, YStack, Text } from 'tamagui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
@@ -39,11 +38,11 @@ interface SearchResultItemProps extends ComponentProps<typeof Button> {
 
 const SearchResultItem = ({ isLast, ...props }: SearchResultItemProps) => (
   <Button
-    variant="ghost"
-    size="md"
     className={`p-4 w-full justify-start rounded-none bg-[var(--background)] text-[var(--color)] gap-3 hover:bg-[var(--background)] hover:opacity-90 ${
       isLast ? 'border-b-0' : 'border-b border-b-[var(--borderColor)]'
     }`}
+    variant="ghost"
+    size="md"
     {...props}
   />
 );
@@ -114,7 +113,7 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
         </PageTitle>
 
         {snapshot.accessToken && (
-          <GlassCard p="$4">
+          <GlassCard className={'p-4'}>
             <Input
               type="text"
               placeholder={
@@ -130,18 +129,12 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
               size="md"
             />
             {searchLoading && (
-              <XStack p="$4" jc="center">
+              <div className="flex flex-row items-stretch p-4 justify-center">
                 <Spinner size="sm" />
-              </XStack>
+              </div>
             )}
             {!!searchQuery.trim() && displaySearchResults.length > 0 && (
-              <YStack
-                borderWidth={1}
-                borderColor="$borderColor"
-                borderRadius={12}
-                overflow="hidden"
-                marginTop="$2"
-              >
+              <div className="flex flex-col items-stretch border border-[var(--borderColor)] rounded-[12px] overflow-hidden -mt-2">
                 {displaySearchResults.map((result, index) => (
                   <SearchResultItem
                     key={result.id}
@@ -154,30 +147,32 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                       equippedAvatarId={null}
                       equippedBadgeId={null}
                     />
-                    <YStack>
-                      <Text fontWeight="600">
+                    <div className="flex flex-col items-stretch">
+                      <span className="font-semibold">
                         {result.displayName || result.username}
-                      </Text>
+                      </span>
                       {result.email && (
-                        <Text fontSize="$3" color="rgba(236,239,238,0.45)">
+                        <span className="text-[16px] text-[rgba(236,239,238,0.45)]">
                           {result.email}
-                        </Text>
+                        </span>
                       )}
-                    </YStack>
+                    </div>
                   </SearchResultItem>
                 ))}
-              </YStack>
+              </div>
             )}
           </GlassCard>
         )}
 
         {loading ? (
-          <YStack jc="center" ai="center" gap="$4" p="$12">
+          <div className="flex flex-col justify-center items-center gap-4 p-12">
             <Spinner size="lg" aria-label="Loading" />
-            <Text color="rgba(236,239,238,0.45)">Loading chats...</Text>
-          </YStack>
+            <span className="text-[rgba(236,239,238,0.45)]">
+              Loading chats...
+            </span>
+          </div>
         ) : displayChats.length === 0 ? (
-          <YStack ai="center" gap="$5" p="$10" flex={1}>
+          <div className="flex flex-col items-center gap-5 p-10 flex-1">
             <EmptyState
               icon="💬"
               message={
@@ -199,9 +194,9 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                 Log In
               </Button>
             )}
-          </YStack>
+          </div>
         ) : (
-          <YStack gap="$4">
+          <div className="flex flex-col items-stretch gap-4">
             {displayChats.map((chat: ChatSummary) => {
               const otherParticipants = chat.participants.filter(
                 (p: ChatParticipant) => p.id !== currentUserId,
@@ -224,49 +219,35 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                     textDecoration: 'none',
                   }}
                 >
-                  <Card interactive padding="md" variant="elevated">
-                    <XStack ai="center" gap="$4" width="100%">
+                  <Card interactive variant="elevated">
+                    <div className="flex flex-row items-center gap-4 w-full">
                       <Avatar name={title} size="md" alt={`${title} avatar`} />
-                      <YStack flex={1} gap="$1" minWidth={0}>
-                        <XStack jc="space-between" ai="center" gap="$2">
-                          <Text
-                            fontWeight="600"
-                            fontSize="$5"
-                            color="$color"
-                            numberOfLines={1}
-                            flexShrink={1}
-                          >
+                      <div className="flex flex-col items-stretch flex-1 gap-1 min-w-0">
+                        <div className="flex flex-row justify-between items-center gap-2">
+                          <span className="font-semibold text-[20px] text-[var(--color)] line-clamp-1 shrink-[1]">
                             {title}
-                          </Text>
+                          </span>
                           {chat.lastMessage && (
-                            <Text
-                              fontSize="$2"
-                              color="rgba(236,239,238,0.45)"
-                              whiteSpace="nowrap"
-                            >
+                            <span className="text-[14px] text-[rgba(236,239,238,0.45)] whitespace-nowrap">
                               {formatSafeDate(chat.lastMessage.timestamp)}
-                            </Text>
+                            </span>
                           )}
-                        </XStack>
+                        </div>
                         {chat.lastMessage && (
-                          <Text
-                            fontSize="$3"
-                            color="rgba(236,239,238,0.45)"
-                            numberOfLines={1}
-                          >
-                            <Text fontWeight="600">
+                          <span className="text-[16px] text-[rgba(236,239,238,0.45)] line-clamp-1">
+                            <span className="font-semibold">
                               {chat.lastMessage.senderUsername}:
-                            </Text>{' '}
+                            </span>{' '}
                             {chat.lastMessage.content}
-                          </Text>
+                          </span>
                         )}
-                      </YStack>
-                    </XStack>
+                      </div>
+                    </div>
                   </Card>
                 </Link>
               );
             })}
-          </YStack>
+          </div>
         )}
       </Container>
     </PageLayout>

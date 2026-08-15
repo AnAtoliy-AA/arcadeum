@@ -2,8 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import { DialogShell } from '@/features/shop/ui/dialogShell';
 import { setShopOverrideAction } from '../server/admin-shop.actions';
 import type { EffectiveShopItem } from '@/features/shop/server/shop.types';
@@ -75,12 +74,12 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
 
   return (
     <DialogShell open={open} onClose={onClose} testId="admin-shop-edit-dialog">
-      <YStack gap="$3">
-        <Text fontSize="$6" fontWeight="700">
+      <div className="flex flex-col items-stretch gap-3">
+        <span className="text-[24px] font-bold">
           {labels.editDialog.title.replace('{itemId}', item.id)}
-        </Text>
+        </span>
 
-        <XStack gap="$2" alignItems="center">
+        <div className="flex flex-row gap-2 items-center">
           <input
             type="checkbox"
             checked={available}
@@ -88,13 +87,13 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
             aria-label={labels.editDialog.available}
             data-testid="admin-shop-edit-available"
           />
-          <Text fontSize="$3">{labels.editDialog.available}</Text>
-        </XStack>
+          <span className="text-[16px]">{labels.editDialog.available}</span>
+        </div>
 
-        <YStack gap="$1">
-          <Text fontSize="$2" color="$color">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[14px] text-[var(--color)]">
             {labels.editDialog.priceAmount}
-          </Text>
+          </span>
           <input
             type="number"
             min={0}
@@ -112,12 +111,12 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
               fontSize: 14,
             }}
           />
-        </YStack>
+        </div>
 
-        <YStack gap="$1">
-          <Text fontSize="$2" color="$color">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[14px] text-[var(--color)]">
             {labels.editDialog.priceCurrency}
-          </Text>
+          </span>
           <select
             value={priceCurrency}
             onChange={(e) =>
@@ -137,23 +136,22 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
             <option value="gems">gems</option>
             <option value="arcadeum">arcadeum</option>
           </select>
-        </YStack>
+        </div>
 
         {error ? (
-          <Text
-            color="$danger"
-            fontSize="$2"
+          <span
+            className="text-[var(--danger)] text-[14px]"
             data-testid="admin-shop-edit-error"
           >
             {error}
-          </Text>
+          </span>
         ) : null}
 
-        <XStack gap="$3" justifyContent="space-between">
+        <div className="flex flex-row items-stretch gap-3 justify-between">
           <Button variant="outline" onClick={handleReset} disabled={isPending}>
             {labels.editDialog.reset}
           </Button>
-          <XStack gap="$2">
+          <div className="flex flex-row items-stretch gap-2">
             <Button variant="outline" onClick={onClose} disabled={isPending}>
               {labels.editDialog.cancel}
             </Button>
@@ -164,9 +162,9 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
             >
               {labels.editDialog.save}
             </Button>
-          </XStack>
-        </XStack>
-      </YStack>
+          </div>
+        </div>
+      </div>
     </DialogShell>
   );
 }

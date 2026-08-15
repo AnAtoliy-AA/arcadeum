@@ -178,8 +178,8 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
 
         {player.error && (
           <Typography
-            uiSize="xs"
             className="mt-1 px-2"
+            uiSize="xs"
             style={{ color: '#f87171' }}
           >
             {player.error}

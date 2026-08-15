@@ -1,12 +1,13 @@
+'use client';
 import { forwardRef } from 'react';
 import { cx } from '../../utils/cx';
+import { fieldBorderClasses } from '../../utils/fieldClasses';
 
 export type TextAreaProps = {
   value?: string;
   defaultValue?: string;
   placeholder?: string;
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
-  onChangeText?: (text: string) => void;
   onFocus?: React.FocusEventHandler<HTMLTextAreaElement>;
   onBlur?: React.FocusEventHandler<HTMLTextAreaElement>;
   disabled?: boolean;
@@ -29,7 +30,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       defaultValue,
       placeholder,
       onChange,
-      onChangeText,
       onFocus,
       onBlur,
       disabled,
@@ -60,18 +60,13 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         required={required}
         aria-required={required || undefined}
         data-testid={dataTestId}
-        onChange={(e) => {
-          onChange?.(e);
-          onChangeText?.(e.target.value);
-        }}
+        onChange={onChange}
         onFocus={onFocus}
         onBlur={onBlur}
         className={cx(
           'min-h-[120px] rounded-[16px] border bg-[var(--background)] px-4 py-3 text-[16px] text-[var(--color)] outline-none transition-[border-color] duration-200',
           fullWidth && 'w-full',
-          error
-            ? 'border-[var(--error)]'
-            : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[var(--primary)] focus:border-[2px]',
+          fieldBorderClasses(!!error),
           className,
         )}
         style={style}

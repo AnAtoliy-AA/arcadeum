@@ -36,7 +36,7 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
     return (
       <DeckCard
         data-testid="deck-card"
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
         style={{ ...deckStyle, opacity: 0.3, cursor: 'default' }}
       />
     );
@@ -49,20 +49,20 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
     return (
       <LastPlayedCard
         data-testid="deck-card"
-        $isAnimating={false}
-        $variant={cardVariant as GameVariant}
+        isAnimating={false}
+        variant={cardVariant as GameVariant}
         style={{ ...deckStyle, position: 'relative' }}
       >
         <CardImage variant={cardVariant ?? ''} cardType={topCard as string} />
         <GradientScrim />
-        <CardCorner $position="tl" $variant={cardVariant} />
-        <CardCorner $position="tr" $variant={cardVariant} />
-        <CardCorner $position="bl" $variant={cardVariant} />
-        <CardCorner $position="br" $variant={cardVariant} />
-        <CardFrame $variant={cardVariant} />
+        <CardCorner position="tl" variant={cardVariant} />
+        <CardCorner position="tr" variant={cardVariant} />
+        <CardCorner position="bl" variant={cardVariant} />
+        <CardCorner position="br" variant={cardVariant} />
+        <CardFrame variant={cardVariant} />
         <CardInner style={{ zIndex: 2 }}>
-          <CardNameContainer $variant={cardVariant as GameVariant}>
-            <CardName $variant={cardVariant}>
+          <CardNameContainer variant={cardVariant as GameVariant}>
+            <CardName variant={cardVariant}>
               {t(getCardTranslationKey(topCard, cardVariant))}
             </CardName>
           </CardNameContainer>
@@ -75,11 +75,11 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
   return (
     <DeckCard
       data-testid="deck-card"
-      $variant={cardVariant as GameVariant}
+      variant={cardVariant as GameVariant}
       style={deckStyle}
     >
       <CardImage variant={cardVariant ?? ''} faceDown />
-      <CardFrame $variant={cardVariant} />
+      <CardFrame variant={cardVariant} />
     </DeckCard>
   );
 };

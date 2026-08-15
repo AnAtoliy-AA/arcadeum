@@ -1,7 +1,6 @@
 'use client';
 import { memo } from 'react';
 import type React from 'react';
-import { Text } from 'tamagui';
 import { CELL_STATE } from '../../types';
 import { BoardCell } from '../styles';
 import type { SeaBattleTheme } from '../../lib/theme';
@@ -80,7 +79,8 @@ export const AttackBoardCell = memo(function AttackBoardCell({
                 boxShadow: '0 0 12px 4px rgba(251, 191, 36, 0.9)',
                 borderColor: '#f59e0b',
                 backgroundColor: 'rgba(251, 191, 36, 0.25)',
-                animation: 'sb-scanwave-pulse 0.5s ease-in-out infinite alternate',
+                animation:
+                  'sb-scanwave-pulse 0.5s ease-in-out infinite alternate',
               }
             : {
                 boxShadow: '0 0 4px 1px rgba(251, 191, 36, 0.3)',
@@ -106,6 +106,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
 
   return (
     <BoardCell
+      className={`sb-cell ${isAttackable || isWeaponClickable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${isWeaponPreview ? 'sb-weapon-preview' : ''} ${animClass || ''}`}
       style={{
         backgroundColor: getCellBg(displayState, theme),
         borderColor: theme.cellBorder,
@@ -114,64 +115,26 @@ export const AttackBoardCell = memo(function AttackBoardCell({
         ...previewStyle,
         ...(isWeaponPreview ? { cursor: 'crosshair' } : {}),
       }}
-      className={`sb-cell ${isAttackable || isWeaponClickable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${isWeaponPreview ? 'sb-weapon-preview' : ''} ${animClass || ''}`}
       data-row={!isMe ? rIndex : undefined}
       data-col={!isMe ? cIndex : undefined}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       {icon && (
-        <Text
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          fontSize={13}
-          pointerEvents="none"
-          userSelect="none"
-          className={icon === '💀' ? 'sb-icon-sunk' : 'sb-icon-hit'}
+        <span
+          className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[13px] pointer-events-none select-none ${icon === '💀' ? 'sb-icon-sunk' : 'sb-icon-hit'}`}
         >
           {icon}
-        </Text>
+        </span>
       )}
       {isPending && (
         <>
-          <Text
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize={11}
-            pointerEvents="none"
-            userSelect="none"
-            className="sb-aim"
-          >
+          <span className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[11px] pointer-events-none select-none sb-aim">
             🎯
-          </Text>
-          <Text
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize={14}
-            pointerEvents="none"
-            userSelect="none"
-            className="sb-missile"
-          >
+          </span>
+          <span className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[14px] pointer-events-none select-none sb-missile">
             🚀
-          </Text>
+          </span>
         </>
       )}
       {!isPending && displayState === CELL_STATE.MISS && (

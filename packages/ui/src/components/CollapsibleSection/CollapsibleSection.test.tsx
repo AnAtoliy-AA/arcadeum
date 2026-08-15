@@ -1,17 +1,9 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { CollapsibleSection } from './CollapsibleSection';
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const render = (ui: React.ReactElement) => {
-  return rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>
-  );
-};
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('CollapsibleSection', () => {
   it('renders title and children when expanded', () => {

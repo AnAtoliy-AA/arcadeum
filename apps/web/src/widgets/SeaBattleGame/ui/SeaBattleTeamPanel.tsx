@@ -1,15 +1,7 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import {
-  Card,
-  StatusBadge,
-  Toggle,
-  Typography,
-  XStack,
-  YStack,
-} from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Card, StatusBadge, Toggle, Typography } from '@arcadeum/ui';
 
 import {
   useTranslation,
@@ -88,15 +80,9 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
   const hasUnassigned = unassignedMembers.length > 0;
 
   const header = (
-    <XStack
-      alignItems="center"
-      justifyContent="space-between"
-      gap="$3"
-      flexWrap="wrap"
-    >
-      <XStack
-        alignItems="center"
-        gap="$3"
+    <div className="flex flex-row items-center justify-between gap-3 flex-wrap">
+      <div
+        className="flex flex-row items-center gap-3"
         data-testid={isHost ? 'team-mode-toggle' : undefined}
       >
         <Typography variant="heading" uiSize="md">
@@ -112,10 +98,10 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
         ) : (
           <StatusBadge active={teamMode} />
         )}
-      </XStack>
+      </div>
 
       {isHost && teamMode && (
-        <XStack alignItems="center" gap="$2">
+        <div className="flex flex-row items-center gap-2">
           <Typography variant="caption" uiSize="sm">
             {hideShipsLabel}
           </Typography>
@@ -125,36 +111,29 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
             ariaLabel={hideShipsLabel}
             testId="hide-ships-switch"
           />
-        </XStack>
+        </div>
       )}
-    </XStack>
+    </div>
   );
 
   return (
-    <Card variant="outlined" padding="md" data-testid="sea-battle-team-panel">
-      <YStack gap="$3">
+    <Card variant="outlined" data-testid="sea-battle-team-panel">
+      <div className="flex flex-col items-stretch gap-3">
         {header}
 
         {teamMode && teamStartBlocked && isHost && (
-          <XStack
-            alignItems="center"
-            justifyContent="center"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius={10}
-            borderWidth={1}
-            backgroundColor="rgba(251,191,36,0.08)"
-            borderColor="rgba(251,191,36,0.3)"
+          <div
+            className="flex flex-row items-center justify-center px-3 py-2 rounded-[10px] border bg-[rgba(251,191,36,0.08)] border-[rgba(251,191,36,0.3)]"
             role="status"
             aria-live="polite"
             data-testid="team-start-blocked-notice"
           >
-            <Text fontSize={12} fontWeight="600" color="#fcd34d">
+            <span className="text-[12px] font-semibold text-[#fcd34d]">
               {t(
                 'games.sea_battle_v1.teamMode.start.disabledNotFull' as TranslationKey,
               )}
-            </Text>
-          </XStack>
+            </span>
+          </div>
         )}
 
         {teamMode && isHost && (
@@ -194,7 +173,7 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
             }
           />
         )}
-      </YStack>
+      </div>
     </Card>
   );
 });

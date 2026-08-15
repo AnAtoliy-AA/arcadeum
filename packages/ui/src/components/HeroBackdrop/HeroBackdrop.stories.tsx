@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { Text, YStack } from 'tamagui';
 import { HeroBackdrop } from './HeroBackdrop';
 
 const meta: Meta<typeof HeroBackdrop> = {
@@ -13,23 +12,25 @@ type Story = StoryObj<typeof HeroBackdrop>;
 export const Default: Story = {
   render: () => (
     <HeroBackdrop>
-      <YStack gap="$3" maxWidth={520}>
-        <Text
-          fontSize="$2"
-          letterSpacing={2}
-          opacity={0.7}
-          color="$mythicAccent"
+      <div className="flex flex-col gap-3" style={{ maxWidth: 520 }}>
+        <span
+          style={{
+            fontSize: 14,
+            letterSpacing: '2px',
+            opacity: 0.7,
+            color: 'var(--mythicAccent)',
+          }}
         >
           LIVE · SEASON 4
-        </Text>
-        <Text fontSize="$10" fontWeight="900" letterSpacing={-1}>
+        </span>
+        <span className="text-[48px] font-black tracking-[-1px]">
           Race the leaderboard.
-        </Text>
-        <Text fontSize="$4" opacity={0.85}>
+        </span>
+        <span className="text-[18px] opacity-[0.85]">
           Updated every 30 seconds. Top 100 players gear up for the Champions
           Cup.
-        </Text>
-      </YStack>
+        </span>
+      </div>
     </HeroBackdrop>
   ),
 };

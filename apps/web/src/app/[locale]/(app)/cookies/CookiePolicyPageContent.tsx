@@ -46,7 +46,7 @@ export default function CookiePolicyPageContent({
                 gap: '1rem',
               }}
             >
-              <Typography variant="label" uiSize="lg" fontWeight="700">
+              <Typography className={'font-bold'} variant="label" uiSize="lg">
                 {section.title}
               </Typography>
               {section.content && (

@@ -9,7 +9,6 @@ import { appConfig } from '@/shared/config/app-config';
 import { ActivityTicker } from '@arcadeum/ui/components/ActivityTicker';
 import { ChannelTile } from '@arcadeum/ui/components/ChannelTile';
 import { StatTile } from '@arcadeum/ui/components/StatTile';
-import { XStack, YStack } from 'tamagui';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 import {
@@ -20,7 +19,6 @@ import {
   InstagramIcon,
   TwitterIcon,
 } from './ContactView.icons';
-import { useContactStyles } from './useContactStyles';
 import { ContactSidePanel } from './ContactSidePanel';
 import { ContactFaq, getFaqItems } from './ContactFaq';
 import { ContactAvatars } from './ContactAvatars';
@@ -37,18 +35,37 @@ export interface ContactViewProps {
 function HeroPill({
   icon,
   children,
-  pillStyle,
 }: {
   icon?: ReactNode;
   children: ReactNode;
-  pillStyle: CSSProperties;
 }) {
   return (
-    <span style={pillStyle}>
+    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] text-[var(--color)] border border-[var(--glassBorder)] bg-[var(--glassBg)]">
       {icon ? <span aria-hidden="true">{icon}</span> : null}
       {children}
     </span>
   );
+}
+
+/** Decorative glow orbs — size/position/color are dynamic. */
+function orbStyle(
+  size: number,
+  top: string,
+  left: string,
+  color: string,
+): CSSProperties {
+  return {
+    position: 'absolute',
+    width: size,
+    height: size,
+    top,
+    left,
+    borderRadius: '50%',
+    background: color,
+    filter: 'blur(60px)',
+    opacity: 0.55,
+    pointerEvents: 'none',
+  };
 }
 
 const tickerItems = [
@@ -94,7 +111,6 @@ export default function ContactView({
   SUPPORT_EMAIL,
   WORKING_HOURS,
 }: ContactViewProps) {
-  const s = useContactStyles();
   const { messages } = useLanguage();
   const t = (messages.legal?.contact as unknown as ContactMessages) || initialT;
   const sections = t?.sections;
@@ -152,91 +168,90 @@ export default function ContactView({
 
   return (
     <PageLayout>
-      <Container size="lg" maxWidth={1120}>
-        <YStack gap="$8">
-          <div style={s.heroWrapStyle}>
+      <Container size="lg" style={{ maxWidth: 1120 }}>
+        <div className="flex flex-col items-stretch gap-8">
+          <div className="relative overflow-hidden rounded-[24px] border border-[var(--glassBorder)] bg-[radial-gradient(80%_80%_at_50%_100%,rgba(56,189,248,0.18),transparent_70%),radial-gradient(60%_60%_at_0%_0%,rgba(3,105,161,0.22),transparent_65%),var(--background)] p-[clamp(28px,5vw,56px)_clamp(20px,3vw,32px)]">
             <span
               aria-hidden="true"
-              style={s.orbStyle(
-                360,
-                '-160px',
-                '-80px',
-                'rgba(56,189,248,0.45)',
-              )}
+              style={orbStyle(360, '-160px', '-80px', 'rgba(56,189,248,0.45)')}
             />
             <span
               aria-hidden="true"
-              style={s.orbStyle(320, '-100px', '70%', 'rgba(244,114,182,0.45)')}
+              style={orbStyle(320, '-100px', '70%', 'rgba(244,114,182,0.45)')}
             />
-            <YStack gap="$4" position="relative" zIndex={1}>
-              <XStack flexWrap="wrap" alignItems="center" gap="$3">
-                <span style={s.eyebrowStyle}>
-                  <span aria-hidden="true" style={s.eyebrowDotStyle} />
+            <div className="flex flex-col items-stretch gap-4 relative z-[100]">
+              <div className="flex flex-row flex-wrap items-center gap-3">
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold tracking-[1.2px] uppercase text-[var(--accent)] border border-[var(--glassBorder)] bg-[var(--glassBg)]">
+                  <span
+                    aria-hidden="true"
+                    className="h-[7px] w-[7px] rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]"
+                  />
                   {hero?.eyebrow ?? 'Player support'}
                 </span>
                 <Typography variant="caption" alpha="medium">
                   arcadeum.games / contact
                 </Typography>
-              </XStack>
-              <h1 style={s.heroTitleStyle}>
+              </div>
+              <h1 className="text-[clamp(40px,6vw,60px)] font-bold tracking-[-0.035em] leading-[1.05] mb-4">
                 {titleHead ? `${titleHead} ` : ''}
-                <span style={s.titleAccentStyle}>{lastWord}</span>
+                <span className="bg-[linear-gradient(120deg,var(--accent)_0%,#f472b6_100%)] bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(56,189,248,0.4)]">
+                  {lastWord}
+                </span>
               </h1>
-              <p style={s.heroTaglineStyle}>{hero?.tagline ?? t?.tagline}</p>
-              <XStack flexWrap="wrap" gap="$3" marginTop="$3">
-                <HeroPill pillStyle={s.pillStyle}>
+              <p className="max-w-[600px] text-[18px] leading-[1.55] text-[var(--textSecondary)] m-0">
+                {hero?.tagline ?? t?.tagline}
+              </p>
+              <div className="flex flex-row items-stretch flex-wrap gap-3 -mt-3">
+                <HeroPill>
                   <span
                     aria-hidden="true"
+                    className="h-[7px] w-[7px] rounded-full"
                     style={{
-                      ...s.eyebrowDotStyle,
                       background: '#34d399',
                       boxShadow: '0 0 8px #34d399',
                     }}
                   />
                   {hero?.statusOk ?? 'All systems operational'}
                 </HeroPill>
-                <HeroPill pillStyle={s.pillStyle} icon={<ClockIcon />}>
+                <HeroPill icon={<ClockIcon />}>
                   {formatMessage(hero?.medianReply, { hours: '4' }) ??
                     '~ 4 hr median reply'}
                 </HeroPill>
-                <HeroPill
-                  pillStyle={s.pillStyle}
-                  icon={<ContactAvatars count={3} size={20} />}
-                >
+                <HeroPill icon={<ContactAvatars count={3} size={20} />}>
                   {formatMessage(hero?.humansOnline, { count: '3' }) ??
                     '3 humans online'}
                 </HeroPill>
-                <HeroPill pillStyle={s.pillStyle} icon={<GlobeIcon />}>
+                <HeroPill icon={<GlobeIcon />}>
                   {formatMessage(hero?.languages, { count: '5' }) ??
                     '5 languages'}
                 </HeroPill>
-              </XStack>
-              <YStack marginTop="$4">
+              </div>
+              <div className="flex flex-col items-stretch -mt-4">
                 <ActivityTicker items={tickerItems} label={ticker?.label} />
-              </YStack>
-            </YStack>
+              </div>
+            </div>
           </div>
 
-          <div style={s.statStripStyle}>
-            <div style={s.statCellWrap}>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-px bg-[var(--glassBorder)] border border-[var(--glassBorder)] rounded-[16px] overflow-hidden">
+            <div className="bg-[var(--background)]">
               <StatTile
                 value={stats?.ticketsResolvedValue ?? '2,840'}
                 label={stats?.ticketsResolved ?? 'Tickets resolved this month'}
               />
             </div>
-            <div style={s.statCellWrap}>
+            <div className="bg-[var(--background)]">
               <StatTile
                 value={stats?.avgRatingValue ?? '4.9 ★'}
                 label={stats?.avgRating ?? 'Avg. support rating'}
               />
             </div>
-            <div style={s.statCellWrap}>
+            <div className="bg-[var(--background)]">
               <StatTile
                 value={stats?.languagesSupportedValue ?? '5'}
                 label={stats?.languagesSupported ?? 'Languages supported'}
               />
             </div>
-            <div style={s.statCellWrap}>
+            <div className="bg-[var(--background)]">
               <StatTile
                 value={stats?.slaHitValue ?? '98%'}
                 label={stats?.slaHit ?? 'SLA hit rate'}
@@ -244,7 +259,7 @@ export default function ContactView({
             </div>
           </div>
 
-          <div style={s.tilesGridStyle}>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
             {channelDefs.map((c) => (
               <ChannelTile
                 key={c.key}
@@ -275,7 +290,7 @@ export default function ContactView({
             browseLabel={faq?.browse}
             questionsLabel={sections?.common?.questionsLabel}
           />
-        </YStack>
+        </div>
       </Container>
     </PageLayout>
   );

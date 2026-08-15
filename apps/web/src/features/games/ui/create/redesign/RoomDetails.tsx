@@ -28,7 +28,12 @@ interface Props {
     patch: Partial<
       Pick<
         CreateRoomForm,
-        'roomName' | 'maxPlayers' | 'visibility' | 'notes' | 'password' | 'preset'
+        | 'roomName'
+        | 'maxPlayers'
+        | 'visibility'
+        | 'notes'
+        | 'password'
+        | 'preset'
       >
     >,
   ) => void;
@@ -128,12 +133,12 @@ export function RoomDetails({ gameId, form, labels, onChange }: Props) {
             </button>
             {form.maxPlayers !== 'auto' && (
               <button
-                type="button"
                 className={s.stepperBtn}
+                style={{ marginLeft: 4, fontSize: 11, padding: '4px 8px' }}
+                type="button"
                 aria-label="Reset to Auto"
                 data-testid="stepper-auto"
                 onClick={() => setMaxPlayers('auto')}
-                style={{ marginLeft: 4, fontSize: 11, padding: '4px 8px' }}
               >
                 Auto
               </button>

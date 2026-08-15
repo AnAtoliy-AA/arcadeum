@@ -1,3 +1,4 @@
+'use client';
 import { forwardRef, useMemo } from 'react';
 
 import { ButtonProps } from './types';

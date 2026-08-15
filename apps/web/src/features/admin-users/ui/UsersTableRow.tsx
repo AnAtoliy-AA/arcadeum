@@ -1,6 +1,5 @@
 'use client';
 import { Avatar, Button } from '@arcadeum/ui';
-import { XStack, YStack, Text } from 'tamagui';
 import type { AdminUserItem } from '../api';
 import type { UserRole } from '@/entities/session/model/types';
 import { RoleBadge } from './RoleBadge';
@@ -55,21 +54,16 @@ export function UsersTableRow({
   const isSelectable = !isDeleted && !isSelf;
 
   return (
-    <XStack
-      gap="$3"
-      alignItems="center"
-      paddingVertical="$2"
-      paddingHorizontal="$3"
-      backgroundColor={
-        isSelected ? '$backgroundFocus' : zebra ? '$backgroundFocus' : undefined
-      }
-      hoverStyle={{ backgroundColor: '$backgroundHover' }}
-      borderBottomWidth={1}
-      borderColor="$borderColor"
-      opacity={isDeleted ? 0.5 : 1}
+    <div
+      className="flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
+      style={{
+        backgroundColor:
+          isSelected || zebra ? 'var(--backgroundFocus)' : undefined,
+        opacity: isDeleted ? 0.5 : 1,
+      }}
       data-testid={`user-row-${item.id}`}
     >
-      <YStack width={32} alignItems="center">
+      <div className="flex flex-col w-[32px] items-center">
         {isSelectable && (
           <input
             type="checkbox"
@@ -78,42 +72,36 @@ export function UsersTableRow({
             data-testid={`select-checkbox-${item.id}`}
           />
         )}
-      </YStack>
+      </div>
       <Avatar
         name={item.displayName ?? item.username}
         size="sm"
         data-testid={`user-avatar-${item.id}`}
       />
-      <YStack flex={1} minWidth={0}>
-        <Text fontWeight="700" numberOfLines={1}>
+      <div className="flex flex-col items-stretch flex-1 min-w-0">
+        <span className="font-bold line-clamp-1">
           {item.username}
           {isSelf && (
-            <Text opacity={0.6} fontSize="$1">
-              {' (you)'}
-            </Text>
+            <span className="opacity-[0.6] text-[12px]">{' (you)'}</span>
           )}
           {isBlocked && (
-            <Text color="$red10" fontSize="$1">
-              {' (blocked)'}
-            </Text>
+            <span className="text-[#dc2626] text-[12px]">{' (blocked)'}</span>
           )}
           {isDeleted && (
-            <Text color="$orange10" fontSize="$1">
-              {' (removed)'}
-            </Text>
+            <span className="text-[#f76b15] text-[12px]">{' (removed)'}</span>
           )}
-        </Text>
-        <Text opacity={0.6} fontSize="$1" numberOfLines={1}>
+        </span>
+        <span className="opacity-[0.6] text-[12px] line-clamp-1">
           {item.email}
-        </Text>
+        </span>
         {item.displayName && (
-          <Text opacity={0.5} fontSize="$1" numberOfLines={1}>
+          <span className="opacity-[0.5] text-[12px] line-clamp-1">
             {item.displayName}
-          </Text>
+          </span>
         )}
-      </YStack>
+      </div>
       <RoleBadge role={item.role} label={roleLabels[item.role]} />
-      <XStack gap="$2" alignItems="center">
+      <div className="flex flex-row gap-2 items-center">
         <span title={isSelf ? selfTooltip : undefined}>
           <RoleSelect
             value={item.role}
@@ -178,7 +166,7 @@ export function UsersTableRow({
             {restoreLabel}
           </Button>
         )}
-      </XStack>
-    </XStack>
+      </div>
+    </div>
   );
 }

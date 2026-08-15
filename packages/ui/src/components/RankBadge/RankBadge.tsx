@@ -1,55 +1,5 @@
-import { Text, styled } from 'tamagui';
-
-export const RankBadge = styled(Text, {
-  name: 'RankBadge',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: '$1',
-  fontWeight: '700',
-  minWidth: 36,
-  textAlign: 'center',
-  borderWidth: 1,
-  borderColor: 'transparent',
-
-  variants: {
-    tier: {
-      mythic: {
-        backgroundColor: 'rgba(236,72,153,0.18)',
-        color: '$mythicAccent',
-        borderColor: '$mythicAccent',
-      },
-      diamond: {
-        backgroundColor: 'rgba(34,211,238,0.16)',
-        color: '$diamondAccent',
-        borderColor: '$diamondAccent',
-      },
-      platinum: {
-        backgroundColor: 'rgba(167,139,250,0.16)',
-        color: '$platinumAccent',
-        borderColor: '$platinumAccent',
-      },
-      gold: {
-        backgroundColor: 'rgba(250,204,21,0.16)',
-        color: '$goldAccent',
-        borderColor: '$goldAccent',
-      },
-      silver: {
-        backgroundColor: 'rgba(148,163,184,0.16)',
-        color: '$silverAccent',
-        borderColor: '$silverAccent',
-      },
-      bronze: {
-        backgroundColor: 'rgba(180,83,9,0.16)',
-        color: '$bronzeAccent',
-        borderColor: '$bronzeAccent',
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    tier: 'gold',
-  },
-});
+import type { HTMLAttributes, ReactNode } from 'react';
+import { cx } from '../../utils/cx';
 
 export type RankBadgeTier =
   | 'mythic'
@@ -58,3 +8,32 @@ export type RankBadgeTier =
   | 'gold'
   | 'silver'
   | 'bronze';
+
+const rankBadgeBase =
+  'inline-flex px-2 py-1 rounded font-bold min-w-[36px] text-center border';
+
+const rankTierClasses: Record<RankBadgeTier, string> = {
+  mythic:
+    'bg-[rgba(236,72,153,0.18)] text-[var(--mythicAccent)] border-[var(--mythicAccent)]',
+  diamond:
+    'bg-[rgba(34,211,238,0.16)] text-[var(--diamondAccent)] border-[var(--diamondAccent)]',
+  platinum:
+    'bg-[rgba(167,139,250,0.16)] text-[var(--platinumAccent)] border-[var(--platinumAccent)]',
+  gold: 'bg-[rgba(250,204,21,0.16)] text-[var(--goldAccent)] border-[var(--goldAccent)]',
+  silver:
+    'bg-[rgba(148,163,184,0.16)] text-[var(--silverAccent)] border-[var(--silverAccent)]',
+  bronze:
+    'bg-[rgba(180,83,9,0.16)] text-[var(--bronzeAccent)] border-[var(--bronzeAccent)]',
+};
+
+export type RankBadgeProps = HTMLAttributes<HTMLSpanElement> & {
+  tier?: RankBadgeTier;
+  children?: ReactNode;
+  className?: string;
+};
+
+export function RankBadge({ tier = 'gold', className, ...rest }: RankBadgeProps) {
+  return (
+    <span className={cx(rankBadgeBase, rankTierClasses[tier], className)} {...rest} />
+  );
+}

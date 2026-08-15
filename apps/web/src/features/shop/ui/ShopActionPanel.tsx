@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, XStack, YStack } from '@arcadeum/ui';
-import { Text, styled, YStack as Stack } from 'tamagui';
+import { Button } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
@@ -56,25 +56,35 @@ export interface ShopActionPanelProps {
   sellLabels: SellConfirmLabels;
 }
 
-const PanelFrame = styled(Stack, {
-  name: 'ShopActionPanel',
-  width: '100%',
-  borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  backgroundColor: 'rgba(255,255,255,0.02)',
-  padding: '$3',
-  gap: 12,
-});
+function PanelFrame({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-col items-stretch w-full gap-3 p-3 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const Eyebrow = styled(Text, {
-  name: 'ShopActionEyebrow',
-  fontSize: 10,
-  letterSpacing: 1.4,
-  textTransform: 'uppercase',
-  fontWeight: '800',
-  color: '$gray11',
-});
+function Eyebrow({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'text-[10px] tracking-[1.4px] uppercase font-extrabold text-[#94a3b8]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 function refundForRow(row: InventoryItemView, gemToCoinRate: number): number {
   if (row.paidAmount === null || row.paidCurrency === null) return 0;
@@ -127,53 +137,45 @@ export function ShopActionPanel({
         aria-label={ariaLabel}
       >
         <Eyebrow>{actionLabels.previewingEyebrow}</Eyebrow>
-        <YStack gap={4}>
-          <Text fontSize="$5" fontWeight="800" color="$white">
+        <div className="flex flex-col items-stretch gap-4">
+          <span className="text-[20px] font-extrabold text-[#f5f7ff]">
             {name}
-          </Text>
-          <Text fontSize="$2" color="$gray11" numberOfLines={4}>
+          </span>
+          <span className="text-[14px] text-[#94a3b8] line-clamp-4">
             {desc}
-          </Text>
-        </YStack>
-        <XStack gap={8} alignItems="center" justifyContent="space-between">
-          <Stack
-            flexDirection="row"
-            alignItems="center"
-            gap={4}
-            paddingHorizontal={6}
-            paddingVertical={2}
-            borderRadius="$2"
-            backgroundColor={`${accent}14`}
-            borderWidth={1}
-            borderColor={`${accent}44`}
+          </span>
+        </div>
+        <div className="flex flex-row gap-8 items-center justify-between">
+          <div
+            className="flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"
+            style={{
+              backgroundColor: `${accent}14`,
+              borderColor: `${accent}44`,
+            }}
           >
-            <Stack
-              width={6}
-              height={6}
-              borderRadius={3}
-              backgroundColor={accent}
+            <div
+              className="flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
+              style={{ backgroundColor: accent }}
             />
-            <Text
-              fontSize={9}
-              letterSpacing={1}
-              textTransform="uppercase"
-              fontWeight="800"
-              color={accent}
+            <span
+              className="text-[40px] tracking-[1px] uppercase font-extrabold"
+              style={{ color: accent }}
             >
               {hoverItem.rarity}
-            </Text>
-          </Stack>
-          <XStack alignItems="center" gap={4}>
-            <Text fontSize={14}>{CURRENCY_GLYPH[hoverItem.priceCurrency]}</Text>
-            <Text
-              fontSize="$4"
-              fontWeight="800"
-              color={CURRENCY_COLOR[hoverItem.priceCurrency]}
+            </span>
+          </div>
+          <div className="flex flex-row items-center gap-4">
+            <span className="text-[14px]">
+              {CURRENCY_GLYPH[hoverItem.priceCurrency]}
+            </span>
+            <span
+              className="text-[18px] font-extrabold"
+              style={{ color: CURRENCY_COLOR[hoverItem.priceCurrency] }}
             >
               {formatNumber(hoverItem.priceAmount, locale)}
-            </Text>
-          </XStack>
-        </XStack>
+            </span>
+          </div>
+        </div>
       </PanelFrame>
     );
   }
@@ -201,42 +203,28 @@ export function ShopActionPanel({
         aria-live="polite"
         aria-label={ariaLabel}
       >
-        <XStack justifyContent="space-between" alignItems="center">
+        <div className="flex flex-row justify-between items-center">
           <Eyebrow>{actionLabels.selectedSlotEyebrow}</Eyebrow>
-          <Text
-            fontSize={10}
-            letterSpacing={1}
-            textTransform="uppercase"
-            fontWeight="700"
-            color="$blue11"
-            cursor="pointer"
-            onPress={() => clearActiveSlot()}
+          <span
+            className="text-[48px] tracking-[1px] uppercase font-bold text-[#3b82f6] cursor-pointer"
+            onClick={() => clearActiveSlot()}
             data-testid="shop-action-clear"
           >
             {actionLabels.clear}
-          </Text>
-        </XStack>
-        <YStack gap={4}>
-          <Text fontSize="$5" fontWeight="800" color="$white">
+          </span>
+        </div>
+        <div className="flex flex-col items-stretch gap-4">
+          <span className="text-[20px] font-extrabold text-[#f5f7ff]">
             {slot.label}
-          </Text>
-          <Text fontSize="$2" color="$gray11">
-            {slot.desc}
-          </Text>
-        </YStack>
-        <YStack
-          gap={4}
-          padding="$2"
-          borderRadius="$3"
-          borderWidth={1}
-          borderColor="rgba(255,255,255,0.08)"
-          backgroundColor="rgba(255,255,255,0.02)"
-        >
+          </span>
+          <span className="text-[14px] text-[#94a3b8]">{slot.desc}</span>
+        </div>
+        <div className="flex flex-col items-stretch gap-4 p-2 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
           <Eyebrow>{actionLabels.equippedEyebrow}</Eyebrow>
-          <Text fontSize={13} fontWeight="700" color="$white">
+          <span className="text-[13px] font-bold text-[#f5f7ff]">
             {equippedName}
-          </Text>
-        </YStack>
+          </span>
+        </div>
         {canSell && equippedRow ? (
           <Button
             variant="danger"
@@ -284,14 +272,14 @@ export function ShopActionPanel({
       aria-label={ariaLabel}
     >
       <Eyebrow>{actionLabels.loadoutEyebrow}</Eyebrow>
-      <YStack gap={4}>
-        <Text fontSize="$5" fontWeight="800" color="$white">
+      <div className="flex flex-col items-stretch gap-4">
+        <span className="text-[20px] font-extrabold text-[#f5f7ff]">
           {actionLabels.idleTitle}
-        </Text>
-        <Text fontSize="$2" color="$gray11">
+        </span>
+        <span className="text-[14px] text-[#94a3b8]">
           {actionLabels.idleBody}
-        </Text>
-      </YStack>
+        </span>
+      </div>
       <WalletRail
         balance={balance}
         nextGemPack={nextGemPack}

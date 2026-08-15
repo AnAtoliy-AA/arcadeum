@@ -1,8 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { YStack } from '@arcadeum/ui';
-import { styled, YStack as Stack } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
@@ -41,26 +40,20 @@ export interface ShopMannequinRailProps {
   sellLabels: SellConfirmLabels;
 }
 
-const RailHost = styled(Stack, {
-  name: 'ShopMannequinRail',
-  width: 320,
-  gap: 12,
-  position: 'sticky',
-  top: 16,
-  alignSelf: 'flex-start',
-  flexShrink: 0,
-
-  // 901-1023px (Tamagui $md & $lg with $gtSm semantics) — shrink to 280 to
-  // give the storefront column breathing room. Matches the leaderboard
-  // variants' 280px sidebars in the design project.
-  $md: { width: 280 },
-
-  $sm: {
-    width: '100%',
-    position: 'relative',
-    top: 0,
-  },
-});
+function RailHost({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-col items-stretch w-[320px] gap-3 sticky top-4 self-start shrink-0 max-[1150px]:w-[280px] max-[800px]:w-full max-[800px]:relative max-[800px]:top-0',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 const SLOT_TO_ROW: Record<ShopCategory, string> = {
   avatar: 'row-avatars',
@@ -170,7 +163,7 @@ export function ShopMannequinRail({
         labels={labels.slots as ShopSlotRingLabels}
         onSlotClick={onSlotClick}
       />
-      <YStack>
+      <div className="flex flex-col items-stretch">
         <ShopActionPanel
           hoverItem={hoverItem}
           activeSlot={activeSlot}
@@ -184,7 +177,7 @@ export function ShopMannequinRail({
           walletLabels={labels.wallet}
           sellLabels={sellLabels}
         />
-      </YStack>
+      </div>
     </RailHost>
   );
 }

@@ -26,7 +26,8 @@
 
 ### UI & Design
 
-- **Modern UI design** — use clean layouts, consistent spacing, and design tokens from `packages/ui/src/tamagui.config.ts`. Prefer polished, contemporary aesthetics over generic defaults.
+- **Modern UI design** — use clean layouts, consistent spacing, and design tokens. Tokens are CSS variables minted on `<html>` by the theme provider from `packages/ui/src/themeDefinitions.ts` (use `var(--primary)`, `var(--glassBg)`, `bg-[var(--success)]`, etc.); static palettes (genres, roles, gold) are hex literals. See `/tailwind-pro` for the full token → class map. Prefer polished, contemporary aesthetics over generic defaults.
+- **Tailwind CSS is the only styling system** — Tamagui was fully removed (see `docs/plans/2026-08-15-tamagui-to-tailwind.md`). Never write `styled()`, `XStack`/`YStack`, `$tokens`, `hoverStyle`, or `onPress`. Use plain React + Tailwind classes; merge classes with `cx` from `@arcadeum/ui/utils/cx`.
 - **Reuse `@arcadeum/ui` components** — run `/check-ui-components` before writing any UI component. It audits the full component catalog, identifies reuse opportunities, and guides adding new components to `packages/ui` when nothing fits.
 - **Handle all UI states** — every data-fetching UI must handle loading, error, and empty states explicitly.
 
@@ -95,9 +96,10 @@ PR titles are validated by CI (`branch-guard.yml`). The title must match the tar
 - `/new-web-page` — add a Next.js App Router page (`page.tsx` + `*Client.tsx` + `*View.tsx` + i18n)
 - `/new-be-module` — add a NestJS module (controller, service, module, DTOs, Mongoose schema)
 - `/new-game` — add a complete multiplayer game end-to-end (BE engine/service/gateway/bot, web widget, landing, registries, i18n, tests, PR)
-- `/new-mobile-screen` — add an Expo Router screen with i18n and Tamagui UI
-- `/new-ui-component` — add a shared Tamagui component to `packages/ui` (`@arcadeum/ui`)
+- `/new-mobile-screen` — add an Expo Router screen with i18n and RN styling (StyleSheet + useThemedStyles)
+- `/new-ui-component` — add a shared Tailwind component to `packages/ui` (`@arcadeum/ui`)
 - `/check-ui-components` — audit existing `@arcadeum/ui` components before implementing any UI; reuse or add to `packages/ui`
+- `/tailwind-pro` — project-specific Tailwind reference: token → class maps, CSS-variable theming, responsive variants, layout gotchas. Load before any UI work.
 - `/ui-ux-design` — comprehensive UI/UX design intelligence with priority-based rules for accessibility, touch, performance, style, layout, typography, animation, forms, navigation, and data visualization
 - `/baseline-ui` — quick UI cleanup/polish pass for spacing, hierarchy, typography, and layout issues
 - `/fixing-accessibility` — comprehensive a11y audit with priority-based rules and common fixes
@@ -105,7 +107,7 @@ PR titles are validated by CI (`branch-guard.yml`). The title must match the tar
 - `/design-system` — generate and maintain design systems with colors, typography, spacing, and effects
 - `/aesthetic-literacy` — understand and characterize any named aesthetic across formal dimensions
 - `/image-analysis` — extract implementable CSS values and design tokens from reference images
-- `/animation` — implement smooth animations using Tamagui transitions, spring physics, and scroll effects
+- `/animation` — implement smooth animations using CSS transitions, Tailwind keyframes, and spring-like easing
 - `/dark-mode` — implement dark mode with proper color tokens, contrast ratios, and platform patterns
 - `/form-patterns` — build accessible forms with validation, error handling, and progressive disclosure
 - `/data-visualization` — implement accessible charts, graphs, and data tables with proper color and tooltips

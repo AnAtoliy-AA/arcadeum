@@ -1,14 +1,6 @@
 'use client';
 import { useState } from 'react';
-import {
-  Container,
-  PageLayout,
-  PageTitle,
-  YStack,
-  XStack,
-  Button,
-} from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Container, PageLayout, PageTitle, Button } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   useAdminAnnouncements,
@@ -210,7 +202,7 @@ export default function AdminAnnouncementsClient() {
   return (
     <PageLayout>
       <Container size="lg">
-        <YStack gap="$3">
+        <div className="flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t.title}</PageTitle>
 
           <AdminAnnouncementsFilters
@@ -246,22 +238,17 @@ export default function AdminAnnouncementsClient() {
           )}
 
           {pendingDelete && (
-            <YStack
-              padding="$3"
-              borderRadius="$4"
-              borderWidth={1}
-              borderColor="$borderColor"
-              backgroundColor="$background"
+            <div
+              className="flex flex-col items-stretch p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] gap-3"
               data-testid="delete-confirm"
-              gap="$3"
             >
-              <Text>
+              <span className="">
                 {t.confirm.delete.replace(
                   '{title}',
                   pendingDelete.content.en.title,
                 )}
-              </Text>
-              <XStack gap="$3" justifyContent="flex-end">
+              </span>
+              <div className="flex flex-row items-stretch gap-3 justify-end">
                 <Button
                   variant="outline"
                   onClick={() => setPendingDelete(null)}
@@ -269,10 +256,10 @@ export default function AdminAnnouncementsClient() {
                   {t.actions.cancel}
                 </Button>
                 <Button onClick={confirmDelete}>{t.actions.delete}</Button>
-              </XStack>
-            </YStack>
+              </div>
+            </div>
           )}
-        </YStack>
+        </div>
       </Container>
     </PageLayout>
   );

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { XStack } from 'tamagui';
 import { Button, Input } from '@arcadeum/ui';
 
 export interface GamesSearchProps {
@@ -40,30 +39,25 @@ export function GamesSearch({
   };
 
   return (
-    <XStack
-      className={className}
-      minWidth={280}
-      maxWidth={450}
-      gap="$2"
-      alignItems="center"
-      $sm={{ minWidth: 0, width: '100%' }}
+    <div
+      className={`flex flex-row min-w-[280px] max-w-[450px] gap-2 items-center max-[800px]:min-w-0 max-[800px]:w-full ${className ?? ''}`}
     >
       <Input
+        className={'flex-1'}
         placeholder={placeholder}
         value={searchText}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        flex={1}
         size="md"
       />
       <Button
+        className="shrink-0 px-6"
         variant="primary"
         onClick={handleSearchClick}
         size="md"
-        className="shrink-0 px-6"
       >
         {buttonLabel}
       </Button>
-    </XStack>
+    </div>
   );
 }

@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { XStack, YStack, Text, styled, useTheme } from 'tamagui';
-
-type ThemeRecord = Record<string, { val?: string; get?: () => string }>;
+import { useEffect, useRef, useState } from 'react';
+import { cx } from '../../utils/cx';
 
 export type ActivityTickerItem = {
   tag: string;
@@ -19,81 +17,58 @@ export type ActivityTickerProps = {
   label?: string;
   pauseOnHover?: boolean;
   'data-testid'?: string;
+  className?: string;
 };
 
-const TickerShell = styled(XStack, {
-  name: 'ActivityTicker',
-  alignItems: 'center',
-  gap: '$3',
-  paddingVertical: '$3',
-  paddingHorizontal: '$4',
-  borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: '$glassBorder',
-  backgroundColor: '$glassBg',
-  overflow: 'hidden',
-});
+const TickerShellClasses = [
+  '',
+  'flex',
+  'flex-row',
+  'items-center',
+  'gap-3',
+  'py-3',
+  'px-4',
+  'rounded-2xl',
+  'border',
+  'border-[var(--glassBorder)]',
+  'bg-[var(--glassBg)]',
+  'overflow-hidden',
+].join(' ');
 
-const TickerLabel = styled(Text, {
-  name: 'ActivityTickerLabel',
-  fontSize: 11,
-  letterSpacing: 1.4,
-  color: '$textSecondary',
-  textTransform: 'uppercase',
-  flexShrink: 0,
-  $sm: { display: 'none' },
-});
+const TickerLabelClasses = [
+  '',
+  'shrink-0',
+  'text-[11px]',
+  'uppercase',
+  'tracking-[1.4px]',
+  'text-[var(--textSecondary)]',
+  'max-[800px]:hidden',
+].join(' ');
 
-const TickerTrack = styled(YStack, {
-  flex: 1,
-  height: 22,
-  position: 'relative',
-});
+const TickerTrackClasses = 'relative h-[22px] flex-1';
 
-const TickerRow = styled(XStack, {
-  name: 'ActivityTickerRow',
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  alignItems: 'center',
-  gap: '$3',
-  variants: {
-    active: {
-      true: {
-        opacity: 1,
-        y: 0,
-        pointerEvents: 'auto',
-        animation: 'medium',
-      },
-      false: {
-        opacity: 0,
-        y: 8,
-        pointerEvents: 'none',
-        animation: 'medium',
-      },
-    },
-  } as const,
-});
+function tickerRowClasses(active: boolean): string {
+  return cx(
+    'absolute left-0 right-0 top-0 flex flex-row items-center gap-3 transition-all duration-300 ease-out',
+    active
+      ? 'pointer-events-auto translate-y-0 opacity-100'
+      : 'pointer-events-none translate-y-[8px] opacity-0',
+  );
+}
 
-// Plain HTML span — Tamagui's runtime emits styled-component output that
-// differs between server and client when `style` overrides include shorthand
-// props like `borderColor`, which produces hydration mismatches. A plain
-// span with inline style hydrates consistently regardless of theme runtime.
-const tagBaseStyle: CSSProperties = {
-  display: 'inline-block',
-  fontSize: 10,
-  fontWeight: 700,
-  letterSpacing: '0.1em',
-  textTransform: 'uppercase',
-  padding: '3px 8px',
-  borderRadius: 999,
-  borderWidth: 1,
-  borderStyle: 'solid',
-  flexShrink: 0,
-  fontFamily: 'inherit',
-  lineHeight: 1.2,
-};
+const TagBaseClasses = [
+  'inline-block',
+  'shrink-0',
+  'rounded-full',
+  'border',
+  'px-2',
+  'py-[3px]',
+  'text-[10px]',
+  'font-bold',
+  'uppercase',
+  'tracking-[0.1em]',
+  'leading-[1.2]',
+].join(' ');
 
 export function ActivityTicker({
   items,
@@ -101,15 +76,8 @@ export function ActivityTicker({
   label,
   pauseOnHover = true,
   'data-testid': testId,
+  className,
 }: ActivityTickerProps) {
-  const theme = useTheme() as unknown as ThemeRecord;
-  const colorMain =
-    theme.color?.val ?? theme.color?.get?.() ?? '#ecefee';
-  const colorMuted =
-    theme.textSecondary?.val ??
-    theme.textSecondary?.get?.() ??
-    '#8e9196';
-
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -140,63 +108,52 @@ export function ActivityTicker({
   };
 
   return (
-    <TickerShell
+    <div
       aria-live="polite"
       data-testid={testId}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      className={cx(TickerShellClasses, className)}
     >
-      {label ? <TickerLabel>{label}</TickerLabel> : null}
-      <TickerTrack>
+      {label ? <span className={TickerLabelClasses}>{label}</span> : null}
+      <div className={TickerTrackClasses}>
         {items.map((it, i) => {
           const active = i === idx;
           const accent = it.color ?? '#38bdf8';
           return (
-            <TickerRow key={`${it.tag}-${i}`} active={active}>
+            <div key={`${it.tag}-${i}`} className={tickerRowClasses(active)}>
               <span
-                style={{
-                  ...tagBaseStyle,
-                  color: accent,
-                  borderColor: accent,
-                }}
+                className={TagBaseClasses}
+                style={{ color: accent, borderColor: accent }}
               >
                 {it.tag}
               </span>
               <span
-                style={{
-                  fontSize: 13,
-                  color: colorMain,
-                  flex: 1,
-                  minWidth: 0,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  fontFamily: 'inherit',
-                }}
+                className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-[13px]"
+                style={{ color: 'var(--color, #ecefee)' }}
               >
-                <strong style={{ fontWeight: 700, color: colorMain }}>
+                <strong
+                  style={{ color: 'var(--color, #ecefee)', fontWeight: 700 }}
+                >
                   {it.who}
                 </strong>{' '}
-                <span style={{ color: colorMuted }}>{it.what}</span>
+                <span style={{ color: 'var(--textSecondary, #8e9196)' }}>
+                  {it.what}
+                </span>
               </span>
               {it.when ? (
                 <span
-                  className="ticker-when"
-                  style={{
-                    fontSize: 12,
-                    color: colorMuted,
-                    flexShrink: 0,
-                    fontFamily: 'inherit',
-                  }}
+                  className="ticker-when shrink-0 text-[12px]"
+                  style={{ color: 'var(--textSecondary, #8e9196)' }}
                 >
                   {it.when}
                 </span>
               ) : null}
-            </TickerRow>
+            </div>
           );
         })}
-      </TickerTrack>
-    </TickerShell>
+      </div>
+    </div>
   );
 }
 

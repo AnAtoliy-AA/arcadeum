@@ -91,7 +91,10 @@ export default function HistoryPage({ initialData }: HistoryPageProps) {
   if (!snapshot.accessToken) {
     return (
       <PageLayout>
-        <Container size="xl" gap="$5" ai="center" jc="center" p="$10" flex={1}>
+        <Container
+          className={'gap-5 items-center justify-center p-10 flex-1'}
+          size="xl"
+        >
           <EmptyState
             icon="🔒"
             message={
@@ -116,7 +119,7 @@ export default function HistoryPage({ initialData }: HistoryPageProps) {
   return (
     <>
       <PageLayout>
-        <Container size="xl" gap="$5">
+        <Container className={'gap-5'} size="xl">
           <HistoryHeader
             loading={loading}
             refreshing={refreshing}

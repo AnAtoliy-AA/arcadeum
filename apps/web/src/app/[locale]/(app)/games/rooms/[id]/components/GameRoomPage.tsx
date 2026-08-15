@@ -25,7 +25,6 @@ import { gameMetadata } from '@/features/games/registry';
 import type { GameInitialData, GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
-import { Text } from 'tamagui';
 import { CenteredContainer, LoadingContainer, GameWrapper } from './styles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
@@ -390,23 +389,23 @@ export default function GameRoomPage({
               <Suspense
                 fallback={
                   <LoadingContainer>
-                    <Text>{t('games.roomPage.loadingGame')}</Text>
+                    <span className="">{t('games.roomPage.loadingGame')}</span>
                   </LoadingContainer>
                 }
               >
                 {gameLoading && (
                   <LoadingContainer>
-                    <Text>{t('games.roomPage.loadingGame')}</Text>
+                    <span className="">{t('games.roomPage.loadingGame')}</span>
                   </LoadingContainer>
                 )}
 
                 {!gameLoading && !gameType && room && (
                   <LoadingContainer>
-                    <Text>
+                    <span className="">
                       {t('games.roomPage.errors.unsupportedGame', {
                         gameId: room.gameId,
                       })}
-                    </Text>
+                    </span>
                   </LoadingContainer>
                 )}
 

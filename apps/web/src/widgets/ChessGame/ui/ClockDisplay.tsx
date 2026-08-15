@@ -24,8 +24,8 @@ export function ClockDisplay({ clocks, currentTurnColor }: ClockDisplayProps) {
         const isCritical = clock != null && clock.remainingSeconds <= 10;
 
         return (
-          <ClockFace key={color} $isActive={isActive}>
-            <ClockTime $isLow={isLow} $isCritical={isCritical}>
+          <ClockFace key={color} isActive={isActive}>
+            <ClockTime isLow={isLow} isCritical={isCritical}>
               {clock ? formatTime(clock.remainingSeconds) : '--:--'}
             </ClockTime>
             <ClockLabel>{color === 'white' ? 'MAIN' : 'INCR'}</ClockLabel>

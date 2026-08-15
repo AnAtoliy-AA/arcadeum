@@ -57,16 +57,6 @@ export const Filters = ({
   />
 );
 
-export const SearchContainer = ({
-  className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx('flex min-w-[280px] max-w-[450px] flex-1 gap-2', className)}
-    {...rest}
-  />
-);
-
 export const FilterGroup = ({
   className,
   ...rest

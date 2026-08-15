@@ -2,8 +2,6 @@
 
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { XStack, YStack } from 'tamagui';
-import { useContactStyles } from './useContactStyles';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 type TipsCopy = NonNullable<NonNullable<ContactMessages['sections']>['tips']>;
@@ -13,7 +11,6 @@ export type ContactTipsProps = {
 };
 
 export function ContactTips({ tips }: ContactTipsProps) {
-  const s = useContactStyles();
   const items = [
     tips?.orderId ??
       'Include your order ID for refund or payment questions — we can pull the receipt instantly.',
@@ -33,29 +30,27 @@ export function ContactTips({ tips }: ContactTipsProps) {
     'Every message is read by a human on our team — no chatbots, no autoresponders.';
   return (
     <GlassCard>
-      <span style={s.labelChipStyle}>{tips?.label ?? 'Faster replies'}</span>
-      <Typography variant="heading" uiSize="md" marginTop="$2">
+      <span className="text-[11px] font-semibold tracking-[1.4px] uppercase text-[var(--textSecondary)]">
+        {tips?.label ?? 'Faster replies'}
+      </span>
+      <Typography variant="heading" uiSize="md" className="mt-2">
         {tips?.title ?? 'Help us help you faster'}
       </Typography>
-      <YStack gap="$3" marginTop="$3">
+      <div className="flex flex-col items-stretch gap-3 -mt-3">
         {items.map((item, i) => (
-          <XStack key={i} gap="$3" alignItems="flex-start">
+          <div className="flex flex-row gap-3 items-start" key={i}>
             <span
               aria-hidden="true"
-              style={{
-                ...s.eyebrowDotStyle,
-                marginTop: 8,
-                flexShrink: 0,
-              }}
+              className="h-[7px] w-[7px] mt-2 shrink-0 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]"
             />
             <Typography variant="body" alpha="medium">
               {item}
             </Typography>
-          </XStack>
+          </div>
         ))}
-      </YStack>
+      </div>
       <hr
-        style={{ ...s.ruleStyle, marginTop: 16, marginBottom: 12 }}
+        className="border-0 h-px bg-[var(--glassBorder)] mt-4 mb-3"
         aria-hidden="true"
       />
       <Typography variant="caption" alpha="medium">

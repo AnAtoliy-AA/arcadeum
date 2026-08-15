@@ -277,9 +277,9 @@ export default function GamesPage({
   return (
     <PageLayout>
       <Container
+        className={'gap-6'}
         size="xl"
         style={{ animation: 'fadeInUp 0.5s ease-out' }}
-        gap="$6"
       >
         <GamesFilters
           searchQuery={searchQuery}
@@ -293,7 +293,7 @@ export default function GamesPage({
           isAuthenticated={!!snapshot.accessToken}
         />
 
-        <GlassCard padding="$6">
+        <GlassCard className={'p-6'}>
           <GamesHeader
             viewMode={viewMode}
             onViewModeChange={setViewMode}

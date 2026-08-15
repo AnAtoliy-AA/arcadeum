@@ -46,8 +46,8 @@ test.describe('Auth Referral Code Registration', () => {
         request.url().includes('/auth/register') && request.method() === 'POST',
     );
 
-    // Tamagui Button uses aria-disabled rather than the disabled attribute;
-    // force-click to avoid waiting on the visual disabled state.
+    // The @arcadeum/ui Button uses aria-disabled rather than the DOM
+    // disabled attribute; force-click to avoid waiting on the visual state.
     await submitBtn.click({ force: true });
 
     const request = await requestPromise;

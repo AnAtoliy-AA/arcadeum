@@ -2,8 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { DialogShell } from './dialogShell';
@@ -122,57 +121,56 @@ function PurchaseConfirmDialogInner({
         onClose={onClose}
         testId="purchase-confirm-dialog"
       >
-        <YStack gap="$3" alignItems="center">
-          <Text fontSize={48}>✓</Text>
-          <Text fontSize="$6" fontWeight="700">
+        <div className="flex flex-col gap-3 items-center">
+          <span className="text-[48px]">✓</span>
+          <span className="text-[24px] font-bold">
             {labels.successTitle ?? 'Equipped'}
-          </Text>
-          <Text fontSize="$3" color="$colorPress" textAlign="center">
+          </span>
+          <span className="text-[16px] text-[var(--colorPress)] text-center">
             {(labels.successBody ?? '{name} is now equipped.').replace(
               '{name}',
               itemName,
             )}
-          </Text>
+          </span>
           <Button onClick={onClose} data-testid="purchase-success-close">
             {labels.close ?? labels.cancel}
           </Button>
-        </YStack>
+        </div>
       </DialogShell>
     );
   }
 
   return (
     <DialogShell open={open} onClose={onClose} testId="purchase-confirm-dialog">
-      <YStack gap="$3">
-        <Text fontSize="$6" fontWeight="700">
-          {labels.title}
-        </Text>
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
-            {itemName}
-          </Text>
-          <Text fontSize="$3" color="$colorPress">
+      <div className="flex flex-col items-stretch gap-3">
+        <span className="text-[24px] font-bold">{labels.title}</span>
+        <div className="flex flex-col items-stretch gap-2">
+          <span className="text-[20px] font-semibold">{itemName}</span>
+          <span className="text-[16px] text-[var(--colorPress)]">
             {itemDesc}
-          </Text>
-        </YStack>
-        <XStack gap="$3" alignItems="center" justifyContent="space-between">
-          <Text fontSize="$4" fontWeight="600">
+          </span>
+        </div>
+        <div className="flex flex-row gap-3 items-center justify-between">
+          <span className="text-[18px] font-semibold">
             {item.priceAmount === 0
               ? labels.free
               : `${item.priceAmount} ${item.priceCurrency}`}
-          </Text>
-          <Text fontSize="$2" color="$colorPress">
+          </span>
+          <span className="text-[14px] text-[var(--colorPress)]">
             {labels.yourBalance
               .replace('{amount}', formatNumber(balanceForCurrency, locale))
               .replace('{currency}', item.priceCurrency)}
-          </Text>
-        </XStack>
+          </span>
+        </div>
         {errorMsg ? (
-          <Text color="$danger" fontSize="$2" data-testid="purchase-error">
+          <span
+            className="text-[var(--danger)] text-[14px]"
+            data-testid="purchase-error"
+          >
             {errorMsg}
-          </Text>
+          </span>
         ) : null}
-        <XStack gap="$3" justifyContent="flex-end">
+        <div className="flex flex-row items-stretch gap-3 justify-end">
           <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
@@ -183,8 +181,8 @@ function PurchaseConfirmDialogInner({
           >
             {labels.buy}
           </Button>
-        </XStack>
-      </YStack>
+        </div>
+      </div>
     </DialogShell>
   );
 }

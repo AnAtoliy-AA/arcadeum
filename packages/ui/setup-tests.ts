@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import './src/tamagui.config';
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -14,6 +13,3 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: () => false,
   }),
 });
-
-import React from 'react';
-(global as any).React = React;

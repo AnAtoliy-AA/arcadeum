@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import { markCompleteAction } from '../server/tournament.actions';
 import type { TournamentRegistrationEntry } from '../api';
 
@@ -108,19 +107,17 @@ export function MarkCompleteDialog({
   return (
     <div style={OVERLAY_STYLE} data-testid="mark-complete-dialog">
       <div style={DIALOG_STYLE}>
-        <YStack gap="$3">
-          <Text fontWeight="700" fontSize="$5">
-            {labels.dialog.title}
-          </Text>
+        <div className="flex flex-col items-stretch gap-3">
+          <span className="font-bold text-[20px]">{labels.dialog.title}</span>
 
-          <Text fontSize="$2" opacity={0.85}>
+          <span className="text-[14px] opacity-[0.85]">
             {labels.dialog.body}
-          </Text>
+          </span>
 
           {registrations.length === 0 ? (
-            <Text fontSize="$2" opacity={0.6}>
+            <span className="text-[14px] opacity-[0.6]">
               No registrations found.
-            </Text>
+            </span>
           ) : (
             <select
               data-testid="winner-select"
@@ -137,16 +134,15 @@ export function MarkCompleteDialog({
           )}
 
           {errorMsg && (
-            <Text
-              fontSize="$1"
-              color="$errorText"
+            <span
+              className="text-[12px] text-[var(--errorText)]"
               data-testid="mark-complete-error"
             >
               {errorMsg}
-            </Text>
+            </span>
           )}
 
-          <XStack gap="$3" justifyContent="flex-end" paddingTop="$2">
+          <div className="flex flex-row items-stretch gap-3 justify-end pt-2">
             <Button
               variant="outline"
               onClick={onClose}
@@ -164,8 +160,8 @@ export function MarkCompleteDialog({
             >
               {isPending ? '…' : labels.dialog.confirm}
             </Button>
-          </XStack>
-        </YStack>
+          </div>
+        </div>
       </div>
     </div>
   );

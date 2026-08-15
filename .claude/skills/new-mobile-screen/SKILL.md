@@ -3,7 +3,7 @@ name: new-mobile-screen
 description: Add a new screen to the mobile app (apps/mobile). Use when creating a new route/screen in the Expo Router app.
 ---
 
-The mobile app uses Expo Router (file-based routing) with React Native, Tamagui UI, and a custom `useTranslation` hook for i18n.
+The mobile app uses Expo Router (file-based routing) with React Native primitives, `StyleSheet` + `useThemedStyles` for styling, and a custom `useTranslation` hook for i18n.
 
 ## Routing structure
 
@@ -30,9 +30,19 @@ apps/mobile/app/
    // t('some.key')
    ```
 
-3. **Use shared UI components** from `@arcadeum/ui` (imported via workspace alias):
-   ```ts
-   import { Button, Card, YStack, XStack, Text } from '@arcadeum/ui';
+3. **Style with React Native primitives + StyleSheet** (no Tamagui, no `@arcadeum/ui` in mobile):
+   ```tsx
+   import { StyleSheet, View, Text } from 'react-native';
+   import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
+
+   const createStyles = (palette: Palette) =>
+     StyleSheet.create({
+       container: { padding: 16, gap: 16 },
+       title: { fontSize: 20, fontWeight: 'bold', color: palette.text },
+     });
+
+   // in component:
+   const styles = useThemedStyles(createStyles);
    ```
 
 4. **Navigation** — use `expo-router` hooks:

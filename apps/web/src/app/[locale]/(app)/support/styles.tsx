@@ -1,195 +1,23 @@
 import React, { type ComponentProps } from 'react';
 import Link from 'next/link';
-import { YStack, XStack, styled, GetProps } from 'tamagui';
 import { GlassCard } from '@arcadeum/ui';
 import { CopyActionButton } from '@/features/support/copy-action/ui/CopyActionButton';
 
-export const supportStyles = `
-  @keyframes supportFadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .support-page {
-    min-height: 100vh;
-    padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 5vw, 2rem);
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .support-content-wrapper {
-    z-index: 1;
-    position: relative;
-    max-width: 960px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: clamp(2.5rem, 5vw, 4rem);
-    animation: supportFadeIn 0.8s ease-out forwards;
-    width: 100%;
-  }
-
-  .support-animated-card {
-    animation: supportFadeIn 0.8s ease-out forwards;
-    opacity: 0;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  }
-
-  .support-animated-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-    border-color: var(--color-primary-gradient-start, #7ad7ff);
-  }
-
-  .support-section-title {
-    margin: 0 0 1.5rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .support-section-title::before {
-    content: '';
-    display: block;
-    width: 6px;
-    height: 24px;
-    border-radius: 4px;
-    flex-shrink: 0;
-    background: linear-gradient(
-      180deg,
-      var(--color-primary-gradient-start, #7ad7ff),
-      var(--color-primary-gradient-end, #a78bfa)
-    );
-  }
-
-  .support-cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 0.95rem;
-    border: 1px solid #32353d;
-    background: rgba(50, 53, 61, 0.5);
-    color: var(--color);
-    transition: all 0.2s ease;
-  }
-
-  .support-cta:focus-visible {
-    outline: 2px solid var(--color-border-focus, #7ad7ff);
-    outline-offset: 3px;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .support-cta:hover {
-      transform: translateY(-2px);
-      border-color: #7ad7ff;
-      background: rgba(50, 53, 61, 0.8);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .support-cta {
-      transition: none;
-    }
-    .support-cta:hover {
-      transform: none;
-    }
-  }
-
-  .support-linkedin-btn {
-    padding: 0.4rem;
-    border-radius: 50%;
-    min-width: auto;
-    width: 2.5rem;
-    height: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .support-linkedin-btn span {
-    font-size: 1.2rem;
-  }
-
-  .support-copy-wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .support-copy-wrapper > div {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .support-copy-wrapper button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 0.95rem;
-    border: 1px solid #32353d;
-    background: rgba(50, 53, 61, 0.5);
-    color: var(--color);
-    transition: all 0.2s ease;
-    width: 100%;
-    cursor: pointer;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .support-copy-wrapper button:hover {
-      transform: translateY(-2px);
-      border-color: #7ad7ff;
-      background: rgba(50, 53, 61, 0.8);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .support-copy-wrapper button {
-      transition: none;
-    }
-    .support-copy-wrapper button:hover {
-      transform: none;
-    }
-  }
-
-  .support-copy-notice {
-    display: block;
-    margin-top: 0.35rem;
-    min-height: 1.2rem;
-    font-size: 0.8rem;
-    color: var(--color-accent, #7ad7ff);
-    text-align: center;
-  }
-`;
-
-export const Page = styled(YStack, {
-  name: 'SupportPageRoot',
-  minHeight: '100vh',
-  backgroundColor: '$background',
-  justifyContent: 'center',
-  overflow: 'hidden',
-  position: 'relative',
-});
+export function Page({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex min-h-screen justify-center overflow-hidden relative bg-[var(--background)] ${className ?? ''}`}
+    >
+      {children}
+    </div>
+  );
+}
 
 export function BackgroundBlob() {
   return (
@@ -218,19 +46,22 @@ export function ContentWrapper({ children }: { children: React.ReactNode }) {
 
 export function AnimatedGlassCard({
   children,
-  $delay,
+  delay,
   style,
   className,
   ...props
 }: {
   children: React.ReactNode;
-  $delay?: string;
-} & GetProps<typeof GlassCard>) {
+  delay?: string;
+} & ComponentProps<typeof GlassCard>) {
   return (
     <GlassCard
-      {...props}
       className={`support-animated-card ${className || ''}`}
-      style={[style, { animationDelay: $delay || '0s' }]}
+      style={{
+        ...(style ?? {}),
+        animationDelay: delay || '0s',
+      }}
+      {...props}
     >
       {children}
     </GlassCard>
@@ -254,14 +85,23 @@ export function Header({ children }: { children: React.ReactNode }) {
   );
 }
 
-import { Paragraph, H3 } from 'tamagui';
-
-export const Tagline = styled(Paragraph, {
-  color: '$color',
-  opacity: 0.7,
-  maxWidth: 650,
-  lineHeight: '$relaxed',
-});
+export function Tagline({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={`max-w-[650px] leading-[24px] opacity-[0.7] text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+}
 
 export function SectionTitle({
   children,
@@ -271,18 +111,29 @@ export function SectionTitle({
   id?: string;
 }) {
   return (
-    <h2 id={id} className="support-section-title" style={{ color: 'inherit' }}>
+    <h2 className="support-section-title" id={id}>
       {children}
     </h2>
   );
 }
 
-export const HeaderDescription = styled(Paragraph, {
-  color: '$color',
-  opacity: 0.5,
-  maxWidth: 700,
-  lineHeight: '$multiplier17',
-});
+export function HeaderDescription({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={`max-w-[700px] leading-[24px] opacity-[0.5] text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+}
 
 export function TeamGrid({ children }: { children: React.ReactNode }) {
   return (
@@ -300,28 +151,38 @@ export function TeamGrid({ children }: { children: React.ReactNode }) {
 
 export function TeamCardInner({
   children,
-  $hasLinkedin,
+  hasLinkedin,
 }: {
   children: React.ReactNode;
-  $hasLinkedin: boolean;
+  hasLinkedin: boolean;
 }) {
   return (
-    <YStack
-      position="relative"
-      flexDirection="column"
-      gap="$2"
-      paddingBottom={$hasLinkedin ? '3.5rem' : 0}
+    <div
+      className="relative flex flex-col gap-2"
+      style={{ paddingBottom: hasLinkedin ? '3.5rem' : 0 }}
     >
       {children}
-    </YStack>
+    </div>
   );
 }
 
-export const TeamHeader = styled(XStack, {
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
-  width: '100%',
-});
+export function TeamHeader({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-start justify-between w-full ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
 
 export function TeamIcon({
   children,
@@ -337,25 +198,59 @@ export function TeamIcon({
   );
 }
 
-export const TeamName = styled(H3, {
-  margin: 0,
-  fontSize: '$6',
-  fontWeight: '700',
-  color: '$color',
-  marginBottom: '$1',
-});
+export function TeamName({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3
+      className={`m-0 mb-1 text-[24px] leading-[30px] font-bold text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </h3>
+  );
+}
 
-export const TeamRole = styled(Paragraph, {
-  color: '$color',
-  opacity: 0.8,
-  marginBottom: '$2',
-});
+export function TeamRole({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={`mb-2 opacity-[0.8] text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+}
 
-export const TeamBio = styled(Paragraph, {
-  color: '$color',
-  opacity: 0.6,
-  lineHeight: '$multiplier16',
-});
+export function TeamBio({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={`leading-[32px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+}
 
 export function ActionList({ children }: { children: React.ReactNode }) {
   return (
@@ -371,28 +266,77 @@ export function ActionList({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const ActionHeader = styled(XStack, {
-  alignItems: 'center',
-  gap: '$3',
-});
+export function ActionHeader({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center gap-3 ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
 
-export const ActionTitle = styled(H3, {
-  color: '$color',
-  opacity: 0.9,
-});
+export function ActionTitle({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3
+      className={`text-[24px] leading-[30px] font-bold opacity-[0.9] text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </h3>
+  );
+}
 
-export const ActionDescription = styled(Paragraph, {
-  color: '$color',
-  opacity: 0.6,
-  lineHeight: '$multiplier16',
-});
+export function ActionDescription({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={`leading-[32px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+}
 
-export const CtaRow = styled(XStack, {
-  flexWrap: 'wrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: '$3',
-});
+export function CtaRow({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center justify-between gap-3 flex-wrap ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
 
 export const CtaLink = ({
   children,
@@ -423,17 +367,11 @@ export const LinkedInButton = ({
   ...props
 }: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
   children?: React.ReactNode;
-  as?: string;
-}) => {
-  const { as: _as, ...rest } = props as {
-    as?: string;
-  } & React.AnchorHTMLAttributes<HTMLAnchorElement>;
-  return (
-    <a className="support-cta support-linkedin-btn" {...rest}>
-      {children}
-    </a>
-  );
-};
+}) => (
+  <a className="support-cta support-linkedin-btn" {...props}>
+    {children}
+  </a>
+);
 
 export function CopyActionWrapper({
   value,
@@ -460,8 +398,20 @@ export const CtaIcon = ({ children }: { children: React.ReactNode }) => (
   <span>{children}</span>
 );
 
-export const Thanks = styled(Paragraph, {
-  color: '$color',
-  opacity: 0.6,
-  lineHeight: '$multiplier17',
-});
+export function Thanks({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={`leading-[24px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+}

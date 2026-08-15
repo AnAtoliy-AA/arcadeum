@@ -1,14 +1,10 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { YStack, Text, Paragraph, styled, Dialog } from 'tamagui';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { ModalButton } from '@arcadeum/ui';
-import {
-  Modal,
-  ModalContent,
-  ModalTitle,
-  ModalActions,
-} from './SharedModalStyles';
+import { cx } from '@arcadeum/ui/utils/cx';
+import { Modal, ModalContent, ModalTitle, ModalActions } from './SharedModal';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 
 interface RematchInvitationModalProps {
@@ -17,23 +13,47 @@ interface RematchInvitationModalProps {
   message?: string;
   onAccept: () => void;
   onDecline: () => void;
+  hostId?: string;
+  roomId?: string;
+  timeLeft?: number;
+  onBlockRematch?: (roomId: string) => void;
+  onBlockUser?: (hostId: string) => void;
+  accepting?: boolean;
+  cardVariant?: string;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
-const TitleText = styled(ModalTitle, {
-  name: 'InvitationTitle',
-  textAlign: 'center',
-  marginBottom: '$4',
-});
+const TitleText = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <ModalTitle className={cx('text-center mb-4', className)} {...props}>
+    {children}
+  </ModalTitle>
+);
 
-const MessageText = styled(Paragraph, {
-  name: 'InvitationMessage',
-  fontSize: '$4',
-  color: 'rgba(255, 255, 255, 0.8)',
-  textAlign: 'center',
-  lineHeight: '$4',
-  marginBottom: '$6',
-});
+const MessageText = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLParagraphElement>) => (
+  <p
+    className={cx(
+      'text-[16px] leading-[24px] text-center mb-6 text-[rgba(255,255,255,0.8)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </p>
+);
 
 export function RematchInvitationModal({
   isOpen,
@@ -41,6 +61,13 @@ export function RematchInvitationModal({
   message,
   onAccept,
   onDecline,
+  hostId,
+  roomId,
+  timeLeft,
+  onBlockRematch,
+  onBlockUser,
+  accepting = false,
+  cardVariant,
   t,
 }: RematchInvitationModalProps) {
   const isClient = useSyncExternalStore(
@@ -53,70 +80,103 @@ export function RematchInvitationModal({
 
   return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onDecline()}>
-      <Dialog.Portal>
-        <Dialog.Overlay key="overlay" backgroundColor="black" />
-        <ModalContent>
-          <YStack alignItems="center" marginBottom="$4">
-            <Text fontSize={60}>🔄</Text>
-          </YStack>
+      <ModalContent variant={cardVariant}>
+        <div className="flex flex-col items-center -mb-4">
+          <span className="text-[60px]">🔄</span>
+        </div>
 
-          <TitleText>
-            {t('games.table.rematch.invitation.title' as TranslationKey)}
-          </TitleText>
+        <TitleText>
+          {t('games.table.rematch.invitation.title' as TranslationKey)}
+        </TitleText>
 
-          <MessageText>
-            {t('games.table.rematch.invitation.message' as TranslationKey, {
-              name: senderName,
-            })}
-          </MessageText>
+        <MessageText>
+          {t('games.table.rematch.invitation.message' as TranslationKey, {
+            name: senderName,
+          })}
+        </MessageText>
 
-          {message && message.trim().length > 0 ? (
-            <YStack
-              alignSelf="stretch"
-              marginBottom="$5"
-              padding="$3"
-              borderRadius="$3"
-              borderWidth={1}
-              borderColor="rgba(255, 255, 255, 0.12)"
-              backgroundColor="rgba(255, 255, 255, 0.04)"
+        {message && message.trim().length > 0 ? (
+          <div className="flex flex-col items-stretch self-stretch -mb-5 p-3 rounded-xl border border-[rgba(255,_255,_255,_0.12)] bg-[rgba(255,_255,_255,_0.04)]">
+            <span className="text-[16px] leading-[20px] text-[rgba(255,_255,_255,_0.9)] italic">
+              “{message}”
+            </span>
+          </div>
+        ) : null}
+
+        {typeof timeLeft === 'number' && (
+          <div className="mb-8 flex flex-col items-center gap-1">
+            <span
+              className={cx(
+                'text-[40px] font-bold',
+                timeLeft <= 10 ? 'text-[#ef4444]' : 'text-[#6366f1]',
+              )}
             >
-              <Paragraph
-                fontSize="$3"
-                lineHeight="$3"
-                color="rgba(255, 255, 255, 0.9)"
-                fontStyle="italic"
-              >
-                “{message}”
-              </Paragraph>
-            </YStack>
-          ) : null}
+              {timeLeft}s
+            </span>
+            <span className="text-[16px] opacity-[0.6]">
+              {t('games.table.rematch.toDecide' as TranslationKey)}
+            </span>
+          </div>
+        )}
 
-          <ModalActions>
-            <ModalButton
-              variant="secondary"
-              onClick={onDecline}
-              data-testid="decline-rematch-button"
-            >
-              {t('games.table.rematch.invitation.decline' as TranslationKey)}
-            </ModalButton>
-            <ModalButton
-              variant="primary"
-              onClick={onAccept}
-              data-testid="accept-rematch-button"
-            >
-              {t('games.table.rematch.invitation.accept' as TranslationKey)}
-            </ModalButton>
-          </ModalActions>
-
+        <ModalActions>
           <ModalButton
-            variant="ghost"
+            variant="secondary"
             onClick={onDecline}
-            className="flex-1 mt-4 p-2"
+            disabled={accepting}
+            data-testid="decline-rematch-button"
           >
-            {t('games.table.modals.common.close' as TranslationKey)}
+            {t('games.table.rematch.invitation.decline' as TranslationKey)}
           </ModalButton>
-        </ModalContent>
-      </Dialog.Portal>
+          <ModalButton
+            variant="primary"
+            onClick={onAccept}
+            disabled={accepting}
+            data-testid="accept-rematch-button"
+          >
+            {accepting
+              ? t('games.table.rematch.joining' as TranslationKey)
+              : t('games.table.rematch.invitation.accept' as TranslationKey)}
+          </ModalButton>
+        </ModalActions>
+
+        {(onBlockRematch || onBlockUser) && (
+          <div className="mt-4 flex flex-col items-center gap-1">
+            {onBlockRematch && roomId && (
+              <button
+                type="button"
+                className="mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
+                onClick={() => onBlockRematch(roomId)}
+                disabled={accepting}
+              >
+                <span className="underline">
+                  {t('games.table.rematch.blockThisRematch' as TranslationKey)}
+                </span>
+              </button>
+            )}
+            {onBlockUser && hostId && (
+              <button
+                type="button"
+                className="mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
+                onClick={() => onBlockUser(hostId)}
+                disabled={accepting}
+              >
+                <span className="underline">
+                  {t('games.table.rematch.blockInvitations' as TranslationKey)}
+                </span>
+              </button>
+            )}
+          </div>
+        )}
+
+        <ModalButton
+          className="flex-1 mt-4 p-2"
+          variant="ghost"
+          onClick={onDecline}
+        >
+          {t('games.table.modals.common.close' as TranslationKey)}
+        </ModalButton>
+      </ModalContent>
     </Modal>
   );
 }

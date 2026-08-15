@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { ServerLoadingNotice } from '@arcadeum/ui/components/ServerLoadingNotice/ServerLoadingNotice';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
@@ -37,7 +36,7 @@ export function GameRoomLoading({
           }}
         />
       ) : (
-        <Text>{message || t('games.roomPage.loading')}</Text>
+        <span className="">{message || t('games.roomPage.loading')}</span>
       )}
     </LoadingContainer>
   );

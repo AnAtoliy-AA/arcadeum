@@ -1,7 +1,6 @@
 'use client';
 
 import { memo } from 'react';
-import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   PIECE_SYMBOLS,
@@ -36,21 +35,21 @@ function PromotionModalImpl({
 
   return (
     <ModalOverlay>
-      <ModalContent minWidth={280}>
+      <ModalContent style={{ minWidth: 280 }}>
         <ModalTitle>{t('games.chess_v1.status.promotionTitle')}</ModalTitle>
         <PromotionGrid>
           {PROMOTION_PIECES.map((pieceType) => (
             <PromotionOption
               key={pieceType}
-              onPress={() => onSelect(pieceType)}
+              onClick={() => onSelect(pieceType)}
             >
-              <Text fontSize={40} lineHeight={1}>
+              <span className="text-[40px] leading-[16px]">
                 {PIECE_SYMBOLS[pieceType][color]}
-              </Text>
+              </span>
             </PromotionOption>
           ))}
         </PromotionGrid>
-        <CancelButton onPress={onCancel}>
+        <CancelButton onClick={onCancel}>
           {t('games.chess_v1.actions.declineDraw')}
         </CancelButton>
       </ModalContent>

@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack, Input, Select, Button } from '@arcadeum/ui';
+import { Input, Select, Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 interface HistoryFiltersProps {
@@ -24,16 +24,9 @@ export function HistoryFilters({
   };
 
   return (
-    <XStack
-      flexWrap="wrap"
-      gap="$4"
-      ai="center"
-      $xs={{ flexDirection: 'column' }}
-    >
+    <div className="flex flex-row flex-wrap gap-4 items-center max-[660px]:flex-col">
       <Input
-        flex={1}
-        minWidth={250}
-        $xs={{ minWidth: '100%', width: '100%' }}
+        className={'flex-1 min-w-[250px]'}
         type="text"
         placeholder={t('history.search.placeholder')}
         value={searchQuery}
@@ -43,7 +36,10 @@ export function HistoryFilters({
         aria-label={t('history.search.label')}
         size="md"
       />
-      <YStack style={{ minWidth: 180 }} $xs={{ width: '100%' }}>
+      <div
+        className="flex flex-col items-stretch max-[660px]:w-full"
+        style={{ minWidth: 180 }}
+      >
         <Select
           id="status-select"
           value={statusFilter}
@@ -55,17 +51,17 @@ export function HistoryFilters({
             { value: 'loss', label: t('stats.losses') },
           ]}
         />
-      </YStack>
+      </div>
       {(searchQuery || statusFilter !== 'all') && (
         <Button
+          className={'whitespace-nowrap max-[480px]:w-full'}
           variant="ghost"
           size="sm"
-          className="whitespace-nowrap max-[480px]:w-full"
           onClick={handleClearFilters}
         >
           {t('history.filter.clear')}
         </Button>
       )}
-    </XStack>
+    </div>
   );
 }

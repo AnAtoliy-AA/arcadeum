@@ -1,78 +1,85 @@
-import { styled, XStack } from 'tamagui';
+import type React from 'react';
+import { type ReactNode, type ComponentProps } from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { Typography } from '@arcadeum/ui';
-import type { ComponentProps } from 'react';
 
-export const ParticipantRow = styled(XStack, {
-  name: 'ParticipantRow',
-  jc: 'space-between',
-  ai: 'center',
-  padding: '$4',
-  paddingHorizontal: '$5',
-  borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: '$background',
-  hoverStyle: {
-    borderColor: '$primary',
-    backgroundColor: '$backgroundStrong',
-  },
-} as Record<string, unknown>);
+export function ParticipantRow({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-row items-center justify-between px-5 py-4 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] transition-colors hover:border-[var(--primary)] hover:bg-[var(--backgroundHover)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ParticipantInfo = styled(XStack, {
-  ai: 'center',
-  gap: '$3',
-  flex: 1,
-});
+export function ParticipantInfo({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx('flex flex-row items-center gap-3 flex-1', className)}
+      {...props}
+    />
+  );
+}
 
-export const ParticipantName = styled(Typography, {
-  weight: '500',
-  flex: 1,
-} as Record<string, unknown>);
+export function ParticipantName({
+  children,
+  ...props
+}: { children?: ReactNode } & ComponentProps<typeof Typography>) {
+  return (
+    <Typography className={'flex-1'} weight="500" {...props}>
+      {children}
+    </Typography>
+  );
+}
 
-// Native checkbox — appearance:none + pseudo-selectors cannot be expressed in Tamagui.
-// Styles injected via a <style> block rendered alongside the component.
-const checkboxStyles = `
-  .history-checkbox {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.2s ease;
-    background: transparent;
-    flex-shrink: 0;
-  }
-  .history-checkbox:checked {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border-color: #6366f1;
-  }
-  .history-checkbox:checked::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 0.875rem;
-    font-weight: bold;
-  }
-  .history-checkbox:hover {
-    border-color: #6366f1;
-  }
-  .history-checkbox:focus-visible {
-    outline: 2px solid #6366f1;
-    outline-offset: 2px;
-  }
-`;
+// Native checkbox styled with Tailwind arbitrary classes (appearance:none +
+// checked/after variants — no runtime <style> injection needed).
+const checkboxClasses = [
+  'appearance-none',
+  'w-[22px]',
+  'h-[22px]',
+  'border-2',
+  'border-[rgba(255,255,255,0.2)]',
+  'rounded-[6px]',
+  'cursor-pointer',
+  'relative',
+  'transition-all',
+  'duration-200',
+  'bg-transparent',
+  'shrink-0',
+  'hover:border-[#6366f1]',
+  'focus-visible:outline',
+  'focus-visible:outline-2',
+  'focus-visible:outline-[#6366f1]',
+  'focus-visible:outline-offset-2',
+  'checked:border-[#6366f1]',
+  'checked:bg-[linear-gradient(135deg,#6366f1_0%,#8b5cf6_100%)]',
+  'checked:after:content-["✓"]',
+  'checked:after:absolute',
+  'checked:after:top-1/2',
+  'checked:after:left-1/2',
+  'checked:after:-translate-x-1/2',
+  'checked:after:-translate-y-1/2',
+  'checked:after:text-white',
+  'checked:after:text-[0.875rem]',
+  'checked:after:font-bold',
+].join(' ');
 
 export function Checkbox(props: ComponentProps<'input'>) {
   return (
-    <>
-      <style>{checkboxStyles}</style>
-      <input {...props} type="checkbox" className="history-checkbox" />
-    </>
+    <input
+      {...props}
+      type="checkbox"
+      className={cx(checkboxClasses, props.className)}
+    />
   );
 }

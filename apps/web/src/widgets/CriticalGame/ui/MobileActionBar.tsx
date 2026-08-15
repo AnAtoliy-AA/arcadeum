@@ -1,5 +1,4 @@
 import React from 'react';
-import { useMedia } from 'tamagui';
 import type { GameVariant } from '@arcadeum/ui';
 import { ActionBar, ActionButton } from './styles';
 
@@ -26,8 +25,6 @@ export function MobileActionBar({
   onDraw,
   onPlayNope,
 }: MobileActionBarProps) {
-  const media = useMedia();
-  if (!media.sm) return null;
   if (isGameOver) return null;
   if (!isMyTurn && !canPlayNope) return null;
 
@@ -45,10 +42,10 @@ export function MobileActionBar({
     ].includes(actionBusy ?? '');
 
   return (
-    <ActionBar data-testid="action-bar">
+    <ActionBar data-testid="action-bar" className="hidden max-[800px]:flex">
       {isMyTurn && (
         <ActionButton
-          $variant={variant}
+          accent={variant}
           onClick={onDraw}
           disabled={drawDisabled}
           data-testid="action-bar-draw"
@@ -60,8 +57,8 @@ export function MobileActionBar({
       )}
       {canPlayNope && (
         <ActionButton
-          $variant={variant}
           variant="secondary"
+          accent={variant}
           onClick={onPlayNope}
           disabled={actionBusy === 'cancel'}
           data-testid="action-bar-nope"

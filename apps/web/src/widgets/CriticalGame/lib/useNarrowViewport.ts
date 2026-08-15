@@ -11,7 +11,7 @@ import {
 
 /**
  * True while the viewport is ≤maxWidth — phones in portrait at 480. Used
- * to gate widget-mode mobile branches that the tamagui `sm` breakpoint
+ * to gate widget-mode mobile branches that the legacy `sm` breakpoint
  * (≤800px) fires too eagerly for.
  *
  * Synchronous initializer reads `matchMedia` on first paint so phone

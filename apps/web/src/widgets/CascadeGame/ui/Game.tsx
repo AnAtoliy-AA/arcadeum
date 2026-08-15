@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useCallback, useEffect, useMemo } from 'react';
-import { YStack } from 'tamagui';
 import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
@@ -173,7 +172,7 @@ function CascadeGameImpl({
   }
 
   const board = (
-    <YStack gap="$3" alignItems="stretch" padding="$1" width="100%">
+    <div className="flex flex-col gap-3 items-stretch p-1 w-full">
       {snapshot ? (
         <>
           <TurnBadge
@@ -198,7 +197,7 @@ function CascadeGameImpl({
           />
         </>
       ) : null}
-    </YStack>
+    </div>
   );
 
   const modals = (

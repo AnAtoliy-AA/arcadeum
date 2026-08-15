@@ -13,23 +13,21 @@
   min-height: 280px;
   overflow: hidden;
   width: 100%;
-}
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    opacity 0.25s ease;
 
-.roomCard.gridView {
-  overflow: hidden;
-}
-
-.roomCard.gridView > .roomHeader {
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 0.5rem;
-}
-
-.roomCard.gridView > .actionsCol {
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(122, 215, 255, 0.1);
-  width: 100%;
+  &:hover {
+    transform: translateY(-8px) scale(1.05);
+    border-color: rgba(122, 215, 255, 0.4);
+    background-color: var(--backgroundHover);
+    box-shadow:
+      0 25px 50px rgba(0, 0, 0, 0.4),
+      0 0 20px rgba(122, 215, 255, 0.15);
+  }
 }
 
 .roomCard::before {
@@ -117,7 +115,6 @@
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -196,6 +193,13 @@
   animation: none;
 }
 
+.roomCard.completed:hover {
+  transform: translateX(0) translateY(0) scale(1);
+  border-color: rgba(107, 114, 128, 0.2);
+  background-color: var(--glassBg);
+  box-shadow: none;
+}
+
 /* ─── List View ──────────────────────────────────────────────────────────── */
 
 .roomCard.listView {
@@ -206,6 +210,10 @@
 
 .roomCard.listView:hover .roomTitle {
   animation-duration: 10s;
+}
+
+.roomCard.listView:hover {
+  transform: translateY(-2px) scale(1);
 }
 
 .roomCard.listView .roomTitle {
@@ -238,12 +246,6 @@
     gap: 0.5rem;
   }
 
-  .listGrid {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
   .roomCard.listView > .roomHeader {
     max-width: 100%;
   }
@@ -252,20 +254,7 @@
     justify-self: start;
   }
 
-  .roomCard.listView > .roomHeader {
-    max-width: 100%;
-  }
-
   .roomCard.listView > .metaCol {
     min-width: 0;
-  }
-
-  .roomCard.gridView > .roomHeader {
-    margin-bottom: 0;
-  }
-
-  .roomCard.gridView > .actionsCol {
-    border-top: none;
-    padding-top: 0;
   }
 }

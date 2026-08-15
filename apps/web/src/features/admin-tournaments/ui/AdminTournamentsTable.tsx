@@ -1,6 +1,5 @@
 'use client';
-import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button, GlassCard } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import { useLanguage } from '@/shared/i18n/context';
 import {
@@ -69,22 +68,21 @@ export function AdminTournamentsTable({
 
   if (isLoading && items.length === 0) {
     return (
-      <YStack alignItems="center" padding="$5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
-      </YStack>
+      </div>
     );
   }
 
   if (!isLoading && items.length === 0) {
     return (
       <GlassCard
-        p="$5"
-        alignItems="center"
+        className={'p-5 items-center'}
         data-testid="tournaments-table-empty"
       >
-        <Text opacity={0.7}>
+        <span className="opacity-[0.7]">
           {hasFilter ? labels.empty.noResults : labels.empty.noTournaments}
-        </Text>
+        </span>
       </GlassCard>
     );
   }
@@ -94,45 +92,41 @@ export function AdminTournamentsTable({
   const end = Math.min(total, page * pageSize);
 
   return (
-    <YStack gap="$3" data-testid="tournaments-table">
-      <Text opacity={0.7} fontSize="$1" paddingHorizontal="$1">
+    <div
+      className="flex flex-col items-stretch gap-3"
+      data-testid="tournaments-table"
+    >
+      <span className="opacity-[0.7] text-[12px] px-1">
         {labels.totalLabel
           .replace('{start}', String(start))
           .replace('{end}', String(end))
           .replace('{total}', String(total))}
-      </Text>
+      </span>
 
-      <GlassCard p="$0" overflow="hidden">
-        <XStack
-          paddingVertical="$2"
-          paddingHorizontal="$3"
-          backgroundColor="$backgroundFocus"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
-          gap="$3"
-        >
-          <Text flex={3} fontWeight="700" fontSize="$1" opacity={0.85}>
+      <GlassCard className={'p-0 overflow-hidden'}>
+        <div className="flex flex-row items-stretch py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)] gap-3">
+          <span className="flex-[3] font-bold text-[12px] opacity-[0.85]">
             {labels.table.name}
-          </Text>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.gameType}
-          </Text>
-          <Text flex={2} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-[2] font-bold text-[12px] opacity-[0.85]">
             {labels.table.scheduled}
-          </Text>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.status}
-          </Text>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.registered}
-          </Text>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.createdBy}
-          </Text>
-          <Text flex={2} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-[2] font-bold text-[12px] opacity-[0.85]">
             {labels.table.actions}
-          </Text>
-        </XStack>
+          </span>
+        </div>
 
         {items.map((item, i) => {
           const fullName = item.content.en.name;
@@ -142,50 +136,44 @@ export function AdminTournamentsTable({
             item.status === 'scheduled' || item.status === 'cancelled';
           const canMarkComplete = item.status === 'live';
           return (
-            <XStack
+            <div
+              className="flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
+              style={{
+                backgroundColor:
+                  i % 2 === 1 ? 'var(--backgroundFocus)' : undefined,
+              }}
               key={item.id}
-              paddingVertical="$2"
-              paddingHorizontal="$3"
-              gap="$3"
-              alignItems="center"
-              backgroundColor={i % 2 === 1 ? '$backgroundFocus' : undefined}
-              hoverStyle={{ backgroundColor: '$backgroundHover' }}
-              borderBottomWidth={1}
-              borderColor="$borderColor"
               data-testid={`tournament-row-${item.id}`}
             >
-              <YStack flex={3}>
+              <div className="flex flex-col items-stretch flex-[3]">
                 <span title={fullName}>
-                  <Text>{truncate(fullName, 60)}</Text>
+                  <span className="">{truncate(fullName, 60)}</span>
                 </span>
-              </YStack>
-              <Text flex={1} fontSize="$1">
+              </div>
+              <span className="flex-1 text-[12px]">
                 {labels.gameTypeLabels[item.gameType]}
-              </Text>
-              <Text flex={2} fontSize="$1">
+              </span>
+              <span className="flex-[2] text-[12px]">
                 {formatSchedule(item.scheduledAt, locale)}
-              </Text>
-              <YStack flex={1}>
-                <XStack
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius="$2"
-                  backgroundColor={chipColor.bg}
-                  alignSelf="flex-start"
+              </span>
+              <div className="flex flex-col items-stretch flex-1">
+                <div
+                  className="flex flex-row items-stretch px-2 py-1 rounded-lg self-start"
+                  style={{ backgroundColor: chipColor.bg }}
                 >
-                  <Text fontSize="$1" color={chipColor.fg}>
+                  <span className="text-[12px]" style={{ color: chipColor.fg }}>
                     {labels.statusLabels[item.status]}
-                  </Text>
-                </XStack>
-              </YStack>
-              <Text flex={1} fontSize="$1">
+                  </span>
+                </div>
+              </div>
+              <span className="flex-1 text-[12px]">
                 {item.registeredCount}/{item.maxPlayers}
                 {item.waitlistCount > 0 ? ` (+${item.waitlistCount})` : ''}
-              </Text>
-              <Text flex={1} fontSize="$1" opacity={0.8}>
+              </span>
+              <span className="flex-1 text-[12px] opacity-[0.8]">
                 {item.createdBy?.displayName ?? '—'}
-              </Text>
-              <XStack flex={2} gap="$2" flexWrap="wrap">
+              </span>
+              <div className="flex flex-row items-stretch flex-[2] gap-2 flex-wrap">
                 <Button
                   size="sm"
                   variant="outline"
@@ -224,18 +212,13 @@ export function AdminTournamentsTable({
                     {labels.delete}
                   </Button>
                 )}
-              </XStack>
-            </XStack>
+              </div>
+            </div>
           );
         })}
       </GlassCard>
 
-      <XStack
-        gap="$3"
-        alignItems="center"
-        justifyContent="center"
-        paddingTop="$2"
-      >
+      <div className="flex flex-row gap-3 items-center justify-center pt-2">
         <Button
           variant="outline"
           size="sm"
@@ -244,11 +227,11 @@ export function AdminTournamentsTable({
         >
           {labels.pagination.prev}
         </Button>
-        <Text opacity={0.8} fontSize="$2">
+        <span className="opacity-[0.8] text-[14px]">
           {labels.pagination.of
             .replace('{current}', String(page))
             .replace('{total}', String(totalPages))}
-        </Text>
+        </span>
         <Button
           variant="outline"
           size="sm"
@@ -257,7 +240,7 @@ export function AdminTournamentsTable({
         >
           {labels.pagination.next}
         </Button>
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

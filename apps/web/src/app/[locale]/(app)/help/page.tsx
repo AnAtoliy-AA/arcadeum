@@ -21,7 +21,7 @@ export async function generateMetadata({
 /**
  * Help Page
  * Fetches translations on the server and passes them to HelpClient.
- * Use HelpClient for client-side only rendering to avoid Tamagui hydration issues.
+ * Use HelpClient for client-side only rendering to avoid SSR/client hydration mismatch.
  */
 export default async function HelpPage({
   params,

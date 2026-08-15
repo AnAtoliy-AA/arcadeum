@@ -2,10 +2,8 @@
 
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { XStack, YStack } from 'tamagui';
 import { GithubIcon } from './ContactView.icons';
 import { ContactAvatars } from './ContactAvatars';
-import { useContactStyles } from './useContactStyles';
 import { appConfig } from '@/shared/config/app-config';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
@@ -19,125 +17,127 @@ export type ContactSidePanelProps = {
   workingHours: string;
 };
 
+const LABEL_CHIP_CLASS =
+  'text-[11px] font-semibold tracking-[1.4px] uppercase text-[var(--textSecondary)]';
+
 export function ContactSidePanel({
   side,
   workingHours,
 }: ContactSidePanelProps) {
-  const s = useContactStyles();
   return (
-    <YStack flex={1} minWidth={0} style={s.sideStackStyle}>
+    <div className="flex flex-col flex-1 min-w-0 gap-4">
       <GlassCard>
-        <span style={s.labelChipStyle}>
+        <span className={LABEL_CHIP_CLASS}>
           {side?.onCall ?? 'On call right now'}
         </span>
-        <XStack alignItems="center" gap="$3" marginTop="$2">
+        <div className="flex flex-row items-center gap-3 -mt-2">
           <ContactAvatars count={4} size={32} />
-          <YStack gap={2}>
-            <Typography fontWeight="700">
+          <div className="flex flex-col items-stretch gap-2">
+            <Typography weight="700">
               {formatMessage(side?.onCallTeam, { extra: '2' }) ??
                 'Maria, Anatoliy +2'}
             </Typography>
             <Typography variant="caption" alpha="medium">
               {side?.onCallRegion ?? 'Support · EU + LATAM'}
             </Typography>
-          </YStack>
-        </XStack>
-        <hr style={s.ruleStyle} aria-hidden="true" />
-        <YStack gap="$2">
-          <div style={s.sideRowStyle}>
+          </div>
+        </div>
+        <hr
+          className="border-0 h-px bg-[var(--glassBorder)] my-3"
+          aria-hidden="true"
+        />
+        <div className="flex flex-col items-stretch gap-2">
+          <div className="flex justify-between items-center text-[13.5px]">
             <Typography alpha="medium">
               {side?.medianFirstReply ?? 'Median first reply'}
             </Typography>
-            <Typography fontWeight="700">
+            <Typography weight="700">
               {side?.medianFirstReplyValue ?? '4 hr'}
             </Typography>
           </div>
-          <div style={s.sideRowStyle}>
+          <div className="flex justify-between items-center text-[13.5px]">
             <Typography alpha="medium">
               {side?.workingHours ?? 'Working hours'}
             </Typography>
-            <Typography fontWeight="700">{workingHours}</Typography>
+            <Typography weight="700">{workingHours}</Typography>
           </div>
-          <div style={s.sideRowStyle}>
+          <div className="flex justify-between items-center text-[13.5px]">
             <Typography alpha="medium">
               {side?.coverage ?? 'Coverage'}
             </Typography>
-            <Typography fontWeight="700">
+            <Typography weight="700">
               {side?.coverageValue ?? 'GMT-5 → GMT+8'}
             </Typography>
           </div>
-        </YStack>
+        </div>
       </GlassCard>
 
       <GlassCard>
-        <span style={s.labelChipStyle}>
+        <span className={LABEL_CHIP_CLASS}>
           {side?.devsLabel ?? 'For developers'}
         </span>
-        <Typography variant="heading" uiSize="md" marginTop="$2">
+        <Typography variant="heading" uiSize="md" className="mt-2">
           {side?.devsTitle ?? 'Bugs & integration'}
         </Typography>
-        <Typography variant="body" alpha="medium" marginTop="$1">
+        <Typography variant="body" alpha="medium" className="mt-1">
           {side?.devsBody ??
             'Reproducible bugs, API issues, and SDK questions are tracked in GitHub. We triage within 24 hours.'}
         </Typography>
         {appConfig.social.github ? (
-          <YStack marginTop="$3">
+          <div className="flex flex-col items-stretch -mt-3">
             <a
               href={appConfig.social.github}
               target="_blank"
               rel="noopener noreferrer"
-              style={s.externalIssueLinkStyle}
+              className="inline-flex items-center justify-center gap-2 w-full px-[14px] py-[10px] rounded-[12px] border border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] no-underline text-[14px] font-medium"
             >
               <GithubIcon />
               <span>{side?.openIssue ?? 'Open an issue'}</span>
             </a>
-          </YStack>
+          </div>
         ) : null}
       </GlassCard>
 
       <GlassCard>
-        <span style={s.labelChipStyle}>
+        <span className={LABEL_CHIP_CLASS}>
           {side?.press ?? 'Press & partnerships'}
         </span>
-        <Typography fontWeight="700" marginTop="$2">
+        <Typography weight="700" className="mt-2">
           <a
             href={`mailto:${side?.pressEmail ?? 'hello@arcadeum.games'}`}
-            style={{ color: s.tokens.accent, textDecoration: 'underline' }}
+            className="text-[var(--accent)] underline"
           >
             {side?.pressEmail ?? 'hello@arcadeum.games'}
           </a>
         </Typography>
-        <Typography variant="caption" alpha="medium" marginTop="$1">
+        <Typography variant="caption" alpha="medium" className="mt-1">
           {side?.pressBody ?? 'For media, creators, and partner studios.'}
         </Typography>
       </GlassCard>
 
       <GlassCard>
-        <span style={s.labelChipStyle}>
+        <span className={LABEL_CHIP_CLASS}>
           {side?.statusLabel ?? 'System status'}
         </span>
-        <XStack alignItems="center" gap="$2" marginTop="$2">
+        <div className="flex flex-row items-center gap-2 -mt-2">
           <span
             aria-hidden="true"
+            className="h-[9px] w-[9px] rounded-full shrink-0"
             style={{
-              width: 9,
-              height: 9,
-              borderRadius: '50%',
               background: '#34d399',
               boxShadow: '0 0 8px #34d399',
-              flexShrink: 0,
             }}
           />
-          <Typography fontWeight="700">
+          <Typography weight="700">
             {side?.statusTitle ?? 'All systems operational'}
           </Typography>
-        </XStack>
-        <Typography variant="caption" alpha="medium" marginTop="$1">
+        </div>
+        <Typography variant="caption" alpha="medium" className="mt-1">
           {side?.statusBody ?? '99.98% uptime over the last 30 days.'}
         </Typography>
         {/* TODO(ARC-575): restore status-page CTA once status.arcadeum.games
             is live. */}
       </GlassCard>
-    </YStack>
+    </div>
   );
 }

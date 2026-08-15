@@ -3,8 +3,8 @@
 import { useMemo, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button, XStack, YStack } from '@arcadeum/ui';
-import { Text, styled, YStack as Stack } from 'tamagui';
+import { Button } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
@@ -43,31 +43,42 @@ export interface ShopHeroProps {
   onBuyClick?: (item: EffectiveShopItem) => void;
 }
 
-const HeroFrame = styled(Stack, {
-  name: 'ShopHeroFrame',
-  width: '100%',
-  borderRadius: '$5',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  paddingHorizontal: '$5',
-  paddingVertical: '$5',
-  overflow: 'hidden',
-  position: 'relative',
-  flexShrink: 0,
-  $sm: { minHeight: 400 },
-});
+function HeroFrame({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'w-full px-5 py-5 rounded-3xl border border-[rgba(255,255,255,0.08)] overflow-hidden relative shrink-0 max-[800px]:min-h-[400px]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const HeroTag = styled(Stack, {
-  name: 'ShopHeroTag',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 8,
-  paddingHorizontal: 10,
-  paddingVertical: 4,
-  borderRadius: '$2',
-  borderWidth: 1,
-  alignSelf: 'flex-start',
-});
+function HeroTag({
+  backgroundColor,
+  borderColor,
+  className,
+  ...props
+}: {
+  backgroundColor?: string;
+  borderColor?: string;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-row items-center gap-2 px-[10px] py-1 rounded-lg border self-start',
+        className,
+      )}
+      style={{ backgroundColor, borderColor }}
+      {...props}
+    />
+  );
+}
 
 type HeroAction = 'buy' | 'equip' | 'unequip';
 
@@ -174,7 +185,8 @@ export function ShopHero({
         : 'shop-hero-buy';
 
   return (
-    <YStack
+    <div
+      className="flex flex-col items-stretch"
       id="shop-featured"
       data-testid="shop-hero"
       data-rarity={item.rarity}
@@ -185,48 +197,30 @@ export function ShopHero({
       onPointerLeave={handleHoverOff}
     >
       <HeroFrame className="animate-entrance" style={bgStyle}>
-        <XStack
-          gap="$5"
-          alignItems="center"
-          $xs={{ flexDirection: 'column', alignItems: 'flex-start', gap: '$3' }}
-          $sm={{ flexDirection: 'column', alignItems: 'flex-start', gap: '$3' }}
-        >
-          <Stack
-            className="shop-featured-disc"
-            width={140}
-            height={140}
-            borderRadius={70}
-            alignItems="center"
-            justifyContent="center"
-            backgroundColor="rgba(255,255,255,0.04)"
-            borderWidth={2}
-            borderColor={`${accent}66`}
-            style={{ ['--shop-glow' as string]: glow } as React.CSSProperties}
+        <div className="flex flex-row gap-5 items-center max-[660px]:flex-col max-[660px]:items-start max-[660px]:gap-3 max-[800px]:flex-col max-[800px]:items-start max-[800px]:gap-3">
+          <div
+            className="flex flex-col w-[140px] h-[140px] rounded-[70px] items-center justify-center bg-[rgba(255,255,255,0.04)] border-[2px] shop-featured-disc"
+            style={{ borderColor: `${accent}66` }}
           >
             <ItemAsset item={item} size={108} priority />
-          </Stack>
+          </div>
 
-          <YStack flex={1} gap="$3" minWidth={0}>
-            <XStack gap="$2" alignItems="center" flexWrap="wrap">
+          <div className="flex flex-col items-stretch flex-1 gap-3 min-w-0">
+            <div className="flex flex-row gap-2 items-center flex-wrap">
               <HeroTag
                 backgroundColor={`${accent}1a`}
                 borderColor={`${accent}55`}
               >
-                <Stack
-                  width={6}
-                  height={6}
-                  borderRadius={3}
-                  backgroundColor={accent}
+                <div
+                  className="flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
+                  style={{ backgroundColor: accent }}
                 />
-                <Text
-                  fontSize={11}
-                  letterSpacing={1.5}
-                  textTransform="uppercase"
-                  fontWeight="800"
-                  color={accent}
+                <span
+                  className="text-[11px] tracking-[1.5px] uppercase font-extrabold"
+                  style={{ color: accent }}
                 >
                   {labels.tag}
-                </Text>
+                </span>
               </HeroTag>
               {equipped ? (
                 <HeroTag
@@ -234,25 +228,19 @@ export function ShopHero({
                   borderColor={`${accent}55`}
                   data-testid="shop-hero-equipped-chip"
                 >
-                  <Text
-                    fontSize={11}
-                    letterSpacing={1.5}
-                    textTransform="uppercase"
-                    fontWeight="800"
-                    color={accent}
+                  <span
+                    className="text-[11px] tracking-[1.5px] uppercase font-extrabold"
+                    style={{ color: accent }}
                   >
                     {labels.equipped}
-                  </Text>
+                  </span>
                 </HeroTag>
               ) : null}
-            </XStack>
+            </div>
 
-            <YStack gap="$1">
-              <Text
-                fontSize="$10"
-                fontWeight="900"
-                letterSpacing={-1}
-                color="$white"
+            <div className="flex flex-col items-stretch gap-1">
+              <span
+                className="text-[48px] font-black tracking-[-1px] text-[#f5f7ff]"
                 style={{
                   backgroundImage: `linear-gradient(135deg, ${accent}, #ffffff)`,
                   WebkitBackgroundClip: 'text',
@@ -261,19 +249,14 @@ export function ShopHero({
                 }}
               >
                 {itemName}
-              </Text>
-              <Text fontSize="$4" color="$gray11" maxWidth={640}>
+              </span>
+              <span className="text-[18px] text-[#94a3b8] max-w-[640px]">
                 {itemDesc} {labels.bodySuffix}
-              </Text>
-            </YStack>
+              </span>
+            </div>
 
-            <XStack gap="$3" alignItems="center" flexWrap="wrap">
+            <div className="flex flex-row gap-3 items-center flex-wrap">
               <Button
-                onClick={handleActionPress}
-                disabled={isPending}
-                data-testid={actionTestId}
-                data-action={action}
-                size="sm"
                 className={action === 'buy' ? 'hero-gold-pulse' : undefined}
                 style={{
                   backgroundImage:
@@ -282,49 +265,41 @@ export function ShopHero({
                       : undefined,
                   borderColor: action === 'buy' ? '#f59e0b' : accent,
                 }}
+                onClick={handleActionPress}
+                disabled={isPending}
+                data-testid={actionTestId}
+                data-action={action}
+                size="sm"
               >
-                <Text
-                  fontSize="$3"
-                  fontWeight="800"
-                  color={action === 'buy' ? '#0a0a0a' : '$white'}
+                <span
+                  className="text-[16px] font-extrabold"
+                  style={{ color: action === 'buy' ? '#0a0a0a' : '#f5f7ff' }}
                 >
                   {actionLabel}
-                </Text>
+                </span>
                 {action === 'buy' ? (
-                  <Text fontSize="$2" fontWeight="700" color="#0a0a0a">
+                  <span className="text-[14px] font-bold text-[#0a0a0a]">
                     · {CURRENCY_GLYPH[item.priceCurrency]}{' '}
                     {formatNumber(item.priceAmount, locale)}
-                  </Text>
+                  </span>
                 ) : null}
               </Button>
               <Link href="#shop-rail" style={{ textDecoration: 'none' }}>
-                <Stack
-                  flexDirection="row"
-                  alignItems="center"
-                  gap={6}
-                  paddingHorizontal="$3"
-                  paddingVertical="$2"
-                  borderRadius="$3"
-                  borderWidth={1}
-                  borderColor="rgba(255,255,255,0.14)"
-                  cursor="pointer"
-                  hoverStyle={{
-                    borderColor: 'rgba(255,255,255,0.32)',
-                    backgroundColor: 'rgba(255,255,255,0.04)',
-                  }}
+                <div
+                  className="flex flex-row items-center gap-6 px-3 py-2 rounded-xl border border-[rgba(255,255,255,0.14)] cursor-pointer hover:border-[rgba(255,255,255,0.32)] hover:bg-[rgba(255,255,255,0.04)]"
                   onMouseEnter={handleHoverOn}
                   onMouseLeave={handleHoverOff}
                   data-testid="shop-hero-tryon"
                 >
-                  <Text fontSize="$3" fontWeight="700" color="$white">
+                  <span className="text-[16px] font-bold text-[#f5f7ff]">
                     {labels.tryOn} →
-                  </Text>
-                </Stack>
+                  </span>
+                </div>
               </Link>
-            </XStack>
-          </YStack>
-        </XStack>
+            </div>
+          </div>
+        </div>
       </HeroFrame>
-    </YStack>
+    </div>
   );
 }

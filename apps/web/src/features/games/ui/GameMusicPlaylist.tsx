@@ -75,8 +75,6 @@ function SortableTrackItem({
       >
         <div
           className="game-music-drag-handle"
-          {...attributes}
-          {...listeners}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -88,6 +86,8 @@ function SortableTrackItem({
             minWidth: '32px',
             minHeight: '32px',
           }}
+          {...attributes}
+          {...listeners}
         >
           <svg
             width="12"
@@ -130,13 +130,13 @@ function SortableTrackItem({
           />
         ) : (
           <Typography
-            uiSize="xs"
             className="min-w-[16px] font-medium"
             style={{
               color: isActive
                 ? 'rgba(165,180,252,0.9)'
                 : 'rgba(255,255,255,0.45)',
             }}
+            uiSize="xs"
           >
             {String(index + 1).padStart(2, '0')}
           </Typography>
@@ -155,9 +155,9 @@ function SortableTrackItem({
         </Typography>
         {duration > 0 && (
           <Typography
-            uiSize="xs"
             className="min-w-[32px] shrink-0 text-right"
             style={{ color: 'rgba(255,255,255,0.35)' }}
+            uiSize="xs"
           >
             {formatTime(duration)}
           </Typography>
@@ -296,15 +296,15 @@ export function Playlist({
 
   return (
     <div
-      data-testid="game-music-playlist"
       className="flex flex-col gap-[4px] pb-[6px] mb-[4px] border-b game-music-playlist"
       style={{ borderBottomColor: 'rgba(255,255,255,0.08)' }}
+      data-testid="game-music-playlist"
     >
       <div className="flex items-center gap-[8px] px-[4px]">
         <Typography
-          uiSize="xs"
           className="font-semibold uppercase tracking-[0.5px]"
           style={{ color: 'rgba(255,255,255,0.6)' }}
+          uiSize="xs"
         >
           Playlist
         </Typography>

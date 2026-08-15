@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, Typography, XStack, YStack } from '@arcadeum/ui';
+import { Button, Card, Typography } from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { SeaBattleTeam } from './team-mode.types';
@@ -36,8 +36,8 @@ export function UnassignedPool(props: UnassignedPoolProps) {
   const pool = members.filter((m) => !assigned.has(m.userId));
 
   return (
-    <Card variant="outlined" padding="md" data-testid="unassigned-pool">
-      <YStack gap="$2">
+    <Card variant="outlined" data-testid="unassigned-pool">
+      <div className="flex flex-col items-stretch gap-2">
         <Typography variant="heading" uiSize="md">
           {t('games.sea_battle_v1.teamMode.unassigned.title')}
         </Typography>
@@ -46,15 +46,14 @@ export function UnassignedPool(props: UnassignedPoolProps) {
             {t('games.sea_battle_v1.teamMode.unassigned.empty')}
           </Typography>
         ) : (
-          <XStack gap="$2" flexWrap="wrap">
+          <div className="flex flex-row items-stretch gap-2 flex-wrap">
             {pool.map((m) => {
               const display = m.displayName ?? m.userId;
               const isBot = m.userId.startsWith('bot-');
               return (
-                <XStack
+                <div
+                  className="flex flex-row gap-1 items-center"
                   key={m.userId}
-                  gap="$1"
-                  alignItems="center"
                   data-testid={`unassigned-${m.userId}`}
                 >
                   <EquippedPlayerAvatar
@@ -80,12 +79,12 @@ export function UnassignedPool(props: UnassignedPoolProps) {
                       ×
                     </Button>
                   )}
-                </XStack>
+                </div>
               );
             })}
-          </XStack>
+          </div>
         )}
-      </YStack>
+      </div>
     </Card>
   );
 }

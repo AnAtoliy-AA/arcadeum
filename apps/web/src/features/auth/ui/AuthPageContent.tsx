@@ -1,6 +1,5 @@
 'use client';
 
-import { XStack, YStack } from 'tamagui';
 import { InstallAppCta } from '@/widgets/install-app';
 import { useAuthForm } from '../hooks/useAuthForm';
 import { useAuthLabels } from '../hooks/useAuthLabels';
@@ -14,31 +13,17 @@ export default function AuthPageContent() {
   const labels = useAuthLabels(auth.isRegisterMode);
 
   return (
-    <XStack
-      minHeight="100vh"
-      width="100%"
-      position="relative"
-      overflow="hidden"
+    <div
+      className="flex flex-row items-stretch w-full relative overflow-hidden"
+      style={{ minHeight: '100vh' }}
       data-testid="auth-page-root"
     >
       <AuthPageBackground />
       <AuthBrandPanel brand={labels.brand} />
-      <YStack
-        flex={1}
-        alignItems="center"
-        justifyContent="center"
-        paddingHorizontal="$8"
-        paddingVertical="$8"
-        gap="$5"
-        $md={{
-          paddingHorizontal: '$4',
-          paddingVertical: '$5',
-          width: '100%',
-        }}
-      >
+      <div className="flex flex-col flex-1 items-center justify-center px-8 py-8 gap-5 max-[1150px]:px-4 max-[1150px]:py-5 max-[1150px]:w-full">
         <AuthFormPanel labels={labels} auth={auth} />
         <InstallAppCta />
-      </YStack>
-    </XStack>
+      </div>
+    </div>
   );
 }

@@ -1,4 +1,5 @@
-import { memo, useState } from 'react';
+'use client';
+import { memo } from 'react';
 import { Input } from '../Input/Input';
 import { Button } from '../Button/Button';
 import { SendIcon } from '../Icons';
@@ -9,7 +10,6 @@ export type ChatInputProps = {
   onSend: () => void;
   disabled?: boolean;
   placeholder?: string;
-  sendText?: string;
 };
 
 export const ChatInput = memo(function ChatInput({
@@ -19,7 +19,6 @@ export const ChatInput = memo(function ChatInput({
   disabled,
   placeholder = 'Type a message...',
 }: ChatInputProps) {
-  const [isFocused, setIsFocused] = useState(false);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -52,7 +51,7 @@ export const ChatInput = memo(function ChatInput({
       <div style={{ flex: 1 }}>
         <Input
           value={value}
-          onChangeText={onChange}
+          onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}
@@ -66,8 +65,6 @@ export const ChatInput = memo(function ChatInput({
             boxShadow: 'none',
           }}
           className="border-0 bg-transparent focus:border-0 focus:ring-0"
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
         />
       </div>
       <Button

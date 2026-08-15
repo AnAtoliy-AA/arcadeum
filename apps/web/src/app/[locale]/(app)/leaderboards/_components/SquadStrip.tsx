@@ -1,5 +1,4 @@
 'use client';
-import { XStack, YStack, Text, View } from 'tamagui';
 import type { Squad } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
@@ -17,70 +16,53 @@ export function SquadStrip({
   const tt = (t?.squads ?? {}) as { title?: string; members?: string };
   const membersTpl = tt.members ?? '{count} members';
   return (
-    <YStack
-      gap="$3"
-      padding="$4"
-      borderRadius="$4"
-      borderWidth={1}
-      borderTopWidth={2}
-      borderTopColor="$info"
-      borderColor="$borderColor"
-      backgroundColor="rgba(255,255,255,0.02)"
-      flex={1}
-      minWidth={280}
-    >
-      <Text
-        fontSize="$2"
-        letterSpacing={2}
-        opacity={0.7}
-        textTransform="uppercase"
-      >
+    <div className="flex flex-col items-stretch gap-3 p-4 rounded-2xl border border-t-[2px] border-t-[var(--info)] border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] flex-1 min-w-[280px]">
+      <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
         {tt.title ?? 'Top squads'}
-      </Text>
-      <YStack gap="$2">
+      </span>
+      <div className="flex flex-col items-stretch gap-2">
         {squads.map((s) => (
-          <XStack
+          <div
+            className="flex flex-row items-center gap-2 justify-between"
+            style={{
+              paddingLeft: s.isYou ? 8 : 0,
+              paddingRight: s.isYou ? 8 : 0,
+              paddingTop: s.isYou ? 4 : 0,
+              paddingBottom: s.isYou ? 4 : 0,
+              borderRadius: s.isYou ? 8 : 0,
+              backgroundColor: s.isYou
+                ? 'rgba(236,72,153,0.08)'
+                : 'transparent',
+            }}
             key={s.id}
-            alignItems="center"
-            justifyContent="space-between"
-            gap="$2"
-            paddingHorizontal={s.isYou ? '$2' : 0}
-            paddingVertical={s.isYou ? '$1' : 0}
-            borderRadius={s.isYou ? '$2' : 0}
-            backgroundColor={s.isYou ? 'rgba(236,72,153,0.08)' : 'transparent'}
           >
-            <XStack alignItems="center" gap="$2" flex={1}>
+            <div className="flex flex-row items-center gap-2 flex-1">
               {s.isYou ? (
-                <View
-                  paddingHorizontal={6}
-                  paddingVertical={1}
-                  borderRadius={999}
-                  backgroundColor="$mythicAccent"
-                >
-                  <Text fontSize={9} fontWeight="800" color="#0f0c19">
+                <div className="px-6 py-1 rounded-[999px] bg-[var(--mythicAccent)]">
+                  <span className="text-[40px] font-extrabold text-[#0f0c19]">
                     YOU
-                  </Text>
-                </View>
+                  </span>
+                </div>
               ) : null}
-              <Text fontWeight="700" letterSpacing={1} color="$mythicAccent">
+              <span className="font-bold tracking-[1px] text-[var(--mythicAccent)]">
                 [{s.tag}]
-              </Text>
-              <Text fontWeight="600" numberOfLines={1} flex={1}>
+              </span>
+              <span className="font-semibold line-clamp-1 flex-1">
                 {s.name}
-              </Text>
-            </XStack>
-            <Text fontSize="$2" opacity={0.7}>
+              </span>
+            </div>
+            <span className="text-[14px] opacity-[0.7]">
               {membersTpl.replace('{count}', String(s.memberCount))}
-            </Text>
-            <Text fontSize="$2" letterSpacing={1} fontWeight="700">
+            </span>
+            <span className="text-[14px] tracking-[1px] font-bold">
               #{s.rank}
-            </Text>
-            <Text fontSize="$2" letterSpacing={1} opacity={0.85}>
+            </span>
+            <span className="text-[14px] tracking-[1px] opacity-[0.85]">
               {formatNumber(s.rating, locale)}
-            </Text>
-          </XStack>
+            </span>
+          </div>
         ))}
-      </YStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

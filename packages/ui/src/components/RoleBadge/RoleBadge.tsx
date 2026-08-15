@@ -82,7 +82,7 @@ export function RoleBadge({ role, children, variant = 'filled' }: RoleBadgeProps
         color: textColor,
         fontSize: 12,
         fontWeight: 700,
-        letterSpacing: 1,
+        letterSpacing: '1px',
       }}
     >
       {children}

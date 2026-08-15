@@ -1,9 +1,9 @@
 /**
  * Tailwind class maps for the shared Button/LinkButton.
  *
- * Colors reference the runtime CSS variables emitted by theme providers
- * (Tamagui themes minted on <html>, AppThemeProvider, tokens.scss), so the
- * button keeps working across web light/dark/neon/purple themes.
+ * Colors reference the runtime CSS variables minted on <html> by the theme
+ * provider (themeDefinitions via ThemeContext, tokens.scss), so the button
+ * keeps working across web light/dark/neon/purple themes.
  */
 import type { ButtonShape, ButtonVariant, GameVariant } from './types';
 import { cx } from '../../utils/cx';
@@ -14,7 +14,6 @@ export const buttonBase = [
   'flex-row',
   'items-center',
   'justify-center',
-  'box-border',
   'cursor-pointer',
   'overflow-hidden',
   'select-none',
@@ -45,7 +44,6 @@ export const buttonSizes: Record<ButtonSizeKey, string> = {
  * compiled CSS, so they deterministically win over size/variant radii.
  */
 export const buttonShapes: Record<string, string> = {
-  rectangle: '',
   round: 'rounded-full',
   square: 'rounded-none',
   circle: 'aspect-square rounded-full !p-0 justify-center items-center',

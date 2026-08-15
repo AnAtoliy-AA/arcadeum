@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useInsertionEffect, useState } from 'react';
-import { XStack, Text, View } from 'tamagui';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
 const STALE_MS = 30_000;
@@ -87,28 +86,21 @@ export function FreshnessIndicator({
   );
 
   return (
-    <XStack
-      alignItems="center"
-      gap="$2"
-      testID="leaderboard-freshness"
+    <div
+      className="flex flex-row items-center gap-2"
+      data-testid="leaderboard-freshness"
       data-fresh={!stale}
     >
-      <View
-        width={8}
-        height={8}
-        borderRadius={4}
-        backgroundColor={stale ? '$textSecondary' : '$success'}
-        style={
-          pulse
-            ? {
-                animation: 'arcadeum-freshness-pulse 2s ease-out',
-              }
-            : undefined
-        }
+      <div
+        className="w-[8px] h-[8px] rounded-2xl"
+        style={{
+          backgroundColor: stale ? 'var(--textSecondary)' : 'var(--success)',
+          animation: pulse ? 'arcadeum-freshness-pulse 2s ease-out' : undefined,
+        }}
       />
-      <Text fontSize="$1" letterSpacing={1} opacity={0.7}>
+      <span className="text-[12px] tracking-[1px] opacity-[0.7]">
         {updatedLabel}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 }

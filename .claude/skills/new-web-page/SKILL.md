@@ -24,7 +24,7 @@ apps/web/src/app/<route>/
 
 2. **Create `<Name>Client.tsx`** (`'use client'`):
    - Use `dynamic(() => import('./<Name>View').then(mod => mod.<Name>View), { ssr: false, loading: LoadingSkeleton })`
-   - Define `LoadingSkeleton` using `PageLayout`, `Container`, `GlassCard`, `Skeleton`, `YStack` from `@/shared/ui`
+   - Define `LoadingSkeleton` using `PageLayout`, `Container`, `GlassCard`, `Skeleton` from `@arcadeum/ui`
 
 3. **Create `<Name>View.tsx`**:
    - Build the actual page UI using components from `@arcadeum/ui` and `@/shared/ui`
@@ -39,5 +39,5 @@ apps/web/src/app/<route>/
 ```ts
 import { appConfig } from '@/shared/config/app-config';
 import { getTranslations } from '@/shared/i18n/server';
-import { PageLayout, Container, GlassCard, Skeleton, YStack } from '@/shared/ui';
+import { PageLayout, Container, GlassCard, Skeleton } from '@arcadeum/ui';
 ```

@@ -1,5 +1,4 @@
 import React, { useRef, useCallback, useEffect } from 'react';
-import { styled, XStack, YStack, Text } from 'tamagui';
 import type { LeaderboardEntry } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
@@ -213,7 +212,7 @@ export function Leaderboard({
                   equippedBannerId={entry.equippedBannerId}
                 />
                 <PlayerName>
-                  <Text>{entry.username}</Text>
+                  <span className="">{entry.username}</span>
                   {entry.playerId === currentUserId && (
                     <Badge variant="info" size="sm">
                       {t('stats.you')}
@@ -222,9 +221,13 @@ export function Leaderboard({
                 </PlayerName>
               </PlayerInfo>
               <StatCell>{entry.totalGames}</StatCell>
-              <StatCell color="$success">{entry.wins}</StatCell>
-              <StatCell color="$danger">{entry.losses}</StatCell>
-              <ProgressBar value={entry.winRate} height={6} showLabel />
+              <StatCell color="var(--success)">{entry.wins}</StatCell>
+              <StatCell color="var(--danger)">{entry.losses}</StatCell>
+              <ProgressBar
+                className={'h-[6px]'}
+                value={entry.winRate}
+                showLabel
+              />
             </div>
           ))}
         </Table>
@@ -241,9 +244,9 @@ export function Leaderboard({
           {loadingMore && (
             <LoadingMoreRow>
               <Spinner size="sm" />
-              <Text color="rgba(236,239,238,0.7)" fontSize="$3">
+              <span className="text-[rgba(236,239,238,0.7)] text-[16px]">
                 {t('stats.loadingMore')}
-              </Text>
+              </span>
             </LoadingMoreRow>
           )}
           {!hasMore && leaderboard.length > 0 && (
@@ -286,59 +289,103 @@ function RankDisplay({ rank }: { rank: number }) {
   return <RankBadge>{rank}</RankBadge>;
 }
 
-const Table = styled(YStack, {
-  name: 'LeaderboardTable',
-  width: '100%',
-  borderRadius: 12,
-  overflow: 'hidden',
-} as Record<string, unknown>);
+function Table({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-col items-stretch w-full rounded-xl overflow-hidden ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const PlayerInfo = styled(XStack, {
-  name: 'LeaderboardPlayerInfo',
-  alignItems: 'center',
-  gap: '$3',
-} as Record<string, unknown>);
+function PlayerInfo({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center gap-3 ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const PlayerName = styled(XStack, {
-  name: 'LeaderboardPlayerName',
-  alignItems: 'center',
-  gap: '$2',
-} as Record<string, unknown>);
+function PlayerName({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center gap-2 ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const StatCell = styled(Text, {
-  name: 'LeaderboardStatCell',
-  fontWeight: '500',
-  color: '$color',
-} as Record<string, unknown>);
+function StatCell({
+  color,
+  className,
+  ...props
+}: {
+  color?: string;
+  className?: string;
+} & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`font-medium text-[var(--color)] ${className ?? ''}`}
+      style={color ? { color } : undefined}
+      {...props}
+    />
+  );
+}
 
-const RankBadge = styled(YStack, {
-  name: 'LeaderboardRankBadge',
-  width: 36,
-  height: 36,
-  borderRadius: 1000,
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: '$background',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-} as Record<string, unknown>);
+function RankBadge({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex items-center justify-center w-[36px] h-[36px] rounded-full border border-[var(--borderColor)] bg-[var(--background)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const TrophyIcon = styled(Text, {
-  name: 'LeaderboardTrophyIcon',
-  fontSize: '$6',
-} as Record<string, unknown>);
+function TrophyIcon({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[24px] leading-[30px] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const LoadingMoreRow = styled(XStack, {
-  name: 'LeaderboardLoadingMoreRow',
-  alignItems: 'center',
-  gap: '$3',
-  padding: '$4',
-} as Record<string, unknown>);
+function LoadingMoreRow({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center gap-3 p-4 ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-const EndOfList = styled(Text, {
-  name: 'LeaderboardEndOfList',
-  color: 'rgba(236,239,238,0.45)',
-  fontSize: '$2',
-  padding: '$4',
-  opacity: 0.7,
-} as Record<string, unknown>);
+function EndOfList({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[14px] leading-[18px] p-4 opacity-[0.7] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}

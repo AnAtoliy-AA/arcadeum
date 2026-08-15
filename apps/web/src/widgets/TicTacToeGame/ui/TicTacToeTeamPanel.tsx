@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { XStack, YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { TEAM_PRESETS } from '../lib/teamPresets';
@@ -42,38 +41,34 @@ export function TicTacToeTeamPanel({
   }, [room]);
 
   return (
-    <YStack gap="$2">
-      <Text fontSize="$3" fontWeight="600">
+    <div className="flex flex-col items-stretch gap-2">
+      <span className="text-[16px] font-semibold">
         {t('games.tic_tac_toe_v1.lobby.teamMode')}
-      </Text>
-      <XStack gap="$3" flexWrap="wrap">
+      </span>
+      <div className="flex flex-row items-stretch gap-3 flex-wrap">
         {teamConfig.map((team) => (
-          <YStack
+          <div
+            className="flex flex-col items-stretch p-3 rounded-[10px] border-[2px] min-w-[140px] gap-2"
+            style={{ borderColor: team.color }}
             key={team.id}
-            padding="$3"
-            borderRadius={10}
-            borderWidth={2}
-            borderColor={team.color}
-            minWidth={140}
-            gap="$2"
           >
-            <Text fontWeight="700" color={team.color}>
+            <span className="font-bold" style={{ color: team.color }}>
               {team.name}
-            </Text>
+            </span>
             {team.playerIds.length === 0 ? (
-              <Text fontSize="$2" opacity={0.6}>
+              <span className="text-[14px] opacity-[0.6]">
                 {t('games.tic_tac_toe_v1.lobby.waitingForPlayers')}
-              </Text>
+              </span>
             ) : (
               team.playerIds.map((pid: string) => (
-                <Text key={pid} fontSize="$2">
+                <span className="text-[14px]" key={pid}>
                   {pid.startsWith('bot-') ? `🤖 ${pid.slice(0, 10)}` : pid}
-                </Text>
+                </span>
               ))
             )}
-          </YStack>
+          </div>
         ))}
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

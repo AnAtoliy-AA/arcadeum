@@ -12,7 +12,6 @@ import {
   PageTitle,
   Typography,
   Section,
-  YStack,
 } from '@arcadeum/ui';
 import type { PrivacyMessages, ContactMessages } from '@/shared/i18n/types';
 
@@ -57,7 +56,7 @@ export default function PrivacyContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.dataCollection?.intro}
           </Typography>
-          <YStack paddingLeft="$5" gap="$2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -91,14 +90,14 @@ export default function PrivacyContent({
                 </Typography>
               </li>
             </ul>
-          </YStack>
+          </div>
         </Section>
 
         <Section variant="legal" title={s?.dataUsage?.title}>
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.dataUsage?.intro}
           </Typography>
-          <YStack paddingLeft="$5" gap="$2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -114,14 +113,14 @@ export default function PrivacyContent({
                 </li>
               ))}
             </ul>
-          </YStack>
+          </div>
         </Section>
 
         <Section variant="legal" title={s?.dataSharing?.title}>
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.dataSharing?.intro}
           </Typography>
-          <YStack paddingLeft="$5" gap="$2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -145,7 +144,7 @@ export default function PrivacyContent({
                 </Typography>
               </li>
             </ul>
-          </YStack>
+          </div>
         </Section>
 
         <Section variant="legal" title={s?.dataSecurity?.title}>
@@ -164,7 +163,7 @@ export default function PrivacyContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.userRights?.intro}
           </Typography>
-          <YStack paddingLeft="$5" gap="$2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -198,11 +197,16 @@ export default function PrivacyContent({
                 </Typography>
               </li>
             </ul>
-          </YStack>
-          <Typography variant="body" uiSize="md" alpha="high" marginTop="$4">
+          </div>
+          <Typography
+            className={'-mt-4'}
+            variant="body"
+            uiSize="md"
+            alpha="high"
+          >
             {s?.userRights?.contact}{' '}
             <Link href={routes.contact}>
-              <Typography color="$primary" textDecorationLine="underline">
+              <Typography className={'text-[var(--primary)] underline'}>
                 {contactT?.title}
               </Typography>
             </Link>

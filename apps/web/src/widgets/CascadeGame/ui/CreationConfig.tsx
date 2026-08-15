@@ -5,7 +5,6 @@ import {
 import { GameCreationConfigProps } from '@/features/games/types';
 import { Section } from '@arcadeum/ui/components/Section/Section';
 import { Button } from '@arcadeum/ui/components/Button/Button';
-import { YStack, XStack, Text } from 'tamagui';
 
 interface CascadeOptions {
   variant?: string;
@@ -44,12 +43,12 @@ export default function CascadeCreationConfig({
 
   return (
     <Section title={t('games.create.sectionHouseRules')}>
-      <YStack gap="$3">
-        <YStack gap="$1">
-          <Text fontSize="$4" fontWeight="600">
+      <div className="flex flex-col items-stretch gap-3">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[18px] font-semibold">
             {t('games.create.cascadeMode')}
-          </Text>
-          <XStack gap="$2" flexWrap="wrap">
+          </span>
+          <div className="flex flex-row items-stretch gap-2 flex-wrap">
             {MODES.map((mode) => (
               <Button
                 key={mode.id}
@@ -62,16 +61,16 @@ export default function CascadeCreationConfig({
                 {t(mode.nameKey)}
               </Button>
             ))}
-          </XStack>
-        </YStack>
+          </div>
+        </div>
 
-        <YStack gap="$1">
-          <Text fontSize="$4" fontWeight="600">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[18px] font-semibold">
             {t('games.create.cascadeLastCardCall')}
-          </Text>
-          <Text fontSize="$3" color="$colorMuted">
+          </span>
+          <span className="text-[16px] text-[rgba(180,_180,_200,_0.7)]">
             {t('games.create.cascadeLastCardCallHint')}
-          </Text>
+          </span>
           <Button
             variant="secondary"
             size="sm"
@@ -86,8 +85,8 @@ export default function CascadeCreationConfig({
           >
             {options.lastCardCallEnabled !== false ? 'ON' : 'OFF'}
           </Button>
-        </YStack>
-      </YStack>
+        </div>
+      </div>
     </Section>
   );
 }

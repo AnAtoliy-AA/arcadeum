@@ -1,5 +1,4 @@
 'use client';
-import { XStack, YStack, Text } from 'tamagui';
 import type { RewardTierItem } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
@@ -25,16 +24,11 @@ export function RewardLadder({
     string
   >;
   return (
-    <YStack gap="$3">
-      <Text
-        fontSize="$2"
-        letterSpacing={2}
-        opacity={0.7}
-        textTransform="uppercase"
-      >
+    <div className="flex flex-col items-stretch gap-3">
+      <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
         {rTitles.title ?? 'Reward ladder'}
-      </Text>
-      <XStack gap="$3" flexWrap="wrap">
+      </span>
+      <div className="flex flex-row items-stretch gap-3 flex-wrap">
         {rewards.map((r) => {
           const color = r.color ?? TIER_COLORS[r.tier] ?? '#94a3b8';
           const range =
@@ -47,43 +41,34 @@ export function RewardLadder({
               .replace('rewards.', '')
               .replace(/^./, (c) => c.toUpperCase());
           return (
-            <YStack
-              key={r.tier}
-              flex={1}
-              minWidth={150}
-              padding="$3"
-              gap="$2"
-              borderRadius="$3"
-              borderWidth={1}
-              alignItems="center"
-              testID={`reward-card-${r.tier}`}
+            <div
+              className="flex flex-col flex-1 min-w-[150px] p-3 gap-2 rounded-xl border items-center"
               style={{
                 borderColor: `${color}55`,
                 backgroundColor: 'rgba(255,255,255,0.02)',
               }}
+              key={r.tier}
+              data-testid={`reward-card-${r.tier}`}
             >
-              <Text fontSize={28} color={color as never}>
+              <span className="text-[28px]" style={{ color: color as never }}>
                 {r.icon ?? '★'}
-              </Text>
-              <Text
-                fontSize="$1"
-                fontWeight="700"
-                letterSpacing={2}
-                textTransform="uppercase"
-                color={color as never}
+              </span>
+              <span
+                className="text-[12px] font-bold tracking-[2px] uppercase"
+                style={{ color: color as never }}
               >
                 {r.tier}
-              </Text>
-              <Text fontSize="$1" opacity={0.6} letterSpacing={1}>
+              </span>
+              <span className="text-[12px] opacity-[0.6] tracking-[1px]">
                 {range}
-              </Text>
-              <Text fontSize="$2" textAlign="center" opacity={0.9}>
+              </span>
+              <span className="text-[14px] text-center opacity-[0.9]">
                 {prizeText}
-              </Text>
-            </YStack>
+              </span>
+            </div>
           );
         })}
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

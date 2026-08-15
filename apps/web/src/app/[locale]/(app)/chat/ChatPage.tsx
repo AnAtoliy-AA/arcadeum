@@ -8,12 +8,11 @@ import {
   Container,
   GlassCard,
   EmptyState,
-  YStack,
   Button,
   Spinner,
 } from '@arcadeum/ui';
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
@@ -26,9 +25,9 @@ import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { formatSafeTime } from '@/shared/lib/date';
-import { ScrollView } from 'tamagui';
 
 export default function ChatPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
@@ -108,8 +107,11 @@ export default function ChatPage() {
   if (!snapshot.accessToken) {
     return (
       <PageLayout>
-        <Container size="md" flex={1} jc="center" ai="center" p="$10">
-          <GlassCard p="$10" ai="center" gap="$5">
+        <Container
+          className={'flex-1 justify-center items-center p-10'}
+          size="md"
+        >
+          <GlassCard className={'p-10 items-center gap-5'}>
             <EmptyState
               icon="🔒"
               message={
@@ -119,7 +121,7 @@ export default function ChatPage() {
             <Button
               variant="primary"
               size="lg"
-              onClick={() => (window.location.href = '/auth')}
+              onClick={() => router.push('/auth')}
             >
               Log In
             </Button>
@@ -131,28 +133,10 @@ export default function ChatPage() {
 
   return (
     <PageLayout>
-      <YStack
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        height="100%"
-        zIndex={-1}
-        opacity={0.3}
-        background="radial-gradient(circle at 10% 20%, $primaryGradientStart 0%, transparent 40%), radial-gradient(circle at 90% 80%, $secondaryGradientStart 0%, transparent 40%)"
-        pointerEvents="none"
-      />
-      <Container size="md" flex={1} pb="$4" pt="$4">
+      <div className="flex flex-col items-stretch absolute top-0 left-0 right-0 h-full z-[-1] opacity-[0.3] bg-[radial-gradient(circle_at_10%_20%,_var(--primaryGradientStart)_0%,_transparent_40%),_radial-gradient(circle_at_90%_80%,_var(--secondaryGradientStart)_0%,_transparent_40%)] pointer-events-none" />
+      <Container className={'flex-1 pb-4 pt-4'} size="md">
         <GlassCard
-          flex={1}
-          p={0}
-          gap={0}
-          borderWidth={1}
-          borderColor="$glassBorder"
-          shadowColor="$shadowColor"
-          shadowOffset={{ width: 0, height: 10 }}
-          shadowOpacity={0.2}
-          shadowRadius={30}
+          className={'flex-1 p-0 gap-0 border border-[var(--glassBorder)]'}
         >
           <ChatHeader
             title={title}
@@ -164,21 +148,22 @@ export default function ChatPage() {
             }
           />
 
-          <ScrollView
-            flex={1}
-            paddingHorizontal="$4"
-            paddingVertical="$4"
+          <div
+            className="overflow-auto flex-1 px-4 py-4"
             data-testid="chat-scroll-view"
           >
-            <YStack gap="$4" data-testid="chat-messages-list">
+            <div
+              className="flex flex-col items-stretch gap-4"
+              data-testid="chat-messages-list"
+            >
               {isLoading && messages.length === 0 ? (
-                <YStack flex={1} ai="center" jc="center" py="$10">
+                <div className="flex flex-col flex-1 items-center justify-center py-10">
                   <Spinner
+                    className={'text-[var(--primary)]'}
                     data-testid="chat-loading-spinner"
                     size="large"
-                    color="$primary"
                   />
-                </YStack>
+                </div>
               ) : (
                 messages.map((msg: ChatMessageData) => {
                   if (!msg) return null;
@@ -198,8 +183,8 @@ export default function ChatPage() {
                 })
               )}
               <div ref={messagesEndRef} />
-            </YStack>
-          </ScrollView>
+            </div>
+          </div>
 
           <ChatInput
             value={inputValue}
@@ -207,7 +192,6 @@ export default function ChatPage() {
             onSend={handleSend}
             disabled={!isConnected}
             placeholder={t('chat.input.placeholder') || 'Type a message...'}
-            sendText={t('chat.send') || 'Send'}
           />
         </GlassCard>
       </Container>

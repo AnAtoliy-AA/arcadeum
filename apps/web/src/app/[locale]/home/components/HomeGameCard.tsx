@@ -83,9 +83,9 @@ export function HomeGameCard({
 
   return (
     <article
-      data-testid={`game-card-${game.id}`}
       className="featured-card-main relative isolate flex h-full flex-col overflow-hidden rounded-[20px] border border-glass-border bg-glass-bg shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_24px_40px_-22px_rgba(0,0,0,0.7)] transition-[transform,border-color] duration-[250ms] after:pointer-events-none hover:-translate-y-[3px] hover:border-[color:color-mix(in_srgb,var(--game-accent)_30%,var(--glassBorder))]"
       style={accentVar}
+      data-testid={`game-card-${game.id}`}
     >
       <div className="featured-card-cover-main relative h-[200px] shrink-0 bg-featured-cover after:absolute after:inset-x-0 after:bottom-0 after:h-[60%] after:bg-card-cover-fade">
         <Link
@@ -158,11 +158,13 @@ export function HomeGameCard({
 
         <div className="featured-card-foot-main mt-auto flex gap-2">
           <LinkButton
+            className={
+              'featured-card-cta-main flex-1 text-[14px] tracking-[0.01em] [&>span]:font-extrabold'
+            }
             href={getPlayHref(game, routes, locale, comingSoon)}
             variant="victory"
             size="sm"
             disabled={isDisabled}
-            className="featured-card-cta-main flex-1 text-[14px] tracking-[0.01em] [&>span]:font-extrabold"
             data-testid="game-play-button"
             aria-label={`${playLabel} ${t(game.nameKey)}`}
           >
@@ -170,13 +172,13 @@ export function HomeGameCard({
             <span>{playLabel}</span>
           </LinkButton>
           <IconButton
+            className={'opacity-65 hover:opacity-100'}
             variant="icon"
             size="sm"
             onClick={() => onOpenDetails(game.id)}
             title={homeCopy.showMore ?? 'Show Details'}
             aria-label={homeCopy.gameHowToPlay ?? 'How to play'}
             data-testid="game-help-button"
-            className="opacity-65 hover:opacity-100"
           >
             <InfoIcon aria-hidden />
           </IconButton>

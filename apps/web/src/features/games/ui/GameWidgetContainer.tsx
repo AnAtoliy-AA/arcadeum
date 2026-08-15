@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { Text, YStack } from 'tamagui';
 import { MaximizeIcon, MinimizeIcon } from '@arcadeum/ui';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { useAutoExitFullscreen } from '../hooks/useAutoExitFullscreen';
@@ -96,10 +95,10 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
       <GameHeader>
         <GameInfo>
           <VariantIconBadge>
-            <Text fontSize={15}>{headerProps.variantEmoji}</Text>
+            <span className="text-[15px]">{headerProps.variantEmoji}</span>
           </VariantIconBadge>
 
-          <YStack gap={0} minWidth={0} flex={1} position="relative">
+          <div className="flex flex-col items-stretch gap-0 min-w-0 flex-1 relative">
             <GameTitle numberOfLines={1}>
               {headerProps.titleGradient ? (
                 <span
@@ -118,27 +117,25 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             {headerProps.subtitle && (
               <SubtitleText text={headerProps.subtitle} />
             )}
-          </YStack>
+          </div>
         </GameInfo>
 
         {headerProps.turn ? (
           <TurnStatusPill
-            $status={pillStatus}
-            gap="$2"
-            paddingLeft="$1"
+            status={pillStatus}
+            className="gap-2 pl-1"
             data-testid="turn-status-pill"
           >
             <TurnIndicator turn={headerProps.turn} />
           </TurnStatusPill>
         ) : (
           <TurnStatusPill
-            $status={pillStatus}
-            gap={headerProps.turnAvatar ? '$2' : undefined}
-            paddingLeft={headerProps.turnAvatar ? '$1' : undefined}
+            status={pillStatus}
+            className={headerProps.turnAvatar ? 'gap-2 pl-1' : undefined}
             data-testid="turn-status-pill"
           >
             {headerProps.turnAvatar}
-            <TurnStatusText $status={pillStatus}>
+            <TurnStatusText status={pillStatus}>
               {headerProps.turnStatusText}
             </TurnStatusText>
           </TurnStatusPill>
@@ -171,32 +168,26 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           }}
         >
           <Container
-            ref={containerRef as React.RefObject<never>}
             className="game-widget-container"
-            isMyTurn={!!isMyTurn}
-            isFullscreen={isFullscreen}
-            $variant={variant as Parameters<typeof Container>[0]['$variant']}
-            data-testid="game-widget-container"
             style={
               containerBackground
                 ? { background: containerBackground }
                 : undefined
             }
+            ref={containerRef as React.RefObject<never>}
+            isMyTurn={!!isMyTurn}
+            isFullscreen={isFullscreen}
+            variant={variant as Parameters<typeof Container>[0]['variant']}
+            data-testid="game-widget-container"
           >
             {renderedHeader}
             <SharedGameBoard data-testid="game-board-section">
               {loading ? (
-                <YStack
-                  flex={1}
-                  alignItems="center"
-                  justifyContent="center"
-                  gap="$3"
-                  minHeight={300}
-                >
-                  <Text fontSize="$5" fontWeight="500" opacity={0.8}>
+                <div className="flex flex-col flex-1 items-center justify-center gap-3 min-h-[300px]">
+                  <span className="text-[20px] font-medium opacity-[0.8]">
                     {t('games.roomPage.loadingGame')}
-                  </Text>
-                </YStack>
+                  </span>
+                </div>
               ) : (
                 board
               )}

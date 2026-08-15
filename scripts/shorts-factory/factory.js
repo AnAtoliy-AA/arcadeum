@@ -269,7 +269,7 @@ const SCENARIOS = [
   // --- Week 1: Game Discovery ---
   {
     name: 'gameExplorer',
-    caption: 'Discover and play the best web3 games instantly! 🎮',
+    caption: 'Ready to level up? Discover next-gen web3 multiplayer games instantly on Arcadeum! ⚡🎮 #web3gaming #gaming',
     steps: [
       { type: 'navigate', url: '/en', wait: 2500 },
       {
@@ -289,7 +289,7 @@ const SCENARIOS = [
   },
   {
     name: 'seaBattleIntro',
-    caption: 'Classic Sea Battle reimagined on the blockchain! ⚓',
+    caption: 'Sink enemy fleets & claim real rewards! ⚓ Play Sea Battle live on Arcadeum 🔥 #seabattle #indiegames',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'click', selector: 'a[href*="/games/sea-battle"]', wait: 3000 },
@@ -304,7 +304,7 @@ const SCENARIOS = [
   },
   {
     name: 'criticalClicks',
-    caption: 'Test your reflexes in Critical! Can you survive? ⚡',
+    caption: 'Test your reaction speed in Critical! High stakes, fast turns, endless thrill ⚡🔥 #arcade #gaming',
     steps: [
       { type: 'navigate', url: '/en/games/critical', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -314,7 +314,7 @@ const SCENARIOS = [
   },
   {
     name: 'tictactoeFun',
-    caption: 'Classic Tic Tac Toe - play with friends or bots! ❌⭕',
+    caption: 'Think Tic-Tac-Toe is easy? Try competing for real ranks on Arcadeum! ❌⭕ #boardgames #onlinegaming',
     steps: [
       { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -328,7 +328,7 @@ const SCENARIOS = [
   },
   {
     name: 'cascadeChaos',
-    caption: 'Match cards and dominate the board in Cascade! 🎲',
+    caption: 'Master the ultimate card cascade! Outsmart opponents & flex your strategy 🎲🏆 #cardgame #strategy',
     steps: [
       { type: 'navigate', url: '/en/games/cascade', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -342,7 +342,7 @@ const SCENARIOS = [
   },
   {
     name: 'createYourGame',
-    caption: 'Launch your custom game rooms in seconds! 🛠️',
+    caption: 'Create your custom game room in under 10 seconds and challenge your friends! 🛠️🔥 #gamedev #multiplayer',
     steps: [
       { type: 'navigate', url: '/en/games/create', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -833,7 +833,7 @@ async function executeStep(page, step) {
     case 'navigate': {
       const url = `${CONFIG.baseUrl}${step.url}`;
       log('info', `Step: Navigate to ${url}`);
-      await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await waitForContent(page);
       if (step.wait) await sleep(step.wait);
       break;
@@ -1128,13 +1128,13 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
   const trackVolume = getTrackVolume(audioTrack);
   log('info', `Selected audio track: ${audioTrack} with volume ${trackVolume}`);
 
-  // Calculate trim duration (cap at 8 seconds for social media, or use recorded length)
+  // Calculate trim duration (cap at 13 seconds for optimal 15s total duration with end card)
   const startOffsetSec = Math.max(0, startOffsetMs / 1000);
   const remainingDuration = Math.max(
-    2,
+    3,
     (recordedDuration - startOffsetMs) / 1000,
   );
-  const trimDuration = Math.min(remainingDuration, 8);
+  const trimDuration = Math.min(remainingDuration, 13);
   const fadeOutStart = Math.max(0, trimDuration - CONFIG.fadeOutDuration);
   const endCardDuration = 2;
 

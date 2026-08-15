@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@arcadeum/ui';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 interface LobbyOptionSectionProps {
   title: string;

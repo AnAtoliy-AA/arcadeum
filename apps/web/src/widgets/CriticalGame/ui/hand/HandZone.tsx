@@ -33,7 +33,7 @@ interface HandZoneProps {
  * track on the right. Mobile (≤480px): cards live in a horizontally-
  * scrolling track and the rail is replaced by a sticky `MobileHandBar`
  * fixed to the viewport bottom. The body must reserve `paddingBottom:
- * 64` on `$sm` so cards aren't hidden behind the bar.
+ * 64` at small screens so cards aren't hidden behind the bar.
  */
 export function HandZone(props: HandZoneProps) {
   // The legacy `sm` breakpoint (≤800px) fires on tablet portrait where the desktop

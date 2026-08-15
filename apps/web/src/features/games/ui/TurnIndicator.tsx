@@ -5,7 +5,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useGameChatStore } from '@/widgets/GameChat';
 import { InGameAvatar } from './InGameAvatar';
 import type { TurnStatusVariant } from './GameWidgetContainer';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 /**
  * Declarative turn contract shared by every game's header. A widget passes only

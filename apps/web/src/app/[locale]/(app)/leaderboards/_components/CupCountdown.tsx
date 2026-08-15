@@ -4,7 +4,7 @@ import type { CupSnapshot } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatCurrency, formatNumber } from '@/shared/i18n/formatters';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 // Temporary: tournaments aren't live yet. Flip to `true` to render the
 // real cup UI (prize pool / countdown / qualified pills) defined below.

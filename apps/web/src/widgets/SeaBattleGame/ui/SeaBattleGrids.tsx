@@ -43,11 +43,8 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
 
-  // Compute landscape synchronously from window dimensions. The legacy
-  // useMediaQuery() may hydrate with SSR defaults (all false) and stay stale
-  // if no matchMedia events fire (e.g. viewport set before page load in
-  // CI). Reading window directly avoids the async useEffect + useState
-  // pattern that can leave isLandscape stuck at false.
+  // Landscape is a pure function of window dimensions, so read it
+  // synchronously in the initializer — no effect round-trip needed.
   const [isLandscape, setIsLandscape] = useState(() => {
     if (typeof window === 'undefined') return false;
     return window.innerWidth > window.innerHeight;

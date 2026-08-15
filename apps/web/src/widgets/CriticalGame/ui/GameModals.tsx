@@ -139,7 +139,7 @@ export interface GameModalsProps {
   omniscienceModal: OmniscienceModalState | null;
   onCloseOmniscienceModal: () => void;
 
-  // Mobile gating — suppresses TargetedAttackModal + FavorModal on $sm;
+  // Mobile gating — suppresses TargetedAttackModal + FavorModal at small screens;
   // ActiveGameView renders MobileActionSheet in their place.
   isMobile?: boolean;
 }

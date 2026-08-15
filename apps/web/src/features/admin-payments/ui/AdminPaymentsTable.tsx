@@ -2,7 +2,7 @@
 import { Button, GlassCard } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { AdminPaymentNoteItem } from '../api';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface AdminPaymentsTableLabels {
   empty: { noNotes: string; noResults: string };

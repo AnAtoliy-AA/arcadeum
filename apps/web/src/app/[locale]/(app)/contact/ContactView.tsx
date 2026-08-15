@@ -19,7 +19,7 @@ import {
   InstagramIcon,
   TwitterIcon,
 } from './ContactView.icons';
-import { useContactStyles } from './useContactStyles';
+import { getContactStyles } from './getContactStyles';
 import { ContactSidePanel } from './ContactSidePanel';
 import { ContactFaq, getFaqItems } from './ContactFaq';
 import { ContactAvatars } from './ContactAvatars';
@@ -93,7 +93,7 @@ export default function ContactView({
   SUPPORT_EMAIL,
   WORKING_HOURS,
 }: ContactViewProps) {
-  const s = useContactStyles();
+  const s = getContactStyles();
   const { messages } = useLanguage();
   const t = (messages.legal?.contact as unknown as ContactMessages) || initialT;
   const sections = t?.sections;

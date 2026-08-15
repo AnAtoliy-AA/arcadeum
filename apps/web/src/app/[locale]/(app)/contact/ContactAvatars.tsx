@@ -1,7 +1,6 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { useThemeColors } from '@/shared/hooks/useThemeColors';
 
 const palettes = [
   'linear-gradient(135deg,#5eead4,#818cf8)',
@@ -37,25 +36,18 @@ const avatarStyle = (
   letterSpacing: '0.3px',
 });
 
-export type ContactAvatarsProps = {
+type ContactAvatarsProps = {
   count?: number;
   size?: number;
   borderColor?: string;
 };
-
-type ThemeRecord = Record<string, { val?: string; get?: () => string }>;
 
 export function ContactAvatars({
   count = 3,
   size = 24,
   borderColor,
 }: ContactAvatarsProps) {
-  const theme = useThemeColors() as unknown as ThemeRecord;
-  const resolvedBorder =
-    borderColor ??
-    theme.background?.val ??
-    theme.background?.get?.() ??
-    '#06011b';
+  const resolvedBorder = borderColor ?? 'var(--background)';
   return (
     <span style={stackStyle} aria-hidden="true" data-testid="contact-avatars">
       {Array.from({ length: count }).map((_, i) => (

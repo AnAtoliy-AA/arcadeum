@@ -10,7 +10,7 @@ import {
 import { formatSchedule } from '../lib/formatSchedule';
 import { getStatusChipColor } from '../lib/statusChip';
 import { nextStatuses } from '../lib/transitions';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface AdminTournamentsTableLabels {
   empty: { noResults: string; noTournaments: string };

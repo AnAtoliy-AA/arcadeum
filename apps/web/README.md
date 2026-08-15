@@ -65,7 +65,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 - **Framework**: [Next.js](https://nextjs.org/) (App Router)
 - **Language**: TypeScript (strict mode)
-- **Styling**: Tamagui with custom theme configuration
+- **Styling**: Tailwind CSS with CSS-variable theming (`@arcadeum/ui` design tokens)
 - **State Management**: Zustand for global state, React Context for scoped state
 - **Routing**: Next.js App Router with file-based routing
 - **API Client**: @tanstack/react-query with Axios for HTTP requests

@@ -2,7 +2,7 @@
 import { DeltaChip } from '@arcadeum/ui';
 import type { ClimberFaller } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export function ClimbersFallersRail({
   climbers,

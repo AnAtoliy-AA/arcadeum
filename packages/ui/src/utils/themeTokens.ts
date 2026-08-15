@@ -2,9 +2,9 @@
  * Resolve a legacy `$token` reference into a CSS value at runtime.
  *
  * Theme-dependent tokens (background, primary, glassBg, …) map to the CSS
- * variables minted on <html> by ThemeContext. Static tokens (genre palettes,
- * role colors, gold shades) and the Radix-style scales used by role badges
- * fall back to their literal values.
+ * variables minted on <html> by the web ThemeContext. Static tokens (genre
+ * palettes, role colors, gold shades) and the Radix-style scales used by
+ * role badges fall back to their literal values.
  */
 
 /** Themed keys minted as CSS vars by ThemeContext (themeDefinitions). */
@@ -104,8 +104,6 @@ const STATIC_COLORS: Record<string, string> = {
   colorMuted: 'rgba(180, 180, 200, 0.7)',
   textMuted: 'rgba(180, 180, 200, 0.7)',
   warningBg: 'rgba(146, 64, 14, 0.1)',
-  red3: '#4c1d1d',
-  orange10: '#f76b15',
   primaryBgSoft: 'rgba(87, 195, 255, 0.1)',
   successBg: 'rgba(16, 185, 129, 0.15)',
   successBgSoft: 'rgba(16, 185, 129, 0.2)',
@@ -120,41 +118,25 @@ const STATIC_COLORS: Record<string, string> = {
 
 /** Radix dark scale used by role badges (legacy default dark theme). */
 const RADIX_DARK: Record<string, string> = {
-  red1: '#1c1316',
-  red2: '#1a1414',
   red3: '#4c1d1d',
   red9: '#ff6369',
-  violet1: '#17151f',
-  violet2: '#1b1825',
   violet3: '#241c43',
   violet9: '#8767fb',
-  orange1: '#1a1511',
-  orange2: '#1b1712',
   orange3: '#3d1f0e',
   orange9: '#ff9e4a',
-  yellow1: '#1a170e',
-  yellow2: '#1b180f',
   yellow3: '#3a2d00',
   yellow9: '#ffd644',
   pink3: '#51172f',
   pink9: '#f65cb6',
   blue3: '#0b2440',
   blue9: '#52a9ff',
-  gray1: '#161618',
-  gray2: '#1a1a1c',
   gray3: '#1c1d21',
   gray4: '#26272b',
   gray9: '#6e7683',
   gray11: '#babfc7',
-  green1: '#0e1815',
-  green2: '#0f1a16',
   green3: '#11301f',
   green9: '#3dd68c',
   green10: '#3fd386',
-  cyan1: '#0d1a1e',
-  cyan2: '#0f1c21',
-  cyan3: '#0b3445',
-  cyan9: '#00b2d6',
 };
 
 /** Convert a `$token` (or plain CSS value) into a usable CSS color string. */

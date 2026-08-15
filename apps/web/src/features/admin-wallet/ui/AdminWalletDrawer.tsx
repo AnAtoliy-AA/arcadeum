@@ -12,7 +12,7 @@ import {
 } from '@arcadeum/ui';
 import { loadAdminWalletAction } from '../server/wallet.actions';
 import { AdminWalletForm, type AdminWalletFormLabels } from './AdminWalletForm';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 import type {
   WalletBalance,
   WalletTransactionView,

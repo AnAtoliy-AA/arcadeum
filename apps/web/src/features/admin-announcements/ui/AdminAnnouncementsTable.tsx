@@ -9,7 +9,7 @@ import {
   type AnnouncementStatus,
 } from '../api';
 import { formatWindow } from '../lib/formatWindow';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface AdminAnnouncementsTableLabels {
   empty: { noResults: string; noAnnouncements: string };

@@ -8,7 +8,7 @@ import { cx } from '@arcadeum/ui/utils/cx';
  * for `MatchWidget` so the rows don't span full bleed and the hand
  * stays clear of the screen edges on wide monitors.
  *
- * `paddingBottom` on `$sm` reserves room for the sticky `MobileHandBar`
+ * `paddingBottom` at small screens reserves room for the sticky `MobileHandBar`
  * which is portaled to body and thus outside this grid's flow.
  */
 // §3.3 — `maxWidth` is the upper bound; the actual constraint is the

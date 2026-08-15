@@ -2,7 +2,7 @@ import React from 'react';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Card, SkeletonText, ProgressCircle } from '@arcadeum/ui';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export const statsOverviewCSS = `
   .stats-overview-grid {

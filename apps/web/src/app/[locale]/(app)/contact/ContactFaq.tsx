@@ -4,7 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { ChevronIcon } from './ContactView.icons';
-import { useContactStyles } from './useContactStyles';
+import { getContactStyles } from './getContactStyles';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 export type FaqItem = { key: string; question: string; answerTemplate: string };
@@ -65,7 +65,7 @@ export function ContactFaq({
   browseLabel,
   questionsLabel,
 }: ContactFaqProps) {
-  const s = useContactStyles();
+  const s = getContactStyles();
   const [openKey, setOpenKey] = useState<string | null>(items[0]?.key ?? null);
   if (items.length === 0) return null;
   return (

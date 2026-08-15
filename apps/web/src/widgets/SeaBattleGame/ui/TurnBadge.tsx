@@ -1,6 +1,6 @@
 'use client';
 
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 interface TurnBadgeProps {
   isYourTurn: boolean;

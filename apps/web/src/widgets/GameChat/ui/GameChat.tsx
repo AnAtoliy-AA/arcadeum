@@ -43,7 +43,6 @@ import {
   TitleDot,
   UnreadBadge,
 } from './GameChat.styled';
-import { useThemeColors } from '@/shared/hooks/useThemeColors';
 
 export type { ResolvedEquipped, EquippedResolver } from './types';
 
@@ -113,8 +112,7 @@ export function GameChat({
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
   const resolveActorColor = useGameChatStore((s) => s.resolveActorColor);
-  const theme = useThemeColors();
-  const inputColor = theme.color || '#ecefee';
+  const inputColor = 'var(--color)';
 
   const scopes = teamMode ? TEAM_SCOPES : FFA_SCOPES;
   const [draft, setDraft] = useState('');

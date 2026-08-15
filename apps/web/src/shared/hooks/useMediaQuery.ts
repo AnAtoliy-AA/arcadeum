@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 /**
  * Breakpoint queries matching the values used across the app (see
  * /tailwind-pro responsive variant map).
  */
-export const MEDIA_QUERIES = {
+const MEDIA_QUERIES = {
   xs: '(max-width: 660px)',
   sm: '(max-width: 800px)',
   md: '(max-width: 1150px)',
@@ -25,53 +25,69 @@ export const MEDIA_QUERIES = {
   pointerCoarse: '(pointer: coarse)',
 } as const;
 
-export type MediaQueryKey = keyof typeof MEDIA_QUERIES;
+type MediaQueryKey = keyof typeof MEDIA_QUERIES;
 
-export type MediaQuerySnapshot = Record<MediaQueryKey, boolean>;
+type MediaQuerySnapshot = Record<MediaQueryKey, boolean>;
 
 const SERVER_SNAPSHOT: MediaQuerySnapshot = Object.fromEntries(
   Object.keys(MEDIA_QUERIES).map((key) => [key, false]),
 ) as MediaQuerySnapshot;
 
+// One shared matchMedia subscription for the whole app: the snapshot is read
+// once per change event instead of once per hook instance.
+let snapshot: MediaQuerySnapshot = SERVER_SNAPSHOT;
+let mqls: MediaQueryList[] | null = null;
+const listeners = new Set<() => void>();
+
 function readSnapshot(): MediaQuerySnapshot {
-  if (typeof window === 'undefined') return SERVER_SNAPSHOT;
-  const snapshot = {} as MediaQuerySnapshot;
+  const next = {} as MediaQuerySnapshot;
   for (const [key, query] of Object.entries(MEDIA_QUERIES)) {
-    snapshot[key as MediaQueryKey] = window.matchMedia(query).matches;
+    next[key as MediaQueryKey] = window.matchMedia(query).matches;
   }
+  return next;
+}
+
+function emitChange(): void {
+  snapshot = readSnapshot();
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(onStoreChange: () => void): () => void {
+  if (!mqls) {
+    mqls = Object.values(MEDIA_QUERIES).map((query) =>
+      window.matchMedia(query),
+    );
+    mqls.forEach((mql) => {
+      if (typeof mql.addEventListener === 'function') {
+        mql.addEventListener('change', emitChange);
+      } else {
+        mql.addListener(emitChange);
+      }
+    });
+    snapshot = readSnapshot();
+  }
+  listeners.add(onStoreChange);
+  return () => {
+    listeners.delete(onStoreChange);
+    if (listeners.size === 0 && mqls) {
+      mqls.forEach((mql) => {
+        if (typeof mql.removeEventListener === 'function') {
+          mql.removeEventListener('change', emitChange);
+        } else {
+          mql.removeListener(emitChange);
+        }
+      });
+      mqls = null;
+      snapshot = SERVER_SNAPSHOT;
+    }
+  };
+}
+
+function getSnapshot(): MediaQuerySnapshot {
   return snapshot;
 }
 
 /** Media-query snapshot — boolean per breakpoint. */
 export function useMediaQuery(): MediaQuerySnapshot {
-  const [snapshot, setSnapshot] = useState<MediaQuerySnapshot>(SERVER_SNAPSHOT);
-
-  useEffect(() => {
-    const listener = () => setSnapshot(readSnapshot());
-    listener();
-
-    const mqls = Object.values(MEDIA_QUERIES).map((query) =>
-      window.matchMedia(query),
-    );
-
-    mqls.forEach((mql) => {
-      if (typeof mql.addEventListener === 'function') {
-        mql.addEventListener('change', listener);
-      } else {
-        mql.addListener(listener);
-      }
-    });
-
-    return () => {
-      mqls.forEach((mql) => {
-        if (typeof mql.removeEventListener === 'function') {
-          mql.removeEventListener('change', listener);
-        } else {
-          mql.removeListener(listener);
-        }
-      });
-    };
-  }, []);
-
-  return snapshot;
+  return useSyncExternalStore(subscribe, getSnapshot, () => SERVER_SNAPSHOT);
 }

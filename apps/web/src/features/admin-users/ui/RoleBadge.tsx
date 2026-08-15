@@ -1,6 +1,6 @@
 'use client';
 import type { UserRole } from '@/entities/session/model/types';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 import { ROLE_COLORS } from '../lib/roleColors';
 
 const FALLBACK_COLOR = { fg: '$gray9', bg: '$gray3' };

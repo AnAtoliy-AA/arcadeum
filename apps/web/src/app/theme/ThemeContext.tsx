@@ -134,26 +134,12 @@ export function AppThemeProvider({
 
     // Defer expensive theme token iteration to idle time
     const applyTokenWrites = () => {
-      const activeTheme = themeDefinitions[resolvedTheme] as Record<
-        string,
-        { val?: string; variable?: string } | string
-      >;
+      const activeTheme = themeDefinitions[resolvedTheme];
       if (activeTheme) {
         Object.entries(activeTheme).forEach(([key, value]) => {
-          if (value) {
-            const stringValue =
-              typeof value === 'object' && value !== null
-                ? value.val || value.variable || String(value)
-                : String(value);
-
-            if (
-              stringValue &&
-              typeof stringValue === 'string' &&
-              !stringValue.includes('[object')
-            ) {
-              doc.style.setProperty(`--${key}`, stringValue);
-              doc.style.setProperty(`--color-${key}`, stringValue);
-            }
+          if (value && typeof value === 'string') {
+            doc.style.setProperty(`--${key}`, value);
+            doc.style.setProperty(`--color-${key}`, value);
           }
         });
       }

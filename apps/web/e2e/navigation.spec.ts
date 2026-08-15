@@ -80,7 +80,7 @@ test.describe('Navigation', () => {
   test('should navigate to auth page', async ({ page }) => {
     if (getIsMobile(page)) {
       // On mobile, login lives inside the drawer (the header indicator is
-      // hidden at $sm). Open the menu and click the drawer login CTA.
+      // hidden at small screens). Open the menu and click the drawer login CTA.
       await page.getByTestId('mobile-menu-button').click();
       const loginLink = page
         .getByTestId('mobile-nav')

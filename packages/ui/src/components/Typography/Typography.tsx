@@ -1,6 +1,7 @@
 'use client';
 import { forwardRef } from 'react';
 import { cx } from '../../utils/cx';
+import { resolveThemeColor } from '../../utils/themeTokens';
 
 export type TypographyProps = {
   children?: React.ReactNode;
@@ -87,13 +88,10 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
     ref,
   ) {
     const spanProps = rest as React.HTMLAttributes<HTMLSpanElement>;
-    const resolvedColor = color?.startsWith('$')
-      ? `var(--${color.slice(1)})`
-      : color;
     const typographyStyle: React.CSSProperties = {
       ...(alpha ? { opacity: alphaOpacities[alpha] } : null),
       ...(tracking ? { letterSpacing: trackingSpacings[tracking] } : null),
-      ...(resolvedColor ? { color: resolvedColor } : null),
+      ...(color ? { color: resolveThemeColor(color) } : null),
     };
     return (
       <span

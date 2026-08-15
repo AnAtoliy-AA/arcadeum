@@ -8,7 +8,7 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { claimTierAction } from '../actions';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 import type {
   BattlePassReward,
   BattlePassState,

@@ -23,7 +23,7 @@ import { BadgePill, TeamPill } from './Pills';
 import { FieldStatus } from './FieldStatus';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { InGameAvatar } from '@/features/games/ui';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 interface AttackPlayerBoardProps {
   player: SeaBattlePlayerState;

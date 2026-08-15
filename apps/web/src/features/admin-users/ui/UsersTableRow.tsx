@@ -4,7 +4,7 @@ import type { AdminUserItem } from '../api';
 import type { UserRole } from '@/entities/session/model/types';
 import { RoleBadge } from './RoleBadge';
 import { RoleSelect } from './RoleSelect';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface UsersTableRowProps {
   item: AdminUserItem;

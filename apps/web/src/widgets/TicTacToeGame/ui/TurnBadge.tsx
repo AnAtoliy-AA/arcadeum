@@ -3,7 +3,7 @@
 import { InGameAvatar } from '@/features/games/ui';
 import { useTicTacToeTheme } from '../lib/TicTacToeThemeContext';
 import type { TicTacToePlayer, TicTacToeTeam } from '../types';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 interface TurnBadgeProps {
   currentEntryId: string | null;

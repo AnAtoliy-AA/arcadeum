@@ -4,7 +4,7 @@ import { GlassCard, Typography } from '@arcadeum/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ADMIN_SIDEBAR_ITEMS, type AdminSidebarItem } from './sidebarItems';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface AdminSidebarLabels {
   items: Partial<Record<AdminSidebarItem['id'], string>>;

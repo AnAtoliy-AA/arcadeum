@@ -7,7 +7,7 @@ import {
   type PublicTournamentItem,
 } from '../api';
 import type { TournamentGameType } from '@/features/admin-tournaments/api';
-import { resolveThemeColor } from '@/shared/lib/theme-tokens';
+import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface TournamentCardLabels {
   registered: string;

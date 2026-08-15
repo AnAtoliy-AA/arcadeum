@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.22] - 2026-08-15
+
+### Improved
+- cut home page critical-path bytes for Lighthouse
+
+### Refactored
+- remove redundant DOM wrappers and nested main landmarks
+
+
 ## [1.25.21] - 2026-08-15
 
 ### Fixed

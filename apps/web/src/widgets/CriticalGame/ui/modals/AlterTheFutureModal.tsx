@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -16,7 +16,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { YStack, XStack, Text, styled } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import type { CriticalCard } from '@/widgets/CriticalGame/types';
 import { getCardTranslationKey } from '@/widgets/CriticalGame/lib/cardUtils';
 import {
@@ -35,63 +35,29 @@ import { CardImage } from '../styles/card-image';
 import { type GameVariant } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
-const CardList = styled(XStack, {
-  name: 'CardList',
-  justifyContent: 'center',
-  gap: '$4',
-  marginBottom: '$8',
-  flexWrap: 'wrap',
-});
-
-const SortableCardWrapper = styled(YStack, {
-  name: 'SortableCardWrapper',
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  borderWidth: 2,
-  borderColor: 'rgba(255, 255, 255, 0.2)',
-  borderRadius: '$4',
-  padding: '$4',
-  alignItems: 'center',
-  gap: '$2',
-  minWidth: 100,
-  cursor: 'grab',
-
-  variants: {
-    isDragging: {
-      true: {
-        opacity: 0.5,
-        shadowColor: 'rgba(255, 255, 255, 0.5)',
-        shadowOffset: { width: 0, height: 0 },
-        shadowRadius: 10,
-      },
-    },
-  } as const,
-
-  pressStyle: {
-    cursor: 'grabbing',
-  },
-});
-
-// Removed CardEmoji styled component as it is replaced by CardImage
-
-const CardName = styled(Text, {
-  name: 'CardName',
-  fontSize: '$3',
-  textAlign: 'center',
-  color: '#fff',
-});
-
-const CardIndex = styled(Text, {
-  name: 'CardIndex',
-  fontSize: '$2',
-  color: 'rgba(255, 255, 255, 0.6)',
-  marginBottom: '$1',
-});
-
-const DescriptionText = styled(Text, {
-  name: 'DescriptionText',
-  textAlign: 'center',
-  marginBottom: '$6',
-  color: '#ccc',
+const SortableCardWrapper = forwardRef<
+  HTMLDivElement,
+  {
+    isDragging?: boolean;
+    className?: string;
+  } & React.HTMLAttributes<HTMLDivElement>
+>(function SortableCardWrapper({ isDragging, className, ...props }, ref) {
+  return (
+    <div
+      className={cx(
+        'box-border flex min-w-[100px] cursor-grab flex-col items-center gap-2 rounded-2xl border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.1)] p-4',
+        isDragging && 'opacity-[0.5]',
+        className,
+      )}
+      style={
+        isDragging
+          ? { boxShadow: '0 0 10px rgba(255,255,255,0.5)', ...props.style }
+          : props.style
+      }
+      ref={ref}
+      {...props}
+    />
+  );
 });
 
 interface SortableCardProps {
@@ -121,14 +87,16 @@ function SortableCard({ id, card, index, t, cardVariant }: SortableCardProps) {
 
   return (
     <SortableCardWrapper
-      ref={(node: unknown) => setNodeRef(node as HTMLElement | null)}
+      ref={(node: HTMLDivElement | null) => setNodeRef(node)}
       style={{ ...style, touchAction: 'none' }}
       isDragging={isDragging}
-      role={role as unknown as 'presentation'}
+      role={role}
       {...restAttributes}
       {...listeners}
     >
-      <CardIndex>#{index + 1}</CardIndex>
+      <div className="box-border mb-1 text-[14px] text-[rgba(255,255,255,0.6)]">
+        #{index + 1}
+      </div>
       <Card
         $cardType={card}
         $variant={cardVariant as GameVariant}
@@ -143,9 +111,9 @@ function SortableCard({ id, card, index, t, cardVariant }: SortableCardProps) {
         <CardImage variant={cardVariant ?? ''} cardType={card} />
         <GradientScrim />
       </Card>
-      <CardName>
+      <div className="box-border text-center text-[16px] text-[#fff]">
         {t(getCardTranslationKey(card, cardVariant) as string)}
-      </CardName>
+      </div>
     </SortableCardWrapper>
   );
 }
@@ -212,9 +180,9 @@ export default function AlterTheFutureModal({
           </ModalTitle>
         </ModalHeader>
 
-        <DescriptionText>
+        <div className="box-border mb-6 text-center text-[#ccc]">
           {t('games.table.modals.alterTheFuture.description')}
-        </DescriptionText>
+        </div>
 
         <DndContext
           sensors={sensors}
@@ -225,7 +193,7 @@ export default function AlterTheFutureModal({
             items={items}
             strategy={horizontalListSortingStrategy}
           >
-            <CardList>
+            <div className="box-border mb-8 flex flex-row flex-wrap justify-center gap-4">
               {items.map((item, index) => (
                 <SortableCard
                   key={item.id}
@@ -236,7 +204,7 @@ export default function AlterTheFutureModal({
                   cardVariant={cardVariant}
                 />
               ))}
-            </CardList>
+            </div>
           </SortableContext>
         </DndContext>
 

@@ -111,7 +111,10 @@ export function TournamentCard({
   }
 
   return (
-    <GlassCard className="p-4 gap-3" data-testid={`tournament-card-${item.id}`}>
+    <GlassCard
+      className={'p-4 gap-3'}
+      data-testid={`tournament-card-${item.id}`}
+    >
       <div className="box-border flex flex-row items-start justify-space-between gap-2">
         <div className="box-border flex flex-col items-stretch flex-1 gap-1">
           <span className="box-border text-[20px] font-bold">{item.name}</span>
@@ -127,9 +130,7 @@ export function TournamentCard({
           </span>
         </div>
         <div
-          className={
-            '"box-border flex flex-row items-stretch px-2 py-1 rounded-lg"'
-          }
+          className="box-border flex flex-row items-stretch px-2 py-1 rounded-lg"
           style={{ backgroundColor: STATUS_BG[item.effectiveStatus] }}
         >
           <span className="box-border text-[12px] font-bold">

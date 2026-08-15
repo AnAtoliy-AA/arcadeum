@@ -1,103 +1,32 @@
-import { YStack, styled, GetProps } from 'tamagui';
-import { memo } from 'react';
-import type { ReactNode, ReactElement } from 'react';
+import { forwardRef } from 'react';
+import type { ReactNode } from 'react';
+import { cx } from '../../utils/cx';
 
 export type CardVariant = 'default' | 'elevated' | 'outlined' | 'glass' | 'error';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 
-const StyledCard = styled(YStack, {
-  name: 'Card',
-  borderRadius: '$5',
-  position: 'relative',
-  overflow: 'hidden',
+const variantClasses: Record<CardVariant, string> = {
+  default: 'border border-[var(--borderColor)] bg-[var(--background)]',
+  elevated:
+    'border border-[var(--borderColor)] bg-[var(--background)] shadow-[0_6px_14px_rgba(0,0,0,0.3)]',
+  outlined: 'border border-dashed border-[var(--borderColor)] bg-transparent',
+  glass: 'border border-[var(--glassBorder)] bg-[var(--glassBg)]',
+  error:
+    'border border-[rgba(185,28,28,0.4)] bg-[rgba(185,28,28,0.1)] text-[var(--danger)]',
+};
 
-  variants: {
-    variant: {
-      default: {
-        backgroundColor: '$background',
-        borderColor: '$borderColor',
-        borderWidth: 1,
-      },
-      elevated: {
-        backgroundColor: '$background',
-        borderColor: '$borderColor',
-        borderWidth: 1,
-        elevation: '$medium',
-      },
-      outlined: {
-        backgroundColor: 'transparent',
-        borderColor: '$borderColor',
-        borderWidth: 1,
-        borderStyle: 'dashed',
-      },
-      glass: {
-        backgroundColor: '$glassBg',
-        borderColor: '$glassBorder',
-        borderWidth: 1,
-      },
-      error: {
-        backgroundColor: '$dangerBgSoft',
-        borderColor: '$dangerBorder',
-        borderWidth: 1,
-        color: '$danger',
-      },
-    },
-    cardPadding: {
-      none: { padding: 0 },
-      sm: { padding: '$3' },
-      md: { padding: '$5' },
-      lg: { padding: '$7' },
-    },
-    interactive: {
-      true: {
-        cursor: 'pointer',
-        hoverStyle: {
-          y: -6,
-          borderColor: '$primary',
-        },
-        pressStyle: {
-          scale: 0.98,
-          y: -2,
-        },
-      },
-    },
-    animated: {
-      true: {
-        animation: 'medium',
-      },
-    },
-  } as const,
+const paddingClasses: Record<CardPadding, string> = {
+  none: 'p-0',
+  sm: 'p-3',
+  md: 'p-5',
+  lg: 'p-7',
+};
 
-  defaultVariants: {
-    variant: 'elevated',
-    cardPadding: 'md',
-    animated: true,
-  },
-});
-
-const TopLine = styled(YStack, {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: 2,
-  opacity: 0,
-  background: 'linear-gradient(90deg, transparent, $primary, transparent)',
-  scaleX: 0.5,
-
-  variants: {
-    visible: {
-      true: {
-        opacity: 1,
-        scaleX: 1,
-      },
-    },
-  } as const,
-});
-
-export type CardProps = GetProps<typeof StyledCard> & {
+export type CardProps = {
   variant?: CardVariant;
   padding?: CardPadding;
+  /** @deprecated Use padding instead */
+  cardPadding?: CardPadding;
   interactive?: boolean;
   children?: ReactNode;
   group?: string | boolean;
@@ -105,50 +34,58 @@ export type CardProps = GetProps<typeof StyledCard> & {
   /** @deprecated Use onClick instead */
   onPress?: () => void;
   onClick?: (e: unknown) => void;
-};
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>;
 
-interface CardInnerProps extends CardProps {
-  isCurrent?: boolean;
-  isHost?: boolean;
-  isCurrentUserCard?: boolean;
-  $isCurrent?: boolean;
-  $isHost?: boolean;
-  $isCurrentUser?: boolean;
-  $variant?: string;
-  $status?: string;
-  [key: string]: unknown;
-}
-
-import { filterProps } from '../../utils/filterProps';
-
-export const Card = StyledCard.styleable<CardProps>(
-  (
-    {
-      variant = 'elevated',
-      padding = 'md',
-      interactive = false,
-      children,
-      onPress,
-      onClick,
-      ...rest
-    }: CardInnerProps,
-    ref,
-  ) => {
-    const filteredProps = filterProps({ ...rest, onPress, onClick });
-
-    return (
-      <StyledCard
-        ref={ref}
-        variant={variant}
-        cardPadding={padding}
-        interactive={interactive}
-        {...filteredProps}
-      >
-        <TopLine visible={interactive} className="card-top-line" />
-        {children}
-      </StyledCard>
-    );
+export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
+  {
+    variant = 'elevated',
+    padding,
+    cardPadding,
+    interactive = false,
+    children,
+    onPress,
+    onClick,
+    className,
+    ...rest
   },
-);
+  ref,
+) {
+  const resolvedPadding: CardPadding = padding ?? cardPadding ?? 'md';
+  return (
+    <div
+      ref={ref}
+      className={cx(
+        'relative',
+        'box-border',
+        'overflow-hidden',
+        'rounded-2xl',
+        variantClasses[variant],
+        paddingClasses[resolvedPadding],
+        interactive &&
+          'cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-[var(--primary)] active:scale-[0.98] active:-translate-y-0.5',
+        !interactive && 'transition-all duration-300 ease-out',
+        className,
+      )}
+      onClick={onClick ?? onPress}
+      {...rest}
+    >
+      <span
+        aria-hidden
+        className={cx(
+          'card-top-line',
+          'pointer-events-none absolute inset-x-0 top-0 h-0.5 origin-center',
+          interactive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-50',
+          'transition-all duration-300 ease-out',
+        )}
+        style={{
+          background:
+            'linear-gradient(90deg, transparent, var(--primary), transparent)',
+        }}
+      />
+      {children}
+    </div>
+  );
+});
 
 Card.displayName = 'Card';

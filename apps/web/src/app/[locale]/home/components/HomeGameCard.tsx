@@ -158,7 +158,9 @@ export function HomeGameCard({
 
         <div className="featured-card-foot-main mt-auto flex gap-2">
           <LinkButton
-            className="featured-card-cta-main flex-1 text-[14px] tracking-[0.01em] [&>span]:font-extrabold"
+            className={
+              'featured-card-cta-main flex-1 text-[14px] tracking-[0.01em] [&>span]:font-extrabold'
+            }
             href={getPlayHref(game, routes, locale, comingSoon)}
             variant="victory"
             size="sm"
@@ -170,7 +172,7 @@ export function HomeGameCard({
             <span>{playLabel}</span>
           </LinkButton>
           <IconButton
-            className="opacity-65 hover:opacity-100"
+            className={'opacity-65 hover:opacity-100'}
             variant="icon"
             size="sm"
             onClick={() => onOpenDetails(game.id)}

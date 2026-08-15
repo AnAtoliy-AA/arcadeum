@@ -7,6 +7,7 @@ import {
   type ChangeEvent,
   type CSSProperties,
 } from 'react';
+import { cx } from '../../utils/cx';
 
 export type FloatingLabelTextAreaProps = {
   id?: string;
@@ -22,8 +23,14 @@ export type FloatingLabelTextAreaProps = {
   minLength?: number;
   maxLength?: number;
   rows?: number;
+  className?: string;
   'data-testid'?: string;
 };
+
+const accent = 'var(--accent)';
+const background = 'var(--background)';
+const textSecondary = 'var(--textSecondary)';
+const warning = 'var(--warning)';
 
 const baseLabelStyle: CSSProperties = {
   position: 'absolute',
@@ -53,6 +60,7 @@ export const FloatingLabelTextArea = forwardRef<
     minLength,
     maxLength,
     rows,
+    className,
     'data-testid': testId,
   },
   ref,
@@ -64,11 +72,6 @@ export const FloatingLabelTextArea = forwardRef<
   const value = isControlled ? valueProp : internal;
   const [focused, setFocused] = useState(false);
   const filled = (value ?? '').length > 0;
-
-  const accent = 'var(--accent)';
-  const background = 'var(--background)';
-  const textSecondary = 'var(--textSecondary)';
-  const warning = 'var(--warning)';
 
   const isFloated = focused || filled;
   const labelStyle: CSSProperties = isFloated
@@ -98,19 +101,10 @@ export const FloatingLabelTextArea = forwardRef<
 
   const length = (value ?? '').length;
   const warn = maxLength ? length > maxLength * 0.85 : false;
-  const counterStyle: CSSProperties = {
-    position: 'absolute',
-    right: 12,
-    bottom: 8,
-    fontSize: 11,
-    fontVariantNumeric: 'tabular-nums',
-    color: warn ? warning : textSecondary,
-    pointerEvents: 'none',
-  };
 
   return (
     <div
-      style={{ position: 'relative', width: fullWidth ? '100%' : undefined }}
+      className={cx('relative', fullWidth && 'w-full', className)}
     >
       <textarea
         ref={ref}
@@ -127,37 +121,12 @@ export const FloatingLabelTextArea = forwardRef<
         maxLength={maxLength}
         placeholder=" "
         data-testid={testId}
-        style={{
-          paddingTop: 24,
-          paddingBottom: 28,
-          paddingLeft: 14,
-          paddingRight: 14,
-          borderRadius: 12,
-          borderWidth: 1,
-          borderStyle: 'solid',
-          backgroundColor: 'var(--background)',
-          borderColor: error ? 'var(--danger)' : 'var(--borderColor)',
-          color: 'var(--color)',
-          fontSize: 15,
-          width: '100%',
-          minHeight: 200,
-          outline: 'none',
-          transition: 'border-color 160ms ease',
-        }}
-        onMouseEnter={(e) => {
-          if (!error) e.currentTarget.style.borderColor = 'var(--primary)';
-        }}
-        onMouseLeave={(e) => {
-          if (!error && !focused) {
-            e.currentTarget.style.borderColor = 'var(--borderColor)';
-          }
-        }}
-        onFocusCapture={(e) => {
-          if (!error) e.currentTarget.style.borderColor = 'var(--accent)';
-        }}
-        onBlurCapture={(e) => {
-          if (!error) e.currentTarget.style.borderColor = 'var(--borderColor)';
-        }}
+        className={cx(
+          'min-h-[200px] w-full rounded-[12px] border bg-[var(--background)] px-3.5 pb-7 pt-6 text-[15px] text-[var(--color)] outline-none transition-[border-color] duration-160',
+          error
+            ? 'border-[var(--danger)]'
+            : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[2px] focus:border-[var(--accent)]',
+        )}
       />
       <label htmlFor={id} style={labelStyle}>
         {label}
@@ -166,7 +135,12 @@ export const FloatingLabelTextArea = forwardRef<
         ) : null}
       </label>
       {maxLength ? (
-        <span style={counterStyle}>
+        <span
+          className={cx(
+            'pointer-events-none absolute bottom-2 right-3 text-[11px] tabular-nums',
+            warn ? 'text-[var(--warning)]' : 'text-[var(--textSecondary)]',
+          )}
+        >
           {length} / {maxLength}
         </span>
       ) : null}

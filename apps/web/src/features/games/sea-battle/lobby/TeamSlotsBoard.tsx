@@ -148,7 +148,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                   data-testid={`team-row-${team.id}`}
                 >
                   <Input
-                    className="flex-1 min-w-[120px]"
+                    className={'flex-1 min-w-[120px]'}
                     type="text"
                     value={draft.name}
                     placeholder={t(

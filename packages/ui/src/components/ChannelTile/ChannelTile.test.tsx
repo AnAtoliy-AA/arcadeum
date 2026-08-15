@@ -1,15 +1,8 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { ChannelTile } from './ChannelTile';
 import { describe, it, expect, vi } from 'vitest';
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('ChannelTile', () => {
   it('renders title and sub', () => {

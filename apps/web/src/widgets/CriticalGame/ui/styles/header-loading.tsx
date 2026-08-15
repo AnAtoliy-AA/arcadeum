@@ -1,94 +1,164 @@
-import { styled, YStack, XStack, Text } from 'tamagui';
+import type { CSSProperties, HTMLAttributes } from 'react';
 
-export const ServerLoadingMessage = styled(YStack, {
-  name: 'ServerLoadingMessage',
-  gap: '$3',
-  padding: '$4',
-  marginTop: '$3',
-  background:
-    'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.06) 50%, rgba(236, 72, 153, 0.05) 100%)',
-  backdropFilter: 'blur(12px)',
-  borderRadius: 14,
-  borderWidth: 1,
-  borderColor: 'rgba(99, 102, 241, 0.2)',
-  maxWidth: 420,
-  position: 'relative',
-  overflow: 'hidden',
-  elevation: 5,
-});
+import { cx } from '@arcadeum/ui/utils/cx';
 
-export const ServerLoadingHeader = styled(XStack, {
-  name: 'ServerLoadingHeader',
-  alignItems: 'center',
-  gap: '$3',
-});
+export function ServerLoadingMessage({
+  className,
+  style,
+  ...props
+}: {
+  className?: string;
+  style?: CSSProperties;
+} & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch gap-3 p-4 mt-3 rounded-[14px] border border-[rgba(99,102,241,0.2)] max-w-[420px] relative overflow-hidden',
+        className,
+      )}
+      style={{
+        background:
+          'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.06) 50%, rgba(236, 72, 153, 0.05) 100%)',
+        backdropFilter: 'blur(12px)',
+        boxShadow: '0 2.5px 5px rgba(0, 0, 0, 0.3)',
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}
 
-export const ServerLoadingSpinner = styled(YStack, {
-  name: 'ServerLoadingSpinner',
-  width: 24,
-  height: 24,
-  flexShrink: 0,
-  borderRadius: 100,
-  borderWidth: 2.5,
-  borderColor: 'rgba(99, 102, 241, 0.15)',
-  borderTopColor: '#6366f1',
-  borderRightColor: '#8b5cf6',
-  // animation handled via animation prop
-});
+export function ServerLoadingHeader({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch items-center gap-3',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ServerLoadingTitle = styled(Text, {
-  name: 'ServerLoadingTitle',
-  fontSize: 14,
-  fontWeight: '600',
-  color: '$color',
-});
+export function ServerLoadingSpinner({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch w-6 h-6 shrink-0 rounded-full border-[2.5px] border-[rgba(99,102,241,0.15)] border-t-[#6366f1] border-r-[#8b5cf6]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ServerLoadingText = styled(Text, {
-  name: 'ServerLoadingText',
-  fontSize: 12,
-  color: '$color',
-  opacity: 0.8,
-  lineHeight: 18,
-  paddingLeft: 36,
-  position: 'relative',
-});
+export function ServerLoadingTitle({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[14px] font-semibold text-[var(--color)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ServerLoadingProgressBar = styled(YStack, {
-  name: 'ServerLoadingProgressBar',
-  height: 6,
-  backgroundColor: 'rgba(99, 102, 241, 0.1)',
-  borderRadius: 3,
-  overflow: 'hidden',
-  marginTop: '$2',
-  position: 'relative',
-});
+export function ServerLoadingText({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[12px] text-[var(--color)] opacity-[0.8] leading-[18px] pl-[36px] relative',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ServerLoadingFooter = styled(XStack, {
-  name: 'ServerLoadingFooter',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginTop: '$1',
-  paddingLeft: 36,
-});
+export function ServerLoadingProgressBar({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch h-[6px] bg-[rgba(99,102,241,0.1)] rounded-[3px] overflow-hidden mt-2 relative',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ServerLoadingPercentage = styled(Text, {
-  name: 'ServerLoadingPercentage',
-  fontSize: 12,
-  fontWeight: '600',
-  color: '#6366f1',
-});
+export function ServerLoadingFooter({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch justify-between items-center mt-1 pl-[36px]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ServerLoadingTimer = styled(Text, {
-  name: 'ServerLoadingTimer',
-  fontSize: 11,
-  color: '$color',
-  opacity: 0.7,
-});
+export function ServerLoadingPercentage({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[12px] font-semibold text-[#6366f1]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const HeaderProgressLabel = styled(Text, {
-  fontSize: 12,
-  fontWeight: '700',
-  lineHeight: '$2',
-  color: '$color',
-  opacity: 0.9,
-});
+export function ServerLoadingTimer({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[11px] text-[var(--color)] opacity-[0.7]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function HeaderProgressLabel({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[12px] font-bold leading-[18px] text-[var(--color)] opacity-[0.9]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}

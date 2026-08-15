@@ -1,13 +1,13 @@
 'use client';
 
 import { memo } from 'react';
-import { Button } from 'tamagui';
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalTitle,
   ModalBody,
+  Button,
 } from '@arcadeum/ui';
 
 interface RulesModalProps {
@@ -89,7 +89,7 @@ export const CatDashRulesModal = memo(function CatDashRulesModal({
           </div>
         </ModalBody>
         <div className="box-border flex flex-col items-stretch p-3">
-          <Button onPress={onClose}>Close</Button>
+          <Button onClick={onClose}>Close</Button>
         </div>
       </ModalContent>
     </Modal>

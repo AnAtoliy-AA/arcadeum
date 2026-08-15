@@ -1,5 +1,4 @@
 import type React from 'react';
-import type { TamaguiElement } from 'tamagui';
 
 export interface GameLobbyTheme {
   titleGradient?: string;
@@ -15,7 +14,7 @@ export interface ReusableGameLobbyProps {
   startBusy: boolean;
   startDisabled?: boolean;
   isFullscreen?: boolean;
-  containerRef?: React.RefObject<TamaguiElement | null>;
+  containerRef?: React.RefObject<HTMLElement | null>;
   onToggleFullscreen?: () => void;
   onStartGame: (options?: {
     withBots?: boolean;

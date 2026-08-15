@@ -1,90 +1,75 @@
-import { YStack, XStack, styled, GetProps } from 'tamagui';
-import { memo } from 'react';
-import type { ReactNode, ReactElement } from 'react';
-import { GameVariant } from './GameContainer';
+import type { HTMLAttributes } from 'react';
+import type { GameVariant } from './GameContainer';
+import { cx } from '../../utils/cx';
 
-export type GameHeaderProps = GetProps<typeof XStack> & {
+export type GameHeaderProps = HTMLAttributes<HTMLDivElement> & {
   variant?: GameVariant;
 };
 
-export const GameHeader = styled(XStack, {
-  name: 'GameHeader',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: '$4',
-  padding: '$4',
-  backgroundColor: '$glassBg',
-  backdropFilter: 'blur(16px)',
-  borderBottomWidth: 1,
-  borderBottomColor: '$glassBorder',
-  zIndex: 30,
-  flexShrink: 0,
+/**
+ * Per-game accent colors (static tokens → hex literals).
+ * Written as full string literals on purpose — Tailwind's scanner only
+ * emits CSS for classes that appear verbatim in source files.
+ */
+const GAME_ACCENT_COLORS: Partial<Record<GameVariant, string>> = {
+  cyberpunk: '#06b6d4',
+  underwater: '#22d3ee',
+  crime: '#dc2626',
+  horror: '#10b981',
+  adventure: '#f59e0b',
+  'high-altitude-hike': '#38bdf8',
+};
 
-  variants: {
-    variant: {
-      cyberpunk: {
-        borderBottomColor: '$cyberpunkPrimary',
-      },
-      underwater: {
-        borderBottomColor: '$underwaterPrimary',
-      },
-      crime: {
-        borderBottomColor: '$crimePrimary',
-      },
-      horror: {
-        borderBottomColor: '$horrorPrimary',
-      },
-      adventure: {
-        borderBottomColor: '$adventurePrimary',
-      },
-      'high-altitude-hike': {
-        borderBottomColor: '$hikePrimary',
-      },
-    },
-  } as const,
-});
+export function GameHeader({ variant, className, style, ...props }: GameHeaderProps) {
+  return (
+    <div
+      className={cx(
+        'flex flex-row items-center justify-between gap-4 border-b bg-[var(--glassBg)] p-4 backdrop-blur-[16px] z-[30] shrink-0',
+        className,
+      )}
+      style={{
+        borderBottomColor: variant ? GAME_ACCENT_COLORS[variant] : 'var(--glassBorder)',
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}
 
-export const GameBoard = styled(YStack, {
-  name: 'GameBoard',
-  flex: 1,
-  position: 'relative',
-  padding: '$4',
-  overflow: 'hidden',
-  zIndex: 1,
-});
+export type GameBoardProps = HTMLAttributes<HTMLDivElement>;
 
-export const TableArea = styled(XStack, {
-  name: 'TableArea',
-  flex: 1,
-  position: 'relative',
-  gap: '$4',
-  height: '100%',
-});
+export function GameBoard({ className, style, ...props }: GameBoardProps) {
+  return (
+    <div
+      className={cx('relative flex flex-1 flex-col overflow-hidden p-4 z-[1]', className)}
+      style={style}
+      {...props}
+    />
+  );
+}
 
-export const GameTitle = styled(YStack, {
-  name: 'GameTitle',
-  gap: '$1',
+export type TableAreaProps = HTMLAttributes<HTMLDivElement>;
 
-  variants: {
-    variant: {
-      cyberpunk: {
-        color: '$cyberpunkPrimary',
-      },
-      underwater: {
-        color: '$underwaterPrimary',
-      },
-      crime: {
-        color: '$crimePrimary',
-      },
-      horror: {
-        color: '$horrorPrimary',
-      },
-      adventure: {
-        color: '$adventurePrimary',
-      },
-      'high-altitude-hike': {
-        color: '$hikePrimary',
-      },
-    },
-  } as const,
-});
+export function TableArea({ className, style, ...props }: TableAreaProps) {
+  return (
+    <div
+      className={cx('relative flex flex-1 flex-row items-stretch gap-4 h-full', className)}
+      style={style}
+      {...props}
+    />
+  );
+}
+
+export type GameTitleProps = HTMLAttributes<HTMLDivElement> & {
+  variant?: GameVariant;
+};
+
+export function GameTitle({ variant, className, style, ...props }: GameTitleProps) {
+  return (
+    <div
+      className={cx('flex flex-col items-stretch gap-1', className)}
+      style={variant ? { ...style, color: GAME_ACCENT_COLORS[variant] } : style}
+      {...props}
+    />
+  );
+}

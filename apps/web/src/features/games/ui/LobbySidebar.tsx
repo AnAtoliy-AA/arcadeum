@@ -275,7 +275,7 @@ export function LobbySidebar({
                   </PlayerInfo>
                   {onKickPlayer && !isRoomHost && (
                     <Button
-                      className={'py-1 px-2 min-w-[auto]'}
+                      className="py-1 px-2 min-w-[auto]"
                       variant="danger"
                       ghost
                       size="sm"
@@ -357,7 +357,7 @@ export function LobbySidebar({
                   </div>
                   {isHost && onReinvite && (
                     <Button
-                      className={'ml-2'}
+                      className="ml-2"
                       variant="ghost"
                       size="sm"
                       onClick={() => onReinvite?.([u.id])}

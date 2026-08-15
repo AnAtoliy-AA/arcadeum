@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
-import { styled, YStack } from 'tamagui';
+import React, { forwardRef, useRef, useState, useEffect } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 interface GameContainerProps {
   room: GameRoomSummary;
@@ -15,56 +16,55 @@ interface GameContainerProps {
   className?: string;
 }
 
-const StyledContainer = styled(YStack, {
-  name: 'GameContainer',
-  gap: '$5',
-  height: '100%',
-  minHeight: 600,
-  position: 'relative',
-
-  // responsive
-  $gtSm: {
-    padding: '$5',
-    gap: '$5',
-  },
-
-  variants: {
-    isFullscreen: {
-      true: {
-        height: '100vh',
-        width: '100vw',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        zIndex: '$5',
-        borderRadius: 0,
-        padding: '$4',
-        gap: '$4',
-        backgroundColor: '$background',
-      },
-    },
-  } as const,
+const StyledContainer = forwardRef<
+  HTMLDivElement,
+  {
+    isFullscreen?: boolean;
+    className?: string;
+    children?: ReactNode;
+  } & HTMLAttributes<HTMLDivElement>
+>(function StyledContainer(
+  { isFullscreen = false, className, children, ...props },
+  ref,
+) {
+  return (
+    <div
+      ref={ref}
+      className={cx(
+        'box-border flex flex-col h-full min-h-[600px] relative',
+        isFullscreen
+          ? 'fixed top-0 left-0 h-screen w-screen z-[500] rounded-none p-4 gap-4 bg-[var(--background)]'
+          : 'gap-5 md:p-5',
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
 });
 
-const StyledGameArea = styled(YStack, {
-  name: 'GameArea',
-  flex: 1,
-  borderRadius: 16,
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: '$background',
-  overflow: 'hidden',
-  position: 'relative',
-
-  variants: {
-    isFullscreen: {
-      true: {
-        borderRadius: 0,
-        borderWidth: 0,
-      },
-    },
-  } as const,
-});
+const StyledGameArea = ({
+  isFullscreen = false,
+  className,
+  children,
+  ...props
+}: {
+  isFullscreen?: boolean;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-col items-stretch flex-1 rounded-[16px] border border-[var(--borderColor)] bg-[var(--background)] overflow-hidden relative',
+      isFullscreen && 'rounded-none border-0',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 export function GameContainer({
   room: _room,
@@ -75,7 +75,7 @@ export function GameContainer({
   roomId,
   className,
 }: GameContainerProps) {
-  const containerRef = useRef<React.ElementRef<typeof StyledContainer>>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {

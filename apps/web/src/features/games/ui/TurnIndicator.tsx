@@ -95,7 +95,7 @@ export const TurnIndicator = memo(function TurnIndicator({
         />
       ) : null}
       <span
-        className={'"box-border text-[14px] font-semibold line-clamp-1"'}
+        className="box-border text-[14px] font-semibold line-clamp-1"
         style={{
           color: STATUS_COLOR[status],
           opacity: status === 'default' ? 0.7 : 1,

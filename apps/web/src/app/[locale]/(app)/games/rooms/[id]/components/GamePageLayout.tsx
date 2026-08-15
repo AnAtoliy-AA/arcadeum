@@ -16,7 +16,7 @@ import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
-import { Container, fullscreenStyles } from './styles';
+import { fullscreenStyles } from './styles';
 import { GameRow, ChatPanel } from './layoutStyles';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
@@ -215,8 +215,8 @@ export function GamePageLayout(props: GamePageLayoutProps) {
   return (
     <>
       <style>{fullscreenStyles}</style>
-      <Container
-        ref={gameContainerRef as React.RefObject<never>}
+      <div
+        ref={gameContainerRef as unknown as React.Ref<HTMLDivElement>}
         className="games-room-container"
       >
         {/* Drops out of fullscreen shortly after the game finishes so the
@@ -288,7 +288,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
             />
           </ChatPanel>
         </GameRow>
-      </Container>
+      </div>
     </>
   );
 }

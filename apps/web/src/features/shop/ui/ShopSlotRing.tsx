@@ -1,6 +1,6 @@
 'use client';
 
-import { styled, YStack as Stack } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
@@ -44,38 +44,41 @@ const SLOT_ORDER: ShopCategory[] = [
   'game_skin',
 ];
 
-const SlotTile = styled(Stack, {
-  name: 'ShopSlotTile',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 10,
-  padding: 10,
-  borderRadius: '$3',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  backgroundColor: 'rgba(255,255,255,0.02)',
-  cursor: 'pointer',
-  minHeight: 62,
-  hoverStyle: {
-    borderColor: 'rgba(255,255,255,0.22)',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-  },
-
-  variants: {
-    active: {
-      true: {
-        borderColor: 'rgba(96,165,250,0.6)',
-        backgroundColor: 'rgba(96,165,250,0.08)',
-      },
-    },
-    previewing: {
-      true: {
-        borderColor: 'rgba(34,197,94,0.6)',
-        backgroundColor: 'rgba(16,185,129,0.10)',
-      },
-    },
-  } as const,
-});
+function SlotTile({
+  active,
+  previewing,
+  onPress,
+  width,
+  $sm,
+  className,
+  ...props
+}: {
+  active?: boolean;
+  previewing?: boolean;
+  onPress?: () => void;
+  width?: string | number;
+  $sm?: { width?: string | number };
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center gap-[10px] p-[10px] rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] cursor-pointer min-h-[62px] transition-colors hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
+        width !== undefined && width === '100%'
+          ? 'w-full'
+          : width !== undefined
+            ? `w-[${width}]`
+            : '',
+        $sm?.width === '100%' ? 'max-[800px]:w-full' : '',
+        active && 'border-[rgba(96,165,250,0.6)] bg-[rgba(96,165,250,0.08)]',
+        previewing && 'border-[rgba(34,197,94,0.6)] bg-[rgba(16,185,129,0.10)]',
+        className,
+      )}
+      onClick={onPress}
+      {...props}
+    />
+  );
+}
 
 export function ShopSlotRing({
   preview,

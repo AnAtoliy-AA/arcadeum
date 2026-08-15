@@ -38,7 +38,7 @@ export function StatsOverview({
           {[1, 2, 3, 4].map((i) => (
             <Card key={i} variant="glass" cardPadding="md">
               <SkeletonText
-                className="w-[60%]"
+                className={'w-[60%]'}
                 style={{ height: '14px' }}
                 delay={i * 0.1}
               />

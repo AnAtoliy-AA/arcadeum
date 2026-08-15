@@ -54,6 +54,7 @@ export const EquippedPlayerAvatar = memo(function EquippedPlayerAvatar(
     : null;
   return (
     <PlayerAvatar
+      onPress={props.onPress}
       name={props.name}
       size={props.size}
       avatarUrl={cosmetics.avatarUrl ?? props.fallbackAvatarUrl ?? null}
@@ -69,7 +70,6 @@ export const EquippedPlayerAvatar = memo(function EquippedPlayerAvatar(
       role={props.role}
       priority={props.priority}
       data-testid={props['data-testid']}
-      onPress={props.onPress}
     />
   );
 });

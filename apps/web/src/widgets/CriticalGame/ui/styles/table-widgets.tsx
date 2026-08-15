@@ -1,48 +1,53 @@
-import { styled, XStack, Text } from 'tamagui';
-import { Button, ButtonProps, GameVariant } from '@arcadeum/ui';
+import type { CSSProperties, HTMLAttributes } from 'react';
+
+import { cx } from '@arcadeum/ui/utils/cx';
+import { Button, type ButtonProps, type GameVariant } from '@arcadeum/ui';
 import { getVariantStyles } from './variants';
+import { resolveVariantStyles } from './variant-styles';
 
-export const InfoTitle = styled(Text, {
-  name: 'InfoTitle',
-  fontSize: 14,
-  fontWeight: '800',
-  color: '$color',
-  textTransform: 'uppercase',
-  letterSpacing: 1,
-  position: 'relative',
-  paddingBottom: '$2',
+type VariantProp = { $variant?: string };
 
-  $sm: {
-    fontSize: 12,
-    marginBottom: '$1.5',
-  },
+export function InfoTitle({
+  className,
+  style,
+  $variant,
+  ...props
+}: { className?: string; style?: CSSProperties } & VariantProp &
+  HTMLAttributes<HTMLSpanElement>) {
+  const config = getVariantStyles($variant).table.actions;
+  const variantStyles = resolveVariantStyles(config?.getTitleStyles?.());
+  return (
+    <span
+      className={cx(
+        'box-border relative pb-2 text-[14px] font-extrabold uppercase tracking-[1px] text-[var(--color)] max-[800px]:text-[12px] max-[800px]:mb-[6px]',
+        className,
+      )}
+      style={{ ...variantStyles.style, ...style }}
+      {...props}
+    />
+  );
+}
 
-  variants: {
-    $variant: (val: string) => {
-      const config = getVariantStyles(val).table.actions;
-      return {
-        ...config?.getTitleStyles?.(),
-      };
-    },
-  } as const,
-});
-
-export const ActionsHeader = styled(XStack, {
-  name: 'ActionsHeader',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '$6',
-  position: 'relative',
-
-  variants: {
-    $variant: (val: string) => {
-      const config = getVariantStyles(val).table.actions;
-      return {
-        ...config?.getContainerStyles?.(),
-      };
-    },
-  } as const,
-});
+export function ActionsHeader({
+  className,
+  style,
+  $variant,
+  ...props
+}: { className?: string; style?: CSSProperties } & VariantProp &
+  HTMLAttributes<HTMLDivElement>) {
+  const config = getVariantStyles($variant).table.actions;
+  const variantStyles = resolveVariantStyles(config?.getContainerStyles?.());
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch justify-between items-center relative mb-6',
+        className,
+      )}
+      style={{ ...variantStyles.style, ...style }}
+      {...props}
+    />
+  );
+}
 
 interface ActionsToggleButtonProps extends Omit<ButtonProps, 'variant'> {
   variant?: string;

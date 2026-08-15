@@ -55,9 +55,7 @@ export function UsersTableRow({
 
   return (
     <div
-      className={
-        '"box-border flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"'
-      }
+      className="box-border flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
       style={{
         backgroundColor: isSelected
           ? '$backgroundFocus'

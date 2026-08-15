@@ -1,4 +1,6 @@
-import { styled, YStack } from 'tamagui';
+import type { CSSProperties, HTMLAttributes } from 'react';
+
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   GameBoard as BaseGameBoard,
   TableArea as BaseTableArea,
@@ -9,44 +11,64 @@ import {
 // my-turn border now live in the shared shell). The per-variant room
 // background it carried is handled by the shared shell + `SceneBackdrop`.
 
-export const GameBoard = styled(BaseGameBoard, {
-  name: 'GameBoard',
-  gap: '$4',
-  zIndex: 20,
-  flexDirection: 'column',
-  position: 'relative',
-  width: '100%',
-  flexGrow: 0,
-  flexShrink: 0,
-  flexBasis: 'auto',
+/**
+ * Legacy styled-wrapper props that conflict with the base `@arcadeum/ui`
+ * classes are carried via inline style so they always win regardless of
+ * Tailwind class order.
+ */
+export function GameBoard({
+  className,
+  style,
+  ...props
+}: {
+  className?: string;
+  style?: CSSProperties;
+} & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <BaseGameBoard
+      className={cx(
+        'box-border flex-col w-full gap-4 max-[800px]:gap-2 max-[800px]:p-0',
+        className,
+      )}
+      style={{
+        position: 'relative',
+        zIndex: 20,
+        flexGrow: 0,
+        flexShrink: 0,
+        flexBasis: 'auto',
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}
 
-  $sm: {
-    gap: '$2',
-    padding: 0,
-  },
-
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
-
-export const TableArea = styled(BaseTableArea, {
-  name: 'TableArea',
-  gap: '$4',
-  flexDirection: 'column',
-  minHeight: 0,
-  position: 'relative',
-  zIndex: 1,
-  width: '100%',
-  flexGrow: 0,
-  flexShrink: 0,
-  flexBasis: 'auto',
-  height: 'auto',
-
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
+export function TableArea({
+  className,
+  style,
+  ...props
+}: {
+  className?: string;
+  style?: CSSProperties;
+} & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <BaseTableArea
+      className={cx('box-border w-full gap-4 max-[800px]:gap-2', className)}
+      style={{
+        position: 'relative',
+        zIndex: 1,
+        flexGrow: 0,
+        flexShrink: 0,
+        flexBasis: 'auto',
+        flexDirection: 'column',
+        minHeight: 0,
+        height: 'auto',
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}
 
 /**
  * Widget-mode grid: 3-row stack (opponents · arena · hand) with a max
@@ -59,65 +81,72 @@ export const TableArea = styled(BaseTableArea, {
  */
 // §3.3 — `maxWidth` is the upper bound; the actual constraint is the
 // `min(1240px, calc(100vw - 48px))` rule in hudStyles.tsx keyed off
-// `[data-testid="match-widget-grid"]`. Tamagui's styled prop only
-// accepts numeric pixel values, hence the split — keep this number in
-// sync with the CSS rule if it ever changes. The same selector also
-// sets `container-type: inline-size` so `.match-arena` can respond to
-// SLOT width via @container queries.
-export const MatchWidgetGrid = styled(YStack, {
-  name: 'MatchWidgetGrid',
-  width: '100%',
-  maxWidth: 1240,
-  marginHorizontal: 'auto',
-  paddingHorizontal: '$3',
-  paddingVertical: '$3',
-  gap: '$3',
+// `[data-testid="match-widget-grid"]`. Keep this number in sync with
+// the CSS rule if it ever changes. The same selector also sets
+// `container-type: inline-size` so `.match-arena` can respond to SLOT
+// width via @container queries.
+export function MatchWidgetGrid({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch w-full max-w-[1240px] mx-auto px-[12px] py-[12px] gap-3 max-[800px]:px-2 max-[800px]:gap-2 max-[800px]:pb-[120px]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  $sm: {
-    paddingHorizontal: '$2',
-    gap: '$2',
-    paddingBottom: 120,
-  },
-});
+export function HandSection({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch gap-4 w-full shrink-0 z-[30] relative border-t border-t-[var(--borderColor)] pt-4 max-[800px]:border-t-0 max-[800px]:pt-0 max-[800px]:gap-2',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const HandSection = styled(YStack, {
-  name: 'HandSection',
-  gap: '$4',
-  width: '100%',
-  flexShrink: 0,
-  zIndex: 30,
-  position: 'relative',
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-  paddingTop: '$4',
+export function HandContainer({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx('box-border flex flex-col items-stretch gap-4', className)}
+      {...props}
+    />
+  );
+}
 
-  $sm: {
-    borderTopWidth: 0,
-    paddingTop: 0,
-    gap: '$2',
-  },
-
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
-
-export const HandContainer = styled(YStack, {
-  name: 'HandContainer',
-  gap: '$4',
-
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
-
-export const FrostyVignette = styled(YStack, {
-  name: 'FrostyVignette',
-  position: 'absolute',
-  inset: 0,
-  pointerEvents: 'none',
-  zIndex: 5,
-  borderRadius: 20,
-  background:
-    'radial-gradient(circle at center, transparent 50%, rgba(255, 255, 255, 0.02) 70%, rgba(125, 211, 252, 0.08) 100%)',
-});
+export function FrostyVignette({
+  className,
+  style,
+  ...props
+}: {
+  className?: string;
+  style?: CSSProperties;
+} & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch absolute inset-0 pointer-events-none z-[5] rounded-[20px]',
+        className,
+      )}
+      style={{
+        background:
+          'radial-gradient(circle at center, transparent 50%, rgba(255, 255, 255, 0.02) 70%, rgba(125, 211, 252, 0.08) 100%)',
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}

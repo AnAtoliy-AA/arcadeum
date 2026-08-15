@@ -198,10 +198,15 @@ export default function PrivacyContent({
               </li>
             </ul>
           </div>
-          <Typography className="-mt-4" variant="body" uiSize="md" alpha="high">
+          <Typography
+            className={'-mt-4'}
+            variant="body"
+            uiSize="md"
+            alpha="high"
+          >
             {s?.userRights?.contact}{' '}
             <Link href={routes.contact}>
-              <Typography className="text-[var(--primary)] underline">
+              <Typography className={'text-[var(--primary)] underline'}>
                 {contactT?.title}
               </Typography>
             </Link>

@@ -58,7 +58,7 @@ export const Static: Story = {
 export const CustomContent: Story = {
   args: {
     animated: true,
-    padding: '$10',
+    className: 'p-10',
     children: (
       <YStack gap="$6" alignItems="center">
         <Typography variant="heading" uiSize="3xl" color="$primary">

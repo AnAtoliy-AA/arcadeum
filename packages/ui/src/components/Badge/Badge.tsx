@@ -1,137 +1,81 @@
-import { Text, styled } from 'tamagui';
-import type { ComponentProps } from 'react';
+import { memo } from 'react';
+import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import { cx } from '../../utils/cx';
+import type { GameVariant } from '../Button/types';
 
 export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 export type BadgeSize = 'sm' | 'md';
 
-const StyledBadge = styled(Text, {
-  name: 'Badge',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '$2',
-  paddingHorizontal: '$4',
-  paddingVertical: '$4',
-  borderWidth: 1,
-  borderColor: 'transparent',
-  color: '$white',
-  fontWeight: '700',
-  letterSpacing: 0.5,
-  fontSize: '$2',
+const badgeBase =
+  'box-border inline-flex flex-row items-center justify-center border font-bold tracking-[0.5px] text-[#f5f7ff]';
 
-  variants: {
-    variant: {
-      success: {
-        backgroundColor: '$success',
-        borderColor: '$successBorder',
-      },
-      warning: {
-        backgroundColor: '$warning',
-        borderColor: '$warningBorder',
-      },
-      error: {
-        backgroundColor: '$danger',
-        borderColor: '$dangerBorder',
-      },
-      info: {
-        backgroundColor: '$primary',
-        borderColor: '$infoBorder',
-      },
-      neutral: {
-        backgroundColor: '$neutral',
-        borderColor: '$neutralBorder',
-      },
-    },
-    size: {
-      sm: {
-        paddingHorizontal: '$3',
-        paddingVertical: '$3',
-        borderRadius: '$1',
-        fontSize: '$1',
-      },
-      md: {
-        paddingHorizontal: '$4',
-        paddingVertical: '$4',
-        borderRadius: '$2',
-        fontSize: '$2',
-      },
-    },
-    gameVariant: {
-      cyberpunk: {
-        backgroundColor: '$cyberpunkPrimary',
-        borderColor: '$cyberpunkAccent',
-      },
-      underwater: {
-        backgroundColor: '$underwaterPrimary',
-        borderColor: '$underwaterAccent',
-      },
-      crime: {
-        backgroundColor: '$crimePrimary',
-        borderColor: '$crimeAccent',
-      },
-      horror: {
-        backgroundColor: '$horrorPrimary',
-        borderColor: '$horrorAccent',
-      },
-      adventure: {
-        backgroundColor: '$adventurePrimary',
-        borderColor: '$adventureAccent',
-      },
-      'high-altitude-hike': {
-        backgroundColor: '$hikePrimary',
-        borderColor: '$hikeSecondary',
-      },
-    },
-    pulse: {
-      true: {
-        animation: 'slow',
-      },
-    },
-  } as const,
+const badgeSizes: Record<BadgeSize, string> = {
+  sm: 'px-3 py-3 rounded text-[12px]',
+  md: 'px-4 py-4 rounded-lg text-[14px]',
+};
 
-  defaultVariants: {
-    variant: 'neutral',
-    size: 'md',
-  },
-});
+const badgeVariants: Record<BadgeVariant, string> = {
+  success: 'bg-[var(--success)] border-[rgba(4,120,87,0.4)]',
+  warning: 'bg-[var(--warning)] border-[rgba(146,64,14,0.4)]',
+  error: 'bg-[var(--danger)] border-[rgba(185,28,28,0.4)]',
+  info: 'bg-[var(--primary)] border-[rgba(37,99,235,0.4)]',
+  neutral: 'bg-[var(--neutral)] border-[rgba(142,145,150,0.4)]',
+};
 
-import { memo } from 'react';
-import type { ReactElement } from 'react';
+const badgeGameVariants: Record<GameVariant, string> = {
+  cyberpunk: 'bg-[#06b6d4] border-[#c026d3]',
+  underwater: 'bg-[#22d3ee] border-[#0ea5e9]',
+  crime: 'bg-[#dc2626] border-[#991b1b]',
+  horror: 'bg-[#10b981] border-[#065f46]',
+  adventure: 'bg-[#f59e0b] border-[#b45309]',
+  'high-altitude-hike': 'bg-[#38bdf8] border-[#0ea5e9]',
+};
 
-export type BadgeProps = ComponentProps<typeof StyledBadge> & {
+export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, 'onClick'> & {
+  variant?: BadgeVariant;
+  size?: BadgeSize;
+  gameVariant?: GameVariant;
+  pulse?: boolean;
   title?: string;
+  children?: ReactNode;
   /** @deprecated Use onClick instead */
   onPress?: () => void;
   onClick?: (e: unknown) => void;
+  className?: string;
+  /** Destructured so it never leaks to the DOM. */
+  $variant?: string;
+  /** Destructured so it never leaks to the DOM. */
+  $status?: string;
+  /** Destructured so it never leaks to the DOM. */
+  isHost?: boolean;
 };
 
-interface BadgeInnerProps extends BadgeProps {
-  // Destructure props that might leak
-  $variant?: string;
-  $status?: string;
-  isHost?: boolean;
-}
-
-import { filterProps } from '../../utils/filterProps';
-
-export const Badge = memo(function Badge({ 
-  variant, 
-  size, 
-  gameVariant, 
+export const Badge = memo(function Badge({
+  variant,
+  size,
+  gameVariant,
   pulse,
   onPress,
   onClick,
-  ...rest 
-}: BadgeInnerProps): ReactElement {
-  const filteredProps = filterProps({ ...rest, onPress, onClick });
-
+  className,
+  $variant: _ignoredVariant,
+  $status: _ignoredStatus,
+  isHost: _ignoredIsHost,
+  ...rest
+}: BadgeProps): ReactElement {
+  const handleClick = onClick ?? onPress;
   return (
-    <StyledBadge 
-      variant={variant} 
-      size={size} 
-      gameVariant={gameVariant} 
-      pulse={pulse}
-      {...filteredProps} 
+    <span
+      className={cx(
+        badgeBase,
+        badgeSizes[size ?? 'md'],
+        badgeVariants[variant ?? 'neutral'],
+        gameVariant && badgeGameVariants[gameVariant],
+        pulse && 'transition-all duration-500 ease-out',
+        className,
+      )}
+      onClick={handleClick}
+      {...rest}
     />
   );
 });

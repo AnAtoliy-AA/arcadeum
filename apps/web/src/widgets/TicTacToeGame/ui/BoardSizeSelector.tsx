@@ -102,7 +102,7 @@ export function BoardSizeSelector({
                   {size === 'infinity' ? '∞' : `${size}×${size}`}
                 </span>
                 <span
-                  className={'"box-border text-[11px] font-medium"'}
+                  className="box-border text-[11px] font-medium"
                   style={{ opacity: isActive ? 0.85 : 0.65 }}
                 >
                   {size === 'infinity'

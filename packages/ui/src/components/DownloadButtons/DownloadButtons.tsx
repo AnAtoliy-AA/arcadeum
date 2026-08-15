@@ -1,20 +1,114 @@
 import React from 'react';
-import { Theme, useThemeName, useTheme } from 'tamagui';
 import { AppleIcon, AndroidIcon, SmartphoneIcon } from '../Icons';
-import * as S from './styles';
+import { cx } from '../../utils/cx';
 
-import type { ThemeName, XStackProps } from 'tamagui';
+const downloadLinkClasses = [
+  'box-border',
+  'flex',
+  'min-h-[60px]',
+  'min-w-[170px]',
+  'cursor-pointer',
+  'flex-row',
+  'items-center',
+  'gap-3',
+  'rounded-[100px]',
+  'border-[1.5px]',
+  'border-[var(--borderColor)]',
+  'bg-[var(--background)]',
+  'px-8',
+  'py-3',
+  'no-underline',
+  '[transition:transform_0.2s_ease,background-color_0.2s_ease,border-color_0.2s_ease]',
+  'hover:scale-[1.02]',
+  'hover:border-[var(--borderColorHover)]',
+  'hover:bg-[var(--backgroundHover)]',
+  'active:scale-[0.98]',
+  'active:border-[var(--borderColorPress)]',
+  'active:bg-[var(--backgroundPress)]',
+].join(' ');
 
-export const DownloadLinkAnchor = S.DownloadLink.styleable<
+const containerClasses =
+  'flex flex-row flex-wrap justify-center gap-4 max-[660px]:flex-col max-[660px]:items-stretch';
+
+const iconWrapperClasses = 'flex flex-row items-center justify-center';
+
+const textWrapperClasses = 'flex flex-col items-start';
+
+const smallTextClasses =
+  'text-[10px] font-semibold uppercase tracking-[1px] text-[var(--color)] opacity-[0.9] leading-[12px]';
+
+const largeTextClasses =
+  'text-[20px] font-bold whitespace-nowrap text-[var(--color)] leading-[22px]';
+
+export type DownloadLinkAnchorProps = {
+  tag?: 'a' | 'button' | 'div';
+  animation?: 'quick' | 'medium' | 'slow' | (string & {});
+  isButton?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+  'data-testid'?: string;
+  children?: React.ReactNode;
+  href?: string;
+  target?: string;
+  rel?: string;
+  type?: 'button' | 'submit' | 'reset';
+  onClick?: (event: React.MouseEvent) => void;
+  ref?: React.Ref<HTMLAnchorElement | HTMLButtonElement | HTMLDivElement>;
+};
+
+export const DownloadLinkAnchor = React.forwardRef<
+  HTMLAnchorElement | HTMLButtonElement | HTMLDivElement,
+  DownloadLinkAnchorProps
+>(function DownloadLinkAnchor(
   {
-    tag?: 'a' | 'button' | 'div';
-    animation?: 'quick' | 'medium' | 'slow' | (string & {});
-    isButton?: boolean;
-  } & XStackProps &
-    React.AnchorHTMLAttributes<HTMLAnchorElement>
->((props, ref) => (
-  <S.DownloadLink {...props} ref={ref} />
-));
+    tag = 'a',
+    animation,
+    isButton,
+    className,
+    style,
+    'data-testid': dataTestId,
+    children,
+    ...rest
+  },
+  ref,
+) {
+  void animation;
+  void isButton;
+  const classes = cx(downloadLinkClasses, className);
+  const common = { className: classes, style, 'data-testid': dataTestId };
+
+  if (tag === 'button') {
+    return (
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type={rest.type ?? 'button'}
+        onClick={rest.onClick as React.MouseEventHandler<HTMLButtonElement> | undefined}
+        {...common}
+      >
+        {children}
+      </button>
+    );
+  }
+  if (tag === 'div') {
+    return (
+      <div ref={ref as React.Ref<HTMLDivElement>} onClick={rest.onClick} {...common}>
+        {children}
+      </div>
+    );
+  }
+  return (
+    <a
+      ref={ref as React.Ref<HTMLAnchorElement>}
+      href={rest.href}
+      target={rest.target}
+      rel={rest.rel}
+      onClick={rest.onClick}
+      {...common}
+    >
+      {children}
+    </a>
+  );
+});
 
 export interface DownloadButtonsProps {
   iosHref?: string;
@@ -40,19 +134,12 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
   onShowInstructions,
   labels,
 }) => {
-  const theme = useTheme();
-
-  // Stable inverted theme logic - avoid useThemeName if possible for initial render
-  // but if we must, we ensure the fallback is consistent.
-  const themeName = useThemeName();
-  const invertedTheme = themeName.includes('light') ? 'dark' : 'light';
-
   if (!iosHref && !androidHref && !onInstall && !onShowInstructions) {
     return null;
   }
 
-  const content = (
-    <S.Container>
+  return (
+    <div className={containerClasses}>
       {iosHref && (
         <DownloadLinkAnchor
           tag="a"
@@ -61,15 +148,14 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
           rel="noopener noreferrer"
           data-testid="download-ios-button"
           style={{ textDecoration: 'none' }}
-          animation="quick"
         >
-          <S.IconWrapper>
+          <div className={iconWrapperClasses}>
             <AppleIcon size={32} />
-          </S.IconWrapper>
-          <S.TextWrapper>
-            <S.SmallText>{labels.iosStore.small}</S.SmallText>
-            <S.LargeText>{labels.iosStore.large}</S.LargeText>
-          </S.TextWrapper>
+          </div>
+          <div className={textWrapperClasses}>
+            <span className={smallTextClasses}>{labels.iosStore.small}</span>
+            <span className={largeTextClasses}>{labels.iosStore.large}</span>
+          </div>
         </DownloadLinkAnchor>
       )}
 
@@ -81,15 +167,14 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
           rel="noopener noreferrer"
           data-testid="download-android-button"
           style={{ textDecoration: 'none' }}
-          animation="quick"
         >
-          <S.IconWrapper>
+          <div className={iconWrapperClasses}>
             <AndroidIcon size={32} />
-          </S.IconWrapper>
-          <S.TextWrapper>
-            <S.SmallText>{labels.googlePlay.small}</S.SmallText>
-            <S.LargeText>{labels.googlePlay.large}</S.LargeText>
-          </S.TextWrapper>
+          </div>
+          <div className={textWrapperClasses}>
+            <span className={smallTextClasses}>{labels.googlePlay.small}</span>
+            <span className={largeTextClasses}>{labels.googlePlay.large}</span>
+          </div>
         </DownloadLinkAnchor>
       )}
 
@@ -99,23 +184,20 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
           onClick={onInstall || onShowInstructions}
           data-testid="install-pwa-button"
           isButton
-          animation="quick"
         >
-          <S.IconWrapper>
+          <div className={iconWrapperClasses}>
             <SmartphoneIcon size={32} />
-          </S.IconWrapper>
-          <S.TextWrapper>
-            <S.SmallText>
+          </div>
+          <div className={textWrapperClasses}>
+            <span className={smallTextClasses}>
               {onInstall ? labels.installAs : labels.getThe}
-            </S.SmallText>
-            <S.LargeText>
+            </span>
+            <span className={largeTextClasses}>
               {onInstall ? labels.webApp : labels.appGuide}
-            </S.LargeText>
-          </S.TextWrapper>
+            </span>
+          </div>
         </DownloadLinkAnchor>
       )}
-    </S.Container>
+    </div>
   );
-
-  return <Theme name={invertedTheme as ThemeName}>{content}</Theme>;
 };

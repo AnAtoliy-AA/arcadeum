@@ -65,7 +65,7 @@ export function ChatMessageBubble({
 
   return (
     <div
-      className={'"box-border flex flex-row gap-2 py-2 px-3 items-start"'}
+      className="box-border flex flex-row gap-2 py-2 px-3 items-start"
       style={{ flexDirection: isOwn ? 'row-reverse' : 'row' }}
     >
       <div className="box-border shrink-0">
@@ -84,9 +84,7 @@ export function ChatMessageBubble({
         {senderName && (
           <div className="box-border flex flex-row items-center gap-2">
             <span
-              className={
-                '"box-border text-[14px] font-semibold uppercase tracking-[0.5px]"'
-              }
+              className="box-border text-[14px] font-semibold uppercase tracking-[0.5px]"
               style={{ color: nameColorProps.color ?? '#a5b4fc' }}
             >
               {senderName}

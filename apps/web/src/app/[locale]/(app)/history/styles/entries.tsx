@@ -1,48 +1,76 @@
-import {
-  styled,
-  XStack,
-  YStack,
-  type GetProps,
-  type TamaguiComponent,
-} from 'tamagui';
-import { Card, Badge, Typography } from '@arcadeum/ui';
-import type { ReactNode, ComponentType } from 'react';
+import { forwardRef, type ReactNode } from 'react';
 import type * as React from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
+import { Card, Badge, Typography } from '@arcadeum/ui';
 
-type WithGetProps<
-  T extends TamaguiComponent | ComponentType<Record<string, unknown>>,
-> = GetProps<T> &
-  React.HTMLAttributes<HTMLElement> & {
-    children?: ReactNode;
-  };
+type WithGetProps<T> =
+  T extends React.ComponentType<infer P>
+    ? P & React.HTMLAttributes<HTMLElement> & { children?: ReactNode }
+    : never;
 
-export const EntriesGrid = styled(YStack, {
-  display: 'grid' as 'flex',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-  gap: '$4',
-  width: '100%',
-});
+export function EntriesGrid({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx('box-border grid gap-4 w-full', className)}
+      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}
+      {...props}
+    />
+  );
+}
 
-export const EntryCard = styled(Card, {
-  name: 'EntryCard',
-  variant: 'elevated',
-  cardPadding: 'md',
-  interactive: true,
-  flexDirection: 'column',
-  gap: '$3',
-  cursor: 'pointer',
-});
+export function EntryCard({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof Card>) {
+  return (
+    <Card
+      className={cx(
+        'flex flex-col items-stretch gap-3 cursor-pointer',
+        className,
+      )}
+      variant="elevated"
+      cardPadding="md"
+      interactive
+      {...props}
+    >
+      {children}
+    </Card>
+  );
+}
 
-export const EntryHeader = styled(XStack, {
-  jc: 'space-between',
-  ai: 'flex-start',
-  gap: '$4',
-});
+export function EntryHeader({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-start justify-between gap-4',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const EntryTitleGroup = styled(YStack, {
-  flex: 1,
-  minWidth: 0,
-});
+export function EntryTitleGroup({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch flex-1 min-w-0',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 const entryTextClasses =
   'w-full overflow-hidden whitespace-nowrap [text-overflow:ellipsis]';
@@ -84,7 +112,7 @@ export const EntryStatus = ({
   ...props
 }: WithGetProps<typeof Badge>) => (
   <Badge
-    className="rounded-[999px] shrink-0"
+    className={'rounded-[999px] shrink-0'}
     variant="info"
     size="sm"
     {...props}
@@ -93,47 +121,87 @@ export const EntryStatus = ({
   </Badge>
 );
 
-export const EntryMeta = styled(XStack, {
-  flexWrap: 'wrap',
-  gap: '$2',
+export function EntryMeta({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch flex-wrap gap-2',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function EntryFooter({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center justify-between gap-4 mt-auto pt-3 border-t border-[var(--borderColor)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function EntryTimestamp({
+  children,
+  ...props
+}: { children?: ReactNode } & React.ComponentProps<typeof Typography>) {
+  return (
+    <Typography uiSize="xs" alpha="medium" {...props}>
+      {children}
+    </Typography>
+  );
+}
+
+export function EntryViewDetails({
+  children,
+  ...props
+}: { children?: ReactNode } & React.ComponentProps<typeof Typography>) {
+  return (
+    <Typography uiSize="sm" weight="600" color="var(--primary)" {...props}>
+      {children}
+    </Typography>
+  );
+}
+
+export const PaginationSpinner = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(function PaginationSpinner({ className, ...props }, ref) {
+  return (
+    <div
+      ref={ref}
+      className={cx(
+        'box-border flex flex-col items-center justify-center p-8 w-full [grid-column:1/-1]',
+        className,
+      )}
+      {...props}
+    />
+  );
 });
 
-export const EntryFooter = styled(XStack, {
-  jc: 'space-between',
-  ai: 'center',
-  gap: '$4',
-  marginTop: 'auto',
-  paddingTop: '$3',
-  borderTopWidth: 1,
-  borderColor: '$borderColor',
-});
-
-export const EntryTimestamp = styled(Typography, {
-  uiSize: 'xs',
-  alpha: 'medium',
-});
-
-export const EntryViewDetails = styled(Typography, {
-  uiSize: 'sm',
-  weight: '600',
-  color: '$primary',
-});
-
-export const PaginationSpinner = styled(YStack, {
-  name: 'PaginationSpinner',
-  gridColumn: '1 / -1',
-  jc: 'center',
-  ai: 'center',
-  padding: '$8',
-  width: '100%',
-});
-
-export const EndOfListText = styled(Typography, {
-  name: 'EndOfListText',
-  uiSize: 'sm',
-  alpha: 'medium',
-  textAlign: 'center',
-  padding: '$8',
-  gridColumn: '1 / -1',
-  width: '100%',
-});
+export function EndOfListText({
+  children,
+  ...props
+}: { children?: ReactNode } & React.ComponentProps<typeof Typography>) {
+  return (
+    <Typography
+      className={'box-border p-8 w-full [grid-column:1/-1]'}
+      uiSize="sm"
+      alpha="medium"
+      textCenter
+      {...props}
+    >
+      {children}
+    </Typography>
+  );
+}

@@ -188,7 +188,7 @@ export function GameChat({
       <CollapsedShell
         role="button"
         aria-label="Expand chat"
-        onPress={() => setCollapsed(false)}
+        onClick={() => setCollapsed(false)}
       >
         <TitleDot />
         <Title>Chat</Title>
@@ -216,7 +216,7 @@ export function GameChat({
           <Title>Table Chat</Title>
           <div className="box-border flex flex-col items-stretch flex-1" />
           <IconButton
-            className={'p-1'}
+            className="p-1"
             size="sm"
             title="Settings"
             aria-label="Chat settings"
@@ -224,7 +224,7 @@ export function GameChat({
             <span className="box-border text-[14px]">⚙</span>
           </IconButton>
           <IconButton
-            className={'p-1'}
+            className="p-1"
             size="sm"
             onClick={() => setCollapsed(true)}
             title="Minimize"
@@ -234,7 +234,7 @@ export function GameChat({
           </IconButton>
           {onClose ? (
             <IconButton
-              className={'p-1'}
+              className="p-1"
               size="sm"
               onClick={onClose}
               title="Close"
@@ -253,7 +253,7 @@ export function GameChat({
                 key={s}
                 role="tab"
                 aria-selected={active}
-                onPress={() => setScope(s)}
+                onClick={() => setScope(s)}
                 style={
                   active
                     ? {
@@ -268,13 +268,15 @@ export function GameChat({
                 </TabLabel>
                 {counts[s] > 0 ? (
                   <TabCount
-                    style={MONO_STYLE}
-                    backgroundColor={
-                      active ? 'rgba(6,1,27,0.25)' : 'rgba(255,255,255,0.08)'
-                    }
-                    color={
-                      active ? 'rgba(6,1,27,0.9)' : 'rgba(255,255,255,0.7)'
-                    }
+                    style={{
+                      ...MONO_STYLE,
+                      backgroundColor: active
+                        ? 'rgba(6,1,27,0.25)'
+                        : 'rgba(255,255,255,0.08)',
+                      color: active
+                        ? 'rgba(6,1,27,0.9)'
+                        : 'rgba(255,255,255,0.7)',
+                    }}
                   >
                     {counts[s]}
                   </TabCount>
@@ -292,7 +294,7 @@ export function GameChat({
         >
           {visibleLogs.length === 0 ? (
             <div className="box-border flex flex-col flex-1 items-center justify-center py-10">
-              <Typography className="text-center" alpha="low" uiSize="sm">
+              <Typography className={'text-center'} alpha="low" uiSize="sm">
                 No messages yet. Break the ice!
               </Typography>
             </div>
@@ -351,16 +353,16 @@ export function GameChat({
         />
 
         <InputPill
-          focusStyle={
-            canSend
+          style={{
+            ...(canSend
               ? {
                   borderColor: `${ACCENT_PINK}88`,
                   backgroundColor: 'rgba(0,0,0,0.32)',
                 }
-              : undefined
-          }
-          opacity={canSend ? 1 : 0.5}
-          pointerEvents={canSend ? 'auto' : 'none'}
+              : undefined),
+            opacity: canSend ? 1 : 0.5,
+            pointerEvents: canSend ? 'auto' : 'none',
+          }}
         >
           <ChannelChip style={MONO_STYLE} color={SCOPE_CHIP_COLOR[scope]}>
             {SCOPE_CHIP[scope]}
@@ -384,7 +386,7 @@ export function GameChat({
             }}
           />
           <IconButton
-            className={'p-1'}
+            className="p-1"
             style={{
               background: draft.trim() && canSend ? ACCENT_GRADIENT : undefined,
               opacity: draft.trim() && canSend ? 1 : 0.4,

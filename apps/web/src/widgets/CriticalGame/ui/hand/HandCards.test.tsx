@@ -9,9 +9,6 @@ import { HandCards } from './HandCards';
 import { handWithUids } from '../../lib/combo';
 import type { CriticalCard } from '../../types';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
 function renderCards(
   props: Partial<React.ComponentProps<typeof HandCards>> = {},
 ) {
@@ -22,11 +19,7 @@ function renderCards(
     ...props,
   };
   return {
-    ...render(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <HandCards {...merged} />
-      </TamaguiProvider>,
-    ),
+    ...render(<HandCards {...merged} />),
     props: merged,
   };
 }

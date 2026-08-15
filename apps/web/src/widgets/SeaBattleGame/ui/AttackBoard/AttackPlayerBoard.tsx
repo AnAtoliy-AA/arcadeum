@@ -256,7 +256,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
                 {isCurrentTurn ? '🎯' : '🛡️'}
               </span>
               <span
-                className={'"box-border text-[40px] font-bold uppercase"'}
+                className="box-border text-[40px] font-bold uppercase"
                 style={{ color: isCurrentTurn ? '$danger' : '$warning' }}
               >
                 {isCurrentTurn

@@ -67,7 +67,11 @@ export function AdminBulkRewardsView({ labels }: Props) {
   return (
     <div className="box-border flex flex-col items-stretch gap-4">
       {confirmOpen && (
-        <GlassCard className="p-4 border border-[var(--warning)] bg-[rgba(146,64,14,0.1)]">
+        <GlassCard
+          className={
+            'p-4 border border-[var(--warning)] bg-[rgba(146,64,14,0.1)]'
+          }
+        >
           <span className="box-border font-semibold -mb-2">
             {labels.confirm.title}
           </span>
@@ -160,7 +164,7 @@ export function AdminBulkRewardsView({ labels }: Props) {
 
       {result && (
         <GlassCard
-          className="p-4 border"
+          className={'p-4 border'}
           style={{
             borderColor: result.failedRewards > 0 ? '$warning' : '$success',
             backgroundColor:

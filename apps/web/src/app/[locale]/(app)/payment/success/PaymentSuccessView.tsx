@@ -169,7 +169,7 @@ function SuccessContent() {
             </PageTitle>
           </div>
           <Typography
-            className="max-w-[480px] leading-[30px]"
+            className={'max-w-[480px] leading-[30px]'}
             uiSize="lg"
             textCenter
             alpha="high"

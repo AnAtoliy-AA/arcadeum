@@ -55,9 +55,7 @@ export function CheckersBoard({
 
   return (
     <div
-      className={
-        '"box-border flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[12px] overflow-hidden border-[2px]"'
-      }
+      className="box-border flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[12px] overflow-hidden border-[2px]"
       style={{ aspectRatio: '1/1', borderColor: theme.darkSquare }}
       role="grid"
       aria-label={ariaLabel}
@@ -80,9 +78,7 @@ export function CheckersBoard({
 
             return (
               <div
-                className={
-                  '"box-border flex flex-col flex-1 items-center justify-center"'
-                }
+                className="box-border flex flex-col flex-1 items-center justify-center"
                 style={{
                   cursor: disabled ? 'default' : 'pointer',
                   backgroundColor: isSelected
@@ -100,9 +96,7 @@ export function CheckersBoard({
               >
                 {piece ? (
                   <div
-                    className={
-                      '"box-border flex flex-col w-[70%] h-[70%] rounded-[9999px] items-center justify-center border-[2px]"'
-                    }
+                    className="box-border flex flex-col w-[70%] h-[70%] rounded-[9999px] items-center justify-center border-[2px]"
                     style={{
                       backgroundColor:
                         pieceColor === 'light'

@@ -24,7 +24,7 @@ export function ScoreBoard({ entries, drawCount }: ScoreBoardProps) {
           key={entry.id}
         >
           <span
-            className={'"box-border text-[14px]"'}
+            className="box-border text-[14px]"
             style={{ color: entry.color ?? '$color' }}
           >
             {entry.name}

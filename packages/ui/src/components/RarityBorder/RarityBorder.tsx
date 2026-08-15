@@ -1,72 +1,53 @@
 'use client';
 
-import { YStack, styled } from 'tamagui';
 import { memo } from 'react';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { CSSProperties, ReactElement, ReactNode } from 'react';
+import { cx } from '../../utils/cx';
 
 export type ShopRarity = 'common' | 'rare' | 'epic' | 'legendary';
 
 const RARITY_BORDER: Record<ShopRarity, string> = {
-  common: '$gray7',
-  rare: '$blue8',
-  epic: '$purple8',
-  legendary: '$yellow8',
+  common: '#6b7280',
+  rare: '#3b82f6',
+  epic: '#a855f7',
+  legendary: '#facc15',
 };
 
-const RARITY_GLOW: Record<ShopRarity, string> = {
-  common: 'transparent',
-  rare: '$blue8',
-  epic: '$purple8',
-  legendary: '$yellow8',
+const RARITY_SHADOW: Record<ShopRarity, string> = {
+  common: '',
+  rare: 'shadow-[0_0_12px_rgba(59,130,246,0.4)]',
+  epic: 'shadow-[0_0_12px_rgba(168,85,247,0.4)]',
+  legendary: 'shadow-[0_0_12px_rgba(250,204,21,0.4)]',
 };
 
-const StyledRarityBorder = styled(YStack, {
-  name: 'RarityBorder',
-  borderWidth: 2,
-  borderRadius: '$4',
-  padding: '$2',
-  shadowOpacity: 0.4,
-  shadowRadius: 12,
-
-  variants: {
-    rarity: {
-      common: {
-        borderColor: RARITY_BORDER.common,
-        shadowColor: RARITY_GLOW.common,
-      },
-      rare: {
-        borderColor: RARITY_BORDER.rare,
-        shadowColor: RARITY_GLOW.rare,
-      },
-      epic: {
-        borderColor: RARITY_BORDER.epic,
-        shadowColor: RARITY_GLOW.epic,
-      },
-      legendary: {
-        borderColor: RARITY_BORDER.legendary,
-        shadowColor: RARITY_GLOW.legendary,
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    rarity: 'common',
-  },
-});
-
-export type RarityBorderProps = ComponentProps<typeof StyledRarityBorder> & {
+export type RarityBorderProps = {
   rarity: ShopRarity;
   children: ReactNode;
+  className?: string;
+  testID?: string;
+  'data-testid'?: string;
+  style?: CSSProperties;
 };
 
 export const RarityBorder = memo(function RarityBorder({
   rarity,
   children,
-  ...rest
+  className,
+  testID,
+  'data-testid': dataTestId,
+  style,
 }: RarityBorderProps): ReactElement {
   return (
-    <StyledRarityBorder rarity={rarity} {...rest}>
+    <div
+      data-testid={dataTestId ?? testID}
+      className={cx(
+        'box-border flex flex-col rounded-2xl border-2 p-2',
+        RARITY_SHADOW[rarity],
+        className,
+      )}
+      style={{ ...style, borderColor: RARITY_BORDER[rarity] }}
+    >
       {children}
-    </StyledRarityBorder>
+    </div>
   );
 });

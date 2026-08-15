@@ -6,9 +6,6 @@ import { GameChat } from '../GameChat';
 import { useGameChatStore } from '../../store/gameChatStore';
 import type { ChatLogEntry } from '../../store/gameChatStore';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
 vi.mock('@/shared/ui/PlayerAvatar', () => ({
   EquippedPlayerAvatar: ({ name }: { name?: string }) =>
     React.createElement('span', { 'data-testid': 'player-avatar' }, name),
@@ -19,11 +16,7 @@ vi.mock('@/features/shop/hooks/useEquippedCosmetics', () => ({
 }));
 
 function renderChat(ui: React.ReactElement) {
-  return render(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+  return render(ui);
 }
 
 vi.mock('@arcadeum/ui', async () => {

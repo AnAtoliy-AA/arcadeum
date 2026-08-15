@@ -41,7 +41,7 @@ export function ConfirmationModal({
           <ModalTitle>{title}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <Typography className="text-[var(--textSecondary)]">
+          <Typography className={'text-[var(--textSecondary)]'}>
             {message}
           </Typography>
         </ModalBody>

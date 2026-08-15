@@ -104,9 +104,7 @@ export function RulesModal({
           <div className="box-border flex flex-col items-stretch gap-3">
             {sections.map((s) => (
               <div
-                className={
-                  '"box-border flex flex-col items-stretch p-3 rounded-xl"'
-                }
+                className="box-border flex flex-col items-stretch p-3 rounded-xl"
                 style={{ background: s.gradient }}
                 key={s.header}
               >

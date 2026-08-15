@@ -375,7 +375,7 @@ interface TabButtonProps {
 
 const TabButton = ({ isActive, children, ...props }: TabButtonProps) => (
   <Button
-    className="min-w-[120px] justify-center"
+    className={'min-w-[120px] justify-center'}
     variant={isActive ? 'primary' : 'chip'}
     size="md"
     active={isActive}

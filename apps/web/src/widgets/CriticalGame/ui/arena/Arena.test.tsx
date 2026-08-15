@@ -21,9 +21,6 @@ vi.mock('../LastPlayedCardDisplay', () => ({
 import { Arena } from './Arena';
 import type { CriticalCard } from '../../types';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
 const palette = getVariantStyles('cyberpunk').scene;
 
 function renderArena(
@@ -45,11 +42,9 @@ function renderArena(
     ...override,
   };
   return render(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      <ScenePaletteProvider palette={palette}>
-        <Arena {...props} />
-      </ScenePaletteProvider>
-    </TamaguiProvider>,
+    <ScenePaletteProvider palette={palette}>
+      <Arena {...props} />
+    </ScenePaletteProvider>,
   );
 }
 

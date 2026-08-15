@@ -54,7 +54,7 @@ export function SectionTitle({ children }: { children: ReactNode }) {
             'linear-gradient(180deg, var(--color-primary, #6366f1) 0%, var(--color-primary-dark, #4f46e5) 100%)',
         }}
       />
-      <Typography className="-m-0" uiSize="lg" weight="600">
+      <Typography className={'-m-0'} uiSize="lg" weight="600">
         {children}
       </Typography>
     </div>

@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import { XStack, YStack, Text, View, styled } from 'tamagui';
 import { Button } from '../Button/Button';
 import { RankBadge } from '../RankBadge/RankBadge';
 import { MythicPortrait } from '../MythicPortrait/MythicPortrait';
 import { FormPips, type FormResult } from '../FormPips/FormPips';
+import { cx } from '../../utils/cx';
 
 export type MythicSpotlightProps = {
   rank: number;
@@ -25,41 +25,38 @@ export type MythicSpotlightProps = {
   onChallenge?: () => void;
   onWatch?: () => void;
   onFollow?: () => void;
+  className?: string;
 };
 
-const Glow = styled(View, {
-  name: 'MythicGlow',
-  position: 'absolute',
-  top: -80,
-  left: -80,
-  right: -80,
-  bottom: -80,
-  pointerEvents: 'none',
-});
+const GlowClasses = 'pointer-events-none absolute -inset-20';
 
-const Card = styled(YStack, {
-  name: 'MythicCard',
-  position: 'relative',
-  padding: '$5',
-  borderRadius: '$5',
-  borderWidth: 1,
-  borderColor: 'rgba(236,72,153,0.4)',
-  backgroundColor: 'rgba(15,12,25,0.7)',
-  overflow: 'hidden',
-  gap: '$4',
-});
+const CardClasses = [
+  'box-border',
+  'relative',
+  'flex',
+  'flex-col',
+  'gap-4',
+  'overflow-hidden',
+  'rounded-3xl',
+  'border',
+  'border-[rgba(236,72,153,0.4)]',
+  'bg-[rgba(15,12,25,0.7)]',
+  'p-5',
+].join(' ');
 
-const StatTile = styled(YStack, {
-  name: 'MythicStatTile',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$2',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: 'rgba(255,255,255,0.02)',
-  gap: 2,
-  minWidth: 96,
-});
+const StatTileClasses = [
+  'box-border',
+  'flex',
+  'min-w-[96px]',
+  'flex-col',
+  'gap-[2px]',
+  'rounded-lg',
+  'border',
+  'border-[var(--borderColor)]',
+  'bg-[rgba(255,255,255,0.02)]',
+  'px-3',
+  'py-2',
+].join(' ');
 
 export function MythicSpotlight({
   rank,
@@ -79,109 +76,80 @@ export function MythicSpotlight({
   onChallenge,
   onWatch,
   onFollow,
+  className,
 }: MythicSpotlightProps) {
   return (
-    <Card testID="leaderboard-mythic-spotlight">
-      <Glow
+    <div data-testid="leaderboard-mythic-spotlight" className={cx(CardClasses, className)}>
+      <div
+        className={GlowClasses}
         style={{
           background:
             'radial-gradient(closest-side, rgba(236,72,153,0.35), rgba(236,72,153,0))',
           filter: 'blur(40px)',
         }}
       />
-      <XStack alignItems="center" gap="$5" flexWrap="wrap">
+      <div className="flex flex-row flex-wrap items-center gap-5">
         {portrait ?? <MythicPortrait monogram={name} />}
-        <YStack gap="$2" flex={1} minWidth={240}>
-          <XStack gap="$2" alignItems="center" flexWrap="wrap">
+        <div className="flex min-w-[240px] flex-1 flex-col gap-2">
+          <div className="flex flex-row flex-wrap items-center gap-2">
             <RankBadge tier="mythic">{`#${rank}`}</RankBadge>
-            <Text
-              fontSize="$2"
-              letterSpacing={2}
-              fontWeight="700"
-              color="$mythicAccent"
-            >
+            <span className="text-[14px] font-bold tracking-[2px] text-[var(--mythicAccent)]">
               MYTHIC
-            </Text>
-            <XStack
-              alignItems="center"
-              gap={4}
-              paddingHorizontal={8}
-              paddingVertical={2}
-              borderRadius={999}
-              borderWidth={1}
-              borderColor="rgba(251,146,60,0.4)"
-              backgroundColor="rgba(251,146,60,0.12)"
-            >
-              <Text fontSize="$2">🔥</Text>
-              <Text fontSize="$2" fontWeight="700" color="#fb923c">
+            </span>
+            <div className="flex flex-row items-center gap-1 rounded-full border border-[rgba(251,146,60,0.4)] bg-[rgba(251,146,60,0.12)] px-2 py-0.5">
+              <span className="text-[14px]">🔥</span>
+              <span className="text-[14px] font-bold text-[#fb923c]">
                 {streak}
-              </Text>
-            </XStack>
+              </span>
+            </div>
             {region ? (
-              <Text fontSize="$2" opacity={0.6}>
-                · {region}
-              </Text>
+              <span className="text-[14px] opacity-[0.6]">· {region}</span>
             ) : null}
-          </XStack>
-          <Text fontSize="$9" fontWeight="800" letterSpacing={-0.5}>
+          </div>
+          <span className="text-[40px] font-extrabold tracking-[-0.5px]">
             {name}
-          </Text>
-          <XStack gap="$3" flexWrap="wrap" alignItems="center">
-            <Text fontSize="$5" fontWeight="700" letterSpacing={1}>
+          </span>
+          <div className="flex flex-row flex-wrap items-center gap-3">
+            <span className="text-[20px] font-bold tracking-[1px]">
               {rating.toLocaleString()}
-            </Text>
-            <Text fontSize="$3" opacity={0.75}>
-              {leadLabel}
-            </Text>
-            <Text fontSize="$3" opacity={0.75}>
-              · {streakLabel}
-            </Text>
-          </XStack>
-        </YStack>
-      </XStack>
+            </span>
+            <span className="text-[16px] opacity-[0.75]">{leadLabel}</span>
+            <span className="text-[16px] opacity-[0.75]">· {streakLabel}</span>
+          </div>
+        </div>
+      </div>
 
       {recentForm.length > 0 ? (
-        <YStack gap="$2">
-          <Text
-            fontSize="$1"
-            letterSpacing={2}
-            opacity={0.6}
-            textTransform="uppercase"
-          >
+        <div className="flex flex-col gap-2">
+          <span className="text-[12px] uppercase tracking-[2px] opacity-[0.6]">
             {recentLabel}
-          </Text>
+          </span>
           <FormPips results={recentForm} max={12} variant="letter" />
-        </YStack>
+        </div>
       ) : null}
 
-      <XStack gap="$3" flexWrap="wrap">
-        <StatTile>
-          <Text fontSize="$1" opacity={0.6} textTransform="uppercase">
-            Rating
-          </Text>
-          <Text fontSize="$4" fontWeight="700" letterSpacing={1}>
+      <div className="flex flex-row flex-wrap gap-3">
+        <div className={StatTileClasses}>
+          <span className="text-[12px] uppercase opacity-[0.6]">Rating</span>
+          <span className="text-[18px] font-bold tracking-[1px]">
             {rating.toLocaleString()}
-          </Text>
-        </StatTile>
-        <StatTile>
-          <Text fontSize="$1" opacity={0.6} textTransform="uppercase">
-            Streak
-          </Text>
-          <Text fontSize="$4" fontWeight="700" letterSpacing={1}>
+          </span>
+        </div>
+        <div className={StatTileClasses}>
+          <span className="text-[12px] uppercase opacity-[0.6]">Streak</span>
+          <span className="text-[18px] font-bold tracking-[1px]">
             {streak}
-          </Text>
-        </StatTile>
-        <StatTile>
-          <Text fontSize="$1" opacity={0.6} textTransform="uppercase">
-            Lead
-          </Text>
-          <Text fontSize="$4" fontWeight="700" letterSpacing={1}>
+          </span>
+        </div>
+        <div className={StatTileClasses}>
+          <span className="text-[12px] uppercase opacity-[0.6]">Lead</span>
+          <span className="text-[18px] font-bold tracking-[1px]">
             +{ratingDelta}
-          </Text>
-        </StatTile>
-      </XStack>
+          </span>
+        </div>
+      </div>
 
-      <XStack gap="$3" flexWrap="wrap">
+      <div className="flex flex-row flex-wrap gap-3">
         {onChallenge ? (
           <Button
             variant="ghost"
@@ -217,7 +185,7 @@ export function MythicSpotlight({
             {followLabel}
           </Button>
         ) : null}
-      </XStack>
-    </Card>
+      </div>
+    </div>
   );
 }

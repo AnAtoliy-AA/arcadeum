@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useMemo, useCallback, useSyncExternalStore } from 'react';
-import { YStack, XStack, Text, TextArea, styled, Dialog } from 'tamagui';
+import type { HTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'react';
 import { ModalButton } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   Modal,
   ModalContent,
@@ -29,98 +30,158 @@ interface RematchModalProps {
   cardVariant?: string;
 }
 
-const ModalDescription = styled(Text, {
-  name: 'ModalDescription',
-  fontSize: '$3',
-  color: '$textSecondary',
-  marginBottom: '$4',
-});
+const ModalDescription = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border text-[16px] text-[var(--textSecondary)] mb-4',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-const PlayerList = styled(YStack, {
-  name: 'PlayerList',
-  gap: '$2',
-  marginBottom: '$4',
-});
+const PlayerList = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-col items-stretch gap-2 mb-4',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-const PlayerItem = styled(XStack, {
-  name: 'PlayerItem',
-  alignItems: 'center',
-  gap: '$3',
-  padding: '$3',
-  borderRadius: 12,
-  cursor: 'pointer',
-  variants: {
-    selected: {
-      true: {
-        backgroundColor: 'rgba(99, 102, 241, 0.2)',
-        borderColor: 'rgba(99, 102, 241, 0.5)',
-        borderWidth: 1,
-      },
-      false: {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        borderWidth: 1,
-      },
-    },
-  } as const,
-  hoverStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-});
+const PlayerItem = ({
+  selected = false,
+  className,
+  children,
+  ...props
+}: {
+  selected?: boolean;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-row items-center gap-3 p-3 rounded-[12px] cursor-pointer border transition-colors hover:bg-[rgba(255,255,255,0.1)]',
+      selected
+        ? 'bg-[rgba(99,102,241,0.2)] border-[rgba(99,102,241,0.5)]'
+        : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-const CheckboxCircle = styled(YStack, {
-  width: 20,
-  height: 20,
-  borderRadius: 10,
-  borderWidth: 2,
-  borderColor: 'rgba(255, 255, 255, 0.3)',
-  alignItems: 'center',
-  justifyContent: 'center',
-  variants: {
-    selected: {
-      true: {
-        backgroundColor: '#6366f1',
-        borderColor: '#6366f1',
-      },
-    },
-  } as const,
-});
+const CheckboxCircle = ({
+  selected = false,
+  className,
+  children,
+  ...props
+}: {
+  selected?: boolean;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border w-[20px] h-[20px] rounded-[10px] border-2 border-[rgba(255,255,255,0.3)] flex items-center justify-center shrink-0',
+      selected && 'bg-[#6366f1] border-[#6366f1]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-const PlayerName = styled(Text, {
-  name: 'PlayerName',
-  fontSize: '$4',
-  color: '$color',
-  flex: 1,
-});
+const PlayerName = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border text-[16px] text-[var(--color)] flex-1',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-const EliminatedBadge = styled(Text, {
-  name: 'EliminatedBadge',
-  fontSize: '$2',
-});
+const EliminatedBadge = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span className={cx('box-border text-[14px] ml-1', className)} {...props}>
+    {children}
+  </span>
+);
 
-const EmptyMessage = styled(Text, {
-  name: 'EmptyMessage',
-  padding: '$4',
-  textAlign: 'center',
-  color: '$textSecondary',
-});
+const EmptyMessage = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border p-4 text-center text-[var(--textSecondary)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-const MessageInput = styled(TextArea, {
-  width: '100%',
-  padding: '$3',
-  marginBottom: '$4',
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  borderColor: 'rgba(255, 255, 255, 0.1)',
-  borderWidth: 1,
-  borderRadius: 12,
-  color: '$color',
-  minHeight: 80,
-  fontSize: '$3',
-  focusStyle: {
-    borderColor: '#6366f1',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-  },
-});
+const MessageInput = ({
+  onChangeText,
+  className,
+  ...props
+}: {
+  onChangeText?: (text: string) => void;
+  className?: string;
+} & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'>) => (
+  <textarea
+    className={cx(
+      'box-border w-full p-3 mb-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[var(--color)] min-h-[80px] text-[16px] outline-none transition-colors placeholder:text-[#8e9196] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
+      className,
+    )}
+    onChange={(e) => onChangeText?.(e.target.value)}
+    {...props}
+  />
+);
 
 export function RematchModal({
   isOpen,
@@ -179,73 +240,67 @@ export function RematchModal({
 
   return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay key="overlay" backgroundColor="black" />
-        <ModalContent $variant={cardVariant}>
-          <ModalTitle>
-            {t('games.table.rematch.title' as TranslationKey)}
-          </ModalTitle>
-          <ModalDescription>
-            {t('games.table.rematch.description' as TranslationKey)}
-          </ModalDescription>
+      <ModalContent $variant={cardVariant}>
+        <ModalTitle>
+          {t('games.table.rematch.title' as TranslationKey)}
+        </ModalTitle>
+        <ModalDescription>
+          {t('games.table.rematch.description' as TranslationKey)}
+        </ModalDescription>
 
-          <PlayerList>
-            {otherPlayers.map((player) => (
-              <PlayerItem
-                key={player.playerId}
-                selected={selectedPlayers.has(player.playerId)}
-                onClick={() => togglePlayer(player.playerId)}
-              >
-                <CheckboxCircle selected={selectedPlayers.has(player.playerId)}>
-                  {selectedPlayers.has(player.playerId) && (
-                    <span className="box-border text-[white] text-[12px]">
-                      ✓
-                    </span>
-                  )}
-                </CheckboxCircle>
-                <PlayerName>
-                  {player.displayName}
-                  {!player.alive && <EliminatedBadge>💀</EliminatedBadge>}
-                </PlayerName>
-              </PlayerItem>
-            ))}
-            {otherPlayers.length === 0 && (
-              <EmptyMessage>{t('games.table.rematch.noPlayers')}</EmptyMessage>
-            )}
-          </PlayerList>
-
-          <MessageInput
-            placeholder={
-              t('games.table.rematch.messagePlaceholder') ||
-              'Enter a message...'
-            }
-            value={message}
-            onChangeText={setMessage}
-            disabled={rematchLoading}
-          />
-
-          {rematchError && (
-            <span className="box-border text-[#dc2626] text-[16px] text-center -mb-3">
-              {rematchError}
-            </span>
-          )}
-
-          <ModalActions>
-            <ModalButton
-              variant="secondary"
-              onClick={onClose}
-              disabled={rematchLoading}
+        <PlayerList>
+          {otherPlayers.map((player) => (
+            <PlayerItem
+              key={player.playerId}
+              selected={selectedPlayers.has(player.playerId)}
+              onClick={() => togglePlayer(player.playerId)}
             >
-              {t('games.table.modals.common.cancel')}
-            </ModalButton>
-            <ModalButton onClick={handleConfirm} disabled={rematchLoading}>
-              {rematchLoading
-                ? t('games.table.rematch.loading')
-                : t('games.table.rematch.button')}
-            </ModalButton>
-          </ModalActions>
-        </ModalContent>
-      </Dialog.Portal>
+              <CheckboxCircle selected={selectedPlayers.has(player.playerId)}>
+                {selectedPlayers.has(player.playerId) && (
+                  <span className="box-border text-[white] text-[12px]">✓</span>
+                )}
+              </CheckboxCircle>
+              <PlayerName>
+                {player.displayName}
+                {!player.alive && <EliminatedBadge>💀</EliminatedBadge>}
+              </PlayerName>
+            </PlayerItem>
+          ))}
+          {otherPlayers.length === 0 && (
+            <EmptyMessage>{t('games.table.rematch.noPlayers')}</EmptyMessage>
+          )}
+        </PlayerList>
+
+        <MessageInput
+          placeholder={
+            t('games.table.rematch.messagePlaceholder') || 'Enter a message...'
+          }
+          value={message}
+          onChangeText={setMessage}
+          disabled={rematchLoading}
+        />
+
+        {rematchError && (
+          <span className="box-border text-[#dc2626] text-[16px] text-center -mb-3">
+            {rematchError}
+          </span>
+        )}
+
+        <ModalActions>
+          <ModalButton
+            variant="secondary"
+            onClick={onClose}
+            disabled={rematchLoading}
+          >
+            {t('games.table.modals.common.cancel')}
+          </ModalButton>
+          <ModalButton onClick={handleConfirm} disabled={rematchLoading}>
+            {rematchLoading
+              ? t('games.table.rematch.loading')
+              : t('games.table.rematch.button')}
+          </ModalButton>
+        </ModalActions>
+      </ModalContent>
     </Modal>
   );
 }

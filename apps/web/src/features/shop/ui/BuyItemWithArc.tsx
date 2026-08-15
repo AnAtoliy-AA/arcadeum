@@ -59,7 +59,7 @@ export function BuyItemWithArc({
   if (step === 'done') {
     return (
       <div className="box-border flex flex-col items-center p-4 gap-3">
-        <Typography className="text-[24px]" variant="body">
+        <Typography className={'text-[24px]'} variant="body">
           ✓
         </Typography>
         <Typography variant="body" alpha="high">
@@ -75,7 +75,7 @@ export function BuyItemWithArc({
   if (step === 'error') {
     return (
       <div className="box-border flex flex-col items-center p-4 gap-3">
-        <Typography className="text-[#dc2626]" variant="body">
+        <Typography className={'text-[#dc2626]'} variant="body">
           {error}
         </Typography>
         <Button onClick={onCancel} variant="secondary">

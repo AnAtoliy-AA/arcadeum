@@ -1,135 +1,148 @@
-import { styled, YStack, XStack, Text } from 'tamagui';
+import type { CSSProperties, HTMLAttributes } from 'react';
+
+import { cx } from '@arcadeum/ui/utils/cx';
 import { getVariantStyles } from './variants';
-import { TamaguiTheme } from './variants/types';
+import {
+  resolveVariantStyles,
+  usePseudoStyles,
+  useVariantTheme,
+} from './variant-styles';
 
-export const TableInfo = styled(YStack, {
-  name: 'TableInfo',
-  position: 'absolute',
-  top: '$4',
-  right: '$4',
-  gap: '$2',
-  padding: '$4',
-  borderRadius: 16,
-  backgroundColor: 'rgba(0, 0, 0, 0.4)',
-  backdropFilter: 'blur(12px)',
-  borderWidth: 1,
-  borderColor: 'rgba(255, 255, 255, 0.1)',
-  zIndex: 5,
-  elevation: 5,
-  overflow: 'hidden',
+type VariantProp = { $variant?: string };
 
-  variants: {
-    $variant: (val: string) => {
-      const config = getVariantStyles(val).tableInfo;
-      return {
+export function TableInfo({
+  className,
+  style,
+  $variant,
+  ...props
+}: { className?: string; style?: CSSProperties } & VariantProp &
+  HTMLAttributes<HTMLDivElement>) {
+  const config = getVariantStyles($variant).tableInfo;
+  const variantStyles = resolveVariantStyles(config.getStyles?.());
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch gap-2 p-4 rounded-[16px] border border-[rgba(255,255,255,0.1)] z-[5] overflow-hidden max-[800px]:top-4 max-[800px]:left-4 max-[800px]:right-4 max-[800px]:flex-row max-[800px]:justify-center max-[800px]:gap-2 max-[800px]:p-2 max-[800px]:rounded-[12px]',
+        className,
+      )}
+      style={{
+        position: 'absolute',
+        top: 16,
+        right: 16,
         backgroundColor: config.getBackground(),
         borderColor: config.getBorder(),
-        shadowColor: config.getShadow(),
-        ...config.getStyles?.(),
-      };
-    },
-  } as const,
+        boxShadow: config.getShadow(),
+        backdropFilter: 'blur(12px)',
+        ...variantStyles.style,
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}
 
-  $sm: {
-    top: '$4',
-    left: '$4',
-    right: '$4',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: '$2',
-    padding: '$2',
-    borderRadius: 12,
-  },
-});
+export function TableStat({
+  className,
+  style,
+  $variant,
+  ...props
+}: { className?: string; style?: CSSProperties } & VariantProp &
+  HTMLAttributes<HTMLDivElement>) {
+  const config = getVariantStyles($variant).tableInfo;
+  const variantStyles = resolveVariantStyles(config.getTableStatStyles?.());
+  const { style: hoverStyle, handlers } = usePseudoStyles(
+    variantStyles.hoverStyle,
+  );
+  const hasDynamicHover = !!variantStyles.hoverStyle;
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center gap-3 py-2 px-3 rounded-[10px] bg-[rgba(255,255,255,0.05)] max-[800px]:flex-1 max-[800px]:justify-center max-[800px]:gap-[6px] max-[800px]:py-[6px] max-[800px]:px-2',
+        hasDynamicHover
+          ? ''
+          : 'transition-transform duration-150 hover:bg-[rgba(255,255,255,0.1)] hover:-translate-x-[2px]',
+        className,
+      )}
+      style={{ ...variantStyles.style, ...hoverStyle, ...style }}
+      {...handlers}
+      {...props}
+    />
+  );
+}
 
-export const TableStat = styled(XStack, {
-  name: 'TableStat',
-  alignItems: 'center',
-  gap: '$3',
-  paddingVertical: '$2',
-  paddingHorizontal: '$3',
-  borderRadius: 10,
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+export function StatIcon({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-center justify-center',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  hoverStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    x: -2,
-  },
+export function StatValue({
+  className,
+  style,
+  $isWarning,
+  $variant,
+  ...props
+}: {
+  className?: string;
+  style?: CSSProperties;
+  $isWarning?: boolean;
+} & VariantProp &
+  HTMLAttributes<HTMLSpanElement>) {
+  const config = getVariantStyles($variant).tableInfo;
+  const glow = config.getTextGlow();
+  return (
+    <span
+      className={cx(
+        'box-border text-[14px] font-bold',
+        $isWarning ? 'text-[var(--danger)]' : 'text-[var(--color)]',
+        className,
+      )}
+      style={{
+        color: config.getStatValueColor(!!$isWarning),
+        textShadow: glow === 'inherit' ? 'none' : `0 0 8px ${glow}`,
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}
 
-  $sm: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: '$1.5',
-    paddingVertical: '$1.5',
-    paddingHorizontal: '$2',
-  },
-
-  variants: {
-    $variant: (val: string) => {
-      const config = getVariantStyles(val).tableInfo;
-      return {
-        ...config.getTableStatStyles?.(),
-      };
-    },
-  } as const,
-});
-
-export const StatIcon = styled(YStack, {
-  name: 'StatIcon',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-export const StatValue = styled(Text, {
-  name: 'StatValue',
-  fontSize: 14,
-  fontWeight: '700',
-  color: '$color',
-
-  variants: {
-    $isWarning: {
-      true: {
-        color: '$danger',
-      },
-    },
-    $variant: (val: string, { props }: { props: { $isWarning?: boolean } }) => {
-      const config = getVariantStyles(val).tableInfo;
-      return {
-        color: config.getStatValueColor(!!props.$isWarning),
-        textShadowColor: config.getTextGlow(),
-      };
-    },
-  } as const,
-});
-
-export const InfoCard = styled(YStack, {
-  name: 'InfoCard',
-  padding: '$6',
-  borderRadius: 20,
-  backgroundColor: '$background',
-  backdropFilter: 'blur(20px)',
-  borderWidth: 2,
-  borderColor: '$borderColor',
-  elevation: 10,
-  position: 'relative',
-  overflow: 'hidden',
-
-  $sm: {
-    padding: '$5',
-    borderRadius: 16,
-  },
-
-  variants: {
-    $variant: (val: string, { theme }: { theme: TamaguiTheme }) => {
-      const config = getVariantStyles(val).tableInfo;
-      return {
+export function InfoCard({
+  className,
+  style,
+  $variant,
+  ...props
+}: { className?: string; style?: CSSProperties } & VariantProp &
+  HTMLAttributes<HTMLDivElement>) {
+  const theme = useVariantTheme();
+  const config = getVariantStyles($variant).tableInfo;
+  const variantStyles = resolveVariantStyles(config.getInfoCardStyles?.());
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch p-6 rounded-[20px] border-2 border-[var(--borderColor)] relative overflow-hidden max-[800px]:p-5 max-[800px]:rounded-[16px]',
+        className,
+      )}
+      style={{
         backgroundColor: config.getInfoCardBackground(theme),
         borderColor: config.getInfoCardBorder(theme),
-        shadowColor: config.getInfoCardShadow(),
-        ...config.getInfoCardStyles?.(),
-      };
-    },
-  } as const,
-});
+        boxShadow: `0 5px 10px rgba(0, 0, 0, 0.3), ${config.getInfoCardShadow()}`,
+        backdropFilter: 'blur(20px)',
+        ...variantStyles.style,
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}
 
 export * from './table-decorations';

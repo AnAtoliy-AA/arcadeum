@@ -1,86 +1,88 @@
-import { styled, YStack, XStack, Text } from 'tamagui';
+import type { CSSProperties, HTMLAttributes } from 'react';
+
+import { cx } from '@arcadeum/ui/utils/cx';
 import { getVariantStyles } from './variants';
+import { resolveVariantStyles } from './variant-styles';
 
-export const PlayerStatsContainer = styled(YStack, {
-  name: 'PlayerStatsContainer',
-  gap: '$1',
-  alignItems: 'center',
+type VariantProp = { $variant?: string };
 
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
+export function PlayerStatsContainer({
+  className,
+  ...props
+}: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch gap-1 items-center',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const PlayerCardCount = styled(XStack, {
-  name: 'PlayerCardCount',
-  alignItems: 'center',
-  gap: '$1',
-  paddingVertical: '$1',
-  paddingHorizontal: '$2',
-  borderRadius: 100,
-  backgroundColor: '$background',
-  borderColor: '$borderColor',
-  borderWidth: 1,
+export function PlayerCardCount({
+  className,
+  style,
+  $variant,
+  $isCurrentTurn,
+  $type,
+  ...props
+}: {
+  className?: string;
+  style?: CSSProperties;
+  $isCurrentTurn?: boolean;
+  $type?: 'default' | 'stash' | 'marked';
+} & VariantProp &
+  HTMLAttributes<HTMLDivElement>) {
+  const config = getVariantStyles($variant).players;
+  const variantStyles = resolveVariantStyles(
+    config.getCardCountStyles?.($isCurrentTurn, $type),
+  );
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch items-center gap-1 py-1 px-2 rounded-full border bg-[var(--background)] border-[var(--borderColor)] max-[800px]:py-1 max-[800px]:px-[6px]',
+        $isCurrentTurn
+          ? 'bg-[rgba(0,0,0,0.5)] border-[rgba(255,255,255,0.4)]'
+          : undefined,
+        $type === 'stash'
+          ? 'bg-[var(--stashBg)] border-[var(--stashBorder)]'
+          : $type === 'marked'
+            ? 'bg-[var(--markedBg)] border-[var(--markedBorder)]'
+            : undefined,
+        className,
+      )}
+      style={{ ...variantStyles.style, ...style }}
+      {...props}
+    />
+  );
+}
 
-  variants: {
-    $isCurrentTurn: {
-      true: {
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        borderColor: 'rgba(255,255,255,0.4)',
-      },
-    },
-    $type: {
-      default: {},
-      stash: {
-        backgroundColor: '$stashBg',
-        borderColor: '$stashBorder',
-      },
-      marked: {
-        backgroundColor: '$markedBg',
-        borderColor: '$markedBorder',
-      },
-    },
-    $variant: (
-      val: string,
-      {
-        props,
-      }: {
-        props: {
-          $isCurrentTurn?: boolean;
-          $type?: 'default' | 'stash' | 'marked';
-        };
-      },
-    ) => {
-      const config = getVariantStyles(val).players;
-      return {
-        ...config.getCardCountStyles?.(props.$isCurrentTurn, props.$type),
-      };
-    },
-  } as const,
-
-  $sm: {
-    paddingVertical: '$1',
-    paddingHorizontal: '$1.5',
-  },
-});
-
-export const TurnIndicator = styled(Text, {
-  name: 'TurnIndicator',
-  position: 'relative',
-  marginBottom: -10,
-  width: 28,
-  height: 28,
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 20,
-
-  variants: {
-    $variant: (val: string) => {
-      const config = getVariantStyles(val).players;
-      return {
-        textShadowColor: config.getTurnIndicatorGlow(),
-        ...config.getTurnIndicatorStyles?.(),
-      };
-    },
-  } as const,
-});
+export function TurnIndicator({
+  className,
+  style,
+  $variant,
+  ...props
+}: { className?: string; style?: CSSProperties } & VariantProp &
+  HTMLAttributes<HTMLDivElement>) {
+  const config = getVariantStyles($variant).players;
+  const variantStyles = resolveVariantStyles(config.getTurnIndicatorStyles?.());
+  return (
+    <div
+      className={cx(
+        'box-border flex w-[28px] h-[28px] items-center justify-center relative mb-[-10px] z-[20]',
+        className,
+      )}
+      style={{
+        textShadow:
+          config.getTurnIndicatorGlow() === 'inherit'
+            ? 'none'
+            : `0 0 8px ${config.getTurnIndicatorGlow()}`,
+        ...variantStyles.style,
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}

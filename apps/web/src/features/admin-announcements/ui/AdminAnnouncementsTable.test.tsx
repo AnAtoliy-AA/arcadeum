@@ -6,18 +6,11 @@ import {
 } from './AdminAnnouncementsTable';
 import type { AdminAnnouncementItem } from '../api';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
 vi.mock('@/shared/i18n/context', () => ({
   useLanguage: () => ({ locale: 'en-US', messages: {}, isReady: true }),
 }));
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <TamaguiProvider config={config} defaultTheme="dark">
-    {children}
-  </TamaguiProvider>
-);
+const Wrapper = ({ children }: { children: React.ReactNode }) => children;
 
 const labels: AdminAnnouncementsTableLabels = {
   empty: { noResults: 'no results', noAnnouncements: 'none yet' },

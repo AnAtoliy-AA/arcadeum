@@ -239,7 +239,7 @@ export function ShopCard({
         <div className="box-border flex flex-row items-stretch absolute top-[8px] right-[8px] gap-4 pointer-events-none">
           {equipped ? (
             <Chip backgroundColor={`${accent}1f`} borderColor={`${accent}66`}>
-              <span className="box-border text-[40px] tracking-[1px] uppercase font-extrabold text-[accent]">
+              <span className="box-border text-[14px] tracking-[1px] uppercase font-extrabold ">
                 {labels.equipped}
               </span>
             </Chip>
@@ -248,7 +248,7 @@ export function ShopCard({
               backgroundColor="rgba(255,255,255,0.06)"
               borderColor="rgba(255,255,255,0.18)"
             >
-              <span className="box-border text-[40px] tracking-[1px] uppercase font-bold text-[#94a3b8]">
+              <span className="box-border text-[14px] tracking-[1px] uppercase font-bold text-[#94a3b8]">
                 {labels.owned}
               </span>
             </Chip>
@@ -258,23 +258,24 @@ export function ShopCard({
 
       <div className="box-border flex flex-col items-stretch px-3 py-2 gap-6">
         <span
-          className={'"box-border font-bold text-[#f5f7ff] line-clamp-1"'}
+          className="box-border font-bold text-[#f5f7ff] line-clamp-1"
           style={{ fontSize: small ? 12 : 13 }}
         >
           {name}
         </span>
-        <div className="box-border flex flex-row items-center justify-space-between gap-6">
+        <div className="box-border flex flex-row items-center justify-between gap-6">
           <div
-            className={
-              '"box-border flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"'
-            }
+            className="box-border flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"
             style={{
               backgroundColor: `${accent}14`,
               borderColor: `${accent}44`,
             }}
           >
-            <div className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl bg-[accent]" />
-            <span className="box-border text-[40px] tracking-[1px] uppercase font-extrabold text-[accent]">
+            <div
+              className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
+              style={{ backgroundColor: accent }}
+            />
+            <span className="box-border text-[14px] tracking-[1px] uppercase font-extrabold ">
               {item.rarity}
             </span>
           </div>
@@ -283,7 +284,7 @@ export function ShopCard({
               {CURRENCY_GLYPH[item.priceCurrency]}
             </span>
             <span
-              className={'"box-border text-[12px] font-extrabold"'}
+              className="box-border text-[12px] font-extrabold"
               style={{ color: CURRENCY_COLOR[item.priceCurrency] }}
             >
               {formatNumber(item.priceAmount, locale)}
@@ -297,8 +298,10 @@ export function ShopCard({
           pending={isPending}
           role="button"
           tabIndex={0}
-          onPress={handleAction}
-          onKeyDown={handleKey}
+          onClick={handleAction}
+          onKeyDown={
+            handleKey as unknown as React.KeyboardEventHandler<HTMLButtonElement>
+          }
           onFocus={handleEnter}
           onBlur={handleLeave}
           aria-disabled={isPending}
@@ -321,8 +324,10 @@ export function ShopCard({
               pending={isPending}
               role="button"
               tabIndex={0}
-              onPress={() => setShowArcPayment(true)}
-              onKeyDown={handleKey}
+              onClick={() => setShowArcPayment(true)}
+              onKeyDown={
+                handleKey as unknown as React.KeyboardEventHandler<HTMLButtonElement>
+              }
               style={{
                 backgroundColor: 'rgba(34,197,94,0.12)',
                 borderColor: 'rgba(34,197,94,0.45)',

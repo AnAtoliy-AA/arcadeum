@@ -94,7 +94,7 @@ export function SortablePlayerItem({
         {isHost && totalCount > 1 && (
           <div className="box-border flex flex-row items-stretch gap-1">
             <Button
-              className={'py-1 px-2 min-w-[auto]'}
+              className="py-1 px-2 min-w-[auto]"
               variant="ghost"
               size="sm"
               onClick={(e: { stopPropagation: () => void }) => {
@@ -106,7 +106,7 @@ export function SortablePlayerItem({
               ↑
             </Button>
             <Button
-              className={'py-1 px-2 min-w-[auto]'}
+              className="py-1 px-2 min-w-[auto]"
               variant="ghost"
               size="sm"
               onClick={(e: { stopPropagation: () => void }) => {
@@ -121,7 +121,7 @@ export function SortablePlayerItem({
         )}
         {onKick && !isRoomHost && (
           <Button
-            className={'py-1 px-2 min-w-[auto]'}
+            className="py-1 px-2 min-w-[auto]"
             variant="danger"
             ghost
             size="sm"

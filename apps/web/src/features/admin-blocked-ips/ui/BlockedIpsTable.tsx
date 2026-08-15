@@ -54,7 +54,7 @@ export function BlockedIpsTable({
 
   if (!isLoading && items.length === 0) {
     return (
-      <GlassCard className="p-5 items-center" data-testid="blocked-ips-empty">
+      <GlassCard className={'p-5 items-center'} data-testid="blocked-ips-empty">
         <span className="box-border opacity-[0.7]">{labels.empty}</span>
       </GlassCard>
     );
@@ -79,7 +79,7 @@ export function BlockedIpsTable({
         </Button>
       </div>
 
-      <GlassCard className="p-0 overflow-hidden">
+      <GlassCard className={'p-0 overflow-hidden'}>
         <div
           className="box-border flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
           data-testid="blocked-ips-header"
@@ -100,9 +100,7 @@ export function BlockedIpsTable({
 
         {items.map((item, i) => (
           <div
-            className={
-              '"box-border flex flex-row gap-3 items-center py-2 px-3 border-b border-[var(--borderColor)]"'
-            }
+            className="box-border flex flex-row gap-3 items-center py-2 px-3 border-b border-[var(--borderColor)]"
             style={{
               backgroundColor: i % 2 === 1 ? '$backgroundFocus' : undefined,
               opacity: pendingIp === item.ip ? 0.5 : 1,

@@ -66,7 +66,7 @@ export function AdminPaymentsTable({
   if (!isLoading && items.length === 0) {
     return (
       <GlassCard
-        className="p-5 items-center"
+        className={'p-5 items-center'}
         data-testid="admin-payments-empty"
       >
         <span className="box-border opacity-[0.7]">
@@ -87,7 +87,7 @@ export function AdminPaymentsTable({
         {labels.totalLabel.replace('{total}', String(total))}
       </span>
 
-      <GlassCard className="p-0 overflow-hidden">
+      <GlassCard className={'p-0 overflow-hidden'}>
         {labels.header && (
           <div
             className="box-border flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
@@ -100,7 +100,7 @@ export function AdminPaymentsTable({
               {labels.header.amount}
             </span>
             <span
-              className={'"box-border font-bold text-[12px] opacity-[0.85]"'}
+              className="box-border font-bold text-[12px] opacity-[0.85]"
               style={{ flex: 2 }}
             >
               {labels.header.note}
@@ -116,9 +116,7 @@ export function AdminPaymentsTable({
 
         {items.map((it, i) => (
           <div
-            className={
-              '"box-border flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"'
-            }
+            className="box-border flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
             style={{
               backgroundColor: i % 2 === 1 ? '$backgroundFocus' : undefined,
             }}
@@ -130,9 +128,7 @@ export function AdminPaymentsTable({
                 {it.displayName ?? labels.anonymous}
               </span>
               <span
-                className={
-                  '"box-border opacity-[0.5] text-[12px] line-clamp-1"'
-                }
+                className="box-border opacity-[0.5] text-[12px] line-clamp-1"
                 style={{ fontFamily: 'monospace' }}
               >
                 {it.transactionId}
@@ -145,14 +141,12 @@ export function AdminPaymentsTable({
               <span className="box-border">{truncate(it.note, 200)}</span>
             </span>
             <div
-              className={
-                '"box-border w-[88px] px-2 py-1 rounded-lg self-center"'
-              }
+              className="box-border w-[88px] px-2 py-1 rounded-lg self-center"
               style={{ backgroundColor: it.isPublic ? '$green3' : '$gray3' }}
               data-testid={`visibility-${it.id}`}
             >
               <span
-                className={'"box-border text-[12px] font-bold text-center"'}
+                className="box-border text-[12px] font-bold text-center"
                 style={{ color: it.isPublic ? '$green9' : '$gray9' }}
               >
                 {it.isPublic ? labels.chipPublic : labels.chipPrivate}

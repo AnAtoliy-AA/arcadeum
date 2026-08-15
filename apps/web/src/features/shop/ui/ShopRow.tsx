@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { styled, YStack as Stack } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { ShopCard, type ShopCardLabels, type ShopCardMode } from './ShopCard';
@@ -49,53 +49,49 @@ export interface ShopRowProps {
   onSellRequest?: (row: InventoryItemView) => void;
 }
 
-const RowHost = styled(Stack, {
-  name: 'ShopRowHost',
-  width: '100%',
-  borderRadius: '$5',
-  paddingHorizontal: '$4',
-  paddingVertical: '$4',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.06)',
-  backgroundColor: 'rgba(255,255,255,0.015)',
+function RowHost({
+  active,
+  highlight,
+  className,
+  ...props
+}: {
+  active?: boolean;
+  highlight?: boolean;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border w-full px-4 py-4 rounded-3xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.015)]',
+        active && 'border-[rgba(96,165,250,0.45)] bg-[rgba(96,165,250,0.06)]',
+        highlight &&
+          'border-[rgba(250,204,21,0.30)] bg-[rgba(250,204,21,0.04)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  variants: {
-    active: {
-      true: {
-        borderColor: 'rgba(96,165,250,0.45)',
-        backgroundColor: 'rgba(96,165,250,0.06)',
-      },
-    },
-    highlight: {
-      true: {
-        borderColor: 'rgba(250,204,21,0.30)',
-        backgroundColor: 'rgba(250,204,21,0.04)',
-      },
-    },
-  } as const,
-});
-
-const Scroller = styled(Stack, {
-  name: 'ShopRowScroller',
-  flexDirection: 'row',
-  alignItems: 'stretch',
-  gap: 12,
-  width: '100%',
-  overflow: 'scroll',
-  paddingVertical: 4,
-
-  variants: {
-    expanded: {
-      // Wrap the cards into a grid that fills the row width so every item
-      // is visible without horizontal scrolling. Scroll mode is the default
-      // (compact, leaves room for many rows on the page).
-      true: {
-        flexWrap: 'wrap',
-        overflow: 'visible',
-      },
-    },
-  } as const,
-});
+function Scroller({
+  expanded,
+  className,
+  ...props
+}: {
+  expanded?: boolean;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch gap-3 w-full overflow-scroll py-1',
+        expanded && 'flex-wrap overflow-visible',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export function ShopRow({
   id,
@@ -158,7 +154,7 @@ export function ShopRow({
 
   return (
     <div
-      className={'"box-border flex flex-col items-stretch gap-3 w-full"'}
+      className="box-border flex flex-col items-stretch gap-3 w-full"
       style={{ scrollMarginTop: 32 }}
       id={id}
       data-testid={`shop-row-${id}`}
@@ -166,7 +162,7 @@ export function ShopRow({
       data-active={isActive ? 'true' : 'false'}
     >
       <RowHost active={isActive} highlight={highlight}>
-        <div className="box-border flex flex-row w-full items-end justify-space-between -mb-3">
+        <div className="box-border flex flex-row w-full items-end justify-between -mb-3">
           <div className="box-border flex flex-col items-stretch gap-2">
             <span className="box-border text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
               {labels.eyebrow.replace('{count}', String(items.length))}

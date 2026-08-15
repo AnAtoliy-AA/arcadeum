@@ -122,7 +122,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       )}
 
       <Button
-        className={'max-[640px]:scale-[0.9] max-[640px]:px-2'}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         variant="glass"
         size="sm"
         data-testid="fullscreen-button"
@@ -145,7 +145,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       </Button>
 
       <Button
-        className={'max-[640px]:scale-[0.9] max-[640px]:px-2'}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         variant="glass"
         size="sm"
         active={soundEnabled}
@@ -162,7 +162,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       </Button>
 
       <Button
-        className={'max-[640px]:scale-[0.9] max-[640px]:px-2'}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         variant="glass"
         size="sm"
         active={musicEnabled}
@@ -180,7 +180,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
       {onShowRules && (
         <Button
-          className={'max-[640px]:scale-[0.9] max-[640px]:px-2'}
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
           variant="glass"
           size="sm"
           onClick={onShowRules}
@@ -197,7 +197,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
       {onToggleChat && (
         <Button
-          className={'max-[640px]:scale-[0.9] max-[640px]:px-2'}
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
           variant="glass"
           size="sm"
           onClick={onToggleChat}
@@ -222,7 +222,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           data-testid="move-controls"
         >
           <Button
-            className={'p-[4px] min-w-[32px]'}
+            className="p-[4px] min-w-[32px]"
             variant="glass"
             size="sm"
             onClick={() => handleMove('up')}
@@ -234,7 +234,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           <div className="box-border flex flex-col items-stretch gap-1">
             <div className="box-border flex flex-row items-stretch gap-1">
               <Button
-                className={'p-[4px] min-w-[32px]'}
+                className="p-[4px] min-w-[32px]"
                 variant="glass"
                 size="sm"
                 onClick={() => handleMove('left')}
@@ -246,7 +246,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
                 ←
               </Button>
               <Button
-                className={'p-[4px] min-w-[32px]'}
+                className="p-[4px] min-w-[32px]"
                 variant="glass"
                 size="sm"
                 onClick={() => handleCenterView()}
@@ -258,7 +258,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
                 ⚡
               </Button>
               <Button
-                className={'p-[4px] min-w-[32px]'}
+                className="p-[4px] min-w-[32px]"
                 variant="glass"
                 size="sm"
                 onClick={() => handleMove('right')}
@@ -272,7 +272,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
             </div>
           </div>
           <Button
-            className={'p-[4px] min-w-[32px]'}
+            className="p-[4px] min-w-[32px]"
             variant="glass"
             size="sm"
             onClick={() => handleMove('down')}
@@ -288,9 +288,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
       {isGameOver && onRematch && (
         <Button
-          className={
-            'max-[640px]:scale-[0.9] max-[640px]:px-2 active:scale-[0.95]'
-          }
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2 active:scale-[0.95]"
           variant="primary"
           size="sm"
           onClick={onRematch}
@@ -312,7 +310,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       )}
 
       <Button
-        className={'max-[640px]:scale-[0.9] max-[640px]:px-2'}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         variant="glass"
         size="sm"
         onClick={handleExitRoom}
@@ -331,7 +329,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
       {snapshot.userId && (
         <Button
-          className={'max-[640px]:scale-[0.9] max-[640px]:px-2'}
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
           variant="danger"
           size="sm"
           onClick={handleLeaveGame}
@@ -368,7 +366,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           <ModalFooter>
             <div className="box-border flex flex-row items-stretch gap-3 justify-center w-full">
               <Button
-                className={'rounded-[12px]'}
+                className="rounded-[12px]"
                 style={{ flex: 1 }}
                 variant="secondary"
                 size="lg"
@@ -377,7 +375,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
                 {t('games.common.cancel') || 'Cancel'}
               </Button>
               <Button
-                className={'rounded-[12px]'}
+                className="rounded-[12px]"
                 style={{ flex: 1 }}
                 variant="danger"
                 size="lg"

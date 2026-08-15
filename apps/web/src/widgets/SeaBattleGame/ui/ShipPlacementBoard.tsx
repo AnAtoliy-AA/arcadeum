@@ -449,9 +449,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
         <BoardContainer>
           <PlacementHeader className="placement-header">
             <span
-              className={
-                '"box-border text-[20px] font-bold -m-0 placement-title"'
-              }
+              className="box-border text-[20px] font-bold -m-0 placement-title"
               style={{ color: theme.textColor }}
               data-testid="placement-instruction"
             >

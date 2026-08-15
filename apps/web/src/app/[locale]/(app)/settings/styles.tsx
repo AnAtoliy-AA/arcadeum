@@ -1,6 +1,6 @@
-import React from 'react';
-import { YStack, XStack, Text, styled } from 'tamagui';
-import { Button, ButtonProps, Typography } from '@arcadeum/ui';
+import type React from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
+import { Button, type ButtonProps } from '@arcadeum/ui';
 
 export const settingsStyles = `
   .settings-toggle-input {
@@ -45,81 +45,125 @@ export const settingsStyles = `
   }
 `;
 
-export const Container = styled(YStack, {
-  maxWidth: 900,
-  alignSelf: 'center',
-  width: '100%',
-  flexDirection: 'column',
-  gap: '$8',
-} as Record<string, unknown>);
+export function Container({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch gap-8 w-full max-w-[900px] self-center',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const OptionList = styled(YStack, {
-  display: 'grid',
-  gap: '1.25rem',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-} as unknown as Record<string, unknown>);
+export function OptionList({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx('box-border grid gap-5 w-full', className)}
+      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
+      {...props}
+    />
+  );
+}
 
-export const PillGroup = styled(XStack, {
-  flexWrap: 'wrap',
-  gap: '$4',
-} as Record<string, unknown>);
+export function PillGroup({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch flex-wrap gap-4',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const AccountStatus = styled(Typography, {
-  name: 'AccountStatus',
-  tag: 'p',
-  margin: 0,
-  uiSize: 'md',
-  color: '$color',
-  opacity: 0.8,
-  backgroundColor: '$background',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  padding: '$5',
-  borderRadius: 12,
-  textCenter: true,
-  style: {
-    backdropFilter: 'blur(12px)',
-  },
-} as Record<string, unknown>);
+export function AccountStatus({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cx(
+        'box-border m-0 p-5 rounded-xl border border-[var(--borderColor)] bg-[var(--background)] text-center text-[16px] leading-[24px] text-[var(--color)] opacity-[0.8]',
+        className,
+      )}
+      style={{ backdropFilter: 'blur(12px)' }}
+      {...props}
+    />
+  );
+}
 
-export const AccountActions = styled(XStack, {
-  flexWrap: 'wrap',
-  gap: '$5',
-  marginTop: '$3',
-} as Record<string, unknown>);
+export function AccountActions({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch flex-wrap gap-5 mt-3',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const AccountActionItem = styled(YStack, {
-  flex: 1,
-  minWidth: 150, // Added minWidth for better responsiveness on small screens
-} as Record<string, unknown>);
+export function AccountActionItem({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch flex-1 min-w-[150px]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ToggleRow = styled(XStack, {
-  name: 'ToggleRow',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: 24,
-  backgroundColor: '$background',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: 12,
-  cursor: 'pointer',
-  hoverStyle: {
-    borderColor: '$primary',
-    backgroundColor: '$backgroundHover',
-  },
-  style: {
-    backdropFilter: 'blur(8px)',
-    scrollMarginTop: 100,
-  },
-} as Record<string, unknown>);
+export function ToggleRow({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center justify-between p-6 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl cursor-pointer transition-colors hover:border-[var(--primary)] hover:bg-[var(--backgroundHover)]',
+        className,
+      )}
+      style={{ backdropFilter: 'blur(8px)', scrollMarginTop: 100 }}
+      {...props}
+    />
+  );
+}
 
-export const ToggleLabel = styled(Text, {
-  tag: 'span',
-  fontSize: '$4',
-  fontWeight: '600',
-  color: '$color',
-  cursor: 'pointer',
-} as Record<string, unknown>);
+export function ToggleLabel({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[18px] leading-[24px] font-semibold text-[var(--color)] cursor-pointer',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export function ToggleInput(
   props: React.InputHTMLAttributes<HTMLInputElement>,
@@ -127,27 +171,40 @@ export function ToggleInput(
   return <input type="checkbox" className="settings-toggle-input" {...props} />;
 }
 
-export const BlockedUserRow = styled(XStack, {
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '$4',
-  backgroundColor: '$background',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: 12,
-  gap: '$4',
-  style: { backdropFilter: 'blur(12px)' },
-} as Record<string, unknown>);
+export function BlockedUserRow({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center justify-between gap-4 p-4 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl',
+        className,
+      )}
+      style={{ backdropFilter: 'blur(12px)' }}
+      {...props}
+    />
+  );
+}
 
-export const BlockedUserInfo = styled(YStack, {
-  gap: '$2',
-  minWidth: 0,
-  flex: 1,
-} as Record<string, unknown>);
+export function BlockedUserInfo({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch gap-2 min-w-0 flex-1',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export const UnblockButton = (props: ButtonProps) => (
   <Button
-    className="rounded-[12px] whitespace-nowrap"
+    className={'rounded-[12px] whitespace-nowrap'}
     variant="danger"
     outline
     size="sm"
@@ -155,30 +212,48 @@ export const UnblockButton = (props: ButtonProps) => (
   />
 );
 
-export const OptionLabel = styled(Text, {
-  name: 'OptionLabel',
-  tag: 'span',
-  fontSize: '$4',
-  fontWeight: '600',
-  color: '$color',
-} as Record<string, unknown>);
+export function OptionLabel({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[18px] leading-[24px] font-semibold text-[var(--color)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const OptionDescription = styled(Text, {
-  name: 'OptionDescription',
-  tag: 'p',
-  margin: 0,
-  fontSize: '$3',
-  color: '$color',
-  opacity: 0.7,
-} as Record<string, unknown>);
+export function OptionDescription({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cx(
+        'box-border m-0 text-[16px] leading-[20px] text-[var(--color)] opacity-[0.7]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const VersionText = styled(Text, {
-  tag: 'span',
-  fontSize: '$3',
-  color: '$color',
-  letterSpacing: '0.05em' as unknown as number,
-  opacity: 0.7,
-  style: {
-    fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
-  },
-} as Record<string, unknown>);
+export function VersionText({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[16px] leading-[20px] text-[var(--color)] tracking-[0.05em] opacity-[0.7]',
+        className,
+      )}
+      style={{ fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace" }}
+      {...props}
+    />
+  );
+}

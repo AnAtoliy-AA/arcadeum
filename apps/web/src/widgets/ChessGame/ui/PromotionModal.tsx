@@ -35,13 +35,13 @@ function PromotionModalImpl({
 
   return (
     <ModalOverlay>
-      <ModalContent minWidth={280}>
+      <ModalContent style={{ minWidth: 280 }}>
         <ModalTitle>{t('games.chess_v1.status.promotionTitle')}</ModalTitle>
         <PromotionGrid>
           {PROMOTION_PIECES.map((pieceType) => (
             <PromotionOption
               key={pieceType}
-              onPress={() => onSelect(pieceType)}
+              onClick={() => onSelect(pieceType)}
             >
               <span className="box-border text-[40px] leading-[16px]">
                 {PIECE_SYMBOLS[pieceType][color]}
@@ -49,7 +49,7 @@ function PromotionModalImpl({
             </PromotionOption>
           ))}
         </PromotionGrid>
-        <CancelButton onPress={onCancel}>
+        <CancelButton onClick={onCancel}>
           {t('games.chess_v1.actions.declineDraw')}
         </CancelButton>
       </ModalContent>

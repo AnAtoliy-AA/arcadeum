@@ -92,7 +92,7 @@ export default function HistoryPage({ initialData }: HistoryPageProps) {
     return (
       <PageLayout>
         <Container
-          className="gap-5 items-center justify-center p-10 flex-1"
+          className={'gap-5 items-center justify-center p-10 flex-1'}
           size="xl"
         >
           <EmptyState
@@ -119,7 +119,7 @@ export default function HistoryPage({ initialData }: HistoryPageProps) {
   return (
     <>
       <PageLayout>
-        <Container className="gap-5" size="xl">
+        <Container className={'gap-5'} size="xl">
           <HistoryHeader
             loading={loading}
             refreshing={refreshing}

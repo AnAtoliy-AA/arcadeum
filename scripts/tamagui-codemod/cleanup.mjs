@@ -445,17 +445,18 @@ function transformFile(sourceText) {
       const exprText = init && ts.isJsxExpression(init) && init.expression
         ? init.expression.getText()
         : undefined;
+      const literalValue = init && !ts.isJsxExpression(init) ? init.getText() : undefined;
       if (staticClasses.length) {
         const merged = staticClasses.join(' ');
-        if (exprText === undefined) {
-          outAttrs.push(`className="${merged}"`);
-        } else if (/^['"`]/.test(exprText) && /['"`]$/.test(exprText)) {
-          outAttrs.push(`className="${exprText.slice(1, -1)} ${merged}"`);
-        } else {
+        if (literalValue !== undefined) {
+          outAttrs.push(`className="${literalValue.slice(1, -1)} ${merged}"`);
+        } else if (exprText !== undefined) {
           outAttrs.push(`className={\`${merged} \${${exprText}}\`}`);
+        } else {
+          outAttrs.push(`className="${merged}"`);
         }
       } else {
-        outAttrs.push(exprText === undefined ? `className={'${init.getText()}'}` : `className={${exprText}}`);
+        outAttrs.push(literalValue !== undefined ? `className="${literalValue.slice(1, -1)}"` : `className={${exprText}}`);
       }
     } else if (staticClasses.length) {
       outAttrs.push(`className="${staticClasses.join(' ')}"`);

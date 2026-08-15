@@ -51,9 +51,7 @@ function PlayerRow({
 }: PlayerRowProps) {
   return (
     <div
-      className={
-        '"box-border flex flex-col items-center gap-2 p-4 border rounded-[12px] relative"'
-      }
+      className="box-border flex flex-col items-center gap-2 p-4 border rounded-[12px] relative"
       style={{
         backgroundColor: isActive
           ? 'rgba(87, 195, 255, 0.05)'
@@ -70,9 +68,7 @@ function PlayerRow({
     >
       {isActive && (
         <div
-          className={
-            '"box-border flex flex-row items-stretch absolute top-[-10px] left-[50%] z-[10]"'
-          }
+          className="box-border flex flex-row items-stretch absolute top-[-10px] left-[50%] z-[10]"
           style={{ transform: 'translateX(-50%)' }}
         >
           <Badge variant="success" size="sm" pulse>
@@ -81,7 +77,7 @@ function PlayerRow({
         </div>
       )}
       <span
-        className={'"box-border text-[19px] font-semibold"'}
+        className="box-border text-[19px] font-semibold"
         style={{ color: teamColor ?? getPlayerColor(player.playerId) }}
       >
         {resolveDisplayName(player.playerId, 'Player')}{' '}
@@ -94,9 +90,7 @@ function PlayerRow({
         {player.board.map((row, rIndex) =>
           row.map((cellState, cIndex) => (
             <div
-              className={
-                '"box-border flex flex-col items-stretch w-[10%] h-[10%] border border-[rgba(255,255,255,0.1)] cursor-pointer"'
-              }
+              className="box-border flex flex-col items-stretch w-[10%] h-[10%] border border-[rgba(255,255,255,0.1)] cursor-pointer"
               style={{
                 backgroundColor:
                   CELL_COLORS[isMe || cellState > 1 ? cellState : 0] ??
@@ -142,7 +136,9 @@ export function SeaBattleTable({
 
   return (
     <div className="box-border flex flex-col items-center justify-center w-full min-h-full gap-5 p-5">
-      <GlassCard className="flex-row p-4 px-6 items-center gap-4 rounded-[100px]">
+      <GlassCard
+        className={'flex-row p-4 px-6 items-center gap-4 rounded-[100px]'}
+      >
         <Badge
           variant={isMyTurn ? 'success' : 'info'}
           size="md"
@@ -162,7 +158,7 @@ export function SeaBattleTable({
                 )}
           </span>
           <span
-            className={'"box-border text-[17px] font-extrabold"'}
+            className="box-border text-[17px] font-extrabold"
             style={activePlayerColor ? { color: activePlayerColor } : undefined}
           >
             {isMyTurn
@@ -187,15 +183,11 @@ export function SeaBattleTable({
                 key={team.id}
               >
                 <div
-                  className={
-                    '"box-border flex flex-row items-center gap-2 px-3 rounded-[20px] bg-[rgba(0,0,0,0.4)] border border-l-[4px] border-[rgba(255,255,255,0.1)]"'
-                  }
+                  className="box-border flex flex-row items-center gap-2 px-3 rounded-[20px] bg-[rgba(0,0,0,0.4)] border border-l-[4px] border-[rgba(255,255,255,0.1)]"
                   style={{ borderLeftColor: team.color }}
                 >
                   <div
-                    className={
-                      '"box-border flex flex-col items-stretch w-[10px] h-[10px] rounded-[100px]"'
-                    }
+                    className="box-border flex flex-col items-stretch w-[10px] h-[10px] rounded-[100px]"
                     style={{ backgroundColor: team.color }}
                   />
                   <span className="box-border text-[14px] font-bold text-[white]">

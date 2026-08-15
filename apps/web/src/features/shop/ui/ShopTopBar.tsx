@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Text, styled, YStack as Stack } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { buildRoutes } from '@/shared/config/routes';
@@ -25,60 +25,73 @@ export interface ShopTopBarProps {
   onTopUp?: () => void;
 }
 
-const BalanceChip = styled(Stack, {
-  name: 'ShopTopBarBalanceChip',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 8,
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$3',
-  borderWidth: 1,
+const BALANCE_CHIP_VARIANTS = {
+  coins: 'bg-[rgba(251,191,36,0.08)] border-[rgba(251,191,36,0.25)]',
+  gems: 'bg-[rgba(167,139,250,0.08)] border-[rgba(167,139,250,0.25)]',
+} as const;
 
-  variants: {
-    currency: {
-      coins: {
-        backgroundColor: 'rgba(251,191,36,0.08)',
-        borderColor: 'rgba(251,191,36,0.25)',
-      },
-      gems: {
-        backgroundColor: 'rgba(167,139,250,0.08)',
-        borderColor: 'rgba(167,139,250,0.25)',
-      },
-    },
-  } as const,
-});
+type BalanceCurrency = keyof typeof BALANCE_CHIP_VARIANTS;
 
-const NavLink = styled(Text, {
-  name: 'ShopTopBarNavLink',
-  fontSize: '$2',
-  letterSpacing: 0.5,
-  textTransform: 'uppercase',
-  fontWeight: '700',
-  color: '$gray11',
-  paddingHorizontal: 10,
-  paddingVertical: 6,
-  borderRadius: '$2',
-  hoverStyle: { color: '$white', backgroundColor: 'rgba(255,255,255,0.04)' },
-});
+function BalanceChip({
+  currency,
+  className,
+  ...props
+}: {
+  currency: BalanceCurrency;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center gap-2 px-3 py-2 rounded-xl border',
+        BALANCE_CHIP_VARIANTS[currency],
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const TopUpBtn = styled(Stack, {
-  name: 'ShopTopBarTopUp',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 4,
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$3',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.18)',
-  borderStyle: 'dashed',
-  cursor: 'pointer',
-  hoverStyle: {
-    borderColor: 'rgba(167,139,250,0.6)',
-    backgroundColor: 'rgba(167,139,250,0.06)',
-  },
-});
+function NavLink({
+  color,
+  className,
+  ...props
+}: {
+  color?: string;
+  className?: string;
+} & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border px-[10px] py-[6px] rounded-lg text-[14px] tracking-[0.5px] uppercase font-bold transition-colors',
+        color === '$white' ? 'text-[#f5f7ff]' : 'text-[#94a3b8]',
+        'hover:text-[#f5f7ff] hover:bg-[rgba(255,255,255,0.04)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function TopUpBtn({
+  onPress,
+  className,
+  ...props
+}: {
+  onPress?: () => void;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center gap-1 px-3 py-2 rounded-xl border border-dashed border-[rgba(255,255,255,0.18)] cursor-pointer transition-colors hover:border-[rgba(167,139,250,0.6)] hover:bg-[rgba(167,139,250,0.06)]',
+        className,
+      )}
+      onClick={onPress}
+      {...props}
+    />
+  );
+}
 
 export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
   const router = useRouter();
@@ -104,7 +117,7 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
 
   return (
     <div
-      className="box-border flex flex-row w-full items-center justify-space-between gap-4 flex-wrap"
+      className="box-border flex flex-row w-full items-center justify-between gap-4 flex-wrap"
       data-testid="shop-top-bar"
     >
       <div className="box-border flex flex-col items-stretch gap-2">
@@ -147,7 +160,7 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         <BalanceChip currency="coins" data-testid="shop-balance-coins">
           <span className="box-border text-[16px]">{COIN_GLYPH}</span>
           <span
-            className={'"box-border text-[18px] font-bold"'}
+            className="box-border text-[18px] font-bold"
             style={{ color: COIN_COLOR }}
           >
             {formatNumber(coins, locale)}
@@ -156,7 +169,7 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         <BalanceChip currency="gems" data-testid="shop-balance-gems">
           <span className="box-border text-[16px]">{GEM_GLYPH}</span>
           <span
-            className={'"box-border text-[18px] font-bold"'}
+            className="box-border text-[18px] font-bold"
             style={{ color: GEM_COLOR }}
           >
             {formatNumber(gems, locale)}
@@ -164,7 +177,7 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         </BalanceChip>
         <TopUpBtn onPress={handleTopUp} role="button" data-testid="shop-top-up">
           <span
-            className={'"box-border text-[16px] font-bold"'}
+            className="box-border text-[16px] font-bold"
             style={{ color: GEM_COLOR }}
           >
             +

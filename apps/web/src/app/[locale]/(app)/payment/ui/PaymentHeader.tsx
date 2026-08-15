@@ -15,7 +15,7 @@ export function PaymentHeader() {
         {t('payments.subtitle') || 'Secure and fast payments powered by PayPal'}
       </Typography>
       <Typography
-        className="-mt-4 leading-[28px] max-w-[480px]"
+        className={'-mt-4 leading-[28px] max-w-[480px]'}
         uiSize="sm"
         alpha="medium"
         textCenter

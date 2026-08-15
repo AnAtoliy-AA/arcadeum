@@ -46,12 +46,14 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                 if (!feature) return null;
                 return (
                   <GlassCard
-                    className="flex-1 min-w-[280px] p-4 border border-[var(--borderColor)]"
+                    className={
+                      'flex-1 min-w-[280px] p-4 border border-[var(--borderColor)]'
+                    }
                     key={index}
                   >
                     <div className="box-border flex flex-col items-stretch gap-2">
                       <Typography
-                        className="font-bold"
+                        className={'font-bold'}
                         variant="label"
                         uiSize="md"
                       >
@@ -93,18 +95,18 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                 className="box-border flex flex-col items-stretch gap-3"
                 id="faq"
               >
-                <Typography className="font-bold" variant="label" uiSize="lg">
+                <Typography className={'font-bold'} variant="label" uiSize="lg">
                   {faq?.heading}
                 </Typography>
                 <div className="box-border flex flex-col items-stretch gap-2">
                   {items.map((item, index) => (
                     <GlassCard
-                      className="p-4 border border-[var(--borderColor)]"
+                      className={'p-4 border border-[var(--borderColor)]'}
                       key={index}
                     >
                       <div className="box-border flex flex-col items-stretch gap-1">
                         <Typography
-                          className="font-bold"
+                          className={'font-bold'}
                           variant="label"
                           uiSize="md"
                         >

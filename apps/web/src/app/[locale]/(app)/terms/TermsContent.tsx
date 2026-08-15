@@ -164,10 +164,15 @@ export default function TermsContent({
               </li>
             </ul>
           </div>
-          <Typography className="-mt-4" variant="body" uiSize="md" alpha="high">
+          <Typography
+            className={'-mt-4'}
+            variant="body"
+            uiSize="md"
+            alpha="high"
+          >
             {s?.refund?.contact}{' '}
             <Link href={routes.contact}>
-              <Typography className="text-[var(--primary)] underline">
+              <Typography className={'text-[var(--primary)] underline'}>
                 {contactT?.title}
               </Typography>
             </Link>
@@ -286,7 +291,7 @@ export default function TermsContent({
             {s?.taxes?.important && (
               <div className="box-border flex flex-col items-stretch -mt-4 p-4 rounded-lg bg-[rgba(234,_179,_8,_0.15)] border-l-[4px] border-l-[#eab308]">
                 <Typography
-                  className="font-bold"
+                  className={'font-bold'}
                   variant="body"
                   uiSize="md"
                   alpha="high"

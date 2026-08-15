@@ -188,7 +188,7 @@ export default function FriendsPageContent({
             </span>
             <div className="box-border flex flex-row gap-2 items-center">
               <Input
-                className="flex-1"
+                className={'flex-1'}
                 size="md"
                 placeholder={tt.addFriend?.placeholder ?? 'Enter username'}
                 value={username}

@@ -1,87 +1,54 @@
-import { styled, YStack } from 'tamagui';
+import type React from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 /**
  * Horizontal flex row on desktop (≥1150px), vertical stack on mobile/tablet.
- * Wraps GameWrapper + ChatPanel side by side.
+ * Wraps GameWrapper + ChatPanel side by side. The caller derives
+ * `flexDirection` from `useMediaQuery().gtMd`, so the prop is applied
+ * directly as the source of truth at every viewport.
  */
-export const GameRow = styled(YStack, {
-  name: 'GameRow',
-  flex: 1,
-  minHeight: 0,
-  gap: '$4',
-  alignItems: 'stretch',
-  position: 'relative',
-
-  // Switch to horizontal layout only on wide screens (> 1150px)
-  $md: {
-    flexDirection: 'column',
-    flex: 1,
-    minHeight: 0,
-  },
-  $tablet: {
-    flexDirection: 'column',
-    flex: 1,
-    minHeight: 0,
-  },
-  $sm: {
-    flexDirection: 'column',
-    flex: 1,
-    minHeight: 0,
-  },
-  $gtMd: {
-    flexDirection: 'row',
-    flex: 1,
-  },
-});
+export function GameRow({
+  flexDirection,
+  className,
+  style,
+  ...props
+}: {
+  flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-1 items-stretch gap-4 relative min-h-0',
+        flexDirection === 'row' ? 'flex-row' : 'flex-col',
+        className,
+      )}
+      style={style}
+      {...props}
+    />
+  );
+}
 
 /**
  * Chat panel — fixed 320px wide on desktop, full width below game on mobile/tablet.
  * Uses glassmorphism for a premium look and separates cleanly from the game.
  */
-export const ChatPanel = styled(YStack, {
-  name: 'ChatPanel',
-  width: 350,
-  minWidth: 350,
-  height: '100%',
-  minHeight: 350,
-  flexShrink: 0,
-  borderRadius: '$4',
-  overflow: 'hidden',
-
-  $md: {
-    width: '100%',
-    minWidth: 0,
-    minHeight: 0,
-    height: 'auto',
-    paddingTop: 0,
-    marginTop: '$2',
-    borderRadius: '$3',
-  },
-  $tablet: {
-    width: '100%',
-    minWidth: 0,
-    minHeight: 0,
-    height: 'auto',
-    paddingTop: 0,
-    marginTop: '$2',
-    borderRadius: '$3',
-  },
-  $sm: {
-    width: '100%',
-    minWidth: 0,
-    minHeight: 0,
-    height: 'auto',
-    paddingTop: 0,
-    marginTop: '$2',
-    borderRadius: '$3',
-  },
-
-  variants: {
-    visible: {
-      true: {},
-      false: {
-        display: 'none',
-      },
-    },
-  } as const,
-});
+export function ChatPanel({
+  visible,
+  className,
+  ...props
+}: {
+  visible?: boolean;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border w-[350px] min-w-[350px] h-full min-h-[350px] shrink-0 rounded-2xl overflow-hidden max-[1150px]:w-full max-[1150px]:min-w-0 max-[1150px]:min-h-0 max-[1150px]:h-auto max-[1150px]:mt-2 max-[1150px]:rounded-lg',
+        visible === false && 'hidden',
+        className,
+      )}
+      {...props}
+    />
+  );
+}

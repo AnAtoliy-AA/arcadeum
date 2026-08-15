@@ -137,7 +137,7 @@ export function AuthFormCredentials({
             data-testid="auth-password-input"
           />
           <button
-            className={'"auth-pw-toggle"'}
+            className="auth-pw-toggle"
             style={passwordToggleStyle}
             type="button"
             onClick={() => setShowPassword((s) => !s)}
@@ -225,7 +225,7 @@ export function AuthFormCredentials({
               {form.magicLinkPrompt}
             </Typography>
             <button
-              className={'"auth-magic-cta"'}
+              className="auth-magic-cta"
               style={magicLinkCtaStyle}
               type="button"
               onClick={() => onRequestMagicLink(email)}

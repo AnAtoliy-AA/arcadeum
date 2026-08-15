@@ -1,6 +1,6 @@
 'use client';
 
-import { styled, YStack as Stack } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
@@ -20,16 +20,29 @@ export interface WalletRailProps {
   labels: WalletRailLabels;
 }
 
-const Tile = styled(Stack, {
-  name: 'ShopWalletRailTile',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 8,
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$3',
-  borderWidth: 1,
-});
+function Tile({
+  flex,
+  backgroundColor,
+  borderColor,
+  className,
+  ...props
+}: {
+  flex?: number | string;
+  backgroundColor?: string;
+  borderColor?: string;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center gap-2 px-3 py-2 rounded-xl border',
+        className,
+      )}
+      style={{ flex, backgroundColor, borderColor }}
+      {...props}
+    />
+  );
+}
 
 export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
   const { locale } = useLanguage();
@@ -52,7 +65,7 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
         >
           <span className="box-border text-[16px]">{COIN_GLYPH}</span>
           <span
-            className={'"box-border text-[18px] font-extrabold"'}
+            className="box-border text-[18px] font-extrabold"
             style={{ color: COIN_COLOR }}
           >
             {fmt(coins)}
@@ -65,7 +78,7 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
         >
           <span className="box-border text-[16px]">{GEM_GLYPH}</span>
           <span
-            className={'"box-border text-[18px] font-extrabold"'}
+            className="box-border text-[18px] font-extrabold"
             style={{ color: GEM_COLOR }}
           >
             {fmt(gems)}
@@ -75,7 +88,7 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
 
       {nextGemPack ? (
         <div className="box-border flex flex-col items-stretch gap-6">
-          <div className="box-border flex flex-row justify-space-between items-center">
+          <div className="box-border flex flex-row justify-between items-center">
             <span className="box-border text-[48px] tracking-[1.4px] uppercase font-extrabold text-[#94a3b8]">
               {labels.nextPack.replace('{label}', nextGemPack.label)}
             </span>
@@ -91,9 +104,9 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
             data-progress={pct}
           >
             <div
-              className={'"box-border flex flex-col items-stretch h-[6px]"'}
+              className="box-border flex flex-col items-stretch h-[6px]"
               style={{
-                width: `${pct}%` as unknown as number,
+                width: `${pct}%`,
                 backgroundColor: GEM_COLOR,
               }}
             />

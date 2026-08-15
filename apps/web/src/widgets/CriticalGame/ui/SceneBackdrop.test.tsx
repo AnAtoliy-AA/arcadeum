@@ -4,18 +4,13 @@ import { SceneBackdrop } from './SceneBackdrop';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { getVariantStyles } from './styles/variants';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
 const palette = getVariantStyles('cyberpunk').scene;
 
 function renderWithPalette() {
   return render(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      <ScenePaletteProvider palette={palette}>
-        <SceneBackdrop />
-      </ScenePaletteProvider>
-    </TamaguiProvider>,
+    <ScenePaletteProvider palette={palette}>
+      <SceneBackdrop />
+    </ScenePaletteProvider>,
   );
 }
 

@@ -74,9 +74,7 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
               >
                 <div className="box-border flex flex-row items-center gap-3">
                   <div
-                    className={
-                      '"box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"'
-                    }
+                    className="box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"
                     style={{ background: section.gradient }}
                   >
                     <span className="box-border text-[20px]">
@@ -97,9 +95,7 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
             <div className="box-border flex flex-col items-stretch gap-3">
               <div className="box-border flex flex-row items-center gap-3">
                 <div
-                  className={
-                    '"box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"'
-                  }
+                  className="box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"
                   style={{
                     background:
                       'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',

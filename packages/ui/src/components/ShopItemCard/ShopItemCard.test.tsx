@@ -1,15 +1,8 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
 import { describe, it, expect, vi } from 'vitest';
-import config from '../../tamagui.config';
 import { ShopItemCard } from './ShopItemCard';
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 const baseProps = {
   itemId: 'avatar-fox-01',

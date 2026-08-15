@@ -113,7 +113,7 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
         </PageTitle>
 
         {snapshot.accessToken && (
-          <GlassCard className="p-4">
+          <GlassCard className={'p-4'}>
             <Input
               type="text"
               placeholder={

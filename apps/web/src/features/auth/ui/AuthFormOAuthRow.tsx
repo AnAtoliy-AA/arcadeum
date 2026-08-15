@@ -50,7 +50,7 @@ export function AuthFormOAuthRow({
 
   return (
     <div
-      className={'"box-border flex flex-row items-stretch"'}
+      className="box-border flex flex-row items-stretch"
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',

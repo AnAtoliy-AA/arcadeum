@@ -32,7 +32,7 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
         const active = isActive(item.href, pathname);
         const card = (
           <GlassCard
-            className="p-3 border"
+            className={'p-3 border'}
             style={{
               opacity: item.enabled ? 1 : 0.55,
               borderColor: active ? '$primary' : '$borderColor',

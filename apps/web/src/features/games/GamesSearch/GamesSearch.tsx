@@ -43,7 +43,7 @@ export function GamesSearch({
       className={`box-border flex flex-row min-w-[280px] max-w-[450px] gap-2 items-center max-[800px]:min-w-0 max-[800px]:w-full ${className ?? ''}`}
     >
       <Input
-        className="flex-1"
+        className={'flex-1'}
         placeholder={placeholder}
         value={searchText}
         onChange={handleChange}
@@ -51,7 +51,7 @@ export function GamesSearch({
         size="md"
       />
       <Button
-        className={'shrink-0 px-6'}
+        className="shrink-0 px-6"
         variant="primary"
         onClick={handleSearchClick}
         size="md"

@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { styled, XStack } from 'tamagui';
+import type { HTMLAttributes, ReactNode } from 'react';
 import type { GameSessionSummary, GameRoomSummary } from '@/shared/types/games';
 import { Typography } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 interface GameStatusProps {
   room: GameRoomSummary;
@@ -13,23 +14,40 @@ interface GameStatusProps {
   showGameTime?: boolean;
 }
 
-const StatusContainer = styled(XStack, {
-  name: 'GameStatus',
-  alignItems: 'center',
-  gap: '$3',
-  paddingHorizontal: '$4',
-  paddingVertical: '$3',
-  backgroundColor: '$background',
-  borderRadius: 8,
-  borderWidth: 1,
-  borderColor: '$borderColor',
-});
+const StatusContainer = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-row items-center gap-3 px-4 py-3 bg-[var(--background)] rounded-[8px] border border-[var(--borderColor)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-const StatusItem = styled(XStack, {
-  name: 'StatusItem',
-  alignItems: 'center',
-  gap: '$1',
-});
+const StatusItem = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx('box-border flex flex-row items-center gap-1', className)}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 export function GameStatus({
   room,
@@ -86,26 +104,28 @@ export function GameStatus({
   return (
     <StatusContainer className={className}>
       <StatusItem>
-        <Typography className="text-[14px]">{getStatusIcon()}</Typography>
-        <Typography className="text-[14px] font-medium">
+        <Typography className={'text-[14px]'}>{getStatusIcon()}</Typography>
+        <Typography className={'text-[14px] font-medium'}>
           {getStatusText()}
         </Typography>
       </StatusItem>
 
       {showPlayerCount && (
         <StatusItem>
-          <Typography className="text-[14px]">👥</Typography>
-          <Typography className="text-[14px] font-semibold text-[var(--color)]">
+          <Typography className={'text-[14px]'}>👥</Typography>
+          <Typography
+            className={'text-[14px] font-semibold text-[var(--color)]'}
+          >
             {room.playerCount} / {room.maxPlayers}
           </Typography>
-          <Typography className="text-[14px] font-medium">players</Typography>
+          <Typography className={'text-[14px] font-medium'}>players</Typography>
         </StatusItem>
       )}
 
       {session && showGameTime && (
         <StatusItem>
-          <Typography className="text-[14px]">⏱️</Typography>
-          <Typography className="text-[14px] font-medium">
+          <Typography className={'text-[14px]'}>⏱️</Typography>
+          <Typography className={'text-[14px] font-medium'}>
             {formatTime(elapsedTime)}
           </Typography>
         </StatusItem>

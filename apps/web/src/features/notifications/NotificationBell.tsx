@@ -150,7 +150,7 @@ const NotificationPopover = memo(function NotificationPopover({
           alignItems: 'center',
         }}
       >
-        <Typography className="text-[20px] font-bold">
+        <Typography className={'text-[20px] font-bold'}>
           {t('notifications.bell.title')}
         </Typography>
         <Button
@@ -163,7 +163,7 @@ const NotificationPopover = memo(function NotificationPopover({
       </div>
       {items.length === 0 ? (
         <Typography
-          className={'py-5 text-center'}
+          className="py-5 text-center"
           style={{ color: 'var(--colorMuted)' }}
         >
           {t('notifications.bell.empty')}
@@ -239,7 +239,7 @@ const NotificationRow = memo(function NotificationRow({
           {title}
         </Typography>
         <Typography
-          className={'line-clamp-2'}
+          className="line-clamp-2"
           style={{ color: 'var(--colorMuted)' }}
         >
           {body}

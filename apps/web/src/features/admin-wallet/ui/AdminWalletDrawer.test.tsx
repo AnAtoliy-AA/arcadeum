@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
 
 // ─── Mock server actions ───────────────────────────────────────────────────────
 vi.mock('../server/wallet.actions', () => ({
@@ -26,11 +24,7 @@ import type {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <TamaguiProvider config={config} defaultTheme="dark">
-    {children}
-  </TamaguiProvider>
-);
+const Wrapper = ({ children }: { children: React.ReactNode }) => children;
 
 const renderWithProvider = (ui: React.ReactElement) =>
   render(<Wrapper>{ui}</Wrapper>);

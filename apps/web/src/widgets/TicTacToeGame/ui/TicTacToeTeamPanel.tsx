@@ -48,14 +48,12 @@ export function TicTacToeTeamPanel({
       <div className="box-border flex flex-row items-stretch gap-3 flex-wrap">
         {teamConfig.map((team) => (
           <div
-            className={
-              '"box-border flex flex-col items-stretch p-3 rounded-[10px] border-[2px] min-w-[140px] gap-2"'
-            }
+            className="box-border flex flex-col items-stretch p-3 rounded-[10px] border-[2px] min-w-[140px] gap-2"
             style={{ borderColor: team.color }}
             key={team.id}
           >
             <span
-              className={'"box-border font-bold"'}
+              className="box-border font-bold"
               style={{ color: team.color }}
             >
               {team.name}

@@ -28,7 +28,7 @@ function BalanceSection({
 }) {
   const { coins, gems } = balance;
   return (
-    <GlassCard className="p-3 gap-2" data-testid="wallet-balance-section">
+    <GlassCard className={'p-3 gap-2'} data-testid="wallet-balance-section">
       <span className="box-border font-bold text-[16px]">{label}</span>
       <div className="box-border flex flex-row items-stretch gap-4">
         <div className="box-border flex flex-col items-stretch">
@@ -70,7 +70,7 @@ function RecentSection({
       <span className="box-border font-bold text-[16px]">{label}</span>
       {items.slice(0, 10).map((tx) => (
         <GlassCard
-          className="p-2"
+          className={'p-2'}
           key={tx.id}
           data-testid={`wallet-tx-${tx.id}`}
         >
@@ -79,7 +79,7 @@ function RecentSection({
               {tx.currency} · {tx.reason}
             </span>
             <span
-              className={'"box-border text-[12px] font-bold"'}
+              className="box-border text-[12px] font-bold"
               style={{ color: tx.delta >= 0 ? '$success' : '$errorText' }}
             >
               {tx.delta >= 0 ? '+' : ''}
@@ -156,9 +156,9 @@ export function AdminWalletDrawer({
                 className="box-border flex flex-col items-stretch gap-3"
                 data-testid="wallet-drawer-loading"
               >
-                <Skeleton className="h-[80px]" />
-                <Skeleton className="h-[200px]" />
-                <Skeleton className="h-[100px]" />
+                <Skeleton className={'h-[80px]'} />
+                <Skeleton className={'h-[200px]'} />
+                <Skeleton className={'h-[100px]'} />
               </div>
             )}
 

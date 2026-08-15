@@ -1,6 +1,6 @@
 'use client';
 
-import { styled, YStack, XStack, Text } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { Button } from '@arcadeum/ui';
 
 import { useIdleTimer } from '../hooks/useIdleTimer';
@@ -15,78 +15,68 @@ interface IdleTimerDisplayProps {
   t: (key: string, params?: Record<string, string | number>) => string;
 }
 
-const Container = styled(YStack, {
-  name: 'IdleTimerContainer',
-  marginVertical: '$2',
-});
+function Container({ children }: { children?: React.ReactNode }) {
+  return <div className="box-border my-2">{children}</div>;
+}
 
-const CountdownContainer = styled(XStack, {
-  name: 'CountdownContainer',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: 'rgba(251, 191, 36, 0.15)',
-  borderRadius: 8,
-  borderWidth: 1,
-  borderColor: 'rgba(251, 191, 36, 0.4)',
-  paddingVertical: '$2.5',
-  paddingHorizontal: '$4',
-  gap: '$2',
-});
+function CountdownContainer({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="box-border flex flex-row items-center justify-center gap-2 rounded-lg border border-[rgba(251,191,36,0.4)] bg-[rgba(251,191,36,0.15)] px-4 py-[10px]">
+      {children}
+    </div>
+  );
+}
 
-const TimerEmoji = styled(Text, {
-  name: 'TimerEmoji',
-  fontSize: 18,
-});
+function TimerEmoji({ children }: { children?: React.ReactNode }) {
+  return <span className="box-border text-[18px]">{children}</span>;
+}
 
-const CountdownText = styled(Text, {
-  name: 'CountdownText',
-  fontSize: 14,
-  fontWeight: '600',
-  color: 'rgb(251, 191, 36)',
+function CountdownText({
+  isRunning,
+  children,
+}: {
+  isRunning: boolean;
+  children?: React.ReactNode;
+}) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[14px] leading-[18px] font-semibold text-[rgb(251,191,36)]',
+        isRunning ? 'animate-pulse' : 'opacity-[0.7]',
+      )}
+    >
+      {children}
+    </span>
+  );
+}
 
-  variants: {
-    $isRunning: {
-      true: {
-        animation: 'pulse',
-        opacity: 1,
-      },
-      false: {
-        opacity: 0.7,
-      },
-    },
-  } as const,
-});
+function ActiveContainer({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="box-border flex flex-row items-center justify-between gap-4 rounded-lg border border-[rgba(34,197,94,0.4)] bg-[rgba(34,197,94,0.15)] px-4 py-[10px]">
+      {children}
+    </div>
+  );
+}
 
-const ActiveContainer = styled(XStack, {
-  name: 'ActiveContainer',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  backgroundColor: 'rgba(34, 197, 94, 0.15)',
-  borderRadius: 8,
-  borderWidth: 1,
-  borderColor: 'rgba(34, 197, 94, 0.4)',
-  paddingVertical: '$2.5',
-  paddingHorizontal: '$4',
-  gap: '$4',
-});
+function ActiveBadge({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="box-border flex flex-row items-center gap-2">
+      {children}
+    </div>
+  );
+}
 
-const ActiveBadge = styled(XStack, {
-  name: 'ActiveBadge',
-  alignItems: 'center',
-  gap: '$2',
-});
+function RobotEmoji({ children }: { children?: React.ReactNode }) {
+  return <span className="box-border text-[18px]">{children}</span>;
+}
 
-const RobotEmoji = styled(Text, {
-  name: 'RobotEmoji',
-  fontSize: 18,
-});
-
-const ActiveText = styled(Text, {
-  name: 'ActiveText',
-  fontSize: 14,
-  fontWeight: '600',
-  color: 'rgb(34, 197, 94)',
-});
+function ActiveText({ children }: { children?: React.ReactNode }) {
+  return (
+    <span className="box-border text-[14px] leading-[18px] font-semibold text-[rgb(34,197,94)]">
+      {children}
+    </span>
+  );
+}
 
 /**
  * Displays the idle timer countdown and autoplay status.
@@ -133,7 +123,7 @@ export function IdleTimerDisplay({
     <Container>
       <CountdownContainer>
         <TimerEmoji>⏱️</TimerEmoji>
-        <CountdownText $isRunning={isRunning}>
+        <CountdownText isRunning={isRunning}>
           {t('games.table.idleTimer.countdown', { seconds: secondsRemaining })}
         </CountdownText>
       </CountdownContainer>

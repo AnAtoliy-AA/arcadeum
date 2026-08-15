@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
-import { Button } from 'tamagui';
 import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
@@ -169,25 +168,20 @@ function CatDashGameImpl({
           />
           <div className="box-border flex flex-col gap-2 items-center -mt-2">
             {myTurn && !isGameOver && (
-              <Button
-                size="$5"
-                backgroundColor="#7c3aed"
-                hoverStyle={{ backgroundColor: '#6d28d9' }}
-                pressStyle={{ backgroundColor: '#5b21b6' }}
+              <button
+                type="button"
                 disabled={isGameOver}
-                onPress={rollDice}
-                borderRadius="$4"
+                onClick={rollDice}
+                className="box-border flex flex-row items-center justify-center gap-2 h-12 px-5 rounded-2xl bg-[#7c3aed] transition-colors duration-150 ease-out hover:bg-[#6d28d9] active:bg-[#5b21b6] disabled:opacity-50 disabled:pointer-events-none"
               >
-                <span className="box-border text-[white] font-bold text-[16px]">
+                <span className="box-border text-[#f5f7ff] font-bold text-[16px]">
                   🎲 Roll Dice
                 </span>
-              </Button>
+              </button>
             )}
             {isGameOver && snapshot?.winner && (
               <div
-                className={
-                  '"box-border flex flex-col items-center gap-2 p-4 bg-[rgba(34,197,94,0.15)] rounded-3xl border-[1.5px] border-[rgba(34,197,94,0.4)]"'
-                }
+                className="box-border flex flex-col items-center gap-2 p-4 bg-[rgba(34,197,94,0.15)] rounded-3xl border-[1.5px] border-[rgba(34,197,94,0.4)]"
                 style={{
                   boxShadow: '0 8px 32px rgba(34, 197, 94, 0.15)',
                   backdropFilter: 'blur(10px)',

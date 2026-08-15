@@ -1,9 +1,9 @@
 'use client';
 
-import { YStack, XStack, Text, styled } from 'tamagui';
 import { memo } from 'react';
 import type { ReactElement } from 'react';
 import { RarityBorder, type ShopRarity } from '../RarityBorder/RarityBorder';
+import { cx } from '../../utils/cx';
 
 export type ShopItemCardPriceCurrency = 'coins' | 'gems';
 
@@ -27,106 +27,72 @@ export interface ShopItemCardProps {
   ownedLabel?: string;
   equippedLabel?: string;
   onClick?: () => void;
+  className?: string;
 }
 
-const CardSurface = styled(YStack, {
-  name: 'ShopItemCardSurface',
-  backgroundColor: '$background',
-  borderRadius: '$3',
-  padding: '$3',
-  gap: '$3',
-  cursor: 'pointer',
-  hoverStyle: { backgroundColor: '$backgroundHover' },
-  pressStyle: { scale: 0.98 },
+function cardSurfaceClasses(disabled?: boolean): string {
+  return cx(
+    'box-border flex flex-col gap-3 rounded-xl bg-[var(--background)] p-3 transition-[transform,background-color] duration-200 ease-out',
+    disabled
+      ? 'cursor-not-allowed opacity-60 hover:bg-[var(--background)] active:scale-100'
+      : 'cursor-pointer hover:bg-[var(--backgroundHover)] active:scale-[0.98]',
+  );
+}
 
-  variants: {
-    disabled: {
-      true: {
-        opacity: 0.6,
-        cursor: 'not-allowed',
-        hoverStyle: { backgroundColor: '$background' },
-        pressStyle: { scale: 1 },
-      },
-    },
-  } as const,
-});
+const PreviewSlotClasses = [
+  'box-border',
+  'relative',
+  'flex',
+  'aspect-square',
+  'w-full',
+  'items-center',
+  'justify-center',
+  'overflow-hidden',
+  'rounded-lg',
+  'bg-[var(--backgroundFocus)]',
+].join(' ');
 
-const PreviewSlot = styled(YStack, {
-  name: 'ShopItemPreview',
-  aspectRatio: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: '$backgroundFocus',
-  borderRadius: '$2',
-  overflow: 'hidden',
-  width: '100%',
-  position: 'relative',
-});
+const RarityBadgeBaseClasses = [
+  'box-border',
+  'absolute',
+  'left-2',
+  'top-2',
+  'rounded-lg',
+  'px-2',
+  'py-[2px]',
+  'text-[10px]',
+  'font-bold',
+  'uppercase',
+  'tracking-[0.6px]',
+].join(' ');
 
-const RarityBadge = styled(Text, {
-  name: 'ShopRarityBadge',
-  position: 'absolute',
-  top: '$2',
-  left: '$2',
-  paddingHorizontal: '$2',
-  paddingVertical: 2,
-  borderRadius: '$2',
-  fontSize: 10,
-  fontWeight: '700',
-  letterSpacing: 0.6,
-  textTransform: 'uppercase',
-  color: '$white',
+const RarityBadgeToneClasses: Record<ShopRarity, string> = {
+  common: 'bg-[rgba(120,120,120,0.85)] text-[#f5f7ff]',
+  rare: 'bg-[rgba(59,130,246,0.85)] text-[#f5f7ff]',
+  epic: 'bg-[rgba(168,85,247,0.85)] text-[#f5f7ff]',
+  legendary: 'bg-[rgba(250,204,21,0.85)] text-[#cbd5e1]',
+};
 
-  variants: {
-    rarity: {
-      common: { backgroundColor: 'rgba(120,120,120,0.85)' },
-      rare: { backgroundColor: 'rgba(59,130,246,0.85)' },
-      epic: { backgroundColor: 'rgba(168,85,247,0.85)' },
-      legendary: { backgroundColor: 'rgba(250,204,21,0.85)', color: '$gray12' },
-    },
-  } as const,
-});
+const StateChipBaseClasses = [
+  'box-border',
+  'rounded-lg',
+  'px-2',
+  'py-1',
+  'text-[10px]',
+  'font-bold',
+  'uppercase',
+  'tracking-[0.6px]',
+].join(' ');
 
-const StateChip = styled(Text, {
-  name: 'ShopStateChip',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: '$2',
-  fontSize: 10,
-  fontWeight: '700',
-  letterSpacing: 0.6,
-  textTransform: 'uppercase',
+const StateChipToneClasses: Record<'neutral' | 'success', string> = {
+  neutral: 'bg-[rgba(255,255,255,0.08)] text-[#94a3b8]',
+  success: 'bg-[rgba(16,185,129,0.18)] text-[#10b981]',
+};
 
-  variants: {
-    tone: {
-      neutral: {
-        backgroundColor: 'rgba(255,255,255,0.08)',
-        color: '$gray11',
-      },
-      success: {
-        backgroundColor: 'rgba(16,185,129,0.18)',
-        color: '$green11',
-      },
-    },
-  } as const,
-
-  defaultVariants: { tone: 'neutral' },
-});
-
-const PriceText = styled(Text, {
-  name: 'ShopPriceText',
-  fontWeight: '700',
-  fontSize: '$4',
-
-  variants: {
-    currency: {
-      coins: { color: '#fbbf24' },
-      gems: { color: '#a78bfa' },
-    },
-  } as const,
-
-  defaultVariants: { currency: 'coins' },
-});
+const PriceCurrencyClasses: Record<ShopItemCardPriceCurrency, string> = {
+  coins: 'text-[#fbbf24]',
+  gems: 'text-[#a78bfa]',
+};
 
 function currencyGlyph(currency: ShopItemCardPriceCurrency): string {
   return currency === 'coins' ? '🪙' : '💎';
@@ -147,6 +113,7 @@ export const ShopItemCard = memo(function ShopItemCard({
   ownedLabel,
   equippedLabel,
   onClick,
+  className,
 }: ShopItemCardProps): ReactElement {
   const handleClick = () => {
     if (disabled) return;
@@ -155,12 +122,12 @@ export const ShopItemCard = memo(function ShopItemCard({
 
   return (
     <RarityBorder rarity={rarity}>
-      <CardSurface
-        onPress={handleClick}
-        disabled={disabled}
+      <div
+        onClick={handleClick}
         data-testid={`shop-item-card-${itemId}`}
+        className={cx(cardSurfaceClasses(disabled), className)}
       >
-        <PreviewSlot>
+        <div className={PreviewSlotClasses}>
           {colorValue ? (
             // Name-color items render the equippable color directly. The big
             // sample text doubles as a legibility check — gradients that look
@@ -216,45 +183,50 @@ export const ShopItemCard = memo(function ShopItemCard({
               }}
             />
           )}
-          <RarityBadge rarity={rarity}>{rarity}</RarityBadge>
-        </PreviewSlot>
+          <span
+            className={cx(RarityBadgeBaseClasses, RarityBadgeToneClasses[rarity])}
+          >
+            {rarity}
+          </span>
+        </div>
 
-        <YStack gap="$2">
-          <Text
-            fontSize="$4"
-            fontWeight="700"
-            numberOfLines={1}
+        <div className="flex flex-col gap-2">
+          <span
+            className="line-clamp-1 text-[18px] font-bold"
             data-testid={`shop-item-name-${itemId}`}
           >
             {name}
-          </Text>
-          <XStack justifyContent="space-between" alignItems="center">
-            <PriceText
-              currency={priceCurrency}
+          </span>
+          <div className="flex flex-row items-center justify-between">
+            <span
+              className={cx(
+                'text-[18px] font-bold',
+                PriceCurrencyClasses[priceCurrency],
+              )}
               data-testid={`shop-item-price-${itemId}`}
             >
               {priceAmount === 0
                 ? (freeLabel ?? 'Free')
                 : `${currencyGlyph(priceCurrency)} ${priceAmount}`}
-            </PriceText>
+            </span>
             {equipped ? (
-              <StateChip
-                tone="success"
+              <span
+                className={cx(StateChipBaseClasses, StateChipToneClasses.success)}
                 data-testid={`shop-item-state-${itemId}`}
               >
                 {equippedLabel ?? 'Equipped'}
-              </StateChip>
+              </span>
             ) : owned ? (
-              <StateChip
-                tone="neutral"
+              <span
+                className={cx(StateChipBaseClasses, StateChipToneClasses.neutral)}
                 data-testid={`shop-item-state-${itemId}`}
               >
                 {ownedLabel ?? 'Owned'}
-              </StateChip>
+              </span>
             ) : null}
-          </XStack>
-        </YStack>
-      </CardSurface>
+          </div>
+        </div>
+      </div>
     </RarityBorder>
   );
 });

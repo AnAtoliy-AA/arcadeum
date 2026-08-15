@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Switch } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -144,14 +144,26 @@ export function TicTacToeLobby({
       />
       <LobbyOptionSection title={t('games.tic_tac_toe_v1.lobby.teamMode')}>
         <div className="box-border flex flex-row items-center gap-3">
-          <Switch
-            checked={internalTeamMode}
-            onCheckedChange={handleTeamModeToggle}
+          <button
+            type="button"
+            role="switch"
+            aria-checked={internalTeamMode}
+            aria-label={t('games.tic_tac_toe_v1.lobby.teamMode')}
             disabled={!isHost}
-            size="$2"
+            onClick={() => handleTeamModeToggle(!internalTeamMode)}
+            className={cx(
+              'box-border h-6 w-11 rounded-full p-1 transition-colors duration-200 ease-out',
+              internalTeamMode ? 'bg-[#2563eb]' : 'bg-[rgba(255,255,255,0.15)]',
+              !isHost && 'cursor-not-allowed opacity-50',
+            )}
           >
-            <Switch.Thumb />
-          </Switch>
+            <span
+              className={cx(
+                'block h-4 w-4 rounded-full bg-white transition-transform duration-200 ease-out',
+                internalTeamMode ? 'translate-x-5' : 'translate-x-0',
+              )}
+            />
+          </button>
         </div>
       </LobbyOptionSection>
       {internalTeamMode ? (

@@ -99,7 +99,7 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
         </span>
         <div className="box-border h-[10px] rounded-[999px] bg-[rgba(255,255,255,0.08)] overflow-hidden">
           <div
-            className={'"box-border h-full rounded-[999px]"'}
+            className="box-border h-full rounded-[999px]"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -123,9 +123,7 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
 
           return (
             <div
-              className={
-                '"box-border flex flex-col items-stretch min-w-[160px] gap-3 p-3 rounded-3xl border bg-[rgba(15,23,42,0.55)]"'
-              }
+              className="box-border flex flex-col items-stretch min-w-[160px] gap-3 p-3 rounded-3xl border bg-[rgba(15,23,42,0.55)]"
               style={{
                 borderColor: unlocked
                   ? 'rgba(56,189,248,0.4)'
@@ -191,9 +189,7 @@ function RewardNode({
 }) {
   return (
     <div
-      className={
-        '"box-border flex flex-col items-stretch gap-2 p-2 rounded-xl border"'
-      }
+      className="box-border flex flex-col items-stretch gap-2 p-2 rounded-xl border"
       style={{
         backgroundColor: accent
           ? 'rgba(251,191,36,0.08)'
@@ -205,9 +201,7 @@ function RewardNode({
       }}
     >
       <span
-        className={
-          '"box-border text-[48px] uppercase tracking-[1px] opacity-[0.6]"'
-        }
+        className="box-border text-[48px] uppercase tracking-[1px] opacity-[0.6]"
         style={{ color: accent ? '#fbbf24' : '$gray11' }}
       >
         {label}

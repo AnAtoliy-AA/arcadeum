@@ -1,58 +1,47 @@
-import { XStack, Text, styled } from 'tamagui';
+import { cx } from '../../utils/cx';
 
 export type TrendPillProps = {
   rank: number;
   prevRank?: number;
   testID?: string;
+  className?: string;
 };
 
-const Pill = styled(XStack, {
-  name: 'TrendPill',
-  alignItems: 'center',
-  gap: 4,
-  paddingHorizontal: 8,
-  paddingVertical: 2,
-  borderRadius: 999,
-  borderWidth: 1,
-  variants: {
-    direction: {
-      up: {
-        borderColor: 'rgba(52,211,153,0.3)',
-        backgroundColor: 'rgba(52,211,153,0.15)',
-      },
-      down: {
-        borderColor: 'rgba(239,68,68,0.3)',
-        backgroundColor: 'rgba(239,68,68,0.15)',
-      },
-      same: {
-        borderColor: '$borderColor',
-        backgroundColor: 'rgba(255,255,255,0.04)',
-      },
-    },
-  } as const,
-});
+type TrendDirection = 'up' | 'down' | 'same';
 
-export function TrendPill({ rank, prevRank, testID }: TrendPillProps) {
+const trendPillClasses: Record<TrendDirection, string> = {
+  up: 'border-[rgba(52,211,153,0.3)] bg-[rgba(52,211,153,0.15)]',
+  down: 'border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.15)]',
+  same: 'border-[var(--borderColor)] bg-[rgba(255,255,255,0.04)]',
+};
+
+const trendTextClasses: Record<TrendDirection, string> = {
+  up: 'text-[var(--success)]',
+  down: 'text-[var(--danger)]',
+  same: 'text-[var(--textSecondary)]',
+};
+
+export function TrendPill({ rank, prevRank, testID, className }: TrendPillProps) {
   const diff = prevRank == null ? 0 : prevRank - rank;
-  const direction: 'up' | 'down' | 'same' =
-    diff > 0 ? 'up' : diff < 0 ? 'down' : 'same';
+  const direction: TrendDirection = diff > 0 ? 'up' : diff < 0 ? 'down' : 'same';
   const glyph = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '–';
-  const color =
-    direction === 'up'
-      ? ('$success' as const)
-      : direction === 'down'
-        ? ('$danger' as const)
-        : ('$textSecondary' as const);
   return (
-    <Pill direction={direction as never} testID={testID}>
-      <Text fontSize="$1" fontWeight="700" color={color as never}>
+    <div
+      data-testid={testID}
+      className={cx(
+        'box-border flex flex-row items-center gap-1 px-2 py-0.5 rounded-full border',
+        trendPillClasses[direction],
+        className,
+      )}
+    >
+      <span className={cx('text-[12px] font-bold', trendTextClasses[direction])}>
         {glyph}
-      </Text>
+      </span>
       {direction !== 'same' ? (
-        <Text fontSize="$1" fontWeight="700" color={color as never}>
+        <span className={cx('text-[12px] font-bold', trendTextClasses[direction])}>
           {Math.abs(diff)}
-        </Text>
+        </span>
       ) : null}
-    </Pill>
+    </div>
   );
 }

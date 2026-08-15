@@ -102,17 +102,17 @@ export default function GeoBlockClient() {
               className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[#4c1d1d]"
               data-testid="geo-block-error"
             >
-              <Typography className="text-[#dc2626]">{error}</Typography>
+              <Typography className={'text-[#dc2626]'}>{error}</Typography>
             </div>
           )}
 
           <div className="box-border flex flex-col items-stretch p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] gap-3">
-            <Typography className="font-bold" variant="body">
+            <Typography className={'font-bold'} variant="body">
               Add Country
             </Typography>
             <div className="box-border flex items-stretch flex-row gap-2">
               <Input
-                className="w-[120px]"
+                className={'w-[120px]'}
                 placeholder="Country code (e.g., US)"
                 value={newCountryCode}
                 onChangeText={setNewCountryCode}
@@ -120,7 +120,7 @@ export default function GeoBlockClient() {
                 data-testid="geo-block-country-input"
               />
               <Input
-                className="flex-1"
+                className={'flex-1'}
                 placeholder="Reason (optional)"
                 value={newReason}
                 onChangeText={setNewReason}
@@ -137,7 +137,7 @@ export default function GeoBlockClient() {
           </div>
 
           <div className="box-border flex flex-col items-stretch p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] gap-3">
-            <Typography className="font-bold" variant="body">
+            <Typography className={'font-bold'} variant="body">
               Quick Add (Common Restricted Countries)
             </Typography>
             <div className="box-border flex items-stretch flex-row flex-wrap gap-2">
@@ -165,7 +165,7 @@ export default function GeoBlockClient() {
           </div>
 
           <div className="box-border flex flex-col items-stretch p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] gap-3">
-            <Typography className="font-bold" variant="body">
+            <Typography className={'font-bold'} variant="body">
               Blocked Countries ({countries.filter((c) => c.active).length})
             </Typography>
 
@@ -188,7 +188,7 @@ export default function GeoBlockClient() {
                       data-testid={`blocked-country-${country.countryCode}`}
                     >
                       <div className="box-border flex flex-col items-stretch gap-1">
-                        <Typography className="font-bold" variant="body">
+                        <Typography className={'font-bold'} variant="body">
                           {country.countryCode}
                         </Typography>
                         {country.reason && (

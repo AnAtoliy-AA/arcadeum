@@ -49,13 +49,11 @@ export const FieldStatus = memo(function FieldStatus({
       <div className="box-border flex flex-row gap-6 items-center">
         <div className="box-border flex flex-row gap-2 items-center">
           <div
-            className={
-              '"box-border flex flex-col items-stretch w-[4px] h-[4px] rounded"'
-            }
+            className="box-border flex flex-col items-stretch w-[4px] h-[4px] rounded"
             style={{ backgroundColor: theme.hitColor }}
           />
           <span
-            className={'"box-border text-[40px] font-bold"'}
+            className="box-border text-[40px] font-bold"
             style={{ color: theme.hitColor }}
           >
             {stats.hitCells}
@@ -66,13 +64,11 @@ export const FieldStatus = memo(function FieldStatus({
         </span>
         <div className="box-border flex flex-row gap-2 items-center">
           <div
-            className={
-              '"box-border flex flex-col items-stretch w-[4px] h-[4px] rounded"'
-            }
+            className="box-border flex flex-col items-stretch w-[4px] h-[4px] rounded"
             style={{ backgroundColor: theme.missColor }}
           />
           <span
-            className={'"box-border text-[40px] font-bold"'}
+            className="box-border text-[40px] font-bold"
             style={{ color: theme.missColor }}
           >
             {stats.missCells}
@@ -80,9 +76,7 @@ export const FieldStatus = memo(function FieldStatus({
         </div>
       </div>
       <span
-        className={
-          '"box-border text-[40px] text-[rgba(255,255,255,0.5)] -ml-4"'
-        }
+        className="box-border text-[40px] text-[rgba(255,255,255,0.5)] -ml-4"
         style={{ fontFamily: 'monospace' } as React.CSSProperties}
       >
         {stats.unexploredCells}/{stats.totalCells} (

@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { styled, XStack } from 'tamagui';
+import type React from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { PageTitle, Button } from '@arcadeum/ui';
 
@@ -19,6 +19,21 @@ interface StatsHeaderProps {
   loading: boolean;
   refreshing: boolean;
   onRefresh: () => void;
+}
+
+function Header({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center justify-between mb-7',
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function StatsHeader({
@@ -54,10 +69,3 @@ export function StatsHeader({
     </Header>
   );
 }
-
-const Header = styled(XStack, {
-  name: 'StatsHeader',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '$7',
-});

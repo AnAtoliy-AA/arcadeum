@@ -62,9 +62,7 @@ export function OpponentsRow({
 
   return (
     <div
-      className={
-        '"box-border flex flex-row items-stretch w-full gap-3 px-2 py-2 justify-center flex-nowrap shrink-0 max-[800px]:gap-2"'
-      }
+      className="box-border flex flex-row items-stretch w-full gap-3 px-2 py-2 justify-center flex-nowrap shrink-0 max-[800px]:gap-2"
       style={
         isMobile
           ? {

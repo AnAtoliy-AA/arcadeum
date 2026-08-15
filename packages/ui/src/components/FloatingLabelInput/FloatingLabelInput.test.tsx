@@ -1,16 +1,9 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
 import { useState } from 'react';
-import config from '../../tamagui.config';
 import { FloatingLabelInput } from './FloatingLabelInput';
 import { describe, it, expect, vi } from 'vitest';
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('FloatingLabelInput', () => {
   it('renders the label', () => {

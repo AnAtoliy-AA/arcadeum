@@ -181,7 +181,9 @@ export function HomeGameDetailsModal({
               role="tablist"
             >
               <Button
-                className="px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]"
+                className={
+                  'px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]'
+                }
                 variant="chip"
                 active={activeTab === 'rules'}
                 shape="round"
@@ -192,7 +194,9 @@ export function HomeGameDetailsModal({
                 {homeCopy.rulesTab ?? 'Rules'}
               </Button>
               <Button
-                className="px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]"
+                className={
+                  'px-8 text-[0.9rem] font-bold uppercase tracking-[0.05em]'
+                }
                 variant="chip"
                 active={activeTab === 'info'}
                 shape="round"

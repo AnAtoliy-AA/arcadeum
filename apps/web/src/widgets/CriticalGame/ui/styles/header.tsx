@@ -1,181 +1,185 @@
-import { styled, XStack, YStack, Text } from 'tamagui';
+import type { CSSProperties, HTMLAttributes } from 'react';
+
+import { cx } from '@arcadeum/ui/utils/cx';
 import { Button, IconButton } from '@arcadeum/ui';
 import type { ButtonProps } from '@arcadeum/ui';
 import { getVariantStyles } from './variants';
-import { TamaguiTheme } from './variants/types';
+import { useVariantTheme } from './variant-styles';
+
+type VariantProp = { $variant?: string };
+
+type TurnStatusValue = 'yourTurn' | 'waiting' | 'completed' | 'default';
 
 // Header Components
-export const GameHeader = styled(XStack, {
-  name: 'GameHeader',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: '$3',
-  paddingHorizontal: '$7',
-  paddingVertical: '$2',
-  height: 50,
-  backgroundColor: '$glassBg',
-  backdropFilter: 'blur(16px)',
-  borderBottomWidth: 1,
-  borderBottomColor: '$glassBorder',
-  marginHorizontal: -28,
-  marginTop: -28,
-  position: 'relative',
-  zIndex: 30,
-  flexShrink: 0,
-  overflow: 'hidden',
-
-  $sm: {
-    paddingHorizontal: '$4',
-    paddingVertical: '$2',
-    marginHorizontal: 0,
-    marginTop: 0,
-    gap: '$2',
-    height: 42,
-  },
-
-  variants: {
-    $variant: (val: string, { theme }: { theme: TamaguiTheme }) => {
-      const config = getVariantStyles(val).header;
-      return {
+export function GameHeader({
+  className,
+  style,
+  $variant,
+  children,
+  ...props
+}: { className?: string; style?: CSSProperties } & VariantProp &
+  HTMLAttributes<HTMLDivElement>) {
+  const theme = useVariantTheme();
+  const config = getVariantStyles($variant).header;
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center justify-between gap-3 px-[28px] py-2 h-[50px] backdrop-blur-[16px] border-b border-b-[var(--glassBorder)] -mx-[28px] -mt-[28px] relative z-[30] shrink-0 overflow-hidden max-[800px]:px-4 max-[800px]:py-2 max-[800px]:mx-0 max-[800px]:mt-0 max-[800px]:gap-2 max-[800px]:h-[42px]',
+        className,
+      )}
+      style={{
         backgroundColor: config.getBackground(theme),
         borderBottomColor: config.getBorder(theme),
-        // web-only: Tamagui passes pseudo-element objects to the CSS layer on web
-        before: {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 28,
-          right: 28,
-          height: 2,
+        ...style,
+      }}
+      {...props}
+    >
+      {/* web-only: Tamagui applied the variant's top line as a ::before */}
+      <div
+        aria-hidden
+        className="absolute top-0 left-[28px] right-[28px] h-[2px] rounded-[1px]"
+        style={{
           background: config.getLineBackground(),
           boxShadow: config.getLineShadow(),
-          borderRadius: 1,
-        },
-      };
-    },
-  } as const,
-});
+        }}
+      />
+      {children}
+    </div>
+  );
+}
 
-export const HeaderActions = styled(XStack, {
-  name: 'HeaderActions',
-  gap: '$2',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  justifyContent: 'flex-end',
-});
+export function HeaderActions({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch gap-2 items-center flex-wrap justify-end',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const TimerControlsWrapper = styled(XStack, {
-  name: 'TimerControlsWrapper',
-  alignItems: 'center',
-  gap: 8,
-  zIndex: 10,
-});
+export function TimerControlsWrapper({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch items-center gap-2 z-[10]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const GameInfo = styled(XStack, {
-  name: 'GameInfo',
-  alignItems: 'center',
-  gap: '$2',
-  minWidth: 0,
-  flex: 1,
-});
+export function GameInfo({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch items-center gap-2 min-w-0 flex-1',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const GameTitle = styled(Text, {
-  name: 'GameTitle',
-  margin: 0,
-  fontSize: 16,
-  fontWeight: '800',
-  letterSpacing: -0.3,
-  position: 'relative',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
+export function GameTitle({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border m-0 text-[16px] font-extrabold tracking-[-0.3px] relative whitespace-nowrap overflow-hidden text-ellipsis max-[800px]:text-[14px]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  $sm: {
-    fontSize: 14,
-  },
+const TURN_STATUS_CLASS: Record<TurnStatusValue, string> = {
+  yourTurn: 'text-[var(--success)]',
+  waiting: 'text-[var(--warning)]',
+  completed: 'text-[var(--secondary)]',
+  default: 'text-[var(--color)] opacity-[0.7]',
+};
 
-  variants: {
-    $variant: (_val: string) => ({}),
-  } as const,
-});
+export function TurnStatus({
+  className,
+  $status = 'default',
+  ...props
+}: {
+  className?: string;
+  $status?: TurnStatusValue;
+} & HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[14px] font-semibold',
+        TURN_STATUS_CLASS[$status] ?? TURN_STATUS_CLASS.default,
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const TurnStatus = styled(Text, {
-  name: 'TurnStatus',
-  fontSize: 14, // 0.875rem
-  fontWeight: '600',
+const TURN_STATUS_PILL_CLASS: Record<TurnStatusValue, string> = {
+  yourTurn: 'bg-[rgba(16,185,129,0.12)] border-[rgba(16,185,129,0.4)]',
+  waiting: 'bg-[rgba(234,179,8,0.1)] border-[rgba(234,179,8,0.35)]',
+  completed: 'bg-[rgba(148,163,184,0.1)] border-[rgba(148,163,184,0.25)]',
+  default: 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)]',
+};
 
-  variants: {
-    $status: {
-      yourTurn: { color: '$success' },
-      waiting: { color: '$warning' },
-      completed: { color: '$secondary' },
-      default: { color: '$color', opacity: 0.7 },
-    },
-  } as const,
+export function TurnStatusPill({
+  className,
+  $status = 'default',
+  ...props
+}: {
+  className?: string;
+  $status?: TurnStatusValue;
+} & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch rounded-[20px] px-3 py-1 border items-center shrink-0',
+        TURN_STATUS_PILL_CLASS[$status] ?? TURN_STATUS_PILL_CLASS.default,
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  defaultVariants: {
-    $status: 'default',
-  },
-});
-
-export const TurnStatusPill = styled(XStack, {
-  name: 'TurnStatusPill',
-  borderRadius: 20,
-  paddingHorizontal: '$3',
-  paddingVertical: '$1',
-  borderWidth: 1,
-  alignItems: 'center',
-  flexShrink: 0,
-
-  variants: {
-    $status: {
-      yourTurn: {
-        backgroundColor: 'rgba(16,185,129,0.12)',
-        borderColor: 'rgba(16,185,129,0.4)',
-      },
-      waiting: {
-        backgroundColor: 'rgba(234,179,8,0.1)',
-        borderColor: 'rgba(234,179,8,0.35)',
-      },
-      completed: {
-        backgroundColor: 'rgba(148,163,184,0.1)',
-        borderColor: 'rgba(148,163,184,0.25)',
-      },
-      default: {
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        borderColor: 'rgba(255,255,255,0.1)',
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    $status: 'default',
-  },
-});
-
-export const VariantIconBadge = styled(YStack, {
-  name: 'VariantIconBadge',
-  width: 30,
-  height: 30,
-  borderRadius: 8,
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: 'rgba(255,255,255,0.08)',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.12)',
-  flexShrink: 0,
-
-  $sm: {
-    width: 24,
-    height: 24,
-  },
-});
+export function VariantIconBadge({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch w-[30px] h-[30px] rounded-lg items-center justify-center bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.12)] shrink-0 max-[800px]:w-6 max-[800px]:h-6',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export const StartButton = (props: ButtonProps) => (
   <Button
-    className={
-      'max-[640px]:scale-[0.9] max-[640px]:h-[36px] max-[640px]:px-[16px] max-[640px]:py-[8px] max-[640px]:rounded-[12px]'
-    }
+    className="max-[640px]:scale-[0.9] max-[640px]:h-[36px] max-[640px]:px-[16px] max-[640px]:py-[8px] max-[640px]:rounded-[12px]"
     variant="secondary"
     {...props}
   />
@@ -183,9 +187,7 @@ export const StartButton = (props: ButtonProps) => (
 
 export const FullscreenButton = (props: ButtonProps) => (
   <IconButton
-    className={
-      'p-2 active:bg-[rgba(255,255,255,0.2)] max-[640px]:scale-[0.85] max-[640px]:p-1'
-    }
+    className="p-2 active:bg-[rgba(255,255,255,0.2)] max-[640px]:scale-[0.85] max-[640px]:p-1"
     size="sm"
     {...props}
   />

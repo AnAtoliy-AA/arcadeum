@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { YStack, XStack, Text, Slider as TamaSlider, styled } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -17,48 +16,6 @@ interface DefuseModalProps {
   t: (key: string) => string;
   cardVariant?: string;
 }
-
-const Description = styled(Text, {
-  name: 'Description',
-  textAlign: 'center',
-  marginBottom: '$6',
-  opacity: 0.8,
-});
-
-const PositionSelector = styled(YStack, {
-  name: 'PositionSelector',
-  gap: '$3',
-  marginBottom: '$6',
-});
-
-const PositionLabel = styled(Text, {
-  name: 'PositionLabel',
-  fontWeight: '500',
-  textAlign: 'center',
-});
-
-const SliderContainer = styled(XStack, {
-  name: 'SliderContainer',
-  alignItems: 'center',
-  gap: '$2',
-});
-
-const SliderLabel = styled(Text, {
-  name: 'SliderLabel',
-  fontSize: '$2',
-  opacity: 0.6,
-  minWidth: 50,
-  textAlign: 'center',
-});
-
-const PositionValue = styled(Text, {
-  name: 'PositionValue',
-  textAlign: 'center',
-  fontSize: '$3',
-  padding: '$2',
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  borderRadius: '$2',
-});
 
 const DefuseModal: React.FC<DefuseModalProps> = ({
   isOpen,
@@ -86,42 +43,39 @@ const DefuseModal: React.FC<DefuseModalProps> = ({
             🛡️ {t('games.table.modals.defuse.title')}
           </ModalTitle>
         </ModalHeader>
-        <Description>{t('games.table.modals.defuse.description')}</Description>
-        <PositionSelector>
-          <PositionLabel>
+        <div className="box-border mb-6 text-center opacity-[0.8]">
+          {t('games.table.modals.defuse.description')}
+        </div>
+        <div className="box-border mb-6 flex flex-col gap-3">
+          <div className="box-border text-center font-medium">
             {t('games.table.modals.defuse.positionLabel')}
-          </PositionLabel>
-          <SliderContainer>
-            <SliderLabel>Top</SliderLabel>
-            <TamaSlider
-              flex={1}
-              size="$4"
-              value={[selectedPosition]}
-              onValueChange={(val) => setSelectedPosition(val[0])}
+          </div>
+          <div className="box-border flex flex-row items-center gap-2">
+            <span className="box-border min-w-[50px] text-center text-[14px] opacity-[0.6]">
+              Top
+            </span>
+            <input
+              type="range"
+              className="box-border h-7 flex-1 accent-[#10b981]"
+              value={selectedPosition}
+              onChange={(e) => setSelectedPosition(Number(e.target.value))}
               min={0}
               max={Math.max(0, deckSize)}
               step={1}
-            >
-              <TamaSlider.Track backgroundColor="rgba(255, 255, 255, 0.1)">
-                <TamaSlider.TrackActive backgroundColor="#10b981" />
-              </TamaSlider.Track>
-              <TamaSlider.Thumb
-                index={0}
-                circular
-                backgroundColor="#10b981"
-                elevate
-              />
-            </TamaSlider>
-            <SliderLabel>Bottom</SliderLabel>
-          </SliderContainer>
-          <PositionValue>
+              aria-label={t('games.table.modals.defuse.positionLabel')}
+            />
+            <span className="box-border min-w-[50px] text-center text-[14px] opacity-[0.6]">
+              Bottom
+            </span>
+          </div>
+          <div className="box-border rounded-lg bg-[rgba(255,255,255,0.1)] p-2 text-center text-[16px]">
             {selectedPosition === 0
               ? 'Top of deck'
               : selectedPosition >= deckSize
                 ? 'Bottom of deck'
                 : `Position ${selectedPosition + 1} from top`}
-          </PositionValue>
-        </PositionSelector>
+          </div>
+        </div>
         <ModalActions>
           <ModalButton onClick={handleConfirm}>
             {t('games.table.modals.defuse.confirm')}

@@ -152,9 +152,7 @@ function BrandHero({
         <div className="box-border flex flex-row items-stretch">
           {AVATARS.map((a, i) => (
             <div
-              className={
-                '"box-border flex flex-col w-[34px] h-[34px] rounded-[999px] border-[2px] border-[var(--background)] items-center justify-center"'
-              }
+              className="box-border flex flex-col w-[34px] h-[34px] rounded-[999px] border-[2px] border-[var(--background)] items-center justify-center"
               style={{ marginLeft: i === 0 ? 0 : -10 }}
               key={a.ch}
             >
@@ -185,9 +183,7 @@ function FeatureBullet({ title, detail }: { title: string; detail: string }) {
   return (
     <div className="box-border flex flex-row items-start gap-3">
       <div
-        className={
-          '"box-border flex flex-col w-[28px] h-[28px] rounded-[999px] items-center justify-center -mt-2 shrink-0 border"'
-        }
+        className="box-border flex flex-col w-[28px] h-[28px] rounded-[999px] items-center justify-center -mt-2 shrink-0 border"
         style={{
           color: '#ffffff',
           background:

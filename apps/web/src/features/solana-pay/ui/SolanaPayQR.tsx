@@ -130,7 +130,7 @@ export function SolanaPayQR({
   if (error) {
     return (
       <div className="box-border flex flex-col items-center p-4 gap-3">
-        <Typography className="text-[#dc2626]" variant="body">
+        <Typography className={'text-[#dc2626]'} variant="body">
           {error}
         </Typography>
         {onCancel && (
@@ -146,10 +146,14 @@ export function SolanaPayQR({
 
   return (
     <div
-      className={'"box-border flex flex-col items-center p-4 gap-3"'}
+      className="box-border flex flex-col items-center p-4 gap-3"
       style={{ minHeight: '100%' }}
     >
-      <Typography className="text-[16px] font-bold" variant="body" alpha="high">
+      <Typography
+        className={'text-[16px] font-bold'}
+        variant="body"
+        alpha="high"
+      >
         Send ARC to pay
       </Typography>
 
@@ -158,7 +162,7 @@ export function SolanaPayQR({
           Amount
         </Typography>
         <Typography
-          className="text-[24px] font-bold text-[#22c55e]"
+          className={'text-[24px] font-bold text-[#22c55e]'}
           variant="body"
         >
           {request.amount} ARC
@@ -177,11 +181,11 @@ export function SolanaPayQR({
       </div>
 
       <div className="box-border flex flex-col items-center gap-2 p-2 rounded-xl bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.12)] w-full">
-        <Typography className="text-[11px]" variant="caption" alpha="medium">
+        <Typography className={'text-[11px]'} variant="caption" alpha="medium">
           Recipient
         </Typography>
         <Typography
-          className={'"text-[11px] text-[#f5f7ff]"'}
+          className="text-[11px] text-[#f5f7ff]"
           style={{
             wordBreak: 'break-all',
             textAlign: 'center',
@@ -202,7 +206,7 @@ export function SolanaPayQR({
 
       <div className="box-border flex flex-col items-stretch gap-2 w-full">
         <Button
-          className={'bg-[#ab9ff2] text-white font-bold rounded-[12px]'}
+          className="bg-[#ab9ff2] text-white font-bold rounded-[12px]"
           onClick={() => {
             const url = `https://phantom.app/ul/${encodeURIComponent(request.solanaPayUrl)}`;
             window.open(url, '_blank');
@@ -212,7 +216,7 @@ export function SolanaPayQR({
           Open in Phantom
         </Button>
         <Button
-          className={'rounded-[12px]'}
+          className="rounded-[12px]"
           onClick={() => copyToClipboard(request.solanaPayUrl, 'amount')}
           variant="secondary"
           size="sm"
@@ -222,7 +226,7 @@ export function SolanaPayQR({
       </div>
 
       <Typography
-        className="text-center text-[11px]"
+        className={'text-center text-[11px]'}
         variant="caption"
         alpha="low"
       >
@@ -230,7 +234,7 @@ export function SolanaPayQR({
       </Typography>
 
       {onCancel && (
-        <Button className={'mt-2'} onClick={onCancel} variant="ghost" size="sm">
+        <Button className="mt-2" onClick={onCancel} variant="ghost" size="sm">
           Cancel
         </Button>
       )}

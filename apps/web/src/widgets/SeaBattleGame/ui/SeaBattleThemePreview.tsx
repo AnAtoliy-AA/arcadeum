@@ -54,21 +54,19 @@ export function SeaBattleThemePreview({
 
   return (
     <div
-      className={
-        '"box-border flex flex-col items-stretch rounded-[10px] border p-3 gap-2 sb-preview-fade"'
-      }
+      className="box-border flex flex-col items-stretch rounded-[10px] border p-3 gap-2 sb-preview-fade"
       style={{ borderColor: theme.cellBorder }}
       key={selectedVariant}
       data-testid="color-preview-container"
     >
       {/* Column labels */}
       <div
-        className={'"box-border flex flex-row items-stretch gap-2"'}
+        className="box-border flex flex-row items-stretch gap-2"
         style={{ marginLeft: colLabelOffset }}
       >
         {COL_LABELS.map((l) => (
           <span
-            className={'"box-border text-center"'}
+            className="box-border text-center"
             style={{
               fontSize: labelFontSize,
               color: theme.textSecondaryColor,
@@ -88,7 +86,7 @@ export function SeaBattleThemePreview({
           key={rIndex}
         >
           <span
-            className={'"box-border text-right"'}
+            className="box-border text-right"
             style={{
               fontSize: labelFontSize,
               color: theme.textSecondaryColor,
@@ -112,9 +110,7 @@ export function SeaBattleThemePreview({
                       : undefined;
             return (
               <div
-                className={
-                  '"box-border flex flex-col border items-center justify-center"'
-                }
+                className="box-border flex flex-col border items-center justify-center"
                 style={{
                   width: cellSize,
                   height: cellSize,
@@ -127,7 +123,7 @@ export function SeaBattleThemePreview({
               >
                 {state === CELL_STATE.HIT && (
                   <span
-                    className={'"box-border"'}
+                    className="box-border"
                     style={{ fontSize: hitFontSize }}
                   >
                     🔥
@@ -135,9 +131,7 @@ export function SeaBattleThemePreview({
                 )}
                 {state === CELL_STATE.MISS && (
                   <div
-                    className={
-                      '"box-border flex flex-col items-stretch rounded-[100px] opacity-[0.7]"'
-                    }
+                    className="box-border flex flex-col items-stretch rounded-[100px] opacity-[0.7]"
                     style={{
                       width: missDotSize,
                       height: missDotSize,

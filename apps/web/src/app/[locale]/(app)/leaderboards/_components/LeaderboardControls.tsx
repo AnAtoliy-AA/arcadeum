@@ -118,7 +118,7 @@ export function LeaderboardControls({
           </select>
         </div>
         <Input
-          className="w-[200px]"
+          className={'w-[200px]'}
           placeholder={(tt.searchPlaceholder as string) ?? 'Find player…'}
           value={search}
           onChangeText={onSearchChange}

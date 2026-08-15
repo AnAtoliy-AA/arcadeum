@@ -115,7 +115,7 @@ function ChessBoardImpl({
       }}
     >
       <div
-        className={'"chess-board-glow"'}
+        className="chess-board-glow"
         style={{
           position: 'absolute',
           inset: -6,

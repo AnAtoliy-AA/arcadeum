@@ -58,12 +58,14 @@ export default function RewardsPageContent({
                 if (!feature) return null;
                 return (
                   <GlassCard
-                    className="flex-1 min-w-[280px] p-4 border border-[var(--borderColor)]"
+                    className={
+                      'flex-1 min-w-[280px] p-4 border border-[var(--borderColor)]'
+                    }
                     key={index}
                   >
                     <div className="box-border flex flex-col items-stretch gap-2">
                       <Typography
-                        className="font-bold"
+                        className={'font-bold'}
                         variant="label"
                         uiSize="md"
                       >

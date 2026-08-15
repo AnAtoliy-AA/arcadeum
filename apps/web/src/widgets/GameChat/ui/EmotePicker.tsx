@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { XStack, Text, styled } from 'tamagui';
+
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
@@ -30,38 +31,57 @@ export type EmoteId = (typeof EMOTES)[number]['id'];
 
 const RATE_LIMIT_MS = 2000;
 
-const PickerShell = styled(XStack, {
-  name: 'EmotePickerShell',
-  gap: 4,
-  padding: 6,
-  borderRadius: 14,
-  borderWidth: 1,
-  borderColor: '$glassBorder',
-  backgroundColor: '$glassBg',
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-});
+function PickerShell({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch gap-[4px] p-[6px] rounded-[14px] border border-[var(--glassBorder)] bg-[var(--glassBg)] flex-wrap justify-center',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const EmoteBtn = styled(XStack, {
-  name: 'EmotePickerBtn',
-  width: 40,
-  height: 40,
-  borderRadius: 10,
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  hoverStyle: { backgroundColor: '$backgroundHover' },
-  pressStyle: { backgroundColor: '$backgroundPress', scale: 0.92 },
-});
+function EmoteBtn({
+  opacity,
+  className,
+  ...props
+}: {
+  opacity?: number;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center justify-center w-[40px] h-[40px] rounded-[10px] cursor-pointer transition-all duration-150 ease-out hover:bg-[var(--backgroundHover)] active:bg-[var(--backgroundPress)] active:scale-[0.92]',
+        className,
+      )}
+      style={opacity !== undefined ? { opacity } : undefined}
+      role="button"
+      tabIndex={0}
+      {...props}
+    />
+  );
+}
 
-const EmoteLabel = styled(Text, {
-  name: 'EmotePickerLabel',
-  fontSize: 9,
-  fontWeight: '600',
-  color: 'rgba(180,180,200,0.7)',
-  textAlign: 'center',
-  numberOfLines: 1,
-});
+function EmoteLabel({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[9px] font-semibold text-[rgba(180,180,200,0.7)] text-center line-clamp-1',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 interface EmotePickerProps {
   onEmote: (emoteId: EmoteId) => void;
@@ -96,7 +116,7 @@ export function EmotePicker({ onEmote, disabled }: EmotePickerProps) {
       {EMOTES.map((e) => (
         <div className="box-border flex flex-col items-center gap-2" key={e.id}>
           <EmoteBtn
-            onPress={() => handleEmote(e.id)}
+            onClick={() => handleEmote(e.id)}
             opacity={cooldown ? 0.5 : 1}
             aria-label={t(`games.emotes.${e.id}` as TranslationKey)}
           >

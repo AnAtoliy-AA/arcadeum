@@ -24,7 +24,7 @@ const AdminBulkRewardsView = dynamic(
 
 export function AdminBulkRewardsClient({ labels }: Props) {
   return (
-    <GlassCard className="p-4">
+    <GlassCard className={'p-4'}>
       <AdminBulkRewardsView labels={labels} />
     </GlassCard>
   );

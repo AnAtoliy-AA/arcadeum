@@ -202,7 +202,7 @@ export function SeaBattleBoards({
       )}
 
       {isBattlePhase && currentPlayer && !currentPlayer.alive && (
-        <Card className="-mx-3 -mb-3" variant="error">
+        <Card className={'-mx-3 -mb-3'} variant="error">
           <Typography>
             {t(
               'games.sea_battle_v1.teamMode.banner.eliminatedSpectator' as TranslationKey,
@@ -212,7 +212,7 @@ export function SeaBattleBoards({
       )}
 
       {isGameOver && teamMode && winnerTeam && (
-        <Card className="-mx-3 -mb-3" variant="elevated">
+        <Card className={'-mx-3 -mb-3'} variant="elevated">
           <Typography>
             {t(
               'games.sea_battle_v1.teamMode.banner.teamWon' as TranslationKey,

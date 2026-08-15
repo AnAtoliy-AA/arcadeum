@@ -194,7 +194,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   if (cols === 1) {
     return (
       <div
-        className={'"sb-grids-container-mobile"'}
+        className="sb-grids-container-mobile"
         style={{
           display: 'flex',
           flexDirection: 'column',

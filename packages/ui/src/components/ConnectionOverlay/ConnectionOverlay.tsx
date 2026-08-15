@@ -1,7 +1,7 @@
-import { YStack, Text, styled, Circle } from 'tamagui';
 import { memo } from 'react';
 import { Spinner } from '../Spinner/Spinner';
 import { WifiOffIcon } from '../Icons';
+import { cx } from '../../utils/cx';
 
 export type ConnectionOverlayProps = {
   visible: boolean;
@@ -11,30 +11,37 @@ export type ConnectionOverlayProps = {
   message?: string;
   reconnectingText?: string;
   testId?: string;
+  'data-testid'?: string;
+  className?: string;
 };
 
-const Backdrop = styled(YStack, {
-  name: 'ConnectionOverlay',
-  position: 'absolute',
-  inset: 0,
-  zIndex: 1000,
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '$5',
-  backgroundColor: '$overlayBg',
-  backdropFilter: 'blur(10px)',
-});
+const BackdropClasses = [
+  'box-border',
+  'absolute',
+  'inset-0',
+  'z-[1000]',
+  'flex',
+  'flex-col',
+  'items-center',
+  'justify-center',
+  'gap-5',
+  'bg-[var(--overlayBg)]',
+  'backdrop-blur-[10px]',
+].join(' ');
 
-const IconWrapper = styled(Circle, {
-  name: 'IconWrapper',
-  size: 60,
-  backgroundColor: '$glassBg',
-  borderWidth: 1,
-  borderColor: '$glassBorder',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
+const IconWrapperClasses = [
+  'box-border',
+  'flex',
+  'h-[60px]',
+  'w-[60px]',
+  'flex-row',
+  'items-center',
+  'justify-center',
+  'rounded-full',
+  'border',
+  'border-[var(--glassBorder)]',
+  'bg-[var(--glassBg)]',
+].join(' ');
 
 export const ConnectionOverlay = memo(function ConnectionOverlay({
   visible,
@@ -44,28 +51,34 @@ export const ConnectionOverlay = memo(function ConnectionOverlay({
   message = 'Tap anywhere or move your mouse to reconnect',
   reconnectingText = 'Reconnecting...',
   testId,
+  'data-testid': dataTestId,
+  className,
 }: ConnectionOverlayProps) {
   if (!visible) return null;
 
   return (
-    <Backdrop onClick={onReconnect} testID={testId}>
+    <div
+      onClick={onReconnect}
+      data-testid={dataTestId ?? testId}
+      className={cx(BackdropClasses, className)}
+    >
       {reconnecting ? (
         <Spinner size="lg" />
       ) : (
-        <IconWrapper>
+        <div className={IconWrapperClasses}>
           <WifiOffIcon size={28} />
-        </IconWrapper>
+        </div>
       )}
-      <YStack alignItems="center" gap="$2">
-        <Text fontSize="$5" fontWeight="600" color="white">
+      <div className="flex flex-col items-center gap-2">
+        <span className="text-[20px] font-semibold text-white">
           {reconnecting ? reconnectingText : title}
-        </Text>
+        </span>
         {!reconnecting && (
-          <Text fontSize="$3" color="white" opacity={0.6} textAlign="center" maxWidth={280}>
+          <span className="max-w-[280px] text-center text-[16px] text-white opacity-[0.6]">
             {message}
-          </Text>
+          </span>
         )}
-      </YStack>
-    </Backdrop>
+      </div>
+    </div>
   );
 });

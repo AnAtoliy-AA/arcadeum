@@ -134,7 +134,7 @@ function AdminShopGrantDialogInner({
   return (
     <DialogShell open onClose={onClose} testId="admin-shop-grant-dialog">
       <div
-        className={'"box-border flex flex-col items-stretch gap-3"'}
+        className="box-border flex flex-col items-stretch gap-3"
         style={{ minWidth: 320 }}
       >
         <span className="box-border text-[24px] font-bold">
@@ -331,7 +331,7 @@ function AdminShopGrantDialogInner({
           <div className="box-border flex flex-row items-stretch gap-null flex-wrap -mt-1">
             {Object.values(labels.grantDialog.reasons).map((text) => (
               <Button
-                className={'py-1 px-2 text-[12px] rounded-[16px]'}
+                className="py-1 px-2 text-[12px] rounded-[16px]"
                 key={text}
                 size="sm"
                 variant="outline"

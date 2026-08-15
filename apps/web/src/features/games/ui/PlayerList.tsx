@@ -1,7 +1,8 @@
 import React from 'react';
-import { styled, YStack } from 'tamagui';
+import type { HTMLAttributes, ReactNode } from 'react';
 import type { GameSessionSummary } from '@/shared/types/games';
 import { Card, Badge, Avatar, Typography } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 interface PlayerListProps {
   session: GameSessionSummary | null;
@@ -12,60 +13,81 @@ interface PlayerListProps {
   onPlayerAction?: (playerId: string, action: string) => void;
 }
 
-const List = styled(YStack, {
-  name: 'PlayerList',
-  gap: '$2',
-  maxHeight: 300,
-  overflowY: 'auto',
-});
+type PlayerStatus = 'active' | 'inactive' | 'away' | 'offline';
 
-const StyledPlayerItem = styled(Card, {
-  name: 'PlayerItem',
-  flexDirection: 'row',
-  alignItems: 'center',
-  padding: 'sm',
-  cursor: 'pointer',
-  borderWidth: 1,
+const STATUS_COLOR_CLASSES: Record<PlayerStatus, string> = {
+  active: 'bg-[#10b981]',
+  inactive: 'bg-[#6b7280]',
+  away: 'bg-[#f59e0b]',
+  offline: 'bg-[#6b7280]',
+};
 
-  hoverStyle: {
-    x: 2,
-    shadowColor: 'rgba(0, 0, 0, 0.1)',
-    shadowRadius: 8,
-  },
+const List = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-col items-stretch gap-2 max-h-[300px] overflow-y-auto',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-  variants: {
-    $isCurrent: {
-      true: {
-        background:
-          'linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(29, 78, 216, 0.12))',
-        borderColor: '$primary',
-      },
-      false: {
-        backgroundColor: '$background',
-        borderColor: '$borderColor',
-      },
-    },
-    $isHost: {
-      true: {
-        borderColor: '#10b981',
-      },
-    },
-  } as const,
-});
+const StyledPlayerItem = ({
+  $isCurrent = false,
+  $isHost = false,
+  className,
+  children,
+  onClick,
+  ...props
+}: {
+  $isCurrent?: boolean;
+  $isHost?: boolean;
+  className?: string;
+  children?: ReactNode;
+  onClick?: () => void;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'onClick'>) => (
+  <Card
+    className={cx(
+      'box-border flex flex-row items-center cursor-pointer transition-all duration-300 ease-out hover:translate-x-[2px] hover:shadow-[0_0_8px_rgba(0,0,0,0.1)]',
+      $isCurrent
+        ? 'bg-[linear-gradient(135deg,rgba(59,130,246,0.12),rgba(29,78,216,0.12))] border-[var(--primary)]'
+        : 'bg-[var(--background)] border-[var(--borderColor)]',
+      $isHost && 'border-[#10b981]',
+      className,
+    )}
+    onClick={onClick}
+    {...props}
+  >
+    {children}
+  </Card>
+);
 
-const StatusIndicator = styled(YStack, {
-  width: 8,
-  height: 8,
-  borderRadius: 4,
-  variants: {
-    status: {
-      active: { backgroundColor: '#10b981' },
-      inactive: { backgroundColor: '#6b7280' },
-      away: { backgroundColor: '#f59e0b' },
-      offline: { backgroundColor: '#6b7280' },
-    },
-  } as const,
-});
+const StatusIndicator = ({
+  status = 'active',
+  className,
+  ...props
+}: {
+  status?: PlayerStatus;
+  className?: string;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border w-2 h-2 rounded-[4px]',
+      STATUS_COLOR_CLASSES[status],
+      className,
+    )}
+    {...props}
+  />
+);
 
 export function PlayerList({
   session,
@@ -81,7 +103,7 @@ export function PlayerList({
         <StyledPlayerItem>
           <Avatar name="?" size="sm" />
           <div className="box-border flex flex-col items-stretch flex-1 -ml-3">
-            <Typography className="font-semibold text-[14px]">
+            <Typography className={'font-semibold text-[14px]'}>
               No players
             </Typography>
           </div>
@@ -132,7 +154,7 @@ export function PlayerList({
           <div className="box-border flex flex-col items-stretch flex-1 -ml-3">
             <div className="box-border flex flex-row items-center gap-2 -mb-1">
               <Typography
-                className="font-semibold text-[14px] line-clamp-1"
+                className={'font-semibold text-[14px] line-clamp-1'}
                 ellipsizeMode="tail"
               >
                 {player.name}
@@ -147,7 +169,9 @@ export function PlayerList({
             <div className="box-border flex flex-row items-center gap-2">
               {showStatus && <StatusIndicator status={player.status} />}
               {showScore && (
-                <Typography className="text-[12px] text-[var(--textSecondary)]">
+                <Typography
+                  className={'text-[12px] text-[var(--textSecondary)]'}
+                >
                   {player.score} pts
                 </Typography>
               )}

@@ -1,46 +1,35 @@
-import { Text, styled } from 'tamagui';
 import { memo } from 'react';
+import { cx } from '../../utils/cx';
 
-const StyledBadge = styled(Text, {
-  name: 'IdleBadge',
-  fontSize: '$1',
-  fontWeight: '600',
-  paddingHorizontal: '$3',
-  paddingVertical: '$3',
-  borderRadius: '$1',
-  borderWidth: 1,
-
-  variants: {
-    variant: {
-      idle: {
-        backgroundColor: '$warningBgSoft',
-        color: '$warning',
-        borderColor: '$warningBorder',
-      },
-      offline: {
-        backgroundColor: '$dangerBgSoft',
-        color: '$danger',
-        borderColor: '$dangerBorder',
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    variant: 'idle',
-  },
-});
+const idleBadgeClasses: Record<'idle' | 'offline', string> = {
+  idle: 'bg-[rgba(146,64,14,0.1)] text-[var(--warning)] border-[rgba(146,64,14,0.4)]',
+  offline:
+    'bg-[rgba(185,28,28,0.1)] text-[var(--danger)] border-[rgba(185,28,28,0.4)]',
+};
 
 export type IdleBadgeProps = {
   variant?: 'idle' | 'offline';
   label?: string;
+  className?: string;
 };
 
-export const IdleBadge = memo(function IdleBadge({ variant = 'idle', label }: IdleBadgeProps) {
+export const IdleBadge = memo(function IdleBadge({
+  variant = 'idle',
+  label,
+  className,
+}: IdleBadgeProps) {
   const emoji = variant === 'offline' ? '🔴' : '💤';
   const defaultLabel = variant === 'offline' ? 'Offline' : 'Idle';
   return (
-    <StyledBadge variant={variant} data-testid="idle-badge">
+    <span
+      className={cx(
+        'box-border inline-flex text-[12px] font-semibold px-3 py-3 rounded border',
+        idleBadgeClasses[variant],
+        className,
+      )}
+      data-testid="idle-badge"
+    >
       {emoji} {label || defaultLabel}
-    </StyledBadge>
+    </span>
   );
 });

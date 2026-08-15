@@ -96,9 +96,7 @@ export const CatDashLobby = memo(function CatDashLobby({
         <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
           {CAT_DASH_VARIANTS.map((v) => (
             <div
-              className={
-                '"box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"'
-              }
+              className="box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"
               style={{
                 borderColor: options.theme === v.id ? '#7c3aed' : 'transparent',
                 backgroundColor:
@@ -128,9 +126,7 @@ export const CatDashLobby = memo(function CatDashLobby({
         <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
           {[8, 10, 12].map((cols) => (
             <div
-              className={
-                '"box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"'
-              }
+              className="box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"
               style={{
                 borderColor: columnsVal === cols ? '#7c3aed' : 'transparent',
                 backgroundColor:
@@ -157,9 +153,7 @@ export const CatDashLobby = memo(function CatDashLobby({
         <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
           {[40, 60, 80, 100].map((len) => (
             <div
-              className={
-                '"box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"'
-              }
+              className="box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"
               style={{
                 borderColor: trackLengthVal === len ? '#7c3aed' : 'transparent',
                 backgroundColor:

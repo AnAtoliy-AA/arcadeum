@@ -84,15 +84,13 @@ export const ShipPaletteSection = memo(
         {!isMobile && (
           <>
             <span
-              className={
-                '"box-border text-[18px] font-semibold -m-0 -mb-2 ship-palette-title"'
-              }
+              className="box-border text-[18px] font-semibold -m-0 -mb-2 ship-palette-title"
               style={{ color: theme.textColor }}
             >
               {t('games.sea_battle_v1.table.state.shipsPalette')}
             </span>
             <span
-              className={'"box-border text-[11px] text-center -mb-2"'}
+              className="box-border text-[11px] text-center -mb-2"
               style={{ color: theme.textSecondaryColor }}
             >
               {t(

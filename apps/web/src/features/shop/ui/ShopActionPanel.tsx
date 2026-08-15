@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@arcadeum/ui';
-import { Text, styled, YStack as Stack } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
@@ -56,25 +56,35 @@ export interface ShopActionPanelProps {
   sellLabels: SellConfirmLabels;
 }
 
-const PanelFrame = styled(Stack, {
-  name: 'ShopActionPanel',
-  width: '100%',
-  borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  backgroundColor: 'rgba(255,255,255,0.02)',
-  padding: '$3',
-  gap: 12,
-});
+function PanelFrame({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch w-full gap-3 p-3 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const Eyebrow = styled(Text, {
-  name: 'ShopActionEyebrow',
-  fontSize: 10,
-  letterSpacing: 1.4,
-  textTransform: 'uppercase',
-  fontWeight: '800',
-  color: '$gray11',
-});
+function Eyebrow({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[10px] tracking-[1.4px] uppercase font-extrabold text-[#94a3b8]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 function refundForRow(row: InventoryItemView, gemToCoinRate: number): number {
   if (row.paidAmount === null || row.paidCurrency === null) return 0;
@@ -135,18 +145,22 @@ export function ShopActionPanel({
             {desc}
           </span>
         </div>
-        <div className="box-border flex flex-row gap-8 items-center justify-space-between">
+        <div className="box-border flex flex-row gap-8 items-center justify-between">
           <div
-            className={
-              '"box-border flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"'
-            }
+            className="box-border flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"
             style={{
               backgroundColor: `${accent}14`,
               borderColor: `${accent}44`,
             }}
           >
-            <div className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl bg-[accent]" />
-            <span className="box-border text-[40px] tracking-[1px] uppercase font-extrabold text-[accent]">
+            <div
+              className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
+              style={{ backgroundColor: accent }}
+            />
+            <span
+              className="box-border text-[40px] tracking-[1px] uppercase font-extrabold"
+              style={{ color: accent }}
+            >
               {hoverItem.rarity}
             </span>
           </div>
@@ -155,7 +169,7 @@ export function ShopActionPanel({
               {CURRENCY_GLYPH[hoverItem.priceCurrency]}
             </span>
             <span
-              className={'"box-border text-[18px] font-extrabold"'}
+              className="box-border text-[18px] font-extrabold"
               style={{ color: CURRENCY_COLOR[hoverItem.priceCurrency] }}
             >
               {formatNumber(hoverItem.priceAmount, locale)}
@@ -189,7 +203,7 @@ export function ShopActionPanel({
         aria-live="polite"
         aria-label={ariaLabel}
       >
-        <div className="box-border flex flex-row justify-space-between items-center">
+        <div className="box-border flex flex-row justify-between items-center">
           <Eyebrow>{actionLabels.selectedSlotEyebrow}</Eyebrow>
           <span
             className="box-border text-[48px] tracking-[1px] uppercase font-bold text-[#3b82f6] cursor-pointer"

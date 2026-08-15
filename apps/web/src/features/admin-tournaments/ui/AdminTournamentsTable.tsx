@@ -77,7 +77,7 @@ export function AdminTournamentsTable({
   if (!isLoading && items.length === 0) {
     return (
       <GlassCard
-        className="p-5 items-center"
+        className={'p-5 items-center'}
         data-testid="tournaments-table-empty"
       >
         <span className="box-border opacity-[0.7]">
@@ -103,7 +103,7 @@ export function AdminTournamentsTable({
           .replace('{total}', String(total))}
       </span>
 
-      <GlassCard className="p-0 overflow-hidden">
+      <GlassCard className={'p-0 overflow-hidden'}>
         <div className="box-border flex flex-row items-stretch py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)] gap-3">
           <span className="box-border flex-[3] font-bold text-[12px] opacity-[0.85]">
             {labels.table.name}
@@ -137,9 +137,7 @@ export function AdminTournamentsTable({
           const canMarkComplete = item.status === 'live';
           return (
             <div
-              className={
-                '"box-border flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"'
-              }
+              className="box-border flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
               style={{
                 backgroundColor: i % 2 === 1 ? '$backgroundFocus' : undefined,
               }}
@@ -159,13 +157,11 @@ export function AdminTournamentsTable({
               </span>
               <div className="box-border flex flex-col items-stretch flex-1">
                 <div
-                  className={
-                    '"box-border flex flex-row items-stretch px-2 py-1 rounded-lg self-start"'
-                  }
+                  className="box-border flex flex-row items-stretch px-2 py-1 rounded-lg self-start"
                   style={{ backgroundColor: chipColor.bg }}
                 >
                   <span
-                    className={'"box-border text-[12px]"'}
+                    className="box-border text-[12px]"
                     style={{ color: chipColor.fg }}
                   >
                     {labels.statusLabels[item.status]}

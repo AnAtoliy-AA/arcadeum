@@ -24,7 +24,7 @@ export function TurnBadge({ isYourTurn, text }: TurnBadgeProps) {
         }}
       />
       <span
-        className={'"box-border text-[11px] font-semibold tracking-[0.8px]"'}
+        className="box-border text-[11px] font-semibold tracking-[0.8px]"
         style={{
           color: isYourTurn ? '$success' : '$color',
           opacity: isYourTurn ? 1 : 0.5,

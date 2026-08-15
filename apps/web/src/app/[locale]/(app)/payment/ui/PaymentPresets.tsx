@@ -47,7 +47,7 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
             active={isActive}
             onClick={() => onSelect(preset.value)}
           >
-            <Typography className="text-[38px] -mb-1">
+            <Typography className={'text-[38px] -mb-1'}>
               {preset.emoji}
             </Typography>
             <div className="box-border flex flex-col items-center gap-1">
@@ -55,7 +55,7 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
                 {preset.label}
               </Typography>
               <Typography
-                className="font-extrabold"
+                className={'font-extrabold'}
                 variant="heading"
                 uiSize="xl"
                 textCenter

@@ -1,224 +1,419 @@
-import { styled, YStack, XStack, H3, Text } from 'tamagui';
-import React from 'react';
+import { forwardRef } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import { ButtonProps, IconButton } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 // Sidebar
-export const Sidebar = styled(YStack, {
-  name: 'LobbySidebar',
-  gap: '$4',
-  width: 300,
-  $tablet: {
-    width: '100%',
-  },
-  $sm: {
-    width: '100%',
-  },
-});
+export const Sidebar = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-col items-stretch gap-4 w-[300px] max-[1023px]:w-full max-[800px]:w-full',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const LobbyCard = styled(YStack, {
-  name: 'LobbyCard',
-  backgroundColor: 'rgba(99, 102, 241, 0.08)',
-  borderRadius: 16,
-  padding: '$5',
-  position: 'relative',
-  overflow: 'hidden',
-  borderWidth: 1,
-  borderColor: 'rgba(99, 102, 241, 0.15)',
-});
+export const LobbyCard = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-col items-stretch bg-[rgba(99,102,241,0.08)] rounded-[16px] p-5 relative overflow-hidden border border-[rgba(99,102,241,0.15)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const LobbyCardGlow = styled(YStack, {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: 2,
-  background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)',
-});
+export const LobbyCardGlow = ({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border absolute top-0 left-0 right-0 h-[2px] bg-[linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899)]',
+      className,
+    )}
+    {...props}
+  />
+);
 
-export const CardHeader = styled(XStack, {
-  name: 'CardHeader',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '$4',
-});
+export const CardHeader = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-row items-center justify-between mb-4',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const CardTitle = styled(H3, {
-  name: 'CardTitle',
-  fontSize: '$1',
-  fontWeight: '600',
-  textTransform: 'uppercase',
-  letterSpacing: 0.5,
-  color: '$textSecondary',
-  margin: 0,
-});
+export const CardTitle = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLHeadingElement>) => (
+  <h3
+    className={cx(
+      'box-border text-[12px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </h3>
+);
 
 // Player List
-export const PlayerList = styled(YStack, {
-  name: 'LobbyPlayerList',
-  gap: '$3',
-});
+export const PlayerList = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx('box-border flex flex-col items-stretch gap-3', className)}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const PlayerItem = styled(XStack, {
-  name: 'PlayerItem',
-  alignItems: 'center',
-  gap: '$3',
-  padding: '$2',
-  borderRadius: 10,
-  variants: {
-    $isHost: {
-      true: {
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-        borderWidth: 1,
-        borderColor: 'rgba(99, 102, 241, 0.3)',
-      },
-      false: {
-        backgroundColor: 'rgba(255, 255, 255, 0.03)',
-        borderWidth: 1,
-        borderColor: 'transparent',
-      },
-    },
-  } as const,
-});
+export type PlayerItemProps = {
+  $isHost?: boolean;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>;
 
-export const LobbyPlayerAvatar = styled(YStack, {
-  name: 'LobbyPlayerAvatar',
-  width: 36,
-  height: 36,
-  borderRadius: 10,
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: '$background',
-  flexShrink: 0,
-});
+export const PlayerItem = forwardRef<HTMLDivElement, PlayerItemProps>(
+  function PlayerItem({ $isHost = false, className, children, ...props }, ref) {
+    return (
+      <div
+        ref={ref}
+        className={cx(
+          'box-border flex flex-row items-center gap-3 p-2 rounded-[10px]',
+          $isHost
+            ? 'bg-[rgba(99,102,241,0.1)] border border-[rgba(99,102,241,0.3)]'
+            : 'bg-[rgba(255,255,255,0.03)] border border-transparent',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+);
 
-export const LobbyPlayerAvatarText = styled(Text, {
-  name: 'LobbyPlayerAvatarText',
-  fontWeight: '600',
-  fontSize: '$2',
-  color: 'white',
-});
+export const LobbyPlayerAvatar = ({
+  backgroundColor,
+  style,
+  className,
+  children,
+  ...props
+}: {
+  backgroundColor?: string;
+  style?: CSSProperties;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[var(--background)] shrink-0',
+      className,
+    )}
+    style={backgroundColor ? { backgroundColor, ...style } : style}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const PlayerInfo = styled(YStack, {
-  name: 'PlayerInfo',
-  flex: 1,
-  minWidth: 0,
-});
+export const LobbyPlayerAvatarText = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border font-semibold text-[14px] text-[#f5f7ff]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-export const LobbyPlayerName = styled(Text, {
-  name: 'LobbyPlayerName',
-  fontSize: '$3',
-  fontWeight: '500',
-  color: '$color',
-});
+export const PlayerInfo = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-col items-stretch flex-1 min-w-0',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const PlayerBadge = styled(Text, {
-  name: 'PlayerBadge',
-  fontSize: 10,
-  paddingHorizontal: '$2',
-  paddingVertical: 2,
-  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-  color: 'white',
-  borderRadius: 8,
-  fontWeight: '600',
-});
+export const LobbyPlayerName = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border text-[16px] font-medium text-[var(--color)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
+
+export const PlayerBadge = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border text-[10px] px-2 py-[2px] bg-[linear-gradient(135deg,#6366f1,#8b5cf6)] text-[#f5f7ff] rounded-[8px] font-semibold',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
 export const ReorderButton = (props: ButtonProps) => (
   <IconButton size="sm" {...props} />
 );
 
-export const EmptySlot = styled(XStack, {
-  name: 'EmptySlot',
-  alignItems: 'center',
-  gap: '$3',
-  padding: '$2',
-  borderRadius: 10,
-  borderWidth: 1,
-  borderStyle: 'dashed',
-  borderColor: 'rgba(99, 102, 241, 0.2)',
-  opacity: 0.5,
-});
+export const EmptySlot = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-row items-center gap-3 p-2 rounded-[10px] border border-dashed border-[rgba(99,102,241,0.2)] opacity-[0.5]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const EmptyAvatar = styled(YStack, {
-  name: 'EmptyAvatar',
-  width: 36,
-  height: 36,
-  borderRadius: 10,
-  backgroundColor: 'rgba(99, 102, 241, 0.1)',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
+export const EmptyAvatar = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[rgba(99,102,241,0.1)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const EmptyAvatarText = styled(Text, {
-  name: 'EmptyAvatarText',
-  fontSize: '$4',
-});
+export const EmptyAvatarText = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span className={cx('box-border text-[18px]', className)} {...props}>
+    {children}
+  </span>
+);
 
 // Info Row
-export const InfoRow = styled(XStack, {
-  name: 'InfoRow',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  paddingVertical: '$2',
-  borderBottomWidth: 1,
-  borderBottomColor: 'rgba(99, 102, 241, 0.1)',
-  // Handle last-child via props or conditionally in component
-});
+export const InfoRow = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-row items-center justify-between py-2 border-b border-[rgba(99,102,241,0.1)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const InfoLabel = styled(Text, {
-  name: 'InfoLabel',
-  fontSize: '$2',
-  color: '$textSecondary',
-});
+export const InfoLabel = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border text-[14px] text-[var(--textSecondary)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-export const InfoValue = styled(Text, {
-  name: 'InfoValue',
-  fontSize: '$3',
-  fontWeight: '500',
-  color: '$color',
-});
+export const InfoValue = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border text-[16px] font-medium text-[var(--color)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-export const StatusBadge = styled(Text, {
-  name: 'StatusBadge',
-  fontSize: '$2',
-  paddingHorizontal: '$3',
-  paddingVertical: '$1',
-  borderRadius: 8,
-  fontWeight: '500',
-  variants: {
-    $status: {
-      lobby: {
-        backgroundColor: 'rgba(16, 185, 129, 0.15)',
-        color: '#10b981',
-      },
-      ready: {
-        backgroundColor: 'rgba(99, 102, 241, 0.15)',
-        color: '#6366f1',
-      },
-      in_progress: {
-        backgroundColor: 'rgba(99, 102, 241, 0.15)',
-        color: '#6366f1',
-      },
-      completed: {
-        backgroundColor: 'rgba(156, 163, 175, 0.15)',
-        color: '#9ca3af',
-      },
-    },
-  } as const,
-});
+export type RoomStatus = 'lobby' | 'ready' | 'in_progress' | 'completed';
 
-export const FastBadge = styled(XStack, {
-  name: 'FastBadge',
-  paddingHorizontal: '$3',
-  paddingVertical: '$1',
-  borderRadius: 8,
-  backgroundColor: 'rgba(234, 179, 8, 0.15)',
-  alignItems: 'center',
-  gap: '$2',
-});
+const STATUS_BADGE_CLASSES: Record<RoomStatus, string> = {
+  lobby: 'bg-[rgba(16,185,129,0.15)] text-[#10b981]',
+  ready: 'bg-[rgba(99,102,241,0.15)] text-[#6366f1]',
+  in_progress: 'bg-[rgba(99,102,241,0.15)] text-[#6366f1]',
+  completed: 'bg-[rgba(156,163,175,0.15)] text-[#9ca3af]',
+};
 
-export const FastBadgeText = styled(Text, {
-  name: 'FastBadgeText',
-  fontSize: '$2',
-  fontWeight: '500',
-  color: '#eab308',
-});
+export const StatusBadge = ({
+  $status = 'lobby',
+  className,
+  children,
+  ...props
+}: {
+  $status?: RoomStatus;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border text-[14px] px-3 py-1 rounded-[8px] font-medium',
+      STATUS_BADGE_CLASSES[$status],
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
+
+export const FastBadge = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-row items-center gap-2 px-3 py-1 rounded-[8px] bg-[rgba(234,179,8,0.15)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
+
+export const FastBadgeText = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'box-border text-[14px] font-medium text-[#eab308]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);

@@ -3,14 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import { ShopSlotRing, type ShopSlotRingLabels } from './ShopSlotRing';
 import type { EffectiveShopItem, ShopCategory } from '../server/shop.types';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <TamaguiProvider config={config} defaultTheme="dark">
-    {children}
-  </TamaguiProvider>
-);
+const Wrapper = ({ children }: { children: React.ReactNode }) => children;
 
 const labels: ShopSlotRingLabels = {
   avatar: { label: 'Avatar', desc: '', empty: 'Empty' },

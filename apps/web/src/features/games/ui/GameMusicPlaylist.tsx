@@ -74,7 +74,7 @@ function SortableTrackItem({
         onDoubleClick={() => onPlay(index)}
       >
         <div
-          className={'"game-music-drag-handle"'}
+          className="game-music-drag-handle"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -130,7 +130,7 @@ function SortableTrackItem({
           />
         ) : (
           <Typography
-            className={'min-w-[16px] font-medium'}
+            className="min-w-[16px] font-medium"
             style={{
               color: isActive
                 ? 'rgba(165,180,252,0.9)'
@@ -155,7 +155,7 @@ function SortableTrackItem({
         </Typography>
         {duration > 0 && (
           <Typography
-            className={'min-w-[32px] shrink-0 text-right'}
+            className="min-w-[32px] shrink-0 text-right"
             style={{ color: 'rgba(255,255,255,0.35)' }}
             uiSize="xs"
           >
@@ -296,15 +296,13 @@ export function Playlist({
 
   return (
     <div
-      className={
-        '"flex flex-col gap-[4px] pb-[6px] mb-[4px] border-b game-music-playlist"'
-      }
+      className="flex flex-col gap-[4px] pb-[6px] mb-[4px] border-b game-music-playlist"
       style={{ borderBottomColor: 'rgba(255,255,255,0.08)' }}
       data-testid="game-music-playlist"
     >
       <div className="flex items-center gap-[8px] px-[4px]">
         <Typography
-          className={'font-semibold uppercase tracking-[0.5px]'}
+          className="font-semibold uppercase tracking-[0.5px]"
           style={{ color: 'rgba(255,255,255,0.6)' }}
           uiSize="xs"
         >

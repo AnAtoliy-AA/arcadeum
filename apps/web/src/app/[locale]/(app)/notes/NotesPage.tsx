@@ -69,7 +69,7 @@ export default function NotesPage({ initialData }: NotesPageProps) {
 
   return (
     <PageLayout>
-      <Container className="pt-12" size="lg">
+      <Container className={'pt-12'} size="lg">
         <div className="box-border flex flex-col items-center -mb-12">
           <PageTitle size="lg">
             {t('payments.notes.title') || 'Supporter Notes'}
@@ -84,7 +84,7 @@ export default function NotesPage({ initialData }: NotesPageProps) {
           <div className="box-border flex flex-row items-stretch flex-wrap gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <Skeleton
-                className="h-[140px] min-w-[300px] flex-1 rounded-[16px]"
+                className={'h-[140px] min-w-[300px] flex-1 rounded-[16px]'}
                 key={i}
               />
             ))}
@@ -100,7 +100,7 @@ export default function NotesPage({ initialData }: NotesPageProps) {
           <>
             <div className="box-border flex flex-row items-stretch flex-wrap gap-6 min-h-[200px]">
               {allNotes.map((note) => (
-                <GlassCard className="min-w-[300px] flex-1" key={note.id}>
+                <GlassCard className={'min-w-[300px] flex-1'} key={note.id}>
                   <span className="box-border text-[var(--color)] text-[18px] leading-[34px] -mb-4 block">
                     {note.note}
                   </span>

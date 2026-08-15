@@ -224,7 +224,7 @@ export function Leaderboard({
               <StatCell color="$success">{entry.wins}</StatCell>
               <StatCell color="$danger">{entry.losses}</StatCell>
               <ProgressBar
-                className="h-[6px]"
+                className={'h-[6px]'}
                 value={entry.winRate}
                 showLabel
               />

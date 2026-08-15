@@ -109,7 +109,7 @@ export const PlayBtn = ({
   children: React.ReactNode;
 }) => (
   <button
-    className={'"game-music-btn game-music-play-btn"'}
+    className="game-music-btn game-music-play-btn"
     style={{
       display: 'flex',
       alignItems: 'center',

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { styled, YStack, XStack } from 'tamagui';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   useTranslation,
@@ -9,6 +9,7 @@ import {
 } from '@/shared/lib/useTranslation';
 import type { GameMetadata } from '../types';
 import { Card as SharedCard, Badge } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 interface GameCardProps {
   game: GameMetadata;
@@ -18,81 +19,93 @@ interface GameCardProps {
   disabled?: boolean;
 }
 
-const StyledCard = styled(SharedCard, {
-  name: 'GameCard',
-  cursor: 'pointer',
-  position: 'relative',
-  overflow: 'hidden',
-  borderWidth: 1,
-  borderColor: '$borderColor',
+const StyledCard = ({
+  disabled = false,
+  className,
+  children,
+  onClick,
+  ...props
+}: {
+  disabled?: boolean;
+  className?: string;
+  children?: ReactNode;
+  onClick?: () => void;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick'>) => (
+  <SharedCard
+    className={cx(
+      'box-border transition-all duration-300 ease-out',
+      disabled
+        ? 'opacity-60 cursor-not-allowed'
+        : 'cursor-pointer hover:-translate-y-[2px] hover:shadow-[0_0_25px_rgba(0,0,0,0.15)] hover:border-[var(--primary)] active:translate-y-0 active:scale-[0.98]',
+      className,
+    )}
+    onClick={onClick}
+    {...props}
+  >
+    {children}
+  </SharedCard>
+);
 
-  hoverStyle: {
-    y: -2,
-    shadowColor: 'rgba(0, 0, 0, 0.15)',
-    shadowRadius: 25,
-    borderColor: '$primary',
-  },
+const CardGlow = ({
+  disabled = false,
+  className,
+  ...props
+}: {
+  disabled?: boolean;
+  className?: string;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border absolute top-0 left-0 right-0 h-[3px]',
+      disabled
+        ? 'bg-[var(--outlineColor)]'
+        : 'bg-[linear-gradient(90deg,var(--primary),var(--secondary))]',
+      className,
+    )}
+    {...props}
+  />
+);
 
-  pressStyle: {
-    y: 0,
-    scale: 0.98,
-  },
+const GameImage = ({
+  background,
+  className,
+  children,
+  ...props
+}: {
+  background?: string;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border w-[60px] h-[60px] rounded-[8px] bg-[var(--backgroundFocus)] border-2 border-[var(--borderColor)] mb-3 flex items-center justify-center',
+      className,
+    )}
+    style={background ? { background } : undefined}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-  variants: {
-    disabled: {
-      true: {
-        opacity: 0.6,
-        cursor: 'not-allowed',
-        hoverStyle: {
-          y: 0,
-          shadowRadius: 0,
-          borderColor: '$borderColor',
-        },
-      },
-    },
-  } as const,
-});
-
-const CardGlow = styled(YStack, {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: 3,
-  variants: {
-    disabled: {
-      true: {
-        backgroundColor: '$outlineColor',
-      },
-      false: {
-        background: 'linear-gradient(90deg, $primary, $secondary)',
-      },
-    },
-  } as const,
-});
-
-const GameImage = styled(YStack, {
-  width: 60,
-  height: 60,
-  borderRadius: 8,
-  backgroundColor: '$backgroundFocus',
-  borderWidth: 2,
-  borderColor: '$borderColor',
-  marginBottom: '$3',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const MetaTag = styled(XStack, {
-  backgroundColor: '$backgroundFocus',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: 12,
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  alignItems: 'center',
-  gap: '$1',
-});
+const MetaTag = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'box-border flex flex-row items-center gap-1 bg-[var(--backgroundFocus)] px-2 py-1 rounded-[12px] border border-[var(--borderColor)]',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 function getStatusVariant(
   status: string,

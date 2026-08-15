@@ -27,11 +27,7 @@ import { ReferralRewardsCard } from './ReferralRewardsCard';
 import type { ReferralTier } from '../types';
 import { REFERRAL_COIN_REWARDS } from '../lib/coin-rewards';
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <TamaguiProvider config={config} defaultTheme="dark">
-    {children}
-  </TamaguiProvider>
-);
+const Wrapper = ({ children }: { children: React.ReactNode }) => children;
 
 const MOCK_TIERS: ReferralTier[] = [
   {
@@ -111,9 +107,6 @@ describe('ReferralRewardsCard', () => {
 
 // Import after mock so the mock is in place
 import { useTranslation } from '@/shared/lib/useTranslation';
-
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
 
 describe('+N coins per friend copy', () => {
   it('REFERRAL_COIN_REWARDS.perFriend is 50 (the copy shown in the explainer)', () => {

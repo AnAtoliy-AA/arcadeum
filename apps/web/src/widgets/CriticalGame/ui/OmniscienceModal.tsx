@@ -62,7 +62,7 @@ export default function OmniscienceModal({
               {resolveDisplayName(hand.playerId, 'Player')}
             </SectionLabel>
             {hand.cards.length === 0 ? (
-              <Typography className="text-center" uiSize="sm" alpha="medium">
+              <Typography className={'text-center'} uiSize="sm" alpha="medium">
                 {t('games.table.modals.omniscience.emptyHand') ||
                   'No cards in hand.'}
               </Typography>
@@ -94,7 +94,7 @@ export default function OmniscienceModal({
                         <GradientScrim />
                       </Card>
                       <Typography
-                        className="text-center w-full line-clamp-1"
+                        className={'text-center w-full line-clamp-1'}
                         uiSize="xs"
                       >
                         {t(getCardTranslationKey(card, cardVariant)) || card}

@@ -22,7 +22,7 @@ export function AdminShopItemPreview({
     <div className="box-border flex flex-col bg-[var(--backgroundFocus)] rounded-lg items-center justify-center overflow-hidden">
       {colorValue ? (
         <span
-          className={'"box-border font-extrabold"'}
+          className="box-border font-extrabold"
           style={{ fontSize: fontSize }}
         >
           Aa

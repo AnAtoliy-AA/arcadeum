@@ -4,9 +4,6 @@ import { MobileActionSheet } from './MobileActionSheet';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { getVariantStyles } from './styles/variants';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
 const palette = getVariantStyles(undefined).scene;
 
 const opponents = [
@@ -19,20 +16,18 @@ function setup(overrides: Record<string, unknown> = {}) {
   const onConfirm = vi.fn();
   const onCancel = vi.fn();
   render(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      <ScenePaletteProvider palette={palette}>
-        <MobileActionSheet
-          isOpen
-          title="Attack"
-          description="Play Attack on which player?"
-          opponents={opponents}
-          resolveDisplayName={(id) => id.toUpperCase()}
-          onConfirm={onConfirm}
-          onCancel={onCancel}
-          {...overrides}
-        />
-      </ScenePaletteProvider>
-    </TamaguiProvider>,
+    <ScenePaletteProvider palette={palette}>
+      <MobileActionSheet
+        isOpen
+        title="Attack"
+        description="Play Attack on which player?"
+        opponents={opponents}
+        resolveDisplayName={(id) => id.toUpperCase()}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+        {...overrides}
+      />
+    </ScenePaletteProvider>,
   );
   return { onConfirm, onCancel };
 }

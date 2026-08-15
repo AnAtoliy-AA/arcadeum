@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Mirrors the shape of Tamagui's `useMedia()` so call sites port 1:1.
+ * Mirrors the shape of Tamagui's `useMediaQuery()` so call sites port 1:1.
  * Resolves the same media queries the old config used (see
  * packages/ui/src/tamagui.config.ts media block).
  */
@@ -43,7 +43,7 @@ function readSnapshot(): MediaQuerySnapshot {
   return snapshot;
 }
 
-/** Same API shape as Tamagui's useMedia() — boolean per breakpoint. */
+/** Same API shape as Tamagui's useMediaQuery() — boolean per breakpoint. */
 export function useMediaQuery(): MediaQuerySnapshot {
   const [snapshot, setSnapshot] = useState<MediaQuerySnapshot>(SERVER_SNAPSHOT);
 

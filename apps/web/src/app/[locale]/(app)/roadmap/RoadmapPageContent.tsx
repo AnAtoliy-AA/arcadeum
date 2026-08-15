@@ -36,7 +36,11 @@ function TierCard({
             </div>
             <div className="box-border flex flex-col items-stretch flex-1 gap-1">
               <div className="box-border flex flex-row items-center gap-2">
-                <Typography className="font-bold" variant="heading" uiSize="md">
+                <Typography
+                  className={'font-bold'}
+                  variant="heading"
+                  uiSize="md"
+                >
                   {tier.label}
                 </Typography>
                 <div
@@ -58,7 +62,7 @@ function TierCard({
           </div>
           <div className="box-border w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
             <Typography
-              className="font-bold"
+              className={'font-bold'}
               variant="body"
               uiSize="sm"
               alpha="medium"
@@ -89,7 +93,7 @@ function TierCard({
                 <div className="box-border flex flex-col items-stretch flex-1 gap-1">
                   <div className="box-border flex flex-row justify-space-between items-center">
                     <Typography
-                      className="font-bold"
+                      className={'font-bold'}
                       variant="label"
                       uiSize="sm"
                     >
@@ -168,7 +172,7 @@ function PhaseTimeline({
                     }}
                   >
                     <Typography
-                      className="font-bold"
+                      className={'font-bold'}
                       style={{ color: p.color }}
                       variant="label"
                       uiSize="xs"
@@ -219,7 +223,7 @@ export default function RoadmapPageContent() {
           >
             <div className="box-border flex flex-col items-stretch gap-2">
               <Typography
-                className="font-extrabold"
+                className={'font-extrabold'}
                 variant="heading"
                 uiSize="3xl"
                 gradient="primary"
@@ -227,7 +231,7 @@ export default function RoadmapPageContent() {
                 Arcadeum Roadmap
               </Typography>
               <Typography
-                className="max-w-[600px]"
+                className={'max-w-[600px]'}
                 variant="body"
                 uiSize="md"
                 alpha="medium"
@@ -250,7 +254,7 @@ export default function RoadmapPageContent() {
                   <Typography uiSize="xl">{stat.icon}</Typography>
                   <div className="box-border flex flex-col items-stretch gap-0">
                     <Typography
-                      className="font-extrabold"
+                      className={'font-extrabold'}
                       variant="heading"
                       uiSize="lg"
                     >
@@ -269,7 +273,7 @@ export default function RoadmapPageContent() {
             <div className="box-border flex flex-col items-stretch gap-3">
               <div className="box-border flex flex-row items-center gap-2">
                 <Typography
-                  className="font-extrabold"
+                  className={'font-extrabold'}
                   variant="heading"
                   uiSize="xl"
                 >
@@ -277,7 +281,7 @@ export default function RoadmapPageContent() {
                 </Typography>
                 <div className="box-border px-2 py-1 rounded-[9999px] bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)]">
                   <Typography
-                    className="text-[#22c55e]"
+                    className={'text-[#22c55e]'}
                     variant="label"
                     uiSize="xs"
                   >
@@ -311,7 +315,7 @@ export default function RoadmapPageContent() {
           <Section variant="legal">
             <div className="box-border flex flex-col items-stretch gap-4">
               <Typography
-                className="font-extrabold"
+                className={'font-extrabold'}
                 variant="heading"
                 uiSize="xl"
               >
@@ -327,7 +331,7 @@ export default function RoadmapPageContent() {
           <Section variant="legal">
             <div className="box-border flex flex-col items-stretch gap-4">
               <Typography
-                className="font-extrabold"
+                className={'font-extrabold'}
                 variant="heading"
                 uiSize="xl"
               >
@@ -354,7 +358,11 @@ export default function RoadmapPageContent() {
             >
               <Typography uiSize="lg">⚖️</Typography>
               <div className="box-border flex flex-col items-stretch flex-1 gap-1">
-                <Typography className="font-bold" variant="heading" uiSize="md">
+                <Typography
+                  className={'font-bold'}
+                  variant="heading"
+                  uiSize="md"
+                >
                   100% Legal — All Public Domain
                 </Typography>
                 <Typography variant="body" uiSize="sm" alpha="medium">

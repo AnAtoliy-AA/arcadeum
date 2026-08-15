@@ -215,7 +215,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
       style={{ position: 'relative', display: 'inline-flex' }}
     >
       <Button
-        className={'max-[640px]:scale-[0.9] max-[640px]:px-2'}
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         variant="glass"
         size="sm"
         onClick={handleTrigger}

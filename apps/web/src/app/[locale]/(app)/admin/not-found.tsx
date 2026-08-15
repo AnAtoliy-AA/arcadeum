@@ -10,7 +10,7 @@ export default function AdminNotFound() {
   return (
     <PageLayout>
       <Container size="md">
-        <GlassCard className="p-5" data-testid="admin-not-found">
+        <GlassCard className={'p-5'} data-testid="admin-not-found">
           <PageTitle size="xl" gradient>
             404
           </PageTitle>

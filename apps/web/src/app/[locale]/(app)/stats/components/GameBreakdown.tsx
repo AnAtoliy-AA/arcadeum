@@ -1,5 +1,5 @@
-import React from 'react';
-import { styled, XStack, YStack, Text } from 'tamagui';
+import type React from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 import type { PlayerStats } from '@/features/history/api';
 import {
   useTranslation,
@@ -45,6 +45,90 @@ export const gameBreakdownCSS = `
 interface GameBreakdownProps {
   stats: PlayerStats | null;
   loading: boolean;
+}
+
+function Table({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch w-full rounded-xl overflow-hidden',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function GameInfo({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx('box-border flex flex-row items-center gap-3', className)}
+      {...props}
+    />
+  );
+}
+
+function GameIcon({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx('box-border text-[20px] w-[40px] h-[40px]', className)}
+      {...props}
+    />
+  );
+}
+
+function GameName({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[16px] leading-[20px] font-semibold text-[var(--color)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function StatCell({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border text-[16px] leading-[20px] font-medium text-[var(--color)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function WinRateCell({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center gap-3 min-w-[120px]',
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
@@ -104,7 +188,7 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
               <StatCell>{game.wins}</StatCell>
               <WinRateCell>
                 <ProgressBar
-                  className="h-[8px]"
+                  className={'h-[8px]'}
                   value={game.winRate}
                   showLabel
                 />
@@ -116,42 +200,3 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
     </>
   );
 }
-
-const Table = styled(YStack, {
-  name: 'GameBreakdownTable',
-  width: '100%',
-  borderRadius: 12,
-  overflow: 'hidden',
-});
-
-const GameInfo = styled(XStack, {
-  name: 'GameBreakdownGameInfo',
-  alignItems: 'center',
-  gap: '$3',
-});
-
-const GameIcon = styled(Text, {
-  name: 'GameBreakdownGameIcon',
-  fontSize: '$5',
-  width: 40,
-  height: 40,
-});
-
-const GameName = styled(Text, {
-  name: 'GameBreakdownGameName',
-  fontWeight: '600',
-  color: '$color',
-});
-
-const StatCell = styled(Text, {
-  name: 'GameBreakdownStatCell',
-  fontWeight: '500',
-  color: '$color',
-});
-
-const WinRateCell = styled(XStack, {
-  name: 'GameBreakdownWinRateCell',
-  alignItems: 'center',
-  gap: '$3',
-  minWidth: 120,
-});

@@ -308,9 +308,7 @@ export const CatDashBoard = memo(function CatDashBoard({
             player.playerId;
           return (
             <div
-              className={
-                '"box-border flex flex-row gap-3 items-center px-4 py-3 rounded-2xl border-[1.5px]"'
-              }
+              className="box-border flex flex-row gap-3 items-center px-4 py-3 rounded-2xl border-[1.5px]"
               style={{
                 opacity: player.isReady ? 1 : 0.4,
                 backgroundColor: isCurrent
@@ -324,7 +322,7 @@ export const CatDashBoard = memo(function CatDashBoard({
             >
               <RealisticCat catId={player.catId} size={28} />
               <span
-                className={'"box-border text-[14px]"'}
+                className="box-border text-[14px]"
                 style={{
                   fontWeight: isCurrent ? 'bold' : 'normal',
                   color: CAT_COLORS[player.catId] ?? tokens.text,
@@ -333,7 +331,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                 {resolveName(player.playerId)}
               </span>
               <span
-                className={'"box-border text-[12px]"'}
+                className="box-border text-[12px]"
                 style={{ color: tokens.textSecondary }}
               >
                 🎲 {player.powerTokens}
@@ -348,7 +346,7 @@ export const CatDashBoard = memo(function CatDashBoard({
         <div className="box-border flex flex-row gap-1 items-center">
           <div className="box-border flex flex-row items-stretch w-[12px] h-[12px] bg-[#22c55e] rounded-[24px]" />
           <span
-            className={'"box-border text-[40px]"'}
+            className="box-border text-[40px]"
             style={{ color: tokens.textSecondary }}
           >
             Start
@@ -357,7 +355,7 @@ export const CatDashBoard = memo(function CatDashBoard({
         <div className="box-border flex flex-row gap-1 items-center">
           <div className="box-border flex flex-row items-stretch w-[12px] h-[12px] bg-[#f59e0b] rounded-[24px]" />
           <span
-            className={'"box-border text-[40px]"'}
+            className="box-border text-[40px]"
             style={{ color: tokens.textSecondary }}
           >
             Finish
@@ -366,7 +364,7 @@ export const CatDashBoard = memo(function CatDashBoard({
         <div className="box-border flex flex-row gap-1 items-center">
           <span className="box-border text-[48px]">⚡</span>
           <span
-            className={'"box-border text-[40px]"'}
+            className="box-border text-[40px]"
             style={{ color: tokens.textSecondary }}
           >
             Obstacle
@@ -375,7 +373,7 @@ export const CatDashBoard = memo(function CatDashBoard({
         <div className="box-border flex flex-row gap-1 items-center">
           <span className="box-border text-[48px]">⭐</span>
           <span
-            className={'"box-border text-[40px]"'}
+            className="box-border text-[40px]"
             style={{ color: tokens.textSecondary }}
           >
             Bonus

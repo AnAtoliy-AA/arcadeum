@@ -87,7 +87,7 @@ export function AdminWalletForm({
     !isPending && Number.isInteger(parsedAmount) && parsedAmount > 0;
 
   return (
-    <GlassCard className="p-3 gap-3" data-testid="admin-wallet-form">
+    <GlassCard className={'p-3 gap-3'} data-testid="admin-wallet-form">
       <div className="box-border flex flex-col items-stretch gap-1">
         <span className="box-border text-[12px] opacity-[0.7]">
           {labels.currencyLabel}

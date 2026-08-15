@@ -6,14 +6,9 @@ import { CatDashRulesModal } from '../ui/RulesModal';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
 import type { CatDashClientState } from '../types';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
 function renderWithTheme(ui: React.ReactNode) {
   return render(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      <CatDashThemeProvider variant="village">{ui}</CatDashThemeProvider>
-    </TamaguiProvider>,
+    <CatDashThemeProvider variant="village">{ui}</CatDashThemeProvider>,
   );
 }
 

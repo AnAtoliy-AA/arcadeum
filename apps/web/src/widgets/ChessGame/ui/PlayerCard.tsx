@@ -41,18 +41,19 @@ export function PlayerCard({
     <PlayerCardStyled $isActive={$isActive}>
       <div className="box-border flex flex-row gap-12 items-center">
         <PlayerAvatar
-          background={
-            color === 'white'
-              ? 'linear-gradient(135deg, #e2e8f0, #94a3b8)'
-              : 'linear-gradient(135deg, #475569, #1e293b)'
-          }
-          borderWidth={2}
-          borderColor={
-            $isActive ? 'rgba(212, 175, 55, 0.8)' : 'rgba(255, 255, 255, 0.1)'
-          }
+          style={{
+            background:
+              color === 'white'
+                ? 'linear-gradient(135deg, #e2e8f0, #94a3b8)'
+                : 'linear-gradient(135deg, #475569, #1e293b)',
+            borderWidth: 2,
+            borderColor: $isActive
+              ? 'rgba(212, 175, 55, 0.8)'
+              : 'rgba(255, 255, 255, 0.1)',
+          }}
         >
           <span
-            className={'"box-border text-[18px]"'}
+            className="box-border text-[18px]"
             style={{ color: color === 'white' ? '#1e293b' : '#f8fafc' }}
           >
             {KING_SYMBOLS[color]}
@@ -76,9 +77,7 @@ export function PlayerCard({
 
       <div className="box-border flex flex-row items-stretch gap-8 -mt-10">
         <div
-          className={
-            '"box-border flex flex-col flex-1 rounded-[8px] bg-[rgba(255,_255,_255,_0.03)] border border-[rgba(255,_255,_255,_0.08)] items-center"'
-          }
+          className="box-border flex flex-col flex-1 rounded-[8px] bg-[rgba(255,_255,_255,_0.03)] border border-[rgba(255,_255,_255,_0.08)] items-center"
           style={{ padding: '8px 12px' }}
         >
           <span className="box-border text-[20px] font-bold text-[#f8fafc]">
@@ -89,9 +88,7 @@ export function PlayerCard({
           </span>
         </div>
         <div
-          className={
-            '"box-border flex flex-col flex-1 rounded-[8px] bg-[rgba(255,_255,_255,_0.03)] border border-[rgba(255,_255,_255,_0.08)] items-center"'
-          }
+          className="box-border flex flex-col flex-1 rounded-[8px] bg-[rgba(255,_255,_255,_0.03)] border border-[rgba(255,_255,_255,_0.08)] items-center"
           style={{ padding: '8px 12px' }}
         >
           <span className="box-border text-[20px] font-bold text-[#f8fafc]">

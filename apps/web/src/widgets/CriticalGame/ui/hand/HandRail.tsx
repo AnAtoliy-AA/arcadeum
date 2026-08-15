@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from 'tamagui';
 import {
   BookOpenIcon,
   CardsIcon,
@@ -9,6 +8,7 @@ import {
   MinimizeIcon,
   ShieldIcon,
 } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { ComboKind } from '../../lib/combo';
 
@@ -43,12 +43,8 @@ interface HandRailProps {
 }
 
 const ACCENT = '#34d399';
-const ACCENT_TINT_BG = 'rgba(52, 211, 153, 0.18)';
-const ACCENT_TINT_BORDER = 'rgba(52, 211, 153, 0.65)';
 const NEUTRAL_BG = 'rgba(255, 255, 255, 0.07)';
-const NEUTRAL_BG_HOVER = 'rgba(255, 255, 255, 0.12)';
 const NEUTRAL_BORDER = 'rgba(255, 255, 255, 0.10)';
-const NOPE_COLOR = '#f59e0b';
 
 // Defuse-card pill shape lookup. Hoisted so the literal object isn't
 // rebuilt on every render — that re-allocation prevented tamagui from
@@ -79,13 +75,50 @@ interface RailSectionProps {
 function RailSection({ children }: RailSectionProps) {
   return (
     <div
-      className={
-        '"box-border flex flex-col items-stretch gap-null pt-2 border-t"'
-      }
+      className="box-border flex flex-col items-stretch gap-[6px] border-t pt-2"
       style={{ borderTopColor: NEUTRAL_BORDER }}
     >
       {children}
     </div>
+  );
+}
+
+function RailButton({
+  height,
+  borderRadius,
+  flex,
+  width,
+  paddingHorizontal,
+  className,
+  style,
+  ...props
+}: {
+  height?: number;
+  borderRadius?: number;
+  flex?: number;
+  width?: string | number;
+  paddingHorizontal?: number;
+  className?: string;
+  style?: React.CSSProperties;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      className={cx(
+        'box-border flex select-none cursor-pointer items-center justify-center transition-colors duration-150',
+        className,
+      )}
+      style={{
+        height,
+        borderRadius,
+        flex,
+        width,
+        paddingLeft: paddingHorizontal,
+        paddingRight: paddingHorizontal,
+        ...style,
+      }}
+      type="button"
+      {...props}
+    />
   );
 }
 
@@ -116,65 +149,54 @@ export function HandRail({
 
   return (
     <div
-      className={
-        '"box-border flex flex-col items-stretch w-[144px] gap-2 px-2 rounded-[16px] border bg-[rgba(8,_12,_20,_0.7)] shrink-0"'
-      }
+      className="box-border flex w-[144px] shrink-0 flex-col items-stretch gap-2 rounded-[16px] border bg-[rgba(8,12,20,0.7)] px-2 py-[10px]"
       style={{ borderColor: NEUTRAL_BORDER }}
       data-testid="hand-rail"
     >
       {/* Stats header */}
       <div className="box-border flex flex-row items-stretch gap-2">
         <div
-          className={
-            '"box-border flex flex-col flex-1 items-center py-8 px-6 rounded-[10px] border"'
-          }
+          className="box-border flex flex-1 flex-col items-center rounded-[10px] border px-[6px] py-[8px]"
           style={{ backgroundColor: NEUTRAL_BG, borderColor: NEUTRAL_BORDER }}
           data-testid="hand-rail-count"
         >
-          <div className="box-border flex flex-row items-center gap-6">
+          <div className="box-border flex flex-row items-center gap-[6px]">
             <CardsIcon size={16} />
             <span className="box-border text-[18px] font-extrabold tracking-[0.5px]">
               {handCount}
             </span>
           </div>
-          <span className="box-border text-[40px] font-bold tracking-[1px] uppercase opacity-[0.55] -mt-2">
+          <span className="box-border mt-[2px] text-[40px] font-bold uppercase tracking-[1px] opacity-[0.55]">
             {t('games.table.state.cards')}
           </span>
         </div>
         <div
-          className={
-            '"box-border flex flex-col flex-1 items-center py-8 px-6 rounded-[10px] border"'
-          }
+          className="box-border flex flex-1 flex-col items-center rounded-[10px] border px-[6px] py-[8px]"
           style={{
             backgroundColor: defuseVariant.bg,
             borderColor: defuseVariant.border,
           }}
           data-testid="hand-rail-defuses"
         >
-          <div className="box-border flex flex-row items-center gap-6">
-            <span
-              className={'"box-border"'}
-              style={{ color: defuseVariant.color }}
-            >
+          <div className="box-border flex flex-row items-center gap-[6px]">
+            <span className="box-border" style={{ color: defuseVariant.color }}>
               <ShieldIcon size={16} />
             </span>
             <span
-              className={
-                '"box-border text-[18px] font-extrabold tracking-[0.5px]"'
-              }
+              className="box-border text-[18px] font-extrabold tracking-[0.5px]"
               style={{ color: defuseVariant.color }}
             >
               {defuseCount}
             </span>
           </div>
-          <span className="box-border text-[40px] font-bold tracking-[1px] uppercase opacity-[0.55] -mt-2">
+          <span className="box-border mt-[2px] text-[40px] font-bold uppercase tracking-[1px] opacity-[0.55]">
             {t('games.table.state.defuses')}
           </span>
         </div>
       </div>
 
       {/* Primary actions */}
-      <div className="box-border flex flex-col items-stretch gap-null">
+      <div className="box-border flex flex-col items-stretch gap-[6px]">
         {/* Native tooltip carries the full combo label so the user can
             hover-confirm what 'Play 3× Targeted…' truncates to. The
             arena's ComboCard is the canonical surface for the verbose
@@ -182,69 +204,55 @@ export function HandRail({
             only place we can attach `title` since tamagui's Button
             doesn't forward HTML title through. */}
         <div title={combo.label}>
-          <Button
+          <RailButton
+            className={`h-[48px] w-full rounded-[12px] px-6 ${cx(
+              canPlay
+                ? 'bg-[#34d399] hover:bg-[#22c55e] active:scale-[0.98]'
+                : 'bg-[rgba(255,255,255,0.07)]',
+            )}`}
             data-testid="hand-rail-play"
             data-combo-kind={combo.kind}
-            size="$3"
-            height={48}
-            width="100%"
-            borderRadius={12}
-            paddingHorizontal={6}
             disabled={!canPlay}
-            opacity={canPlay ? 1 : 0.45}
-            backgroundColor={canPlay ? ACCENT : NEUTRAL_BG}
-            hoverStyle={canPlay ? { backgroundColor: '#22c55e' } : undefined}
-            pressStyle={canPlay ? { scale: 0.98 } : undefined}
-            onPress={canPlay ? onPlay : undefined}
+            onClick={canPlay ? onPlay : undefined}
           >
             <span
-              className={
-                '"box-border text-[12px] font-black tracking-[0.3px] uppercase line-clamp-2 text-center"'
-              }
-              style={{ color: canPlay ? '#062317' : 'rgba(255,255,255,0.5)' }}
+              className={cx(
+                'box-border text-center text-[12px] font-black uppercase tracking-[0.3px] line-clamp-2',
+                canPlay ? 'text-[#062317]' : 'text-[rgba(255,255,255,0.5)]',
+              )}
             >
               {combo.label}
             </span>
-          </Button>
+          </RailButton>
         </div>
-        <Button
+        <RailButton
+          className={`h-[36px] rounded-[10px] ${cx(
+            'border border-[rgba(255,255,255,0.10)]',
+            canDraw
+              ? 'bg-[rgba(255,255,255,0.07)] hover:bg-[rgba(255,255,255,0.12)] active:scale-[0.98]'
+              : '',
+          )}`}
           data-testid="hand-rail-draw"
-          size="$2"
-          height={36}
-          borderRadius={10}
           disabled={!canDraw}
-          opacity={canDraw ? 1 : 0.45}
-          backgroundColor={NEUTRAL_BG}
-          borderWidth={1}
-          borderColor={NEUTRAL_BORDER}
-          hoverStyle={
-            canDraw ? { backgroundColor: NEUTRAL_BG_HOVER } : undefined
-          }
-          pressStyle={canDraw ? { scale: 0.98 } : undefined}
-          onPress={canDraw ? onDraw : undefined}
+          onClick={canDraw ? onDraw : undefined}
         >
-          <span className="box-border text-[11px] font-extrabold tracking-[0.3px] uppercase">
+          <span className="box-border text-[11px] font-extrabold uppercase tracking-[0.3px]">
             ↓ {t('games.table.actions.draw')}
           </span>
-        </Button>
+        </RailButton>
         {canNope && (
-          <Button
+          <RailButton
+            className="h-[36px] rounded-[10px]"
             data-testid="hand-rail-nope"
-            size="$2"
-            height={36}
-            borderRadius={10}
-            backgroundColor={NOPE_COLOR}
-            hoverStyle={{ backgroundColor: '#fbbf24' }}
-            pressStyle={{ scale: 0.98 }}
-            onPress={onNope}
+            onClick={onNope}
           >
-            <div className="box-border flex flex-row gap-null items-center">
+            <div className="box-border flex flex-row items-center gap-[6px]">
               <HandIcon size={14} />
-              <span className="box-border text-[11px] font-black tracking-[0.3px] uppercase text-[#1c0f00]">
+              <span className="box-border text-[11px] font-black uppercase tracking-[0.3px] text-[#1c0f00]">
                 {t('games.table.actions.playNope')}
               </span>
             </div>
-          </Button>
+          </RailButton>
         )}
       </div>
 
@@ -253,78 +261,58 @@ export function HandRail({
       {hasCardToggles && (
         <RailSection>
           <div
-            className="box-border flex flex-row items-stretch gap-null"
+            className="box-border flex flex-row items-stretch gap-[6px]"
             data-testid="hand-rail-card-toggles"
           >
             {onToggleCardName && (
-              <Button
+              <RailButton
+                className={`h-[32px] flex-1 px-4 rounded-[8px] ${cx(
+                  'border',
+                  showCardName
+                    ? 'border-[rgba(52,211,153,0.65)] bg-[rgba(52,211,153,0.18)] hover:bg-[rgba(52,211,153,0.28)]'
+                    : 'border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.07)] hover:bg-[rgba(255,255,255,0.12)]',
+                )}`}
                 data-testid="hand-rail-toggle-name"
-                size="$2"
-                height={32}
-                flex={1}
-                paddingHorizontal={4}
-                borderRadius={8}
-                backgroundColor={showCardName ? ACCENT_TINT_BG : NEUTRAL_BG}
-                borderWidth={1}
-                borderColor={showCardName ? ACCENT_TINT_BORDER : NEUTRAL_BORDER}
-                hoverStyle={{
-                  backgroundColor: showCardName
-                    ? 'rgba(52,211,153,0.28)'
-                    : NEUTRAL_BG_HOVER,
-                }}
-                onPress={onToggleCardName}
+                onClick={onToggleCardName}
                 aria-pressed={!!showCardName}
                 aria-label={t('games.table.hud.cards.toggleName')}
               >
                 <span
-                  className={
-                    '"box-border text-[11px] font-extrabold tracking-[0.3px]"'
-                  }
-                  style={{
-                    color: showCardName ? ACCENT : 'rgba(255,255,255,0.7)',
-                  }}
+                  className={cx(
+                    'box-border text-[11px] font-extrabold tracking-[0.3px]',
+                    showCardName
+                      ? 'text-[#34d399]'
+                      : 'text-[rgba(255,255,255,0.7)]',
+                  )}
                 >
                   Aa {showCardName ? '✓' : '○'}
                 </span>
-              </Button>
+              </RailButton>
             )}
             {onToggleCardDescription && (
-              <Button
+              <RailButton
+                className={`h-[32px] flex-1 px-4 rounded-[8px] ${cx(
+                  'border',
+                  showCardDescription
+                    ? 'border-[rgba(52,211,153,0.65)] bg-[rgba(52,211,153,0.18)] hover:bg-[rgba(52,211,153,0.28)]'
+                    : 'border-[rgba(255,255,255,0.10)] bg-[rgba(255,255,255,0.07)] hover:bg-[rgba(255,255,255,0.12)]',
+                )}`}
                 data-testid="hand-rail-toggle-description"
-                size="$2"
-                height={32}
-                flex={1}
-                paddingHorizontal={4}
-                borderRadius={8}
-                backgroundColor={
-                  showCardDescription ? ACCENT_TINT_BG : NEUTRAL_BG
-                }
-                borderWidth={1}
-                borderColor={
-                  showCardDescription ? ACCENT_TINT_BORDER : NEUTRAL_BORDER
-                }
-                hoverStyle={{
-                  backgroundColor: showCardDescription
-                    ? 'rgba(52,211,153,0.28)'
-                    : NEUTRAL_BG_HOVER,
-                }}
-                onPress={onToggleCardDescription}
+                onClick={onToggleCardDescription}
                 aria-pressed={!!showCardDescription}
                 aria-label={t('games.table.hud.cards.toggleDescription')}
               >
                 <span
-                  className={
-                    '"box-border text-[11px] font-extrabold tracking-[0.3px]"'
-                  }
-                  style={{
-                    color: showCardDescription
-                      ? ACCENT
-                      : 'rgba(255,255,255,0.7)',
-                  }}
+                  className={cx(
+                    'box-border text-[11px] font-extrabold tracking-[0.3px]',
+                    showCardDescription
+                      ? 'text-[#34d399]'
+                      : 'text-[rgba(255,255,255,0.7)]',
+                  )}
                 >
                   ¶ {showCardDescription ? '✓' : '○'}
                 </span>
-              </Button>
+              </RailButton>
             )}
           </div>
         </RailSection>
@@ -334,42 +322,28 @@ export function HandRail({
       {hasChrome && (
         <RailSection>
           <div
-            className="box-border flex flex-row items-stretch gap-null"
+            className="box-border flex flex-row items-stretch gap-[6px]"
             data-testid="hand-rail-menu"
           >
             {onOpenRules && (
-              <Button
+              <RailButton
+                className="h-[40px] flex-1 rounded-[8px]"
                 data-testid="hand-rail-rules"
-                size="$3"
-                height={40}
-                flex={1}
-                borderRadius={8}
-                backgroundColor={NEUTRAL_BG}
-                borderWidth={1}
-                borderColor={NEUTRAL_BORDER}
-                hoverStyle={{ backgroundColor: NEUTRAL_BG_HOVER }}
-                onPress={onOpenRules}
+                onClick={onOpenRules}
               >
                 <div className="box-border flex flex-col items-center gap-2">
                   <BookOpenIcon size={16} />
-                  <span className="box-border text-[40px] font-extrabold tracking-[0.6px] uppercase opacity-[0.85] line-clamp-1">
+                  <span className="box-border text-[40px] font-extrabold uppercase tracking-[0.6px] opacity-[0.85] line-clamp-1">
                     {t('games.table.controlPanel.rules')}
                   </span>
                 </div>
-              </Button>
+              </RailButton>
             )}
             {onToggleFullscreen && (
-              <Button
+              <RailButton
+                className="h-[40px] flex-1 rounded-[8px]"
                 data-testid="hand-rail-fullscreen"
-                size="$3"
-                height={40}
-                flex={1}
-                borderRadius={8}
-                backgroundColor={NEUTRAL_BG}
-                borderWidth={1}
-                borderColor={NEUTRAL_BORDER}
-                hoverStyle={{ backgroundColor: NEUTRAL_BG_HOVER }}
-                onPress={onToggleFullscreen}
+                onClick={onToggleFullscreen}
                 aria-label={t(
                   isFullscreen
                     ? 'games.table.controlPanel.exitFullscreen'
@@ -388,11 +362,11 @@ export function HandRail({
                       Maximize/Minimize icon already signals the state;
                       the full action label lives in the aria-label
                       above for assistive tech. */}
-                  <span className="box-border text-[40px] font-extrabold tracking-[0.6px] uppercase opacity-[0.85] line-clamp-1">
+                  <span className="box-border text-[40px] font-extrabold uppercase tracking-[0.6px] opacity-[0.85] line-clamp-1">
                     {t('games.table.controlPanel.fullscreen')}
                   </span>
                 </div>
-              </Button>
+              </RailButton>
             )}
           </div>
         </RailSection>

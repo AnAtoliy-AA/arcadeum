@@ -67,9 +67,7 @@ function ClockFace({
 
   return (
     <div
-      className={
-        '"box-border flex flex-row gap-2 items-center p-2 px-3 rounded-[8px]"'
-      }
+      className="box-border flex flex-row gap-2 items-center p-2 px-3 rounded-[8px]"
       style={{
         backgroundColor: isActive
           ? 'rgba(37, 99, 235, 0.15)'
@@ -83,7 +81,7 @@ function ClockFace({
         {label}
       </span>
       <span
-        className={'"box-border text-[18px] font-bold"'}
+        className="box-border text-[18px] font-bold"
         style={{
           color: isFlagged
             ? '#ef4444'

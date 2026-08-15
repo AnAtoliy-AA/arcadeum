@@ -14,9 +14,7 @@ export default function AuthPageContent() {
 
   return (
     <div
-      className={
-        '"box-border flex flex-row items-stretch w-full relative overflow-hidden"'
-      }
+      className="box-border flex flex-row items-stretch w-full relative overflow-hidden"
       style={{ minHeight: '100vh' }}
       data-testid="auth-page-root"
     >

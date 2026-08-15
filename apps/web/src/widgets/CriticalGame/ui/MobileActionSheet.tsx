@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { YStack, styled } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useScenePalette } from './ScenePaletteContext';
 
@@ -17,22 +16,17 @@ export interface MobileActionSheetProps {
   cancelLabel?: string;
 }
 
-const Sheet = styled(YStack, {
-  name: 'MobileActionSheet',
-  position: 'fixed' as unknown as 'absolute',
-  left: 0,
-  right: 0,
-  bottom: 0,
-  padding: '$4',
-  gap: '$3',
-  borderTopLeftRadius: 24,
-  borderTopRightRadius: 24,
-  backgroundColor: 'rgba(15, 23, 42, 0.95)',
-  backdropFilter: 'blur(16px)',
-  borderTopWidth: 1,
-  borderColor: 'rgba(255, 255, 255, 0.14)',
-  zIndex: 200,
-});
+function Sheet({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`box-border flex flex-col items-stretch fixed left-0 right-0 bottom-0 gap-3 rounded-t-[24px] border-t border-[rgba(255,255,255,0.14)] bg-[rgba(15,23,42,0.95)] p-4 backdrop-blur-[16px] z-[200] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
 export function MobileActionSheet({
   isOpen,

@@ -1,45 +1,59 @@
-import { styled, YStack, XStack, H2 } from 'tamagui';
-import { Button, GameVariant } from '@arcadeum/ui';
-import { Card, ActionButton, ActionButtonProps } from './cards';
+import type { CSSProperties, HTMLAttributes } from 'react';
+
+import { cx } from '@arcadeum/ui/utils/cx';
+import { Button, type GameVariant } from '@arcadeum/ui';
+import { Card as BaseCard } from './cards-base';
+import { ActionButton, type ActionButtonProps } from './cards';
 import { getVariantStyles } from './variants';
+import { resolveVariantStyles } from './variant-styles';
+
+type VariantProp = { $variant?: string };
 
 // Hand Components
-export const HandHeader = styled(XStack, {
-  name: 'HandHeader',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '$4',
-  flexWrap: 'wrap',
-  gap: '$2',
+export function HandHeader({
+  className,
+  ...props
+}: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch justify-between items-center mb-4 flex-wrap gap-2',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
+export function HandTitle({
+  className,
+  ...props
+}: { className?: string } & VariantProp & HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cx(
+        'box-border mr-auto text-[14px] font-extrabold text-[var(--color)] uppercase tracking-[1px]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const HandTitle = styled(H2, {
-  name: 'HandTitle',
-  marginRight: 'auto',
-  fontSize: 14,
-  fontWeight: '800',
-  color: '$color',
-  textTransform: 'uppercase',
-  letterSpacing: 1,
-
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
-
-export const HandControls = styled(XStack, {
-  name: 'HandControls',
-  flexWrap: 'wrap',
-  gap: '$2',
-
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
+export function HandControls({
+  className,
+  ...props
+}: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch flex-wrap gap-2',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export const HandToggleButton = (props: ActionButtonProps) => (
   <ActionButton
@@ -48,14 +62,20 @@ export const HandToggleButton = (props: ActionButtonProps) => (
   />
 );
 
-export const DropdownContainer = styled(YStack, {
-  name: 'DropdownContainer',
-  position: 'relative',
-
-  variants: {
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
+export function DropdownContainer({
+  className,
+  ...props
+}: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch relative',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export const DropdownTrigger = ({
   variant,
@@ -69,7 +89,7 @@ export const DropdownTrigger = ({
   [key: string]: unknown;
 }) => (
   <Button
-    className={'min-w-[120px] justify-start'}
+    className="min-w-[120px] justify-start"
     variant="chip"
     size="sm"
     active={isOpen || $isOpen}
@@ -78,33 +98,31 @@ export const DropdownTrigger = ({
   />
 );
 
-export const DropdownList = styled(YStack, {
-  name: 'DropdownList',
-  position: 'absolute',
-  top: '100%',
-  marginTop: 4,
-  right: 0,
-  zIndex: 100,
-  minWidth: '100%',
-  borderRadius: 8,
-  overflow: 'hidden',
-  backgroundColor: '#1e293b',
-  borderWidth: 1,
-  borderColor: 'rgba(255, 255, 255, 0.1)',
-  elevation: 10,
-
-  variants: {
-    $variant: (val: string) => {
-      // Re-using tableInfo or chat variants for dropdown list as they are similar
-      const config = getVariantStyles(val).chat;
-      return {
+export function DropdownList({
+  className,
+  style,
+  $variant,
+  ...props
+}: { className?: string; style?: CSSProperties } & VariantProp &
+  HTMLAttributes<HTMLDivElement>) {
+  // Re-using tableInfo or chat variants for dropdown list as they are similar
+  const config = getVariantStyles($variant).chat;
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch absolute top-full right-0 mt-1 z-[100] min-w-full rounded-lg overflow-hidden border border-[rgba(255,255,255,0.1)]',
+        className,
+      )}
+      style={{
         backgroundColor: config.getBackground(),
         borderColor: config.getBorder() || 'rgba(255, 255, 255, 0.1)',
-        shadowColor: config.getShadow(),
-      };
-    },
-  } as const,
-});
+        boxShadow: `0 5px 10px rgba(0, 0, 0, 0.3), ${config.getShadow()}`,
+        ...style,
+      }}
+      {...props}
+    />
+  );
+}
 
 export const DropdownItem = ({
   isActive,
@@ -133,49 +151,50 @@ export const HAND_CARD_SELECTED_SHADOW =
   '0 2px 4px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.4), 0 0 24px rgba(250, 204, 21, 0.4)';
 export const HAND_CARD_SELECTED_BORDER_COLOR = 'rgba(250, 204, 21, 1)';
 
-export const HandCard = styled(Card, {
-  name: 'HandCard',
-  flexShrink: 0,
-  // Size is now controlled via $size variant (set per-card by PlayerHand based
-  // on useMedia().sm). Default width kept for any legacy callers.
-  width: 110,
-  variants: {
-    $clickable: {
-      true: { cursor: 'pointer', opacity: 1 },
-      false: { cursor: 'default' },
-    },
-    $dimmed: {
-      true: { opacity: 0.7 },
-    },
-    $size: {
-      desktopFan: {
-        width: 82,
-        height: 114,
-        aspectRatio: undefined,
-        hoverStyle: {
-          y: -26,
-          borderColor: HAND_CARD_SELECTED_BORDER_COLOR,
-          borderWidth: 2,
-          boxShadow: HAND_CARD_SELECTED_SHADOW,
-        },
-      },
-      mobileFlat: {
-        width: 104,
-        height: 142,
-        aspectRatio: undefined,
-        pressStyle: {
-          y: -14,
-          borderColor: HAND_CARD_SELECTED_BORDER_COLOR,
-          borderWidth: 2,
-          boxShadow: HAND_CARD_SELECTED_SHADOW,
-        },
-      },
-    },
-    $variant: (val: string) => {
-      const config = getVariantStyles(val).cards;
-      return {
-        ...config.getCardStyles?.(),
-      };
-    },
-  } as const,
-});
+const HAND_CARD_HOVER_CLASS =
+  'hover:border-[rgba(250,204,21,1)] hover:border-2 hover:shadow-[0_2px_4px_rgba(0,0,0,0.3),0_8px_16px_rgba(0,0,0,0.4),0_0_24px_rgba(250,204,21,0.4)]';
+
+const HAND_CARD_SIZE_CLASS = {
+  desktopFan: cx(
+    'w-[82px] h-[114px]',
+    'hover:translate-y-[-26px]',
+    HAND_CARD_HOVER_CLASS,
+  ),
+  mobileFlat: cx(
+    'w-[104px] h-[142px]',
+    'active:translate-y-[-14px]',
+    HAND_CARD_HOVER_CLASS.replaceAll('hover:', 'active:'),
+  ),
+} as const;
+
+export function HandCard({
+  className,
+  $variant,
+  $clickable,
+  $dimmed,
+  $size,
+  ...props
+}: {
+  className?: string;
+  $clickable?: boolean;
+  $dimmed?: boolean;
+  $size?: 'desktopFan' | 'mobileFlat';
+} & VariantProp &
+  HTMLAttributes<HTMLDivElement>) {
+  const config = getVariantStyles($variant).cards;
+  const variantStyles = resolveVariantStyles(config.getCardStyles?.());
+  return (
+    <BaseCard
+      className={cx(
+        'shrink-0 w-[110px]',
+        $clickable === false ? 'cursor-default' : 'cursor-pointer opacity-[1]',
+        $dimmed ? 'opacity-[0.7]' : undefined,
+        $size ? HAND_CARD_SIZE_CLASS[$size] : undefined,
+        className,
+      )}
+      $variant={$variant}
+      style={variantStyles.style}
+      {...props}
+    />
+  );
+}

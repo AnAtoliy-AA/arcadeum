@@ -21,14 +21,14 @@ export default function AdminError({
   )?.error;
 
   return (
-    <GlassCard className="p-4" data-testid="admin-error">
-      <Typography className="font-bold" variant="label" uiSize="lg">
+    <GlassCard className={'p-4'} data-testid="admin-error">
+      <Typography className={'font-bold'} variant="label" uiSize="lg">
         {t?.title ?? 'Something went wrong'}
       </Typography>
       <Typography variant="body" uiSize="md" alpha="medium">
         {t?.body ?? 'An error occurred while loading this admin page.'}
       </Typography>
-      <Button className="mt-3" onClick={reset}>
+      <Button className={'mt-3'} onClick={reset}>
         {t?.retry ?? 'Try again'}
       </Button>
     </GlassCard>

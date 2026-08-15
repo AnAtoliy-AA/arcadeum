@@ -39,19 +39,20 @@ export function GameChatSystemRow({
   const color = SYS_COLOR[kind];
   return (
     <SysWrap
-      borderLeftColor={color}
-      backgroundColor={`color-mix(in srgb, ${color} 12%, transparent)`}
+      style={{
+        borderLeftColor: color,
+        backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)`,
+      }}
       data-testid="game-chat-system-row"
     >
-      <SysText flex={0} color={color} fontWeight="700">
+      <SysText style={{ flex: 0, color, fontWeight: 700 }}>
         {GLYPHS[kind]}
       </SysText>
       <SysText>
         {senderName ? (
           <>
             <SysText
-              color={senderColor ?? color}
-              fontWeight="700"
+              style={{ color: senderColor ?? color, fontWeight: 700 }}
               data-testid="system-row-sender"
             >
               {senderName}
@@ -60,8 +61,7 @@ export function GameChatSystemRow({
               <>
                 {' → '}
                 <SysText
-                  color={targetColor ?? color}
-                  fontWeight="700"
+                  style={{ color: targetColor ?? color, fontWeight: 700 }}
                   data-testid="system-row-target"
                 >
                   {targetName}

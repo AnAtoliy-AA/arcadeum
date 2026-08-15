@@ -104,7 +104,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             <GameTitle numberOfLines={1}>
               {headerProps.titleGradient ? (
                 <span
-                  className={'"text-gradient"'}
+                  className="text-gradient"
                   style={{
                     background: headerProps.titleGradient,
                   }}
@@ -172,7 +172,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           }}
         >
           <Container
-            className={'"game-widget-container"'}
+            className="game-widget-container"
             style={
               containerBackground
                 ? { background: containerBackground }

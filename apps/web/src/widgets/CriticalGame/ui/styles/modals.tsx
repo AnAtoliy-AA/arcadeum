@@ -1,36 +1,33 @@
 import React, { useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { styled, YStack, XStack, Text } from 'tamagui';
-import { Button, GameVariant, ModalButton, OptionButton } from '@arcadeum/ui';
+import type { HTMLAttributes } from 'react';
+
+import { cx } from '@arcadeum/ui/utils/cx';
+import {
+  Button,
+  type GameVariant,
+  ModalButton,
+  OptionButton,
+} from '@arcadeum/ui';
+import { CardsGrid, Card as BaseCard } from './cards';
+import { splitStyleProps, type LegacyStyleProps } from './shared';
 
 export { ModalButton, OptionButton };
-import { CardsGrid, Card } from './cards';
 
-const VARIANT_COLORS = {
-  cyberpunk: {
-    background: 'rgba(20, 0, 30, 0.95)',
-    primary: '#06b6d4',
-    accent: '#d946ef',
-  },
-  underwater: {
-    background: 'rgba(8, 51, 68, 0.85)',
-    primary: '#22d3ee',
-    accent: '#22d3ee',
-  },
-};
-
-const Overlay = styled(YStack, {
-  name: 'ModalOverlay',
-  position: 'fixed' as unknown as 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: 'rgba(0,0,0,0.8)',
-  zIndex: 1000,
-  justifyContent: 'center' as never,
-  alignItems: 'center' as never,
-});
+function Overlay({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.8)] z-[1000] items-center justify-center',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 interface ModalProps {
   open?: boolean;
@@ -46,7 +43,7 @@ export function Modal({ open = false, onOpenChange, children }: ModalProps) {
   if (!open) return null;
 
   const overlay = (
-    <Overlay onPress={handleOverlayClick} data-testid="modal-overlay">
+    <Overlay onClick={handleOverlayClick} data-testid="modal-overlay">
       {children}
     </Overlay>
   );
@@ -57,47 +54,52 @@ export function Modal({ open = false, onOpenChange, children }: ModalProps) {
   return overlay;
 }
 
-const StyledModalFrame = styled(YStack, {
-  name: 'ModalFrame',
-  backgroundColor: '$background',
-  borderWidth: 2,
-  borderColor: '$borderColor',
-  borderRadius: 24,
-  maxWidth: 600,
-  width: '100%',
-  maxHeight: '90%',
-  position: 'relative' as unknown as 'relative',
-  elevation: 10,
-  overflow: 'hidden',
-  zIndex: 1001,
+const MODAL_FRAME_VARIANT_CLASS = {
+  cyberpunk: 'rounded-[4px] border-[#c026d3] bg-[rgba(20,0,30,0.95)]',
+  underwater: 'border-[#22d3ee] bg-[rgba(8,51,68,0.85)]',
+  crime: 'border-[#ef4444]',
+  horror: 'border-[#7c3aed]',
+  adventure: 'border-[#10b981]',
+  'high-altitude-hike': 'border-[#06b6d4]',
+  fiver: 'border-[#f59e0b]',
+} as const;
 
-  variants: {
-    variant: {
-      cyberpunk: {
-        borderRadius: 4,
-        borderColor: '#c026d3',
-        backgroundColor: VARIANT_COLORS.cyberpunk.background,
-      },
-      underwater: {
-        borderColor: '#22d3ee',
-        backgroundColor: VARIANT_COLORS.underwater.background,
-      },
-      crime: { borderColor: '#ef4444' },
-      horror: { borderColor: '#7c3aed' },
-      adventure: { borderColor: '#10b981' },
-      'high-altitude-hike': { borderColor: '#06b6d4' },
-      fiver: { borderColor: '#f59e0b' },
-    },
-  } as const,
-});
+function ModalFrame({
+  variant,
+  className,
+  ...props
+}: {
+  variant?: GameVariant | string;
+  className?: string;
+} & HTMLAttributes<HTMLDivElement>) {
+  const key = (variant ?? '') as keyof typeof MODAL_FRAME_VARIANT_CLASS;
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch bg-[var(--background)] border-2 border-[var(--borderColor)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[1001]',
+        MODAL_FRAME_VARIANT_CLASS[key],
+        className,
+      )}
+      style={{ boxShadow: '0 5px 10px rgba(0, 0, 0, 0.3)' }}
+      {...props}
+    />
+  );
+}
 
-const StyledScrollArea = styled(YStack, {
-  name: 'ScrollArea',
-  overflowY: 'auto',
-  padding: '$6',
-  width: '100%',
-  height: '100%',
-});
+function ScrollArea({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-col items-stretch overflow-y-auto p-6 w-full h-full',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export const ModalContent = ({
   children,
@@ -116,7 +118,7 @@ export const ModalContent = ({
   [key: string]: unknown;
 }) => {
   return (
-    <StyledModalFrame
+    <ModalFrame
       variant={variant || ($variant as GameVariant)}
       onClick={(e: React.MouseEvent) => {
         e.stopPropagation();
@@ -124,49 +126,69 @@ export const ModalContent = ({
       }}
       {...props}
     >
-      <StyledScrollArea>{children}</StyledScrollArea>
-    </StyledModalFrame>
+      <ScrollArea>{children}</ScrollArea>
+    </ModalFrame>
   );
 };
 
-export const ModalHeader = styled(XStack, {
-  name: 'ModalHeader',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '$6',
-  paddingBottom: '$4',
-  borderBottomWidth: 2,
-  borderBottomColor: '$borderColor',
-  variants: {
-    $variant: {
-      cyberpunk: { borderBottomColor: VARIANT_COLORS.cyberpunk.primary },
-      underwater: { borderBottomColor: VARIANT_COLORS.underwater.primary },
-      crime: { borderBottomColor: '#ef4444' },
-      horror: { borderBottomColor: '#7c3aed' },
-      adventure: { borderBottomColor: '#10b981' },
-      'high-altitude-hike': { borderBottomColor: '#06b6d4' },
-      fiver: { borderBottomColor: '#f59e0b' },
-    },
-  } as const,
-});
+const MODAL_ACCENT_BORDER_CLASS = {
+  cyberpunk: 'border-b-[#06b6d4]',
+  underwater: 'border-b-[#22d3ee]',
+  crime: 'border-b-[#ef4444]',
+  horror: 'border-b-[#7c3aed]',
+  adventure: 'border-b-[#10b981]',
+  'high-altitude-hike': 'border-b-[#06b6d4]',
+  fiver: 'border-b-[#f59e0b]',
+} as const;
 
-export const ModalTitle = styled(Text, {
-  name: 'ModalTitle',
-  fontSize: 24,
-  fontWeight: '700',
-  color: '$color',
-  variants: {
-    $variant: {
-      cyberpunk: { color: VARIANT_COLORS.cyberpunk.primary },
-      underwater: { color: VARIANT_COLORS.underwater.primary },
-      crime: { color: '#ef4444' },
-      horror: { color: '#7c3aed' },
-      adventure: { color: '#10b981' },
-      'high-altitude-hike': { color: '#06b6d4' },
-      fiver: { color: '#f59e0b' },
-    },
-  } as const,
-});
+export function ModalHeader({
+  className,
+  $variant,
+  ...props
+}: { className?: string; $variant?: string } & HTMLAttributes<HTMLDivElement>) {
+  const key = ($variant ?? '') as keyof typeof MODAL_ACCENT_BORDER_CLASS;
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch justify-between items-center mb-6 pb-4 border-b-2 border-b-[var(--borderColor)]',
+        MODAL_ACCENT_BORDER_CLASS[key],
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+const MODAL_ACCENT_TEXT_CLASS = {
+  cyberpunk: 'text-[#06b6d4]',
+  underwater: 'text-[#22d3ee]',
+  crime: 'text-[#ef4444]',
+  horror: 'text-[#7c3aed]',
+  adventure: 'text-[#10b981]',
+  'high-altitude-hike': 'text-[#06b6d4]',
+  fiver: 'text-[#f59e0b]',
+} as const;
+
+export function ModalTitle({
+  className,
+  $variant,
+  ...props
+}: {
+  className?: string;
+  $variant?: string;
+} & HTMLAttributes<HTMLSpanElement>) {
+  const key = ($variant ?? '') as keyof typeof MODAL_ACCENT_TEXT_CLASS;
+  return (
+    <span
+      className={cx(
+        'box-border text-[24px] font-bold text-[var(--color)]',
+        MODAL_ACCENT_TEXT_CLASS[key],
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export const CloseButton = ({
   variant,
@@ -185,7 +207,7 @@ export const CloseButton = ({
   [key: string]: unknown;
 }) => (
   <Button
-    className={'hover:rotate-[90deg]'}
+    className="hover:rotate-[90deg]"
     variant="icon"
     size="sm"
     gameVariant={(variant || $variant) as GameVariant}
@@ -196,90 +218,126 @@ export const CloseButton = ({
   </Button>
 );
 
-export const ModalSection = styled(YStack, {
-  name: 'ModalSection',
-  marginBottom: '$6',
-});
+export function ModalSection({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx('box-border flex flex-col items-stretch mb-6', className)}
+      {...props}
+    />
+  );
+}
 
-export const SectionLabel = styled(Text, {
-  name: 'SectionLabel',
-  fontSize: 14,
-  fontWeight: '600',
-  textTransform: 'uppercase',
-  letterSpacing: 0.5,
-  marginBottom: '$3',
+export function SectionLabel({
+  className,
+  $variant,
+  ...props
+}: {
+  className?: string;
+  $variant?: string;
+} & HTMLAttributes<HTMLSpanElement>) {
+  const key = ($variant ?? '') as keyof typeof MODAL_ACCENT_TEXT_CLASS;
+  return (
+    <span
+      className={cx(
+        'box-border text-[14px] font-semibold uppercase tracking-[0.5px] mb-3',
+        MODAL_ACCENT_TEXT_CLASS[key],
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  variants: {
-    $variant: {
-      cyberpunk: {
-        color: VARIANT_COLORS.cyberpunk.primary,
-      },
-      underwater: {
-        color: VARIANT_COLORS.underwater.primary,
-      },
-      crime: {
-        color: '#ef4444',
-      },
-      horror: {
-        color: '#7c3aed',
-      },
-      adventure: {
-        color: '#10b981',
-      },
-      'high-altitude-hike': {
-        color: '#06b6d4',
-      },
-      fiver: {
-        color: '#f59e0b',
-      },
-    },
-  } as const,
-});
+export function OptionGrid({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch flex-wrap gap-3',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const OptionGrid = styled(XStack, {
-  name: 'OptionGrid',
-  flexWrap: 'wrap',
-  gap: '$3',
-});
+export function ModalActions({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-stretch gap-3 mt-8',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ModalActions = styled(XStack, {
-  name: 'ModalActions',
-  gap: '$3',
-  marginTop: '$8',
-});
+export function ScrollableCardsGrid({
+  className,
+  ...props
+}: { className?: string } & LegacyStyleProps & HTMLAttributes<HTMLDivElement>) {
+  const { style, domProps } = splitStyleProps(props);
+  return (
+    <CardsGrid
+      className={cx('max-h-[55vh] overflow-y-auto p-2', className)}
+      style={style}
+      {...domProps}
+    />
+  );
+}
 
-export const ScrollableCardsGrid = styled(CardsGrid, {
-  name: 'ScrollableCardsGrid',
-  maxHeight: '55vh',
-  overflowY: 'auto',
-  padding: '$2',
-});
+export function SelectableCard({
+  className,
+  selected,
+  $variant,
+  $cardType: _cardType,
+  $index: _index,
+  ...props
+}: {
+  className?: string;
+  selected?: boolean;
+  $cardType?: unknown;
+  $index?: unknown;
+} & { $variant?: string } & LegacyStyleProps &
+  HTMLAttributes<HTMLDivElement>) {
+  const { style, domProps } = splitStyleProps(props);
+  return (
+    <BaseCard
+      className={cx(
+        selected ? 'scale-[1.05] border-white border-2' : undefined,
+        className,
+      )}
+      $variant={$variant}
+      style={style}
+      {...domProps}
+    />
+  );
+}
 
-export const SelectableCard = styled(Card, {
-  name: 'SelectableCard',
-  cursor: 'pointer',
-  // transition: 'all 0.2s ease',
+export function RulesText({
+  className,
+  ...props
+}: { className?: string } & LegacyStyleProps &
+  HTMLAttributes<HTMLSpanElement>) {
+  const { style, domProps } = splitStyleProps(props);
+  return (
+    <span
+      className={cx('box-border leading-[24px] opacity-[0.9]', className)}
+      style={style}
+      {...domProps}
+    />
+  );
+}
 
-  variants: {
-    selected: {
-      true: {
-        scale: 1.05,
-        borderColor: 'white',
-        borderWidth: 2,
-      },
-    },
-  } as const,
-
-  hoverStyle: {
-    scale: 1.05,
-  },
-});
-
-export const RulesText = styled(Text, {
-  lineHeight: 24,
-  opacity: 0.9,
-});
-
-export const RulesTextPre = styled(RulesText, {
-  whiteSpace: 'pre-line',
-});
+export function RulesTextPre(props: HTMLAttributes<HTMLSpanElement>) {
+  return <RulesText className="whitespace-pre-line" {...props} />;
+}

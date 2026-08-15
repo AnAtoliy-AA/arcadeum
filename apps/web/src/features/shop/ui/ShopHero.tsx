@@ -4,7 +4,7 @@ import { useMemo, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@arcadeum/ui';
-import { styled, YStack as Stack } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
@@ -43,31 +43,42 @@ export interface ShopHeroProps {
   onBuyClick?: (item: EffectiveShopItem) => void;
 }
 
-const HeroFrame = styled(Stack, {
-  name: 'ShopHeroFrame',
-  width: '100%',
-  borderRadius: '$5',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  paddingHorizontal: '$5',
-  paddingVertical: '$5',
-  overflow: 'hidden',
-  position: 'relative',
-  flexShrink: 0,
-  $sm: { minHeight: 400 },
-});
+function HeroFrame({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border w-full px-5 py-5 rounded-3xl border border-[rgba(255,255,255,0.08)] overflow-hidden relative shrink-0 max-[800px]:min-h-[400px]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const HeroTag = styled(Stack, {
-  name: 'ShopHeroTag',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 8,
-  paddingHorizontal: 10,
-  paddingVertical: 4,
-  borderRadius: '$2',
-  borderWidth: 1,
-  alignSelf: 'flex-start',
-});
+function HeroTag({
+  backgroundColor,
+  borderColor,
+  className,
+  ...props
+}: {
+  backgroundColor?: string;
+  borderColor?: string;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center gap-2 px-[10px] py-1 rounded-lg border self-start',
+        className,
+      )}
+      style={{ backgroundColor, borderColor }}
+      {...props}
+    />
+  );
+}
 
 type HeroAction = 'buy' | 'equip' | 'unequip';
 
@@ -185,12 +196,10 @@ export function ShopHero({
       onPointerEnter={handleHoverOn}
       onPointerLeave={handleHoverOff}
     >
-      <HeroFrame className={'"animate-entrance"'} style={bgStyle}>
-        <div className="box-border flex flex-row gap-5 items-center max-[660px]:flex-column max-[660px]:items-start max-[660px]:gap-3 max-[800px]:flex-column max-[800px]:items-start max-[800px]:gap-3">
+      <HeroFrame className="animate-entrance" style={bgStyle}>
+        <div className="box-border flex flex-row gap-5 items-center max-[660px]:flex-col max-[660px]:items-start max-[660px]:gap-3 max-[800px]:flex-col max-[800px]:items-start max-[800px]:gap-3">
           <div
-            className={
-              '"box-border flex flex-col w-[140px] h-[140px] rounded-[70px] items-center justify-center bg-[rgba(255,255,255,0.04)] border-[2px] shop-featured-disc"'
-            }
+            className="box-border flex flex-col w-[140px] h-[140px] rounded-[70px] items-center justify-center bg-[rgba(255,255,255,0.04)] border-[2px] shop-featured-disc"
             style={{ borderColor: `${accent}66` }}
           >
             <ItemAsset item={item} size={108} priority />
@@ -202,8 +211,14 @@ export function ShopHero({
                 backgroundColor={`${accent}1a`}
                 borderColor={`${accent}55`}
               >
-                <div className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl bg-[accent]" />
-                <span className="box-border text-[11px] tracking-[1.5px] uppercase font-extrabold text-[accent]">
+                <div
+                  className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
+                  style={{ backgroundColor: accent }}
+                />
+                <span
+                  className="box-border text-[11px] tracking-[1.5px] uppercase font-extrabold"
+                  style={{ color: accent }}
+                >
                   {labels.tag}
                 </span>
               </HeroTag>
@@ -213,7 +228,10 @@ export function ShopHero({
                   borderColor={`${accent}55`}
                   data-testid="shop-hero-equipped-chip"
                 >
-                  <span className="box-border text-[11px] tracking-[1.5px] uppercase font-extrabold text-[accent]">
+                  <span
+                    className="box-border text-[11px] tracking-[1.5px] uppercase font-extrabold"
+                    style={{ color: accent }}
+                  >
                     {labels.equipped}
                   </span>
                 </HeroTag>
@@ -222,9 +240,7 @@ export function ShopHero({
 
             <div className="box-border flex flex-col items-stretch gap-1">
               <span
-                className={
-                  '"box-border text-[48px] font-black tracking-[-1px] text-[#f5f7ff]"'
-                }
+                className="box-border text-[48px] font-black tracking-[-1px] text-[#f5f7ff]"
                 style={{
                   backgroundImage: `linear-gradient(135deg, ${accent}, #ffffff)`,
                   WebkitBackgroundClip: 'text',
@@ -256,8 +272,8 @@ export function ShopHero({
                 size="sm"
               >
                 <span
-                  className={'"box-border text-[16px] font-extrabold"'}
-                  style={{ color: action === 'buy' ? '#0a0a0a' : '$white' }}
+                  className="box-border text-[16px] font-extrabold"
+                  style={{ color: action === 'buy' ? '#0a0a0a' : '#f5f7ff' }}
                 >
                   {actionLabel}
                 </span>

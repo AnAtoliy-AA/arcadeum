@@ -42,9 +42,7 @@ export function AuthFormPanel({
         data-testid="auth-magic-link-success"
       >
         <div
-          className={
-            '"box-border flex flex-col w-[64px] h-[64px] rounded-[999px] items-center justify-center -mb-1 border"'
-          }
+          className="box-border flex flex-col w-[64px] h-[64px] rounded-[999px] items-center justify-center -mb-1 border"
           style={{
             color: 'var(--accent, #38bdf8)',
             background:

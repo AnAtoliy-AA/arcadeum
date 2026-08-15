@@ -53,7 +53,7 @@ function VersionCard({
           <div className="box-border flex flex-row gap-3 items-center flex-1">
             <div className="box-border px-3 rounded-[9999px] bg-[rgba(99,102,241,0.15)] border border-[rgba(99,102,241,0.3)]">
               <Typography
-                className="font-bold text-[#6366f1]"
+                className={'font-bold text-[#6366f1]'}
                 variant="label"
                 uiSize="sm"
               >
@@ -68,7 +68,7 @@ function VersionCard({
             {isReleased && (
               <div className="box-border px-2 py-1 rounded-[9999px] bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)]">
                 <Typography
-                  className="font-bold text-[#22c55e]"
+                  className={'font-bold text-[#22c55e]'}
                   variant="label"
                   uiSize="xs"
                 >
@@ -85,7 +85,7 @@ function VersionCard({
             </div>
             <div className="box-border w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
               <Typography
-                className="font-bold"
+                className={'font-bold'}
                 variant="body"
                 uiSize="sm"
                 alpha="medium"
@@ -115,7 +115,7 @@ function VersionCard({
                     }}
                   />
                   <Typography
-                    className="font-bold"
+                    className={'font-bold'}
                     style={{ color: SECTION_COLORS[section.type] || '#6b7280' }}
                     variant="label"
                     uiSize="sm"
@@ -142,7 +142,7 @@ function VersionCard({
                         }}
                       />
                       <Typography
-                        className="flex-1"
+                        className={'flex-1'}
                         variant="body"
                         uiSize="sm"
                         alpha="high"
@@ -202,7 +202,7 @@ export default function ChangelogView({
             }}
           >
             <Typography
-              className="font-extrabold"
+              className={'font-extrabold'}
               variant="heading"
               uiSize="3xl"
               gradient="primary"
@@ -210,7 +210,7 @@ export default function ChangelogView({
               Changelog
             </Typography>
             <Typography
-              className="max-w-[500px]"
+              className={'max-w-[500px]'}
               variant="body"
               uiSize="md"
               alpha="medium"
@@ -250,7 +250,7 @@ export default function ChangelogView({
                 onClick={() => setShowAll(true)}
               >
                 <Typography
-                  className="text-[#6366f1] font-semibold"
+                  className={'text-[#6366f1] font-semibold'}
                   variant="label"
                   uiSize="sm"
                 >

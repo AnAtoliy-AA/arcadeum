@@ -55,7 +55,7 @@ export default function PaymentCancelPageContent() {
     <>
       <style>{cancelStyles}</style>
       <PageLayout>
-        <Container className="cancel-container" size="sm">
+        <Container className={'cancel-container'} size="sm">
           <div className="cancel-icon-wrapper">✕</div>
 
           <div>

@@ -115,7 +115,7 @@ export function UsersTable({
 
   if (!isLoading && items.length === 0) {
     return (
-      <GlassCard className="p-5 items-center" data-testid="users-table-empty">
+      <GlassCard className={'p-5 items-center'} data-testid="users-table-empty">
         <span className="box-border opacity-[0.7]">
           {hasFilter ? labels.empty.noResults : labels.empty.noUsers}
         </span>
@@ -144,7 +144,7 @@ export function UsersTable({
         </span>
       </div>
 
-      <GlassCard className="p-0 overflow-hidden">
+      <GlassCard className={'p-0 overflow-hidden'}>
         <div
           className="box-border flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
           data-testid="users-table-header"

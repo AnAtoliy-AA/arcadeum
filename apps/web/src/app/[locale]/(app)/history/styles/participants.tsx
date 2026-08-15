@@ -1,33 +1,48 @@
-import { styled, XStack } from 'tamagui';
+import type React from 'react';
+import { type ReactNode, type ComponentProps } from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { Typography } from '@arcadeum/ui';
-import type { ComponentProps } from 'react';
 
-export const ParticipantRow = styled(XStack, {
-  name: 'ParticipantRow',
-  jc: 'space-between',
-  ai: 'center',
-  padding: '$4',
-  paddingHorizontal: '$5',
-  borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: '$background',
-  hoverStyle: {
-    borderColor: '$primary',
-    backgroundColor: '$backgroundStrong',
-  },
-} as Record<string, unknown>);
+export function ParticipantRow({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center justify-between px-5 py-4 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] transition-colors hover:border-[var(--primary)] hover:bg-[var(--backgroundStrong, rgba(255,255,255,0.03))]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ParticipantInfo = styled(XStack, {
-  ai: 'center',
-  gap: '$3',
-  flex: 1,
-});
+export function ParticipantInfo({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'box-border flex flex-row items-center gap-3 flex-1',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const ParticipantName = styled(Typography, {
-  weight: '500',
-  flex: 1,
-} as Record<string, unknown>);
+export function ParticipantName({
+  children,
+  ...props
+}: { children?: ReactNode } & ComponentProps<typeof Typography>) {
+  return (
+    <Typography className={'flex-1'} weight="500" {...props}>
+      {children}
+    </Typography>
+  );
+}
 
 // Native checkbox — appearance:none + pseudo-selectors cannot be expressed in Tamagui.
 // Styles injected via a <style> block rendered alongside the component.

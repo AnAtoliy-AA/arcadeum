@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, Text, styled } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   Modal,
   ModalContent,
@@ -25,83 +25,6 @@ interface RematchInvitationModalProps {
   t: (key: string) => string;
   cardVariant?: string;
 }
-
-const ModalDescription = styled(Text, {
-  name: 'ModalDescription',
-  fontSize: '$4',
-  marginBottom: '$6',
-  opacity: 0.8,
-});
-
-const MessageBlock = styled(YStack, {
-  name: 'MessageBlock',
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  borderRadius: '$4',
-  padding: '$4',
-  marginBottom: '$6',
-});
-
-const MessageLabel = styled(Text, {
-  name: 'MessageLabel',
-  fontSize: '$2',
-  opacity: 0.6,
-  marginBottom: '$1',
-  textTransform: 'uppercase',
-  letterSpacing: 1,
-});
-
-const MessageText = styled(Text, {
-  name: 'MessageText',
-  fontSize: '$4',
-  whiteSpace: 'pre-wrap',
-  fontStyle: 'italic',
-});
-
-const TimerContainer = styled(YStack, {
-  name: 'TimerContainer',
-  marginBottom: '$8',
-  alignItems: 'center',
-  gap: '$1',
-});
-
-const TimerValue = styled(Text, {
-  name: 'TimerValue',
-  fontSize: '$9',
-  fontWeight: '700',
-
-  variants: {
-    low: {
-      true: { color: '#ef4444' },
-      false: { color: '#6366f1' },
-    },
-  } as const,
-});
-
-const TimerLabel = styled(Text, {
-  name: 'TimerLabel',
-  fontSize: '$3',
-  opacity: 0.6,
-});
-
-const BlockOptions = styled(YStack, {
-  name: 'BlockOptions',
-  alignItems: 'center',
-  gap: '$1',
-  marginTop: '$4',
-});
-
-const BlockLink = styled(Text, {
-  name: 'BlockLink',
-  marginTop: '$4',
-  padding: '$2',
-  textDecorationLine: 'underline',
-  cursor: 'pointer',
-  fontSize: '$3',
-
-  hoverStyle: {
-    color: '#ef4444',
-  },
-});
 
 export default function RematchInvitationModal({
   isOpen,
@@ -129,21 +52,34 @@ export default function RematchInvitationModal({
         <ModalTitle $variant={cardVariant as GameVariant}>
           {t('games.table.rematch.invitationTitle')}
         </ModalTitle>
-        <ModalDescription>
+        <div className="box-border mb-6 text-[18px] opacity-[0.8]">
           {hostName} {t('games.table.rematch.invitationDescription')}
-        </ModalDescription>
+        </div>
 
         {message && (
-          <MessageBlock>
-            <MessageLabel>{t('games.table.rematch.message')}:</MessageLabel>
-            <MessageText>{message}</MessageText>
-          </MessageBlock>
+          <div className="box-border mb-6 rounded-2xl bg-[rgba(255,255,255,0.05)] p-4">
+            <div className="box-border mb-1 text-[14px] uppercase tracking-[1px] opacity-[0.6]">
+              {t('games.table.rematch.message')}:
+            </div>
+            <div className="box-border text-[18px] italic whitespace-pre-wrap">
+              {message}
+            </div>
+          </div>
         )}
 
-        <TimerContainer>
-          <TimerValue low={timeLeft <= 10}>{timeLeft}s</TimerValue>
-          <TimerLabel>{t('games.table.rematch.toDecide')}</TimerLabel>
-        </TimerContainer>
+        <div className="box-border mb-8 flex flex-col items-center gap-1">
+          <span
+            className={cx(
+              'box-border text-[40px] font-bold',
+              timeLeft <= 10 ? 'text-[#ef4444]' : 'text-[#6366f1]',
+            )}
+          >
+            {timeLeft}s
+          </span>
+          <span className="box-border text-[16px] opacity-[0.6]">
+            {t('games.table.rematch.toDecide')}
+          </span>
+        </div>
 
         <ModalActions>
           <ModalButton
@@ -160,25 +96,32 @@ export default function RematchInvitationModal({
           </ModalButton>
         </ModalActions>
 
-        <BlockOptions>
+        <div className="box-border mt-4 flex flex-col items-center gap-1">
           {onBlockRematch && roomId && (
-            <BlockLink
+            <button
+              type="button"
+              className="box-border mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
               onClick={() => onBlockRematch(roomId)}
               disabled={accepting}
             >
               <span className="box-border underline">
                 {t('games.table.rematch.blockThisRematch')}
               </span>
-            </BlockLink>
+            </button>
           )}
           {onBlockUser && hostId && (
-            <BlockLink onClick={() => onBlockUser(hostId)} disabled={accepting}>
+            <button
+              type="button"
+              className="box-border mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
+              onClick={() => onBlockUser(hostId)}
+              disabled={accepting}
+            >
               <span className="box-border underline">
                 {t('games.table.rematch.blockInvitations')}
               </span>
-            </BlockLink>
+            </button>
           )}
-        </BlockOptions>
+        </div>
       </ModalContent>
     </Modal>
   );

@@ -7,9 +7,6 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 
 import { HandRail } from './HandRail';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
 function renderRail(
   props: Partial<React.ComponentProps<typeof HandRail>> = {},
 ) {
@@ -26,11 +23,7 @@ function renderRail(
     ...props,
   };
   return {
-    ...render(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <HandRail {...merged} />
-      </TamaguiProvider>,
-    ),
+    ...render(<HandRail {...merged} />),
     props: merged,
   };
 }
@@ -121,21 +114,19 @@ describe('HandRail', () => {
       'games.table.controlPanel.enterFullscreen',
     );
     rerender(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <HandRail
-          handCount={5}
-          defuseCount={1}
-          combo={{ kind: 'none', label: 'Select cards' }}
-          canPlay={false}
-          canDraw={true}
-          canNope={false}
-          onPlay={vi.fn()}
-          onDraw={vi.fn()}
-          onNope={vi.fn()}
-          onToggleFullscreen={vi.fn()}
-          isFullscreen={true}
-        />
-      </TamaguiProvider>,
+      <HandRail
+        handCount={5}
+        defuseCount={1}
+        combo={{ kind: 'none', label: 'Select cards' }}
+        canPlay={false}
+        canDraw={true}
+        canNope={false}
+        onPlay={vi.fn()}
+        onDraw={vi.fn()}
+        onNope={vi.fn()}
+        onToggleFullscreen={vi.fn()}
+        isFullscreen={true}
+      />,
     );
     expect(screen.getByTestId('hand-rail-fullscreen')).toHaveAttribute(
       'aria-label',

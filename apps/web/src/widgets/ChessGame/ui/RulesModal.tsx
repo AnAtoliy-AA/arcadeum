@@ -16,10 +16,12 @@ function RulesModalImpl({ open, onClose }: RulesModalProps) {
 
   return (
     <ModalOverlay>
-      <ModalContent maxWidth={480} width="90%" maxHeight="80vh">
-        <ModalTitle fontSize={20}>{t('games.chess_v1.rules.title')}</ModalTitle>
+      <ModalContent style={{ maxWidth: 480, width: '90%', maxHeight: '80vh' }}>
+        <ModalTitle className="text-[20px]">
+          {t('games.chess_v1.rules.title')}
+        </ModalTitle>
 
-        <div className="box-border flex flex-col items-stretch gap-null w-full">
+        <div className="box-border flex flex-col items-stretch gap-2 w-full">
           <div className="box-border flex flex-col items-stretch gap-2">
             <span className="box-border text-[15px] font-semibold text-[#f8fafc]">
               {t('games.chess_v1.rules.objective')}
@@ -102,7 +104,7 @@ function RulesModalImpl({ open, onClose }: RulesModalProps) {
           </div>
         </div>
 
-        <ModalButton onPress={onClose} marginTop={4}>
+        <ModalButton onClick={onClose} className="mt-1">
           {t('games.chess_v1.rules.gotIt')}
         </ModalButton>
       </ModalContent>

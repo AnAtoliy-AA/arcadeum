@@ -160,7 +160,7 @@ export function OpponentTile({
   // is the only press target.
   return (
     <div
-      className={'"box-border flex flex-col items-stretch relative shrink-0"'}
+      className="box-border flex flex-col items-stretch relative shrink-0"
       style={{ flex: isDuel ? 0 : 1 }}
     >
       {latestMessage && (
@@ -210,9 +210,7 @@ export function OpponentTile({
             clean circle and guarantees it can't spill out of its slot (an
             unclipped, oversized disc previously overflowed the tile). */}
         <div
-          className={
-            '"box-border flex flex-col rounded-[9999px] bg-[rgba(255,255,255,0.08)] border-[2px] items-center justify-center overflow-hidden shrink-0"'
-          }
+          className="box-border flex flex-col rounded-[9999px] bg-[rgba(255,255,255,0.08)] border-[2px] items-center justify-center overflow-hidden shrink-0"
           style={{
             width: bubbleSize,
             height: bubbleSize,
@@ -232,9 +230,7 @@ export function OpponentTile({
         </div>
         <div className="box-border flex flex-row items-center gap-4 max-w-full">
           <span
-            className={
-              '"box-border text-[12px] font-bold tracking-[0.3px] line-clamp-1"'
-            }
+            className="box-border text-[12px] font-bold tracking-[0.3px] line-clamp-1"
             style={{ maxWidth: isMobile ? 80 : 100 }}
             data-testid={`player-name-${player.playerId}`}
           >
@@ -254,9 +250,7 @@ export function OpponentTile({
           </div>
         ) : (
           <span
-            className={
-              '"box-border text-[48px] font-extrabold tracking-[1px] uppercase"'
-            }
+            className="box-border text-[48px] font-extrabold tracking-[1px] uppercase"
             style={{ color: ELIMINATED_RING }}
             data-testid={`player-eliminated-label-${player.playerId}`}
           >

@@ -9,9 +9,6 @@ import {
 import CreationConfig from './CreationConfig';
 import { gamesApi } from '@/features/games/api';
 
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
-
 vi.mock('@/features/games/api', () => ({
   gamesApi: { getCatalog: vi.fn() },
 }));
@@ -25,12 +22,10 @@ beforeEach(() => {
 
 function renderConfig() {
   return render(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      <CreationConfig
-        options={{ variant: 'classic' } as never}
-        onChange={vi.fn()}
-      />
-    </TamaguiProvider>,
+    <CreationConfig
+      options={{ variant: 'classic' } as never}
+      onChange={vi.fn()}
+    />,
   );
 }
 
@@ -92,12 +87,10 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
     });
 
     render(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <CreationConfig
-          options={{ variant: 'classic' } as never}
-          onChange={onChangeSpy}
-        />
-      </TamaguiProvider>,
+      <CreationConfig
+        options={{ variant: 'classic' } as never}
+        onChange={onChangeSpy}
+      />,
     );
 
     await waitFor(() => {

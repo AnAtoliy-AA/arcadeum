@@ -239,9 +239,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // the Start button for stacking context.
   const renderThemeChip = (variant: (typeof SEA_BATTLE_VARIANTS)[number]) => (
     <div
-      className={
-        '"box-border flex flex-row items-center gap-2 px-3 py-2 rounded-[12px] border-[1.5px] cursor-pointer shrink-0"'
-      }
+      className="box-border flex flex-row items-center gap-2 px-3 py-2 rounded-[12px] border-[1.5px] cursor-pointer shrink-0"
       style={{
         borderColor:
           selectedVariant === variant.id
@@ -257,7 +255,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     >
       <span className="box-border text-[14px]">{variant.emoji}</span>
       <span
-        className={'"box-border text-[12px] font-medium"'}
+        className="box-border text-[12px] font-medium"
         style={{
           color: selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1',
         }}

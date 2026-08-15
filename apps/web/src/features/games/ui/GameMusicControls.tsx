@@ -192,11 +192,7 @@ export function TransportControls({
             background: `linear-gradient(to right, rgba(129,140,248,0.8) 0%, rgba(129,140,248,0.8) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) 100%)`,
           }}
         />
-        <Typography
-          className={
-            'game-music-time min-w-[32px] text-right text-[10px] font-medium text-[rgba(255,255,255,0.55)]'
-          }
-        >
+        <Typography className="game-music-time min-w-[32px] text-right text-[10px] font-medium text-[rgba(255,255,255,0.55)]">
           {Math.round(volume * 100)}%
         </Typography>
       </div>
@@ -450,11 +446,7 @@ export function ProgressBar({
   const pct = duration > 0 ? (smoothTime / duration) * 100 : 0;
   return (
     <div className="flex w-full items-center gap-[14px] px-1">
-      <Typography
-        className={
-          'game-music-time min-w-[32px] text-[10px] font-medium text-[rgba(255,255,255,0.55)]'
-        }
-      >
+      <Typography className="game-music-time min-w-[32px] text-[10px] font-medium text-[rgba(255,255,255,0.55)]">
         {formatTime(smoothTime)}
       </Typography>
       <input
@@ -472,11 +464,7 @@ export function ProgressBar({
           background: `linear-gradient(to right, #818cf8 ${pct}%, rgba(255,255,255,0.12) ${pct}%)`,
         }}
       />
-      <Typography
-        className={
-          'game-music-time min-w-[32px] text-right text-[10px] font-medium text-[rgba(255,255,255,0.55)]'
-        }
-      >
+      <Typography className="game-music-time min-w-[32px] text-right text-[10px] font-medium text-[rgba(255,255,255,0.55)]">
         {formatTime(duration)}
       </Typography>
     </div>

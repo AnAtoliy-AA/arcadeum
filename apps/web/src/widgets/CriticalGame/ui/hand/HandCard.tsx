@@ -150,9 +150,7 @@ export function HandCard({
       />
       {(showName || showDescription) && (
         <div
-          className={
-            '"box-border flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-8 pb-8 gap-2 pointer-events-none"'
-          }
+          className="box-border flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-8 pb-8 gap-2 pointer-events-none"
           style={{
             background:
               'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0) 100%)',
@@ -161,9 +159,7 @@ export function HandCard({
         >
           {showName && (
             <span
-              className={
-                '"box-border text-[11px] font-extrabold tracking-[0.4px] uppercase text-center line-clamp-1"'
-              }
+              className="box-border text-[11px] font-extrabold tracking-[0.4px] uppercase text-center line-clamp-1"
               style={{ color: borderColor }}
               data-testid={`hand-card-name-${card.uid}`}
             >
@@ -183,14 +179,12 @@ export function HandCard({
       )}
       {!!count && count > 1 && (
         <div
-          className={
-            '"box-border flex flex-col absolute top-[4px] right-[4px] min-w-[20px] h-[20px] px-4 rounded-[9999px] bg-[rgba(0,0,0,0.75)] border items-center justify-center"'
-          }
+          className="box-border flex flex-col absolute top-[4px] right-[4px] min-w-[20px] h-[20px] px-4 rounded-[9999px] bg-[rgba(0,0,0,0.75)] border items-center justify-center"
           style={{ borderColor: borderColor }}
           data-testid={`hand-card-count-${card.uid}`}
         >
           <span
-            className={'"box-border text-[48px] font-extrabold"'}
+            className="box-border text-[48px] font-extrabold"
             style={{ color: borderColor }}
           >
             ×{count}

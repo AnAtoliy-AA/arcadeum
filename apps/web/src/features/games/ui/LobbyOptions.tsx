@@ -127,7 +127,7 @@ export function LobbyToggle({
           }}
         />
         <span
-          className={'"box-border text-[16px] font-medium"'}
+          className="box-border text-[16px] font-medium"
           style={{ color: disabled ? 'rgba(180,180,200,0.7)' : '$color' }}
         >
           {label}

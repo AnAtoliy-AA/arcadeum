@@ -1,5 +1,7 @@
 # Tamagui → Tailwind Full Migration Implementation Plan
 
+> **STATUS: COMPLETE** — implemented on branch `ARC-tamagui-to-tailwind` (commits `070c85a4`…`19ddc93f`). All phases executed; web (1153 tests) and packages/ui (145 tests) green, type-check 0 errors, production build passes, lockfile tamagui-free. Remaining manual verification: Playwright e2e (`pnpm test:e2e:local`) and 7-theme visual QA. This plan is kept as the historical record.
+
 > **For agentic workers:** implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Each phase ends with a verification gate; do not start the next phase until the gate passes.
 
 **Goal:** Fully remove Tamagui (`tamagui`, `@tamagui/*`, `@arcadeum/ui`'s tamagui-based components, next-plugin, babel/turbo aliases, postinstall patch, test wrappers) from the monorepo and replace every Tamagui-styled element with Tailwind CSS classes. Web is the only consumer of Tamagui today (mobile has zero Tamagui usage — only vestigial deps to prune).

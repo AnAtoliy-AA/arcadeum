@@ -30,7 +30,6 @@ export type FloatingLabelTextAreaProps = {
 const accent = 'var(--accent)';
 const background = 'var(--background)';
 const textSecondary = 'var(--textSecondary)';
-const warning = 'var(--warning)';
 
 const baseLabelStyle: CSSProperties = {
   position: 'absolute',

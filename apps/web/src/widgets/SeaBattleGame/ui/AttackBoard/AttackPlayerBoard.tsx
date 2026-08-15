@@ -1,6 +1,5 @@
 'use client';
 import { memo, useCallback, useState } from 'react';
-import { Text, XStack, YStack } from 'tamagui';
 import type { SeaBattlePlayerState, SeaBattleTeam } from '../../types';
 import { CELL_STATE, colLabels, rowLabels } from '../../types';
 import { ShipsLeft } from '../ShipsLeft';
@@ -127,13 +126,13 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
 
   const boardGrid = (
     <BoardGrid
-      gridSize={boardSize}
       className={`sb-board-grid ${!isMe && showTargeting ? 'sb-my-turn' : ''}`}
       style={{
         backgroundColor: theme.boardBackground,
         borderColor: theme.cellBorder,
         ...(isTeammate ? { cursor: 'not-allowed' } : {}),
       }}
+      gridSize={boardSize}
       onClick={handleGridClick}
     >
       {player.board.map((row, rIndex) =>
@@ -222,21 +221,14 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   // from the board border + team pill, and the avatar carries its own disc.
   // The md disc is ~72px, so a -36 offset centers it on the corner.
   const cornerAvatar = (
-    <YStack
-      className="sb-header-avatar"
-      position="absolute"
-      top={-36}
-      left={-36}
-      zIndex={11}
-      pointerEvents="none"
-    >
+    <div className="flex flex-col items-stretch absolute top-[-36px] left-[-36px] z-[11] pointer-events-none sb-header-avatar">
       <InGameAvatar
         playerId={player.playerId}
         name={resolveDisplayName(player.playerId, isMe ? 'You' : 'Unknown')}
         size="md"
         data-testid={`sb-corner-avatar-${player.playerId}`}
       />
-    </YStack>
+    </div>
   );
 
   if (isMe) {
@@ -245,31 +237,27 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     return (
       <PlayerSectionWrapper>
         <BadgeWrapper
-          backgroundColor={theme.boardBackground}
-          borderRadius={8}
-          paddingHorizontal="$1.5"
-          top={-4}
+          className="px-1.5 top-[-4px] rounded-[8px]"
+          style={{ backgroundColor: theme.boardBackground }}
         >
           {showBadge && (
-            <XStack
-              alignItems="center"
-              gap="$1"
-              paddingHorizontal="$2"
-              paddingVertical="$0.5"
-              borderRadius={8}
-              borderWidth={1}
-              backgroundColor={
-                isCurrentTurn ? '$dangerBgSoft' : '$warningBgSoft'
-              }
-              borderColor={isCurrentTurn ? '$dangerBorder' : '$warningBorder'}
-              className={isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}
+            <div
+              className={`flex flex-row items-center gap-1 px-2 rounded-[8px] border ${isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}`}
+              style={{
+                backgroundColor: isCurrentTurn
+                  ? 'rgba(239,68,68,0.25)'
+                  : 'rgba(251,191,36,0.2)',
+                borderColor: isCurrentTurn
+                  ? 'rgba(239,68,68,0.4)'
+                  : 'rgba(245,158,11,0.4)',
+              }}
             >
-              <Text fontSize={10}>{isCurrentTurn ? '🎯' : '🛡️'}</Text>
-              <Text
-                fontSize={9}
-                fontWeight="700"
-                color={isCurrentTurn ? '$danger' : '$warning'}
-                textTransform="uppercase"
+              <span className="text-[48px]">{isCurrentTurn ? '🎯' : '🛡️'}</span>
+              <span
+                className="text-[40px] font-bold uppercase"
+                style={{
+                  color: isCurrentTurn ? 'var(--danger)' : 'var(--warning)',
+                }}
               >
                 {isCurrentTurn
                   ? t(
@@ -278,20 +266,24 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
                   : t(
                       'games.sea_battle_v1.table.players.defendingBadge' as TranslationKey,
                     )}
-              </Text>
-            </XStack>
+              </span>
+            </div>
           )}
         </BadgeWrapper>
         <PlayerSection
-          backgroundColor={theme.boardBackground}
-          borderColor={
-            team ? team.color : isDefending ? theme.hitColor : theme.cellBorder
-          }
-          borderWidth={team ? 2 : undefined}
           className={`sb-player-section-fit ${
             isDefending ? 'sb-section-danger-breathe' : ''
           }`}
-          backdropFilter="blur(8px)"
+          style={{
+            backgroundColor: theme.boardBackground,
+            borderColor: team
+              ? team.color
+              : isDefending
+                ? theme.hitColor
+                : theme.cellBorder,
+            borderWidth: team ? 2 : undefined,
+            backdropFilter: 'blur(8px)',
+          }}
         >
           {cornerAvatar}
           <PlayerName
@@ -306,19 +298,25 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           <PlayerStats>
             <ShipsLeft ships={player.ships} isMe={true} shipCount={shipCount} />
           </PlayerStats>
-          <YStack position="relative" width="100%">
+          <div className="flex flex-col items-stretch relative w-full">
             <BoardWithLabels>
               <div />
               <ColLabels gridSize={boardSize}>
                 {colLbls.map((label) => (
-                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                  <Label
+                    key={label}
+                    style={{ color: theme.textSecondaryColor }}
+                  >
                     {label}
                   </Label>
                 ))}
               </ColLabels>
               <RowLabels gridSize={boardSize}>
                 {rowLbls.map((label) => (
-                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                  <Label
+                    key={label}
+                    style={{ color: theme.textSecondaryColor }}
+                  >
                     {label}
                   </Label>
                 ))}
@@ -326,7 +324,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               {boardGrid}
             </BoardWithLabels>
             <FieldStatus board={player.board} isMe={true} />
-          </YStack>
+          </div>
         </PlayerSection>
       </PlayerSectionWrapper>
     );
@@ -335,10 +333,8 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   return (
     <PlayerSectionWrapper>
       <BadgeWrapper
-        backgroundColor={theme.boardBackground}
-        borderRadius={8}
-        paddingHorizontal="$1.5"
-        top={-4}
+        className="px-1.5 top-[-4px] rounded-[8px]"
+        style={{ backgroundColor: theme.boardBackground }}
       >
         {isTeammate ? (
           <BadgePill
@@ -357,10 +353,9 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           <BadgePill
             icon="🎯"
             label="ATTACKING"
-            bg="$dangerBgSoft"
-            border="$dangerBorder"
-            color="$danger"
-            className="sb-badge-danger-breathe"
+            bg="rgba(185,28,28,0.1)"
+            border="var(--dangerBorder)"
+            color="var(--danger)"
           />
         ) : isMyTurn ? (
           <BadgePill
@@ -368,23 +363,27 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             label={t(
               'games.sea_battle_v1.table.players.targetBadge' as TranslationKey,
             )}
-            bg="$infoBgSoft"
-            border="$infoBorder"
-            color="$info"
+            bg="rgba(99,102,241,0.1)"
+            border="rgba(87,195,255,0.4)"
+            color="var(--info)"
           />
         ) : null}
       </BadgeWrapper>
       <PlayerSection
-        isTargetable={isMyTurn}
-        backgroundColor={theme.boardBackground}
-        borderColor={
-          team ? team.color : isMyTurn ? theme.accentColor : theme.cellBorder
-        }
-        borderWidth={team ? 2 : undefined}
         className={`sb-player-section-fit ${
           isMyTurn && !team ? 'sb-breathe' : ''
         }`}
-        backdropFilter="blur(8px)"
+        style={{
+          backgroundColor: theme.boardBackground,
+          borderColor: team
+            ? team.color
+            : isMyTurn
+              ? theme.accentColor
+              : theme.cellBorder,
+          borderWidth: team ? 2 : undefined,
+          backdropFilter: 'blur(8px)',
+        }}
+        isTargetable={isMyTurn}
       >
         {cornerAvatar}
         <PlayerName
@@ -403,7 +402,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         <PlayerStats>
           <ShipsLeft ships={player.ships} isMe={false} shipCount={shipCount} />
         </PlayerStats>
-        <YStack position="relative" width="100%">
+        <div className="flex flex-col items-stretch relative w-full">
           <BoardWithLabels>
             <div />
             <ColLabels gridSize={boardSize}>
@@ -423,7 +422,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             {boardGrid}
           </BoardWithLabels>
           <FieldStatus board={player.board} isMe={false} />
-        </YStack>
+        </div>
       </PlayerSection>
     </PlayerSectionWrapper>
   );

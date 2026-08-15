@@ -31,7 +31,7 @@ This Turborepo workspace is managed with `pnpm` and contains:
 - **`apps/mobile`**: Expo React Native app (iOS/Android)
 - **`apps/web`**: Next.js web application
 - **`apps/be`**: NestJS API server
-- **`packages/ui`**: Shared `@arcadeum/ui` component library (Tamagui)
+- **`packages/ui`**: Shared `@arcadeum/ui` component library (Tailwind + CSS-variable theming)
 - **`docs`**: Comprehensive project documentation
 - **`scripts`**: Maintenance and build scripts
 

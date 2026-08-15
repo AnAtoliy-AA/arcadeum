@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import type { AuthBrandLabels } from '../types';
 import { CheckGlyph, SparkleGlyph } from './AuthProviderIcons';
@@ -23,24 +22,13 @@ const AVATARS: AvatarEntry[] = [
 
 export function AuthBrandPanel({ brand, flex = 1.55 }: AuthBrandPanelProps) {
   return (
-    <YStack
-      flex={flex}
-      paddingHorizontal="$8"
-      paddingVertical="$8"
-      gap="$8"
-      position="relative"
-      justifyContent="space-between"
-      $md={{ display: 'none' }}
+    <div
+      className="flex flex-col items-stretch px-8 py-8 gap-8 relative justify-between max-[1150px]:hidden"
+      style={{ flex }}
       data-testid="auth-brand-panel"
     >
-      <YStack
-        position="absolute"
-        top="10%"
-        bottom="10%"
-        right={0}
-        width={1}
-        pointerEvents="none"
-        $md={{ display: 'none' }}
+      <div
+        className="flex flex-col items-stretch absolute top-[10%] bottom-[10%] right-0 w-[1px] pointer-events-none max-[1150px]:hidden"
         style={{
           background:
             'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.10) 30%, rgba(255,255,255,0.10) 70%, transparent 100%)',
@@ -49,7 +37,7 @@ export function AuthBrandPanel({ brand, flex = 1.55 }: AuthBrandPanelProps) {
       <BrandHeader brand={brand} className="auth-fade-in-1" />
       <BrandHero brand={brand} className="auth-fade-in-2" />
       <BrandFooterLinks brand={brand} className="auth-fade-in-3" />
-    </YStack>
+    </div>
   );
 }
 
@@ -61,41 +49,21 @@ function BrandHeader({
   className?: string;
 }) {
   return (
-    <XStack
-      className={className}
-      alignItems="center"
-      gap="$3"
-      width="100%"
-      maxWidth={680}
-      alignSelf="center"
+    <div
+      className={`flex flex-row items-center gap-3 w-full max-w-[680px] self-center ${className ?? ''}`}
     >
-      <XStack
-        alignItems="center"
-        gap="$2"
-        paddingHorizontal="$3"
-        paddingVertical="$1.5"
-        borderRadius={999}
-        borderWidth={1}
-        borderColor="$glassBorder"
-        backgroundColor="$glassBg"
-      >
-        <YStack
-          className="auth-status-dot"
-          width={8}
-          height={8}
-          borderRadius={999}
-          backgroundColor="#22c55e"
-        />
+      <div className="flex flex-row items-center gap-2 px-3 rounded-[999px] border border-[var(--glassBorder)] bg-[var(--glassBg)]">
+        <div className="flex flex-col items-stretch w-[8px] h-[8px] rounded-[999px] bg-[#22c55e] auth-status-dot" />
         <Typography
           variant="caption"
           uiSize="xs"
-          color="$colorMuted"
+          color="var(--textSecondary)"
           style={{ fontFamily: 'var(--font-mono, ui-monospace, monospace)' }}
         >
           {brand.statusPill}
         </Typography>
-      </XStack>
-    </XStack>
+      </div>
+    </div>
   );
 }
 
@@ -107,21 +75,11 @@ function BrandHero({
   className?: string;
 }) {
   return (
-    <YStack
-      className={className}
-      gap="$5"
-      maxWidth={680}
-      alignSelf="center"
-      width="100%"
+    <div
+      className={`flex flex-col items-stretch gap-5 max-w-[680px] self-center w-full ${className ?? ''}`}
     >
-      <XStack
-        alignSelf="flex-start"
-        alignItems="center"
-        gap="$2"
-        paddingHorizontal="$3"
-        paddingVertical="$1.5"
-        borderRadius={999}
-        borderWidth={1}
+      <div
+        className="flex flex-row self-start items-center gap-2 px-3 rounded-[999px] border"
         style={{
           borderColor:
             'color-mix(in srgb, var(--accent, #38bdf8) 25%, transparent)',
@@ -134,7 +92,7 @@ function BrandHero({
         <Typography
           variant="caption"
           uiSize="xs"
-          color="$accent"
+          color="var(--accent)"
           weight="600"
           style={{
             textTransform: 'uppercase',
@@ -144,13 +102,13 @@ function BrandHero({
         >
           {brand.eyebrow}
         </Typography>
-      </XStack>
+      </div>
 
-      <YStack gap="$2">
+      <div className="flex flex-col items-stretch gap-2">
         <Typography
           variant="heading"
           weight="800"
-          style={{ fontSize: 80, lineHeight: 84, letterSpacing: '-0.02em' }}
+          style={{ fontSize: 80, lineHeight: '84px', letterSpacing: '-0.02em' }}
         >
           {brand.headlinePrefix}{' '}
           <Typography
@@ -158,7 +116,7 @@ function BrandHero({
             weight="800"
             style={{
               fontSize: 80,
-              lineHeight: 84,
+              lineHeight: '84px',
               letterSpacing: '-0.02em',
               backgroundImage:
                 'linear-gradient(120deg, #38bdf8 0%, #a78bfa 55%, #ff6af7 100%)',
@@ -170,12 +128,12 @@ function BrandHero({
             {brand.headlineHighlight}
           </Typography>
         </Typography>
-        <Typography variant="body" uiSize="lg" color="$colorMuted">
+        <Typography variant="body" uiSize="lg" color="var(--textSecondary)">
           {brand.subline}
         </Typography>
-      </YStack>
+      </div>
 
-      <YStack gap="$3" marginTop="$2">
+      <div className="flex flex-col items-stretch gap-3 -mt-2">
         <FeatureBullet
           title={brand.featureOauthTitle}
           detail={brand.featureOauthDetail}
@@ -188,22 +146,15 @@ function BrandHero({
           title={brand.featureProgressTitle}
           detail={brand.featureProgressDetail}
         />
-      </YStack>
+      </div>
 
-      <XStack alignItems="center" gap="$3" marginTop="$2">
-        <XStack>
+      <div className="flex flex-row items-center gap-3 -mt-2">
+        <div className="flex flex-row items-stretch">
           {AVATARS.map((a, i) => (
-            <YStack
+            <div
+              className="flex flex-col w-[34px] h-[34px] rounded-[999px] border-[2px] border-[var(--background)] items-center justify-center"
+              style={{ marginLeft: i === 0 ? 0 : -10 }}
               key={a.ch}
-              width={34}
-              height={34}
-              borderRadius={999}
-              borderWidth={2}
-              borderColor="$background"
-              marginLeft={i === 0 ? 0 : -10}
-              alignItems="center"
-              justifyContent="center"
-              style={{ background: a.bg }}
             >
               <Typography
                 variant="heading"
@@ -213,33 +164,30 @@ function BrandHero({
               >
                 {a.ch}
               </Typography>
-            </YStack>
+            </div>
           ))}
-        </XStack>
-        <Typography variant="body" uiSize="sm" color="$colorMuted" flex={1}>
+        </div>
+        <Typography
+          variant="body"
+          uiSize="sm"
+          className="flex-1 text-secondary"
+        >
           {brand.proofBefore}
           <Typography variant="body" uiSize="sm" weight="600">
             {brand.proofCount}
           </Typography>
           {brand.proofAfter}
         </Typography>
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }
 
 function FeatureBullet({ title, detail }: { title: string; detail: string }) {
   return (
-    <XStack alignItems="flex-start" gap="$3">
-      <YStack
-        width={28}
-        height={28}
-        borderRadius={999}
-        alignItems="center"
-        justifyContent="center"
-        marginTop={2}
-        flexShrink={0}
-        borderWidth={1}
+    <div className="flex flex-row items-start gap-3">
+      <div
+        className="flex flex-col w-[28px] h-[28px] rounded-[999px] items-center justify-center -mt-2 shrink-0 border"
         style={{
           color: '#ffffff',
           background:
@@ -249,16 +197,16 @@ function FeatureBullet({ title, detail }: { title: string; detail: string }) {
         }}
       >
         <CheckGlyph size={14} />
-      </YStack>
-      <Typography variant="body" uiSize="md" flex={1}>
+      </div>
+      <Typography variant="body" uiSize="md" className="flex-1">
         <Typography variant="body" uiSize="md" weight="700">
           {title}
         </Typography>{' '}
-        <Typography variant="body" uiSize="md" color="$colorMuted">
+        <Typography variant="body" uiSize="md" className="text-secondary">
           — {detail}
         </Typography>
       </Typography>
-    </XStack>
+    </div>
   );
 }
 
@@ -276,29 +224,23 @@ function BrandFooterLinks({
     color: 'inherit',
   };
   return (
-    <XStack
-      className={className}
-      gap="$4"
-      flexWrap="wrap"
-      alignItems="center"
-      width="100%"
-      maxWidth={680}
-      alignSelf="center"
+    <div
+      className={`flex flex-row gap-4 flex-wrap items-center w-full max-w-[680px] self-center ${className ?? ''}`}
     >
       <Link href="/" style={linkStyle} data-testid="auth-brand-home-link">
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {brand.footHome}
         </Typography>
       </Link>
-      <Typography variant="body" uiSize="sm" color="$colorMuted">
+      <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
         ·
       </Typography>
       <Link href="/games" style={linkStyle} data-testid="auth-brand-games-link">
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {brand.footGames}
         </Typography>
       </Link>
-      <Typography variant="body" uiSize="sm" color="$colorMuted">
+      <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
         ·
       </Typography>
       <Link
@@ -306,10 +248,10 @@ function BrandFooterLinks({
         style={linkStyle}
         data-testid="auth-brand-help-link"
       >
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {brand.footHelp}
         </Typography>
       </Link>
-    </XStack>
+    </div>
   );
 }

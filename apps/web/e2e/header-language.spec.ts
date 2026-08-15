@@ -2,7 +2,7 @@ import { expect, type Locator } from '@playwright/test';
 import { test, navigateTo, getIsMobile } from './fixtures/test-utils';
 
 /**
- * Tamagui's Select trigger opens the dropdown on `mousedown`, but on
+ * The @arcadeum/ui Select trigger opens the dropdown on `mousedown`, but on
  * webkit-desktop the first synthetic click occasionally fails to register
  * — the dropdown stays closed and the option locator times out. Wait for
  * `aria-expanded="true"` to confirm the dropdown actually opened, and

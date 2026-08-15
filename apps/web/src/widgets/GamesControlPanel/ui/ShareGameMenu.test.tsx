@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '@/shared/config/tamagui.config';
 import { ShareGameMenu } from './ShareGameMenu';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
@@ -20,9 +18,7 @@ function renderMenu(
   const inviteCode =
     'inviteCode' in props ? (props.inviteCode ?? undefined) : INVITE_CODE;
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <ShareGameMenu roomId={props.roomId ?? ROOM_ID} inviteCode={inviteCode} />
-    </TamaguiProvider>,
+    <ShareGameMenu roomId={props.roomId ?? ROOM_ID} inviteCode={inviteCode} />,
   );
 }
 

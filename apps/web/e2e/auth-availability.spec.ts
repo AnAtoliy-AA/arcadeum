@@ -94,7 +94,8 @@ test.describe('Auth Availability Checking', () => {
       /already taken|уже занято|déjà pris|ya está en uso|ўжо занята/i,
     );
     if (await takenText.isVisible()) {
-      // Tamagui Button uses aria-disabled rather than the disabled attribute.
+      // The @arcadeum/ui Button uses aria-disabled rather than the DOM
+      // disabled attribute.
       await expect(submitBtn).toHaveAttribute('aria-disabled', 'true');
     }
   });

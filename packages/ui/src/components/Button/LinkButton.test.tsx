@@ -1,18 +1,8 @@
-import { TamaguiProvider } from "tamagui";
-import config from "../../tamagui.config";
-
 import { render as rtlRender, screen } from '@testing-library/react';
 import { LinkButton } from './LinkButton';
 import { describe, it, expect } from 'vitest';
 
-const render = (ui: React.ReactElement) => {
-  return rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>
-  );
-};
-
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('LinkButton', () => {
   it('renders an internal link', () => {

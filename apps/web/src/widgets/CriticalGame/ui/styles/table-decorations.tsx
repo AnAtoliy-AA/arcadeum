@@ -1,99 +1,145 @@
-import { styled, YStack } from 'tamagui';
+import type { HTMLAttributes } from 'react';
 
-export const SonarRadar = styled(YStack, {
-  name: 'SonarRadar',
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  width: '150%',
-  height: '150%',
-  transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
-  borderRadius: 1000,
-  pointerEvents: 'none',
-  zIndex: 1,
+import { cx } from '@arcadeum/ui/utils/cx';
 
-  // Animation and conic-gradient handled via props or inline styles for web
-});
+const BASE = 'flex flex-col items-stretch';
 
-export const Bubble = styled(YStack, {
-  name: 'Bubble',
-  position: 'absolute',
-  bottom: 0,
-  width: 6,
-  height: 6,
-  backgroundColor: 'rgba(165, 243, 252, 0.4)',
-  borderRadius: 100,
-  pointerEvents: 'none',
-  zIndex: 0,
-});
+export function SonarRadar({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        BASE,
+        'absolute top-1/2 left-1/2 w-[150%] h-[150%] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none z-[1]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const FishSilhouette = styled(YStack, {
-  name: 'FishSilhouette',
-  position: 'absolute',
-  width: 12,
-  height: 6,
-  backgroundColor: 'rgba(34, 211, 238, 0.3)',
-  pointerEvents: 'none',
-  zIndex: 0,
-});
+export function Bubble({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        BASE,
+        'absolute bottom-0 w-1.5 h-1.5 bg-[rgba(165,243,252,0.4)] rounded-full pointer-events-none z-[0]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const SonarSweep = styled(YStack, {
-  name: 'SonarSweep',
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  width: '150vmax',
-  height: '150vmax',
-  transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
-  pointerEvents: 'none',
-  zIndex: 0,
-  borderRadius: 1000,
-  overflow: 'hidden',
-});
+export function FishSilhouette({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        BASE,
+        'absolute w-[12px] h-[6px] bg-[rgba(34,211,238,0.3)] pointer-events-none z-[0]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const FloatingDots = styled(YStack, {
-  name: 'FloatingDots',
-  position: 'absolute',
-  inset: 0,
-  pointerEvents: 'none',
-  zIndex: 1,
-});
+export function SonarSweep({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        BASE,
+        'absolute top-1/2 left-1/2 w-[150vmax] h-[150vmax] -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[0] rounded-full overflow-hidden',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const CircuitLines = styled(YStack, {
-  name: 'CircuitLines',
-  position: 'absolute',
-  inset: 0,
-  pointerEvents: 'none',
-  zIndex: 0,
-  opacity: 0.3,
-});
+export function FloatingDots({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        BASE,
+        'absolute inset-0 pointer-events-none z-[1]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const Snowflake = styled(YStack, {
-  name: 'Snowflake',
-  position: 'absolute',
-  top: '-10vh',
-  backgroundColor: 'white',
-  borderRadius: 100,
-  opacity: 0.6,
-  pointerEvents: 'none',
-  zIndex: 1,
-});
+export function CircuitLines({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        BASE,
+        'absolute inset-0 pointer-events-none z-[0] opacity-[0.3]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const IceCrystal = styled(YStack, {
-  name: 'IceCrystal',
-  position: 'absolute',
-  width: 40,
-  height: 40,
-  pointerEvents: 'none',
-  zIndex: 5,
-  opacity: 0.5,
+export function Snowflake({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        BASE,
+        'absolute top-[-10vh] bg-white rounded-full opacity-[0.6] pointer-events-none z-[1]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-  variants: {
-    corner: {
-      tl: { top: 10, left: 10, rotate: '0deg' },
-      tr: { top: 10, right: 10, rotate: '90deg' },
-      bl: { bottom: 10, left: 10, rotate: '-90deg' },
-      br: { bottom: 10, right: 10, rotate: '180deg' },
-    },
-  } as const,
-});
+const ICE_CRYSTAL_CORNER_CLASS = {
+  tl: 'top-[10px] left-[10px] rotate-0',
+  tr: 'top-[10px] right-[10px] rotate-[90deg]',
+  bl: 'bottom-[10px] left-[10px] -rotate-[90deg]',
+  br: 'bottom-[10px] right-[10px] rotate-[180deg]',
+} as const;
+
+export function IceCrystal({
+  className,
+  corner,
+  ...props
+}: {
+  className?: string;
+  corner?: 'tl' | 'tr' | 'bl' | 'br';
+} & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        BASE,
+        'absolute w-10 h-10 pointer-events-none z-[5] opacity-[0.5]',
+        corner ? ICE_CRYSTAL_CORNER_CLASS[corner] : undefined,
+        className,
+      )}
+      {...props}
+    />
+  );
+}

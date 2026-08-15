@@ -1,34 +1,30 @@
-import { styled, Anchor } from 'tamagui';
+import { cx } from '../../utils/cx';
 
-export const SocialIcon = styled(Anchor, {
-  name: 'SocialIcon',
-  display: 'flex',
-  width: 40,
-  height: 40,
-  borderRadius: 10,
-  backgroundColor: '$glassBg',
-  borderWidth: 1,
-  borderColor: '$glassBorder',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: '$color',
-  opacity: 0.8,
-  hoverStyle: {
-    backgroundColor: '$glassBgHover',
-    borderColor: '$primary',
-    color: '$primary',
-    scale: 1.1,
-    rotate: '8deg',
-    opacity: 1,
-    shadowColor: '$primary',
-    shadowRadius: 12,
-    shadowOpacity: 0.15,
-  },
-  pressStyle: {
-    scale: 0.95,
-  },
-}, {
-  defaultProps: {
-    animation: 'quick',
-  },
-});
+export type SocialIconProps = {
+  href: string;
+  children?: React.ReactNode;
+  className?: string;
+  'data-testid'?: string;
+} & React.AnchorHTMLAttributes<HTMLAnchorElement>;
+
+export function SocialIcon({ href, children, className, ...rest }: SocialIconProps) {
+  return (
+    <a
+      href={href}
+      className={cx(
+        'flex h-10 w-10 items-center justify-center rounded-[10px] border',
+        'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)]',
+        'transition-all duration-200',
+        'hover:scale-[1.1] hover:rotate-[8deg] hover:border-[var(--primary)]',
+        'hover:bg-[var(--glassBgHover)] hover:text-[var(--primary)] hover:opacity-100',
+        'hover:shadow-[0_0_12px_var(--primary)] hover:shadow-[0_0_12px_rgba(0,0,0,0.15)]',
+        'active:scale-95',
+        'opacity-80',
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </a>
+  );
+}

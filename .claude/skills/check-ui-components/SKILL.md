@@ -3,7 +3,7 @@ name: check-ui-components
 description: Check existing @arcadeum/ui components before implementing any new UI. Use before writing any component — reuse what exists, add to packages/ui if missing.
 ---
 
-> **Related skills**: `ui-ux-design` — comprehensive UI/UX guide with priority-based rules for design decisions, interaction patterns, and visual quality. `tamagui-pro` — Tamagui gotchas, correct patterns, tokens, and layout limitations specific to this project. Load before any UI work.
+> **Related skills**: `ui-ux-design` — comprehensive UI/UX guide with priority-based rules for design decisions, interaction patterns, and visual quality. `tailwind-pro` — project-specific Tailwind reference: token → class maps, CSS-variable theming, responsive variants, and layout gotchas. Load before any UI work.
 
 Before writing any UI component, you MUST audit the shared library. Never implement custom UI that duplicates an existing shared component.
 
@@ -56,7 +56,6 @@ Read `packages/ui/src/index.ts` to get the full list of exported components. The
 | `Footer` | `links`, `socials` | App footer |
 | `MobileLoginIndicator` | — | Mobile auth status |
 | `DownloadButtons` | `platform` | App store download CTAs |
-| `XStack`, `YStack`, `ZStack`, `ScrollView`, `ThemeableStack` | (Tamagui layout) | Layout primitives |
 
 ## Step 2 — Decide: reuse or create
 
@@ -68,7 +67,7 @@ Read `packages/ui/src/index.ts` to get the full list of exported components. The
 **If no existing component fits** (genuinely new pattern):
 - The component MUST be created in `packages/ui`, not inline in the app.
 - Follow the `/new-ui-component` skill to add it:
-  1. `packages/ui/src/components/<Name>/<Name>.tsx` — Tamagui-based implementation
+  1. `packages/ui/src/components/<Name>/<Name>.tsx` — plain React + Tailwind implementation
   2. `packages/ui/src/components/<Name>/index.ts` — re-export
   3. `packages/ui/src/components/<Name>/<Name>.stories.tsx` — Storybook story (required)
   4. Register in `packages/ui/src/index.ts`
@@ -77,7 +76,7 @@ Read `packages/ui/src/index.ts` to get the full list of exported components. The
 ## Step 3 — Extending an existing component
 
 If the existing component almost fits but needs a new variant or prop:
-1. Read the component's `.tsx` and its `types.ts`/`StyledComponent` to understand its variant system
+1. Read the component's `.tsx` and its `types.ts` to understand its variant system
 2. Add the new variant/prop to `packages/ui/src/components/<Name>/<Name>.tsx`
 3. Export the updated type from `index.ts`
 4. Add a Storybook story for the new variant in `<Name>.stories.tsx`
@@ -87,5 +86,5 @@ If the existing component almost fits but needs a new variant or prop:
 
 - Never create a component file in `apps/web`, `apps/mobile`, or `apps/be` if it belongs in the shared library
 - One-off app-specific compositions (combining 2–3 shared components for a specific screen) are fine as local view files — but the individual building blocks must come from `@arcadeum/ui`
-- Check `packages/ui/src/tamagui.config.ts` for design tokens before hardcoding colors/spacing
-- All new components must be platform-agnostic (web + React Native), so avoid `react-native` imports; use Tamagui primitives
+- Check `packages/ui/src/themeDefinitions.ts` for theme tokens (minted as CSS variables) and `/tailwind-pro` for the class maps before hardcoding colors/spacing
+- All new components are plain React + Tailwind (Tamagui was removed) — accept and merge a `className` prop via `cx` from `@arcadeum/ui/utils/cx`

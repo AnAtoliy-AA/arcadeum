@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
-import { XStack, YStack, styled, ThemeableStack, GetProps, View } from 'tamagui';
 import { Avatar } from '../Avatar/Avatar';
 import { Typography } from '../Typography/Typography';
+import { cx } from '../../utils/cx';
+
+export type ChatMessageType = 'system' | 'action' | 'message';
 
 export type ChatMessageProps = {
   content: string;
@@ -35,108 +37,56 @@ export type ChatMessageProps = {
    *  the web shared UI. */
   senderAvatar?: React.ReactNode;
   isEncrypted?: boolean;
-  type?: 'system' | 'action' | 'message';
+  type?: ChatMessageType;
 };
 
-const MessageGroup = styled(ThemeableStack, {
-  name: 'MessageGroup',
-  flexDirection: 'column',
-  gap: '$0.5',
-  maxWidth: '85%',
-  minWidth: 0,
-  paddingVertical: '$1',
-  
-  variants: {
-    isOwn: {
-      true: {
-        alignItems: 'flex-start',
-        alignSelf: 'flex-end',
-      },
-      false: {
-        alignItems: 'flex-start',
-        alignSelf: 'flex-start',
-      },
-    },
-    type: {
-      system: {
-        maxWidth: '100%',
-        alignSelf: 'center',
-        alignItems: 'center',
-        opacity: 0.8,
-      },
-      action: {
-        maxWidth: '100%',
-        alignSelf: 'center',
-        alignItems: 'center',
-        opacity: 0.9,
-      },
-      message: {},
-    },
-  } as const,
-  
-  defaultVariants: {
-    type: 'message',
-  },
-});
+const MESSAGE_GROUP_BASE = 'flex flex-col gap-0.5 min-w-0 max-w-[85%] py-1';
 
-type MessageGroupProps = GetProps<typeof MessageGroup>;
+function messageGroupClasses(isOwn: boolean, type: ChatMessageType): string {
+  if (type === 'system') {
+    return cx(
+      MESSAGE_GROUP_BASE,
+      'max-w-full self-center items-center opacity-80',
+    );
+  }
+  if (type === 'action') {
+    return cx(
+      MESSAGE_GROUP_BASE,
+      'max-w-full self-center items-center opacity-90',
+    );
+  }
+  return cx(
+    MESSAGE_GROUP_BASE,
+    isOwn ? 'items-start self-end' : 'items-start self-start',
+  );
+}
 
-const MessageBubble = styled(YStack, {
-  paddingHorizontal: '$4',
-  paddingVertical: '$2.5',
-  flexShrink: 1,
-  minWidth: 0,
-  alignSelf: 'flex-start',
-  
-  hoverStyle: {
-    scale: 1.01,
-  },
-  
-  variants: {
-    isOwn: {
-      true: {
-        alignSelf: 'flex-end',
-        borderRadius: '$4',
-        borderBottomRightRadius: '$1',
-        background: 'linear-gradient(135deg, $primaryGradientStart 0%, $primaryGradientEnd 100%)',
-        shadowColor: '$primary',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
-      },
-      false: {
-        borderRadius: '$4',
-        borderBottomLeftRadius: '$2',
-        backgroundColor: '$glassBg',
-        borderWidth: 1,
-        borderColor: '$glassBorder',
-        backdropFilter: 'blur(16px)',
-        shadowColor: '$shadowColor',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-    },
-    type: {
-      system: {
-        backgroundColor: 'transparent',
-        borderWidth: 0,
-        paddingVertical: '$1',
-        paddingHorizontal: '$2',
-      },
-      action: {
-        backgroundColor: '$glassBg',
-        borderRadius: '$6',
-        paddingVertical: '$1.5',
-        paddingHorizontal: '$4',
-        borderWidth: 1,
-        borderColor: '$glassBorder',
-        borderStyle: 'dashed',
-      },
-      message: {},
-    },
-  } as const,
-});
+const MESSAGE_BUBBLE_BASE =
+  'flex flex-col min-w-0 shrink transition-transform duration-150 ease-out hover:scale-[1.01]';
+
+function messageBubbleClasses(isOwn: boolean, type: ChatMessageType): string {
+  if (type === 'system') {
+    return cx(
+      MESSAGE_BUBBLE_BASE,
+      'border-0 bg-transparent px-2 py-1',
+      isOwn ? 'self-end' : 'self-start',
+    );
+  }
+  if (type === 'action') {
+    return cx(
+      MESSAGE_BUBBLE_BASE,
+      'rounded-[24px] border border-dashed border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5',
+      isOwn ? 'self-end' : 'self-start',
+    );
+  }
+  return cx(
+    MESSAGE_BUBBLE_BASE,
+    'px-4 py-2.5',
+    isOwn
+      ? 'self-end rounded-2xl rounded-br bg-[linear-gradient(135deg,var(--primaryGradientStart)_0%,var(--primaryGradientEnd)_100%)] shadow-[0_4px_10px_color-mix(in_srgb,var(--primary)_30%,transparent)]'
+      : 'self-start rounded-2xl rounded-bl-lg border border-[var(--glassBorder)] bg-[var(--glassBg)] backdrop-blur-[16px] shadow-[0_2px_4px_var(--shadowColor)]',
+  );
+}
 
 const NAME_STYLE = { fontSize: 11, lineHeight: '16px' } as const;
 
@@ -154,9 +104,7 @@ function SenderName({
       uiSize="xs"
       weight="600"
       {...(color ? { color } : { alpha: 'medium' })}
-      letterSpacing={0.5}
-      textTransform="uppercase"
-      numberOfLines={1}
+      className="uppercase tracking-[0.5px] line-clamp-1"
       style={{ ...NAME_STYLE, ...nameStyle }}
     >
       {name}
@@ -184,24 +132,19 @@ export const ChatMessage = memo(function ChatMessage({
   const isSystem = type === 'system' || type === 'action';
 
   return (
-    <MessageGroup
-      isOwn={isOwn}
-      type={type}
-      enterStyle={{ opacity: 0, scale: 0.9, y: 15 }}
-    >
+    <div className={messageGroupClasses(isOwn, type)}>
       {!isSystem && senderName && (
-        <XStack
-          ai="flex-end"
-          gap="$2"
-          width="100%"
-          flexShrink={1}
-          {...(isOwn ? { jc: 'flex-end' } : {})}
+        <div
+          className={cx(
+            'flex w-full flex-row items-end gap-2 shrink',
+            isOwn ? 'justify-end' : undefined,
+          )}
         >
           {senderAvatar ?? (
-            <View flexShrink={0}>
+            <div className="shrink-0">
               <Avatar name={senderName} size="sm" src={avatarUrl} />
               {badgeUrl ? (
-                <View width={16} height={16}>
+                <div className="h-4 w-4">
                   <img
                     src={badgeUrl}
                     alt=""
@@ -209,19 +152,27 @@ export const ChatMessage = memo(function ChatMessage({
                     height={16}
                     style={{ objectFit: 'contain' }}
                   />
-                </View>
+                </div>
               ) : null}
-            </View>
+            </div>
           )}
-          <YStack flex={1} minWidth={0} gap="$1">
+          <div className="flex flex-1 flex-col gap-1 min-w-0">
             {emoji ? (
               <span style={{ fontSize: 36, lineHeight: 1 }}>{emoji}</span>
             ) : (
-              <MessageBubble isOwn={isOwn} type={type} data-testid="chat-message" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', width: '100%' }}>
+              <div
+                className={messageBubbleClasses(isOwn, type)}
+                data-testid="chat-message"
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'anywhere',
+                  width: '100%',
+                }}
+              >
                 <Typography
                   uiSize="sm"
-                  color={isOwn ? 'white' : '$color'}
-                  textAlign="left"
+                  color={isOwn ? '#f5f7ff' : 'var(--color)'}
+                  className="text-left"
                 >
                   {isEncrypted ? '[Encrypted Message]' : (contentNode ?? content)}
                 </Typography>
@@ -229,37 +180,39 @@ export const ChatMessage = memo(function ChatMessage({
                   <Typography
                     uiSize="xs"
                     alpha="low"
-                    color={isOwn ? 'white' : '$color'}
-                    mt="$1"
-                    opacity={0.7}
+                    color={isOwn ? '#f5f7ff' : 'var(--color)'}
+                    className="mt-1"
+                    style={{ opacity: 0.7 }}
                   >
                     {timestamp}
                   </Typography>
                 )}
-              </MessageBubble>
+              </div>
             )}
             <SenderName
               name={senderName}
               color={senderColor}
               nameStyle={senderNameStyle}
             />
-          </YStack>
-        </XStack>
+          </div>
+        </div>
       )}
       {isSystem && (
-        <MessageBubble isOwn={isOwn} type={type} data-testid="chat-message">
+        <div
+          className={messageBubbleClasses(isOwn, type)}
+          data-testid="chat-message"
+        >
           <Typography
             uiSize="xs"
-            color={isOwn ? 'white' : '$color'}
-            textAlign="center"
-            fontStyle="italic"
+            color={isOwn ? '#f5f7ff' : 'var(--color)'}
+            className="text-center italic"
           >
             {senderName && !isEncrypted ? (
               <>
                 <Typography
                   uiSize="xs"
                   weight="700"
-                  fontStyle="normal"
+                  className="not-italic"
                   {...(senderColor ? { color: senderColor } : {})}
                 >
                   {senderName}
@@ -270,7 +223,7 @@ export const ChatMessage = memo(function ChatMessage({
                     <Typography
                       uiSize="xs"
                       weight="700"
-                      fontStyle="normal"
+                      className="not-italic"
                       {...(targetColor ? { color: targetColor } : {})}
                     >
                       {targetName}
@@ -285,8 +238,8 @@ export const ChatMessage = memo(function ChatMessage({
               (contentNode ?? content)
             )}
           </Typography>
-        </MessageBubble>
+        </div>
       )}
-    </MessageGroup>
+    </div>
   );
 });

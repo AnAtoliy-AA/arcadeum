@@ -5,7 +5,7 @@ description: Add a new shared UI component to the @arcadeum/ui package (packages
 
 > **Related skill**: `ui-ux-design` — comprehensive UI/UX guide with priority-based rules for design decisions, interaction patterns, and visual quality.
 
-The shared UI library (`packages/ui`) uses Tamagui as the component foundation and is consumed by both `apps/web` and `apps/mobile` via `@arcadeum/ui`.
+The shared UI library (`packages/ui`) is a plain React + Tailwind component library, consumed by `apps/web` via `@arcadeum/ui`. `apps/mobile` does NOT consume `@arcadeum/ui` — mobile uses React Native primitives.
 
 ## Structure
 
@@ -20,9 +20,9 @@ packages/ui/src/components/
 ## Steps
 
 1. **Create component** in `packages/ui/src/components/<Name>/<Name>.tsx`:
-   - Use Tamagui primitives (`YStack`, `XStack`, `Text`, `Stack`, etc.)
+   - Build with plain React elements + Tailwind classes (see `/tailwind-pro` for the token → class map; tokens are CSS vars from `packages/ui/src/themeDefinitions.ts`)
    - Export named: `export const <Name> = ...`
-   - Accept typed props extending Tamagui's component props where appropriate
+   - Accept and merge a `className` prop via `cx` from `@arcadeum/ui/utils/cx`
 
 2. **Create `index.ts`** re-export:
    ```ts
@@ -64,20 +64,22 @@ packages/ui/src/components/
    - Cover: default state, each variant, disabled/error/loading states where applicable
    - Add an `AllVariants` render story when there are multiple visual variants
 
-5. **Tamagui primitives reference**:
+5. **Tailwind class-map reference**:
    ```ts
-   import { YStack, XStack, Text, Stack, View, styled } from 'tamagui';
-   // Use styled() for variant-driven components
-   const MyComponent = styled(Stack, {
-     variants: {
-       size: { sm: { padding: '$2' }, md: { padding: '$4' } }
-     }
-   });
+   import { cx } from '../../utils/cx';
+   const SIZE_CLASS = {
+     sm: 'p-2',
+     md: 'p-4',
+   } as const;
+   // Variant-driven components merge class maps with cx()
+   export const MyComponent = ({ size = 'md', className, ...props }) => (
+     <div className={cx('box-border flex flex-col', SIZE_CLASS[size], className)} {...props} />
+   );
    ```
 
 ## Notes
 
-- Keep components platform-agnostic — they run on both web and React Native
-- Avoid importing from `react-native` directly; use Tamagui equivalents
-- Check `packages/ui/src/tamagui.config.ts` for design tokens (`$colors`, `$space`, `$size`)
+- Keep components platform-agnostic — web uses them directly; mobile does not consume `@arcadeum/ui`
+- Style with Tailwind classes only; theme tokens via `var(--x)` (see `/tailwind-pro`)
+- Check `packages/ui/src/themeDefinitions.ts` for theme tokens before hardcoding colors/spacing
 - Run `pnpm storybook` from `apps/web` to verify stories render correctly

@@ -1,15 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
 import { UsersTable, type UsersTableLabels } from './UsersTable';
 import type { AdminUserItem } from '../api';
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <TamaguiProvider config={config} defaultTheme="dark">
-    {children}
-  </TamaguiProvider>
-);
+const Wrapper = ({ children }: { children: React.ReactNode }) => children;
 
 const renderWithProvider = (ui: React.ReactElement) =>
   render(<Wrapper>{ui}</Wrapper>);

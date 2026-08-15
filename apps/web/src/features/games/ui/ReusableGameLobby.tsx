@@ -146,12 +146,12 @@ export function ReusableGameLobby({
   }, [room.gameId, onRuleComingSoonChange]);
 
   const [botCount, setBotCount] = useState(1);
-  const [difficulty, setDifficulty] = useState<
-    'easy' | 'medium' | 'hard'
-  >(() => {
-    const settings = loadStoredSettings();
-    return settings.aiDifficulty ?? 'medium';
-  });
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(
+    () => {
+      const settings = loadStoredSettings();
+      return settings.aiDifficulty ?? 'medium';
+    },
+  );
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
   const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 6;
@@ -232,26 +232,30 @@ export function ReusableGameLobby({
       <GameHeader>
         <GameInfo>
           <GameTitleText
-            background={theme.titleGradient}
             className={
               theme.titleGradient ? 'text-gradient shimmer-animated' : undefined
             }
-            style={theme.titleGradient ? { backgroundSize: '200% auto' } : {}}
+            style={{
+              background: theme.titleGradient,
+              ...(theme.titleGradient ? { backgroundSize: '200% auto' } : {}),
+            }}
           >
             {gameName}
             {variantName && (
               <>
                 {' '}
                 <VariantText
-                  background={theme.variantGradient}
                   className={
                     theme.variantGradient
                       ? 'text-gradient shimmer-animated'
                       : undefined
                   }
-                  style={
-                    theme.variantGradient ? { backgroundSize: '200% auto' } : {}
-                  }
+                  style={{
+                    background: theme.variantGradient,
+                    ...(theme.variantGradient
+                      ? { backgroundSize: '200% auto' }
+                      : {}),
+                  }}
                 >
                   : {variantName}
                 </VariantText>
@@ -324,7 +328,7 @@ export function ReusableGameLobby({
                       <BotCountButton
                         key={count}
                         data-testid={`bot-count-${count}`}
-                        $isActive={botCount === count}
+                        active={botCount === count}
                         onClick={() => setBotCount(count)}
                       >
                         {count}
@@ -352,7 +356,7 @@ export function ReusableGameLobby({
                       <BotCountButton
                         key={d.key}
                         data-testid={`difficulty-${d.key}`}
-                        $isActive={difficulty === d.key}
+                        active={difficulty === d.key}
                         onClick={() => setDifficulty(d.key)}
                       >
                         {d.label}

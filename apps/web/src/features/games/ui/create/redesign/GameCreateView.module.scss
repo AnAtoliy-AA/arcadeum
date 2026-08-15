@@ -1,7 +1,7 @@
 @use '../../../../../app/styles/breakpoints' as bp;
 
 /* Editorial layout tokens scoped to the games create redesign.
-   Colors resolve through Tamagui CSS variables (var(--background),
+   Colors resolve through theme CSS variables (var(--background),
    var(--color), var(--glassBg), …) so they follow the active theme.
 
    Breakpoints (used in @media below — CSS custom properties can't be

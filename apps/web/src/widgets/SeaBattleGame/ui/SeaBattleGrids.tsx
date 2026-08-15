@@ -1,6 +1,6 @@
 'use client';
 import { Children, useEffect, useRef, useState, type ReactNode } from 'react';
-import { useMedia } from 'tamagui';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface SeaBattleGridsProps {
   children: ReactNode;
@@ -34,7 +34,7 @@ function idealCols(count: number): number {
  * no JS measurement needed.
  */
 export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
-  const media = useMedia();
+  const media = useMediaQuery();
   // `Children.count` includes booleans / nulls from `{cond && ...}`
   // expressions, which inflates the row count when callers conditionally
   // render the current-player board. `Children.toArray` drops those.
@@ -43,11 +43,8 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
 
-  // Compute landscape synchronously from window dimensions. Tamagui's
-  // useMedia() may hydrate with SSR defaults (all false) and stay stale
-  // if no matchMedia events fire (e.g. viewport set before page load in
-  // CI). Reading window directly avoids the async useEffect + useState
-  // pattern that can leave isLandscape stuck at false.
+  // Landscape is a pure function of window dimensions, so read it
+  // synchronously in the initializer — no effect round-trip needed.
   const [isLandscape, setIsLandscape] = useState(() => {
     if (typeof window === 'undefined') return false;
     return window.innerWidth > window.innerHeight;
@@ -186,7 +183,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   // `fits || ideal` evaluates to 1 (truthy). The short branch has its
   // own `containerWidth > 0 ? … : 2` guard, but the desktop path lacks
   // one. This covers all stale-media-query combinations (e.g. WebKit
-  // headless where Tamagui matchMedia may not fire).
+  // headless where matchMedia may not fire).
   if (cols === 1 && count > 1 && isLandscape) {
     cols = 2;
   }
@@ -194,8 +191,6 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   if (cols === 1) {
     return (
       <div
-        ref={containerRef}
-        data-testid="sea-battle-grids-container"
         className="sb-grids-container-mobile"
         style={{
           display: 'flex',
@@ -205,8 +200,9 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
           paddingTop: 4,
           paddingLeft: 4,
           paddingRight: 4,
-          boxSizing: 'border-box',
         }}
+        ref={containerRef}
+        data-testid="sea-battle-grids-container"
       >
         {children}
       </div>
@@ -272,8 +268,6 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   return (
     <div
-      ref={containerRef}
-      data-testid="sea-battle-grids-container"
       className={`sb-grids-container sb-fit-grid${
         useSideLayout ? ' sb-mobile-landscape' : ''
       }`}
@@ -287,7 +281,6 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         minWidth: 0,
         minHeight: 0,
         padding: media.short ? 4 : media.sm ? 4 : 8,
-        boxSizing: 'border-box',
         // Anchor tracks to the top. We previously used `place-content:
         // center` here, but when content (rows × rowHeight) exceeds the
         // grid container, centering pushes the first row ABOVE the
@@ -299,6 +292,8 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         justifyContent: 'center',
         flex: 1,
       }}
+      ref={containerRef}
+      data-testid="sea-battle-grids-container"
     >
       {children}
     </div>

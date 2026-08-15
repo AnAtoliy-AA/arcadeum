@@ -316,7 +316,6 @@ export function EconomyEditDialog({
                   background: '#09090b',
                   color: '#e4e4e7',
                   fontSize: '14px',
-                  boxSizing: 'border-box',
                 }}
               />
             </div>

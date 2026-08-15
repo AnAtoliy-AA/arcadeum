@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { EmotePicker, type EmoteId } from './EmotePicker';
-import { QuickButton, QuickButtonText, QuickRow } from './GameChat.styled';
+import { QuickButton, QuickButtonText, QuickRow } from './GameChat.styles';
 
 const QUICK_PHRASES = ['gl hf', 'nice play', 'thinking…', 'gg'];
 
@@ -27,11 +27,11 @@ export function ChatQuickBar({ onEmote, onQuickPhrase }: ChatQuickBarProps) {
 
   return (
     <QuickRow role="toolbar" aria-label="Quick phrases">
-      <QuickButton onPress={() => setEmoteOpen(true)} aria-label="Send emote">
+      <QuickButton onClick={() => setEmoteOpen(true)} aria-label="Send emote">
         <QuickButtonText>😀</QuickButtonText>
       </QuickButton>
       {QUICK_PHRASES.map((p) => (
-        <QuickButton key={p} onPress={() => onQuickPhrase(p)} aria-label={p}>
+        <QuickButton key={p} onClick={() => onQuickPhrase(p)} aria-label={p}>
           <QuickButtonText>{p}</QuickButtonText>
         </QuickButton>
       ))}

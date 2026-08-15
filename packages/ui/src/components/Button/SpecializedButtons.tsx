@@ -2,77 +2,35 @@ import React from 'react';
 import { Button } from './Button';
 import { LinkButton, type LinkButtonProps } from './LinkButton';
 import { ArrowRightIcon, PlusCircleIcon } from '../Icons/index';
+import { cx } from '../../utils/cx';
 import type { ButtonProps, GameVariant } from './types';
 
-export interface BotCountButtonProps extends ButtonProps {
-  isActive?: boolean;
-}
-
 export const BotCountButton = ({
-  $isActive: isActive,
+  active,
   children,
-  testId,
   ...props
-}: BotCountButtonProps) => (
+}: ButtonProps & { active?: boolean }) => (
   <Button
     variant="chip"
+    active={active}
     size="sm"
-    data-active={isActive}
-    padding="$2 $3"
-    borderRadius={8}
-    fontWeight="600"
-    overflow="hidden"
-    backgroundColor={
-      isActive ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)'
-    }
-    borderColor={
-      isActive ? 'rgba(99, 102, 241, 0.5)' : 'rgba(255, 255, 255, 0.1)'
-    }
-    color={isActive ? '#6366f1' : '$color'}
-    hoverStyle={{
-      backgroundColor: isActive
-        ? 'rgba(99, 102, 241, 0.25)'
-        : 'rgba(255, 255, 255, 0.1)',
-      borderColor: isActive
-        ? 'rgba(99, 102, 241, 0.6)'
-        : 'rgba(255, 255, 255, 0.2)',
-    }}
-    data-testid={testId || props['data-testid']}
+    data-active={active ? 'on' : undefined}
+    className="!px-2 !py-2 font-semibold"
     {...props}
   >
     {children}
   </Button>
 );
 
-export const DeleteButton = ({
-  children,
-  testId,
-  width = '100%',
-  ...props
-}: ButtonProps) => (
+export const DeleteButton = ({ children, ...props }: ButtonProps) => (
   <Button
-    variant="primary"
+    variant="danger"
     size="lg"
-    $sm={{ $uiSize: 'md', borderRadius: 8 }}
-    $short={{ $uiSize: 'sm', borderRadius: 8 }}
-    width={width}
-    fontWeight="600"
-    borderRadius={12}
-    backgroundColor="#ef4444"
-    color="white"
-    shadowColor="rgba(239, 68, 68, 0.3)"
-    shadowRadius={16}
-    shadowOffset={{ width: 0, height: 4 }}
-    hoverStyle={{
-      y: -2,
-      shadowRadius: 24,
-      shadowColor: 'rgba(239, 68, 68, 0.4)',
-    }}
-    disabledStyle={{
-      opacity: 0.5,
-      shadowRadius: 16,
-    }}
-    data-testid={testId || props['data-testid']}
+    className={[
+      'w-full',
+      'hover:-translate-y-[2px]',
+      'max-[640px]:h-12 max-[640px]:px-6 max-[640px]:py-3 max-[640px]:rounded-[8px]',
+    ].join(' ')}
     {...props}
   >
     {children}
@@ -81,57 +39,28 @@ export const DeleteButton = ({
 
 export const StartButton = ({
   children,
-  testId,
   width = '100%',
   className,
   ...props
-}: ButtonProps & { className?: string }) => (
-  // The pulse + shimmer live on a wrapper because Tamagui's styled
-  // components drop unknown classNames from the prop chain (verified
-  // in the rendered DOM — only Tamagui's atomic _bg-* / _pos-* etc.
-  // survive). Wrapping in a plain <div> keeps the animation styles
-  // outside Tamagui's prop system entirely, and the button itself
-  // stays a normal Tamagui Button.
+}: ButtonProps & { className?: string; width?: string | number }) => (
   <div
-    className={['start-button-glow', className].filter(Boolean).join(' ')}
+    className={cx('start-button-glow', className)}
     style={{
       display: 'inline-block',
-      borderRadius: 12,
+      borderRadius: 20,
       width: width as string | number,
     }}
   >
     <Button
-      variant="primary"
+      variant="victory"
       size="lg"
-      $sm={{ $uiSize: 'md', borderRadius: 8 }}
-      $short={{ $uiSize: 'sm', borderRadius: 8 }}
-      width="100%"
-      fontWeight="800"
-      fontSize={18}
-      letterSpacing={0.3}
-      borderRadius={12}
-      color="#1a1a1a"
-      // Match the home Play Now button: yellow-to-orange gradient,
-      // orange glow. Solid backgroundColor is the fallback for any
-      // Tamagui consumer that doesn't pick up `background`.
-      backgroundColor="#ff9500"
-      style={{
-        background: 'linear-gradient(160deg, #ffe866 0%, #ff9500 100%)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.35)',
-      }}
-      shadowColor="rgba(255, 165, 0, 0.7)"
-      shadowRadius={20}
-      shadowOffset={{ width: 0, height: 4 }}
-      hoverStyle={{
-        y: -2,
-        shadowRadius: 28,
-        shadowColor: 'rgba(255, 165, 0, 0.85)',
-      }}
-      disabledStyle={{
-        opacity: 0.5,
-        shadowRadius: 12,
-      }}
-      data-testid={testId || props['data-testid']}
+      className={[
+        'w-full',
+        'text-lg',
+        'tracking-wide',
+        'hover:-translate-y-[2px]',
+        'max-[640px]:h-12 max-[640px]:px-6 max-[640px]:py-3 max-[640px]:rounded-[8px]',
+      ].join(' ')}
       {...props}
     >
       {children}
@@ -139,85 +68,49 @@ export const StartButton = ({
   </div>
 );
 
-export const IconButton = ({
-  children,
-  testId,
-  backgroundColor = 'rgba(255, 255, 255, 0.05)',
-  borderColor = 'rgba(255, 255, 255, 0.1)',
-  size = 'sm',
-  ...props
-}: ButtonProps) => (
-  <Button
-    variant="icon"
-    size={size}
-    backgroundColor={backgroundColor}
-    borderColor={borderColor}
-    hoverStyle={{ rotate: '180deg', scale: 1.1, ...props.hoverStyle }}
-    data-testid={testId || props['data-testid']}
-    {...props}
-  >
+export const IconButton = ({ children, size = 'sm', ...props }: ButtonProps) => (
+  <Button variant="icon" size={size} {...props}>
     {children}
   </Button>
 );
 
 export const RefreshButton = ({
   children,
-  testId,
   opacity = 0.7,
   ...props
-}: ButtonProps) => (
+}: ButtonProps & { opacity?: string | number }) => (
   <IconButton
-    circular
-    padding={4}
-    hoverStyle={{ rotate: '30deg', opacity: 1 }}
-    pressStyle={{ rotate: '180deg' }}
-    opacity={opacity}
-    testId={testId || props['data-testid']}
+    rotatable
+    shape="circle"
+    className="!p-1 hover:opacity-100"
+    style={{ opacity }}
     {...props}
   >
     {children}
   </IconButton>
 );
-export interface ModalButtonProps extends ButtonProps { }
+
+export interface ModalButtonProps extends ButtonProps {}
 
 export const ModalButton = (props: ModalButtonProps) => (
-  <Button flex={1} {...props} />
+  <Button className="flex-1" {...props} />
 );
 
-export interface OptionButtonProps extends ButtonProps {
-  $selected?: boolean;
-  $variant?: string;
-}
+export interface OptionButtonProps extends ButtonProps {}
 
-export const OptionButton = ({
-  $selected,
-  $variant,
-  ...props
-}: OptionButtonProps) => (
-  <Button
-    variant="chip"
-    size="md"
-    isActive={$selected}
-    gameVariant={$variant as GameVariant}
-    p="$4"
-    flexDirection="column"
-    gap="$2"
-    {...props}
-  />
+export const OptionButton = (props: OptionButtonProps) => (
+  <Button variant="chip" size="md" className="flex flex-col gap-2 !p-4" {...props} />
 );
 
 export const CreateRoomButton = (props: ButtonProps) => (
   <Button
     variant="victory"
     size="lg"
-    $sm={{ $uiSize: 'md' }}
-    $short={{ $uiSize: 'sm' }}
     pulse
     jump
     showShimmer
-    fontWeight="800"
-    letterSpacing={1}
     icon={<PlusCircleIcon size={24} />}
+    className="font-extrabold tracking-widest max-[640px]:h-12 max-[640px]:px-6 max-[640px]:py-3 max-[640px]:rounded-[16px]"
     {...props}
   />
 );
@@ -226,14 +119,11 @@ export const CreateRoomLinkButton = (props: LinkButtonProps) => (
   <LinkButton
     variant="victory"
     size="lg"
-    $sm={{ $uiSize: 'md' }}
-    $short={{ $uiSize: 'sm' }}
     pulse
     jump
     showShimmer
-    fontWeight="800"
-    letterSpacing={1}
     icon={<PlusCircleIcon size={24} />}
+    className="max-[640px]:h-12 max-[640px]:px-6 max-[640px]:py-3 max-[640px]:rounded-[16px] [&>span]:font-extrabold [&>span]:tracking-widest"
     {...props}
   />
 );
@@ -245,9 +135,8 @@ export const HomePrimaryButton = (props: ButtonProps) => (
     pulse
     jump
     showShimmer
-    fontWeight="800"
-    letterSpacing={1.5}
     icon={<ArrowRightIcon size={24} />}
+    className="font-extrabold tracking-[1.5px]"
     {...props}
   />
 );
@@ -259,9 +148,8 @@ export const HomePrimaryLinkButton = (props: LinkButtonProps) => (
     pulse
     jump
     showShimmer
-    fontWeight="800"
-    letterSpacing={1.5}
     icon={<ArrowRightIcon size={24} />}
+    className="[&>span]:font-extrabold [&>span]:tracking-[1.5px]"
     {...props}
   />
 );

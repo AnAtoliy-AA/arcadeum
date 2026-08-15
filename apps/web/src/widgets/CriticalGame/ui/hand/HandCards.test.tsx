@@ -1,7 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../../shared/config/tamagui.config';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -21,11 +19,7 @@ function renderCards(
     ...props,
   };
   return {
-    ...render(
-      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-        <HandCards {...merged} />
-      </TamaguiProvider>,
-    ),
+    ...render(<HandCards {...merged} />),
     props: merged,
   };
 }
@@ -143,17 +137,13 @@ describe('HandCards', () => {
     // signal selection without disturbing layout.
     const { rerender, props } = renderCards();
     const before = screen.getByTestId('hand-card-strike-0');
-    expect(before.className).toMatch(/_w-124px/);
-    expect(before.className).toMatch(/_h-172px/);
-    rerender(
-      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-        <HandCards {...props} selectedUids={['strike-0']} />
-      </TamaguiProvider>,
-    );
+    expect(before.className).toMatch(/w-\[124px\]/);
+    expect(before.className).toMatch(/h-\[172px\]/);
+    rerender(<HandCards {...props} selectedUids={['strike-0']} />);
     const after = screen.getByTestId('hand-card-strike-0');
     expect(after).toHaveAttribute('data-selected', 'true');
-    expect(after.className).toMatch(/_w-124px/);
-    expect(after.className).toMatch(/_h-172px/);
+    expect(after.className).toMatch(/w-\[124px\]/);
+    expect(after.className).toMatch(/h-\[172px\]/);
   });
 
   it('renders the role fallback icon when the variant has no sprite art', () => {

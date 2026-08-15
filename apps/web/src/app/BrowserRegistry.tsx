@@ -1,55 +1,24 @@
 'use client';
 
 import { ReactNode, useEffect } from 'react';
-import { useServerInsertedHTML } from 'next/navigation';
-import { disconnectSockets } from '@/shared/lib/socket';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
-import { config as tamaguiConfig } from '@/shared/config/tamagui.config';
-import {
-  wasTamaguiCSSInjected,
-  markTamaguiCSSInjected,
-} from '@/shared/config/tamagui-css-injected';
-
-// Prime config immediately for SSR and Client environments
 
 interface BrowserRegistryProps {
   children: ReactNode;
 }
 
 export default function BrowserRegistry({ children }: BrowserRegistryProps) {
-  useServerInsertedHTML(() => {
-    try {
-      if (wasTamaguiCSSInjected()) return null;
-      if (typeof tamaguiConfig.getCSS !== 'function') {
-        console.error(
-          'tamaguiConfig.getCSS is not a function. Current config:',
-          Object.keys(tamaguiConfig),
-        );
-        throw new Error('tamaguiConfig.getCSS is not a function');
-      }
-      const code = tamaguiConfig.getCSS();
-      if (!code) {
-        return null;
-      }
-      markTamaguiCSSInjected();
-      return (
-        <style
-          href="tamagui-css"
-          precedence="default"
-          dangerouslySetInnerHTML={{
-            __html: code,
-          }}
-        />
-      );
-    } catch (error) {
-      console.error('Failed to generate Tamagui CSS during SSR:', error);
-      return null;
-    }
-  });
-
   useEffect(() => {
+    // Lazy-load the socket module only for pagehide cleanup. A static
+    // import would pull socket.io-client into the initial bundle of
+    // every page (the home page never opens a socket connection).
+    let disconnect: (() => void) | undefined;
+    void import('@/shared/lib/socket').then((mod) => {
+      disconnect = mod.disconnectSockets;
+    });
+
     const handlePageHide = () => {
-      disconnectSockets();
+      disconnect?.();
     };
 
     window.addEventListener('pagehide', handlePageHide);

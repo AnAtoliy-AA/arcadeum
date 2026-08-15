@@ -91,26 +91,19 @@ export function ClaimButton({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <div className="flex flex-col gap-2">
       <button
         type="button"
         data-testid="daily-reward-claim-btn"
         onClick={handleClick}
         disabled={disabled}
         aria-disabled={disabled}
+        className="w-full rounded-[10px] border-none px-5 py-3 text-center text-[14px] font-bold transition-opacity disabled:cursor-not-allowed"
         style={{
-          padding: '12px 20px',
-          borderRadius: '10px',
-          border: 'none',
           background: disabled
             ? 'rgba(255,255,255,0.06)'
             : 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
           color: disabled ? '#71717a' : '#0a0a0a',
-          fontWeight: 700,
-          fontSize: '14px',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          width: '100%',
-          textAlign: 'center',
         }}
       >
         {isPending ? '…' : label}
@@ -120,13 +113,7 @@ export function ClaimButton({
         <div
           role="status"
           data-testid="daily-reward-success"
-          style={{
-            fontSize: '13px',
-            color: '#22c55e',
-            background: 'rgba(34,197,94,0.08)',
-            padding: '8px 12px',
-            borderRadius: '6px',
-          }}
+          className="rounded-[6px] bg-[rgba(34,197,94,0.08)] px-3 py-2 text-[13px] text-[#22c55e]"
         >
           {feedback.message}
         </div>
@@ -135,13 +122,7 @@ export function ClaimButton({
         <div
           role="alert"
           data-testid="daily-reward-error"
-          style={{
-            fontSize: '13px',
-            color: '#ef4444',
-            background: 'rgba(239,68,68,0.08)',
-            padding: '8px 12px',
-            borderRadius: '6px',
-          }}
+          className="rounded-[6px] bg-[rgba(239,68,68,0.08)] px-3 py-2 text-[13px] text-[#ef4444]"
         >
           {feedback.message}
         </div>

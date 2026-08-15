@@ -680,7 +680,7 @@ If `SeaBattleThemePreview` from `@/widgets/SeaBattleGame/ui/SeaBattleThemePrevie
 
 ### 6.1 Tokens
 
-The HTML preview defines its own scoped tokens at `:root` (`--gc-ink`, `--gc-bg-card`, etc.) because the existing `styles/tokens.css` doesn't have the exact warm-gold premium palette. **In production**, add these as new tokens scoped to a `[data-section='games-create']` block or — preferred — promote them into `packages/ui/src/tamagui.config.ts` as a new `premiumDark` theme variant:
+The HTML preview defines its own scoped tokens at `:root` (`--gc-ink`, `--gc-bg-card`, etc.) because the existing `styles/tokens.css` doesn't have the exact warm-gold premium palette. **In production**, add these as new tokens scoped to a `[data-section='games-create']` block or — preferred — promote them into `packages/ui/src/themeDefinitions.ts` as a new `premiumDark` theme variant:
 
 ```css
 --gc-ink: #0a0510;

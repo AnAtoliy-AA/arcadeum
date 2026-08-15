@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '@/shared/config/tamagui.config';
 import { GlimwormLobby } from './GlimwormLobby';
 import { gamesApi } from '@/features/games/api';
 import type { GameRoomSummary } from '@/shared/types/games';
@@ -43,9 +41,7 @@ const MOCK_ROOM: GameRoomSummary = {
 
 function renderLobby(isHost = true) {
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <GlimwormLobby room={MOCK_ROOM} isHost={isHost} currentUserId="user-1" />
-    </TamaguiProvider>,
+    <GlimwormLobby room={MOCK_ROOM} isHost={isHost} currentUserId="user-1" />,
   );
 }
 

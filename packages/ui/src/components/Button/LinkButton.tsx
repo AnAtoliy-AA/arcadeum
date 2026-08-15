@@ -1,125 +1,148 @@
 'use client';
 
-import { GetProps } from 'tamagui';
-import React, { useMemo, Children } from 'react';
-import { filterProps } from '../../utils/filterProps';
-import type { ReactNode, MouseEventHandler, KeyboardEventHandler } from 'react';
+import React, { Children, forwardRef, useMemo } from 'react';
 import Link from 'next/link';
-import { Typography } from '../Typography/Typography';
-import { StyledLinkButton } from './StyledLinkButton';
-import { Shimmer } from './StyledButton';
-import type { ButtonVariant, ButtonSize, ResponsiveProp } from './types';
+import type { MouseEventHandler, ReactNode } from 'react';
+import { resolveButtonClasses } from './buttonClasses';
+import { Shimmer } from './Button';
+import type {
+  ButtonShape,
+  ButtonSize,
+  ButtonVariant,
+  GameVariant,
+} from './types';
 
-
-type StyledLinkButtonProps = GetProps<typeof StyledLinkButton>;
-
-export type LinkButtonProps = Omit<StyledLinkButtonProps, 'size' | 'variant'> & {
+export type LinkButtonProps = {
   href: string;
   children: ReactNode;
-  variant?: ResponsiveProp<ButtonVariant>;
-  size?: ResponsiveProp<ButtonSize>;
+  variant?: ButtonVariant | ButtonVariant[];
+  size?: ButtonSize;
+  shape?: ButtonShape;
+  gameVariant?: GameVariant;
   external?: boolean;
   fullWidth?: boolean;
-  isActive?: boolean;
+  active?: boolean;
+  outline?: boolean;
+  ghost?: boolean;
+  rotatable?: boolean;
   pulse?: boolean;
   jump?: boolean;
-  pill?: boolean;
   showShimmer?: boolean;
+  loading?: boolean;
+  disabled?: boolean;
   icon?: ReactNode;
   id?: string;
   className?: string;
-  /** @deprecated Use onClick instead */
-  onPress?: StyledLinkButtonProps['onPress'];
+  style?: React.CSSProperties;
   onClick?: MouseEventHandler<unknown>;
   'data-testid'?: string;
+  'data-active'?: string | boolean;
   'aria-label'?: string;
   prefetch?: boolean;
-  as?: React.ElementType;
-  fontWeight?: string | number;
-  letterSpacing?: string | number;
 };
 
-export const LinkButton = StyledLinkButton.styleable<LinkButtonProps>(
-  (
+export const LinkButton = forwardRef<HTMLAnchorElement, LinkButtonProps>(
+  function LinkButton(
     {
       href,
       children,
       variant = 'primary',
       size = 'md',
+      shape,
+      gameVariant,
       external,
       fullWidth,
-      isActive,
+      active,
+      outline,
+      ghost,
+      rotatable,
       pulse,
       jump,
-      pill,
       showShimmer,
+      loading,
+      disabled = false,
       icon,
-      onPress,
       onClick,
       id,
       className,
+      style,
       'aria-label': ariaLabel,
       'data-testid': testId,
+      'data-active': dataActive,
       prefetch,
-      ...props
     },
-    ref
-  ) => {
+    ref,
+  ) {
     const hasTextChildren = Children.toArray(children).some(
-      child => typeof child === 'string' || typeof child === 'number'
+      (child) => typeof child === 'string' || typeof child === 'number',
     );
 
-    const renderedChildren = hasTextChildren ? (
-      <Typography
-        uiSize={size as any}
-        color="inherit"
-        fontWeight="600"
-        variant="label"
-      >
-        {children}
-      </Typography>
-    ) : (
-      children
+    const classes = useMemo(
+      () =>
+        resolveButtonClasses({
+          variant,
+          gameVariant,
+          size,
+          shape,
+          active,
+          outline,
+          ghost,
+          rotatable,
+          fullWidth,
+          disabled,
+          loading,
+          pulse,
+          jump,
+          className,
+        }),
+      [
+        variant,
+        gameVariant,
+        size,
+        shape,
+        active,
+        outline,
+        ghost,
+        rotatable,
+        fullWidth,
+        disabled,
+        loading,
+        pulse,
+        jump,
+        className,
+      ],
     );
-
-    const renderedIcon = icon && (typeof icon === 'string' || typeof icon === 'number') ? (
-      <Typography uiSize={size as any} color="inherit">{icon}</Typography>
-    ) : (
-      icon
-    );
-
-    const filteredProps = filterProps({ ...props, onPress, onClick });
+    const isDisabled = disabled || loading;
 
     return (
       <Link
         href={href}
-        passHref
+        ref={ref}
+        id={id}
+        aria-label={ariaLabel}
+        aria-disabled={isDisabled || undefined}
+        data-testid={testId}
+        data-active={dataActive}
         target={external ? '_blank' : undefined}
         rel={external ? 'noopener noreferrer' : undefined}
-        prefetch={prefetch}
+        prefetch={prefetch ?? false}
+        className={classes}
+        style={style}
+        onClick={isDisabled ? undefined : onClick}
+        tabIndex={isDisabled ? -1 : undefined}
       >
-        <StyledLinkButton
-          variant={variant as any}
-          $uiSize={size as any}
-          fullWidth={fullWidth}
-          isActive={isActive}
-          pulse={pulse}
-          jump={jump}
-          pill={pill}
-          className={className}
-          id={id}
-          aria-label={ariaLabel}
-          {...filteredProps}
-          ref={ref}
-          data-testid={testId}
-        >
-          {renderedIcon}
-          {renderedChildren}
-          {showShimmer && <Shimmer />}
-        </StyledLinkButton>
+        {icon}
+        {hasTextChildren ? (
+          <span className="flex h-full w-full flex-row items-center justify-center gap-2 font-semibold tracking-[0.5px]">
+            {children}
+          </span>
+        ) : (
+          children
+        )}
+        {showShimmer && !isDisabled ? <Shimmer /> : null}
       </Link>
     );
-  }
+  },
 );
 
 LinkButton.displayName = 'LinkButton';

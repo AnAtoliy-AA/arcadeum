@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Text } from 'tamagui';
 import { EvalBarContainer } from './styles';
 
 interface EvalBarProps {
@@ -36,30 +35,12 @@ export function EvalBar({ evalScore }: EvalBarProps) {
           borderRadius: '0 0 5px 5px',
         }}
       />
-      <Text
-        position="absolute"
-        top={4}
-        left={0}
-        right={0}
-        textAlign="center"
-        fontSize={8}
-        fontWeight="700"
-        color="rgba(255, 255, 255, 0.5)"
-      >
+      <span className="absolute top-[4px] left-0 right-0 text-center text-[32px] font-bold text-[rgba(255,_255,_255,_0.5)]">
         ♔
-      </Text>
-      <Text
-        position="absolute"
-        bottom={4}
-        left={0}
-        right={0}
-        textAlign="center"
-        fontSize={8}
-        fontWeight="700"
-        color="rgba(255, 255, 255, 0.5)"
-      >
+      </span>
+      <span className="absolute bottom-[4px] left-0 right-0 text-center text-[32px] font-bold text-[rgba(255,_255,_255,_0.5)]">
         ♚
-      </Text>
+      </span>
     </EvalBarContainer>
   );
 }

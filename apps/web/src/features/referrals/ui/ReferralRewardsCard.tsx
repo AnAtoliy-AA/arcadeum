@@ -38,11 +38,11 @@ export function ReferralRewardsCard({ tiers }: ReferralRewardsCardProps) {
           return (
             <TierCard
               key={tier.tier}
-              $unlocked={tier.unlocked}
+              unlocked={tier.unlocked}
               data-testid={`tier-${tier.tier}`}
               data-unlocked={tier.unlocked}
             >
-              <TierIcon $unlocked={tier.unlocked}>
+              <TierIcon unlocked={tier.unlocked}>
                 {getRewardIcon(tier.rewards[0]?.rewardId ?? '', tier.unlocked)}
               </TierIcon>
               <TierContent>
@@ -67,7 +67,7 @@ export function ReferralRewardsCard({ tiers }: ReferralRewardsCardProps) {
                     })}
                   </TierDescription>
                 )}
-                <TierBadge $unlocked={tier.unlocked}>
+                <TierBadge unlocked={tier.unlocked}>
                   {tier.unlocked
                     ? t('referrals.rewardsCard.unlocked')
                     : t('referrals.rewardsCard.locked')}

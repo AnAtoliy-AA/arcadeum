@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../../shared/config/tamagui.config';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -36,11 +34,7 @@ function renderRow(
     resolveDisplayName: (_id, fb) => fb,
     ...override,
   };
-  return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <OpponentsRow {...props} />
-    </TamaguiProvider>,
-  );
+  return render(<OpponentsRow {...props} />);
 }
 
 describe('OpponentsRow', () => {

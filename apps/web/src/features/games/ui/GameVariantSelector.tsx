@@ -91,13 +91,13 @@ export function GameVariantSelector({
 
   return (
     <Select
+      className={className}
       id={selectId}
       name={optionKey}
       value={internalVariant ?? currentVariant ?? ''}
       onChange={handleVariantChange}
       disabled={disabled}
       style={{ minWidth: '200px' }}
-      className={className}
       aria-label="Select Game Variant"
       options={displayVariants.map((v) => {
         const translatedVariant =

@@ -1,5 +1,10 @@
 import { memo } from 'react';
 
+/**
+ * Localized version of PageLoading to resolve Turbopack module factory errors.
+ * This component is used in dynamic loading states to ensure stable instantiation.
+ */
+
 export interface PageLoadingProps {
   layout?: 'standard' | 'stats' | 'grid' | 'room' | 'auth' | 'home';
 }
@@ -12,7 +17,6 @@ const s = {
     backgroundColor: '#151718',
     width: '100%',
     fontFamily: 'inherit',
-    boxSizing: 'border-box' as const,
   },
   container: {
     maxWidth: 1400,
@@ -56,11 +60,18 @@ const s = {
     right: 0,
     height: 1,
     pointerEvents: 'none' as const,
-    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%)',
+    background:
+      'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%)',
   },
 } as const;
 
-function Skel({ w = '100%', h = 20, round, delay = 0, style }: {
+function Skel({
+  w = '100%',
+  h = 20,
+  round,
+  delay = 0,
+  style,
+}: {
   w?: string | number;
   h?: string | number;
   round?: boolean;
@@ -69,6 +80,7 @@ function Skel({ w = '100%', h = 20, round, delay = 0, style }: {
 }) {
   return (
     <div
+      className="shimmer-surface"
       style={{
         width: w,
         height: h,
@@ -84,7 +96,13 @@ function Skel({ w = '100%', h = 20, round, delay = 0, style }: {
   );
 }
 
-function Glass({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+function Glass({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) {
   return (
     <div style={{ ...s.glass, ...style }}>
       <div style={s.glassLine} />
@@ -97,8 +115,16 @@ function GridLayout() {
   return (
     <div style={s.row}>
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Glass key={i} style={{ width: 300, flexGrow: 1, height: 200, padding: 0 }}>
-          <Skel w="100%" h="100%" delay={0.2 + i * 0.05} style={{ borderRadius: 0 }} />
+        <Glass
+          key={i}
+          style={{ width: 300, flexGrow: 1, height: 200, padding: 0 }}
+        >
+          <Skel
+            w="100%"
+            h="100%"
+            delay={0.2 + i * 0.05}
+            style={{ borderRadius: 0 }}
+          />
         </Glass>
       ))}
     </div>
@@ -147,12 +173,28 @@ function RoomLayout() {
   return (
     <div style={{ ...s.row, height: 600, flexWrap: 'nowrap' }}>
       <div style={{ flex: 2, height: '100%' }}>
-        <Glass style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <Glass
+          style={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <Skel w={120} h={120} round delay={0.3} />
           <Skel w="40%" h={24} delay={0.4} style={{ marginTop: 16 }} />
         </Glass>
       </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16, height: '100%' }}>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16,
+          height: '100%',
+        }}
+      >
         <Glass style={{ flex: 1 }}>
           <Skel w="100%" h="100%" delay={0.5} />
         </Glass>
@@ -166,8 +208,24 @@ function RoomLayout() {
 
 function AuthLayout() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', width: '100%', paddingTop: 40 }}>
-      <Glass style={{ width: 450, maxWidth: '100%', padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+        paddingTop: 40,
+      }}
+    >
+      <Glass
+        style={{
+          width: 450,
+          maxWidth: '100%',
+          padding: 32,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <Skel w={80} h={80} round delay={0.2} style={{ marginBottom: 24 }} />
         <Skel w="70%" h={40} delay={0.3} style={{ marginBottom: 16 }} />
         <Skel w="50%" h={16} delay={0.4} style={{ marginBottom: 32 }} />
@@ -185,7 +243,15 @@ function HomeLayout() {
   return (
     <div style={{ ...s.col, gap: 0 }}>
       {/* Hero section */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 48, padding: '60px 0 80px', flexWrap: 'wrap' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 48,
+          padding: '60px 0 80px',
+          flexWrap: 'wrap',
+        }}
+      >
         {/* Hero text side */}
         <div style={{ ...s.col, flex: 1, minWidth: 280, gap: 20 }}>
           <Skel w={180} h={28} delay={0.1} style={{ borderRadius: 14 }} />
@@ -201,7 +267,16 @@ function HomeLayout() {
           </div>
         </div>
         {/* Hero card stack side */}
-        <div style={{ flex: 1, minWidth: 250, display: 'flex', justifyContent: 'center', alignItems: 'center', height: 320 }}>
+        <div
+          style={{
+            flex: 1,
+            minWidth: 250,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 320,
+          }}
+        >
           {[0, 1, 2].map((i) => (
             <div
               key={i}
@@ -212,7 +287,9 @@ function HomeLayout() {
                 borderRadius: 16,
                 backgroundColor: '#32353d',
                 opacity: 0.3 + i * 0.15,
-                transform: `rotate(${(i - 1) * 12}deg) translateX(${(i - 1) * 65}px)`,
+                transform: `rotate(${(i - 1) * 12}deg) translateX(${
+                  (i - 1) * 65
+                }px)`,
                 animation: 'pl-pulse 1.8s ease-in-out infinite',
                 animationDelay: `${0.3 + i * 0.1}s`,
               }}
@@ -226,21 +303,56 @@ function HomeLayout() {
           <Skel w={220} h={32} delay={0.5} />
           <Skel w={340} h={18} delay={0.55} />
         </div>
-        <div style={{ ...s.row, gap: 24, flexWrap: 'nowrap', overflow: 'hidden' }}>
+        <div
+          style={{ ...s.row, gap: 24, flexWrap: 'nowrap', overflow: 'hidden' }}
+        >
           {[1, 2, 3, 4].map((i) => (
-            <Glass key={i} style={{ minWidth: 340, width: 340, height: 320, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ ...s.row, gap: 12, alignItems: 'center', flexWrap: 'nowrap' }}>
+            <Glass
+              key={i}
+              style={{
+                minWidth: 340,
+                width: 340,
+                height: 320,
+                flexShrink: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+              }}
+            >
+              <div
+                style={{
+                  ...s.row,
+                  gap: 12,
+                  alignItems: 'center',
+                  flexWrap: 'nowrap',
+                }}
+              >
                 <Skel w={48} h={48} round delay={0.6 + i * 0.05} />
                 <Skel w="60%" h={24} delay={0.65 + i * 0.05} />
               </div>
               <Skel w="100%" h={16} delay={0.7 + i * 0.05} />
               <Skel w="80%" h={16} delay={0.75 + i * 0.05} />
               <div style={{ ...s.row, gap: 8 }}>
-                <Skel w={60} h={24} delay={0.8 + i * 0.05} style={{ borderRadius: 12 }} />
-                <Skel w={80} h={24} delay={0.85 + i * 0.05} style={{ borderRadius: 12 }} />
+                <Skel
+                  w={60}
+                  h={24}
+                  delay={0.8 + i * 0.05}
+                  style={{ borderRadius: 12 }}
+                />
+                <Skel
+                  w={80}
+                  h={24}
+                  delay={0.85 + i * 0.05}
+                  style={{ borderRadius: 12 }}
+                />
               </div>
               <div style={{ marginTop: 'auto' }}>
-                <Skel w="100%" h={44} delay={0.9 + i * 0.05} style={{ borderRadius: 12 }} />
+                <Skel
+                  w="100%"
+                  h={44}
+                  delay={0.9 + i * 0.05}
+                  style={{ borderRadius: 12 }}
+                />
               </div>
             </Glass>
           ))}
@@ -250,7 +362,10 @@ function HomeLayout() {
   );
 }
 
-const layouts: Record<NonNullable<PageLoadingProps['layout']>, () => React.JSX.Element> = {
+const layouts: Record<
+  NonNullable<PageLoadingProps['layout']>,
+  () => React.JSX.Element
+> = {
   grid: GridLayout,
   standard: StandardLayout,
   stats: StatsLayout,
@@ -259,20 +374,19 @@ const layouts: Record<NonNullable<PageLoadingProps['layout']>, () => React.JSX.E
   home: HomeLayout,
 };
 
-export const PageLoading = memo(function PageLoading({ layout = 'standard' }: PageLoadingProps) {
+export const PageLoading = memo(function PageLoading({
+  layout = 'standard',
+}: PageLoadingProps) {
   const Layout = layouts[layout];
   return (
-    <>
-      <style>{`@keyframes pl-pulse{0%,100%{opacity:.5}50%{opacity:.25}}`}</style>
-      <div style={s.page}>
-        <div style={s.container}>
-          <div style={s.header}>
-            <Skel w="60%" h={56} delay={0.1} />
-            <Skel w="40%" h={20} delay={0.2} />
-          </div>
-          <Layout />
+    <div style={s.page}>
+      <div style={s.container}>
+        <div style={s.header}>
+          <Skel w="60%" h={56} delay={0.1} />
+          <Skel w="40%" h={20} delay={0.2} />
         </div>
+        <Layout />
       </div>
-    </>
+    </div>
   );
 });

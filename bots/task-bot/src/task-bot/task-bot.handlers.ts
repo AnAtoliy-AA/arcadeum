@@ -22,6 +22,7 @@ export {
   handleStatus,
   handlePrefs,
   handleShorts,
+  handleVersion,
 } from './task-bot.commands';
 
 export async function handleTaskMessage(

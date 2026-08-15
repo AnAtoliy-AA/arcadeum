@@ -30,27 +30,13 @@ async function DailyRewardChipInner() {
     <section
       data-testid="daily-reward-chip"
       aria-label={title}
+      className="mx-auto mb-3 flex w-full max-w-[480px] items-center gap-3 rounded-xl border border-[rgba(251,191,36,0.25)] px-4 py-3"
       style={{
-        maxWidth: '480px',
-        margin: '12px auto',
-        padding: '12px 16px',
-        borderRadius: '12px',
         background:
           'linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(124,58,237,0.08) 100%)',
-        border: '1px solid rgba(251,191,36,0.25)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
       }}
     >
-      <span
-        aria-hidden
-        style={{
-          fontSize: '24px',
-          lineHeight: 1,
-          display: 'inline-flex',
-        }}
-      >
+      <span aria-hidden className="inline-flex text-[24px] leading-none">
         {'🪙'}
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -60,8 +46,7 @@ async function DailyRewardChipInner() {
           nextRewardGems={status.nextRewardGems}
           labels={{
             claim: claimLabel,
-            gemBonusSuffix:
-              t.gemBonusSuffix ?? dailyRewardsEn.gemBonusSuffix,
+            gemBonusSuffix: t.gemBonusSuffix ?? dailyRewardsEn.gemBonusSuffix,
             claimed: claimedLabel,
             toastClaimed: toasts.claimed ?? dailyRewardsEn.toasts.claimed,
             toastGemBonusSuffix:

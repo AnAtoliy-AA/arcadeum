@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../../shared/config/tamagui.config';
 import { ScenePaletteProvider } from '../ScenePaletteContext';
 import { getVariantStyles } from '../styles/variants';
 
@@ -37,11 +35,9 @@ function renderCenter(
     ...override,
   };
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <ScenePaletteProvider palette={palette}>
-        <ArenaCenter {...props} />
-      </ScenePaletteProvider>
-    </TamaguiProvider>,
+    <ScenePaletteProvider palette={palette}>
+      <ArenaCenter {...props} />
+    </ScenePaletteProvider>,
   );
 }
 

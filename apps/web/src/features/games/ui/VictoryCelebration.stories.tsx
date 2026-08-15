@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { YStack } from 'tamagui';
 import { VictoryCelebration } from './VictoryCelebration';
 
 const meta: Meta<typeof VictoryCelebration> = {
@@ -13,14 +12,9 @@ const meta: Meta<typeof VictoryCelebration> = {
   // the falling confetti and rising sparkles are visible in isolation.
   decorators: [
     (Story) => (
-      <YStack
-        position="relative"
-        height={600}
-        backgroundColor="#0b0d0e"
-        overflow="hidden"
-      >
+      <div className="flex flex-col items-stretch relative h-[600px] bg-[#0b0d0e] overflow-hidden">
         <Story />
-      </YStack>
+      </div>
     ),
   ],
 };

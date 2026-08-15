@@ -13,7 +13,6 @@ import {
   YouTubeIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { Footer, type SocialLink } from '@arcadeum/ui/components/Footer/Footer';
-import { View } from 'tamagui';
 import { appConfig } from '@/shared/config/app-config';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
@@ -90,21 +89,21 @@ export default function AppFooter() {
   }
 
   return (
-    <View data-testid="app-footer" $sm={{ paddingHorizontal: '$2' }}>
-      <Footer
-        appName={appName}
-        socialLinks={socialLinks}
-        copyrightLabel={t('home.footerRights', {
-          year: 2026,
-          appName,
-        })}
-        versionLabel={appVersion}
-        description={t('home.footerDescription')}
-        followUsLabel={t('home.footerFollowUs')}
-        sections={sections}
-        stableReleaseLabel={t('home.footerStableRelease')}
-        craftedWithLoveLabel={t('home.footerCraftedWithLove')}
-      />
-    </View>
+    <Footer
+      className="sm:px-2"
+      data-testid="app-footer"
+      appName={appName}
+      socialLinks={socialLinks}
+      copyrightLabel={t('home.footerRights', {
+        year: 2026,
+        appName,
+      })}
+      versionLabel={appVersion}
+      description={t('home.footerDescription')}
+      followUsLabel={t('home.footerFollowUs')}
+      sections={sections}
+      stableReleaseLabel={t('home.footerStableRelease')}
+      craftedWithLoveLabel={t('home.footerCraftedWithLove')}
+    />
   );
 }

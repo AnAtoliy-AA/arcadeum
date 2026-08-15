@@ -9,16 +9,16 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { TamaguiProvider } from 'tamagui';
 
 import { useThemeStore } from './store/themeStore';
 import {
+  DEFAULT_THEME_NAME,
   ThemeName,
   ThemePreference,
   ThemeTokens,
   themeTokens,
 } from '@/shared/config/theme';
-import tamaguiConfig from '@/shared/config/tamagui.config';
+import { themeDefinitions } from '@arcadeum/ui/themeDefinitions';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -97,7 +97,7 @@ export function AppThemeProvider({
   );
 
   const resolvedTheme: ThemeName = useMemo(() => {
-    if (!isHydrated) return initialTheme || 'dark';
+    if (!isHydrated) return initialTheme || DEFAULT_THEME_NAME;
 
     if (themePreference === 'system') return systemTheme;
     return themePreference;
@@ -118,8 +118,7 @@ export function AppThemeProvider({
 
     if (
       currentTheme === resolvedTheme &&
-      currentPreference === themePreference &&
-      doc.classList.contains(`t_${resolvedTheme}`)
+      currentPreference === themePreference
     ) {
       return;
     }
@@ -128,35 +127,14 @@ export function AppThemeProvider({
     doc.setAttribute('data-theme', resolvedTheme);
     doc.setAttribute('data-theme-preference', themePreference);
 
-    doc.classList.forEach((c) => {
-      if (c.startsWith('t_')) doc.classList.remove(c);
-    });
-    doc.classList.add(`t_${resolvedTheme}`);
-
-    // Defer expensive Tamagui token iteration to idle time
+    // Defer expensive theme token iteration to idle time
     const applyTokenWrites = () => {
-      const activeTamaguiTheme = tamaguiConfig.themes[
-        resolvedTheme
-      ] as unknown as Record<
-        string,
-        { val?: string; variable?: string } | string
-      >;
-      if (activeTamaguiTheme) {
-        Object.entries(activeTamaguiTheme).forEach(([key, value]) => {
-          if (value) {
-            const stringValue =
-              typeof value === 'object' && value !== null
-                ? value.val || value.variable || String(value)
-                : String(value);
-
-            if (
-              stringValue &&
-              typeof stringValue === 'string' &&
-              !stringValue.includes('[object')
-            ) {
-              doc.style.setProperty(`--${key}`, stringValue);
-              doc.style.setProperty(`--color-${key}`, stringValue);
-            }
+      const activeTheme = themeDefinitions[resolvedTheme];
+      if (activeTheme) {
+        Object.entries(activeTheme).forEach(([key, value]) => {
+          if (value && typeof value === 'string') {
+            doc.style.setProperty(`--${key}`, value);
+            doc.style.setProperty(`--color-${key}`, value);
           }
         });
       }
@@ -164,7 +142,9 @@ export function AppThemeProvider({
       doc.style.setProperty('--background', themeTokensValue.background.base);
       doc.style.setProperty('--foreground', themeTokensValue.text.primary);
       doc.style.setProperty('--muted-foreground', themeTokensValue.text.muted);
-      doc.style.setProperty('--primary', themeTokensValue.text.accent);
+      // NOTE: `--primary` is deliberately NOT overridden here — it comes from
+      // themeDefinitions, which darkens it to #0369a1 for WCAG AA 4.5:1
+      // contrast with white button text (see themeDefinitions.ts).
       doc.style.setProperty('--glassBg', themeTokensValue.glass.background);
       doc.style.setProperty('--glassBorder', themeTokensValue.glass.border);
 
@@ -205,13 +185,7 @@ export function AppThemeProvider({
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <TamaguiProvider
-        config={tamaguiConfig}
-        defaultTheme={resolvedTheme}
-        disableInjectCSS={process.env.NODE_ENV === 'production'}
-      >
-        {children}
-      </TamaguiProvider>
+      {children}
     </ThemeContext.Provider>
   );
 }

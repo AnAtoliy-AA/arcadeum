@@ -188,12 +188,12 @@ const handleSort = (key) => {
   <TableHeader>
     <TableRow>
       <TableHead
-        onPress={() => handleSort('name')}
+        onClick={() => handleSort('name')}
         aria-sort={sortConfig.key === 'name' ? sortConfig.direction : 'none'}
       >
         Name {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
       </TableHead>
-      <TableHead onPress={() => handleSort('value')}>
+      <TableHead onClick={() => handleSort('value')}>
         Value
       </TableHead>
     </TableRow>
@@ -229,7 +229,7 @@ const filteredData = useMemo(() => {
 <Input
   placeholder="Search..."
   value={search}
-  onChangeText={setSearch}
+  onChange={setSearch}
   aria-label="Search table"
 />
 

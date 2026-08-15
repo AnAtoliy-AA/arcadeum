@@ -1,14 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { OptionCard } from './OptionCard';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../../shared/config/tamagui.config';
 
-const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <TamaguiProvider config={config} defaultTheme="dark">
-    {children}
-  </TamaguiProvider>
-);
+const TestWrapper = ({ children }: { children: React.ReactNode }) => children;
 
 describe('OptionCard', () => {
   it('renders label and description', () => {

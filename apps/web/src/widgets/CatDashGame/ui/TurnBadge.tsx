@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { XStack, Text } from 'tamagui';
 import { useCatDashTheme } from '../lib/CatDashThemeContext';
 import type { CatDashClientState } from '../types';
 
@@ -30,37 +29,24 @@ export const CatDashTurnBadge = memo(function CatDashTurnBadge({
   if (!currentPlayer) return null;
 
   return (
-    <XStack
-      alignItems="center"
-      justifyContent="center"
-      gap="$3"
-      paddingVertical="$3"
-      paddingHorizontal="$4"
-      backgroundColor={
-        myTurn ? 'rgba(124, 58, 237, 0.18)' : 'rgba(255, 255, 255, 0.03)'
-      }
-      borderRadius="$5"
-      borderWidth={1.5}
-      borderColor={myTurn ? tokens.playerBorder : tokens.trackBorder}
+    <div
+      className="flex flex-row items-center justify-center gap-3 py-3 px-4 rounded-3xl border-[1.5px]"
       style={{
-        backdropFilter: 'blur(12px)',
-        boxShadow: myTurn
-          ? `0 8px 32px ${tokens.playerBorder}33`
-          : '0 8px 32px rgba(0, 0, 0, 0.15)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        backgroundColor: myTurn
+          ? 'rgba(124, 58, 237, 0.18)'
+          : 'rgba(255, 255, 255, 0.03)',
+        borderColor: myTurn ? tokens.playerBorder : tokens.trackBorder,
       }}
     >
       <RealisticCat catId={currentPlayer.catId} size={40} />
-      <Text
-        fontSize={18}
-        fontWeight="bold"
-        color={tokens.text}
-        letterSpacing={0.5}
+      <span
+        className="text-[18px] font-bold tracking-[0.5px]"
+        style={{ color: tokens.text }}
       >
         {myTurn
           ? '🎲 Your turn — roll the dice!'
           : `⏳ ${resolveName(currentEntryId)} is rolling...`}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 });

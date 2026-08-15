@@ -251,7 +251,7 @@ export function LobbySidebar({
               const avatarColor =
                 AVATAR_COLORS[member.displayName.length % AVATAR_COLORS.length];
               return (
-                <PlayerItem key={member.id} $isHost={isRoomHost}>
+                <PlayerItem key={member.id} isHost={isRoomHost}>
                   {member.equippedAvatarId ? (
                     <InGameAvatar
                       playerId={member.id}
@@ -275,7 +275,9 @@ export function LobbySidebar({
                   </PlayerInfo>
                   {onKickPlayer && !isRoomHost && (
                     <Button
-                      variant="ghost"
+                      className="py-1 px-2 min-w-[auto]"
+                      variant="danger"
+                      ghost
                       size="sm"
                       onClick={() =>
                         setKickTarget({
@@ -283,10 +285,6 @@ export function LobbySidebar({
                           name: member.displayName,
                         })
                       }
-                      paddingVertical="$1"
-                      paddingHorizontal="$2"
-                      minWidth="auto"
-                      style={{ color: '#ef4444' }}
                     >
                       ✕
                     </Button>
@@ -359,10 +357,10 @@ export function LobbySidebar({
                   </div>
                   {isHost && onReinvite && (
                     <Button
+                      className="ml-2"
                       variant="ghost"
                       size="sm"
                       onClick={() => onReinvite?.([u.id])}
-                      marginLeft="$2"
                     >
                       {reinviteLabel}
                     </Button>
@@ -377,7 +375,7 @@ export function LobbySidebar({
         <CardTitle>{roomInfoLabel}</CardTitle>
         <InfoRow>
           <InfoLabel>{statusLabel}</InfoLabel>
-          <StatusBadge $status={room.status}>
+          <StatusBadge status={room.status}>
             {t(`games.rooms.status.${room.status}`) || room.status}
           </StatusBadge>
         </InfoRow>
@@ -412,12 +410,8 @@ export function LobbySidebar({
       {isHost && onDeleteRoom && (
         <DeleteButton
           onClick={onDeleteRoom}
-          marginTop="$2"
-          width="100%"
           size="md"
-          shadowRadius={0}
-          shadowColor="transparent"
-          shadowOffset={{ width: 0, height: 0 }}
+          style={{ marginTop: 8, boxShadow: '0 0px 0px transparent' }}
         >
           {deleteRoomLabel}
         </DeleteButton>
@@ -426,12 +420,8 @@ export function LobbySidebar({
       {!isHost && onLeaveRoom && (
         <DeleteButton
           onClick={() => setShowLeaveConfirm(true)}
-          marginTop="$2"
-          width="100%"
           size="md"
-          shadowRadius={0}
-          shadowColor="transparent"
-          shadowOffset={{ width: 0, height: 0 }}
+          style={{ marginTop: 8, boxShadow: '0 0px 0px transparent' }}
         >
           {labels.leaveRoomLabel || t('games.common.leaveRoom.button')}
         </DeleteButton>

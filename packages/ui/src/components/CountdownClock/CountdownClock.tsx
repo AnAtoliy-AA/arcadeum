@@ -1,24 +1,13 @@
+'use client';
 import { useEffect, useState } from 'react';
-import { XStack, YStack, Text, styled } from 'tamagui';
 
 export type CountdownClockProps = {
   targetIso: string;
   variant?: 'compact' | 'full';
   onComplete?: () => void;
   testID?: string;
+  'data-testid'?: string;
 };
-
-const Box = styled(YStack, {
-  name: 'CountdownBox',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$2',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: 'rgba(255,255,255,0.04)',
-  alignItems: 'center',
-  minWidth: 56,
-});
 
 const pad = (n: number) => String(Math.max(0, n)).padStart(2, '0');
 
@@ -27,6 +16,7 @@ export function CountdownClock({
   variant = 'full',
   onComplete,
   testID,
+  'data-testid': dataTestId,
 }: CountdownClockProps) {
   const [now, setNow] = useState(() => Date.now());
 
@@ -47,22 +37,22 @@ export function CountdownClock({
   const m = Math.floor((remaining / 60_000) % 60);
   const s = Math.floor((remaining / 1000) % 60);
 
+  const testId = dataTestId ?? testID;
+
   if (variant === 'compact') {
     return (
-      <Text
-        fontSize="$5"
-        fontWeight="700"
-        letterSpacing={1}
-        testID={testID}
+      <span
+        className="text-[20px] font-bold tracking-[1px]"
+        data-testid={testId}
         aria-label={`${d} days ${h} hours ${m} minutes`}
       >
         {`${pad(h + d * 24)}:${pad(m)}:${pad(s)}`}
-      </Text>
+      </span>
     );
   }
 
   return (
-    <XStack gap="$2" testID={testID}>
+    <div className="flex flex-row gap-2" data-testid={testId}>
       {(
         [
           ['D', d],
@@ -71,15 +61,14 @@ export function CountdownClock({
           ['S', s],
         ] as const
       ).map(([k, v]) => (
-        <Box key={k}>
-          <Text fontSize="$7" fontWeight="700" letterSpacing={1}>
-            {pad(v)}
-          </Text>
-          <Text fontSize="$1" opacity={0.7}>
-            {k}
-          </Text>
-        </Box>
+        <div
+          key={k}
+          className="flex flex-col items-center rounded-lg border border-[var(--borderColor)] bg-[rgba(255,255,255,0.04)] px-3 py-2 min-w-[56px]"
+        >
+          <span className="text-[28px] font-bold tracking-[1px]">{pad(v)}</span>
+          <span className="text-[12px] opacity-70">{k}</span>
+        </div>
       ))}
-    </XStack>
+    </div>
   );
 }

@@ -27,7 +27,6 @@ import {
   GameTileItem,
   GameTileContainer,
 } from '@/features/games/ui/create/styles';
-import { YStack } from 'tamagui';
 
 interface CriticalGameOptions {
   cardVariant?: string;
@@ -112,9 +111,8 @@ export default function CriticalCreationConfig({
           <Button
             variant="link"
             size="sm"
-            mb="$4"
             type="button"
-            color="$accent"
+            className="mb-4 text-[var(--accent)]"
             onClick={() => setShowRules(true)}
             data-testid="view-rules-button"
           >
@@ -150,8 +148,8 @@ export default function CriticalCreationConfig({
                     </ComingSoonBadge>
                   )}
                   <GameTileIcon
-                    background={variant.gradient || undefined}
                     className={variant.gradient ? 'text-gradient' : undefined}
+                    style={{ background: variant.gradient || undefined }}
                   >
                     {variant.emoji}
                   </GameTileIcon>
@@ -180,14 +178,14 @@ export default function CriticalCreationConfig({
                 })
               }
             />
-            <YStack flex={1} gap="$0.5">
+            <div className="flex flex-col items-stretch flex-1">
               <ExpansionLabel>
                 {t('games.create.houseRuleActionCardCombos')}
               </ExpansionLabel>
               <ExpansionBadge>
                 {t('games.create.houseRuleActionCardCombosHint')}
               </ExpansionBadge>
-            </YStack>
+            </div>
           </ExpansionCheckbox>
 
           <ExpansionCheckbox>
@@ -198,7 +196,7 @@ export default function CriticalCreationConfig({
                 handleUpdate({ idleTimerEnabled: !options.idleTimerEnabled })
               }
             />
-            <YStack flex={1} gap="$0.5">
+            <div className="flex flex-col items-stretch flex-1">
               <ExpansionLabel>
                 {t('games.create.houseRuleIdleTimer') || 'Idle Timer Autoplay'}
               </ExpansionLabel>
@@ -207,7 +205,7 @@ export default function CriticalCreationConfig({
                   seconds: String(IDLE_TIMER_DURATION_SEC),
                 }) || 'Automated play after 15s'}
               </ExpansionBadge>
-            </YStack>
+            </div>
           </ExpansionCheckbox>
         </ExpansionGrid>
       </Section>

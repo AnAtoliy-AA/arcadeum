@@ -1,16 +1,10 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { Input } from './Input';
 import { describe, it, expect, vi } from 'vitest';
 
 
 const render = (ui: React.ReactElement) => {
-  return rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>
-  );
+  return rtlRender(ui);
 };
 
 describe('Input', () => {
@@ -30,6 +24,6 @@ describe('Input', () => {
 
   it('renders in disabled state', () => {
     render(<Input disabled />);
-    expect(screen.getByRole('textbox')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('textbox')).toBeDisabled();
   });
 });

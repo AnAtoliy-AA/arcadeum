@@ -24,10 +24,12 @@ Incremental UI enhancement of the Sea Battle widget. All existing game logic, st
 ```ts
 const sunkCellSet = useMemo(() => {
   const set = new Set<string>();
-  players.forEach(p => {
-    p.ships.filter(s => s.sunk).forEach(s => {
-      s.cells.forEach(c => set.add(`${p.playerId}-${c.row}-${c.col}`));
-    });
+  players.forEach((p) => {
+    p.ships
+      .filter((s) => s.sunk)
+      .forEach((s) => {
+        s.cells.forEach((c) => set.add(`${p.playerId}-${c.row}-${c.col}`));
+      });
   });
   return set;
 }, [players]);
@@ -37,14 +39,14 @@ Each cell checks `sunkCellSet.has(`${playerId}-${rIndex}-${cIndex}`)` before fal
 
 ### Cell States
 
-| State | Visual |
-|-------|--------|
-| Empty | Dark fill, subtle blue border |
-| Ship (own board) | Steel blue fill (`rgba(148,163,184,0.4)`) |
-| Hit (not sunk) | Red fill + `🔥` icon centered via `position:absolute` child + pulsing red glow |
-| Miss | Dark fill + white dot (9px circle via absolute child) |
-| Sunk | Deep red fill + `💀` icon centered + stronger persistent glow |
-| Hover (enemy, your turn only) | Blue tint + glowing border + `scale(1.08)` via Tamagui `hoverStyle` |
+| State                         | Visual                                                                         |
+| ----------------------------- | ------------------------------------------------------------------------------ |
+| Empty                         | Dark fill, subtle blue border                                                  |
+| Ship (own board)              | Steel blue fill (`rgba(148,163,184,0.4)`)                                      |
+| Hit (not sunk)                | Red fill + `🔥` icon centered via `position:absolute` child + pulsing red glow |
+| Miss                          | Dark fill + white dot (9px circle via absolute child)                          |
+| Sunk                          | Deep red fill + `💀` icon centered + stronger persistent glow                  |
+| Hover (enemy, your turn only) | Blue tint + glowing border + `scale(1.08)` via Tamagui `hoverStyle`            |
 
 **Icon placement:** `🔥` and `💀` are rendered as an absolutely positioned `<Text>` child inside `BoardCell`, so the cell's `backgroundColor` is not occluded — existing Playwright color checks remain valid.
 
@@ -77,7 +79,7 @@ All keyframe animations are injected via `useSeaBattleAnimations()` hook in a ne
 
 `animations.ts` must be `'use client'` (accesses `document`). `Game.tsx` is already a client component, so this is safe. SSR renders no animations; they hydrate on the client.
 
-`@tamagui/animations-css` is already configured in `packages/ui/src/tamagui.config.ts` — `hoverStyle` with `scale` works as-is.
+`hoverStyle` with `scale` works as-is via CSS transitions.
 
 Animations defined:
 
@@ -94,6 +96,7 @@ Animations defined:
 The existing `<Badge variant="success" size="sm" pulse>` in `AttackBoard` is **replaced** with a new `<TurnBadge>` sub-component (extracted to `ui/TurnBadge.tsx`) — a pill with blinking dot + translated text.
 
 Turn text uses existing i18n keys:
+
 - `games.sea_battle_v1.table.players.yourTurnAttack` (already exists)
 - `games.sea_battle_v1.table.players.waitingFor` (already exists)
 
@@ -104,6 +107,7 @@ The `TurnIndicator` from `@arcadeum/ui` in the header (`Game.tsx`) is **unchange
 ### Ships Remaining (`ShipsLeft.tsx`)
 
 Add `useSeaBattleTheme()` call inside `ShipsLeft`. Replace hardcoded colors:
+
 - Own alive: `theme.primaryColor`
 - Enemy alive: `theme.textSecondaryColor`
 - Sunk: `theme.hitColor` at 35% opacity
@@ -132,10 +136,16 @@ function useDragPlacement(args: {
   selectedShipId: string | null;
   setSelectedShipId: (id: string | null) => void;
 }): {
-  getDragProps: (shipId: string) => { draggable: boolean; onDragStart: DragEventHandler };
-  getDropProps: (row: number, col: number) => { onDragOver: DragEventHandler; onDrop: DragEventHandler };
+  getDragProps: (shipId: string) => {
+    draggable: boolean;
+    onDragStart: DragEventHandler;
+  };
+  getDropProps: (
+    row: number,
+    col: number,
+  ) => { onDragOver: DragEventHandler; onDrop: DragEventHandler };
   isDragging: boolean;
-}
+};
 ```
 
 - `draggable` is only `true` for unplaced ships
@@ -158,12 +168,12 @@ function useDragPlacement(args: {
 
 Emoji prefixes added in component code — i18n strings unchanged. All label keys already exist:
 
-| Button | i18n keys used |
-|--------|----------------|
-| `↻ Rotate (H/V)` | `actions.rotate` + `state.horizontal` / `state.vertical` |
-| `↺ Reset` | `actions.resetPlacement` |
-| `🎲 Auto-place / Randomize` | `actions.autoPlace` / `actions.randomize` |
-| `⚓ Confirm Placement` | `actions.confirmPlacement` |
+| Button                      | i18n keys used                                           |
+| --------------------------- | -------------------------------------------------------- |
+| `↻ Rotate (H/V)`            | `actions.rotate` + `state.horizontal` / `state.vertical` |
+| `↺ Reset`                   | `actions.resetPlacement`                                 |
+| `🎲 Auto-place / Randomize` | `actions.autoPlace` / `actions.randomize`                |
+| `⚓ Confirm Placement`      | `actions.confirmPlacement`                               |
 
 Confirm button: glowing green gradient + `valid-pulse` class when all ships placed; muted/disabled otherwise.
 
@@ -200,61 +210,61 @@ New file: `ui/SeaBattleThemePreview.tsx`
 
 Add to all 5 locale files (`en`, `ru`, `es`, `fr`, `by`):
 
-| Key | English value |
-|-----|---------------|
-| `games.sea_battle_v1.table.players.targetBadge` | `"Target"` |
-| `games.sea_battle_v1.table.actions.dragHint` | `"Drag to board · Click to select"` |
+| Key                                             | English value                       |
+| ----------------------------------------------- | ----------------------------------- |
+| `games.sea_battle_v1.table.players.targetBadge` | `"Target"`                          |
+| `games.sea_battle_v1.table.actions.dragHint`    | `"Drag to board · Click to select"` |
 
 ---
 
 ## 5. New Files
 
-| File | Purpose |
-|------|---------|
-| `widgets/SeaBattleGame/hooks/useDragPlacement.ts` | HTML5 DnD hook |
-| `widgets/SeaBattleGame/ui/TurnBadge.tsx` | Turn pill badge with blinking dot |
-| `widgets/SeaBattleGame/ui/SeaBattleThemePreview.tsx` | Static 10×10 board preview for lobby |
-| `widgets/SeaBattleGame/ui/styles/animations.ts` | `useSeaBattleAnimations()` — injects CSS keyframes into `<head>` |
+| File                                                 | Purpose                                                          |
+| ---------------------------------------------------- | ---------------------------------------------------------------- |
+| `widgets/SeaBattleGame/hooks/useDragPlacement.ts`    | HTML5 DnD hook                                                   |
+| `widgets/SeaBattleGame/ui/TurnBadge.tsx`             | Turn pill badge with blinking dot                                |
+| `widgets/SeaBattleGame/ui/SeaBattleThemePreview.tsx` | Static 10×10 board preview for lobby                             |
+| `widgets/SeaBattleGame/ui/styles/animations.ts`      | `useSeaBattleAnimations()` — injects CSS keyframes into `<head>` |
 
 ---
 
 ## 6. Files Changed
 
-| File | Change |
-|------|--------|
-| `ui/AttackBoard.tsx` | Sunk detection; emoji icon children; glassmorphism panels; target badge; `TurnBadge` |
-| `ui/ShipPlacementBoard.tsx` | Drag-and-drop via `useDragPlacement`; invalid hover state; button emoji prefixes |
-| `ui/ShipsLeft.tsx` | Add `useSeaBattleTheme()`; replace hardcoded colors |
-| `ui/SeaBattleLobby.tsx` | Theme tab strip + `SeaBattleThemePreview` + larger swatches |
-| `ui/styles/board.tsx` | `BoardGrid` overflow visible; `BoardCell` hover scale |
-| `ui/styles/placement.tsx` | `ShipItem` states; `ShipCell` color; `PlacementActions` layout |
-| `ui/styles/player.tsx` | `PlayerSection` inline `backdropFilter`; `breathe` class support |
-| `shared/i18n/messages/games/sea-battle/*.ts` | 2 new keys × 5 locale files |
-| `ui/Game.tsx` | Call `useSeaBattleAnimations()` |
+| File                                         | Change                                                                               |
+| -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `ui/AttackBoard.tsx`                         | Sunk detection; emoji icon children; glassmorphism panels; target badge; `TurnBadge` |
+| `ui/ShipPlacementBoard.tsx`                  | Drag-and-drop via `useDragPlacement`; invalid hover state; button emoji prefixes     |
+| `ui/ShipsLeft.tsx`                           | Add `useSeaBattleTheme()`; replace hardcoded colors                                  |
+| `ui/SeaBattleLobby.tsx`                      | Theme tab strip + `SeaBattleThemePreview` + larger swatches                          |
+| `ui/styles/board.tsx`                        | `BoardGrid` overflow visible; `BoardCell` hover scale                                |
+| `ui/styles/placement.tsx`                    | `ShipItem` states; `ShipCell` color; `PlacementActions` layout                       |
+| `ui/styles/player.tsx`                       | `PlayerSection` inline `backdropFilter`; `breathe` class support                     |
+| `shared/i18n/messages/games/sea-battle/*.ts` | 2 new keys × 5 locale files                                                          |
+| `ui/Game.tsx`                                | Call `useSeaBattleAnimations()`                                                      |
 
 ---
 
 ## 7. File Size Projections
 
-| File | Current | Projected | Status |
-|------|---------|-----------|--------|
-| `AttackBoard.tsx` | 243 | ~320 | Safe |
-| `ShipPlacementBoard.tsx` | 377 | ~460 | Safe |
-| `ShipsLeft.tsx` | 83 | ~100 | Safe |
-| `SeaBattleLobby.tsx` | 248 | ~290 | Safe |
-| `styles/board.tsx` | 97 | ~110 | Safe |
-| `styles/placement.tsx` | 84 | ~110 | Safe |
-| `styles/player.tsx` | 62 | ~80 | Safe |
+| File                     | Current | Projected | Status |
+| ------------------------ | ------- | --------- | ------ |
+| `AttackBoard.tsx`        | 243     | ~320      | Safe   |
+| `ShipPlacementBoard.tsx` | 377     | ~460      | Safe   |
+| `ShipsLeft.tsx`          | 83      | ~100      | Safe   |
+| `SeaBattleLobby.tsx`     | 248     | ~290      | Safe   |
+| `styles/board.tsx`       | 97      | ~110      | Safe   |
+| `styles/placement.tsx`   | 84      | ~110      | Safe   |
+| `styles/player.tsx`      | 62      | ~80       | Safe   |
 
 ---
 
 ## 8. Playwright Test Impact
 
-| Test file | Impact | Action needed |
-|-----------|--------|---------------|
-| `sea-battle-colors.spec.ts` | Checks `data-highlighted="true"` + cell `backgroundColor`. Emoji icons are `position:absolute` children — cell own `backgroundColor` unaffected. | None |
-| `sea-battle-lobby-colors.spec.ts` | Checks `data-testid="color-swatch-*"` background colors. Colors unchanged; only size increases. | None |
-| Other sea-battle specs | No structural DOM changes to game flow selectors. | None |
+| Test file                         | Impact                                                                                                                                           | Action needed |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------- |
+| `sea-battle-colors.spec.ts`       | Checks `data-highlighted="true"` + cell `backgroundColor`. Emoji icons are `position:absolute` children — cell own `backgroundColor` unaffected. | None          |
+| `sea-battle-lobby-colors.spec.ts` | Checks `data-testid="color-swatch-*"` background colors. Colors unchanged; only size increases.                                                  | None          |
+| Other sea-battle specs            | No structural DOM changes to game flow selectors.                                                                                                | None          |
 
 ---
 

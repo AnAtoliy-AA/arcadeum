@@ -1,5 +1,4 @@
 'use client';
-import { XStack, Text } from 'tamagui';
 
 interface BadgePillProps {
   icon: string;
@@ -21,47 +20,27 @@ export function BadgePill({
   ariaLabel,
 }: BadgePillProps) {
   return (
-    <XStack
-      alignItems="center"
-      gap="$1"
-      paddingHorizontal="$2"
-      paddingVertical="$0.5"
-      borderRadius={8}
-      borderWidth={1}
-      backgroundColor={bg}
-      borderColor={border}
-      className={className}
+    <div
+      className={`flex flex-row items-center gap-1 rounded-lg border px-2 py-0.5 ${className ?? ''}`}
+      style={{ backgroundColor: bg, borderColor: border }}
       aria-label={ariaLabel}
     >
-      <Text fontSize={10}>{icon}</Text>
-      <Text
-        fontSize={9}
-        fontWeight="700"
-        color={color}
-        textTransform="uppercase"
+      <span className="text-[10px] leading-none">{icon}</span>
+      <span
+        className="text-[9px] leading-none font-bold uppercase"
+        style={{ color }}
       >
         {label}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 }
 
-export function TeamPill({
-  team,
-}: {
-  team: { name: string; color: string };
-}) {
+export function TeamPill({ team }: { team: { name: string; color: string } }) {
   return (
-    <XStack
-      alignItems="center"
-      gap="$1"
-      paddingHorizontal="$2"
-      paddingVertical="$0.5"
-      borderRadius={999}
-      borderWidth={1}
-      backgroundColor="rgba(0,0,0,0.3)"
-      borderColor={team.color}
-      marginLeft="$1"
+    <div
+      className="flex flex-row items-center gap-1 ml-1 rounded-full border px-2 py-0.5"
+      style={{ backgroundColor: 'rgba(0,0,0,0.3)', borderColor: team.color }}
     >
       <span
         style={{
@@ -72,14 +51,12 @@ export function TeamPill({
           backgroundColor: team.color,
         }}
       />
-      <Text
-        fontSize={9}
-        fontWeight="700"
-        color={team.color}
-        textTransform="uppercase"
+      <span
+        className="text-[9px] leading-none font-bold uppercase"
+        style={{ color: team.color }}
       >
         {team.name}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 }

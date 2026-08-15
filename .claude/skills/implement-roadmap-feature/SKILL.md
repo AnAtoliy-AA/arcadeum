@@ -46,7 +46,7 @@ Follow existing code conventions:
 - **TypeScript**: never use `any`, define proper types
 - **React**: Server Components by default, `'use client'` only when needed
 - **State**: Zustand stores with `persist` middleware for localStorage
-- **Styling**: Tamagui components from `@arcadeum/ui`, use `styled()` for custom styles
+- **Styling**: Tailwind classes on plain React elements; reuse `@arcadeum/ui` components and merge overrides via `cx` (see `/tailwind-pro`)
 - **i18n**: all user-facing strings through `useTranslation()`, add keys to all 5 locales (en, es, fr, ru, by)
 - **Backend**: validate DTOs with `class-validator`, protect routes with `JwtAuthGuard`
 

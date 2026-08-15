@@ -1,15 +1,8 @@
 import { render as rtlRender, screen } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
 import { describe, it, expect } from 'vitest';
-import config from '../../tamagui.config';
 import { RarityBorder, type ShopRarity } from './RarityBorder';
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('RarityBorder', () => {
   it('renders children', () => {

@@ -1,7 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../../shared/config/tamagui.config';
 import { AuthFormPanel } from './AuthFormPanel';
 import type { AuthLabels } from '../hooks/useAuthLabels';
 import type { UseAuthFormResult } from '../hooks/useAuthForm';
@@ -125,11 +123,7 @@ function makeAuth(
 }
 
 function renderPanel(auth: UseAuthFormResult) {
-  return render(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      <AuthFormPanel labels={labels} auth={auth} />
-    </TamaguiProvider>,
-  );
+  return render(<AuthFormPanel labels={labels} auth={auth} />);
 }
 
 describe('AuthFormPanel', () => {
@@ -215,12 +209,10 @@ describe('AuthFormPanel', () => {
     const { rerender } = renderPanel(makeAuth({ isRegisterMode: false }));
     expect(screen.queryByTestId('auth-username-input')).toBeNull();
     rerender(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <AuthFormPanel
-          labels={labels}
-          auth={makeAuth({ isRegisterMode: true })}
-        />
-      </TamaguiProvider>,
+      <AuthFormPanel
+        labels={labels}
+        auth={makeAuth({ isRegisterMode: true })}
+      />,
     );
     expect(screen.getByTestId('auth-username-input')).toBeInTheDocument();
   });

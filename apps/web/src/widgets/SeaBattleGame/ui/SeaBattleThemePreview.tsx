@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { YStack, XStack, Text } from 'tamagui';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import { CELL_STATE } from '../types';
 
@@ -54,43 +53,45 @@ export function SeaBattleThemePreview({
   }
 
   return (
-    <YStack
+    <div
+      className="flex flex-col items-stretch rounded-[10px] border p-3 gap-2 sb-preview-fade"
+      style={{ borderColor: theme.cellBorder }}
       key={selectedVariant}
-      className="sb-preview-fade"
-      borderRadius={10}
-      borderWidth={1}
-      borderColor={theme.cellBorder}
-      padding="$3"
-      gap="$2"
       data-testid="color-preview-container"
-      style={{ background: theme.boardBackground } as React.CSSProperties}
     >
       {/* Column labels */}
-      <XStack marginLeft={colLabelOffset} gap={2}>
+      <div
+        className="flex flex-row items-stretch gap-2"
+        style={{ marginLeft: colLabelOffset }}
+      >
         {COL_LABELS.map((l) => (
-          <Text
+          <span
+            className="text-center"
+            style={{
+              fontSize: labelFontSize,
+              color: theme.textSecondaryColor,
+              width: cellSize,
+            }}
             key={l}
-            fontSize={labelFontSize}
-            color={theme.textSecondaryColor}
-            width={cellSize}
-            textAlign="center"
           >
             {l}
-          </Text>
+          </span>
         ))}
-      </XStack>
+      </div>
 
       {/* Rows */}
       {Array.from({ length: 10 }, (_, rIndex) => (
-        <XStack key={rIndex} gap={2} alignItems="center">
-          <Text
-            fontSize={labelFontSize}
-            color={theme.textSecondaryColor}
-            width={rowLabelWidth}
-            textAlign="right"
+        <div className="flex flex-row gap-2 items-center" key={rIndex}>
+          <span
+            className="text-right"
+            style={{
+              fontSize: labelFontSize,
+              color: theme.textSecondaryColor,
+              width: rowLabelWidth,
+            }}
           >
             {ROW_LABELS[rIndex]}
-          </Text>
+          </span>
           {Array.from({ length: 10 }, (_, cIndex) => {
             const state = BOARD_PATTERN[rIndex * 10 + cIndex];
             // Preserve data-testid compatibility with sea-battle-lobby-colors.spec.ts
@@ -105,40 +106,38 @@ export function SeaBattleThemePreview({
                       ? 'color-swatch-empty'
                       : undefined;
             return (
-              <YStack
+              <div
+                className="flex flex-col border items-center justify-center"
+                style={{
+                  width: cellSize,
+                  height: cellSize,
+                  borderRadius: parseInt(theme.borderRadius) || 3,
+                  borderColor: theme.cellBorder,
+                  backgroundColor: getCellColor(state ?? 0),
+                }}
                 key={cIndex}
-                width={cellSize}
-                height={cellSize}
-                borderRadius={parseInt(theme.borderRadius) || 3}
-                borderWidth={1}
-                borderColor={theme.cellBorder}
-                backgroundColor={getCellColor(state ?? 0)}
-                alignItems="center"
-                justifyContent="center"
                 data-testid={testId}
               >
                 {state === CELL_STATE.HIT && (
-                  <Text
-                    fontSize={hitFontSize}
-                    style={{ pointerEvents: 'none' } as React.CSSProperties}
-                  >
+                  <span className="" style={{ fontSize: hitFontSize }}>
                     🔥
-                  </Text>
+                  </span>
                 )}
                 {state === CELL_STATE.MISS && (
-                  <YStack
-                    width={missDotSize}
-                    height={missDotSize}
-                    borderRadius={100}
-                    backgroundColor={theme.textSecondaryColor}
-                    opacity={0.7}
+                  <div
+                    className="flex flex-col items-stretch rounded-[100px] opacity-[0.7]"
+                    style={{
+                      width: missDotSize,
+                      height: missDotSize,
+                      backgroundColor: theme.textSecondaryColor,
+                    }}
                   />
                 )}
-              </YStack>
+              </div>
             );
           })}
-        </XStack>
+        </div>
       ))}
-    </YStack>
+    </div>
   );
 }

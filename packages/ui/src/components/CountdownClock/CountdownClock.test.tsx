@@ -1,15 +1,8 @@
 import { render as rtlRender, screen, act } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
-import config from '../../tamagui.config';
 import { CountdownClock } from './CountdownClock';
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('CountdownClock', () => {
   beforeAll(() => {

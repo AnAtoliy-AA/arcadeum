@@ -1,6 +1,6 @@
 'use client';
 
-import { Text, XStack, YStack } from 'tamagui';
+import { Typography } from '@arcadeum/ui';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useAudioPlayer } from './useAudioPlayer';
@@ -28,27 +28,18 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
 
   if (player.loading) {
     return (
-      <YStack
-        position="fixed"
-        zIndex={1000}
-        width={200}
-        paddingVertical="$3"
-        paddingHorizontal="$3"
-        borderRadius={28}
-        backgroundColor="rgba(255,255,255,0.18)"
-        borderWidth={1}
-        borderColor="rgba(255,255,255,0.5)"
+      <div
+        className="fixed bottom-4 left-4 z-[1000] w-[200px] rounded-[28px] border border-[rgba(255,255,255,0.5)] px-3 py-3"
         style={{
+          backgroundColor: 'rgba(255,255,255,0.18)',
           backdropFilter: 'blur(50px) saturate(1.6)',
           WebkitBackdropFilter: 'blur(50px) saturate(1.6)',
-          left: 16,
-          bottom: 16,
         }}
       >
-        <Text fontSize={12} color="rgba(255,255,255,0.7)">
+        <Typography uiSize="xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
           Loading music…
-        </Text>
-      </YStack>
+        </Typography>
+      </div>
     );
   }
 
@@ -76,20 +67,12 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   return (
     <>
       <style>{playerStyles}</style>
-      <YStack
-        className={`game-music-player${player.isPlaying ? ' is-playing' : ''}`}
-        testID="game-music-player"
-        position="fixed"
-        zIndex={1000}
-        width={player.miniMode ? 200 : 320}
-        gap={0}
-        paddingVertical="$3"
-        paddingHorizontal="$3"
-        borderRadius={28}
-        backgroundColor="rgba(255,255,255,0.18)"
-        borderWidth={1}
-        borderColor="rgba(255,255,255,0.5)"
+      <div
+        className={`game-music-player fixed z-[1000] rounded-[28px] border border-[rgba(255,255,255,0.5)] px-3 py-3 ${player.isPlaying ? 'is-playing' : ''}`}
+        data-testid="game-music-player"
         style={{
+          width: player.miniMode ? 200 : 320,
+          backgroundColor: 'rgba(255,255,255,0.18)',
           backdropFilter: 'blur(50px) saturate(1.6)',
           WebkitBackdropFilter: 'blur(50px) saturate(1.6)',
           boxShadow:
@@ -105,24 +88,15 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       >
-        <XStack
+        <div
           data-drag-handle
-          alignItems="center"
-          gap="$3"
-          cursor="grab"
-          paddingVertical="$1"
-          paddingHorizontal="$1"
+          className="flex cursor-grab items-center gap-3 px-1 py-1"
           style={{ touchAction: 'none' }}
         >
-          <XStack
-            width={40}
-            height={40}
-            borderRadius={10}
-            backgroundColor="rgba(255,255,255,0.25)"
-            alignItems="center"
-            justifyContent="center"
-            flexShrink={0}
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px]"
             style={{
+              backgroundColor: 'rgba(255,255,255,0.25)',
               border: '1px solid rgba(255,255,255,0.45)',
               boxShadow:
                 'inset 0 1px 0 rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.08)',
@@ -144,26 +118,21 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
                 audioRef={player.audioRef}
               />
             )}
-          </XStack>
-          <YStack flex={1} overflow="hidden" gap={1}>
-            <Text
-              className="game-music-title"
-              fontSize={13}
-              fontWeight="600"
-              color="rgba(255,255,255,0.95)"
-              numberOfLines={1}
+          </div>
+          <div className="min-w-0 flex-1 gap-[1px] overflow-hidden">
+            <Typography
+              className="game-music-title block truncate text-[13px] font-semibold"
+              style={{ color: 'rgba(255,255,255,0.95)' }}
             >
               {player.track?.title}
-            </Text>
-            <Text
-              fontSize={10}
-              fontWeight="400"
-              color="rgba(255,255,255,0.55)"
-              numberOfLines={1}
+            </Typography>
+            <Typography
+              className="block truncate text-[10px]"
+              style={{ color: 'rgba(255,255,255,0.55)' }}
             >
               Arcadeum
-            </Text>
-          </YStack>
+            </Typography>
+          </div>
           <button
             onClick={player.closePlayer}
             data-testid="game-music-close"
@@ -205,21 +174,20 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
-        </XStack>
+        </div>
 
         {player.error && (
-          <Text
-            fontSize={11}
-            color="#f87171"
-            paddingHorizontal="$2"
-            marginTop="$1"
+          <Typography
+            className="mt-1 px-2"
+            uiSize="xs"
+            style={{ color: '#f87171' }}
           >
             {player.error}
-          </Text>
+          </Typography>
         )}
 
         {!player.miniMode && (
-          <YStack gap="$3" marginTop="$2">
+          <div className="mt-2 flex flex-col gap-3">
             {player.playlistOpen && (
               <Playlist
                 tracks={player.tracks}
@@ -257,21 +225,17 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               onSkipBack={player.skipBack}
               labels={labels}
             />
-          </YStack>
+          </div>
         )}
 
         {player.miniMode && (
-          <YStack gap="$2" alignItems="center">
-            <Text
-              className="game-music-title"
-              fontSize={10}
-              fontWeight="500"
-              color="rgba(255,255,255,0.7)"
-              numberOfLines={1}
-              maxWidth={140}
+          <div className="flex flex-col items-center gap-2">
+            <Typography
+              className="game-music-title max-w-[140px] truncate text-[10px] font-medium"
+              style={{ color: 'rgba(255,255,255,0.7)' }}
             >
               {player.track?.title}
-            </Text>
+            </Typography>
             <MiniControls
               isPlaying={player.isPlaying}
               onTogglePlay={player.togglePlay}
@@ -281,9 +245,9 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               onToggleMiniMode={() => player.setMiniMode(false)}
               labels={labels}
             />
-          </YStack>
+          </div>
         )}
-      </YStack>
+      </div>
     </>
   );
 }

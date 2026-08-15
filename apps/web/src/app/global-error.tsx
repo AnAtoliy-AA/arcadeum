@@ -13,13 +13,12 @@ export default function GlobalError({
 }) {
   const cookieStore = typeof document !== 'undefined' ? document.cookie : '';
   const theme = (cookieStore.match(/app-theme=(light|dark)/)?.[1] || 'dark') as
-    | 'light'
-    | 'dark';
+    'light' | 'dark';
 
   const isDark = theme === 'dark';
 
   return (
-    <html lang="en" className={`t_${theme}`} data-theme={theme}>
+    <html lang="en" data-theme={theme}>
       <head>
         <style>{`
           :root {
@@ -37,7 +36,6 @@ export default function GlobalError({
         `}</style>
       </head>
       <body
-        className={`t_${theme}`}
         style={{
           margin: 0,
           fontFamily: 'system-ui, sans-serif',

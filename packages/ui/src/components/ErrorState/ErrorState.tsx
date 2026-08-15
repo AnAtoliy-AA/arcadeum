@@ -1,7 +1,9 @@
-import { YStack, Text, styled, H3, GetProps } from 'tamagui';
+'use client';
 import { memo } from 'react';
 import type { ReactElement } from 'react';
 import { Button } from '../Button/Button';
+import { Typography } from '../Typography/Typography';
+import { cx } from '../../utils/cx';
 
 export type ErrorStateProps = {
   message: string;
@@ -9,39 +11,8 @@ export type ErrorStateProps = {
   onRetry?: () => void;
   retryLabel?: string;
   'data-testid'?: string;
+  className?: string;
 };
-
-const StyledError = styled(YStack, {
-  name: 'ErrorState',
-  padding: '$8',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '$4',
-  backgroundColor: '$background',
-});
-
-const ErrorIcon = styled(Text, {
-  name: 'ErrorIcon',
-  fontSize: '$8',
-});
-
-const ErrorTitle = styled(H3, {
-  name: 'ErrorTitle',
-  margin: 0,
-  fontSize: '$5',
-  fontWeight: '600',
-  color: '$color',
-});
-
-const ErrorMessage = styled(Text, {
-  name: 'ErrorMessage',
-  fontSize: '$3',
-  color: '$color',
-  opacity: 0.6,
-  style: {
-    textAlign: 'center',
-  },
-});
 
 export const ErrorState = memo(function ErrorState({
   message,
@@ -49,19 +20,36 @@ export const ErrorState = memo(function ErrorState({
   onRetry,
   retryLabel = 'Try Again',
   'data-testid': dataTestId,
+  className,
 }: ErrorStateProps): ReactElement {
   return (
-    <StyledError data-testid={dataTestId}>
-      <ErrorIcon>⚠️</ErrorIcon>
-      {title && <ErrorTitle>{title}</ErrorTitle>}
-      <ErrorMessage>{message}</ErrorMessage>
+    <div
+      data-testid={dataTestId}
+      className={cx(
+        'flex flex-col items-center justify-center gap-4 p-8',
+        className,
+      )}
+      style={{ backgroundColor: 'var(--background)' }}
+    >
+      <span style={{ fontSize: 32 }}>⚠️</span>
+      {title && (
+        <Typography
+          className="m-0 text-[20px] font-semibold"
+          color="var(--color)"
+        >
+          {title}
+        </Typography>
+      )}
+      <Typography uiSize="sm" color="var(--color)" className="text-center opacity-60">
+        {message}
+      </Typography>
       {onRetry && (
-        <YStack marginTop="$4">
+        <div className="mt-4">
           <Button variant="secondary" size="sm" onClick={onRetry}>
             {retryLabel}
           </Button>
-        </YStack>
+        </div>
       )}
-    </StyledError>
+    </div>
   );
 });

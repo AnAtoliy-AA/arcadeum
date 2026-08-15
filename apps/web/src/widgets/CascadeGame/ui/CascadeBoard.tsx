@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { XStack, YStack } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Card } from './Card';
 import { ColorPicker } from './ColorPicker';
@@ -112,13 +111,8 @@ export function CascadeBoard({
   const deckEmblem = theme.symbols.WILD;
 
   return (
-    <YStack
-      width="100%"
-      gap="$3"
-      padding="$0"
-      paddingTop="$4"
-      borderRadius="$4"
-      className={`${styles.table} ${cardStyle === 'aurora' ? styles.aurora : ''}`}
+    <div
+      className={`flex flex-col items-stretch w-full gap-3 p-0 pt-4 rounded-2xl ${`${styles.table} ${cardStyle === 'aurora' ? styles.aurora : ''}`}`}
       style={
         {
           background: theme.background,
@@ -132,16 +126,16 @@ export function CascadeBoard({
         } as React.CSSProperties
       }
     >
-      <YStack gap="$3" className={styles.tableLayer}>
+      <div className={`flex flex-col items-stretch gap-3 ${styles.tableLayer}`}>
         {/* Opponents */}
-        <XStack gap="$3" flexWrap="wrap" justifyContent="center">
+        <div className="flex flex-row items-stretch gap-3 flex-wrap justify-center">
           {opponents.map((opp) => {
             const backs = Math.min(opp.hand.length, MAX_FAN_BACKS);
             const isActive = opp.playerId === activeTurnId;
             return (
-              <YStack
+              <div
+                className={`flex flex-col items-stretch ${`${styles.pod} ${isActive ? styles.podActive : ''}`}`}
                 key={opp.playerId}
-                className={`${styles.pod} ${isActive ? styles.podActive : ''}`}
               >
                 {isActive && !disabled ? (
                   <span className={styles.podThink} aria-hidden="true">
@@ -175,25 +169,25 @@ export function CascadeBoard({
                 <div className={styles.podFan} aria-hidden="true">
                   {Array.from({ length: backs }).map((_, i) => (
                     <span
-                      key={i}
                       className={styles.podFanCard}
                       style={{
                         transform: `rotate(${(i - (backs - 1) / 2) * 7}deg)`,
                       }}
+                      key={i}
                     />
                   ))}
                 </div>
-              </YStack>
+              </div>
             );
           })}
-        </XStack>
+        </div>
 
         {/* Last-Card race: pulsing call button visible to ALL alive players
             while the window is open. First press wins — the engine sorts the
             race by arrival order. Self-press = safe; other-press = at-risk
             player draws 2 penalty cards. */}
         {cascadeOpen && onCallCascade ? (
-          <XStack justifyContent="center" paddingTop="$1">
+          <div className="flex flex-row items-stretch justify-center pt-1">
             <button
               type="button"
               onClick={onCallCascade}
@@ -206,7 +200,7 @@ export function CascadeBoard({
             >
               {t('games.cascade_v1.board.callCascade')}
             </button>
-          </XStack>
+          </div>
         ) : null}
 
         {/* Center: draw deck + discard pile */}
@@ -242,9 +236,9 @@ export function CascadeBoard({
           </div>
 
           <div
-            ref={discardRef}
             className={styles.discard}
             style={{ width: 92, height: 138 }}
+            ref={discardRef}
           >
             <span
               className={styles.discardUnder}
@@ -272,11 +266,6 @@ export function CascadeBoard({
             const isPlayableCard = playableIds.has(c.id);
             return (
               <div
-                key={c.id}
-                ref={(el) => {
-                  if (el) slotRefs.current.set(c.id, el);
-                  else slotRefs.current.delete(c.id);
-                }}
                 className={`${styles.handSlot} ${
                   isPlayableCard ? styles.handSlotPlay : ''
                 } ${shakeId === c.id ? styles.shake : ''}`}
@@ -286,6 +275,11 @@ export function CascadeBoard({
                     '--lift': `${Math.abs(offset) * 3}px`,
                   } as React.CSSProperties
                 }
+                key={c.id}
+                ref={(el) => {
+                  if (el) slotRefs.current.set(c.id, el);
+                  else slotRefs.current.delete(c.id);
+                }}
               >
                 <Card
                   card={c}
@@ -298,7 +292,7 @@ export function CascadeBoard({
             );
           })}
         </div>
-      </YStack>
+      </div>
 
       {toasts.length ? (
         <div className={styles.toasts} aria-hidden="true">
@@ -315,7 +309,7 @@ export function CascadeBoard({
 
       <ColorPicker open={!!pendingWildCard} onPick={handlePickColor} />
       {flyNode}
-    </YStack>
+    </div>
   );
 }
 

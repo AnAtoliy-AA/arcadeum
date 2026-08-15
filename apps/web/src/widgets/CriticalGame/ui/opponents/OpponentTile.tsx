@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, XStack, Text } from 'tamagui';
 import { CardsIcon, SkullIcon, IdleBadge } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalPlayerTableState, CriticalLogEntry } from '../../types';
@@ -160,7 +159,10 @@ export function OpponentTile({
   // and blocks the popup's `router.push` from firing). The tile itself
   // is the only press target.
   return (
-    <YStack position="relative" flex={isDuel ? 0 : 1} flexShrink={0}>
+    <div
+      className="flex flex-col items-stretch relative shrink-0"
+      style={{ flex: isDuel ? 0 : 1 }}
+    >
       {latestMessage && (
         <>
           <ChatBubble
@@ -177,8 +179,19 @@ export function OpponentTile({
           />
         </>
       )}
-      <YStack
-        position="relative"
+      <div
+        className={`flex flex-col relative items-center gap-1 px-2 py-2 rounded-[12px] border bg-[rgba(12,17,28,0.92)] z-[100] flex-[0] shrink-0 ${interactive ? 'transition-colors duration-150 hover:border-[#f472b6]' : ''}`}
+        style={{
+          cursor: interactive ? 'pointer' : 'default',
+          borderStyle: ringStyle,
+          borderColor: ringColor,
+          width: isDuel ? (isMobile ? 180 : 240) : '100%',
+          maxWidth: isDuel ? (isMobile ? 180 : 240) : 180,
+          minWidth: isMobile ? 96 : 120,
+          minHeight: bubbleSize + 64,
+          opacity: alive ? 1 : 0.6,
+        }}
+        onClick={interactive ? onSelect : undefined}
         data-testid={`player-card-${player.playerId}`}
         data-alive={alive ? 'true' : 'false'}
         data-current-turn={isCurrentTurn ? 'true' : 'false'}
@@ -186,70 +199,23 @@ export function OpponentTile({
         role={interactive ? 'button' : undefined}
         tabIndex={interactive ? 0 : undefined}
         aria-pressed={interactive ? isTarget : undefined}
-        // Compose the accessible name from the visible visual state so a
-        // screen-reader user hears the same context a sighted player sees
-        // (turn ring, target ring, dead/dashed). State is mutually
-        // exclusive in the tile border, so we resolve a single suffix
-        // key per render — three unconditional `t()` lookups × 5 tiles
-        // every state push was wasteful telemetry noise.
         aria-label={describeOpponentTile(
           displayName,
           t as unknown as (key: string) => string,
           { alive, isCurrentTurn, isTarget },
         )}
-        onPress={interactive ? onSelect : undefined}
         onKeyDown={handleKeyDown}
-        cursor={interactive ? 'pointer' : 'default'}
-        hoverStyle={interactive ? { borderColor: TARGET_RING } : undefined}
-        alignItems="center"
-        gap="$1"
-        paddingHorizontal="$2"
-        paddingVertical="$2"
-        borderRadius={12}
-        borderWidth={1}
-        borderStyle={ringStyle}
-        borderColor={ringColor}
-        // Solid card fill so the tile reads as a container that fully encloses
-        // the avatar + name + count. The previous near-transparent fill
-        // (rgba(0,0,0,0.35)) vanished against the dark arena, leaving only a
-        // faint top arc — the avatar looked like it floated over a thin oval.
-        backgroundColor="rgba(12,17,28,0.92)"
-        // Lift the card above the arena panel behind it so its border + fill
-        // read clearly instead of blending into the arena's own background.
-        zIndex={1}
-        // Natural content height — NOT flex-grow. `flex={1}` here gave the tile
-        // `flex-basis: 0`, so it contributed zero height to the column and
-        // collapsed to a thin bar while the avatar overflowed. The parent
-        // wrapper handles horizontal distribution across the row; the tile just
-        // fills that width (`100%`) and grows tall enough for its content.
-        flex={0}
-        width={isDuel ? (isMobile ? 180 : 240) : '100%'}
-        maxWidth={isDuel ? (isMobile ? 180 : 240) : 180}
-        minWidth={isMobile ? 96 : 120}
-        // Guaranteed floor so the card always has room for the avatar bubble +
-        // name + count, independent of how the surrounding flex column resolves
-        // (the avatar bubble + ~64px of text/padding below it).
-        minHeight={bubbleSize + 64}
-        flexShrink={0}
-        opacity={alive ? 1 : 0.6}
-        // Scroll-snap on mobile: align each tile to the start of the
-        // scroll container so swipes don't strand a tile mid-row.
-        style={isMobile ? { scrollSnapAlign: 'start' } : undefined}
       >
         {/* Seat-colour identity ring. `overflow: hidden` clips the avatar to a
             clean circle and guarantees it can't spill out of its slot (an
             unclipped, oversized disc previously overflowed the tile). */}
-        <YStack
-          width={bubbleSize}
-          height={bubbleSize}
-          borderRadius={9999}
-          backgroundColor="rgba(255,255,255,0.08)"
-          borderWidth={2}
-          borderColor={avatarBorderColor}
-          alignItems="center"
-          justifyContent="center"
-          overflow="hidden"
-          flexShrink={0}
+        <div
+          className="flex flex-col rounded-[9999px] bg-[rgba(255,255,255,0.08)] border-[2px] items-center justify-center overflow-hidden shrink-0"
+          style={{
+            width: bubbleSize,
+            height: bubbleSize,
+            borderColor: avatarBorderColor,
+          }}
         >
           {alive ? (
             <InGameAvatar
@@ -261,45 +227,37 @@ export function OpponentTile({
           ) : (
             <SkullIcon size={Math.round(discSize * 0.55)} />
           )}
-        </YStack>
-        <XStack alignItems="center" gap={4} maxWidth="100%">
-          <Text
+        </div>
+        <div className="flex flex-row items-center gap-4 max-w-full">
+          <span
+            className="text-[12px] font-bold tracking-[0.3px] line-clamp-1"
+            style={{ maxWidth: isMobile ? 80 : 100 }}
             data-testid={`player-name-${player.playerId}`}
-            fontSize={12}
-            fontWeight="700"
-            letterSpacing={0.3}
-            numberOfLines={1}
-            maxWidth={isMobile ? 80 : 100}
           >
             {displayName}
-          </Text>
+          </span>
           {isIdle && <IdleBadge />}
-        </XStack>
+        </div>
         {alive ? (
-          <XStack
+          <div
+            className="flex flex-row items-center gap-4 opacity-[0.85]"
             data-testid={`player-stats-count-${player.playerId}`}
-            alignItems="center"
-            gap={4}
-            opacity={0.85}
           >
             <CardsIcon size={11} />
-            <Text fontSize={11} fontWeight="800" letterSpacing={0.4}>
+            <span className="text-[11px] font-extrabold tracking-[0.4px]">
               {player.hand.length}
-            </Text>
-          </XStack>
+            </span>
+          </div>
         ) : (
-          <Text
+          <span
+            className="text-[48px] font-extrabold tracking-[1px] uppercase"
+            style={{ color: ELIMINATED_RING }}
             data-testid={`player-eliminated-label-${player.playerId}`}
-            fontSize={10}
-            fontWeight="800"
-            letterSpacing={1}
-            textTransform="uppercase"
-            color={ELIMINATED_RING}
           >
             {t('games.table.players.eliminated')}
-          </Text>
+          </span>
         )}
-      </YStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

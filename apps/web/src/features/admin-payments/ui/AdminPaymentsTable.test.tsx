@@ -1,18 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
 import {
   AdminPaymentsTable,
   type AdminPaymentsTableLabels,
 } from './AdminPaymentsTable';
 import type { AdminPaymentNoteItem } from '../api';
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <TamaguiProvider config={config} defaultTheme="dark">
-    {children}
-  </TamaguiProvider>
-);
+const Wrapper = ({ children }: { children: React.ReactNode }) => children;
 
 const renderWith = (ui: React.ReactElement) => render(<Wrapper>{ui}</Wrapper>);
 

@@ -5,9 +5,7 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as fs from 'node:fs';
 import { Bot, type Context } from 'grammy';
-import { exec } from 'node:child_process';
 
 interface TransactionData {
   type: 'buy' | 'sell';

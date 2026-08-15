@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../shared/config/tamagui.config';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { getVariantStyles } from './styles/variants';
 
@@ -43,16 +41,14 @@ function renderBanner(props: RenderBannerProps = {}) {
     pendingDraws,
   } = props;
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <ScenePaletteProvider palette={palette}>
-        <TurnBanner
-          isMyTurn={isMyTurn}
-          currentPlayerName={currentPlayerName}
-          secondsRemaining={secondsRemaining}
-          pendingDraws={pendingDraws}
-        />
-      </ScenePaletteProvider>
-    </TamaguiProvider>,
+    <ScenePaletteProvider palette={palette}>
+      <TurnBanner
+        isMyTurn={isMyTurn}
+        currentPlayerName={currentPlayerName}
+        secondsRemaining={secondsRemaining}
+        pendingDraws={pendingDraws}
+      />
+    </ScenePaletteProvider>,
   );
 }
 
@@ -88,7 +84,7 @@ describe('TurnBanner', () => {
   });
 
   it('attaches its pulse via the global hudStyles attribute selector, not inline', () => {
-    // Keyframes live in `hudStyles.tsx` (HUD_KEYFRAMES_CSS) and are
+    // Keyframes live in `styles/hud.scss` and are
     // mounted once by `ArenaCenter`. The banner itself should NOT emit
     // a `<style>` tag and the dot's inline style must NOT carry an
     // animation rule — the prefers-reduced-motion media gate inside

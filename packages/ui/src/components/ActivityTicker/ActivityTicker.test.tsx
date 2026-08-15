@@ -1,6 +1,4 @@
 import { render as rtlRender, screen, act } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { ActivityTicker } from './ActivityTicker';
 import {
   describe,
@@ -11,12 +9,7 @@ import {
   afterEach,
 } from 'vitest';
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 const items = [
   { tag: 'support', who: 'Maria', what: 'answered a ticket', when: '12s ago' },

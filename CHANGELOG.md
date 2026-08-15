@@ -7,6 +7,102 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.24] - 2026-08-15
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.25.23] - 2026-08-15
+
+### Added
+- format post result social platform list with checkmarks (ARC-201) (ARC-201)
+
+### Fixed
+- add emoji definition in sendResultMessage (ARC-201) (ARC-201)
+- fix TikTok Postiz settings properties for successful posting (ARC-201) (ARC-201)
+
+
+## [1.25.22] - 2026-08-15
+
+### Improved
+- cut home page critical-path bytes for Lighthouse
+
+### Refactored
+- remove redundant DOM wrappers and nested main landmarks
+
+
+## [1.25.21] - 2026-08-15
+
+### Fixed
+- repair layouts and clicks broken by CSS-migration quirks
+
+### Refactored
+- remove Tamagui runtime shims and migration leftovers
+- remove Tamagui migration leftovers and fix CI build
+- drop Tamagui migration leftovers after Tailwind switch
+- fix theme resolution and drop migration leftovers
+- clean up Tamagui migration leftovers
+- remove Tamagui legacy layers after Tailwind migration
+- migrate all remaining Tamagui components to Tailwind
+- migrate widgets/ from Tamagui to Tailwind classes
+- migrate features/ from Tamagui to Tailwind classes
+- migrate app shell from Tamagui to Tailwind classes
+
+### Documentation
+- replace all Tamagui references with Tailwind guidance
+- mark tamagui-to-tailwind plan as complete
+
+
+## [1.25.20] - 2026-08-15
+
+### Added
+- optimize short video length to 15s total for maximum engagement (ARC-201) (ARC-201)
+- enhance short captions for virality & engagement (ARC-201) (ARC-201)
+
+### Fixed
+- use domcontentloaded and 60s timeout to prevent navigation failures (ARC-201) (ARC-201)
+
+
+## [1.25.19] - 2026-08-15
+
+### Added
+- footer dropdowns open by default on desktop (ARC-912) (ARC-912)
+- port home page to tailwind utility classes (ARC-912) (ARC-912)
+
+### Fixed
+- resolve CodeQL warnings in Modal component (ARC-912) (ARC-912)
+- add modal focus management and select keyboard navigation (ARC-912) (ARC-912)
+- restore custom dropdown behavior in Select for e2e (ARC-912) (ARC-912)
+- restore dialog role and data-state on modal (ARC-912) (ARC-912)
+- restore dialog role on Modal and remove Tamagui from OfflineView (ARC-912) (ARC-912)
+- theme-aware filter chips and footer line-height (ARC-912) (ARC-912)
+- fix footer breakpoints and convert games filter chips to tailwind (ARC-912) (ARC-912)
+- fix light theme contrast for header nav and button variants (ARC-912) (ARC-912)
+- make icon and circle button padding win over size padding (ARC-912) (ARC-912)
+- use important modifiers for active mobile nav link (ARC-912) (ARC-912)
+- strip button animations in e2e and fix tailwind class override order (ARC-912) (ARC-912)
+
+### Improved
+- drop tamagui from home route bundle and self-host font (ARC-912) (ARC-912)
+
+### Refactored
+- dedupe hero variant data, fix hero locale, clean dead code (ARC-912) (ARC-912)
+- port button to tailwind and trim redundant props and variants (ARC-912) (ARC-912)
+
+
+## [1.25.18] - 2026-08-13
+
+### Added
+- add /version command to show bot versions (ARC-201) (ARC-201)
+- add Other Scenario regenerate button (ARC-201) (ARC-201)
+- support unlimited video regenerations via task-bot (ARC-201) (ARC-201)
+- add X/Twitter posting via Postiz (ARC-201) (ARC-201)
+
+### Fixed
+- remove unused fs and exec imports in telegram service (ARC-201) (ARC-201)
+
+
 ## [1.25.17] - 2026-08-12
 
 ### Fixed

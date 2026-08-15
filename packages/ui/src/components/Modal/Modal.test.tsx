@@ -1,18 +1,9 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody, ModalFooter } from './Modal';
 
+import { describe, it, expect, vi } from 'vitest';
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-const render = (ui: React.ReactElement) => {
-  return rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>
-  );
-};
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('Modal', () => {
   it('does not render when open is false', () => {
@@ -33,7 +24,7 @@ describe('Modal', () => {
     expect(screen.getByTestId('modal-content')).toBeInTheDocument();
   });
 
-  it('calls onClose when clicking overlay', () => {
+  it('calls onClose when clicking the backdrop', () => {
     const handleClose = vi.fn();
     render(
       <Modal open={true} onClose={handleClose}>
@@ -43,11 +34,21 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    const overlay = screen.getByTestId('modal-overlay');
-    fireEvent.mouseDown(overlay);
-    fireEvent.mouseUp(overlay);
-    fireEvent.click(overlay);
+    const backdrop = document.querySelector('[class*="fixed inset-0"]');
+    fireEvent.click(backdrop as HTMLElement);
     expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not close when clicking the content', () => {
+    const handleClose = vi.fn();
+    render(
+      <Modal open={true} onClose={handleClose}>
+        <ModalContent data-testid="modal-content">Content</ModalContent>
+      </Modal>,
+    );
+
+    fireEvent.click(screen.getByTestId('modal-content'));
+    expect(handleClose).not.toHaveBeenCalled();
   });
 
   it('calls onClose when pressing Escape', () => {

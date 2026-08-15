@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import HomePage from './home/HomePage';
-import { PageLoading } from '@/shared/ui/Loading/PageLoading';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 import type { Metadata } from 'next';
 import { appConfig } from '@/shared/config/app-config';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
@@ -52,7 +52,7 @@ export default async function HomeRoute({
       {videoJsonLd ? <JsonLd data={videoJsonLd} /> : null}
       <JsonLd id="json-ld-home-breadcrumb" data={breadcrumbJsonLd} />
       <Suspense fallback={<PageLoading layout="home" />}>
-        <HomePage />
+        <HomePage locale={safeLocale} />
       </Suspense>
     </>
   );

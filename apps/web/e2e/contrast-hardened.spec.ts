@@ -11,8 +11,8 @@ declare global {
  * Programmatic contrast check
  * Returns the contrast ratio between text color and background color.
  *
- * Handles Tamagui's rendering where:
- * - Link wrappers (<a>) may have a different color than the styled button inside
+ * Handles how the app renders interactive elements:
+ * - Link wrappers (<a>) may have a different color than the button inside
  * - CSS `background` gradient shorthand resets `backgroundColor` to transparent
  * - Text color may be set on a deeply nested Typography element
  */
@@ -43,7 +43,7 @@ async function checkContrast(page: Page, selector: string) {
 
         if (depth > 3) return { backgroundColor: bg, backgroundImage: 'none' };
 
-        // Check children (common for <a> wrapping tamagui styled components)
+        // Check children (common for <a> wrapping styled components)
         for (const child of Array.from(element.children)) {
           const result = getVisibleBg(child as HTMLElement, depth + 1);
           if (

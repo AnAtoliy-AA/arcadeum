@@ -13,8 +13,8 @@ interface TurnBannerProps {
   pendingDraws?: number;
 }
 
-// `turnBannerDotPulse` keyframes live in `hudStyles.tsx`
-// (HUD_KEYFRAMES_CSS) — `ArenaCenter` mounts `<HudStyles />` once for
+// `turnBannerDotPulse` keyframes live in `./styles/hud.scss`
+// — `ArenaCenter` imports the stylesheet once for
 // the whole widget, so the rule is already in the document by the time
 // this banner paints.
 
@@ -65,7 +65,7 @@ export function TurnBanner({
     color: '#ffffff',
     fontWeight: 700,
     fontSize: 14,
-    letterSpacing: 0.6,
+    letterSpacing: '0.6px',
     textTransform: 'uppercase',
     boxShadow: palette.turnBannerShadow,
     overflow: 'hidden',
@@ -156,7 +156,7 @@ export function TurnBanner({
               border: '1px solid rgba(245, 158, 11, 0.45)',
               fontSize: 11,
               fontWeight: 800,
-              letterSpacing: 0.4,
+              letterSpacing: '0.4px',
               textTransform: 'uppercase',
               fontVariantNumeric: 'tabular-nums',
               flexShrink: 0,

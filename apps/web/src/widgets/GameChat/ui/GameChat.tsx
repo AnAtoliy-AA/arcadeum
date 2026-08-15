@@ -7,9 +7,8 @@ import {
   useMemo,
   type KeyboardEvent,
 } from 'react';
-import { XStack, YStack, ScrollView, Text, useTheme } from 'tamagui';
 import { IconButton, CloseIcon, Typography } from '@arcadeum/ui';
-import type { ScrollView as TamaguiScrollView } from 'tamagui';
+
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope, ChatLogEntry } from '../store/gameChatStore';
@@ -18,10 +17,7 @@ import type { EquippedResolver } from './types';
 import type { EmoteId } from './EmotePicker';
 import { ChatQuickBar } from './ChatQuickBar';
 import { ChatLogItem } from './ChatLogItem';
-import {
-  logBelongsToScope,
-  lastMessagePreview,
-} from './chatHelpers';
+import { logBelongsToScope, lastMessagePreview } from './chatHelpers';
 import {
   ACCENT_GRADIENT,
   ACCENT_PINK,
@@ -46,7 +42,7 @@ import {
   Title,
   TitleDot,
   UnreadBadge,
-} from './GameChat.styled';
+} from './GameChat.styles';
 
 export type { ResolvedEquipped, EquippedResolver } from './types';
 
@@ -116,8 +112,7 @@ export function GameChat({
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
   const resolveActorColor = useGameChatStore((s) => s.resolveActorColor);
-  const theme = useTheme();
-  const inputColor = (theme.color?.get?.() as string | undefined) ?? '#ecefee';
+  const inputColor = 'var(--color)';
 
   const scopes = teamMode ? TEAM_SCOPES : FFA_SCOPES;
   const [draft, setDraft] = useState('');
@@ -125,10 +120,11 @@ export function GameChat({
   const [collapsed, setCollapsed] = useChatCollapsed();
   const [unread, setUnread] = useState(0);
   const lastSeenIdRef = useRef<string | null>(null);
-  const scrollRef = useRef<TamaguiScrollView>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!collapsed) scrollRef.current?.scrollToEnd({ animated: true });
+    if (!collapsed && scrollRef.current)
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [logs.length, collapsed]);
 
   useEffect(() => {
@@ -190,7 +186,7 @@ export function GameChat({
       <CollapsedShell
         role="button"
         aria-label="Expand chat"
-        onPress={() => setCollapsed(false)}
+        onClick={() => setCollapsed(false)}
       >
         <TitleDot />
         <Title>Chat</Title>
@@ -211,33 +207,32 @@ export function GameChat({
 
   return (
     <Panel data-testid="game-chat-panel">
-      <style>{`.chat-msg-row:hover .chat-delete-btn { opacity: 1 !important; }`}</style>
       <Head>
         <HeadRow>
           <TitleDot />
           <Title>Table Chat</Title>
-          <YStack flex={1} />
+          <div className="flex flex-col items-stretch flex-1" />
           <IconButton
+            className="p-1"
             size="sm"
-            padding="$1"
             title="Settings"
             aria-label="Chat settings"
           >
-            <Text fontSize={14}>⚙</Text>
+            <span className="text-[14px]">⚙</span>
           </IconButton>
           <IconButton
+            className="p-1"
             size="sm"
-            padding="$1"
             onClick={() => setCollapsed(true)}
             title="Minimize"
             aria-label="Minimize chat"
           >
-            <Text fontSize={14}>—</Text>
+            <span className="text-[14px]">—</span>
           </IconButton>
           {onClose ? (
             <IconButton
+              className="p-1"
               size="sm"
-              padding="$1"
               onClick={onClose}
               title="Close"
               aria-label="Close chat"
@@ -255,7 +250,7 @@ export function GameChat({
                 key={s}
                 role="tab"
                 aria-selected={active}
-                onPress={() => setScope(s)}
+                onClick={() => setScope(s)}
                 style={
                   active
                     ? {
@@ -270,13 +265,15 @@ export function GameChat({
                 </TabLabel>
                 {counts[s] > 0 ? (
                   <TabCount
-                    style={MONO_STYLE}
-                    backgroundColor={
-                      active ? 'rgba(6,1,27,0.25)' : 'rgba(255,255,255,0.08)'
-                    }
-                    color={
-                      active ? 'rgba(6,1,27,0.9)' : 'rgba(255,255,255,0.7)'
-                    }
+                    style={{
+                      ...MONO_STYLE,
+                      backgroundColor: active
+                        ? 'rgba(6,1,27,0.25)'
+                        : 'rgba(255,255,255,0.08)',
+                      color: active
+                        ? 'rgba(6,1,27,0.9)'
+                        : 'rgba(255,255,255,0.7)',
+                    }}
                   >
                     {counts[s]}
                   </TabCount>
@@ -288,31 +285,22 @@ export function GameChat({
       </Head>
 
       <Body>
-        <ScrollView
+        <div
+          className={`overflow-auto flex-1 ${scrollbarStyles.className}`}
           ref={scrollRef}
-          flex={1}
-          className={scrollbarStyles.className}
         >
           {visibleLogs.length === 0 ? (
-            <YStack flex={1} ai="center" jc="center" py="$10">
-              <Typography alpha="low" textAlign="center" uiSize="sm">
+            <div className="flex flex-col flex-1 items-center justify-center py-10">
+              <Typography className={'text-center'} alpha="low" uiSize="sm">
                 No messages yet. Break the ice!
               </Typography>
-            </YStack>
+            </div>
           ) : (
             <ListGap role="log" aria-live="polite" aria-relevant="additions">
               <Divider>
-                <YStack
-                  height={1}
-                  flex={1}
-                  backgroundColor="rgba(255,255,255,0.06)"
-                />
+                <div className="flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
                 <DividerLabel style={MONO_STYLE}>Match</DividerLabel>
-                <YStack
-                  height={1}
-                  flex={1}
-                  backgroundColor="rgba(255,255,255,0.06)"
-                />
+                <div className="flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
               </Divider>
               {visibleLogs.map((log) => {
                 const senderName = log.senderId
@@ -324,8 +312,7 @@ export function GameChat({
                     : (log.senderName ?? undefined)
                   : undefined;
                 const senderColor = log.senderId
-                  ? (resolveActorColor?.(log.senderId) ??
-                    undefined)
+                  ? (resolveActorColor?.(log.senderId) ?? undefined)
                   : undefined;
                 const targetId = log.targetId;
                 const targetName = targetId
@@ -353,7 +340,7 @@ export function GameChat({
               })}
             </ListGap>
           )}
-        </ScrollView>
+        </div>
       </Body>
 
       <Foot>
@@ -363,16 +350,16 @@ export function GameChat({
         />
 
         <InputPill
-          focusStyle={
-            canSend
+          style={{
+            ...(canSend
               ? {
                   borderColor: `${ACCENT_PINK}88`,
                   backgroundColor: 'rgba(0,0,0,0.32)',
                 }
-              : undefined
-          }
-          opacity={canSend ? 1 : 0.5}
-          pointerEvents={canSend ? 'auto' : 'none'}
+              : undefined),
+            opacity: canSend ? 1 : 0.5,
+            pointerEvents: canSend ? 'auto' : 'none',
+          }}
         >
           <ChannelChip style={MONO_STYLE} color={SCOPE_CHIP_COLOR[scope]}>
             {SCOPE_CHIP[scope]}
@@ -382,11 +369,7 @@ export function GameChat({
             maxLength={240}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={
-              canSend
-                ? SCOPE_PLACEHOLDER[scope]
-                : signInPlaceholder
-            }
+            placeholder={canSend ? SCOPE_PLACEHOLDER[scope] : signInPlaceholder}
             disabled={!canSend}
             aria-label="Message"
             style={{
@@ -400,11 +383,7 @@ export function GameChat({
             }}
           />
           <IconButton
-            size="sm"
-            padding="$1"
-            onClick={send}
-            disabled={!draft.trim() || !canSend}
-            aria-label="Send message"
+            className="p-1"
             style={{
               background: draft.trim() && canSend ? ACCENT_GRADIENT : undefined,
               opacity: draft.trim() && canSend ? 1 : 0.4,
@@ -412,19 +391,21 @@ export function GameChat({
               height: 30,
               borderRadius: 9,
             }}
+            size="sm"
+            onClick={send}
+            disabled={!draft.trim() || !canSend}
+            aria-label="Send message"
           >
-            <Text fontSize={14} color="#06011b" fontWeight="700">
-              ↑
-            </Text>
+            <span className="text-[14px] text-[#06011b] font-bold">↑</span>
           </IconButton>
         </InputPill>
 
         <MetaLine>
           <MetaText style={MONO_STYLE}>{draft.length}/240</MetaText>
-          <XStack gap={6} alignItems="center">
+          <div className="flex flex-row gap-6 items-center">
             <MetaText style={MONO_STYLE}>↵ send</MetaText>
             <MetaText style={MONO_STYLE}>⇧↵ newline</MetaText>
-          </XStack>
+          </div>
         </MetaLine>
       </Foot>
     </Panel>

@@ -1,46 +1,38 @@
 'use client';
-import { YStack, styled, GetProps } from 'tamagui';
+
 import type { ComponentProps } from 'react';
+import { cx } from '../../utils/cx';
 
 export type ContainerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
-const StyledContainer = styled(YStack, {
-  name: 'Container',
-  marginHorizontal: 'auto',
-  width: '100%',
-  gap: '$4',
-
-  variants: {
-    size: {
-      sm: { maxWidth: 600 },
-      md: { maxWidth: 800 },
-      lg: { maxWidth: 1000 },
-      xl: { maxWidth: 1400 },
-      full: { maxWidth: '100%' },
-    },
-  } as const,
-
-  defaultVariants: {
-    size: 'lg',
-  },
-});
-
-import { filterProps } from '../../utils/filterProps';
-
-export type ContainerProps = GetProps<typeof StyledContainer> & {
+export type ContainerProps = {
   size?: ContainerSize;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: (e: unknown) => void;
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  id?: string;
+  'data-testid'?: string;
+} & React.HTMLAttributes<HTMLDivElement>;
+
+const sizeClasses: Record<ContainerSize, string> = {
+  sm: 'max-w-[600px]',
+  md: 'max-w-[800px]',
+  lg: 'max-w-[1000px]',
+  xl: 'max-w-[1400px]',
+  full: 'max-w-full',
 };
 
-export const Container = StyledContainer.styleable<ContainerProps>(({ onPress, onClick, ...props }, ref) => {
-  const filteredProps = filterProps({ ...props, onPress, onClick });
-
+export function Container({
+  size = 'lg',
+  className,
+  style,
+  ...rest
+}: ContainerProps) {
   return (
-    <StyledContainer 
-      {...filteredProps} 
-      ref={ref} 
+    <div
+      className={cx('mx-auto w-full gap-4', sizeClasses[size], className)}
+      style={style}
+      {...rest}
     />
   );
-});
+}

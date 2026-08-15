@@ -49,7 +49,7 @@ export function FlashHistory({
     gap: 2,
     fontSize: 10,
     fontWeight: 600,
-    letterSpacing: 0.3,
+    letterSpacing: '0.3px',
     color: 'rgba(226,232,240,0.7)',
     // The wrapper itself stays passthrough so clicks fall through to the
     // arena underneath. Individual rows re-enable pointer events below so

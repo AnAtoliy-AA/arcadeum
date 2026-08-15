@@ -14,9 +14,9 @@ Enforces an opinionated UI baseline to prevent AI-generated interface slop.
 
 ## Stack
 
-- Use Tamagui primitives (`YStack`, `XStack`, `Text`, `Stack`) for layout
+- Use plain React elements with Tailwind classes for layout (Tamagui was removed)
 - Use `@arcadeum/ui` components before creating new ones
-- Use design tokens from `packages/ui/src/tamagui.config.ts`
+- Use design tokens as CSS variables (`var(--primary)`, `var(--glassBg)`) minted from `packages/ui/src/themeDefinitions.ts` — see `/tailwind-pro` for the token → class map
 
 ## Components
 
@@ -74,7 +74,7 @@ Enforces an opinionated UI baseline to prevent AI-generated interface slop.
 - Never use gradients unless explicitly requested
 - Never use purple or multicolor gradients
 - Never use glow effects as primary affordances
-- Use Tamagui shadow scale unless explicitly requested
+- Use Tailwind shadow utilities (`shadow-sm`/`shadow-md`/`shadow-lg`/`shadow-xl`) unless explicitly requested
 - Give empty states one clear next action
 - Limit accent color usage to one per view
 - Use existing theme tokens before introducing new ones

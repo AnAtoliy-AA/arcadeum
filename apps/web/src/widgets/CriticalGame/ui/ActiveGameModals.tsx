@@ -16,7 +16,6 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import type { RematchInvitation } from '@/features/games/hooks/useRematch';
 
 interface ActiveGameModalsProps {
   currentUserId: string | null;
@@ -26,23 +25,6 @@ interface ActiveGameModalsProps {
   aliveOpponents: CriticalPlayerState[];
   currentPlayer: CriticalPlayerState | null;
   actions: UseGameActionsReturn;
-  rematch: {
-    rematchLoading: boolean;
-    showRematchModal: boolean;
-    openRematchModal: () => void;
-    closeRematchModal: () => void;
-    handleRematch: (
-      participantIds: string[],
-      message?: string,
-    ) => Promise<void>;
-    invitation: RematchInvitation | null;
-    invitationTimeLeft: number;
-    handleAcceptInvitation: () => void;
-    handleDeclineInvitation: () => void;
-    isAcceptingInvitation: boolean;
-    handleBlockRematch: (roomId: string) => void;
-    handleBlockUser: (userId: string) => void;
-  };
   modals: {
     eventComboModal: EventComboModalState | null;
     selectedMode: 'pair' | 'trio' | 'fiver' | null;
@@ -97,7 +79,6 @@ export function ActiveGameModals({
   aliveOpponents,
   currentPlayer,
   actions,
-  rematch,
   modals,
   handlers,
   resolveDisplayName,
@@ -131,28 +112,7 @@ export function ActiveGameModals({
   return (
     <>
       <GameModals
-        // Rematch Modal
-        showRematchModal={rematch.showRematchModal}
-        players={snapshot.players.map((p) => ({
-          playerId: p.playerId,
-          displayName: resolveDisplayName(
-            p.playerId,
-            `Player ${p.playerId.slice(0, 8)}`,
-          ),
-          alive: p.alive,
-        }))}
         currentUserId={currentUserId}
-        rematchLoading={rematch.rematchLoading}
-        onCloseRematchModal={rematch.closeRematchModal}
-        onConfirmRematch={rematch.handleRematch}
-        // Rematch Invitation
-        invitation={rematch.invitation}
-        invitationTimeLeft={rematch.invitationTimeLeft}
-        onAcceptInvitation={rematch.handleAcceptInvitation}
-        onDeclineInvitation={rematch.handleDeclineInvitation}
-        onBlockRematch={rematch.handleBlockRematch}
-        onBlockUser={rematch.handleBlockUser}
-        isAcceptingInvitation={rematch.isAcceptingInvitation}
         // Event Combo Modal
         eventComboModal={modals.eventComboModal}
         onCloseEventComboModal={handlers.handleCloseEventComboModal}

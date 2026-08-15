@@ -1,4 +1,3 @@
-import { XStack, Text, styled } from 'tamagui';
 import { memo } from 'react';
 
 export type CosmeticBadgeProps = {
@@ -7,24 +6,24 @@ export type CosmeticBadgeProps = {
 
 const BADGE_CONFIG: Record<
   string,
-  { emoji: string; gradient: string; glow: string }
+  { emoji: string; background: string; glow: string }
 > = {
   badge_social_butterfly: {
     emoji: '🦋',
-    gradient: '$successGradient',
-    glow: '$successBorder',
+    background: 'linear-gradient(135deg, #10b981, #047857)',
+    glow: 'rgba(4, 120, 87, 0.4)',
   },
   badge_legend_recruiter: {
     emoji: '👑',
-    gradient: '$warningGradient',
-    glow: '$warningBorder',
+    background: 'linear-gradient(135deg, #f59e0b, #92400e)',
+    glow: 'rgba(146, 64, 14, 0.4)',
   },
 };
 
 const DEFAULT_BADGE = {
   emoji: '🏷️',
-  gradient: '$infoGradient',
-  glow: '$infoBorder',
+  background: 'linear-gradient(135deg, #2563eb, #1e40af)',
+  glow: 'rgba(37, 99, 235, 0.4)',
 };
 
 const BADGE_LABELS: Record<string, string> = {
@@ -32,39 +31,21 @@ const BADGE_LABELS: Record<string, string> = {
   badge_legend_recruiter: 'Legend Recruiter',
 };
 
-const BadgePill = styled(XStack, {
-  name: 'CosmeticBadge',
-  alignItems: 'center',
-  paddingHorizontal: '$2',
-  paddingVertical: '$1',
-  borderRadius: 6,
-  gap: '$1',
-
-  variants: {
-    badgeId: {
-      ':string': (val) => {
-        const config = BADGE_CONFIG[val] || DEFAULT_BADGE;
-        return {
-          background: config.gradient,
-          shadowColor: config.glow,
-          shadowRadius: 8,
-          shadowOpacity: 0.5,
-        };
-      },
-    },
-  },
-});
-
 export const CosmeticBadge = memo(function CosmeticBadge({ badgeId }: CosmeticBadgeProps) {
   const config = BADGE_CONFIG[badgeId] ?? DEFAULT_BADGE;
   const label = BADGE_LABELS[badgeId] ?? badgeId;
 
   return (
-    <BadgePill badgeId={badgeId} data-testid={`cosmetic-badge-${badgeId}`}>
-      <Text fontSize="$1">{config.emoji}</Text>
-      <Text fontSize="$1" fontWeight="700" color="white">
-        {label}
-      </Text>
-    </BadgePill>
+    <span
+      className="inline-flex items-center gap-1 rounded-[6px] px-2 py-1"
+      style={{
+        background: config.background,
+        boxShadow: `0 0 8px ${config.glow}`,
+      }}
+      data-testid={`cosmetic-badge-${badgeId}`}
+    >
+      <span style={{ fontSize: 12 }}>{config.emoji}</span>
+      <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{label}</span>
+    </span>
   );
 });

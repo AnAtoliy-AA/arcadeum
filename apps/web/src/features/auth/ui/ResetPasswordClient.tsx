@@ -3,7 +3,6 @@
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
@@ -42,8 +41,7 @@ const FALLBACK: ResetCopy = {
   signInCta: 'Continue to sign in',
   missingToken:
     'This link is missing its reset code. Request a new one from the sign-in page.',
-  invalidToken:
-    'This reset link is invalid or has expired. Request a new one.',
+  invalidToken: 'This reset link is invalid or has expired. Request a new one.',
   passwordTooShort: 'Password must be at least 8 characters.',
   passwordMismatch: "Passwords don't match.",
   error: 'Could not update password. Please try again.',
@@ -90,55 +88,47 @@ export default function ResetPasswordClient() {
     } catch (err) {
       setStatus('error');
       const message = err instanceof Error ? err.message : '';
-      setErrorText(message === 'TOKEN_INVALID' ? copy.invalidToken : copy.error);
+      setErrorText(
+        message === 'TOKEN_INVALID' ? copy.invalidToken : copy.error,
+      );
     }
   };
 
   if (status === 'success') {
     return (
-      <YStack
-        maxWidth={460}
-        marginHorizontal="auto"
-        paddingVertical="$8"
-        paddingHorizontal="$5"
-        gap="$4"
+      <div
+        className="flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4"
         data-testid="reset-password-success"
       >
         <Typography variant="heading" uiSize="lg" weight="700">
           {copy.successTitle}
         </Typography>
-        <Typography variant="body" uiSize="md" color="$colorSubtle">
+        <Typography variant="body" uiSize="md" color="var(--textSecondary)">
           {copy.successBody}
         </Typography>
         <Link href="/auth" style={{ textDecoration: 'none' }}>
           <Button
             variant="primary"
-            uiSize="md"
+            size="md"
             data-testid="reset-password-signin-cta"
           >
             {copy.signInCta}
           </Button>
         </Link>
-      </YStack>
+      </div>
     );
   }
 
   return (
-    <YStack
-      maxWidth={460}
-      marginHorizontal="auto"
-      paddingVertical="$8"
-      paddingHorizontal="$5"
-      gap="$4"
-    >
+    <div className="flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4">
       <Typography variant="heading" uiSize="lg" weight="700">
         {copy.title}
       </Typography>
-      <Typography variant="body" uiSize="md" color="$colorSubtle">
+      <Typography variant="body" uiSize="md" color="var(--textSecondary)">
         {copy.description}
       </Typography>
       <form onSubmit={onSubmit} noValidate>
-        <YStack gap="$4">
+        <div className="flex flex-col items-stretch gap-4">
           <FloatingLabelInput
             type="password"
             label={copy.passwordLabel}
@@ -159,7 +149,7 @@ export default function ResetPasswordClient() {
             <Typography
               variant="body"
               uiSize="sm"
-              color="$danger"
+              color="var(--danger)"
               data-testid="reset-password-error"
             >
               {errorText}
@@ -168,15 +158,15 @@ export default function ResetPasswordClient() {
           <Button
             type="submit"
             variant="primary"
-            uiSize="md"
+            size="md"
             disabled={!token || status === 'submitting'}
             data-testid="reset-password-submit"
           >
             {status === 'submitting' ? copy.submitting : copy.submit}
           </Button>
-        </YStack>
+        </div>
       </form>
-    </YStack>
+    </div>
   );
 }
 

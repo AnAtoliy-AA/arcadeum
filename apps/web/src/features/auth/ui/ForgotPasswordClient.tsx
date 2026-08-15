@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
@@ -71,49 +70,39 @@ export default function ForgotPasswordClient() {
 
   if (status === 'success') {
     return (
-      <YStack
-        maxWidth={460}
-        marginHorizontal="auto"
-        paddingVertical="$8"
-        paddingHorizontal="$5"
-        gap="$4"
+      <div
+        className="flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4"
         data-testid="forgot-password-success"
       >
         <Typography variant="heading" uiSize="lg" weight="700">
           {copy.successTitle}
         </Typography>
-        <Typography variant="body" uiSize="md" color="$colorSubtle">
+        <Typography variant="body" uiSize="md" color="var(--textSecondary)">
           {formatMessage(copy.successBody, { email: submittedEmail })}
         </Typography>
         <Link href="/auth" style={{ textDecoration: 'none' }}>
           <Button
             variant="primary"
-            uiSize="md"
+            size="md"
             data-testid="forgot-password-back"
           >
             {copy.backToSignIn}
           </Button>
         </Link>
-      </YStack>
+      </div>
     );
   }
 
   return (
-    <YStack
-      maxWidth={460}
-      marginHorizontal="auto"
-      paddingVertical="$8"
-      paddingHorizontal="$5"
-      gap="$4"
-    >
+    <div className="flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4">
       <Typography variant="heading" uiSize="lg" weight="700">
         {copy.title}
       </Typography>
-      <Typography variant="body" uiSize="md" color="$colorSubtle">
+      <Typography variant="body" uiSize="md" color="var(--textSecondary)">
         {copy.description}
       </Typography>
       <form onSubmit={onSubmit} noValidate>
-        <YStack gap="$4">
+        <div className="flex flex-col items-stretch gap-4">
           <FloatingLabelInput
             type="email"
             label={copy.emailLabel}
@@ -125,7 +114,7 @@ export default function ForgotPasswordClient() {
             <Typography
               variant="body"
               uiSize="sm"
-              color="$danger"
+              color="var(--danger)"
               data-testid="forgot-password-error"
             >
               {errorText}
@@ -134,7 +123,7 @@ export default function ForgotPasswordClient() {
           <Button
             type="submit"
             variant="primary"
-            uiSize="md"
+            size="md"
             disabled={status === 'submitting'}
             data-testid="forgot-password-submit"
           >
@@ -144,13 +133,18 @@ export default function ForgotPasswordClient() {
             href="/auth"
             style={{ textDecoration: 'none', alignSelf: 'center' }}
           >
-            <Typography variant="body" uiSize="sm" color="$accent" weight="600">
+            <Typography
+              variant="body"
+              uiSize="sm"
+              color="var(--accent)"
+              weight="600"
+            >
               {copy.backToSignIn}
             </Typography>
           </Link>
-        </YStack>
+        </div>
       </form>
-    </YStack>
+    </div>
   );
 }
 

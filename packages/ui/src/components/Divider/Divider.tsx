@@ -1,36 +1,42 @@
-import { YStack, styled } from 'tamagui';
-import type { ComponentProps } from 'react';
+import React from 'react';
+import { cx } from '../../utils/cx';
 
-export const Divider = styled(YStack, {
-  name: 'Divider',
-  backgroundColor: '$borderColor',
-  opacity: 0.5,
+export type DividerProps = {
+  vertical?: boolean;
+  spacing?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+  style?: React.CSSProperties;
+  'data-testid'?: string;
+  id?: string;
+};
 
-  variants: {
-    vertical: {
-      true: {
-        width: 1,
-        height: '100%',
-      },
-      false: {
-        height: 1,
-        width: '100%',
-      },
-    },
-    spacing: {
-      none: { margin: 0 },
-      xs: { margin: '$1' },
-      sm: { margin: '$2' },
-      md: { margin: '$4' },
-      lg: { margin: '$6' },
-      xl: { margin: '$8' },
-    },
-  } as const,
+const spacingClasses: Record<NonNullable<DividerProps['spacing']>, string> = {
+  none: 'm-0',
+  xs: 'm-1',
+  sm: 'm-2',
+  md: 'm-4',
+  lg: 'm-6',
+  xl: 'm-8',
+};
 
-  defaultVariants: {
-    vertical: false,
-    spacing: 'md',
-  },
-});
-
-export type DividerProps = ComponentProps<typeof Divider>;
+export const Divider = ({
+  vertical = false,
+  spacing = 'md',
+  className,
+  style,
+  'data-testid': dataTestId,
+  id,
+}: DividerProps) => (
+  <div
+    role="separator"
+    id={id}
+    data-testid={dataTestId}
+    style={style}
+    className={cx(
+      'bg-[var(--borderColor)] opacity-50',
+      vertical ? 'h-full w-px' : 'h-px w-full',
+      spacingClasses[spacing],
+      className,
+    )}
+  />
+);

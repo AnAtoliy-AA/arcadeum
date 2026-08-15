@@ -1,139 +1,76 @@
 'use client';
 
-import { YStack, Text, styled } from 'tamagui';
-import { ReactNode } from 'react';
+import type React from 'react';
+import { type ReactNode } from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 export interface OptionCardProps {
   label: ReactNode;
   description?: ReactNode;
   isActive?: boolean;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
   onClick?: () => void;
   icon?: ReactNode;
   'data-testid'?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-const StyledOptionCard = styled(YStack, {
-  name: 'OptionCard',
-  tag: 'button',
-  role: 'button',
-  type: 'button',
-  borderRadius: 12,
-  borderWidth: 1,
-  padding: '$5',
-  gap: '$2',
-  cursor: 'pointer',
-  position: 'relative',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'stretch',
-  width: '100%',
-  overflow: 'hidden',
-  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-  borderColor: 'rgba(255, 255, 255, 0.1)',
-  variants: {
-    isActive: {
-      true: {
-        backgroundColor: 'rgba(87, 195, 255, 0.1)',
-        borderColor: '$primary',
-        elevation: '$small',
-        shadowColor: '$primary',
-        shadowOffset: { width: 0, height: 0 },
-        shadowRadius: 15,
-        shadowOpacity: 0.5,
-      },
-      false: {
-        hoverStyle: {
-          backgroundColor: 'rgba(255, 255, 255, 0.07)',
-          borderColor: 'rgba(255, 255, 255, 0.2)',
-          y: -2,
-        },
-      },
-    },
-    animated: {
-      true: {
-        animation: 'medium',
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    isActive: false,
-    animated: true,
-  },
-} as Record<string, unknown>) as React.ComponentType<Record<string, unknown>>;
-
-const Description = styled(Text, {
-  fontSize: '$3',
-  opacity: 0.7,
-  lineHeight: '$2',
-  color: '$color',
-});
-
-const Label = styled(Text, {
-  fontSize: '$5',
-  fontWeight: '600',
-  color: '$color',
-});
-
-const ActiveIndicator = styled(YStack, {
-  position: 'absolute',
-  top: 10,
-  right: 10,
-  width: 8,
-  height: 8,
-  borderRadius: 4,
-  backgroundColor: '$primary',
-  shadowColor: '$primary',
-  shadowRadius: 10,
-  shadowOpacity: 1,
-  opacity: 0,
-
-  variants: {
-    visible: {
-      true: {
-        opacity: 1,
-      },
-    },
-  } as const,
-});
+function ActiveIndicator({ visible }: { visible?: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={cx(
+        'absolute top-[10px] right-[10px] w-2 h-2 rounded-[4px] bg-[var(--primary)] shadow-[0_0_10px_var(--primary)] opacity-0',
+        visible && 'opacity-100',
+      )}
+    />
+  );
+}
 
 export function OptionCard({
   label,
   description,
   isActive,
-  onPress,
   onClick,
   icon,
   'data-testid': dataTestId,
+  className,
+  style,
   ...rest
 }: OptionCardProps) {
   return (
-    <StyledOptionCard
-      isActive={isActive}
-      onClick={onClick || onPress}
-      data-testid={dataTestId}
-      {...rest}
-      {...({
-        'aria-pressed': isActive ? 'true' : 'false',
-        role: 'button',
-        tabIndex: 0,
-      } as Record<string, unknown>)}
+    <button
+      className={cx(
+        'relative flex w-full flex-col items-stretch overflow-hidden rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] p-5 gap-2 cursor-pointer text-left transition-all duration-300 ease-out',
+        isActive
+          ? 'bg-[rgba(87,195,255,0.1)] border-[var(--primary)] shadow-[0_0_15px_var(--primary)]'
+          : 'hover:bg-[rgba(255,255,255,0.07)] hover:border-[rgba(255,255,255,0.2)] hover:-translate-y-0.5',
+        className,
+      )}
       style={{
         scrollMarginTop: 100,
-        textAlign: 'left',
+        ...style,
       }}
+      type="button"
+      onClick={onClick}
+      data-testid={dataTestId}
+      aria-pressed={isActive ? 'true' : 'false'}
+      {...rest}
     >
       <ActiveIndicator visible={isActive} />
-      <YStack gap="$1">
-        <YStack flexDirection="row" alignItems="center" gap="$3">
+      <div className="flex flex-col items-stretch gap-1">
+        <div className="flex flex-row items-center gap-3">
           {icon}
-          <Label>{label}</Label>
-        </YStack>
-        {description && <Description>{description}</Description>}
-      </YStack>
-    </StyledOptionCard>
+          <span className="text-[20px] leading-[28px] font-semibold text-[var(--color)]">
+            {label}
+          </span>
+        </div>
+        {description && (
+          <span className="text-[16px] leading-[18px] opacity-[0.7] text-[var(--color)]">
+            {description}
+          </span>
+        )}
+      </div>
+    </button>
   );
 }

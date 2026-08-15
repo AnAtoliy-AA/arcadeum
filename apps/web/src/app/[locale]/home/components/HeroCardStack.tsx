@@ -1,15 +1,24 @@
 'use client';
 
-import React, { useRef, useState, useCallback, type ReactNode } from 'react';
+import React, {
+  useRef,
+  useState,
+  useCallback,
+  Children,
+  isValidElement,
+  cloneElement,
+  type ReactNode,
+  type CSSProperties,
+} from 'react';
 import { useHeroBackgroundStore } from '../store/heroBackgroundStore';
+import {
+  HERO_CARD_FAN_OFFSET,
+  HERO_VARIANT_BG_IMAGES,
+} from '../data/heroVariants';
 
-const FAN_OFFSET = 140;
+const FAN_OFFSET = HERO_CARD_FAN_OFFSET;
 
-const HERO_BG_IMAGES = [
-  '/images/variants/fantasy_bg.webp',
-  '/images/variants/galaxy_bg.webp',
-  '/images/variants/steampunk_bg.webp',
-];
+const HERO_BG_IMAGES = HERO_VARIANT_BG_IMAGES;
 
 function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
   const rect = stack.getBoundingClientRect();
@@ -19,6 +28,24 @@ function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
   if (dx > FAN_OFFSET / 2) return 2;
   return 1;
 }
+
+type CardElement = React.ReactElement<{
+  className?: string;
+  style?: CSSProperties;
+}>;
+
+/**
+ * Active-card state, applied via cloneElement so the hovered card lifts
+ * (transform + shadow) and its play CTA / shimmer activate. The descendant
+ * selectors below replace the old `[data-hovered="N"] :nth-child(N)` CSS.
+ */
+const ACTIVE_CLASSES =
+  'hero-card-active z-[100] opacity-100 shadow-card-hover [&.hero-card-active_.hero-card-play-cta]:opacity-100 [&.hero-card-active_.hero-card-play-cta]:scale-100 [&.hero-card-active_.hero-card-shimmer]:translate-x-full motion-reduce:[&_.hero-card-play-cta]:scale-100 motion-reduce:[&_.hero-card-shimmer]:-translate-x-full motion-reduce:[&_.hero-card-shimmer]:transition-none';
+const BASE_CLASSES = [
+  'z-0 opacity-80',
+  'z-[1] opacity-80',
+  'z-[2] opacity-100',
+];
 
 export function HeroCardStack({
   children,
@@ -70,13 +97,29 @@ export function HeroCardStack({
   return (
     <div
       ref={stackRef}
-      className="hero-card-stack-main hero-card-stack"
+      className="hero-card-stack relative flex h-[400px] w-[380px] items-center justify-center [transform:scale(0.52)] [transform-style:preserve-3d] transition-transform duration-[250ms] ease-out motion-reduce:[transform:none] min-[481px]:[transform:scale(0.85)] min-[481px]:mb-10 min-[481px]:mt-[60px] min-[1151px]:mb-0 min-[1151px]:mt-0 min-[1151px]:[transform:perspective(600px)_rotateX(var(--tilt-y,0deg))_rotateY(var(--tilt-x,0deg))]"
       data-testid="hero-card-stack"
       data-hovered={hoveredIndex ?? ''}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
     >
-      {children}
+      {Children.map(children, (child, index) => {
+        if (!isValidElement(child)) return child;
+        const card = child as CardElement;
+        const isActive = hoveredIndex === index;
+        const transform = isActive
+          ? `translate(var(--card-x), -20px) rotate(var(--card-rotate)) scale(1.05)`
+          : `translate(var(--card-x), var(--card-y)) rotate(var(--card-rotate)) scale(var(--card-scale))`;
+        return cloneElement(card, {
+          className: `${card.props.className ?? ''} ${
+            isActive ? ACTIVE_CLASSES : (BASE_CLASSES[index] ?? '')
+          }`.trim(),
+          style: {
+            ...card.props.style,
+            '--card-transform': transform,
+          } as CSSProperties,
+        });
+      })}
     </div>
   );
 }

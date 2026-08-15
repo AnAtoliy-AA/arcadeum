@@ -1,8 +1,9 @@
-import { XStack, View, Text, styled } from 'tamagui';
+import { cx } from '../../utils/cx';
 
 export type LiveChipProps = {
   label?: string;
   testID?: string;
+  className?: string;
 };
 
 const PULSE_STYLE_ID = '__arcadeum-live-pulse';
@@ -20,35 +21,22 @@ if (typeof document !== 'undefined' && !document.getElementById(PULSE_STYLE_ID))
   document.head.appendChild(styleEl);
 }
 
-const Root = styled(XStack, {
-  name: 'LiveChip',
-  alignItems: 'center',
-  gap: 6,
-  paddingHorizontal: 10,
-  paddingVertical: 4,
-  borderRadius: 999,
-  borderWidth: 1,
-  borderColor: 'rgba(239,68,68,0.5)',
-  backgroundColor: 'rgba(239,68,68,0.12)',
-});
-
-const Dot = styled(View, {
-  name: 'LiveDot',
-  width: 8,
-  height: 8,
-  borderRadius: 4,
-  backgroundColor: '#ef4444',
-});
-
-export function LiveChip({ label = 'Live', testID }: LiveChipProps) {
+export function LiveChip({ label = 'Live', testID, className }: LiveChipProps) {
   return (
-    <Root testID={testID}>
-      <Dot
+    <div
+      data-testid={testID}
+      className={cx(
+        'flex flex-row items-center gap-[6px] px-[10px] py-1 rounded-full border border-[rgba(239,68,68,0.5)] bg-[rgba(239,68,68,0.12)]',
+        className,
+      )}
+    >
+      <div
+        className="h-2 w-2 rounded bg-[#ef4444]"
         style={{ animation: 'arcadeum-live-pulse 1.6s ease-in-out infinite' }}
       />
-      <Text fontSize="$1" fontWeight="700" letterSpacing={1} color="#ef4444">
+      <span className="text-[12px] font-bold tracking-[1px] text-[#ef4444]">
         {label.toUpperCase()}
-      </Text>
-    </Root>
+      </span>
+    </div>
   );
 }

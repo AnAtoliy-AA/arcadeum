@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
+import { IconButton, LinkButton } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes, useLocale } from '@/shared/config/useRoutes';
 import type { Routes } from '@/shared/config/routes';
@@ -82,26 +83,29 @@ export function HomeGameCard({
 
   return (
     <article
-      data-testid={`game-card-${game.id}`}
-      className="featured-card-main"
+      className="featured-card-main relative isolate flex h-full flex-col overflow-hidden rounded-[20px] border border-glass-border bg-glass-bg shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_24px_40px_-22px_rgba(0,0,0,0.7)] transition-[transform,border-color] duration-[250ms] after:pointer-events-none hover:-translate-y-[3px] hover:border-[color:color-mix(in_srgb,var(--game-accent)_30%,var(--glassBorder))]"
       style={accentVar}
+      data-testid={`game-card-${game.id}`}
     >
-      <div className="featured-card-cover-main">
+      <div className="featured-card-cover-main relative h-[200px] shrink-0 bg-featured-cover after:absolute after:inset-x-0 after:bottom-0 after:h-[60%] after:bg-card-cover-fade">
         <Link
           href={getCardLinkHref(game, routes, locale)}
           data-testid={`game-title-link-${game.id}`}
-          className="featured-card-cover-link"
+          className="featured-card-cover-link absolute inset-0 z-[1] flex items-end p-[18px] text-inherit no-underline focus-visible:rounded-2xl focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-[-4px]"
           aria-label={t(game.nameKey)}
         >
-          <span className="featured-card-pill-main">
-            <span className="featured-card-pill-dot-main" aria-hidden />
+          <span className="absolute left-[14px] top-[14px] inline-flex items-center whitespace-nowrap rounded-full border border-[color:color-mix(in_srgb,var(--game-accent)_35%,transparent)] bg-black/35 px-[9px] py-1 text-[10px] uppercase tracking-[0.16em] text-[color:color-mix(in_srgb,var(--game-accent)_80%,white)] backdrop-blur">
+            <span
+              className="mr-[6px] inline-block h-[5px] w-[5px] rounded-full bg-[var(--game-accent)] shadow-[0_0_8px_var(--game-accent)]"
+              aria-hidden
+            />
             {game.genre} · {game.pace}
           </span>
 
           {game.isDemo ? (
             <span
               data-testid={`game-demo-badge-${game.id}`}
-              className="featured-card-demo-main"
+              className="absolute right-[14px] top-[14px] rounded-full bg-[#fde68a] px-[9px] py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#0b0f12]"
               aria-label={homeCopy.demoBadgeLabel ?? 'Demo build'}
             >
               {homeCopy.demoBadge ?? 'Demo'}
@@ -111,7 +115,7 @@ export function HomeGameCard({
           {comingSoon ? (
             <span
               data-testid="home-game-coming-soon-badge"
-              className="featured-card-coming-soon-main"
+              className="absolute right-[14px] top-[14px] rounded-full border border-white/15 bg-[rgba(20,22,28,0.85)] px-[9px] py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white"
             >
               {t('games.create.comingSoon') || 'Coming Soon'}
             </span>
@@ -119,23 +123,25 @@ export function HomeGameCard({
 
           <GameSymbol
             gameId={game.id}
-            className="featured-card-symbol-main"
+            className="featured-card-symbol-main pointer-events-none absolute left-1/2 top-1/2 h-[108px] w-[108px] -translate-x-1/2 -translate-y-[65%] text-[color:color-mix(in_srgb,var(--game-accent)_82%,white_12%)] drop-shadow-[0_6px_28px_color-mix(in_srgb,var(--game-accent)_30%,transparent)]"
             aria-hidden="true"
           />
 
           <h3
             data-testid={`game-title-${game.id}`}
-            className="featured-card-title-main"
+            className="featured-card-title-main relative z-[1] m-0 text-[26px] font-semibold tracking-[-0.015em] text-white text-shadow-title-soft max-[640px]:text-[22px]"
           >
             {t(game.nameKey)}
           </h3>
         </Link>
       </div>
 
-      <div className="featured-card-body-main">
-        <p className="featured-card-desc-main">{t(game.descriptionKey)}</p>
+      <div className="featured-card-body-main flex flex-1 flex-col gap-[14px] p-[16px_18px_18px]">
+        <p className="featured-card-desc-main m-0 min-h-[42px] text-[14px] leading-[1.5] text-color opacity-85">
+          {t(game.descriptionKey)}
+        </p>
 
-        <ul className="featured-card-meta-main">
+        <ul className="featured-card-meta-main m-0 flex list-none flex-wrap gap-x-[14px] gap-y-[6px] p-0 text-[12.5px] text-color opacity-70 [&_b]:font-medium [&_li]:inline-flex [&_li]:items-center [&_li]:gap-[6px]">
           <li>
             <b>{game.players}</b> {homeCopy.gameMetaPlayers ?? 'players'}
           </li>
@@ -150,27 +156,32 @@ export function HomeGameCard({
           )}
         </ul>
 
-        <div className="featured-card-foot-main">
-          <Link
+        <div className="featured-card-foot-main mt-auto flex gap-2">
+          <LinkButton
+            className={
+              'featured-card-cta-main flex-1 text-[14px] tracking-[0.01em] [&>span]:font-extrabold'
+            }
             href={getPlayHref(game, routes, locale, comingSoon)}
-            className="featured-card-cta-main"
+            variant="victory"
+            size="sm"
+            disabled={isDisabled}
             data-testid="game-play-button"
-            aria-disabled={isDisabled ? 'true' : undefined}
             aria-label={`${playLabel} ${t(game.nameKey)}`}
           >
             <PlayTriangle aria-hidden />
             <span>{playLabel}</span>
-          </Link>
-          <button
-            type="button"
+          </LinkButton>
+          <IconButton
+            className={'opacity-65 hover:opacity-100'}
+            variant="icon"
+            size="sm"
             onClick={() => onOpenDetails(game.id)}
             title={homeCopy.showMore ?? 'Show Details'}
             aria-label={homeCopy.gameHowToPlay ?? 'How to play'}
             data-testid="game-help-button"
-            className="featured-card-info-main"
           >
             <InfoIcon aria-hidden />
-          </button>
+          </IconButton>
         </div>
       </div>
     </article>

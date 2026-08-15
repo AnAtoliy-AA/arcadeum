@@ -1,9 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider, createTamagui } from 'tamagui';
-import { defaultConfig } from '@tamagui/config/v4';
 
-const tamaguiConfig = createTamagui(defaultConfig);
 import { CascadeBoard } from './CascadeBoard';
 import { CascadeThemeProvider } from '../lib/CascadeThemeContext';
 import type { CascadeClientState } from '../types';
@@ -86,16 +83,14 @@ function makeSnapshot(
 
 function renderBoard(props: React.ComponentProps<typeof CascadeBoard>) {
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
-      <CascadeThemeProvider variant="cosmic">
-        <CascadeBoard {...props} />
-      </CascadeThemeProvider>
-    </TamaguiProvider>,
+    <CascadeThemeProvider variant="cosmic">
+      <CascadeBoard {...props} />
+    </CascadeThemeProvider>,
   );
 }
 
 describe('CascadeBoard', () => {
-  // First Tamagui render pays a one-time setup cost — give it room.
+  // First render pays a one-time setup cost — give it room.
   it('renders my hand and the discard top card', { timeout: 20000 }, () => {
     const snapshot = makeSnapshot();
     renderBoard({

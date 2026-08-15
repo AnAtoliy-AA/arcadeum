@@ -1,7 +1,6 @@
-'use client';
-import { YStack, Text, styled, H2, GetProps } from 'tamagui';
-import { memo } from 'react';
-import type { ReactNode, ReactElement } from 'react';
+import { forwardRef } from 'react';
+import type { ReactNode } from 'react';
+import { cx } from '../../utils/cx';
 
 export type SectionProps = {
   title?: string;
@@ -9,66 +8,47 @@ export type SectionProps = {
   variant?: 'legal';
   children: ReactNode;
   'data-testid'?: string;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: (e: unknown) => void;
+  className?: string;
 };
 
-const StyledSection = styled(YStack, {
-  name: 'Section',
-  gap: '$3',
-  borderRadius: '$5',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  padding: '$5',
-  backgroundColor: '$glassBg',
-  backdropFilter: 'blur(10px)',
+export const Section = forwardRef<HTMLDivElement, SectionProps>(
+  function Section({ title, description, variant, children, className, ...rest }, ref) {
+    return (
+      <div
+        ref={ref}
+        className={cx(
+          '',
+          'flex',
+          'flex-col',
+          'gap-3',
+          'border',
+          'border-[var(--borderColor)]',
+          'bg-[var(--glassBg)]',
+          'backdrop-blur-[10px]',
+          variant === 'legal'
+            ? 'rounded-[24px] p-6 backdrop-blur-[14px]'
+            : 'rounded-2xl p-5',
+          className,
+        )}
+        {...rest}
+      >
+        {title && (
+          <h2
+            data-testid="section-title"
+            className="m-0 text-[20px] font-semibold leading-[28px] text-[var(--color)]"
+          >
+            {title}
+          </h2>
+        )}
+        {description && (
+          <p className="m-0 text-[16px] leading-[18px] text-[var(--color)] opacity-70">
+            {description}
+          </p>
+        )}
+        {children}
+      </div>
+    );
+  },
+);
 
-  variants: {
-    variant: {
-      legal: {
-        backgroundColor: '$glassBg',
-        backdropFilter: 'blur(14px)',
-        padding: '$6',
-        borderRadius: '$6',
-      },
-    },
-  } as const,
-});
-
-const SectionTitle = styled(H2, {
-  name: 'SectionTitle',
-  margin: 0,
-  fontSize: '$5',
-  fontWeight: '600',
-  color: '$color',
-});
-
-const SectionDescription = styled(Text, {
-  name: 'SectionDescription',
-  margin: 0,
-  fontSize: '$3',
-  lineHeight: '$2',
-  color: '$color',
-  opacity: 0.7,
-});
-
-import { filterProps } from '../../utils/filterProps';
-
-export const Section = StyledSection.styleable<
-  Omit<SectionProps, 'children'> & GetProps<typeof StyledSection>
->(({ title, description, variant, onPress, onClick, ...props }, ref) => {
-  const filteredProps = filterProps({ ...props, onPress, onClick });
-
-  return (
-    <StyledSection 
-      {...filteredProps} 
-      variant={variant} 
-      ref={ref}
-    >
-      {title && <SectionTitle data-testid="section-title">{title}</SectionTitle>}
-      {description && <SectionDescription>{description}</SectionDescription>}
-      {props.children}
-    </StyledSection>
-  );
-});
+Section.displayName = 'Section';

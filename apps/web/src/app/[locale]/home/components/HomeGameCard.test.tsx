@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { HomeGameCard } from './HomeGameCard';
 import { featuredGames } from '../data/games';
 
-// HomeGameCard renders plain HTML elements (no Tamagui) — no TamaguiProvider needed.
+const Wrapper = ({ children }: { children: React.ReactNode }) => children;
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -46,7 +46,11 @@ const baseProps = {
 
 describe('HomeGameCard — comingSoon prop', () => {
   it('renders Play now button enabled when comingSoon=false', () => {
-    render(<HomeGameCard {...baseProps} comingSoon={false} />);
+    render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} comingSoon={false} />
+      </Wrapper>,
+    );
 
     const playBtn = screen.getByTestId('game-play-button');
     expect(playBtn).not.toHaveAttribute('aria-disabled', 'true');
@@ -57,7 +61,11 @@ describe('HomeGameCard — comingSoon prop', () => {
   });
 
   it('renders the card disabled with a "Coming soon" badge when comingSoon=true', () => {
-    render(<HomeGameCard {...baseProps} comingSoon={true} />);
+    render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} comingSoon={true} />
+      </Wrapper>,
+    );
 
     const playBtn = screen.getByTestId('game-play-button');
     const href = playBtn.getAttribute('href');
@@ -70,14 +78,22 @@ describe('HomeGameCard — comingSoon prop', () => {
   });
 
   it('routes the sea battle play CTA to the locale-prefixed landing page', () => {
-    render(<HomeGameCard {...baseProps} game={seaBattleGame} />);
+    render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} game={seaBattleGame} />
+      </Wrapper>,
+    );
 
     const playBtn = screen.getByTestId('game-play-button');
     expect(playBtn.getAttribute('href')).toBe('/en/games/sea-battle');
   });
 
   it('routes the critical play CTA to the locale-prefixed landing page', () => {
-    render(<HomeGameCard {...baseProps} game={criticalGame} />);
+    render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} game={criticalGame} />
+      </Wrapper>,
+    );
 
     const playBtn = screen.getByTestId('game-play-button');
     expect(playBtn.getAttribute('href')).toBe('/en/games/critical');
@@ -96,7 +112,11 @@ describe('HomeGameCard — comingSoon prop', () => {
 
 describe('HomeGameCard — V2 cover-led layout (ARC-747)', () => {
   it('renders the genre · pace pill in the cover', () => {
-    render(<HomeGameCard {...baseProps} comingSoon={false} />);
+    render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} comingSoon={false} />
+      </Wrapper>,
+    );
 
     expect(
       screen.getByText(`${criticalGame.genre} · ${criticalGame.pace}`),
@@ -117,7 +137,11 @@ describe('HomeGameCard — V2 cover-led layout (ARC-747)', () => {
   });
 
   it('shows the Demo badge with "Try demo" CTA copy for demo games', () => {
-    render(<HomeGameCard {...baseProps} game={glimwormGame} />);
+    render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} game={glimwormGame} />
+      </Wrapper>,
+    );
 
     expect(
       screen.getByTestId(`game-demo-badge-${glimwormGame.id}`),
@@ -128,7 +152,11 @@ describe('HomeGameCard — V2 cover-led layout (ARC-747)', () => {
   });
 
   it('hides the playing-now meta entry when count is null', () => {
-    render(<HomeGameCard {...baseProps} comingSoon={false} />);
+    render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} comingSoon={false} />
+      </Wrapper>,
+    );
 
     // criticalGame.playingNow is null in the data
     expect(screen.queryByText(/playing now/i)).not.toBeInTheDocument();
@@ -136,21 +164,33 @@ describe('HomeGameCard — V2 cover-led layout (ARC-747)', () => {
 
   it('shows the playing-now meta entry when count is a number', () => {
     const liveGame = { ...criticalGame, playingNow: 1234 };
-    render(<HomeGameCard {...baseProps} game={liveGame} />);
+    render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} game={liveGame} />
+      </Wrapper>,
+    );
 
     expect(screen.getByText(/1\.2k/)).toBeInTheDocument();
     expect(screen.getByText(/playing now/i)).toBeInTheDocument();
   });
 
   it('exposes the help button with an accessible "How to play" label', () => {
-    render(<HomeGameCard {...baseProps} />);
+    render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} />
+      </Wrapper>,
+    );
 
     const helpBtn = screen.getByTestId('game-help-button');
     expect(helpBtn).toHaveAccessibleName(/how to play/i);
   });
 
   it('applies the per-game accent as a CSS variable', () => {
-    const { container } = render(<HomeGameCard {...baseProps} />);
+    const { container } = render(
+      <Wrapper>
+        <HomeGameCard {...baseProps} />
+      </Wrapper>,
+    );
 
     const card = container.querySelector(
       '.featured-card-main',

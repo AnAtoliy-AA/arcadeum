@@ -12,7 +12,7 @@ import { cx } from '@arcadeum/ui/utils/cx';
  * which is portaled to body and thus outside this grid's flow.
  */
 // §3.3 — `maxWidth` is the upper bound; the actual constraint is the
-// `min(1240px, calc(100vw - 48px))` rule in hudStyles.tsx keyed off
+// `min(1240px, calc(100vw - 48px))` rule in HudStyles.tsx keyed off
 // `[data-testid="match-widget-grid"]`. Keep this number in sync with
 // the CSS rule if it ever changes. The same selector also sets
 // `container-type: inline-size` so `.match-arena` can respond to SLOT

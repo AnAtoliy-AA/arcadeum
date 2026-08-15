@@ -220,27 +220,6 @@ export function InputRow({ className, ...props }: DivProps) {
   );
 }
 
-export function InputGroup({ className, ...props }: DivProps) {
-  return (
-    <div
-      className={cx('flex w-full flex-row items-stretch gap-3', className)}
-      {...props}
-    />
-  );
-}
-
-export function ErrorBanner({ className, ...props }: DivProps) {
-  return (
-    <div
-      className={cx(
-        'flex w-full flex-row items-center gap-2 rounded-xl border border-[rgba(239,68,68,0.15)] bg-[rgba(239,68,68,0.1)] px-4 py-3',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
 export function ErrorMessage({ className, ...props }: DivProps) {
   return (
     <div
@@ -282,29 +261,11 @@ export function LoginLink({
   );
 }
 
-export function LockIcon({ className, ...props }: SpanProps) {
-  return (
-    <span className={cx('text-center text-[32px]', className)} {...props} />
-  );
-}
-
 export function NoticeMessage({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
         'self-center rounded-xl border border-[rgba(139,92,246,0.12)] bg-[rgba(139,92,246,0.08)] px-4 py-2.5 text-center text-[13px] text-[var(--accent)]',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-export function PasswordToggle({ className, ...props }: SpanProps) {
-  return (
-    <span
-      className={cx(
-        '-mt-1 text-center text-[13px] text-[rgba(236,239,238,0.4)]',
         className,
       )}
       {...props}

@@ -22,7 +22,7 @@ export type GameVariant =
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 /** Corner shape — overrides the radius from the chosen size. */
-export type ButtonShape = 'rectangle' | 'round' | 'square' | 'circle';
+export type ButtonShape = 'round' | 'square' | 'circle';
 
 export type ButtonProps = {
   children?: React.ReactNode;

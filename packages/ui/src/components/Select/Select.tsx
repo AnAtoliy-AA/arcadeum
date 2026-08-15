@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, Children, isValidElement } from 'react';
 import type { ReactNode } from 'react';
 import { cx } from '../../utils/cx';
+import { fieldBorderClasses } from '../../utils/fieldClasses';
 import { ChevronDownIcon } from '../Icons';
 
 export type SelectProps = {
@@ -221,9 +222,7 @@ export const Select = memo(function Select({
         className={cx(
           triggerBaseClasses,
           fullWidth ? 'w-full' : 'w-auto',
-          error
-            ? 'border-[var(--error)]'
-            : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[var(--primary)] focus:border-[2px]',
+          fieldBorderClasses(!!error),
           sizeClasses[size],
         )}
       >

@@ -123,7 +123,7 @@ export const FloatingLabelInput = forwardRef<
         placeholder=" "
         data-testid={testId}
         className={cx(
-          'h-[56px] w-full rounded-[12px] border bg-[var(--background)] px-3.5 pb-[10px] pt-[22px] text-[15px] text-[var(--color)] outline-none transition-[border-color] duration-160',
+          'h-[56px] w-full rounded-[12px] border bg-[var(--background)] px-3.5 pb-[10px] pt-[22px] text-[15px] text-[var(--color)] outline-none transition-[border-color] duration-150',
           error
             ? 'border-[var(--danger)] focus:border-[2px] focus:border-[var(--danger)]'
             : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[2px] focus:border-[var(--accent)]',

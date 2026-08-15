@@ -3,7 +3,6 @@
 import { Button, GlassCard } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { BlockedIp } from '../api';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface BlockedIpsTableLabels {
   empty: string;
@@ -103,9 +102,8 @@ export function BlockedIpsTable({
           <div
             className="flex flex-row gap-3 items-center py-2 px-3 border-b border-[var(--borderColor)]"
             style={{
-              backgroundColor: resolveThemeColor(
-                i % 2 === 1 ? '$backgroundFocus' : undefined,
-              ),
+              backgroundColor:
+                i % 2 === 1 ? 'var(--backgroundFocus)' : undefined,
               opacity: pendingIp === item.ip ? 0.5 : 1,
             }}
             key={item.ip}

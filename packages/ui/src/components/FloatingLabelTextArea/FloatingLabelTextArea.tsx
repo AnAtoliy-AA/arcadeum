@@ -122,7 +122,7 @@ export const FloatingLabelTextArea = forwardRef<
         placeholder=" "
         data-testid={testId}
         className={cx(
-          'min-h-[200px] w-full rounded-[12px] border bg-[var(--background)] px-3.5 pb-7 pt-6 text-[15px] text-[var(--color)] outline-none transition-[border-color] duration-160',
+          'min-h-[200px] w-full rounded-[12px] border bg-[var(--background)] px-3.5 pb-7 pt-6 text-[15px] text-[var(--color)] outline-none transition-[border-color] duration-150',
           error
             ? 'border-[var(--danger)]'
             : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[2px] focus:border-[var(--accent)]',

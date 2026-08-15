@@ -1,5 +1,7 @@
+'use client';
 import { forwardRef } from 'react';
 import { cx } from '../../utils/cx';
+import { fieldBorderClasses } from '../../utils/fieldClasses';
 
 export type InputProps = {
   size?: 'sm' | 'md' | 'lg';
@@ -52,9 +54,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         'rounded-[16px] border bg-[var(--background)] text-[var(--color)] outline-none transition-[border-color] duration-200',
         sizeClasses[size],
         fullWidth && 'w-full',
-        error
-          ? 'border-[var(--error)]'
-          : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[var(--primary)] focus:border-[2px]',
+        fieldBorderClasses(!!error),
         className,
       )}
       style={style}

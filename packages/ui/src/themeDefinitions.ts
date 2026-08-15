@@ -28,10 +28,9 @@ export const themeBase = {
   primaryText: '#ffffff',
   secondary: '#4338ca',
   danger: '#b91c1c',
-  // Alias the danger palette under the `$error*` namespace so components
-  // that follow the standard form-validation naming (Input, FormGroup,
-  // TextArea, Select, admin/tournaments error banners) resolve their
-  // tokens at SSR, avoiding server/client mismatch on themed pages.
+  // Form-validation components (Input, FormGroup, TextArea, Select, admin
+  // error banners) read the danger palette via var(--error*) — aliased here
+  // so error styling stays theme-consistent.
   error: '#b91c1c',
   errorText: '#ffffff',
   errorBg: 'rgba(220, 38, 38, 0.15)',

@@ -9,7 +9,7 @@ import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
 import { FloatingLabelTextArea } from '@arcadeum/ui/components/FloatingLabelTextArea';
 import { LaunchButton } from '@arcadeum/ui/components/LaunchButton';
 import { ContactAvatars } from './ContactAvatars';
-import { getContactStyles } from './getContactStyles';
+import { getContactStyles } from './contactTokens';
 import { submitContactAction, type ContactActionState } from './actions';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 

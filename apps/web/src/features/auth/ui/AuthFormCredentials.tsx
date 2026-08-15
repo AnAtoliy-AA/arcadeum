@@ -182,7 +182,7 @@ export function AuthFormCredentials({
               <Typography
                 variant="body"
                 uiSize="sm"
-                color="$accent"
+                color="var(--accent)"
                 weight="600"
               >
                 {form.forgotPassword}
@@ -195,7 +195,7 @@ export function AuthFormCredentials({
           <Typography
             variant="body"
             uiSize="sm"
-            color="$danger"
+            color="var(--danger)"
             data-testid="auth-credentials-error"
           >
             {localError}
@@ -221,7 +221,7 @@ export function AuthFormCredentials({
 
         {!isRegisterMode && (
           <div className="flex flex-row items-center justify-center gap-2 flex-wrap -mt-1">
-            <Typography variant="body" uiSize="sm" color="$colorMuted">
+            <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
               {form.magicLinkPrompt}
             </Typography>
             <button
@@ -242,7 +242,7 @@ export function AuthFormCredentials({
           <Typography
             variant="caption"
             uiSize="xs"
-            color="$colorMuted"
+            color="var(--textSecondary)"
             textCenter
           >
             {form.legalPrefix.replace('{{appName}}', appConfig.appName)}
@@ -250,7 +250,7 @@ export function AuthFormCredentials({
               <Typography
                 variant="caption"
                 uiSize="xs"
-                color="$colorMuted"
+                color="var(--textSecondary)"
                 weight="600"
               >
                 {form.termsLink}
@@ -261,7 +261,7 @@ export function AuthFormCredentials({
               <Typography
                 variant="caption"
                 uiSize="xs"
-                color="$colorMuted"
+                color="var(--textSecondary)"
                 weight="600"
               >
                 {form.privacyLink}
@@ -288,11 +288,11 @@ function FieldWithMessage({
     <div className="flex flex-col items-stretch gap-1">
       {children}
       {error ? (
-        <Typography variant="body" uiSize="xs" color="$danger">
+        <Typography variant="body" uiSize="xs" color="var(--danger)">
           {error}
         </Typography>
       ) : description ? (
-        <Typography variant="body" uiSize="xs" color="$colorMuted">
+        <Typography variant="body" uiSize="xs" color="var(--textSecondary)">
           {description}
         </Typography>
       ) : null}
@@ -360,7 +360,7 @@ function RememberMeCheckbox({
           </svg>
         )}
       </span>
-      <Typography variant="body" uiSize="sm" color="$colorMuted">
+      <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
         {label}
       </Typography>
     </button>

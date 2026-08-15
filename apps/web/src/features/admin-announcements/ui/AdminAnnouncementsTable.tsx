@@ -9,7 +9,6 @@ import {
   type AnnouncementStatus,
 } from '../api';
 import { formatWindow } from '../lib/formatWindow';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface AdminAnnouncementsTableLabels {
   empty: { noResults: string; noAnnouncements: string };
@@ -46,9 +45,9 @@ export interface AdminAnnouncementsTableProps {
 }
 
 const SEVERITY_COLOR: Record<AnnouncementSeverity, string> = {
-  info: '$infoBgSoft',
-  warning: '$warningBgSoft',
-  critical: '$errorBgSoft',
+  info: 'rgba(99,102,241,0.1)',
+  warning: 'rgba(251,191,36,0.2)',
+  critical: 'rgba(239,68,68,0.25)',
 };
 
 const truncate = (s: string, n: number) =>
@@ -136,9 +135,8 @@ export function AdminAnnouncementsTable({
             <div
               className="flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
               style={{
-                backgroundColor: resolveThemeColor(
-                  i % 2 === 1 ? '$backgroundFocus' : undefined,
-                ),
+                backgroundColor:
+                  i % 2 === 1 ? 'var(--backgroundFocus)' : undefined,
               }}
               key={item.id}
               data-testid={`announcement-row-${item.id}`}
@@ -152,9 +150,7 @@ export function AdminAnnouncementsTable({
                 <div
                   className="flex flex-row items-stretch px-2 py-1 rounded-lg self-start"
                   style={{
-                    backgroundColor: resolveThemeColor(
-                      SEVERITY_COLOR[item.severity],
-                    ),
+                    backgroundColor: SEVERITY_COLOR[item.severity],
                   }}
                 >
                   <span className="text-[12px]">

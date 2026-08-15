@@ -45,7 +45,6 @@ export const buttonSizes: Record<ButtonSizeKey, string> = {
  * compiled CSS, so they deterministically win over size/variant radii.
  */
 export const buttonShapes: Record<string, string> = {
-  rectangle: '',
   round: 'rounded-full',
   square: 'rounded-none',
   circle: 'aspect-square rounded-full !p-0 justify-center items-center',

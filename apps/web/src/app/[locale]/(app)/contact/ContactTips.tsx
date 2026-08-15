@@ -2,7 +2,7 @@
 
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
-import { getContactStyles } from './getContactStyles';
+import { getContactStyles } from './contactTokens';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 type TipsCopy = NonNullable<NonNullable<ContactMessages['sections']>['tips']>;

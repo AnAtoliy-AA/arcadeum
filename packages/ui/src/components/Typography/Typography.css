@@ -7,7 +7,7 @@
 }
 
 .typography-gradient-gold {
-  background: var(--goldGradient);
+  background: linear-gradient(135deg, #ffe866 0%, #ffb500 50%, #ff9500 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -15,7 +15,7 @@
 }
 
 .typography-gradient-silver {
-  background: var(--silverGradient);
+  background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

@@ -84,7 +84,7 @@ describe('TurnBanner', () => {
   });
 
   it('attaches its pulse via the global hudStyles attribute selector, not inline', () => {
-    // Keyframes live in `hudStyles.tsx` (HUD_KEYFRAMES_CSS) and are
+    // Keyframes live in `HudStyles.tsx` (HUD_KEYFRAMES_CSS) and are
     // mounted once by `ArenaCenter`. The banner itself should NOT emit
     // a `<style>` tag and the dot's inline style must NOT carry an
     // animation rule — the prefers-reduced-motion media gate inside

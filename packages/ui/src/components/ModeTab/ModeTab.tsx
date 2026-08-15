@@ -1,3 +1,4 @@
+'use client';
 import type { KeyboardEvent } from 'react';
 import { cx } from '../../utils/cx';
 

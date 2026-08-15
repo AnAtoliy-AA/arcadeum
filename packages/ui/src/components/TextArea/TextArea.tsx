@@ -1,5 +1,7 @@
+'use client';
 import { forwardRef } from 'react';
 import { cx } from '../../utils/cx';
+import { fieldBorderClasses } from '../../utils/fieldClasses';
 
 export type TextAreaProps = {
   value?: string;
@@ -64,9 +66,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         className={cx(
           'min-h-[120px] rounded-[16px] border bg-[var(--background)] px-4 py-3 text-[16px] text-[var(--color)] outline-none transition-[border-color] duration-200',
           fullWidth && 'w-full',
-          error
-            ? 'border-[var(--error)]'
-            : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[var(--primary)] focus:border-[2px]',
+          fieldBorderClasses(!!error),
           className,
         )}
         style={style}

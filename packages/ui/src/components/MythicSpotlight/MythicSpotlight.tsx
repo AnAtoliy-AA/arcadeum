@@ -1,3 +1,4 @@
+'use client';
 import type { ReactNode } from 'react';
 import { Button } from '../Button/Button';
 import { RankBadge } from '../RankBadge/RankBadge';

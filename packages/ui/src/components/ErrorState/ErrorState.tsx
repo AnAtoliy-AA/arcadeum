@@ -1,3 +1,4 @@
+'use client';
 import { memo } from 'react';
 import type { ReactElement } from 'react';
 import { Button } from '../Button/Button';

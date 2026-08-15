@@ -4,7 +4,7 @@ import { useState, type ReactNode } from 'react';
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { ChevronIcon } from './ContactView.icons';
-import { getContactStyles } from './getContactStyles';
+import { getContactStyles } from './contactTokens';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 
 export type FaqItem = { key: string; question: string; answerTemplate: string };

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { EmotePicker, type EmoteId } from './EmotePicker';
-import { QuickButton, QuickButtonText, QuickRow } from './GameChat.styled';
+import { QuickButton, QuickButtonText, QuickRow } from './GameChat.styles';
 
 const QUICK_PHRASES = ['gl hf', 'nice play', 'thinking…', 'gg'];
 

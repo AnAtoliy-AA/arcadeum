@@ -4,7 +4,7 @@ import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { GithubIcon } from './ContactView.icons';
 import { ContactAvatars } from './ContactAvatars';
-import { getContactStyles } from './getContactStyles';
+import { getContactStyles } from './contactTokens';
 import { appConfig } from '@/shared/config/app-config';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';

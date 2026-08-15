@@ -1,3 +1,4 @@
+'use client';
 import { memo } from 'react';
 import { Spinner } from '../Spinner';
 import { Button } from '../Button';
@@ -43,7 +44,7 @@ export const ServerLoadingNotice = memo(function ServerLoadingNotice({
       )}
     >
       <div className="flex flex-row items-center gap-3">
-        <Spinner size="sm" color="$primary" />
+        <Spinner size="sm" color="var(--primary)" />
         <span className="text-[18px] font-bold leading-[24px] tracking-[0.5px] text-[var(--color)]">
           {title}
         </span>
@@ -55,7 +56,7 @@ export const ServerLoadingNotice = memo(function ServerLoadingNotice({
         </p>
 
         <div className="flex flex-col gap-2">
-          <ProgressBar value={progress} height={10} color="$primary" />
+          <ProgressBar value={progress} height={10} color="var(--primary)" />
           <div className="flex flex-row items-center justify-between">
             <span className="text-[16px] font-bold leading-[24px] text-[var(--primary)]">
               {Math.round(progress)}%

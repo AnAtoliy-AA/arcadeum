@@ -12,6 +12,7 @@ import {
 
 import { useThemeStore } from './store/themeStore';
 import {
+  DEFAULT_THEME_NAME,
   ThemeName,
   ThemePreference,
   ThemeTokens,
@@ -96,7 +97,7 @@ export function AppThemeProvider({
   );
 
   const resolvedTheme: ThemeName = useMemo(() => {
-    if (!isHydrated) return initialTheme || 'dark';
+    if (!isHydrated) return initialTheme || DEFAULT_THEME_NAME;
 
     if (themePreference === 'system') return systemTheme;
     return themePreference;
@@ -117,8 +118,7 @@ export function AppThemeProvider({
 
     if (
       currentTheme === resolvedTheme &&
-      currentPreference === themePreference &&
-      doc.classList.contains(`t_${resolvedTheme}`)
+      currentPreference === themePreference
     ) {
       return;
     }
@@ -126,11 +126,6 @@ export function AppThemeProvider({
     // Fast synchronous writes — lightweight, needed immediately for FOUC prevention
     doc.setAttribute('data-theme', resolvedTheme);
     doc.setAttribute('data-theme-preference', themePreference);
-
-    doc.classList.forEach((c) => {
-      if (c.startsWith('t_')) doc.classList.remove(c);
-    });
-    doc.classList.add(`t_${resolvedTheme}`);
 
     // Defer expensive theme token iteration to idle time
     const applyTokenWrites = () => {

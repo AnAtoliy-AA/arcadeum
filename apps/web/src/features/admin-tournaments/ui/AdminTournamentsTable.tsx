@@ -10,7 +10,6 @@ import {
 import { formatSchedule } from '../lib/formatSchedule';
 import { getStatusChipColor } from '../lib/statusChip';
 import { nextStatuses } from '../lib/transitions';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface AdminTournamentsTableLabels {
   empty: { noResults: string; noTournaments: string };
@@ -140,7 +139,8 @@ export function AdminTournamentsTable({
             <div
               className="flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
               style={{
-                backgroundColor: i % 2 === 1 ? '$backgroundFocus' : undefined,
+                backgroundColor:
+                  i % 2 === 1 ? 'var(--backgroundFocus)' : undefined,
               }}
               key={item.id}
               data-testid={`tournament-row-${item.id}`}
@@ -159,12 +159,9 @@ export function AdminTournamentsTable({
               <div className="flex flex-col items-stretch flex-1">
                 <div
                   className="flex flex-row items-stretch px-2 py-1 rounded-lg self-start"
-                  style={{ backgroundColor: resolveThemeColor(chipColor.bg) }}
+                  style={{ backgroundColor: chipColor.bg }}
                 >
-                  <span
-                    className="text-[12px]"
-                    style={{ color: resolveThemeColor(chipColor.fg) }}
-                  >
+                  <span className="text-[12px]" style={{ color: chipColor.fg }}>
                     {labels.statusLabels[item.status]}
                   </span>
                 </div>

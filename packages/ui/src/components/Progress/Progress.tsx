@@ -1,6 +1,7 @@
 import { memo } from 'react';
 
 import { GameVariant } from '../Game/GameContainer';
+import { GAME_ACCENT_COLORS } from '../Game/gamePalette';
 
 export type ProgressBarProps = {
   value: number;
@@ -11,35 +12,17 @@ export type ProgressBarProps = {
   className?: string;
 };
 
-const GAME_COLORS: Record<string, string> = {
-  cyberpunk: '#06b6d4',
-  underwater: '#22d3ee',
-  crime: '#dc2626',
-  horror: '#10b981',
-  adventure: '#f59e0b',
-  'high-altitude-hike': '#38bdf8',
-};
-
-/** Resolve a $token / CSS value into a usable color string. */
-function resolveColor(value: string): string {
-  if (value.startsWith('$')) {
-    const name = value.slice(1);
-    return `var(--${name})`;
-  }
-  return value;
-}
-
 export const ProgressBar = memo(function ProgressBar({
   value,
   height = 8,
-  color = '$primary',
+  color = 'var(--primary)',
   showLabel = false,
   gameVariant,
   className,
 }: ProgressBarProps) {
   const indicatorColor = gameVariant
-    ? GAME_COLORS[gameVariant] ?? resolveColor(color)
-    : resolveColor(color);
+    ? (GAME_ACCENT_COLORS[gameVariant] ?? color)
+    : color;
   const clamped = Math.min(100, Math.max(0, value));
 
   return (
@@ -80,7 +63,7 @@ export const ProgressCircle = memo(function ProgressCircle({
   value,
   size = 80,
   strokeWidth = 8,
-  color = '$primary',
+  color = 'var(--primary)',
   showLabel = true,
   suffix = '%',
 }: ProgressCircleProps) {
@@ -104,7 +87,7 @@ export const ProgressCircle = memo(function ProgressCircle({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="var(--neutralBorder)"
+          stroke="var(--borderColor)"
           strokeWidth={strokeWidth}
           fill="none"
         />
@@ -119,7 +102,7 @@ export const ProgressCircle = memo(function ProgressCircle({
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
           style={{
-            color: resolveColor(color),
+            color,
             transition: 'stroke-dashoffset 0.5s ease',
           }}
         />

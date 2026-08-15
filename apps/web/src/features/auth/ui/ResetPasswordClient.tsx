@@ -103,7 +103,7 @@ export default function ResetPasswordClient() {
         <Typography variant="heading" uiSize="lg" weight="700">
           {copy.successTitle}
         </Typography>
-        <Typography variant="body" uiSize="md" color="$colorSubtle">
+        <Typography variant="body" uiSize="md" color="var(--textSecondary)">
           {copy.successBody}
         </Typography>
         <Link href="/auth" style={{ textDecoration: 'none' }}>
@@ -124,7 +124,7 @@ export default function ResetPasswordClient() {
       <Typography variant="heading" uiSize="lg" weight="700">
         {copy.title}
       </Typography>
-      <Typography variant="body" uiSize="md" color="$colorSubtle">
+      <Typography variant="body" uiSize="md" color="var(--textSecondary)">
         {copy.description}
       </Typography>
       <form onSubmit={onSubmit} noValidate>
@@ -149,7 +149,7 @@ export default function ResetPasswordClient() {
             <Typography
               variant="body"
               uiSize="sm"
-              color="$danger"
+              color="var(--danger)"
               data-testid="reset-password-error"
             >
               {errorText}

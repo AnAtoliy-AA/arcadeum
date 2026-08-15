@@ -9,10 +9,6 @@ export const tableInfoStyles = {
   getTextGlow: () => C.primary,
   getStatValueColor: (isWarning?: boolean) =>
     isWarning ? '#ef4444' : C.primary,
-  getInfoCardBackground: () => 'rgba(15, 23, 42, 0.95)',
-  getInfoCardBorder: () => `1px solid ${C.primary}1a`,
-  getInfoCardShadow: () => '0 8px 32px rgba(0, 0, 0, 0.7)',
-  getInfoCardPattern: () => 'none',
   getStyles: () => ({
     backdropFilter: 'blur(20px)',
     borderRadius: '2px',

@@ -1,7 +1,5 @@
 'use client';
 
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
-
 interface ScoreEntry {
   id: string;
   name: string;
@@ -24,7 +22,7 @@ export function ScoreBoard({ entries, drawCount }: ScoreBoardProps) {
         <div className="flex flex-col items-center min-w-[56px]" key={entry.id}>
           <span
             className="text-[14px]"
-            style={{ color: resolveThemeColor(entry.color ?? '$color') }}
+            style={{ color: entry.color ?? 'var(--color)' }}
           >
             {entry.name}
           </span>

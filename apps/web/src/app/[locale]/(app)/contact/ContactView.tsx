@@ -19,7 +19,7 @@ import {
   InstagramIcon,
   TwitterIcon,
 } from './ContactView.icons';
-import { getContactStyles } from './getContactStyles';
+import { getContactStyles } from './contactTokens';
 import { ContactSidePanel } from './ContactSidePanel';
 import { ContactFaq, getFaqItems } from './ContactFaq';
 import { ContactAvatars } from './ContactAvatars';

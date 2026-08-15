@@ -6,7 +6,7 @@ describe('ROLE_COLORS', () => {
   it.each(USER_ROLES)('has an entry for %s', (role) => {
     const color = ROLE_COLORS[role];
     expect(color).toBeDefined();
-    expect(color.fg).toMatch(/^\$/);
-    expect(color.bg).toMatch(/^\$/);
+    expect(color.fg).toMatch(/^(var\(--|\()|^#[0-9a-fA-F]{3,8}$/);
+    expect(color.bg).toMatch(/^(var\(--|\()|^#[0-9a-fA-F]{3,8}$/);
   });
 });

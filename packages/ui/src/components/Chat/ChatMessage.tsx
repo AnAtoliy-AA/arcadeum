@@ -171,7 +171,7 @@ export const ChatMessage = memo(function ChatMessage({
               >
                 <Typography
                   uiSize="sm"
-                  color={isOwn ? 'white' : '$color'}
+                  color={isOwn ? '#f5f7ff' : 'var(--color)'}
                   className="text-left"
                 >
                   {isEncrypted ? '[Encrypted Message]' : (contentNode ?? content)}
@@ -180,7 +180,7 @@ export const ChatMessage = memo(function ChatMessage({
                   <Typography
                     uiSize="xs"
                     alpha="low"
-                    color={isOwn ? 'white' : '$color'}
+                    color={isOwn ? '#f5f7ff' : 'var(--color)'}
                     className="mt-1"
                     style={{ opacity: 0.7 }}
                   >
@@ -204,7 +204,7 @@ export const ChatMessage = memo(function ChatMessage({
         >
           <Typography
             uiSize="xs"
-            color={isOwn ? 'white' : '$color'}
+            color={isOwn ? '#f5f7ff' : 'var(--color)'}
             className="text-center italic"
           >
             {senderName && !isEncrypted ? (

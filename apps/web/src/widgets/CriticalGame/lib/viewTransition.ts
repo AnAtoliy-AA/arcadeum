@@ -9,7 +9,7 @@
  *
  * Skips the animation when the user has `prefers-reduced-motion: reduce`
  * set at the OS level, matching every other animation in this widget
- * (`hudStyles.tsx` gates keyframes the same way). Motion-sensitive users
+ * (`HudStyles.tsx` gates keyframes the same way). Motion-sensitive users
  * see plays land instantly without the cross-fade.
  *
  * In unsupported browsers the callback runs synchronously. Calling code

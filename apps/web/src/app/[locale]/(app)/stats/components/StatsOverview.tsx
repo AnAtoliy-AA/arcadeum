@@ -2,7 +2,6 @@ import React from 'react';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Card, SkeletonText, ProgressCircle } from '@arcadeum/ui';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export const statsOverviewCSS = `
   .stats-overview-grid {
@@ -69,13 +68,13 @@ export function StatsOverview({
         </Card>
         <Card variant="glass" padding="md">
           <StatLabel>{t('stats.wins')}</StatLabel>
-          <StatValue data-testid="stats-wins" color="$success">
+          <StatValue data-testid="stats-wins" color="var(--success)">
             {stats.wins}
           </StatValue>
         </Card>
         <Card variant="glass" padding="md">
           <StatLabel>{t('stats.losses')}</StatLabel>
-          <StatValue data-testid="stats-losses" color="$danger">
+          <StatValue data-testid="stats-losses" color="var(--danger)">
             {stats.losses}
           </StatValue>
         </Card>
@@ -90,7 +89,9 @@ export function StatsOverview({
             <StatLabel>{t('stats.currentStreak')}</StatLabel>
             <StatValue
               data-testid="stats-current-streak"
-              color={currentStreakType === 'won' ? '$success' : '$danger'}
+              color={
+                currentStreakType === 'won' ? 'var(--success)' : 'var(--danger)'
+              }
             >
               {currentStreak}
               <StreakSuffix>
@@ -102,7 +103,10 @@ export function StatsOverview({
         {bestWinStreak != null && bestWinStreak > 0 && (
           <Card variant="glass" padding="md">
             <StatLabel>{t('stats.bestWinStreak')}</StatLabel>
-            <StatValue data-testid="stats-best-win-streak" color="$success">
+            <StatValue
+              data-testid="stats-best-win-streak"
+              color="var(--success)"
+            >
               {bestWinStreak}
               <StreakSuffix>W</StreakSuffix>
             </StatValue>
@@ -150,7 +154,7 @@ function StatValue({
   return (
     <span
       className={`text-[48px] font-extrabold leading-none tracking-[-0.5px] text-[var(--primaryGradientStart)] ${className ?? ''}`}
-      style={color ? { color: resolveThemeColor(color) } : undefined}
+      style={color ? { color } : undefined}
       {...props}
     />
   );

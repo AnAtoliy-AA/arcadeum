@@ -5,7 +5,6 @@ import { Button, GlassCard, Input } from '@arcadeum/ui';
 import { sendBulkRewardsAction } from '@/features/admin-bulk-rewards/server/admin-bulk-rewards.actions';
 import type { BulkRewardResult } from '@/features/admin-bulk-rewards/server/admin-bulk-rewards.actions';
 import type { adminBulkRewardsEn } from '@/shared/i18n/messages/pages/admin-bulk-rewards/en';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 type Labels = typeof adminBulkRewardsEn;
 
@@ -155,12 +154,12 @@ export function AdminBulkRewardsView({ labels }: Props) {
         <GlassCard
           className={'p-4 border'}
           style={{
-            borderColor: resolveThemeColor(
-              result.failedRewards > 0 ? '$warning' : '$success',
-            ),
-            backgroundColor: resolveThemeColor(
-              result.failedRewards > 0 ? 'rgba(146,64,14,0.1)' : '$successBg',
-            ),
+            borderColor:
+              result.failedRewards > 0 ? 'var(--warning)' : 'var(--success)',
+            backgroundColor:
+              result.failedRewards > 0
+                ? 'rgba(146,64,14,0.1)'
+                : 'rgba(16,185,129,0.15)',
           }}
         >
           <span className="font-semibold -mb-2">

@@ -1,3 +1,4 @@
+'use client';
 import { memo, useMemo } from 'react';
 import { cx } from '../../utils/cx';
 

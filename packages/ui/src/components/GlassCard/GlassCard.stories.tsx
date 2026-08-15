@@ -60,7 +60,7 @@ export const CustomContent: Story = {
     className: 'p-10',
     children: (
       <div className="flex flex-col items-center gap-6">
-        <Typography variant="heading" uiSize="3xl" color="$primary">
+        <Typography variant="heading" uiSize="3xl" color="var(--primary)">
           Premium Experience
         </Typography>
         <Typography variant="body" uiSize="sm" className="text-center">

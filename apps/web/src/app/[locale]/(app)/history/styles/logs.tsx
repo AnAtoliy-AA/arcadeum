@@ -73,7 +73,7 @@ export function LogScope({
   return (
     <Typography
       className={cx(
-        'rounded-full bg-[var(--backgroundStrong, rgba(255,255,255,0.03))] px-3 py-1 uppercase tracking-[0.25em]',
+        'rounded-full bg-[var(--backgroundHover)] px-3 py-1 uppercase tracking-[0.25em]',
         className,
       )}
       uiSize="xs"
@@ -95,7 +95,7 @@ export function LogSender({
 >) {
   return (
     <Typography
-      className={cx(className)}
+      className={className}
       uiSize="sm"
       weight="500"
       alpha="high"

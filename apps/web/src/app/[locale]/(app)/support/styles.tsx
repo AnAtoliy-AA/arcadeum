@@ -3,8 +3,6 @@ import Link from 'next/link';
 import { GlassCard } from '@arcadeum/ui';
 import { CopyActionButton } from '@/features/support/copy-action/ui/CopyActionButton';
 
-export { supportStyles } from './supportStyles';
-
 export function Page({
   children,
   className,
@@ -129,7 +127,7 @@ export function HeaderDescription({
 } & React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`max-w-[700px] leading-[48px] opacity-[0.5] text-[var(--color)] ${className ?? ''}`}
+      className={`max-w-[700px] leading-[24px] opacity-[0.5] text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -369,17 +367,11 @@ export const LinkedInButton = ({
   ...props
 }: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
   children?: React.ReactNode;
-  as?: string;
-}) => {
-  const { as: _as, ...rest } = props as {
-    as?: string;
-  } & React.AnchorHTMLAttributes<HTMLAnchorElement>;
-  return (
-    <a className="support-cta support-linkedin-btn" {...rest}>
-      {children}
-    </a>
-  );
-};
+}) => (
+  <a className="support-cta support-linkedin-btn" {...props}>
+    {children}
+  </a>
+);
 
 export function CopyActionWrapper({
   value,
@@ -416,7 +408,7 @@ export function Thanks({
 } & React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`leading-[48px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
+      className={`leading-[24px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}

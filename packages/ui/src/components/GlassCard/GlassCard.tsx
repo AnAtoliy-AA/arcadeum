@@ -2,20 +2,12 @@ import { forwardRef } from 'react';
 import type { ReactNode } from 'react';
 import { cx } from '../../utils/cx';
 
-/** style widened with RN-style shadow keys still used by web consumers. */
-export type GlassCardStyle = React.CSSProperties & {
-  shadowColor?: string;
-  shadowOffset?: { width?: number; height?: number };
-  shadowOpacity?: number;
-  shadowRadius?: number;
-};
-
 export type GlassCardProps = {
   children: ReactNode;
   /** Enable subtle entrance transition. */
   animated?: boolean;
   className?: string;
-  style?: GlassCardStyle;
+  style?: React.CSSProperties;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 /**
@@ -32,7 +24,6 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
         ref={ref}
         className={cx(
           'relative',
-          '',
           'overflow-hidden',
           'flex',
           'flex-col',

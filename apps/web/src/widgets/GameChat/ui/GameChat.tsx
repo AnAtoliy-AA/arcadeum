@@ -42,7 +42,7 @@ import {
   Title,
   TitleDot,
   UnreadBadge,
-} from './GameChat.styled';
+} from './GameChat.styles';
 
 export type { ResolvedEquipped, EquippedResolver } from './types';
 

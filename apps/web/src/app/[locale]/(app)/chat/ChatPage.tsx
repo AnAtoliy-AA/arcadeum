@@ -192,7 +192,6 @@ export default function ChatPage() {
             onSend={handleSend}
             disabled={!isConnected}
             placeholder={t('chat.input.placeholder') || 'Type a message...'}
-            sendText={t('chat.send') || 'Send'}
           />
         </GlassCard>
       </Container>

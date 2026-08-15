@@ -1,12 +1,12 @@
 import type { UserRole } from '@/entities/session/model/types';
 
 export const ROLE_COLORS: Record<UserRole, { fg: string; bg: string }> = {
-  admin: { fg: '$red9', bg: '$red3' },
-  developer: { fg: '$violet9', bg: '$violet3' },
-  moderator: { fg: '$orange9', bg: '$orange3' },
-  vip: { fg: '$yellow9', bg: '$yellow3' },
-  supporter: { fg: '$pink9', bg: '$pink3' },
-  tester: { fg: '$blue9', bg: '$blue3' },
-  premium: { fg: '$green9', bg: '$green3' },
-  free: { fg: '$gray9', bg: '$gray3' },
+  admin: { fg: '#ff6369', bg: '#4c1d1d' },
+  developer: { fg: '#8767fb', bg: '#241c43' },
+  moderator: { fg: '#ff9e4a', bg: '#3d1f0e' },
+  vip: { fg: '#ffd644', bg: '#3a2d00' },
+  supporter: { fg: '#f65cb6', bg: '#51172f' },
+  tester: { fg: '#52a9ff', bg: '#0b2440' },
+  premium: { fg: '#3dd68c', bg: '#11301f' },
+  free: { fg: '#6e7683', bg: '#1c1d21' },
 };

@@ -7,7 +7,6 @@ import {
   type PublicTournamentItem,
 } from '../api';
 import type { TournamentGameType } from '@/features/admin-tournaments/api';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface TournamentCardLabels {
   registered: string;
@@ -47,13 +46,13 @@ export interface TournamentCardProps {
 }
 
 const STATUS_BG: Record<EffectiveTournamentStatus, string> = {
-  scheduled: '$gray3',
-  registration_open: '$infoBgSoft',
-  registration_closed: '$gray4',
-  live: '$successBgSoft',
-  awaiting_results: '$warningBgSoft',
-  completed: '$gray4',
-  cancelled: '$errorBgSoft',
+  scheduled: '#1c1d21',
+  registration_open: 'rgba(99,102,241,0.1)',
+  registration_closed: '#26272b',
+  live: 'rgba(16,185,129,0.2)',
+  awaiting_results: 'rgba(251,191,36,0.2)',
+  completed: '#26272b',
+  cancelled: 'rgba(239,68,68,0.25)',
 };
 
 export function TournamentCard({
@@ -133,7 +132,7 @@ export function TournamentCard({
         <div
           className="flex flex-row items-stretch px-2 py-1 rounded-lg"
           style={{
-            backgroundColor: resolveThemeColor(STATUS_BG[item.effectiveStatus]),
+            backgroundColor: STATUS_BG[item.effectiveStatus],
           }}
         >
           <span className="text-[12px] font-bold">

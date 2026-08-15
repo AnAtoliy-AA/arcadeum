@@ -1,9 +1,9 @@
+'use client';
 import React from 'react';
 import { AppleIcon, AndroidIcon, SmartphoneIcon } from '../Icons';
 import { cx } from '../../utils/cx';
 
 const downloadLinkClasses = [
-  '',
   'flex',
   'min-h-[60px]',
   'min-w-[170px]',
@@ -42,8 +42,6 @@ const largeTextClasses =
 
 export type DownloadLinkAnchorProps = {
   tag?: 'a' | 'button' | 'div';
-  animation?: 'quick' | 'medium' | 'slow' | (string & {});
-  isButton?: boolean;
   className?: string;
   style?: React.CSSProperties;
   'data-testid'?: string;
@@ -60,20 +58,9 @@ export const DownloadLinkAnchor = React.forwardRef<
   HTMLAnchorElement | HTMLButtonElement | HTMLDivElement,
   DownloadLinkAnchorProps
 >(function DownloadLinkAnchor(
-  {
-    tag = 'a',
-    animation,
-    isButton,
-    className,
-    style,
-    'data-testid': dataTestId,
-    children,
-    ...rest
-  },
+  { tag = 'a', className, style, 'data-testid': dataTestId, children, ...rest },
   ref,
 ) {
-  void animation;
-  void isButton;
   const classes = cx(downloadLinkClasses, className);
   const common = { className: classes, style, 'data-testid': dataTestId };
 
@@ -183,7 +170,6 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
           tag="button"
           onClick={onInstall || onShowInstructions}
           data-testid="install-pwa-button"
-          isButton
         >
           <div className={iconWrapperClasses}>
             <SmartphoneIcon size={32} />

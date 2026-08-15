@@ -221,8 +221,8 @@ export function Leaderboard({
                 </PlayerName>
               </PlayerInfo>
               <StatCell>{entry.totalGames}</StatCell>
-              <StatCell color="$success">{entry.wins}</StatCell>
-              <StatCell color="$danger">{entry.losses}</StatCell>
+              <StatCell color="var(--success)">{entry.wins}</StatCell>
+              <StatCell color="var(--danger)">{entry.losses}</StatCell>
               <ProgressBar
                 className={'h-[6px]'}
                 value={entry.winRate}
@@ -336,7 +336,7 @@ function StatCell({
   return (
     <span
       className={`font-medium text-[var(--color)] ${className ?? ''}`}
-      style={color ? { color: `var(--${color.replace('$', '')})` } : undefined}
+      style={color ? { color } : undefined}
       {...props}
     />
   );

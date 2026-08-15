@@ -1,5 +1,7 @@
 'use client';
 
+import './support.scss';
+
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 
 import { PageTitle } from '@arcadeum/ui';
@@ -40,7 +42,6 @@ import {
   TeamName,
   TeamRole,
   Thanks,
-  supportStyles,
 } from './styles';
 
 export type SupportPageProps = {
@@ -137,7 +138,6 @@ export function SupportPage({
 
   return (
     <>
-      <style>{supportStyles}</style>
       <Page className="support-page">
         <BackgroundBlob />
         <ContentWrapper>

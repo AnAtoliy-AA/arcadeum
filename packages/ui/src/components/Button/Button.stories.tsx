@@ -26,7 +26,7 @@ const meta: Meta<typeof Button> = {
     },
     shape: {
       control: 'select',
-      options: ['rectangle', 'round', 'square', 'circle'],
+      options: ['round', 'square', 'circle'],
       description: 'Corner shape (overrides size radius)',
     },
     active: {

@@ -3,7 +3,6 @@
 import { InGameAvatar } from '@/features/games/ui';
 import { useTicTacToeTheme } from '../lib/TicTacToeThemeContext';
 import type { TicTacToePlayer, TicTacToeTeam } from '../types';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 interface TurnBadgeProps {
   currentEntryId: string | null;
@@ -49,9 +48,7 @@ export function TurnBadge({
     <div
       className="flex flex-row py-2 px-3 rounded-[999px] border-[var(--borderColor)] self-center items-center gap-2"
       style={{
-        backgroundColor: resolveThemeColor(
-          myTurn ? '$green10' : '$backgroundHover',
-        ),
+        backgroundColor: myTurn ? '#3fd386' : 'var(--backgroundHover)',
         borderWidth: myTurn ? 0 : 1,
       }}
       data-testid="ttt-turn-badge"
@@ -67,7 +64,7 @@ export function TurnBadge({
       <span
         className="font-bold"
         style={{
-          color: resolveThemeColor(myTurn ? '$white' : theme.textColor),
+          color: myTurn ? '#f5f7ff' : theme.textColor,
         }}
       >
         {myTurn ? 'Your turn' : `${display}'s turn`}

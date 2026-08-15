@@ -1,23 +1,10 @@
 import type { HTMLAttributes } from 'react';
 import type { GameVariant } from './GameContainer';
 import { cx } from '../../utils/cx';
+import { GAME_ACCENT_COLORS } from './gamePalette';
 
 export type GameHeaderProps = HTMLAttributes<HTMLDivElement> & {
   variant?: GameVariant;
-};
-
-/**
- * Per-game accent colors (static tokens → hex literals).
- * Written as full string literals on purpose — Tailwind's scanner only
- * emits CSS for classes that appear verbatim in source files.
- */
-const GAME_ACCENT_COLORS: Partial<Record<GameVariant, string>> = {
-  cyberpunk: '#06b6d4',
-  underwater: '#22d3ee',
-  crime: '#dc2626',
-  horror: '#10b981',
-  adventure: '#f59e0b',
-  'high-altitude-hike': '#38bdf8',
 };
 
 export function GameHeader({ variant, className, style, ...props }: GameHeaderProps) {

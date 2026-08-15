@@ -5,7 +5,6 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useGameChatStore } from '@/widgets/GameChat';
 import { InGameAvatar } from './InGameAvatar';
 import type { TurnStatusVariant } from './GameWidgetContainer';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 /**
  * Declarative turn contract shared by every game's header. A widget passes only
@@ -34,10 +33,10 @@ export function resolveTurnStatus(turn: TurnContract): TurnStatusVariant {
 }
 
 const STATUS_COLOR: Record<TurnStatusVariant, string> = {
-  yourTurn: '$success',
-  waiting: '$warning',
-  completed: '$secondary',
-  default: '$color',
+  yourTurn: 'var(--success)',
+  waiting: 'var(--warning)',
+  completed: 'var(--secondary)',
+  default: 'var(--color)',
 };
 
 interface TurnIndicatorProps {
@@ -95,7 +94,7 @@ export const TurnIndicator = memo(function TurnIndicator({
       <span
         className="text-[14px] font-semibold line-clamp-1"
         style={{
-          color: resolveThemeColor(STATUS_COLOR[status]),
+          color: STATUS_COLOR[status],
           opacity: status === 'default' ? 0.7 : 1,
         }}
         data-testid="turn-indicator-label"

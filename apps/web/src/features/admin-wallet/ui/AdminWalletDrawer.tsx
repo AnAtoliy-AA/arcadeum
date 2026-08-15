@@ -12,7 +12,6 @@ import {
 } from '@arcadeum/ui';
 import { loadAdminWalletAction } from '../server/wallet.actions';
 import { AdminWalletForm, type AdminWalletFormLabels } from './AdminWalletForm';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 import type {
   WalletBalance,
   WalletTransactionView,
@@ -76,9 +75,7 @@ function RecentSection({
             <span
               className="text-[12px] font-bold"
               style={{
-                color: resolveThemeColor(
-                  tx.delta >= 0 ? '$success' : '$errorText',
-                ),
+                color: tx.delta >= 0 ? 'var(--success)' : 'var(--errorText)',
               }}
             >
               {tx.delta >= 0 ? '+' : ''}

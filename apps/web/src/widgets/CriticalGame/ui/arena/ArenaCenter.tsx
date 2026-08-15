@@ -4,7 +4,7 @@ import { TurnBanner } from '../TurnBanner';
 import { ThreatStrip } from '../ThreatStrip';
 import { FlashBanner } from '../FlashBanner';
 import { FlashHistory } from '../FlashHistory';
-import { HudStyles } from '../hudStyles';
+import { HudStyles } from '../HudStyles';
 import { ComboCard, type ComboKind } from './ComboCard';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
 

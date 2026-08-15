@@ -89,7 +89,7 @@ function TabButton({
         variant="heading"
         uiSize="md"
         weight="600"
-        color={isActive ? '$colorStrong' : 'rgba(180,180,200,0.7)'}
+        color={isActive ? 'var(--color)' : 'rgba(180,180,200,0.7)'}
       >
         {label}
       </Typography>

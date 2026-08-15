@@ -77,7 +77,7 @@ export default function ForgotPasswordClient() {
         <Typography variant="heading" uiSize="lg" weight="700">
           {copy.successTitle}
         </Typography>
-        <Typography variant="body" uiSize="md" color="$colorSubtle">
+        <Typography variant="body" uiSize="md" color="var(--textSecondary)">
           {formatMessage(copy.successBody, { email: submittedEmail })}
         </Typography>
         <Link href="/auth" style={{ textDecoration: 'none' }}>
@@ -98,7 +98,7 @@ export default function ForgotPasswordClient() {
       <Typography variant="heading" uiSize="lg" weight="700">
         {copy.title}
       </Typography>
-      <Typography variant="body" uiSize="md" color="$colorSubtle">
+      <Typography variant="body" uiSize="md" color="var(--textSecondary)">
         {copy.description}
       </Typography>
       <form onSubmit={onSubmit} noValidate>
@@ -114,7 +114,7 @@ export default function ForgotPasswordClient() {
             <Typography
               variant="body"
               uiSize="sm"
-              color="$danger"
+              color="var(--danger)"
               data-testid="forgot-password-error"
             >
               {errorText}
@@ -133,7 +133,12 @@ export default function ForgotPasswordClient() {
             href="/auth"
             style={{ textDecoration: 'none', alignSelf: 'center' }}
           >
-            <Typography variant="body" uiSize="sm" color="$accent" weight="600">
+            <Typography
+              variant="body"
+              uiSize="sm"
+              color="var(--accent)"
+              weight="600"
+            >
               {copy.backToSignIn}
             </Typography>
           </Link>

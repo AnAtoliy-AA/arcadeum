@@ -9,6 +9,7 @@ import { useLanguage } from '@/shared/i18n/useLanguage';
 import { formatRelative } from '@/shared/i18n/formatters';
 import { GAME_ROOM_STATUS, type GameRoomSummary } from '@/shared/types/games';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
 import cardStyles from './RoomCardComponent.module.scss';
 import {
@@ -27,7 +28,7 @@ import {
   MetaIcon,
   MetaLabel,
   MetaValue,
-} from './room-card.styles';
+} from './room-card-components';
 import { LinkButton } from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 
@@ -192,7 +193,12 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                 <ParticipantsLabel>
                   {t('games.rooms.participants')}
                 </ParticipantsLabel>
-                <div className="flex flex-row items-stretch cardStyles.participantAvatars">
+                <div
+                  className={cx(
+                    'flex flex-row items-stretch',
+                    cardStyles.participantAvatars,
+                  )}
+                >
                   {room.members
                     .slice(0, MAX_VISIBLE_PARTICIPANTS)
                     .map((member) => (
@@ -234,7 +240,9 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           </RoomMeta>
         ) : (
           <>
-            <div className="flex flex-row items-center cardStyles.metaCol">
+            <div
+              className={cx('flex flex-row items-center', cardStyles.metaCol)}
+            >
               {room.members
                 ?.slice(0, MAX_VISIBLE_PARTICIPANTS)
                 .map((member) => (

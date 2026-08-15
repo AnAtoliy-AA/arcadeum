@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Button } from '@arcadeum/ui';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 interface LobbyOptionSectionProps {
   title: string;
@@ -137,9 +136,7 @@ export function LobbyToggle({
         <span
           className="text-[16px] font-medium"
           style={{
-            color: resolveThemeColor(
-              disabled ? 'rgba(180,180,200,0.7)' : '$color',
-            ),
+            color: disabled ? 'rgba(180,180,200,0.7)' : 'var(--color)',
           }}
         >
           {label}

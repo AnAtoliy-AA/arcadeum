@@ -2,7 +2,6 @@
 import { Button, GlassCard } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { AdminPaymentNoteItem } from '../api';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface AdminPaymentsTableLabels {
   empty: { noNotes: string; noResults: string };
@@ -119,9 +118,8 @@ export function AdminPaymentsTable({
           <div
             className="flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
             style={{
-              backgroundColor: resolveThemeColor(
-                i % 2 === 1 ? '$backgroundFocus' : undefined,
-              ),
+              backgroundColor:
+                i % 2 === 1 ? 'var(--backgroundFocus)' : undefined,
             }}
             key={it.id}
             data-testid={`payment-row-${it.id}`}
@@ -146,16 +144,14 @@ export function AdminPaymentsTable({
             <div
               className="w-[88px] px-2 py-1 rounded-lg self-center"
               style={{
-                backgroundColor: resolveThemeColor(
-                  it.isPublic ? '$green3' : '$gray3',
-                ),
+                backgroundColor: it.isPublic ? '#11301f' : '#1c1d21',
               }}
               data-testid={`visibility-${it.id}`}
             >
               <span
                 className="text-[12px] font-bold text-center"
                 style={{
-                  color: resolveThemeColor(it.isPublic ? '$green9' : '$gray9'),
+                  color: it.isPublic ? '#3dd68c' : '#6e7683',
                 }}
               >
                 {it.isPublic ? labels.chipPublic : labels.chipPrivate}

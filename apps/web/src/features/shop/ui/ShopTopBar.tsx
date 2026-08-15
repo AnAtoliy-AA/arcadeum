@@ -64,7 +64,7 @@ function NavLink({
     <span
       className={cx(
         'px-[10px] py-[6px] rounded-lg text-[14px] tracking-[0.5px] uppercase font-bold transition-colors',
-        color === '$white' ? 'text-[#f5f7ff]' : 'text-[#94a3b8]',
+        color === '#f5f7ff' ? 'text-[#f5f7ff]' : 'text-[#94a3b8]',
         'hover:text-[#f5f7ff] hover:bg-[rgba(255,255,255,0.04)]',
         className,
       )}
@@ -135,7 +135,7 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
       >
         <Link href={routes.shop} style={{ textDecoration: 'none' }}>
           <NavLink
-            color={isShop ? '$white' : '$gray11'}
+            color={isShop ? '#f5f7ff' : '#babfc7'}
             data-testid="shop-nav-shop"
             data-active={isShop ? 'true' : 'false'}
           >
@@ -144,7 +144,7 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         </Link>
         <Link href={routes.shopInventory} style={{ textDecoration: 'none' }}>
           <NavLink
-            color={isInventory ? '$white' : '$gray11'}
+            color={isInventory ? '#f5f7ff' : '#babfc7'}
             data-testid="shop-nav-inventory"
             data-active={isInventory ? 'true' : 'false'}
           >

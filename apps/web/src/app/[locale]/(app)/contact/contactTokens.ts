@@ -9,7 +9,20 @@ export type ContactStyleTokens = {
   textSecondary: string;
 };
 
-export const buildContactStyles = (t: ContactStyleTokens) => {
+/**
+ * Resolve theme-dependent contact styles from the CSS variables minted on
+ * <html> by ThemeContext (var(--x) resolves at render time, no hook needed).
+ */
+export function getContactStyles() {
+  const t: ContactStyleTokens = {
+    accent: 'var(--accent)',
+    glassBorder: 'var(--glassBorder)',
+    glassBg: 'var(--glassBg)',
+    background: 'var(--background)',
+    color: 'var(--color)',
+    textSecondary: 'var(--textSecondary)',
+  };
+
   const heroWrapStyle: CSSProperties = {
     position: 'relative',
     borderRadius: 24,
@@ -305,6 +318,6 @@ export const buildContactStyles = (t: ContactStyleTokens) => {
     helpLinkStyle,
     errorTextStyle,
   };
-};
+}
 
-export type ContactStyles = ReturnType<typeof buildContactStyles>;
+export type ContactStyles = ReturnType<typeof getContactStyles>;

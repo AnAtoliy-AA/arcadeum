@@ -4,7 +4,6 @@ import { GlassCard, Typography } from '@arcadeum/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ADMIN_SIDEBAR_ITEMS, type AdminSidebarItem } from './sidebarItems';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface AdminSidebarLabels {
   items: Partial<Record<AdminSidebarItem['id'], string>>;
@@ -36,12 +35,8 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
             className={'p-3 border'}
             style={{
               opacity: item.enabled ? 1 : 0.55,
-              borderColor: resolveThemeColor(
-                active ? '$primary' : '$borderColor',
-              ),
-              backgroundColor: resolveThemeColor(
-                active ? '$primaryBgSoft' : undefined,
-              ),
+              borderColor: active ? 'var(--primary)' : 'var(--borderColor)',
+              backgroundColor: active ? 'rgba(87,195,255,0.1)' : undefined,
               cursor: item.enabled ? 'pointer' : 'default',
             }}
             data-testid={`admin-nav-${item.id}`}

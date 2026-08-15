@@ -12,7 +12,7 @@ export function DetailTimestamp({
   return (
     <Typography
       className={cx(
-        'border rounded-2xl px-4 py-3 border-[var(--borderColor)] bg-[var(--backgroundStrong, rgba(255,255,255,0.03))]',
+        'border rounded-2xl px-4 py-3 border-[var(--borderColor)] bg-[var(--backgroundHover)]',
         className,
       )}
       uiSize="sm"
@@ -33,7 +33,7 @@ export function Section({
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch gap-4 p-6 rounded-3xl border border-[var(--borderColor)] bg-[var(--backgroundStrong, rgba(255,255,255,0.03))]',
+        'flex flex-col items-stretch gap-4 p-6 rounded-3xl border border-[var(--borderColor)] bg-[var(--backgroundHover)]',
         className,
       )}
     >
@@ -54,7 +54,7 @@ export function SectionTitle({ children }: { children: ReactNode }) {
             'linear-gradient(180deg, var(--color-primary, #6366f1) 0%, var(--color-primary-dark, #4f46e5) 100%)',
         }}
       />
-      <Typography className={'-m-0'} uiSize="lg" weight="600">
+      <Typography uiSize="lg" weight="600">
         {children}
       </Typography>
     </div>

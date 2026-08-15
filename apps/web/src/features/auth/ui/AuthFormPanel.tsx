@@ -57,7 +57,12 @@ export function AuthFormPanel({
           <Typography variant="heading" uiSize="lg" weight="700" textCenter>
             {form.magicLinkSentTitle}
           </Typography>
-          <Typography variant="body" uiSize="sm" color="$colorMuted" textCenter>
+          <Typography
+            variant="body"
+            uiSize="sm"
+            color="var(--textSecondary)"
+            textCenter
+          >
             {form.magicLinkSentBody.replace('{{email}}', magicLinkEmail)}
           </Typography>
         </div>
@@ -106,7 +111,7 @@ export function AuthFormPanel({
         >
           {isRegisterMode ? form.headingRegister : form.headingSignIn}
         </Typography>
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {isRegisterMode ? form.subRegister : form.subSignIn}
         </Typography>
       </div>
@@ -137,7 +142,7 @@ function OrDivider({ label }: { label: string }) {
       <Typography
         variant="caption"
         uiSize="xs"
-        color="$colorMuted"
+        color="var(--textSecondary)"
         weight="600"
         style={{ textTransform: 'uppercase', letterSpacing: '0.16em' }}
       >
@@ -174,7 +179,7 @@ function ActiveSessionCard({
         <Typography variant="heading" uiSize="lg" weight="700">
           {labels.statusActiveMessage}
         </Typography>
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {labels.statusDescription}
         </Typography>
       </div>
@@ -185,12 +190,12 @@ function ActiveSessionCard({
           </Typography>
         )}
         {storedEmail && (
-          <Typography variant="body" uiSize="sm" color="$colorMuted">
+          <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
             {labels.emailLabel}: {storedEmail}
           </Typography>
         )}
         {storedUsername && (
-          <Typography variant="body" uiSize="sm" color="$colorMuted">
+          <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
             {labels.usernameLabel}: {storedUsername}
           </Typography>
         )}

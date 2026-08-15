@@ -4,7 +4,6 @@ import type { AdminUserItem } from '../api';
 import type { UserRole } from '@/entities/session/model/types';
 import { RoleBadge } from './RoleBadge';
 import { RoleSelect } from './RoleSelect';
-import { resolveThemeColor } from '@arcadeum/ui/utils/themeTokens';
 
 export interface UsersTableRowProps {
   item: AdminUserItem;
@@ -58,13 +57,8 @@ export function UsersTableRow({
     <div
       className="flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
       style={{
-        backgroundColor: resolveThemeColor(
-          isSelected
-            ? '$backgroundFocus'
-            : zebra
-              ? '$backgroundFocus'
-              : undefined,
-        ),
+        backgroundColor:
+          isSelected || zebra ? 'var(--backgroundFocus)' : undefined,
         opacity: isDeleted ? 0.5 : 1,
       }}
       data-testid={`user-row-${item.id}`}

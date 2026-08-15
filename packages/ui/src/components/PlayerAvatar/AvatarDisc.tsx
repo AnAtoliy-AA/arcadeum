@@ -52,7 +52,7 @@ export function AvatarDisc({
         }
       : {
           backgroundColor: `${frameColor}33`,
-          borderColor: frameColor as string,
+          borderColor: frameColor,
         }
     : {
         // No frame equipped: still paint a base disc (slate fill + faint ring)
@@ -219,7 +219,7 @@ export function AvatarDisc({
             />
           ) : (
             <img
-              src={badgeUrl as string}
+              src={badgeUrl}
               alt=""
               width={Math.round(badge * 0.75)}
               height={Math.round(badge * 0.75)}

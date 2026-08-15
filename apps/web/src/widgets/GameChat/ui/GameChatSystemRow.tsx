@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { ChatMessage } from '@arcadeum/ui';
-import { SYS_COLOR, SysText, SysTime, SysWrap } from './GameChat.styled';
+import { SYS_COLOR, SysText, SysTime, SysWrap } from './GameChat.styles';
 import { ChatSenderLabel } from './ChatSenderLabel';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';

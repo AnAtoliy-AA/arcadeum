@@ -68,10 +68,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **Styling**: Tailwind CSS with CSS-variable theming (`@arcadeum/ui` design tokens)
 - **State Management**: Zustand for global state, React Context for scoped state
 - **Routing**: Next.js App Router with file-based routing
-- **API Client**: @tanstack/react-query with Axios for HTTP requests
-- **Testing**: Jest for unit tests, Playwright for E2E tests
+- **API Client**: fetch-based client layer (`shared/lib/http`) with Socket.IO for real-time
+- **Testing**: Vitest for unit tests, Playwright for E2E tests
 - **Component Library**: Custom design system with Storybook
-- **Analytics**: Vercel Analytics, Sentry for error tracking
+- **Analytics**: Vercel Analytics and Speed Insights
 - **Performance**: Next.js Image optimization, code splitting, lazy loading
 
 ## Architecture Documentation
@@ -194,10 +194,10 @@ pnpm --filter web storybook
 
 ## Testing Strategy
 
-### Unit Tests (Jest)
+### Unit Tests (Vitest)
 
 - Test business logic and hooks
-- Mock API calls with `jest.mock()`
+- Mock API calls with `vi.mock()`
 - Use `@testing-library/react` for component testing
 
 ### E2E Tests (Playwright)
@@ -209,7 +209,7 @@ pnpm --filter web storybook
 
 ### Accessibility Tests
 
-- Use `@testing-library/user-event` for user interactions
+- Use `fireEvent`/`user-event` from `@testing-library/react` for user interactions
 - Test keyboard navigation
 - Verify ARIA attributes
 
@@ -249,8 +249,7 @@ pnpm --filter web storybook
 
 ### Monitoring
 
-- Vercel Analytics for performance metrics
-- Sentry for error tracking
+- Vercel Analytics and Speed Insights for performance metrics
 - Vercel Logs for debugging
 
 ## Security

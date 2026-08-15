@@ -57,7 +57,7 @@ function BrandHeader({
         <Typography
           variant="caption"
           uiSize="xs"
-          color="$colorMuted"
+          color="var(--textSecondary)"
           style={{ fontFamily: 'var(--font-mono, ui-monospace, monospace)' }}
         >
           {brand.statusPill}
@@ -92,7 +92,7 @@ function BrandHero({
         <Typography
           variant="caption"
           uiSize="xs"
-          color="$accent"
+          color="var(--accent)"
           weight="600"
           style={{
             textTransform: 'uppercase',
@@ -128,7 +128,7 @@ function BrandHero({
             {brand.headlineHighlight}
           </Typography>
         </Typography>
-        <Typography variant="body" uiSize="lg" color="$colorMuted">
+        <Typography variant="body" uiSize="lg" color="var(--textSecondary)">
           {brand.subline}
         </Typography>
       </div>
@@ -228,19 +228,19 @@ function BrandFooterLinks({
       className={`flex flex-row gap-4 flex-wrap items-center w-full max-w-[680px] self-center ${className ?? ''}`}
     >
       <Link href="/" style={linkStyle} data-testid="auth-brand-home-link">
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {brand.footHome}
         </Typography>
       </Link>
-      <Typography variant="body" uiSize="sm" color="$colorMuted">
+      <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
         ·
       </Typography>
       <Link href="/games" style={linkStyle} data-testid="auth-brand-games-link">
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {brand.footGames}
         </Typography>
       </Link>
-      <Typography variant="body" uiSize="sm" color="$colorMuted">
+      <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
         ·
       </Typography>
       <Link
@@ -248,7 +248,7 @@ function BrandFooterLinks({
         style={linkStyle}
         data-testid="auth-brand-help-link"
       >
-        <Typography variant="body" uiSize="sm" color="$colorMuted">
+        <Typography variant="body" uiSize="sm" color="var(--textSecondary)">
           {brand.footHelp}
         </Typography>
       </Link>

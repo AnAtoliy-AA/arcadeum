@@ -1,3 +1,4 @@
+'use client';
 import { memo } from 'react';
 import { Spinner } from '../Spinner/Spinner';
 import { WifiOffIcon } from '../Icons';

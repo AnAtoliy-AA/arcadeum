@@ -2,26 +2,13 @@ import { memo } from 'react';
 import type { HTMLAttributes, ReactNode, ReactElement } from 'react';
 import type { GameVariant } from '../Button/types';
 import { cx } from '../../utils/cx';
+import { GAME_BG_CLASSES } from './gamePalette';
 
 export type { GameVariant };
 
 export type GameContainerProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
   variant?: GameVariant;
-};
-
-/**
- * Per-game background colors (static tokens → hex literals).
- * Written as full string literals on purpose — Tailwind's scanner only
- * emits CSS for classes that appear verbatim in source files.
- */
-const GAME_BG_CLASSES: Partial<Record<GameVariant, string>> = {
-  cyberpunk: 'bg-[#0f0518]',
-  underwater: 'bg-[#040b15]',
-  crime: 'bg-[#18181b]',
-  horror: 'bg-[#020617]',
-  adventure: 'bg-[#451a03]',
-  'high-altitude-hike': 'bg-[#020617]',
 };
 
 const AMBIENT_GLOW_BACKGROUNDS: Partial<Record<GameVariant, string>> = {

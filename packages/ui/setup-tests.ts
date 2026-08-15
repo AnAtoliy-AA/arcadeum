@@ -13,6 +13,3 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: () => false,
   }),
 });
-
-import React from 'react';
-(global as any).React = React;

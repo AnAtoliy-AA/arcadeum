@@ -37,7 +37,7 @@ export function UnassignedPool(props: UnassignedPoolProps) {
 
   return (
     <Card variant="outlined" data-testid="unassigned-pool">
-      <div className="box-border flex flex-col items-stretch gap-2">
+      <div className="flex flex-col items-stretch gap-2">
         <Typography variant="heading" uiSize="md">
           {t('games.sea_battle_v1.teamMode.unassigned.title')}
         </Typography>
@@ -46,13 +46,13 @@ export function UnassignedPool(props: UnassignedPoolProps) {
             {t('games.sea_battle_v1.teamMode.unassigned.empty')}
           </Typography>
         ) : (
-          <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+          <div className="flex flex-row items-stretch gap-2 flex-wrap">
             {pool.map((m) => {
               const display = m.displayName ?? m.userId;
               const isBot = m.userId.startsWith('bot-');
               return (
                 <div
-                  className="box-border flex flex-row gap-1 items-center"
+                  className="flex flex-row gap-1 items-center"
                   key={m.userId}
                   data-testid={`unassigned-${m.userId}`}
                 >

@@ -5,8 +5,8 @@ export function PaymentHeader() {
   const { t } = useTranslation();
 
   return (
-    <div className="box-border flex flex-col items-center -mb-12">
-      <div className="box-border flex flex-col items-stretch -mb-2 [display:inline-flex]">
+    <div className="flex flex-col items-center -mb-12">
+      <div className="flex flex-col items-stretch -mb-2 [display:inline-flex]">
         <PageTitle size="xl" gradient>
           {t('payments.title') || 'Support the Project'}
         </PageTitle>

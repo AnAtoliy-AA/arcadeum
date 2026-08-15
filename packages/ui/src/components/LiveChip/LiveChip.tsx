@@ -26,7 +26,7 @@ export function LiveChip({ label = 'Live', testID, className }: LiveChipProps) {
     <div
       data-testid={testID}
       className={cx(
-        'box-border flex flex-row items-center gap-[6px] px-[10px] py-1 rounded-full border border-[rgba(239,68,68,0.5)] bg-[rgba(239,68,68,0.12)]',
+        'flex flex-row items-center gap-[6px] px-[10px] py-1 rounded-full border border-[rgba(239,68,68,0.5)] bg-[rgba(239,68,68,0.12)]',
         className,
       )}
     >

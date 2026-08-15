@@ -254,7 +254,7 @@ export default function LeaderboardsPageContent({
     return (
       <PageLayout>
         <Container size="lg">
-          <div className="box-border flex flex-col items-stretch py-8">
+          <div className="flex flex-col items-stretch py-8">
             <ErrorState
               title={errorT.title ?? "Couldn't load leaderboard"}
               message={error.message}
@@ -284,18 +284,18 @@ export default function LeaderboardsPageContent({
     <PageLayout>
       <Container size="lg">
         <div
-          className="box-border flex flex-col items-stretch gap-6"
+          className="flex flex-col items-stretch gap-6"
           style={{ paddingBottom: paddingBottom }}
         >
           <HeroBackdrop data-testid="leaderboard-hero">
-            <div className="box-border flex flex-col items-stretch gap-3 max-w-[680px]">
-              <span className="box-border text-[14px] tracking-[2px] opacity-[0.7] uppercase text-[var(--mythicAccent)]">
+            <div className="flex flex-col items-stretch gap-3 max-w-[680px]">
+              <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase text-[var(--mythicAccent)]">
                 {heroT.eyebrow ?? 'Live · Season 4'}
               </span>
-              <span className="box-border text-[48px] font-black tracking-[-1px] max-[800px]:text-[32px]">
+              <span className="text-[48px] font-black tracking-[-1px] max-[800px]:text-[32px]">
                 {heroT.title ?? 'Race the leaderboard.'}
               </span>
-              <span className="box-border text-[18px] opacity-[0.85]">
+              <span className="text-[18px] opacity-[0.85]">
                 {heroT.tagline ??
                   'Updated every 30 seconds. Top 100 players gear up for the Champions Cup.'}
               </span>
@@ -315,8 +315,8 @@ export default function LeaderboardsPageContent({
           <CupCountdown cup={data?.cup ?? null} t={t} />
 
           {mythic ? (
-            <div className="box-border flex flex-row gap-4 flex-wrap items-stretch">
-              <div className="box-border flex-[2] min-w-[360px] relative">
+            <div className="flex flex-row gap-4 flex-wrap items-stretch">
+              <div className="flex-[2] min-w-[360px] relative">
                 <MythicBloom />
                 <MythicSpotlight
                   rank={mythic.rank}
@@ -357,7 +357,7 @@ export default function LeaderboardsPageContent({
                 />
               </div>
               {second ? (
-                <div className="box-border flex flex-col items-stretch flex-1 min-w-[220px] gap-3">
+                <div className="flex flex-col items-stretch flex-1 min-w-[220px] gap-3">
                   <RunnerUpCard
                     place={2}
                     name={second.name}
@@ -416,7 +416,7 @@ export default function LeaderboardsPageContent({
           ) : null}
 
           <GameModeTabs value={mode} onChange={handleModeChange} t={t} />
-          <div className="box-border flex flex-row items-stretch gap-4 flex-wrap">
+          <div className="flex flex-row items-stretch gap-4 flex-wrap">
             <ClimbersFallersRail
               climbers={data?.climbers ?? []}
               fallers={data?.fallers ?? []}
@@ -450,7 +450,7 @@ export default function LeaderboardsPageContent({
                 t={t}
               />
               {canLoadMore ? (
-                <div className="box-border flex flex-row items-stretch justify-center">
+                <div className="flex flex-row items-stretch justify-center">
                   <Button
                     variant="ghost"
                     onClick={() => setPage((p) => p + 1)}
@@ -467,7 +467,7 @@ export default function LeaderboardsPageContent({
         </div>
       </Container>
       {data?.self ? (
-        <div className="box-border" ref={selfRowMountRef as never}>
+        <div className="" ref={selfRowMountRef as never}>
           <PinnedSelfRow
             player={data.self}
             topRating={maxRating}

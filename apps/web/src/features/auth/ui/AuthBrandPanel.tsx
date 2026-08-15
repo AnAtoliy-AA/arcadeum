@@ -23,12 +23,12 @@ const AVATARS: AvatarEntry[] = [
 export function AuthBrandPanel({ brand, flex = 1.55 }: AuthBrandPanelProps) {
   return (
     <div
-      className="box-border flex flex-col items-stretch px-8 py-8 gap-8 relative justify-between max-[1150px]:hidden"
+      className="flex flex-col items-stretch px-8 py-8 gap-8 relative justify-between max-[1150px]:hidden"
       style={{ flex }}
       data-testid="auth-brand-panel"
     >
       <div
-        className="box-border flex flex-col items-stretch absolute top-[10%] bottom-[10%] right-0 w-[1px] pointer-events-none max-[1150px]:hidden"
+        className="flex flex-col items-stretch absolute top-[10%] bottom-[10%] right-0 w-[1px] pointer-events-none max-[1150px]:hidden"
         style={{
           background:
             'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.10) 30%, rgba(255,255,255,0.10) 70%, transparent 100%)',
@@ -50,10 +50,10 @@ function BrandHeader({
 }) {
   return (
     <div
-      className={`box-border flex flex-row items-center gap-3 w-full max-w-[680px] self-center ${className ?? ''}`}
+      className={`flex flex-row items-center gap-3 w-full max-w-[680px] self-center ${className ?? ''}`}
     >
-      <div className="box-border flex flex-row items-center gap-2 px-3 rounded-[999px] border border-[var(--glassBorder)] bg-[var(--glassBg)]">
-        <div className="box-border flex flex-col items-stretch w-[8px] h-[8px] rounded-[999px] bg-[#22c55e] auth-status-dot" />
+      <div className="flex flex-row items-center gap-2 px-3 rounded-[999px] border border-[var(--glassBorder)] bg-[var(--glassBg)]">
+        <div className="flex flex-col items-stretch w-[8px] h-[8px] rounded-[999px] bg-[#22c55e] auth-status-dot" />
         <Typography
           variant="caption"
           uiSize="xs"
@@ -76,10 +76,10 @@ function BrandHero({
 }) {
   return (
     <div
-      className={`box-border flex flex-col items-stretch gap-5 max-w-[680px] self-center w-full ${className ?? ''}`}
+      className={`flex flex-col items-stretch gap-5 max-w-[680px] self-center w-full ${className ?? ''}`}
     >
       <div
-        className="box-border flex flex-row self-start items-center gap-2 px-3 rounded-[999px] border"
+        className="flex flex-row self-start items-center gap-2 px-3 rounded-[999px] border"
         style={{
           borderColor:
             'color-mix(in srgb, var(--accent, #38bdf8) 25%, transparent)',
@@ -104,7 +104,7 @@ function BrandHero({
         </Typography>
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-2">
+      <div className="flex flex-col items-stretch gap-2">
         <Typography
           variant="heading"
           weight="800"
@@ -133,7 +133,7 @@ function BrandHero({
         </Typography>
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-3 -mt-2">
+      <div className="flex flex-col items-stretch gap-3 -mt-2">
         <FeatureBullet
           title={brand.featureOauthTitle}
           detail={brand.featureOauthDetail}
@@ -148,11 +148,11 @@ function BrandHero({
         />
       </div>
 
-      <div className="box-border flex flex-row items-center gap-3 -mt-2">
-        <div className="box-border flex flex-row items-stretch">
+      <div className="flex flex-row items-center gap-3 -mt-2">
+        <div className="flex flex-row items-stretch">
           {AVATARS.map((a, i) => (
             <div
-              className="box-border flex flex-col w-[34px] h-[34px] rounded-[999px] border-[2px] border-[var(--background)] items-center justify-center"
+              className="flex flex-col w-[34px] h-[34px] rounded-[999px] border-[2px] border-[var(--background)] items-center justify-center"
               style={{ marginLeft: i === 0 ? 0 : -10 }}
               key={a.ch}
             >
@@ -185,9 +185,9 @@ function BrandHero({
 
 function FeatureBullet({ title, detail }: { title: string; detail: string }) {
   return (
-    <div className="box-border flex flex-row items-start gap-3">
+    <div className="flex flex-row items-start gap-3">
       <div
-        className="box-border flex flex-col w-[28px] h-[28px] rounded-[999px] items-center justify-center -mt-2 shrink-0 border"
+        className="flex flex-col w-[28px] h-[28px] rounded-[999px] items-center justify-center -mt-2 shrink-0 border"
         style={{
           color: '#ffffff',
           background:
@@ -225,7 +225,7 @@ function BrandFooterLinks({
   };
   return (
     <div
-      className={`box-border flex flex-row gap-4 flex-wrap items-center w-full max-w-[680px] self-center ${className ?? ''}`}
+      className={`flex flex-row gap-4 flex-wrap items-center w-full max-w-[680px] self-center ${className ?? ''}`}
     >
       <Link href="/" style={linkStyle} data-testid="auth-brand-home-link">
         <Typography variant="body" uiSize="sm" color="$colorMuted">

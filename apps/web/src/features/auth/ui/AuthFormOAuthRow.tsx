@@ -50,7 +50,7 @@ export function AuthFormOAuthRow({
 
   return (
     <div
-      className="box-border flex flex-row items-stretch"
+      className="flex flex-row items-stretch"
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -109,7 +109,7 @@ function ProviderButton({
         transition: 'background-color 160ms ease, border-color 160ms ease',
       }}
     >
-      <div className="box-border flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
         {provider.icon}
       </div>
       <Typography variant="body" uiSize="sm" weight="600">

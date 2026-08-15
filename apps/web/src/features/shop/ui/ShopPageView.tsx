@@ -199,7 +199,7 @@ export function ShopPageView({
 
   return (
     <PageLayout>
-      <div className="box-border flex flex-col items-stretch max-w-[1280px] px-4 py-5 gap-5 w-full">
+      <div className="flex flex-col items-stretch max-w-[1280px] px-4 py-5 gap-5 w-full">
         <ShopTopBar balance={balance} labels={labels.topBar} />
 
         {!isAuthenticated ? <ShopSignInBanner labels={labels.signIn} /> : null}
@@ -208,7 +208,7 @@ export function ShopPageView({
           <ShopCatalogEmpty labels={labels.empty} />
         ) : null}
 
-        <div className="box-border flex flex-row gap-5 w-full items-start max-[800px]:flex-col">
+        <div className="flex flex-row gap-5 w-full items-start max-[800px]:flex-col">
           <ShopMannequinRail
             catalog={catalog}
             inventory={inventory}
@@ -219,7 +219,7 @@ export function ShopPageView({
             sellLabels={labels.sell}
           />
 
-          <div className="box-border flex flex-col items-stretch flex-1 w-full gap-5 min-w-0 max-[800px]:grow-[0] max-[800px]:basis-[auto]">
+          <div className="flex flex-col items-stretch flex-1 w-full gap-5 min-w-0 max-[800px]:grow-[0] max-[800px]:basis-[auto]">
             {featuredItem ? (
               <ShopHero
                 item={featuredItem}

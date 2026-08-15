@@ -25,7 +25,7 @@ const GridContainer = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border grid gap-5 sm:gap-4 sm:[grid-template-columns:repeat(auto-fill,minmax(240px,1fr))] max-[660px]:[grid-template-columns:1fr] [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]',
+      'grid gap-5 sm:gap-4 sm:[grid-template-columns:repeat(auto-fill,minmax(240px,1fr))] max-[660px]:[grid-template-columns:1fr] [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]',
       className,
     )}
     style={gap !== undefined ? ({ gap } as CSSProperties) : undefined}

@@ -122,17 +122,17 @@ export const AttackBoardCell = memo(function AttackBoardCell({
     >
       {icon && (
         <span
-          className={`box-border absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[13px] pointer-events-none select-none ${icon === '💀' ? 'sb-icon-sunk' : 'sb-icon-hit'}`}
+          className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[13px] pointer-events-none select-none ${icon === '💀' ? 'sb-icon-sunk' : 'sb-icon-hit'}`}
         >
           {icon}
         </span>
       )}
       {isPending && (
         <>
-          <span className="box-border absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[11px] pointer-events-none select-none sb-aim">
+          <span className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[11px] pointer-events-none select-none sb-aim">
             🎯
           </span>
-          <span className="box-border absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[14px] pointer-events-none select-none sb-missile">
+          <span className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[14px] pointer-events-none select-none sb-missile">
             🚀
           </span>
         </>

@@ -21,16 +21,7 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
   ];
 
   return (
-    <div
-      className="box-border flex flex-row items-stretch gap-4"
-      {...({
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        $gtXs: {
-          gridTemplateColumns: 'repeat(4, 1fr)',
-        },
-      } as unknown as Record<string, unknown>)}
-    >
+    <div className="grid grid-cols-2 min-[661px]:grid-cols-4 gap-4">
       {presets.map((preset) => {
         const isActive = amount === preset.value;
         return (
@@ -50,7 +41,7 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
             <Typography className={'text-[38px] -mb-1'}>
               {preset.emoji}
             </Typography>
-            <div className="box-border flex flex-col items-center gap-1">
+            <div className="flex flex-col items-center gap-1">
               <Typography variant="label" uiSize="xs" alpha="medium" textCenter>
                 {preset.label}
               </Typography>

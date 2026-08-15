@@ -35,7 +35,7 @@ export function AdminPaymentsFilters({
   }, [debouncedQ]);
 
   return (
-    <div className="box-border flex flex-row gap-3 items-center flex-wrap">
+    <div className="flex flex-row gap-3 items-center flex-wrap">
       <input
         placeholder={labels.searchPlaceholder}
         value={localQ}

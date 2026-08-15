@@ -185,15 +185,13 @@ export function AdminTournamentForm({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] max-w-[720px]"
+      className="flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] max-w-[720px]"
       data-testid="tournament-form"
     >
-      <span className="box-border font-bold text-[20px]">
-        {labels.sections.settings}
-      </span>
+      <span className="font-bold text-[20px]">{labels.sections.settings}</span>
 
-      <div className="box-border flex flex-row gap-3 items-center flex-wrap">
-        <span className="box-border">{labels.gameType}</span>
+      <div className="flex flex-row gap-3 items-center flex-wrap">
+        <span className="">{labels.gameType}</span>
         <select
           data-testid="form-gameType"
           value={state.gameType}
@@ -212,7 +210,7 @@ export function AdminTournamentForm({
           ))}
         </select>
 
-        <span className="box-border">{labels.maxPlayers}</span>
+        <span className="">{labels.maxPlayers}</span>
         <input
           type="number"
           data-testid="form-maxPlayers"
@@ -225,7 +223,7 @@ export function AdminTournamentForm({
           style={{ ...INPUT_STYLE, width: 100 }}
         />
 
-        <span className="box-border">{labels.entryFeeLabel}</span>
+        <span className="">{labels.entryFeeLabel}</span>
         <input
           type="number"
           data-testid="form-entryFeeCoins"
@@ -238,7 +236,7 @@ export function AdminTournamentForm({
           style={{ ...INPUT_STYLE, width: 120 }}
         />
 
-        <span className="box-border">{labels.prizePoolLabel}</span>
+        <span className="">{labels.prizePoolLabel}</span>
         <input
           type="number"
           data-testid="form-prizePoolCoins"
@@ -252,9 +250,9 @@ export function AdminTournamentForm({
         />
       </div>
 
-      <div className="box-border flex flex-row items-stretch gap-3 flex-wrap">
-        <div className="box-border flex flex-col items-stretch">
-          <span className="box-border text-[12px] opacity-[0.7]">
+      <div className="flex flex-row items-stretch gap-3 flex-wrap">
+        <div className="flex flex-col items-stretch">
+          <span className="text-[12px] opacity-[0.7]">
             {labels.scheduledAt}
           </span>
           <input
@@ -267,8 +265,8 @@ export function AdminTournamentForm({
             style={INPUT_STYLE}
           />
         </div>
-        <div className="box-border flex flex-col items-stretch">
-          <span className="box-border text-[12px] opacity-[0.7]">
+        <div className="flex flex-col items-stretch">
+          <span className="text-[12px] opacity-[0.7]">
             {labels.registrationOpensAt} ({labels.optional})
           </span>
           <input
@@ -284,8 +282,8 @@ export function AdminTournamentForm({
             style={INPUT_STYLE}
           />
         </div>
-        <div className="box-border flex flex-col items-stretch">
-          <span className="box-border text-[12px] opacity-[0.7]">
+        <div className="flex flex-col items-stretch">
+          <span className="text-[12px] opacity-[0.7]">
             {labels.registrationClosesAt} ({labels.optional})
           </span>
           <input
@@ -303,8 +301,8 @@ export function AdminTournamentForm({
         </div>
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border text-[12px] opacity-[0.7]">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="text-[12px] opacity-[0.7]">
           {labels.prizeDescription} ({labels.optional})
         </span>
         <textarea
@@ -319,11 +317,11 @@ export function AdminTournamentForm({
         />
       </div>
 
-      <span className="box-border font-bold text-[20px] -mt-2">
+      <span className="font-bold text-[20px] -mt-2">
         {labels.sections.content}
       </span>
 
-      <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+      <div className="flex flex-row items-stretch gap-2 flex-wrap">
         {TOURNAMENT_LOCALES.map((loc) => (
           <button
             key={loc}
@@ -348,8 +346,8 @@ export function AdminTournamentForm({
         ))}
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border text-[12px] opacity-[0.7]">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="text-[12px] opacity-[0.7]">
           {labels.name}
           {state.activeLocale === 'en' ? ' *' : ''}
         </span>
@@ -362,9 +360,7 @@ export function AdminTournamentForm({
           style={INPUT_STYLE}
           maxLength={120}
         />
-        <span className="box-border text-[12px] opacity-[0.7]">
-          {labels.description}
-        </span>
+        <span className="text-[12px] opacity-[0.7]">{labels.description}</span>
         <textarea
           data-testid={`form-description-${state.activeLocale}`}
           value={active.description ?? ''}
@@ -379,21 +375,18 @@ export function AdminTournamentForm({
 
       {errors.length > 0 && (
         <div
-          className="box-border flex flex-col items-stretch p-2 rounded-lg bg-[var(--errorBgSoft)]"
+          className="flex flex-col items-stretch p-2 rounded-lg bg-[var(--errorBgSoft)]"
           data-testid="form-errors"
         >
           {errors.map((err) => (
-            <span
-              className="box-border text-[12px] text-[var(--errorText)]"
-              key={err}
-            >
+            <span className="text-[12px] text-[var(--errorText)]" key={err}>
               • {err}
             </span>
           ))}
         </div>
       )}
 
-      <div className="box-border flex flex-row items-stretch gap-3 justify-end pt-2">
+      <div className="flex flex-row items-stretch gap-3 justify-end pt-2">
         <Button variant="outline" onClick={onCancel} data-testid="form-cancel">
           {labels.cancel}
         </Button>

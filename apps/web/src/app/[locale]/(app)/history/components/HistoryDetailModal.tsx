@@ -100,7 +100,7 @@ export function HistoryDetailModal({
             <ArrowLeftIcon size={16} />
             {t('history.detail.backToList')}
           </Button>
-          <div className="box-border flex flex-row items-center gap-3">
+          <div className="flex flex-row items-center gap-3">
             <ModalTitle>{selectedEntry.roomName}</ModalTitle>
             <EntryStatus data-testid="history-status">
               {t(`history.status.${selectedEntry.status}`) ||
@@ -226,7 +226,7 @@ export function HistoryDetailModal({
                   </Badge>
                 )}
                 {showRemoveConfirm ? (
-                  <div className="box-border flex flex-row items-stretch gap-4">
+                  <div className="flex flex-row items-stretch gap-4">
                     <Button
                       style={{ flex: 1 }}
                       variant="secondary"

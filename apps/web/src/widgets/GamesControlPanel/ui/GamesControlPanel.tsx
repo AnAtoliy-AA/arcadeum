@@ -105,17 +105,17 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
   return (
     <div
-      className={`box-border flex flex-row items-center justify-start gap-4 flex-wrap max-[800px]:gap-2 max-[800px]:justify-center max-[800px]:py-2 max-[800px]:px-3 max-[800px]:rounded-[12px] py-3 px-6 bg-[var(--glassBg)] rounded-[16px] border border-[var(--glassBorder)] ${className}`}
+      className={`flex flex-row items-center justify-start gap-4 flex-wrap max-[800px]:gap-2 max-[800px]:justify-center max-[800px]:py-2 max-[800px]:px-3 max-[800px]:rounded-[12px] py-3 px-6 bg-[var(--glassBg)] rounded-[16px] border border-[var(--glassBorder)] ${className}`}
       data-testid="games-control-panel"
     >
       {isSpectating && (
         <div
-          className="box-border flex flex-row bg-[rgba(56,_189,_248,_0.15)] border-[rgba(56,_189,_248,_0.4)] border px-3 py-2 rounded-[20px] items-center gap-2"
+          className="flex flex-row bg-[rgba(56,_189,_248,_0.15)] border-[rgba(56,_189,_248,_0.4)] border px-3 py-2 rounded-[20px] items-center gap-2"
           aria-label="Spectating mode"
           data-testid="spectating-indicator"
         >
-          <span className="box-border text-[14px]">👁️</span>
-          <span className="box-border text-[11px] font-extrabold text-[#0284c7] uppercase tracking-[1px]">
+          <span className="text-[14px]">👁️</span>
+          <span className="text-[11px] font-extrabold text-[#0284c7] uppercase tracking-[1px]">
             {t('games.table.controlPanel.spectating') || 'Spectating'}
           </span>
         </div>
@@ -139,7 +139,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         }
       >
         {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
-        <span className="box-border max-[800px]:hidden">
+        <span className="max-[800px]:hidden">
           {' ' + t('games.table.controlPanel.fullscreen')}
         </span>
       </Button>
@@ -156,7 +156,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         data-testid="sound-toggle-button"
       >
         {soundEnabled ? '🔊' : '🔇'}
-        <span className="box-border max-[800px]:hidden">
+        <span className="max-[800px]:hidden">
           {' ' + t('settings.soundLabel')}
         </span>
       </Button>
@@ -173,7 +173,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         data-testid="music-toggle-button"
       >
         {musicEnabled ? '🎵' : '🔕'}
-        <span className="box-border max-[800px]:hidden">
+        <span className="max-[800px]:hidden">
           {' ' + t('settings.musicLabel')}
         </span>
       </Button>
@@ -189,7 +189,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           data-testid="show-rules-button"
         >
           📖
-          <span className="box-border max-[800px]:hidden">
+          <span className="max-[800px]:hidden">
             {' ' + (t('games.table.controlPanel.rules') || 'Rules')}
           </span>
         </Button>
@@ -207,7 +207,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           }
         >
           💬
-          <span className="box-border max-[800px]:hidden">
+          <span className="max-[800px]:hidden">
             {' ' +
               (showChat
                 ? t('games.table.chat.hide')
@@ -218,7 +218,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
       {showMoveControls && (
         <div
-          className="box-border flex flex-row items-stretch gap-1 border border-[var(--borderColor)] p-1 scale-[1] max-[800px]:scale-[0.9]"
+          className="flex flex-row items-stretch gap-1 border border-[var(--borderColor)] p-1 scale-[1] max-[800px]:scale-[0.9]"
           data-testid="move-controls"
         >
           <Button
@@ -231,8 +231,8 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           >
             ↑
           </Button>
-          <div className="box-border flex flex-col items-stretch gap-1">
-            <div className="box-border flex flex-row items-stretch gap-1">
+          <div className="flex flex-col items-stretch gap-1">
+            <div className="flex flex-row items-stretch gap-1">
               <Button
                 className="p-[4px] min-w-[32px]"
                 variant="glass"
@@ -296,7 +296,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           data-testid="rematch-button"
         >
           🔄
-          <span className="box-border max-[800px]:hidden">
+          <span className="max-[800px]:hidden">
             {' ' +
               (rematchLoading
                 ? t(
@@ -322,7 +322,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         data-testid="exit-room-button"
       >
         🏃
-        <span className="box-border max-[800px]:hidden">
+        <span className="max-[800px]:hidden">
           {' ' + (t('games.table.controlPanel.exitRoom') || 'Exit')}
         </span>
       </Button>
@@ -341,7 +341,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           data-testid="leave-game-button"
         >
           🚪
-          <span className="box-border max-[800px]:hidden">
+          <span className="max-[800px]:hidden">
             {' ' + t('games.table.controlPanel.leaveRoom')}
           </span>
         </Button>
@@ -353,18 +353,18 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
             <ModalTitle>{t('games.table.controlPanel.leaveRoom')}</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <div className="box-border flex flex-col gap-4 items-center py-4">
-              <div className="box-border flex flex-col w-[80px] h-[80px] rounded-[40px] bg-[rgba(239,_68,_68,_0.1)] items-center justify-center -mb-2">
-                <span className="box-border text-[32px]">🚪</span>
+            <div className="flex flex-col gap-4 items-center py-4">
+              <div className="flex flex-col w-[80px] h-[80px] rounded-[40px] bg-[rgba(239,_68,_68,_0.1)] items-center justify-center -mb-2">
+                <span className="text-[32px]">🚪</span>
               </div>
-              <span className="box-border text-center text-[16px] leading-[24px] opacity-[0.8] font-medium">
+              <span className="text-center text-[16px] leading-[24px] opacity-[0.8] font-medium">
                 {t('games.table.controlPanel.leaveConfirmMessage') ||
                   'Are you sure you want to leave the game? You will be removed from the participants list.'}
               </span>
             </div>
           </ModalBody>
           <ModalFooter>
-            <div className="box-border flex flex-row items-stretch gap-3 justify-center w-full">
+            <div className="flex flex-row items-stretch gap-3 justify-center w-full">
               <Button
                 className="rounded-[12px]"
                 style={{ flex: 1 }}

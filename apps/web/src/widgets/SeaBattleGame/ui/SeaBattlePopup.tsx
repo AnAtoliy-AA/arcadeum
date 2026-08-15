@@ -79,13 +79,13 @@ export function SeaBattlePopup({
 
   return (
     <div
-      className="box-border flex flex-col absolute z-[200] items-center gap-2 min-w-[120px]"
+      className="flex flex-col absolute z-[200] items-center gap-2 min-w-[120px]"
       style={POSITION_STYLES[position]}
       data-testid="sea-battle-popup-container"
     >
       <GlassCard className={'p-3 items-center gap-2 w-full'}>
-        <span className="box-border text-[24px]">🚢</span>
-        <span className="box-border text-[11px] font-semibold text-[var(--color)] text-center opacity-[0.9]">
+        <span className="text-[24px]">🚢</span>
+        <span className="text-[11px] font-semibold text-[var(--color)] text-center opacity-[0.9]">
           {t('games.sea_battle_v1.challengePlayer' as TranslationKey, {
             name: playerName,
           }) || `Challenge ${playerName}?`}

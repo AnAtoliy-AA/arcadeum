@@ -54,19 +54,19 @@ export function SeaBattleThemePreview({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch rounded-[10px] border p-3 gap-2 sb-preview-fade"
+      className="flex flex-col items-stretch rounded-[10px] border p-3 gap-2 sb-preview-fade"
       style={{ borderColor: theme.cellBorder }}
       key={selectedVariant}
       data-testid="color-preview-container"
     >
       {/* Column labels */}
       <div
-        className="box-border flex flex-row items-stretch gap-2"
+        className="flex flex-row items-stretch gap-2"
         style={{ marginLeft: colLabelOffset }}
       >
         {COL_LABELS.map((l) => (
           <span
-            className="box-border text-center"
+            className="text-center"
             style={{
               fontSize: labelFontSize,
               color: theme.textSecondaryColor,
@@ -81,12 +81,9 @@ export function SeaBattleThemePreview({
 
       {/* Rows */}
       {Array.from({ length: 10 }, (_, rIndex) => (
-        <div
-          className="box-border flex flex-row gap-2 items-center"
-          key={rIndex}
-        >
+        <div className="flex flex-row gap-2 items-center" key={rIndex}>
           <span
-            className="box-border text-right"
+            className="text-right"
             style={{
               fontSize: labelFontSize,
               color: theme.textSecondaryColor,
@@ -110,7 +107,7 @@ export function SeaBattleThemePreview({
                       : undefined;
             return (
               <div
-                className="box-border flex flex-col border items-center justify-center"
+                className="flex flex-col border items-center justify-center"
                 style={{
                   width: cellSize,
                   height: cellSize,
@@ -122,16 +119,13 @@ export function SeaBattleThemePreview({
                 data-testid={testId}
               >
                 {state === CELL_STATE.HIT && (
-                  <span
-                    className="box-border"
-                    style={{ fontSize: hitFontSize }}
-                  >
+                  <span className="" style={{ fontSize: hitFontSize }}>
                     🔥
                   </span>
                 )}
                 {state === CELL_STATE.MISS && (
                   <div
-                    className="box-border flex flex-col items-stretch rounded-[100px] opacity-[0.7]"
+                    className="flex flex-col items-stretch rounded-[100px] opacity-[0.7]"
                     style={{
                       width: missDotSize,
                       height: missDotSize,

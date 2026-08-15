@@ -34,7 +34,7 @@ function VersionCard({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch rounded-2xl overflow-hidden"
+      className="flex flex-col items-stretch rounded-2xl overflow-hidden"
       style={{
         background: isExpanded
           ? 'rgba(255,255,255,0.03)'
@@ -46,12 +46,12 @@ function VersionCard({
       }}
     >
       <div
-        className="box-border flex flex-col items-stretch active:opacity-[0.8] cursor-pointer p-4"
+        className="flex flex-col items-stretch active:opacity-[0.8] cursor-pointer p-4"
         onClick={onToggle}
       >
-        <div className="box-border flex flex-row justify-between items-center">
-          <div className="box-border flex flex-row gap-3 items-center flex-1">
-            <div className="box-border px-3 rounded-[9999px] bg-[rgba(99,102,241,0.15)] border border-[rgba(99,102,241,0.3)]">
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row gap-3 items-center flex-1">
+            <div className="px-3 rounded-[9999px] bg-[rgba(99,102,241,0.15)] border border-[rgba(99,102,241,0.3)]">
               <Typography
                 className={'font-bold text-[#6366f1]'}
                 variant="label"
@@ -66,7 +66,7 @@ function VersionCard({
               </Typography>
             )}
             {isReleased && (
-              <div className="box-border px-2 py-1 rounded-[9999px] bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)]">
+              <div className="px-2 py-1 rounded-[9999px] bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)]">
                 <Typography
                   className={'font-bold text-[#22c55e]'}
                   variant="label"
@@ -77,13 +77,13 @@ function VersionCard({
               </div>
             )}
           </div>
-          <div className="box-border flex flex-row gap-2 items-center">
-            <div className="box-border px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
+          <div className="flex flex-row gap-2 items-center">
+            <div className="px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
               <Typography variant="caption" uiSize="xs" alpha="medium">
                 {totalChanges} changes
               </Typography>
             </div>
-            <div className="box-border w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
+            <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
               <Typography
                 className={'font-bold'}
                 variant="body"
@@ -98,17 +98,17 @@ function VersionCard({
       </div>
 
       {isExpanded && (
-        <div className="box-border flex flex-col items-stretch gap-0">
-          <div className="box-border -mx-4 border-b border-b-[rgba(255,255,255,0.06)]" />
-          <div className="box-border flex flex-col items-stretch p-4 gap-4">
+        <div className="flex flex-col items-stretch gap-0">
+          <div className="-mx-4 border-b border-b-[rgba(255,255,255,0.06)]" />
+          <div className="flex flex-col items-stretch p-4 gap-4">
             {entry.sections.map((section) => (
               <div
-                className="box-border flex flex-col items-stretch gap-2"
+                className="flex flex-col items-stretch gap-2"
                 key={section.type}
               >
-                <div className="box-border flex flex-row items-center gap-2">
+                <div className="flex flex-row items-center gap-2">
                   <div
-                    className="box-border w-[8px] h-[8px] rounded-[9999px]"
+                    className="w-[8px] h-[8px] rounded-[9999px]"
                     style={{
                       backgroundColor:
                         SECTION_COLORS[section.type] || '#6b7280',
@@ -122,20 +122,17 @@ function VersionCard({
                   >
                     {section.type}
                   </Typography>
-                  <div className="box-border rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
+                  <div className="rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
                     <Typography variant="caption" uiSize="xs" alpha="medium">
                       {section.items.length}
                     </Typography>
                   </div>
                 </div>
-                <div className="box-border flex flex-col items-stretch pl-5 gap-null">
+                <div className="flex flex-col items-stretch pl-5">
                   {section.items.map((item, idx) => (
-                    <div
-                      className="box-border flex flex-row gap-2 items-start"
-                      key={idx}
-                    >
+                    <div className="flex flex-row gap-2 items-start" key={idx}>
                       <div
-                        className="box-border w-[4px] h-[4px] rounded-[9999px] opacity-[0.4] shrink-0"
+                        className="w-[4px] h-[4px] rounded-[9999px] opacity-[0.4] shrink-0"
                         style={{
                           backgroundColor:
                             SECTION_COLORS[section.type] || '#6b7280',
@@ -193,9 +190,9 @@ export default function ChangelogView({
   return (
     <PageLayout>
       <Container size="lg">
-        <div className="box-border flex flex-col items-stretch gap-6">
+        <div className="flex flex-col items-stretch gap-6">
           <div
-            className="box-border flex flex-col items-stretch p-8 rounded-2xl border border-[rgba(99,102,241,0.2)] gap-3"
+            className="flex flex-col items-stretch p-8 rounded-2xl border border-[rgba(99,102,241,0.2)] gap-3"
             style={{
               background:
                 'linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(168,85,247,0.15) 50%, rgba(236,72,153,0.1) 100%)',
@@ -218,7 +215,7 @@ export default function ChangelogView({
               All notable changes to Arcadeum are documented here. Follow
               Semantic Versioning.
             </Typography>
-            <div className="box-border px-3 py-1 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] self-start">
+            <div className="px-3 py-1 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] self-start">
               <Typography variant="caption" uiSize="xs" alpha="medium">
                 {entries.length} releases
               </Typography>
@@ -226,7 +223,7 @@ export default function ChangelogView({
           </div>
 
           <Section variant="legal">
-            <div className="box-border flex flex-col items-stretch gap-3">
+            <div className="flex flex-col items-stretch gap-3">
               {visibleEntries.map((entry) => (
                 <VersionCard
                   key={entry.version}
@@ -244,9 +241,9 @@ export default function ChangelogView({
           </Section>
 
           {!showAll && entries.length > 10 && (
-            <div className="box-border flex flex-row items-stretch justify-center">
+            <div className="flex flex-row items-stretch justify-center">
               <div
-                className="box-border px-6 py-3 rounded-xl cursor-pointer active:opacity-[0.8] bg-[rgba(99,102,241,0.15)] border border-[rgba(99,102,241,0.3)]"
+                className="px-6 py-3 rounded-xl cursor-pointer active:opacity-[0.8] bg-[rgba(99,102,241,0.15)] border border-[rgba(99,102,241,0.3)]"
                 onClick={() => setShowAll(true)}
               >
                 <Typography

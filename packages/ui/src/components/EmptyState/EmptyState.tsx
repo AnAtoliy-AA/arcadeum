@@ -18,7 +18,7 @@ export const EmptyState = memo(function EmptyState({
   return (
     <div
       className={cx(
-        'box-border',
+        '',
         'flex',
         'flex-col',
         'items-center',

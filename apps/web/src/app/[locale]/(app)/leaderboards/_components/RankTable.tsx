@@ -14,7 +14,7 @@ import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 
 const rowBase =
-  'box-border flex flex-row items-center gap-3 border-b border-[var(--borderColor)]';
+  'flex flex-row items-center gap-3 border-b border-[var(--borderColor)]';
 
 function Row({
   className,
@@ -51,7 +51,7 @@ function TagPill({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-stretch rounded-full border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] px-2 py-0.5',
+        'flex flex-row items-stretch rounded-full border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] px-2 py-0.5',
         className,
       )}
       {...props}
@@ -85,29 +85,29 @@ export function RankTable({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch rounded-2xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] overflow-hidden"
+      className="flex flex-col items-stretch rounded-2xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] overflow-hidden"
       data-testid="leaderboard-table"
     >
       <HeaderRow>
-        <span className="box-border w-[56px] text-[12px] opacity-[0.6] uppercase">
+        <span className="w-[56px] text-[12px] opacity-[0.6] uppercase">
           {labels.rank ?? '#'}
         </span>
-        <span className="box-border flex-1 text-[12px] opacity-[0.6] uppercase">
+        <span className="flex-1 text-[12px] opacity-[0.6] uppercase">
           {labels.player ?? 'Player'}
         </span>
-        <span className="box-border w-[80px] text-[12px] opacity-[0.6] uppercase">
+        <span className="w-[80px] text-[12px] opacity-[0.6] uppercase">
           {labels.region ?? 'Region'}
         </span>
-        <span className="box-border w-[240px] text-[12px] opacity-[0.6] uppercase max-[800px]:hidden">
+        <span className="w-[240px] text-[12px] opacity-[0.6] uppercase max-[800px]:hidden">
           {labels.rating ?? 'Rating'}
         </span>
-        <span className="box-border w-[140px] text-[12px] opacity-[0.6] uppercase max-[800px]:hidden">
+        <span className="w-[140px] text-[12px] opacity-[0.6] uppercase max-[800px]:hidden">
           {labels.form ?? 'Form'}
         </span>
-        <span className="box-border w-[120px] text-[12px] opacity-[0.6] uppercase max-[1150px]:hidden">
+        <span className="w-[120px] text-[12px] opacity-[0.6] uppercase max-[1150px]:hidden">
           Tags
         </span>
-        <span className="box-border w-[72px] text-[12px] opacity-[0.6] uppercase">
+        <span className="w-[72px] text-[12px] opacity-[0.6] uppercase">
           {labels.trend ?? 'Trend'}
         </span>
       </HeaderRow>
@@ -115,17 +115,17 @@ export function RankTable({
       {loading
         ? Array.from({ length: 8 }).map((_, i) => (
             <Row key={`sk_${i}`} minHeight={56}>
-              <div className="box-border w-[56px] items-start">
-                <div className="box-border w-[36px] h-[22px] bg-[rgba(255,255,255,0.06)] rounded-2xl" />
+              <div className="w-[56px] items-start">
+                <div className="w-[36px] h-[22px] bg-[rgba(255,255,255,0.06)] rounded-2xl" />
               </div>
-              <div className="box-border flex flex-col items-stretch flex-1 gap-4">
-                <div className="box-border w-[60%] h-[16px] bg-[rgba(255,255,255,0.06)] rounded-2xl" />
+              <div className="flex flex-col items-stretch flex-1 gap-4">
+                <div className="w-[60%] h-[16px] bg-[rgba(255,255,255,0.06)] rounded-2xl" />
               </div>
-              <div className="box-border w-[80px] h-[14px] bg-[rgba(255,255,255,0.04)] rounded-2xl" />
-              <div className="box-border w-[240px] h-[22px] bg-[rgba(255,255,255,0.06)] rounded-[11px] max-[800px]:hidden" />
-              <div className="box-border w-[140px] h-[16px] bg-[rgba(255,255,255,0.04)] rounded-2xl max-[800px]:hidden" />
-              <div className="box-border w-[120px] h-[20px] bg-[rgba(255,255,255,0.04)] rounded-[10px] max-[1150px]:hidden" />
-              <div className="box-border w-[72px] h-[20px] bg-[rgba(255,255,255,0.04)] rounded-[10px]" />
+              <div className="w-[80px] h-[14px] bg-[rgba(255,255,255,0.04)] rounded-2xl" />
+              <div className="w-[240px] h-[22px] bg-[rgba(255,255,255,0.06)] rounded-[11px] max-[800px]:hidden" />
+              <div className="w-[140px] h-[16px] bg-[rgba(255,255,255,0.04)] rounded-2xl max-[800px]:hidden" />
+              <div className="w-[120px] h-[20px] bg-[rgba(255,255,255,0.04)] rounded-[10px] max-[1150px]:hidden" />
+              <div className="w-[72px] h-[20px] bg-[rgba(255,255,255,0.04)] rounded-[10px]" />
             </Row>
           ))
         : rows.map((p, i) => (
@@ -174,11 +174,11 @@ function RankRow({
       data-testid={`leaderboard-row-${p.rank}`}
       {...(isSelf ? { 'data-self': 'true' } : {})}
     >
-      <div className="box-border w-[56px]">
+      <div className="w-[56px]">
         <RankBadge tier={p.tier as never}>{`#${p.rank}`}</RankBadge>
       </div>
-      <div className="box-border flex flex-col items-stretch flex-1 gap-2">
-        <div className="box-border flex flex-row gap-2 items-center flex-wrap">
+      <div className="flex flex-col items-stretch flex-1 gap-2">
+        <div className="flex flex-row gap-2 items-center flex-wrap">
           <EquippedPlayerAvatar
             size="sm"
             name={p.name}
@@ -194,12 +194,12 @@ function RankRow({
             data-testid={`leaderboard-row-${p.rank}-avatar`}
           />
           {flag ? (
-            <span className="box-border text-[16px]" aria-label={p.countryCode}>
+            <span className="text-[16px]" aria-label={p.countryCode}>
               {flag}
             </span>
           ) : null}
           <span
-            className="box-border font-bold line-clamp-1"
+            className="font-bold line-clamp-1"
             style={
               nameProps.color ? { color: nameProps.color } : nameProps.style
             }
@@ -207,40 +207,40 @@ function RankRow({
             {p.name}
           </span>
           {p.isOnline ? (
-            <div className="box-border w-[8px] h-[8px] rounded-2xl bg-[var(--success)]" />
+            <div className="w-[8px] h-[8px] rounded-2xl bg-[var(--success)]" />
           ) : null}
           {p.streak && p.streak >= 3 ? (
-            <span className="box-border text-[14px]">🔥 {p.streak}</span>
+            <span className="text-[14px]">🔥 {p.streak}</span>
           ) : null}
           {live ? (
-            <div className="box-border" data-testid="row-live-chip">
+            <div className="" data-testid="row-live-chip">
               <LiveChip label={liveLabel} />
             </div>
           ) : null}
           {p.elo ? (
-            <span className="box-border text-[12px] opacity-[0.5] tracking-[1px]">
+            <span className="text-[12px] opacity-[0.5] tracking-[1px]">
               {p.elo} ELO
             </span>
           ) : null}
         </div>
       </div>
-      <span className="box-border w-[80px] text-[14px] opacity-[0.8] line-clamp-1">
+      <span className="w-[80px] text-[14px] opacity-[0.8] line-clamp-1">
         {regionLabels[p.region] ?? p.region.toUpperCase()}
       </span>
-      <div className="box-border w-[240px] max-[800px]:hidden">
+      <div className="w-[240px] max-[800px]:hidden">
         <EnergyBar value={p.rating} max={max} />
       </div>
-      <div className="box-border w-[140px] max-[800px]:hidden">
+      <div className="w-[140px] max-[800px]:hidden">
         <FormPips results={p.recentForm} max={8} variant="letter" />
       </div>
-      <div className="box-border flex flex-col items-stretch w-[120px] gap-4 max-[1150px]:hidden">
+      <div className="flex flex-col items-stretch w-[120px] gap-4 max-[1150px]:hidden">
         {(p.gameTags ?? []).slice(0, 2).map((tag) => (
           <TagPill key={tag}>
-            <span className="box-border text-[12px] opacity-[0.85]">{tag}</span>
+            <span className="text-[12px] opacity-[0.85]">{tag}</span>
           </TagPill>
         ))}
       </div>
-      <div className="box-border w-[72px]">
+      <div className="w-[72px]">
         <TrendPill rank={p.rank} prevRank={p.prevRank} />
       </div>
     </Row>

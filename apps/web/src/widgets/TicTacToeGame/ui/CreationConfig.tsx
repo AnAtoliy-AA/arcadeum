@@ -36,12 +36,12 @@ export default function TicTacToeCreationConfig({
 
   return (
     <Section title={t('games.create.sectionHouseRules')}>
-      <div className="box-border flex flex-col items-stretch gap-3">
-        <div className="box-border flex flex-col items-stretch gap-1">
-          <span className="box-border text-[18px] font-semibold">
+      <div className="flex flex-col items-stretch gap-3">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[18px] font-semibold">
             {t('games.create.tttBoardSize')}
           </span>
-          <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+          <div className="flex flex-row items-stretch gap-2 flex-wrap">
             {BOARD_SIZES.map((bs) => (
               <Button
                 key={bs.value}
@@ -58,12 +58,12 @@ export default function TicTacToeCreationConfig({
         </div>
 
         {isInfinity && (
-          <div className="box-border flex flex-col items-stretch gap-3 p-3 bg-[rgba(99,102,241,0.08)] rounded-[10px]">
-            <div className="box-border flex flex-col items-stretch gap-1">
-              <span className="box-border text-[16px] font-semibold">
+          <div className="flex flex-col items-stretch gap-3 p-3 bg-[rgba(99,102,241,0.08)] rounded-[10px]">
+            <div className="flex flex-col items-stretch gap-1">
+              <span className="text-[16px] font-semibold">
                 {t('games.tic_tac_toe_v1.lobby.expansionMargin')}
               </span>
-              <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+              <div className="flex flex-row items-stretch gap-2 flex-wrap">
                 {MARGIN_OPTIONS.map((margin) => (
                   <Button
                     key={margin}
@@ -79,11 +79,11 @@ export default function TicTacToeCreationConfig({
               </div>
             </div>
 
-            <div className="box-border flex flex-col items-stretch gap-1">
-              <span className="box-border text-[16px] font-semibold">
+            <div className="flex flex-col items-stretch gap-1">
+              <span className="text-[16px] font-semibold">
                 {t('games.tic_tac_toe_v1.lobby.winCondition')}
               </span>
-              <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+              <div className="flex flex-row items-stretch gap-2 flex-wrap">
                 {WIN_LENGTH_OPTIONS.map((winLen) => (
                   <Button
                     key={winLen}

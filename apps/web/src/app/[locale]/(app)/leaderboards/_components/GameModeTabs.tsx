@@ -53,10 +53,7 @@ export function GameModeTabs({
   }
 
   return (
-    <div
-      className="box-border flex flex-row items-stretch gap-3 flex-wrap"
-      role="tablist"
-    >
+    <div className="flex flex-row items-stretch gap-3 flex-wrap" role="tablist">
       {MODES.map((m) => {
         const meta = modeLabels[m] ?? {};
         return (

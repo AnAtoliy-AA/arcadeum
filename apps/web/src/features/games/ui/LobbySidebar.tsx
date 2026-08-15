@@ -251,7 +251,7 @@ export function LobbySidebar({
               const avatarColor =
                 AVATAR_COLORS[member.displayName.length % AVATAR_COLORS.length];
               return (
-                <PlayerItem key={member.id} $isHost={isRoomHost}>
+                <PlayerItem key={member.id} isHost={isRoomHost}>
                   {member.equippedAvatarId ? (
                     <InGameAvatar
                       playerId={member.id}
@@ -375,7 +375,7 @@ export function LobbySidebar({
         <CardTitle>{roomInfoLabel}</CardTitle>
         <InfoRow>
           <InfoLabel>{statusLabel}</InfoLabel>
-          <StatusBadge $status={room.status}>
+          <StatusBadge status={room.status}>
             {t(`games.rooms.status.${room.status}`) || room.status}
           </StatusBadge>
         </InfoRow>

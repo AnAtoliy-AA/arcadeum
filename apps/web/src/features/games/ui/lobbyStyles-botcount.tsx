@@ -11,7 +11,7 @@ export const BotCountLabel = ({
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
     className={cx(
-      'box-border text-[14px] font-medium text-[var(--textSecondary)] uppercase tracking-[0.5px]',
+      'text-[14px] font-medium text-[var(--textSecondary)] uppercase tracking-[0.5px]',
       className,
     )}
     {...props}
@@ -29,7 +29,7 @@ export const BotCountButtons = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cx('box-border flex flex-row items-stretch gap-2', className)}
+    className={cx('flex flex-row items-stretch gap-2', className)}
     {...props}
   >
     {children}

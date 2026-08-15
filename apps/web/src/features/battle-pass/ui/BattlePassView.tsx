@@ -8,6 +8,7 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { claimTierAction } from '../actions';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 import type {
   BattlePassReward,
   BattlePassState,
@@ -64,56 +65,56 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
   };
 
   return (
-    <div className="box-border flex flex-col items-stretch gap-5 p-4 max-w-[1100px] w-full">
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <div className="box-border flex flex-row items-center gap-3 flex-wrap">
-          <span className="box-border text-[40px] font-black">
+    <div className="flex flex-col items-stretch gap-5 p-4 max-w-[1100px] w-full">
+      <div className="flex flex-col items-stretch gap-2">
+        <div className="flex flex-row items-center gap-3 flex-wrap">
+          <span className="text-[40px] font-black">
             {t('battlePass.title' as TranslationKey)}
           </span>
           {isPremium ? (
-            <div className="box-border px-10 py-4 rounded-[999px] bg-[rgba(251,191,36,0.15)] border border-[rgba(251,191,36,0.4)]">
-              <span className="box-border text-[14px] font-extrabold text-[#fbbf24]">
+            <div className="px-10 py-4 rounded-[999px] bg-[rgba(251,191,36,0.15)] border border-[rgba(251,191,36,0.4)]">
+              <span className="text-[14px] font-extrabold text-[#fbbf24]">
                 👑 {t('battlePass.premiumActive' as TranslationKey)}
               </span>
             </div>
           ) : null}
         </div>
-        <span className="box-border text-[18px] opacity-[0.75]">
+        <span className="text-[18px] opacity-[0.75]">
           {t('battlePass.subtitle' as TranslationKey)}
         </span>
-        <span className="box-border text-[16px] opacity-[0.6]">
+        <span className="text-[16px] opacity-[0.6]">
           {season.title} · {endsLabel}
         </span>
       </div>
 
       {/* XP progress to next tier */}
       <div
-        className="box-border flex flex-col items-stretch gap-2"
+        className="flex flex-col items-stretch gap-2"
         role="status"
         aria-live="polite"
       >
-        <span className="box-border text-[14px] opacity-[0.7]">
+        <span className="text-[14px] opacity-[0.7]">
           {maxed
             ? t('battlePass.maxedOut' as TranslationKey)
             : t('battlePass.progress' as TranslationKey, { xp, next })}
         </span>
-        <div className="box-border h-[10px] rounded-[999px] bg-[rgba(255,255,255,0.08)] overflow-hidden">
+        <div className="h-[10px] rounded-[999px] bg-[rgba(255,255,255,0.08)] overflow-hidden">
           <div
-            className="box-border h-full rounded-[999px]"
+            className="h-full rounded-[999px]"
             style={{ width: `${progressPct}%` }}
           />
         </div>
       </div>
 
       {!isPremium ? (
-        <span className="box-border text-[14px] opacity-[0.6]">
+        <span className="text-[14px] opacity-[0.6]">
           🔒 {t('battlePass.unlockHint' as TranslationKey)}
         </span>
       ) : null}
 
       {/* Tier rail */}
       <div
-        className="box-border flex flex-row items-stretch gap-3 overflow-scroll py-2"
+        className="flex flex-row items-stretch gap-3 overflow-scroll py-2"
         data-testid="battle-pass-rail"
       >
         {season.tiers.map((tierDef) => {
@@ -123,7 +124,7 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
 
           return (
             <div
-              className="box-border flex flex-col items-stretch min-w-[160px] gap-3 p-3 rounded-3xl border bg-[rgba(15,23,42,0.55)]"
+              className="flex flex-col items-stretch min-w-[160px] gap-3 p-3 rounded-3xl border bg-[rgba(15,23,42,0.55)]"
               style={{
                 borderColor: unlocked
                   ? 'rgba(56,189,248,0.4)'
@@ -133,7 +134,7 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
               key={tierDef.tier}
               data-testid={`battle-pass-tier-${tierDef.tier}`}
             >
-              <span className="box-border text-[16px] font-extrabold tracking-[1px]">
+              <span className="text-[16px] font-extrabold tracking-[1px]">
                 {t('battlePass.tier' as TranslationKey, { tier: tierDef.tier })}
               </span>
 
@@ -189,7 +190,7 @@ function RewardNode({
 }) {
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-2 p-2 rounded-xl border"
+      className="flex flex-col items-stretch gap-2 p-2 rounded-xl border"
       style={{
         backgroundColor: accent
           ? 'rgba(251,191,36,0.08)'
@@ -201,14 +202,12 @@ function RewardNode({
       }}
     >
       <span
-        className="box-border text-[48px] uppercase tracking-[1px] opacity-[0.6]"
-        style={{ color: accent ? '#fbbf24' : '$gray11' }}
+        className="text-[48px] uppercase tracking-[1px] opacity-[0.6]"
+        style={{ color: resolveThemeColor(accent ? '#fbbf24' : '$gray11') }}
       >
         {label}
       </span>
-      <span className="box-border text-[16px] font-bold">
-        {rewardLabel(reward)}
-      </span>
+      <span className="text-[16px] font-bold">{rewardLabel(reward)}</span>
     </div>
   );
 }

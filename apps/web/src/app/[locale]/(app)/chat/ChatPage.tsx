@@ -133,16 +133,10 @@ export default function ChatPage() {
 
   return (
     <PageLayout>
-      <div className="box-border flex flex-col items-stretch absolute top-0 left-0 right-0 h-full z-[-1] opacity-[0.3] bg-[radial-gradient(circle_at_10%_20%,_var(--primaryGradientStart)_0%,_transparent_40%),_radial-gradient(circle_at_90%_80%,_var(--secondaryGradientStart)_0%,_transparent_40%)] pointer-events-none" />
+      <div className="flex flex-col items-stretch absolute top-0 left-0 right-0 h-full z-[-1] opacity-[0.3] bg-[radial-gradient(circle_at_10%_20%,_var(--primaryGradientStart)_0%,_transparent_40%),_radial-gradient(circle_at_90%_80%,_var(--secondaryGradientStart)_0%,_transparent_40%)] pointer-events-none" />
       <Container className={'flex-1 pb-4 pt-4'} size="md">
         <GlassCard
           className={'flex-1 p-0 gap-0 border border-[var(--glassBorder)]'}
-          style={{
-            shadowColor: '$shadowColor',
-            shadowOffset: { width: 0, height: 10 },
-            shadowOpacity: 0.2,
-            shadowRadius: 30,
-          }}
         >
           <ChatHeader
             title={title}
@@ -155,15 +149,15 @@ export default function ChatPage() {
           />
 
           <div
-            className="box-border overflow-auto flex-1 px-4 py-4"
+            className="overflow-auto flex-1 px-4 py-4"
             data-testid="chat-scroll-view"
           >
             <div
-              className="box-border flex flex-col items-stretch gap-4"
+              className="flex flex-col items-stretch gap-4"
               data-testid="chat-messages-list"
             >
               {isLoading && messages.length === 0 ? (
-                <div className="box-border flex flex-col flex-1 items-center justify-center py-10">
+                <div className="flex flex-col flex-1 items-center justify-center py-10">
                   <Spinner
                     className={'text-[var(--primary)]'}
                     data-testid="chat-loading-spinner"

@@ -24,7 +24,7 @@ const StatusContainer = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center gap-3 px-4 py-3 bg-[var(--background)] rounded-[8px] border border-[var(--borderColor)]',
+      'flex flex-row items-center gap-3 px-4 py-3 bg-[var(--background)] rounded-[8px] border border-[var(--borderColor)]',
       className,
     )}
     {...props}
@@ -41,10 +41,7 @@ const StatusItem = ({
   className?: string;
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx('box-border flex flex-row items-center gap-1', className)}
-    {...props}
-  >
+  <div className={cx('flex flex-row items-center gap-1', className)} {...props}>
     {children}
   </div>
 );

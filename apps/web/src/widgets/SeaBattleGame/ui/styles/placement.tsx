@@ -21,7 +21,7 @@ export const ShipPalette = ({
 }: ShipPaletteProps) => (
   <div
     className={cx(
-      'box-border flex flex-col items-center gap-1.5 p-3',
+      'flex flex-col items-center gap-1.5 p-3',
       'max-[1150px]:flex-row max-[1150px]:overflow-x-auto max-[1150px]:p-1.5 max-[1150px]:gap-1.5 max-[1150px]:w-full max-[1150px]:items-center',
       '[@media(max-height:480px)]:p-1.5 [@media(max-height:480px)]:gap-1',
       className,
@@ -50,7 +50,7 @@ export const ShipItem = ({
 }: ShipItemProps) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center gap-1.5 px-2 py-1.5 border rounded-[8px] max-w-[240px] w-full',
+      'flex flex-row items-center gap-1.5 px-2 py-1.5 border rounded-[8px] max-w-[240px] w-full',
       'max-[1150px]:shrink-0 max-[1150px]:w-auto max-[1150px]:px-1.5 max-[1150px]:py-1',
       isPlaced ? 'opacity-50 cursor-default' : 'cursor-grab',
       animated && 'transition-all duration-300 ease-out',
@@ -63,10 +63,7 @@ export const ShipItem = ({
 
 export const ShipPreview = ({ className, ...props }: CommonProps) => (
   <div
-    className={cx(
-      'box-border flex flex-row items-stretch gap-[1.5px]',
-      className,
-    )}
+    className={cx('flex flex-row items-stretch gap-[1.5px]', className)}
     {...props}
   />
 );
@@ -84,7 +81,7 @@ export const ShipCell = ({
 }: ShipCellProps) => (
   <div
     className={cx(
-      'box-border flex flex-col items-stretch w-[14px] h-[14px] rounded-[2px] border-[0.5px]',
+      'flex flex-col items-stretch w-[14px] h-[14px] rounded-[2px] border-[0.5px]',
       className,
     )}
     style={{
@@ -107,7 +104,7 @@ export const ShipName = ({
   ...props
 }: ShipNameProps) => (
   <span
-    className={cx('box-border text-[13px] max-[1150px]:text-[11px]', className)}
+    className={cx('text-[13px] max-[1150px]:text-[11px]', className)}
     style={{
       ...(color ? { color } : {}),
       ...(style ?? {}),
@@ -119,7 +116,7 @@ export const ShipName = ({
 export const PlacementActions = ({ className, ...props }: CommonProps) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center justify-center gap-2 w-full px-2 py-2 flex-wrap',
+      'flex flex-row items-center justify-center gap-2 w-full px-2 py-2 flex-wrap',
       'xl:gap-3 xl:px-4 xl:py-4',
       '[@media(max-height:480px)]:py-1 [@media(max-height:480px)]:gap-1.5',
       className,

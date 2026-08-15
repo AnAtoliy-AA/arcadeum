@@ -4,7 +4,7 @@ import type { CSSProperties, HTMLAttributes } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
-const SCENE_LAYER_BASE = 'box-border flex flex-col items-stretch';
+const SCENE_LAYER_BASE = 'flex flex-col items-stretch';
 
 export function SceneShell({
   className,

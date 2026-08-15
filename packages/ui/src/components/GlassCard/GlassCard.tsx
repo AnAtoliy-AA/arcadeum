@@ -32,7 +32,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
         ref={ref}
         className={cx(
           'relative',
-          'box-border',
+          '',
           'overflow-hidden',
           'flex',
           'flex-col',

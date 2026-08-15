@@ -49,7 +49,7 @@ export function HandCards({
 
   return (
     <div
-      className="box-border flex flex-row flex-1 flex-nowrap items-end justify-center gap-2 pb-12 px-2 w-full max-[800px]:flex-[0] max-[800px]:basis-[auto] max-[800px]:w-full max-[800px]:min-h-[200px] max-[800px]:justify-start"
+      className="flex flex-row flex-1 flex-nowrap items-end justify-center gap-2 pb-12 px-2 w-full max-[800px]:flex-[0] max-[800px]:basis-[auto] max-[800px]:w-full max-[800px]:min-h-[200px] max-[800px]:justify-start"
       style={{
         paddingTop: isFanned ? 24 : 14,
         WebkitMaskImage: EDGE_FADE_MASK,

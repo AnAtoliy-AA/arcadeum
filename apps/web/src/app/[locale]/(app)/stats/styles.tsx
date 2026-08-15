@@ -10,10 +10,7 @@ export function Page({
 }: HTMLAttributes<HTMLElement> & { className?: string }) {
   return (
     <main
-      className={cx(
-        'box-border min-h-screen bg-[var(--background)] pt-20',
-        className,
-      )}
+      className={cx('min-h-screen bg-[var(--background)] pt-20', className)}
       {...props}
     />
   );
@@ -22,10 +19,7 @@ export function Page({
 export function Container({ className, ...props }: DivProps) {
   return (
     <div
-      className={cx(
-        'box-border w-full max-w-[1200px] self-center p-6 px-4',
-        className,
-      )}
+      className={cx('w-full max-w-[1200px] self-center p-6 px-4', className)}
       {...props}
     />
   );
@@ -37,7 +31,7 @@ export function CardTitle({ className, ...props }: SpanProps) {
   return (
     <h3
       className={cx(
-        'box-border m-0 text-[18px] font-semibold text-[var(--color)]',
+        'm-0 text-[18px] font-semibold text-[var(--color)]',
         className,
       )}
       {...props}
@@ -49,7 +43,7 @@ export function StatValue({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border text-[40px] font-bold text-[var(--primaryGradientStart)]',
+        'text-[40px] font-bold text-[var(--primaryGradientStart)]',
         className,
       )}
       {...props}
@@ -61,7 +55,7 @@ export function StatLabel({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border text-[14px] uppercase tracking-[1px] text-[rgba(236,239,238,0.7)]',
+        'text-[14px] uppercase tracking-[1px] text-[rgba(236,239,238,0.7)]',
         className,
       )}
       {...props}
@@ -73,7 +67,7 @@ export function BreakdownTable({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border mt-6 w-full overflow-hidden rounded-xl border border-[var(--borderColor)] bg-[var(--background)]',
+        'mt-6 w-full overflow-hidden rounded-xl border border-[var(--borderColor)] bg-[var(--background)]',
         className,
       )}
       {...props}

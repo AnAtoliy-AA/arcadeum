@@ -53,8 +53,8 @@ export function ChatMessageBubble({
 
   if (type === 'system' || type === 'action') {
     return (
-      <div className="box-border flex flex-row items-stretch py-2 px-3 opacity-[0.7]">
-        <span className="box-border text-[16px] italic text-[$colorSubtle]">
+      <div className="flex flex-row items-stretch py-2 px-3 opacity-[0.7]">
+        <span className="text-[16px] italic text-[$colorSubtle]">
           {message}
         </span>
       </div>
@@ -65,10 +65,10 @@ export function ChatMessageBubble({
 
   return (
     <div
-      className="box-border flex flex-row gap-2 py-2 px-3 items-start"
+      className="flex flex-row gap-2 py-2 px-3 items-start"
       style={{ flexDirection: isOwn ? 'row-reverse' : 'row' }}
     >
-      <div className="box-border shrink-0">
+      <div className="shrink-0">
         <EquippedPlayerAvatar
           name={displayName}
           size="sm"
@@ -80,20 +80,18 @@ export function ChatMessageBubble({
           equippedBannerId={senderEquippedBannerId}
         />
       </div>
-      <div className="box-border flex flex-col items-stretch flex-1 gap-1 bg-[rgba(15,23,42,0.8)] rounded-2xl border border-[rgba(99,102,241,0.3)] px-3 py-2">
+      <div className="flex flex-col items-stretch flex-1 gap-1 bg-[rgba(15,23,42,0.8)] rounded-2xl border border-[rgba(99,102,241,0.3)] px-3 py-2">
         {senderName && (
-          <div className="box-border flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-2">
             <span
-              className="box-border text-[14px] font-semibold uppercase tracking-[0.5px]"
+              className="text-[14px] font-semibold uppercase tracking-[0.5px]"
               style={{ color: nameColorProps.color ?? '#a5b4fc' }}
             >
               {senderName}
             </span>
           </div>
         )}
-        <span className="box-border text-[18px] text-[var(--color)]">
-          {message}
-        </span>
+        <span className="text-[18px] text-[var(--color)]">{message}</span>
       </div>
     </div>
   );

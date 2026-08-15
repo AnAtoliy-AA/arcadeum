@@ -178,7 +178,7 @@ export default function CriticalCreationConfig({
                 })
               }
             />
-            <div className="box-border flex flex-col items-stretch flex-1 gap-null">
+            <div className="flex flex-col items-stretch flex-1">
               <ExpansionLabel>
                 {t('games.create.houseRuleActionCardCombos')}
               </ExpansionLabel>
@@ -196,7 +196,7 @@ export default function CriticalCreationConfig({
                 handleUpdate({ idleTimerEnabled: !options.idleTimerEnabled })
               }
             />
-            <div className="box-border flex flex-col items-stretch flex-1 gap-null">
+            <div className="flex flex-col items-stretch flex-1">
               <ExpansionLabel>
                 {t('games.create.houseRuleIdleTimer') || 'Idle Timer Autoplay'}
               </ExpansionLabel>

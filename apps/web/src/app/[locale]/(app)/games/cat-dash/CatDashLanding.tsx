@@ -34,7 +34,7 @@ export default function CatDashLanding({
 
   return (
     <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 16px' }}>
-      <div className="box-border flex flex-col items-stretch gap-8 py-8">
+      <div className="flex flex-col items-stretch gap-8 py-8">
         <CatDashHero
           title={hero?.title ?? 'Cat Dash'}
           subtitle={hero?.subtitle ?? 'Race your cat to victory!'}
@@ -46,10 +46,8 @@ export default function CatDashLanding({
         />
 
         {highlights && (
-          <div className="box-border flex flex-col items-stretch gap-3">
-            <span className="box-border text-[24px] font-bold">
-              Why Cat Dash?
-            </span>
+          <div className="flex flex-col items-stretch gap-3">
+            <span className="text-[24px] font-bold">Why Cat Dash?</span>
             <div
               style={{
                 display: 'grid',
@@ -83,10 +81,8 @@ export default function CatDashLanding({
         )}
 
         {steps && (
-          <div className="box-border flex flex-col items-stretch gap-3">
-            <span className="box-border text-[24px] font-bold">
-              How to Play
-            </span>
+          <div className="flex flex-col items-stretch gap-3">
+            <span className="text-[24px] font-bold">How to Play</span>
             <div
               style={{
                 display: 'grid',
@@ -137,11 +133,9 @@ export default function CatDashLanding({
         )}
 
         {variants && (
-          <div className="box-border flex flex-col items-stretch gap-3">
-            <span className="box-border text-[24px] font-bold">
-              Pick a Track
-            </span>
-            <span className="box-border text-[14px] text-[#94a3b8]">
+          <div className="flex flex-col items-stretch gap-3">
+            <span className="text-[24px] font-bold">Pick a Track</span>
+            <span className="text-[14px] text-[#94a3b8]">
               Each theme gives the track a unique visual style.
             </span>
             <CatDashThemesGrid
@@ -152,11 +146,8 @@ export default function CatDashLanding({
         )}
 
         {faq && (
-          <div
-            className="box-border flex flex-col items-stretch gap-3"
-            id="faq"
-          >
-            <span className="box-border text-[24px] font-bold">FAQ</span>
+          <div className="flex flex-col items-stretch gap-3" id="faq">
+            <span className="text-[24px] font-bold">FAQ</span>
             {Object.values(faq).map((item, i) => (
               <div
                 key={i}
@@ -177,8 +168,8 @@ export default function CatDashLanding({
           </div>
         )}
 
-        <div className="box-border flex flex-col gap-3 items-center py-4">
-          <span className="box-border text-[20px] font-bold text-center">
+        <div className="flex flex-col gap-3 items-center py-4">
+          <span className="text-[20px] font-bold text-center">
             Ready to Race?
           </span>
           <CatDashFinalCtaButtons

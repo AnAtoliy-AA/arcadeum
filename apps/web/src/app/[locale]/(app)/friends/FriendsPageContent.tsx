@@ -168,10 +168,10 @@ export default function FriendsPageContent({
     pending.outgoing.length > 0;
 
   return (
-    <div className="box-border overflow-auto p-4 max-w-[640px] w-full">
-      <div className="box-border flex flex-col items-stretch gap-5">
-        <div className="box-border flex flex-row justify-between items-center">
-          <span className="box-border text-[28px] font-extrabold">
+    <div className="overflow-auto p-4 max-w-[640px] w-full">
+      <div className="flex flex-col items-stretch gap-5">
+        <div className="flex flex-row justify-between items-center">
+          <span className="text-[28px] font-extrabold">
             {tt.title ?? 'Friends'}
           </span>
           {friends.length > 0 && (
@@ -182,11 +182,11 @@ export default function FriendsPageContent({
         </div>
 
         <Card variant="elevated">
-          <div className="box-border flex flex-col items-stretch gap-3">
-            <span className="box-border text-[16px] font-semibold text-[#94a3b8]">
+          <div className="flex flex-col items-stretch gap-3">
+            <span className="text-[16px] font-semibold text-[#94a3b8]">
               Add Friend
             </span>
-            <div className="box-border flex flex-row gap-2 items-center">
+            <div className="flex flex-row gap-2 items-center">
               <Input
                 className={'flex-1'}
                 size="md"
@@ -215,22 +215,20 @@ export default function FriendsPageContent({
 
         {error && (
           <Card variant="error">
-            <span className="box-border text-[var(--danger)] text-[16px]">
-              {error}
-            </span>
+            <span className="text-[var(--danger)] text-[16px]">{error}</span>
           </Card>
         )}
 
         {loading ? (
-          <div className="box-border flex flex-col items-center p-8 gap-3">
+          <div className="flex flex-col items-center p-8 gap-3">
             <Spinner size="md" />
-            <span className="box-border text-[#6b7280] text-[16px]">
+            <span className="text-[#6b7280] text-[16px]">
               Loading friends...
             </span>
           </div>
         ) : !token ? (
-          <div className="box-border flex flex-col items-center p-8 gap-4">
-            <span className="box-border text-[#6b7280] text-[16px] text-center">
+          <div className="flex flex-col items-center p-8 gap-4">
+            <span className="text-[#6b7280] text-[16px] text-center">
               {tt.loginPrompt ?? 'Log in to manage your friends list.'}
             </span>
             <LinkButton variant="primary" href={routes.auth}>
@@ -247,9 +245,9 @@ export default function FriendsPageContent({
         ) : (
           <>
             {pending.incoming.length > 0 && (
-              <div className="box-border flex flex-col items-stretch gap-3">
-                <div className="box-border flex flex-row items-center gap-2">
-                  <span className="box-border text-[18px] font-bold">
+              <div className="flex flex-col items-stretch gap-3">
+                <div className="flex flex-row items-center gap-2">
+                  <span className="text-[18px] font-bold">
                     {tt.requests?.incoming ?? 'Incoming Requests'}
                   </span>
                   <Badge variant="info" size="sm">
@@ -258,14 +256,14 @@ export default function FriendsPageContent({
                 </div>
                 {pending.incoming.map((req) => (
                   <Card key={req.id} variant="default">
-                    <div className="box-border flex flex-row gap-3 items-center">
+                    <div className="flex flex-row gap-3 items-center">
                       <EquippedPlayerAvatar
                         name={req.displayName ?? req.username}
                         equippedAvatarId={req.equippedAvatarId}
                         equippedBadgeId={null}
                         size="sm"
                       />
-                      <span className="box-border flex-1 text-[16px] font-medium">
+                      <span className="flex-1 text-[16px] font-medium">
                         {req.displayName ?? req.username}
                       </span>
                       <Button
@@ -291,9 +289,9 @@ export default function FriendsPageContent({
             )}
 
             {pending.outgoing.length > 0 && (
-              <div className="box-border flex flex-col items-stretch gap-3">
-                <div className="box-border flex flex-row items-center gap-2">
-                  <span className="box-border text-[18px] font-bold">
+              <div className="flex flex-col items-stretch gap-3">
+                <div className="flex flex-row items-center gap-2">
+                  <span className="text-[18px] font-bold">
                     {tt.requests?.outgoing ?? 'Outgoing Requests'}
                   </span>
                   <Badge variant="warning" size="sm">
@@ -302,14 +300,14 @@ export default function FriendsPageContent({
                 </div>
                 {pending.outgoing.map((req) => (
                   <Card key={req.id} variant="default">
-                    <div className="box-border flex flex-row gap-3 items-center">
+                    <div className="flex flex-row gap-3 items-center">
                       <EquippedPlayerAvatar
                         name={req.displayName ?? req.username}
                         equippedAvatarId={req.equippedAvatarId}
                         equippedBadgeId={null}
                         size="sm"
                       />
-                      <span className="box-border flex-1 text-[16px] font-medium">
+                      <span className="flex-1 text-[16px] font-medium">
                         {req.displayName ?? req.username}
                       </span>
                       <Badge variant="warning" size="sm">
@@ -322,24 +320,24 @@ export default function FriendsPageContent({
             )}
 
             {friends.length > 0 && (
-              <div className="box-border flex flex-col items-stretch gap-3">
-                <span className="box-border text-[18px] font-bold">
+              <div className="flex flex-col items-stretch gap-3">
+                <span className="text-[18px] font-bold">
                   {tt.title ?? 'Friends'}
                 </span>
                 {friends.map((friend) => (
                   <Card key={friend.id} variant="default">
-                    <div className="box-border flex flex-row gap-3 items-center">
+                    <div className="flex flex-row gap-3 items-center">
                       <EquippedPlayerAvatar
                         name={friend.displayName ?? friend.username}
                         equippedAvatarId={friend.equippedAvatarId}
                         equippedBadgeId={null}
                         size="sm"
                       />
-                      <div className="box-border flex flex-col items-stretch flex-1 gap-1">
-                        <span className="box-border text-[16px] font-semibold">
+                      <div className="flex flex-col items-stretch flex-1 gap-1">
+                        <span className="text-[16px] font-semibold">
                           {friend.displayName ?? friend.username}
                         </span>
-                        <div className="box-border flex flex-row items-center gap-2">
+                        <div className="flex flex-row items-center gap-2">
                           <Badge
                             variant={friend.online ? 'success' : 'neutral'}
                             size="sm"
@@ -381,7 +379,7 @@ export default function FriendsPageContent({
             <ModalTitle>{tt.removeFriend ?? 'Remove Friend'}</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <span className="box-border text-[16px]">
+            <span className="text-[16px]">
               Remove {removeTarget?.displayName ?? removeTarget?.username} from
               your friends?
             </span>

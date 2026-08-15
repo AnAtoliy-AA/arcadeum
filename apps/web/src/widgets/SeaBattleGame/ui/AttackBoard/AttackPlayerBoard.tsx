@@ -23,6 +23,7 @@ import { BadgePill, TeamPill } from './Pills';
 import { FieldStatus } from './FieldStatus';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { InGameAvatar } from '@/features/games/ui';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 interface AttackPlayerBoardProps {
   player: SeaBattlePlayerState;
@@ -221,7 +222,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   // from the board border + team pill, and the avatar carries its own disc.
   // The md disc is ~72px, so a -36 offset centers it on the corner.
   const cornerAvatar = (
-    <div className="box-border flex flex-col items-stretch absolute top-[-36px] left-[-36px] z-[11] pointer-events-none sb-header-avatar">
+    <div className="flex flex-col items-stretch absolute top-[-36px] left-[-36px] z-[11] pointer-events-none sb-header-avatar">
       <InGameAvatar
         playerId={player.playerId}
         name={resolveDisplayName(player.playerId, isMe ? 'You' : 'Unknown')}
@@ -242,20 +243,24 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         >
           {showBadge && (
             <div
-              className={`box-border flex flex-row items-center gap-1 px-2 rounded-[8px] border ${isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}`}
+              className={`flex flex-row items-center gap-1 px-2 rounded-[8px] border ${isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}`}
               style={{
-                backgroundColor: isCurrentTurn
-                  ? '$dangerBgSoft'
-                  : '$warningBgSoft',
-                borderColor: isCurrentTurn ? '$dangerBorder' : '$warningBorder',
+                backgroundColor: resolveThemeColor(
+                  isCurrentTurn ? '$dangerBgSoft' : '$warningBgSoft',
+                ),
+                borderColor: resolveThemeColor(
+                  isCurrentTurn ? '$dangerBorder' : '$warningBorder',
+                ),
               }}
             >
-              <span className="box-border text-[48px]">
-                {isCurrentTurn ? '🎯' : '🛡️'}
-              </span>
+              <span className="text-[48px]">{isCurrentTurn ? '🎯' : '🛡️'}</span>
               <span
-                className="box-border text-[40px] font-bold uppercase"
-                style={{ color: isCurrentTurn ? '$danger' : '$warning' }}
+                className="text-[40px] font-bold uppercase"
+                style={{
+                  color: resolveThemeColor(
+                    isCurrentTurn ? '$danger' : '$warning',
+                  ),
+                }}
               >
                 {isCurrentTurn
                   ? t(
@@ -296,7 +301,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           <PlayerStats>
             <ShipsLeft ships={player.ships} isMe={true} shipCount={shipCount} />
           </PlayerStats>
-          <div className="box-border flex flex-col items-stretch relative w-full">
+          <div className="flex flex-col items-stretch relative w-full">
             <BoardWithLabels>
               <div />
               <ColLabels gridSize={boardSize}>
@@ -400,7 +405,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         <PlayerStats>
           <ShipsLeft ships={player.ships} isMe={false} shipCount={shipCount} />
         </PlayerStats>
-        <div className="box-border flex flex-col items-stretch relative w-full">
+        <div className="flex flex-col items-stretch relative w-full">
           <BoardWithLabels>
             <div />
             <ColLabels gridSize={boardSize}>

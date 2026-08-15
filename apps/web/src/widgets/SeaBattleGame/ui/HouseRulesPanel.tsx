@@ -30,20 +30,20 @@ export function HouseRulesPanel({
     { sonar?: boolean; radar?: boolean; revealAll?: boolean } | undefined;
 
   return (
-    <div className="box-border flex flex-col items-stretch gap-3 py-2">
-      <span className="box-border text-[18px] font-semibold">
+    <div className="flex flex-col items-stretch gap-3 py-2">
+      <span className="text-[18px] font-semibold">
         {t('games.create.sectionHouseRules') || 'House Rules'}
       </span>
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border text-[16px] font-semibold">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="text-[16px] font-semibold">
           {t('games.create.seaBattleGridSize') || 'Grid Size'}
           {ruleComingSoon.get('gridSize') && (
-            <span className="box-border text-[48px] text-[#f59e0b] font-semibold -ml-8">
+            <span className="text-[48px] text-[#f59e0b] font-semibold -ml-8">
               {t('games.create.comingSoon') || 'Coming Soon'}
             </span>
           )}
         </span>
-        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+        <div className="flex flex-row items-stretch gap-2 flex-wrap">
           {([10, 15, 20] as const).map((gs) => {
             const disabled = !!ruleComingSoon.get('gridSize');
             const active = gridSize === gs;
@@ -80,11 +80,11 @@ export function HouseRulesPanel({
           })}
         </div>
       </div>
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border text-[16px] font-semibold">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="text-[16px] font-semibold">
           {t('games.create.seaBattleShipCount') || 'Number of Ships'}
         </span>
-        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+        <div className="flex flex-row items-stretch gap-2 flex-wrap">
           {getShipCountOptions(gridSize).map((count) => {
             const active = shipCount === count;
             return (
@@ -109,11 +109,11 @@ export function HouseRulesPanel({
           })}
         </div>
       </div>
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border text-[16px] font-semibold">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="text-[16px] font-semibold">
           {t('games.create.specialWeapons') || 'Special Weapons'}
           {(ruleComingSoon.get('sonar') || ruleComingSoon.get('radar')) && (
-            <span className="box-border text-[48px] text-[#f59e0b] font-semibold -ml-8">
+            <span className="text-[48px] text-[#f59e0b] font-semibold -ml-8">
               {t('games.create.comingSoon') || 'Coming Soon'}
             </span>
           )}
@@ -196,9 +196,7 @@ export function HouseRulesPanel({
               paddingLeft: 24,
             }}
           >
-            <span className="box-border text-[12px] opacity-[0.6]">
-              Duration:
-            </span>
+            <span className="text-[12px] opacity-[0.6]">Duration:</span>
             {[1, 2, 3, 4, 5].map((sec) => {
               const currentDuration =
                 (gameOptions.revealAllDuration as number) ?? 1;

@@ -48,7 +48,7 @@ export function MobileActionBar({
     <ActionBar data-testid="action-bar">
       {isMyTurn && (
         <ActionButton
-          $variant={variant}
+          accent={variant}
           onClick={onDraw}
           disabled={drawDisabled}
           data-testid="action-bar-draw"
@@ -60,8 +60,8 @@ export function MobileActionBar({
       )}
       {canPlayNope && (
         <ActionButton
-          $variant={variant}
           variant="secondary"
+          accent={variant}
           onClick={onPlayNope}
           disabled={actionBusy === 'cancel'}
           data-testid="action-bar-nope"

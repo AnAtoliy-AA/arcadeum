@@ -75,7 +75,7 @@ interface RailSectionProps {
 function RailSection({ children }: RailSectionProps) {
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-[6px] border-t pt-2"
+      className="flex flex-col items-stretch gap-[6px] border-t pt-2"
       style={{ borderTopColor: NEUTRAL_BORDER }}
     >
       {children}
@@ -104,7 +104,7 @@ function RailButton({
   return (
     <button
       className={cx(
-        'box-border flex select-none cursor-pointer items-center justify-center transition-colors duration-150',
+        'flex select-none cursor-pointer items-center justify-center transition-colors duration-150',
         className,
       )}
       style={{
@@ -149,54 +149,54 @@ export function HandRail({
 
   return (
     <div
-      className="box-border flex w-[144px] shrink-0 flex-col items-stretch gap-2 rounded-[16px] border bg-[rgba(8,12,20,0.7)] px-2 py-[10px]"
+      className="flex w-[144px] shrink-0 flex-col items-stretch gap-2 rounded-[16px] border bg-[rgba(8,12,20,0.7)] px-2 py-[10px]"
       style={{ borderColor: NEUTRAL_BORDER }}
       data-testid="hand-rail"
     >
       {/* Stats header */}
-      <div className="box-border flex flex-row items-stretch gap-2">
+      <div className="flex flex-row items-stretch gap-2">
         <div
-          className="box-border flex flex-1 flex-col items-center rounded-[10px] border px-[6px] py-[8px]"
+          className="flex flex-1 flex-col items-center rounded-[10px] border px-[6px] py-[8px]"
           style={{ backgroundColor: NEUTRAL_BG, borderColor: NEUTRAL_BORDER }}
           data-testid="hand-rail-count"
         >
-          <div className="box-border flex flex-row items-center gap-[6px]">
+          <div className="flex flex-row items-center gap-[6px]">
             <CardsIcon size={16} />
-            <span className="box-border text-[18px] font-extrabold tracking-[0.5px]">
+            <span className="text-[18px] font-extrabold tracking-[0.5px]">
               {handCount}
             </span>
           </div>
-          <span className="box-border mt-[2px] text-[40px] font-bold uppercase tracking-[1px] opacity-[0.55]">
+          <span className="mt-[2px] text-[40px] font-bold uppercase tracking-[1px] opacity-[0.55]">
             {t('games.table.state.cards')}
           </span>
         </div>
         <div
-          className="box-border flex flex-1 flex-col items-center rounded-[10px] border px-[6px] py-[8px]"
+          className="flex flex-1 flex-col items-center rounded-[10px] border px-[6px] py-[8px]"
           style={{
             backgroundColor: defuseVariant.bg,
             borderColor: defuseVariant.border,
           }}
           data-testid="hand-rail-defuses"
         >
-          <div className="box-border flex flex-row items-center gap-[6px]">
-            <span className="box-border" style={{ color: defuseVariant.color }}>
+          <div className="flex flex-row items-center gap-[6px]">
+            <span className="" style={{ color: defuseVariant.color }}>
               <ShieldIcon size={16} />
             </span>
             <span
-              className="box-border text-[18px] font-extrabold tracking-[0.5px]"
+              className="text-[18px] font-extrabold tracking-[0.5px]"
               style={{ color: defuseVariant.color }}
             >
               {defuseCount}
             </span>
           </div>
-          <span className="box-border mt-[2px] text-[40px] font-bold uppercase tracking-[1px] opacity-[0.55]">
+          <span className="mt-[2px] text-[40px] font-bold uppercase tracking-[1px] opacity-[0.55]">
             {t('games.table.state.defuses')}
           </span>
         </div>
       </div>
 
       {/* Primary actions */}
-      <div className="box-border flex flex-col items-stretch gap-[6px]">
+      <div className="flex flex-col items-stretch gap-[6px]">
         {/* Native tooltip carries the full combo label so the user can
             hover-confirm what 'Play 3× Targeted…' truncates to. The
             arena's ComboCard is the canonical surface for the verbose
@@ -217,7 +217,7 @@ export function HandRail({
           >
             <span
               className={cx(
-                'box-border text-center text-[12px] font-black uppercase tracking-[0.3px] line-clamp-2',
+                'text-center text-[12px] font-black uppercase tracking-[0.3px] line-clamp-2',
                 canPlay ? 'text-[#062317]' : 'text-[rgba(255,255,255,0.5)]',
               )}
             >
@@ -236,7 +236,7 @@ export function HandRail({
           disabled={!canDraw}
           onClick={canDraw ? onDraw : undefined}
         >
-          <span className="box-border text-[11px] font-extrabold uppercase tracking-[0.3px]">
+          <span className="text-[11px] font-extrabold uppercase tracking-[0.3px]">
             ↓ {t('games.table.actions.draw')}
           </span>
         </RailButton>
@@ -246,9 +246,9 @@ export function HandRail({
             data-testid="hand-rail-nope"
             onClick={onNope}
           >
-            <div className="box-border flex flex-row items-center gap-[6px]">
+            <div className="flex flex-row items-center gap-[6px]">
               <HandIcon size={14} />
-              <span className="box-border text-[11px] font-black uppercase tracking-[0.3px] text-[#1c0f00]">
+              <span className="text-[11px] font-black uppercase tracking-[0.3px] text-[#1c0f00]">
                 {t('games.table.actions.playNope')}
               </span>
             </div>
@@ -261,7 +261,7 @@ export function HandRail({
       {hasCardToggles && (
         <RailSection>
           <div
-            className="box-border flex flex-row items-stretch gap-[6px]"
+            className="flex flex-row items-stretch gap-[6px]"
             data-testid="hand-rail-card-toggles"
           >
             {onToggleCardName && (
@@ -279,7 +279,7 @@ export function HandRail({
               >
                 <span
                   className={cx(
-                    'box-border text-[11px] font-extrabold tracking-[0.3px]',
+                    'text-[11px] font-extrabold tracking-[0.3px]',
                     showCardName
                       ? 'text-[#34d399]'
                       : 'text-[rgba(255,255,255,0.7)]',
@@ -304,7 +304,7 @@ export function HandRail({
               >
                 <span
                   className={cx(
-                    'box-border text-[11px] font-extrabold tracking-[0.3px]',
+                    'text-[11px] font-extrabold tracking-[0.3px]',
                     showCardDescription
                       ? 'text-[#34d399]'
                       : 'text-[rgba(255,255,255,0.7)]',
@@ -322,7 +322,7 @@ export function HandRail({
       {hasChrome && (
         <RailSection>
           <div
-            className="box-border flex flex-row items-stretch gap-[6px]"
+            className="flex flex-row items-stretch gap-[6px]"
             data-testid="hand-rail-menu"
           >
             {onOpenRules && (
@@ -331,9 +331,9 @@ export function HandRail({
                 data-testid="hand-rail-rules"
                 onClick={onOpenRules}
               >
-                <div className="box-border flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-2">
                   <BookOpenIcon size={16} />
-                  <span className="box-border text-[40px] font-extrabold uppercase tracking-[0.6px] opacity-[0.85] line-clamp-1">
+                  <span className="text-[40px] font-extrabold uppercase tracking-[0.6px] opacity-[0.85] line-clamp-1">
                     {t('games.table.controlPanel.rules')}
                   </span>
                 </div>
@@ -350,7 +350,7 @@ export function HandRail({
                     : 'games.table.controlPanel.enterFullscreen',
                 )}
               >
-                <div className="box-border flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-2">
                   {isFullscreen ? (
                     <MinimizeIcon size={16} />
                   ) : (
@@ -362,7 +362,7 @@ export function HandRail({
                       Maximize/Minimize icon already signals the state;
                       the full action label lives in the aria-label
                       above for assistive tech. */}
-                  <span className="box-border text-[40px] font-extrabold uppercase tracking-[0.6px] opacity-[0.85] line-clamp-1">
+                  <span className="text-[40px] font-extrabold uppercase tracking-[0.6px] opacity-[0.85] line-clamp-1">
                     {t('games.table.controlPanel.fullscreen')}
                   </span>
                 </div>

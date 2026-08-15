@@ -3,14 +3,11 @@
 import React from 'react';
 
 /**
- * PageLayout is a high-performance Client Component that provides the base 
+ * PageLayout is a Client Component that provides the base
  * structure and glassmorphism background for all pages.
- * 
- * By using a standard <main> element and static CSS classes instead of a legacy Tamagui 
- * styled component here, we avoid the hydration overhead and attribute mismatches 
- * that occur with the legacy Tamagui 'Main' component during SSR.
- * 
- * This approach restores maximum performance while ensuring perfect hydration stability.
+ *
+ * By using a standard <main> element with static CSS classes, it keeps
+ * hydration stable and avoids attribute mismatches during SSR.
  */
 
 export interface PageLayoutProps {

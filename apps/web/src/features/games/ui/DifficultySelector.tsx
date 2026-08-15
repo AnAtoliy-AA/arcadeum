@@ -28,7 +28,7 @@ export function DifficultySelector({
   return (
     <BotCountSelector>
       <BotCountLabel>{t('games.lobby.difficultyLabel')}</BotCountLabel>
-      <div className="box-border flex flex-row items-stretch gap-2">
+      <div className="flex flex-row items-stretch gap-2">
         {DIFFICULTY_OPTIONS.map((diff) => {
           const isActive = value === diff;
           return (

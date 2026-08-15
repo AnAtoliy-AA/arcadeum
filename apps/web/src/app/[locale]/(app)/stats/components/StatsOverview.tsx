@@ -2,6 +2,7 @@ import React from 'react';
 import type { PlayerStats } from '@/features/history/api';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Card, SkeletonText, ProgressCircle } from '@arcadeum/ui';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 export const statsOverviewCSS = `
   .stats-overview-grid {
@@ -116,7 +117,7 @@ export function StatsOverview({
             >
               🎯
             </StatValue>
-            <span className="box-border text-[16px] font-semibold text-[var(--color)] -mt-1 text-center">
+            <span className="text-[16px] font-semibold text-[var(--color)] -mt-1 text-center">
               {favoriteGame}
             </span>
           </Card>
@@ -132,19 +133,24 @@ function StatLabel({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[14px] leading-[18px] uppercase tracking-[1.2px] font-medium text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      className={`text-[14px] leading-[18px] uppercase tracking-[1.2px] font-medium text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
       {...props}
     />
   );
 }
 
 function StatValue({
+  color,
   className,
   ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+}: {
+  color?: string;
+  className?: string;
+} & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[48px] font-extrabold leading-none tracking-[-0.5px] text-[var(--primaryGradientStart)] ${className ?? ''}`}
+      className={`text-[48px] font-extrabold leading-none tracking-[-0.5px] text-[var(--primaryGradientStart)] ${className ?? ''}`}
+      style={color ? { color: resolveThemeColor(color) } : undefined}
       {...props}
     />
   );
@@ -156,7 +162,7 @@ function WinRateCardContent({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-col items-center justify-center gap-4 ${className ?? ''}`}
+      className={`flex flex-col items-center justify-center gap-4 ${className ?? ''}`}
       {...props}
     />
   );
@@ -168,7 +174,7 @@ function StreakSuffix({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[20px] font-semibold leading-[28px] ml-0.5 text-[var(--colorMuted, rgba(180,180,200,0.7))] ${className ?? ''}`}
+      className={`text-[20px] font-semibold leading-[28px] ml-0.5 text-[var(--colorMuted, rgba(180,180,200,0.7))] ${className ?? ''}`}
       {...props}
     />
   );

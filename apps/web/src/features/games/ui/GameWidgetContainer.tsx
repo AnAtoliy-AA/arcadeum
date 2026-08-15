@@ -95,12 +95,10 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
       <GameHeader>
         <GameInfo>
           <VariantIconBadge>
-            <span className="box-border text-[15px]">
-              {headerProps.variantEmoji}
-            </span>
+            <span className="text-[15px]">{headerProps.variantEmoji}</span>
           </VariantIconBadge>
 
-          <div className="box-border flex flex-col items-stretch gap-0 min-w-0 flex-1 relative">
+          <div className="flex flex-col items-stretch gap-0 min-w-0 flex-1 relative">
             <GameTitle numberOfLines={1}>
               {headerProps.titleGradient ? (
                 <span
@@ -124,7 +122,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
 
         {headerProps.turn ? (
           <TurnStatusPill
-            $status={pillStatus}
+            status={pillStatus}
             gap="$2"
             paddingLeft="$1"
             data-testid="turn-status-pill"
@@ -133,13 +131,13 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </TurnStatusPill>
         ) : (
           <TurnStatusPill
-            $status={pillStatus}
+            status={pillStatus}
             gap={headerProps.turnAvatar ? '$2' : undefined}
             paddingLeft={headerProps.turnAvatar ? '$1' : undefined}
             data-testid="turn-status-pill"
           >
             {headerProps.turnAvatar}
-            <TurnStatusText $status={pillStatus}>
+            <TurnStatusText status={pillStatus}>
               {headerProps.turnStatusText}
             </TurnStatusText>
           </TurnStatusPill>
@@ -181,14 +179,14 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             ref={containerRef as React.RefObject<never>}
             isMyTurn={!!isMyTurn}
             isFullscreen={isFullscreen}
-            $variant={variant as Parameters<typeof Container>[0]['$variant']}
+            variant={variant as Parameters<typeof Container>[0]['variant']}
             data-testid="game-widget-container"
           >
             {renderedHeader}
             <SharedGameBoard data-testid="game-board-section">
               {loading ? (
-                <div className="box-border flex flex-col flex-1 items-center justify-center gap-3 min-h-[300px]">
-                  <span className="box-border text-[20px] font-medium opacity-[0.8]">
+                <div className="flex flex-col flex-1 items-center justify-center gap-3 min-h-[300px]">
+                  <span className="text-[20px] font-medium opacity-[0.8]">
                     {t('games.roomPage.loadingGame')}
                   </span>
                 </div>

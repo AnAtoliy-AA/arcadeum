@@ -67,7 +67,7 @@ function ClockFace({
 
   return (
     <div
-      className="box-border flex flex-row gap-2 items-center p-2 px-3 rounded-[8px]"
+      className="flex flex-row gap-2 items-center p-2 px-3 rounded-[8px]"
       style={{
         backgroundColor: isActive
           ? 'rgba(37, 99, 235, 0.15)'
@@ -77,11 +77,9 @@ function ClockFace({
         opacity: isGameOver && !isActive ? 0.5 : 1,
       }}
     >
-      <span className="box-border text-[14px] opacity-[0.7] font-semibold">
-        {label}
-      </span>
+      <span className="text-[14px] opacity-[0.7] font-semibold">{label}</span>
       <span
-        className="box-border text-[18px] font-bold"
+        className="text-[18px] font-bold"
         style={{
           color: isFlagged
             ? '#ef4444'
@@ -106,7 +104,7 @@ function ChessClockImpl({
   if (!clocks) return null;
 
   return (
-    <div className="box-border flex flex-row justify-between items-center gap-2">
+    <div className="flex flex-row justify-between items-center gap-2">
       <ClockFace
         label="♔"
         clock={clocks.white}

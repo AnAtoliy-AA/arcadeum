@@ -28,11 +28,11 @@ export function ChatBubble({ message, position = 'top' }: ChatBubbleProps) {
 
   return (
     <ChatBubbleContainer
-      $visible={visible}
-      $position={position}
+      visible={visible}
+      position={position}
       data-testid="chat-bubble"
     >
-      <span className="box-border text-[12px] text-[var(--color)] font-semibold">
+      <span className="text-[12px] text-[var(--color)] font-semibold">
         {message}
       </span>
     </ChatBubbleContainer>

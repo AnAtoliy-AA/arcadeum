@@ -24,7 +24,7 @@ export function HistoryHeader({
           to { transform: rotate(360deg); }
         }
       `}</style>
-      <div className="box-border flex flex-row justify-between items-center -mb-8">
+      <div className="flex flex-row justify-between items-center -mb-8">
         <PageTitle size="xl" gradient>
           {t('navigation.historyTab')}
         </PageTitle>

@@ -25,7 +25,7 @@ export const ErrorState = memo(function ErrorState({
     <div
       data-testid={dataTestId}
       className={cx(
-        'box-border flex flex-col items-center justify-center gap-4 p-8',
+        'flex flex-col items-center justify-center gap-4 p-8',
         className,
       )}
       style={{ backgroundColor: 'var(--background)' }}

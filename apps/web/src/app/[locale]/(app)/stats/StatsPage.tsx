@@ -262,7 +262,7 @@ export default function StatsPage({
           ) : hasLocalStats ? (
             <>
               <LocalStatsBanner>
-                <span className="box-border text-[14px] text-[rgba(236,239,238,0.6)]">
+                <span className="text-[14px] text-[rgba(236,239,238,0.6)]">
                   {t('stats.localStatsNotice')}
                 </span>
               </LocalStatsBanner>
@@ -294,7 +294,7 @@ export default function StatsPage({
                 }}
                 loading={false}
               />
-              <div className="box-border flex flex-col items-center gap-3 -mt-4">
+              <div className="flex flex-col items-center gap-3 -mt-4">
                 <Button
                   variant="primary"
                   size="md"
@@ -305,7 +305,7 @@ export default function StatsPage({
               </div>
             </>
           ) : (
-            <div className="box-border flex flex-col items-center gap-5 p-10">
+            <div className="flex flex-col items-center gap-5 p-10">
               <EmptyState icon="📊" message={t('stats.noLocalStats')} />
               <Button
                 variant="primary"
@@ -347,7 +347,7 @@ function Container({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-col items-stretch gap-5 max-w-[1200px] ${className ?? ''}`}
+      className={`flex flex-col items-stretch gap-5 max-w-[1200px] ${className ?? ''}`}
       {...props}
     />
   );
@@ -359,7 +359,7 @@ function TabGroup({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-stretch gap-3 flex-wrap ${className ?? ''}`}
+      className={`flex flex-row items-stretch gap-3 flex-wrap ${className ?? ''}`}
       {...props}
     />
   );
@@ -391,7 +391,7 @@ function FilterContainer({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center gap-4 p-4 px-5 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] ${className ?? ''}`}
+      className={`flex flex-row items-center gap-4 p-4 px-5 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -403,7 +403,7 @@ function FilterLabel({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[16px] leading-[20px] font-semibold tracking-[0.5px] select-none text-[var(--color)] ${className ?? ''}`}
+      className={`text-[16px] leading-[20px] font-semibold tracking-[0.5px] select-none text-[var(--color)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -415,7 +415,7 @@ function LocalStatsBanner({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center p-4 px-5 rounded-xl border border-[rgba(255,200,50,0.2)] bg-[rgba(255,200,50,0.08)] ${className ?? ''}`}
+      className={`flex flex-row items-center p-4 px-5 rounded-xl border border-[rgba(255,200,50,0.2)] bg-[rgba(255,200,50,0.08)] ${className ?? ''}`}
       {...props}
     />
   );

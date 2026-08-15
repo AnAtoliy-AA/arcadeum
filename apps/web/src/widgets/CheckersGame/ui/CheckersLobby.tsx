@@ -135,7 +135,7 @@ export function CheckersLobby({
   const ruleConfig = RULE_VARIANT_CONFIGS[ruleVariant];
 
   const optionsSlot = (
-    <div className="box-border flex flex-col items-stretch gap-4">
+    <div className="flex flex-col items-stretch gap-4">
       <LobbyOptionSection title={t('games.checkers_v1.lobby.variant')}>
         <LobbyChipGroup
           options={variantOptions}
@@ -155,7 +155,7 @@ export function CheckersLobby({
           accentColor="#2563eb"
           testIdPrefix="checkers-rule-variant"
         />
-        <span className="box-border text-[14px] opacity-[0.6] -mt-1">
+        <span className="text-[14px] opacity-[0.6] -mt-1">
           {t(
             RULE_VARIANT_OPTIONS.find((rv) => rv.id === ruleVariant)!
               .descriptionKey,
@@ -163,7 +163,7 @@ export function CheckersLobby({
         </span>
       </LobbyOptionSection>
       <LobbyOptionSection title={t('games.checkers_v1.lobby.rules')}>
-        <div className="box-border flex flex-col items-stretch gap-2">
+        <div className="flex flex-col items-stretch gap-2">
           <label
             style={{
               display: 'flex',
@@ -180,7 +180,7 @@ export function CheckersLobby({
               onChange={(e) => setOption({ forcedCaptures: e.target.checked })}
               style={{ width: 16, height: 16, accentColor: '#2563eb' }}
             />
-            <span className="box-border text-[16px]">
+            <span className="text-[16px]">
               {t('games.checkers_v1.lobby.forcedCaptures')}
             </span>
           </label>
@@ -204,7 +204,7 @@ export function CheckersLobby({
               }
               style={{ width: 16, height: 16, accentColor: '#2563eb' }}
             />
-            <span className="box-border text-[16px]">
+            <span className="text-[16px]">
               {t('games.checkers_v1.lobby.backwardCaptures')}
               {ruleConfig.backwardCapturesForMen
                 ? ` (${t('games.checkers_v1.lobby.alwaysEnabled')})`
@@ -213,7 +213,7 @@ export function CheckersLobby({
           </label>
         </div>
       </LobbyOptionSection>
-      <span className="box-border text-[14px] opacity-[0.7]">
+      <span className="text-[14px] opacity-[0.7]">
         {t('games.checkers_v1.rules.steps')}
       </span>
     </div>

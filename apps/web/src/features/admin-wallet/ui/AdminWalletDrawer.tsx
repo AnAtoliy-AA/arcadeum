@@ -12,6 +12,7 @@ import {
 } from '@arcadeum/ui';
 import { loadAdminWalletAction } from '../server/wallet.actions';
 import { AdminWalletForm, type AdminWalletFormLabels } from './AdminWalletForm';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 import type {
   WalletBalance,
   WalletTransactionView,
@@ -29,23 +30,17 @@ function BalanceSection({
   const { coins, gems } = balance;
   return (
     <GlassCard className={'p-3 gap-2'} data-testid="wallet-balance-section">
-      <span className="box-border font-bold text-[16px]">{label}</span>
-      <div className="box-border flex flex-row items-stretch gap-4">
-        <div className="box-border flex flex-col items-stretch">
-          <span className="box-border text-[12px] opacity-[0.6]">Coins</span>
-          <span
-            className="box-border font-bold"
-            data-testid="wallet-balance-coins"
-          >
+      <span className="font-bold text-[16px]">{label}</span>
+      <div className="flex flex-row items-stretch gap-4">
+        <div className="flex flex-col items-stretch">
+          <span className="text-[12px] opacity-[0.6]">Coins</span>
+          <span className="font-bold" data-testid="wallet-balance-coins">
             {coins.toLocaleString()}
           </span>
         </div>
-        <div className="box-border flex flex-col items-stretch">
-          <span className="box-border text-[12px] opacity-[0.6]">Gems</span>
-          <span
-            className="box-border font-bold"
-            data-testid="wallet-balance-gems"
-          >
+        <div className="flex flex-col items-stretch">
+          <span className="text-[12px] opacity-[0.6]">Gems</span>
+          <span className="font-bold" data-testid="wallet-balance-gems">
             {gems.toLocaleString()}
           </span>
         </div>
@@ -64,29 +59,33 @@ function RecentSection({
   if (items.length === 0) return null;
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-2"
+      className="flex flex-col items-stretch gap-2"
       data-testid="wallet-recent-section"
     >
-      <span className="box-border font-bold text-[16px]">{label}</span>
+      <span className="font-bold text-[16px]">{label}</span>
       {items.slice(0, 10).map((tx) => (
         <GlassCard
           className={'p-2'}
           key={tx.id}
           data-testid={`wallet-tx-${tx.id}`}
         >
-          <div className="box-border flex flex-row justify-between items-center">
-            <span className="box-border text-[12px]">
+          <div className="flex flex-row justify-between items-center">
+            <span className="text-[12px]">
               {tx.currency} · {tx.reason}
             </span>
             <span
-              className="box-border text-[12px] font-bold"
-              style={{ color: tx.delta >= 0 ? '$success' : '$errorText' }}
+              className="text-[12px] font-bold"
+              style={{
+                color: resolveThemeColor(
+                  tx.delta >= 0 ? '$success' : '$errorText',
+                ),
+              }}
             >
               {tx.delta >= 0 ? '+' : ''}
               {tx.delta}
             </span>
           </div>
-          <span className="box-border text-[12px] opacity-[0.5]">
+          <span className="text-[12px] opacity-[0.5]">
             {new Date(tx.createdAt).toLocaleString()}
           </span>
         </GlassCard>
@@ -150,10 +149,10 @@ export function AdminWalletDrawer({
           <ModalTitle>{labels.title}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <div className="box-border flex flex-col items-stretch gap-4">
+          <div className="flex flex-col items-stretch gap-4">
             {data === null && (
               <div
-                className="box-border flex flex-col items-stretch gap-3"
+                className="flex flex-col items-stretch gap-3"
                 data-testid="wallet-drawer-loading"
               >
                 <Skeleton className={'h-[80px]'} />
@@ -164,7 +163,7 @@ export function AdminWalletDrawer({
 
             {data !== null && !data.ok && (
               <span
-                className="box-border text-[var(--errorText)]"
+                className="text-[var(--errorText)]"
                 data-testid="wallet-drawer-error"
               >
                 {labels.form.errors.generic}
@@ -177,7 +176,7 @@ export function AdminWalletDrawer({
                   balance={data.data.balance}
                   label={labels.sections.balance}
                 />
-                <span className="box-border font-bold text-[16px]">
+                <span className="font-bold text-[16px]">
                   {labels.sections.grantDeduct}
                 </span>
                 <AdminWalletForm

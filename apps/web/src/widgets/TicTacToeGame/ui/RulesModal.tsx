@@ -75,52 +75,50 @@ export function RulesModal({
           <ModalTitle>{t('games.tic_tac_toe_v1.rules.title')}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <div className="box-border flex flex-col items-stretch gap-6">
+          <div className="flex flex-col items-stretch gap-6">
             {sections.map((section) => (
               <div
-                className="box-border flex flex-col items-stretch gap-3"
+                className="flex flex-col items-stretch gap-3"
                 key={section.header}
               >
-                <div className="box-border flex flex-row items-center gap-3">
+                <div className="flex flex-row items-center gap-3">
                   <div
-                    className="box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"
+                    className="flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"
                     style={{ background: section.gradient }}
                   >
-                    <span className="box-border text-[20px]">
-                      {section.icon}
-                    </span>
+                    <span className="text-[20px]">{section.icon}</span>
                   </div>
-                  <span className="box-border font-bold text-[18px] text-[#f1f5f9]">
+                  <span className="font-bold text-[18px] text-[#f1f5f9]">
                     {section.header}
                   </span>
                 </div>
-                <span className="box-border text-[16px] leading-[26px] text-[#cbd5e1] whitespace-pre-line">
+                <span className="text-[16px] leading-[26px] text-[#cbd5e1] whitespace-pre-line">
                   {section.body}
                 </span>
               </div>
             ))}
 
-            <div className="box-border flex flex-col items-stretch gap-3">
-              <div className="box-border flex flex-row items-center gap-3">
+            <div className="flex flex-col items-stretch gap-3">
+              <div className="flex flex-row items-center gap-3">
                 <div
-                  className="box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"
+                  className="flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"
                   style={{
                     background:
                       'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
                   }}
                 >
-                  <span className="box-border text-[20px]">📏</span>
+                  <span className="text-[20px]">📏</span>
                 </div>
-                <span className="box-border font-bold text-[18px] text-[#f1f5f9]">
+                <span className="font-bold text-[18px] text-[#f1f5f9]">
                   {t('games.tic_tac_toe_v1.rules.headers.boardSizes')}
                 </span>
               </div>
-              <div className="box-border flex flex-row items-stretch flex-wrap gap-3">
+              <div className="flex flex-row items-stretch flex-wrap gap-3">
                 {BOARD_VARIANTS.map((bv) => {
                   const active = bv.size === boardSize;
                   return (
                     <div
-                      className="box-border flex flex-col items-stretch border rounded-[14px] p-3 gap-2 basis-[22%] grow min-w-[120px]"
+                      className="flex flex-col items-stretch border rounded-[14px] p-3 gap-2 basis-[22%] grow min-w-[120px]"
                       style={{
                         backgroundColor: active
                           ? 'rgba(99,102,241,0.18)'
@@ -132,12 +130,12 @@ export function RulesModal({
                       key={String(bv.size)}
                     >
                       <span
-                        className="box-border font-extrabold text-[20px]"
+                        className="font-extrabold text-[20px]"
                         style={{ color: active ? '#c7d2fe' : '#f8fafc' }}
                       >
                         {bv.size === 'infinity' ? '∞' : `${bv.size}×${bv.size}`}
                       </span>
-                      <span className="box-border text-[12px] text-[#94a3b8]">
+                      <span className="text-[12px] text-[#94a3b8]">
                         {t('games.tic_tac_toe_v1.rules.inARow', {
                           n: String(bv.win),
                         })}
@@ -146,7 +144,7 @@ export function RulesModal({
                   );
                 })}
               </div>
-              <span className="box-border text-[13px] text-[#94a3b8] opacity-[0.85]">
+              <span className="text-[13px] text-[#94a3b8] opacity-[0.85]">
                 {t('games.tic_tac_toe_v1.rules.winLengths')}
               </span>
             </div>

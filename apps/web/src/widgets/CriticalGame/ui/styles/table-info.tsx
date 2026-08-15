@@ -4,21 +4,21 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import { getVariantStyles } from './variants';
 import { resolveVariantStyles, usePseudoStyles } from './variant-styles';
 
-type VariantProp = { $variant?: string };
+type VariantProp = { variant?: string };
 
 export function TableInfo({
   className,
   style,
-  $variant,
+  variant,
   ...props
 }: { className?: string; style?: CSSProperties } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
-  const config = getVariantStyles($variant).tableInfo;
+  const config = getVariantStyles(variant).tableInfo;
   const variantStyles = resolveVariantStyles(config.getStyles?.());
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch gap-2 p-4 rounded-[16px] border border-[rgba(255,255,255,0.1)] z-[5] overflow-hidden max-[800px]:top-4 max-[800px]:left-4 max-[800px]:right-4 max-[800px]:flex-row max-[800px]:justify-center max-[800px]:gap-2 max-[800px]:p-2 max-[800px]:rounded-[12px]',
+        'flex flex-col items-stretch gap-2 p-4 rounded-[16px] border border-[rgba(255,255,255,0.1)] z-[5] overflow-hidden max-[800px]:top-4 max-[800px]:left-4 max-[800px]:right-4 max-[800px]:flex-row max-[800px]:justify-center max-[800px]:gap-2 max-[800px]:p-2 max-[800px]:rounded-[12px]',
         className,
       )}
       style={{
@@ -40,11 +40,11 @@ export function TableInfo({
 export function TableStat({
   className,
   style,
-  $variant,
+  variant,
   ...props
 }: { className?: string; style?: CSSProperties } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
-  const config = getVariantStyles($variant).tableInfo;
+  const config = getVariantStyles(variant).tableInfo;
   const variantStyles = resolveVariantStyles(config.getTableStatStyles?.());
   const { style: hoverStyle, handlers } = usePseudoStyles(
     variantStyles.hoverStyle,
@@ -53,7 +53,7 @@ export function TableStat({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-3 py-2 px-3 rounded-[10px] bg-[rgba(255,255,255,0.05)] max-[800px]:flex-1 max-[800px]:justify-center max-[800px]:gap-[6px] max-[800px]:py-[6px] max-[800px]:px-2',
+        'flex flex-row items-center gap-3 py-2 px-3 rounded-[10px] bg-[rgba(255,255,255,0.05)] max-[800px]:flex-1 max-[800px]:justify-center max-[800px]:gap-[6px] max-[800px]:py-[6px] max-[800px]:px-2',
         hasDynamicHover
           ? ''
           : 'transition-transform duration-150 hover:bg-[rgba(255,255,255,0.1)] hover:-translate-x-[2px]',
@@ -72,10 +72,7 @@ export function StatIcon({
 }: { className?: string } & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx(
-        'box-border flex flex-col items-center justify-center',
-        className,
-      )}
+      className={cx('flex flex-col items-center justify-center', className)}
       {...props}
     />
   );
@@ -84,26 +81,26 @@ export function StatIcon({
 export function StatValue({
   className,
   style,
-  $isWarning,
-  $variant,
+  isWarning,
+  variant,
   ...props
 }: {
   className?: string;
   style?: CSSProperties;
-  $isWarning?: boolean;
+  isWarning?: boolean;
 } & VariantProp &
   HTMLAttributes<HTMLSpanElement>) {
-  const config = getVariantStyles($variant).tableInfo;
+  const config = getVariantStyles(variant).tableInfo;
   const glow = config.getTextGlow();
   return (
     <span
       className={cx(
-        'box-border text-[14px] font-bold',
-        $isWarning ? 'text-[var(--danger)]' : 'text-[var(--color)]',
+        'text-[14px] font-bold',
+        isWarning ? 'text-[var(--danger)]' : 'text-[var(--color)]',
         className,
       )}
       style={{
-        color: config.getStatValueColor(!!$isWarning),
+        color: config.getStatValueColor(!!isWarning),
         textShadow: glow === 'inherit' ? 'none' : `0 0 8px ${glow}`,
         ...style,
       }}

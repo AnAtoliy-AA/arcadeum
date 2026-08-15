@@ -47,7 +47,7 @@ function RailHost({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch w-[320px] gap-3 sticky top-4 self-start shrink-0 max-[1150px]:w-[280px] max-[800px]:w-full max-[800px]:relative max-[800px]:top-0',
+        'flex flex-col items-stretch w-[320px] gap-3 sticky top-4 self-start shrink-0 max-[1150px]:w-[280px] max-[800px]:w-full max-[800px]:relative max-[800px]:top-0',
         className,
       )}
       {...props}
@@ -163,7 +163,7 @@ export function ShopMannequinRail({
         labels={labels.slots as ShopSlotRingLabels}
         onSlotClick={onSlotClick}
       />
-      <div className="box-border flex flex-col items-stretch">
+      <div className="flex flex-col items-stretch">
         <ShopActionPanel
           hoverItem={hoverItem}
           activeSlot={activeSlot}

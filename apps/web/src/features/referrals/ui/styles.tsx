@@ -19,7 +19,7 @@ function DashboardContainer({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch gap-6 p-7 max-w-[720px] self-center md:py-9 md:px-8',
+        'flex flex-col items-stretch gap-6 p-7 max-w-[720px] self-center md:py-9 md:px-8',
         className,
       )}
       {...props}
@@ -33,7 +33,7 @@ function DashboardTitle({
 }: { className?: string } & React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h1
-      className={`box-border m-0 text-[32px] leading-[38px] font-bold text-[var(--color)] ${className ?? ''}`}
+      className={`m-0 text-[32px] leading-[38px] font-bold text-[var(--color)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -45,7 +45,7 @@ function DashboardSubtitle({
 }: { className?: string } & React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`box-border -mt-2 mb-3 text-[16px] leading-[24px] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      className={`-mt-2 mb-3 text-[16px] leading-[24px] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -57,7 +57,7 @@ function CardTitle({
 }: { className?: string } & React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h2
-      className={`box-border flex flex-row items-center gap-2 mb-3 text-[18px] leading-[24px] font-semibold text-[var(--color)] ${className ?? ''}`}
+      className={`flex flex-row items-center gap-2 mb-3 text-[18px] leading-[24px] font-semibold text-[var(--color)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -69,7 +69,7 @@ function CodeContainer({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center gap-3 p-3 px-4 rounded-[10px] border border-[var(--borderColor)] bg-[var(--backgroundHover)] ${className ?? ''}`}
+      className={`flex flex-row items-center gap-3 p-3 px-4 rounded-[10px] border border-[var(--borderColor)] bg-[var(--backgroundHover)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -81,7 +81,7 @@ function CodeText({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border flex-1 text-[20px] leading-[28px] font-bold text-[var(--accent)] ${className ?? ''}`}
+      className={`flex-1 text-[20px] leading-[28px] font-bold text-[var(--accent)] ${className ?? ''}`}
       style={{
         fontFamily: "'SF Mono','Fira Code','Courier New',monospace",
         letterSpacing: '2px',
@@ -110,7 +110,7 @@ function ShareLinkRow({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center gap-2 mt-3 ${className ?? ''}`}
+      className={`flex flex-row items-center gap-2 mt-3 ${className ?? ''}`}
       {...props}
     />
   );
@@ -122,7 +122,7 @@ function ShareLink({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[var(--accent)] ${className ?? ''}`}
+      className={`text-[var(--accent)] ${className ?? ''}`}
       style={{ wordBreak: 'break-all' }}
       {...props}
     />
@@ -135,7 +135,7 @@ function ProgressSection({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-col items-stretch gap-2 ${className ?? ''}`}
+      className={`flex flex-col items-stretch gap-2 ${className ?? ''}`}
       {...props}
     />
   );
@@ -147,7 +147,7 @@ function ProgressLabel({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center justify-between ${className ?? ''}`}
+      className={`flex flex-row items-center justify-between ${className ?? ''}`}
       {...props}
     />
   );
@@ -159,7 +159,7 @@ function ProgressCount({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[28px] leading-[34px] font-bold text-[var(--color)] ${className ?? ''}`}
+      className={`text-[28px] leading-[34px] font-bold text-[var(--color)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -171,7 +171,7 @@ function ProgressTarget({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border font-medium text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      className={`font-medium text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -183,34 +183,34 @@ function TierList({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-col items-stretch gap-4 ${className ?? ''}`}
+      className={`flex flex-col items-stretch gap-4 ${className ?? ''}`}
       {...props}
     />
   );
 }
 
 interface TierCardProps {
-  $unlocked: boolean;
+  unlocked: boolean;
   children: React.ReactNode;
   'data-testid'?: string;
   'data-unlocked'?: boolean;
 }
 
-export function TierCard({ $unlocked, children, ...props }: TierCardProps) {
+export function TierCard({ unlocked, children, ...props }: TierCardProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-start gap-4 p-4 rounded-[12px] border',
-        $unlocked && 'referrals-tier-card-unlocked',
+        'flex flex-row items-start gap-4 p-4 rounded-[12px] border',
+        unlocked && 'referrals-tier-card-unlocked',
       )}
       style={{
-        borderColor: $unlocked
+        borderColor: unlocked
           ? 'var(--primaryGradientStart)'
           : 'var(--borderColor)',
-        backgroundColor: $unlocked
+        backgroundColor: unlocked
           ? 'rgba(122,215,255,0.12)'
           : 'var(--backgroundHover)',
-        opacity: $unlocked ? 1 : 0.6,
+        opacity: unlocked ? 1 : 0.6,
       }}
       {...props}
     >
@@ -220,16 +220,16 @@ export function TierCard({ $unlocked, children, ...props }: TierCardProps) {
 }
 
 export function TierIcon({
-  $unlocked,
+  unlocked,
   children,
 }: {
-  $unlocked: boolean;
+  unlocked: boolean;
   children: React.ReactNode;
 }) {
   return (
     <span
-      className="box-border text-[24px] shrink-0"
-      style={{ opacity: $unlocked ? 1 : 0.4 }}
+      className="text-[24px] shrink-0"
+      style={{ opacity: unlocked ? 1 : 0.4 }}
     >
       {children}
     </span>
@@ -242,7 +242,7 @@ function TierContent({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-col items-stretch gap-2 flex-1 ${className ?? ''}`}
+      className={`flex flex-col items-stretch gap-2 flex-1 ${className ?? ''}`}
       {...props}
     />
   );
@@ -254,7 +254,7 @@ function TierTitle({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[16px] leading-[20px] font-semibold text-[var(--color)] ${className ?? ''}`}
+      className={`text-[16px] leading-[20px] font-semibold text-[var(--color)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -266,17 +266,17 @@ function TierDescription({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[14px] leading-[18px] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      className={`text-[14px] leading-[18px] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
       {...props}
     />
   );
 }
 
 export function TierBadge({
-  $unlocked,
+  unlocked,
   children,
 }: {
-  $unlocked: boolean;
+  unlocked: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -290,10 +290,10 @@ export function TierBadge({
         borderRadius: 6,
         alignSelf: 'flex-start',
         marginTop: '0.25rem',
-        background: $unlocked
+        background: unlocked
           ? 'linear-gradient(135deg, #10b981, #059669)'
           : 'rgba(107,114,128,0.3)',
-        color: $unlocked ? 'white' : 'rgba(255,255,255,0.5)',
+        color: unlocked ? 'white' : 'rgba(255,255,255,0.5)',
         display: 'inline-block',
       }}
     >
@@ -308,7 +308,7 @@ function CopiedNotice({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[14px] leading-[18px] font-medium text-[var(--accent)] ${className ?? ''}`}
+      className={`text-[14px] leading-[18px] font-medium text-[var(--accent)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -320,7 +320,7 @@ function BadgesRowContainer({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-stretch gap-2 flex-wrap ${className ?? ''}`}
+      className={`flex flex-row items-stretch gap-2 flex-wrap ${className ?? ''}`}
       {...props}
     />
   );

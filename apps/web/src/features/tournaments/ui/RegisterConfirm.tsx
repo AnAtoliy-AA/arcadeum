@@ -117,25 +117,21 @@ export function RegisterConfirm({
   return (
     <div style={OVERLAY_STYLE} data-testid="register-confirm-dialog">
       <div style={DIALOG_STYLE}>
-        <div className="box-border flex flex-col items-stretch gap-3">
-          <span className="box-border font-bold text-[20px]">
-            {labels.title}
-          </span>
+        <div className="flex flex-col items-stretch gap-3">
+          <span className="font-bold text-[20px]">{labels.title}</span>
 
-          <span className="box-border text-[14px] opacity-[0.85]">
-            {bodyText}
-          </span>
+          <span className="text-[14px] opacity-[0.85]">{bodyText}</span>
 
           {errorMsg && (
-            <div className="box-border flex flex-col items-stretch gap-1">
+            <div className="flex flex-col items-stretch gap-1">
               <span
-                className="box-border text-[12px] text-[var(--errorText)]"
+                className="text-[12px] text-[var(--errorText)]"
                 data-testid="register-confirm-error"
               >
                 {errorMsg}
               </span>
               {!hasEnoughBalance && (
-                <span className="box-border text-[12px]">
+                <span className="text-[12px]">
                   <a
                     href={walletPath}
                     style={{ color: '#7c8cf8', textDecoration: 'underline' }}
@@ -148,7 +144,7 @@ export function RegisterConfirm({
             </div>
           )}
 
-          <div className="box-border flex flex-row items-stretch gap-3 justify-end pt-2">
+          <div className="flex flex-row items-stretch gap-3 justify-end pt-2">
             <Button
               variant="outline"
               onClick={onClose}

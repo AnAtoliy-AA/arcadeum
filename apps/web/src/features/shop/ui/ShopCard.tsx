@@ -236,10 +236,10 @@ export function ShopCard({
       >
         <ItemAsset item={item} size={small ? 64 : 96} priority={priority} />
 
-        <div className="box-border flex flex-row items-stretch absolute top-[8px] right-[8px] gap-4 pointer-events-none">
+        <div className="flex flex-row items-stretch absolute top-[8px] right-[8px] gap-4 pointer-events-none">
           {equipped ? (
             <Chip backgroundColor={`${accent}1f`} borderColor={`${accent}66`}>
-              <span className="box-border text-[14px] tracking-[1px] uppercase font-extrabold ">
+              <span className="text-[14px] tracking-[1px] uppercase font-extrabold ">
                 {labels.equipped}
               </span>
             </Chip>
@@ -248,7 +248,7 @@ export function ShopCard({
               backgroundColor="rgba(255,255,255,0.06)"
               borderColor="rgba(255,255,255,0.18)"
             >
-              <span className="box-border text-[14px] tracking-[1px] uppercase font-bold text-[#94a3b8]">
+              <span className="text-[14px] tracking-[1px] uppercase font-bold text-[#94a3b8]">
                 {labels.owned}
               </span>
             </Chip>
@@ -256,35 +256,35 @@ export function ShopCard({
         </div>
       </ArtBox>
 
-      <div className="box-border flex flex-col items-stretch px-3 py-2 gap-6">
+      <div className="flex flex-col items-stretch px-3 py-2 gap-6">
         <span
-          className="box-border font-bold text-[#f5f7ff] line-clamp-1"
+          className="font-bold text-[#f5f7ff] line-clamp-1"
           style={{ fontSize: small ? 12 : 13 }}
         >
           {name}
         </span>
-        <div className="box-border flex flex-row items-center justify-between gap-6">
+        <div className="flex flex-row items-center justify-between gap-6">
           <div
-            className="box-border flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"
+            className="flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"
             style={{
               backgroundColor: `${accent}14`,
               borderColor: `${accent}44`,
             }}
           >
             <div
-              className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
+              className="flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
               style={{ backgroundColor: accent }}
             />
-            <span className="box-border text-[14px] tracking-[1px] uppercase font-extrabold ">
+            <span className="text-[14px] tracking-[1px] uppercase font-extrabold ">
               {item.rarity}
             </span>
           </div>
-          <div className="box-border flex flex-row items-center gap-4">
-            <span className="box-border text-[12px]">
+          <div className="flex flex-row items-center gap-4">
+            <span className="text-[12px]">
               {CURRENCY_GLYPH[item.priceCurrency]}
             </span>
             <span
-              className="box-border text-[12px] font-extrabold"
+              className="text-[12px] font-extrabold"
               style={{ color: CURRENCY_COLOR[item.priceCurrency] }}
             >
               {formatNumber(item.priceAmount, locale)}
@@ -308,7 +308,7 @@ export function ShopCard({
           data-testid={`shop-card-action-${item.id}`}
           data-affordable={affordable ? 'true' : 'false'}
         >
-          <span className="box-border text-[11px] tracking-[0.8px] uppercase font-extrabold text-[#f5f7ff]">
+          <span className="text-[11px] tracking-[0.8px] uppercase font-extrabold text-[#f5f7ff]">
             {actionLabel}
           </span>
         </ActionButton>
@@ -333,7 +333,7 @@ export function ShopCard({
                 borderColor: 'rgba(34,197,94,0.45)',
               }}
             >
-              <span className="box-border text-[11px] tracking-[0.8px] uppercase font-extrabold text-[#22c55e]">
+              <span className="text-[11px] tracking-[0.8px] uppercase font-extrabold text-[#22c55e]">
                 {formatNumber(arcPrice, locale)} ARC
               </span>
             </ActionButton>
@@ -365,7 +365,7 @@ export function ShopCard({
         !equipped &&
         onSellRequest ? (
           <span
-            className="box-border text-[48px] tracking-[1px] uppercase font-bold text-[#94a3b8] cursor-pointer py-1 text-center hover:text-[#ef4444]"
+            className="text-[48px] tracking-[1px] uppercase font-bold text-[#94a3b8] cursor-pointer py-1 text-center hover:text-[#ef4444]"
             onClick={() => {
               track('shop.sell.click', {
                 itemId: item.id,

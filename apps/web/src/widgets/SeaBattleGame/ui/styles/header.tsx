@@ -12,7 +12,7 @@ export const CompactHeaderContainer = ({
 }: CommonProps) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center justify-between w-full gap-4 py-2 pb-3 z-[100] bg-[var(--background)] border-b border-b-[var(--glassBorder)]',
+      'flex flex-row items-center justify-between w-full gap-4 py-2 pb-3 z-[100] bg-[var(--background)] border-b border-b-[var(--glassBorder)]',
       'max-[800px]:flex-col max-[800px]:items-center max-[800px]:gap-2',
       className,
     )}
@@ -23,7 +23,7 @@ export const CompactHeaderContainer = ({
 export const HeaderTitleArea = ({ className, ...props }: CommonProps) => (
   <div
     className={cx(
-      'box-border flex flex-col items-stretch min-w-0 flex-1',
+      'flex flex-col items-stretch min-w-0 flex-1',
       'max-[800px]:items-center',
       className,
     )}
@@ -34,7 +34,7 @@ export const HeaderTitleArea = ({ className, ...props }: CommonProps) => (
 export const PlacementHeader = ({ className, ...props }: CommonProps) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center justify-between gap-4 mb-5',
+      'flex flex-row items-center justify-between gap-4 mb-5',
       'max-[800px]:flex-col max-[800px]:items-stretch max-[800px]:gap-2 max-[800px]:mb-3',
       className,
     )}

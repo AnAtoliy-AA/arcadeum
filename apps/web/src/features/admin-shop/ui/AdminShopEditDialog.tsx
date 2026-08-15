@@ -74,12 +74,12 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
 
   return (
     <DialogShell open={open} onClose={onClose} testId="admin-shop-edit-dialog">
-      <div className="box-border flex flex-col items-stretch gap-3">
-        <span className="box-border text-[24px] font-bold">
+      <div className="flex flex-col items-stretch gap-3">
+        <span className="text-[24px] font-bold">
           {labels.editDialog.title.replace('{itemId}', item.id)}
         </span>
 
-        <div className="box-border flex flex-row gap-2 items-center">
+        <div className="flex flex-row gap-2 items-center">
           <input
             type="checkbox"
             checked={available}
@@ -87,13 +87,11 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
             aria-label={labels.editDialog.available}
             data-testid="admin-shop-edit-available"
           />
-          <span className="box-border text-[16px]">
-            {labels.editDialog.available}
-          </span>
+          <span className="text-[16px]">{labels.editDialog.available}</span>
         </div>
 
-        <div className="box-border flex flex-col items-stretch gap-1">
-          <span className="box-border text-[14px] text-[var(--color)]">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[14px] text-[var(--color)]">
             {labels.editDialog.priceAmount}
           </span>
           <input
@@ -115,8 +113,8 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
           />
         </div>
 
-        <div className="box-border flex flex-col items-stretch gap-1">
-          <span className="box-border text-[14px] text-[var(--color)]">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[14px] text-[var(--color)]">
             {labels.editDialog.priceCurrency}
           </span>
           <select
@@ -142,18 +140,18 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
 
         {error ? (
           <span
-            className="box-border text-[var(--danger)] text-[14px]"
+            className="text-[var(--danger)] text-[14px]"
             data-testid="admin-shop-edit-error"
           >
             {error}
           </span>
         ) : null}
 
-        <div className="box-border flex flex-row items-stretch gap-3 justify-between">
+        <div className="flex flex-row items-stretch gap-3 justify-between">
           <Button variant="outline" onClick={handleReset} disabled={isPending}>
             {labels.editDialog.reset}
           </Button>
-          <div className="box-border flex flex-row items-stretch gap-2">
+          <div className="flex flex-row items-stretch gap-2">
             <Button variant="outline" onClick={onClose} disabled={isPending}>
               {labels.editDialog.cancel}
             </Button>

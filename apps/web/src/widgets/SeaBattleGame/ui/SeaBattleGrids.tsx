@@ -203,7 +203,6 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
           paddingTop: 4,
           paddingLeft: 4,
           paddingRight: 4,
-          boxSizing: 'border-box',
         }}
         ref={containerRef}
         data-testid="sea-battle-grids-container"
@@ -285,7 +284,6 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         minWidth: 0,
         minHeight: 0,
         padding: media.short ? 4 : media.sm ? 4 : 8,
-        boxSizing: 'border-box',
         // Anchor tracks to the top. We previously used `place-content:
         // center` here, but when content (rows × rowHeight) exceeds the
         // grid container, centering pushes the first row ABOVE the

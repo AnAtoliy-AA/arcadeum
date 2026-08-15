@@ -87,10 +87,13 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
     ref,
   ) {
     const spanProps = rest as React.HTMLAttributes<HTMLSpanElement>;
+    const resolvedColor = color?.startsWith('$')
+      ? `var(--${color.slice(1)})`
+      : color;
     const typographyStyle: React.CSSProperties = {
       ...(alpha ? { opacity: alphaOpacities[alpha] } : null),
       ...(tracking ? { letterSpacing: trackingSpacings[tracking] } : null),
-      ...(color ? { color } : null),
+      ...(resolvedColor ? { color: resolvedColor } : null),
     };
     return (
       <span

@@ -27,7 +27,7 @@ export const ServerLoadingNotice = memo(function ServerLoadingNotice({
     <div
       className={cx(
         'relative',
-        'box-border',
+        '',
         'flex',
         'flex-col',
         'gap-3',

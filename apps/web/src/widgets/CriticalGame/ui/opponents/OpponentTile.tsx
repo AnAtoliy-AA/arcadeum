@@ -160,7 +160,7 @@ export function OpponentTile({
   // is the only press target.
   return (
     <div
-      className="box-border flex flex-col items-stretch relative shrink-0"
+      className="flex flex-col items-stretch relative shrink-0"
       style={{ flex: isDuel ? 0 : 1 }}
     >
       {latestMessage && (
@@ -180,7 +180,7 @@ export function OpponentTile({
         </>
       )}
       <div
-        className={`box-border flex flex-col relative items-center gap-1 px-2 py-2 rounded-[12px] border bg-[rgba(12,17,28,0.92)] z-[100] flex-[0] shrink-0 ${interactive ? 'transition-colors duration-150 hover:border-[#f472b6]' : ''}`}
+        className={`flex flex-col relative items-center gap-1 px-2 py-2 rounded-[12px] border bg-[rgba(12,17,28,0.92)] z-[100] flex-[0] shrink-0 ${interactive ? 'transition-colors duration-150 hover:border-[#f472b6]' : ''}`}
         style={{
           cursor: interactive ? 'pointer' : 'default',
           borderStyle: ringStyle,
@@ -210,7 +210,7 @@ export function OpponentTile({
             clean circle and guarantees it can't spill out of its slot (an
             unclipped, oversized disc previously overflowed the tile). */}
         <div
-          className="box-border flex flex-col rounded-[9999px] bg-[rgba(255,255,255,0.08)] border-[2px] items-center justify-center overflow-hidden shrink-0"
+          className="flex flex-col rounded-[9999px] bg-[rgba(255,255,255,0.08)] border-[2px] items-center justify-center overflow-hidden shrink-0"
           style={{
             width: bubbleSize,
             height: bubbleSize,
@@ -228,9 +228,9 @@ export function OpponentTile({
             <SkullIcon size={Math.round(discSize * 0.55)} />
           )}
         </div>
-        <div className="box-border flex flex-row items-center gap-4 max-w-full">
+        <div className="flex flex-row items-center gap-4 max-w-full">
           <span
-            className="box-border text-[12px] font-bold tracking-[0.3px] line-clamp-1"
+            className="text-[12px] font-bold tracking-[0.3px] line-clamp-1"
             style={{ maxWidth: isMobile ? 80 : 100 }}
             data-testid={`player-name-${player.playerId}`}
           >
@@ -240,17 +240,17 @@ export function OpponentTile({
         </div>
         {alive ? (
           <div
-            className="box-border flex flex-row items-center gap-4 opacity-[0.85]"
+            className="flex flex-row items-center gap-4 opacity-[0.85]"
             data-testid={`player-stats-count-${player.playerId}`}
           >
             <CardsIcon size={11} />
-            <span className="box-border text-[11px] font-extrabold tracking-[0.4px]">
+            <span className="text-[11px] font-extrabold tracking-[0.4px]">
               {player.hand.length}
             </span>
           </div>
         ) : (
           <span
-            className="box-border text-[48px] font-extrabold tracking-[1px] uppercase"
+            className="text-[48px] font-extrabold tracking-[1px] uppercase"
             style={{ color: ELIMINATED_RING }}
             data-testid={`player-eliminated-label-${player.playerId}`}
           >

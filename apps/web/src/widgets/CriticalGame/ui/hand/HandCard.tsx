@@ -113,7 +113,7 @@ export function HandCard({
 
   return (
     <div
-      className={`box-border flex flex-col items-stretch rounded-[10px] border-[2px] bg-[rgba(8,12,20,0.85)] overflow-hidden relative shrink-0 w-[124px] h-[172px] transition-transform duration-150 ease-out ${disabled ? '' : 'hover:translate-y-[-4px]'} focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#34d399]`}
+      className={`flex flex-col items-stretch rounded-[10px] border-[2px] bg-[rgba(8,12,20,0.85)] overflow-hidden relative shrink-0 w-[124px] h-[172px] transition-transform duration-150 ease-out ${disabled ? '' : 'hover:translate-y-[-4px]'} focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#34d399]`}
       style={{
         borderColor: borderColor,
         transform: isSelected ? 'translateY(-8px)' : undefined,
@@ -150,7 +150,7 @@ export function HandCard({
       />
       {(showName || showDescription) && (
         <div
-          className="box-border flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-8 pb-8 gap-2 pointer-events-none"
+          className="flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-8 pb-8 gap-2 pointer-events-none"
           style={{
             background:
               'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0) 100%)',
@@ -159,7 +159,7 @@ export function HandCard({
         >
           {showName && (
             <span
-              className="box-border text-[11px] font-extrabold tracking-[0.4px] uppercase text-center line-clamp-1"
+              className="text-[11px] font-extrabold tracking-[0.4px] uppercase text-center line-clamp-1"
               style={{ color: borderColor }}
               data-testid={`hand-card-name-${card.uid}`}
             >
@@ -168,7 +168,7 @@ export function HandCard({
           )}
           {showDescription && (
             <span
-              className="box-border text-[40px] leading-[12px] text-center line-clamp-2 text-[rgba(226,_232,_240,_0.88)]"
+              className="text-[40px] leading-[12px] text-center line-clamp-2 text-[rgba(226,_232,_240,_0.88)]"
               id={descriptionId}
               data-testid={descriptionId}
             >
@@ -179,12 +179,12 @@ export function HandCard({
       )}
       {!!count && count > 1 && (
         <div
-          className="box-border flex flex-col absolute top-[4px] right-[4px] min-w-[20px] h-[20px] px-4 rounded-[9999px] bg-[rgba(0,0,0,0.75)] border items-center justify-center"
+          className="flex flex-col absolute top-[4px] right-[4px] min-w-[20px] h-[20px] px-4 rounded-[9999px] bg-[rgba(0,0,0,0.75)] border items-center justify-center"
           style={{ borderColor: borderColor }}
           data-testid={`hand-card-count-${card.uid}`}
         >
           <span
-            className="box-border text-[48px] font-extrabold"
+            className="text-[48px] font-extrabold"
             style={{ color: borderColor }}
           >
             ×{count}
@@ -212,7 +212,7 @@ function CardArt({ cardId, cardVariant, role, testId }: CardArtProps) {
   const showArt = hasArtFor(cardVariant, cardId);
   return (
     <div
-      className="box-border flex flex-col absolute top-0 left-0 right-0 bottom-0 items-center justify-center bg-[rgba(0,0,0,0.45)]"
+      className="flex flex-col absolute top-0 left-0 right-0 bottom-0 items-center justify-center bg-[rgba(0,0,0,0.45)]"
       data-testid={testId}
     >
       {showArt ? (
@@ -222,7 +222,7 @@ function CardArt({ cardId, cardVariant, role, testId }: CardArtProps) {
           const FallbackIcon = ROLE_FALLBACK_ICON[role];
           return (
             <div
-              className="box-border flex flex-col items-stretch opacity-[0.55]"
+              className="flex flex-col items-stretch opacity-[0.55]"
               data-testid={`hand-card-fallback-${role}`}
             >
               <FallbackIcon size={56} />

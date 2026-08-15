@@ -106,6 +106,16 @@ const STATIC_COLORS: Record<string, string> = {
   warningBg: 'rgba(146, 64, 14, 0.1)',
   red3: '#4c1d1d',
   orange10: '#f76b15',
+  primaryBgSoft: 'rgba(87, 195, 255, 0.1)',
+  successBg: 'rgba(16, 185, 129, 0.15)',
+  successBgSoft: 'rgba(16, 185, 129, 0.2)',
+  successBorder: 'rgba(16, 185, 129, 0.4)',
+  warningBgSoft: 'rgba(251, 191, 36, 0.2)',
+  warningBorder: 'rgba(245, 158, 11, 0.4)',
+  infoBgSoft: 'rgba(99, 102, 241, 0.1)',
+  infoBorder: 'rgba(87, 195, 255, 0.4)',
+  dangerBgSoft: 'rgba(239, 68, 68, 0.25)',
+  dangerBorder: 'rgba(239, 68, 68, 0.4)',
 };
 
 /** Radix dark scale used by role badges (legacy default dark theme). */
@@ -126,14 +136,21 @@ const RADIX_DARK: Record<string, string> = {
   yellow2: '#1b180f',
   yellow3: '#3a2d00',
   yellow9: '#ffd644',
+  pink3: '#51172f',
+  pink9: '#f65cb6',
+  blue3: '#0b2440',
+  blue9: '#52a9ff',
   gray1: '#161618',
   gray2: '#1a1a1c',
   gray3: '#1c1d21',
+  gray4: '#26272b',
   gray9: '#6e7683',
+  gray11: '#babfc7',
   green1: '#0e1815',
   green2: '#0f1a16',
   green3: '#11301f',
   green9: '#3dd68c',
+  green10: '#3fd386',
   cyan1: '#0d1a1e',
   cyan2: '#0f1c21',
   cyan3: '#0b3445',
@@ -147,6 +164,7 @@ export function resolveThemeColor(value: string | undefined | null): string {
   if (!raw.startsWith('$')) return raw;
   const name = raw.slice(1);
   if (THEMED_KEYS.has(name)) return `var(--${name})`;
+  if (name === 'colorStrong') return 'var(--color)';
   if (name in STATIC_COLORS) return STATIC_COLORS[name];
   if (name in RADIX_DARK) return RADIX_DARK[name];
   // Unknown token — keep a var() so it degrades gracefully instead of breaking CSS

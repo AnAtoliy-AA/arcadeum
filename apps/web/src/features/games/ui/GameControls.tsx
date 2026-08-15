@@ -36,7 +36,7 @@ const ControlsContainer = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center gap-3 px-4 py-3 rounded-[8px] border flex-wrap max-[800px]:gap-2 max-[800px]:px-3 max-[800px]:py-2',
+      'flex flex-row items-center gap-3 px-4 py-3 rounded-[8px] border flex-wrap max-[800px]:gap-2 max-[800px]:px-3 max-[800px]:py-2',
       CONTROLS_VARIANT_CLASSES[variant],
       className,
     )}
@@ -52,7 +52,7 @@ const ControlDivider = ({
 }: { className?: string } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border w-[1px] h-6 bg-[var(--borderColor)] opacity-[0.3] mx-1',
+      'w-[1px] h-6 bg-[var(--borderColor)] opacity-[0.3] mx-1',
       className,
     )}
     {...props}

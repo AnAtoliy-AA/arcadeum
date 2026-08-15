@@ -43,7 +43,7 @@ function BalanceChip({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-2 px-3 py-2 rounded-xl border',
+        'flex flex-row items-center gap-2 px-3 py-2 rounded-xl border',
         BALANCE_CHIP_VARIANTS[currency],
         className,
       )}
@@ -63,7 +63,7 @@ function NavLink({
   return (
     <span
       className={cx(
-        'box-border px-[10px] py-[6px] rounded-lg text-[14px] tracking-[0.5px] uppercase font-bold transition-colors',
+        'px-[10px] py-[6px] rounded-lg text-[14px] tracking-[0.5px] uppercase font-bold transition-colors',
         color === '$white' ? 'text-[#f5f7ff]' : 'text-[#94a3b8]',
         'hover:text-[#f5f7ff] hover:bg-[rgba(255,255,255,0.04)]',
         className,
@@ -84,7 +84,7 @@ function TopUpBtn({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-1 px-3 py-2 rounded-xl border border-dashed border-[rgba(255,255,255,0.18)] cursor-pointer transition-colors hover:border-[rgba(167,139,250,0.6)] hover:bg-[rgba(167,139,250,0.06)]',
+        'flex flex-row items-center gap-1 px-3 py-2 rounded-xl border border-dashed border-[rgba(255,255,255,0.18)] cursor-pointer transition-colors hover:border-[rgba(167,139,250,0.6)] hover:bg-[rgba(167,139,250,0.06)]',
         className,
       )}
       onClick={onClick}
@@ -117,20 +117,20 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
 
   return (
     <div
-      className="box-border flex flex-row w-full items-center justify-between gap-4 flex-wrap"
+      className="flex flex-row w-full items-center justify-between gap-4 flex-wrap"
       data-testid="shop-top-bar"
     >
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
           {labels.eyebrow}
         </span>
-        <span className="box-border text-[40px] font-black tracking-[-0.5px]">
+        <span className="text-[40px] font-black tracking-[-0.5px]">
           {labels.title}
         </span>
       </div>
 
       <div
-        className="box-border flex flex-row gap-1 items-center max-[800px]:hidden"
+        className="flex flex-row gap-1 items-center max-[800px]:hidden"
         data-testid="shop-top-bar-nav"
       >
         <Link href={routes.shop} style={{ textDecoration: 'none' }}>
@@ -156,33 +156,24 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         </Link>
       </div>
 
-      <div className="box-border flex flex-row gap-2 items-center">
+      <div className="flex flex-row gap-2 items-center">
         <BalanceChip currency="coins" data-testid="shop-balance-coins">
-          <span className="box-border text-[16px]">{COIN_GLYPH}</span>
-          <span
-            className="box-border text-[18px] font-bold"
-            style={{ color: COIN_COLOR }}
-          >
+          <span className="text-[16px]">{COIN_GLYPH}</span>
+          <span className="text-[18px] font-bold" style={{ color: COIN_COLOR }}>
             {formatNumber(coins, locale)}
           </span>
         </BalanceChip>
         <BalanceChip currency="gems" data-testid="shop-balance-gems">
-          <span className="box-border text-[16px]">{GEM_GLYPH}</span>
-          <span
-            className="box-border text-[18px] font-bold"
-            style={{ color: GEM_COLOR }}
-          >
+          <span className="text-[16px]">{GEM_GLYPH}</span>
+          <span className="text-[18px] font-bold" style={{ color: GEM_COLOR }}>
             {formatNumber(gems, locale)}
           </span>
         </BalanceChip>
         <TopUpBtn onClick={handleTopUp} role="button" data-testid="shop-top-up">
-          <span
-            className="box-border text-[16px] font-bold"
-            style={{ color: GEM_COLOR }}
-          >
+          <span className="text-[16px] font-bold" style={{ color: GEM_COLOR }}>
             +
           </span>
-          <span className="box-border text-[14px] font-bold tracking-[0.5px]">
+          <span className="text-[14px] font-bold tracking-[0.5px]">
             {labels.topUp}
           </span>
         </TopUpBtn>

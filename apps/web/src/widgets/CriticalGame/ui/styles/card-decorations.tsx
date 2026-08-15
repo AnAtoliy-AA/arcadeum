@@ -2,18 +2,18 @@ import type { HTMLAttributes } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
-type VariantProp = { $variant?: string };
+type VariantProp = { variant?: string };
 
 export function CardNameContainer({
   className,
-  $variant,
+  variant,
   ...props
 }: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch absolute top-0 left-0 right-0 px-2 py-[6px] rounded-t-[14px] z-[10] border-b border-b-[rgba(255,255,255,0.1)]',
-        $variant === 'cyberpunk'
+        'flex flex-col items-stretch absolute top-0 left-0 right-0 px-2 py-[6px] rounded-t-[14px] z-[10] border-b border-b-[rgba(255,255,255,0.1)]',
+        variant === 'cyberpunk'
           ? 'rounded-t-[4px] bg-[rgba(0,0,0,0.7)]'
           : 'bg-[rgba(0,0,0,0.45)]',
         className,
@@ -31,7 +31,7 @@ export function CardName({
   return (
     <span
       className={cx(
-        'box-border text-[11px] font-extrabold uppercase tracking-[1px] text-white text-center line-clamp-1 [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]',
+        'text-[11px] font-extrabold uppercase tracking-[1px] text-white text-center line-clamp-1 [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]',
         className,
       )}
       {...props}
@@ -46,7 +46,7 @@ export function CardInner({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch flex-1 w-full items-center justify-center relative rounded-[12px] overflow-hidden',
+        'flex flex-col items-stretch flex-1 w-full items-center justify-center relative rounded-[12px] overflow-hidden',
         className,
       )}
       {...props}
@@ -61,7 +61,7 @@ export function CardFrame({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch absolute inset-0 border-2 border-[rgba(255,255,255,0.1)] rounded-[14px] pointer-events-none',
+        'flex flex-col items-stretch absolute inset-0 border-2 border-[rgba(255,255,255,0.1)] rounded-[14px] pointer-events-none',
         className,
       )}
       {...props}
@@ -78,18 +78,18 @@ const CARD_CORNER_CLASS = {
 
 export function CardCorner({
   className,
-  $position,
+  position,
   ...props
 }: {
   className?: string;
-  $position?: keyof typeof CARD_CORNER_CLASS;
+  position?: keyof typeof CARD_CORNER_CLASS;
 } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cx(
-        'box-border absolute w-[12px] h-[12px] border-[var(--primary)] pointer-events-none',
-        $position ? CARD_CORNER_CLASS[$position] : undefined,
+        'absolute w-[12px] h-[12px] border-[var(--primary)] pointer-events-none',
+        position ? CARD_CORNER_CLASS[position] : undefined,
         className,
       )}
       {...props}

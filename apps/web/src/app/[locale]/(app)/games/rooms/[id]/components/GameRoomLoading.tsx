@@ -36,9 +36,7 @@ export function GameRoomLoading({
           }}
         />
       ) : (
-        <span className="box-border">
-          {message || t('games.roomPage.loading')}
-        </span>
+        <span className="">{message || t('games.roomPage.loading')}</span>
       )}
     </LoadingContainer>
   );

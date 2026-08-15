@@ -63,7 +63,7 @@ function PanelFrame({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch w-full gap-3 p-3 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]',
+        'flex flex-col items-stretch w-full gap-3 p-3 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]',
         className,
       )}
       {...props}
@@ -78,7 +78,7 @@ function Eyebrow({
   return (
     <span
       className={cx(
-        'box-border text-[10px] tracking-[1.4px] uppercase font-extrabold text-[#94a3b8]',
+        'text-[10px] tracking-[1.4px] uppercase font-extrabold text-[#94a3b8]',
         className,
       )}
       {...props}
@@ -137,39 +137,39 @@ export function ShopActionPanel({
         aria-label={ariaLabel}
       >
         <Eyebrow>{actionLabels.previewingEyebrow}</Eyebrow>
-        <div className="box-border flex flex-col items-stretch gap-4">
-          <span className="box-border text-[20px] font-extrabold text-[#f5f7ff]">
+        <div className="flex flex-col items-stretch gap-4">
+          <span className="text-[20px] font-extrabold text-[#f5f7ff]">
             {name}
           </span>
-          <span className="box-border text-[14px] text-[#94a3b8] line-clamp-4">
+          <span className="text-[14px] text-[#94a3b8] line-clamp-4">
             {desc}
           </span>
         </div>
-        <div className="box-border flex flex-row gap-8 items-center justify-between">
+        <div className="flex flex-row gap-8 items-center justify-between">
           <div
-            className="box-border flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"
+            className="flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"
             style={{
               backgroundColor: `${accent}14`,
               borderColor: `${accent}44`,
             }}
           >
             <div
-              className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
+              className="flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
               style={{ backgroundColor: accent }}
             />
             <span
-              className="box-border text-[40px] tracking-[1px] uppercase font-extrabold"
+              className="text-[40px] tracking-[1px] uppercase font-extrabold"
               style={{ color: accent }}
             >
               {hoverItem.rarity}
             </span>
           </div>
-          <div className="box-border flex flex-row items-center gap-4">
-            <span className="box-border text-[14px]">
+          <div className="flex flex-row items-center gap-4">
+            <span className="text-[14px]">
               {CURRENCY_GLYPH[hoverItem.priceCurrency]}
             </span>
             <span
-              className="box-border text-[18px] font-extrabold"
+              className="text-[18px] font-extrabold"
               style={{ color: CURRENCY_COLOR[hoverItem.priceCurrency] }}
             >
               {formatNumber(hoverItem.priceAmount, locale)}
@@ -203,27 +203,25 @@ export function ShopActionPanel({
         aria-live="polite"
         aria-label={ariaLabel}
       >
-        <div className="box-border flex flex-row justify-between items-center">
+        <div className="flex flex-row justify-between items-center">
           <Eyebrow>{actionLabels.selectedSlotEyebrow}</Eyebrow>
           <span
-            className="box-border text-[48px] tracking-[1px] uppercase font-bold text-[#3b82f6] cursor-pointer"
+            className="text-[48px] tracking-[1px] uppercase font-bold text-[#3b82f6] cursor-pointer"
             onClick={() => clearActiveSlot()}
             data-testid="shop-action-clear"
           >
             {actionLabels.clear}
           </span>
         </div>
-        <div className="box-border flex flex-col items-stretch gap-4">
-          <span className="box-border text-[20px] font-extrabold text-[#f5f7ff]">
+        <div className="flex flex-col items-stretch gap-4">
+          <span className="text-[20px] font-extrabold text-[#f5f7ff]">
             {slot.label}
           </span>
-          <span className="box-border text-[14px] text-[#94a3b8]">
-            {slot.desc}
-          </span>
+          <span className="text-[14px] text-[#94a3b8]">{slot.desc}</span>
         </div>
-        <div className="box-border flex flex-col items-stretch gap-4 p-2 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
+        <div className="flex flex-col items-stretch gap-4 p-2 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
           <Eyebrow>{actionLabels.equippedEyebrow}</Eyebrow>
-          <span className="box-border text-[13px] font-bold text-[#f5f7ff]">
+          <span className="text-[13px] font-bold text-[#f5f7ff]">
             {equippedName}
           </span>
         </div>
@@ -274,11 +272,11 @@ export function ShopActionPanel({
       aria-label={ariaLabel}
     >
       <Eyebrow>{actionLabels.loadoutEyebrow}</Eyebrow>
-      <div className="box-border flex flex-col items-stretch gap-4">
-        <span className="box-border text-[20px] font-extrabold text-[#f5f7ff]">
+      <div className="flex flex-col items-stretch gap-4">
+        <span className="text-[20px] font-extrabold text-[#f5f7ff]">
           {actionLabels.idleTitle}
         </span>
-        <span className="box-border text-[14px] text-[#94a3b8]">
+        <span className="text-[14px] text-[#94a3b8]">
           {actionLabels.idleBody}
         </span>
       </div>

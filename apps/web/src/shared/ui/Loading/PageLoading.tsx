@@ -17,7 +17,6 @@ const s = {
     backgroundColor: '#151718',
     width: '100%',
     fontFamily: 'inherit',
-    boxSizing: 'border-box' as const,
   },
   container: {
     maxWidth: 1400,
@@ -381,12 +380,12 @@ export const PageLoading = memo(function PageLoading({
   const Layout = layouts[layout];
   return (
     <div style={s.page}>
-        <div style={s.container}>
-          <div style={s.header}>
-            <Skel w="60%" h={56} delay={0.1} />
-            <Skel w="40%" h={20} delay={0.2} />
-          </div>
-          <Layout />
+      <div style={s.container}>
+        <div style={s.header}>
+          <Skel w="60%" h={56} delay={0.1} />
+          <Skel w="40%" h={20} delay={0.2} />
+        </div>
+        <Layout />
       </div>
     </div>
   );

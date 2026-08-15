@@ -12,7 +12,7 @@ export type StatTileProps = {
 };
 
 const statTileCellClasses =
-  'box-border flex flex-col items-start relative flex-1 min-w-[140px] py-[18px] px-[18px] gap-[6px]';
+  'flex flex-col items-start relative flex-1 min-w-[140px] py-[18px] px-[18px] gap-[6px]';
 
 const sparkStyle: CSSProperties = {
   marginTop: 4,

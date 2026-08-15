@@ -42,7 +42,7 @@ export function AuthFormPanel({
         data-testid="auth-magic-link-success"
       >
         <div
-          className="box-border flex flex-col w-[64px] h-[64px] rounded-[999px] items-center justify-center -mb-1 border"
+          className="flex flex-col w-[64px] h-[64px] rounded-[999px] items-center justify-center -mb-1 border"
           style={{
             color: 'var(--accent, #38bdf8)',
             background:
@@ -53,7 +53,7 @@ export function AuthFormPanel({
         >
           <MailGlyph size={30} />
         </div>
-        <div className="box-border flex flex-col gap-2 items-center">
+        <div className="flex flex-col gap-2 items-center">
           <Typography variant="heading" uiSize="lg" weight="700" textCenter>
             {form.magicLinkSentTitle}
           </Typography>
@@ -97,7 +97,7 @@ export function AuthFormPanel({
         }}
       />
 
-      <div className="box-border flex flex-col items-stretch gap-2">
+      <div className="flex flex-col items-stretch gap-2">
         <Typography
           variant="heading"
           uiSize="2xl"
@@ -132,8 +132,8 @@ export function AuthFormPanel({
 
 function OrDivider({ label }: { label: string }) {
   return (
-    <div className="box-border flex flex-row items-center gap-3">
-      <div className="box-border flex flex-col items-stretch flex-1 h-[1px] bg-[var(--glassBorder)]" />
+    <div className="flex flex-row items-center gap-3">
+      <div className="flex flex-col items-stretch flex-1 h-[1px] bg-[var(--glassBorder)]" />
       <Typography
         variant="caption"
         uiSize="xs"
@@ -143,7 +143,7 @@ function OrDivider({ label }: { label: string }) {
       >
         {label}
       </Typography>
-      <div className="box-border flex flex-col items-stretch flex-1 h-[1px] bg-[var(--glassBorder)]" />
+      <div className="flex flex-col items-stretch flex-1 h-[1px] bg-[var(--glassBorder)]" />
     </div>
   );
 }
@@ -170,7 +170,7 @@ function ActiveSessionCard({
       style={{ maxWidth: maxWidth }}
       data-testid="auth-active-session"
     >
-      <div className="box-border flex flex-col items-stretch gap-1">
+      <div className="flex flex-col items-stretch gap-1">
         <Typography variant="heading" uiSize="lg" weight="700">
           {labels.statusActiveMessage}
         </Typography>
@@ -178,7 +178,7 @@ function ActiveSessionCard({
           {labels.statusDescription}
         </Typography>
       </div>
-      <div className="box-border flex flex-col items-stretch gap-null p-4 rounded-[16px] border border-[rgba(4,_120,_87,_0.4)] bg-[rgba(4,_120,_87,_0.1)]">
+      <div className="flex flex-col items-stretch p-4 rounded-[16px] border border-[rgba(4,_120,_87,_0.4)] bg-[rgba(4,_120,_87,_0.1)]">
         {storedDisplayName && (
           <Typography variant="body" uiSize="sm">
             {labels.sessionDetailLabels.displayName}: {storedDisplayName}

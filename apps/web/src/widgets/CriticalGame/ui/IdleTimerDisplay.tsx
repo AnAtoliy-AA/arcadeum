@@ -16,19 +16,19 @@ interface IdleTimerDisplayProps {
 }
 
 function Container({ children }: { children?: React.ReactNode }) {
-  return <div className="box-border my-2">{children}</div>;
+  return <div className="my-2">{children}</div>;
 }
 
 function CountdownContainer({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="box-border flex flex-row items-center justify-center gap-2 rounded-lg border border-[rgba(251,191,36,0.4)] bg-[rgba(251,191,36,0.15)] px-4 py-[10px]">
+    <div className="flex flex-row items-center justify-center gap-2 rounded-lg border border-[rgba(251,191,36,0.4)] bg-[rgba(251,191,36,0.15)] px-4 py-[10px]">
       {children}
     </div>
   );
 }
 
 function TimerEmoji({ children }: { children?: React.ReactNode }) {
-  return <span className="box-border text-[18px]">{children}</span>;
+  return <span className="text-[18px]">{children}</span>;
 }
 
 function CountdownText({
@@ -41,7 +41,7 @@ function CountdownText({
   return (
     <span
       className={cx(
-        'box-border text-[14px] leading-[18px] font-semibold text-[rgb(251,191,36)]',
+        'text-[14px] leading-[18px] font-semibold text-[rgb(251,191,36)]',
         isRunning ? 'animate-pulse' : 'opacity-[0.7]',
       )}
     >
@@ -52,27 +52,23 @@ function CountdownText({
 
 function ActiveContainer({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="box-border flex flex-row items-center justify-between gap-4 rounded-lg border border-[rgba(34,197,94,0.4)] bg-[rgba(34,197,94,0.15)] px-4 py-[10px]">
+    <div className="flex flex-row items-center justify-between gap-4 rounded-lg border border-[rgba(34,197,94,0.4)] bg-[rgba(34,197,94,0.15)] px-4 py-[10px]">
       {children}
     </div>
   );
 }
 
 function ActiveBadge({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="box-border flex flex-row items-center gap-2">
-      {children}
-    </div>
-  );
+  return <div className="flex flex-row items-center gap-2">{children}</div>;
 }
 
 function RobotEmoji({ children }: { children?: React.ReactNode }) {
-  return <span className="box-border text-[18px]">{children}</span>;
+  return <span className="text-[18px]">{children}</span>;
 }
 
 function ActiveText({ children }: { children?: React.ReactNode }) {
   return (
-    <span className="box-border text-[14px] leading-[18px] font-semibold text-[rgb(34,197,94)]">
+    <span className="text-[14px] leading-[18px] font-semibold text-[rgb(34,197,94)]">
       {children}
     </span>
   );

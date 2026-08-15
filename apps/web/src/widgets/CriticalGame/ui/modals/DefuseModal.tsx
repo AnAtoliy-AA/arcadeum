@@ -36,27 +36,27 @@ const DefuseModal: React.FC<DefuseModalProps> = ({
     <Modal open={isOpen}>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
       >
-        <ModalHeader $variant={cardVariant as GameVariant}>
-          <ModalTitle $variant={cardVariant as GameVariant}>
+        <ModalHeader variant={cardVariant as GameVariant}>
+          <ModalTitle variant={cardVariant as GameVariant}>
             🛡️ {t('games.table.modals.defuse.title')}
           </ModalTitle>
         </ModalHeader>
-        <div className="box-border mb-6 text-center opacity-[0.8]">
+        <div className="mb-6 text-center opacity-[0.8]">
           {t('games.table.modals.defuse.description')}
         </div>
-        <div className="box-border mb-6 flex flex-col gap-3">
-          <div className="box-border text-center font-medium">
+        <div className="mb-6 flex flex-col gap-3">
+          <div className="text-center font-medium">
             {t('games.table.modals.defuse.positionLabel')}
           </div>
-          <div className="box-border flex flex-row items-center gap-2">
-            <span className="box-border min-w-[50px] text-center text-[14px] opacity-[0.6]">
+          <div className="flex flex-row items-center gap-2">
+            <span className="min-w-[50px] text-center text-[14px] opacity-[0.6]">
               Top
             </span>
             <input
               type="range"
-              className="box-border h-7 flex-1 accent-[#10b981]"
+              className="h-7 flex-1 accent-[#10b981]"
               value={selectedPosition}
               onChange={(e) => setSelectedPosition(Number(e.target.value))}
               min={0}
@@ -64,11 +64,11 @@ const DefuseModal: React.FC<DefuseModalProps> = ({
               step={1}
               aria-label={t('games.table.modals.defuse.positionLabel')}
             />
-            <span className="box-border min-w-[50px] text-center text-[14px] opacity-[0.6]">
+            <span className="min-w-[50px] text-center text-[14px] opacity-[0.6]">
               Bottom
             </span>
           </div>
-          <div className="box-border rounded-lg bg-[rgba(255,255,255,0.1)] p-2 text-center text-[16px]">
+          <div className="rounded-lg bg-[rgba(255,255,255,0.1)] p-2 text-center text-[16px]">
             {selectedPosition === 0
               ? 'Top of deck'
               : selectedPosition >= deckSize

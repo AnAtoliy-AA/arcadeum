@@ -13,7 +13,7 @@ export function ActionBar({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-stretch sticky bottom-0 z-[40] py-2 px-3 gap-2 border-t border-t-[var(--glassBorder)] items-center justify-end shrink-0 w-full',
+        'flex flex-row items-stretch sticky bottom-0 z-[40] py-2 px-3 gap-2 border-t border-t-[var(--glassBorder)] items-center justify-end shrink-0 w-full',
         className,
       )}
       style={{

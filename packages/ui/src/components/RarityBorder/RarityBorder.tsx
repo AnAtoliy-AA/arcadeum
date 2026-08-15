@@ -41,7 +41,7 @@ export const RarityBorder = memo(function RarityBorder({
     <div
       data-testid={dataTestId ?? testID}
       className={cx(
-        'box-border flex flex-col rounded-2xl border-2 p-2',
+        'flex flex-col rounded-2xl border-2 p-2',
         RARITY_SHADOW[rarity],
         className,
       )}

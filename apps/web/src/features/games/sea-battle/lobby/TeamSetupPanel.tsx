@@ -56,10 +56,10 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-2"
+      className="flex flex-col items-stretch gap-2"
       data-testid="team-setup-panel"
     >
-      <div className="box-border flex flex-row gap-3 items-center flex-wrap">
+      <div className="flex flex-row gap-3 items-center flex-wrap">
         <Button
           variant="secondary"
           size="sm"
@@ -79,7 +79,7 @@ export function TeamSetupPanel(props: TeamSetupPanelProps) {
 
       {hasErrors && (
         <Card variant="error" data-testid="team-setup-validation">
-          <div className="box-border flex flex-col items-stretch gap-1">
+          <div className="flex flex-col items-stretch gap-1">
             {isOverCap && (
               <Typography variant="caption" uiSize="sm">
                 {t('games.sea_battle_v1.teamMode.errors.roomFull')}

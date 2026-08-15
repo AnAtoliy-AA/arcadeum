@@ -389,23 +389,19 @@ export default function GameRoomPage({
               <Suspense
                 fallback={
                   <LoadingContainer>
-                    <span className="box-border">
-                      {t('games.roomPage.loadingGame')}
-                    </span>
+                    <span className="">{t('games.roomPage.loadingGame')}</span>
                   </LoadingContainer>
                 }
               >
                 {gameLoading && (
                   <LoadingContainer>
-                    <span className="box-border">
-                      {t('games.roomPage.loadingGame')}
-                    </span>
+                    <span className="">{t('games.roomPage.loadingGame')}</span>
                   </LoadingContainer>
                 )}
 
                 {!gameLoading && !gameType && room && (
                   <LoadingContainer>
-                    <span className="box-border">
+                    <span className="">
                       {t('games.roomPage.errors.unsupportedGame', {
                         gameId: room.gameId,
                       })}

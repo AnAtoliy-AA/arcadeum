@@ -129,12 +129,12 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
               size="md"
             />
             {searchLoading && (
-              <div className="box-border flex flex-row items-stretch p-4 justify-center">
+              <div className="flex flex-row items-stretch p-4 justify-center">
                 <Spinner size="sm" />
               </div>
             )}
             {!!searchQuery.trim() && displaySearchResults.length > 0 && (
-              <div className="box-border flex flex-col items-stretch border border-[var(--borderColor)] rounded-[12px] overflow-hidden -mt-2">
+              <div className="flex flex-col items-stretch border border-[var(--borderColor)] rounded-[12px] overflow-hidden -mt-2">
                 {displaySearchResults.map((result, index) => (
                   <SearchResultItem
                     key={result.id}
@@ -147,12 +147,12 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                       equippedAvatarId={null}
                       equippedBadgeId={null}
                     />
-                    <div className="box-border flex flex-col items-stretch">
-                      <span className="box-border font-semibold">
+                    <div className="flex flex-col items-stretch">
+                      <span className="font-semibold">
                         {result.displayName || result.username}
                       </span>
                       {result.email && (
-                        <span className="box-border text-[16px] text-[rgba(236,239,238,0.45)]">
+                        <span className="text-[16px] text-[rgba(236,239,238,0.45)]">
                           {result.email}
                         </span>
                       )}
@@ -165,14 +165,14 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
         )}
 
         {loading ? (
-          <div className="box-border flex flex-col justify-center items-center gap-4 p-12">
+          <div className="flex flex-col justify-center items-center gap-4 p-12">
             <Spinner size="lg" aria-label="Loading" />
-            <span className="box-border text-[rgba(236,239,238,0.45)]">
+            <span className="text-[rgba(236,239,238,0.45)]">
               Loading chats...
             </span>
           </div>
         ) : displayChats.length === 0 ? (
-          <div className="box-border flex flex-col items-center gap-5 p-10 flex-1">
+          <div className="flex flex-col items-center gap-5 p-10 flex-1">
             <EmptyState
               icon="💬"
               message={
@@ -196,7 +196,7 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
             )}
           </div>
         ) : (
-          <div className="box-border flex flex-col items-stretch gap-4">
+          <div className="flex flex-col items-stretch gap-4">
             {displayChats.map((chat: ChatSummary) => {
               const otherParticipants = chat.participants.filter(
                 (p: ChatParticipant) => p.id !== currentUserId,
@@ -220,22 +220,22 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                   }}
                 >
                   <Card interactive variant="elevated">
-                    <div className="box-border flex flex-row items-center gap-4 w-full">
+                    <div className="flex flex-row items-center gap-4 w-full">
                       <Avatar name={title} size="md" alt={`${title} avatar`} />
-                      <div className="box-border flex flex-col items-stretch flex-1 gap-1 min-w-0">
-                        <div className="box-border flex flex-row justify-between items-center gap-2">
-                          <span className="box-border font-semibold text-[20px] text-[var(--color)] line-clamp-1 shrink-[1]">
+                      <div className="flex flex-col items-stretch flex-1 gap-1 min-w-0">
+                        <div className="flex flex-row justify-between items-center gap-2">
+                          <span className="font-semibold text-[20px] text-[var(--color)] line-clamp-1 shrink-[1]">
                             {title}
                           </span>
                           {chat.lastMessage && (
-                            <span className="box-border text-[14px] text-[rgba(236,239,238,0.45)] whitespace-nowrap">
+                            <span className="text-[14px] text-[rgba(236,239,238,0.45)] whitespace-nowrap">
                               {formatSafeDate(chat.lastMessage.timestamp)}
                             </span>
                           )}
                         </div>
                         {chat.lastMessage && (
-                          <span className="box-border text-[16px] text-[rgba(236,239,238,0.45)] line-clamp-1">
-                            <span className="box-border font-semibold">
+                          <span className="text-[16px] text-[rgba(236,239,238,0.45)] line-clamp-1">
+                            <span className="font-semibold">
                               {chat.lastMessage.senderUsername}:
                             </span>{' '}
                             {chat.lastMessage.content}

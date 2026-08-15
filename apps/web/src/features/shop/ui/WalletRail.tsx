@@ -35,7 +35,7 @@ function Tile({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-2 px-3 py-2 rounded-xl border',
+        'flex flex-row items-center gap-2 px-3 py-2 rounded-xl border',
         className,
       )}
       style={{ flex, backgroundColor, borderColor }}
@@ -54,18 +54,18 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)]"
+      className="flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)]"
       data-testid="shop-wallet-rail"
     >
-      <div className="box-border flex flex-row items-stretch gap-2">
+      <div className="flex flex-row items-stretch gap-2">
         <Tile
           flex={1}
           backgroundColor="rgba(251,191,36,0.08)"
           borderColor="rgba(251,191,36,0.25)"
         >
-          <span className="box-border text-[16px]">{COIN_GLYPH}</span>
+          <span className="text-[16px]">{COIN_GLYPH}</span>
           <span
-            className="box-border text-[18px] font-extrabold"
+            className="text-[18px] font-extrabold"
             style={{ color: COIN_COLOR }}
           >
             {fmt(coins)}
@@ -76,9 +76,9 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
           backgroundColor="rgba(167,139,250,0.08)"
           borderColor="rgba(167,139,250,0.25)"
         >
-          <span className="box-border text-[16px]">{GEM_GLYPH}</span>
+          <span className="text-[16px]">{GEM_GLYPH}</span>
           <span
-            className="box-border text-[18px] font-extrabold"
+            className="text-[18px] font-extrabold"
             style={{ color: GEM_COLOR }}
           >
             {fmt(gems)}
@@ -87,24 +87,24 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
       </div>
 
       {nextGemPack ? (
-        <div className="box-border flex flex-col items-stretch gap-6">
-          <div className="box-border flex flex-row justify-between items-center">
-            <span className="box-border text-[48px] tracking-[1.4px] uppercase font-extrabold text-[#94a3b8]">
+        <div className="flex flex-col items-stretch gap-6">
+          <div className="flex flex-row justify-between items-center">
+            <span className="text-[48px] tracking-[1.4px] uppercase font-extrabold text-[#94a3b8]">
               {labels.nextPack.replace('{label}', nextGemPack.label)}
             </span>
-            <span className="box-border text-[11px] font-bold text-[#f5f7ff]">
+            <span className="text-[11px] font-bold text-[#f5f7ff]">
               {labels.ofTarget
                 .replace('{current}', fmt(gems))
                 .replace('{target}', fmt(nextGemPack.target))}
             </span>
           </div>
           <div
-            className="box-border flex flex-col items-stretch h-[6px] rounded-xl bg-[rgba(255,255,255,0.06)] overflow-hidden"
+            className="flex flex-col items-stretch h-[6px] rounded-xl bg-[rgba(255,255,255,0.06)] overflow-hidden"
             data-testid="shop-wallet-progress"
             data-progress={pct}
           >
             <div
-              className="box-border flex flex-col items-stretch h-[6px]"
+              className="flex flex-col items-stretch h-[6px]"
               style={{
                 width: `${pct}%`,
                 backgroundColor: GEM_COLOR,

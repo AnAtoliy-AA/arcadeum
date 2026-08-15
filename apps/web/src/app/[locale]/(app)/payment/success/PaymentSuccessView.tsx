@@ -163,7 +163,7 @@ function SuccessContent() {
         </div>
 
         <div>
-          <div className="box-border flex flex-col items-stretch -mb-4">
+          <div className="flex flex-col items-stretch -mb-4">
             <PageTitle size="lg" gradient>
               {t('payments.successPage.title') || 'Payment Successful!'}
             </PageTitle>
@@ -221,7 +221,7 @@ function SuccessContent() {
         )}
 
         <div
-          className="box-border flex flex-row items-stretch gap-6 -mt-6"
+          className="flex flex-row items-stretch gap-6 -mt-6"
           style={{ animation: 'fadeIn 0.6s ease-out 0.4s backwards' }}
         >
           <LinkButton href="/" size="lg" variant="primary">

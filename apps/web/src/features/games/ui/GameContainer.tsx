@@ -16,14 +16,14 @@ interface GameContainerProps {
   className?: string;
 }
 
-const StyledContainer = forwardRef<
+const Container = forwardRef<
   HTMLDivElement,
   {
     isFullscreen?: boolean;
     className?: string;
     children?: ReactNode;
   } & HTMLAttributes<HTMLDivElement>
->(function StyledContainer(
+>(function Container(
   { isFullscreen = false, className, children, ...props },
   ref,
 ) {
@@ -31,7 +31,7 @@ const StyledContainer = forwardRef<
     <div
       ref={ref}
       className={cx(
-        'box-border flex flex-col h-full min-h-[600px] relative',
+        'flex flex-col h-full min-h-[600px] relative',
         isFullscreen
           ? 'fixed top-0 left-0 h-screen w-screen z-[500] rounded-none p-4 gap-4 bg-[var(--background)]'
           : 'gap-5 md:p-5',
@@ -44,7 +44,7 @@ const StyledContainer = forwardRef<
   );
 });
 
-const StyledGameArea = ({
+const GameArea = ({
   isFullscreen = false,
   className,
   children,
@@ -56,7 +56,7 @@ const StyledGameArea = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-col items-stretch flex-1 rounded-[16px] border border-[var(--borderColor)] bg-[var(--background)] overflow-hidden relative',
+      'flex flex-col items-stretch flex-1 rounded-[16px] border border-[var(--borderColor)] bg-[var(--background)] overflow-hidden relative',
       isFullscreen && 'rounded-none border-0',
       className,
     )}
@@ -85,13 +85,13 @@ export function GameContainer({
   }, []);
 
   return (
-    <StyledContainer
+    <Container
       ref={containerRef}
       className={className}
       isFullscreen={isFullscreen}
     >
       <GamesControlPanel roomId={roomId} />
-      <StyledGameArea isFullscreen={isFullscreen}>{children}</StyledGameArea>
-    </StyledContainer>
+      <GameArea isFullscreen={isFullscreen}>{children}</GameArea>
+    </Container>
   );
 }

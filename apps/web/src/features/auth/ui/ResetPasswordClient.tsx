@@ -97,7 +97,7 @@ export default function ResetPasswordClient() {
   if (status === 'success') {
     return (
       <div
-        className="box-border flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4"
+        className="flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4"
         data-testid="reset-password-success"
       >
         <Typography variant="heading" uiSize="lg" weight="700">
@@ -120,7 +120,7 @@ export default function ResetPasswordClient() {
   }
 
   return (
-    <div className="box-border flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4">
+    <div className="flex flex-col items-stretch max-w-[460px] py-8 px-5 gap-4">
       <Typography variant="heading" uiSize="lg" weight="700">
         {copy.title}
       </Typography>
@@ -128,7 +128,7 @@ export default function ResetPasswordClient() {
         {copy.description}
       </Typography>
       <form onSubmit={onSubmit} noValidate>
-        <div className="box-border flex flex-col items-stretch gap-4">
+        <div className="flex flex-col items-stretch gap-4">
           <FloatingLabelInput
             type="password"
             label={copy.passwordLabel}

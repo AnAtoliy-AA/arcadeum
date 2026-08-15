@@ -19,12 +19,9 @@ export function AdminShopItemPreview({
   const fontSize = size >= 48 ? '$5' : size >= 32 ? '$3' : '$1';
 
   return (
-    <div className="box-border flex flex-col bg-[var(--backgroundFocus)] rounded-lg items-center justify-center overflow-hidden">
+    <div className="flex flex-col bg-[var(--backgroundFocus)] rounded-lg items-center justify-center overflow-hidden">
       {colorValue ? (
-        <span
-          className="box-border font-extrabold"
-          style={{ fontSize: fontSize }}
-        >
+        <span className="font-extrabold" style={{ fontSize: fontSize }}>
           Aa
         </span>
       ) : assetUrl ? (
@@ -40,7 +37,7 @@ export function AdminShopItemPreview({
           }}
         />
       ) : (
-        <span className="box-border text-[12px]">?</span>
+        <span className="text-[12px]">?</span>
       )}
     </div>
   );

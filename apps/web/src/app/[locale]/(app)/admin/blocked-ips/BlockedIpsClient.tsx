@@ -60,11 +60,11 @@ export default function BlockedIpsClient() {
   return (
     <PageLayout>
       <Container size="lg">
-        <div className="box-border flex flex-col items-stretch gap-3">
+        <div className="flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t?.title ?? 'Blocked IPs'}</PageTitle>
           {errorMsg && (
             <div
-              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[#4c1d1d]"
+              className="flex flex-col items-stretch p-3 rounded-xl bg-[#4c1d1d]"
               data-testid="blocked-ips-error"
             >
               {errorMsg}

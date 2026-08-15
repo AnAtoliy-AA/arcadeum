@@ -15,7 +15,7 @@ export function GameRoomError({
 
   return (
     <ErrorContainer>
-      <span className="box-border">{error}</span>
+      <span className="">{error}</span>
       {isPrivateRoomError && (
         <>
           <br />

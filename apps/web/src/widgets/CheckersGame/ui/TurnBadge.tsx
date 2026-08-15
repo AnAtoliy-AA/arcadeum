@@ -26,7 +26,7 @@ export function TurnBadge({
 
   return (
     <div
-      className="box-border flex flex-row py-2 px-3 rounded-[999px] border-[var(--borderColor)] self-center items-center gap-2"
+      className="flex flex-row py-2 px-3 rounded-[999px] border-[var(--borderColor)] self-center items-center gap-2"
       style={{
         backgroundColor: myTurn ? '$green10' : '$backgroundHover',
         borderWidth: myTurn ? 0 : 1,
@@ -40,7 +40,7 @@ export function TurnBadge({
         data-testid="checkers-turn-avatar"
       />
       <span
-        className="box-border font-bold"
+        className="font-bold"
         style={{ color: myTurn ? '$white' : theme.textColor }}
       >
         {myTurn ? 'Your turn' : `${display}'s turn`}

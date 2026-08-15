@@ -26,7 +26,7 @@ export function DiscardPile({
 
   return (
     <div
-      className="box-border flex flex-col items-center gap-1 shrink-0"
+      className="flex flex-col items-center gap-1 shrink-0"
       data-testid="arena-discard-pile"
     >
       {/* `LastPlayedCardDisplay` renders `LastPlayedCard`, which is
@@ -35,7 +35,7 @@ export function DiscardPile({
           ancestor and dominates the arena. `CardSlot` is what the legacy
           table layout uses for the same component. */}
       <CardSlot
-        $role="lastPlayed"
+        role="lastPlayed"
         style={{
           width: isNarrow ? 80 : 140,
           height: isNarrow ? 112 : 196,
@@ -97,7 +97,7 @@ export function DiscardPile({
         )}
       </CardSlot>
       <span
-        className="box-border text-[12px] font-extrabold tracking-[0.4px] opacity-[0.85]"
+        className="text-[12px] font-extrabold tracking-[0.4px] opacity-[0.85]"
         data-testid="arena-discard-pile-count"
       >
         {t('games.table.state.discard')} · {count}

@@ -24,7 +24,7 @@ export function HistoryFilters({
   };
 
   return (
-    <div className="box-border flex flex-row flex-wrap gap-4 items-center max-[660px]:flex-col">
+    <div className="flex flex-row flex-wrap gap-4 items-center max-[660px]:flex-col">
       <Input
         className={'flex-1 min-w-[250px]'}
         type="text"
@@ -37,7 +37,7 @@ export function HistoryFilters({
         size="md"
       />
       <div
-        className="box-border flex flex-col items-stretch max-[660px]:w-full"
+        className="flex flex-col items-stretch max-[660px]:w-full"
         style={{ minWidth: 180 }}
       >
         <Select

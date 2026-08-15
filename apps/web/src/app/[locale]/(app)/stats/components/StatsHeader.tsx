@@ -28,7 +28,7 @@ function Header({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center justify-between mb-7',
+        'flex flex-row items-center justify-between mb-7',
         className,
       )}
       {...props}

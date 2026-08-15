@@ -43,7 +43,7 @@ function PromotionModalImpl({
               key={pieceType}
               onClick={() => onSelect(pieceType)}
             >
-              <span className="box-border text-[40px] leading-[16px]">
+              <span className="text-[40px] leading-[16px]">
                 {PIECE_SYMBOLS[pieceType][color]}
               </span>
             </PromotionOption>

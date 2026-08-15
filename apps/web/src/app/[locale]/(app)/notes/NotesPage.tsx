@@ -70,18 +70,18 @@ export default function NotesPage({ initialData }: NotesPageProps) {
   return (
     <PageLayout>
       <Container className={'pt-12'} size="lg">
-        <div className="box-border flex flex-col items-center -mb-12">
+        <div className="flex flex-col items-center -mb-12">
           <PageTitle size="lg">
             {t('payments.notes.title') || 'Supporter Notes'}
           </PageTitle>
-          <span className="box-border text-[rgba(236,239,238,0.7)] text-[20px] max-w-[600px] -mt-4 leading-[34px] text-center">
+          <span className="text-[rgba(236,239,238,0.7)] text-[20px] max-w-[600px] -mt-4 leading-[34px] text-center">
             {t('payments.notes.subtitle') ||
               'Messages of support from our amazing community. Thank you for keeping us going!'}
           </span>
         </div>
 
         {isLoading && !initialData ? (
-          <div className="box-border flex flex-row items-stretch flex-wrap gap-6">
+          <div className="flex flex-row items-stretch flex-wrap gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <Skeleton
                 className={'h-[140px] min-w-[300px] flex-1 rounded-[16px]'}
@@ -98,25 +98,25 @@ export default function NotesPage({ initialData }: NotesPageProps) {
           />
         ) : (
           <>
-            <div className="box-border flex flex-row items-stretch flex-wrap gap-6 min-h-[200px]">
+            <div className="flex flex-row items-stretch flex-wrap gap-6 min-h-[200px]">
               {allNotes.map((note) => (
                 <GlassCard className={'min-w-[300px] flex-1'} key={note.id}>
-                  <span className="box-border text-[var(--color)] text-[18px] leading-[34px] -mb-4 block">
+                  <span className="text-[var(--color)] text-[18px] leading-[34px] -mb-4 block">
                     {note.note}
                   </span>
-                  <div className="box-border flex flex-row justify-between items-end gap-4 flex-wrap">
-                    <div className="box-border flex flex-col items-stretch gap-1">
+                  <div className="flex flex-row justify-between items-end gap-4 flex-wrap">
+                    <div className="flex flex-col items-stretch gap-1">
                       {note.displayName ? (
-                        <span className="box-border text-[var(--primaryGradientStart)] font-semibold text-[18px]">
+                        <span className="text-[var(--primaryGradientStart)] font-semibold text-[18px]">
                           {note.displayName}
                         </span>
                       ) : (
-                        <span className="box-border text-[rgba(236,239,238,0.45)] text-[18px] italic">
+                        <span className="text-[rgba(236,239,238,0.45)] text-[18px] italic">
                           {t('payments.notes.anonymous') ||
                             'Anonymous Supporter'}
                         </span>
                       )}
-                      <span className="box-border text-[rgba(236,239,238,0.45)] text-[14px]">
+                      <span className="text-[rgba(236,239,238,0.45)] text-[14px]">
                         {formatDate(note.createdAt, locale, {
                           year: 'numeric',
                           month: 'short',
@@ -124,8 +124,8 @@ export default function NotesPage({ initialData }: NotesPageProps) {
                         })}
                       </span>
                     </div>
-                    <div className="box-border flex flex-row items-stretch bg-[rgba(122,215,255,0.1)] border border-[rgba(122,215,255,0.3)] py-1 px-3 rounded-2xl self-end">
-                      <span className="box-border text-[var(--primaryGradientStart)] text-[16px] font-semibold">
+                    <div className="flex flex-row items-stretch bg-[rgba(122,215,255,0.1)] border border-[rgba(122,215,255,0.3)] py-1 px-3 rounded-2xl self-end">
+                      <span className="text-[var(--primaryGradientStart)] text-[16px] font-semibold">
                         {formatCurrency(note.amount, locale, note.currency, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 2,
@@ -143,8 +143,8 @@ export default function NotesPage({ initialData }: NotesPageProps) {
             />
 
             {isFetchingNextPage && (
-              <div className="box-border flex flex-row items-stretch justify-center py-8">
-                <span className="box-border text-[rgba(236,239,238,0.45)]">
+              <div className="flex flex-row items-stretch justify-center py-8">
+                <span className="text-[rgba(236,239,238,0.45)]">
                   {t('payments.notes.loading') || 'Loading...'}
                 </span>
               </div>

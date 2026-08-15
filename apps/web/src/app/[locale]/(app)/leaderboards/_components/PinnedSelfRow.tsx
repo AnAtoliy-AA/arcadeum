@@ -23,7 +23,7 @@ export function PinnedSelfRow({
   const max = topRating ?? player.rating;
   return (
     <div
-      className="box-border bg-[rgba(15,12,25,0.92)] border-t border-[var(--mythicAccent)] px-4 py-3"
+      className="bg-[rgba(15,12,25,0.92)] border-t border-[var(--mythicAccent)] px-4 py-3"
       style={{
         position: 'fixed',
         left: 0,
@@ -38,12 +38,12 @@ export function PinnedSelfRow({
       }}
       data-testid="leaderboard-self-row"
     >
-      <div className="box-border flex flex-row items-center gap-3 flex-nowrap">
-        <span className="box-border text-[12px] tracking-[2px] opacity-[0.6] uppercase max-[800px]:hidden">
+      <div className="flex flex-row items-center gap-3 flex-nowrap">
+        <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase max-[800px]:hidden">
           {tt.pinned ?? 'Your rank'}
         </span>
         {isAnon ? (
-          <span className="box-border text-[16px] opacity-[0.85] flex-1 line-clamp-1">
+          <span className="text-[16px] opacity-[0.85] flex-1 line-clamp-1">
             {tt.unranked ?? 'Unranked — play 5 ranked games to appear'}
           </span>
         ) : (
@@ -51,14 +51,12 @@ export function PinnedSelfRow({
             <RankBadge tier={player.tier as never}>
               {`#${player.rank}`}
             </RankBadge>
-            <span className="box-border font-bold line-clamp-1">
-              {player.name}
-            </span>
+            <span className="font-bold line-clamp-1">{player.name}</span>
             {/* Hide rating viz on small screens so the row stays one line */}
-            <div className="box-border flex-1 min-w-[120px] max-w-[320px] max-[800px]:hidden">
+            <div className="flex-1 min-w-[120px] max-w-[320px] max-[800px]:hidden">
               <EnergyBar value={player.rating} max={max} />
             </div>
-            <div className="box-border flex flex-col items-end max-[800px]:hidden">
+            <div className="flex flex-col items-end max-[800px]:hidden">
               <FormPips results={player.recentForm} max={8} variant="letter" />
             </div>
           </>

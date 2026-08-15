@@ -19,7 +19,7 @@ export type EventTickerProps = {
 };
 
 const RootClasses = [
-  'box-border',
+  '',
   'flex',
   'flex-row',
   'items-center',

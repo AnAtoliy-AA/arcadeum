@@ -157,9 +157,9 @@ export function SupportPage({
               {localizedTeamMembers.map((member, index) => (
                 <AnimatedGlassCard
                   key={member.key}
-                  $delay={`${index * 0.1 + 0.2}s`}
+                  delay={`${index * 0.1 + 0.2}s`}
                 >
-                  <TeamCardInner $hasLinkedin={!!member.linkedin}>
+                  <TeamCardInner hasLinkedin={!!member.linkedin}>
                     <TeamHeader>
                       <TeamIcon aria-hidden="true">{member.icon}</TeamIcon>
                       {member.linkedin && (
@@ -173,7 +173,7 @@ export function SupportPage({
                         </LinkedInButton>
                       )}
                     </TeamHeader>
-                    <div className="box-border flex flex-col items-stretch gap-1">
+                    <div className="flex flex-col items-stretch gap-1">
                       <TeamName>{member.name}</TeamName>
                       <TeamRole>{member.role}</TeamRole>
                     </div>
@@ -192,7 +192,7 @@ export function SupportPage({
               {localizedActions.map((action, index) => (
                 <AnimatedGlassCard
                   key={action.key}
-                  $delay={`${index * 0.1 + 0.5}s`}
+                  delay={`${index * 0.1 + 0.5}s`}
                 >
                   <ActionHeader>
                     <TeamIcon aria-hidden="true">{action.icon}</TeamIcon>

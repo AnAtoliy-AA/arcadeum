@@ -25,12 +25,10 @@ export function AdminShopTable({ catalog, labels }: Props) {
   if (catalog.length === 0) {
     return (
       <div
-        className="box-border flex flex-col items-stretch p-4"
+        className="flex flex-col items-stretch p-4"
         data-testid="admin-shop-empty"
       >
-        <span className="box-border text-[16px] text-[#94a3b8]">
-          {labels.empty}
-        </span>
+        <span className="text-[16px] text-[#94a3b8]">{labels.empty}</span>
       </div>
     );
   }
@@ -42,8 +40,8 @@ export function AdminShopTable({ catalog, labels }: Props) {
 
   return (
     <>
-      <div className="box-border flex flex-row justify-between items-center -mb-3">
-        <span className="box-border text-[18px] font-semibold">
+      <div className="flex flex-row justify-between items-center -mb-3">
+        <span className="text-[18px] font-semibold">
           {catalog.length} items
         </span>
         <Button
@@ -93,7 +91,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
                   }}
                 >
                   <Td>
-                    <div className="box-border flex flex-row items-center gap-2">
+                    <div className="flex flex-row items-center gap-2">
                       <AdminShopItemPreview
                         size={32}
                         colorValue={item.colorValue}
@@ -136,7 +134,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
                     )}
                   </Td>
                   <Td>
-                    <div className="box-border flex flex-row items-stretch gap-2">
+                    <div className="flex flex-row items-stretch gap-2">
                       <RowActionButton
                         onClick={() => setEditing(item)}
                         data-testid={`admin-shop-edit-${item.id}`}

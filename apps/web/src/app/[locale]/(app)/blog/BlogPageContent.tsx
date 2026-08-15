@@ -51,7 +51,7 @@ export default function BlogPageContent({ t: initialT }: BlogPageContentProps) {
 
         {t?.features && (
           <Section variant="legal">
-            <div className="box-border flex flex-row items-stretch flex-wrap gap-4">
+            <div className="flex flex-row items-stretch flex-wrap gap-4">
               {t.features.map((feature: BlogFeature | null, index: number) => {
                 if (!feature) return null;
                 return (
@@ -61,7 +61,7 @@ export default function BlogPageContent({ t: initialT }: BlogPageContentProps) {
                     }
                     key={index}
                   >
-                    <div className="box-border flex flex-col items-stretch gap-2">
+                    <div className="flex flex-col items-stretch gap-2">
                       <Typography
                         className={'font-bold'}
                         variant="label"

@@ -28,7 +28,7 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
 }
 
 const RootClasses = [
-  'box-border',
+  '',
   'relative',
   'flex',
   'flex-col',

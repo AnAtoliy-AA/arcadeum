@@ -8,7 +8,7 @@ export type MythicPortraitProps = {
   className?: string;
 };
 
-const FrameClasses = 'box-border relative';
+const FrameClasses = 'relative';
 
 const ArcClasses = 'absolute border-2 border-[var(--mythicAccent)]';
 

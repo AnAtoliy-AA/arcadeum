@@ -29,7 +29,7 @@ export const TableStats: React.FC<TableStatsProps> = ({
   const media = useMediaQuery();
   if (media.sm) return null;
   return (
-    <TableInfo $variant={cardVariant as GameVariant}>
+    <TableInfo variant={cardVariant as GameVariant}>
       {(cardVariant as string) === GAME_VARIANT.UNDERWATER && (
         <>
           <SonarRadar />
@@ -103,7 +103,7 @@ export const TableStats: React.FC<TableStatsProps> = ({
             <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
           </svg>
         </StatIcon>
-        <StatValue $isWarning={true}>{pendingDraws}</StatValue>
+        <StatValue isWarning={true}>{pendingDraws}</StatValue>
       </TableStat>
     </TableInfo>
   );

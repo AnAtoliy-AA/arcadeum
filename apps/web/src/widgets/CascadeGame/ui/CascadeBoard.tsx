@@ -112,7 +112,7 @@ export function CascadeBoard({
 
   return (
     <div
-      className={`box-border flex flex-col items-stretch w-full gap-3 p-0 pt-4 rounded-2xl ${`${styles.table} ${cardStyle === 'aurora' ? styles.aurora : ''}`}`}
+      className={`flex flex-col items-stretch w-full gap-3 p-0 pt-4 rounded-2xl ${`${styles.table} ${cardStyle === 'aurora' ? styles.aurora : ''}`}`}
       style={
         {
           background: theme.background,
@@ -126,17 +126,15 @@ export function CascadeBoard({
         } as React.CSSProperties
       }
     >
-      <div
-        className={`box-border flex flex-col items-stretch gap-3 ${styles.tableLayer}`}
-      >
+      <div className={`flex flex-col items-stretch gap-3 ${styles.tableLayer}`}>
         {/* Opponents */}
-        <div className="box-border flex flex-row items-stretch gap-3 flex-wrap justify-center">
+        <div className="flex flex-row items-stretch gap-3 flex-wrap justify-center">
           {opponents.map((opp) => {
             const backs = Math.min(opp.hand.length, MAX_FAN_BACKS);
             const isActive = opp.playerId === activeTurnId;
             return (
               <div
-                className={`box-border flex flex-col items-stretch ${`${styles.pod} ${isActive ? styles.podActive : ''}`}`}
+                className={`flex flex-col items-stretch ${`${styles.pod} ${isActive ? styles.podActive : ''}`}`}
                 key={opp.playerId}
               >
                 {isActive && !disabled ? (
@@ -189,7 +187,7 @@ export function CascadeBoard({
             race by arrival order. Self-press = safe; other-press = at-risk
             player draws 2 penalty cards. */}
         {cascadeOpen && onCallCascade ? (
-          <div className="box-border flex flex-row items-stretch justify-center pt-1">
+          <div className="flex flex-row items-stretch justify-center pt-1">
             <button
               type="button"
               onClick={onCallCascade}

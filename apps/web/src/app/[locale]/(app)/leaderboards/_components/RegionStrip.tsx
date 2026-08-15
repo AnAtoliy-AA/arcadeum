@@ -23,14 +23,14 @@ export function RegionStrip({
   const tRegions = (t?.regions ?? {}) as Record<string, string | undefined>;
   const title = tRegions.title ?? 'By region';
   return (
-    <div className="box-border flex flex-col items-stretch gap-3">
-      <span className="box-border text-[14px] tracking-[2px] opacity-[0.7] uppercase">
+    <div className="flex flex-col items-stretch gap-3">
+      <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
         {title}
       </span>
-      <div className="box-border flex flex-row items-stretch h-[14px] rounded-[7px] overflow-hidden border border-[var(--borderColor)]">
+      <div className="flex flex-row items-stretch h-[14px] rounded-[7px] overflow-hidden border border-[var(--borderColor)]">
         {regions.map((r) => (
           <div
-            className="box-border"
+            className=""
             style={{
               backgroundColor: COLORS[r.region] ?? '#94a3b8',
               width: `${r.share * 100}%`,
@@ -39,20 +39,17 @@ export function RegionStrip({
           />
         ))}
       </div>
-      <div className="box-border flex flex-row items-stretch gap-3 flex-wrap">
+      <div className="flex flex-row items-stretch gap-3 flex-wrap">
         {regions.map((r) => (
-          <div
-            className="box-border flex flex-row items-center gap-2"
-            key={r.region}
-          >
+          <div className="flex flex-row items-center gap-2" key={r.region}>
             <div
-              className="box-border w-[10px] h-[10px] rounded-3xl"
+              className="w-[10px] h-[10px] rounded-3xl"
               style={{ backgroundColor: COLORS[r.region] ?? '#94a3b8' }}
             />
-            <span className="box-border text-[14px] opacity-[0.85]">
+            <span className="text-[14px] opacity-[0.85]">
               {tRegions[r.region] ?? r.region.toUpperCase()}
             </span>
-            <span className="box-border text-[14px] opacity-[0.6] tracking-[1px]">
+            <span className="text-[14px] opacity-[0.6] tracking-[1px]">
               {Math.round(r.share * 100)}%
             </span>
           </div>

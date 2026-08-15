@@ -107,7 +107,7 @@ export function UsersTable({
 
   if (isLoading && items.length === 0) {
     return (
-      <div className="box-border flex flex-col items-center p-5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
       </div>
     );
@@ -116,7 +116,7 @@ export function UsersTable({
   if (!isLoading && items.length === 0) {
     return (
       <GlassCard className={'p-5 items-center'} data-testid="users-table-empty">
-        <span className="box-border opacity-[0.7]">
+        <span className="opacity-[0.7]">
           {hasFilter ? labels.empty.noResults : labels.empty.noUsers}
         </span>
       </GlassCard>
@@ -135,21 +135,21 @@ export function UsersTable({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-3"
+      className="flex flex-col items-stretch gap-3"
       data-testid="users-table"
     >
-      <div className="box-border flex flex-row items-center justify-between px-1">
-        <span className="box-border opacity-[0.7] text-[12px]">
+      <div className="flex flex-row items-center justify-between px-1">
+        <span className="opacity-[0.7] text-[12px]">
           {labels.totalLabel.replace('{total}', String(total))}
         </span>
       </div>
 
       <GlassCard className={'p-0 overflow-hidden'}>
         <div
-          className="box-border flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
+          className="flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
           data-testid="users-table-header"
         >
-          <div className="box-border flex flex-col w-[32px] items-center">
+          <div className="flex flex-col w-[32px] items-center">
             <input
               type="checkbox"
               checked={allSelectableSelected}
@@ -157,13 +157,13 @@ export function UsersTable({
               data-testid="select-all-checkbox"
             />
           </div>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.username}
           </span>
-          <span className="box-border w-[120px] font-bold text-[12px] opacity-[0.85]">
+          <span className="w-[120px] font-bold text-[12px] opacity-[0.85]">
             {labels.table.role}
           </span>
-          <span className="box-border w-[150px] font-bold text-[12px] opacity-[0.85]">
+          <span className="w-[150px] font-bold text-[12px] opacity-[0.85]">
             {labels.table.actions}
           </span>
         </div>
@@ -196,16 +196,16 @@ export function UsersTable({
 
       {selectedIds.size > 0 && (
         <div
-          className="box-border flex flex-row gap-3 items-center justify-between p-3 rounded-xl bg-[var(--backgroundFocus)]"
+          className="flex flex-row gap-3 items-center justify-between p-3 rounded-xl bg-[var(--backgroundFocus)]"
           data-testid="bulk-actions-bar"
         >
-          <span className="box-border text-[14px] opacity-[0.8]">
+          <span className="text-[14px] opacity-[0.8]">
             {labels.table.selectedCount.replace(
               '{count}',
               String(selectedIds.size),
             )}
           </span>
-          <div className="box-border flex flex-row items-stretch gap-2">
+          <div className="flex flex-row items-stretch gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -226,7 +226,7 @@ export function UsersTable({
         </div>
       )}
 
-      <div className="box-border flex flex-row gap-3 items-center justify-center pt-2">
+      <div className="flex flex-row gap-3 items-center justify-center pt-2">
         <Button
           variant="outline"
           size="sm"
@@ -235,7 +235,7 @@ export function UsersTable({
         >
           {labels.pagination.prev}
         </Button>
-        <span className="box-border opacity-[0.8] text-[14px]">
+        <span className="opacity-[0.8] text-[14px]">
           {labels.pagination.of
             .replace('{current}', String(page))
             .replace('{total}', String(totalPages))}

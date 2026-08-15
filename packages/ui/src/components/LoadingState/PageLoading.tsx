@@ -12,7 +12,6 @@ const s = {
     backgroundColor: '#151718',
     width: '100%',
     fontFamily: 'inherit',
-    boxSizing: 'border-box' as const,
   },
   container: {
     maxWidth: 1400,

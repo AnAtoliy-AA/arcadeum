@@ -67,17 +67,22 @@ export function Modal({ open, onOpenChange, children, className }: ModalProps) {
   );
 }
 
-export type StyledModalFrameProps = {
-  variant?: 'default' | 'cyberpunk' | 'underwater';
+export type ModalVariant = 'default' | 'cyberpunk' | 'underwater';
+
+function resolveModalVariant(variant?: string): ModalVariant {
+  return variant === 'cyberpunk' || variant === 'underwater'
+    ? variant
+    : 'default';
+}
+
+export type ModalFrameProps = {
+  variant?: ModalVariant;
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'className' | 'style'>;
 
-const FRAME_VARIANT_CLASSES: Record<
-  'default' | 'cyberpunk' | 'underwater',
-  string
-> = {
+const FRAME_VARIANT_CLASSES: Record<ModalVariant, string> = {
   default:
     'border border-[var(--borderColor)] bg-[var(--background)] shadow-[0_20px_60px_rgba(0,0,0,0.5)]',
   cyberpunk:
@@ -86,16 +91,16 @@ const FRAME_VARIANT_CLASSES: Record<
     'border-2 border-[rgba(34,211,238,0.5)] bg-[rgba(8,51,68,0.85)] shadow-[0_20px_30px_rgba(34,211,238,0.2)]',
 };
 
-export const StyledModalFrame = ({
+export const ModalFrame = ({
   variant = 'default',
   className,
   style,
   children,
   ...props
-}: StyledModalFrameProps) => (
+}: ModalFrameProps) => (
   <div
     className={cx(
-      'box-border relative w-full max-w-[600px] max-h-[calc(100vh-40px)] overflow-hidden',
+      'relative w-full max-w-[600px] max-h-[calc(100vh-40px)] overflow-hidden',
       variant === 'cyberpunk' ? 'rounded-[4px]' : 'rounded-[24px]',
       FRAME_VARIANT_CLASSES[variant],
       className,
@@ -107,7 +112,7 @@ export const StyledModalFrame = ({
   </div>
 );
 
-export const StyledScrollArea = ({
+export const ScrollArea = ({
   className,
   children,
   ...props
@@ -117,7 +122,7 @@ export const StyledScrollArea = ({
 } & React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-col items-stretch w-full h-full p-5 overflow-y-auto',
+      'flex flex-col items-stretch w-full h-full p-5 overflow-y-auto',
       className,
     )}
     {...props}
@@ -128,47 +133,44 @@ export const StyledScrollArea = ({
 
 export const ModalContent = ({
   children,
-  $variant,
+  variant,
   maxWidth,
   className,
   style,
   ...props
 }: {
-  $variant?: string;
+  variant?: string;
   maxWidth?: string | number;
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'className' | 'style'>) => {
-  const variant: StyledModalFrameProps['variant'] =
-    $variant === 'cyberpunk' || $variant === 'underwater'
-      ? $variant
-      : 'default';
+  const resolvedVariant = resolveModalVariant(variant);
 
   return (
-    <StyledModalFrame
+    <ModalFrame
       className={cx('m-auto', className)}
       style={maxWidth ? { maxWidth, ...style } : style}
-      variant={variant}
+      variant={resolvedVariant}
       {...props}
     >
-      {variant === 'cyberpunk' && (
+      {resolvedVariant === 'cyberpunk' && (
         <>
           <div
-            className="box-border absolute top-[-2px] left-[-2px] w-[20px] h-[20px] border-t-[2px] border-l-[2px] pointer-events-none"
+            className="absolute top-[-2px] left-[-2px] w-[20px] h-[20px] border-t-[2px] border-l-[2px] pointer-events-none"
             style={{ borderColor: VARIANT_COLORS.cyberpunk.primary }}
           />
           <div
-            className="box-border absolute bottom-[-2px] right-[-2px] w-[20px] h-[20px] border-b-[2px] border-r-[2px] pointer-events-none"
+            className="absolute bottom-[-2px] right-[-2px] w-[20px] h-[20px] border-b-[2px] border-r-[2px] pointer-events-none"
             style={{ borderColor: VARIANT_COLORS.cyberpunk.primary }}
           />
         </>
       )}
-      {variant === 'underwater' && (
-        <div className="box-border absolute inset-[4px] border border-[rgba(34,_211,_238,_0.2)] rounded-[20px] pointer-events-none" />
+      {resolvedVariant === 'underwater' && (
+        <div className="absolute inset-[4px] border border-[rgba(34,_211,_238,_0.2)] rounded-[20px] pointer-events-none" />
       )}
-      <StyledScrollArea>{children}</StyledScrollArea>
-    </StyledModalFrame>
+      <ScrollArea>{children}</ScrollArea>
+    </ModalFrame>
   );
 };
 
@@ -184,7 +186,7 @@ export const ModalHeader = ({
 } & React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center justify-between mb-4 pb-3 border-b-2 border-b-[var(--borderColor)]',
+      'flex flex-row items-center justify-between mb-4 pb-3 border-b-2 border-b-[var(--borderColor)]',
       variant === 'cyberpunk' && 'border-b-[rgba(6,182,212,0.3)]',
       className,
     )}
@@ -194,10 +196,7 @@ export const ModalHeader = ({
   </div>
 );
 
-const TITLE_VARIANT_CLASSES: Record<
-  'default' | 'cyberpunk' | 'underwater',
-  string
-> = {
+const TITLE_VARIANT_CLASSES: Record<ModalVariant, string> = {
   default: 'text-[var(--color)]',
   cyberpunk:
     'uppercase tracking-[2px] text-[#d946ef] [text-shadow:0_0_10px_rgba(232,121,249,0.5)]',
@@ -206,25 +205,22 @@ const TITLE_VARIANT_CLASSES: Record<
 };
 
 export const ModalTitle = ({
-  $variant,
+  variant,
   className,
   children,
   ...props
 }: {
-  $variant?: string;
+  variant?: string;
   className?: string;
   children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLSpanElement>) => {
-  const variant: StyledModalFrameProps['variant'] =
-    $variant === 'cyberpunk' || $variant === 'underwater'
-      ? $variant
-      : 'default';
+  const resolvedVariant = resolveModalVariant(variant);
 
   return (
     <span
       className={cx(
-        'box-border text-[28px] font-bold',
-        TITLE_VARIANT_CLASSES[variant],
+        'text-[28px] font-bold',
+        TITLE_VARIANT_CLASSES[resolvedVariant],
         className,
       )}
       {...props}
@@ -235,16 +231,16 @@ export const ModalTitle = ({
 };
 
 interface CloseButtonProps extends React.ComponentProps<typeof Button> {
-  $variant?: string;
+  accent?: string;
 }
 
-export const CloseButton = ({ $variant, ...props }: CloseButtonProps) => (
+export const CloseButton = ({ accent, ...props }: CloseButtonProps) => (
   <Button
     className="hover:rotate-[180deg] hover:scale-[1.1]"
     variant="icon"
     size="sm"
     data-testid="modal-close-button"
-    gameVariant={$variant as GameVariant}
+    gameVariant={accent as GameVariant}
     {...props}
   />
 );
@@ -258,10 +254,7 @@ export const ModalActions = ({
   children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cx(
-      'box-border flex flex-row items-stretch gap-3 mt-5',
-      className,
-    )}
+    className={cx('flex flex-row items-stretch gap-3 mt-5', className)}
     {...props}
   >
     {children}
@@ -276,43 +269,34 @@ export const ModalSection = ({
   className?: string;
   children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx('box-border flex flex-col items-stretch mb-4', className)}
-    {...props}
-  >
+  <div className={cx('flex flex-col items-stretch mb-4', className)} {...props}>
     {children}
   </div>
 );
 
-const SECTION_LABEL_VARIANT_CLASSES: Record<
-  'default' | 'cyberpunk' | 'underwater',
-  string
-> = {
+const SECTION_LABEL_VARIANT_CLASSES: Record<ModalVariant, string> = {
   default: 'text-[var(--textSecondary)]',
   cyberpunk: 'text-[#06b6d4] [text-shadow:0_0_5px_rgba(6,182,212,0.5)]',
   underwater: 'text-[#22d3ee] [text-shadow:0_0_5px_rgba(34,211,238,0.5)]',
 };
 
 export const SectionLabel = ({
-  $variant,
+  variant,
   className,
   children,
   ...props
 }: {
-  $variant?: string;
+  variant?: string;
   className?: string;
   children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLSpanElement>) => {
-  const variant: StyledModalFrameProps['variant'] =
-    $variant === 'cyberpunk' || $variant === 'underwater'
-      ? $variant
-      : 'default';
+  const resolvedVariant = resolveModalVariant(variant);
 
   return (
     <span
       className={cx(
-        'box-border text-[14px] font-semibold uppercase tracking-[0.5px] mb-2',
-        SECTION_LABEL_VARIANT_CLASSES[variant],
+        'text-[14px] font-semibold uppercase tracking-[0.5px] mb-2',
+        SECTION_LABEL_VARIANT_CLASSES[resolvedVariant],
         className,
       )}
       {...props}
@@ -331,10 +315,7 @@ export const RulesText = ({
   children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cx(
-      'box-border text-[16px] leading-[20px] opacity-[0.9]',
-      className,
-    )}
+    className={cx('text-[16px] leading-[20px] opacity-[0.9]', className)}
     {...props}
   >
     {children}

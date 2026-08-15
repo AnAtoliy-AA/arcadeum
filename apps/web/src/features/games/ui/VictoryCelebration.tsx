@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 export type CelebrationTone = 'victory' | 'defeat' | 'draw';
 
 const LAYER_CLASSES =
-  'box-border flex flex-col items-stretch fixed top-0 left-0 w-screen h-[100dvh] pointer-events-none overflow-hidden z-0';
+  'flex flex-col items-stretch fixed top-0 left-0 w-screen h-[100dvh] pointer-events-none overflow-hidden z-0';
 
 // Gold-weighted palette for wins; muted cool flecks for losses.
 const VICTORY_COLORS = [

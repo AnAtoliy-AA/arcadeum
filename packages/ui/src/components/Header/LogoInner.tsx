@@ -9,7 +9,7 @@ export type LogoInnerProps = {
 };
 
 const LogoInnerClasses = [
-  'box-border',
+  '',
   'flex',
   'shrink-0',
   'cursor-pointer',

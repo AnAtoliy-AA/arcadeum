@@ -10,18 +10,18 @@ const CARD_SLOT_CLASS = {
 export function CardSlot({
   className,
   style,
-  $role,
+  role,
   ...props
 }: {
   className?: string;
   style?: CSSProperties;
-  $role?: 'deck' | 'lastPlayed';
+  role?: 'deck' | 'lastPlayed';
 } & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-center justify-center relative z-[2]',
-        $role ? CARD_SLOT_CLASS[$role] : undefined,
+        'flex flex-col items-center justify-center relative z-[2]',
+        role ? CARD_SLOT_CLASS[role] : undefined,
         className,
       )}
       style={style}

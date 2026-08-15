@@ -159,10 +159,10 @@ export default function SeaBattleCreationConfig({
       </Section>
 
       <Section title={t('games.create.sectionHouseRules')}>
-        <div className="box-border flex flex-col items-stretch gap-3">
-          <div className="box-border flex flex-col items-stretch gap-1">
-            <div className="box-border flex flex-row items-center gap-2">
-              <span className="box-border text-[18px] font-semibold">
+        <div className="flex flex-col items-stretch gap-3">
+          <div className="flex flex-col items-stretch gap-1">
+            <div className="flex flex-row items-center gap-2">
+              <span className="text-[18px] font-semibold">
                 {t('games.create.seaBattleGridSize') || 'Grid Size'}
               </span>
               {ruleComingSoon.get('gridSize') && (
@@ -171,7 +171,7 @@ export default function SeaBattleCreationConfig({
                 </ComingSoonBadge>
               )}
             </div>
-            <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+            <div className="flex flex-row items-stretch gap-2 flex-wrap">
               {GRID_SIZES.map((gs) => (
                 <Button
                   key={gs.value}
@@ -194,13 +194,13 @@ export default function SeaBattleCreationConfig({
             </div>
           </div>
 
-          <div className="box-border flex flex-col items-stretch gap-1">
-            <div className="box-border flex flex-row items-center gap-2">
-              <span className="box-border text-[18px] font-semibold">
+          <div className="flex flex-col items-stretch gap-1">
+            <div className="flex flex-row items-center gap-2">
+              <span className="text-[18px] font-semibold">
                 {t('games.create.seaBattleShipCount') || 'Number of Ships'}
               </span>
             </div>
-            <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+            <div className="flex flex-row items-stretch gap-2 flex-wrap">
               {getShipCountOptions(options.gridSize ?? 10).map((count) => (
                 <Button
                   key={count}

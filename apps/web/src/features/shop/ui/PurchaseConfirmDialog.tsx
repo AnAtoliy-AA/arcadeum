@@ -121,12 +121,12 @@ function PurchaseConfirmDialogInner({
         onClose={onClose}
         testId="purchase-confirm-dialog"
       >
-        <div className="box-border flex flex-col gap-3 items-center">
-          <span className="box-border text-[48px]">✓</span>
-          <span className="box-border text-[24px] font-bold">
+        <div className="flex flex-col gap-3 items-center">
+          <span className="text-[48px]">✓</span>
+          <span className="text-[24px] font-bold">
             {labels.successTitle ?? 'Equipped'}
           </span>
-          <span className="box-border text-[16px] text-[var(--colorPress)] text-center">
+          <span className="text-[16px] text-[var(--colorPress)] text-center">
             {(labels.successBody ?? '{name} is now equipped.').replace(
               '{name}',
               itemName,
@@ -142,23 +142,21 @@ function PurchaseConfirmDialogInner({
 
   return (
     <DialogShell open={open} onClose={onClose} testId="purchase-confirm-dialog">
-      <div className="box-border flex flex-col items-stretch gap-3">
-        <span className="box-border text-[24px] font-bold">{labels.title}</span>
-        <div className="box-border flex flex-col items-stretch gap-2">
-          <span className="box-border text-[20px] font-semibold">
-            {itemName}
-          </span>
-          <span className="box-border text-[16px] text-[var(--colorPress)]">
+      <div className="flex flex-col items-stretch gap-3">
+        <span className="text-[24px] font-bold">{labels.title}</span>
+        <div className="flex flex-col items-stretch gap-2">
+          <span className="text-[20px] font-semibold">{itemName}</span>
+          <span className="text-[16px] text-[var(--colorPress)]">
             {itemDesc}
           </span>
         </div>
-        <div className="box-border flex flex-row gap-3 items-center justify-between">
-          <span className="box-border text-[18px] font-semibold">
+        <div className="flex flex-row gap-3 items-center justify-between">
+          <span className="text-[18px] font-semibold">
             {item.priceAmount === 0
               ? labels.free
               : `${item.priceAmount} ${item.priceCurrency}`}
           </span>
-          <span className="box-border text-[14px] text-[var(--colorPress)]">
+          <span className="text-[14px] text-[var(--colorPress)]">
             {labels.yourBalance
               .replace('{amount}', formatNumber(balanceForCurrency, locale))
               .replace('{currency}', item.priceCurrency)}
@@ -166,13 +164,13 @@ function PurchaseConfirmDialogInner({
         </div>
         {errorMsg ? (
           <span
-            className="box-border text-[var(--danger)] text-[14px]"
+            className="text-[var(--danger)] text-[14px]"
             data-testid="purchase-error"
           >
             {errorMsg}
           </span>
         ) : null}
-        <div className="box-border flex flex-row items-stretch gap-3 justify-end">
+        <div className="flex flex-row items-stretch gap-3 justify-end">
           <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>

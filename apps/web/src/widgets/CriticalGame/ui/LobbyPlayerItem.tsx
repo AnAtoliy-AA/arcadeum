@@ -71,10 +71,10 @@ export function SortablePlayerItem({
     <PlayerItem
       ref={setNodeRef as unknown as (instance: unknown) => void}
       style={style}
-      $isHost={isRoomHost}
+      isHost={isRoomHost}
     >
       <div
-        className="box-border flex flex-row items-center flex-1"
+        className="flex flex-row items-center flex-1"
         {...(attributes as unknown as Record<string, unknown>)}
         {...(listeners as unknown as Record<string, unknown>)}
       >
@@ -94,7 +94,7 @@ export function SortablePlayerItem({
       {isRoomHost && <PlayerBadge>HOST</PlayerBadge>}
 
       {isHost && (
-        <div className="box-border flex flex-row items-center gap-1 pl-2">
+        <div className="flex flex-row items-center gap-1 pl-2">
           <Button
             variant="ghost"
             size="sm"
@@ -120,7 +120,7 @@ export function SortablePlayerItem({
             ↓
           </Button>
           <div
-            className="box-border flex flex-row items-stretch opacity-[0.5] cursor-grab"
+            className="flex flex-row items-stretch opacity-[0.5] cursor-grab"
             {...(attributes as unknown as Record<string, unknown>)}
             {...(listeners as unknown as Record<string, unknown>)}
           >

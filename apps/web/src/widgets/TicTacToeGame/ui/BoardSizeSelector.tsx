@@ -70,11 +70,11 @@ export function BoardSizeSelector({
   const isInfinity = internalSize === 'infinity';
 
   return (
-    <div className="box-border flex flex-col items-stretch gap-2">
-      <span className="box-border text-[16px] font-semibold text-[var(--color)]">
+    <div className="flex flex-col items-stretch gap-2">
+      <span className="text-[16px] font-semibold text-[var(--color)]">
         {t('games.tic_tac_toe_v1.lobby.boardSize')}
       </span>
-      <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+      <div className="flex flex-row items-stretch gap-2 flex-wrap">
         {BOARD_SIZES.map((size) => {
           const isActive = size === internalSize;
           return (
@@ -97,12 +97,12 @@ export function BoardSizeSelector({
               data-active={isActive ? 'on' : undefined}
               onClick={() => handlePick(size)}
             >
-              <div className="box-border flex flex-col items-center gap-2">
-                <span className="box-border">
+              <div className="flex flex-col items-center gap-2">
+                <span className="">
                   {size === 'infinity' ? '∞' : `${size}×${size}`}
                 </span>
                 <span
-                  className="box-border text-[11px] font-medium"
+                  className="text-[11px] font-medium"
                   style={{ opacity: isActive ? 0.85 : 0.65 }}
                 >
                   {size === 'infinity'
@@ -118,12 +118,12 @@ export function BoardSizeSelector({
       </div>
 
       {isInfinity && (
-        <div className="box-border flex flex-col items-stretch gap-3 -mt-2 p-3 bg-[rgba(99,102,241,0.08)] rounded-[10px]">
-          <div className="box-border flex flex-col items-stretch gap-1">
-            <span className="box-border text-[14px] font-semibold text-[var(--color)]">
+        <div className="flex flex-col items-stretch gap-3 -mt-2 p-3 bg-[rgba(99,102,241,0.08)] rounded-[10px]">
+          <div className="flex flex-col items-stretch gap-1">
+            <span className="text-[14px] font-semibold text-[var(--color)]">
               {t('games.tic_tac_toe_v1.lobby.expansionMargin')}
             </span>
-            <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+            <div className="flex flex-row items-stretch gap-2 flex-wrap">
               {INFINITY_MARGIN_OPTIONS.map((margin) => {
                 const isActive = margin === internalMargin;
                 return (
@@ -149,11 +149,11 @@ export function BoardSizeSelector({
             </div>
           </div>
 
-          <div className="box-border flex flex-col items-stretch gap-1">
-            <span className="box-border text-[14px] font-semibold text-[var(--color)]">
+          <div className="flex flex-col items-stretch gap-1">
+            <span className="text-[14px] font-semibold text-[var(--color)]">
               {t('games.tic_tac_toe_v1.lobby.winCondition')}
             </span>
-            <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+            <div className="flex flex-row items-stretch gap-2 flex-wrap">
               {INFINITY_WIN_LENGTH_OPTIONS.map((winLen) => {
                 const isActive = winLen === internalWinLength;
                 return (

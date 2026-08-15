@@ -10,7 +10,7 @@ export function ParticipantRow({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center justify-between px-5 py-4 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] transition-colors hover:border-[var(--primary)] hover:bg-[var(--backgroundStrong, rgba(255,255,255,0.03))]',
+        'flex flex-row items-center justify-between px-5 py-4 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] transition-colors hover:border-[var(--primary)] hover:bg-[var(--backgroundStrong, rgba(255,255,255,0.03))]',
         className,
       )}
       {...props}
@@ -24,10 +24,7 @@ export function ParticipantInfo({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx(
-        'box-border flex flex-row items-center gap-3 flex-1',
-        className,
-      )}
+      className={cx('flex flex-row items-center gap-3 flex-1', className)}
       {...props}
     />
   );

@@ -96,7 +96,7 @@ export function AuthFormCredentials({
       data-mode={isRegisterMode ? 'register' : 'login'}
       data-testid="auth-credentials-form"
     >
-      <div className="box-border flex flex-col items-stretch gap-4">
+      <div className="flex flex-col items-stretch gap-4">
         <FieldWithMessage
           error={emailErrorMessage}
           description={emailDescription}
@@ -172,7 +172,7 @@ export function AuthFormCredentials({
         )}
 
         {!isRegisterMode && (
-          <div className="box-border flex flex-row items-center justify-between gap-3">
+          <div className="flex flex-row items-center justify-between gap-3">
             <RememberMeCheckbox
               checked={rememberMe}
               onChange={setRememberMe}
@@ -211,7 +211,7 @@ export function AuthFormCredentials({
           loading={localLoading}
           data-testid="auth-submit-button"
         >
-          <div className="box-border flex flex-row gap-2 items-center justify-center">
+          <div className="flex flex-row gap-2 items-center justify-center">
             <Typography color="inherit" uiSize="md" weight="600">
               {submitLabel}
             </Typography>
@@ -220,7 +220,7 @@ export function AuthFormCredentials({
         </Button>
 
         {!isRegisterMode && (
-          <div className="box-border flex flex-row items-center justify-center gap-2 flex-wrap -mt-1">
+          <div className="flex flex-row items-center justify-center gap-2 flex-wrap -mt-1">
             <Typography variant="body" uiSize="sm" color="$colorMuted">
               {form.magicLinkPrompt}
             </Typography>
@@ -238,7 +238,7 @@ export function AuthFormCredentials({
           </div>
         )}
 
-        <div className="box-border flex flex-col items-stretch pt-4 -mt-2 border-t border-[var(--glassBorder)]">
+        <div className="flex flex-col items-stretch pt-4 -mt-2 border-t border-[var(--glassBorder)]">
           <Typography
             variant="caption"
             uiSize="xs"
@@ -285,7 +285,7 @@ function FieldWithMessage({
   children: React.ReactNode;
 }) {
   return (
-    <div className="box-border flex flex-col items-stretch gap-1">
+    <div className="flex flex-col items-stretch gap-1">
       {children}
       {error ? (
         <Typography variant="body" uiSize="xs" color="$danger">

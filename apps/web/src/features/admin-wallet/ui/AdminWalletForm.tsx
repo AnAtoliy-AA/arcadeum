@@ -88,8 +88,8 @@ export function AdminWalletForm({
 
   return (
     <GlassCard className={'p-3 gap-3'} data-testid="admin-wallet-form">
-      <div className="box-border flex flex-col items-stretch gap-1">
-        <span className="box-border text-[12px] opacity-[0.7]">
+      <div className="flex flex-col items-stretch gap-1">
+        <span className="text-[12px] opacity-[0.7]">
           {labels.currencyLabel}
         </span>
         <select
@@ -103,10 +103,8 @@ export function AdminWalletForm({
         </select>
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-1">
-        <span className="box-border text-[12px] opacity-[0.7]">
-          {labels.amountLabel}
-        </span>
+      <div className="flex flex-col items-stretch gap-1">
+        <span className="text-[12px] opacity-[0.7]">{labels.amountLabel}</span>
         <input
           type="number"
           data-testid="wallet-form-amount"
@@ -119,10 +117,8 @@ export function AdminWalletForm({
         />
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-1">
-        <span className="box-border text-[12px] opacity-[0.7]">
-          {labels.noteLabel}
-        </span>
+      <div className="flex flex-col items-stretch gap-1">
+        <span className="text-[12px] opacity-[0.7]">{labels.noteLabel}</span>
         <textarea
           data-testid="wallet-form-note"
           value={note}
@@ -135,7 +131,7 @@ export function AdminWalletForm({
 
       {feedback?.kind === 'insufficient' && (
         <span
-          className="box-border text-[12px] text-[var(--errorText)]"
+          className="text-[12px] text-[var(--errorText)]"
           data-testid="wallet-form-error-insufficient"
         >
           {labels.errors.insufficient}
@@ -143,7 +139,7 @@ export function AdminWalletForm({
       )}
       {feedback?.kind === 'generic' && (
         <span
-          className="box-border text-[12px] text-[var(--errorText)]"
+          className="text-[12px] text-[var(--errorText)]"
           data-testid="wallet-form-error-generic"
         >
           {labels.errors.generic}
@@ -151,14 +147,14 @@ export function AdminWalletForm({
       )}
       {feedback?.kind === 'success' && (
         <span
-          className="box-border text-[12px] text-[var(--color)] opacity-[0.7]"
+          className="text-[12px] text-[var(--color)] opacity-[0.7]"
           data-testid="wallet-form-success"
         >
           {labels.success}
         </span>
       )}
 
-      <div className="box-border flex flex-row items-stretch gap-2">
+      <div className="flex flex-row items-stretch gap-2">
         <Button
           variant="outline"
           size="sm"

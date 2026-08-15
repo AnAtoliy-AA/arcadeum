@@ -10,6 +10,7 @@ import {
 import { formatSchedule } from '../lib/formatSchedule';
 import { getStatusChipColor } from '../lib/statusChip';
 import { nextStatuses } from '../lib/transitions';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 export interface AdminTournamentsTableLabels {
   empty: { noResults: string; noTournaments: string };
@@ -68,7 +69,7 @@ export function AdminTournamentsTable({
 
   if (isLoading && items.length === 0) {
     return (
-      <div className="box-border flex flex-col items-center p-5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
       </div>
     );
@@ -80,7 +81,7 @@ export function AdminTournamentsTable({
         className={'p-5 items-center'}
         data-testid="tournaments-table-empty"
       >
-        <span className="box-border opacity-[0.7]">
+        <span className="opacity-[0.7]">
           {hasFilter ? labels.empty.noResults : labels.empty.noTournaments}
         </span>
       </GlassCard>
@@ -93,10 +94,10 @@ export function AdminTournamentsTable({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-3"
+      className="flex flex-col items-stretch gap-3"
       data-testid="tournaments-table"
     >
-      <span className="box-border opacity-[0.7] text-[12px] px-1">
+      <span className="opacity-[0.7] text-[12px] px-1">
         {labels.totalLabel
           .replace('{start}', String(start))
           .replace('{end}', String(end))
@@ -104,26 +105,26 @@ export function AdminTournamentsTable({
       </span>
 
       <GlassCard className={'p-0 overflow-hidden'}>
-        <div className="box-border flex flex-row items-stretch py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)] gap-3">
-          <span className="box-border flex-[3] font-bold text-[12px] opacity-[0.85]">
+        <div className="flex flex-row items-stretch py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)] gap-3">
+          <span className="flex-[3] font-bold text-[12px] opacity-[0.85]">
             {labels.table.name}
           </span>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.gameType}
           </span>
-          <span className="box-border flex-[2] font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-[2] font-bold text-[12px] opacity-[0.85]">
             {labels.table.scheduled}
           </span>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.status}
           </span>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.registered}
           </span>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.createdBy}
           </span>
-          <span className="box-border flex-[2] font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-[2] font-bold text-[12px] opacity-[0.85]">
             {labels.table.actions}
           </span>
         </div>
@@ -137,45 +138,45 @@ export function AdminTournamentsTable({
           const canMarkComplete = item.status === 'live';
           return (
             <div
-              className="box-border flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
+              className="flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
               style={{
                 backgroundColor: i % 2 === 1 ? '$backgroundFocus' : undefined,
               }}
               key={item.id}
               data-testid={`tournament-row-${item.id}`}
             >
-              <div className="box-border flex flex-col items-stretch flex-[3]">
+              <div className="flex flex-col items-stretch flex-[3]">
                 <span title={fullName}>
-                  <span className="box-border">{truncate(fullName, 60)}</span>
+                  <span className="">{truncate(fullName, 60)}</span>
                 </span>
               </div>
-              <span className="box-border flex-1 text-[12px]">
+              <span className="flex-1 text-[12px]">
                 {labels.gameTypeLabels[item.gameType]}
               </span>
-              <span className="box-border flex-[2] text-[12px]">
+              <span className="flex-[2] text-[12px]">
                 {formatSchedule(item.scheduledAt, locale)}
               </span>
-              <div className="box-border flex flex-col items-stretch flex-1">
+              <div className="flex flex-col items-stretch flex-1">
                 <div
-                  className="box-border flex flex-row items-stretch px-2 py-1 rounded-lg self-start"
-                  style={{ backgroundColor: chipColor.bg }}
+                  className="flex flex-row items-stretch px-2 py-1 rounded-lg self-start"
+                  style={{ backgroundColor: resolveThemeColor(chipColor.bg) }}
                 >
                   <span
-                    className="box-border text-[12px]"
-                    style={{ color: chipColor.fg }}
+                    className="text-[12px]"
+                    style={{ color: resolveThemeColor(chipColor.fg) }}
                   >
                     {labels.statusLabels[item.status]}
                   </span>
                 </div>
               </div>
-              <span className="box-border flex-1 text-[12px]">
+              <span className="flex-1 text-[12px]">
                 {item.registeredCount}/{item.maxPlayers}
                 {item.waitlistCount > 0 ? ` (+${item.waitlistCount})` : ''}
               </span>
-              <span className="box-border flex-1 text-[12px] opacity-[0.8]">
+              <span className="flex-1 text-[12px] opacity-[0.8]">
                 {item.createdBy?.displayName ?? '—'}
               </span>
-              <div className="box-border flex flex-row items-stretch flex-[2] gap-2 flex-wrap">
+              <div className="flex flex-row items-stretch flex-[2] gap-2 flex-wrap">
                 <Button
                   size="sm"
                   variant="outline"
@@ -220,7 +221,7 @@ export function AdminTournamentsTable({
         })}
       </GlassCard>
 
-      <div className="box-border flex flex-row gap-3 items-center justify-center pt-2">
+      <div className="flex flex-row gap-3 items-center justify-center pt-2">
         <Button
           variant="outline"
           size="sm"
@@ -229,7 +230,7 @@ export function AdminTournamentsTable({
         >
           {labels.pagination.prev}
         </Button>
-        <span className="box-border opacity-[0.8] text-[14px]">
+        <span className="opacity-[0.8] text-[14px]">
           {labels.pagination.of
             .replace('{current}', String(page))
             .replace('{total}', String(totalPages))}

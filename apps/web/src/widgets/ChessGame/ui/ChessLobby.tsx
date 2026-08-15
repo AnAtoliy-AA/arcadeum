@@ -131,7 +131,7 @@ export function ChessLobby({
   };
 
   const optionsSlot = (
-    <div className="box-border flex flex-col items-stretch gap-4">
+    <div className="flex flex-col items-stretch gap-4">
       <LobbyOptionSection title={t('games.chess_v1.lobby.variant')}>
         <LobbyChipGroup
           options={variantOptions}

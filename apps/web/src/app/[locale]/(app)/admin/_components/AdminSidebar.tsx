@@ -4,6 +4,7 @@ import { GlassCard, Typography } from '@arcadeum/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ADMIN_SIDEBAR_ITEMS, type AdminSidebarItem } from './sidebarItems';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 export interface AdminSidebarLabels {
   items: Partial<Record<AdminSidebarItem['id'], string>>;
@@ -25,7 +26,7 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-2 w-full"
+      className="flex flex-col items-stretch gap-2 w-full"
       data-testid="admin-sidebar"
     >
       {ADMIN_SIDEBAR_ITEMS.map((item) => {
@@ -35,18 +36,22 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
             className={'p-3 border'}
             style={{
               opacity: item.enabled ? 1 : 0.55,
-              borderColor: active ? '$primary' : '$borderColor',
-              backgroundColor: active ? '$primaryBgSoft' : undefined,
+              borderColor: resolveThemeColor(
+                active ? '$primary' : '$borderColor',
+              ),
+              backgroundColor: resolveThemeColor(
+                active ? '$primaryBgSoft' : undefined,
+              ),
               cursor: item.enabled ? 'pointer' : 'default',
             }}
             data-testid={`admin-nav-${item.id}`}
             data-active={active ? 'true' : undefined}
           >
-            <div className="box-border flex flex-row items-center gap-2">
+            <div className="flex flex-row items-center gap-2">
               {active && (
-                <div className="box-border w-[3px] h-[16px] rounded-lg bg-[var(--primary)]" />
+                <div className="w-[3px] h-[16px] rounded-lg bg-[var(--primary)]" />
               )}
-              <div className="box-border flex flex-col items-stretch flex-1">
+              <div className="flex flex-col items-stretch flex-1">
                 <Typography
                   variant="label"
                   uiSize="md"

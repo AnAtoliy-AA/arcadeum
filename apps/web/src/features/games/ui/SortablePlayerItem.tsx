@@ -69,7 +69,7 @@ export function SortablePlayerItem({
       style={style}
       {...(isHost ? { ...attributes, ...listeners } : {})}
     >
-      <PlayerItem $isHost={isRoomHost}>
+      <PlayerItem isHost={isRoomHost}>
         {member.equippedAvatarId ? (
           <InGameAvatar
             playerId={member.id}
@@ -92,7 +92,7 @@ export function SortablePlayerItem({
           )}
         </PlayerInfo>
         {isHost && totalCount > 1 && (
-          <div className="box-border flex flex-row items-stretch gap-1">
+          <div className="flex flex-row items-stretch gap-1">
             <Button
               className="py-1 px-2 min-w-[auto]"
               variant="ghost"

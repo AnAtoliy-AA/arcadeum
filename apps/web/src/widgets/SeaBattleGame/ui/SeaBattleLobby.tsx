@@ -239,7 +239,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // the Start button for stacking context.
   const renderThemeChip = (variant: (typeof SEA_BATTLE_VARIANTS)[number]) => (
     <div
-      className="box-border flex flex-row items-center gap-2 px-3 py-2 rounded-[12px] border-[1.5px] cursor-pointer shrink-0"
+      className="flex flex-row items-center gap-2 px-3 py-2 rounded-[12px] border-[1.5px] cursor-pointer shrink-0"
       style={{
         borderColor:
           selectedVariant === variant.id
@@ -253,9 +253,9 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       key={variant.id}
       onClick={() => handleVariantSelect(variant.id)}
     >
-      <span className="box-border text-[14px]">{variant.emoji}</span>
+      <span className="text-[14px]">{variant.emoji}</span>
       <span
-        className="box-border text-[12px] font-medium"
+        className="text-[12px] font-medium"
         style={{
           color: selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1',
         }}
@@ -266,7 +266,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   );
 
   const themeLabel = (
-    <span className="box-border text-[14px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
+    <span className="text-[14px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
       {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
     </span>
   );
@@ -293,10 +293,10 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       {teamPanelSlot}
       {isHost && room.status === 'lobby' ? (
         themeListHorizontal ? (
-          <div className="box-border flex flex-col items-stretch gap-3 w-full min-w-0">
-            <div className="box-border flex flex-col items-stretch gap-2 w-full min-w-0">
+          <div className="flex flex-col items-stretch gap-3 w-full min-w-0">
+            <div className="flex flex-col items-stretch gap-2 w-full min-w-0">
               {themeLabel}
-              <div className="box-border flex flex-row items-stretch gap-2 w-full min-w-0 overflow-scroll pb-1">
+              <div className="flex flex-row items-stretch gap-2 w-full min-w-0 overflow-scroll pb-1">
                 {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
               </div>
             </div>
@@ -305,13 +305,13 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
             </SeaBattleThemeProvider>
           </div>
         ) : (
-          <div className="box-border flex flex-row gap-4 w-full min-w-0 items-stretch">
+          <div className="flex flex-row gap-4 w-full min-w-0 items-stretch">
             <SeaBattleThemeProvider variant={selectedVariant}>
               <SeaBattleThemePreview selectedVariant={selectedVariant} />
             </SeaBattleThemeProvider>
-            <div className="box-border flex flex-col items-stretch gap-2 flex-1 min-w-0 min-h-0">
+            <div className="flex flex-col items-stretch gap-2 flex-1 min-w-0 min-h-0">
               {themeLabel}
-              <div className="box-border flex flex-col items-stretch gap-2 flex-1 min-h-0 overflow-scroll pr-1">
+              <div className="flex flex-col items-stretch gap-2 flex-1 min-h-0 overflow-scroll pr-1">
                 {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
               </div>
             </div>
@@ -345,7 +345,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   );
 
   return (
-    <div className="box-border flex flex-col items-stretch flex-1 min-h-0">
+    <div className="flex flex-col items-stretch flex-1 min-h-0">
       <ReusableGameLobby
         room={effectiveRoom}
         userId={userId ?? ''}

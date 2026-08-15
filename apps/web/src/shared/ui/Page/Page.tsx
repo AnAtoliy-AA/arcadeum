@@ -34,7 +34,7 @@ export function Page({
   return (
     <main
       className={cx(
-        'box-border flex flex-col items-stretch relative w-full',
+        'flex flex-col items-stretch relative w-full',
         fixedHeight ? 'overflow-y-auto' : 'overflow-y-visible',
         withPadding ? 'p-5 max-[800px]:p-4' : 'p-0',
         className,

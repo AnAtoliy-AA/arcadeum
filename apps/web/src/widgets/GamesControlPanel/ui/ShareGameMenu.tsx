@@ -227,14 +227,14 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
         data-testid="share-game-button"
       >
         🔗
-        <span className="box-border max-[800px]:hidden">
+        <span className="max-[800px]:hidden">
           {' ' + t('games.common.share')}
         </span>
       </Button>
 
       {isOpen && (
         <div
-          className="box-border flex flex-col items-stretch absolute top-full right-0 -mt-2 min-w-[220px] bg-[var(--glassBg)] border-[var(--glassBorder)] border rounded-[12px] p-2 gap-1 z-[100]"
+          className="flex flex-col items-stretch absolute top-full right-0 -mt-2 min-w-[220px] bg-[var(--glassBg)] border-[var(--glassBorder)] border rounded-[12px] p-2 gap-1 z-[100]"
           id="share-game-menu-popover"
           role="menu"
           aria-label={t('games.common.shareTooltip')}
@@ -242,7 +242,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
         >
           {channels.map((c) => (
             <div
-              className="box-border flex flex-row items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-[rgba(255,255,255,0.08)] focus:bg-[rgba(255,255,255,0.08)]"
+              className="flex flex-row items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-[rgba(255,255,255,0.08)] focus:bg-[rgba(255,255,255,0.08)]"
               onClick={() => handleChannelClick(c.href)}
               key={c.key}
               role="menuitem"
@@ -250,18 +250,18 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
               data-testid={`share-via-${c.key}`}
             >
               {c.icon}
-              <span className="box-border text-[14px]">{c.label}</span>
+              <span className="text-[14px]">{c.label}</span>
             </div>
           ))}
           <div
-            className="box-border flex flex-row items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-[rgba(255,255,255,0.08)] focus:bg-[rgba(255,255,255,0.08)]"
+            className="flex flex-row items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-[rgba(255,255,255,0.08)] focus:bg-[rgba(255,255,255,0.08)]"
             onClick={handleCopy}
             role="menuitem"
             tabIndex={0}
             data-testid="share-via-copy"
           >
             <CopyLinkIcon />
-            <span className="box-border text-[14px]">
+            <span className="text-[14px]">
               {isCopied
                 ? t('games.common.shareVia.copied')
                 : t('games.common.shareVia.copyLink')}

@@ -11,27 +11,27 @@ const CHAT_BUBBLE_POSITION_CLASS = {
 } as const;
 
 interface ChatBubbleContainerProps {
-  $visible: boolean;
-  $position?: 'top' | 'bottom' | 'left' | 'right';
+  visible: boolean;
+  position?: 'top' | 'bottom' | 'left' | 'right';
   children?: ReactNode;
-  $variant?: string;
+  variant?: string;
 }
 
 export const ChatBubbleContainer = memo(function ChatBubbleContainer({
-  $visible,
-  $position,
-  $variant: _variant,
+  visible,
+  position,
+  variant: _variant,
   style,
   ...props
 }: ChatBubbleContainerProps & { style?: CSSProperties }): ReactElement {
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch absolute py-1 px-3 rounded-full border border-[rgba(255,255,255,0.14)] max-w-[180px] z-[100] transition-all duration-150 ease-out',
-        $visible
+        'flex flex-col items-stretch absolute py-1 px-3 rounded-full border border-[rgba(255,255,255,0.14)] max-w-[180px] z-[100] transition-all duration-150 ease-out',
+        visible
           ? 'opacity-[1] scale-[1]'
           : 'opacity-0 scale-[0.9] pointer-events-none',
-        $position ? CHAT_BUBBLE_POSITION_CLASS[$position] : undefined,
+        position ? CHAT_BUBBLE_POSITION_CLASS[position] : undefined,
       )}
       style={{
         wordBreak: 'break-word',

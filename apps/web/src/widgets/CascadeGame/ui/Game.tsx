@@ -172,7 +172,7 @@ function CascadeGameImpl({
   }
 
   const board = (
-    <div className="box-border flex flex-col gap-3 items-stretch p-1 w-full">
+    <div className="flex flex-col gap-3 items-stretch p-1 w-full">
       {snapshot ? (
         <>
           <TurnBadge

@@ -40,13 +40,13 @@ const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
     <Modal open={isOpen}>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
       >
-        <ModalHeader $variant={cardVariant as GameVariant}>
-          <ModalTitle $variant={cardVariant as GameVariant}>
+        <ModalHeader variant={cardVariant as GameVariant}>
+          <ModalTitle variant={cardVariant as GameVariant}>
             🔮 {t('games.table.modals.seeTheFuture.title')}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
+          <CloseButton onClick={onClose} variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
@@ -58,24 +58,22 @@ const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
               gameVariant={cardVariant as GameVariant}
               style={{ padding: 0, height: 'auto' }}
             >
-              <div className="box-border flex flex-col items-center w-[100px] gap-2 p-2">
-                <span className="box-border text-[14px] opacity-[0.7]">
-                  #{index + 1}
-                </span>
+              <div className="flex flex-col items-center w-[100px] gap-2 p-2">
+                <span className="text-[14px] opacity-[0.7]">#{index + 1}</span>
                 <Card
-                  $cardType={card}
-                  $variant={cardVariant as GameVariant}
+                  cardType={card}
+                  variant={cardVariant as GameVariant}
                   className="w-full cursor-default"
                 >
-                  <CardCorner $position="tl" $variant={cardVariant} />
-                  <CardCorner $position="tr" $variant={cardVariant} />
-                  <CardCorner $position="bl" $variant={cardVariant} />
-                  <CardCorner $position="br" $variant={cardVariant} />
-                  <CardFrame $variant={cardVariant} />
+                  <CardCorner position="tl" variant={cardVariant} />
+                  <CardCorner position="tr" variant={cardVariant} />
+                  <CardCorner position="bl" variant={cardVariant} />
+                  <CardCorner position="br" variant={cardVariant} />
+                  <CardFrame variant={cardVariant} />
                   <CardImage variant={cardVariant ?? ''} cardType={card} />
                   <GradientScrim />
                 </Card>
-                <span className="box-border text-[14px] text-center line-clamp-1">
+                <span className="text-[14px] text-center line-clamp-1">
                   {t(getCardTranslationKey(card, cardVariant)) || card}
                 </span>
               </div>

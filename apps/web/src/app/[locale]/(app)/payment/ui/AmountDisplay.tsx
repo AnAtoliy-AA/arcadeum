@@ -42,7 +42,7 @@ export function AmountDisplay({ amount, onChange }: AmountDisplayProps) {
   return (
     <>
       <style>{amountInputStyles}</style>
-      <div className="box-border flex flex-row items-center justify-center relative -my-4">
+      <div className="flex flex-row items-center justify-center relative -my-4">
         <span
           style={{
             fontSize: '2.5rem',

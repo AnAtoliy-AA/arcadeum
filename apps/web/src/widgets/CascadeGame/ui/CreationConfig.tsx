@@ -43,12 +43,12 @@ export default function CascadeCreationConfig({
 
   return (
     <Section title={t('games.create.sectionHouseRules')}>
-      <div className="box-border flex flex-col items-stretch gap-3">
-        <div className="box-border flex flex-col items-stretch gap-1">
-          <span className="box-border text-[18px] font-semibold">
+      <div className="flex flex-col items-stretch gap-3">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[18px] font-semibold">
             {t('games.create.cascadeMode')}
           </span>
-          <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+          <div className="flex flex-row items-stretch gap-2 flex-wrap">
             {MODES.map((mode) => (
               <Button
                 key={mode.id}
@@ -64,11 +64,11 @@ export default function CascadeCreationConfig({
           </div>
         </div>
 
-        <div className="box-border flex flex-col items-stretch gap-1">
-          <span className="box-border text-[18px] font-semibold">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[18px] font-semibold">
             {t('games.create.cascadeLastCardCall')}
           </span>
-          <span className="box-border text-[16px] text-[rgba(180,_180,_200,_0.7)]">
+          <span className="text-[16px] text-[rgba(180,_180,_200,_0.7)]">
             {t('games.create.cascadeLastCardCallHint')}
           </span>
           <Button

@@ -144,7 +144,7 @@ export function CascadeLobby({
   };
 
   const optionsSlot = (
-    <div className="box-border flex flex-col items-stretch gap-4">
+    <div className="flex flex-col items-stretch gap-4">
       {isHost && (
         <LobbyOptionSection title={t('games.create.sectionVariant') || 'Theme'}>
           <LobbyChipGroup
@@ -158,11 +158,11 @@ export function CascadeLobby({
       )}
 
       {!isHost && (
-        <div className="box-border flex flex-col items-stretch gap-1">
-          <span className="box-border text-[#fff] font-semibold">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[#fff] font-semibold">
             {variantTokens.emoji} {t(variantTokens.name)}
           </span>
-          <span className="box-border text-[#cbd5e1] text-[13px]">
+          <span className="text-[#cbd5e1] text-[13px]">
             {t(variantTokens.description)}
           </span>
         </div>

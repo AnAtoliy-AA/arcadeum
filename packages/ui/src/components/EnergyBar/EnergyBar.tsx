@@ -22,7 +22,7 @@ export function EnergyBar({
     <div
       data-testid={testID}
       className={cx(
-        'box-border relative flex-1 rounded-full border border-[var(--borderColor)] bg-[rgba(255,255,255,0.04)] overflow-hidden flex flex-row items-center',
+        'relative flex-1 rounded-full border border-[var(--borderColor)] bg-[rgba(255,255,255,0.04)] overflow-hidden flex flex-row items-center',
         className,
       )}
       style={{ height }}

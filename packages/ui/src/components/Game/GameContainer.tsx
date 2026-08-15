@@ -7,7 +7,7 @@ export type { GameVariant };
 
 export type GameContainerProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
-  $variant?: GameVariant;
+  variant?: GameVariant;
 };
 
 /**
@@ -49,7 +49,7 @@ function AmbientGlow({ variant }: { variant?: GameVariant }) {
 
 export const GameContainer = memo(function GameContainer({
   children,
-  $variant,
+  variant,
   className,
   style,
   ...props
@@ -58,13 +58,13 @@ export const GameContainer = memo(function GameContainer({
     <div
       className={cx(
         'relative flex w-full flex-1 flex-col overflow-hidden bg-[var(--background)]',
-        $variant ? GAME_BG_CLASSES[$variant] : null,
+        variant ? GAME_BG_CLASSES[variant] : null,
         className,
       )}
       style={style}
       {...props}
     >
-      <AmbientGlow variant={$variant} />
+      <AmbientGlow variant={variant} />
       {children}
     </div>
   );

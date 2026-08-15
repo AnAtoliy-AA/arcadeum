@@ -54,7 +54,7 @@ function Table({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch w-full rounded-xl overflow-hidden',
+        'flex flex-col items-stretch w-full rounded-xl overflow-hidden',
         className,
       )}
       {...props}
@@ -68,7 +68,7 @@ function GameInfo({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx('box-border flex flex-row items-center gap-3', className)}
+      className={cx('flex flex-row items-center gap-3', className)}
       {...props}
     />
   );
@@ -80,7 +80,7 @@ function GameIcon({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={cx('box-border text-[20px] w-[40px] h-[40px]', className)}
+      className={cx('text-[20px] w-[40px] h-[40px]', className)}
       {...props}
     />
   );
@@ -93,7 +93,7 @@ function GameName({
   return (
     <span
       className={cx(
-        'box-border text-[16px] leading-[20px] font-semibold text-[var(--color)]',
+        'text-[16px] leading-[20px] font-semibold text-[var(--color)]',
         className,
       )}
       {...props}
@@ -108,7 +108,7 @@ function StatCell({
   return (
     <span
       className={cx(
-        'box-border text-[16px] leading-[20px] font-medium text-[var(--color)]',
+        'text-[16px] leading-[20px] font-medium text-[var(--color)]',
         className,
       )}
       {...props}
@@ -123,7 +123,7 @@ function WinRateCell({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-3 min-w-[120px]',
+        'flex flex-row items-center gap-3 min-w-[120px]',
         className,
       )}
       {...props}

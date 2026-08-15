@@ -35,7 +35,7 @@ export function DrawPile({
 
   return (
     <div
-      className="box-border flex flex-col items-center gap-1 shrink-0 transition-transform duration-150 ease-out hover:scale-[1.02] active:scale-[0.98]"
+      className="flex flex-col items-center gap-1 shrink-0 transition-transform duration-150 ease-out hover:scale-[1.02] active:scale-[0.98]"
       style={{
         opacity: disabled ? 0.55 : 1,
         cursor: disabled ? 'default' : 'pointer',
@@ -61,7 +61,7 @@ export function DrawPile({
           estate than the table-mode header. Phones: 80×112 so the
           three-column row still fits at 390px. */}
       <CardSlot
-        $role="deck"
+        role="deck"
         style={{
           width: isNarrow ? 80 : 140,
           height: isNarrow ? 112 : 196,
@@ -70,13 +70,13 @@ export function DrawPile({
         <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
       </CardSlot>
       <span
-        className="box-border text-[12px] font-extrabold tracking-[0.4px] opacity-[0.85]"
+        className="text-[12px] font-extrabold tracking-[0.4px] opacity-[0.85]"
         data-testid="arena-draw-pile-count"
       >
         {t('games.table.state.deck')} · {count}
       </span>
       <span
-        className="box-border text-[48px] font-semibold tracking-[0.4px] uppercase opacity-[0.6]"
+        className="text-[48px] font-semibold tracking-[0.4px] uppercase opacity-[0.6]"
         data-testid="arena-draw-pile-hint"
       >
         {t('games.table.arena.drawHint')}

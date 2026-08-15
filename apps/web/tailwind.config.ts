@@ -4,8 +4,8 @@ import plugin from 'tailwindcss/plugin';
 /**
  * Tailwind for apps/web — used by the home page.
  *
- * - preflight is disabled: the app already resets via reset.scss + the
- *   Tailwind baseline classes (box-border etc.), so enabling Tailwind's
+ * - preflight is disabled: the app already resets via reset.scss
+ *   (global box-sizing: border-box etc.), so enabling Tailwind's
  *   preflight would double-reset and shift styling across the app.
  * - Colors map to the runtime CSS variables emitted by the theme provider
  *   (--color, --glassBg, --primary, ...) and tokens.scss, so dark / light /

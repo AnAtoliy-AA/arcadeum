@@ -62,7 +62,7 @@ function RowHost({
   return (
     <div
       className={cx(
-        'box-border w-full px-4 py-4 rounded-3xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.015)]',
+        'w-full px-4 py-4 rounded-3xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.015)]',
         active && 'border-[rgba(96,165,250,0.45)] bg-[rgba(96,165,250,0.06)]',
         highlight &&
           'border-[rgba(250,204,21,0.30)] bg-[rgba(250,204,21,0.04)]',
@@ -84,7 +84,7 @@ function Scroller({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-stretch gap-3 w-full overflow-scroll py-1',
+        'flex flex-row items-stretch gap-3 w-full overflow-scroll py-1',
         expanded && 'flex-wrap overflow-visible',
         className,
       )}
@@ -154,7 +154,7 @@ export function ShopRow({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-3 w-full"
+      className="flex flex-col items-stretch gap-3 w-full"
       style={{ scrollMarginTop: 32 }}
       id={id}
       data-testid={`shop-row-${id}`}
@@ -162,17 +162,17 @@ export function ShopRow({
       data-active={isActive ? 'true' : 'false'}
     >
       <RowHost active={isActive} highlight={highlight}>
-        <div className="box-border flex flex-row w-full items-end justify-between -mb-3">
-          <div className="box-border flex flex-col items-stretch gap-2">
-            <span className="box-border text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
+        <div className="flex flex-row w-full items-end justify-between -mb-3">
+          <div className="flex flex-col items-stretch gap-2">
+            <span className="text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
               {labels.eyebrow.replace('{count}', String(items.length))}
             </span>
-            <span className="box-border text-[24px] font-extrabold tracking-[-0.3px]">
+            <span className="text-[24px] font-extrabold tracking-[-0.3px]">
               {labels.title}
             </span>
           </div>
           <span
-            className="box-border text-[11px] tracking-[1px] uppercase font-bold text-[#94a3b8] cursor-pointer hover:text-[#f5f7ff]"
+            className="text-[11px] tracking-[1px] uppercase font-bold text-[#94a3b8] cursor-pointer hover:text-[#f5f7ff]"
             onClick={toggleExpanded}
             role="button"
             tabIndex={0}

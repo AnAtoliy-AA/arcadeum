@@ -410,7 +410,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   if (isMobile) {
     return (
       <div
-        className="box-border flex flex-col items-stretch w-full gap-2 px-1"
+        className="flex flex-col items-stretch w-full gap-2 px-1"
         onDragEnd={handleDragEnd}
       >
         <ShipPaletteSection
@@ -444,12 +444,12 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   }
 
   return (
-    <div className="box-border flex flex-col items-stretch w-full gap-4">
+    <div className="flex flex-col items-stretch w-full gap-4">
       <GameBoardWrapper onDragEnd={handleDragEnd}>
         <BoardContainer>
           <PlacementHeader className="placement-header">
             <span
-              className="box-border text-[20px] font-bold -m-0 placement-title"
+              className="text-[20px] font-bold -m-0 placement-title"
               style={{ color: theme.textColor }}
               data-testid="placement-instruction"
             >

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from '@arcadeum/ui';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 interface LobbyOptionSectionProps {
   title: string;
@@ -15,13 +16,13 @@ export function LobbyOptionSection({
   hint,
 }: LobbyOptionSectionProps) {
   return (
-    <div className="box-border flex flex-col items-stretch gap-2">
-      <span className="box-border text-[14px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
+    <div className="flex flex-col items-stretch gap-2">
+      <span className="text-[14px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
         {title}
       </span>
       {children}
       {hint && (
-        <span className="box-border text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
+        <span className="text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
           {hint}
         </span>
       )}
@@ -55,7 +56,7 @@ export function LobbyChipGroup({
   testIdPrefix = 'chip',
 }: LobbyChipGroupProps) {
   return (
-    <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+    <div className="flex flex-row items-stretch gap-2 flex-wrap">
       {options.map((option) => {
         const isActive = value === option.id;
         const isDisabled = disabled || option.comingSoon;
@@ -89,12 +90,10 @@ export function LobbyChipGroup({
             disabled={isDisabled}
             onClick={() => !isDisabled && onChange(option.id)}
           >
-            {option.emoji && (
-              <span className="box-border -mr-2">{option.emoji}</span>
-            )}
+            {option.emoji && <span className="-mr-2">{option.emoji}</span>}
             {option.label}
             {option.comingSoon && (
-              <span className="box-border -ml-2 text-[48px] opacity-[0.85]">
+              <span className="-ml-2 text-[48px] opacity-[0.85]">
                 Coming Soon
               </span>
             )}
@@ -121,8 +120,8 @@ export function LobbyToggle({
   hint,
 }: LobbyToggleProps) {
   return (
-    <div className="box-border flex flex-col items-stretch gap-1">
-      <div className="box-border flex flex-row items-center gap-3">
+    <div className="flex flex-col items-stretch gap-1">
+      <div className="flex flex-row items-center gap-3">
         <input
           type="checkbox"
           checked={checked}
@@ -136,14 +135,18 @@ export function LobbyToggle({
           }}
         />
         <span
-          className="box-border text-[16px] font-medium"
-          style={{ color: disabled ? 'rgba(180,180,200,0.7)' : '$color' }}
+          className="text-[16px] font-medium"
+          style={{
+            color: resolveThemeColor(
+              disabled ? 'rgba(180,180,200,0.7)' : '$color',
+            ),
+          }}
         >
           {label}
         </span>
       </div>
       {hint && (
-        <span className="box-border text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
+        <span className="text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
           {hint}
         </span>
       )}

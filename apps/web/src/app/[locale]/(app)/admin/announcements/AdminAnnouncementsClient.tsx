@@ -202,7 +202,7 @@ export default function AdminAnnouncementsClient() {
   return (
     <PageLayout>
       <Container size="lg">
-        <div className="box-border flex flex-col items-stretch gap-3">
+        <div className="flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t.title}</PageTitle>
 
           <AdminAnnouncementsFilters
@@ -239,16 +239,16 @@ export default function AdminAnnouncementsClient() {
 
           {pendingDelete && (
             <div
-              className="box-border flex flex-col items-stretch p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] gap-3"
+              className="flex flex-col items-stretch p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] gap-3"
               data-testid="delete-confirm"
             >
-              <span className="box-border">
+              <span className="">
                 {t.confirm.delete.replace(
                   '{title}',
                   pendingDelete.content.en.title,
                 )}
               </span>
-              <div className="box-border flex flex-row items-stretch gap-3 justify-end">
+              <div className="flex flex-row items-stretch gap-3 justify-end">
                 <Button
                   variant="outline"
                   onClick={() => setPendingDelete(null)}

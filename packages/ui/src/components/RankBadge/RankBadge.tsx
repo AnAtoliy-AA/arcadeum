@@ -10,7 +10,7 @@ export type RankBadgeTier =
   | 'bronze';
 
 const rankBadgeBase =
-  'box-border inline-flex px-2 py-1 rounded font-bold min-w-[36px] text-center border';
+  'inline-flex px-2 py-1 rounded font-bold min-w-[36px] text-center border';
 
 const rankTierClasses: Record<RankBadgeTier, string> = {
   mythic:

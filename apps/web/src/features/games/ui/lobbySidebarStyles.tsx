@@ -14,7 +14,7 @@ export const Sidebar = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-col items-stretch gap-4 w-[300px] max-[1023px]:w-full max-[800px]:w-full',
+      'flex flex-col items-stretch gap-4 w-[300px] max-[1023px]:w-full max-[800px]:w-full',
       className,
     )}
     {...props}
@@ -33,7 +33,7 @@ export const LobbyCard = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-col items-stretch bg-[rgba(99,102,241,0.08)] rounded-[16px] p-5 relative overflow-hidden border border-[rgba(99,102,241,0.15)]',
+      'flex flex-col items-stretch bg-[rgba(99,102,241,0.08)] rounded-[16px] p-5 relative overflow-hidden border border-[rgba(99,102,241,0.15)]',
       className,
     )}
     {...props}
@@ -48,7 +48,7 @@ export const LobbyCardGlow = ({
 }: { className?: string } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border absolute top-0 left-0 right-0 h-[2px] bg-[linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899)]',
+      'absolute top-0 left-0 right-0 h-[2px] bg-[linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899)]',
       className,
     )}
     {...props}
@@ -64,10 +64,7 @@ export const CardHeader = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cx(
-      'box-border flex flex-row items-center justify-between mb-4',
-      className,
-    )}
+    className={cx('flex flex-row items-center justify-between mb-4', className)}
     {...props}
   >
     {children}
@@ -84,7 +81,7 @@ export const CardTitle = ({
 } & HTMLAttributes<HTMLHeadingElement>) => (
   <h3
     className={cx(
-      'box-border text-[12px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]',
+      'text-[12px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]',
       className,
     )}
     {...props}
@@ -103,7 +100,7 @@ export const PlayerList = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cx('box-border flex flex-col items-stretch gap-3', className)}
+    className={cx('flex flex-col items-stretch gap-3', className)}
     {...props}
   >
     {children}
@@ -111,19 +108,19 @@ export const PlayerList = ({
 );
 
 export type PlayerItemProps = {
-  $isHost?: boolean;
+  isHost?: boolean;
   className?: string;
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>;
 
 export const PlayerItem = forwardRef<HTMLDivElement, PlayerItemProps>(
-  function PlayerItem({ $isHost = false, className, children, ...props }, ref) {
+  function PlayerItem({ isHost = false, className, children, ...props }, ref) {
     return (
       <div
         ref={ref}
         className={cx(
-          'box-border flex flex-row items-center gap-3 p-2 rounded-[10px]',
-          $isHost
+          'flex flex-row items-center gap-3 p-2 rounded-[10px]',
+          isHost
             ? 'bg-[rgba(99,102,241,0.1)] border border-[rgba(99,102,241,0.3)]'
             : 'bg-[rgba(255,255,255,0.03)] border border-transparent',
           className,
@@ -150,7 +147,7 @@ export const LobbyPlayerAvatar = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[var(--background)] shrink-0',
+      'flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[var(--background)] shrink-0',
       className,
     )}
     style={backgroundColor ? { backgroundColor, ...style } : style}
@@ -169,10 +166,7 @@ export const LobbyPlayerAvatarText = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cx(
-      'box-border font-semibold text-[14px] text-[#f5f7ff]',
-      className,
-    )}
+    className={cx('font-semibold text-[14px] text-[#f5f7ff]', className)}
     {...props}
   >
     {children}
@@ -188,10 +182,7 @@ export const PlayerInfo = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cx(
-      'box-border flex flex-col items-stretch flex-1 min-w-0',
-      className,
-    )}
+    className={cx('flex flex-col items-stretch flex-1 min-w-0', className)}
     {...props}
   >
     {children}
@@ -207,10 +198,7 @@ export const LobbyPlayerName = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cx(
-      'box-border text-[16px] font-medium text-[var(--color)]',
-      className,
-    )}
+    className={cx('text-[16px] font-medium text-[var(--color)]', className)}
     {...props}
   >
     {children}
@@ -227,7 +215,7 @@ export const PlayerBadge = ({
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
     className={cx(
-      'box-border text-[10px] px-2 py-[2px] bg-[linear-gradient(135deg,#6366f1,#8b5cf6)] text-[#f5f7ff] rounded-[8px] font-semibold',
+      'text-[10px] px-2 py-[2px] bg-[linear-gradient(135deg,#6366f1,#8b5cf6)] text-[#f5f7ff] rounded-[8px] font-semibold',
       className,
     )}
     {...props}
@@ -250,7 +238,7 @@ export const EmptySlot = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center gap-3 p-2 rounded-[10px] border border-dashed border-[rgba(99,102,241,0.2)] opacity-[0.5]',
+      'flex flex-row items-center gap-3 p-2 rounded-[10px] border border-dashed border-[rgba(99,102,241,0.2)] opacity-[0.5]',
       className,
     )}
     {...props}
@@ -269,7 +257,7 @@ export const EmptyAvatar = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[rgba(99,102,241,0.1)]',
+      'flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[rgba(99,102,241,0.1)]',
       className,
     )}
     {...props}
@@ -286,7 +274,7 @@ export const EmptyAvatarText = ({
   className?: string;
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
-  <span className={cx('box-border text-[18px]', className)} {...props}>
+  <span className={cx('text-[18px]', className)} {...props}>
     {children}
   </span>
 );
@@ -302,7 +290,7 @@ export const InfoRow = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center justify-between py-2 border-b border-[rgba(99,102,241,0.1)]',
+      'flex flex-row items-center justify-between py-2 border-b border-[rgba(99,102,241,0.1)]',
       className,
     )}
     {...props}
@@ -320,10 +308,7 @@ export const InfoLabel = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cx(
-      'box-border text-[14px] text-[var(--textSecondary)]',
-      className,
-    )}
+    className={cx('text-[14px] text-[var(--textSecondary)]', className)}
     {...props}
   >
     {children}
@@ -339,10 +324,7 @@ export const InfoValue = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cx(
-      'box-border text-[16px] font-medium text-[var(--color)]',
-      className,
-    )}
+    className={cx('text-[16px] font-medium text-[var(--color)]', className)}
     {...props}
   >
     {children}
@@ -359,19 +341,19 @@ const STATUS_BADGE_CLASSES: Record<RoomStatus, string> = {
 };
 
 export const StatusBadge = ({
-  $status = 'lobby',
+  status = 'lobby',
   className,
   children,
   ...props
 }: {
-  $status?: RoomStatus;
+  status?: RoomStatus;
   className?: string;
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
     className={cx(
-      'box-border text-[14px] px-3 py-1 rounded-[8px] font-medium',
-      STATUS_BADGE_CLASSES[$status],
+      'text-[14px] px-3 py-1 rounded-[8px] font-medium',
+      STATUS_BADGE_CLASSES[status],
       className,
     )}
     {...props}
@@ -390,7 +372,7 @@ export const FastBadge = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center gap-2 px-3 py-1 rounded-[8px] bg-[rgba(234,179,8,0.15)]',
+      'flex flex-row items-center gap-2 px-3 py-1 rounded-[8px] bg-[rgba(234,179,8,0.15)]',
       className,
     )}
     {...props}
@@ -408,10 +390,7 @@ export const FastBadgeText = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cx(
-      'box-border text-[14px] font-medium text-[#eab308]',
-      className,
-    )}
+    className={cx('text-[14px] font-medium text-[#eab308]', className)}
     {...props}
   >
     {children}

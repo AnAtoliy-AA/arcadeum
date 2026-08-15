@@ -79,7 +79,7 @@ export function Container({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex w-full max-w-[1400px] flex-col gap-4 p-4 mx-auto flex-1 min-h-0 max-[1150px]:overflow-y-auto max-[1023px]:p-3 max-[1023px]:gap-3 max-[800px]:p-2 max-[800px]:gap-2',
+        'flex w-full max-w-[1400px] flex-col gap-4 p-4 mx-auto flex-1 min-h-0 max-[1150px]:overflow-y-auto max-[1023px]:p-3 max-[1023px]:gap-3 max-[800px]:p-2 max-[800px]:gap-2',
         className,
       )}
       {...props}
@@ -100,7 +100,7 @@ export function LoadingContainer({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex min-h-[50vh] flex-col items-center justify-center text-[18px] text-[var(--textSecondary)]',
+        'flex min-h-[50vh] flex-col items-center justify-center text-[18px] text-[var(--textSecondary)]',
         className,
       )}
       {...props}
@@ -112,7 +112,7 @@ export function ErrorContainer({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-center p-8 text-[var(--danger)]',
+        'flex flex-col items-center p-8 text-[var(--danger)]',
         className,
       )}
       {...props}
@@ -124,7 +124,7 @@ export function GameWrapper({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex min-h-0 min-w-0 flex-1 flex-col overflow-visible rounded-2xl max-[1150px]:grow-0 max-[1150px]:shrink-0 max-[1150px]:basis-auto max-[1150px]:min-h-[calc(100dvh-180px)] max-[1023px]:grow-0 max-[1023px]:shrink-0 max-[1023px]:basis-auto max-[800px]:min-h-0',
+        'flex min-h-0 min-w-0 flex-1 flex-col overflow-visible rounded-2xl max-[1150px]:grow-0 max-[1150px]:shrink-0 max-[1150px]:basis-auto max-[1150px]:min-h-[calc(100dvh-180px)] max-[1023px]:grow-0 max-[1023px]:shrink-0 max-[1023px]:basis-auto max-[800px]:min-h-0',
         className,
       )}
       {...props}
@@ -136,7 +136,7 @@ export function Card({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex w-full max-w-[460px] flex-col items-stretch gap-0 overflow-hidden rounded-[24px] border border-[var(--glassBorder)] bg-[var(--glassBg)] px-10 pb-10 pt-14 mx-auto backdrop-blur-[32px]',
+        'flex w-full max-w-[460px] flex-col items-stretch gap-0 overflow-hidden rounded-[24px] border border-[var(--glassBorder)] bg-[var(--glassBg)] px-10 pb-10 pt-14 mx-auto backdrop-blur-[32px]',
         className,
       )}
       style={{
@@ -152,7 +152,7 @@ export function IconCircle({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex h-20 w-20 items-center justify-center self-center rounded-full border border-[rgba(139,92,246,0.25)] mb-7',
+        'flex h-20 w-20 items-center justify-center self-center rounded-full border border-[rgba(139,92,246,0.25)] mb-7',
         className,
       )}
       style={{
@@ -166,16 +166,14 @@ export function IconCircle({ className, ...props }: DivProps) {
 }
 
 export function IconEmoji({ className, ...props }: SpanProps) {
-  return (
-    <span className={cx('box-border text-[36px]', className)} {...props} />
-  );
+  return <span className={cx('text-[36px]', className)} {...props} />;
 }
 
 export function Title({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border mb-2.5 text-center text-[26px] font-bold tracking-[-0.15px] text-[var(--accent)]',
+        'mb-2.5 text-center text-[26px] font-bold tracking-[-0.15px] text-[var(--accent)]',
         className,
       )}
       {...props}
@@ -186,10 +184,7 @@ export function Title({ className, ...props }: SpanProps) {
 export function Description({ className, ...props }: DivProps) {
   return (
     <div
-      className={cx(
-        'box-border mb-8 flex flex-col items-center px-4',
-        className,
-      )}
+      className={cx('mb-8 flex flex-col items-center px-4', className)}
       {...props}
     />
   );
@@ -199,7 +194,7 @@ export function DescriptionText({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border text-center text-[15px] leading-[22px] opacity-[0.6] text-[var(--color)]',
+        'text-center text-[15px] leading-[22px] opacity-[0.6] text-[var(--color)]',
         className,
       )}
       {...props}
@@ -212,20 +207,14 @@ export function Form({
   ...props
 }: HTMLAttributes<HTMLFormElement> & { className?: string }) {
   return (
-    <form
-      className={cx('box-border flex w-full flex-col gap-4', className)}
-      {...props}
-    />
+    <form className={cx('flex w-full flex-col gap-4', className)} {...props} />
   );
 }
 
 export function InputRow({ className, ...props }: DivProps) {
   return (
     <div
-      className={cx(
-        'box-border flex w-full flex-col items-stretch gap-3',
-        className,
-      )}
+      className={cx('flex w-full flex-col items-stretch gap-3', className)}
       {...props}
     />
   );
@@ -234,10 +223,7 @@ export function InputRow({ className, ...props }: DivProps) {
 export function InputGroup({ className, ...props }: DivProps) {
   return (
     <div
-      className={cx(
-        'box-border flex w-full flex-row items-stretch gap-3',
-        className,
-      )}
+      className={cx('flex w-full flex-row items-stretch gap-3', className)}
       {...props}
     />
   );
@@ -247,7 +233,7 @@ export function ErrorBanner({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex w-full flex-row items-center gap-2 rounded-xl border border-[rgba(239,68,68,0.15)] bg-[rgba(239,68,68,0.1)] px-4 py-3',
+        'flex w-full flex-row items-center gap-2 rounded-xl border border-[rgba(239,68,68,0.15)] bg-[rgba(239,68,68,0.1)] px-4 py-3',
         className,
       )}
       {...props}
@@ -259,7 +245,7 @@ export function ErrorMessage({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-center self-center rounded-xl border border-[var(--errorBorder)] bg-[var(--errorBg)] px-8 py-3',
+        'flex flex-col items-center self-center rounded-xl border border-[var(--errorBorder)] bg-[var(--errorBg)] px-8 py-3',
         className,
       )}
       {...props}
@@ -271,7 +257,7 @@ export function ErrorText({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border text-center text-[14px] font-semibold text-[var(--error)]',
+        'text-center text-[14px] font-semibold text-[var(--error)]',
         className,
       )}
       {...props}
@@ -288,7 +274,7 @@ export function LoginLink({
   return (
     <a
       className={cx(
-        'box-border mt-4 inline-block text-[var(--accent)] underline',
+        'mt-4 inline-block text-[var(--accent)] underline',
         className,
       )}
       {...props}
@@ -298,10 +284,7 @@ export function LoginLink({
 
 export function LockIcon({ className, ...props }: SpanProps) {
   return (
-    <span
-      className={cx('box-border text-center text-[32px]', className)}
-      {...props}
-    />
+    <span className={cx('text-center text-[32px]', className)} {...props} />
   );
 }
 
@@ -309,7 +292,7 @@ export function NoticeMessage({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border self-center rounded-xl border border-[rgba(139,92,246,0.12)] bg-[rgba(139,92,246,0.08)] px-4 py-2.5 text-center text-[13px] text-[var(--accent)]',
+        'self-center rounded-xl border border-[rgba(139,92,246,0.12)] bg-[rgba(139,92,246,0.08)] px-4 py-2.5 text-center text-[13px] text-[var(--accent)]',
         className,
       )}
       {...props}
@@ -321,7 +304,7 @@ export function PasswordToggle({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border -mt-1 text-center text-[13px] text-[rgba(236,239,238,0.4)]',
+        '-mt-1 text-center text-[13px] text-[rgba(236,239,238,0.4)]',
         className,
       )}
       {...props}

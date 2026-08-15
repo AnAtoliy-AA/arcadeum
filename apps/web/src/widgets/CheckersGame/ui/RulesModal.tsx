@@ -63,26 +63,24 @@ export function RulesModal({ open, onClose }: RulesModalProps) {
           <ModalTitle>{t('games.checkers_v1.rules.title')}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <div className="box-border flex flex-col items-stretch gap-6">
+          <div className="flex flex-col items-stretch gap-6">
             {sections.map((section) => (
               <div
-                className="box-border flex flex-col items-stretch gap-3"
+                className="flex flex-col items-stretch gap-3"
                 key={section.header}
               >
-                <div className="box-border flex flex-row items-center gap-3">
+                <div className="flex flex-row items-center gap-3">
                   <div
-                    className="box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"
+                    className="flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"
                     style={{ background: section.gradient }}
                   >
-                    <span className="box-border text-[20px]">
-                      {section.icon}
-                    </span>
+                    <span className="text-[20px]">{section.icon}</span>
                   </div>
-                  <span className="box-border font-bold text-[18px] text-[#f1f5f9]">
+                  <span className="font-bold text-[18px] text-[#f1f5f9]">
                     {section.header}
                   </span>
                 </div>
-                <span className="box-border text-[16px] leading-[26px] text-[#cbd5e1] whitespace-pre-line">
+                <span className="text-[16px] leading-[26px] text-[#cbd5e1] whitespace-pre-line">
                   {section.body}
                 </span>
               </div>

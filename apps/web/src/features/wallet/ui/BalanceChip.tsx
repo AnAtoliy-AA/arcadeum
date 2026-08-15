@@ -5,7 +5,7 @@ import { apiClient } from '@/shared/lib/api-client';
 
 // UI-component audit (packages/ui/src/components):
 //   - No `Pill`, `CoinIcon`, or `GemIcon` exported from @arcadeum/ui.
-//   - Closest primitives: DeltaChip, LiveChip (pill-shaped XStack + Text).
+//   - Closest primitives: DeltaChip, LiveChip (pill-shaped).
 //   - CONCERN: A generic currency Pill would be a useful addition to
 //     @arcadeum/ui, but introducing it now would exceed this task's scope.
 //     Using native <span> elements styled via CSS classes instead.

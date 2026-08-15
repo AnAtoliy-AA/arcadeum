@@ -62,18 +62,18 @@ const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
     <Modal open={isOpen}>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={gameVariant}
+        variant={gameVariant}
       >
-        <ModalHeader $variant={gameVariant}>
-          <ModalTitle $variant={gameVariant}>
+        <ModalHeader variant={gameVariant}>
+          <ModalTitle variant={gameVariant}>
             🤲 {t('games.table.modals.giveFavor.title')}
           </ModalTitle>
-          <CloseButton onClick={handleCancel} $variant={gameVariant}>
+          <CloseButton onClick={handleCancel} variant={gameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel $variant={gameVariant}>
+          <SectionLabel variant={gameVariant}>
             {t('games.table.modals.giveFavor.description', {
               player: requesterName,
             })}
@@ -82,31 +82,31 @@ const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
             {myHand.map((card, index) => (
               <SelectableCard
                 key={`${card}-${index}`}
-                $cardType={card}
-                $index={index}
-                $variant={cardVariant as GameVariant}
+                cardType={card}
+                index={index}
+                variant={cardVariant as GameVariant}
                 onClick={() => setSelectedCard(card)}
                 selected={selectedCard === card}
                 className="p-0 h-auto"
               >
-                <div className="box-border flex flex-col items-center w-[100px] gap-2 p-2">
+                <div className="flex flex-col items-center w-[100px] gap-2 p-2">
                   <Card
-                    $cardType={card}
-                    $variant={cardVariant as GameVariant}
+                    cardType={card}
+                    variant={cardVariant as GameVariant}
                     className="w-full cursor-default"
                   >
-                    <CardCorner $position="tl" $variant={cardVariant} />
-                    <CardCorner $position="tr" $variant={cardVariant} />
-                    <CardCorner $position="bl" $variant={cardVariant} />
-                    <CardCorner $position="br" $variant={cardVariant} />
-                    <CardFrame $variant={cardVariant} />
+                    <CardCorner position="tl" variant={cardVariant} />
+                    <CardCorner position="tr" variant={cardVariant} />
+                    <CardCorner position="bl" variant={cardVariant} />
+                    <CardCorner position="br" variant={cardVariant} />
+                    <CardFrame variant={cardVariant} />
                     <CardImage variant={cardVariant ?? ''} cardType={card} />
                     <GradientScrim />
                   </Card>
-                  <span className="box-border text-[14px] text-center w-full line-clamp-1">
+                  <span className="text-[14px] text-center w-full line-clamp-1">
                     {getCardName(card, cardVariant || 'adventure')}
                   </span>
-                  <span className="box-border text-[12px] opacity-[0.7] line-clamp-2">
+                  <span className="text-[12px] opacity-[0.7] line-clamp-2">
                     {t(getCardDescriptionKey(card))}
                   </span>
                 </div>

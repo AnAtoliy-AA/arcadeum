@@ -4,6 +4,7 @@ import type { CupSnapshot } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatCurrency, formatNumber } from '@/shared/i18n/formatters';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 // Temporary: tournaments aren't live yet. Flip to `true` to render the
 // real cup UI (prize pool / countdown / qualified pills) defined below.
@@ -22,16 +23,16 @@ export function CupCountdown({
   if (!TOURNAMENTS_ENABLED) {
     return (
       <div
-        className="box-border flex flex-col gap-3 p-5 rounded-2xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] items-center"
+        className="flex flex-col gap-3 p-5 rounded-2xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] items-center"
         data-testid="cup-coming-soon"
       >
-        <span className="box-border text-[12px] tracking-[2px] opacity-[0.7] uppercase">
+        <span className="text-[12px] tracking-[2px] opacity-[0.7] uppercase">
           {tt.eyebrow ?? 'Tournament'}
         </span>
-        <span className="box-border text-[32px] font-extrabold text-[var(--mythicAccent)] text-center">
+        <span className="text-[32px] font-extrabold text-[var(--mythicAccent)] text-center">
           {tt.comingSoon ?? 'Coming soon'}
         </span>
-        <span className="box-border text-[16px] opacity-[0.75] text-center max-w-[520px]">
+        <span className="text-[16px] opacity-[0.75] text-center max-w-[520px]">
           {tt.comingSoonBody ??
             'Live tournaments and prize pools are coming soon.'}
         </span>
@@ -44,19 +45,19 @@ export function CupCountdown({
   const visiblePills = qualified.slice(0, 8);
   const overflow = Math.max(0, qualified.length - visiblePills.length);
   return (
-    <div className="box-border flex flex-col items-stretch gap-4 p-4 rounded-2xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]">
-      <div className="box-border flex flex-row items-center justify-between gap-4 flex-wrap">
-        <div className="box-border flex flex-col items-stretch gap-2 flex-1 min-w-[220px]">
-          <div className="box-border flex flex-row gap-3 items-center">
+    <div className="flex flex-col items-stretch gap-4 p-4 rounded-2xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]">
+      <div className="flex flex-row items-center justify-between gap-4 flex-wrap">
+        <div className="flex flex-col items-stretch gap-2 flex-1 min-w-[220px]">
+          <div className="flex flex-row gap-3 items-center">
             <LiveChip label={(t?.live as string) ?? 'Live'} />
-            <span className="box-border text-[14px] tracking-[2px] opacity-[0.7] uppercase">
+            <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
               {tt.eyebrow ?? 'Tournament'}
             </span>
           </div>
-          <span className="box-border text-[32px] font-extrabold">
+          <span className="text-[32px] font-extrabold">
             {tt.title ?? cup.title}
           </span>
-          <div className="box-border flex flex-row items-stretch gap-5 flex-wrap">
+          <div className="flex flex-row items-stretch gap-5 flex-wrap">
             <Stat
               label={tt.prizePool ?? 'Prize pool'}
               value={formatCurrency(cup.prizePoolUSD, locale, 'USD', {
@@ -70,8 +71,8 @@ export function CupCountdown({
             />
           </div>
         </div>
-        <div className="box-border flex flex-col gap-2 items-end">
-          <span className="box-border text-[14px] opacity-[0.7] uppercase">
+        <div className="flex flex-col gap-2 items-end">
+          <span className="text-[14px] opacity-[0.7] uppercase">
             {tt.endsIn ?? 'Ends in'}
           </span>
           <CountdownClock
@@ -82,30 +83,28 @@ export function CupCountdown({
       </div>
 
       {visiblePills.length > 0 ? (
-        <div className="box-border flex flex-col items-stretch gap-2">
-          <span className="box-border text-[12px] tracking-[2px] opacity-[0.6] uppercase">
+        <div className="flex flex-col items-stretch gap-2">
+          <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
             {tt.qualifiedLabel ?? 'Qualified'}
           </span>
-          <div className="box-border flex flex-row items-stretch gap-6 flex-wrap">
+          <div className="flex flex-row items-stretch gap-6 flex-wrap">
             {visiblePills.map((p) => (
               <div
-                className="box-border w-[28px] h-[28px] rounded-[14px] border border-[var(--borderColor)] items-center justify-center"
+                className="w-[28px] h-[28px] rounded-[14px] border border-[var(--borderColor)] items-center justify-center"
                 style={{
                   background: 'linear-gradient(180deg,#22d3ee,#6366f1)',
                 }}
                 key={p.id}
                 aria-label={p.name}
               >
-                <span className="box-border text-[11px] font-bold text-[#ffffff]">
+                <span className="text-[11px] font-bold text-[#ffffff]">
                   {p.name.slice(0, 2).toUpperCase()}
                 </span>
               </div>
             ))}
             {overflow > 0 ? (
-              <div className="box-border w-[28px] h-[28px] rounded-[14px] border border-[var(--borderColor)] items-center justify-center bg-[rgba(255,255,255,0.04)]">
-                <span className="box-border text-[11px] opacity-[0.7]">
-                  +{overflow}
-                </span>
+              <div className="w-[28px] h-[28px] rounded-[14px] border border-[var(--borderColor)] items-center justify-center bg-[rgba(255,255,255,0.04)]">
+                <span className="text-[11px] opacity-[0.7]">+{overflow}</span>
               </div>
             ) : null}
           </div>
@@ -125,13 +124,13 @@ function Stat({
   accent?: boolean;
 }) {
   return (
-    <div className="box-border flex flex-col items-stretch">
-      <span className="box-border text-[12px] opacity-[0.6] uppercase">
-        {label}
-      </span>
+    <div className="flex flex-col items-stretch">
+      <span className="text-[12px] opacity-[0.6] uppercase">{label}</span>
       <span
-        className="box-border text-[20px] font-bold tracking-[1px]"
-        style={{ color: accent ? '$mythicAccent' : undefined }}
+        className="text-[20px] font-bold tracking-[1px]"
+        style={{
+          color: resolveThemeColor(accent ? '$mythicAccent' : undefined),
+        }}
       >
         {value}
       </span>

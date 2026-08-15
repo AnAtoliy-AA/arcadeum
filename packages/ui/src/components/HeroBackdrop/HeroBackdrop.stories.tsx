@@ -23,10 +23,10 @@ export const Default: Story = {
         >
           LIVE · SEASON 4
         </span>
-        <span className="box-border text-[48px] font-black tracking-[-1px]">
+        <span className="text-[48px] font-black tracking-[-1px]">
           Race the leaderboard.
         </span>
-        <span className="box-border text-[18px] opacity-[0.85]">
+        <span className="text-[18px] opacity-[0.85]">
           Updated every 30 seconds. Top 100 players gear up for the Champions
           Cup.
         </span>

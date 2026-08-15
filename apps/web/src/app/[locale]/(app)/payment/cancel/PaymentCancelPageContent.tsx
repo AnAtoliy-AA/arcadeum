@@ -63,8 +63,8 @@ export default function PaymentCancelPageContent() {
               {t('payments.cancelPage.title') || 'Payment Cancelled'}
             </PageTitle>
             <span
-              className="box-border text-[var(--color)] opacity-[0.7] max-w-[400px]"
-              style={{ fontSize: '1rem', lineHeight: '$multiplier16' }}
+              className="text-[var(--color)] opacity-[0.7] max-w-[400px]"
+              style={{ fontSize: '1rem', lineHeight: '1.6' }}
             >
               {t('payments.cancelPage.message') ||
                 "No worries! No charges were made to your account. You can always try again when you're ready—we'll be here."}

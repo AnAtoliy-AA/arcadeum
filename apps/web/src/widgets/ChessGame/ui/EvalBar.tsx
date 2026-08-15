@@ -35,10 +35,10 @@ export function EvalBar({ evalScore }: EvalBarProps) {
           borderRadius: '0 0 5px 5px',
         }}
       />
-      <span className="box-border absolute top-[4px] left-0 right-0 text-center text-[32px] font-bold text-[rgba(255,_255,_255,_0.5)]">
+      <span className="absolute top-[4px] left-0 right-0 text-center text-[32px] font-bold text-[rgba(255,_255,_255,_0.5)]">
         ♔
       </span>
-      <span className="box-border absolute bottom-[4px] left-0 right-0 text-center text-[32px] font-bold text-[rgba(255,_255,_255,_0.5)]">
+      <span className="absolute bottom-[4px] left-0 right-0 text-center text-[32px] font-bold text-[rgba(255,_255,_255,_0.5)]">
         ♚
       </span>
     </EvalBarContainer>

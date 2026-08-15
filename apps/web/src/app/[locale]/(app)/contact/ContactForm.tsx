@@ -84,7 +84,7 @@ export function ContactForm({ form }: ContactFormProps) {
     <GlassCard>
       <div style={s.formCardInnerStyle}>
         <div style={s.formHeaderStyle}>
-          <div className="box-border flex flex-col items-stretch gap-2">
+          <div className="flex flex-col items-stretch gap-2">
             <span style={s.labelChipStyle}>
               {form?.subtitle ?? 'Direct message'}
             </span>
@@ -92,7 +92,7 @@ export function ContactForm({ form }: ContactFormProps) {
               {form?.title ?? 'Send the team a message'}
             </Typography>
           </div>
-          <div className="box-border flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-2">
             <ContactAvatars count={3} size={26} />
             <Typography variant="caption" alpha="medium">
               {form?.repliesNote ?? 'Replies hit your email'}
@@ -113,7 +113,7 @@ export function ContactForm({ form }: ContactFormProps) {
                 {form?.successBody ??
                   'Expect a reply within 4 hours. We sent a copy to your email.'}
               </Typography>
-              <div className="box-border flex flex-col items-center -mt-4">
+              <div className="flex flex-col items-center -mt-4">
                 <button type="button" onClick={reset} style={s.helpLinkStyle}>
                   {form?.sendAnother ?? 'Send another'}
                 </button>
@@ -130,7 +130,7 @@ export function ContactForm({ form }: ContactFormProps) {
                 {form?.errorBody ??
                   'Something went wrong on our end. You can try again, or open your mail app to send directly.'}
               </Typography>
-              <div className="box-border flex flex-col items-center gap-3 -mt-4">
+              <div className="flex flex-col items-center gap-3 -mt-4">
                 <a
                   href={errorState.fallbackMailto}
                   style={s.helpLinkStyle}
@@ -146,7 +146,7 @@ export function ContactForm({ form }: ContactFormProps) {
           </Card>
         ) : (
           <form key={formKey} action={formAction}>
-            <div className="box-border flex flex-col items-stretch gap-4">
+            <div className="flex flex-col items-stretch gap-4">
               <div style={s.formGridStyle}>
                 <div>
                   <FloatingLabelInput

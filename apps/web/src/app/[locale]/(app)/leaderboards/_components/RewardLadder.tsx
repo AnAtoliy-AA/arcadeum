@@ -24,11 +24,11 @@ export function RewardLadder({
     string
   >;
   return (
-    <div className="box-border flex flex-col items-stretch gap-3">
-      <span className="box-border text-[14px] tracking-[2px] opacity-[0.7] uppercase">
+    <div className="flex flex-col items-stretch gap-3">
+      <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
         {rTitles.title ?? 'Reward ladder'}
       </span>
-      <div className="box-border flex flex-row items-stretch gap-3 flex-wrap">
+      <div className="flex flex-row items-stretch gap-3 flex-wrap">
         {rewards.map((r) => {
           const color = r.color ?? TIER_COLORS[r.tier] ?? '#94a3b8';
           const range =
@@ -42,7 +42,7 @@ export function RewardLadder({
               .replace(/^./, (c) => c.toUpperCase());
           return (
             <div
-              className="box-border flex flex-col flex-1 min-w-[150px] p-3 gap-2 rounded-xl border items-center"
+              className="flex flex-col flex-1 min-w-[150px] p-3 gap-2 rounded-xl border items-center"
               style={{
                 borderColor: `${color}55`,
                 backgroundColor: 'rgba(255,255,255,0.02)',
@@ -50,22 +50,19 @@ export function RewardLadder({
               key={r.tier}
               data-testid={`reward-card-${r.tier}`}
             >
-              <span
-                className="box-border text-[28px]"
-                style={{ color: color as never }}
-              >
+              <span className="text-[28px]" style={{ color: color as never }}>
                 {r.icon ?? '★'}
               </span>
               <span
-                className="box-border text-[12px] font-bold tracking-[2px] uppercase"
+                className="text-[12px] font-bold tracking-[2px] uppercase"
                 style={{ color: color as never }}
               >
                 {r.tier}
               </span>
-              <span className="box-border text-[12px] opacity-[0.6] tracking-[1px]">
+              <span className="text-[12px] opacity-[0.6] tracking-[1px]">
                 {range}
               </span>
-              <span className="box-border text-[14px] text-center opacity-[0.9]">
+              <span className="text-[14px] text-center opacity-[0.9]">
                 {prizeText}
               </span>
             </div>

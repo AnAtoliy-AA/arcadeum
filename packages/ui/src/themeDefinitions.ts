@@ -31,9 +31,7 @@ export const themeBase = {
   // Alias the danger palette under the `$error*` namespace so components
   // that follow the standard form-validation naming (Input, FormGroup,
   // TextArea, Select, admin/tournaments error banners) resolve their
-  // tokens at SSR. A missing token here used to cause Tamagui to emit inline
-  // style fallbacks server-side and atomic classes client-side, which
-  // triggers hydration mismatches on any page using these components.
+  // tokens at SSR, avoiding server/client mismatch on themed pages.
   error: '#b91c1c',
   errorText: '#ffffff',
   errorBg: 'rgba(220, 38, 38, 0.15)',

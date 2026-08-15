@@ -42,7 +42,7 @@ const TONE_BACKDROP_CLASSES: Record<GameResultKind, string> = {
   draw: 'bg-[radial-gradient(circle_at_center,rgba(148,163,184,0.1)_0%,rgba(0,0,0,0.95)_100%)]',
 };
 
-const StyledBackdrop = ({
+const Backdrop = ({
   tone,
   className,
   ...props
@@ -52,7 +52,7 @@ const StyledBackdrop = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border fixed top-0 left-0 w-screen h-[100dvh] z-[1199] backdrop-blur-[12px]',
+      'fixed top-0 left-0 w-screen h-[100dvh] z-[1199] backdrop-blur-[12px]',
       TONE_BACKDROP_CLASSES[tone],
       className,
     )}
@@ -72,7 +72,7 @@ const ContentWrapper = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-col items-center p-10 bg-[rgba(255,255,255,0.03)] backdrop-blur-[40px] rounded-[40px] border border-[rgba(255,255,255,0.1)] border-t-[rgba(255,255,255,0.2)] border-l-[rgba(255,255,255,0.15)] shadow-[0_40px_100px_rgba(0,0,0,0.8)] max-w-[90%] w-[520px] max-h-[90dvh] overflow-y-auto relative',
+      'flex flex-col items-center p-10 bg-[rgba(255,255,255,0.03)] backdrop-blur-[40px] rounded-[40px] border border-[rgba(255,255,255,0.1)] border-t-[rgba(255,255,255,0.2)] border-l-[rgba(255,255,255,0.15)] shadow-[0_40px_100px_rgba(0,0,0,0.8)] max-w-[90%] w-[520px] max-h-[90dvh] overflow-y-auto relative',
       className,
     )}
     style={style}
@@ -101,7 +101,7 @@ const ResultTitleText = ({
 } & HTMLAttributes<HTMLHeadingElement>) => (
   <h1
     className={cx(
-      'box-border text-[56px] font-extrabold text-center uppercase tracking-[2px]',
+      'text-[56px] font-extrabold text-center uppercase tracking-[2px]',
       TONE_TITLE_CLASSES[tone],
       className,
     )}
@@ -121,7 +121,7 @@ const ResultMessage = ({
 } & HTMLAttributes<HTMLParagraphElement>) => (
   <p
     className={cx(
-      'box-border text-[20px] leading-[24px] text-center mb-8 text-[rgba(255,255,255,0.8)]',
+      'text-[20px] leading-[24px] text-center mb-8 text-[rgba(255,255,255,0.8)]',
       className,
     )}
     {...props}
@@ -139,10 +139,7 @@ const ActionsContainer = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cx(
-      'box-border flex flex-col items-stretch gap-5 w-full',
-      className,
-    )}
+    className={cx('flex flex-col items-stretch gap-5 w-full', className)}
     {...props}
   >
     {children}
@@ -175,7 +172,7 @@ const ResultContent = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border fixed top-0 left-0 w-screen h-[100dvh] z-[1200] flex items-center justify-center',
+      'fixed top-0 left-0 w-screen h-[100dvh] z-[1200] flex items-center justify-center',
       className,
     )}
     {...props}
@@ -227,7 +224,7 @@ export function GameResultModal({
 
   return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
-      <StyledBackdrop tone={result} />
+      <Backdrop tone={result} />
       <ResultContent key="content">
         <div className="sr-only">
           <h2 className="sr-only">Game Result</h2>
@@ -243,15 +240,15 @@ export function GameResultModal({
           }}
         >
           {onClose && (
-            <div className="box-border flex flex-row items-stretch absolute">
+            <div className="flex flex-row items-stretch absolute">
               <CloseButton onClick={onClose} data-testid="modal-close-button">
                 <CloseIcon size={20} />
               </CloseButton>
             </div>
           )}
 
-          <div className="box-border flex flex-col items-center gap-2 -mb-6">
-            <span className="box-border text-[80px] -mb-2 float">{emoji}</span>
+          <div className="flex flex-col items-center gap-2 -mb-6">
+            <span className="text-[80px] -mb-2 float">{emoji}</span>
             <ResultTitleText
               tone={result}
               data-testid="game-result-title"

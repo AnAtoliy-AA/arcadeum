@@ -14,7 +14,7 @@ export function EntriesGrid({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx('box-border grid gap-4 w-full', className)}
+      className={cx('grid gap-4 w-full', className)}
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}
       {...props}
     />
@@ -49,7 +49,7 @@ export function EntryHeader({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-start justify-between gap-4',
+        'flex flex-row items-start justify-between gap-4',
         className,
       )}
       {...props}
@@ -63,10 +63,7 @@ export function EntryTitleGroup({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx(
-        'box-border flex flex-col items-stretch flex-1 min-w-0',
-        className,
-      )}
+      className={cx('flex flex-col items-stretch flex-1 min-w-0', className)}
       {...props}
     />
   );
@@ -127,10 +124,7 @@ export function EntryMeta({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx(
-        'box-border flex flex-row items-stretch flex-wrap gap-2',
-        className,
-      )}
+      className={cx('flex flex-row items-stretch flex-wrap gap-2', className)}
       {...props}
     />
   );
@@ -143,7 +137,7 @@ export function EntryFooter({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center justify-between gap-4 mt-auto pt-3 border-t border-[var(--borderColor)]',
+        'flex flex-row items-center justify-between gap-4 mt-auto pt-3 border-t border-[var(--borderColor)]',
         className,
       )}
       {...props}
@@ -181,7 +175,7 @@ export const PaginationSpinner = forwardRef<
     <div
       ref={ref}
       className={cx(
-        'box-border flex flex-col items-center justify-center p-8 w-full [grid-column:1/-1]',
+        'flex flex-col items-center justify-center p-8 w-full [grid-column:1/-1]',
         className,
       )}
       {...props}
@@ -195,7 +189,7 @@ export function EndOfListText({
 }: { children?: ReactNode } & React.ComponentProps<typeof Typography>) {
   return (
     <Typography
-      className={'box-border p-8 w-full [grid-column:1/-1]'}
+      className={'p-8 w-full [grid-column:1/-1]'}
       uiSize="sm"
       alpha="medium"
       textCenter

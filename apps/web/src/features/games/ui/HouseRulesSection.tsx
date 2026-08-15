@@ -38,8 +38,8 @@ export function HouseRulesSection({
   );
 
   return (
-    <div className="box-border flex flex-col items-stretch gap-3 pt-2">
-      <span className="box-border text-[18px] font-semibold">
+    <div className="flex flex-col items-stretch gap-3 pt-2">
+      <span className="text-[18px] font-semibold">
         {t('games.create.sectionHouseRules') || 'House Rules'}
       </span>
 
@@ -55,11 +55,11 @@ export function HouseRulesSection({
           }}
           style={checkboxStyle}
         />
-        <span className="box-border text-[16px]">
+        <span className="text-[16px]">
           {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
         </span>
         {ruleComingSoon.get('idle') && (
-          <span className="box-border text-[48px] text-[#f59e0b] font-semibold">
+          <span className="text-[48px] text-[#f59e0b] font-semibold">
             {t('games.create.comingSoon') || 'Coming Soon'}
           </span>
         )}
@@ -77,18 +77,18 @@ export function HouseRulesSection({
           }}
           style={checkboxStyle}
         />
-        <span className="box-border text-[16px]">
+        <span className="text-[16px]">
           {t('games.create.rules.spectators.title') || 'Allow spectators'}
         </span>
         {ruleComingSoon.get('spectators') && (
-          <span className="box-border text-[48px] text-[#f59e0b] font-semibold">
+          <span className="text-[48px] text-[#f59e0b] font-semibold">
             {t('games.create.comingSoon') || 'Coming Soon'}
           </span>
         )}
       </label>
 
-      <div className="box-border flex flex-col items-stretch gap-1">
-        <span className="box-border text-[16px] font-medium">
+      <div className="flex flex-col items-stretch gap-1">
+        <span className="text-[16px] font-medium">
           {t('games.create.rules.firstPlayer.title')}
         </span>
         <select

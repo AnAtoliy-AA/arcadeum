@@ -50,7 +50,7 @@ function HeroFrame({
   return (
     <div
       className={cx(
-        'box-border w-full px-5 py-5 rounded-3xl border border-[rgba(255,255,255,0.08)] overflow-hidden relative shrink-0 max-[800px]:min-h-[400px]',
+        'w-full px-5 py-5 rounded-3xl border border-[rgba(255,255,255,0.08)] overflow-hidden relative shrink-0 max-[800px]:min-h-[400px]',
         className,
       )}
       {...props}
@@ -71,7 +71,7 @@ function HeroTag({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-2 px-[10px] py-1 rounded-lg border self-start',
+        'flex flex-row items-center gap-2 px-[10px] py-1 rounded-lg border self-start',
         className,
       )}
       style={{ backgroundColor, borderColor }}
@@ -186,7 +186,7 @@ export function ShopHero({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch"
+      className="flex flex-col items-stretch"
       id="shop-featured"
       data-testid="shop-hero"
       data-rarity={item.rarity}
@@ -197,26 +197,26 @@ export function ShopHero({
       onPointerLeave={handleHoverOff}
     >
       <HeroFrame className="animate-entrance" style={bgStyle}>
-        <div className="box-border flex flex-row gap-5 items-center max-[660px]:flex-col max-[660px]:items-start max-[660px]:gap-3 max-[800px]:flex-col max-[800px]:items-start max-[800px]:gap-3">
+        <div className="flex flex-row gap-5 items-center max-[660px]:flex-col max-[660px]:items-start max-[660px]:gap-3 max-[800px]:flex-col max-[800px]:items-start max-[800px]:gap-3">
           <div
-            className="box-border flex flex-col w-[140px] h-[140px] rounded-[70px] items-center justify-center bg-[rgba(255,255,255,0.04)] border-[2px] shop-featured-disc"
+            className="flex flex-col w-[140px] h-[140px] rounded-[70px] items-center justify-center bg-[rgba(255,255,255,0.04)] border-[2px] shop-featured-disc"
             style={{ borderColor: `${accent}66` }}
           >
             <ItemAsset item={item} size={108} priority />
           </div>
 
-          <div className="box-border flex flex-col items-stretch flex-1 gap-3 min-w-0">
-            <div className="box-border flex flex-row gap-2 items-center flex-wrap">
+          <div className="flex flex-col items-stretch flex-1 gap-3 min-w-0">
+            <div className="flex flex-row gap-2 items-center flex-wrap">
               <HeroTag
                 backgroundColor={`${accent}1a`}
                 borderColor={`${accent}55`}
               >
                 <div
-                  className="box-border flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
+                  className="flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
                   style={{ backgroundColor: accent }}
                 />
                 <span
-                  className="box-border text-[11px] tracking-[1.5px] uppercase font-extrabold"
+                  className="text-[11px] tracking-[1.5px] uppercase font-extrabold"
                   style={{ color: accent }}
                 >
                   {labels.tag}
@@ -229,7 +229,7 @@ export function ShopHero({
                   data-testid="shop-hero-equipped-chip"
                 >
                   <span
-                    className="box-border text-[11px] tracking-[1.5px] uppercase font-extrabold"
+                    className="text-[11px] tracking-[1.5px] uppercase font-extrabold"
                     style={{ color: accent }}
                   >
                     {labels.equipped}
@@ -238,9 +238,9 @@ export function ShopHero({
               ) : null}
             </div>
 
-            <div className="box-border flex flex-col items-stretch gap-1">
+            <div className="flex flex-col items-stretch gap-1">
               <span
-                className="box-border text-[48px] font-black tracking-[-1px] text-[#f5f7ff]"
+                className="text-[48px] font-black tracking-[-1px] text-[#f5f7ff]"
                 style={{
                   backgroundImage: `linear-gradient(135deg, ${accent}, #ffffff)`,
                   WebkitBackgroundClip: 'text',
@@ -250,12 +250,12 @@ export function ShopHero({
               >
                 {itemName}
               </span>
-              <span className="box-border text-[18px] text-[#94a3b8] max-w-[640px]">
+              <span className="text-[18px] text-[#94a3b8] max-w-[640px]">
                 {itemDesc} {labels.bodySuffix}
               </span>
             </div>
 
-            <div className="box-border flex flex-row gap-3 items-center flex-wrap">
+            <div className="flex flex-row gap-3 items-center flex-wrap">
               <Button
                 className={action === 'buy' ? 'hero-gold-pulse' : undefined}
                 style={{
@@ -272,13 +272,13 @@ export function ShopHero({
                 size="sm"
               >
                 <span
-                  className="box-border text-[16px] font-extrabold"
+                  className="text-[16px] font-extrabold"
                   style={{ color: action === 'buy' ? '#0a0a0a' : '#f5f7ff' }}
                 >
                   {actionLabel}
                 </span>
                 {action === 'buy' ? (
-                  <span className="box-border text-[14px] font-bold text-[#0a0a0a]">
+                  <span className="text-[14px] font-bold text-[#0a0a0a]">
                     · {CURRENCY_GLYPH[item.priceCurrency]}{' '}
                     {formatNumber(item.priceAmount, locale)}
                   </span>
@@ -286,12 +286,12 @@ export function ShopHero({
               </Button>
               <Link href="#shop-rail" style={{ textDecoration: 'none' }}>
                 <div
-                  className="box-border flex flex-row items-center gap-6 px-3 py-2 rounded-xl border border-[rgba(255,255,255,0.14)] cursor-pointer hover:border-[rgba(255,255,255,0.32)] hover:bg-[rgba(255,255,255,0.04)]"
+                  className="flex flex-row items-center gap-6 px-3 py-2 rounded-xl border border-[rgba(255,255,255,0.14)] cursor-pointer hover:border-[rgba(255,255,255,0.32)] hover:bg-[rgba(255,255,255,0.04)]"
                   onMouseEnter={handleHoverOn}
                   onMouseLeave={handleHoverOff}
                   data-testid="shop-hero-tryon"
                 >
-                  <span className="box-border text-[16px] font-bold text-[#f5f7ff]">
+                  <span className="text-[16px] font-bold text-[#f5f7ff]">
                     {labels.tryOn} →
                   </span>
                 </div>

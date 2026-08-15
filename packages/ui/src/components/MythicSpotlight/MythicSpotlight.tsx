@@ -31,7 +31,7 @@ export type MythicSpotlightProps = {
 const GlowClasses = 'pointer-events-none absolute -inset-20';
 
 const CardClasses = [
-  'box-border',
+  '',
   'relative',
   'flex',
   'flex-col',
@@ -45,7 +45,7 @@ const CardClasses = [
 ].join(' ');
 
 const StatTileClasses = [
-  'box-border',
+  '',
   'flex',
   'min-w-[96px]',
   'flex-col',

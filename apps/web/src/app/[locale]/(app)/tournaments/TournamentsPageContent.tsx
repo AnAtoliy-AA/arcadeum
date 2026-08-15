@@ -76,8 +76,8 @@ export default function TournamentsPageContent() {
   return (
     <PageLayout>
       <Container size="lg">
-        <div className="box-border flex flex-col items-stretch gap-4">
-          <div className="box-border flex flex-col items-stretch gap-1">
+        <div className="flex flex-col items-stretch gap-4">
+          <div className="flex flex-col items-stretch gap-1">
             <PageTitle size="xl" gradient>
               {t?.title}
             </PageTitle>
@@ -89,13 +89,13 @@ export default function TournamentsPageContent() {
           </div>
 
           {isLoading && (
-            <div className="box-border flex flex-col items-center p-5">
+            <div className="flex flex-col items-center p-5">
               <Spinner />
             </div>
           )}
 
           {showEmpty && (
-            <div className="box-border flex flex-col items-center p-5">
+            <div className="flex flex-col items-center p-5">
               <Typography variant="body" alpha="medium">
                 {listT?.empty ?? t?.comingSoon ?? 'No tournaments yet.'}
               </Typography>
@@ -103,7 +103,7 @@ export default function TournamentsPageContent() {
           )}
 
           {listT && items.length > 0 && (
-            <div className="box-border flex flex-col items-stretch gap-3">
+            <div className="flex flex-col items-stretch gap-3">
               {items.map((item) => (
                 <TournamentCard
                   key={item.id}

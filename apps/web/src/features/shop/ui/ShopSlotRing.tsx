@@ -57,7 +57,7 @@ function SlotTile({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-[10px] p-[10px] rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] cursor-pointer min-h-[62px] transition-colors hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
+        'flex flex-row items-center gap-[10px] p-[10px] rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] cursor-pointer min-h-[62px] transition-colors hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
         active && 'border-[rgba(96,165,250,0.6)] bg-[rgba(96,165,250,0.08)]',
         previewing && 'border-[rgba(34,197,94,0.6)] bg-[rgba(16,185,129,0.10)]',
         className,
@@ -78,10 +78,10 @@ export function ShopSlotRing({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-2"
+      className="flex flex-col items-stretch gap-2"
       data-testid="shop-slot-ring"
     >
-      <div className="box-border flex flex-row items-stretch flex-wrap gap-2">
+      <div className="flex flex-row items-stretch flex-wrap gap-2">
         {SLOT_ORDER.map((slot) => {
           const slotLabels = labels[slot];
           const item = preview[slot] ?? null;
@@ -104,20 +104,18 @@ export function ShopSlotRing({
               data-previewing={isPreviewing ? 'true' : 'false'}
               className="w-[48%] max-[800px]:w-full"
             >
-              <div className="box-border flex flex-col w-[40px] h-[40px] rounded-lg items-center justify-center bg-[rgba(0,0,0,0.30)] border border-[rgba(255,255,255,0.10)] overflow-hidden">
+              <div className="flex flex-col w-[40px] h-[40px] rounded-lg items-center justify-center bg-[rgba(0,0,0,0.30)] border border-[rgba(255,255,255,0.10)] overflow-hidden">
                 {item ? (
                   <ItemAsset item={item} size={32} />
                 ) : (
-                  <span className="box-border text-[20px] text-[#6b7280]">
-                    ·
-                  </span>
+                  <span className="text-[20px] text-[#6b7280]">·</span>
                 )}
               </div>
-              <div className="box-border flex flex-col items-stretch flex-1 min-w-0 gap-2">
-                <span className="box-border text-[40px] tracking-[1.2px] uppercase font-extrabold text-[#94a3b8]">
+              <div className="flex flex-col items-stretch flex-1 min-w-0 gap-2">
+                <span className="text-[40px] tracking-[1.2px] uppercase font-extrabold text-[#94a3b8]">
                   {slotLabels.label}
                 </span>
-                <span className="box-border text-[12px] font-bold text-[#f5f7ff] line-clamp-1">
+                <span className="text-[12px] font-bold text-[#f5f7ff] line-clamp-1">
                   {itemName}
                 </span>
               </div>

@@ -2,7 +2,7 @@ import type { HTMLAttributes } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
-const BASE = 'box-border flex flex-col items-stretch';
+const BASE = 'flex flex-col items-stretch';
 
 export function SonarRadar({
   className,

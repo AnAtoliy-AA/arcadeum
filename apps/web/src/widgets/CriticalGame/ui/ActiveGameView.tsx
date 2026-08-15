@@ -288,7 +288,7 @@ export function ActiveGameView({
         board={
           <>
             <SceneBackdrop />
-            <div className="box-border flex flex-col items-stretch flex-1 animate-entrance">
+            <div className="flex flex-col items-stretch flex-1 animate-entrance">
               <MatchWidget
                 room={room}
                 snapshot={snapshot}

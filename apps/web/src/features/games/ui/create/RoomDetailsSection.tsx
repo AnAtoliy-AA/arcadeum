@@ -68,7 +68,7 @@ export function RoomDetailsSection({
           label={t('games.create.fieldMaxPlayers') || 'Max Players (optional)'}
           htmlFor="max-players"
         >
-          <div className="box-border flex flex-row gap-2 items-start">
+          <div className="flex flex-row gap-2 items-start">
             <Input
               key="max-players-input"
               id="max-players"
@@ -91,7 +91,7 @@ export function RoomDetailsSection({
               size="lg"
             />
             {maxPlayers ? (
-              <div className="box-border flex flex-col items-stretch shrink-0 w-[150px] justify-center">
+              <div className="flex flex-col items-stretch shrink-0 w-[150px] justify-center">
                 <Button
                   type="button"
                   variant="secondary"

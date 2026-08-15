@@ -48,7 +48,7 @@ export default function PlayerProfileClient({
     <PageLayout>
       <Container size="md">
         <div
-          className="box-border flex flex-col gap-5 py-8 items-start"
+          className="flex flex-col gap-5 py-8 items-start"
           data-testid={`player-profile-${id}`}
         >
           <Button
@@ -60,7 +60,7 @@ export default function PlayerProfileClient({
             ← {backLabel}
           </Button>
           {loading ? (
-            <span className="box-border text-[16px] opacity-[0.6]">
+            <span className="text-[16px] opacity-[0.6]">
               {profileT.loading ?? 'Loading…'}
             </span>
           ) : missing || !profile ? (
@@ -113,11 +113,11 @@ function Profile({
   });
   const nameProps = nameColorRenderProps(nameColor);
   return (
-    <div className="box-border flex flex-col items-stretch gap-4 w-full">
-      <span className="box-border text-[14px] tracking-[2px] opacity-[0.6] uppercase">
+    <div className="flex flex-col items-stretch gap-4 w-full">
+      <span className="text-[14px] tracking-[2px] opacity-[0.6] uppercase">
         {eyebrow}
       </span>
-      <div className="box-border flex flex-row items-center gap-3 flex-wrap">
+      <div className="flex flex-row items-center gap-3 flex-wrap">
         <EquippedPlayerAvatar
           name={player.name}
           size="md"
@@ -131,27 +131,27 @@ function Profile({
           fallbackAvatarUrl={player.avatarUrl}
           data-testid="player-profile-avatar"
         />
-        <div className="box-border flex flex-col items-stretch gap-1">
-          <div className="box-border flex flex-row items-center gap-2 flex-wrap">
+        <div className="flex flex-col items-stretch gap-1">
+          <div className="flex flex-row items-center gap-2 flex-wrap">
             <span
-              className="box-border text-[40px] font-extrabold tracking-[-0.5px]"
+              className="text-[40px] font-extrabold tracking-[-0.5px]"
               {...(nameProps.color ? { color: nameProps.color } : {})}
               {...(nameProps.style ? { style: nameProps.style } : {})}
             >
               {player.name}
             </span>
           </div>
-          <div className="box-border flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-2">
             <RankBadge
               tier={player.tier as never}
             >{`#${player.rank}`}</RankBadge>
             {player.streak && player.streak >= 3 ? (
-              <span className="box-border text-[16px]">🔥 {player.streak}</span>
+              <span className="text-[16px]">🔥 {player.streak}</span>
             ) : null}
           </div>
         </div>
       </div>
-      <div className="box-border flex flex-row items-stretch gap-3 flex-wrap">
+      <div className="flex flex-row items-stretch gap-3 flex-wrap">
         <Stat label="Rating" value={formatNumber(player.rating, locale)} />
         <Stat label="Wins" value={String(player.wins)} />
         <Stat label="Winrate" value={`${Math.round(player.winrate * 100)}%`} />
@@ -160,28 +160,28 @@ function Profile({
         ) : null}
         <Stat label="Region" value={player.region.toUpperCase()} />
       </div>
-      <div className="box-border flex flex-col items-stretch gap-2 w-full max-w-[520px]">
-        <span className="box-border text-[12px] tracking-[2px] opacity-[0.6] uppercase">
+      <div className="flex flex-col items-stretch gap-2 w-full max-w-[520px]">
+        <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
           Recent form
         </span>
         <FormPips results={player.recentForm} max={12} variant="letter" />
       </div>
-      <div className="box-border flex flex-col items-stretch gap-3 w-full">
-        <span className="box-border text-[12px] tracking-[2px] opacity-[0.6] uppercase">
+      <div className="flex flex-col items-stretch gap-3 w-full">
+        <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
           Per-mode ranks
         </span>
-        <div className="box-border flex flex-col items-stretch gap-2">
+        <div className="flex flex-col items-stretch gap-2">
           {modeRanks.map((m) => (
             <div
-              className="box-border flex flex-row items-center gap-3 p-3 rounded-xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]"
+              className="flex flex-row items-center gap-3 p-3 rounded-xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]"
               key={m.mode}
               data-testid={`profile-mode-${m.mode}`}
             >
-              <span className="box-border w-[96px] text-[14px] tracking-[1px] capitalize">
+              <span className="w-[96px] text-[14px] tracking-[1px] capitalize">
                 {m.mode}
               </span>
               <RankBadge tier={player.tier as never}>{`#${m.rank}`}</RankBadge>
-              <div className="box-border flex-1 min-w-[140px]">
+              <div className="flex-1 min-w-[140px]">
                 <EnergyBar value={m.rating} max={max} />
               </div>
             </div>
@@ -189,25 +189,23 @@ function Profile({
         </div>
       </div>
       {squad ? (
-        <div className="box-border flex flex-col items-stretch gap-2">
-          <span className="box-border text-[12px] tracking-[2px] opacity-[0.6] uppercase">
+        <div className="flex flex-col items-stretch gap-2">
+          <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
             Squad
           </span>
-          <div className="box-border flex flex-row items-center gap-3 p-3 rounded-xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]">
-            <span className="box-border font-bold tracking-[1px] text-[var(--mythicAccent)]">
+          <div className="flex flex-row items-center gap-3 p-3 rounded-xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]">
+            <span className="font-bold tracking-[1px] text-[var(--mythicAccent)]">
               [{squad.tag}]
             </span>
-            <span className="box-border font-semibold">{squad.name}</span>
-            <span className="box-border text-[14px] opacity-[0.7]">
-              #{squad.rank}
-            </span>
-            <span className="box-border text-[14px] opacity-[0.85] tracking-[1px]">
+            <span className="font-semibold">{squad.name}</span>
+            <span className="text-[14px] opacity-[0.7]">#{squad.rank}</span>
+            <span className="text-[14px] opacity-[0.85] tracking-[1px]">
               {formatNumber(squad.rating, locale)}
             </span>
           </div>
         </div>
       ) : null}
-      <span className="box-border text-[14px] opacity-[0.6] max-w-[520px]">
+      <span className="text-[14px] opacity-[0.6] max-w-[520px]">
         {placeholder}
       </span>
     </div>
@@ -216,13 +214,9 @@ function Profile({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="box-border flex flex-col items-stretch px-3 py-2 rounded-lg border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] gap-2 min-w-[96px]">
-      <span className="box-border text-[12px] opacity-[0.6] uppercase">
-        {label}
-      </span>
-      <span className="box-border text-[18px] font-bold tracking-[1px]">
-        {value}
-      </span>
+    <div className="flex flex-col items-stretch px-3 py-2 rounded-lg border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] gap-2 min-w-[96px]">
+      <span className="text-[12px] opacity-[0.6] uppercase">{label}</span>
+      <span className="text-[18px] font-bold tracking-[1px]">{value}</span>
     </div>
   );
 }

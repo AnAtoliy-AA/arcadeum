@@ -41,30 +41,27 @@ export function TicTacToeTeamPanel({
   }, [room]);
 
   return (
-    <div className="box-border flex flex-col items-stretch gap-2">
-      <span className="box-border text-[16px] font-semibold">
+    <div className="flex flex-col items-stretch gap-2">
+      <span className="text-[16px] font-semibold">
         {t('games.tic_tac_toe_v1.lobby.teamMode')}
       </span>
-      <div className="box-border flex flex-row items-stretch gap-3 flex-wrap">
+      <div className="flex flex-row items-stretch gap-3 flex-wrap">
         {teamConfig.map((team) => (
           <div
-            className="box-border flex flex-col items-stretch p-3 rounded-[10px] border-[2px] min-w-[140px] gap-2"
+            className="flex flex-col items-stretch p-3 rounded-[10px] border-[2px] min-w-[140px] gap-2"
             style={{ borderColor: team.color }}
             key={team.id}
           >
-            <span
-              className="box-border font-bold"
-              style={{ color: team.color }}
-            >
+            <span className="font-bold" style={{ color: team.color }}>
               {team.name}
             </span>
             {team.playerIds.length === 0 ? (
-              <span className="box-border text-[14px] opacity-[0.6]">
+              <span className="text-[14px] opacity-[0.6]">
                 {t('games.tic_tac_toe_v1.lobby.waitingForPlayers')}
               </span>
             ) : (
               team.playerIds.map((pid: string) => (
-                <span className="box-border text-[14px]" key={pid}>
+                <span className="text-[14px]" key={pid}>
                   {pid.startsWith('bot-') ? `🤖 ${pid.slice(0, 10)}` : pid}
                 </span>
               ))

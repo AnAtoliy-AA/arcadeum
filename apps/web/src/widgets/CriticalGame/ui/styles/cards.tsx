@@ -11,12 +11,12 @@ export * from './cards-base';
 
 export type ActionButtonProps = ButtonProps & {
   variant?: string;
-  $variant?: string;
+  accent?: string;
 };
 
 export const ActionButton = ({
   variant,
-  $variant,
+  accent,
   ...props
 }: ActionButtonProps) => {
   const media = useMediaQuery();
@@ -24,37 +24,37 @@ export const ActionButton = ({
     <Button
       variant={(variant || 'primary') as ButtonProps['variant']}
       size={media.sm ? 'sm' : 'md'}
-      gameVariant={(variant || $variant) as GameVariant}
+      gameVariant={(variant || accent) as GameVariant}
       {...props}
     />
   );
 };
 
-type VariantProp = { $variant?: string };
+type VariantProp = { variant?: string };
 
 export function LastPlayedCard({
   className,
   style,
-  $isAnimating = false,
-  $variant,
-  $cardType: _cardType,
+  isAnimating = false,
+  variant,
+  cardType: _cardType,
   children,
   ...props
 }: {
   className?: string;
   style?: CSSProperties;
-  $isAnimating?: boolean;
-  $cardType?: unknown;
+  isAnimating?: boolean;
+  cardType?: unknown;
   children?: ReactNode;
 } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
-  const config = getVariantStyles($variant).cards;
+  const config = getVariantStyles(variant).cards;
   const borderColor = config.borderEffect.split(' ')[2] || config.borderEffect;
   const variantStyles = resolveVariantStyles(config.getCardStyles?.());
   return (
     <div
       className={cx(
-        'box-border absolute left-0 top-0 w-full h-full z-[10] cursor-default transition-transform duration-150 ease-out hover:scale-[1.05]',
+        'absolute left-0 top-0 w-full h-full z-[10] cursor-default transition-transform duration-150 ease-out hover:scale-[1.05]',
         className,
       )}
       style={{
@@ -71,7 +71,7 @@ export function LastPlayedCard({
         style={{
           borderColor,
           borderWidth: 2,
-          transform: $isAnimating ? 'rotateY(180deg) scale(1.1)' : undefined,
+          transform: isAnimating ? 'rotateY(180deg) scale(1.1)' : undefined,
           ...variantStyles.style,
         }}
       >
@@ -93,17 +93,17 @@ const CARDS_GRID_LAYOUT_CLASS = {
 
 export function CardsGrid({
   className,
-  $layout,
+  layout,
   ...props
 }: {
   className?: string;
-  $layout?: keyof typeof CARDS_GRID_LAYOUT_CLASS;
+  layout?: keyof typeof CARDS_GRID_LAYOUT_CLASS;
 } & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-stretch flex-wrap gap-3 justify-center p-2 max-[800px]:flex-row max-[800px]:flex-nowrap max-[800px]:overflow-x-auto max-[800px]:py-2 max-[800px]:px-2 max-[800px]:gap-2 max-[800px]:justify-start',
-        $layout ? CARDS_GRID_LAYOUT_CLASS[$layout] : undefined,
+        'flex flex-row items-stretch flex-wrap gap-3 justify-center p-2 max-[800px]:flex-row max-[800px]:flex-nowrap max-[800px]:overflow-x-auto max-[800px]:py-2 max-[800px]:px-2 max-[800px]:gap-2 max-[800px]:justify-start',
+        layout ? CARDS_GRID_LAYOUT_CLASS[layout] : undefined,
         className,
       )}
       {...props}
@@ -114,11 +114,11 @@ export function CardsGrid({
 export function DeckCard({
   className,
   style,
-  $variant,
+  variant,
   ...props
 }: { className?: string; style?: CSSProperties } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
-  const config = getVariantStyles($variant).cards;
+  const config = getVariantStyles(variant).cards;
   const variantStyles = resolveVariantStyles(config.getDeckStyles?.());
   return (
     <BaseCard
@@ -136,7 +136,7 @@ export function DeckCard({
           ...style,
         } as CSSProperties
       }
-      $variant={$variant}
+      variant={variant}
       {...props}
     />
   );

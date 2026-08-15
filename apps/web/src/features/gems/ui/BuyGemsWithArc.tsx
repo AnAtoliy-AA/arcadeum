@@ -51,7 +51,7 @@ export function BuyGemsWithArc({
 
   if (step === 'done') {
     return (
-      <div className="box-border flex flex-col items-center p-4 gap-3">
+      <div className="flex flex-col items-center p-4 gap-3">
         <Typography className={'text-[24px]'} variant="body">
           ✓
         </Typography>
@@ -67,7 +67,7 @@ export function BuyGemsWithArc({
 
   if (step === 'error') {
     return (
-      <div className="box-border flex flex-col items-center p-4 gap-3">
+      <div className="flex flex-col items-center p-4 gap-3">
         <Typography className={'text-[#dc2626]'} variant="body">
           {error}
         </Typography>
@@ -80,7 +80,7 @@ export function BuyGemsWithArc({
 
   if (step === 'confirming') {
     return (
-      <div className="box-border flex flex-col items-center p-4">
+      <div className="flex flex-col items-center p-4">
         <Typography variant="body" alpha="medium">
           Verifying payment...
         </Typography>

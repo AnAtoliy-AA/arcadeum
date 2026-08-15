@@ -29,7 +29,7 @@ export function TrendPill({ rank, prevRank, testID, className }: TrendPillProps)
     <div
       data-testid={testID}
       className={cx(
-        'box-border flex flex-row items-center gap-1 px-2 py-0.5 rounded-full border',
+        'flex flex-row items-center gap-1 px-2 py-0.5 rounded-full border',
         trendPillClasses[direction],
         className,
       )}

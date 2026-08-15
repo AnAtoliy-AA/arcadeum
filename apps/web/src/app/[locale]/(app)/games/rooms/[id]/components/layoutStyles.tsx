@@ -19,7 +19,7 @@ export function GameRow({
   return (
     <div
       className={cx(
-        'box-border flex flex-1 items-stretch gap-4 relative min-h-0',
+        'flex flex-1 items-stretch gap-4 relative min-h-0',
         flexDirection === 'row' ? 'flex-row' : 'flex-col',
         className,
       )}
@@ -44,7 +44,7 @@ export function ChatPanel({
   return (
     <div
       className={cx(
-        'box-border w-[350px] min-w-[350px] h-full min-h-[350px] shrink-0 rounded-2xl overflow-hidden max-[1150px]:w-full max-[1150px]:min-w-0 max-[1150px]:min-h-0 max-[1150px]:h-auto max-[1150px]:mt-2 max-[1150px]:rounded-lg',
+        'w-[350px] min-w-[350px] h-full min-h-[350px] shrink-0 rounded-2xl overflow-hidden max-[1150px]:w-full max-[1150px]:min-w-0 max-[1150px]:min-h-0 max-[1150px]:h-auto max-[1150px]:mt-2 max-[1150px]:rounded-lg',
         visible === false && 'hidden',
         className,
       )}

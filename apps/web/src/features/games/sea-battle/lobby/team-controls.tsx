@@ -11,7 +11,7 @@ interface ColorPaletteProps {
 export function ColorPalette({ color, onChange }: ColorPaletteProps) {
   return (
     <div
-      className="box-border flex flex-row items-stretch gap-1"
+      className="flex flex-row items-stretch gap-1"
       data-testid="color-palette"
     >
       {TEAM_DEFAULT_COLORS.map((c) => {
@@ -51,7 +51,7 @@ interface SizeStepperProps {
 export function SizeStepper({ value, onChange, max }: SizeStepperProps) {
   return (
     <div
-      className="box-border flex flex-row items-center gap-1"
+      className="flex flex-row items-center gap-1"
       data-testid="size-stepper"
     >
       <Button

@@ -19,7 +19,7 @@ export type RunnerUpCardProps = {
 const MEDAL_BY_PLACE: Record<2 | 3, string> = { 2: '🥈', 3: '🥉' };
 
 const CardClasses = [
-  'box-border',
+  '',
   'flex',
   'min-w-[200px]',
   'flex-col',

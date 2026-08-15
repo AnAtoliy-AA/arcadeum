@@ -11,7 +11,7 @@ export function CardFrame({
   return (
     <div
       className={cx(
-        'box-border relative flex flex-col items-stretch shrink-0 overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
+        'relative flex flex-col items-stretch shrink-0 overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
         small ? 'w-[144px]' : 'w-[200px]',
         className,
       )}
@@ -31,7 +31,7 @@ export function ArtBox({
   return (
     <div
       className={cx(
-        'box-border relative flex items-center justify-center',
+        'relative flex items-center justify-center',
         small ? 'h-[96px]' : 'h-[140px]',
         className,
       )}
@@ -53,7 +53,7 @@ export function Chip({
   return (
     <div
       className={cx(
-        'box-border rounded-lg border border-[var(--borderColor)] px-1.5 py-0.5',
+        'rounded-lg border border-[var(--borderColor)] px-1.5 py-0.5',
         className,
       )}
       style={{ backgroundColor, borderColor }}
@@ -86,7 +86,7 @@ export function ActionButton({
     <button
       type="button"
       className={cx(
-        'box-border flex w-full cursor-pointer flex-row items-center justify-center gap-1.5 rounded-xl border px-4 py-2 transition-colors duration-150 focus:outline-2 focus:outline-[rgba(125,211,252,0.6)] focus:outline-offset-1 focus:outline-solid',
+        'flex w-full cursor-pointer flex-row items-center justify-center gap-1.5 rounded-xl border px-4 py-2 transition-colors duration-150 focus:outline-2 focus:outline-[rgba(125,211,252,0.6)] focus:outline-offset-1 focus:outline-solid',
         ACTION_INTENT_CLASS[intent],
         !affordable && 'opacity-[0.7]',
         pending && 'opacity-[0.55]',

@@ -9,6 +9,7 @@ import {
   type AnnouncementStatus,
 } from '../api';
 import { formatWindow } from '../lib/formatWindow';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 export interface AdminAnnouncementsTableLabels {
   empty: { noResults: string; noAnnouncements: string };
@@ -69,7 +70,7 @@ export function AdminAnnouncementsTable({
 
   if (isLoading && items.length === 0) {
     return (
-      <div className="box-border flex flex-col items-center p-5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
       </div>
     );
@@ -81,7 +82,7 @@ export function AdminAnnouncementsTable({
         className={'p-5 items-center'}
         data-testid="announcements-table-empty"
       >
-        <span className="box-border opacity-[0.7]">
+        <span className="opacity-[0.7]">
           {hasFilter ? labels.empty.noResults : labels.empty.noAnnouncements}
         </span>
       </GlassCard>
@@ -94,10 +95,10 @@ export function AdminAnnouncementsTable({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-3"
+      className="flex flex-col items-stretch gap-3"
       data-testid="announcements-table"
     >
-      <span className="box-border opacity-[0.7] text-[12px] px-1">
+      <span className="opacity-[0.7] text-[12px] px-1">
         {labels.totalLabel
           .replace('{start}', String(start))
           .replace('{end}', String(end))
@@ -106,25 +107,25 @@ export function AdminAnnouncementsTable({
 
       <GlassCard className={'p-0 overflow-hidden'}>
         <div
-          className="box-border flex flex-row items-stretch py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)] gap-3"
+          className="flex flex-row items-stretch py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)] gap-3"
           data-testid="announcements-table-header"
         >
-          <span className="box-border flex-[3] font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-[3] font-bold text-[12px] opacity-[0.85]">
             {labels.table.title}
           </span>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.severity}
           </span>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.audience}
           </span>
-          <span className="box-border flex-[2] font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-[2] font-bold text-[12px] opacity-[0.85]">
             {labels.table.window}
           </span>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.createdBy}
           </span>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.actions}
           </span>
         </div>
@@ -133,33 +134,39 @@ export function AdminAnnouncementsTable({
           const fullTitle = item.content.en.title;
           return (
             <div
-              className="box-border flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
+              className="flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
               style={{
-                backgroundColor: i % 2 === 1 ? '$backgroundFocus' : undefined,
+                backgroundColor: resolveThemeColor(
+                  i % 2 === 1 ? '$backgroundFocus' : undefined,
+                ),
               }}
               key={item.id}
               data-testid={`announcement-row-${item.id}`}
             >
-              <div className="box-border flex flex-col items-stretch flex-[3]">
+              <div className="flex flex-col items-stretch flex-[3]">
                 <span title={fullTitle}>
-                  <span className="box-border">{truncate(fullTitle, 60)}</span>
+                  <span className="">{truncate(fullTitle, 60)}</span>
                 </span>
               </div>
-              <div className="box-border flex flex-col items-stretch flex-1">
+              <div className="flex flex-col items-stretch flex-1">
                 <div
-                  className="box-border flex flex-row items-stretch px-2 py-1 rounded-lg self-start"
-                  style={{ backgroundColor: SEVERITY_COLOR[item.severity] }}
+                  className="flex flex-row items-stretch px-2 py-1 rounded-lg self-start"
+                  style={{
+                    backgroundColor: resolveThemeColor(
+                      SEVERITY_COLOR[item.severity],
+                    ),
+                  }}
                 >
-                  <span className="box-border text-[12px]">
+                  <span className="text-[12px]">
                     {labels.severityLabels[item.severity]}
                   </span>
                 </div>
               </div>
-              <span className="box-border flex-1">
+              <span className="flex-1">
                 {labels.audienceLabels[item.audience]}
               </span>
-              <div className="box-border flex flex-col items-stretch flex-[2] gap-1">
-                <span className="box-border text-[12px]">
+              <div className="flex flex-col items-stretch flex-[2] gap-1">
+                <span className="text-[12px]">
                   {formatWindow(
                     item.startsAt,
                     item.endsAt,
@@ -168,17 +175,17 @@ export function AdminAnnouncementsTable({
                   )}
                 </span>
                 {item.status === 'active' && (
-                  <div className="box-border flex flex-row items-stretch px-2 py-2 rounded-lg bg-[rgba(4,_120,_87,_0.1)] self-start">
-                    <span className="box-border text-[12px] font-semibold">
+                  <div className="flex flex-row items-stretch px-2 py-2 rounded-lg bg-[rgba(4,_120,_87,_0.1)] self-start">
+                    <span className="text-[12px] font-semibold">
                       {labels.table.nowPill}
                     </span>
                   </div>
                 )}
               </div>
-              <span className="box-border flex-1 text-[12px] opacity-[0.8]">
+              <span className="flex-1 text-[12px] opacity-[0.8]">
                 {item.createdBy?.displayName ?? '—'}
               </span>
-              <div className="box-border flex flex-row items-stretch flex-1 gap-2">
+              <div className="flex flex-row items-stretch flex-1 gap-2">
                 <Button
                   size="sm"
                   variant="outline"
@@ -201,7 +208,7 @@ export function AdminAnnouncementsTable({
         })}
       </GlassCard>
 
-      <div className="box-border flex flex-row gap-3 items-center justify-center pt-2">
+      <div className="flex flex-row gap-3 items-center justify-center pt-2">
         <Button
           variant="outline"
           size="sm"
@@ -210,7 +217,7 @@ export function AdminAnnouncementsTable({
         >
           {labels.pagination.prev}
         </Button>
-        <span className="box-border opacity-[0.8] text-[14px]">
+        <span className="opacity-[0.8] text-[14px]">
           {labels.pagination.of
             .replace('{current}', String(page))
             .replace('{total}', String(totalPages))}

@@ -47,21 +47,21 @@ const FavorModal: React.FC<FavorModalProps> = ({
     <Modal open={isOpen}>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
       >
-        <ModalHeader $variant={cardVariant as GameVariant}>
-          <ModalTitle $variant={cardVariant as GameVariant}>
+        <ModalHeader variant={cardVariant as GameVariant}>
+          <ModalTitle variant={cardVariant as GameVariant}>
             🤝 {t('games.table.modals.favor.title')}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
+          <CloseButton onClick={onClose} variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel $variant={cardVariant as GameVariant}>
+          <SectionLabel variant={cardVariant as GameVariant}>
             {t('games.table.modals.favor.selectPlayer')}
           </SectionLabel>
-          <span className="box-border text-[16px] opacity-[0.8] -mb-4">
+          <span className="text-[16px] opacity-[0.8] -mb-4">
             {t('games.table.modals.favor.description')}
           </span>
           <OptionGrid>
@@ -73,15 +73,15 @@ const FavorModal: React.FC<FavorModalProps> = ({
                 onClick={() => onSelectTarget(opponent.playerId)}
                 disabled={opponent.hand.length === 0}
               >
-                <span className="box-border text-[24px]">🎮</span>
-                <div className="box-border flex flex-col items-stretch">
-                  <span className="box-border">
+                <span className="text-[24px]">🎮</span>
+                <div className="flex flex-col items-stretch">
+                  <span className="">
                     {resolveDisplayName(
                       opponent.playerId,
                       `Player ${opponent.playerId.slice(0, 8)}`,
                     )}
                   </span>
-                  <span className="box-border text-[14px] opacity-[0.7]">
+                  <span className="text-[14px] opacity-[0.7]">
                     {t('games.table.modals.favor.cardsCount').replace(
                       '{count}',
                       opponent.hand.length.toString(),

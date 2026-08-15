@@ -31,7 +31,7 @@ interface RematchModalProps {
 
 function ModalDescription({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="box-border text-[16px] leading-[20px] opacity-[0.8] mb-4">
+    <div className="text-[16px] leading-[20px] opacity-[0.8] mb-4">
       {children}
     </div>
   );
@@ -39,9 +39,7 @@ function ModalDescription({ children }: { children?: React.ReactNode }) {
 
 function PlayerList({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="box-border flex flex-col items-stretch gap-2 mb-4">
-      {children}
-    </div>
+    <div className="flex flex-col items-stretch gap-2 mb-4">{children}</div>
   );
 }
 
@@ -56,7 +54,7 @@ function PlayerItem({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-3 p-3 rounded-2xl border cursor-pointer hover:bg-[rgba(255,255,255,0.1)]',
+        'flex flex-row items-center gap-3 p-3 rounded-2xl border cursor-pointer hover:bg-[rgba(255,255,255,0.1)]',
         selected
           ? 'bg-[rgba(99,102,241,0.2)] border-[rgba(99,102,241,0.5)]'
           : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)]',
@@ -68,32 +66,22 @@ function PlayerItem({
 }
 
 function PlayerName({ children }: { children?: React.ReactNode }) {
-  return (
-    <span className="box-border flex-1 text-[18px] leading-[24px]">
-      {children}
-    </span>
-  );
+  return <span className="flex-1 text-[18px] leading-[24px]">{children}</span>;
 }
 
 function EliminatedBadge({ children }: { children?: React.ReactNode }) {
-  return (
-    <span className="box-border text-[14px] leading-[18px] ml-2">
-      {children}
-    </span>
-  );
+  return <span className="text-[14px] leading-[18px] ml-2">{children}</span>;
 }
 
 function EmptyMessage({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="box-border text-center p-4 opacity-[0.6]">{children}</div>
-  );
+  return <div className="text-center p-4 opacity-[0.6]">{children}</div>;
 }
 
-function StyledMessageInput(props: React.ComponentProps<typeof TextArea>) {
+function MessageInput(props: React.ComponentProps<typeof TextArea>) {
   return (
     <TextArea
       className={cx(
-        'box-border w-full min-h-[80px] text-[16px] rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] mb-4 text-[var(--color)] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
+        'w-full min-h-[80px] text-[16px] rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] mb-4 text-[var(--color)] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
         props.className,
       )}
       {...props}
@@ -154,9 +142,9 @@ export default function RematchModal({
     <Modal open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
       >
-        <ModalTitle $variant={cardVariant as GameVariant}>
+        <ModalTitle variant={cardVariant as GameVariant}>
           {t('games.table.rematch.modalTitle')}
         </ModalTitle>
         <ModalDescription>
@@ -176,7 +164,7 @@ export default function RematchModal({
                 checked={selectedPlayers.has(player.playerId)}
                 onChange={() => togglePlayer(player.playerId)}
                 aria-label={player.displayName}
-                className="box-border w-4 h-4 cursor-pointer accent-[#6366f1]"
+                className="w-4 h-4 cursor-pointer accent-[#6366f1]"
               />
               <PlayerName>
                 {player.displayName}
@@ -188,7 +176,7 @@ export default function RematchModal({
             <EmptyMessage>{t('games.table.rematch.noPlayers')}</EmptyMessage>
           )}
         </PlayerList>
-        <StyledMessageInput
+        <MessageInput
           placeholder={
             t('games.table.rematch.messagePlaceholder') || 'Enter a message...'
           }

@@ -32,7 +32,7 @@ export interface ShopItemCardProps {
 
 function cardSurfaceClasses(disabled?: boolean): string {
   return cx(
-    'box-border flex flex-col gap-3 rounded-xl bg-[var(--background)] p-3 transition-[transform,background-color] duration-200 ease-out',
+    'flex flex-col gap-3 rounded-xl bg-[var(--background)] p-3 transition-[transform,background-color] duration-200 ease-out',
     disabled
       ? 'cursor-not-allowed opacity-60 hover:bg-[var(--background)] active:scale-100'
       : 'cursor-pointer hover:bg-[var(--backgroundHover)] active:scale-[0.98]',
@@ -40,7 +40,7 @@ function cardSurfaceClasses(disabled?: boolean): string {
 }
 
 const PreviewSlotClasses = [
-  'box-border',
+  '',
   'relative',
   'flex',
   'aspect-square',
@@ -53,7 +53,7 @@ const PreviewSlotClasses = [
 ].join(' ');
 
 const RarityBadgeBaseClasses = [
-  'box-border',
+  '',
   'absolute',
   'left-2',
   'top-2',
@@ -74,7 +74,7 @@ const RarityBadgeToneClasses: Record<ShopRarity, string> = {
 };
 
 const StateChipBaseClasses = [
-  'box-border',
+  '',
   'rounded-lg',
   'px-2',
   'py-1',

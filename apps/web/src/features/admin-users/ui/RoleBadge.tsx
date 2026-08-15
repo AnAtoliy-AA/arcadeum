@@ -9,12 +9,12 @@ export function RoleBadge({ role, label }: { role: UserRole; label: string }) {
   const c = ROLE_COLORS[role] ?? FALLBACK_COLOR;
   return (
     <div
-      className="box-border px-2 py-1 rounded-lg self-start"
+      className="px-2 py-1 rounded-lg self-start"
       style={{ backgroundColor: resolveThemeColor(c.bg) }}
       data-testid={`role-badge-${role}`}
     >
       <span
-        className="box-border text-[14px] font-bold"
+        className="text-[14px] font-bold"
         style={{ color: resolveThemeColor(c.fg) }}
       >
         {label}

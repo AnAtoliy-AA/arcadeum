@@ -189,15 +189,13 @@ export function AdminAnnouncementForm({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] max-w-[720px]"
+      className="flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] max-w-[720px]"
       data-testid="announcement-form"
     >
-      <span className="box-border font-bold text-[20px]">
-        {labels.sections.settings}
-      </span>
+      <span className="font-bold text-[20px]">{labels.sections.settings}</span>
 
-      <div className="box-border flex flex-row gap-3 items-center flex-wrap">
-        <span className="box-border">{labels.severity}</span>
+      <div className="flex flex-row gap-3 items-center flex-wrap">
+        <span className="">{labels.severity}</span>
         <select
           data-testid="form-severity"
           value={state.severity}
@@ -216,7 +214,7 @@ export function AdminAnnouncementForm({
           ))}
         </select>
 
-        <span className="box-border">{labels.audience}</span>
+        <span className="">{labels.audience}</span>
         <select
           data-testid="form-audience"
           value={state.audience}
@@ -236,11 +234,9 @@ export function AdminAnnouncementForm({
         </select>
       </div>
 
-      <div className="box-border flex flex-row gap-3 items-center flex-wrap">
-        <div className="box-border flex flex-col items-stretch">
-          <span className="box-border text-[12px] opacity-[0.7]">
-            {labels.startsAt}
-          </span>
+      <div className="flex flex-row gap-3 items-center flex-wrap">
+        <div className="flex flex-col items-stretch">
+          <span className="text-[12px] opacity-[0.7]">{labels.startsAt}</span>
           <input
             type="datetime-local"
             data-testid="form-startsAt"
@@ -251,10 +247,8 @@ export function AdminAnnouncementForm({
             style={INPUT_STYLE}
           />
         </div>
-        <div className="box-border flex flex-col items-stretch">
-          <span className="box-border text-[12px] opacity-[0.7]">
-            {labels.endsAt}
-          </span>
+        <div className="flex flex-col items-stretch">
+          <span className="text-[12px] opacity-[0.7]">{labels.endsAt}</span>
           <input
             type="datetime-local"
             data-testid="form-endsAt"
@@ -267,11 +261,11 @@ export function AdminAnnouncementForm({
         </div>
       </div>
 
-      <span className="box-border font-bold text-[20px] -mt-2">
+      <span className="font-bold text-[20px] -mt-2">
         {labels.sections.content}
       </span>
 
-      <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+      <div className="flex flex-row items-stretch gap-2 flex-wrap">
         {ANNOUNCEMENT_LOCALES.map((loc) => (
           <button
             key={loc}
@@ -296,8 +290,8 @@ export function AdminAnnouncementForm({
         ))}
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border text-[12px] opacity-[0.7]">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="text-[12px] opacity-[0.7]">
           {labels.title}
           {state.activeLocale === 'en' ? ' *' : ''}
         </span>
@@ -310,9 +304,7 @@ export function AdminAnnouncementForm({
           style={INPUT_STYLE}
           maxLength={120}
         />
-        <span className="box-border text-[12px] opacity-[0.7]">
-          {labels.body}
-        </span>
+        <span className="text-[12px] opacity-[0.7]">{labels.body}</span>
         <textarea
           data-testid={`form-body-${state.activeLocale}`}
           value={active.body ?? ''}
@@ -323,11 +315,9 @@ export function AdminAnnouncementForm({
           maxLength={500}
           style={{ ...INPUT_STYLE, fontFamily: 'inherit' }}
         />
-        <div className="box-border flex flex-row items-stretch gap-3">
-          <div className="box-border flex flex-col items-stretch flex-1">
-            <span className="box-border text-[12px] opacity-[0.7]">
-              {labels.ctaLabel}
-            </span>
+        <div className="flex flex-row items-stretch gap-3">
+          <div className="flex flex-col items-stretch flex-1">
+            <span className="text-[12px] opacity-[0.7]">{labels.ctaLabel}</span>
             <input
               data-testid={`form-ctaLabel-${state.activeLocale}`}
               value={active.ctaLabel ?? ''}
@@ -338,10 +328,8 @@ export function AdminAnnouncementForm({
               maxLength={60}
             />
           </div>
-          <div className="box-border flex flex-col items-stretch flex-[2]">
-            <span className="box-border text-[12px] opacity-[0.7]">
-              {labels.ctaHref}
-            </span>
+          <div className="flex flex-col items-stretch flex-[2]">
+            <span className="text-[12px] opacity-[0.7]">{labels.ctaHref}</span>
             <input
               data-testid={`form-ctaHref-${state.activeLocale}`}
               value={active.ctaHref ?? ''}
@@ -356,21 +344,18 @@ export function AdminAnnouncementForm({
 
       {errors.length > 0 && (
         <div
-          className="box-border flex flex-col items-stretch p-2 rounded-lg bg-[var(--errorBgSoft)]"
+          className="flex flex-col items-stretch p-2 rounded-lg bg-[var(--errorBgSoft)]"
           data-testid="form-errors"
         >
           {errors.map((err) => (
-            <span
-              className="box-border text-[12px] text-[var(--errorText)]"
-              key={err}
-            >
+            <span className="text-[12px] text-[var(--errorText)]" key={err}>
               • {err}
             </span>
           ))}
         </div>
       )}
 
-      <div className="box-border flex flex-row items-stretch gap-3 justify-end pt-2">
+      <div className="flex flex-row items-stretch gap-3 justify-end pt-2">
         <Button variant="outline" onClick={onCancel} data-testid="form-cancel">
           {labels.cancel}
         </Button>

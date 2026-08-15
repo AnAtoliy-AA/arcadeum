@@ -32,7 +32,6 @@ export default function SeaBattleRealPreview({
           justifyContent: 'flex-start',
           background,
           padding,
-          boxSizing: 'border-box',
           overflow: 'hidden',
         }}
       >

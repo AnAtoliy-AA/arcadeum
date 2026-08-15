@@ -28,7 +28,7 @@ export default async function ChatRoute({
       <PageBreadcrumb locale={locale} page="chat" />
       <Suspense
         fallback={
-          <div className="box-border flex flex-col p-7 items-center">
+          <div className="flex flex-col p-7 items-center">
             <Typography uiSize="md" alpha="medium">
               Loading...
             </Typography>

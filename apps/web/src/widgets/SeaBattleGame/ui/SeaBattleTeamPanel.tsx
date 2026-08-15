@@ -80,9 +80,9 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
   const hasUnassigned = unassignedMembers.length > 0;
 
   const header = (
-    <div className="box-border flex flex-row items-center justify-between gap-3 flex-wrap">
+    <div className="flex flex-row items-center justify-between gap-3 flex-wrap">
       <div
-        className="box-border flex flex-row items-center gap-3"
+        className="flex flex-row items-center gap-3"
         data-testid={isHost ? 'team-mode-toggle' : undefined}
       >
         <Typography variant="heading" uiSize="md">
@@ -101,7 +101,7 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
       </div>
 
       {isHost && teamMode && (
-        <div className="box-border flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center gap-2">
           <Typography variant="caption" uiSize="sm">
             {hideShipsLabel}
           </Typography>
@@ -118,17 +118,17 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
 
   return (
     <Card variant="outlined" data-testid="sea-battle-team-panel">
-      <div className="box-border flex flex-col items-stretch gap-3">
+      <div className="flex flex-col items-stretch gap-3">
         {header}
 
         {teamMode && teamStartBlocked && isHost && (
           <div
-            className="box-border flex flex-row items-center justify-center px-3 py-2 rounded-[10px] border bg-[rgba(251,191,36,0.08)] border-[rgba(251,191,36,0.3)]"
+            className="flex flex-row items-center justify-center px-3 py-2 rounded-[10px] border bg-[rgba(251,191,36,0.08)] border-[rgba(251,191,36,0.3)]"
             role="status"
             aria-live="polite"
             data-testid="team-start-blocked-notice"
           >
-            <span className="box-border text-[12px] font-semibold text-[#fcd34d]">
+            <span className="text-[12px] font-semibold text-[#fcd34d]">
               {t(
                 'games.sea_battle_v1.teamMode.start.disabledNotFull' as TranslationKey,
               )}

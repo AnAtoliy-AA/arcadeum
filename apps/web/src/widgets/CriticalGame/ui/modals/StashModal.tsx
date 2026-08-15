@@ -69,21 +69,21 @@ const StashModal: React.FC<StashModalProps> = ({
     <Modal open={isOpen}>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
       >
-        <ModalHeader $variant={cardVariant as GameVariant}>
-          <ModalTitle $variant={cardVariant as GameVariant}>
+        <ModalHeader variant={cardVariant as GameVariant}>
+          <ModalTitle variant={cardVariant as GameVariant}>
             🏰 {t('games.table.modals.stash.title')}
           </ModalTitle>
           <CloseButton
             onClick={handleClose}
-            $variant={cardVariant as GameVariant}
+            variant={cardVariant as GameVariant}
           >
             ×
           </CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel $variant={cardVariant as GameVariant}>
+          <SectionLabel variant={cardVariant as GameVariant}>
             {t('games.table.modals.stash.description')}
           </SectionLabel>
           <CardsGrid className="max-h-[400px] overflow-y-auto p-2">
@@ -92,9 +92,9 @@ const StashModal: React.FC<StashModalProps> = ({
               return (
                 <Card
                   key={`${card}-${index}`}
-                  $cardType={card}
-                  $index={0}
-                  $variant={cardVariant as GameVariant}
+                  cardType={card}
+                  index={0}
+                  variant={cardVariant as GameVariant}
                   onClick={() => toggleCard(index)}
                   className={
                     isSelected
@@ -103,10 +103,10 @@ const StashModal: React.FC<StashModalProps> = ({
                   }
                   style={{ borderColor: isSelected ? 'white' : 'transparent' }}
                 >
-                  <CardCorner $position="tl" />
-                  <CardCorner $position="tr" />
-                  <CardCorner $position="bl" />
-                  <CardCorner $position="br" />
+                  <CardCorner position="tl" />
+                  <CardCorner position="tr" />
+                  <CardCorner position="bl" />
+                  <CardCorner position="br" />
                   <CardFrame />
                   <CardInner>
                     <CardImage variant={cardVariant ?? ''} cardType={card} />

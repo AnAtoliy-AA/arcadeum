@@ -30,7 +30,7 @@ export const CatDashTurnBadge = memo(function CatDashTurnBadge({
 
   return (
     <div
-      className="box-border flex flex-row items-center justify-center gap-3 py-3 px-4 rounded-3xl border-[1.5px]"
+      className="flex flex-row items-center justify-center gap-3 py-3 px-4 rounded-3xl border-[1.5px]"
       style={{
         backgroundColor: myTurn
           ? 'rgba(124, 58, 237, 0.18)'
@@ -40,7 +40,7 @@ export const CatDashTurnBadge = memo(function CatDashTurnBadge({
     >
       <RealisticCat catId={currentPlayer.catId} size={40} />
       <span
-        className="box-border text-[18px] font-bold tracking-[0.5px]"
+        className="text-[18px] font-bold tracking-[0.5px]"
         style={{ color: tokens.text }}
       >
         {myTurn

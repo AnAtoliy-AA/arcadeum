@@ -214,14 +214,14 @@ export function GameChat({
         <HeadRow>
           <TitleDot />
           <Title>Table Chat</Title>
-          <div className="box-border flex flex-col items-stretch flex-1" />
+          <div className="flex flex-col items-stretch flex-1" />
           <IconButton
             className="p-1"
             size="sm"
             title="Settings"
             aria-label="Chat settings"
           >
-            <span className="box-border text-[14px]">⚙</span>
+            <span className="text-[14px]">⚙</span>
           </IconButton>
           <IconButton
             className="p-1"
@@ -230,7 +230,7 @@ export function GameChat({
             title="Minimize"
             aria-label="Minimize chat"
           >
-            <span className="box-border text-[14px]">—</span>
+            <span className="text-[14px]">—</span>
           </IconButton>
           {onClose ? (
             <IconButton
@@ -289,11 +289,11 @@ export function GameChat({
 
       <Body>
         <div
-          className={`box-border overflow-auto flex-1 ${scrollbarStyles.className}`}
+          className={`overflow-auto flex-1 ${scrollbarStyles.className}`}
           ref={scrollRef}
         >
           {visibleLogs.length === 0 ? (
-            <div className="box-border flex flex-col flex-1 items-center justify-center py-10">
+            <div className="flex flex-col flex-1 items-center justify-center py-10">
               <Typography className={'text-center'} alpha="low" uiSize="sm">
                 No messages yet. Break the ice!
               </Typography>
@@ -301,9 +301,9 @@ export function GameChat({
           ) : (
             <ListGap role="log" aria-live="polite" aria-relevant="additions">
               <Divider>
-                <div className="box-border flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
+                <div className="flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
                 <DividerLabel style={MONO_STYLE}>Match</DividerLabel>
-                <div className="box-border flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
+                <div className="flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
               </Divider>
               {visibleLogs.map((log) => {
                 const senderName = log.senderId
@@ -399,15 +399,13 @@ export function GameChat({
             disabled={!draft.trim() || !canSend}
             aria-label="Send message"
           >
-            <span className="box-border text-[14px] text-[#06011b] font-bold">
-              ↑
-            </span>
+            <span className="text-[14px] text-[#06011b] font-bold">↑</span>
           </IconButton>
         </InputPill>
 
         <MetaLine>
           <MetaText style={MONO_STYLE}>{draft.length}/240</MetaText>
-          <div className="box-border flex flex-row gap-6 items-center">
+          <div className="flex flex-row gap-6 items-center">
             <MetaText style={MONO_STYLE}>↵ send</MetaText>
             <MetaText style={MONO_STYLE}>⇧↵ newline</MetaText>
           </div>

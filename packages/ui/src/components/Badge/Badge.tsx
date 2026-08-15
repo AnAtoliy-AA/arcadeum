@@ -7,7 +7,7 @@ export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 export type BadgeSize = 'sm' | 'md';
 
 const badgeBase =
-  'box-border inline-flex flex-row items-center justify-center border font-bold tracking-[0.5px] text-[#f5f7ff]';
+  'inline-flex flex-row items-center justify-center border font-bold tracking-[0.5px] text-[#f5f7ff]';
 
 const badgeSizes: Record<BadgeSize, string> = {
   sm: 'px-3 py-3 rounded text-[12px]',

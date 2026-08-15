@@ -56,7 +56,7 @@ export default function PrivacyContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.dataCollection?.intro}
           </Typography>
-          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -97,7 +97,7 @@ export default function PrivacyContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.dataUsage?.intro}
           </Typography>
-          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -120,7 +120,7 @@ export default function PrivacyContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.dataSharing?.intro}
           </Typography>
-          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -163,7 +163,7 @@ export default function PrivacyContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.userRights?.intro}
           </Typography>
-          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',

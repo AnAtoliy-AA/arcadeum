@@ -48,7 +48,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       ref={ref}
       className={cx(
         'relative',
-        'box-border',
+        '',
         'overflow-hidden',
         'rounded-2xl',
         variantClasses[variant],

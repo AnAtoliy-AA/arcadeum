@@ -3,7 +3,7 @@ import { AppleIcon, AndroidIcon, SmartphoneIcon } from '../Icons';
 import { cx } from '../../utils/cx';
 
 const downloadLinkClasses = [
-  'box-border',
+  '',
   'flex',
   'min-h-[60px]',
   'min-w-[170px]',

@@ -34,11 +34,11 @@ export function AuthFormTabs({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch border-b border-[var(--glassBorder)] relative"
+      className="flex flex-col items-stretch border-b border-[var(--glassBorder)] relative"
       role="tablist"
       aria-label="Authentication mode"
     >
-      <div className="box-border flex flex-row items-stretch">
+      <div className="flex flex-row items-stretch">
         <TabButton
           isActive={!isRegisterMode}
           label={signInLabel}

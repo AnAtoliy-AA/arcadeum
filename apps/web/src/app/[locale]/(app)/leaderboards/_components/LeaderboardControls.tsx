@@ -30,7 +30,7 @@ function SegBtn({
     <div
       role="tab"
       className={cx(
-        'box-border flex flex-row items-center cursor-pointer rounded-lg border px-3 py-2 hover:bg-[rgba(255,255,255,0.04)]',
+        'flex flex-row items-center cursor-pointer rounded-lg border px-3 py-2 hover:bg-[rgba(255,255,255,0.04)]',
         active
           ? 'border-[var(--mythicAccent)] bg-[rgba(236,72,153,0.12)]'
           : 'border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]',
@@ -64,9 +64,9 @@ export function LeaderboardControls({
   const ranges = (tt.ranges as Record<string, string>) ?? {};
 
   return (
-    <div className="box-border flex flex-row items-center gap-3 justify-between flex-wrap">
+    <div className="flex flex-row items-center gap-3 justify-between flex-wrap">
       <div
-        className="box-border flex flex-row items-stretch gap-2 flex-wrap"
+        className="flex flex-row items-stretch gap-2 flex-wrap"
         role="tablist"
         aria-label="Leaderboard scope"
       >
@@ -81,7 +81,7 @@ export function LeaderboardControls({
           >
             <span
               className={cx(
-                'box-border text-[14px]',
+                'text-[14px]',
                 scope === s
                   ? 'font-bold text-[var(--mythicAccent)]'
                   : 'font-medium',
@@ -92,8 +92,8 @@ export function LeaderboardControls({
           </SegBtn>
         ))}
       </div>
-      <div className="box-border flex flex-row gap-2 flex-wrap items-center">
-        <div className="box-border flex flex-col items-stretch">
+      <div className="flex flex-row gap-2 flex-wrap items-center">
+        <div className="flex flex-col items-stretch">
           <select
             value={range}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>

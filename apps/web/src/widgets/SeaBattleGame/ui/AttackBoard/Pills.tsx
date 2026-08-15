@@ -21,13 +21,13 @@ export function BadgePill({
 }: BadgePillProps) {
   return (
     <div
-      className={`box-border flex flex-row items-center gap-1 rounded-lg border px-2 py-0.5 ${className ?? ''}`}
+      className={`flex flex-row items-center gap-1 rounded-lg border px-2 py-0.5 ${className ?? ''}`}
       style={{ backgroundColor: bg, borderColor: border }}
       aria-label={ariaLabel}
     >
-      <span className="box-border text-[10px] leading-none">{icon}</span>
+      <span className="text-[10px] leading-none">{icon}</span>
       <span
-        className="box-border text-[9px] leading-none font-bold uppercase"
+        className="text-[9px] leading-none font-bold uppercase"
         style={{ color }}
       >
         {label}
@@ -39,7 +39,7 @@ export function BadgePill({
 export function TeamPill({ team }: { team: { name: string; color: string } }) {
   return (
     <div
-      className="box-border flex flex-row items-center gap-1 ml-1 rounded-full border px-2 py-0.5"
+      className="flex flex-row items-center gap-1 ml-1 rounded-full border px-2 py-0.5"
       style={{ backgroundColor: 'rgba(0,0,0,0.3)', borderColor: team.color }}
     >
       <span
@@ -52,7 +52,7 @@ export function TeamPill({ team }: { team: { name: string; color: string } }) {
         }}
       />
       <span
-        className="box-border text-[9px] leading-none font-bold uppercase"
+        className="text-[9px] leading-none font-bold uppercase"
         style={{ color: team.color }}
       >
         {team.name}

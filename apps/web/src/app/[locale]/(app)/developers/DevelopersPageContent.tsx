@@ -42,7 +42,7 @@ export default function DevelopersPageContent({
 
         {t?.features && (
           <Section variant="legal">
-            <div className="box-border flex flex-row items-stretch flex-wrap gap-4">
+            <div className="flex flex-row items-stretch flex-wrap gap-4">
               {(
                 t.features as ({ title: string; description: string } | null)[]
               ).map((feature, index: number) => {
@@ -54,7 +54,7 @@ export default function DevelopersPageContent({
                     }
                     key={index}
                   >
-                    <div className="box-border flex flex-col items-stretch gap-2">
+                    <div className="flex flex-col items-stretch gap-2">
                       <Typography
                         className={'font-bold'}
                         variant="label"

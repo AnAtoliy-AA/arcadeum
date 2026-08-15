@@ -13,7 +13,7 @@ function Container({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-col items-stretch relative z-[50] ${className ?? ''}`}
+      className={`flex flex-col items-stretch relative z-[50] ${className ?? ''}`}
       {...props}
     />
   );
@@ -30,7 +30,7 @@ function Header({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-2 cursor-pointer select-none rounded-2xl border border-[rgba(99,102,241,0.3)] px-3 py-2 hover:bg-[rgba(99,102,241,0.2)]',
+        'flex flex-row items-center gap-2 cursor-pointer select-none rounded-2xl border border-[rgba(99,102,241,0.3)] px-3 py-2 hover:bg-[rgba(99,102,241,0.2)]',
         expanded ? 'bg-[rgba(99,102,241,0.2)]' : 'bg-[rgba(99,102,241,0.1)]',
         className,
       )}
@@ -45,7 +45,7 @@ function HeaderText({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[16px] leading-[20px] font-semibold text-[rgba(255,255,255,0.95)] ${className ?? ''}`}
+      className={`text-[16px] leading-[20px] font-semibold text-[rgba(255,255,255,0.95)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -57,7 +57,7 @@ function Toggle({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[14px] leading-[18px] text-[rgba(255,255,255,0.7)] ${className ?? ''}`}
+      className={`text-[14px] leading-[18px] text-[rgba(255,255,255,0.7)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -69,7 +69,7 @@ function DropdownMenu({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-col items-stretch absolute top-full right-0 mt-2 w-[280px] gap-1 overflow-hidden rounded-2xl border border-[rgba(99,102,241,0.3)] bg-[#1e1e2e] p-2 ${className ?? ''}`}
+      className={`flex flex-col items-stretch absolute top-full right-0 mt-2 w-[280px] gap-1 overflow-hidden rounded-2xl border border-[rgba(99,102,241,0.3)] bg-[#1e1e2e] p-2 ${className ?? ''}`}
       style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)' }}
       {...props}
     />
@@ -87,7 +87,7 @@ function Label({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-3 cursor-pointer rounded-lg px-3 py-2 hover:bg-[rgba(255,255,255,0.05)]',
+        'flex flex-row items-center gap-3 cursor-pointer rounded-lg px-3 py-2 hover:bg-[rgba(255,255,255,0.05)]',
         secondary && 'pl-6 opacity-[0.9]',
         className,
       )}
@@ -102,7 +102,7 @@ function ControlText({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[16px] leading-[20px] font-medium text-[rgba(255,255,255,0.9)] ${className ?? ''}`}
+      className={`text-[16px] leading-[20px] font-medium text-[rgba(255,255,255,0.9)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -135,7 +135,7 @@ const CheckboxItem: React.FC<CheckboxItemProps> = ({
       onChange={(e) => onCheckedChange(e.target.checked)}
       disabled={disabled}
       aria-label={label}
-      className="box-border w-4 h-4 cursor-pointer accent-[#6366f1]"
+      className="w-4 h-4 cursor-pointer accent-[#6366f1]"
     />
     <ControlText className="ml-2">{label}</ControlText>
   </Label>

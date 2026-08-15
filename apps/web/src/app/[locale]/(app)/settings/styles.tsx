@@ -52,7 +52,7 @@ export function Container({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch gap-8 w-full max-w-[900px] self-center',
+        'flex flex-col items-stretch gap-8 w-full max-w-[900px] self-center',
         className,
       )}
       {...props}
@@ -66,7 +66,7 @@ export function OptionList({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx('box-border grid gap-5 w-full', className)}
+      className={cx('grid gap-5 w-full', className)}
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
       {...props}
     />
@@ -79,10 +79,7 @@ export function PillGroup({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx(
-        'box-border flex flex-row items-stretch flex-wrap gap-4',
-        className,
-      )}
+      className={cx('flex flex-row items-stretch flex-wrap gap-4', className)}
       {...props}
     />
   );
@@ -95,7 +92,7 @@ export function AccountStatus({
   return (
     <p
       className={cx(
-        'box-border m-0 p-5 rounded-xl border border-[var(--borderColor)] bg-[var(--background)] text-center text-[16px] leading-[24px] text-[var(--color)] opacity-[0.8]',
+        'm-0 p-5 rounded-xl border border-[var(--borderColor)] bg-[var(--background)] text-center text-[16px] leading-[24px] text-[var(--color)] opacity-[0.8]',
         className,
       )}
       style={{ backdropFilter: 'blur(12px)' }}
@@ -111,7 +108,7 @@ export function AccountActions({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-stretch flex-wrap gap-5 mt-3',
+        'flex flex-row items-stretch flex-wrap gap-5 mt-3',
         className,
       )}
       {...props}
@@ -126,7 +123,7 @@ export function AccountActionItem({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch flex-1 min-w-[150px]',
+        'flex flex-col items-stretch flex-1 min-w-[150px]',
         className,
       )}
       {...props}
@@ -141,7 +138,7 @@ export function ToggleRow({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center justify-between p-6 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl cursor-pointer transition-colors hover:border-[var(--primary)] hover:bg-[var(--backgroundHover)]',
+        'flex flex-row items-center justify-between p-6 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl cursor-pointer transition-colors hover:border-[var(--primary)] hover:bg-[var(--backgroundHover)]',
         className,
       )}
       style={{ backdropFilter: 'blur(8px)', scrollMarginTop: 100 }}
@@ -157,7 +154,7 @@ export function ToggleLabel({
   return (
     <span
       className={cx(
-        'box-border text-[18px] leading-[24px] font-semibold text-[var(--color)] cursor-pointer',
+        'text-[18px] leading-[24px] font-semibold text-[var(--color)] cursor-pointer',
         className,
       )}
       {...props}
@@ -178,7 +175,7 @@ export function BlockedUserRow({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center justify-between gap-4 p-4 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl',
+        'flex flex-row items-center justify-between gap-4 p-4 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl',
         className,
       )}
       style={{ backdropFilter: 'blur(12px)' }}
@@ -194,7 +191,7 @@ export function BlockedUserInfo({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch gap-2 min-w-0 flex-1',
+        'flex flex-col items-stretch gap-2 min-w-0 flex-1',
         className,
       )}
       {...props}
@@ -219,7 +216,7 @@ export function OptionLabel({
   return (
     <span
       className={cx(
-        'box-border text-[18px] leading-[24px] font-semibold text-[var(--color)]',
+        'text-[18px] leading-[24px] font-semibold text-[var(--color)]',
         className,
       )}
       {...props}
@@ -234,7 +231,7 @@ export function OptionDescription({
   return (
     <p
       className={cx(
-        'box-border m-0 text-[16px] leading-[20px] text-[var(--color)] opacity-[0.7]',
+        'm-0 text-[16px] leading-[20px] text-[var(--color)] opacity-[0.7]',
         className,
       )}
       {...props}
@@ -249,7 +246,7 @@ export function VersionText({
   return (
     <span
       className={cx(
-        'box-border text-[16px] leading-[20px] text-[var(--color)] tracking-[0.05em] opacity-[0.7]',
+        'text-[16px] leading-[20px] text-[var(--color)] tracking-[0.05em] opacity-[0.7]',
         className,
       )}
       style={{ fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace" }}

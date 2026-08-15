@@ -83,7 +83,7 @@ export const CatDashBoard = memo(function CatDashBoard({
   const spaceRadius = 22;
 
   return (
-    <div className="box-border flex flex-col gap-3 items-center w-full p-3">
+    <div className="flex flex-col gap-3 items-center w-full p-3">
       <svg
         viewBox={`0 0 ${svgW} ${svgH}`}
         width="100%"
@@ -301,14 +301,14 @@ export const CatDashBoard = memo(function CatDashBoard({
       </svg>
 
       {/* Player legend */}
-      <div className="box-border flex flex-row items-stretch gap-3 flex-wrap justify-center">
+      <div className="flex flex-row items-stretch gap-3 flex-wrap justify-center">
         {snapshot.players.map((player) => {
           const isCurrent =
             snapshot.players[snapshot.currentPlayerIndex]?.playerId ===
             player.playerId;
           return (
             <div
-              className="box-border flex flex-row gap-3 items-center px-4 py-3 rounded-2xl border-[1.5px]"
+              className="flex flex-row gap-3 items-center px-4 py-3 rounded-2xl border-[1.5px]"
               style={{
                 opacity: player.isReady ? 1 : 0.4,
                 backgroundColor: isCurrent
@@ -322,7 +322,7 @@ export const CatDashBoard = memo(function CatDashBoard({
             >
               <RealisticCat catId={player.catId} size={28} />
               <span
-                className="box-border text-[14px]"
+                className="text-[14px]"
                 style={{
                   fontWeight: isCurrent ? 'bold' : 'normal',
                   color: CAT_COLORS[player.catId] ?? tokens.text,
@@ -331,7 +331,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                 {resolveName(player.playerId)}
               </span>
               <span
-                className="box-border text-[12px]"
+                className="text-[12px]"
                 style={{ color: tokens.textSecondary }}
               >
                 🎲 {player.powerTokens}
@@ -342,40 +342,28 @@ export const CatDashBoard = memo(function CatDashBoard({
       </div>
 
       {/* Legend */}
-      <div className="box-border flex flex-row items-stretch gap-3 justify-center flex-wrap">
-        <div className="box-border flex flex-row gap-1 items-center">
-          <div className="box-border flex flex-row items-stretch w-[12px] h-[12px] bg-[#22c55e] rounded-[24px]" />
-          <span
-            className="box-border text-[40px]"
-            style={{ color: tokens.textSecondary }}
-          >
+      <div className="flex flex-row items-stretch gap-3 justify-center flex-wrap">
+        <div className="flex flex-row gap-1 items-center">
+          <div className="flex flex-row items-stretch w-[12px] h-[12px] bg-[#22c55e] rounded-[24px]" />
+          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
             Start
           </span>
         </div>
-        <div className="box-border flex flex-row gap-1 items-center">
-          <div className="box-border flex flex-row items-stretch w-[12px] h-[12px] bg-[#f59e0b] rounded-[24px]" />
-          <span
-            className="box-border text-[40px]"
-            style={{ color: tokens.textSecondary }}
-          >
+        <div className="flex flex-row gap-1 items-center">
+          <div className="flex flex-row items-stretch w-[12px] h-[12px] bg-[#f59e0b] rounded-[24px]" />
+          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
             Finish
           </span>
         </div>
-        <div className="box-border flex flex-row gap-1 items-center">
-          <span className="box-border text-[48px]">⚡</span>
-          <span
-            className="box-border text-[40px]"
-            style={{ color: tokens.textSecondary }}
-          >
+        <div className="flex flex-row gap-1 items-center">
+          <span className="text-[48px]">⚡</span>
+          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
             Obstacle
           </span>
         </div>
-        <div className="box-border flex flex-row gap-1 items-center">
-          <span className="box-border text-[48px]">⭐</span>
-          <span
-            className="box-border text-[40px]"
-            style={{ color: tokens.textSecondary }}
-          >
+        <div className="flex flex-row gap-1 items-center">
+          <span className="text-[48px]">⭐</span>
+          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
             Bonus
           </span>
         </div>

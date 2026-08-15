@@ -45,7 +45,7 @@ const SortableCardWrapper = forwardRef<
   return (
     <div
       className={cx(
-        'box-border flex min-w-[100px] cursor-grab flex-col items-center gap-2 rounded-2xl border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.1)] p-4',
+        'flex min-w-[100px] cursor-grab flex-col items-center gap-2 rounded-2xl border-2 border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.1)] p-4',
         isDragging && 'opacity-[0.5]',
         className,
       )}
@@ -94,23 +94,23 @@ function SortableCard({ id, card, index, t, cardVariant }: SortableCardProps) {
       {...restAttributes}
       {...listeners}
     >
-      <div className="box-border mb-1 text-[14px] text-[rgba(255,255,255,0.6)]">
+      <div className="mb-1 text-[14px] text-[rgba(255,255,255,0.6)]">
         #{index + 1}
       </div>
       <Card
-        $cardType={card}
-        $variant={cardVariant as GameVariant}
+        cardType={card}
+        variant={cardVariant as GameVariant}
         className="w-full mb-2"
       >
-        <CardCorner $position="tl" $variant={cardVariant} />
-        <CardCorner $position="tr" $variant={cardVariant} />
-        <CardCorner $position="bl" $variant={cardVariant} />
-        <CardCorner $position="br" $variant={cardVariant} />
-        <CardFrame $variant={cardVariant} />
+        <CardCorner position="tl" variant={cardVariant} />
+        <CardCorner position="tr" variant={cardVariant} />
+        <CardCorner position="bl" variant={cardVariant} />
+        <CardCorner position="br" variant={cardVariant} />
+        <CardFrame variant={cardVariant} />
         <CardImage variant={cardVariant ?? ''} cardType={card} />
         <GradientScrim />
       </Card>
-      <div className="box-border text-center text-[16px] text-[#fff]">
+      <div className="text-center text-[16px] text-[#fff]">
         {t(getCardTranslationKey(card, cardVariant) as string)}
       </div>
     </SortableCardWrapper>
@@ -170,16 +170,16 @@ export default function AlterTheFutureModal({
 
   return (
     <Overlay open={isOpen} onOpenChange={(open) => !open && onClose?.()}>
-      <ModalContainer $variant={cardVariant as GameVariant}>
-        <ModalHeader $variant={cardVariant as GameVariant}>
-          <ModalTitle $variant={cardVariant as GameVariant}>
+      <ModalContainer variant={cardVariant as GameVariant}>
+        <ModalHeader variant={cardVariant as GameVariant}>
+          <ModalTitle variant={cardVariant as GameVariant}>
             {isShare
               ? t('games.table.modals.shareTheFuture.title')
               : t('games.table.modals.alterTheFuture.title')}
           </ModalTitle>
         </ModalHeader>
 
-        <div className="box-border mb-6 text-center text-[#ccc]">
+        <div className="mb-6 text-center text-[#ccc]">
           {t('games.table.modals.alterTheFuture.description')}
         </div>
 
@@ -192,7 +192,7 @@ export default function AlterTheFutureModal({
             items={items}
             strategy={horizontalListSortingStrategy}
           >
-            <div className="box-border mb-8 flex flex-row flex-wrap justify-center gap-4">
+            <div className="mb-8 flex flex-row flex-wrap justify-center gap-4">
               {items.map((item, index) => (
                 <SortableCard
                   key={item.id}

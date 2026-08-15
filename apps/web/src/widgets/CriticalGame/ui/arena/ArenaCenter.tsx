@@ -60,12 +60,12 @@ export function ArenaCenter({
 }: ArenaCenterProps) {
   return (
     <div
-      className="box-border flex flex-col flex-1 items-center justify-center gap-2 relative"
+      className="flex flex-col flex-1 items-center justify-center gap-2 relative"
       data-testid="arena-center"
     >
       <HudStyles />
       <div
-        className="box-border flex flex-col absolute top-[8px] left-0 right-0 items-center pointer-events-none z-[500]"
+        className="flex flex-col absolute top-[8px] left-0 right-0 items-center pointer-events-none z-[500]"
         data-testid="arena-flash-slot"
       >
         <FlashBanner logs={logs} formatMessage={formatLogMessage} />

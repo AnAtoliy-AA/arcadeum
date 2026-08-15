@@ -13,7 +13,7 @@ export function LogItem({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch gap-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] p-5 hover:border-[var(--borderColorHover)]',
+        'flex flex-col items-stretch gap-3 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] p-5 hover:border-[var(--borderColorHover)]',
         className,
       )}
       {...props}
@@ -34,7 +34,7 @@ export function LogHeader({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-4 justify-between',
+        'flex flex-row items-center gap-4 justify-between',
         className,
       )}
       {...props}
@@ -73,7 +73,7 @@ export function LogScope({
   return (
     <Typography
       className={cx(
-        'box-border rounded-full bg-[var(--backgroundStrong, rgba(255,255,255,0.03))] px-3 py-1 uppercase tracking-[0.25em]',
+        'rounded-full bg-[var(--backgroundStrong, rgba(255,255,255,0.03))] px-3 py-1 uppercase tracking-[0.25em]',
         className,
       )}
       uiSize="xs"

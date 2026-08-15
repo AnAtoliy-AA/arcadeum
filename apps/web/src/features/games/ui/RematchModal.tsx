@@ -39,10 +39,7 @@ const ModalDescription = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cx(
-      'box-border text-[16px] text-[var(--textSecondary)] mb-4',
-      className,
-    )}
+    className={cx('text-[16px] text-[var(--textSecondary)] mb-4', className)}
     {...props}
   >
     {children}
@@ -58,10 +55,7 @@ const PlayerList = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cx(
-      'box-border flex flex-col items-stretch gap-2 mb-4',
-      className,
-    )}
+    className={cx('flex flex-col items-stretch gap-2 mb-4', className)}
     {...props}
   >
     {children}
@@ -80,7 +74,7 @@ const PlayerItem = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-row items-center gap-3 p-3 rounded-[12px] cursor-pointer border transition-colors hover:bg-[rgba(255,255,255,0.1)]',
+      'flex flex-row items-center gap-3 p-3 rounded-[12px] cursor-pointer border transition-colors hover:bg-[rgba(255,255,255,0.1)]',
       selected
         ? 'bg-[rgba(99,102,241,0.2)] border-[rgba(99,102,241,0.5)]'
         : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)]',
@@ -104,7 +98,7 @@ const CheckboxCircle = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border w-[20px] h-[20px] rounded-[10px] border-2 border-[rgba(255,255,255,0.3)] flex items-center justify-center shrink-0',
+      'w-[20px] h-[20px] rounded-[10px] border-2 border-[rgba(255,255,255,0.3)] flex items-center justify-center shrink-0',
       selected && 'bg-[#6366f1] border-[#6366f1]',
       className,
     )}
@@ -123,10 +117,7 @@ const PlayerName = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cx(
-      'box-border text-[16px] text-[var(--color)] flex-1',
-      className,
-    )}
+    className={cx('text-[16px] text-[var(--color)] flex-1', className)}
     {...props}
   >
     {children}
@@ -141,7 +132,7 @@ const EliminatedBadge = ({
   className?: string;
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
-  <span className={cx('box-border text-[14px] ml-1', className)} {...props}>
+  <span className={cx('text-[14px] ml-1', className)} {...props}>
     {children}
   </span>
 );
@@ -155,10 +146,7 @@ const EmptyMessage = ({
   children?: ReactNode;
 } & HTMLAttributes<HTMLSpanElement>) => (
   <span
-    className={cx(
-      'box-border p-4 text-center text-[var(--textSecondary)]',
-      className,
-    )}
+    className={cx('p-4 text-center text-[var(--textSecondary)]', className)}
     {...props}
   >
     {children}
@@ -175,7 +163,7 @@ const MessageInput = ({
 } & TextareaHTMLAttributes<HTMLTextAreaElement>) => (
   <textarea
     className={cx(
-      'box-border w-full p-3 mb-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[var(--color)] min-h-[80px] text-[16px] outline-none transition-colors placeholder:text-[#8e9196] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
+      'w-full p-3 mb-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[var(--color)] min-h-[80px] text-[16px] outline-none transition-colors placeholder:text-[#8e9196] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
       className,
     )}
     onChange={onChange}
@@ -240,7 +228,7 @@ export function RematchModal({
 
   return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose()}>
-      <ModalContent $variant={cardVariant}>
+      <ModalContent variant={cardVariant}>
         <ModalTitle>
           {t('games.table.rematch.title' as TranslationKey)}
         </ModalTitle>
@@ -257,7 +245,7 @@ export function RematchModal({
             >
               <CheckboxCircle selected={selectedPlayers.has(player.playerId)}>
                 {selectedPlayers.has(player.playerId) && (
-                  <span className="box-border text-[white] text-[12px]">✓</span>
+                  <span className="text-[white] text-[12px]">✓</span>
                 )}
               </CheckboxCircle>
               <PlayerName>
@@ -281,7 +269,7 @@ export function RematchModal({
         />
 
         {rematchError && (
-          <span className="box-border text-[#dc2626] text-[16px] text-center -mb-3">
+          <span className="text-[#dc2626] text-[16px] text-center -mb-3">
             {rematchError}
           </span>
         )}

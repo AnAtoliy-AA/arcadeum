@@ -20,7 +20,7 @@ function Overlay({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.8)] z-[1000] items-center justify-center',
+        'flex flex-col items-stretch fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.8)] z-[1000] items-center justify-center',
         className,
       )}
       {...props}
@@ -75,7 +75,7 @@ function ModalFrame({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch bg-[var(--background)] border-2 border-[var(--borderColor)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[1001]',
+        'flex flex-col items-stretch bg-[var(--background)] border-2 border-[var(--borderColor)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[1001]',
         MODAL_FRAME_VARIANT_CLASS[key],
         className,
       )}
@@ -92,7 +92,7 @@ function ScrollArea({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch overflow-y-auto p-6 w-full h-full',
+        'flex flex-col items-stretch overflow-y-auto p-6 w-full h-full',
         className,
       )}
       {...props}
@@ -103,19 +103,17 @@ function ScrollArea({
 export const ModalContent = ({
   children,
   variant,
-  $variant,
   onClick,
   ...props
 }: {
   children: React.ReactNode;
   variant?: GameVariant;
-  $variant?: GameVariant;
   onClick?: (e: { stopPropagation: () => void }) => void;
   [key: string]: unknown;
 }) => {
   return (
     <ModalFrame
-      variant={variant || ($variant as GameVariant)}
+      variant={variant}
       onClick={(e: React.MouseEvent) => {
         e.stopPropagation();
         onClick?.({ stopPropagation: () => {} });
@@ -139,14 +137,14 @@ const MODAL_ACCENT_BORDER_CLASS = {
 
 export function ModalHeader({
   className,
-  $variant,
+  variant,
   ...props
-}: { className?: string; $variant?: string } & HTMLAttributes<HTMLDivElement>) {
-  const key = ($variant ?? '') as keyof typeof MODAL_ACCENT_BORDER_CLASS;
+}: { className?: string; variant?: string } & HTMLAttributes<HTMLDivElement>) {
+  const key = (variant ?? '') as keyof typeof MODAL_ACCENT_BORDER_CLASS;
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-stretch justify-between items-center mb-6 pb-4 border-b-2 border-b-[var(--borderColor)]',
+        'flex flex-row items-stretch justify-between items-center mb-6 pb-4 border-b-2 border-b-[var(--borderColor)]',
         MODAL_ACCENT_BORDER_CLASS[key],
         className,
       )}
@@ -167,17 +165,17 @@ const MODAL_ACCENT_TEXT_CLASS = {
 
 export function ModalTitle({
   className,
-  $variant,
+  variant,
   ...props
 }: {
   className?: string;
-  $variant?: string;
+  variant?: string;
 } & HTMLAttributes<HTMLSpanElement>) {
-  const key = ($variant ?? '') as keyof typeof MODAL_ACCENT_TEXT_CLASS;
+  const key = (variant ?? '') as keyof typeof MODAL_ACCENT_TEXT_CLASS;
   return (
     <span
       className={cx(
-        'box-border text-[24px] font-bold text-[var(--color)]',
+        'text-[24px] font-bold text-[var(--color)]',
         MODAL_ACCENT_TEXT_CLASS[key],
         className,
       )}
@@ -188,13 +186,11 @@ export function ModalTitle({
 
 export const CloseButton = ({
   variant,
-  $variant,
   children,
   onClick,
   ...props
 }: {
   variant?: GameVariant;
-  $variant?: GameVariant;
   children?: React.ReactNode;
   onClick?: (e: { stopPropagation: () => void }) => void;
   [key: string]: unknown;
@@ -203,7 +199,7 @@ export const CloseButton = ({
     className="hover:rotate-[90deg]"
     variant="icon"
     size="sm"
-    gameVariant={(variant || $variant) as GameVariant}
+    gameVariant={variant as GameVariant}
     onClick={onClick}
     {...props}
   >
@@ -217,7 +213,7 @@ export function ModalSection({
 }: { className?: string } & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx('box-border flex flex-col items-stretch mb-6', className)}
+      className={cx('flex flex-col items-stretch mb-6', className)}
       {...props}
     />
   );
@@ -225,17 +221,17 @@ export function ModalSection({
 
 export function SectionLabel({
   className,
-  $variant,
+  variant,
   ...props
 }: {
   className?: string;
-  $variant?: string;
+  variant?: string;
 } & HTMLAttributes<HTMLSpanElement>) {
-  const key = ($variant ?? '') as keyof typeof MODAL_ACCENT_TEXT_CLASS;
+  const key = (variant ?? '') as keyof typeof MODAL_ACCENT_TEXT_CLASS;
   return (
     <span
       className={cx(
-        'box-border text-[14px] font-semibold uppercase tracking-[0.5px] mb-3',
+        'text-[14px] font-semibold uppercase tracking-[0.5px] mb-3',
         MODAL_ACCENT_TEXT_CLASS[key],
         className,
       )}
@@ -250,10 +246,7 @@ export function OptionGrid({
 }: { className?: string } & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx(
-        'box-border flex flex-row items-stretch flex-wrap gap-3',
-        className,
-      )}
+      className={cx('flex flex-row items-stretch flex-wrap gap-3', className)}
       {...props}
     />
   );
@@ -265,10 +258,7 @@ export function ModalActions({
 }: { className?: string } & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cx(
-        'box-border flex flex-row items-stretch gap-3 mt-8',
-        className,
-      )}
+      className={cx('flex flex-row items-stretch gap-3 mt-8', className)}
       {...props}
     />
   );
@@ -290,22 +280,22 @@ export function SelectableCard({
   className,
   style,
   selected,
-  $variant,
-  $cardType: _cardType,
-  $index: _index,
+  variant,
+  cardType: _cardType,
+  index: _index,
   ...props
 }: {
   className?: string;
   style?: CSSProperties;
   selected?: boolean;
-  $cardType?: unknown;
-  $index?: unknown;
-} & { $variant?: string } & HTMLAttributes<HTMLDivElement>) {
+  cardType?: unknown;
+  index?: unknown;
+} & { variant?: string } & HTMLAttributes<HTMLDivElement>) {
   return (
     <BaseCard
       className={cx(selected ? 'scale-[1.05]' : undefined, className)}
       style={selected ? { ...style, borderColor: 'white' } : style}
-      $variant={$variant}
+      variant={variant}
       {...props}
     />
   );
@@ -317,7 +307,7 @@ export function RulesText({
 }: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={cx('box-border leading-[24px] opacity-[0.9]', className)}
+      className={cx('leading-[24px] opacity-[0.9]', className)}
       {...props}
     />
   );

@@ -320,7 +320,6 @@ function TicTacToeBoardImpl({
         borderRadius: theme.borderRadius,
         width: 'max-content',
         height: 'max-content',
-        boxSizing: 'border-box',
       }
     : {
         display: 'grid',
@@ -334,7 +333,6 @@ function TicTacToeBoardImpl({
         maxWidth: 'min(80vmin, 480px)',
         aspectRatio: `${cols} / ${rows}`,
         margin: '0 auto',
-        boxSizing: 'border-box',
       };
 
   const cellStyle: React.CSSProperties = isScrollable

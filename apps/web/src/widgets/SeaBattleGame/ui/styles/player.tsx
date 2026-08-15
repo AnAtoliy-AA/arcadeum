@@ -24,7 +24,7 @@ export const PlayerSection = ({
 }: PlayerSectionProps) => (
   <div
     className={cx(
-      'box-border flex flex-col items-stretch relative gap-1.5 p-3 border-2 rounded-[12px] min-w-0 min-h-0 w-full overflow-visible',
+      'flex flex-col items-stretch relative gap-1.5 p-3 border-2 rounded-[12px] min-w-0 min-h-0 w-full overflow-visible',
       'max-[1150px]:p-2 max-[1150px]:gap-1',
       'max-[800px]:p-1 max-[800px]:gap-[2px] max-[800px]:rounded-[8px]',
       '[@media(max-height:480px)]:p-1 [@media(max-height:480px)]:gap-[1px]',
@@ -48,7 +48,7 @@ export const PlayerSection = ({
 export const PlayerSectionWrapper = ({ className, ...props }: CommonProps) => (
   <div
     className={cx(
-      'box-border flex flex-col items-stretch relative overflow-visible pt-[8px] w-full min-w-0',
+      'flex flex-col items-stretch relative overflow-visible pt-[8px] w-full min-w-0',
       'max-[800px]:pt-[6px]',
       '[@media(max-height:480px)]:pt-[4px]',
       className,
@@ -66,7 +66,7 @@ export const BadgeWrapper = ({
 }: BadgeWrapperProps) => (
   <div
     className={cx(
-      'box-border flex flex-row items-stretch absolute top-0 z-[10] left-1/2 -translate-x-1/2',
+      'flex flex-row items-stretch absolute top-0 z-[10] left-1/2 -translate-x-1/2',
       className,
     )}
     style={style}
@@ -87,7 +87,7 @@ export const PlayerName = ({
 }: PlayerNameProps) => (
   <span
     className={cx(
-      'is_PlayerName box-border m-0 text-[15px] font-semibold text-center max-[800px]:text-[13px]',
+      'is_PlayerName m-0 text-[15px] font-semibold text-center max-[800px]:text-[13px]',
       className,
     )}
     style={{
@@ -101,7 +101,7 @@ export const PlayerName = ({
 export const PlayerStats = ({ className, ...props }: CommonProps) => (
   <div
     className={cx(
-      'is_PlayerStats box-border flex flex-col items-stretch w-full text-[14px]',
+      'is_PlayerStats flex flex-col items-stretch w-full text-[14px]',
       className,
     )}
     {...props}

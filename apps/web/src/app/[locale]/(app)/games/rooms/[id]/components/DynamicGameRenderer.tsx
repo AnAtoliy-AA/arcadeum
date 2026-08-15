@@ -18,9 +18,7 @@ export const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
   if (!gameType) {
     return (
       <ErrorContainer>
-        <span className="box-border">
-          {t('games.roomPage.errors.gameTypeMissing')}
-        </span>
+        <span className="">{t('games.roomPage.errors.gameTypeMissing')}</span>
       </ErrorContainer>
     );
   }
@@ -28,7 +26,7 @@ export const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
   if (!props || !props.room) {
     return (
       <ErrorContainer>
-        <span className="box-border">
+        <span className="">
           {t('games.roomPage.errors.gameDataIncomplete')}
         </span>
       </ErrorContainer>
@@ -39,7 +37,7 @@ export const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
   if (!LoadedGame) {
     return (
       <ErrorContainer>
-        <span className="box-border">
+        <span className="">
           {t('games.roomPage.errors.gameComponentNotFound')}
         </span>
       </ErrorContainer>

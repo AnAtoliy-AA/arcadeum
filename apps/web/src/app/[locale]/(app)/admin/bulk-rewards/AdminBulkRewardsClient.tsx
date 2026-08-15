@@ -11,8 +11,8 @@ interface Props {
 }
 
 const LoadingSkeleton = (
-  <div className="box-border flex flex-col items-stretch gap-4 p-4">
-    <span className="box-border">Loading...</span>
+  <div className="flex flex-col items-stretch gap-4 p-4">
+    <span className="">Loading...</span>
   </div>
 );
 

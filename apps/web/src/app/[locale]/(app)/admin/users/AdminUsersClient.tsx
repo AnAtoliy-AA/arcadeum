@@ -274,7 +274,7 @@ export default function AdminUsersClient({
   return (
     <PageLayout>
       <Container size="lg">
-        <div className="box-border flex flex-col items-stretch gap-3">
+        <div className="flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t?.title ?? 'Users'}</PageTitle>
           {filtersLabels && (
             <UsersFilters
@@ -287,7 +287,7 @@ export default function AdminUsersClient({
           )}
           {errorMsg && (
             <div
-              className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[#4c1d1d]"
+              className="flex flex-col items-stretch p-3 rounded-xl bg-[#4c1d1d]"
               data-testid="admin-users-error"
             >
               {errorMsg}

@@ -15,7 +15,7 @@ import { Section } from '@arcadeum/ui/components/Section/Section';
 import { FormGroup } from '@arcadeum/ui/components/FormGroup/FormGroup';
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { PaymentHeader, PaymentPresets, AmountDisplay } from './ui';
-import { StyledTextArea, StatusMessage } from './styles';
+import { PaymentTextArea, StatusMessage } from './styles';
 
 const backgroundStyles = `
   @keyframes float {
@@ -174,7 +174,7 @@ export default function PaymentPage() {
         <Section>
           <PaymentHeader />
 
-          <div className="box-border flex flex-row items-stretch justify-center -mb-6 gap-4">
+          <div className="flex flex-row items-stretch justify-center -mb-6 gap-4">
             <Button
               variant={mode === 'payment' ? 'primary' : 'secondary'}
               onClick={() => setLocalMode('payment')}
@@ -190,10 +190,10 @@ export default function PaymentPage() {
           </div>
 
           <GlassCard>
-            <div className="box-border flex flex-col items-stretch gap-8">
+            <div className="flex flex-col items-stretch gap-8">
               <form onSubmit={handleSubmit}>
                 {mode === 'subscription' && (
-                  <div className="box-border flex flex-row items-stretch justify-center -mb-4 gap-2">
+                  <div className="flex flex-row items-stretch justify-center -mb-4 gap-2">
                     <Button
                       variant={interval === 'MONTHLY' ? 'secondary' : 'ghost'}
                       size="sm"
@@ -235,7 +235,7 @@ export default function PaymentPage() {
                   }
                   htmlFor="payment-note"
                 >
-                  <StyledTextArea
+                  <PaymentTextArea
                     id="payment-note"
                     placeholder={
                       t('payments.notePlaceholder') || 'Say something nice...'
@@ -320,7 +320,7 @@ export default function PaymentPage() {
             </div>
           </GlassCard>
 
-          <div className="box-border flex flex-row justify-center items-center gap-2 opacity-[0.5] -mt-8">
+          <div className="flex flex-row justify-center items-center gap-2 opacity-[0.5] -mt-8">
             <span role="img" aria-label="secure">
               🔒
             </span>

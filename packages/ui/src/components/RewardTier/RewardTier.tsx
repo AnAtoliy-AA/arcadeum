@@ -10,7 +10,7 @@ export type RewardTierProps = {
 };
 
 const RootClasses = [
-  'box-border',
+  '',
   'flex',
   'flex-row',
   'items-center',

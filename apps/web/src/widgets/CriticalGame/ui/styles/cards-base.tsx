@@ -8,7 +8,7 @@ import { cx } from '@arcadeum/ui/utils/cx';
  * (DeckCard, HandCard, SelectableCard, …) can override them inline.
  */
 export const CARD_SURFACE_CLASS =
-  'box-border flex flex-col items-center justify-center gap-2 p-3 cursor-pointer relative overflow-hidden rounded-[16px] border-2 border-[var(--borderColor)] aspect-[2/3] transition-transform duration-150 ease-out hover:scale-[var(--card-hover-scale,1.05)] hover:border-[var(--primary)] active:scale-[var(--card-press-scale,0.98)]';
+  'flex flex-col items-center justify-center gap-2 p-3 cursor-pointer relative overflow-hidden rounded-[16px] border-2 border-[var(--borderColor)] aspect-[2/3] transition-transform duration-150 ease-out hover:scale-[var(--card-hover-scale,1.05)] hover:border-[var(--primary)] active:scale-[var(--card-press-scale,0.98)]';
 
 const CARD_VARIANT_CLASS = {
   cyberpunk: 'rounded-[4px] border-[#06b6d4]',
@@ -18,21 +18,21 @@ const CARD_VARIANT_CLASS = {
 type CardProps = {
   className?: string;
   style?: CSSProperties;
-  $variant?: string;
-  $cardType?: unknown;
-  $index?: unknown;
+  variant?: string;
+  cardType?: unknown;
+  index?: unknown;
   isSticker?: boolean;
 } & HTMLAttributes<HTMLDivElement>;
 
 /**
- * Base playing-card surface. `$cardType` / `$index` were no-op variants on
- * the old styled() component — kept as accepted props for compatibility.
+ * Base playing-card surface. `cardType` / `index` are no-op props kept for
+ * compatibility with call sites that pass them — they don't affect styling.
  */
 export function Card({
   className,
-  $variant,
-  $cardType: _cardType,
-  $index: _index,
+  variant,
+  cardType: _cardType,
+  index: _index,
   isSticker,
   style,
   ...props
@@ -42,8 +42,8 @@ export function Card({
       className={cx(
         CARD_SURFACE_CLASS,
         isSticker ? 'border-0 bg-transparent' : 'bg-[var(--background)]',
-        $variant
-          ? CARD_VARIANT_CLASS[$variant as keyof typeof CARD_VARIANT_CLASS]
+        variant
+          ? CARD_VARIANT_CLASS[variant as keyof typeof CARD_VARIANT_CLASS]
           : undefined,
         className,
       )}

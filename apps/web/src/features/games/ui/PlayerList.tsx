@@ -32,7 +32,7 @@ const List = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border flex flex-col items-stretch gap-2 max-h-[300px] overflow-y-auto',
+      'flex flex-col items-stretch gap-2 max-h-[300px] overflow-y-auto',
       className,
     )}
     {...props}
@@ -41,27 +41,27 @@ const List = ({
   </div>
 );
 
-const StyledPlayerItem = ({
-  $isCurrent = false,
-  $isHost = false,
+const PlayerItem = ({
+  isCurrent = false,
+  isHost = false,
   className,
   children,
   onClick,
   ...props
 }: {
-  $isCurrent?: boolean;
-  $isHost?: boolean;
+  isCurrent?: boolean;
+  isHost?: boolean;
   className?: string;
   children?: ReactNode;
   onClick?: () => void;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'onClick'>) => (
   <Card
     className={cx(
-      'box-border flex flex-row items-center cursor-pointer transition-all duration-300 ease-out hover:translate-x-[2px] hover:shadow-[0_0_8px_rgba(0,0,0,0.1)]',
-      $isCurrent
+      'flex flex-row items-center cursor-pointer transition-all duration-300 ease-out hover:translate-x-[2px] hover:shadow-[0_0_8px_rgba(0,0,0,0.1)]',
+      isCurrent
         ? 'bg-[linear-gradient(135deg,rgba(59,130,246,0.12),rgba(29,78,216,0.12))] border-[var(--primary)]'
         : 'bg-[var(--background)] border-[var(--borderColor)]',
-      $isHost && 'border-[#10b981]',
+      isHost && 'border-[#10b981]',
       className,
     )}
     onClick={onClick}
@@ -81,7 +81,7 @@ const StatusIndicator = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'box-border w-2 h-2 rounded-[4px]',
+      'w-2 h-2 rounded-[4px]',
       STATUS_COLOR_CLASSES[status],
       className,
     )}
@@ -100,14 +100,14 @@ export function PlayerList({
   if (!session) {
     return (
       <List className={className}>
-        <StyledPlayerItem>
+        <PlayerItem>
           <Avatar name="?" size="sm" />
-          <div className="box-border flex flex-col items-stretch flex-1 -ml-3">
+          <div className="flex flex-col items-stretch flex-1 -ml-3">
             <Typography className={'font-semibold text-[14px]'}>
               No players
             </Typography>
           </div>
-        </StyledPlayerItem>
+        </PlayerItem>
       </List>
     );
   }
@@ -135,10 +135,10 @@ export function PlayerList({
   return (
     <List className={className}>
       {players.map((player) => (
-        <StyledPlayerItem
+        <PlayerItem
           key={player.id}
-          $isCurrent={player.isCurrent}
-          $isHost={player.isHost}
+          isCurrent={player.isCurrent}
+          isHost={player.isHost}
           onClick={() => onPlayerAction?.(player.id, 'info')}
         >
           <Avatar
@@ -151,8 +151,8 @@ export function PlayerList({
               : {})}
           />
 
-          <div className="box-border flex flex-col items-stretch flex-1 -ml-3">
-            <div className="box-border flex flex-row items-center gap-2 -mb-1">
+          <div className="flex flex-col items-stretch flex-1 -ml-3">
+            <div className="flex flex-row items-center gap-2 -mb-1">
               <Typography className={'font-semibold text-[14px] line-clamp-1'}>
                 {player.name}
               </Typography>
@@ -163,7 +163,7 @@ export function PlayerList({
               )}
             </div>
 
-            <div className="box-border flex flex-row items-center gap-2">
+            <div className="flex flex-row items-center gap-2">
               {showStatus && <StatusIndicator status={player.status} />}
               {showScore && (
                 <Typography
@@ -174,7 +174,7 @@ export function PlayerList({
               )}
             </div>
           </div>
-        </StyledPlayerItem>
+        </PlayerItem>
       ))}
     </List>
   );

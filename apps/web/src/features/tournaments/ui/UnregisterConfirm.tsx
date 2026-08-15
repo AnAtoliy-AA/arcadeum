@@ -96,18 +96,14 @@ export function UnregisterConfirm({
   return (
     <div style={OVERLAY_STYLE} data-testid="unregister-confirm-dialog">
       <div style={DIALOG_STYLE}>
-        <div className="box-border flex flex-col items-stretch gap-3">
-          <span className="box-border font-bold text-[20px]">
-            {labels.title}
-          </span>
+        <div className="flex flex-col items-stretch gap-3">
+          <span className="font-bold text-[20px]">{labels.title}</span>
 
-          <span className="box-border text-[14px] opacity-[0.85]">
-            {labels.body}
-          </span>
+          <span className="text-[14px] opacity-[0.85]">{labels.body}</span>
 
           {showRefund && (
             <span
-              className="box-border text-[14px] text-[var(--successText)]"
+              className="text-[14px] text-[var(--successText)]"
               data-testid="refund-notice"
             >
               {refundText}
@@ -116,14 +112,14 @@ export function UnregisterConfirm({
 
           {errorMsg && (
             <span
-              className="box-border text-[12px] text-[var(--errorText)]"
+              className="text-[12px] text-[var(--errorText)]"
               data-testid="unregister-confirm-error"
             >
               {errorMsg}
             </span>
           )}
 
-          <div className="box-border flex flex-row items-stretch gap-3 justify-end pt-2">
+          <div className="flex flex-row items-stretch gap-3 justify-end pt-2">
             <Button
               variant="outline"
               onClick={onClose}

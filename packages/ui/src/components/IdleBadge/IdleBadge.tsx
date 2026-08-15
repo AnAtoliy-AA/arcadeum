@@ -23,7 +23,7 @@ export const IdleBadge = memo(function IdleBadge({
   return (
     <span
       className={cx(
-        'box-border inline-flex text-[12px] font-semibold px-3 py-3 rounded border',
+        'inline-flex text-[12px] font-semibold px-3 py-3 rounded border',
         idleBadgeClasses[variant],
         className,
       )}

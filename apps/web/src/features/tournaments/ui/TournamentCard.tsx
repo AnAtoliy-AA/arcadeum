@@ -7,6 +7,7 @@ import {
   type PublicTournamentItem,
 } from '../api';
 import type { TournamentGameType } from '@/features/admin-tournaments/api';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 export interface TournamentCardLabels {
   registered: string;
@@ -75,7 +76,7 @@ export function TournamentCard({
     cta = null;
   } else if (!isAuthenticated) {
     cta = (
-      <span className="box-border text-[12px] opacity-[0.7]">
+      <span className="text-[12px] opacity-[0.7]">
         {labels.signInToRegister}
       </span>
     );
@@ -104,7 +105,7 @@ export function TournamentCard({
     );
   } else {
     cta = (
-      <span className="box-border text-[12px] opacity-[0.7]">
+      <span className="text-[12px] opacity-[0.7]">
         {labels.registrationClosed}
       </span>
     );
@@ -115,10 +116,10 @@ export function TournamentCard({
       className={'p-4 gap-3'}
       data-testid={`tournament-card-${item.id}`}
     >
-      <div className="box-border flex flex-row items-start justify-between gap-2">
-        <div className="box-border flex flex-col items-stretch flex-1 gap-1">
-          <span className="box-border text-[20px] font-bold">{item.name}</span>
-          <span className="box-border text-[12px] opacity-[0.7]">
+      <div className="flex flex-row items-start justify-between gap-2">
+        <div className="flex flex-col items-stretch flex-1 gap-1">
+          <span className="text-[20px] font-bold">{item.name}</span>
+          <span className="text-[12px] opacity-[0.7]">
             {labels.gameType[item.gameType]} ·{' '}
             {formatDateTime(item.scheduledAt, locale, {
               weekday: 'short',
@@ -130,53 +131,47 @@ export function TournamentCard({
           </span>
         </div>
         <div
-          className="box-border flex flex-row items-stretch px-2 py-1 rounded-lg"
-          style={{ backgroundColor: STATUS_BG[item.effectiveStatus] }}
+          className="flex flex-row items-stretch px-2 py-1 rounded-lg"
+          style={{
+            backgroundColor: resolveThemeColor(STATUS_BG[item.effectiveStatus]),
+          }}
         >
-          <span className="box-border text-[12px] font-bold">
+          <span className="text-[12px] font-bold">
             {labels.effectiveStatus[item.effectiveStatus]}
           </span>
         </div>
       </div>
 
       {item.description && (
-        <span className="box-border text-[14px] opacity-[0.85]">
-          {item.description}
-        </span>
+        <span className="text-[14px] opacity-[0.85]">{item.description}</span>
       )}
 
       {item.prizeDescription && (
-        <span className="box-border text-[14px]">
-          <span className="box-border font-bold">{labels.prize}:</span>{' '}
+        <span className="text-[14px]">
+          <span className="font-bold">{labels.prize}:</span>{' '}
           {item.prizeDescription}
         </span>
       )}
 
       {(item.entryFeeCoins > 0 || item.prizePoolCoins > 0) && (
-        <div className="box-border flex flex-row items-stretch gap-3 flex-wrap">
+        <div className="flex flex-row items-stretch gap-3 flex-wrap">
           {item.entryFeeCoins > 0 && (
-            <span
-              className="box-border text-[14px]"
-              data-testid={`entry-fee-${item.id}`}
-            >
-              <span className="box-border font-bold">{labels.entryFee}:</span>{' '}
+            <span className="text-[14px]" data-testid={`entry-fee-${item.id}`}>
+              <span className="font-bold">{labels.entryFee}:</span>{' '}
               {formatNumber(item.entryFeeCoins, locale)}
             </span>
           )}
           {item.prizePoolCoins > 0 && (
-            <span
-              className="box-border text-[14px]"
-              data-testid={`prize-pool-${item.id}`}
-            >
-              <span className="box-border font-bold">{labels.prizePool}:</span>{' '}
+            <span className="text-[14px]" data-testid={`prize-pool-${item.id}`}>
+              <span className="font-bold">{labels.prizePool}:</span>{' '}
               {formatNumber(item.prizePoolCoins, locale)}
             </span>
           )}
         </div>
       )}
 
-      <div className="box-border flex flex-row items-center justify-between">
-        <span className="box-border text-[12px] opacity-[0.7]">
+      <div className="flex flex-row items-center justify-between">
+        <span className="text-[12px] opacity-[0.7]">
           {labels.registered
             .replace('{count}', String(item.registeredCount))
             .replace('{max}', String(item.maxPlayers))}

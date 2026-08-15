@@ -65,29 +65,27 @@ export function NotificationSettingsSection() {
       title={t('notifications.settings.title')}
       data-testid="notifications-settings-section"
     >
-      <div className="box-border flex flex-col items-stretch gap-3">
-        <span className="box-border text-[rgba(180,180,200,0.7)] text-[16px]">
+      <div className="flex flex-col items-stretch gap-3">
+        <span className="text-[rgba(180,180,200,0.7)] text-[16px]">
           {t('notifications.settings.description')}
         </span>
 
         {iosHint ? (
-          <div className="box-border p-3 rounded-lg bg-[var(--backgroundHover)] border-[var(--borderColor)] border">
-            <span className="box-border text-[16px]">
+          <div className="p-3 rounded-lg bg-[var(--backgroundHover)] border-[var(--borderColor)] border">
+            <span className="text-[16px]">
               {t('notifications.settings.iosInstallHint')}
             </span>
           </div>
         ) : (
-          <div className="box-border flex flex-row p-3 rounded-lg bg-[var(--backgroundHover)] border-[var(--borderColor)] border items-center justify-between">
-            <span className="box-border text-[16px]">{permissionLabel}</span>
+          <div className="flex flex-row p-3 rounded-lg bg-[var(--backgroundHover)] border-[var(--borderColor)] border items-center justify-between">
+            <span className="text-[16px]">{permissionLabel}</span>
             {permission === 'denied' && error && (
-              <span className="box-border text-[14px] text-[var(--error)]">
-                {error}
-              </span>
+              <span className="text-[14px] text-[var(--error)]">{error}</span>
             )}
           </div>
         )}
 
-        <div className="box-border flex flex-col items-stretch gap-2">
+        <div className="flex flex-col items-stretch gap-2">
           {NOTIFICATION_CATEGORIES.map((category) => (
             <CategoryToggle
               key={category}
@@ -126,9 +124,9 @@ function CategoryToggle({
   const descKey = `notifications.categories.${category}.description`;
   return (
     <ToggleRow data-testid={`notification-toggle-${category}`}>
-      <div className="box-border flex flex-col items-stretch flex-1 gap-1">
+      <div className="flex flex-col items-stretch flex-1 gap-1">
         <ToggleLabel>{t(labelKey)}</ToggleLabel>
-        <span className="box-border text-[rgba(180,180,200,0.7)] text-[14px]">
+        <span className="text-[rgba(180,180,200,0.7)] text-[14px]">
           {t(descKey)}
         </span>
       </div>

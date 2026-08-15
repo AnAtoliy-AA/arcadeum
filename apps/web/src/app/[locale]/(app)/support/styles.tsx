@@ -14,7 +14,7 @@ export function Page({
 }) {
   return (
     <div
-      className={`box-border flex min-h-screen justify-center overflow-hidden relative bg-[var(--background)] ${className ?? ''}`}
+      className={`flex min-h-screen justify-center overflow-hidden relative bg-[var(--background)] ${className ?? ''}`}
     >
       {children}
     </div>
@@ -48,20 +48,20 @@ export function ContentWrapper({ children }: { children: React.ReactNode }) {
 
 export function AnimatedGlassCard({
   children,
-  $delay,
+  delay,
   style,
   className,
   ...props
 }: {
   children: React.ReactNode;
-  $delay?: string;
+  delay?: string;
 } & ComponentProps<typeof GlassCard>) {
   return (
     <GlassCard
       className={`support-animated-card ${className || ''}`}
       style={{
         ...((style as object | undefined) ?? {}),
-        animationDelay: $delay || '0s',
+        animationDelay: delay || '0s',
       }}
       {...props}
     >
@@ -97,7 +97,7 @@ export function Tagline({
 } & React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`box-border max-w-[650px] leading-[24px] opacity-[0.7] text-[var(--color)] ${className ?? ''}`}
+      className={`max-w-[650px] leading-[24px] opacity-[0.7] text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -129,7 +129,7 @@ export function HeaderDescription({
 } & React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`box-border max-w-[700px] leading-[48px] opacity-[0.5] text-[var(--color)] ${className ?? ''}`}
+      className={`max-w-[700px] leading-[48px] opacity-[0.5] text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -153,15 +153,15 @@ export function TeamGrid({ children }: { children: React.ReactNode }) {
 
 export function TeamCardInner({
   children,
-  $hasLinkedin,
+  hasLinkedin,
 }: {
   children: React.ReactNode;
-  $hasLinkedin: boolean;
+  hasLinkedin: boolean;
 }) {
   return (
     <div
-      className="box-border relative flex flex-col gap-2"
-      style={{ paddingBottom: $hasLinkedin ? '3.5rem' : 0 }}
+      className="relative flex flex-col gap-2"
+      style={{ paddingBottom: hasLinkedin ? '3.5rem' : 0 }}
     >
       {children}
     </div>
@@ -178,7 +178,7 @@ export function TeamHeader({
 } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-start justify-between w-full ${className ?? ''}`}
+      className={`flex flex-row items-start justify-between w-full ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -210,7 +210,7 @@ export function TeamName({
 } & React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={`box-border m-0 mb-1 text-[24px] leading-[30px] font-bold text-[var(--color)] ${className ?? ''}`}
+      className={`m-0 mb-1 text-[24px] leading-[30px] font-bold text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -228,7 +228,7 @@ export function TeamRole({
 } & React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`box-border mb-2 opacity-[0.8] text-[var(--color)] ${className ?? ''}`}
+      className={`mb-2 opacity-[0.8] text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -246,7 +246,7 @@ export function TeamBio({
 } & React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`box-border leading-[32px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
+      className={`leading-[32px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -278,7 +278,7 @@ export function ActionHeader({
 } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center gap-3 ${className ?? ''}`}
+      className={`flex flex-row items-center gap-3 ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -296,7 +296,7 @@ export function ActionTitle({
 } & React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={`box-border text-[24px] leading-[30px] font-bold opacity-[0.9] text-[var(--color)] ${className ?? ''}`}
+      className={`text-[24px] leading-[30px] font-bold opacity-[0.9] text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -314,7 +314,7 @@ export function ActionDescription({
 } & React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`box-border leading-[32px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
+      className={`leading-[32px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -332,7 +332,7 @@ export function CtaRow({
 } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center justify-between gap-3 flex-wrap ${className ?? ''}`}
+      className={`flex flex-row items-center justify-between gap-3 flex-wrap ${className ?? ''}`}
       {...props}
     >
       {children}
@@ -416,7 +416,7 @@ export function Thanks({
 } & React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`box-border leading-[48px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
+      className={`leading-[48px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
       {...props}
     >
       {children}

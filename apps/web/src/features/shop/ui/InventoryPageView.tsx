@@ -86,12 +86,12 @@ export function InventoryPageView({
 
   return (
     <PageLayout>
-      <div className="box-border flex flex-col items-stretch max-w-[1280px] px-4 py-5 gap-5 w-full">
+      <div className="flex flex-col items-stretch max-w-[1280px] px-4 py-5 gap-5 w-full">
         <ShopTopBar balance={balance} labels={labels.topBar} />
 
         {!isAuthenticated ? <ShopSignInBanner labels={labels.signIn} /> : null}
 
-        <div className="box-border flex flex-row gap-5 w-full items-start max-[800px]:flex-col">
+        <div className="flex flex-row gap-5 w-full items-start max-[800px]:flex-col">
           <ShopMannequinRail
             catalog={catalog}
             inventory={inventory}
@@ -102,25 +102,25 @@ export function InventoryPageView({
             sellLabels={labels.sell}
           />
 
-          <div className="box-border flex flex-col items-stretch flex-1 w-full gap-5 min-w-0">
-            <div className="box-border flex flex-col items-stretch gap-2">
-              <span className="box-border text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
+          <div className="flex flex-col items-stretch flex-1 w-full gap-5 min-w-0">
+            <div className="flex flex-col items-stretch gap-2">
+              <span className="text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
                 {labels.inventory.eyebrow.replace(
                   '{count}',
                   String(totalOwned),
                 )}
               </span>
-              <span className="box-border text-[40px] font-black tracking-[-0.5px]">
+              <span className="text-[40px] font-black tracking-[-0.5px]">
                 {labels.inventory.title}
               </span>
             </div>
 
             {totalOwned === 0 ? (
               <div
-                className="box-border flex flex-col p-5 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] items-center"
+                className="flex flex-col p-5 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] items-center"
                 data-testid="inventory-empty"
               >
-                <span className="box-border text-[18px] text-[#94a3b8] text-center">
+                <span className="text-[18px] text-[#94a3b8] text-center">
                   {labels.inventory.empty}
                 </span>
               </div>

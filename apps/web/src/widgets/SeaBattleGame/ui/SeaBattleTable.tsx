@@ -51,7 +51,7 @@ function PlayerRow({
 }: PlayerRowProps) {
   return (
     <div
-      className="box-border flex flex-col items-center gap-2 p-4 border rounded-[12px] relative"
+      className="flex flex-col items-center gap-2 p-4 border rounded-[12px] relative"
       style={{
         backgroundColor: isActive
           ? 'rgba(87, 195, 255, 0.05)'
@@ -68,7 +68,7 @@ function PlayerRow({
     >
       {isActive && (
         <div
-          className="box-border flex flex-row items-stretch absolute top-[-10px] left-[50%] z-[10]"
+          className="flex flex-row items-stretch absolute top-[-10px] left-[50%] z-[10]"
           style={{ transform: 'translateX(-50%)' }}
         >
           <Badge variant="success" size="sm">
@@ -77,7 +77,7 @@ function PlayerRow({
         </div>
       )}
       <span
-        className="box-border text-[19px] font-semibold"
+        className="text-[19px] font-semibold"
         style={{ color: teamColor ?? getPlayerColor(player.playerId) }}
       >
         {resolveDisplayName(player.playerId, 'Player')}{' '}
@@ -86,11 +86,11 @@ function PlayerRow({
           : ''}
         {idlePlayers.includes(player.playerId) && <IdleBadge />}
       </span>
-      <div className="box-border flex items-stretch flex-row flex-wrap bg-[rgba(0,0,0,0.5)] p-4 rounded-2xl w-full max-w-[320px] aspect-[1]">
+      <div className="flex items-stretch flex-row flex-wrap bg-[rgba(0,0,0,0.5)] p-4 rounded-2xl w-full max-w-[320px] aspect-[1]">
         {player.board.map((row, rIndex) =>
           row.map((cellState, cIndex) => (
             <div
-              className="box-border flex flex-col items-stretch w-[10%] h-[10%] border border-[rgba(255,255,255,0.1)] cursor-pointer"
+              className="flex flex-col items-stretch w-[10%] h-[10%] border border-[rgba(255,255,255,0.1)] cursor-pointer"
               style={{
                 backgroundColor:
                   CELL_COLORS[isMe || cellState > 1 ? cellState : 0] ??
@@ -135,15 +135,15 @@ export function SeaBattleTable({
     : undefined;
 
   return (
-    <div className="box-border flex flex-col items-center justify-center w-full min-h-full gap-5 p-5">
+    <div className="flex flex-col items-center justify-center w-full min-h-full gap-5 p-5">
       <GlassCard
         className={'flex-row p-4 px-6 items-center gap-4 rounded-[100px]'}
       >
         <Badge variant={isMyTurn ? 'success' : 'info'} size="md">
           {isMyTurn ? '🎯' : '⏳'}
         </Badge>
-        <div className="box-border flex flex-col items-stretch">
-          <span className="box-border text-[13px] opacity-[0.7] font-bold">
+        <div className="flex flex-col items-stretch">
+          <span className="text-[13px] opacity-[0.7] font-bold">
             {isMyTurn
               ? t(
                   'games.sea_battle_v1.table.players.yourTurn' as TranslationKey,
@@ -154,7 +154,7 @@ export function SeaBattleTable({
                 )}
           </span>
           <span
-            className="box-border text-[17px] font-extrabold"
+            className="text-[17px] font-extrabold"
             style={activePlayerColor ? { color: activePlayerColor } : undefined}
           >
             {isMyTurn
@@ -167,7 +167,7 @@ export function SeaBattleTable({
       </GlassCard>
 
       {teamMode ? (
-        <div className="box-border flex flex-col gap-5 w-full items-center">
+        <div className="flex flex-col gap-5 w-full items-center">
           {teams!.map((team) => {
             const teamPlayers = team.playerIds
               .map((id) => playerById.get(id))
@@ -175,18 +175,18 @@ export function SeaBattleTable({
             if (teamPlayers.length === 0) return null;
             return (
               <div
-                className="box-border flex flex-col gap-3 w-full items-center"
+                className="flex flex-col gap-3 w-full items-center"
                 key={team.id}
               >
                 <div
-                  className="box-border flex flex-row items-center gap-2 px-3 rounded-[20px] bg-[rgba(0,0,0,0.4)] border border-l-[4px] border-[rgba(255,255,255,0.1)]"
+                  className="flex flex-row items-center gap-2 px-3 rounded-[20px] bg-[rgba(0,0,0,0.4)] border border-l-[4px] border-[rgba(255,255,255,0.1)]"
                   style={{ borderLeftColor: team.color }}
                 >
                   <div
-                    className="box-border flex flex-col items-stretch w-[10px] h-[10px] rounded-[100px]"
+                    className="flex flex-col items-stretch w-[10px] h-[10px] rounded-[100px]"
                     style={{ backgroundColor: team.color }}
                   />
-                  <span className="box-border text-[14px] font-bold text-[white]">
+                  <span className="text-[14px] font-bold text-[white]">
                     {team.name}
                   </span>
                 </div>

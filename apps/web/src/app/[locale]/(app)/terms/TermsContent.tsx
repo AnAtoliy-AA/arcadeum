@@ -76,7 +76,7 @@ export default function TermsContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {formatMessage(s?.services?.intro, { appName: APP_NAME })}
           </Typography>
-          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -99,7 +99,7 @@ export default function TermsContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {formatMessage(s?.accounts?.intro, { appName: APP_NAME })}
           </Typography>
-          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -134,7 +134,7 @@ export default function TermsContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.refund?.intro}
           </Typography>
-          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -184,7 +184,7 @@ export default function TermsContent({
           <Typography variant="body" uiSize="md" alpha="high">
             {s?.acceptableUse?.intro}
           </Typography>
-          <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+          <div className="flex flex-col items-stretch pl-5 gap-2">
             <ul
               style={{
                 listStyleType: 'disc',
@@ -230,7 +230,7 @@ export default function TermsContent({
             <Typography variant="body" uiSize="md" alpha="high">
               {s?.arcPayments?.content}
             </Typography>
-            <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+            <div className="flex flex-col items-stretch pl-5 gap-2">
               <ul
                 style={{
                   listStyleType: 'disc',
@@ -271,7 +271,7 @@ export default function TermsContent({
             <Typography variant="body" uiSize="md" alpha="high">
               {s?.taxes?.content}
             </Typography>
-            <div className="box-border flex flex-col items-stretch pl-5 gap-2">
+            <div className="flex flex-col items-stretch pl-5 gap-2">
               <ul
                 style={{
                   listStyleType: 'disc',
@@ -289,7 +289,7 @@ export default function TermsContent({
               </ul>
             </div>
             {s?.taxes?.important && (
-              <div className="box-border flex flex-col items-stretch -mt-4 p-4 rounded-lg bg-[rgba(234,_179,_8,_0.15)] border-l-[4px] border-l-[#eab308]">
+              <div className="flex flex-col items-stretch -mt-4 p-4 rounded-lg bg-[rgba(234,_179,_8,_0.15)] border-l-[4px] border-l-[#eab308]">
                 <Typography
                   className={'font-bold'}
                   variant="body"

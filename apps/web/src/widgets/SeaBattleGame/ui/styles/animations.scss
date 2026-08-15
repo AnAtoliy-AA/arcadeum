@@ -172,8 +172,7 @@
    height. The grids container is a CSS grid; each direct child is a
    PlayerSectionWrapper that we stretch to fill its cell AND make a
    size container — so anything deeper can read the wrapper's box via
-   cqi/cqh without depending on Tamagui className passthrough on the
-   styled components inside. In mobile vertical (1-col flex column) the
+   cqi/cqh. In mobile vertical (1-col flex column) the
    `.sb-fit-grid` class is absent, so neither rule applies and the
    page scrolls naturally between boards. */
 .sb-fit-grid > * {
@@ -192,8 +191,8 @@
 .sb-fit-grid .sb-player-section-fit {
   height: 100%;
   min-height: 0;
-  /* Tamagui's `width: 100%` rule from PlayerSection is at higher
-     specificity (`:root ._w-...`), so override needs !important. */
+  /* The wider `width: 100%` rule from PlayerSection is at higher
+     specificity, so the override needs !important. */
   width: fit-content !important;
   max-width: 100% !important;
   margin-left: auto !important;
@@ -284,7 +283,7 @@
   grid-area: board;
 }
 
-/* The ShipsLeft container is a YStack (column) wrapping a label row and
+/* The ShipsLeft container is a column wrapping a label row and
    a bars row. In side-layout mode we want the visual order:
      1. "10/10" count at the top (the most useful glanceable stat)
      2. Ship silhouettes in the middle
@@ -356,10 +355,10 @@
 }
 
 /* Each ship: keep horizontal cell row (no flex-direction override).
-   Override Tamagui's `flex: size` (which would grow vertically in a
-   column parent) and the inline `height: 10` so ships sit at a fixed
-   compact height. Width is set by data-size below — proportional to
-   ship length so the silhouette is recognizable. */
+   Override the flex-grow from the column parent and the inline
+   `height: 10` so ships sit at a fixed compact height. Width is set by
+   data-size below — proportional to ship length so the silhouette is
+   recognizable. */
 .sb-mobile-landscape .sb-ships-remaining-container > div:nth-child(2) > div {
   flex: 0 0 auto !important;
   height: 8px !important;

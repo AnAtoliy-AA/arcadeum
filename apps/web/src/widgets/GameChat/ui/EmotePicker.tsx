@@ -38,7 +38,7 @@ function PickerShell({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-stretch gap-[4px] p-[6px] rounded-[14px] border border-[var(--glassBorder)] bg-[var(--glassBg)] flex-wrap justify-center',
+        'flex flex-row items-stretch gap-[4px] p-[6px] rounded-[14px] border border-[var(--glassBorder)] bg-[var(--glassBg)] flex-wrap justify-center',
         className,
       )}
       {...props}
@@ -57,7 +57,7 @@ function EmoteBtn({
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center justify-center w-[40px] h-[40px] rounded-[10px] cursor-pointer transition-all duration-150 ease-out hover:bg-[var(--backgroundHover)] active:bg-[var(--backgroundPress)] active:scale-[0.92]',
+        'flex flex-row items-center justify-center w-[40px] h-[40px] rounded-[10px] cursor-pointer transition-all duration-150 ease-out hover:bg-[var(--backgroundHover)] active:bg-[var(--backgroundPress)] active:scale-[0.92]',
         className,
       )}
       style={opacity !== undefined ? { opacity } : undefined}
@@ -75,7 +75,7 @@ function EmoteLabel({
   return (
     <span
       className={cx(
-        'box-border text-[9px] font-semibold text-[rgba(180,180,200,0.7)] text-center line-clamp-1',
+        'text-[9px] font-semibold text-[rgba(180,180,200,0.7)] text-center line-clamp-1',
         className,
       )}
       {...props}
@@ -114,13 +114,13 @@ export function EmotePicker({ onEmote, disabled }: EmotePickerProps) {
   return (
     <PickerShell>
       {EMOTES.map((e) => (
-        <div className="box-border flex flex-col items-center gap-2" key={e.id}>
+        <div className="flex flex-col items-center gap-2" key={e.id}>
           <EmoteBtn
             onClick={() => handleEmote(e.id)}
             opacity={cooldown ? 0.5 : 1}
             aria-label={t(`games.emotes.${e.id}` as TranslationKey)}
           >
-            <span className="box-border text-[20px]">{e.emoji}</span>
+            <span className="text-[20px]">{e.emoji}</span>
           </EmoteBtn>
           <EmoteLabel>{t(`games.emotes.${e.id}` as TranslationKey)}</EmoteLabel>
         </div>

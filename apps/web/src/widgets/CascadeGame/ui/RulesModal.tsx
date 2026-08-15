@@ -101,44 +101,44 @@ export function RulesModal({
           <ModalTitle>{t('games.cascade_v1.rules.title')}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <div className="box-border flex flex-col items-stretch gap-3">
+          <div className="flex flex-col items-stretch gap-3">
             {sections.map((s) => (
               <div
-                className="box-border flex flex-col items-stretch p-3 rounded-xl"
+                className="flex flex-col items-stretch p-3 rounded-xl"
                 style={{ background: s.gradient }}
                 key={s.header}
               >
-                <div className="box-border flex flex-row gap-3 items-center pb-2">
-                  <span className="box-border text-[22px]" aria-hidden>
+                <div className="flex flex-row gap-3 items-center pb-2">
+                  <span className="text-[22px]" aria-hidden>
                     {s.icon}
                   </span>
-                  <span className="box-border text-[#fff] font-bold text-[16px]">
+                  <span className="text-[#fff] font-bold text-[16px]">
                     {s.header}
                   </span>
                 </div>
-                <span className="box-border text-[#fff]">{s.body}</span>
+                <span className="text-[#fff]">{s.body}</span>
               </div>
             ))}
 
-            <div className="box-border flex flex-col items-stretch p-3 rounded-xl bg-[rgba(15,_23,_42,_0.78)] border-[rgba(255,255,255,0.08)] border">
-              <div className="box-border flex flex-row gap-3 items-center pb-2">
-                <span className="box-border text-[22px]" aria-hidden>
+            <div className="flex flex-col items-stretch p-3 rounded-xl bg-[rgba(15,_23,_42,_0.78)] border-[rgba(255,255,255,0.08)] border">
+              <div className="flex flex-row gap-3 items-center pb-2">
+                <span className="text-[22px]" aria-hidden>
                   🎨
                 </span>
-                <span className="box-border text-[#fff] font-bold text-[16px]">
+                <span className="text-[#fff] font-bold text-[16px]">
                   Themed cards · {themeName}
                 </span>
               </div>
-              <div className="box-border flex flex-col items-stretch gap-1">
+              <div className="flex flex-col items-stretch gap-1">
                 {themedRows.map((row) => (
                   <div
-                    className="box-border flex flex-row gap-2 items-baseline"
+                    className="flex flex-row gap-2 items-baseline"
                     key={row.kind}
                   >
-                    <span className="box-border text-[#fbbf24] font-bold text-[14px]">
+                    <span className="text-[#fbbf24] font-bold text-[14px]">
                       {row.themed}
                     </span>
-                    <span className="box-border text-[#94a3b8] text-[13px]">
+                    <span className="text-[#94a3b8] text-[13px]">
                       · {row.mechanic}
                     </span>
                   </div>

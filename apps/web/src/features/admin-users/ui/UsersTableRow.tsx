@@ -4,6 +4,7 @@ import type { AdminUserItem } from '../api';
 import type { UserRole } from '@/entities/session/model/types';
 import { RoleBadge } from './RoleBadge';
 import { RoleSelect } from './RoleSelect';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 export interface UsersTableRowProps {
   item: AdminUserItem;
@@ -55,18 +56,20 @@ export function UsersTableRow({
 
   return (
     <div
-      className="box-border flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
+      className="flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
       style={{
-        backgroundColor: isSelected
-          ? '$backgroundFocus'
-          : zebra
+        backgroundColor: resolveThemeColor(
+          isSelected
             ? '$backgroundFocus'
-            : undefined,
+            : zebra
+              ? '$backgroundFocus'
+              : undefined,
+        ),
         opacity: isDeleted ? 0.5 : 1,
       }}
       data-testid={`user-row-${item.id}`}
     >
-      <div className="box-border flex flex-col w-[32px] items-center">
+      <div className="flex flex-col w-[32px] items-center">
         {isSelectable && (
           <input
             type="checkbox"
@@ -81,36 +84,30 @@ export function UsersTableRow({
         size="sm"
         data-testid={`user-avatar-${item.id}`}
       />
-      <div className="box-border flex flex-col items-stretch flex-1 min-w-0">
-        <span className="box-border font-bold line-clamp-1">
+      <div className="flex flex-col items-stretch flex-1 min-w-0">
+        <span className="font-bold line-clamp-1">
           {item.username}
           {isSelf && (
-            <span className="box-border opacity-[0.6] text-[12px]">
-              {' (you)'}
-            </span>
+            <span className="opacity-[0.6] text-[12px]">{' (you)'}</span>
           )}
           {isBlocked && (
-            <span className="box-border text-[#dc2626] text-[12px]">
-              {' (blocked)'}
-            </span>
+            <span className="text-[#dc2626] text-[12px]">{' (blocked)'}</span>
           )}
           {isDeleted && (
-            <span className="box-border text-[#f76b15] text-[12px]">
-              {' (removed)'}
-            </span>
+            <span className="text-[#f76b15] text-[12px]">{' (removed)'}</span>
           )}
         </span>
-        <span className="box-border opacity-[0.6] text-[12px] line-clamp-1">
+        <span className="opacity-[0.6] text-[12px] line-clamp-1">
           {item.email}
         </span>
         {item.displayName && (
-          <span className="box-border opacity-[0.5] text-[12px] line-clamp-1">
+          <span className="opacity-[0.5] text-[12px] line-clamp-1">
             {item.displayName}
           </span>
         )}
       </div>
       <RoleBadge role={item.role} label={roleLabels[item.role]} />
-      <div className="box-border flex flex-row gap-2 items-center">
+      <div className="flex flex-row gap-2 items-center">
         <span title={isSelf ? selfTooltip : undefined}>
           <RoleSelect
             value={item.role}

@@ -12,11 +12,11 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
 import cardStyles from './RoomCardComponent.module.scss';
 import {
-  StyledRoomCard,
-  StyledRoomHeader,
-  StyledStatusBadge,
-  StyledGameName,
-  StyledRoomActions,
+  RoomCard,
+  RoomHeader,
+  StatusBadge,
+  GameName,
+  RoomActions,
   ParticipantsLabel,
   FastBadge,
   FastBadgeText,
@@ -93,18 +93,8 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   );
 
   return (
-    <StyledRoomCard
+    <RoomCard
       status={isCompleted ? 'completed' : undefined}
-      hoverStyle={
-        viewMode === 'list'
-          ? {
-              scale: 1,
-              y: -2,
-              borderColor: 'rgba(122, 215, 255, 0.4)',
-              backgroundColor: '$backgroundHover',
-            }
-          : undefined
-      }
       className={`${cardStyles.roomCard} ${viewMode === 'list' ? cardStyles.listView : ''} ${isCompleted ? cardStyles.completed : ''}`}
       data-testid="room-card"
     >
@@ -120,19 +110,19 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             : undefined
         }
       >
-        <StyledRoomHeader className={cardStyles.roomHeader}>
-          <div className="box-border flex flex-col items-stretch gap-1 min-w-0">
+        <RoomHeader className={cardStyles.roomHeader}>
+          <div className="flex flex-col items-stretch gap-1 min-w-0">
             <h3 className={cardStyles.roomTitle} title={room.name}>
               {room.name}
             </h3>
-            <StyledGameName
+            <GameName
               className={variantGradient ? 'text-gradient' : undefined}
               style={
                 variantGradient ? { backgroundImage: variantGradient } : {}
               }
             >
               {gameName}
-            </StyledGameName>
+            </GameName>
           </div>
 
           {room.gameOptions?.idleTimerEnabled && (
@@ -141,13 +131,13 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               <FastBadgeText>{t('games.rooms.fastRoom')}</FastBadgeText>
             </FastBadge>
           )}
-        </StyledRoomHeader>
+        </RoomHeader>
 
         {viewMode === 'list' && (
-          <div className="box-border flex flex-row items-center justify-center">
-            <StyledStatusBadge status={room.status}>
+          <div className="flex flex-row items-center justify-center">
+            <StatusBadge status={room.status}>
               {t(`games.rooms.status.${room.status}`) || room.status}
-            </StyledStatusBadge>
+            </StatusBadge>
           </div>
         )}
 
@@ -156,14 +146,14 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             <MetaGrid>
               <MetaRow>
                 <MetaIcon>👑</MetaIcon>
-                <div className="box-border flex flex-col items-stretch">
+                <div className="flex flex-col items-stretch">
                   <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
                   <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
                 </div>
               </MetaRow>
               <MetaRow>
                 <MetaIcon>👥</MetaIcon>
-                <div className="box-border flex flex-col items-stretch">
+                <div className="flex flex-col items-stretch">
                   <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
                   <MetaValue>
                     {room.maxPlayers
@@ -176,7 +166,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                 <MetaIcon>
                   {room.visibility === 'private' ? '🔒' : '🌐'}
                 </MetaIcon>
-                <div className="box-border flex flex-col items-stretch">
+                <div className="flex flex-col items-stretch">
                   <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
                   <MetaValue>
                     {room.visibility === 'private'
@@ -188,21 +178,21 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               </MetaRow>
               <MetaRow>
                 <MetaIcon>⏱️</MetaIcon>
-                <div className="box-border flex flex-col items-stretch">
+                <div className="flex flex-col items-stretch">
                   <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
-                  <StyledStatusBadge status={room.status}>
+                  <StatusBadge status={room.status}>
                     {t(`games.rooms.status.${room.status}`) || room.status}
-                  </StyledStatusBadge>
+                  </StatusBadge>
                 </div>
               </MetaRow>
             </MetaGrid>
 
             {room.members && room.members.length > 0 && (
-              <div className="box-border flex flex-col items-stretch gap-2">
+              <div className="flex flex-col items-stretch gap-2">
                 <ParticipantsLabel>
                   {t('games.rooms.participants')}
                 </ParticipantsLabel>
-                <div className="box-border flex flex-row items-stretch cardStyles.participantAvatars">
+                <div className="flex flex-row items-stretch cardStyles.participantAvatars">
                   {room.members
                     .slice(0, MAX_VISIBLE_PARTICIPANTS)
                     .map((member) => (
@@ -225,7 +215,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                     ))}
                   {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
                     <div className={cardStyles.avatarOverlap}>
-                      <div className="box-border flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
+                      <div className="flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
                         <MetaLabel
                           style={{
                             opacity: 1,
@@ -244,7 +234,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           </RoomMeta>
         ) : (
           <>
-            <div className="box-border flex flex-row gap-null items-center cardStyles.metaCol">
+            <div className="flex flex-row items-center cardStyles.metaCol">
               {room.members
                 ?.slice(0, MAX_VISIBLE_PARTICIPANTS)
                 .map((member) => (
@@ -268,7 +258,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               {room.members &&
                 room.members.length > MAX_VISIBLE_PARTICIPANTS && (
                   <div className={cardStyles.avatarOverlap}>
-                    <div className="box-border flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
+                    <div className="flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
                       <MetaLabel
                         style={{ opacity: 1, fontSize: 10, fontWeight: '700' }}
                       >
@@ -279,7 +269,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                 )}
             </div>
             <MetaRow className={cardStyles.metaCol}>
-              <div className="box-border flex flex-col items-stretch gap-null">
+              <div className="flex flex-col items-stretch">
                 <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
                 <MetaValue>
                   {room.maxPlayers
@@ -289,7 +279,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               </div>
             </MetaRow>
             <MetaRow className={cardStyles.metaCol}>
-              <div className="box-border flex flex-col items-stretch gap-null">
+              <div className="flex flex-col items-stretch">
                 <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
                 <MetaValue>
                   {room.visibility === 'private'
@@ -300,7 +290,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               </div>
             </MetaRow>
             <MetaRow className={cardStyles.metaCol}>
-              <div className="box-border flex flex-col items-stretch gap-null">
+              <div className="flex flex-col items-stretch">
                 <MetaLabel>{t('games.rooms.createdLabel')}</MetaLabel>
                 <MetaValue>{createdAgo}</MetaValue>
               </div>
@@ -308,7 +298,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           </>
         )}
 
-        <StyledRoomActions className={cardStyles.actionsCol}>
+        <RoomActions className={cardStyles.actionsCol}>
           {!isCompleted &&
             (room.status === GAME_ROOM_STATUS.LOBBY || isParticipant) && (
               <LinkButton
@@ -338,8 +328,8 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               {t('games.common.watchRoom')}
             </LinkButton>
           )}
-        </StyledRoomActions>
+        </RoomActions>
       </div>
-    </StyledRoomCard>
+    </RoomCard>
   );
 }

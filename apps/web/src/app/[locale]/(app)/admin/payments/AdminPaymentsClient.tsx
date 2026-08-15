@@ -89,7 +89,7 @@ export default function AdminPaymentsClient() {
   return (
     <PageLayout>
       <Container size="lg">
-        <div className="box-border flex flex-col items-stretch gap-3">
+        <div className="flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t?.title ?? 'Payments'}</PageTitle>
           {filtersLabels && (
             <AdminPaymentsFilters

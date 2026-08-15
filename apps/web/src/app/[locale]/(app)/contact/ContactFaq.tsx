@@ -71,7 +71,7 @@ export function ContactFaq({
   return (
     <GlassCard>
       <div style={s.faqHeaderRowStyle}>
-        <div className="box-border flex flex-col items-stretch gap-2">
+        <div className="flex flex-col items-stretch gap-2">
           <span style={s.labelChipStyle}>
             {questionsLabel ?? 'Common questions'}
           </span>
@@ -88,7 +88,7 @@ export function ContactFaq({
           {browseLabel ?? 'Browse help center'}
         </a>
       </div>
-      <div className="box-border flex flex-col items-stretch">
+      <div className="flex flex-col items-stretch">
         {items.map((it) => {
           const open = openKey === it.key;
           return (

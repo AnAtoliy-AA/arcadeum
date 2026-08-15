@@ -47,36 +47,36 @@ export default function RematchInvitationModal({
     <Modal open={isOpen}>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
       >
-        <ModalTitle $variant={cardVariant as GameVariant}>
+        <ModalTitle variant={cardVariant as GameVariant}>
           {t('games.table.rematch.invitationTitle')}
         </ModalTitle>
-        <div className="box-border mb-6 text-[18px] opacity-[0.8]">
+        <div className="mb-6 text-[18px] opacity-[0.8]">
           {hostName} {t('games.table.rematch.invitationDescription')}
         </div>
 
         {message && (
-          <div className="box-border mb-6 rounded-2xl bg-[rgba(255,255,255,0.05)] p-4">
-            <div className="box-border mb-1 text-[14px] uppercase tracking-[1px] opacity-[0.6]">
+          <div className="mb-6 rounded-2xl bg-[rgba(255,255,255,0.05)] p-4">
+            <div className="mb-1 text-[14px] uppercase tracking-[1px] opacity-[0.6]">
               {t('games.table.rematch.message')}:
             </div>
-            <div className="box-border text-[18px] italic whitespace-pre-wrap">
+            <div className="text-[18px] italic whitespace-pre-wrap">
               {message}
             </div>
           </div>
         )}
 
-        <div className="box-border mb-8 flex flex-col items-center gap-1">
+        <div className="mb-8 flex flex-col items-center gap-1">
           <span
             className={cx(
-              'box-border text-[40px] font-bold',
+              'text-[40px] font-bold',
               timeLeft <= 10 ? 'text-[#ef4444]' : 'text-[#6366f1]',
             )}
           >
             {timeLeft}s
           </span>
-          <span className="box-border text-[16px] opacity-[0.6]">
+          <span className="text-[16px] opacity-[0.6]">
             {t('games.table.rematch.toDecide')}
           </span>
         </div>
@@ -96,15 +96,15 @@ export default function RematchInvitationModal({
           </ModalButton>
         </ModalActions>
 
-        <div className="box-border mt-4 flex flex-col items-center gap-1">
+        <div className="mt-4 flex flex-col items-center gap-1">
           {onBlockRematch && roomId && (
             <button
               type="button"
-              className="box-border mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
+              className="mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
               onClick={() => onBlockRematch(roomId)}
               disabled={accepting}
             >
-              <span className="box-border underline">
+              <span className="underline">
                 {t('games.table.rematch.blockThisRematch')}
               </span>
             </button>
@@ -112,11 +112,11 @@ export default function RematchInvitationModal({
           {onBlockUser && hostId && (
             <button
               type="button"
-              className="box-border mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
+              className="mt-4 cursor-pointer p-2 text-[16px] underline hover:text-[#ef4444] disabled:cursor-default disabled:opacity-[0.5]"
               onClick={() => onBlockUser(hostId)}
               disabled={accepting}
             >
-              <span className="box-border underline">
+              <span className="underline">
                 {t('games.table.rematch.blockInvitations')}
               </span>
             </button>

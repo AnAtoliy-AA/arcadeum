@@ -3,6 +3,7 @@
 import { Button, GlassCard } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { BlockedIp } from '../api';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 export interface BlockedIpsTableLabels {
   empty: string;
@@ -46,7 +47,7 @@ export function BlockedIpsTable({
 }: BlockedIpsTableProps) {
   if (isLoading && items.length === 0) {
     return (
-      <div className="box-border flex flex-col items-center p-5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
       </div>
     );
@@ -55,18 +56,18 @@ export function BlockedIpsTable({
   if (!isLoading && items.length === 0) {
     return (
       <GlassCard className={'p-5 items-center'} data-testid="blocked-ips-empty">
-        <span className="box-border opacity-[0.7]">{labels.empty}</span>
+        <span className="opacity-[0.7]">{labels.empty}</span>
       </GlassCard>
     );
   }
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-3"
+      className="flex flex-col items-stretch gap-3"
       data-testid="blocked-ips-table"
     >
-      <div className="box-border flex flex-row items-center justify-between px-1">
-        <span className="box-border opacity-[0.7] text-[12px]">
+      <div className="flex flex-row items-center justify-between px-1">
+        <span className="opacity-[0.7] text-[12px]">
           {labels.totalLabel.replace('{total}', String(items.length))}
         </span>
         <Button
@@ -81,38 +82,40 @@ export function BlockedIpsTable({
 
       <GlassCard className={'p-0 overflow-hidden'}>
         <div
-          className="box-border flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
+          className="flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
           data-testid="blocked-ips-header"
         >
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.ip}
           </span>
-          <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.reason}
           </span>
-          <span className="box-border w-[120px] font-bold text-[12px] opacity-[0.85]">
+          <span className="w-[120px] font-bold text-[12px] opacity-[0.85]">
             {labels.table.expiresAt}
           </span>
-          <span className="box-border w-[100px] font-bold text-[12px] opacity-[0.85]">
+          <span className="w-[100px] font-bold text-[12px] opacity-[0.85]">
             {labels.table.actions}
           </span>
         </div>
 
         {items.map((item, i) => (
           <div
-            className="box-border flex flex-row gap-3 items-center py-2 px-3 border-b border-[var(--borderColor)]"
+            className="flex flex-row gap-3 items-center py-2 px-3 border-b border-[var(--borderColor)]"
             style={{
-              backgroundColor: i % 2 === 1 ? '$backgroundFocus' : undefined,
+              backgroundColor: resolveThemeColor(
+                i % 2 === 1 ? '$backgroundFocus' : undefined,
+              ),
               opacity: pendingIp === item.ip ? 0.5 : 1,
             }}
             key={item.ip}
             data-testid={`blocked-ip-row-${item.ip}`}
           >
-            <span className="box-border flex-1 text-[14px]">{item.ip}</span>
-            <span className="box-border flex-1 text-[14px] opacity-[0.8]">
+            <span className="flex-1 text-[14px]">{item.ip}</span>
+            <span className="flex-1 text-[14px] opacity-[0.8]">
               {item.reason}
             </span>
-            <span className="box-border w-[120px] text-[14px] opacity-[0.7]">
+            <span className="w-[120px] text-[14px] opacity-[0.7]">
               {formatExpiry(item.expiresAt)}
             </span>
             <Button

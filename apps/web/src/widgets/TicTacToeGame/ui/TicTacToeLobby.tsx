@@ -125,7 +125,7 @@ export function TicTacToeLobby({
   };
 
   const optionsSlot = (
-    <div className="box-border flex flex-col items-stretch gap-4">
+    <div className="flex flex-col items-stretch gap-4">
       <VariantSelector
         roomId={room.id}
         hostId={userId}
@@ -143,7 +143,7 @@ export function TicTacToeLobby({
         onWinLengthChange={handleWinLengthChange}
       />
       <LobbyOptionSection title={t('games.tic_tac_toe_v1.lobby.teamMode')}>
-        <div className="box-border flex flex-row items-center gap-3">
+        <div className="flex flex-row items-center gap-3">
           <button
             type="button"
             role="switch"
@@ -152,7 +152,7 @@ export function TicTacToeLobby({
             disabled={!isHost}
             onClick={() => handleTeamModeToggle(!internalTeamMode)}
             className={cx(
-              'box-border h-6 w-11 rounded-full p-1 transition-colors duration-200 ease-out',
+              'h-6 w-11 rounded-full p-1 transition-colors duration-200 ease-out',
               internalTeamMode ? 'bg-[#2563eb]' : 'bg-[rgba(255,255,255,0.15)]',
               !isHost && 'cursor-not-allowed opacity-50',
             )}
@@ -169,7 +169,7 @@ export function TicTacToeLobby({
       {internalTeamMode ? (
         <TicTacToeTeamPanel room={room} isHost={isHost} />
       ) : null}
-      <span className="box-border text-[16px] opacity-[0.7]">
+      <span className="text-[16px] opacity-[0.7]">
         {options.boardSize === 'infinity'
           ? t('games.tic_tac_toe_v1.lobby.winCondition')
           : t('games.tic_tac_toe_v1.rules.winLengths')}

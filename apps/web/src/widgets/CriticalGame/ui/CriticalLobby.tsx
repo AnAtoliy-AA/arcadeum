@@ -106,7 +106,7 @@ export function CriticalLobby({
           hostId={userId}
           currentVariant={cardVariant}
         />
-        <div className="box-border flex flex-row items-center gap-2 pt-2">
+        <div className="flex flex-row items-center gap-2 pt-2">
           <input
             type="checkbox"
             checked={
@@ -121,17 +121,17 @@ export function CriticalLobby({
               t('games.create.houseRuleActionCardCombos') ||
               'Action Card Combos'
             }
-            className="box-border w-4 h-4 cursor-pointer accent-[var(--primary)]"
+            className="w-4 h-4 cursor-pointer accent-[var(--primary)]"
           />
           <span
-            className="box-border text-[16px]"
+            className="text-[16px]"
             style={{ opacity: ruleComingSoon.get('combos') ? 0.4 : 1 }}
           >
             {t('games.create.houseRuleActionCardCombos') ||
               'Action Card Combos'}
           </span>
           {ruleComingSoon.get('combos') && (
-            <span className="box-border text-[48px] text-[#f59e0b] font-semibold">
+            <span className="text-[48px] text-[#f59e0b] font-semibold">
               {t('games.create.comingSoon') || 'Coming Soon'}
             </span>
           )}

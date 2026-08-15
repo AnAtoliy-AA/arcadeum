@@ -119,7 +119,7 @@ export function SolanaPayQR({
 
   if (loading) {
     return (
-      <div className="box-border flex flex-col items-center p-4">
+      <div className="flex flex-col items-center p-4">
         <Typography variant="body" alpha="medium">
           Creating payment request...
         </Typography>
@@ -129,7 +129,7 @@ export function SolanaPayQR({
 
   if (error) {
     return (
-      <div className="box-border flex flex-col items-center p-4 gap-3">
+      <div className="flex flex-col items-center p-4 gap-3">
         <Typography className={'text-[#dc2626]'} variant="body">
           {error}
         </Typography>
@@ -146,7 +146,7 @@ export function SolanaPayQR({
 
   return (
     <div
-      className="box-border flex flex-col items-center p-4 gap-3"
+      className="flex flex-col items-center p-4 gap-3"
       style={{ minHeight: '100%' }}
     >
       <Typography
@@ -157,7 +157,7 @@ export function SolanaPayQR({
         Send ARC to pay
       </Typography>
 
-      <div className="box-border flex flex-col items-center gap-1">
+      <div className="flex flex-col items-center gap-1">
         <Typography variant="caption" alpha="medium">
           Amount
         </Typography>
@@ -169,7 +169,7 @@ export function SolanaPayQR({
         </Typography>
       </div>
 
-      <div className="box-border flex flex-col p-2 bg-[white] rounded-xl items-center w-full max-w-[200px]">
+      <div className="flex flex-col p-2 bg-[white] rounded-xl items-center w-full max-w-[200px]">
         <Image
           src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(request.solanaPayUrl)}&color=000000&bgcolor=FFFFFF&format=svg`}
           alt="Solana Pay QR Code"
@@ -180,7 +180,7 @@ export function SolanaPayQR({
         />
       </div>
 
-      <div className="box-border flex flex-col items-center gap-2 p-2 rounded-xl bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.12)] w-full">
+      <div className="flex flex-col items-center gap-2 p-2 rounded-xl bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.12)] w-full">
         <Typography className={'text-[11px]'} variant="caption" alpha="medium">
           Recipient
         </Typography>
@@ -204,7 +204,7 @@ export function SolanaPayQR({
         </Button>
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-2 w-full">
+      <div className="flex flex-col items-stretch gap-2 w-full">
         <Button
           className="bg-[#ab9ff2] text-white font-bold rounded-[12px]"
           onClick={() => {

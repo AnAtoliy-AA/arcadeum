@@ -70,20 +70,20 @@ export function SellConfirmDialog({
 
   return (
     <DialogShell open={open} onClose={onClose} testId="sell-confirm-dialog">
-      <div className="box-border flex flex-col items-stretch gap-3">
-        <span className="box-border text-[24px] font-bold">{labels.title}</span>
-        <span className="box-border text-[18px]">
+      <div className="flex flex-col items-stretch gap-3">
+        <span className="text-[24px] font-bold">{labels.title}</span>
+        <span className="text-[18px]">
           {labels.refund.replace('{amount}', formatNumber(refundCoins, locale))}
         </span>
         {errorMsg ? (
           <span
-            className="box-border text-[var(--danger)] text-[14px]"
+            className="text-[var(--danger)] text-[14px]"
             data-testid="sell-error"
           >
             {errorMsg}
           </span>
         ) : null}
-        <div className="box-border flex flex-row items-stretch gap-3 justify-end">
+        <div className="flex flex-row items-stretch gap-3 justify-end">
           <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>

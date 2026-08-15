@@ -45,30 +45,28 @@ export const FieldStatus = memo(function FieldStatus({
   const stats = useMemo(() => computeBoardStats(board), [board]);
 
   return (
-    <div className="box-border flex flex-row justify-end items-center py-1 px-2 bg-[rgba(0,0,0,0.3)] rounded-2xl">
-      <div className="box-border flex flex-row gap-6 items-center">
-        <div className="box-border flex flex-row gap-2 items-center">
+    <div className="flex flex-row justify-end items-center py-1 px-2 bg-[rgba(0,0,0,0.3)] rounded-2xl">
+      <div className="flex flex-row gap-6 items-center">
+        <div className="flex flex-row gap-2 items-center">
           <div
-            className="box-border flex flex-col items-stretch w-[4px] h-[4px] rounded"
+            className="flex flex-col items-stretch w-[4px] h-[4px] rounded"
             style={{ backgroundColor: theme.hitColor }}
           />
           <span
-            className="box-border text-[40px] font-bold"
+            className="text-[40px] font-bold"
             style={{ color: theme.hitColor }}
           >
             {stats.hitCells}
           </span>
         </div>
-        <span className="box-border text-[32px] text-[rgba(255,255,255,0.3)]">
-          ·
-        </span>
-        <div className="box-border flex flex-row gap-2 items-center">
+        <span className="text-[32px] text-[rgba(255,255,255,0.3)]">·</span>
+        <div className="flex flex-row gap-2 items-center">
           <div
-            className="box-border flex flex-col items-stretch w-[4px] h-[4px] rounded"
+            className="flex flex-col items-stretch w-[4px] h-[4px] rounded"
             style={{ backgroundColor: theme.missColor }}
           />
           <span
-            className="box-border text-[40px] font-bold"
+            className="text-[40px] font-bold"
             style={{ color: theme.missColor }}
           >
             {stats.missCells}
@@ -76,7 +74,7 @@ export const FieldStatus = memo(function FieldStatus({
         </div>
       </div>
       <span
-        className="box-border text-[40px] text-[rgba(255,255,255,0.5)] -ml-4"
+        className="text-[40px] text-[rgba(255,255,255,0.5)] -ml-4"
         style={{ fontFamily: 'monospace' } as React.CSSProperties}
       >
         {stats.unexploredCells}/{stats.totalCells} (

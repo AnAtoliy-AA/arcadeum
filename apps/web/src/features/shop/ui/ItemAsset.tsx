@@ -29,11 +29,11 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
     const props = nameColorRenderProps(item.colorValue ?? null);
     return (
       <div
-        className="box-border flex flex-col items-center justify-center"
+        className="flex flex-col items-center justify-center"
         data-testid={`shop-asset-${item.id}`}
       >
         <span
-          className="box-border font-black"
+          className="font-black"
           style={{ fontSize: Math.round(size * 0.55), color: props.color }}
           {...props}
         >
@@ -51,11 +51,11 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
     const value = item.colorValue ?? '#1e293b';
     return (
       <div
-        className="box-border flex flex-col items-center justify-center"
+        className="flex flex-col items-center justify-center"
         data-testid={`shop-asset-${item.id}`}
       >
         <div
-          className="box-border flex flex-col items-stretch border border-[rgba(255,255,255,0.18)]"
+          className="flex flex-col items-stretch border border-[rgba(255,255,255,0.18)]"
           style={{
             height: Math.round(size * 0.62),
             borderRadius: Math.round(size * 0.12),
@@ -75,12 +75,12 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
     const value = item.colorValue ?? '#94a3b8';
     return (
       <div
-        className="box-border flex flex-col items-center justify-center"
+        className="flex flex-col items-center justify-center"
         style={{ position: 'relative' }}
         data-testid={`shop-asset-${item.id}`}
       >
         <div
-          className="box-border flex flex-col items-stretch absolute inset-0"
+          className="flex flex-col items-stretch absolute inset-0"
           style={{
             borderRadius: size / 2,
             ...(value.includes('gradient')
@@ -89,7 +89,7 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
           }}
         />
         <div
-          className="box-border flex flex-col items-stretch bg-[rgba(15,23,42,0.95)] relative z-[1]"
+          className="flex flex-col items-stretch bg-[rgba(15,23,42,0.95)] relative z-[1]"
           style={{
             width: Math.round(size * 0.7),
             height: Math.round(size * 0.7),
@@ -109,11 +109,11 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
     const value = item.colorValue ?? '#1e293b';
     return (
       <div
-        className="box-border flex flex-col items-center justify-center"
+        className="flex flex-col items-center justify-center"
         data-testid={`shop-asset-${item.id}`}
       >
         <div
-          className="box-border flex flex-col items-stretch border border-[rgba(255,255,255,0.18)] overflow-hidden"
+          className="flex flex-col items-stretch border border-[rgba(255,255,255,0.18)] overflow-hidden"
           style={{
             borderRadius: Math.round(size * 0.16),
             ...(value.includes('gradient')
@@ -122,7 +122,7 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
           }}
         >
           <div
-            className="box-border flex flex-col items-stretch w-full bg-[rgba(0,0,0,0.35)]"
+            className="flex flex-col items-stretch w-full bg-[rgba(0,0,0,0.35)]"
             style={{ height: Math.round(size * 0.16) }}
           />
         </div>
@@ -143,16 +143,16 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
         };
     return (
       <div
-        className="box-border flex flex-col items-center justify-center"
+        className="flex flex-col items-center justify-center"
         style={{ position: 'relative' }}
         data-testid={`shop-asset-${item.id}`}
       >
         <div
-          className="box-border flex flex-col items-stretch"
+          className="flex flex-col items-stretch"
           style={{ ...haloStyle, borderRadius: size / 2 }}
         />
         <div
-          className="box-border flex flex-col items-stretch border border-[rgba(255,255,255,0.22)] bg-[rgba(15,23,42,0.85)]"
+          className="flex flex-col items-stretch border border-[rgba(255,255,255,0.22)] bg-[rgba(15,23,42,0.85)]"
           style={{
             width: Math.round(size * 0.55),
             height: Math.round(size * 0.55),
@@ -169,11 +169,11 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
     const value = item.colorValue ?? '#1e293b';
     return (
       <div
-        className="box-border flex flex-col items-center justify-center"
+        className="flex flex-col items-center justify-center"
         data-testid={`shop-asset-${item.id}`}
       >
         <div
-          className="box-border flex flex-col items-stretch border border-[rgba(255,255,255,0.18)]"
+          className="flex flex-col items-stretch border border-[rgba(255,255,255,0.18)]"
           style={{
             borderRadius: size / 2,
             ...(value.includes('gradient')
@@ -196,11 +196,11 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
   if (sprite) {
     return (
       <div
-        className="box-border flex flex-col items-center justify-center"
+        className="flex flex-col items-center justify-center"
         data-testid={`shop-asset-${item.id}`}
       >
         <div
-          className="box-border flex flex-col items-stretch"
+          className="flex flex-col items-stretch"
           style={{
             backgroundImage: `url(${sprite.spritesheet})`,
             backgroundSize: `${size * sprite.cols}px auto`,
@@ -213,7 +213,7 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
 
   return (
     <div
-      className="box-border flex flex-col items-center justify-center"
+      className="flex flex-col items-center justify-center"
       data-testid={`shop-asset-${item.id}`}
     >
       <Image

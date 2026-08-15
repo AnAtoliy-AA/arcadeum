@@ -21,7 +21,7 @@ export type ActivityTickerProps = {
 };
 
 const TickerShellClasses = [
-  'box-border',
+  '',
   'flex',
   'flex-row',
   'items-center',
@@ -36,7 +36,7 @@ const TickerShellClasses = [
 ].join(' ');
 
 const TickerLabelClasses = [
-  'box-border',
+  '',
   'shrink-0',
   'text-[11px]',
   'uppercase',
@@ -45,11 +45,11 @@ const TickerLabelClasses = [
   'max-[800px]:hidden',
 ].join(' ');
 
-const TickerTrackClasses = 'box-border relative h-[22px] flex-1';
+const TickerTrackClasses = 'relative h-[22px] flex-1';
 
 function tickerRowClasses(active: boolean): string {
   return cx(
-    'box-border absolute left-0 right-0 top-0 flex flex-row items-center gap-3 transition-all duration-300 ease-out',
+    'absolute left-0 right-0 top-0 flex flex-row items-center gap-3 transition-all duration-300 ease-out',
     active
       ? 'pointer-events-auto translate-y-0 opacity-100'
       : 'pointer-events-none translate-y-[8px] opacity-0',

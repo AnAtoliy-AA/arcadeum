@@ -19,7 +19,7 @@ export function Panel({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border relative h-full w-full min-h-[360px] overflow-hidden rounded-[18px] border border-[var(--glassBorder)] bg-[var(--glassBg)]',
+        'relative h-full w-full min-h-[360px] overflow-hidden rounded-[18px] border border-[var(--glassBorder)] bg-[var(--glassBg)]',
         className,
       )}
       {...props}
@@ -31,7 +31,7 @@ export function Head({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch gap-[10px] border-b border-[var(--glassBorder)] px-3 pt-3 pb-2.5',
+        'flex flex-col items-stretch gap-[10px] border-b border-[var(--glassBorder)] px-3 pt-3 pb-2.5',
         className,
       )}
       {...props}
@@ -42,7 +42,7 @@ export function Head({ className, ...props }: DivProps) {
 export function HeadRow({ className, ...props }: DivProps) {
   return (
     <div
-      className={cx('box-border flex flex-row items-center gap-2', className)}
+      className={cx('flex flex-row items-center gap-2', className)}
       {...props}
     />
   );
@@ -51,10 +51,7 @@ export function HeadRow({ className, ...props }: DivProps) {
 export function TitleDot({ className, ...props }: DivProps) {
   return (
     <div
-      className={cx(
-        'box-border h-[7px] w-[7px] rounded-full bg-[#34D399]',
-        className,
-      )}
+      className={cx('h-[7px] w-[7px] rounded-full bg-[#34D399]', className)}
       style={{ boxShadow: '0 0 8px #34D399' }}
       {...props}
     />
@@ -65,7 +62,7 @@ export function Title({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border text-[13px] font-semibold tracking-[0.2px] text-[var(--color)]',
+        'text-[13px] font-semibold tracking-[0.2px] text-[var(--color)]',
         className,
       )}
       {...props}
@@ -77,7 +74,7 @@ export function TabsRow({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-0.5 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-[3px]',
+        'flex flex-row items-center gap-0.5 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-[3px]',
         className,
       )}
       {...props}
@@ -89,7 +86,7 @@ export function Tab({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-1 cursor-pointer flex-row items-center justify-center gap-1.5 rounded-full px-2.5 py-1.25 hover:bg-[var(--backgroundHover)]',
+        'flex flex-1 cursor-pointer flex-row items-center justify-center gap-1.5 rounded-full px-2.5 py-1.25 hover:bg-[var(--backgroundHover)]',
         className,
       )}
       {...props}
@@ -101,7 +98,7 @@ export function TabLabel({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border text-[11.5px] font-semibold text-[rgba(180,180,200,0.7)]',
+        'text-[11.5px] font-semibold text-[rgba(180,180,200,0.7)]',
         className,
       )}
       {...props}
@@ -113,7 +110,7 @@ export function TabCount({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border min-w-[16px] rounded-full bg-[var(--backgroundHover)] px-1 py-0.5 text-center text-[9.5px] text-[rgba(180,180,200,0.7)]',
+        'min-w-[16px] rounded-full bg-[var(--backgroundHover)] px-1 py-0.5 text-center text-[9.5px] text-[rgba(180,180,200,0.7)]',
         className,
       )}
       {...props}
@@ -124,10 +121,7 @@ export function TabCount({ className, ...props }: SpanProps) {
 export function Body({ className, ...props }: DivProps) {
   return (
     <div
-      className={cx(
-        'box-border flex min-h-0 flex-1 flex-col items-stretch',
-        className,
-      )}
+      className={cx('flex min-h-0 flex-1 flex-col items-stretch', className)}
       {...props}
     />
   );
@@ -137,7 +131,7 @@ export function ListGap({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch gap-[10px] px-3.5 pt-1 pb-1.5',
+        'flex flex-col items-stretch gap-[10px] px-3.5 pt-1 pb-1.5',
         className,
       )}
       {...props}
@@ -149,7 +143,7 @@ export function Divider({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center justify-center py-1',
+        'flex flex-row items-center justify-center py-1',
         className,
       )}
       {...props}
@@ -161,7 +155,7 @@ export function DividerLabel({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border px-2.5 text-[9.5px] font-bold uppercase tracking-[1.2px] text-[rgba(180,180,200,0.7)]',
+        'px-2.5 text-[9.5px] font-bold uppercase tracking-[1.2px] text-[rgba(180,180,200,0.7)]',
         className,
       )}
       {...props}
@@ -173,7 +167,7 @@ export function Foot({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch gap-2 border-t border-[var(--glassBorder)] px-3.5 pt-2.5 pb-3',
+        'flex flex-col items-stretch gap-2 border-t border-[var(--glassBorder)] px-3.5 pt-2.5 pb-3',
         className,
       )}
       {...props}
@@ -184,10 +178,7 @@ export function Foot({ className, ...props }: DivProps) {
 export function QuickRow({ className, ...props }: DivProps) {
   return (
     <div
-      className={cx(
-        'box-border flex flex-row items-stretch gap-1.5 flex-wrap',
-        className,
-      )}
+      className={cx('flex flex-row items-stretch gap-1.5 flex-wrap', className)}
       {...props}
     />
   );
@@ -197,7 +188,7 @@ export function QuickButton({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex h-6 cursor-pointer flex-row items-center gap-1 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-2.5 hover:bg-[var(--backgroundPress)]',
+        'flex h-6 cursor-pointer flex-row items-center gap-1 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-2.5 hover:bg-[var(--backgroundPress)]',
         className,
       )}
       {...props}
@@ -208,10 +199,7 @@ export function QuickButton({ className, ...props }: DivProps) {
 export function QuickButtonText({ className, ...props }: SpanProps) {
   return (
     <span
-      className={cx(
-        'box-border text-[11px] font-medium text-[var(--color)]',
-        className,
-      )}
+      className={cx('text-[11px] font-medium text-[var(--color)]', className)}
       {...props}
     />
   );
@@ -221,7 +209,7 @@ export function InputPill({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex h-[38px] flex-row items-center gap-2 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] pl-3 pr-1',
+        'flex h-[38px] flex-row items-center gap-2 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] pl-3 pr-1',
         className,
       )}
       {...props}
@@ -233,7 +221,7 @@ export function ChannelChip({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border border-r border-[var(--glassBorder)] pr-2 text-[10px] font-bold uppercase tracking-[1px]',
+        'border-r border-[var(--glassBorder)] pr-2 text-[10px] font-bold uppercase tracking-[1px]',
         className,
       )}
       {...props}
@@ -244,10 +232,7 @@ export function ChannelChip({ className, ...props }: SpanProps) {
 export function MetaLine({ className, ...props }: DivProps) {
   return (
     <div
-      className={cx(
-        'box-border flex flex-row items-center justify-between',
-        className,
-      )}
+      className={cx('flex flex-row items-center justify-between', className)}
       {...props}
     />
   );
@@ -257,7 +242,7 @@ export function MetaText({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border text-[9.5px] uppercase tracking-[0.8px] text-[rgba(180,180,200,0.7)]',
+        'text-[9.5px] uppercase tracking-[0.8px] text-[rgba(180,180,200,0.7)]',
         className,
       )}
       {...props}
@@ -269,7 +254,7 @@ export function CollapsedShell({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex h-11 w-full cursor-pointer flex-row items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 hover:border-[var(--glassBorderHover)]',
+        'flex h-11 w-full cursor-pointer flex-row items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 hover:border-[var(--glassBorderHover)]',
         className,
       )}
       {...props}
@@ -281,7 +266,7 @@ export function CollapsedPreview({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border flex-1 truncate text-[12px] text-[rgba(180,180,200,0.7)]',
+        'flex-1 truncate text-[12px] text-[rgba(180,180,200,0.7)]',
         className,
       )}
       {...props}
@@ -293,7 +278,7 @@ export function UnreadBadge({ className, ...props }: SpanProps) {
   return (
     <span
       className={cx(
-        'box-border rounded-full px-2 py-0.5 text-[10px] font-bold tracking-[0.4px] text-[#06011b]',
+        'rounded-full px-2 py-0.5 text-[10px] font-bold tracking-[0.4px] text-[#06011b]',
         className,
       )}
       {...props}
@@ -305,7 +290,7 @@ export function SysWrap({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'box-border flex flex-row items-center gap-2 rounded-[10px] border-l-2 border-l-[rgba(255,255,255,0.18)] px-2.5 py-1.75',
+        'flex flex-row items-center gap-2 rounded-[10px] border-l-2 border-l-[rgba(255,255,255,0.18)] px-2.5 py-1.75',
         className,
       )}
       {...props}
@@ -316,10 +301,7 @@ export function SysWrap({ className, ...props }: DivProps) {
 export function SysText({ className, ...props }: SpanProps) {
   return (
     <span
-      className={cx(
-        'box-border flex-1 text-[11px] text-[var(--color)]',
-        className,
-      )}
+      className={cx('flex-1 text-[11px] text-[var(--color)]', className)}
       {...props}
     />
   );
@@ -328,10 +310,7 @@ export function SysText({ className, ...props }: SpanProps) {
 export function SysTime({ className, ...props }: SpanProps) {
   return (
     <span
-      className={cx(
-        'box-border text-[10px] text-[rgba(180,180,200,0.7)]',
-        className,
-      )}
+      className={cx('text-[10px] text-[rgba(180,180,200,0.7)]', className)}
       {...props}
     />
   );

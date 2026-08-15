@@ -29,7 +29,7 @@ export function DeltaChip({ from, to, testID, className }: DeltaChipProps) {
     <div
       data-testid={testID}
       className={cx(
-        'box-border flex flex-row items-center gap-1 px-2 py-0.5 rounded-full border',
+        'flex flex-row items-center gap-1 px-2 py-0.5 rounded-full border',
         deltaChipClasses[direction],
         className,
       )}

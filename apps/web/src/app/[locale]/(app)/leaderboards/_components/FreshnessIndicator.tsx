@@ -87,18 +87,18 @@ export function FreshnessIndicator({
 
   return (
     <div
-      className="box-border flex flex-row items-center gap-2"
+      className="flex flex-row items-center gap-2"
       data-testid="leaderboard-freshness"
       data-fresh={!stale}
     >
       <div
-        className="box-border w-[8px] h-[8px] rounded-2xl"
+        className="w-[8px] h-[8px] rounded-2xl"
         style={{
           backgroundColor: stale ? 'var(--textSecondary)' : 'var(--success)',
           animation: pulse ? 'arcadeum-freshness-pulse 2s ease-out' : undefined,
         }}
       />
-      <span className="box-border text-[12px] tracking-[1px] opacity-[0.7]">
+      <span className="text-[12px] tracking-[1px] opacity-[0.7]">
         {updatedLabel}
       </span>
     </div>

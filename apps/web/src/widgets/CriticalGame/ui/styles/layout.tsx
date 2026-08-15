@@ -24,7 +24,7 @@ export function MatchWidgetGrid({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch w-full max-w-[1240px] mx-auto px-[12px] py-[12px] gap-3 max-[800px]:px-2 max-[800px]:gap-2 max-[800px]:pb-[120px]',
+        'flex flex-col items-stretch w-full max-w-[1240px] mx-auto px-[12px] py-[12px] gap-3 max-[800px]:px-2 max-[800px]:gap-2 max-[800px]:pb-[120px]',
         className,
       )}
       {...props}
@@ -43,7 +43,7 @@ export function FrostyVignette({
   return (
     <div
       className={cx(
-        'box-border flex flex-col items-stretch absolute inset-0 pointer-events-none z-[5] rounded-[20px]',
+        'flex flex-col items-stretch absolute inset-0 pointer-events-none z-[5] rounded-[20px]',
         className,
       )}
       style={{

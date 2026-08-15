@@ -5,6 +5,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useGameChatStore } from '@/widgets/GameChat';
 import { InGameAvatar } from './InGameAvatar';
 import type { TurnStatusVariant } from './GameWidgetContainer';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 /**
  * Declarative turn contract shared by every game's header. A widget passes only
@@ -82,10 +83,7 @@ export const TurnIndicator = memo(function TurnIndicator({
   const showAvatar = !!onClockUserId && !isGameOver;
 
   return (
-    <div
-      className="box-border flex flex-row items-center gap-2"
-      data-testid={testId}
-    >
+    <div className="flex flex-row items-center gap-2" data-testid={testId}>
       {showAvatar && resolvedName ? (
         <InGameAvatar
           playerId={onClockUserId}
@@ -95,9 +93,9 @@ export const TurnIndicator = memo(function TurnIndicator({
         />
       ) : null}
       <span
-        className="box-border text-[14px] font-semibold line-clamp-1"
+        className="text-[14px] font-semibold line-clamp-1"
         style={{
-          color: STATUS_COLOR[status],
+          color: resolveThemeColor(STATUS_COLOR[status]),
           opacity: status === 'default' ? 0.7 : 1,
         }}
         data-testid="turn-indicator-label"

@@ -2,6 +2,7 @@
 import { Button, GlassCard } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { AdminPaymentNoteItem } from '../api';
+import { resolveThemeColor } from '@/shared/lib/theme-tokens';
 
 export interface AdminPaymentsTableLabels {
   empty: { noNotes: string; noResults: string };
@@ -57,7 +58,7 @@ export function AdminPaymentsTable({
 }: AdminPaymentsTableProps) {
   if (isLoading && items.length === 0) {
     return (
-      <div className="box-border flex flex-col items-center p-5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
       </div>
     );
@@ -69,7 +70,7 @@ export function AdminPaymentsTable({
         className={'p-5 items-center'}
         data-testid="admin-payments-empty"
       >
-        <span className="box-border opacity-[0.7]">
+        <span className="opacity-[0.7]">
           {hasFilter ? labels.empty.noResults : labels.empty.noNotes}
         </span>
       </GlassCard>
@@ -80,35 +81,35 @@ export function AdminPaymentsTable({
 
   return (
     <div
-      className="box-border flex flex-col items-stretch gap-3"
+      className="flex flex-col items-stretch gap-3"
       data-testid="admin-payments-table"
     >
-      <span className="box-border opacity-[0.7] text-[12px] px-1">
+      <span className="opacity-[0.7] text-[12px] px-1">
         {labels.totalLabel.replace('{total}', String(total))}
       </span>
 
       <GlassCard className={'p-0 overflow-hidden'}>
         {labels.header && (
           <div
-            className="box-border flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
+            className="flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
             data-testid="admin-payments-header"
           >
-            <span className="box-border flex-1 font-bold text-[12px] opacity-[0.85]">
+            <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
               {labels.header.user}
             </span>
-            <span className="box-border w-[120px] text-right font-bold text-[12px] opacity-[0.85]">
+            <span className="w-[120px] text-right font-bold text-[12px] opacity-[0.85]">
               {labels.header.amount}
             </span>
             <span
-              className="box-border font-bold text-[12px] opacity-[0.85]"
+              className="font-bold text-[12px] opacity-[0.85]"
               style={{ flex: 2 }}
             >
               {labels.header.note}
             </span>
-            <span className="box-border w-[88px] font-bold text-[12px] opacity-[0.85]">
+            <span className="w-[88px] font-bold text-[12px] opacity-[0.85]">
               {labels.header.visibility}
             </span>
-            <span className="box-border w-[140px] font-bold text-[12px] opacity-[0.85]">
+            <span className="w-[140px] font-bold text-[12px] opacity-[0.85]">
               {labels.header.createdAt}
             </span>
           </div>
@@ -116,50 +117,58 @@ export function AdminPaymentsTable({
 
         {items.map((it, i) => (
           <div
-            className="box-border flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
+            className="flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
             style={{
-              backgroundColor: i % 2 === 1 ? '$backgroundFocus' : undefined,
+              backgroundColor: resolveThemeColor(
+                i % 2 === 1 ? '$backgroundFocus' : undefined,
+              ),
             }}
             key={it.id}
             data-testid={`payment-row-${it.id}`}
           >
-            <div className="box-border flex-1 min-w-0">
-              <span className="box-border font-bold line-clamp-1">
+            <div className="flex-1 min-w-0">
+              <span className="font-bold line-clamp-1">
                 {it.displayName ?? labels.anonymous}
               </span>
               <span
-                className="box-border opacity-[0.5] text-[12px] line-clamp-1"
+                className="opacity-[0.5] text-[12px] line-clamp-1"
                 style={{ fontFamily: 'monospace' }}
               >
                 {it.transactionId}
               </span>
             </div>
-            <span className="box-border w-[120px] text-right font-semibold">
+            <span className="w-[120px] text-right font-semibold">
               {formatAmount(it.amount, it.currency)}
             </span>
             <span style={{ flex: 2 }} title={it.note}>
-              <span className="box-border">{truncate(it.note, 200)}</span>
+              <span className="">{truncate(it.note, 200)}</span>
             </span>
             <div
-              className="box-border w-[88px] px-2 py-1 rounded-lg self-center"
-              style={{ backgroundColor: it.isPublic ? '$green3' : '$gray3' }}
+              className="w-[88px] px-2 py-1 rounded-lg self-center"
+              style={{
+                backgroundColor: resolveThemeColor(
+                  it.isPublic ? '$green3' : '$gray3',
+                ),
+              }}
               data-testid={`visibility-${it.id}`}
             >
               <span
-                className="box-border text-[12px] font-bold text-center"
-                style={{ color: it.isPublic ? '$green9' : '$gray9' }}
+                className="text-[12px] font-bold text-center"
+                style={{
+                  color: resolveThemeColor(it.isPublic ? '$green9' : '$gray9'),
+                }}
               >
                 {it.isPublic ? labels.chipPublic : labels.chipPrivate}
               </span>
             </div>
-            <span className="box-border w-[140px] opacity-[0.6] text-[12px]">
+            <span className="w-[140px] opacity-[0.6] text-[12px]">
               {new Date(it.createdAt).toLocaleString()}
             </span>
           </div>
         ))}
       </GlassCard>
 
-      <div className="box-border flex flex-row gap-3 items-center justify-center pt-2">
+      <div className="flex flex-row gap-3 items-center justify-center pt-2">
         <Button
           variant="outline"
           size="sm"
@@ -168,7 +177,7 @@ export function AdminPaymentsTable({
         >
           {labels.pagination.prev}
         </Button>
-        <span className="box-border opacity-[0.8] text-[14px]">
+        <span className="opacity-[0.8] text-[14px]">
           {labels.pagination.of
             .replace('{current}', String(page))
             .replace('{total}', String(totalPages))}

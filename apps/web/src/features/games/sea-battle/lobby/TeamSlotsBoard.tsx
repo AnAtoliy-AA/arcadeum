@@ -114,7 +114,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
 
   return (
     <div
-      className="box-border flex flex-row items-stretch gap-3 flex-wrap"
+      className="flex flex-row items-stretch gap-3 flex-wrap"
       data-testid="team-slots-board"
     >
       {teams.map((team) => {
@@ -141,10 +141,10 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
               flex: 1,
             }}
           >
-            <div className="box-border flex flex-col items-stretch gap-2">
+            <div className="flex flex-col items-stretch gap-2">
               {isHost ? (
                 <div
-                  className="box-border flex flex-row gap-2 items-center flex-wrap"
+                  className="flex flex-row gap-2 items-center flex-wrap"
                   data-testid={`team-row-${team.id}`}
                 >
                   <Input
@@ -203,7 +203,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
 
                 return (
                   <div
-                    className="box-border flex flex-row gap-2 items-center justify-between"
+                    className="flex flex-row gap-2 items-center justify-between"
                     key={id}
                     data-testid={`team-slot-${team.id}-${id}`}
                   >
@@ -248,7 +248,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
                     )}
 
                     {isHost && !isViewer && !memberIsBot && (
-                      <div className="box-border flex flex-row items-stretch gap-1 flex-wrap">
+                      <div className="flex flex-row items-stretch gap-1 flex-wrap">
                         {teams
                           .filter((other) => other.id !== team.id)
                           .map((other) => (
@@ -354,7 +354,7 @@ function TeamMemberIdentity({
   });
   const nameProps = nameColorRenderProps(nameColor);
   return (
-    <div className="box-border flex flex-row gap-2 items-center flex-1">
+    <div className="flex flex-row gap-2 items-center flex-1">
       <EquippedPlayerAvatar
         size="sm"
         name={display}

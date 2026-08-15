@@ -348,7 +348,7 @@ export default function CreateGameRoomPage() {
 
             {error && (
               <Card variant="error" padding="sm">
-                <span className="box-border">{error}</span>
+                <span className="">{error}</span>
               </Card>
             )}
 

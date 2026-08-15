@@ -36,9 +36,9 @@ export function ContactTips({ tips }: ContactTipsProps) {
       <Typography variant="heading" uiSize="md" className="mt-2">
         {tips?.title ?? 'Help us help you faster'}
       </Typography>
-      <div className="box-border flex flex-col items-stretch gap-3 -mt-3">
+      <div className="flex flex-col items-stretch gap-3 -mt-3">
         {items.map((item, i) => (
-          <div className="box-border flex flex-row gap-3 items-start" key={i}>
+          <div className="flex flex-row gap-3 items-start" key={i}>
             <span
               aria-hidden="true"
               style={{

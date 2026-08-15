@@ -40,7 +40,7 @@ export function GamesSearch({
 
   return (
     <div
-      className={`box-border flex flex-row min-w-[280px] max-w-[450px] gap-2 items-center max-[800px]:min-w-0 max-[800px]:w-full ${className ?? ''}`}
+      className={`flex flex-row min-w-[280px] max-w-[450px] gap-2 items-center max-[800px]:min-w-0 max-[800px]:w-full ${className ?? ''}`}
     >
       <Input
         className={'flex-1'}

@@ -17,7 +17,7 @@ export const Section = forwardRef<HTMLDivElement, SectionProps>(
       <div
         ref={ref}
         className={cx(
-          'box-border',
+          '',
           'flex',
           'flex-col',
           'gap-3',

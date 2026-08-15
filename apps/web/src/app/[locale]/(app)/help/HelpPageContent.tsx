@@ -39,7 +39,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
 
         {t?.features && (
           <Section variant="legal">
-            <div className="box-border flex flex-row items-stretch flex-wrap gap-4">
+            <div className="flex flex-row items-stretch flex-wrap gap-4">
               {(
                 t.features as ({ title: string; description: string } | null)[]
               ).map((feature, index: number) => {
@@ -51,7 +51,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                     }
                     key={index}
                   >
-                    <div className="box-border flex flex-col items-stretch gap-2">
+                    <div className="flex flex-col items-stretch gap-2">
                       <Typography
                         className={'font-bold'}
                         variant="label"
@@ -91,20 +91,17 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                * (hashed class names) so Google Assistant
                * can locate the block reliably.
                */}
-              <div
-                className="box-border flex flex-col items-stretch gap-3"
-                id="faq"
-              >
+              <div className="flex flex-col items-stretch gap-3" id="faq">
                 <Typography className={'font-bold'} variant="label" uiSize="lg">
                   {faq?.heading}
                 </Typography>
-                <div className="box-border flex flex-col items-stretch gap-2">
+                <div className="flex flex-col items-stretch gap-2">
                   {items.map((item, index) => (
                     <GlassCard
                       className={'p-4 border border-[var(--borderColor)]'}
                       key={index}
                     >
-                      <div className="box-border flex flex-col items-stretch gap-1">
+                      <div className="flex flex-col items-stretch gap-1">
                         <Typography
                           className={'font-bold'}
                           variant="label"

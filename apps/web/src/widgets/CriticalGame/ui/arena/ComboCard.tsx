@@ -54,7 +54,7 @@ export function ComboCard({
 
   return (
     <div
-      className="box-border flex flex-col items-center gap-2 px-3 py-2 rounded-[14px] border bg-[rgba(0,0,0,0.45)]"
+      className="flex flex-col items-center gap-2 px-3 py-2 rounded-[14px] border bg-[rgba(0,0,0,0.45)]"
       style={{
         filter: KIND_FILTER[kind],
         borderColor: KIND_BORDER[kind],
@@ -64,7 +64,7 @@ export function ComboCard({
       data-kind={kind}
     >
       <span
-        className="box-border text-[11px] font-extrabold tracking-[0.6px] uppercase text-[#e2e8f0]"
+        className="text-[11px] font-extrabold tracking-[0.6px] uppercase text-[#e2e8f0]"
         data-testid="combo-card-label"
       >
         {label}

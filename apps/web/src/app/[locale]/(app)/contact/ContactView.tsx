@@ -152,7 +152,7 @@ export default function ContactView({
   return (
     <PageLayout>
       <Container size="lg" style={{ maxWidth: 1120 }}>
-        <div className="box-border flex flex-col items-stretch gap-8">
+        <div className="flex flex-col items-stretch gap-8">
           <div style={s.heroWrapStyle}>
             <span
               aria-hidden="true"
@@ -167,8 +167,8 @@ export default function ContactView({
               aria-hidden="true"
               style={s.orbStyle(320, '-100px', '70%', 'rgba(244,114,182,0.45)')}
             />
-            <div className="box-border flex flex-col items-stretch gap-4 relative z-[100]">
-              <div className="box-border flex flex-row flex-wrap items-center gap-3">
+            <div className="flex flex-col items-stretch gap-4 relative z-[100]">
+              <div className="flex flex-row flex-wrap items-center gap-3">
                 <span style={s.eyebrowStyle}>
                   <span aria-hidden="true" style={s.eyebrowDotStyle} />
                   {hero?.eyebrow ?? 'Player support'}
@@ -182,7 +182,7 @@ export default function ContactView({
                 <span style={s.titleAccentStyle}>{lastWord}</span>
               </h1>
               <p style={s.heroTaglineStyle}>{hero?.tagline ?? t?.tagline}</p>
-              <div className="box-border flex flex-row items-stretch flex-wrap gap-3 -mt-3">
+              <div className="flex flex-row items-stretch flex-wrap gap-3 -mt-3">
                 <HeroPill pillStyle={s.pillStyle}>
                   <span
                     aria-hidden="true"
@@ -210,7 +210,7 @@ export default function ContactView({
                     '5 languages'}
                 </HeroPill>
               </div>
-              <div className="box-border flex flex-col items-stretch -mt-4">
+              <div className="flex flex-col items-stretch -mt-4">
                 <ActivityTicker items={tickerItems} label={ticker?.label} />
               </div>
             </div>

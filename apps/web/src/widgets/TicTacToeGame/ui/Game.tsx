@@ -180,7 +180,7 @@ function TicTacToeGameImpl({
   }
 
   const board = (
-    <div className="box-border flex flex-col gap-3 items-stretch p-3 w-full">
+    <div className="flex flex-col gap-3 items-stretch p-3 w-full">
       {snapshot ? (
         <>
           <TurnBadge

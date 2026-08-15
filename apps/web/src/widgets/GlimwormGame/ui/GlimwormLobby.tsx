@@ -164,7 +164,7 @@ export function GlimwormLobby({
 
   const optionsSlot =
     room.status === 'lobby' ? (
-      <div className="box-border flex flex-col items-stretch gap-4 p-3 rounded-xl">
+      <div className="flex flex-col items-stretch gap-4 p-3 rounded-xl">
         <LobbyOptionSection title={t('games.glimworm_v1.lobby.variant')}>
           <LobbyChipGroup
             options={variantOptions}
@@ -175,7 +175,7 @@ export function GlimwormLobby({
             testIdPrefix="glimworm-variant"
           />
           {!isHost && (
-            <span className="box-border -mt-2 text-[12px] text-[rgba(180,_180,_200,_0.7)] italic">
+            <span className="-mt-2 text-[12px] text-[rgba(180,_180,_200,_0.7)] italic">
               Host chooses the variant.
             </span>
           )}
@@ -201,7 +201,7 @@ export function GlimwormLobby({
         </LobbyOptionSection>
 
         <LobbyOptionSection title={t('games.glimworm_v1.lobby.pickColor')}>
-          <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+          <div className="flex flex-row items-stretch gap-2 flex-wrap">
             {PALETTE.map((color) => {
               const isSelected = color === effectiveSelectedColor;
               const isTaken = takenColors.has(color) && !isSelected;
@@ -234,7 +234,7 @@ export function GlimwormLobby({
         </LobbyOptionSection>
 
         {error && (
-          <span className="box-border text-[14px] py-6 px-10 rounded-2xl bg-[rgba(255,94,94,0.12)] text-[#ffb0b0]">
+          <span className="text-[14px] py-6 px-10 rounded-2xl bg-[rgba(255,94,94,0.12)] text-[#ffb0b0]">
             {error}
           </span>
         )}

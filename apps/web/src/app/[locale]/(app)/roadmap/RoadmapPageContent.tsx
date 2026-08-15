@@ -15,7 +15,7 @@ function TierCard({
 }) {
   return (
     <div
-      className="box-border flex flex-col items-stretch rounded-2xl overflow-hidden"
+      className="flex flex-col items-stretch rounded-2xl overflow-hidden"
       style={{
         background: isExpanded ? tier.gradient : 'rgba(255,255,255,0.02)',
         borderWidth: 1,
@@ -23,19 +23,19 @@ function TierCard({
       }}
     >
       <div
-        className="box-border flex flex-col items-stretch active:opacity-[0.8] cursor-pointer p-4"
+        className="flex flex-col items-stretch active:opacity-[0.8] cursor-pointer p-4"
         onClick={onToggle}
       >
-        <div className="box-border flex flex-row justify-between items-center">
-          <div className="box-border flex flex-row gap-3 items-center flex-1">
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row gap-3 items-center flex-1">
             <div
-              className="box-border w-[40px] h-[40px] rounded-xl items-center justify-center"
+              className="w-[40px] h-[40px] rounded-xl items-center justify-center"
               style={{ backgroundColor: `${tier.color}20` }}
             >
               <Typography uiSize="lg">{tier.icon}</Typography>
             </div>
-            <div className="box-border flex flex-col items-stretch flex-1 gap-1">
-              <div className="box-border flex flex-row items-center gap-2">
+            <div className="flex flex-col items-stretch flex-1 gap-1">
+              <div className="flex flex-row items-center gap-2">
                 <Typography
                   className={'font-bold'}
                   variant="heading"
@@ -44,7 +44,7 @@ function TierCard({
                   {tier.label}
                 </Typography>
                 <div
-                  className="box-border px-2 rounded-[9999px] border"
+                  className="px-2 rounded-[9999px] border"
                   style={{
                     backgroundColor: `${tier.color}15`,
                     borderColor: `${tier.color}30`,
@@ -60,7 +60,7 @@ function TierCard({
               </Typography>
             </div>
           </div>
-          <div className="box-border w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
+          <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
             <Typography
               className={'font-bold'}
               variant="body"
@@ -74,12 +74,12 @@ function TierCard({
       </div>
 
       {isExpanded && (
-        <div className="box-border flex flex-col items-stretch gap-0">
-          <div className="box-border -mx-4 border-b border-b-[rgba(255,255,255,0.06)]" />
-          <div className="box-border flex flex-col items-stretch p-4 gap-2">
+        <div className="flex flex-col items-stretch gap-0">
+          <div className="-mx-4 border-b border-b-[rgba(255,255,255,0.06)]" />
+          <div className="flex flex-col items-stretch p-4 gap-2">
             {tier.features.map((f, idx) => (
               <div
-                className="box-border flex flex-row p-3 rounded-xl gap-3 items-start"
+                className="flex flex-row p-3 rounded-xl gap-3 items-start"
                 style={{
                   background:
                     idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
@@ -87,11 +87,11 @@ function TierCard({
                 key={f.title}
               >
                 <div
-                  className="box-border -mt-1 w-[6px] h-[6px] rounded-[9999px] opacity-[0.6] shrink-0"
+                  className="-mt-1 w-[6px] h-[6px] rounded-[9999px] opacity-[0.6] shrink-0"
                   style={{ backgroundColor: tier.color }}
                 />
-                <div className="box-border flex flex-col items-stretch flex-1 gap-1">
-                  <div className="box-border flex flex-row justify-between items-center">
+                <div className="flex flex-col items-stretch flex-1 gap-1">
+                  <div className="flex flex-row justify-between items-center">
                     <Typography
                       className={'font-bold'}
                       variant="label"
@@ -99,7 +99,7 @@ function TierCard({
                     >
                       {f.title}
                     </Typography>
-                    <div className="box-border px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
+                    <div className="px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
                       <Typography variant="caption" uiSize="xs" alpha="medium">
                         {f.effort}
                       </Typography>
@@ -127,8 +127,8 @@ function PhaseTimeline({
 }) {
   const maxDays = 61;
   return (
-    <div className="box-border flex flex-col items-stretch gap-0 relative">
-      <div className="box-border absolute left-[15px] top-[20px] bottom-[20px] w-[2px] bg-[rgba(255,255,255,0.06)] rounded" />
+    <div className="flex flex-col items-stretch gap-0 relative">
+      <div className="absolute left-[15px] top-[20px] bottom-[20px] w-[2px] bg-[rgba(255,255,255,0.06)] rounded" />
       {PHASES.map((p) => {
         const totalDays = parseInt(p.days.split('–')[1] || p.days);
         const progress = Math.min((totalDays / maxDays) * 100, 100);
@@ -136,13 +136,13 @@ function PhaseTimeline({
 
         return (
           <div
-            className="box-border flex flex-col items-stretch pl-10 py-3 relative"
+            className="flex flex-col items-stretch pl-10 py-3 relative"
             key={p.phase}
             onMouseEnter={() => onHover(p.phase)}
             onMouseLeave={() => onHover(null)}
           >
             <div
-              className="box-border absolute left-[8px] top-[50%] w-[16px] h-[16px] rounded-[9999px] border-[3px]"
+              className="absolute left-[8px] top-[50%] w-[16px] h-[16px] rounded-[9999px] border-[3px]"
               style={{
                 backgroundColor: p.color,
                 borderColor: isHovered ? p.color : 'rgba(255,255,255,0.1)',
@@ -151,7 +151,7 @@ function PhaseTimeline({
               }}
             />
             <div
-              className="box-border flex flex-row justify-between items-center p-3 rounded-xl gap-3"
+              className="flex flex-row justify-between items-center p-3 rounded-xl gap-3"
               style={{
                 background: isHovered
                   ? `linear-gradient(135deg, ${p.color}12, ${p.color}06)`
@@ -162,10 +162,10 @@ function PhaseTimeline({
                   : 'rgba(255,255,255,0.04)',
               }}
             >
-              <div className="box-border flex flex-col items-stretch flex-1 gap-2">
-                <div className="box-border flex flex-row items-center gap-2">
+              <div className="flex flex-col items-stretch flex-1 gap-2">
+                <div className="flex flex-row items-center gap-2">
                   <div
-                    className="box-border px-2 py-1 rounded-[9999px] border"
+                    className="px-2 py-1 rounded-[9999px] border"
                     style={{
                       backgroundColor: `${p.color}20`,
                       borderColor: `${p.color}40`,
@@ -187,9 +187,9 @@ function PhaseTimeline({
                 <Typography variant="body" uiSize="sm" alpha="high">
                   {p.features}
                 </Typography>
-                <div className="box-border h-[4px] rounded-lg bg-[rgba(255,255,255,0.05)] overflow-hidden">
+                <div className="h-[4px] rounded-lg bg-[rgba(255,255,255,0.05)] overflow-hidden">
                   <div
-                    className="box-border h-[4px] rounded-lg opacity-[0.7]"
+                    className="h-[4px] rounded-lg opacity-[0.7]"
                     style={{ backgroundColor: p.color, width: `${progress}%` }}
                   />
                 </div>
@@ -213,15 +213,15 @@ export default function RoadmapPageContent() {
   return (
     <PageLayout>
       <Container size="lg">
-        <div className="box-border flex flex-col items-stretch gap-6">
+        <div className="flex flex-col items-stretch gap-6">
           <div
-            className="box-border flex flex-col items-stretch p-8 rounded-2xl border border-[rgba(99,102,241,0.2)] gap-4"
+            className="flex flex-col items-stretch p-8 rounded-2xl border border-[rgba(99,102,241,0.2)] gap-4"
             style={{
               background:
                 'linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(168,85,247,0.15) 50%, rgba(236,72,153,0.1) 100%)',
             }}
           >
-            <div className="box-border flex flex-col items-stretch gap-2">
+            <div className="flex flex-col items-stretch gap-2">
               <Typography
                 className={'font-extrabold'}
                 variant="heading"
@@ -239,20 +239,20 @@ export default function RoadmapPageContent() {
                 From niche casual tool to a universally recommended platform for
                 everyone — hardcore board gamers to party-game lovers.
               </Typography>
-              <div className="box-border px-3 py-1 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] self-start">
+              <div className="px-3 py-1 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] self-start">
                 <Typography variant="caption" uiSize="xs" alpha="medium">
                   English is the canonical version
                 </Typography>
               </div>
             </div>
-            <div className="box-border flex flex-row items-stretch flex-wrap gap-3">
+            <div className="flex flex-row items-stretch flex-wrap gap-3">
               {STATS.map((stat) => (
                 <div
-                  className="box-border flex flex-row px-4 py-3 rounded-xl gap-3 items-center bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] min-w-[140px] flex-1"
+                  className="flex flex-row px-4 py-3 rounded-xl gap-3 items-center bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] min-w-[140px] flex-1"
                   key={stat.label}
                 >
                   <Typography uiSize="xl">{stat.icon}</Typography>
-                  <div className="box-border flex flex-col items-stretch gap-0">
+                  <div className="flex flex-col items-stretch gap-0">
                     <Typography
                       className={'font-extrabold'}
                       variant="heading"
@@ -270,8 +270,8 @@ export default function RoadmapPageContent() {
           </div>
 
           <Section variant="legal">
-            <div className="box-border flex flex-col items-stretch gap-3">
-              <div className="box-border flex flex-row items-center gap-2">
+            <div className="flex flex-col items-stretch gap-3">
+              <div className="flex flex-row items-center gap-2">
                 <Typography
                   className={'font-extrabold'}
                   variant="heading"
@@ -279,7 +279,7 @@ export default function RoadmapPageContent() {
                 >
                   Current State
                 </Typography>
-                <div className="box-border px-2 py-1 rounded-[9999px] bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)]">
+                <div className="px-2 py-1 rounded-[9999px] bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)]">
                   <Typography
                     className={'text-[#22c55e]'}
                     variant="label"
@@ -289,7 +289,7 @@ export default function RoadmapPageContent() {
                   </Typography>
                 </div>
               </div>
-              <div className="box-border flex flex-row items-stretch flex-wrap gap-2">
+              <div className="flex flex-row items-stretch flex-wrap gap-2">
                 {[
                   { icon: '🎮', text: '6 games live' },
                   { icon: '⚙️', text: 'Engine for 200+ games' },
@@ -299,7 +299,7 @@ export default function RoadmapPageContent() {
                   { icon: '👥', text: 'Friends + auth' },
                 ].map((item) => (
                   <div
-                    className="box-border flex flex-row px-3 py-2 rounded-xl gap-2 items-center bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]"
+                    className="flex flex-row px-3 py-2 rounded-xl gap-2 items-center bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)]"
                     key={item.text}
                   >
                     <Typography uiSize="sm">{item.icon}</Typography>
@@ -313,7 +313,7 @@ export default function RoadmapPageContent() {
           </Section>
 
           <Section variant="legal">
-            <div className="box-border flex flex-col items-stretch gap-4">
+            <div className="flex flex-col items-stretch gap-4">
               <Typography
                 className={'font-extrabold'}
                 variant="heading"
@@ -329,7 +329,7 @@ export default function RoadmapPageContent() {
           </Section>
 
           <Section variant="legal">
-            <div className="box-border flex flex-col items-stretch gap-4">
+            <div className="flex flex-col items-stretch gap-4">
               <Typography
                 className={'font-extrabold'}
                 variant="heading"
@@ -350,14 +350,14 @@ export default function RoadmapPageContent() {
 
           <Section variant="legal">
             <div
-              className="box-border flex flex-row p-4 rounded-2xl gap-3 items-start border border-[rgba(34,197,94,0.15)]"
+              className="flex flex-row p-4 rounded-2xl gap-3 items-start border border-[rgba(34,197,94,0.15)]"
               style={{
                 background:
                   'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02))',
               }}
             >
               <Typography uiSize="lg">⚖️</Typography>
-              <div className="box-border flex flex-col items-stretch flex-1 gap-1">
+              <div className="flex flex-col items-stretch flex-1 gap-1">
                 <Typography
                   className={'font-bold'}
                   variant="heading"

@@ -212,7 +212,7 @@ export function Leaderboard({
                   equippedBannerId={entry.equippedBannerId}
                 />
                 <PlayerName>
-                  <span className="box-border">{entry.username}</span>
+                  <span className="">{entry.username}</span>
                   {entry.playerId === currentUserId && (
                     <Badge variant="info" size="sm">
                       {t('stats.you')}
@@ -244,7 +244,7 @@ export function Leaderboard({
           {loadingMore && (
             <LoadingMoreRow>
               <Spinner size="sm" />
-              <span className="box-border text-[rgba(236,239,238,0.7)] text-[16px]">
+              <span className="text-[rgba(236,239,238,0.7)] text-[16px]">
                 {t('stats.loadingMore')}
               </span>
             </LoadingMoreRow>
@@ -295,7 +295,7 @@ function Table({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-col items-stretch w-full rounded-xl overflow-hidden ${className ?? ''}`}
+      className={`flex flex-col items-stretch w-full rounded-xl overflow-hidden ${className ?? ''}`}
       {...props}
     />
   );
@@ -307,7 +307,7 @@ function PlayerInfo({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center gap-3 ${className ?? ''}`}
+      className={`flex flex-row items-center gap-3 ${className ?? ''}`}
       {...props}
     />
   );
@@ -319,7 +319,7 @@ function PlayerName({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center gap-2 ${className ?? ''}`}
+      className={`flex flex-row items-center gap-2 ${className ?? ''}`}
       {...props}
     />
   );
@@ -335,7 +335,7 @@ function StatCell({
 } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border font-medium text-[var(--color)] ${className ?? ''}`}
+      className={`font-medium text-[var(--color)] ${className ?? ''}`}
       style={color ? { color: `var(--${color.replace('$', '')})` } : undefined}
       {...props}
     />
@@ -348,7 +348,7 @@ function RankBadge({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex items-center justify-center w-[36px] h-[36px] rounded-full border border-[var(--borderColor)] bg-[var(--background)] ${className ?? ''}`}
+      className={`flex items-center justify-center w-[36px] h-[36px] rounded-full border border-[var(--borderColor)] bg-[var(--background)] ${className ?? ''}`}
       {...props}
     />
   );
@@ -360,7 +360,7 @@ function TrophyIcon({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[24px] leading-[30px] ${className ?? ''}`}
+      className={`text-[24px] leading-[30px] ${className ?? ''}`}
       {...props}
     />
   );
@@ -372,7 +372,7 @@ function LoadingMoreRow({
 }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`box-border flex flex-row items-center gap-3 p-4 ${className ?? ''}`}
+      className={`flex flex-row items-center gap-3 p-4 ${className ?? ''}`}
       {...props}
     />
   );
@@ -384,7 +384,7 @@ function EndOfList({
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
-      className={`box-border text-[14px] leading-[18px] p-4 opacity-[0.7] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      className={`text-[14px] leading-[18px] p-4 opacity-[0.7] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
       {...props}
     />
   );

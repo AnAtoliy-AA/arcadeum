@@ -88,15 +88,13 @@ export const CatDashLobby = memo(function CatDashLobby({
   };
 
   const optionsSlot = (
-    <div className="box-border flex flex-col items-stretch gap-3 p-2">
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border font-bold text-[13px] text-[#94a3b8]">
-          Theme
-        </span>
-        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+    <div className="flex flex-col items-stretch gap-3 p-2">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="font-bold text-[13px] text-[#94a3b8]">Theme</span>
+        <div className="flex flex-row items-stretch gap-2 flex-wrap">
           {CAT_DASH_VARIANTS.map((v) => (
             <div
-              className="box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"
+              className="flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"
               style={{
                 borderColor: options.theme === v.id ? '#7c3aed' : 'transparent',
                 backgroundColor:
@@ -108,25 +106,23 @@ export const CatDashLobby = memo(function CatDashLobby({
               onClick={() => handleThemeChange(v.id)}
               key={v.id}
             >
-              <div className="box-border flex flex-row gap-1 items-center">
-                <span className="box-border text-[16px]">{v.emoji}</span>
-                <span className="box-border text-[12px] text-[#e2e8f0]">
-                  {v.id}
-                </span>
+              <div className="flex flex-row gap-1 items-center">
+                <span className="text-[16px]">{v.emoji}</span>
+                <span className="text-[12px] text-[#e2e8f0]">{v.id}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border font-bold text-[13px] text-[#94a3b8]">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="font-bold text-[13px] text-[#94a3b8]">
           Board Width (Columns)
         </span>
-        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+        <div className="flex flex-row items-stretch gap-2 flex-wrap">
           {[8, 10, 12].map((cols) => (
             <div
-              className="box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"
+              className="flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"
               style={{
                 borderColor: columnsVal === cols ? '#7c3aed' : 'transparent',
                 backgroundColor:
@@ -138,7 +134,7 @@ export const CatDashLobby = memo(function CatDashLobby({
               onClick={() => handleColumnsChange(cols)}
               key={cols}
             >
-              <span className="box-border text-[12px] text-[#e2e8f0] font-bold">
+              <span className="text-[12px] text-[#e2e8f0] font-bold">
                 {cols} Columns
               </span>
             </div>
@@ -146,14 +142,14 @@ export const CatDashLobby = memo(function CatDashLobby({
         </div>
       </div>
 
-      <div className="box-border flex flex-col items-stretch gap-2">
-        <span className="box-border font-bold text-[13px] text-[#94a3b8]">
+      <div className="flex flex-col items-stretch gap-2">
+        <span className="font-bold text-[13px] text-[#94a3b8]">
           Track Length (Spaces)
         </span>
-        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
+        <div className="flex flex-row items-stretch gap-2 flex-wrap">
           {[40, 60, 80, 100].map((len) => (
             <div
-              className="box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"
+              className="flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"
               style={{
                 borderColor: trackLengthVal === len ? '#7c3aed' : 'transparent',
                 backgroundColor:
@@ -165,7 +161,7 @@ export const CatDashLobby = memo(function CatDashLobby({
               onClick={() => handleTrackLengthChange(len)}
               key={len}
             >
-              <span className="box-border text-[12px] text-[#e2e8f0] font-bold">
+              <span className="text-[12px] text-[#e2e8f0] font-bold">
                 {len} Spaces
               </span>
             </div>

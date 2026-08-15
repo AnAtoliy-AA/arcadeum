@@ -16,7 +16,7 @@ export type ConnectionOverlayProps = {
 };
 
 const BackdropClasses = [
-  'box-border',
+  '',
   'absolute',
   'inset-0',
   'z-[1000]',
@@ -30,7 +30,7 @@ const BackdropClasses = [
 ].join(' ');
 
 const IconWrapperClasses = [
-  'box-border',
+  '',
   'flex',
   'h-[60px]',
   'w-[60px]',

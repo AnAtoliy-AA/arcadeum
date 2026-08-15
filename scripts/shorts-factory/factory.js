@@ -1363,8 +1363,8 @@ async function publishToSocials(videoPath, caption) {
             .trim()
             .slice(0, 90),
           privacy_level: 'PUBLIC_TO_EVERYONE',
-          duet: false,
-          stitch: false,
+          duet: true,
+          stitch: true,
           comment: true,
           autoAddMusic: 'no',
           brand_content_toggle: false,

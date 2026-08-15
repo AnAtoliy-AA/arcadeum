@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useMemo, useRef, useEffect, memo } from 'react';
-import { Text, YStack, useMedia } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type {
   ShipCell,
@@ -23,6 +22,7 @@ import {
 import { ShipPaletteSection } from './ShipPlacement/ShipPaletteSection';
 import { PlacementActionsSection } from './ShipPlacement/PlacementActionsSection';
 import { PlacementBoardGrid } from './ShipPlacement/PlacementBoardGrid';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface ShipPlacementBoardProps {
   currentPlayer: SeaBattlePlayerState | null;
@@ -66,7 +66,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   const [isInvalidHover, setIsInvalidHover] = useState(false);
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
-  const media = useMedia();
+  const media = useMediaQuery();
   const isMobile = !media.gtMd;
 
   const serverShips = useMemo(
@@ -409,11 +409,9 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
 
   if (isMobile) {
     return (
-      <YStack
-        width="100%"
-        gap="$2"
+      <div
+        className="box-border flex flex-col items-stretch w-full gap-2 px-1"
         onDragEnd={handleDragEnd}
-        paddingHorizontal="$1"
       >
         <ShipPaletteSection
           theme={theme}
@@ -441,25 +439,24 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
           t={t}
         />
         <BoardContainer alignSelf="center">{boardEl}</BoardContainer>
-      </YStack>
+      </div>
     );
   }
 
   return (
-    <YStack width="100%" gap="$4">
+    <div className="box-border flex flex-col items-stretch w-full gap-4">
       <GameBoardWrapper onDragEnd={handleDragEnd}>
         <BoardContainer>
           <PlacementHeader className="placement-header">
-            <Text
+            <span
+              className={
+                '"box-border text-[20px] font-bold -m-0 placement-title"'
+              }
+              style={{ color: theme.textColor }}
               data-testid="placement-instruction"
-              color={theme.textColor}
-              fontSize="$5"
-              fontWeight="700"
-              margin={0}
-              className="placement-title"
             >
               {t('games.sea_battle_v1.table.players.placeShips')}
-            </Text>
+            </span>
           </PlacementHeader>
           {boardEl}
         </BoardContainer>
@@ -489,7 +486,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
         isMovingShip={!!movingShipId}
         t={t}
       />
-    </YStack>
+    </div>
   );
 });
 ShipPlacementBoard.displayName = 'ShipPlacementBoard';

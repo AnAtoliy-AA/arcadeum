@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalCard } from '../../types';
 import { LastPlayedCardDisplay } from '../LastPlayedCardDisplay';
@@ -26,11 +25,9 @@ export function DiscardPile({
   const description = lastCard ? t(getCardDescriptionKey(lastCard)) : '';
 
   return (
-    <YStack
+    <div
+      className="box-border flex flex-col items-center gap-1 shrink-0"
       data-testid="arena-discard-pile"
-      alignItems="center"
-      gap="$1"
-      flexShrink={0}
     >
       {/* `LastPlayedCardDisplay` renders `LastPlayedCard`, which is
           `position: absolute` with width/height 100%. Without a sized,
@@ -97,15 +94,12 @@ export function DiscardPile({
           </div>
         )}
       </CardSlot>
-      <Text
+      <span
+        className="box-border text-[12px] font-extrabold tracking-[0.4px] opacity-[0.85]"
         data-testid="arena-discard-pile-count"
-        fontSize={12}
-        fontWeight="800"
-        letterSpacing={0.4}
-        opacity={0.85}
       >
         {t('games.table.state.discard')} · {count}
-      </Text>
-    </YStack>
+      </span>
+    </div>
   );
 }

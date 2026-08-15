@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../../shared/config/tamagui.config';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({
@@ -44,11 +42,7 @@ function renderTile(
     resolveDisplayName: (_id, fb) => fb,
     ...override,
   };
-  return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <OpponentTile {...props} />
-    </TamaguiProvider>,
-  );
+  return render(<OpponentTile {...props} />);
 }
 
 describe('OpponentTile', () => {

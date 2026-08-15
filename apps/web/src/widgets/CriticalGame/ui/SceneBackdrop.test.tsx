@@ -1,16 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../shared/config/tamagui.config';
 import { SceneBackdrop } from './SceneBackdrop';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { getVariantStyles } from './styles/variants';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 const palette = getVariantStyles('cyberpunk').scene;
 
 function renderWithPalette() {
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+    <TamaguiProvider config={config} defaultTheme="dark">
       <ScenePaletteProvider palette={palette}>
         <SceneBackdrop />
       </ScenePaletteProvider>

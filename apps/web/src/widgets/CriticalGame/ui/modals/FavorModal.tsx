@@ -1,5 +1,4 @@
 import React from 'react';
-import { YStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -62,9 +61,9 @@ const FavorModal: React.FC<FavorModalProps> = ({
           <SectionLabel $variant={cardVariant as GameVariant}>
             {t('games.table.modals.favor.selectPlayer')}
           </SectionLabel>
-          <Text fontSize="$3" opacity={0.8} marginBottom="$4">
+          <span className="box-border text-[16px] opacity-[0.8] -mb-4">
             {t('games.table.modals.favor.description')}
-          </Text>
+          </span>
           <OptionGrid>
             {aliveOpponents.map((opponent) => (
               <OptionButton
@@ -74,21 +73,21 @@ const FavorModal: React.FC<FavorModalProps> = ({
                 onClick={() => onSelectTarget(opponent.playerId)}
                 disabled={opponent.hand.length === 0}
               >
-                <Text fontSize="$6">🎮</Text>
-                <YStack>
-                  <Text>
+                <span className="box-border text-[24px]">🎮</span>
+                <div className="box-border flex flex-col items-stretch">
+                  <span className="box-border">
                     {resolveDisplayName(
                       opponent.playerId,
                       `Player ${opponent.playerId.slice(0, 8)}`,
                     )}
-                  </Text>
-                  <Text fontSize="$2" opacity={0.7}>
+                  </span>
+                  <span className="box-border text-[14px] opacity-[0.7]">
                     {t('games.table.modals.favor.cardsCount').replace(
                       '{count}',
                       opponent.hand.length.toString(),
                     )}
-                  </Text>
-                </YStack>
+                  </span>
+                </div>
               </OptionButton>
             ))}
           </OptionGrid>

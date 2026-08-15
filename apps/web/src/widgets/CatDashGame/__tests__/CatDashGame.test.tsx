@@ -1,16 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../shared/config/tamagui.config';
 import { CatDashBoard } from '../ui/Board';
 import { CatDashTurnBadge } from '../ui/TurnBadge';
 import { CatDashRulesModal } from '../ui/RulesModal';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
 import type { CatDashClientState } from '../types';
 
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
+
 function renderWithTheme(ui: React.ReactNode) {
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+    <TamaguiProvider config={config} defaultTheme="dark">
       <CatDashThemeProvider variant="village">{ui}</CatDashThemeProvider>
     </TamaguiProvider>,
   );

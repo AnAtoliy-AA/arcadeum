@@ -1,7 +1,8 @@
-import { styled, XStack, Text, useMedia } from 'tamagui';
+import { styled, XStack, Text } from 'tamagui';
 import { Button, ButtonProps, GameVariant } from '@arcadeum/ui';
 import { Card } from './cards-base';
 import { getVariantStyles } from './variants';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 export * from './cards-base';
 
@@ -15,7 +16,7 @@ export const ActionButton = ({
   $variant,
   ...props
 }: ActionButtonProps) => {
-  const media = useMedia();
+  const media = useMediaQuery();
   return (
     <Button
       variant={(variant || 'primary') as ButtonProps['variant']}

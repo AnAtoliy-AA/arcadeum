@@ -1,7 +1,7 @@
 import React from 'react';
-import { useMedia } from 'tamagui';
 import type { GameVariant } from '@arcadeum/ui';
 import { ActionBar, ActionButton } from './styles';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface MobileActionBarProps {
   isMyTurn: boolean;
@@ -26,7 +26,7 @@ export function MobileActionBar({
   onDraw,
   onPlayNope,
 }: MobileActionBarProps) {
-  const media = useMedia();
+  const media = useMediaQuery();
   if (!media.sm) return null;
   if (isGameOver) return null;
   if (!isMyTurn && !canPlayNope) return null;

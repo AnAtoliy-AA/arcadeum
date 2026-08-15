@@ -1,10 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../shared/config/tamagui.config';
 import { MobileActionSheet } from './MobileActionSheet';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { getVariantStyles } from './styles/variants';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 const palette = getVariantStyles(undefined).scene;
 
@@ -18,7 +19,7 @@ function setup(overrides: Record<string, unknown> = {}) {
   const onConfirm = vi.fn();
   const onCancel = vi.fn();
   render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+    <TamaguiProvider config={config} defaultTheme="dark">
       <ScenePaletteProvider palette={palette}>
         <MobileActionSheet
           isOpen
@@ -59,8 +60,6 @@ describe('MobileActionSheet', () => {
 
   it('does not render when isOpen is false', () => {
     setup({ isOpen: false });
-    expect(
-      screen.queryByTestId('mobile-action-sheet'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mobile-action-sheet')).not.toBeInTheDocument();
   });
 });

@@ -6,10 +6,11 @@ import {
   fireEvent,
   within,
 } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '@/shared/config/tamagui.config';
 import CreationConfig from './CreationConfig';
 import { gamesApi } from '@/features/games/api';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 vi.mock('@/features/games/api', () => ({
   gamesApi: { getCatalog: vi.fn() },
@@ -24,7 +25,7 @@ beforeEach(() => {
 
 function renderConfig() {
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+    <TamaguiProvider config={config} defaultTheme="dark">
       <CreationConfig
         options={{ variant: 'classic' } as never}
         onChange={vi.fn()}
@@ -91,7 +92,7 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
     });
 
     render(
-      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+      <TamaguiProvider config={config} defaultTheme="dark">
         <CreationConfig
           options={{ variant: 'classic' } as never}
           onChange={onChangeSpy}

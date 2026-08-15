@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { YStack, XStack, Text } from 'tamagui';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
@@ -89,97 +88,97 @@ export const CatDashLobby = memo(function CatDashLobby({
   };
 
   const optionsSlot = (
-    <YStack gap="$3" padding="$2">
-      <YStack gap="$2">
-        <Text fontWeight="bold" fontSize={13} color="#94a3b8">
+    <div className="box-border flex flex-col items-stretch gap-3 p-2">
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border font-bold text-[13px] text-[#94a3b8]">
           Theme
-        </Text>
-        <XStack gap="$2" flexWrap="wrap">
+        </span>
+        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
           {CAT_DASH_VARIANTS.map((v) => (
-            <YStack
+            <div
+              className={
+                '"box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"'
+              }
+              style={{
+                borderColor: options.theme === v.id ? '#7c3aed' : 'transparent',
+                backgroundColor:
+                  options.theme === v.id
+                    ? 'rgba(124, 58, 237, 0.15)'
+                    : 'rgba(255,255,255,0.05)',
+                cursor: isHost ? 'pointer' : 'default',
+              }}
+              onClick={() => handleThemeChange(v.id)}
               key={v.id}
-              padding="$2"
-              paddingHorizontal="$3"
-              borderRadius="$3"
-              borderWidth={2}
-              borderColor={options.theme === v.id ? '#7c3aed' : 'transparent'}
-              backgroundColor={
-                options.theme === v.id
-                  ? 'rgba(124, 58, 237, 0.15)'
-                  : 'rgba(255,255,255,0.05)'
-              }
-              cursor={isHost ? 'pointer' : 'default'}
-              onPress={() => handleThemeChange(v.id)}
             >
-              <XStack gap="$1" alignItems="center">
-                <Text fontSize={16}>{v.emoji}</Text>
-                <Text fontSize={12} color="#e2e8f0">
+              <div className="box-border flex flex-row gap-1 items-center">
+                <span className="box-border text-[16px]">{v.emoji}</span>
+                <span className="box-border text-[12px] text-[#e2e8f0]">
                   {v.id}
-                </Text>
-              </XStack>
-            </YStack>
+                </span>
+              </div>
+            </div>
           ))}
-        </XStack>
-      </YStack>
+        </div>
+      </div>
 
-      <YStack gap="$2">
-        <Text fontWeight="bold" fontSize={13} color="#94a3b8">
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border font-bold text-[13px] text-[#94a3b8]">
           Board Width (Columns)
-        </Text>
-        <XStack gap="$2" flexWrap="wrap">
+        </span>
+        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
           {[8, 10, 12].map((cols) => (
-            <YStack
+            <div
+              className={
+                '"box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"'
+              }
+              style={{
+                borderColor: columnsVal === cols ? '#7c3aed' : 'transparent',
+                backgroundColor:
+                  columnsVal === cols
+                    ? 'rgba(124, 58, 237, 0.15)'
+                    : 'rgba(255,255,255,0.05)',
+                cursor: isHost ? 'pointer' : 'default',
+              }}
+              onClick={() => handleColumnsChange(cols)}
               key={cols}
-              padding="$2"
-              paddingHorizontal="$3"
-              borderRadius="$3"
-              borderWidth={2}
-              borderColor={columnsVal === cols ? '#7c3aed' : 'transparent'}
-              backgroundColor={
-                columnsVal === cols
-                  ? 'rgba(124, 58, 237, 0.15)'
-                  : 'rgba(255,255,255,0.05)'
-              }
-              cursor={isHost ? 'pointer' : 'default'}
-              onPress={() => handleColumnsChange(cols)}
             >
-              <Text fontSize={12} color="#e2e8f0" fontWeight="bold">
+              <span className="box-border text-[12px] text-[#e2e8f0] font-bold">
                 {cols} Columns
-              </Text>
-            </YStack>
+              </span>
+            </div>
           ))}
-        </XStack>
-      </YStack>
+        </div>
+      </div>
 
-      <YStack gap="$2">
-        <Text fontWeight="bold" fontSize={13} color="#94a3b8">
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border font-bold text-[13px] text-[#94a3b8]">
           Track Length (Spaces)
-        </Text>
-        <XStack gap="$2" flexWrap="wrap">
+        </span>
+        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
           {[40, 60, 80, 100].map((len) => (
-            <YStack
-              key={len}
-              padding="$2"
-              paddingHorizontal="$3"
-              borderRadius="$3"
-              borderWidth={2}
-              borderColor={trackLengthVal === len ? '#7c3aed' : 'transparent'}
-              backgroundColor={
-                trackLengthVal === len
-                  ? 'rgba(124, 58, 237, 0.15)'
-                  : 'rgba(255,255,255,0.05)'
+            <div
+              className={
+                '"box-border flex flex-col items-stretch p-2 px-3 rounded-xl border-[2px]"'
               }
-              cursor={isHost ? 'pointer' : 'default'}
-              onPress={() => handleTrackLengthChange(len)}
+              style={{
+                borderColor: trackLengthVal === len ? '#7c3aed' : 'transparent',
+                backgroundColor:
+                  trackLengthVal === len
+                    ? 'rgba(124, 58, 237, 0.15)'
+                    : 'rgba(255,255,255,0.05)',
+                cursor: isHost ? 'pointer' : 'default',
+              }}
+              onClick={() => handleTrackLengthChange(len)}
+              key={len}
             >
-              <Text fontSize={12} color="#e2e8f0" fontWeight="bold">
+              <span className="box-border text-[12px] text-[#e2e8f0] font-bold">
                 {len} Spaces
-              </Text>
-            </YStack>
+              </span>
+            </div>
           ))}
-        </XStack>
-      </YStack>
-    </YStack>
+        </div>
+      </div>
+    </div>
   );
 
   return (

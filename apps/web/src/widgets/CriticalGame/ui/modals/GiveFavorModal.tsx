@@ -1,6 +1,5 @@
 import type { GameVariant } from '@arcadeum/ui';
 import React, { useState } from 'react';
-import { YStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -91,7 +90,7 @@ const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
                 padding={0}
                 height="auto"
               >
-                <YStack alignItems="center" width={100} gap="$2" padding="$2">
+                <div className="box-border flex flex-col items-center w-[100px] gap-2 p-2">
                   <Card
                     $cardType={card}
                     $variant={cardVariant as GameVariant}
@@ -106,18 +105,13 @@ const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
                     <CardImage variant={cardVariant ?? ''} cardType={card} />
                     <GradientScrim />
                   </Card>
-                  <Text
-                    fontSize="$2"
-                    textAlign="center"
-                    width="100%"
-                    numberOfLines={1}
-                  >
+                  <span className="box-border text-[14px] text-center w-full line-clamp-1">
                     {getCardName(card, cardVariant || 'adventure')}
-                  </Text>
-                  <Text fontSize="$1" opacity={0.7} numberOfLines={2}>
+                  </span>
+                  <span className="box-border text-[12px] opacity-[0.7] line-clamp-2">
                     {t(getCardDescriptionKey(card))}
-                  </Text>
-                </YStack>
+                  </span>
+                </div>
               </SelectableCard>
             ))}
           </ScrollableCardsGrid>

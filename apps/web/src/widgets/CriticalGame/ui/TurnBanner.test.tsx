@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../shared/config/tamagui.config';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { getVariantStyles } from './styles/variants';
 
@@ -43,16 +41,14 @@ function renderBanner(props: RenderBannerProps = {}) {
     pendingDraws,
   } = props;
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <ScenePaletteProvider palette={palette}>
-        <TurnBanner
-          isMyTurn={isMyTurn}
-          currentPlayerName={currentPlayerName}
-          secondsRemaining={secondsRemaining}
-          pendingDraws={pendingDraws}
-        />
-      </ScenePaletteProvider>
-    </TamaguiProvider>,
+    <ScenePaletteProvider palette={palette}>
+      <TurnBanner
+        isMyTurn={isMyTurn}
+        currentPlayerName={currentPlayerName}
+        secondsRemaining={secondsRemaining}
+        pendingDraws={pendingDraws}
+      />
+    </ScenePaletteProvider>,
   );
 }
 

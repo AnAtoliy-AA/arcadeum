@@ -1,18 +1,12 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { ComboHints } from '../ComboHints';
 import type { CriticalCard } from '../../types';
 
 export type ComboKind =
-  | 'none'
-  | 'single'
-  | 'pair'
-  | 'triple'
-  | 'five'
-  | 'invalid';
+  'none' | 'single' | 'pair' | 'triple' | 'five' | 'invalid';
 
 interface ComboCardProps {
   hand: CriticalCard[];
@@ -59,30 +53,22 @@ export function ComboCard({
   const label = combo?.label ?? t('games.table.hud.combo.placeholder');
 
   return (
-    <YStack
+    <div
+      className="box-border flex flex-col items-center gap-2 px-3 py-2 rounded-[14px] border bg-[rgba(0,0,0,0.45)]"
+      style={{
+        filter: KIND_FILTER[kind],
+        borderColor: KIND_BORDER[kind],
+        opacity: kind === 'invalid' ? 0.65 : 1,
+      }}
       data-testid="combo-card"
       data-kind={kind}
-      alignItems="center"
-      gap="$2"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      borderRadius={14}
-      borderWidth={1}
-      borderColor={KIND_BORDER[kind]}
-      backgroundColor="rgba(0,0,0,0.45)"
-      opacity={kind === 'invalid' ? 0.65 : 1}
-      style={{ filter: KIND_FILTER[kind] }}
     >
-      <Text
+      <span
+        className="box-border text-[11px] font-extrabold tracking-[0.6px] uppercase text-[#e2e8f0]"
         data-testid="combo-card-label"
-        fontSize={11}
-        fontWeight="800"
-        letterSpacing={0.6}
-        textTransform="uppercase"
-        color="#e2e8f0"
       >
         {label}
-      </Text>
+      </span>
       {/* Hide the chip strip at idle — three "possible" chips read as
           decorative clutter without a selection. Once the player picks
           anything (kind !== 'none') the strip surfaces the active /
@@ -94,6 +80,6 @@ export function ComboCard({
           activeKind={kind}
         />
       )}
-    </YStack>
+    </div>
   );
 }

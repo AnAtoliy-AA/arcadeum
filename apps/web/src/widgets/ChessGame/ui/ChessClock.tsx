@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useEffect, useState } from 'react';
-import { XStack, Text } from 'tamagui';
 import type { PieceColor, PlayerClock } from '../types';
 
 interface ChessClockProps {
@@ -67,38 +66,37 @@ function ClockFace({
   const isFlagged = seconds <= 0 && !!clock;
 
   return (
-    <XStack
-      gap="$2"
-      alignItems="center"
-      padding="$2"
-      paddingHorizontal="$3"
-      borderRadius={8}
-      backgroundColor={
-        isActive ? 'rgba(37, 99, 235, 0.15)' : 'rgba(255, 255, 255, 0.05)'
+    <div
+      className={
+        '"box-border flex flex-row gap-2 items-center p-2 px-3 rounded-[8px]"'
       }
-      borderWidth={isActive ? 2 : 1}
-      borderColor={isActive ? '#3b82f6' : 'rgba(255,255,255,0.1)'}
-      opacity={isGameOver && !isActive ? 0.5 : 1}
+      style={{
+        backgroundColor: isActive
+          ? 'rgba(37, 99, 235, 0.15)'
+          : 'rgba(255, 255, 255, 0.05)',
+        borderWidth: isActive ? 2 : 1,
+        borderColor: isActive ? '#3b82f6' : 'rgba(255,255,255,0.1)',
+        opacity: isGameOver && !isActive ? 0.5 : 1,
+      }}
     >
-      <Text fontSize="$2" opacity={0.7} fontWeight="600">
+      <span className="box-border text-[14px] opacity-[0.7] font-semibold">
         {label}
-      </Text>
-      <Text
-        fontSize="$4"
-        fontWeight="700"
-        color={
-          isFlagged
+      </span>
+      <span
+        className={'"box-border text-[18px] font-bold"'}
+        style={{
+          color: isFlagged
             ? '#ef4444'
             : isCritical
               ? '#f97316'
               : isLow
                 ? '#eab308'
-                : undefined
-        }
+                : undefined,
+        }}
       >
         {clock ? formatTime(seconds) : '--:--'}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 }
 
@@ -110,7 +108,7 @@ function ChessClockImpl({
   if (!clocks) return null;
 
   return (
-    <XStack justifyContent="space-between" alignItems="center" gap="$2">
+    <div className="box-border flex flex-row justify-space-between items-center gap-2">
       <ClockFace
         label="♔"
         clock={clocks.white}
@@ -123,7 +121,7 @@ function ChessClockImpl({
         isActive={currentTurnColor === 'black' && !isGameOver}
         isGameOver={isGameOver}
       />
-    </XStack>
+    </div>
   );
 }
 

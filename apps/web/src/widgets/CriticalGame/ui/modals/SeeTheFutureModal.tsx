@@ -1,5 +1,4 @@
 import React from 'react';
-import { YStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -59,10 +58,10 @@ const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
               gameVariant={cardVariant as GameVariant}
               style={{ padding: 0, height: 'auto' }}
             >
-              <YStack alignItems="center" width={100} gap="$2" padding="$2">
-                <Text fontSize="$2" opacity={0.7}>
+              <div className="box-border flex flex-col items-center w-[100px] gap-2 p-2">
+                <span className="box-border text-[14px] opacity-[0.7]">
                   #{index + 1}
-                </Text>
+                </span>
                 <Card
                   $cardType={card}
                   $variant={cardVariant as GameVariant}
@@ -77,10 +76,10 @@ const SeeTheFutureModal: React.FC<SeeTheFutureModalProps> = ({
                   <CardImage variant={cardVariant ?? ''} cardType={card} />
                   <GradientScrim />
                 </Card>
-                <Text fontSize="$2" textAlign="center" numberOfLines={1}>
+                <span className="box-border text-[14px] text-center line-clamp-1">
                   {t(getCardTranslationKey(card, cardVariant)) || card}
-                </Text>
-              </YStack>
+                </span>
+              </div>
             </OptionButton>
           ))}
         </OptionGrid>

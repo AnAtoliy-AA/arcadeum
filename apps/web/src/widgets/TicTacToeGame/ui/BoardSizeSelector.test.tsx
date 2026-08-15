@@ -1,10 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BoardSizeSelector } from './BoardSizeSelector';
-import { TamaguiProvider, createTamagui } from 'tamagui';
-import { defaultConfig } from '@tamagui/config/v4';
-
-const tamaguiConfig = createTamagui(defaultConfig);
 
 const mockEmit = vi.fn();
 vi.mock('@/shared/lib/socket', () => ({
@@ -18,11 +14,7 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 }));
 
 function renderWithProvider(ui: React.ReactElement) {
-  return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
-      {ui}
-    </TamaguiProvider>,
-  );
+  return render(ui);
 }
 
 describe('BoardSizeSelector', () => {

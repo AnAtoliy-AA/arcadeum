@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { YStack, XStack, Text, Switch } from 'tamagui';
+import { Switch } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -125,7 +125,7 @@ export function TicTacToeLobby({
   };
 
   const optionsSlot = (
-    <YStack gap="$4">
+    <div className="box-border flex flex-col items-stretch gap-4">
       <VariantSelector
         roomId={room.id}
         hostId={userId}
@@ -143,7 +143,7 @@ export function TicTacToeLobby({
         onWinLengthChange={handleWinLengthChange}
       />
       <LobbyOptionSection title={t('games.tic_tac_toe_v1.lobby.teamMode')}>
-        <XStack alignItems="center" gap="$3">
+        <div className="box-border flex flex-row items-center gap-3">
           <Switch
             checked={internalTeamMode}
             onCheckedChange={handleTeamModeToggle}
@@ -152,17 +152,17 @@ export function TicTacToeLobby({
           >
             <Switch.Thumb />
           </Switch>
-        </XStack>
+        </div>
       </LobbyOptionSection>
       {internalTeamMode ? (
         <TicTacToeTeamPanel room={room} isHost={isHost} />
       ) : null}
-      <Text fontSize="$3" opacity={0.7}>
+      <span className="box-border text-[16px] opacity-[0.7]">
         {options.boardSize === 'infinity'
           ? t('games.tic_tac_toe_v1.lobby.winCondition')
           : t('games.tic_tac_toe_v1.rules.winLengths')}
-      </Text>
-    </YStack>
+      </span>
+    </div>
   );
 
   return (

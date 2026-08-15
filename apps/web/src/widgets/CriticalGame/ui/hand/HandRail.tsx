@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, Text, Button } from 'tamagui';
+import { Button } from 'tamagui';
 import {
   BookOpenIcon,
   CardsIcon,
@@ -78,14 +78,14 @@ interface RailSectionProps {
  */
 function RailSection({ children }: RailSectionProps) {
   return (
-    <YStack
-      gap="$1.5"
-      paddingTop="$2"
-      borderTopWidth={1}
-      borderTopColor={NEUTRAL_BORDER}
+    <div
+      className={
+        '"box-border flex flex-col items-stretch gap-null pt-2 border-t"'
+      }
+      style={{ borderTopColor: NEUTRAL_BORDER }}
     >
       {children}
-    </YStack>
+    </div>
   );
 }
 
@@ -115,96 +115,66 @@ export function HandRail({
     defuseCount === 0 ? DEFUSE_VARIANT.low : DEFUSE_VARIANT.ok;
 
   return (
-    <YStack
+    <div
+      className={
+        '"box-border flex flex-col items-stretch w-[144px] gap-2 px-2 rounded-[16px] border bg-[rgba(8,_12,_20,_0.7)] shrink-0"'
+      }
+      style={{ borderColor: NEUTRAL_BORDER }}
       data-testid="hand-rail"
-      // 144 (up from 128) so the Play button label can fit "Play 3× …"
-      // on two lines without mid-word ellipsis. The hand track still has
-      // ample room — 144px is ≤6% of the 1240px max-width grid.
-      //
-      // No `$sm` width override: tamagui's `$sm` fires at ≤800px, but
-      // `HandZone` already gates the rail on `useIsNarrow(480)` so the
-      // rail only renders on >480px viewports. The previous
-      // `$sm: { width: '100%' }` expanded the rail to fill the row at
-      // tablet portrait (481–800), pushing the hand track off-screen.
-      width={144}
-      gap="$2"
-      paddingHorizontal="$2"
-      paddingVertical="$2.5"
-      borderRadius={16}
-      borderWidth={1}
-      borderColor={NEUTRAL_BORDER}
-      backgroundColor="rgba(8, 12, 20, 0.7)"
-      flexShrink={0}
     >
       {/* Stats header */}
-      <XStack alignItems="stretch" gap="$2">
-        <YStack
+      <div className="box-border flex flex-row items-stretch gap-2">
+        <div
+          className={
+            '"box-border flex flex-col flex-1 items-center py-8 px-6 rounded-[10px] border"'
+          }
+          style={{ backgroundColor: NEUTRAL_BG, borderColor: NEUTRAL_BORDER }}
           data-testid="hand-rail-count"
-          flex={1}
-          alignItems="center"
-          paddingVertical={8}
-          paddingHorizontal={6}
-          borderRadius={10}
-          backgroundColor={NEUTRAL_BG}
-          borderWidth={1}
-          borderColor={NEUTRAL_BORDER}
         >
-          <XStack alignItems="center" gap={6}>
+          <div className="box-border flex flex-row items-center gap-6">
             <CardsIcon size={16} />
-            <Text fontSize={18} fontWeight="800" letterSpacing={0.5}>
+            <span className="box-border text-[18px] font-extrabold tracking-[0.5px]">
               {handCount}
-            </Text>
-          </XStack>
-          <Text
-            fontSize={9}
-            fontWeight="700"
-            letterSpacing={1}
-            textTransform="uppercase"
-            opacity={0.55}
-            marginTop={2}
-          >
+            </span>
+          </div>
+          <span className="box-border text-[40px] font-bold tracking-[1px] uppercase opacity-[0.55] -mt-2">
             {t('games.table.state.cards')}
-          </Text>
-        </YStack>
-        <YStack
+          </span>
+        </div>
+        <div
+          className={
+            '"box-border flex flex-col flex-1 items-center py-8 px-6 rounded-[10px] border"'
+          }
+          style={{
+            backgroundColor: defuseVariant.bg,
+            borderColor: defuseVariant.border,
+          }}
           data-testid="hand-rail-defuses"
-          flex={1}
-          alignItems="center"
-          paddingVertical={8}
-          paddingHorizontal={6}
-          borderRadius={10}
-          backgroundColor={defuseVariant.bg}
-          borderWidth={1}
-          borderColor={defuseVariant.border}
         >
-          <XStack alignItems="center" gap={6}>
-            <Text color={defuseVariant.color}>
+          <div className="box-border flex flex-row items-center gap-6">
+            <span
+              className={'"box-border"'}
+              style={{ color: defuseVariant.color }}
+            >
               <ShieldIcon size={16} />
-            </Text>
-            <Text
-              fontSize={18}
-              fontWeight="800"
-              letterSpacing={0.5}
-              color={defuseVariant.color}
+            </span>
+            <span
+              className={
+                '"box-border text-[18px] font-extrabold tracking-[0.5px]"'
+              }
+              style={{ color: defuseVariant.color }}
             >
               {defuseCount}
-            </Text>
-          </XStack>
-          <Text
-            fontSize={9}
-            fontWeight="700"
-            letterSpacing={1}
-            textTransform="uppercase"
-            opacity={0.55}
-            marginTop={2}
-          >
+            </span>
+          </div>
+          <span className="box-border text-[40px] font-bold tracking-[1px] uppercase opacity-[0.55] -mt-2">
             {t('games.table.state.defuses')}
-          </Text>
-        </YStack>
-      </XStack>
+          </span>
+        </div>
+      </div>
 
       {/* Primary actions */}
-      <YStack gap="$1.5">
+      <div className="box-border flex flex-col items-stretch gap-null">
         {/* Native tooltip carries the full combo label so the user can
             hover-confirm what 'Play 3× Targeted…' truncates to. The
             arena's ComboCard is the canonical surface for the verbose
@@ -227,17 +197,14 @@ export function HandRail({
             pressStyle={canPlay ? { scale: 0.98 } : undefined}
             onPress={canPlay ? onPlay : undefined}
           >
-            <Text
-              fontSize={12}
-              fontWeight="900"
-              letterSpacing={0.3}
-              textTransform="uppercase"
-              color={canPlay ? '#062317' : 'rgba(255,255,255,0.5)'}
-              numberOfLines={2}
-              textAlign="center"
+            <span
+              className={
+                '"box-border text-[12px] font-black tracking-[0.3px] uppercase line-clamp-2 text-center"'
+              }
+              style={{ color: canPlay ? '#062317' : 'rgba(255,255,255,0.5)' }}
             >
               {combo.label}
-            </Text>
+            </span>
           </Button>
         </div>
         <Button
@@ -256,14 +223,9 @@ export function HandRail({
           pressStyle={canDraw ? { scale: 0.98 } : undefined}
           onPress={canDraw ? onDraw : undefined}
         >
-          <Text
-            fontSize={11}
-            fontWeight="800"
-            letterSpacing={0.3}
-            textTransform="uppercase"
-          >
+          <span className="box-border text-[11px] font-extrabold tracking-[0.3px] uppercase">
             ↓ {t('games.table.actions.draw')}
-          </Text>
+          </span>
         </Button>
         {canNope && (
           <Button
@@ -276,27 +238,24 @@ export function HandRail({
             pressStyle={{ scale: 0.98 }}
             onPress={onNope}
           >
-            <XStack gap="$1.5" alignItems="center">
+            <div className="box-border flex flex-row gap-null items-center">
               <HandIcon size={14} />
-              <Text
-                fontSize={11}
-                fontWeight="900"
-                letterSpacing={0.3}
-                textTransform="uppercase"
-                color="#1c0f00"
-              >
+              <span className="box-border text-[11px] font-black tracking-[0.3px] uppercase text-[#1c0f00]">
                 {t('games.table.actions.playNope')}
-              </Text>
-            </XStack>
+              </span>
+            </div>
           </Button>
         )}
-      </YStack>
+      </div>
 
       {/* Card-text toggles — compact 2-column row so the rail keeps its
           128px footprint instead of stacking two full-width buttons. */}
       {hasCardToggles && (
         <RailSection>
-          <XStack gap="$1.5" data-testid="hand-rail-card-toggles">
+          <div
+            className="box-border flex flex-row items-stretch gap-null"
+            data-testid="hand-rail-card-toggles"
+          >
             {onToggleCardName && (
               <Button
                 data-testid="hand-rail-toggle-name"
@@ -317,14 +276,16 @@ export function HandRail({
                 aria-pressed={!!showCardName}
                 aria-label={t('games.table.hud.cards.toggleName')}
               >
-                <Text
-                  fontSize={11}
-                  fontWeight="800"
-                  letterSpacing={0.3}
-                  color={showCardName ? ACCENT : 'rgba(255,255,255,0.7)'}
+                <span
+                  className={
+                    '"box-border text-[11px] font-extrabold tracking-[0.3px]"'
+                  }
+                  style={{
+                    color: showCardName ? ACCENT : 'rgba(255,255,255,0.7)',
+                  }}
                 >
                   Aa {showCardName ? '✓' : '○'}
-                </Text>
+                </span>
               </Button>
             )}
             {onToggleCardDescription && (
@@ -351,24 +312,31 @@ export function HandRail({
                 aria-pressed={!!showCardDescription}
                 aria-label={t('games.table.hud.cards.toggleDescription')}
               >
-                <Text
-                  fontSize={11}
-                  fontWeight="800"
-                  letterSpacing={0.3}
-                  color={showCardDescription ? ACCENT : 'rgba(255,255,255,0.7)'}
+                <span
+                  className={
+                    '"box-border text-[11px] font-extrabold tracking-[0.3px]"'
+                  }
+                  style={{
+                    color: showCardDescription
+                      ? ACCENT
+                      : 'rgba(255,255,255,0.7)',
+                  }}
                 >
                   ¶ {showCardDescription ? '✓' : '○'}
-                </Text>
+                </span>
               </Button>
             )}
-          </XStack>
+          </div>
         </RailSection>
       )}
 
       {/* Chrome */}
       {hasChrome && (
         <RailSection>
-          <XStack gap="$1.5" data-testid="hand-rail-menu">
+          <div
+            className="box-border flex flex-row items-stretch gap-null"
+            data-testid="hand-rail-menu"
+          >
             {onOpenRules && (
               <Button
                 data-testid="hand-rail-rules"
@@ -382,19 +350,12 @@ export function HandRail({
                 hoverStyle={{ backgroundColor: NEUTRAL_BG_HOVER }}
                 onPress={onOpenRules}
               >
-                <YStack alignItems="center" gap={2}>
+                <div className="box-border flex flex-col items-center gap-2">
                   <BookOpenIcon size={16} />
-                  <Text
-                    fontSize={9}
-                    fontWeight="800"
-                    letterSpacing={0.6}
-                    textTransform="uppercase"
-                    opacity={0.85}
-                    numberOfLines={1}
-                  >
+                  <span className="box-border text-[40px] font-extrabold tracking-[0.6px] uppercase opacity-[0.85] line-clamp-1">
                     {t('games.table.controlPanel.rules')}
-                  </Text>
-                </YStack>
+                  </span>
+                </div>
               </Button>
             )}
             {onToggleFullscreen && (
@@ -415,7 +376,7 @@ export function HandRail({
                     : 'games.table.controlPanel.enterFullscreen',
                 )}
               >
-                <YStack alignItems="center" gap={2}>
+                <div className="box-border flex flex-col items-center gap-2">
                   {isFullscreen ? (
                     <MinimizeIcon size={16} />
                   ) : (
@@ -427,22 +388,15 @@ export function HandRail({
                       Maximize/Minimize icon already signals the state;
                       the full action label lives in the aria-label
                       above for assistive tech. */}
-                  <Text
-                    fontSize={9}
-                    fontWeight="800"
-                    letterSpacing={0.6}
-                    textTransform="uppercase"
-                    opacity={0.85}
-                    numberOfLines={1}
-                  >
+                  <span className="box-border text-[40px] font-extrabold tracking-[0.6px] uppercase opacity-[0.85] line-clamp-1">
                     {t('games.table.controlPanel.fullscreen')}
-                  </Text>
-                </YStack>
+                  </span>
+                </div>
               </Button>
             )}
-          </XStack>
+          </div>
         </RailSection>
       )}
-    </YStack>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { XStack, YStack, Text } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { getDefaultShipCount } from '../types';
@@ -31,30 +30,25 @@ export function HouseRulesPanel({
     { sonar?: boolean; radar?: boolean; revealAll?: boolean } | undefined;
 
   return (
-    <YStack gap="$3" paddingVertical="$2">
-      <Text fontSize="$4" fontWeight="600">
+    <div className="box-border flex flex-col items-stretch gap-3 py-2">
+      <span className="box-border text-[18px] font-semibold">
         {t('games.create.sectionHouseRules') || 'House Rules'}
-      </Text>
-      <YStack gap="$2">
-        <Text fontSize="$3" fontWeight="600">
+      </span>
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border text-[16px] font-semibold">
           {t('games.create.seaBattleGridSize') || 'Grid Size'}
           {ruleComingSoon.get('gridSize') && (
-            <Text fontSize={10} color="#f59e0b" fontWeight="600" marginLeft={8}>
+            <span className="box-border text-[48px] text-[#f59e0b] font-semibold -ml-8">
               {t('games.create.comingSoon') || 'Coming Soon'}
-            </Text>
+            </span>
           )}
-        </Text>
-        <XStack gap="$2" flexWrap="wrap">
+        </span>
+        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
           {([10, 15, 20] as const).map((gs) => {
             const disabled = !!ruleComingSoon.get('gridSize');
             const active = gridSize === gs;
             return (
               <Button
-                key={gs}
-                variant="chip"
-                size="sm"
-                disabled={disabled}
-                data-active={active ? 'on' : undefined}
                 className={`rounded-[8px] font-semibold text-[13px] ${
                   active
                     ? 'bg-[rgba(59,130,246,0.15)] border-[var(--color,#3b82f6)] hover:bg-[rgba(59,130,246,0.2)]'
@@ -67,6 +61,11 @@ export function HouseRulesPanel({
                       ? 'var(--color, #3b82f6)'
                       : '#e2e8f0',
                 }}
+                key={gs}
+                variant="chip"
+                size="sm"
+                disabled={disabled}
+                data-active={active ? 'on' : undefined}
                 onClick={() => {
                   if (disabled) return;
                   onOptionChange({
@@ -79,21 +78,17 @@ export function HouseRulesPanel({
               </Button>
             );
           })}
-        </XStack>
-      </YStack>
-      <YStack gap="$2">
-        <Text fontSize="$3" fontWeight="600">
+        </div>
+      </div>
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border text-[16px] font-semibold">
           {t('games.create.seaBattleShipCount') || 'Number of Ships'}
-        </Text>
-        <XStack gap="$2" flexWrap="wrap">
+        </span>
+        <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
           {getShipCountOptions(gridSize).map((count) => {
             const active = shipCount === count;
             return (
               <Button
-                key={count}
-                variant="chip"
-                size="sm"
-                data-active={active ? 'on' : undefined}
                 className={`rounded-[8px] font-semibold text-[13px] ${
                   active
                     ? 'bg-[rgba(59,130,246,0.15)] border-[var(--color,#3b82f6)] hover:bg-[rgba(59,130,246,0.2)]'
@@ -102,23 +97,27 @@ export function HouseRulesPanel({
                 style={{
                   color: active ? 'var(--color, #3b82f6)' : '#e2e8f0',
                 }}
+                key={count}
+                variant="chip"
+                size="sm"
+                data-active={active ? 'on' : undefined}
                 onClick={() => onOptionChange({ shipCount: count })}
               >
                 {count}
               </Button>
             );
           })}
-        </XStack>
-      </YStack>
-      <YStack gap="$2">
-        <Text fontSize="$3" fontWeight="600">
+        </div>
+      </div>
+      <div className="box-border flex flex-col items-stretch gap-2">
+        <span className="box-border text-[16px] font-semibold">
           {t('games.create.specialWeapons') || 'Special Weapons'}
           {(ruleComingSoon.get('sonar') || ruleComingSoon.get('radar')) && (
-            <Text fontSize={10} color="#f59e0b" fontWeight="600" marginLeft={8}>
+            <span className="box-border text-[48px] text-[#f59e0b] font-semibold -ml-8">
               {t('games.create.comingSoon') || 'Coming Soon'}
-            </Text>
+            </span>
           )}
-        </Text>
+        </span>
         <label
           style={{
             display: 'flex',
@@ -197,9 +196,9 @@ export function HouseRulesPanel({
               paddingLeft: 24,
             }}
           >
-            <Text fontSize={12} opacity={0.6}>
+            <span className="box-border text-[12px] opacity-[0.6]">
               Duration:
-            </Text>
+            </span>
             {[1, 2, 3, 4, 5].map((sec) => {
               const currentDuration =
                 (gameOptions.revealAllDuration as number) ?? 1;
@@ -232,7 +231,7 @@ export function HouseRulesPanel({
             })}
           </div>
         )}
-      </YStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

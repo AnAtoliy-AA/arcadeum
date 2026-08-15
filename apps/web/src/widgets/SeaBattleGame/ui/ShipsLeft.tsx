@@ -1,7 +1,8 @@
-import { styled, YStack, XStack, Text, useMedia } from 'tamagui';
+import { styled, YStack } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Ship, getActiveShips } from '../types';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface ShipsLeftProps {
   ships: Ship[];
@@ -32,7 +33,7 @@ const ShipsContainer = styled(YStack, {
 export function ShipsLeft({ ships, isMe, shipCount }: ShipsLeftProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
-  const media = useMedia();
+  const media = useMediaQuery();
   const isMobile = !media.gtSm;
   const sortedConfig = [...getActiveShips(shipCount)].sort(
     (a, b) => b.size - a.size,
@@ -43,87 +44,63 @@ export function ShipsLeft({ ships, isMe, shipCount }: ShipsLeftProps) {
 
   return (
     <ShipsContainer
+      className={'"sb-ships-remaining-container"'}
       style={{ backdropFilter: 'blur(12px)' } as React.CSSProperties}
-      className="sb-ships-remaining-container"
     >
-      <XStack justifyContent="space-between" alignItems="center" width="100%">
-        <Text
-          fontSize={12}
-          color="rgba(255,255,255,0.8)"
-          fontWeight="700"
-          textTransform="uppercase"
-          letterSpacing={1}
-        >
+      <div className="box-border flex flex-row justify-space-between items-center w-full">
+        <span className="box-border text-[12px] text-[rgba(255,255,255,0.8)] font-bold uppercase tracking-[1px]">
           {t('games.sea_battle_v1.table.state.shipsRemaining')}
-        </Text>
-        <Text
-          fontSize={14}
-          color={aliveCount === 0 ? '$error' : '$success'}
-          fontWeight="900"
-          style={
-            {
-              fontFamily: 'monospace',
-              textShadow:
-                aliveCount > 0
-                  ? '0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.3)'
-                  : 'none',
-            } as React.CSSProperties
-          }
+        </span>
+        <span
+          className={'"box-border text-[14px] font-black"'}
+          style={{ color: aliveCount === 0 ? '$error' : '$success' }}
         >
           {aliveCount}/{totalShips}
-        </Text>
-      </XStack>
+        </span>
+      </div>
 
-      <XStack
-        justifyContent="space-between"
-        alignItems="center"
-        gap={isMobile ? 6 : 10}
-        width="100%"
+      <div
+        className={
+          '"box-border flex flex-row justify-space-between items-center w-full"'
+        }
+        style={{ gap: isMobile ? 6 : 10 }}
       >
         {sortedConfig.map((config) => {
           const isSunk = ships?.find((s) => s.id === config.id)?.sunk ?? false;
           return (
-            <XStack
+            <div
+              className={
+                '"box-border flex flex-row items-stretch gap-1 relative"'
+              }
+              style={{
+                opacity: isSunk ? 0.2 : 1,
+                flex: config.size,
+                height: isMobile ? 10 : 14,
+              }}
               key={config.id}
-              gap={1}
-              opacity={isSunk ? 0.2 : 1}
-              flex={config.size}
-              height={isMobile ? 10 : 14}
-              position="relative"
               data-title={config.name}
               data-size={config.size}
               data-sunk={isSunk.toString()}
             >
               {Array.from({ length: config.size }).map((_, i) => (
-                <YStack
-                  key={i}
-                  flex={1}
-                  height="100%"
-                  backgroundColor={
-                    isSunk
+                <div
+                  className={
+                    '"box-border flex flex-col items-stretch flex-1 h-full border border-[rgba(0,0,0,0.4)] rounded-lg"'
+                  }
+                  style={{
+                    backgroundColor: isSunk
                       ? theme.hitColor
                       : isMe
                         ? theme.primaryColor
-                        : theme.textSecondaryColor
-                  }
-                  borderWidth={1}
-                  borderColor="rgba(0,0,0,0.4)"
-                  borderRadius={2}
-                  style={
-                    !isSunk
-                      ? ({
-                          boxShadow: `inset 0 1px 1px rgba(255,255,255,0.2), 0 0 8px ${
-                            isMe ? theme.primaryColor : 'rgba(255,255,255,0.2)'
-                          }`,
-                        } as React.CSSProperties)
-                      : {}
-                  }
+                        : theme.textSecondaryColor,
+                  }}
+                  key={i}
                 />
               ))}
-            </XStack>
+            </div>
           );
         })}
-      </XStack>
+      </div>
     </ShipsContainer>
   );
 }

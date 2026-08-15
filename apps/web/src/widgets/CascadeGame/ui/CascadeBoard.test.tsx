@@ -1,9 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider, createTamagui } from 'tamagui';
-import { defaultConfig } from '@tamagui/config/v4';
 
-const tamaguiConfig = createTamagui(defaultConfig);
 import { CascadeBoard } from './CascadeBoard';
 import { CascadeThemeProvider } from '../lib/CascadeThemeContext';
 import type { CascadeClientState } from '../types';
@@ -86,11 +83,9 @@ function makeSnapshot(
 
 function renderBoard(props: React.ComponentProps<typeof CascadeBoard>) {
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
-      <CascadeThemeProvider variant="cosmic">
-        <CascadeBoard {...props} />
-      </CascadeThemeProvider>
-    </TamaguiProvider>,
+    <CascadeThemeProvider variant="cosmic">
+      <CascadeBoard {...props} />
+    </CascadeThemeProvider>,
   );
 }
 

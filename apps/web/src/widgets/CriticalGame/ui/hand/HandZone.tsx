@@ -1,11 +1,9 @@
 'use client';
 
-import { XStack, YStack } from 'tamagui';
 import { HandCards } from './HandCards';
 import { HandRail } from './HandRail';
 import { MobileHandBar } from './MobileHandBar';
 import { useIsNarrow } from '../../lib/useNarrowViewport';
-import { useScenePalette } from '../ScenePaletteContext';
 import type { HandCardInstance, ComboKind } from '../../lib/combo';
 
 interface HandZoneProps {
@@ -43,19 +41,12 @@ export function HandZone(props: HandZoneProps) {
   // `NarrowViewportProvider` at the widget root so HandZone, Arena, and
   // OpponentsRow commit the same flip on the same React frame.
   const isMobile = useIsNarrow(480);
-  const palette = useScenePalette();
-
   if (isMobile) {
     return (
-      <YStack
+      <div
+        className="box-border flex flex-col items-stretch w-full gap-2 px-2 pt-2 -mx-2"
         data-testid="hand-zone"
         data-layout="mobile"
-        width="100%"
-        gap="$2"
-        paddingHorizontal="$2"
-        paddingTop="$2"
-        marginHorizontal="-$2"
-        style={{ background: palette.handBackground }}
       >
         <HandCards
           cards={props.cards}
@@ -84,20 +75,15 @@ export function HandZone(props: HandZoneProps) {
           onToggleCardName={props.onToggleCardName}
           onToggleCardDescription={props.onToggleCardDescription}
         />
-      </YStack>
+      </div>
     );
   }
 
   return (
-    <XStack
+    <div
+      className="box-border flex flex-row items-stretch w-full gap-3 px-2 py-2 -mx-3"
       data-testid="hand-zone"
       data-layout="desktop"
-      width="100%"
-      gap="$3"
-      paddingHorizontal="$2"
-      paddingVertical="$2"
-      marginHorizontal="-$3"
-      style={{ background: palette.handBackground }}
     >
       <HandRail
         handCount={props.cards.length}
@@ -126,6 +112,6 @@ export function HandZone(props: HandZoneProps) {
         showName={props.showCardName}
         showDescription={props.showCardDescription}
       />
-    </XStack>
+    </div>
   );
 }

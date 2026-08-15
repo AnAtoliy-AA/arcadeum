@@ -95,20 +95,6 @@ function CellRenderer({
 
   return (
     <button
-      type="button"
-      role="gridcell"
-      data-testid={`ttt-cell-${rowIdx}-${colIdx}`}
-      disabled={cellDisabled}
-      aria-label={
-        ownerInfo
-          ? `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: ${ownerInfo.mark} mark`
-          : `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: empty`
-      }
-      onClick={() => onCellClick(rowIdx, colIdx)}
-      onMouseEnter={() => {
-        if (!cell && !disabled) onHover(rowIdx, colIdx);
-      }}
-      onMouseLeave={onLeave}
       className={`ttt-cell${isWinning ? ' ttt-winning' : ''}${isHighlighted ? ' ttt-highlighted' : ''}${isAtLimit ? ' ttt-at-limit' : ''}`}
       style={{
         ...cellStyle,
@@ -136,6 +122,20 @@ function CellRenderer({
         transition: 'background-color 120ms ease, border 120ms ease',
         overflow: 'hidden',
       }}
+      type="button"
+      role="gridcell"
+      data-testid={`ttt-cell-${rowIdx}-${colIdx}`}
+      disabled={cellDisabled}
+      aria-label={
+        ownerInfo
+          ? `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: ${ownerInfo.mark} mark`
+          : `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: empty`
+      }
+      onClick={() => onCellClick(rowIdx, colIdx)}
+      onMouseEnter={() => {
+        if (!cell && !disabled) onHover(rowIdx, colIdx);
+      }}
+      onMouseLeave={onLeave}
     >
       {ownerInfo ? (
         <span className="ttt-mark">{ownerInfo.mark}</span>

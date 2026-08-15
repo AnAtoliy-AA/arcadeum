@@ -173,16 +173,20 @@ export const VariantIconBadge = styled(YStack, {
 
 export const StartButton = (props: ButtonProps) => (
   <Button
+    className={
+      'max-[640px]:scale-[0.9] max-[640px]:h-[36px] max-[640px]:px-[16px] max-[640px]:py-[8px] max-[640px]:rounded-[12px]'
+    }
     variant="secondary"
-    className="max-[640px]:scale-[0.9] max-[640px]:h-[36px] max-[640px]:px-[16px] max-[640px]:py-[8px] max-[640px]:rounded-[12px]"
     {...props}
   />
 );
 
 export const FullscreenButton = (props: ButtonProps) => (
   <IconButton
+    className={
+      'p-2 active:bg-[rgba(255,255,255,0.2)] max-[640px]:scale-[0.85] max-[640px]:p-1'
+    }
     size="sm"
-    className="p-2 active:bg-[rgba(255,255,255,0.2)] max-[640px]:scale-[0.85] max-[640px]:p-1"
     {...props}
   />
 );

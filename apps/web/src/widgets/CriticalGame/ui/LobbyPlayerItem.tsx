@@ -1,7 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { Button, XStack, IdleBadge } from '@arcadeum/ui';
+import { Button, IdleBadge } from '@arcadeum/ui';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import {
   PlayerItem,
@@ -73,9 +73,8 @@ export function SortablePlayerItem({
       style={style}
       $isHost={isRoomHost}
     >
-      <XStack
-        alignItems="center"
-        flex={1}
+      <div
+        className="box-border flex flex-row items-center flex-1"
         {...(attributes as unknown as Record<string, unknown>)}
         {...(listeners as unknown as Record<string, unknown>)}
       >
@@ -90,12 +89,12 @@ export function SortablePlayerItem({
             {isPlayerIdle && <IdleBadge />}
           </LobbyPlayerName>
         </PlayerInfo>
-      </XStack>
+      </div>
 
       {isRoomHost && <PlayerBadge>HOST</PlayerBadge>}
 
       {isHost && (
-        <XStack alignItems="center" gap="$1" marginLeft="auto" paddingLeft="$2">
+        <div className="box-border flex flex-row items-center gap-1 pl-2">
           <Button
             variant="ghost"
             size="sm"
@@ -120,15 +119,14 @@ export function SortablePlayerItem({
           >
             ↓
           </Button>
-          <XStack
-            opacity={0.5}
-            cursor="grab"
+          <div
+            className="box-border flex flex-row items-stretch opacity-[0.5] cursor-grab"
             {...(attributes as unknown as Record<string, unknown>)}
             {...(listeners as unknown as Record<string, unknown>)}
           >
             ⋮⋮
-          </XStack>
-        </XStack>
+          </div>
+        </div>
       )}
     </PlayerItem>
   );

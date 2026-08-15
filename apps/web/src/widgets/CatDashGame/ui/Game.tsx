@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
-import { YStack, Button, Text } from 'tamagui';
+import { Button } from 'tamagui';
 import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
@@ -153,7 +153,7 @@ function CatDashGameImpl({
   }
 
   const board = (
-    <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
+    <div className="box-border flex flex-col gap-3 items-stretch p-3 w-full">
       {snapshot ? (
         <>
           <CatDashTurnBadge
@@ -167,7 +167,7 @@ function CatDashGameImpl({
             disabled={!myTurn || isGameOver}
             resolveName={resolveDisplayNameBound}
           />
-          <YStack gap="$2" alignItems="center" marginTop="$2">
+          <div className="box-border flex flex-col gap-2 items-center -mt-2">
             {myTurn && !isGameOver && (
               <Button
                 size="$5"
@@ -178,20 +178,16 @@ function CatDashGameImpl({
                 onPress={rollDice}
                 borderRadius="$4"
               >
-                <Text color="white" fontWeight="bold" fontSize={16}>
+                <span className="box-border text-[white] font-bold text-[16px]">
                   🎲 Roll Dice
-                </Text>
+                </span>
               </Button>
             )}
             {isGameOver && snapshot?.winner && (
-              <YStack
-                alignItems="center"
-                gap="$2"
-                padding="$4"
-                backgroundColor="rgba(34,197,94,0.15)"
-                borderRadius="$5"
-                borderWidth={1.5}
-                borderColor="rgba(34,197,94,0.4)"
+              <div
+                className={
+                  '"box-border flex flex-col items-center gap-2 p-4 bg-[rgba(34,197,94,0.15)] rounded-3xl border-[1.5px] border-[rgba(34,197,94,0.4)]"'
+                }
                 style={{
                   boxShadow: '0 8px 32px rgba(34, 197, 94, 0.15)',
                   backdropFilter: 'blur(10px)',
@@ -204,20 +200,15 @@ function CatDashGameImpl({
                   }
                   size={48}
                 />
-                <Text
-                  fontSize={16}
-                  fontWeight="bold"
-                  color="#22c55e"
-                  marginTop="$1"
-                >
+                <span className="box-border text-[16px] font-bold text-[#22c55e] -mt-1">
                   {resolveDisplayNameBound(snapshot.winner)} wins!
-                </Text>
-              </YStack>
+                </span>
+              </div>
             )}
-          </YStack>
+          </div>
         </>
       ) : null}
-    </YStack>
+    </div>
   );
 
   const modals = (

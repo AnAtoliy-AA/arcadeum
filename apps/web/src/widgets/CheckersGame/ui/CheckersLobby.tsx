@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -136,7 +135,7 @@ export function CheckersLobby({
   const ruleConfig = RULE_VARIANT_CONFIGS[ruleVariant];
 
   const optionsSlot = (
-    <YStack gap="$4">
+    <div className="box-border flex flex-col items-stretch gap-4">
       <LobbyOptionSection title={t('games.checkers_v1.lobby.variant')}>
         <LobbyChipGroup
           options={variantOptions}
@@ -156,15 +155,15 @@ export function CheckersLobby({
           accentColor="#2563eb"
           testIdPrefix="checkers-rule-variant"
         />
-        <Text fontSize="$2" opacity={0.6} mt="$1">
+        <span className="box-border text-[14px] opacity-[0.6] -mt-1">
           {t(
             RULE_VARIANT_OPTIONS.find((rv) => rv.id === ruleVariant)!
               .descriptionKey,
           )}
-        </Text>
+        </span>
       </LobbyOptionSection>
       <LobbyOptionSection title={t('games.checkers_v1.lobby.rules')}>
-        <YStack gap="$2">
+        <div className="box-border flex flex-col items-stretch gap-2">
           <label
             style={{
               display: 'flex',
@@ -181,9 +180,9 @@ export function CheckersLobby({
               onChange={(e) => setOption({ forcedCaptures: e.target.checked })}
               style={{ width: 16, height: 16, accentColor: '#2563eb' }}
             />
-            <Text fontSize="$3">
+            <span className="box-border text-[16px]">
               {t('games.checkers_v1.lobby.forcedCaptures')}
-            </Text>
+            </span>
           </label>
           <label
             style={{
@@ -205,19 +204,19 @@ export function CheckersLobby({
               }
               style={{ width: 16, height: 16, accentColor: '#2563eb' }}
             />
-            <Text fontSize="$3">
+            <span className="box-border text-[16px]">
               {t('games.checkers_v1.lobby.backwardCaptures')}
               {ruleConfig.backwardCapturesForMen
                 ? ` (${t('games.checkers_v1.lobby.alwaysEnabled')})`
                 : ''}
-            </Text>
+            </span>
           </label>
-        </YStack>
+        </div>
       </LobbyOptionSection>
-      <Text fontSize="$2" opacity={0.7}>
+      <span className="box-border text-[14px] opacity-[0.7]">
         {t('games.checkers_v1.rules.steps')}
-      </Text>
-    </YStack>
+      </span>
+    </div>
   );
 
   return (

@@ -1,7 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../../shared/config/tamagui.config';
 import { ScenePaletteProvider } from '../ScenePaletteContext';
 import { getVariantStyles } from '../styles/variants';
 
@@ -22,6 +20,9 @@ vi.mock('../LastPlayedCardDisplay', () => ({
 
 import { Arena } from './Arena';
 import type { CriticalCard } from '../../types';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 const palette = getVariantStyles('cyberpunk').scene;
 
@@ -44,7 +45,7 @@ function renderArena(
     ...override,
   };
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+    <TamaguiProvider config={config} defaultTheme="dark">
       <ScenePaletteProvider palette={palette}>
         <Arena {...props} />
       </ScenePaletteProvider>

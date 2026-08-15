@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useCallback, useMemo, useState } from 'react';
-import { YStack } from 'tamagui';
 import {
   GameWidgetContainer,
   RematchInvitationModal,
@@ -323,7 +322,7 @@ function CheckersGameImpl({
   }
 
   const board = (
-    <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
+    <div className="box-border flex flex-col gap-3 items-stretch p-3 w-full">
       {snapshot && displayBoard ? (
         <>
           <TurnBadge
@@ -343,7 +342,7 @@ function CheckersGameImpl({
           />
         </>
       ) : null}
-    </YStack>
+    </div>
   );
 
   const modals = (

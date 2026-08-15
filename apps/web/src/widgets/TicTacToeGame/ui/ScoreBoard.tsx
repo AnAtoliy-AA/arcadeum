@@ -1,7 +1,5 @@
 'use client';
 
-import { XStack, YStack, Text } from 'tamagui';
-
 interface ScoreEntry {
   id: string;
   name: string;
@@ -16,33 +14,32 @@ interface ScoreBoardProps {
 
 export function ScoreBoard({ entries, drawCount }: ScoreBoardProps) {
   return (
-    <XStack
+    <div
+      className="box-border flex flex-row items-stretch gap-3 py-2 px-3 rounded-2xl bg-[var(--backgroundHover)] self-center"
       data-testid="ttt-scoreboard"
-      gap="$3"
-      paddingVertical="$2"
-      paddingHorizontal="$3"
-      borderRadius="$4"
-      backgroundColor="$backgroundHover"
-      alignSelf="center"
     >
       {entries.map((entry) => (
-        <YStack key={entry.id} alignItems="center" minWidth={56}>
-          <Text fontSize="$2" color={entry.color ?? '$color'}>
+        <div
+          className="box-border flex flex-col items-center min-w-[56px]"
+          key={entry.id}
+        >
+          <span
+            className={'"box-border text-[14px]"'}
+            style={{ color: entry.color ?? '$color' }}
+          >
             {entry.name}
-          </Text>
-          <Text fontWeight="800" fontSize="$5">
+          </span>
+          <span className="box-border font-extrabold text-[20px]">
             {entry.score}
-          </Text>
-        </YStack>
+          </span>
+        </div>
       ))}
-      <YStack alignItems="center" minWidth={56}>
-        <Text fontSize="$2" opacity={0.7}>
-          Draws
-        </Text>
-        <Text fontWeight="800" fontSize="$5">
+      <div className="box-border flex flex-col items-center min-w-[56px]">
+        <span className="box-border text-[14px] opacity-[0.7]">Draws</span>
+        <span className="box-border font-extrabold text-[20px]">
           {drawCount}
-        </Text>
-      </YStack>
-    </XStack>
+        </span>
+      </div>
+    </div>
   );
 }

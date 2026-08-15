@@ -1,6 +1,5 @@
 'use client';
 import { memo, useMemo } from 'react';
-import { Text, XStack, YStack } from 'tamagui';
 import type { CellState } from '../../types';
 import { CELL_STATE } from '../../types';
 import { useSeaBattleTheme } from '../../lib/SeaBattleThemeContext';
@@ -46,47 +45,49 @@ export const FieldStatus = memo(function FieldStatus({
   const stats = useMemo(() => computeBoardStats(board), [board]);
 
   return (
-    <XStack
-      justifyContent="flex-end"
-      alignItems="center"
-      paddingVertical="$1"
-      paddingHorizontal="$2"
-      backgroundColor="rgba(0,0,0,0.3)"
-      borderRadius={4}
-    >
-      <XStack gap={6} alignItems="center">
-        <XStack gap={2} alignItems="center">
-          <YStack width={4} height={4} backgroundColor={theme.hitColor} borderRadius={1} />
-          <Text
-            fontSize={9}
-            color={theme.hitColor}
-            fontWeight="700"
-            style={{ fontFamily: 'monospace' } as React.CSSProperties}
+    <div className="box-border flex flex-row justify-end items-center py-1 px-2 bg-[rgba(0,0,0,0.3)] rounded-2xl">
+      <div className="box-border flex flex-row gap-6 items-center">
+        <div className="box-border flex flex-row gap-2 items-center">
+          <div
+            className={
+              '"box-border flex flex-col items-stretch w-[4px] h-[4px] rounded"'
+            }
+            style={{ backgroundColor: theme.hitColor }}
+          />
+          <span
+            className={'"box-border text-[40px] font-bold"'}
+            style={{ color: theme.hitColor }}
           >
             {stats.hitCells}
-          </Text>
-        </XStack>
-        <Text fontSize={8} color="rgba(255,255,255,0.3)">·</Text>
-        <XStack gap={2} alignItems="center">
-          <YStack width={4} height={4} backgroundColor={theme.missColor} borderRadius={1} />
-          <Text
-            fontSize={9}
-            color={theme.missColor}
-            fontWeight="700"
-            style={{ fontFamily: 'monospace' } as React.CSSProperties}
+          </span>
+        </div>
+        <span className="box-border text-[32px] text-[rgba(255,255,255,0.3)]">
+          ·
+        </span>
+        <div className="box-border flex flex-row gap-2 items-center">
+          <div
+            className={
+              '"box-border flex flex-col items-stretch w-[4px] h-[4px] rounded"'
+            }
+            style={{ backgroundColor: theme.missColor }}
+          />
+          <span
+            className={'"box-border text-[40px] font-bold"'}
+            style={{ color: theme.missColor }}
           >
             {stats.missCells}
-          </Text>
-        </XStack>
-      </XStack>
-      <Text
-        fontSize={9}
-        color="rgba(255,255,255,0.5)"
-        marginLeft={4}
+          </span>
+        </div>
+      </div>
+      <span
+        className={
+          '"box-border text-[40px] text-[rgba(255,255,255,0.5)] -ml-4"'
+        }
         style={{ fontFamily: 'monospace' } as React.CSSProperties}
       >
-        {stats.unexploredCells}/{stats.totalCells} ({Math.round((stats.unexploredCells / stats.totalCells) * 100)}%)
-      </Text>
-    </XStack>
+        {stats.unexploredCells}/{stats.totalCells} (
+        {Math.round((stats.unexploredCells / stats.totalCells) * 100)}%)
+      </span>
+    </div>
   );
 });

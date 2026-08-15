@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { XStack, YStack, Text, styled } from 'tamagui';
+import { XStack, Text, styled } from 'tamagui';
 import {
   useTranslation,
   type TranslationKey,
@@ -94,16 +94,16 @@ export function EmotePicker({ onEmote, disabled }: EmotePickerProps) {
   return (
     <PickerShell>
       {EMOTES.map((e) => (
-        <YStack key={e.id} alignItems="center" gap={2}>
+        <div className="box-border flex flex-col items-center gap-2" key={e.id}>
           <EmoteBtn
             onPress={() => handleEmote(e.id)}
             opacity={cooldown ? 0.5 : 1}
             aria-label={t(`games.emotes.${e.id}` as TranslationKey)}
           >
-            <Text fontSize={20}>{e.emoji}</Text>
+            <span className="box-border text-[20px]">{e.emoji}</span>
           </EmoteBtn>
           <EmoteLabel>{t(`games.emotes.${e.id}` as TranslationKey)}</EmoteLabel>
-        </YStack>
+        </div>
       ))}
     </PickerShell>
   );

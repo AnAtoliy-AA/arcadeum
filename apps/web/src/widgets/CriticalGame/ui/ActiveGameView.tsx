@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { useMedia, YStack } from 'tamagui';
 import { useGameChatIntegration } from '@/features/games/hooks';
 import {
   useTranslation,
@@ -35,6 +34,7 @@ import { SceneBackdrop } from './SceneBackdrop';
 import type { GameVariant } from '@arcadeum/ui';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { RematchInvitation } from '@/features/games/hooks/useRematch';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface ActiveGameViewProps {
   currentUserId: string | null;
@@ -91,7 +91,7 @@ export function ActiveGameView({
   onOpenRules,
 }: ActiveGameViewProps) {
   const { t } = useTranslation();
-  const media = useMedia();
+  const media = useMediaQuery();
   const isMobile = media.sm;
   const cardVariant = room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
   const scenePalette = useMemo(
@@ -288,7 +288,7 @@ export function ActiveGameView({
         board={
           <>
             <SceneBackdrop />
-            <YStack flex={1} className="animate-entrance">
+            <div className="box-border flex flex-col items-stretch flex-1 animate-entrance">
               <MatchWidget
                 room={room}
                 snapshot={snapshot}
@@ -318,7 +318,7 @@ export function ActiveGameView({
                 handleStopAutoplay={handleStopAutoplay}
                 onOpenRules={onOpenRules}
               />
-            </YStack>
+            </div>
             {currentPlayer && (
               <GameStatusMessage
                 currentPlayerAlive={currentPlayer.alive}

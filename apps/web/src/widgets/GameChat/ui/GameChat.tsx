@@ -7,9 +7,8 @@ import {
   useMemo,
   type KeyboardEvent,
 } from 'react';
-import { XStack, YStack, ScrollView, Text, useTheme } from 'tamagui';
 import { IconButton, CloseIcon, Typography } from '@arcadeum/ui';
-import type { ScrollView as TamaguiScrollView } from 'tamagui';
+
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { useGameChatStore } from '../store/gameChatStore';
 import type { ChatScope, ChatLogEntry } from '../store/gameChatStore';
@@ -44,6 +43,7 @@ import {
   TitleDot,
   UnreadBadge,
 } from './GameChat.styled';
+import { useThemeColors } from '@/shared/hooks/useThemeColors';
 
 export type { ResolvedEquipped, EquippedResolver } from './types';
 
@@ -113,8 +113,8 @@ export function GameChat({
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
   const resolveActorColor = useGameChatStore((s) => s.resolveActorColor);
-  const theme = useTheme();
-  const inputColor = (theme.color?.get?.() as string | undefined) ?? '#ecefee';
+  const theme = useThemeColors();
+  const inputColor = theme.color || '#ecefee';
 
   const scopes = teamMode ? TEAM_SCOPES : FFA_SCOPES;
   const [draft, setDraft] = useState('');
@@ -122,10 +122,11 @@ export function GameChat({
   const [collapsed, setCollapsed] = useChatCollapsed();
   const [unread, setUnread] = useState(0);
   const lastSeenIdRef = useRef<string | null>(null);
-  const scrollRef = useRef<TamaguiScrollView>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!collapsed) scrollRef.current?.scrollToEnd({ animated: true });
+    if (!collapsed && scrollRef.current)
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [logs.length, collapsed]);
 
   useEffect(() => {
@@ -213,28 +214,28 @@ export function GameChat({
         <HeadRow>
           <TitleDot />
           <Title>Table Chat</Title>
-          <YStack flex={1} />
+          <div className="box-border flex flex-col items-stretch flex-1" />
           <IconButton
+            className={'p-1'}
             size="sm"
-            className="p-1"
             title="Settings"
             aria-label="Chat settings"
           >
-            <Text fontSize={14}>⚙</Text>
+            <span className="box-border text-[14px]">⚙</span>
           </IconButton>
           <IconButton
+            className={'p-1'}
             size="sm"
-            className="p-1"
             onClick={() => setCollapsed(true)}
             title="Minimize"
             aria-label="Minimize chat"
           >
-            <Text fontSize={14}>—</Text>
+            <span className="box-border text-[14px]">—</span>
           </IconButton>
           {onClose ? (
             <IconButton
+              className={'p-1'}
               size="sm"
-              className="p-1"
               onClick={onClose}
               title="Close"
               aria-label="Close chat"
@@ -285,31 +286,22 @@ export function GameChat({
       </Head>
 
       <Body>
-        <ScrollView
+        <div
+          className={`box-border overflow-auto flex-1 ${scrollbarStyles.className}`}
           ref={scrollRef}
-          flex={1}
-          className={scrollbarStyles.className}
         >
           {visibleLogs.length === 0 ? (
-            <YStack flex={1} ai="center" jc="center" py="$10">
-              <Typography alpha="low" textAlign="center" uiSize="sm">
+            <div className="box-border flex flex-col flex-1 items-center justify-center py-10">
+              <Typography className="text-center" alpha="low" uiSize="sm">
                 No messages yet. Break the ice!
               </Typography>
-            </YStack>
+            </div>
           ) : (
             <ListGap role="log" aria-live="polite" aria-relevant="additions">
               <Divider>
-                <YStack
-                  height={1}
-                  flex={1}
-                  backgroundColor="rgba(255,255,255,0.06)"
-                />
+                <div className="box-border flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
                 <DividerLabel style={MONO_STYLE}>Match</DividerLabel>
-                <YStack
-                  height={1}
-                  flex={1}
-                  backgroundColor="rgba(255,255,255,0.06)"
-                />
+                <div className="box-border flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
               </Divider>
               {visibleLogs.map((log) => {
                 const senderName = log.senderId
@@ -349,7 +341,7 @@ export function GameChat({
               })}
             </ListGap>
           )}
-        </ScrollView>
+        </div>
       </Body>
 
       <Foot>
@@ -392,11 +384,7 @@ export function GameChat({
             }}
           />
           <IconButton
-            size="sm"
-            className="p-1"
-            onClick={send}
-            disabled={!draft.trim() || !canSend}
-            aria-label="Send message"
+            className={'p-1'}
             style={{
               background: draft.trim() && canSend ? ACCENT_GRADIENT : undefined,
               opacity: draft.trim() && canSend ? 1 : 0.4,
@@ -404,19 +392,23 @@ export function GameChat({
               height: 30,
               borderRadius: 9,
             }}
+            size="sm"
+            onClick={send}
+            disabled={!draft.trim() || !canSend}
+            aria-label="Send message"
           >
-            <Text fontSize={14} color="#06011b" fontWeight="700">
+            <span className="box-border text-[14px] text-[#06011b] font-bold">
               ↑
-            </Text>
+            </span>
           </IconButton>
         </InputPill>
 
         <MetaLine>
           <MetaText style={MONO_STYLE}>{draft.length}/240</MetaText>
-          <XStack gap={6} alignItems="center">
+          <div className="box-border flex flex-row gap-6 items-center">
             <MetaText style={MONO_STYLE}>↵ send</MetaText>
             <MetaText style={MONO_STYLE}>⇧↵ newline</MetaText>
-          </XStack>
+          </div>
         </MetaLine>
       </Foot>
     </Panel>

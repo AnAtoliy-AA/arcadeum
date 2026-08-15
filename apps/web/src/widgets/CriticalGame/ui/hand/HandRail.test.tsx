@@ -1,13 +1,14 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../../shared/config/tamagui.config';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
 import { HandRail } from './HandRail';
+
+import { TamaguiProvider } from 'tamagui';
+import config from '@/shared/config/tamagui.config';
 
 function renderRail(
   props: Partial<React.ComponentProps<typeof HandRail>> = {},
@@ -26,7 +27,7 @@ function renderRail(
   };
   return {
     ...render(
-      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+      <TamaguiProvider config={config} defaultTheme="dark">
         <HandRail {...merged} />
       </TamaguiProvider>,
     ),
@@ -120,7 +121,7 @@ describe('HandRail', () => {
       'games.table.controlPanel.enterFullscreen',
     );
     rerender(
-      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
+      <TamaguiProvider config={config} defaultTheme="dark">
         <HandRail
           handCount={5}
           defuseCount={1}

@@ -1,7 +1,6 @@
 'use client';
 
 import { memo } from 'react';
-import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   PIECE_SYMBOLS,
@@ -44,9 +43,9 @@ function PromotionModalImpl({
               key={pieceType}
               onPress={() => onSelect(pieceType)}
             >
-              <Text fontSize={40} lineHeight={1}>
+              <span className="box-border text-[40px] leading-[16px]">
                 {PIECE_SYMBOLS[pieceType][color]}
-              </Text>
+              </span>
             </PromotionOption>
           ))}
         </PromotionGrid>

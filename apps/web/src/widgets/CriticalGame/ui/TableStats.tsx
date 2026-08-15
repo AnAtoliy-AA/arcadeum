@@ -1,5 +1,4 @@
 import React from 'react';
-import { useMedia } from 'tamagui';
 import {
   TableInfo,
   TableStat,
@@ -12,6 +11,7 @@ import {
 
 import { GAME_VARIANT } from '../lib/constants';
 import type { GameVariant } from '@arcadeum/ui';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface TableStatsProps {
   deckCount: number;
@@ -26,7 +26,7 @@ export const TableStats: React.FC<TableStatsProps> = ({
   pendingDraws,
   cardVariant,
 }) => {
-  const media = useMedia();
+  const media = useMediaQuery();
   if (media.sm) return null;
   return (
     <TableInfo $variant={cardVariant as GameVariant}>

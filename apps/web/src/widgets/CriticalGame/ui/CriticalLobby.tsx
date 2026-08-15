@@ -7,7 +7,7 @@ import {
   IconButton,
   LobbyOptionSection,
 } from '@/features/games/ui';
-import { TamaguiElement, XStack, Switch, Text } from 'tamagui';
+import { TamaguiElement, Switch } from 'tamagui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
@@ -107,7 +107,7 @@ export function CriticalLobby({
           hostId={userId}
           currentVariant={cardVariant}
         />
-        <XStack alignItems="center" gap="$2" paddingTop="$2">
+        <div className="box-border flex flex-row items-center gap-2 pt-2">
           <Switch
             checked={
               !!(room.gameOptions as Record<string, unknown>)
@@ -119,16 +119,19 @@ export function CriticalLobby({
           >
             <Switch.Thumb />
           </Switch>
-          <Text fontSize="$3" opacity={ruleComingSoon.get('combos') ? 0.4 : 1}>
+          <span
+            className={'"box-border text-[16px]"'}
+            style={{ opacity: ruleComingSoon.get('combos') ? 0.4 : 1 }}
+          >
             {t('games.create.houseRuleActionCardCombos') ||
               'Action Card Combos'}
-          </Text>
+          </span>
           {ruleComingSoon.get('combos') && (
-            <Text fontSize={10} color="#f59e0b" fontWeight="600">
+            <span className="box-border text-[48px] text-[#f59e0b] font-semibold">
               {t('games.create.comingSoon') || 'Coming Soon'}
-            </Text>
+            </span>
           )}
-        </XStack>
+        </div>
       </LobbyOptionSection>
     ) : null;
 

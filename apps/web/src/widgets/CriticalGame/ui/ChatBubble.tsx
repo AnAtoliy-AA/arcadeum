@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Text as SizedText } from 'tamagui';
 import { ChatBubbleContainer } from './styles';
 
 interface ChatBubbleProps {
@@ -33,9 +32,9 @@ export function ChatBubble({ message, position = 'top' }: ChatBubbleProps) {
       $position={position}
       data-testid="chat-bubble"
     >
-      <SizedText fontSize={12} color="$color" fontWeight="600">
+      <span className="box-border text-[12px] text-[var(--color)] font-semibold">
         {message}
-      </SizedText>
+      </span>
     </ChatBubbleContainer>
   );
 }

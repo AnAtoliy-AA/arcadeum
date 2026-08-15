@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import { XStack, YStack } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -30,37 +29,27 @@ interface RulesModalProps {
 }
 
 const RulesGrid = ({ children }: { children: React.ReactNode }) => (
-  <XStack flexWrap="wrap" gap="$4">
+  <div className="box-border flex flex-row items-stretch flex-wrap gap-4">
     {children}
-  </XStack>
+  </div>
 );
 
 const CardRuleItem = ({ children }: { children: React.ReactNode }) => (
-  <XStack
-    gap="$3"
-    alignItems="flex-start"
-    backgroundColor="rgba(255, 255, 255, 0.03)"
-    padding="$3"
-    borderRadius={12}
-    borderWidth={1}
-    borderColor="rgba(255, 255, 255, 0.05)"
-    width="100%"
-    $gtSm={{ width: 'calc(50% - 8px)' }}
-  >
+  <div className="box-border flex flex-row gap-3 items-start bg-[rgba(255,_255,_255,_0.03)] p-3 rounded-[12px] border border-[rgba(255,_255,_255,_0.05)] w-full">
     {children}
-  </XStack>
+  </div>
 );
 
 const CardVisual = ({ children }: { children: React.ReactNode }) => (
-  <YStack flexShrink={0} width={80}>
+  <div className="box-border flex flex-col items-stretch shrink-0 w-[80px]">
     {children}
-  </YStack>
+  </div>
 );
 
 const CardInfo = ({ children }: { children: React.ReactNode }) => (
-  <YStack gap="$1" flex={1}>
+  <div className="box-border flex flex-col items-stretch gap-1 flex-1">
     {children}
-  </YStack>
+  </div>
 );
 
 const CardName = ({ children }: { children: React.ReactNode }) => (

@@ -1,7 +1,5 @@
 'use client';
 
-import { XStack, YStack, Text } from 'tamagui';
-
 interface TurnBadgeProps {
   isYourTurn: boolean;
   text: string;
@@ -9,36 +7,31 @@ interface TurnBadgeProps {
 
 export function TurnBadge({ isYourTurn, text }: TurnBadgeProps) {
   return (
-    <XStack
-      alignItems="center"
-      gap="$2"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      borderRadius={20}
-      borderWidth={1}
-      className={isYourTurn ? 'sb-turn-pulse' : undefined}
-      backgroundColor={
-        isYourTurn ? '$successBgSoft' : 'rgba(255, 255, 255, 0.06)'
-      }
-      borderColor={isYourTurn ? '$successBorder' : 'rgba(255, 255, 255, 0.1)'}
+    <div
+      className={`box-border flex flex-row items-center gap-2 px-3 py-2 rounded-[20px] border ${isYourTurn ? 'sb-turn-pulse' : undefined}`}
+      style={{
+        backgroundColor: isYourTurn
+          ? '$successBgSoft'
+          : 'rgba(255, 255, 255, 0.06)',
+        borderColor: isYourTurn ? '$successBorder' : 'rgba(255, 255, 255, 0.1)',
+      }}
     >
-      <YStack
-        width={7}
-        height={7}
-        borderRadius={100}
-        className={isYourTurn ? 'sb-dot-blink' : undefined}
-        backgroundColor={isYourTurn ? '$success' : '$color'}
-        opacity={isYourTurn ? 1 : 0.3}
+      <div
+        className={`box-border flex flex-col items-stretch w-[7px] h-[7px] rounded-[100px] ${isYourTurn ? 'sb-dot-blink' : undefined}`}
+        style={{
+          backgroundColor: isYourTurn ? '$success' : '$color',
+          opacity: isYourTurn ? 1 : 0.3,
+        }}
       />
-      <Text
-        fontSize={11}
-        fontWeight="600"
-        letterSpacing={0.8}
-        color={isYourTurn ? '$success' : '$color'}
-        opacity={isYourTurn ? 1 : 0.5}
+      <span
+        className={'"box-border text-[11px] font-semibold tracking-[0.8px]"'}
+        style={{
+          color: isYourTurn ? '$success' : '$color',
+          opacity: isYourTurn ? 1 : 0.5,
+        }}
       >
         {text}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 }

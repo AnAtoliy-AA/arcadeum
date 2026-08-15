@@ -166,16 +166,16 @@ export default function RematchInvitationModal({
               onClick={() => onBlockRematch(roomId)}
               disabled={accepting}
             >
-              <Text textDecorationLine="underline">
+              <span className="box-border underline">
                 {t('games.table.rematch.blockThisRematch')}
-              </Text>
+              </span>
             </BlockLink>
           )}
           {onBlockUser && hostId && (
             <BlockLink onClick={() => onBlockUser(hostId)} disabled={accepting}>
-              <Text textDecorationLine="underline">
+              <span className="box-border underline">
                 {t('games.table.rematch.blockInvitations')}
-              </Text>
+              </span>
             </BlockLink>
           )}
         </BlockOptions>

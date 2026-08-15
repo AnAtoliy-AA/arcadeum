@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, XStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -76,105 +75,88 @@ export function RulesModal({
           <ModalTitle>{t('games.tic_tac_toe_v1.rules.title')}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <YStack gap="$6">
+          <div className="box-border flex flex-col items-stretch gap-6">
             {sections.map((section) => (
-              <YStack key={section.header} gap="$3">
-                <XStack alignItems="center" gap="$3">
-                  <YStack
-                    width={42}
-                    height={42}
-                    borderRadius={12}
-                    alignItems="center"
-                    justifyContent="center"
+              <div
+                className="box-border flex flex-col items-stretch gap-3"
+                key={section.header}
+              >
+                <div className="box-border flex flex-row items-center gap-3">
+                  <div
+                    className={
+                      '"box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"'
+                    }
                     style={{ background: section.gradient }}
                   >
-                    <Text fontSize={20}>{section.icon}</Text>
-                  </YStack>
-                  <Text fontWeight="700" fontSize={18} color="#f1f5f9">
+                    <span className="box-border text-[20px]">
+                      {section.icon}
+                    </span>
+                  </div>
+                  <span className="box-border font-bold text-[18px] text-[#f1f5f9]">
                     {section.header}
-                  </Text>
-                </XStack>
-                <Text
-                  fontSize={16}
-                  lineHeight={26}
-                  color="#cbd5e1"
-                  paddingLeft={54}
-                  whiteSpace="pre-line"
-                >
+                  </span>
+                </div>
+                <span className="box-border text-[16px] leading-[26px] text-[#cbd5e1] whitespace-pre-line">
                   {section.body}
-                </Text>
-              </YStack>
+                </span>
+              </div>
             ))}
 
-            <YStack gap="$3">
-              <XStack alignItems="center" gap="$3">
-                <YStack
-                  width={42}
-                  height={42}
-                  borderRadius={12}
-                  alignItems="center"
-                  justifyContent="center"
+            <div className="box-border flex flex-col items-stretch gap-3">
+              <div className="box-border flex flex-row items-center gap-3">
+                <div
+                  className={
+                    '"box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"'
+                  }
                   style={{
                     background:
                       'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
                   }}
                 >
-                  <Text fontSize={20}>📏</Text>
-                </YStack>
-                <Text fontWeight="700" fontSize={18} color="#f1f5f9">
+                  <span className="box-border text-[20px]">📏</span>
+                </div>
+                <span className="box-border font-bold text-[18px] text-[#f1f5f9]">
                   {t('games.tic_tac_toe_v1.rules.headers.boardSizes')}
-                </Text>
-              </XStack>
-              <XStack flexWrap="wrap" gap="$3" paddingLeft={54}>
+                </span>
+              </div>
+              <div className="box-border flex flex-row items-stretch flex-wrap gap-3">
                 {BOARD_VARIANTS.map((bv) => {
                   const active = bv.size === boardSize;
                   return (
-                    <YStack
-                      key={String(bv.size)}
-                      backgroundColor={
-                        active
+                    <div
+                      className={
+                        '"box-border flex flex-col items-stretch border rounded-[14px] p-3 gap-2 basis-[22%] grow min-w-[120px]"'
+                      }
+                      style={{
+                        backgroundColor: active
                           ? 'rgba(99,102,241,0.18)'
-                          : 'rgba(255,255,255,0.03)'
-                      }
-                      borderWidth={1}
-                      borderColor={
-                        active
+                          : 'rgba(255,255,255,0.03)',
+                        borderColor: active
                           ? 'rgba(99,102,241,0.55)'
-                          : 'rgba(255,255,255,0.08)'
-                      }
-                      borderRadius={14}
-                      padding="$3"
-                      gap="$2"
-                      flexBasis="22%"
-                      flexGrow={1}
-                      minWidth={120}
+                          : 'rgba(255,255,255,0.08)',
+                      }}
+                      key={String(bv.size)}
                     >
-                      <Text
-                        fontWeight="800"
-                        fontSize={20}
-                        color={active ? '#c7d2fe' : '#f8fafc'}
+                      <span
+                        className={'"box-border font-extrabold text-[20px]"'}
+                        style={{ color: active ? '#c7d2fe' : '#f8fafc' }}
                       >
                         {bv.size === 'infinity' ? '∞' : `${bv.size}×${bv.size}`}
-                      </Text>
-                      <Text fontSize={12} color="#94a3b8">
+                      </span>
+                      <span className="box-border text-[12px] text-[#94a3b8]">
                         {t('games.tic_tac_toe_v1.rules.inARow', {
                           n: String(bv.win),
                         })}
-                      </Text>
-                    </YStack>
+                      </span>
+                    </div>
                   );
                 })}
-              </XStack>
-              <Text
-                fontSize={13}
-                color="#94a3b8"
-                paddingLeft={54}
-                opacity={0.85}
-              >
+              </div>
+              <span className="box-border text-[13px] text-[#94a3b8] opacity-[0.85]">
                 {t('games.tic_tac_toe_v1.rules.winLengths')}
-              </Text>
-            </YStack>
-          </YStack>
+              </span>
+            </div>
+          </div>
         </ModalBody>
       </ModalContent>
     </Modal>

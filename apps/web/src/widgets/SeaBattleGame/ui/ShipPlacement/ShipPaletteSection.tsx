@@ -1,7 +1,6 @@
 'use client';
 
 import { memo } from 'react';
-import { Text } from 'tamagui';
 import type { ShipConfig } from '../../types';
 import {
   ShipPalette,
@@ -41,37 +40,40 @@ export const ShipPaletteSection = memo(
     const shipItems = [...activeShips]
       .sort((a, b) => b.size - a.size)
       .map((ship) => {
-      const isPlaced = placedShipIds.has(ship.id);
-      const isSelected = selectedShipId === ship.id;
+        const isPlaced = placedShipIds.has(ship.id);
+        const isSelected = selectedShipId === ship.id;
 
-      return (
-        <ShipItem
-          key={ship.id}
-          isPlaced={isPlaced}
-          backgroundColor={
-            isSelected ? theme.accentColor + '33' : theme.boardBackground
-          }
-          borderColor={isSelected ? theme.accentColor : theme.cellBorder}
-          className={isSelected ? 'sb-selected-glow' : undefined}
-          onClick={() =>
-            !isPlaced && setSelectedShipId(isSelected ? null : ship.id)
-          }
-          data-testid="ship-palette-item"
-          {...getDragProps(ship.id)}
-        >
-          <ShipPreview>
-            {Array(ship.size)
-              .fill(null)
-              .map((_, i) => (
-                <ShipCellStyled key={i} backgroundColor={theme.shipColor} />
-              ))}
-          </ShipPreview>
-          <ShipName color={theme.textColor}>
-            {ship.name} ({ship.size}){isPlaced ? ' ✓' : isSelected ? ' ◀' : ''}
-          </ShipName>
-        </ShipItem>
-      );
-    });
+        return (
+          <ShipItem
+            className={isSelected ? 'sb-selected-glow' : undefined}
+            style={{
+              backgroundColor: isSelected
+                ? theme.accentColor + '33'
+                : theme.boardBackground,
+              borderColor: isSelected ? theme.accentColor : theme.cellBorder,
+            }}
+            key={ship.id}
+            isPlaced={isPlaced}
+            onClick={() =>
+              !isPlaced && setSelectedShipId(isSelected ? null : ship.id)
+            }
+            data-testid="ship-palette-item"
+            {...getDragProps(ship.id)}
+          >
+            <ShipPreview>
+              {Array(ship.size)
+                .fill(null)
+                .map((_, i) => (
+                  <ShipCellStyled key={i} backgroundColor={theme.shipColor} />
+                ))}
+            </ShipPreview>
+            <ShipName color={theme.textColor}>
+              {ship.name} ({ship.size})
+              {isPlaced ? ' ✓' : isSelected ? ' ◀' : ''}
+            </ShipName>
+          </ShipItem>
+        );
+      });
 
     return (
       <ShipPalette
@@ -81,26 +83,22 @@ export const ShipPaletteSection = memo(
       >
         {!isMobile && (
           <>
-            <Text
-              className="ship-palette-title"
-              color={theme.textColor}
-              fontSize="$4"
-              fontWeight="600"
-              margin={0}
-              marginBottom="$2"
+            <span
+              className={
+                '"box-border text-[18px] font-semibold -m-0 -mb-2 ship-palette-title"'
+              }
+              style={{ color: theme.textColor }}
             >
               {t('games.sea_battle_v1.table.state.shipsPalette')}
-            </Text>
-            <Text
-              fontSize={11}
-              color={theme.textSecondaryColor}
-              textAlign="center"
-              marginBottom="$2"
+            </span>
+            <span
+              className={'"box-border text-[11px] text-center -mb-2"'}
+              style={{ color: theme.textSecondaryColor }}
             >
               {t(
                 'games.sea_battle_v1.table.actions.dragHint' as TranslationKey,
               )}
-            </Text>
+            </span>
           </>
         )}
         {shipItems}

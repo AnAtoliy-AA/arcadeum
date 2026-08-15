@@ -1,4 +1,4 @@
-import { styled, YStack, Text } from 'tamagui';
+import { styled, YStack } from 'tamagui';
 
 interface GameStatusMessageProps {
   currentPlayerAlive: boolean;
@@ -20,13 +20,15 @@ export function GameStatusMessage({
   if (!currentPlayerAlive) {
     return (
       <EmptyState>
-        <Text fontSize={64}>💀</Text>
-        <YStack alignItems="center">
-          <Text fontSize={20} fontWeight="bold">
+        <span className="box-border text-[64px]">💀</span>
+        <div className="box-border flex flex-col items-center">
+          <span className="box-border text-[20px] font-bold">
             {t('games.table.eliminated.title')}
-          </Text>
-        </YStack>
-        <Text fontSize={16}>{t('games.table.eliminated.message')}</Text>
+          </span>
+        </div>
+        <span className="box-border text-[16px]">
+          {t('games.table.eliminated.message')}
+        </span>
       </EmptyState>
     );
   }

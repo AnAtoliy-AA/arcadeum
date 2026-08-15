@@ -26,7 +26,6 @@ import {
 } from '@/features/games/ui/create/styles';
 import { RulesModal } from './RulesModal';
 import { useState } from 'react';
-import { YStack, XStack, Text } from 'tamagui';
 
 interface SeaBattleOptions {
   variant?: string;
@@ -141,8 +140,8 @@ export default function SeaBattleCreationConfig({
                     </ComingSoonBadge>
                   )}
                   <GameTileIcon
-                    background={variant.gradient || undefined}
                     className={variant.gradient ? 'text-gradient' : undefined}
+                    style={{ background: variant.gradient || undefined }}
                   >
                     {variant.emoji}
                   </GameTileIcon>
@@ -160,19 +159,19 @@ export default function SeaBattleCreationConfig({
       </Section>
 
       <Section title={t('games.create.sectionHouseRules')}>
-        <YStack gap="$3">
-          <YStack gap="$1">
-            <XStack alignItems="center" gap="$2">
-              <Text fontSize="$4" fontWeight="600">
+        <div className="box-border flex flex-col items-stretch gap-3">
+          <div className="box-border flex flex-col items-stretch gap-1">
+            <div className="box-border flex flex-row items-center gap-2">
+              <span className="box-border text-[18px] font-semibold">
                 {t('games.create.seaBattleGridSize') || 'Grid Size'}
-              </Text>
+              </span>
               {ruleComingSoon.get('gridSize') && (
                 <ComingSoonBadge>
                   {t('games.create.comingSoon') || 'Coming Soon'}
                 </ComingSoonBadge>
               )}
-            </XStack>
-            <XStack gap="$2" flexWrap="wrap">
+            </div>
+            <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
               {GRID_SIZES.map((gs) => (
                 <Button
                   key={gs.value}
@@ -192,16 +191,16 @@ export default function SeaBattleCreationConfig({
                   {gs.label}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
+            </div>
+          </div>
 
-          <YStack gap="$1">
-            <XStack alignItems="center" gap="$2">
-              <Text fontSize="$4" fontWeight="600">
+          <div className="box-border flex flex-col items-stretch gap-1">
+            <div className="box-border flex flex-row items-center gap-2">
+              <span className="box-border text-[18px] font-semibold">
                 {t('games.create.seaBattleShipCount') || 'Number of Ships'}
-              </Text>
-            </XStack>
-            <XStack gap="$2" flexWrap="wrap">
+              </span>
+            </div>
+            <div className="box-border flex flex-row items-stretch gap-2 flex-wrap">
               {getShipCountOptions(options.gridSize ?? 10).map((count) => (
                 <Button
                   key={count}
@@ -217,9 +216,9 @@ export default function SeaBattleCreationConfig({
                   {count}
                 </Button>
               ))}
-            </XStack>
-          </YStack>
-        </YStack>
+            </div>
+          </div>
+        </div>
       </Section>
 
       <RulesModal

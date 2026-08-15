@@ -1,6 +1,5 @@
 'use client';
 
-import { XStack, YStack } from 'tamagui';
 import { InGameAvatar } from '@/features/games/ui';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -29,16 +28,10 @@ export function TurnBadge({
   const { t } = useTranslation();
 
   return (
-    <XStack
-      alignItems="center"
-      justifyContent="space-between"
-      gap="$3"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      borderRadius="$3"
-      className={`${styles.turnBar} ${myTurn ? styles.turnBarActive : ''}`}
+    <div
+      className={`box-border flex flex-row items-center justify-space-between gap-3 px-3 py-2 rounded-xl ${`${styles.turnBar} ${myTurn ? styles.turnBarActive : ''}`}`}
     >
-      <XStack alignItems="center" gap="$2">
+      <div className="box-border flex flex-row items-center gap-2">
         {currentEntryId ? (
           <InGameAvatar
             playerId={currentEntryId}
@@ -47,7 +40,7 @@ export function TurnBadge({
             data-testid="cascade-turn-avatar"
           />
         ) : null}
-        <YStack>
+        <div className="box-border flex flex-col items-stretch">
           <span className={styles.turnLabelMuted}>
             {myTurn
               ? t('games.cascade_v1.board.yourTurn')
@@ -70,9 +63,9 @@ export function TurnBadge({
               ? t('games.cascade_v1.board.clockwise')
               : t('games.cascade_v1.board.counterClockwise')}
           </span>
-        </YStack>
-      </XStack>
-      <XStack alignItems="center" gap="$2">
+        </div>
+      </div>
+      <div className="box-border flex flex-row items-center gap-2">
         {pendingDraw > 0 ? (
           <span className={styles.stackBadge}>
             {t('games.cascade_v1.board.stacked', { n: pendingDraw })}
@@ -92,7 +85,7 @@ export function TurnBadge({
         >
           {activeColor}
         </span>
-      </XStack>
-    </XStack>
+      </div>
+    </div>
   );
 }

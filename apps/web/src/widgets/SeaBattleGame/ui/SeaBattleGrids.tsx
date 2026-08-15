@@ -1,6 +1,6 @@
 'use client';
 import { Children, useEffect, useRef, useState, type ReactNode } from 'react';
-import { useMedia } from 'tamagui';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface SeaBattleGridsProps {
   children: ReactNode;
@@ -34,7 +34,7 @@ function idealCols(count: number): number {
  * no JS measurement needed.
  */
 export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
-  const media = useMedia();
+  const media = useMediaQuery();
   // `Children.count` includes booleans / nulls from `{cond && ...}`
   // expressions, which inflates the row count when callers conditionally
   // render the current-player board. `Children.toArray` drops those.
@@ -44,7 +44,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const [containerHeight, setContainerHeight] = useState(0);
 
   // Compute landscape synchronously from window dimensions. Tamagui's
-  // useMedia() may hydrate with SSR defaults (all false) and stay stale
+  // useMediaQuery() may hydrate with SSR defaults (all false) and stay stale
   // if no matchMedia events fire (e.g. viewport set before page load in
   // CI). Reading window directly avoids the async useEffect + useState
   // pattern that can leave isLandscape stuck at false.
@@ -194,9 +194,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   if (cols === 1) {
     return (
       <div
-        ref={containerRef}
-        data-testid="sea-battle-grids-container"
-        className="sb-grids-container-mobile"
+        className={'"sb-grids-container-mobile"'}
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -207,6 +205,8 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
           paddingRight: 4,
           boxSizing: 'border-box',
         }}
+        ref={containerRef}
+        data-testid="sea-battle-grids-container"
       >
         {children}
       </div>
@@ -272,8 +272,6 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
 
   return (
     <div
-      ref={containerRef}
-      data-testid="sea-battle-grids-container"
       className={`sb-grids-container sb-fit-grid${
         useSideLayout ? ' sb-mobile-landscape' : ''
       }`}
@@ -299,6 +297,8 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
         justifyContent: 'center',
         flex: 1,
       }}
+      ref={containerRef}
+      data-testid="sea-battle-grids-container"
     >
       {children}
     </div>

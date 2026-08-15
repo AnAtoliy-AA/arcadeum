@@ -92,11 +92,11 @@ function EmptyMessage({ children }: { children?: React.ReactNode }) {
 function StyledMessageInput(props: React.ComponentProps<typeof TextArea>) {
   return (
     <TextArea
-      {...props}
       className={cx(
         'box-border w-full min-h-[80px] text-[16px] rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] mb-4 text-[var(--color)] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
         props.className,
       )}
+      {...props}
     />
   );
 }

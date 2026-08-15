@@ -1,12 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
-import { TamaguiProvider, createTamagui } from 'tamagui';
-import { defaultConfig } from '@tamagui/config/v4';
 import { ChessBoard } from './ChessBoard';
 import type { Board, File, Rank, PieceColor } from '../types';
 import { FILES } from '../types';
-
-const tamaguiConfig = createTamagui(defaultConfig);
 
 function createEmptyBoard(): Board {
   return Array.from({ length: 8 }, () => Array(8).fill(null));
@@ -20,11 +16,7 @@ function createBoardWithPawn(color: PieceColor): Board {
 }
 
 function renderWithProvider(ui: React.ReactElement) {
-  return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+  return render(ui);
 }
 
 describe('ChessBoard', () => {

@@ -69,9 +69,9 @@ export const DropdownTrigger = ({
   [key: string]: unknown;
 }) => (
   <Button
+    className={'min-w-[120px] justify-start'}
     variant="chip"
     size="sm"
-    className="min-w-[120px] justify-start"
     active={isOpen || $isOpen}
     gameVariant={variant as GameVariant}
     {...props}

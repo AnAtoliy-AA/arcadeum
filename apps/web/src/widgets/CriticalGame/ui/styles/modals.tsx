@@ -185,9 +185,9 @@ export const CloseButton = ({
   [key: string]: unknown;
 }) => (
   <Button
+    className={'hover:rotate-[90deg]'}
     variant="icon"
     size="sm"
-    className="hover:rotate-[90deg]"
     gameVariant={(variant || $variant) as GameVariant}
     onClick={onClick || onPress}
     {...props}

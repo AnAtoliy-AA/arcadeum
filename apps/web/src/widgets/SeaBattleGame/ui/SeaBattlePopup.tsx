@@ -1,6 +1,5 @@
 'use client';
 import { useEffect } from 'react';
-import { YStack, Text } from 'tamagui';
 import { Button, GlassCard } from '@arcadeum/ui';
 import { useRouter } from 'next/navigation';
 import {
@@ -79,31 +78,23 @@ export function SeaBattlePopup({
   if (!visible) return null;
 
   return (
-    <YStack
-      position="absolute"
-      zIndex={200}
-      alignItems="center"
-      gap="$2"
-      minWidth={120}
+    <div
+      className={
+        '"box-border flex flex-col absolute z-[200] items-center gap-2 min-w-[120px]"'
+      }
       style={POSITION_STYLES[position]}
       data-testid="sea-battle-popup-container"
     >
-      <GlassCard padding="$3" alignItems="center" gap="$2" width="100%">
-        <Text fontSize={24}>🚢</Text>
-        <Text
-          fontSize={11}
-          fontWeight="600"
-          color="$color"
-          textAlign="center"
-          opacity={0.9}
-        >
+      <GlassCard className="p-3 items-center gap-2 w-full">
+        <span className="box-border text-[24px]">🚢</span>
+        <span className="box-border text-[11px] font-semibold text-[var(--color)] text-center opacity-[0.9]">
           {t('games.sea_battle_v1.challengePlayer' as TranslationKey, {
             name: playerName,
           }) || `Challenge ${playerName}?`}
-        </Text>
+        </span>
         <Button
+          className={'w-full'}
           size="sm"
-          className="w-full"
           onClick={handleChallenge}
           data-testid="challenge-button"
           aria-label={
@@ -116,6 +107,6 @@ export function SeaBattlePopup({
             'Challenge'}
         </Button>
       </GlassCard>
-    </YStack>
+    </div>
   );
 }

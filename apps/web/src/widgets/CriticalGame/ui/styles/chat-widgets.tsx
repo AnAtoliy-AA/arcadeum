@@ -20,11 +20,11 @@ export const ScopeOption = ({
   ...props
 }: ScopeOptionProps) => (
   <Button
+    className={'min-w-[120px] max-[480px]:min-w-[80px]'}
     variant={isActive ? 'primary' : 'secondary'}
     size="sm"
     active={isActive}
     gameVariant={variant as GameVariant}
-    className="min-w-[120px] max-[480px]:min-w-[80px]"
     style={{ flex: 1 }}
     {...props}
   />

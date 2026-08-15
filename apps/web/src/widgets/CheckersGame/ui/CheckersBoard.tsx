@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
-import { YStack } from 'tamagui';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
 import type { Board, CheckersPlayer } from '../types';
 
@@ -55,22 +54,21 @@ export function CheckersBoard({
   }, [boardSize, isFlipped]);
 
   return (
-    <YStack
-      width="100%"
-      maxWidth={480}
-      aspectRatio="1/1"
-      alignSelf="center"
-      borderRadius={12}
-      overflow="hidden"
-      borderWidth={2}
-      borderColor={theme.darkSquare}
-      style={{ background: theme.boardBackground, boxSizing: 'border-box' }}
+    <div
+      className={
+        '"box-border flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[12px] overflow-hidden border-[2px]"'
+      }
+      style={{ aspectRatio: '1/1', borderColor: theme.darkSquare }}
       role="grid"
       aria-label={ariaLabel}
       data-testid="checkers-board"
     >
       {rows.map((row) => (
-        <YStack key={row} flexDirection="row" flex={1} role="row">
+        <div
+          className="box-border flex items-stretch flex-row flex-1"
+          key={row}
+          role="row"
+        >
           {cols.map((col) => {
             const isDarkSquare = (row + col) % 2 === 1;
             const piece = board[row][col];
@@ -81,51 +79,39 @@ export function CheckersBoard({
             const pieceColor = piece ? playerColorMap[piece.playerId] : null;
 
             return (
-              <YStack
-                key={`${row}-${col}`}
-                flex={1}
-                alignItems="center"
-                justifyContent="center"
-                cursor={disabled ? 'default' : 'pointer'}
-                backgroundColor={
-                  isSelected
+              <div
+                className={
+                  '"box-border flex flex-col flex-1 items-center justify-center"'
+                }
+                style={{
+                  cursor: disabled ? 'default' : 'pointer',
+                  backgroundColor: isSelected
                     ? theme.selectedPiece
                     : isHighlighted
                       ? 'rgba(99, 102, 241, 0.35)'
                       : isDarkSquare
                         ? theme.darkSquare
-                        : theme.lightSquare
-                }
-                style={{
-                  boxSizing: 'border-box',
-                  aspectRatio: '1/1',
+                        : theme.lightSquare,
                 }}
+                onClick={() => handleClick(row, col)}
+                key={`${row}-${col}`}
                 role="button"
                 data-testid={`checkers-cell-${row}-${col}`}
-                onPress={() => handleClick(row, col)}
               >
                 {piece ? (
-                  <YStack
-                    width="70%"
-                    height="70%"
-                    borderRadius={9999}
-                    alignItems="center"
-                    justifyContent="center"
-                    backgroundColor={
-                      pieceColor === 'light'
-                        ? theme.lightPiece
-                        : theme.darkPiece
-                    }
-                    borderWidth={2}
-                    borderColor={
-                      pieceColor === 'light'
-                        ? theme.lightPieceBorder
-                        : theme.darkPieceBorder
+                  <div
+                    className={
+                      '"box-border flex flex-col w-[70%] h-[70%] rounded-[9999px] items-center justify-center border-[2px]"'
                     }
                     style={{
-                      boxShadow: isSelected
-                        ? `0 0 12px ${theme.selectedPiece}`
-                        : 'none',
+                      backgroundColor:
+                        pieceColor === 'light'
+                          ? theme.lightPiece
+                          : theme.darkPiece,
+                      borderColor:
+                        pieceColor === 'light'
+                          ? theme.lightPieceBorder
+                          : theme.darkPieceBorder,
                     }}
                   >
                     {piece.type === 'king' ? (
@@ -140,13 +126,13 @@ export function CheckersBoard({
                         ♚
                       </span>
                     ) : null}
-                  </YStack>
+                  </div>
                 ) : null}
-              </YStack>
+              </div>
             );
           })}
-        </YStack>
+        </div>
       ))}
-    </YStack>
+    </div>
   );
 }

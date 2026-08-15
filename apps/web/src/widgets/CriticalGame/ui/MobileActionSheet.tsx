@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { YStack, XStack, Text, styled } from 'tamagui';
+import { YStack, styled } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useScenePalette } from './ScenePaletteContext';
 
@@ -59,14 +59,14 @@ export function MobileActionSheet({
       aria-modal={true}
       style={{ boxShadow: `0 -8px 32px ${palette.opponentTurnHaloColor}` }}
     >
-      <Text fontSize={18} fontWeight="700" color="$color">
+      <span className="box-border text-[18px] font-bold text-[var(--color)]">
         {title}
-      </Text>
-      <Text fontSize={13} opacity={0.75} color="$color">
+      </span>
+      <span className="box-border text-[13px] opacity-[0.75] text-[var(--color)]">
         {description}
-      </Text>
+      </span>
 
-      <YStack gap="$2">
+      <div className="box-border flex flex-col items-stretch gap-2">
         {liveOpponents.map((opp) => {
           const isSelected = selectedTarget === opp.playerId;
           return (
@@ -81,9 +81,9 @@ export function MobileActionSheet({
             </Button>
           );
         })}
-      </YStack>
+      </div>
 
-      <XStack gap="$2" justifyContent="flex-end">
+      <div className="box-border flex flex-row items-stretch gap-2 justify-end">
         <Button variant="secondary" size="md" onClick={onCancel}>
           {cancelLabel}
         </Button>
@@ -95,7 +95,7 @@ export function MobileActionSheet({
         >
           {confirmLabel}
         </Button>
-      </XStack>
+      </div>
     </Sheet>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { YStack } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -132,7 +131,7 @@ export function ChessLobby({
   };
 
   const optionsSlot = (
-    <YStack gap="$4">
+    <div className="box-border flex flex-col items-stretch gap-4">
       <LobbyOptionSection title={t('games.chess_v1.lobby.variant')}>
         <LobbyChipGroup
           options={variantOptions}
@@ -154,7 +153,7 @@ export function ChessLobby({
           testIdPrefix="chess-time"
         />
       </LobbyOptionSection>
-    </YStack>
+    </div>
   );
 
   return (

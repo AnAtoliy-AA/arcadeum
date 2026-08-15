@@ -1,5 +1,4 @@
 'use client';
-import { YStack, XStack, Text } from 'tamagui';
 import { GlassCard, Badge, IdleBadge } from '@arcadeum/ui';
 import {
   useTranslation,
@@ -51,43 +50,38 @@ function PlayerRow({
   t,
 }: PlayerRowProps) {
   return (
-    <YStack
-      key={player.playerId}
-      alignItems="center"
-      gap="$2"
-      padding="$4"
-      backgroundColor={
-        isActive ? 'rgba(87, 195, 255, 0.05)' : 'rgba(0, 0, 0, 0.2)'
+    <div
+      className={
+        '"box-border flex flex-col items-center gap-2 p-4 border rounded-[12px] relative"'
       }
-      borderWidth={1}
-      borderColor={
-        isMe
+      style={{
+        backgroundColor: isActive
+          ? 'rgba(87, 195, 255, 0.05)'
+          : 'rgba(0, 0, 0, 0.2)',
+        borderColor: isMe
           ? 'var(--primary-color)'
           : isActive
             ? '#57c3ff'
-            : 'rgba(255,255,255,0.1)'
-      }
-      borderLeftWidth={teamColor ? 4 : 1}
-      borderLeftColor={teamColor || undefined}
-      borderRadius={12}
-      position="relative"
+            : 'rgba(255,255,255,0.1)',
+        borderLeftWidth: teamColor ? 4 : 1,
+        borderLeftColor: teamColor || undefined,
+      }}
+      key={player.playerId}
     >
       {isActive && (
-        <XStack
-          position="absolute"
-          top={-10}
-          left="50%"
-          zIndex={10}
+        <div
+          className={
+            '"box-border flex flex-row items-stretch absolute top-[-10px] left-[50%] z-[10]"'
+          }
           style={{ transform: 'translateX(-50%)' }}
         >
           <Badge variant="success" size="sm" pulse>
             {t('games.sea_battle_v1.table.players.alive' as TranslationKey)}
           </Badge>
-        </XStack>
+        </div>
       )}
-      <Text
-        fontSize={19}
-        fontWeight="600"
+      <span
+        className={'"box-border text-[19px] font-semibold"'}
         style={{ color: teamColor ?? getPlayerColor(player.playerId) }}
       >
         {resolveDisplayName(player.playerId, 'Player')}{' '}
@@ -95,36 +89,26 @@ function PlayerRow({
           ? `(${t('games.sea_battle_v1.table.players.you' as TranslationKey)})`
           : ''}
         {idlePlayers.includes(player.playerId) && <IdleBadge />}
-      </Text>
-      <YStack
-        flexDirection="row"
-        flexWrap="wrap"
-        backgroundColor="rgba(0,0,0,0.5)"
-        padding={4}
-        borderRadius={4}
-        width="100%"
-        maxWidth={320}
-        aspectRatio={1}
-      >
+      </span>
+      <div className="box-border flex items-stretch flex-row flex-wrap bg-[rgba(0,0,0,0.5)] p-4 rounded-2xl w-full max-w-[320px] aspect-[1]">
         {player.board.map((row, rIndex) =>
           row.map((cellState, cIndex) => (
-            <YStack
-              key={`${rIndex}-${cIndex}`}
-              width="10%"
-              height="10%"
-              backgroundColor={
-                CELL_COLORS[isMe || cellState > 1 ? cellState : 0] ??
-                'transparent'
+            <div
+              className={
+                '"box-border flex flex-col items-stretch w-[10%] h-[10%] border border-[rgba(255,255,255,0.1)] cursor-pointer"'
               }
-              borderWidth={1}
-              borderColor="rgba(255,255,255,0.1)"
-              cursor="pointer"
+              style={{
+                backgroundColor:
+                  CELL_COLORS[isMe || cellState > 1 ? cellState : 0] ??
+                  'transparent',
+              }}
+              key={`${rIndex}-${cIndex}`}
             />
           )),
         )}
-      </YStack>
+      </div>
       <ShipsLeft ships={player.ships} isMe={isMe} shipCount={shipCount} />
-    </YStack>
+    </div>
   );
 }
 
@@ -157,22 +141,8 @@ export function SeaBattleTable({
     : undefined;
 
   return (
-    <YStack
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-      minHeight="100%"
-      gap="$5"
-      padding="$5"
-    >
-      <GlassCard
-        flexDirection="row"
-        padding="$4"
-        paddingHorizontal="$6"
-        alignItems="center"
-        gap="$4"
-        borderRadius={100}
-      >
+    <div className="box-border flex flex-col items-center justify-center w-full min-h-full gap-5 p-5">
+      <GlassCard className="flex-row p-4 px-6 items-center gap-4 rounded-[100px]">
         <Badge
           variant={isMyTurn ? 'success' : 'info'}
           size="md"
@@ -180,8 +150,8 @@ export function SeaBattleTable({
         >
           {isMyTurn ? '🎯' : '⏳'}
         </Badge>
-        <YStack>
-          <Text fontSize={13} opacity={0.7} fontWeight="700">
+        <div className="box-border flex flex-col items-stretch">
+          <span className="box-border text-[13px] opacity-[0.7] font-bold">
             {isMyTurn
               ? t(
                   'games.sea_battle_v1.table.players.yourTurn' as TranslationKey,
@@ -190,10 +160,9 @@ export function SeaBattleTable({
                   'games.sea_battle_v1.table.players.waitingFor' as TranslationKey,
                   { player: activeName },
                 )}
-          </Text>
-          <Text
-            fontSize={17}
-            fontWeight="800"
+          </span>
+          <span
+            className={'"box-border text-[17px] font-extrabold"'}
             style={activePlayerColor ? { color: activePlayerColor } : undefined}
           >
             {isMyTurn
@@ -201,41 +170,38 @@ export function SeaBattleTable({
                   'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
                 ).replace('🎯 ', '')
               : activeName}
-          </Text>
-        </YStack>
+          </span>
+        </div>
       </GlassCard>
 
       {teamMode ? (
-        <YStack gap="$5" width="100%" alignItems="center">
+        <div className="box-border flex flex-col gap-5 w-full items-center">
           {teams!.map((team) => {
             const teamPlayers = team.playerIds
               .map((id) => playerById.get(id))
               .filter((p): p is SeaBattlePlayerState => !!p);
             if (teamPlayers.length === 0) return null;
             return (
-              <YStack key={team.id} gap="$3" width="100%" alignItems="center">
-                <XStack
-                  alignItems="center"
-                  gap="$2"
-                  paddingHorizontal="$3"
-                  paddingVertical="$1.5"
-                  borderRadius={20}
-                  backgroundColor="rgba(0,0,0,0.4)"
-                  borderWidth={1}
-                  borderLeftWidth={4}
-                  borderLeftColor={team.color}
-                  borderColor="rgba(255,255,255,0.1)"
+              <div
+                className="box-border flex flex-col gap-3 w-full items-center"
+                key={team.id}
+              >
+                <div
+                  className={
+                    '"box-border flex flex-row items-center gap-2 px-3 rounded-[20px] bg-[rgba(0,0,0,0.4)] border border-l-[4px] border-[rgba(255,255,255,0.1)]"'
+                  }
+                  style={{ borderLeftColor: team.color }}
                 >
-                  <YStack
-                    width={10}
-                    height={10}
-                    borderRadius={100}
-                    backgroundColor={team.color}
+                  <div
+                    className={
+                      '"box-border flex flex-col items-stretch w-[10px] h-[10px] rounded-[100px]"'
+                    }
+                    style={{ backgroundColor: team.color }}
                   />
-                  <Text fontSize={14} fontWeight="700" color="white">
+                  <span className="box-border text-[14px] font-bold text-[white]">
                     {team.name}
-                  </Text>
-                </XStack>
+                  </span>
+                </div>
                 <SeaBattleGrids>
                   {teamPlayers.map((player) => (
                     <PlayerRow
@@ -251,10 +217,10 @@ export function SeaBattleTable({
                     />
                   ))}
                 </SeaBattleGrids>
-              </YStack>
+              </div>
             );
           })}
-        </YStack>
+        </div>
       ) : (
         <SeaBattleGrids>
           {players.map((player) => (
@@ -271,6 +237,6 @@ export function SeaBattleTable({
           ))}
         </SeaBattleGrids>
       )}
-    </YStack>
+    </div>
   );
 }

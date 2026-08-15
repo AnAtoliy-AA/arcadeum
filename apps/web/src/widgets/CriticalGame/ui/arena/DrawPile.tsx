@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalCard } from '../../types';
 import { DeckDisplay } from '../DeckDisplay';
@@ -35,13 +34,18 @@ export function DrawPile({
   const tCompat = t as unknown as (key: string) => string;
 
   return (
-    <YStack
+    <div
+      className="box-border flex flex-col items-center gap-1 shrink-0 transition-transform duration-150 ease-out hover:scale-[1.02] active:scale-[0.98]"
+      style={{
+        opacity: disabled ? 0.55 : 1,
+        cursor: disabled ? 'default' : 'pointer',
+      }}
+      onClick={disabled ? undefined : onDraw}
       data-testid="arena-draw-pile"
       role="button"
       tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled}
       aria-label={t('games.table.arena.drawAria')}
-      onPress={disabled ? undefined : onDraw}
       onKeyDown={
         disabled
           ? undefined
@@ -52,13 +56,6 @@ export function DrawPile({
               }
             }
       }
-      alignItems="center"
-      gap="$1"
-      opacity={disabled ? 0.55 : 1}
-      cursor={disabled ? 'default' : 'pointer'}
-      hoverStyle={disabled ? undefined : { scale: 1.02 }}
-      pressStyle={disabled ? undefined : { scale: 0.98 }}
-      flexShrink={0}
     >
       {/* Desktop: 140×196 — the widget arena has more vertical real
           estate than the table-mode header. Phones: 80×112 so the
@@ -70,25 +67,18 @@ export function DrawPile({
       >
         <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
       </CardSlot>
-      <Text
+      <span
+        className="box-border text-[12px] font-extrabold tracking-[0.4px] opacity-[0.85]"
         data-testid="arena-draw-pile-count"
-        fontSize={12}
-        fontWeight="800"
-        letterSpacing={0.4}
-        opacity={0.85}
       >
         {t('games.table.state.deck')} · {count}
-      </Text>
-      <Text
+      </span>
+      <span
+        className="box-border text-[48px] font-semibold tracking-[0.4px] uppercase opacity-[0.6]"
         data-testid="arena-draw-pile-hint"
-        fontSize={10}
-        fontWeight="600"
-        letterSpacing={0.4}
-        textTransform="uppercase"
-        opacity={0.6}
       >
         {t('games.table.arena.drawHint')}
-      </Text>
-    </YStack>
+      </span>
+    </div>
   );
 }

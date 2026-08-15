@@ -1,6 +1,11 @@
 'use client';
-import { YStack, XStack, Text } from 'tamagui';
-import { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody } from '@arcadeum/ui';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from '@arcadeum/ui';
 import { type TranslationKey } from '@/shared/lib/useTranslation';
 
 interface RulesModalProps {
@@ -15,7 +20,8 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
     .split('\n')
     .map((line) => {
       const match = line.match(/•\s+(.+)\s+\((\d+)\s+.*\)\s+-\s+(.+)/);
-      if (match) return { name: match[1], size: match[2], description: match[3] };
+      if (match)
+        return { name: match[1], size: match[2], description: match[3] };
       return null;
     })
     .filter(Boolean);
@@ -24,7 +30,9 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
     {
       icon: '🎯',
       gradient: 'linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)',
-      header: t('games.sea_battle_v1.rules.headers.objective' as TranslationKey),
+      header: t(
+        'games.sea_battle_v1.rules.headers.objective' as TranslationKey,
+      ),
       text: t('games.sea_battle_v1.rules.objective' as TranslationKey),
     },
     {
@@ -36,7 +44,9 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
     {
       icon: '⚓',
       gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      header: t('games.sea_battle_v1.rules.headers.placement' as TranslationKey),
+      header: t(
+        'games.sea_battle_v1.rules.headers.placement' as TranslationKey,
+      ),
       text: t('games.sea_battle_v1.rules.placement' as TranslationKey),
     },
     {
@@ -51,84 +61,85 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
     <Modal open={isOpen} onClose={onClose}>
       <ModalContent maxWidth={850} data-testid="rules-modal">
         <ModalHeader onClose={onClose}>
-          <ModalTitle>{t('games.sea_battle_v1.rules.title' as TranslationKey)}</ModalTitle>
+          <ModalTitle>
+            {t('games.sea_battle_v1.rules.title' as TranslationKey)}
+          </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <YStack gap="$6">
+          <div className="box-border flex flex-col items-stretch gap-6">
             {sections.map((section) => (
-              <YStack key={section.header} gap="$3">
-                <XStack alignItems="center" gap="$3">
-                  <YStack
-                    width={42}
-                    height={42}
-                    borderRadius={12}
-                    alignItems="center"
-                    justifyContent="center"
+              <div
+                className="box-border flex flex-col items-stretch gap-3"
+                key={section.header}
+              >
+                <div className="box-border flex flex-row items-center gap-3">
+                  <div
+                    className={
+                      '"box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"'
+                    }
                     style={{ background: section.gradient }}
                   >
-                    <Text fontSize={20}>{section.icon}</Text>
-                  </YStack>
-                  <Text fontWeight="700" fontSize={18} color="#f1f5f9">
+                    <span className="box-border text-[20px]">
+                      {section.icon}
+                    </span>
+                  </div>
+                  <span className="box-border font-bold text-[18px] text-[#f1f5f9]">
                     {section.header}
-                  </Text>
-                </XStack>
-                <Text fontSize={18} lineHeight={27} color="#94a3b8" paddingLeft={54}>
+                  </span>
+                </div>
+                <span className="box-border text-[18px] leading-[27px] text-[#94a3b8]">
                   {section.text}
-                </Text>
-              </YStack>
+                </span>
+              </div>
             ))}
 
             {/* Fleet section */}
-            <YStack gap="$3">
-              <XStack alignItems="center" gap="$3">
-                <YStack
-                  width={42}
-                  height={42}
-                  borderRadius={12}
-                  alignItems="center"
-                  justifyContent="center"
-                  style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' }}
+            <div className="box-border flex flex-col items-stretch gap-3">
+              <div className="box-border flex flex-row items-center gap-3">
+                <div
+                  className={
+                    '"box-border flex flex-col w-[42px] h-[42px] rounded-[12px] items-center justify-center"'
+                  }
+                  style={{
+                    background:
+                      'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                  }}
                 >
-                  <Text fontSize={20}>🚢</Text>
-                </YStack>
-                <Text fontWeight="700" fontSize={18} color="#f1f5f9">
-                  {t('games.sea_battle_v1.rules.headers.ships' as TranslationKey)}
-                </Text>
-              </XStack>
-              <XStack flexWrap="wrap" gap="$3" paddingLeft={54}>
+                  <span className="box-border text-[20px]">🚢</span>
+                </div>
+                <span className="box-border font-bold text-[18px] text-[#f1f5f9]">
+                  {t(
+                    'games.sea_battle_v1.rules.headers.ships' as TranslationKey,
+                  )}
+                </span>
+              </div>
+              <div className="box-border flex flex-row items-stretch flex-wrap gap-3">
                 {ships.map((ship, idx) => (
-                  <YStack
+                  <div
+                    className="box-border flex flex-col items-stretch bg-[rgba(255,255,255,0.03)] border border-[rgba(56,189,248,0.1)] rounded-[16px] p-3 gap-2 basis-[45%] grow"
                     key={idx}
-                    backgroundColor="rgba(255,255,255,0.03)"
-                    borderWidth={1}
-                    borderColor="rgba(56,189,248,0.1)"
-                    borderRadius={16}
-                    padding="$3"
-                    gap="$2"
-                    flexBasis="45%"
-                    flexGrow={1}
                   >
-                    <XStack justifyContent="space-between" alignItems="center">
-                      <Text fontWeight="700" color="#f8fafc">{ship?.name}</Text>
-                      <XStack
-                        backgroundColor="rgba(56,189,248,0.1)"
-                        paddingHorizontal="$2"
-                        paddingVertical={2}
-                        borderRadius={8}
-                      >
-                        <Text color="#38bdf8" fontSize={11} fontWeight="700" textTransform="uppercase">
-                          {ship?.size} {t('games.sea_battle_v1.table.state.cells' as TranslationKey)}
-                        </Text>
-                      </XStack>
-                    </XStack>
-                    <Text fontSize={14} color="#64748b" lineHeight={20}>
+                    <div className="box-border flex flex-row justify-space-between items-center">
+                      <span className="box-border font-bold text-[#f8fafc]">
+                        {ship?.name}
+                      </span>
+                      <div className="box-border flex flex-row items-stretch bg-[rgba(56,189,248,0.1)] px-2 py-2 rounded-[8px]">
+                        <span className="box-border text-[#38bdf8] text-[11px] font-bold uppercase">
+                          {ship?.size}{' '}
+                          {t(
+                            'games.sea_battle_v1.table.state.cells' as TranslationKey,
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="box-border text-[14px] text-[#64748b] leading-[20px]">
                       {ship?.description}
-                    </Text>
-                  </YStack>
+                    </span>
+                  </div>
                 ))}
-              </XStack>
-            </YStack>
-          </YStack>
+              </div>
+            </div>
+          </div>
         </ModalBody>
       </ModalContent>
     </Modal>

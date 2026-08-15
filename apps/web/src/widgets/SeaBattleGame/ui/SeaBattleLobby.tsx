@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { XStack, YStack, Text, useMedia } from 'tamagui';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
@@ -17,6 +16,7 @@ import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';
 import { HouseRulesPanel } from './HouseRulesPanel';
 import type { SeaBattleGameOptions } from '@/features/games/sea-battle/lobby';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
   const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
@@ -81,7 +81,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     roomId: room.id,
     userId: userId ?? '',
   });
-  const media = useMedia();
+  const media = useMediaQuery();
 
   const roomOpts = (room.gameOptions ?? {}) as Record<string, unknown>;
   const [currentGridSize, setCurrentGridSize] = React.useState<number>(
@@ -238,49 +238,39 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // dedicated SeaBattleTeamPanel above the lobby so they don't compete with
   // the Start button for stacking context.
   const renderThemeChip = (variant: (typeof SEA_BATTLE_VARIANTS)[number]) => (
-    <XStack
+    <div
+      className={
+        '"box-border flex flex-row items-center gap-2 px-3 py-2 rounded-[12px] border-[1.5px] cursor-pointer shrink-0"'
+      }
+      style={{
+        borderColor:
+          selectedVariant === variant.id
+            ? 'rgba(96,165,250,0.6)'
+            : 'rgba(255,255,255,0.1)',
+        backgroundColor:
+          selectedVariant === variant.id
+            ? 'rgba(96,165,250,0.12)'
+            : 'rgba(255,255,255,0.03)',
+      }}
       key={variant.id}
-      alignItems="center"
-      gap="$2"
-      paddingHorizontal="$3"
-      paddingVertical="$2"
-      borderRadius={12}
-      borderWidth={1.5}
-      cursor="pointer"
-      flexShrink={0}
       onClick={() => handleVariantSelect(variant.id)}
-      borderColor={
-        selectedVariant === variant.id
-          ? 'rgba(96,165,250,0.6)'
-          : 'rgba(255,255,255,0.1)'
-      }
-      backgroundColor={
-        selectedVariant === variant.id
-          ? 'rgba(96,165,250,0.12)'
-          : 'rgba(255,255,255,0.03)'
-      }
     >
-      <Text fontSize={14}>{variant.emoji}</Text>
-      <Text
-        fontSize={12}
-        fontWeight="500"
-        color={selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1'}
+      <span className="box-border text-[14px]">{variant.emoji}</span>
+      <span
+        className={'"box-border text-[12px] font-medium"'}
+        style={{
+          color: selectedVariant === variant.id ? '#93c5fd' : '#cbd5e1',
+        }}
       >
         {t(variant.name as TranslationKey)}
-      </Text>
-    </XStack>
+      </span>
+    </div>
   );
 
   const themeLabel = (
-    <Text
-      fontSize="$2"
-      fontWeight="600"
-      textTransform="uppercase"
-      letterSpacing={0.5}
-      color="$textSecondary"
-    >
+    <span className="box-border text-[14px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
       {t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
-    </Text>
+    </span>
   );
 
   const showTeamPanel = room.status === 'lobby' && (isHost || teamMode);
@@ -305,41 +295,29 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
       {teamPanelSlot}
       {isHost && room.status === 'lobby' ? (
         themeListHorizontal ? (
-          <YStack gap="$3" width="100%" minWidth={0}>
-            <YStack gap="$2" width="100%" minWidth={0}>
+          <div className="box-border flex flex-col items-stretch gap-3 w-full min-w-0">
+            <div className="box-border flex flex-col items-stretch gap-2 w-full min-w-0">
               {themeLabel}
-              <XStack
-                gap="$2"
-                width="100%"
-                minWidth={0}
-                overflow="scroll"
-                paddingBottom="$1"
-              >
+              <div className="box-border flex flex-row items-stretch gap-2 w-full min-w-0 overflow-scroll pb-1">
                 {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
-              </XStack>
-            </YStack>
+              </div>
+            </div>
             <SeaBattleThemeProvider variant={selectedVariant}>
               <SeaBattleThemePreview selectedVariant={selectedVariant} />
             </SeaBattleThemeProvider>
-          </YStack>
+          </div>
         ) : (
-          <XStack gap="$4" width="100%" minWidth={0} alignItems="stretch">
+          <div className="box-border flex flex-row gap-4 w-full min-w-0 items-stretch">
             <SeaBattleThemeProvider variant={selectedVariant}>
               <SeaBattleThemePreview selectedVariant={selectedVariant} />
             </SeaBattleThemeProvider>
-            <YStack gap="$2" flex={1} minWidth={0} minHeight={0}>
+            <div className="box-border flex flex-col items-stretch gap-2 flex-1 min-w-0 min-h-0">
               {themeLabel}
-              <YStack
-                gap="$2"
-                flex={1}
-                minHeight={0}
-                overflow="scroll"
-                paddingRight="$1"
-              >
+              <div className="box-border flex flex-col items-stretch gap-2 flex-1 min-h-0 overflow-scroll pr-1">
                 {SEA_BATTLE_VARIANTS.map(renderThemeChip)}
-              </YStack>
-            </YStack>
-          </XStack>
+              </div>
+            </div>
+          </div>
         )
       ) : null}
 
@@ -369,7 +347,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   );
 
   return (
-    <YStack flex={1} minHeight={0}>
+    <div className="box-border flex flex-col items-stretch flex-1 min-h-0">
       <ReusableGameLobby
         room={effectiveRoom}
         userId={userId ?? ''}
@@ -413,6 +391,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
         enableBots={true}
         onRuleComingSoonChange={setRuleComingSoon}
       />
-    </YStack>
+    </div>
   );
 });

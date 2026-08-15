@@ -1,15 +1,8 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { PlayerAvatar } from './PlayerAvatar';
 import { describe, it, expect, vi } from 'vitest';
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('PlayerAvatar', () => {
   it('renders initials when no avatarUrl', () => {
@@ -57,16 +50,14 @@ describe('PlayerAvatar', () => {
     expect(screen.getByTestId('pa-badge')).toBeInTheDocument();
 
     rerender(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <PlayerAvatar name="J" badgeUrl="/b.png" size="md" data-testid="pa" />
-      </TamaguiProvider>,
+              <PlayerAvatar name="J" badgeUrl="/b.png" size="md" data-testid="pa" />
+      ,
     );
     expect(screen.getByTestId('pa-badge')).toBeInTheDocument();
 
     rerender(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <PlayerAvatar name="J" badgeUrl="/b.png" size="card" data-testid="pa" />
-      </TamaguiProvider>,
+              <PlayerAvatar name="J" badgeUrl="/b.png" size="card" data-testid="pa" />
+      ,
     );
     expect(screen.getByTestId('pa-badge')).toBeInTheDocument();
   });
@@ -99,14 +90,13 @@ describe('PlayerAvatar', () => {
     expect(screen.getByTestId('pa-frame')).toBeInTheDocument();
 
     rerender(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <PlayerAvatar
+              <PlayerAvatar
           name="J"
           frameColor="#ff00ff"
           size="md"
           data-testid="pa"
         />
-      </TamaguiProvider>,
+      ,
     );
     expect(screen.getByTestId('pa-frame')).toBeInTheDocument();
   });
@@ -118,9 +108,8 @@ describe('PlayerAvatar', () => {
     expect(screen.getByTestId('pa-aura')).toBeInTheDocument();
 
     rerender(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <PlayerAvatar name="J" auraColor="#ff0" size="md" data-testid="pa" />
-      </TamaguiProvider>,
+              <PlayerAvatar name="J" auraColor="#ff0" size="md" data-testid="pa" />
+      ,
     );
     expect(screen.getByTestId('pa-aura')).toBeInTheDocument();
   });
@@ -140,15 +129,14 @@ describe('PlayerAvatar', () => {
     expect(screen.queryByText('Level 42')).toBeNull();
 
     rerender(
-      <TamaguiProvider config={config} defaultTheme="dark">
-        <PlayerAvatar
+              <PlayerAvatar
           name="Jane"
           bannerColor="#0f0"
           presenceLine="Level 42"
           size="card"
           data-testid="pa"
         />
-      </TamaguiProvider>,
+      ,
     );
     expect(screen.getByTestId('pa-banner')).toBeInTheDocument();
     expect(screen.getByTestId('pa-name')).toHaveTextContent('Jane');

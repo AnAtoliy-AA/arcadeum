@@ -7,7 +7,6 @@ import {
   SkeletonButton,
   SkeletonTableRow,
 } from './Skeleton';
-import { YStack, XStack, Text, styled } from 'tamagui';
 
 const meta: Meta<typeof Skeleton> = {
   title: 'Shared/Skeleton',
@@ -190,75 +189,53 @@ export const LeaderboardSkeleton: Story = {
 };
 
 // Styled helpers for stories
-const Container = styled(YStack, {
-  gap: '$4',
-  padding: '$4',
-});
+type DivProps = { className?: string } & React.HTMLAttributes<HTMLDivElement>;
+type SpanProps = { className?: string } & React.HTMLAttributes<HTMLSpanElement>;
 
-const Row = styled(XStack, {
-  alignItems: 'center',
-  gap: '$4',
-});
+const Container = ({ className, ...props }: DivProps) => (
+  <div className={`flex flex-col gap-4 p-4 ${className ?? ''}`} {...props} />
+);
 
-const Label = styled(Text, {
-  width: 100,
-  fontSize: '$2',
-  color: '$color',
-  opacity: 0.7,
-});
+const Row = ({ className, ...props }: DivProps) => (
+  <div className={`flex items-center gap-4 ${className ?? ''}`} {...props} />
+);
 
-const Card = styled(YStack, {
-  padding: '$5',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: '$5',
-  gap: '$3',
-  maxWidth: 300,
-});
+const Label = ({ className, ...props }: SpanProps) => (
+  <span className={`w-[100px] text-[14px] leading-[18px] text-[var(--color)] opacity-[0.7] ${className ?? ''}`} {...props} />
+);
 
-const ProfileCard = styled(XStack, {
-  alignItems: 'center',
-  gap: '$4',
-  padding: '$4',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: '$4',
-  maxWidth: 250,
-});
+const Card = ({ className, ...props }: DivProps) => (
+  <div className={`flex max-w-[300px] flex-col gap-3 rounded-3xl border border-[var(--borderColor)] p-5 ${className ?? ''}`} {...props} />
+);
 
-const ProfileInfo = styled(YStack, {
-  gap: '$2',
-});
+const ProfileCard = ({ className, ...props }: DivProps) => (
+  <div className={`flex max-w-[250px] items-center gap-4 rounded-2xl border border-[var(--borderColor)] p-4 ${className ?? ''}`} {...props} />
+);
 
-const TableContainer = styled(YStack, {
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: '$4',
-  overflow: 'hidden',
-});
+const ProfileInfo = ({ className, ...props }: DivProps) => (
+  <div className={`flex flex-col gap-2 ${className ?? ''}`} {...props} />
+);
 
-const TableRow = styled(XStack, {
-  display: 'grid' as unknown as 'inherit',
-  gridTemplateColumns: '2fr 1fr 1fr 1fr',
-  gap: '$4',
-  padding: '$4',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-});
+const TableContainer = ({ className, ...props }: DivProps) => (
+  <div className={`overflow-hidden rounded-2xl border border-[var(--borderColor)] ${className ?? ''}`} {...props} />
+);
 
-const LeaderboardContainer = styled(YStack, {
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: '$5',
-  overflow: 'hidden',
-});
+const TableRow = ({ className, ...props }: DivProps) => (
+  <div
+    className={`gap-4 border-b border-[var(--borderColor)] p-4 ${className ?? ''}`}
+    style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr' }}
+    {...props}
+  />
+);
 
-const LeaderboardRow = styled(XStack, {
-  display: 'grid' as unknown as 'inherit',
-  gridTemplateColumns: '60px 2fr 80px 80px 80px 100px',
-  gap: '$2',
-  padding: '$4 $5',
-  borderBottomWidth: 1,
-  borderBottomColor: '$borderColor',
-  alignItems: 'center',
-});
+const LeaderboardContainer = ({ className, ...props }: DivProps) => (
+  <div className={`overflow-hidden rounded-3xl border border-[var(--borderColor)] ${className ?? ''}`} {...props} />
+);
+
+const LeaderboardRow = ({ className, ...props }: DivProps) => (
+  <div
+    className={`gap-2 border-b border-[var(--borderColor)] px-5 py-4 ${className ?? ''}`}
+    style={{ display: 'grid', gridTemplateColumns: '60px 2fr 80px 80px 80px 100px' }}
+    {...props}
+  />
+);

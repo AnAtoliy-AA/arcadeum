@@ -1,7 +1,5 @@
 'use client';
 
-import './tamagui.config';
-
 export * from './components/Button';
 
 export * from './components/Avatar/Avatar';
@@ -76,4 +74,3 @@ export * from './components/DeltaChip';
 export * from './components/TrendPill';
 export * from './components/ProfileMenu';
 
-export { XStack, YStack, ZStack, ScrollView, ThemeableStack } from 'tamagui';

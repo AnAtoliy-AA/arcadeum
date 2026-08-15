@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { YStack, Text } from 'tamagui';
 import { RarityBorder } from './RarityBorder';
 
 const meta: Meta<typeof RarityBorder> = {
@@ -12,16 +11,12 @@ type Story = StoryObj<typeof RarityBorder>;
 
 function Sample() {
   return (
-    <YStack
-      width={120}
-      height={120}
-      backgroundColor="$backgroundHover"
-      alignItems="center"
-      justifyContent="center"
-      borderRadius="$3"
+    <div
+      className="flex items-center justify-center rounded-xl bg-[var(--backgroundHover)]"
+      style={{ width: 120, height: 120 }}
     >
-      <Text fontSize="$2">item preview</Text>
-    </YStack>
+      <span className="text-[14px] leading-[18px]">item preview</span>
+    </div>
   );
 }
 

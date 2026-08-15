@@ -20,18 +20,12 @@ vi.hoisted(() => {
 import React from 'react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { PageLayout } from './PageLayout';
 
 expect.extend(matchers);
 
 const render = (ui: React.ReactElement) => {
-  return rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>
-  );
+  return rtlRender(ui);
 };
 
 describe('PageLayout', () => {

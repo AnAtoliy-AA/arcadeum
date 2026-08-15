@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { CloseIcon } from '../Icons';
 import { Button } from '../Button/Button';
@@ -81,7 +81,7 @@ export const Modal = memo(function Modal({ open, onClose, children }: ModalProps
         role="dialog"
         aria-modal="true"
         tabIndex={-1}
-        data-state={open ? 'open' : 'closed'}
+        data-state="open"
       >
         {children}
       </div>

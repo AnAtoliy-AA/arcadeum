@@ -44,7 +44,7 @@ export function ParticipantName({
   );
 }
 
-// Native checkbox — appearance:none + pseudo-selectors cannot be expressed in Tamagui.
+// Native checkbox — appearance:none + pseudo-selectors handled via Tailwind classes.
 // Styles injected via a <style> block rendered alongside the component.
 const checkboxStyles = `
   .history-checkbox {

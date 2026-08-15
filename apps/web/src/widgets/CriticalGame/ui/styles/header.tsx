@@ -34,7 +34,7 @@ export function GameHeader({
       }}
       {...props}
     >
-      {/* web-only: Tamagui applied the variant's top line as a ::before */}
+      {/* web-only: the variant's top line used to be a ::before */}
       <div
         aria-hidden
         className="absolute top-0 left-[28px] right-[28px] h-[2px] rounded-[1px]"

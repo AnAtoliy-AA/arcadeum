@@ -14,9 +14,9 @@ Enforces an opinionated UI baseline to prevent AI-generated interface slop.
 
 ## Stack
 
-- Use Tamagui primitives (`YStack`, `XStack`, `Text`, `Stack`) for layout
+- Use plain React elements with Tailwind classes for layout (Tamagui was removed)
 - Use `@arcadeum/ui` components before creating new ones
-- Use design tokens from `packages/ui/src/tamagui.config.ts`
+- Use design tokens as CSS variables (`var(--primary)`, `var(--glassBg)`) minted from `packages/ui/src/themeDefinitions.ts` — see `/tailwind-pro` for the token → class map
 
 ## Components
 

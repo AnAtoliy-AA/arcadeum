@@ -26,18 +26,23 @@ description: Build cross-platform mobile apps with React Native and Expo. Use wh
 
 ```tsx
 import { Stack } from 'expo-router';
-import { YStack, Text } from 'tamagui';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function GameScreen() {
   return (
     <Stack>
       <Stack.Screen options={{ title: 'Game' }} />
-      <YStack padding="$4" gap="$4">
-        <Text fontSize="$2xl" fontWeight="bold">Game</Text>
-      </YStack>
+      <View style={styles.container}>
+        <Text style={styles.title}>Game</Text>
+      </View>
     </Stack>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { padding: 16, gap: 16 },
+  title: { fontSize: 24, fontWeight: 'bold' },
+});
 ```
 
 ### Platform-Specific Code

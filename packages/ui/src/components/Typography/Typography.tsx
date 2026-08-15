@@ -5,7 +5,7 @@ import { cx } from '../../utils/cx';
 function normalizeLineHeight(
   lineHeight: number | string,
 ): React.CSSProperties['lineHeight'] {
-  // Tamagui treated numeric lineHeight as px (e.g. 24 → 24px). React would
+  // The legacy runtime treated numeric lineHeight as px (e.g. 24 → 24px). React would
   // emit a unitless value (24 → 24em), ballooning the rendered line box.
   if (typeof lineHeight === 'number') {
     return lineHeight >= 10 ? `${lineHeight}px` : lineHeight;
@@ -33,7 +33,7 @@ export type TypographyProps = {
   id?: string;
   numberOfLines?: number;
   ref?: React.Ref<HTMLElement>;
-  // ─── Tamagui-compat props (mapped to style/className) ───
+  // ─── legacy-compat props (mapped to style/className) ───
   fontWeight?: string | number;
   fontSize?: number | string;
   marginTop?: string | number;

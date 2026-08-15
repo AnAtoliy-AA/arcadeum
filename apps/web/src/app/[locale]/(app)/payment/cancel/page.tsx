@@ -16,7 +16,7 @@ export async function generateMetadata({
 
 /**
  * Payment Cancel Page
- * Use PaymentCancelClient for client-side only rendering to avoid Tamagui hydration issues.
+ * Use PaymentCancelClient for client-side only rendering to avoid SSR/client hydration mismatch.
  */
 export default function PaymentCancelPage() {
   return <PaymentCancelClient />;

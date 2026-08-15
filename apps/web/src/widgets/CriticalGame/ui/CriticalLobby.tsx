@@ -164,7 +164,7 @@ export function CriticalLobby({
         isHost={isHost}
         startBusy={startBusy}
         isFullscreen={isFullscreen}
-        // ReusableGameLobby.types still declares TamaguiElement; HTMLElement
+        // ReusableGameLobby.types accepts HTMLElement refs; HTMLElement
         // is not assignable to it, so narrow the ref type for the handoff.
         containerRef={containerRef as React.RefObject<never>}
         onToggleFullscreen={onToggleFullscreen}

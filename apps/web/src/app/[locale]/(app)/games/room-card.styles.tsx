@@ -4,7 +4,7 @@ import { cx } from '@arcadeum/ui/utils/cx';
 // ─── Styled Components ────────────────────────────────────────────────────────
 
 /**
- * Runtime `hoverStyle` prop (Tamagui-compat) → CSS custom properties that
+ * Runtime hover style prop → CSS custom properties that
  * drive the `.arc-room-card:hover` rule below. Only keys actually present in
  * the passed object are set, so unset keys fall back to the base hover look.
  */

@@ -30,9 +30,9 @@ interface MobileHandBarProps {
  * so the bar stays thumb-reachable. Pairs with `paddingBottom: 64` on
  * the game body so cards don't hide under the bar.
  *
- * Uses raw inline styles rather than tamagui because:
+ * Uses raw inline styles because:
  *   - `position: fixed` + `env(safe-area-inset-bottom)` aren't part of
- *     the tamagui style surface
+ *     the Tailwind class surface
  *   - the bar lives outside the normal layout flow so flex/grid prop
  *     interplay doesn't help
  */

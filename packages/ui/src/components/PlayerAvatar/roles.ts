@@ -1,7 +1,7 @@
 /**
  * VIP tier visuals for player avatars. Only the "prestige" roles get a visible
  * treatment (aura tint, nameplate color, glyph); everyday roles render normally.
- * Colors mirror the role tokens in `tamagui.config.ts`
+ * Colors mirror the role tokens in the static palette (see /tailwind-pro)
  * (`rolePremium` / `roleVip` / `roleSupporter`).
  */
 const ROLE_TIER_COLOR: Record<string, string> = {

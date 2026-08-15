@@ -31,13 +31,13 @@ export type InputProps = {
   flex?: number | string;
   width?: number | string;
   minWidth?: number | string;
-  /** Tamagui responsive shorthand — mapped to minWidth/width. */
+  /** responsive shorthand (legacy) — mapped to minWidth/width. */
   $xs?: { minWidth?: number | string; width?: number | string };
-  /** Tamagui-compat: fires with the new value. */
+  /** Legacy-compat: fires with the new value. */
   onChangeText?: (text: string) => void;
-  /** Tamagui-compat: fires on Enter. */
+  /** Legacy-compat: fires on Enter. */
   onSubmitEditing?: () => void;
-  /** Tamagui-compat alias for data-testid. */
+  /** Legacy-compat alias for data-testid. */
   testID?: string;
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'onChange'>;
 

@@ -47,7 +47,7 @@ const NEUTRAL_BG = 'rgba(255, 255, 255, 0.07)';
 const NEUTRAL_BORDER = 'rgba(255, 255, 255, 0.10)';
 
 // Defuse-card pill shape lookup. Hoisted so the literal object isn't
-// rebuilt on every render — that re-allocation prevented tamagui from
+// rebuilt on every render — that re-allocation prevented class caching
 // memoizing the style hash, so the rendered class changed across renders
 // even when nothing visual moved.
 const DEFUSE_VARIANT = {
@@ -201,7 +201,7 @@ export function HandRail({
             hover-confirm what 'Play 3× Targeted…' truncates to. The
             arena's ComboCard is the canonical surface for the verbose
             label — the rail is the action surface. Wrapper div is the
-            only place we can attach `title` since tamagui's Button
+            only place we can attach `title` since the legacy Button
             doesn't forward HTML title through. */}
         <div title={combo.label}>
           <RailButton

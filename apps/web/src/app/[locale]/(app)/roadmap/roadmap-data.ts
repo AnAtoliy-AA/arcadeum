@@ -35,7 +35,7 @@ export const TIERS: Tier[] = [
       },
       {
         title: 'Dark Mode',
-        desc: "System-wide theme toggle using Tamagui's built-in theme system.",
+        desc: 'System-wide theme toggle using the CSS-variable theme system (ThemeContext + themeDefinitions).',
         effort: '1 day',
       },
       {

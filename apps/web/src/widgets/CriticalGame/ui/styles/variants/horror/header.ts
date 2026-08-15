@@ -1,12 +1,12 @@
 import { VARIANT_COLORS } from '../../variant-palette';
-import { TamaguiTheme } from '../types';
+import { VariantTheme } from '../types';
 
 const C = VARIANT_COLORS.horror;
 
 export const headerStyles = {
-  getBackground: (_theme: TamaguiTheme) =>
+  getBackground: (_theme: VariantTheme) =>
     `linear-gradient(135deg, ${C.background}f8, #000000cc)`,
-  getBorder: (_theme: TamaguiTheme) => 'rgba(16, 185, 129, 0.1)',
+  getBorder: (_theme: VariantTheme) => 'rgba(16, 185, 129, 0.1)',
   getLineBackground: () =>
     `linear-gradient(90deg, transparent 0%, ${C.primary} 50%, transparent 100%)`,
   getLineShadow: () => `0 0 15px ${C.primary}80`,

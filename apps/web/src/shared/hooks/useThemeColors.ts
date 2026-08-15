@@ -8,7 +8,7 @@ import { themeDefinitions } from '@arcadeum/ui/themeDefinitions';
  * Returns the resolved theme colors as plain CSS values (strings), keyed by
  * themeDefinitions keys (e.g. `colors.primary` → '#0369a1').
  *
- * Replaces Tamagui's `useThemeColors()`; values are read from the CSS variables
+ * Replaces the legacy Tamagui `useTheme()`; values are read from the CSS variables
  * minted on <html> by ThemeContext, so they stay in sync on theme switch.
  */
 export function useThemeColors(): Record<string, string> {

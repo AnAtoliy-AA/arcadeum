@@ -305,26 +305,16 @@ features/
 
 **Themed Component:**
 
-```typescript
-import { YStack, Text, styled } from 'tamagui';
+```tsx
+import { cx } from '@arcadeum/ui/utils/cx';
 
 function MyComponent() {
   return (
-    <Container>
-      <Title>My Component</Title>
-    </Container>
+    <div className="box-border flex flex-col gap-4 bg-[var(--background)] p-4">
+      <h1 className="text-[var(--color)]">My Component</h1>
+    </div>
   );
 }
-
-const Container = styled(YStack, {
-  backgroundColor: '$background',
-  padding: '$4',
-});
-
-const Title = styled(Text, {
-  tag: 'h1',
-  color: '$color',
-});
 ```
 
 **Zustand Store:**
@@ -353,15 +343,13 @@ export const useGameStore = create<GameState>()(
 
 ### Styling Best Practices
 
-1. **Use Tamagui** - `YStack`, `XStack`, `Text`, and `styled()` from `tamagui` for component-specific styles
-2. **Use Tamagui tokens** - `$background`, `$color`, `$borderColor`, `$accent`, etc. for theme-aware values
-3. **Keep styles local** - Define styles within the component file or a companion `styles.ts`
+1. **Use Tailwind CSS** - Tailwind classes on plain React elements for all component styles (Tamagui was removed; never use `styled()`/`XStack`/`YStack`/`$tokens`)
+2. **Use theme tokens as CSS variables** - `var(--background)`, `var(--color)`, `var(--borderColor)`, `var(--accent)`, etc. via arbitrary values (`bg-[var(--background)]`); static palettes are hex literals. See `/tailwind-pro` for the full map
+3. **Keep styles local** - Define class strings within the component file or a companion `*.classes.ts` / `styles.tsx` module; merge with `cx`
 
-```typescript
+```tsx
 // Good
-const Container = styled(YStack, {
-  backgroundColor: '$background',
-});
+<div className="box-border bg-[var(--background)] p-4">
 
 // Bad
 <div style={{ backgroundColor: 'var(--background)' }}>
@@ -692,7 +680,7 @@ In addition for the Web App:
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
-- [Tamagui](https://tamagui.dev/docs/intro/introduction)
+- [Tailwind CSS](https://tailwindcss.com/docs/installation)
 - [Zustand](https://zustand-demo.pmnd.rs/)
 - [React Query](https://tanstack.com/query/latest/docs/react/overview)
 

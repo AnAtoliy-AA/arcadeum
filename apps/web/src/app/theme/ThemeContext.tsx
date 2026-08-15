@@ -134,12 +134,12 @@ export function AppThemeProvider({
 
     // Defer expensive theme token iteration to idle time
     const applyTokenWrites = () => {
-      const activeTamaguiTheme = themeDefinitions[resolvedTheme] as Record<
+      const activeTheme = themeDefinitions[resolvedTheme] as Record<
         string,
         { val?: string; variable?: string } | string
       >;
-      if (activeTamaguiTheme) {
-        Object.entries(activeTamaguiTheme).forEach(([key, value]) => {
+      if (activeTheme) {
+        Object.entries(activeTheme).forEach(([key, value]) => {
           if (value) {
             const stringValue =
               typeof value === 'object' && value !== null

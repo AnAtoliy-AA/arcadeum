@@ -1,9 +1,9 @@
 /**
  * Tailwind class maps for the shared Button/LinkButton.
  *
- * Colors reference the runtime CSS variables emitted by theme providers
- * (Tamagui themes minted on <html>, AppThemeProvider, tokens.scss), so the
- * button keeps working across web light/dark/neon/purple themes.
+ * Colors reference the runtime CSS variables minted on <html> by the theme
+ * provider (themeDefinitions via ThemeContext, tokens.scss), so the button
+ * keeps working across web light/dark/neon/purple themes.
  */
 import type { ButtonShape, ButtonVariant, GameVariant } from './types';
 import { cx } from '../../utils/cx';

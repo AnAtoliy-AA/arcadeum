@@ -29,7 +29,7 @@ const KIND_BORDER: Record<ComboKind, string> = {
 };
 
 // Pre-built filter strings keyed by kind so we don't rebuild the template
-// literal on every render. tamagui's RN-style `shadow*` props translate to
+// literal on every render. RN-style `shadow*` props translate to
 // `box-shadow` on web; emitting both there and via `filter: drop-shadow`
 // painted the glow twice — we now drop the shadow props entirely and rely
 // on `filter` only, which is also the only path that paints consistently

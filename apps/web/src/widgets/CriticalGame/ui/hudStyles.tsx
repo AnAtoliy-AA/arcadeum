@@ -32,7 +32,7 @@ const HUD_KEYFRAMES_CSS = `
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* §4.1 — HandCard glow via ::after pseudo-element instead of tamagui's
+/* §4.1 — HandCard glow via ::after pseudo-element instead of box-shadow
    shadow* props. The pseudo-layer composites on the GPU and animates
    the box-shadow on the compositor thread; the role/selection state
    are attribute-keyed so React doesn't have to push a render to update

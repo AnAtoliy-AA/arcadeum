@@ -212,7 +212,7 @@ function RowActionButton({
   onClick,
   'data-testid': testId,
 }: RowActionButtonProps) {
-  // CSS custom properties from the active Tamagui theme so this button reads
+  // CSS custom properties from the active theme so this button reads
   // correctly under both dark and light themes.
   return (
     <button

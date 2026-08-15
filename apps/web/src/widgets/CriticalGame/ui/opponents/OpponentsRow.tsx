@@ -48,7 +48,7 @@ export function OpponentsRow({
   resolveDisplayName,
   logs,
 }: OpponentsRowProps) {
-  // Use the ≤480px hook (not tamagui's `sm`) so tablet portrait keeps
+  // Use the ≤480px hook (not the legacy `sm` breakpoint) so tablet portrait keeps
   // the desktop layout. Mobile picks up scroll-snap + smaller tiles.
   // Value comes from `NarrowViewportProvider` at the widget root.
   const isMobile = useIsNarrow(480);

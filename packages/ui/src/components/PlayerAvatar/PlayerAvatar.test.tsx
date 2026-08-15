@@ -72,7 +72,7 @@ describe('PlayerAvatar', () => {
         data-testid="pa"
       />,
     );
-    // Tamagui applies zIndex via class, so read the resolved computed value.
+    // zIndex applies via class, so read the resolved computed value.
     const badgeZ = Number(getComputedStyle(screen.getByTestId('pa-badge')).zIndex);
     const imgZ = Number(getComputedStyle(screen.getByRole('img', { name: 'J' })).zIndex);
     expect(badgeZ).toBeGreaterThan(imgZ);

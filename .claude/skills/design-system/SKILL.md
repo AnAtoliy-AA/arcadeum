@@ -151,16 +151,16 @@ z-index:
 - Never use different shadow styles for the same component type
 - Never hardcode z-index values — use the z-index scale
 
-## Tamagui Integration
+## Tailwind & CSS-variable Integration
 
-Check `packages/ui/src/tamagui.config.ts` for existing tokens before creating new ones:
+Check `packages/ui/src/themeDefinitions.ts` for existing theme tokens (minted as CSS variables on `<html>`) before creating new ones:
 
 ```tsx
 // Use tokens
-<Box padding="$4" backgroundColor="$primary" borderRadius="$lg" />
+<div className="box-border p-4 bg-[var(--primary)] rounded-lg" />
 
 // Don't hardcode
-<Box padding={16} backgroundColor="#2563EB" borderRadius={8} />
+<div style={{ padding: 16, backgroundColor: '#2563EB', borderRadius: 8 }} />
 ```
 
 ## Checklist

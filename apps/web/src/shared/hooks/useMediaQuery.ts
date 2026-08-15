@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Mirrors the shape of Tamagui's `useMediaQuery()` so call sites port 1:1.
- * Resolves the same media queries the old config used (see
- * packages/ui/src/tamagui.config.ts media block).
+ * Mirrors the old Tamagui `useMedia()` shape so call sites port 1:1.
+ * Breakpoint queries match the values used across the app (see
+ * /tailwind-pro responsive variant map).
  */
 export const MEDIA_QUERIES = {
   xs: '(max-width: 660px)',
@@ -43,7 +43,7 @@ function readSnapshot(): MediaQuerySnapshot {
   return snapshot;
 }
 
-/** Same API shape as Tamagui's useMediaQuery() — boolean per breakpoint. */
+/** Same API shape as the legacy Tamagui useMedia() — boolean per breakpoint. */
 export function useMediaQuery(): MediaQuerySnapshot {
   const [snapshot, setSnapshot] = useState<MediaQuerySnapshot>(SERVER_SNAPSHOT);
 

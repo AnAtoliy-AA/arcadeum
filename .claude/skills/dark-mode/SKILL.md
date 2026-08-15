@@ -69,9 +69,8 @@ const darkTokens = {
 ### Theme Setup
 
 ```tsx
-import { Theme, useTheme } from 'tamagui';
-
-// Define themes in tamagui.config.ts
+// Themes are token maps in packages/ui/src/themeDefinitions.ts; ThemeContext
+// mints them as CSS variables on <html>. data-theme switches the tokens.
 export const themes = {
   light: {
     background: '#FFFFFF',
@@ -104,27 +103,21 @@ export const themes = {
 ### Using Tokens in Components
 
 ```tsx
-import { YStack, Text, styled } from 'tamagui';
+// Tailwind classes read the CSS variables (var(--x)) minted from the token maps
+const Card = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={`box-border rounded-lg border border-[var(--border)] bg-[var(--surface)] p-4 ${className ?? ''}`}
+    {...props}
+  />
+);
 
-const Card = styled(YStack, {
-  backgroundColor: '$surface',
-  borderColor: '$border',
-  borderWidth: 1,
-  borderRadius: '$lg',
-  padding: '$4',
-});
+const Heading = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+  <h2 className={`text-[24px] font-bold text-[var(--text)] ${className ?? ''}`} {...props} />
+);
 
-const Heading = styled(Text, {
-  color: '$text',
-  fontSize: '$2xl',
-  fontWeight: '700',
-});
-
-const Body = styled(Text, {
-  color: '$textSecondary',
-  fontSize: '$base',
-  lineHeight: '$base',
-});
+const Body = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
+  <p className={`text-[16px] leading-[24px] text-[var(--textSecondary)] ${className ?? ''}`} {...props} />
+);
 ```
 
 ## Contrast Requirements
@@ -155,20 +148,20 @@ function getContrastRatio(color1: string, color2: string): number {
 ### Theme Toggle
 
 ```tsx
-import { useTheme } from 'tamagui';
 import { useCallback } from 'react';
+import { useThemeController } from '@/app/theme/ThemeContext';
 
 const ThemeToggle = () => {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setThemePreference } = useThemeController();
 
   const toggleTheme = useCallback(() => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-  }, [theme, setTheme]);
+    setThemePreference(resolvedTheme === 'light' ? 'dark' : 'light');
+  }, [resolvedTheme, setThemePreference]);
 
   return (
-    <Button onPress={toggleTheme}>
-      {theme === 'light' ? '🌙' : '☀️'}
-    </Button>
+    <button type="button" onClick={toggleTheme}>
+      {resolvedTheme === 'light' ? '🌙' : '☀️'}
+    </button>
   );
 };
 ```

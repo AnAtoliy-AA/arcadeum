@@ -2,18 +2,18 @@ import { useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
 
 import { useThemeColors } from '@/shared/hooks/useThemeColors';
-import type { TamaguiTheme } from './variants/types';
+import type { VariantTheme } from './variants/types';
 import { resolveFontSize, resolveLineHeight } from './shared';
 
 /**
- * Build a `TamaguiTheme`-shaped object from the live CSS-variable theme so
+ * Build a `VariantTheme`-shaped object from the live CSS-variable theme so
  * the variant config getters (`getVariantStyles(variant).players.getCardBackground(..., theme)`)
  * keep working unchanged. Values are plain strings on `{ val }`.
  */
-export function useVariantTheme(): TamaguiTheme {
+export function useVariantTheme(): VariantTheme {
   const colors = useThemeColors();
   return useMemo(() => {
-    const out: TamaguiTheme = {};
+    const out: VariantTheme = {};
     for (const [key, value] of Object.entries(colors)) {
       if (value) out[key] = { val: value };
     }

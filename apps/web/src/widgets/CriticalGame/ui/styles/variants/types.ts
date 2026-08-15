@@ -1,4 +1,4 @@
-export interface TamaguiTheme {
+export interface VariantTheme {
   [key: string]: { val?: string; get?: () => string } | undefined;
 }
 
@@ -26,8 +26,8 @@ export interface VariantStyleConfig {
     };
   };
   header: {
-    getBackground: (theme: TamaguiTheme) => string;
-    getBorder: (theme: TamaguiTheme) => string;
+    getBackground: (theme: VariantTheme) => string;
+    getBorder: (theme: VariantTheme) => string;
     getLineBackground: () => string;
     getLineShadow: () => string;
     getTitleBackground: () => string;
@@ -38,7 +38,7 @@ export interface VariantStyleConfig {
       isCurrentTurn?: boolean,
       isCurrentUser?: boolean,
       isAlive?: boolean,
-      theme?: TamaguiTheme,
+      theme?: VariantTheme,
     ) => string;
     getCardBorder: (isCurrentTurn?: boolean, isCurrentUser?: boolean) => string;
     getCardShadow: (isCurrentTurn?: boolean, isCurrentUser?: boolean) => string;
@@ -49,9 +49,9 @@ export interface VariantStyleConfig {
     getCardDimensions: () => { minWidth: string; maxWidth: string };
     getAvatarBackground: (
       isCurrentTurn?: boolean,
-      theme?: TamaguiTheme,
+      theme?: VariantTheme,
     ) => string;
-    getAvatarBorder: (isCurrentTurn?: boolean, theme?: TamaguiTheme) => string;
+    getAvatarBorder: (isCurrentTurn?: boolean, theme?: VariantTheme) => string;
     getNameShadow: (isCurrentTurn?: boolean) => string;
     getAvatarRing: (isCurrentTurn: boolean, isEliminated: boolean) => string;
     getAvatarShadow: (isCurrentTurn: boolean) => string;
@@ -71,8 +71,8 @@ export interface VariantStyleConfig {
     getShadow: () => string;
     getTextGlow: () => string;
     getStatValueColor: (isWarning?: boolean) => string;
-    getInfoCardBackground: (theme?: TamaguiTheme) => string;
-    getInfoCardBorder: (theme?: TamaguiTheme) => string;
+    getInfoCardBackground: (theme?: VariantTheme) => string;
+    getInfoCardBorder: (theme?: VariantTheme) => string;
     getInfoCardShadow: () => string;
     getInfoCardPattern: () => string;
     getStyles?: () => Record<string, unknown>;
@@ -83,9 +83,9 @@ export interface VariantStyleConfig {
     getBackground: () => string;
     getBorder: () => string;
     getShadow: () => string;
-    getInputBackground?: (theme: TamaguiTheme) => string;
-    getInputBorder?: (theme: TamaguiTheme) => string;
-    getInputFocusBorder?: (theme: TamaguiTheme) => string;
+    getInputBackground?: (theme: VariantTheme) => string;
+    getInputBorder?: (theme: VariantTheme) => string;
+    getInputFocusBorder?: (theme: VariantTheme) => string;
     getInputFocusShadow?: () => string;
     getInputStyles?: () => Record<string, unknown>;
     getTurnStatusStyles?: () => Record<string, unknown>;

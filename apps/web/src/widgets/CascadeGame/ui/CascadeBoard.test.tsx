@@ -90,7 +90,7 @@ function renderBoard(props: React.ComponentProps<typeof CascadeBoard>) {
 }
 
 describe('CascadeBoard', () => {
-  // First Tamagui render pays a one-time setup cost — give it room.
+  // First render pays a one-time setup cost — give it room.
   it('renders my hand and the discard top card', { timeout: 20000 }, () => {
     const snapshot = makeSnapshot();
     renderBoard({

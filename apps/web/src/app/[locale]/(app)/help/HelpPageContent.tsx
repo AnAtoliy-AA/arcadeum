@@ -88,7 +88,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
               {/*
                * `id="faq"` is the anchor the FAQPage JSON-LD's
                * SpeakableSpecification points at. Stable across builds
-               * (Tamagui's emitted class names hash) so Google Assistant
+               * (hashed class names) so Google Assistant
                * can locate the block reliably.
                */}
               <div

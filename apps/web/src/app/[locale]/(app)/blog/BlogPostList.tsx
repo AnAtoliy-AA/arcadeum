@@ -20,7 +20,7 @@ interface Props {
 
 /**
  * Server-rendered list of blog post cards. Kept separate from BlogClient
- * (which dynamically imports a Tamagui-heavy view with ssr=false) so the
+ * (which dynamically imports a heavy client view with ssr=false) so the
  * post titles, dates, and excerpts always exist in the initial HTML —
  * which is what Googlebot and the BlogPosting JSON-LD parser see first.
  */

@@ -47,17 +47,12 @@ import { Animated } from 'react-native';
 </Pressable>
 ```
 
-### Tamagui Animated Props
+### Tailwind Transition Classes
 
 ```tsx
-import { YStack } from 'tamagui';
-
-// Hover effect
-<YStack
-  hoverStyle={{ scale: 1.02, opacity: 0.9 }}
-  pressStyle={{ scale: 0.98 }}
-  animation="quick"
-  transition={{}}
+// Hover effect (replaces Tamagui animation + hoverStyle/pressStyle)
+<div
+  className="box-border transition-all duration-150 ease-out hover:scale-[1.02] hover:opacity-[0.9] active:scale-[0.98]"
 >
   <Card />
 </YStack>

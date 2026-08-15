@@ -1,5 +1,5 @@
 import { VARIANT_COLORS } from '../../variant-palette';
-import { TamaguiTheme } from '../types';
+import { VariantTheme } from '../types';
 
 export const playersStyles = {
   getCardBackground: (
@@ -26,7 +26,7 @@ export const playersStyles = {
   getCardBorderRadius: () => '12px',
   getCardClipPath: () => 'none',
   getCardDimensions: () => ({ minWidth: '100px', maxWidth: '140px' }),
-  getAvatarBackground: (isCurrentTurn?: boolean, _theme?: TamaguiTheme) =>
+  getAvatarBackground: (isCurrentTurn?: boolean, _theme?: VariantTheme) =>
     isCurrentTurn ? VARIANT_COLORS.underwater.primary : 'rgba(2, 6, 23, 0.6)',
   getAvatarBorder: (isCurrentTurn?: boolean) =>
     isCurrentTurn ? '#fff' : `${VARIANT_COLORS.underwater.primary}4d`,

@@ -1,5 +1,5 @@
 import { VARIANT_COLORS } from '../../variant-palette';
-import { TamaguiTheme } from '../types';
+import { VariantTheme } from '../types';
 
 const COLORS = VARIANT_COLORS['high-altitude-hike'];
 
@@ -28,7 +28,7 @@ export const playersStyles = {
   getCardBorderRadius: () => '8px',
   getCardClipPath: () => 'none',
   getCardDimensions: () => ({ minWidth: '95px', maxWidth: '125px' }),
-  getAvatarBackground: (isCurrentTurn?: boolean, _theme?: TamaguiTheme) =>
+  getAvatarBackground: (isCurrentTurn?: boolean, _theme?: VariantTheme) =>
     isCurrentTurn ? COLORS.primary : 'rgba(2, 6, 23, 0.6)',
   getAvatarBorder: (isCurrentTurn?: boolean) =>
     isCurrentTurn ? '#fff' : `${COLORS.primary}4d`,

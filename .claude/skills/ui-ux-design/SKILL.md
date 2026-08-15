@@ -347,15 +347,15 @@ Use this skill when the task involves **UI structure, visual design decisions, i
 | **Adaptive gutters by breakpoint** | Increase horizontal insets on larger widths and in landscape | Same narrow gutter on all device sizes/orientations |
 | **Scroll and fixed element coexistence** | Add bottom/top content insets so lists are not hidden behind fixed bars | Scroll content obscured by sticky headers/footers |
 
-## Tamagui & @arcadeum/ui Integration
+## Tailwind & @arcadeum/ui Integration
 
 ### Design Tokens
 
-Always check `packages/ui/src/tamagui.config.ts` for design tokens before hardcoding colors/spacing:
+Always check `packages/ui/src/themeDefinitions.ts` for theme tokens (minted as CSS variables) and `/tailwind-pro` for the class maps before hardcoding colors/spacing:
 
 ```tsx
-// Use Tamagui tokens
-<Box padding="$4" backgroundColor="$background" borderRadius="$radius-lg" />
+// Use tokens
+<div className="box-border p-4 bg-[var(--background)] rounded-2xl" />
 
 // Don't hardcode
 <Box padding={16} backgroundColor="#ffffff" borderRadius={12} />

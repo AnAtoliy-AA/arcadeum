@@ -43,7 +43,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
 
-  // Compute landscape synchronously from window dimensions. Tamagui's
+  // Compute landscape synchronously from window dimensions. The legacy
   // useMediaQuery() may hydrate with SSR defaults (all false) and stay stale
   // if no matchMedia events fire (e.g. viewport set before page load in
   // CI). Reading window directly avoids the async useEffect + useState
@@ -186,7 +186,7 @@ export function SeaBattleGrids({ children }: SeaBattleGridsProps) {
   // `fits || ideal` evaluates to 1 (truthy). The short branch has its
   // own `containerWidth > 0 ? … : 2` guard, but the desktop path lacks
   // one. This covers all stale-media-query combinations (e.g. WebKit
-  // headless where Tamagui matchMedia may not fire).
+  // headless where matchMedia may not fire).
   if (cols === 1 && count > 1 && isLandscape) {
     cols = 2;
   }

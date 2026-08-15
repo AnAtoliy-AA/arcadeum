@@ -7,7 +7,7 @@ import { useThemeController } from '@/app/theme/ThemeContext';
  * AppThemeProvider in the root layout; this wrapper exists so the route
  * group keeps a stable composition point.
  */
-export function TamaguiAppLayout({ children }: { children: React.ReactNode }) {
+export function AppLayoutClient({ children }: { children: React.ReactNode }) {
   useThemeController();
   return <>{children}</>;
 }

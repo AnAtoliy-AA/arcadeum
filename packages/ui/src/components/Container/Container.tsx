@@ -15,7 +15,7 @@ export type ContainerProps = {
   /** @deprecated Use onClick instead */
   onPress?: () => void;
   onClick?: (e: unknown) => void;
-  // ─── Tamagui-compat props (mapped to style) ───
+  // ─── legacy Tamagui-compat props (mapped to style) ───
   flex?: number | string;
   jc?: string;
   ai?: string;

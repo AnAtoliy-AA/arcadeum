@@ -95,7 +95,7 @@ describe('OpponentTile', () => {
   it('fires onSelect when the tile is clicked (alive opponent)', () => {
     const onSelect = vi.fn();
     renderTile({ onSelect });
-    // Tamagui maps `onPress` to a `click` listener on the web.
+    // onPress maps to a click listener on the web.
     screen.getByTestId('player-card-p1').click();
     expect(onSelect).toHaveBeenCalledTimes(1);
   });

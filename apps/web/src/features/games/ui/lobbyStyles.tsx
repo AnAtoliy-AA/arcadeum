@@ -373,7 +373,7 @@ export const GameContainer = forwardRef<unknown, GameContainerStylesProps>(
   function GameContainer({ className, children, ...props }, ref) {
     return (
       <div
-        // styled(YStack) exposed TamaguiElement refs; consumers pass RefObject<TamaguiElement | null>
+        // legacy consumers may pass HTMLElement refs
         ref={ref as Ref<HTMLDivElement>}
         className={cx(
           'box-border flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-x-hidden bg-[var(--background)] max-[1023px]:min-h-0 max-[1023px]:flex-1',

@@ -12,7 +12,7 @@ export type FormGroupProps = {
   className?: string;
   flexGrow?: number | string;
   flexBasis?: number | string;
-  /** Tamagui responsive shorthand — mapped to flexGrow/flexBasis. */
+  /** legacy Tamagui responsive shorthand — mapped to flexGrow/flexBasis. */
   $xs?: { flexGrow?: number | string; flexBasis?: number | string };
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>;
 

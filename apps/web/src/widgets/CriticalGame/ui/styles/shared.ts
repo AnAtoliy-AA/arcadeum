@@ -3,10 +3,9 @@ import type { CSSProperties, HTMLAttributes } from 'react';
 /**
  * Shared helpers for the CriticalGame plain-React + Tailwind migration.
  *
- * `$token` spacing / font scale mirrors the old Tamagui config
- * (`packages/ui/src/tamagui.config.ts`): space N = N×4px, font N =
- * [12,14,16,18,20,24,28,32,40,48]px. Fractional tokens (`$1.5`) resolve
- * to base × 1.5 like Tamagui's shorthand.
+ * `$token` spacing / font scale mirrors the legacy token config (see
+ * /tailwind-pro): space N = N×4px, font N = [12,14,16,18,20,24,28,32,40,48]px.
+ * Fractional tokens (`$1.5`) resolve to base × 1.5.
  */
 
 const SPACE_SCALE: Record<string, number> = {

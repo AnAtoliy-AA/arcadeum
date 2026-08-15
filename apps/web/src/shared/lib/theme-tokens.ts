@@ -1,5 +1,5 @@
 /**
- * Resolve a Tamagui-style `$token` reference into a CSS value at runtime.
+ * Resolve a legacy `$token` reference into a CSS value at runtime.
  *
  * Theme-dependent tokens (background, primary, glassBg, …) map to the CSS
  * variables minted on <html> by ThemeContext. Static tokens (genre palettes,
@@ -108,7 +108,7 @@ const STATIC_COLORS: Record<string, string> = {
   orange10: '#f76b15',
 };
 
-/** Radix dark scale used by role badges (Tamagui default dark theme). */
+/** Radix dark scale used by role badges (legacy default dark theme). */
 const RADIX_DARK: Record<string, string> = {
   red1: '#1c1316',
   red2: '#1a1414',

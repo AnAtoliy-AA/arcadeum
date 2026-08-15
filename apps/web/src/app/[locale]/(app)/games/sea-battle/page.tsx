@@ -150,7 +150,7 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
       })),
       // Speakable hint for Google Assistant / voice surfaces. `#faq` is
       // the FAQ section's id on the rendered SeaBattleLanding view —
-      // stable across builds (unlike Tamagui's hashed module classes).
+      // stable across builds.
       speakable: {
         '@type': 'SpeakableSpecification',
         cssSelector: ['#faq'],

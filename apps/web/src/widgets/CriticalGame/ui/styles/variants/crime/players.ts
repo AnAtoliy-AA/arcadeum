@@ -1,5 +1,5 @@
 import { VARIANT_COLORS } from '../../variant-palette';
-import { TamaguiTheme } from '../types';
+import { VariantTheme } from '../types';
 
 const C = VARIANT_COLORS.crime;
 
@@ -28,7 +28,7 @@ export const playersStyles = {
   getCardBorderRadius: () => '4px',
   getCardClipPath: () => 'none',
   getCardDimensions: () => ({ minWidth: '90px', maxWidth: '120px' }),
-  getAvatarBackground: (isCurrentTurn?: boolean, _theme?: TamaguiTheme) =>
+  getAvatarBackground: (isCurrentTurn?: boolean, _theme?: VariantTheme) =>
     isCurrentTurn ? C.primary : 'rgba(0, 0, 0, 0.6)',
   getAvatarBorder: (isCurrentTurn?: boolean) =>
     isCurrentTurn ? '#fff' : `${C.primary}4d`,

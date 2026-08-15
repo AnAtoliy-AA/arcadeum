@@ -27,7 +27,7 @@ Implement accessible forms with proper validation, error handling, and progressi
 ### Basic Form
 
 ```tsx
-import { YStack, Input, Button, Text } from 'tamagui';
+import { Input, Button } from '@arcadeum/ui';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');

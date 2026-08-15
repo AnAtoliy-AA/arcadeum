@@ -1,12 +1,12 @@
 import { VARIANT_COLORS } from '../../variant-palette';
-import { TamaguiTheme } from '../types';
+import { VariantTheme } from '../types';
 
 const C = VARIANT_COLORS.adventure;
 
 export const headerStyles = {
-  getBackground: (_theme: TamaguiTheme) =>
+  getBackground: (_theme: VariantTheme) =>
     `linear-gradient(135deg, ${C.background}f8, #1c1917cc)`,
-  getBorder: (_theme: TamaguiTheme) => 'rgba(245, 158, 11, 0.1)',
+  getBorder: (_theme: VariantTheme) => 'rgba(245, 158, 11, 0.1)',
   getLineBackground: () =>
     `linear-gradient(90deg, transparent 0%, ${C.primary} 50%, transparent 100%)`,
   getLineShadow: () => `0 0 15px ${C.primary}66`,

@@ -372,7 +372,7 @@ function CriticalThumbnail({ theme }: { theme: CriticalTheme }) {
 }
 
 // SSR-safe Sea Battle thumbnail: the SVG poster renders both on the server
-// and during the first client paint; the real Tamagui-rendered board
+// and during the first client paint; the real client-rendered board
 // overlays it once the dynamic chunk lands on the client.
 function SeaBattleThumbnail({ theme }: { theme: SeaBattleThemeMeta }) {
   return (

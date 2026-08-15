@@ -1,4 +1,4 @@
-import { TamaguiTheme } from '../types';
+import { VariantTheme } from '../types';
 import { VARIANT_COLORS } from '../../variant-palette';
 
 export const playersStyles = {
@@ -34,12 +34,12 @@ export const playersStyles = {
   getCardDimensions: () => ({ minWidth: '95px', maxWidth: '115px' }),
   getAvatarBackground: (
     isCurrentTurn?: boolean,
-    theme?: TamaguiTheme,
+    theme?: VariantTheme,
   ): string =>
     isCurrentTurn
       ? '#fff'
       : (theme?.background as { val: string })?.val || 'inherit',
-  getAvatarBorder: (isCurrentTurn?: boolean, theme?: TamaguiTheme): string =>
+  getAvatarBorder: (isCurrentTurn?: boolean, theme?: VariantTheme): string =>
     isCurrentTurn
       ? '#fff'
       : (theme?.borderColor as { val: string })?.val || 'inherit',

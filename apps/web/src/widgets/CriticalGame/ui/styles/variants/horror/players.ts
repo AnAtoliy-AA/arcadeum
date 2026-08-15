@@ -1,5 +1,5 @@
 import { VARIANT_COLORS } from '../../variant-palette';
-import { TamaguiTheme } from '../types';
+import { VariantTheme } from '../types';
 
 const C = VARIANT_COLORS.horror;
 
@@ -28,7 +28,7 @@ export const playersStyles = {
   getCardBorderRadius: () => '2px', // Very sharp
   getCardClipPath: () => 'none',
   getCardDimensions: () => ({ minWidth: '95px', maxWidth: '125px' }),
-  getAvatarBackground: (isCurrentTurn?: boolean, _theme?: TamaguiTheme) =>
+  getAvatarBackground: (isCurrentTurn?: boolean, _theme?: VariantTheme) =>
     isCurrentTurn ? C.primary : '#000',
   getAvatarBorder: (isCurrentTurn?: boolean) =>
     isCurrentTurn ? '#fff' : `${C.primary}33`,

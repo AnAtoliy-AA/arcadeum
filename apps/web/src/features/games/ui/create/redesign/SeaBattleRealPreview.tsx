@@ -10,8 +10,8 @@ interface Props {
   padding?: number;
 }
 
-// Client-only wrapper around the real Tamagui-rendered Sea Battle board.
-// Consumers `dynamic({ ssr: false })` import this so the heavy Tamagui
+// Client-only wrapper around the real client-rendered Sea Battle board.
+// Consumers `dynamic({ ssr: false })` import this so the heavy client-rendered
 // atomic styles never appear in the SSR HTML — that mismatch is what
 // triggers React hydration errors when the component is rendered eagerly
 // from a 'use client' parent.

@@ -17,7 +17,7 @@ export async function generateMetadata({
 /**
  * Cookie Policy Page
  * Fetches translations on the server and passes them to CookiePolicyClient.
- * Use CookiePolicyClient for client-side only rendering to avoid Tamagui hydration issues.
+ * Use CookiePolicyClient for client-side only rendering to avoid SSR/client hydration mismatch.
  */
 export default async function CookiePolicyPage({
   params,

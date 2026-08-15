@@ -1,10 +1,10 @@
 import { VARIANT_COLORS } from '../../variant-palette';
-import { TamaguiTheme } from '../types';
+import { VariantTheme } from '../types';
 
 export const headerStyles = {
-  getBackground: (_theme: TamaguiTheme) =>
+  getBackground: (_theme: VariantTheme) =>
     `linear-gradient(135deg, ${VARIANT_COLORS.underwater.secondary}f2, #083344cc)`,
-  getBorder: (_theme: TamaguiTheme) => 'rgba(255, 255, 255, 0.08)',
+  getBorder: (_theme: VariantTheme) => 'rgba(255, 255, 255, 0.08)',
   getLineBackground: () =>
     `linear-gradient(90deg, transparent 0%, ${VARIANT_COLORS.underwater.primary}66 50%, transparent 100%)`,
   getLineShadow: () => `0 0 15px ${VARIANT_COLORS.underwater.primary}40`,

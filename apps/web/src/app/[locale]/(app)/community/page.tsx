@@ -19,7 +19,7 @@ export async function generateMetadata({
 /**
  * Community Page
  * Fetches translations on the server and passes them to CommunityClient.
- * Use CommunityClient for client-side only rendering to avoid Tamagui hydration issues.
+ * Use CommunityClient for client-side only rendering to avoid SSR/client hydration mismatch.
  */
 export default async function CommunityPage({
   params,

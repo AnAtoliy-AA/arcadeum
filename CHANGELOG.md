@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.20] - 2026-08-15
+
+### Added
+- optimize short video length to 15s total for maximum engagement (ARC-201) (ARC-201)
+- enhance short captions for virality & engagement (ARC-201) (ARC-201)
+
+### Fixed
+- use domcontentloaded and 60s timeout to prevent navigation failures (ARC-201) (ARC-201)
+
+
 ## [1.25.19] - 2026-08-15
 
 ### Added

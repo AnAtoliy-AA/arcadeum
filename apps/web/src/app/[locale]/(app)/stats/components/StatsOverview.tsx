@@ -36,7 +36,7 @@ export function StatsOverview({
         <style>{statsOverviewCSS}</style>
         <div className="stats-overview-grid">
           {[1, 2, 3, 4].map((i) => (
-            <Card key={i} variant="glass" cardPadding="md">
+            <Card key={i} variant="glass" padding="md">
               <SkeletonText
                 className={'w-[60%]'}
                 style={{ height: '14px' }}
@@ -60,32 +60,32 @@ export function StatsOverview({
     <>
       <style>{statsOverviewCSS}</style>
       <div className="stats-overview-grid">
-        <Card variant="glass" cardPadding="md">
+        <Card variant="glass" padding="md">
           <StatLabel>{t('stats.totalGames')}</StatLabel>
           <StatValue data-testid="stats-total-games">
             {stats.totalGames}
           </StatValue>
         </Card>
-        <Card variant="glass" cardPadding="md">
+        <Card variant="glass" padding="md">
           <StatLabel>{t('stats.wins')}</StatLabel>
           <StatValue data-testid="stats-wins" color="$success">
             {stats.wins}
           </StatValue>
         </Card>
-        <Card variant="glass" cardPadding="md">
+        <Card variant="glass" padding="md">
           <StatLabel>{t('stats.losses')}</StatLabel>
           <StatValue data-testid="stats-losses" color="$danger">
             {stats.losses}
           </StatValue>
         </Card>
-        <Card variant="glass" cardPadding="md">
+        <Card variant="glass" padding="md">
           <WinRateCardContent>
             <StatLabel>{t('stats.winRate')}</StatLabel>
             <ProgressCircle value={stats.winRate} size={80} strokeWidth={8} />
           </WinRateCardContent>
         </Card>
         {currentStreak != null && currentStreak > 0 && (
-          <Card variant="glass" cardPadding="md">
+          <Card variant="glass" padding="md">
             <StatLabel>{t('stats.currentStreak')}</StatLabel>
             <StatValue
               data-testid="stats-current-streak"
@@ -99,7 +99,7 @@ export function StatsOverview({
           </Card>
         )}
         {bestWinStreak != null && bestWinStreak > 0 && (
-          <Card variant="glass" cardPadding="md">
+          <Card variant="glass" padding="md">
             <StatLabel>{t('stats.bestWinStreak')}</StatLabel>
             <StatValue data-testid="stats-best-win-streak" color="$success">
               {bestWinStreak}
@@ -108,7 +108,7 @@ export function StatsOverview({
           </Card>
         )}
         {favoriteGame && (
-          <Card variant="glass" cardPadding="md">
+          <Card variant="glass" padding="md">
             <StatLabel>{t('stats.favoriteGame')}</StatLabel>
             <StatValue
               data-testid="stats-favorite-game"

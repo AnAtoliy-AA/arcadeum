@@ -87,15 +87,13 @@ const GiveFavorModal: React.FC<GiveFavorModalProps> = ({
                 $variant={cardVariant as GameVariant}
                 onClick={() => setSelectedCard(card)}
                 selected={selectedCard === card}
-                padding={0}
-                height="auto"
+                className="p-0 h-auto"
               >
                 <div className="box-border flex flex-col items-center w-[100px] gap-2 p-2">
                   <Card
                     $cardType={card}
                     $variant={cardVariant as GameVariant}
-                    width="100%"
-                    cursor="default"
+                    className="w-full cursor-default"
                   >
                     <CardCorner $position="tl" $variant={cardVariant} />
                     <CardCorner $position="tr" $variant={cardVariant} />

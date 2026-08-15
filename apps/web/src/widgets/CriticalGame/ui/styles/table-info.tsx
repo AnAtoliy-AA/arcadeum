@@ -2,11 +2,7 @@ import type { CSSProperties, HTMLAttributes } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 import { getVariantStyles } from './variants';
-import {
-  resolveVariantStyles,
-  usePseudoStyles,
-  useVariantTheme,
-} from './variant-styles';
+import { resolveVariantStyles, usePseudoStyles } from './variant-styles';
 
 type VariantProp = { $variant?: string };
 
@@ -109,35 +105,6 @@ export function StatValue({
       style={{
         color: config.getStatValueColor(!!$isWarning),
         textShadow: glow === 'inherit' ? 'none' : `0 0 8px ${glow}`,
-        ...style,
-      }}
-      {...props}
-    />
-  );
-}
-
-export function InfoCard({
-  className,
-  style,
-  $variant,
-  ...props
-}: { className?: string; style?: CSSProperties } & VariantProp &
-  HTMLAttributes<HTMLDivElement>) {
-  const theme = useVariantTheme();
-  const config = getVariantStyles($variant).tableInfo;
-  const variantStyles = resolveVariantStyles(config.getInfoCardStyles?.());
-  return (
-    <div
-      className={cx(
-        'box-border flex flex-col items-stretch p-6 rounded-[20px] border-2 border-[var(--borderColor)] relative overflow-hidden max-[800px]:p-5 max-[800px]:rounded-[16px]',
-        className,
-      )}
-      style={{
-        backgroundColor: config.getInfoCardBackground(theme),
-        borderColor: config.getInfoCardBorder(theme),
-        boxShadow: `0 5px 10px rgba(0, 0, 0, 0.3), ${config.getInfoCardShadow()}`,
-        backdropFilter: 'blur(20px)',
-        ...variantStyles.style,
         ...style,
       }}
       {...props}

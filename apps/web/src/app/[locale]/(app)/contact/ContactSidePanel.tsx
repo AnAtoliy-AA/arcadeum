@@ -35,7 +35,7 @@ export function ContactSidePanel({
         <div className="box-border flex flex-row items-center gap-3 -mt-2">
           <ContactAvatars count={4} size={32} />
           <div className="box-border flex flex-col items-stretch gap-2">
-            <Typography fontWeight="700">
+            <Typography weight="700">
               {formatMessage(side?.onCallTeam, { extra: '2' }) ??
                 'Maria, Anatoliy +2'}
             </Typography>
@@ -50,7 +50,7 @@ export function ContactSidePanel({
             <Typography alpha="medium">
               {side?.medianFirstReply ?? 'Median first reply'}
             </Typography>
-            <Typography fontWeight="700">
+            <Typography weight="700">
               {side?.medianFirstReplyValue ?? '4 hr'}
             </Typography>
           </div>
@@ -58,13 +58,13 @@ export function ContactSidePanel({
             <Typography alpha="medium">
               {side?.workingHours ?? 'Working hours'}
             </Typography>
-            <Typography fontWeight="700">{workingHours}</Typography>
+            <Typography weight="700">{workingHours}</Typography>
           </div>
           <div style={s.sideRowStyle}>
             <Typography alpha="medium">
               {side?.coverage ?? 'Coverage'}
             </Typography>
-            <Typography fontWeight="700">
+            <Typography weight="700">
               {side?.coverageValue ?? 'GMT-5 → GMT+8'}
             </Typography>
           </div>
@@ -75,10 +75,10 @@ export function ContactSidePanel({
         <span style={s.labelChipStyle}>
           {side?.devsLabel ?? 'For developers'}
         </span>
-        <Typography variant="heading" uiSize="md" marginTop="$2">
+        <Typography variant="heading" uiSize="md" className="mt-2">
           {side?.devsTitle ?? 'Bugs & integration'}
         </Typography>
-        <Typography variant="body" alpha="medium" marginTop="$1">
+        <Typography variant="body" alpha="medium" className="mt-1">
           {side?.devsBody ??
             'Reproducible bugs, API issues, and SDK questions are tracked in GitHub. We triage within 24 hours.'}
         </Typography>
@@ -101,7 +101,7 @@ export function ContactSidePanel({
         <span style={s.labelChipStyle}>
           {side?.press ?? 'Press & partnerships'}
         </span>
-        <Typography fontWeight="700" marginTop="$2">
+        <Typography weight="700" className="mt-2">
           <a
             href={`mailto:${side?.pressEmail ?? 'hello@arcadeum.games'}`}
             style={{ color: s.tokens.accent, textDecoration: 'underline' }}
@@ -109,7 +109,7 @@ export function ContactSidePanel({
             {side?.pressEmail ?? 'hello@arcadeum.games'}
           </a>
         </Typography>
-        <Typography variant="caption" alpha="medium" marginTop="$1">
+        <Typography variant="caption" alpha="medium" className="mt-1">
           {side?.pressBody ?? 'For media, creators, and partner studios.'}
         </Typography>
       </GlassCard>
@@ -130,11 +130,11 @@ export function ContactSidePanel({
               flexShrink: 0,
             }}
           />
-          <Typography fontWeight="700">
+          <Typography weight="700">
             {side?.statusTitle ?? 'All systems operational'}
           </Typography>
         </div>
-        <Typography variant="caption" alpha="medium" marginTop="$1">
+        <Typography variant="caption" alpha="medium" className="mt-1">
           {side?.statusBody ?? '99.98% uptime over the last 30 days.'}
         </Typography>
         {/* TODO(ARC-575): restore status-page CTA once status.arcadeum.games

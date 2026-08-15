@@ -24,7 +24,7 @@ This project uses **Tailwind CSS v3** for all web UI (`apps/web` + `@arcadeum/ui
 
 - Themed token → `var(--name)`: `bg-[var(--glassBg)]`, `text-[var(--primary)]`, `border-[var(--borderColor)]`, `bg-[var(--success)]`, `text-[var(--mythicAccent)]`
 - `--background` / `--foreground` are also minted (used by `tokens.scss`): `bg-[var(--background)]`, `text-[var(--foreground)]`
-- Static tokens (genre palettes, role colors, gold shades, radix scales) → **hex literals** from `STATIC_COLORS` in `scripts/tamagui-codemod/run.mjs` (e.g. `rolePremium` → `#fbbf24`, `cyberpunkPrimary` → `#06b6d4`)
+- Static tokens (genre palettes, role colors, gold shades, radix scales) → **hex literals** from `apps/web/src/shared/lib/theme-tokens.ts` (e.g. `rolePremium` → `#fbbf24`, `cyberpunkPrimary` → `#06b6d4`)
 - Runtime token strings (`$red9`-style values from data modules) → resolve via `resolveThemeColor()` in `apps/web/src/shared/lib/theme-tokens.ts`
 - `body` already sets `color: var(--foreground)` — bare `<span>` inherits text color; only set `text-*` when it must differ
 
@@ -104,4 +104,4 @@ const VAR_CLASS = {
 - **Base layout classes** — stacks were migrated as: `XStack` → `box-border flex flex-row items-stretch`, `YStack` → `box-border flex flex-col items-stretch`, `Text` → `box-border` (span). Drop `items-stretch` when `items-center`/etc. is set.
 - **Components accept `className`** — every `@arcadeum/ui` component merges it via `cx`; never pass Tamagui style props to them.
 - **500-line file limit** — keep class maps in sibling `*.classes.ts` / `*.styles.tsx` modules when a component grows.
-- **Migration history** — the one-off codemod and its token dictionary live in `scripts/tamagui-codemod/` (legacy reference; do not re-run on committed code).
+- **Migration history** — the tamagui→tailwind migration plan lives in `docs/plans/2026-08-15-tamagui-to-tailwind.md` (historical; the one-off codemod was deleted after use).

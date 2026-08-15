@@ -115,7 +115,7 @@ export default function GeoBlockClient() {
                 className={'w-[120px]'}
                 placeholder="Country code (e.g., US)"
                 value={newCountryCode}
-                onChangeText={setNewCountryCode}
+                onChange={(e) => setNewCountryCode(e.target.value)}
                 maxLength={2}
                 data-testid="geo-block-country-input"
               />
@@ -123,7 +123,7 @@ export default function GeoBlockClient() {
                 className={'flex-1'}
                 placeholder="Reason (optional)"
                 value={newReason}
-                onChangeText={setNewReason}
+                onChange={(e) => setNewReason(e.target.value)}
                 data-testid="geo-block-reason-input"
               />
               <Button
@@ -183,7 +183,7 @@ export default function GeoBlockClient() {
                   .filter((c) => c.active)
                   .map((country) => (
                     <div
-                      className="box-border flex flex-row items-center justify-space-between p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)]"
+                      className="box-border flex flex-row items-center justify-between p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)]"
                       key={country.countryCode}
                       data-testid={`blocked-country-${country.countryCode}`}
                     >

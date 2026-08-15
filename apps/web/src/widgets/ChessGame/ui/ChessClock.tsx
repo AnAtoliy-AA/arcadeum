@@ -106,7 +106,7 @@ function ChessClockImpl({
   if (!clocks) return null;
 
   return (
-    <div className="box-border flex flex-row justify-space-between items-center gap-2">
+    <div className="box-border flex flex-row justify-between items-center gap-2">
       <ClockFace
         label="♔"
         clock={clocks.white}

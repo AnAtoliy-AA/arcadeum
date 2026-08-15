@@ -33,7 +33,7 @@ export function ContactTips({ tips }: ContactTipsProps) {
   return (
     <GlassCard>
       <span style={s.labelChipStyle}>{tips?.label ?? 'Faster replies'}</span>
-      <Typography variant="heading" uiSize="md" marginTop="$2">
+      <Typography variant="heading" uiSize="md" className="mt-2">
         {tips?.title ?? 'Help us help you faster'}
       </Typography>
       <div className="box-border flex flex-col items-stretch gap-3 -mt-3">

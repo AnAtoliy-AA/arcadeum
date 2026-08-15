@@ -223,7 +223,7 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                     <div className="box-border flex flex-row items-center gap-4 w-full">
                       <Avatar name={title} size="md" alt={`${title} avatar`} />
                       <div className="box-border flex flex-col items-stretch flex-1 gap-1 min-w-0">
-                        <div className="box-border flex flex-row justify-space-between items-center gap-2">
+                        <div className="box-border flex flex-row justify-between items-center gap-2">
                           <span className="box-border font-semibold text-[20px] text-[var(--color)] line-clamp-1 shrink-[1]">
                             {title}
                           </span>

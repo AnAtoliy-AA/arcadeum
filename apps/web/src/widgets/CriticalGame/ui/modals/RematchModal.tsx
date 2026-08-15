@@ -193,7 +193,7 @@ export default function RematchModal({
             t('games.table.rematch.messagePlaceholder') || 'Enter a message...'
           }
           value={message}
-          onChangeText={setMessage}
+          onChange={(e) => setMessage(e.target.value)}
           disabled={rematchLoading}
         />
 

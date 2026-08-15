@@ -49,7 +49,7 @@ function VersionCard({
         className="box-border flex flex-col items-stretch active:opacity-[0.8] cursor-pointer p-4"
         onClick={onToggle}
       >
-        <div className="box-border flex flex-row justify-space-between items-center">
+        <div className="box-border flex flex-row justify-between items-center">
           <div className="box-border flex flex-row gap-3 items-center flex-1">
             <div className="box-border px-3 rounded-[9999px] bg-[rgba(99,102,241,0.15)] border border-[rgba(99,102,241,0.3)]">
               <Typography

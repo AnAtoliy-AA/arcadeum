@@ -114,7 +114,7 @@ test.describe('Sea Battle Rules Modal', () => {
     await expect(modal).toBeVisible({});
     await expect(modal).toContainText(/objective/i);
 
-    // Close using close button, with fallback for Tamagui animation timing
+    // Close using close button, with fallback for animation timing
     const closeBtn = page.getByTestId('modal-close-button').first();
     await closeBtn.click({ force: true });
     await closeGameRulesModal(page);

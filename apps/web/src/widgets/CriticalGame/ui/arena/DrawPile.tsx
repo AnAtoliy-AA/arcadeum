@@ -62,8 +62,10 @@ export function DrawPile({
           three-column row still fits at 390px. */}
       <CardSlot
         $role="deck"
-        width={isNarrow ? 80 : 140}
-        height={isNarrow ? 112 : 196}
+        style={{
+          width: isNarrow ? 80 : 140,
+          height: isNarrow ? 112 : 196,
+        }}
       >
         <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
       </CardSlot>

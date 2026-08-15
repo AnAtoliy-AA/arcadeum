@@ -37,7 +37,7 @@ export interface PlayerAvatarProps {
   /** Overlay rendered top-left (used by shop for the TRY-ON tag). card/profile only. */
   topLeftOverlay?: React.ReactNode;
   'data-testid'?: string;
-  onPress?: () => void;
+  onClick?: () => void;
 }
 
 export const PlayerAvatar = memo(function PlayerAvatar({
@@ -57,7 +57,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   skinChip,
   topLeftOverlay,
   'data-testid': testId,
-  onPress,
+  onClick,
 }: PlayerAvatarProps) {
   const disc = DISC_SIZE[size];
   const roleColor = getRoleTierColor(role);
@@ -125,9 +125,9 @@ export const PlayerAvatar = memo(function PlayerAvatar({
     return (
       <div
         data-testid={testId}
-        onClick={onPress}
+        onClick={onClick}
         style={{
-          cursor: onPress ? 'pointer' : 'default',
+          cursor: onClick ? 'pointer' : 'default',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -150,7 +150,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
       roleColor={roleColor}
       roleGlyph={roleGlyph}
       testId={testId}
-      onPress={onPress}
+      onClick={onClick}
     >
       {discZone}
     </CardChrome>

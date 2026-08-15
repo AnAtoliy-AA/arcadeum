@@ -1,25 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { CSSProperties } from 'react';
-
-import { useThemeColors } from '@/shared/hooks/useThemeColors';
-import type { VariantTheme } from './variants/types';
-import { resolveFontSize, resolveLineHeight } from './shared';
-
-/**
- * Build a `VariantTheme`-shaped object from the live CSS-variable theme so
- * the variant config getters (`getVariantStyles(variant).players.getCardBackground(..., theme)`)
- * keep working unchanged. Values are plain strings on `{ val }`.
- */
-export function useVariantTheme(): VariantTheme {
-  const colors = useThemeColors();
-  return useMemo(() => {
-    const out: VariantTheme = {};
-    for (const [key, value] of Object.entries(colors)) {
-      if (value) out[key] = { val: value };
-    }
-    return out;
-  }, [colors]);
-}
 
 /**
  * Normalize an RN-style `transform` array (`[{ translateX: -2 }, ...]`)
@@ -62,14 +42,6 @@ function flatStyleToCss(value: unknown): CSSProperties | undefined {
     if (key === 'textShadowColor') {
       const shadow = typeof v === 'string' ? v : '';
       css.textShadow = shadow === 'inherit' ? 'none' : `0 0 8px ${shadow}`;
-      continue;
-    }
-    if (key === 'fontSize') {
-      css.fontSize = resolveFontSize(v as number | string);
-      continue;
-    }
-    if (key === 'lineHeight') {
-      css.lineHeight = resolveLineHeight(v as number | string);
       continue;
     }
     // The getters return plain CSS values; csstype doesn't index them.

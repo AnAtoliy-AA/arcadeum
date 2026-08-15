@@ -29,7 +29,7 @@ export function TurnBadge({
 
   return (
     <div
-      className={`box-border flex flex-row items-center justify-space-between gap-3 px-3 py-2 rounded-xl ${`${styles.turnBar} ${myTurn ? styles.turnBarActive : ''}`}`}
+      className={`box-border flex flex-row items-center justify-between gap-3 px-3 py-2 rounded-xl ${`${styles.turnBar} ${myTurn ? styles.turnBarActive : ''}`}`}
     >
       <div className="box-border flex flex-row items-center gap-2">
         {currentEntryId ? (

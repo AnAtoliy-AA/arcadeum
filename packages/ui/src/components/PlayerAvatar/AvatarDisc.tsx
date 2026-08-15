@@ -179,9 +179,8 @@ export function AvatarDisc({
       ) : (
         <Typography
           color="#f5f7ff"
-          fontWeight="700"
-          fontSize={Math.max(12, Math.round(disc * 0.34))}
-          style={{ zIndex: 1 }}
+          weight="700"
+          style={{ zIndex: 1, fontSize: Math.max(12, Math.round(disc * 0.34)) }}
         >
           {getInitials(name)}
         </Typography>

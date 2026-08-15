@@ -10,10 +10,6 @@ export type FormGroupProps = {
   description?: string;
   children: ReactNode;
   className?: string;
-  flexGrow?: number | string;
-  flexBasis?: number | string;
-  /** legacy Tamagui responsive shorthand — mapped to flexGrow/flexBasis. */
-  $xs?: { flexGrow?: number | string; flexBasis?: number | string };
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>;
 
 export const FormGroup = memo(function FormGroup({
@@ -25,25 +21,12 @@ export const FormGroup = memo(function FormGroup({
   children,
   className,
   style,
-  flexGrow,
-  flexBasis,
-  $xs,
   ...rest
 }: FormGroupProps) {
   return (
     <div
       className={cx('flex w-full flex-col gap-2', className)}
-      style={{
-        ...(flexGrow !== undefined ? { flexGrow } : null),
-        ...(flexBasis !== undefined ? { flexBasis } : null),
-        ...($xs
-          ? {
-              flexGrow: $xs.flexGrow,
-              flexBasis: $xs.flexBasis,
-            }
-          : null),
-        ...style,
-      }}
+      style={style}
       {...rest}
     >
       {label && (

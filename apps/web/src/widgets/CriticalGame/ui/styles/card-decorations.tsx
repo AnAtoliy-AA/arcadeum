@@ -24,26 +24,6 @@ export function CardNameContainer({
   );
 }
 
-export function CardDescriptionContainer({
-  className,
-  $variant,
-  ...props
-}: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cx(
-        'box-border flex flex-col items-stretch absolute bottom-0 left-0 right-0 px-2 py-[6px] rounded-b-[14px] z-[10] border-t border-t-[rgba(255,255,255,0.1)]',
-        $variant === 'cyberpunk'
-          ? 'rounded-b-[4px] bg-[rgba(0,0,0,0.7)]'
-          : 'bg-[rgba(0,0,0,0.45)]',
-        className,
-      )}
-      style={{ backdropFilter: 'blur(8px)' }}
-      {...props}
-    />
-  );
-}
-
 export function CardName({
   className,
   ...props
@@ -59,36 +39,6 @@ export function CardName({
   );
 }
 
-export function CardDescription({
-  className,
-  ...props
-}: { className?: string } & VariantProp & HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cx(
-        'box-border text-[10px] leading-[13px] font-medium text-[rgba(255,255,255,0.95)] text-center [text-shadow:0_1px_2px_rgba(0,0,0,0.8)]',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-export function CardCountBadge({
-  className,
-  ...props
-}: { className?: string } & VariantProp & HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cx(
-        'box-border absolute top-[-8px] right-[-8px] bg-[var(--danger)] text-white w-6 h-6 rounded-[12px] text-center leading-[24px] text-[12px] font-bold z-[20] shadow-[0_2.5px_5px_rgba(0,0,0,0.3)]',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
 export function CardInner({
   className,
   ...props
@@ -97,36 +47,6 @@ export function CardInner({
     <div
       className={cx(
         'box-border flex flex-col items-stretch flex-1 w-full items-center justify-center relative rounded-[12px] overflow-hidden',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-export function CardBackContainer({
-  className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cx(
-        'box-border flex flex-col items-stretch flex-1 items-center justify-center h-full',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-export function CardBackLogo({
-  className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cx(
-        'box-border text-[40px] leading-[48px] opacity-[0.15]',
         className,
       )}
       {...props}

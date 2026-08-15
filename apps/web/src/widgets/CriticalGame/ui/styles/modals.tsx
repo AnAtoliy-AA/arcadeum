@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import type { HTMLAttributes } from 'react';
+import type { CSSProperties, HTMLAttributes } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 import {
@@ -10,7 +10,6 @@ import {
   OptionButton,
 } from '@arcadeum/ui';
 import { CardsGrid, Card as BaseCard } from './cards';
-import { splitStyleProps, type LegacyStyleProps } from './shared';
 
 export { ModalButton, OptionButton };
 
@@ -105,15 +104,12 @@ export const ModalContent = ({
   children,
   variant,
   $variant,
-  onPress: _onPress,
   onClick,
   ...props
 }: {
   children: React.ReactNode;
   variant?: GameVariant;
   $variant?: GameVariant;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
   onClick?: (e: { stopPropagation: () => void }) => void;
   [key: string]: unknown;
 }) => {
@@ -194,15 +190,12 @@ export const CloseButton = ({
   variant,
   $variant,
   children,
-  onPress,
   onClick,
   ...props
 }: {
   variant?: GameVariant;
   $variant?: GameVariant;
   children?: React.ReactNode;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
   onClick?: (e: { stopPropagation: () => void }) => void;
   [key: string]: unknown;
 }) => (
@@ -211,7 +204,7 @@ export const CloseButton = ({
     variant="icon"
     size="sm"
     gameVariant={(variant || $variant) as GameVariant}
-    onClick={onClick || onPress}
+    onClick={onClick}
     {...props}
   >
     {children}
@@ -284,19 +277,18 @@ export function ModalActions({
 export function ScrollableCardsGrid({
   className,
   ...props
-}: { className?: string } & LegacyStyleProps & HTMLAttributes<HTMLDivElement>) {
-  const { style, domProps } = splitStyleProps(props);
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
   return (
     <CardsGrid
       className={cx('max-h-[55vh] overflow-y-auto p-2', className)}
-      style={style}
-      {...domProps}
+      {...props}
     />
   );
 }
 
 export function SelectableCard({
   className,
+  style,
   selected,
   $variant,
   $cardType: _cardType,
@@ -304,21 +296,17 @@ export function SelectableCard({
   ...props
 }: {
   className?: string;
+  style?: CSSProperties;
   selected?: boolean;
   $cardType?: unknown;
   $index?: unknown;
-} & { $variant?: string } & LegacyStyleProps &
-  HTMLAttributes<HTMLDivElement>) {
-  const { style, domProps } = splitStyleProps(props);
+} & { $variant?: string } & HTMLAttributes<HTMLDivElement>) {
   return (
     <BaseCard
-      className={cx(
-        selected ? 'scale-[1.05] border-white border-2' : undefined,
-        className,
-      )}
+      className={cx(selected ? 'scale-[1.05]' : undefined, className)}
+      style={selected ? { ...style, borderColor: 'white' } : style}
       $variant={$variant}
-      style={style}
-      {...domProps}
+      {...props}
     />
   );
 }
@@ -326,14 +314,11 @@ export function SelectableCard({
 export function RulesText({
   className,
   ...props
-}: { className?: string } & LegacyStyleProps &
-  HTMLAttributes<HTMLSpanElement>) {
-  const { style, domProps } = splitStyleProps(props);
+}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
       className={cx('box-border leading-[24px] opacity-[0.9]', className)}
-      style={style}
-      {...domProps}
+      {...props}
     />
   );
 }

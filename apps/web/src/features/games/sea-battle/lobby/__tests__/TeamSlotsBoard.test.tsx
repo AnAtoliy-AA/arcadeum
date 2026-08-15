@@ -66,13 +66,6 @@ vi.mock('@arcadeum/ui', () => ({
   ),
   Badge: ({ children }: ChildrenProps) => <span>{children}</span>,
   Typography: ({ children }: ChildrenProps) => <span>{children}</span>,
-  XStack: ({
-    children,
-    ...rest
-  }: ChildrenProps & { 'data-testid'?: string }) => (
-    <div data-testid={rest['data-testid']}>{children}</div>
-  ),
-  YStack: ({ children }: ChildrenProps) => <div>{children}</div>,
 }));
 
 import { TeamSlotsBoard } from '../TeamSlotsBoard';

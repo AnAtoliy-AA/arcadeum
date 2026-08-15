@@ -143,11 +143,11 @@ describe('PlayerAvatar', () => {
     expect(screen.getByText('Level 42')).toBeInTheDocument();
   });
 
-  it('calls onPress when clicked', () => {
-    const onPress = vi.fn();
-    render(<PlayerAvatar name="J" onPress={onPress} data-testid="pa" />);
+  it('calls onClick when clicked', () => {
+    const onClick = vi.fn();
+    render(<PlayerAvatar name="J" onClick={onClick} data-testid="pa" />);
     fireEvent.click(screen.getByTestId('pa'));
-    expect(onPress).toHaveBeenCalled();
+    expect(onClick).toHaveBeenCalled();
   });
 
   it('renders banner sentinel, name label, and presence line at profile size', () => {

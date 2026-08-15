@@ -100,8 +100,7 @@ function SortableCard({ id, card, index, t, cardVariant }: SortableCardProps) {
       <Card
         $cardType={card}
         $variant={cardVariant as GameVariant}
-        width="100%"
-        marginBottom="$2"
+        className="w-full mb-2"
       >
         <CardCorner $position="tl" $variant={cardVariant} />
         <CardCorner $position="tr" $variant={cardVariant} />

@@ -58,7 +58,7 @@ cp .env.example .env
 | Framework        | React Native 0.81.5 with Expo SDK 54           |
 | Navigation       | Expo Router (file-based routing)               |
 | State Management | React Context API                              |
-| Styling          | Tamagui + Custom theme system + StyleSheet     |
+| Styling          | Custom theme system + StyleSheet               |
 | Real-time        | Socket.io with optional AES-256-GCM encryption |
 | Authentication   | OAuth 2.0 (Google) + Local email/password      |
 

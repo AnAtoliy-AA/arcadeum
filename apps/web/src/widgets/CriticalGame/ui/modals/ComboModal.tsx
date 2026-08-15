@@ -177,8 +177,7 @@ const ComboModal: React.FC<ComboModalProps> = ({
                     <Card
                       $cardType={card}
                       $variant={cardVariant as GameVariant}
-                      width="100%"
-                      cursor="default"
+                      className="w-full cursor-default"
                     >
                       <CardCorner $position="tl" $variant={cardVariant} />
                       <CardCorner $position="tr" $variant={cardVariant} />
@@ -276,8 +275,7 @@ const ComboModal: React.FC<ComboModalProps> = ({
                       <Card
                         $cardType={card}
                         $variant={cardVariant as GameVariant}
-                        width="100%"
-                        cursor="default"
+                        className="w-full cursor-default"
                       >
                         <CardCorner $position="tl" $variant={cardVariant} />
                         <CardCorner $position="tr" $variant={cardVariant} />
@@ -322,8 +320,7 @@ const ComboModal: React.FC<ComboModalProps> = ({
                       <Card
                         $cardType={card}
                         $variant={cardVariant as GameVariant}
-                        width="100%"
-                        cursor="default"
+                        className="w-full cursor-default"
                       >
                         <CardCorner $position="tl" $variant={cardVariant} />
                         <CardCorner $position="tr" $variant={cardVariant} />
@@ -425,8 +422,7 @@ const ComboModal: React.FC<ComboModalProps> = ({
                       <Card
                         $cardType={card as CriticalCard}
                         $variant={cardVariant as GameVariant}
-                        width="100%"
-                        cursor="default"
+                        className="w-full cursor-default"
                       >
                         <CardCorner $position="tl" $variant={cardVariant} />
                         <CardCorner $position="tr" $variant={cardVariant} />

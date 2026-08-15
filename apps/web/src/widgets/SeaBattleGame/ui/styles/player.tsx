@@ -57,29 +57,11 @@ export const PlayerSectionWrapper = ({ className, ...props }: CommonProps) => (
   />
 );
 
-type BadgeWrapperProps = CommonProps & {
-  backgroundColor?: string;
-  borderRadius?: number;
-  paddingHorizontal?: string | number;
-  top?: number;
-};
-
-/** Resolve a `$N` spacing token to px ($N = N x 4px). */
-function spacingToPx(value: string | number | undefined): number | undefined {
-  if (typeof value === 'number') return value;
-  if (typeof value !== 'string') return undefined;
-  const match = value.match(/^\$(\d+(?:\.\d+)?)$/);
-  if (!match) return undefined;
-  return parseFloat(match[1]) * 4;
-}
+type BadgeWrapperProps = CommonProps;
 
 export const BadgeWrapper = ({
   className,
   style,
-  backgroundColor,
-  borderRadius,
-  paddingHorizontal,
-  top,
   ...props
 }: BadgeWrapperProps) => (
   <div
@@ -87,15 +69,7 @@ export const BadgeWrapper = ({
       'box-border flex flex-row items-stretch absolute top-0 z-[10] left-1/2 -translate-x-1/2',
       className,
     )}
-    style={{
-      ...(backgroundColor ? { backgroundColor } : {}),
-      ...(borderRadius !== undefined ? { borderRadius } : {}),
-      ...(paddingHorizontal !== undefined
-        ? { paddingHorizontal: spacingToPx(paddingHorizontal) }
-        : {}),
-      ...(top !== undefined ? { top } : {}),
-      ...(style ?? {}),
-    }}
+    style={style}
     {...props}
   />
 );

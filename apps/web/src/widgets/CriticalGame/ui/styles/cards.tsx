@@ -4,7 +4,6 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import { Button, type ButtonProps, type GameVariant } from '@arcadeum/ui';
 import { Card as BaseCard, CARD_SURFACE_CLASS } from './cards-base';
 import { getVariantStyles } from './variants';
-import { splitStyleProps, type LegacyStyleProps } from './shared';
 import { resolveVariantStyles } from './variant-styles';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
@@ -82,27 +81,6 @@ export function LastPlayedCard({
   );
 }
 
-export function ActionButtons({
-  className,
-  style,
-  $variant,
-  ...props
-}: { className?: string; style?: CSSProperties } & VariantProp &
-  HTMLAttributes<HTMLDivElement>) {
-  const config = getVariantStyles($variant).cards;
-  const variantStyles = resolveVariantStyles(config.getActionButtonsStyles?.());
-  return (
-    <div
-      className={cx(
-        'box-border flex flex-row items-stretch gap-3 flex-wrap z-[50]',
-        className,
-      )}
-      style={{ ...variantStyles.style, ...style }}
-      {...props}
-    />
-  );
-}
-
 const CARDS_GRID_LAYOUT_CLASS = {
   grid: 'flex flex-row flex-wrap',
   'grid-3': 'grid grid-cols-3',
@@ -120,30 +98,12 @@ export function CardsGrid({
 }: {
   className?: string;
   $layout?: keyof typeof CARDS_GRID_LAYOUT_CLASS;
-} & LegacyStyleProps &
-  HTMLAttributes<HTMLDivElement>) {
-  const { style, domProps } = splitStyleProps(props);
+} & HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cx(
         'box-border flex flex-row items-stretch flex-wrap gap-3 justify-center p-2 max-[800px]:flex-row max-[800px]:flex-nowrap max-[800px]:overflow-x-auto max-[800px]:py-2 max-[800px]:px-2 max-[800px]:gap-2 max-[800px]:justify-start',
         $layout ? CARDS_GRID_LAYOUT_CLASS[$layout] : undefined,
-        className,
-      )}
-      style={style}
-      {...domProps}
-    />
-  );
-}
-
-export function CardEmoji({
-  className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cx(
-        'box-border text-[40px] leading-[48px] mb-2 text-center max-[800px]:text-[28px] max-[800px]:leading-[34px]',
         className,
       )}
       {...props}
@@ -153,13 +113,12 @@ export function CardEmoji({
 
 export function DeckCard({
   className,
+  style,
   $variant,
   ...props
-}: { className?: string } & VariantProp &
-  LegacyStyleProps &
+}: { className?: string; style?: CSSProperties } & VariantProp &
   HTMLAttributes<HTMLDivElement>) {
   const config = getVariantStyles($variant).cards;
-  const { style, domProps } = splitStyleProps(props);
   const variantStyles = resolveVariantStyles(config.getDeckStyles?.());
   return (
     <BaseCard
@@ -178,42 +137,6 @@ export function DeckCard({
         } as CSSProperties
       }
       $variant={$variant}
-      {...domProps}
-    />
-  );
-}
-
-export function StashedCard({
-  className,
-  $variant,
-  ...props
-}: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
-  const config = getVariantStyles($variant).cards;
-  const variantStyles = resolveVariantStyles(config.getCardStyles?.());
-  return (
-    <BaseCard
-      className={cx('opacity-[0.9]', className)}
-      style={{
-        borderColor: config.deckBorderColor,
-        borderWidth: 1,
-        ...variantStyles.style,
-      }}
-      $variant={$variant}
-      {...props}
-    />
-  );
-}
-
-export function StashIcon({
-  className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cx(
-        'box-border absolute top-2 right-2 text-[12px] opacity-[0.6]',
-        className,
-      )}
       {...props}
     />
   );

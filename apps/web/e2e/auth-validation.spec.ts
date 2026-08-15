@@ -28,8 +28,9 @@ test.describe('Auth Validation', () => {
     const usernameInput = page.getByTestId('auth-username-input');
     const submitBtn = page.getByTestId('auth-submit-button');
 
-    // 3. Initially submit should be disabled (fields are empty). Tamagui
-    //    Button uses aria-disabled rather than the DOM disabled attribute.
+    // 3. Initially submit should be disabled (fields are empty). The
+    //    @arcadeum/ui Button uses aria-disabled rather than the DOM disabled
+    //    attribute.
     await expect(submitBtn).toHaveAttribute('aria-disabled', 'true');
 
     // 4. Type invalid email + the rest of the required fields

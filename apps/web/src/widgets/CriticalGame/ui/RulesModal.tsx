@@ -53,13 +53,14 @@ const CardInfo = ({ children }: { children: React.ReactNode }) => (
 );
 
 const CardName = ({ children }: { children: React.ReactNode }) => (
-  <RulesText fontWeight="700" fontSize="$4">
-    {children}
-  </RulesText>
+  <RulesText className="font-bold text-[18px]">{children}</RulesText>
 );
 
 const CardDescription = ({ children }: { children: React.ReactNode }) => (
-  <RulesText fontSize="$2" opacity={0.7} lineHeight={16}>
+  <RulesText
+    className="text-[14px]"
+    style={{ lineHeight: '16px', opacity: 0.7 }}
+  >
     {children}
   </RulesText>
 );
@@ -200,7 +201,7 @@ export function RulesModal({
                     <Card
                       $cardType={cardKey as CriticalCard}
                       $variant={currentVariant as string}
-                      cursor="default"
+                      className="cursor-default"
                     >
                       <CardCorner $position="tl" $variant={currentVariant} />
                       <CardCorner $position="tr" $variant={currentVariant} />

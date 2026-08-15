@@ -31,7 +31,7 @@ export function Container({ className, ...props }: DivProps) {
   );
 }
 
-// Card is provided by @arcadeum/ui — use <Card variant="default" cardPadding="md"> in JSX
+// Card is provided by @arcadeum/ui — use <Card variant="default" padding="md"> in JSX
 
 export function CardTitle({ className, ...props }: SpanProps) {
   return (

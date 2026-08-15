@@ -35,35 +35,18 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, 'onClick'> & {
   variant?: BadgeVariant;
   size?: BadgeSize;
   gameVariant?: GameVariant;
-  pulse?: boolean;
   title?: string;
   children?: ReactNode;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: (e: unknown) => void;
   className?: string;
-  /** Destructured so it never leaks to the DOM. */
-  $variant?: string;
-  /** Destructured so it never leaks to the DOM. */
-  $status?: string;
-  /** Destructured so it never leaks to the DOM. */
-  isHost?: boolean;
 };
 
 export const Badge = memo(function Badge({
   variant,
   size,
   gameVariant,
-  pulse,
-  onPress,
-  onClick,
   className,
-  $variant: _ignoredVariant,
-  $status: _ignoredStatus,
-  isHost: _ignoredIsHost,
   ...rest
 }: BadgeProps): ReactElement {
-  const handleClick = onClick ?? onPress;
   return (
     <span
       className={cx(
@@ -71,10 +54,8 @@ export const Badge = memo(function Badge({
         badgeSizes[size ?? 'md'],
         badgeVariants[variant ?? 'neutral'],
         gameVariant && badgeGameVariants[gameVariant],
-        pulse && 'transition-all duration-500 ease-out',
         className,
       )}
-      onClick={handleClick}
       {...rest}
     />
   );

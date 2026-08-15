@@ -153,10 +153,7 @@ export function PlayerList({
 
           <div className="box-border flex flex-col items-stretch flex-1 -ml-3">
             <div className="box-border flex flex-row items-center gap-2 -mb-1">
-              <Typography
-                className={'font-semibold text-[14px] line-clamp-1'}
-                ellipsizeMode="tail"
-              >
+              <Typography className={'font-semibold text-[14px] line-clamp-1'}>
                 {player.name}
               </Typography>
               {player.isHost && (

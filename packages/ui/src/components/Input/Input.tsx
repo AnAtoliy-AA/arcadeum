@@ -5,9 +5,6 @@ export type InputProps = {
   size?: 'sm' | 'md' | 'lg';
   error?: boolean;
   fullWidth?: boolean;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: (e: unknown) => void;
   value?: string;
   defaultValue?: string;
   placeholder?: string;
@@ -28,17 +25,6 @@ export type InputProps = {
   'aria-required'?: boolean | string;
   className?: string;
   style?: React.CSSProperties;
-  flex?: number | string;
-  width?: number | string;
-  minWidth?: number | string;
-  /** responsive shorthand (legacy) — mapped to minWidth/width. */
-  $xs?: { minWidth?: number | string; width?: number | string };
-  /** Legacy-compat: fires with the new value. */
-  onChangeText?: (text: string) => void;
-  /** Legacy-compat: fires on Enter. */
-  onSubmitEditing?: () => void;
-  /** Legacy-compat alias for data-testid. */
-  testID?: string;
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'onChange'>;
 
 const sizeClasses: Record<NonNullable<InputProps['size']>, string> = {
@@ -52,18 +38,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     size = 'md',
     error,
     fullWidth,
-    onPress,
-    onClick,
     className,
     style,
-    flex,
-    width,
-    minWidth,
-    $xs,
-    onChangeText,
-    onSubmitEditing,
-    testID,
-    'data-testid': dataTestId,
     onChange,
     ...rest
   },
@@ -72,7 +48,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   return (
     <input
       ref={ref}
-      data-testid={testID ?? dataTestId}
       className={cx(
         'rounded-[16px] border bg-[var(--background)] text-[var(--color)] outline-none transition-[border-color] duration-200',
         sizeClasses[size],
@@ -82,29 +57,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[var(--primary)] focus:border-[2px]',
         className,
       )}
-      style={{
-        ...(flex !== undefined ? { flex } : null),
-        ...(width !== undefined ? { width } : null),
-        ...(minWidth !== undefined ? { minWidth } : null),
-        ...($xs
-          ? {
-              minWidth: $xs.minWidth,
-              width: $xs.width,
-            }
-          : null),
-        ...style,
-      }}
-      onChange={(e) => {
-        onChange?.(e);
-        onChangeText?.(e.target.value);
-      }}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') onSubmitEditing?.();
-      }}
-      onClick={(e) => {
-        onClick?.(e);
-        onPress?.();
-      }}
+      style={style}
+      onChange={onChange}
       {...rest}
     />
   );

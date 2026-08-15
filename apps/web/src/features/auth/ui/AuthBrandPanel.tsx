@@ -167,7 +167,11 @@ function BrandHero({
             </div>
           ))}
         </div>
-        <Typography variant="body" uiSize="sm" color="$colorMuted" flex={1}>
+        <Typography
+          variant="body"
+          uiSize="sm"
+          className="flex-1 text-secondary"
+        >
           {brand.proofBefore}
           <Typography variant="body" uiSize="sm" weight="600">
             {brand.proofCount}
@@ -194,11 +198,11 @@ function FeatureBullet({ title, detail }: { title: string; detail: string }) {
       >
         <CheckGlyph size={14} />
       </div>
-      <Typography variant="body" uiSize="md" flex={1}>
+      <Typography variant="body" uiSize="md" className="flex-1">
         <Typography variant="body" uiSize="md" weight="700">
           {title}
         </Typography>{' '}
-        <Typography variant="body" uiSize="md" color="$colorMuted">
+        <Typography variant="body" uiSize="md" className="text-secondary">
           — {detail}
         </Typography>
       </Typography>

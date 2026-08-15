@@ -33,7 +33,7 @@ export function EntryCard({
         className,
       )}
       variant="elevated"
-      cardPadding="md"
+      padding="md"
       interactive
       {...props}
     >

@@ -152,7 +152,7 @@ function PurchaseConfirmDialogInner({
             {itemDesc}
           </span>
         </div>
-        <div className="box-border flex flex-row gap-3 items-center justify-space-between">
+        <div className="box-border flex flex-row gap-3 items-center justify-between">
           <span className="box-border text-[18px] font-semibold">
             {item.priceAmount === 0
               ? labels.free

@@ -50,7 +50,7 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
                 <Typography
                   variant="label"
                   uiSize="md"
-                  fontWeight={active ? '800' : '700'}
+                  weight={active ? '800' : '700'}
                 >
                   {labels.items[item.id] ?? item.id}
                 </Typography>

@@ -74,11 +74,11 @@ function NavLink({
 }
 
 function TopUpBtn({
-  onPress,
+  onClick,
   className,
   ...props
 }: {
-  onPress?: () => void;
+  onClick?: () => void;
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>) {
   return (
@@ -87,7 +87,7 @@ function TopUpBtn({
         'box-border flex flex-row items-center gap-1 px-3 py-2 rounded-xl border border-dashed border-[rgba(255,255,255,0.18)] cursor-pointer transition-colors hover:border-[rgba(167,139,250,0.6)] hover:bg-[rgba(167,139,250,0.06)]',
         className,
       )}
-      onClick={onPress}
+      onClick={onClick}
       {...props}
     />
   );
@@ -175,7 +175,7 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
             {formatNumber(gems, locale)}
           </span>
         </BalanceChip>
-        <TopUpBtn onPress={handleTopUp} role="button" data-testid="shop-top-up">
+        <TopUpBtn onClick={handleTopUp} role="button" data-testid="shop-top-up">
           <span
             className="box-border text-[16px] font-bold"
             style={{ color: GEM_COLOR }}

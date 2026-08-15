@@ -205,8 +205,7 @@ export const Footer = memo(function Footer({
                 <Typography
                   uiSize="md"
                   alpha="medium"
-                  lineHeight={24}
-                  className="max-[800px]:text-center"
+                  className="max-[800px]:text-center leading-[24px]"
                   style={{ maxWidth: 500 }}
                 >
                   {description}

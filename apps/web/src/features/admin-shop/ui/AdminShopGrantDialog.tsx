@@ -147,7 +147,7 @@ function AdminShopGrantDialogInner({
             {labels.grantDialog.userId}
           </span>
           {userId ? (
-            <div className="box-border flex flex-row p-2 bg-[var(--backgroundHover)] rounded-lg border border-[var(--borderColor)] justify-space-between items-center">
+            <div className="box-border flex flex-row p-2 bg-[var(--backgroundHover)] rounded-lg border border-[var(--borderColor)] justify-between items-center">
               <div className="box-border flex flex-col items-stretch">
                 <span className="box-border text-[16px] font-bold">
                   {selectedUser

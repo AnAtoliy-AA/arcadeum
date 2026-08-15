@@ -64,9 +64,7 @@ export function RoomDetailsSection({
 
       <Row>
         <FormGroup
-          flexGrow={1}
-          flexBasis={0}
-          $xs={{ flexGrow: 0, flexBasis: 'auto' }}
+          className="grow basis-0 max-[660px]:grow-0 max-[660px]:basis-auto"
           label={t('games.create.fieldMaxPlayers') || 'Max Players (optional)'}
           htmlFor="max-players"
         >
@@ -88,7 +86,7 @@ export function RoomDetailsSection({
               aria-label={
                 t('games.create.maxPlayersAria') || 'Maximum number of players'
               }
-              flex={1}
+              className="flex-1"
               fullWidth
               size="lg"
             />
@@ -111,9 +109,7 @@ export function RoomDetailsSection({
         </FormGroup>
 
         <FormGroup
-          flexGrow={1}
-          flexBasis={0}
-          $xs={{ flexGrow: 0, flexBasis: 'auto' }}
+          className="grow basis-0 max-[660px]:grow-0 max-[660px]:basis-auto"
           label={t('games.create.fieldVisibility') || 'Visibility'}
           htmlFor="visibility"
         >
@@ -163,7 +159,7 @@ export function RoomDetailsSection({
           id="notes"
           placeholder={t('games.create.notesPlaceholder') || 'Add notes...'}
           value={notes}
-          onChangeText={onNotesChange}
+          onChange={(e) => onNotesChange(e.target.value)}
           aria-label={
             t('games.create.notesAria') || 'Additional notes for the room'
           }

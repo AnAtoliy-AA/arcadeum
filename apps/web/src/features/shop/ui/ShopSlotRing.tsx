@@ -47,34 +47,21 @@ const SLOT_ORDER: ShopCategory[] = [
 function SlotTile({
   active,
   previewing,
-  onPress,
-  width,
-  $sm,
   className,
   ...props
 }: {
   active?: boolean;
   previewing?: boolean;
-  onPress?: () => void;
-  width?: string | number;
-  $sm?: { width?: string | number };
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cx(
         'box-border flex flex-row items-center gap-[10px] p-[10px] rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] cursor-pointer min-h-[62px] transition-colors hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
-        width !== undefined && width === '100%'
-          ? 'w-full'
-          : width !== undefined
-            ? `w-[${width}]`
-            : '',
-        $sm?.width === '100%' ? 'max-[800px]:w-full' : '',
         active && 'border-[rgba(96,165,250,0.6)] bg-[rgba(96,165,250,0.08)]',
         previewing && 'border-[rgba(34,197,94,0.6)] bg-[rgba(16,185,129,0.10)]',
         className,
       )}
-      onClick={onPress}
       {...props}
     />
   );
@@ -109,14 +96,13 @@ export function ShopSlotRing({
               key={slot}
               active={isActive}
               previewing={isPreviewing}
-              onPress={() => onSlotClick(slot)}
+              onClick={() => onSlotClick(slot)}
               role="button"
               tabIndex={0}
               data-testid={`shop-slot-${slot}`}
               data-active={isActive ? 'true' : 'false'}
               data-previewing={isPreviewing ? 'true' : 'false'}
-              width="48%"
-              $sm={{ width: '100%' }}
+              className="w-[48%] max-[800px]:w-full"
             >
               <div className="box-border flex flex-col w-[40px] h-[40px] rounded-lg items-center justify-center bg-[rgba(0,0,0,0.30)] border border-[rgba(255,255,255,0.10)] overflow-hidden">
                 {item ? (

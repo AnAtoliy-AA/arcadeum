@@ -138,7 +138,7 @@ export function UsersTable({
       className="box-border flex flex-col items-stretch gap-3"
       data-testid="users-table"
     >
-      <div className="box-border flex flex-row items-center justify-space-between px-1">
+      <div className="box-border flex flex-row items-center justify-between px-1">
         <span className="box-border opacity-[0.7] text-[12px]">
           {labels.totalLabel.replace('{total}', String(total))}
         </span>
@@ -196,7 +196,7 @@ export function UsersTable({
 
       {selectedIds.size > 0 && (
         <div
-          className="box-border flex flex-row gap-3 items-center justify-space-between p-3 rounded-xl bg-[var(--backgroundFocus)]"
+          className="box-border flex flex-row gap-3 items-center justify-between p-3 rounded-xl bg-[var(--backgroundFocus)]"
           data-testid="bulk-actions-bar"
         >
           <span className="box-border text-[14px] opacity-[0.8]">

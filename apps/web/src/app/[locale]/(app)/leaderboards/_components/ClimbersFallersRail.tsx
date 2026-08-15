@@ -52,7 +52,7 @@ function Column({
       <div className="box-border flex flex-col items-stretch gap-2">
         {rows.map(({ player, fromRank, toRank }) => (
           <div
-            className="box-border flex flex-row items-center justify-space-between gap-3"
+            className="box-border flex flex-row items-center justify-between gap-3"
             key={player.id}
           >
             <span className="box-border font-semibold line-clamp-1 flex-1">

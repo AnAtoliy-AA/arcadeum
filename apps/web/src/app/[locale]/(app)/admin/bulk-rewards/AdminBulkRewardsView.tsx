@@ -120,7 +120,7 @@ export function AdminBulkRewardsView({ labels }: Props) {
           <Input
             type="number"
             value={amount}
-            onChangeText={setAmount}
+            onChange={(e) => setAmount(e.target.value)}
             placeholder={labels.form.amount.placeholder}
             min={1}
             max={1000000}
@@ -134,7 +134,7 @@ export function AdminBulkRewardsView({ labels }: Props) {
             </span>
             <Input
               value={itemId}
-              onChangeText={setItemId}
+              onChange={(e) => setItemId(e.target.value)}
               placeholder={labels.form.itemId.placeholder}
             />
           </div>
@@ -146,7 +146,7 @@ export function AdminBulkRewardsView({ labels }: Props) {
           </span>
           <Input
             value={reason}
-            onChangeText={setReason}
+            onChange={(e) => setReason(e.target.value)}
             placeholder={labels.form.reason.placeholder}
           />
         </div>

@@ -26,7 +26,7 @@ function TierCard({
         className="box-border flex flex-col items-stretch active:opacity-[0.8] cursor-pointer p-4"
         onClick={onToggle}
       >
-        <div className="box-border flex flex-row justify-space-between items-center">
+        <div className="box-border flex flex-row justify-between items-center">
           <div className="box-border flex flex-row gap-3 items-center flex-1">
             <div
               className="box-border w-[40px] h-[40px] rounded-xl items-center justify-center"
@@ -91,7 +91,7 @@ function TierCard({
                   style={{ backgroundColor: tier.color }}
                 />
                 <div className="box-border flex flex-col items-stretch flex-1 gap-1">
-                  <div className="box-border flex flex-row justify-space-between items-center">
+                  <div className="box-border flex flex-row justify-between items-center">
                     <Typography
                       className={'font-bold'}
                       variant="label"
@@ -151,7 +151,7 @@ function PhaseTimeline({
               }}
             />
             <div
-              className="box-border flex flex-row justify-space-between items-center p-3 rounded-xl gap-3"
+              className="box-border flex flex-row justify-between items-center p-3 rounded-xl gap-3"
               style={{
                 background: isHovered
                   ? `linear-gradient(135deg, ${p.color}12, ${p.color}06)`

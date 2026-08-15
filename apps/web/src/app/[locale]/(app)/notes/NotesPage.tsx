@@ -104,7 +104,7 @@ export default function NotesPage({ initialData }: NotesPageProps) {
                   <span className="box-border text-[var(--color)] text-[18px] leading-[34px] -mb-4 block">
                     {note.note}
                   </span>
-                  <div className="box-border flex flex-row justify-space-between items-end gap-4 flex-wrap">
+                  <div className="box-border flex flex-row justify-between items-end gap-4 flex-wrap">
                     <div className="box-border flex flex-col items-stretch gap-1">
                       {note.displayName ? (
                         <span className="box-border text-[var(--primaryGradientStart)] font-semibold text-[18px]">

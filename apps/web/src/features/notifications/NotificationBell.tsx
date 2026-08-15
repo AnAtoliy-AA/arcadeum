@@ -162,10 +162,7 @@ const NotificationPopover = memo(function NotificationPopover({
         </Button>
       </div>
       {items.length === 0 ? (
-        <Typography
-          className="py-5 text-center"
-          style={{ color: 'var(--colorMuted)' }}
-        >
+        <Typography className="py-5 text-center text-secondary">
           {t('notifications.bell.empty')}
         </Typography>
       ) : (
@@ -235,15 +232,10 @@ const NotificationRow = memo(function NotificationRow({
             : 'var(--backgroundHover)';
         }}
       >
-        <Typography fontWeight={item.read ? '500' : '700'} uiSize="sm">
+        <Typography weight={item.read ? '500' : '700'} uiSize="sm">
           {title}
         </Typography>
-        <Typography
-          className="line-clamp-2"
-          style={{ color: 'var(--colorMuted)' }}
-        >
-          {body}
-        </Typography>
+        <Typography className="line-clamp-2 text-secondary">{body}</Typography>
       </div>
     </Link>
   );

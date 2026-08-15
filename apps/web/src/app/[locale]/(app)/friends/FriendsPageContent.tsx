@@ -170,7 +170,7 @@ export default function FriendsPageContent({
   return (
     <div className="box-border overflow-auto p-4 max-w-[640px] w-full">
       <div className="box-border flex flex-col items-stretch gap-5">
-        <div className="box-border flex flex-row justify-space-between items-center">
+        <div className="box-border flex flex-row justify-between items-center">
           <span className="box-border text-[28px] font-extrabold">
             {tt.title ?? 'Friends'}
           </span>
@@ -192,8 +192,10 @@ export default function FriendsPageContent({
                 size="md"
                 placeholder={tt.addFriend?.placeholder ?? 'Enter username'}
                 value={username}
-                onChangeText={setUsername}
-                onSubmitEditing={handleSendRequest}
+                onChange={(e) => setUsername(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSendRequest();
+                }}
                 data-testid="add-friend-input"
               />
               <Button

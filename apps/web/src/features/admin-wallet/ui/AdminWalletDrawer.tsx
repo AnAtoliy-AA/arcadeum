@@ -74,7 +74,7 @@ function RecentSection({
           key={tx.id}
           data-testid={`wallet-tx-${tx.id}`}
         >
-          <div className="box-border flex flex-row justify-space-between items-center">
+          <div className="box-border flex flex-row justify-between items-center">
             <span className="box-border text-[12px]">
               {tx.currency} · {tx.reason}
             </span>

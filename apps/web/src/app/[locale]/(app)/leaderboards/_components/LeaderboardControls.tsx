@@ -121,7 +121,7 @@ export function LeaderboardControls({
           className={'w-[200px]'}
           placeholder={(tt.searchPlaceholder as string) ?? 'Find player…'}
           value={search}
-          onChangeText={onSearchChange}
+          onChange={(e) => onSearchChange(e.target.value)}
           data-testid="leaderboard-search"
         />
         {onJumpToSelf ? (

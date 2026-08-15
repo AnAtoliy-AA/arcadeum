@@ -149,7 +149,7 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
           </span>
         ) : null}
 
-        <div className="box-border flex flex-row items-stretch gap-3 justify-space-between">
+        <div className="box-border flex flex-row items-stretch gap-3 justify-between">
           <Button variant="outline" onClick={handleReset} disabled={isPending}>
             {labels.editDialog.reset}
           </Button>

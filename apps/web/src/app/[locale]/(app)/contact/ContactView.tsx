@@ -151,7 +151,7 @@ export default function ContactView({
 
   return (
     <PageLayout>
-      <Container size="lg" maxWidth={1120}>
+      <Container size="lg" style={{ maxWidth: 1120 }}>
         <div className="box-border flex flex-col items-stretch gap-8">
           <div style={s.heroWrapStyle}>
             <span

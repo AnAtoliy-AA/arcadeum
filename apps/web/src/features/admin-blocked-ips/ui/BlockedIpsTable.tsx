@@ -65,7 +65,7 @@ export function BlockedIpsTable({
       className="box-border flex flex-col items-stretch gap-3"
       data-testid="blocked-ips-table"
     >
-      <div className="box-border flex flex-row items-center justify-space-between px-1">
+      <div className="box-border flex flex-row items-center justify-between px-1">
         <span className="box-border opacity-[0.7] text-[12px]">
           {labels.totalLabel.replace('{total}', String(items.length))}
         </span>

@@ -104,8 +104,7 @@ function SenderName({
       uiSize="xs"
       weight="600"
       {...(color ? { color } : { alpha: 'medium' })}
-      className="uppercase tracking-[0.5px]"
-      numberOfLines={1}
+      className="uppercase tracking-[0.5px] line-clamp-1"
       style={{ ...NAME_STYLE, ...nameStyle }}
     >
       {name}

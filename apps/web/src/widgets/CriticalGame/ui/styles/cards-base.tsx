@@ -1,7 +1,6 @@
 import type { CSSProperties, HTMLAttributes } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
-import { splitStyleProps, type LegacyStyleProps } from './shared';
 
 /**
  * Shared card surface styling (no background — derivatives override it).
@@ -23,8 +22,7 @@ type CardProps = {
   $cardType?: unknown;
   $index?: unknown;
   isSticker?: boolean;
-} & LegacyStyleProps &
-  HTMLAttributes<HTMLDivElement>;
+} & HTMLAttributes<HTMLDivElement>;
 
 /**
  * Base playing-card surface. `$cardType` / `$index` were no-op variants on
@@ -36,9 +34,9 @@ export function Card({
   $cardType: _cardType,
   $index: _index,
   isSticker,
+  style,
   ...props
 }: CardProps) {
-  const { style, domProps } = splitStyleProps(props);
   return (
     <div
       className={cx(
@@ -50,7 +48,7 @@ export function Card({
         className,
       )}
       style={style}
-      {...domProps}
+      {...props}
     />
   );
 }

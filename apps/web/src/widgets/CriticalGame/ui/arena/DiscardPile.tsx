@@ -36,8 +36,10 @@ export function DiscardPile({
           table layout uses for the same component. */}
       <CardSlot
         $role="lastPlayed"
-        width={isNarrow ? 80 : 140}
-        height={isNarrow ? 112 : 196}
+        style={{
+          width: isNarrow ? 80 : 140,
+          height: isNarrow ? 112 : 196,
+        }}
       >
         <LastPlayedCardDisplay
           discardPile={pile}

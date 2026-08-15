@@ -32,9 +32,6 @@ vi.mock('@arcadeum/ui', async () => {
     onClick?: () => void;
   }) => React.createElement('button', { onClick }, children);
   return {
-    XStack: passthrough('XStack'),
-    YStack: passthrough('YStack'),
-    ScrollView: passthrough('ScrollView'),
     Button: button,
     IconButton: button,
     GlassCard: passthrough('GlassCard'),

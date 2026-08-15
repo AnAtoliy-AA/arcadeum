@@ -241,7 +241,7 @@ export default function PaymentPage() {
                       t('payments.notePlaceholder') || 'Say something nice...'
                     }
                     value={note}
-                    onChangeText={setNote}
+                    onChange={(e) => setNote(e.target.value)}
                     aria-label={
                       t('payments.noteAria') || 'Payment note or description'
                     }

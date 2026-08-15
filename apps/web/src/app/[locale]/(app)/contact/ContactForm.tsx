@@ -109,7 +109,7 @@ export function ContactForm({ form }: ContactFormProps) {
               <Typography variant="heading" uiSize="lg">
                 {form?.successTitle ?? form?.success ?? 'Message away.'}
               </Typography>
-              <Typography variant="body" alpha="medium" marginTop="$2">
+              <Typography variant="body" alpha="medium" className="mt-2">
                 {form?.successBody ??
                   'Expect a reply within 4 hours. We sent a copy to your email.'}
               </Typography>
@@ -126,7 +126,7 @@ export function ContactForm({ form }: ContactFormProps) {
               <Typography variant="heading" uiSize="lg">
                 {form?.errorTitle ?? "We couldn't send your message"}
               </Typography>
-              <Typography variant="body" alpha="medium" marginTop="$2">
+              <Typography variant="body" alpha="medium" className="mt-2">
                 {form?.errorBody ??
                   'Something went wrong on our end. You can try again, or open your mail app to send directly.'}
               </Typography>

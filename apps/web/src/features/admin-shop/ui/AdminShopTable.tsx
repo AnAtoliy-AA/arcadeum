@@ -42,7 +42,7 @@ export function AdminShopTable({ catalog, labels }: Props) {
 
   return (
     <>
-      <div className="box-border flex flex-row justify-space-between items-center -mb-3">
+      <div className="box-border flex flex-row justify-between items-center -mb-3">
         <span className="box-border text-[18px] font-semibold">
           {catalog.length} items
         </span>

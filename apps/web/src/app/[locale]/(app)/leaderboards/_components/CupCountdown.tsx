@@ -45,7 +45,7 @@ export function CupCountdown({
   const overflow = Math.max(0, qualified.length - visiblePills.length);
   return (
     <div className="box-border flex flex-col items-stretch gap-4 p-4 rounded-2xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]">
-      <div className="box-border flex flex-row items-center justify-space-between gap-4 flex-wrap">
+      <div className="box-border flex flex-row items-center justify-between gap-4 flex-wrap">
         <div className="box-border flex flex-col items-stretch gap-2 flex-1 min-w-[220px]">
           <div className="box-border flex flex-row gap-3 items-center">
             <LiveChip label={(t?.live as string) ?? 'Live'} />

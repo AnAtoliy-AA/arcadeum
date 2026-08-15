@@ -25,33 +25,24 @@ const paddingClasses: Record<CardPadding, string> = {
 export type CardProps = {
   variant?: CardVariant;
   padding?: CardPadding;
-  /** @deprecated Use padding instead */
-  cardPadding?: CardPadding;
   interactive?: boolean;
   children?: ReactNode;
   group?: string | boolean;
   title?: string;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: (e: unknown) => void;
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   {
     variant = 'elevated',
-    padding,
-    cardPadding,
+    padding = 'md',
     interactive = false,
     children,
-    onPress,
-    onClick,
     className,
     ...rest
   },
   ref,
 ) {
-  const resolvedPadding: CardPadding = padding ?? cardPadding ?? 'md';
   return (
     <div
       ref={ref}
@@ -61,13 +52,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
         'overflow-hidden',
         'rounded-2xl',
         variantClasses[variant],
-        paddingClasses[resolvedPadding],
+        paddingClasses[padding],
         interactive &&
           'cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-[var(--primary)] active:scale-[0.98] active:-translate-y-0.5',
         !interactive && 'transition-all duration-300 ease-out',
         className,
       )}
-      onClick={onClick ?? onPress}
       {...rest}
     >
       <span

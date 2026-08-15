@@ -71,7 +71,7 @@ function PlayerRow({
           className="box-border flex flex-row items-stretch absolute top-[-10px] left-[50%] z-[10]"
           style={{ transform: 'translateX(-50%)' }}
         >
-          <Badge variant="success" size="sm" pulse>
+          <Badge variant="success" size="sm">
             {t('games.sea_battle_v1.table.players.alive' as TranslationKey)}
           </Badge>
         </div>
@@ -139,11 +139,7 @@ export function SeaBattleTable({
       <GlassCard
         className={'flex-row p-4 px-6 items-center gap-4 rounded-[100px]'}
       >
-        <Badge
-          variant={isMyTurn ? 'success' : 'info'}
-          size="md"
-          pulse={isMyTurn}
-        >
+        <Badge variant={isMyTurn ? 'success' : 'info'} size="md">
           {isMyTurn ? '🎯' : '⏳'}
         </Badge>
         <div className="box-border flex flex-col items-stretch">

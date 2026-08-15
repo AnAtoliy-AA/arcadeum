@@ -203,7 +203,7 @@ export function TeamSlotsBoard(props: TeamSlotsBoardProps) {
 
                 return (
                   <div
-                    className="box-border flex flex-row gap-2 items-center justify-space-between"
+                    className="box-border flex flex-row gap-2 items-center justify-between"
                     key={id}
                     data-testid={`team-slot-${team.id}-${id}`}
                   >

@@ -80,7 +80,7 @@ export const SeaBattleTeamPanel = React.memo(function SeaBattleTeamPanel({
   const hasUnassigned = unassignedMembers.length > 0;
 
   const header = (
-    <div className="box-border flex flex-row items-center justify-space-between gap-3 flex-wrap">
+    <div className="box-border flex flex-row items-center justify-between gap-3 flex-wrap">
       <div
         className="box-border flex flex-row items-center gap-3"
         data-testid={isHost ? 'team-mode-toggle' : undefined}

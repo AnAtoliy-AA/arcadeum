@@ -77,7 +77,7 @@ export function NotificationSettingsSection() {
             </span>
           </div>
         ) : (
-          <div className="box-border flex flex-row p-3 rounded-lg bg-[var(--backgroundHover)] border-[var(--borderColor)] border items-center justify-space-between">
+          <div className="box-border flex flex-row p-3 rounded-lg bg-[var(--backgroundHover)] border-[var(--borderColor)] border items-center justify-between">
             <span className="box-border text-[16px]">{permissionLabel}</span>
             {permission === 'denied' && error && (
               <span className="box-border text-[14px] text-[var(--error)]">

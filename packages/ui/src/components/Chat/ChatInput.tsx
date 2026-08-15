@@ -52,7 +52,7 @@ export const ChatInput = memo(function ChatInput({
       <div style={{ flex: 1 }}>
         <Input
           value={value}
-          onChangeText={onChange}
+          onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={disabled}

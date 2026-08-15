@@ -34,8 +34,7 @@ test.describe('Navigation', () => {
     const onPageError = (err: Error) => {
       if (
         err.message.includes('ChunkLoadError') ||
-        err.message.includes('Failed to load chunk') ||
-        err.message.includes("Can't find Tamagui")
+        err.message.includes('Failed to load chunk')
       ) {
         chunkLoadError = true;
       }

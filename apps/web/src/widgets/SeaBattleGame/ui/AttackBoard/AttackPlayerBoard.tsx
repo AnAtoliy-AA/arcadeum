@@ -237,10 +237,8 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     return (
       <PlayerSectionWrapper>
         <BadgeWrapper
-          backgroundColor={theme.boardBackground}
-          borderRadius={8}
-          paddingHorizontal="$1.5"
-          top={-4}
+          className="px-1.5 top-[-4px] rounded-[8px]"
+          style={{ backgroundColor: theme.boardBackground }}
         >
           {showBadge && (
             <div
@@ -333,10 +331,8 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   return (
     <PlayerSectionWrapper>
       <BadgeWrapper
-        backgroundColor={theme.boardBackground}
-        borderRadius={8}
-        paddingHorizontal="$1.5"
-        top={-4}
+        className="px-1.5 top-[-4px] rounded-[8px]"
+        style={{ backgroundColor: theme.boardBackground }}
       >
         {isTeammate ? (
           <BadgePill

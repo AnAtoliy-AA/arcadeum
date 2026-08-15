@@ -166,19 +166,19 @@ const EmptyMessage = ({
 );
 
 const MessageInput = ({
-  onChangeText,
+  onChange,
   className,
   ...props
 }: {
-  onChangeText?: (text: string) => void;
+  onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
   className?: string;
-} & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'>) => (
+} & TextareaHTMLAttributes<HTMLTextAreaElement>) => (
   <textarea
     className={cx(
       'box-border w-full p-3 mb-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[var(--color)] min-h-[80px] text-[16px] outline-none transition-colors placeholder:text-[#8e9196] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
       className,
     )}
-    onChange={(e) => onChangeText?.(e.target.value)}
+    onChange={onChange}
     {...props}
   />
 );
@@ -276,7 +276,7 @@ export function RematchModal({
             t('games.table.rematch.messagePlaceholder') || 'Enter a message...'
           }
           value={message}
-          onChangeText={setMessage}
+          onChange={(e) => setMessage(e.target.value)}
           disabled={rematchLoading}
         />
 

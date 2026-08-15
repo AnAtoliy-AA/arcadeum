@@ -6,7 +6,6 @@ export type TextAreaProps = {
   defaultValue?: string;
   placeholder?: string;
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
-  onChangeText?: (text: string) => void;
   onFocus?: React.FocusEventHandler<HTMLTextAreaElement>;
   onBlur?: React.FocusEventHandler<HTMLTextAreaElement>;
   disabled?: boolean;
@@ -29,7 +28,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       defaultValue,
       placeholder,
       onChange,
-      onChangeText,
       onFocus,
       onBlur,
       disabled,
@@ -60,10 +58,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         required={required}
         aria-required={required || undefined}
         data-testid={dataTestId}
-        onChange={(e) => {
-          onChange?.(e);
-          onChangeText?.(e.target.value);
-        }}
+        onChange={onChange}
         onFocus={onFocus}
         onBlur={onBlur}
         className={cx(

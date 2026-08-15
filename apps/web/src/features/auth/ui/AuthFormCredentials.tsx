@@ -172,7 +172,7 @@ export function AuthFormCredentials({
         )}
 
         {!isRegisterMode && (
-          <div className="box-border flex flex-row items-center justify-space-between gap-3">
+          <div className="box-border flex flex-row items-center justify-between gap-3">
             <RememberMeCheckbox
               checked={rememberMe}
               onChange={setRememberMe}

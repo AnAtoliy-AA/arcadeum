@@ -63,7 +63,7 @@ export function LobbyChipGroup({
           <Button
             className={`rounded-[10px] font-medium text-[13px] ${
               isActive
-                ? `bg-[${accentColor}20] border-[${accentColor}80] text-[${accentColor}] hover:bg-[${accentColor}30]`
+                ? undefined
                 : 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.10)] text-[#cbd5e1] hover:bg-[rgba(255,255,255,0.08)]'
             } ${
               option.comingSoon
@@ -72,6 +72,15 @@ export function LobbyChipGroup({
                   ? 'opacity-[0.5]'
                   : ''
             }`}
+            style={
+              isActive
+                ? {
+                    backgroundColor: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
+                    borderColor: `color-mix(in srgb, ${accentColor} 80%, transparent)`,
+                    color: accentColor,
+                  }
+                : undefined
+            }
             key={option.id}
             variant="chip"
             size="sm"

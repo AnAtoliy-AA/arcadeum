@@ -86,7 +86,7 @@ const StashModal: React.FC<StashModalProps> = ({
           <SectionLabel $variant={cardVariant as GameVariant}>
             {t('games.table.modals.stash.description')}
           </SectionLabel>
-          <CardsGrid maxHeight={400} overflowY="auto" padding="$2">
+          <CardsGrid className="max-h-[400px] overflow-y-auto p-2">
             {hand.map((card, index) => {
               const isSelected = selectedIndices.includes(index);
               return (
@@ -96,14 +96,12 @@ const StashModal: React.FC<StashModalProps> = ({
                   $index={0}
                   $variant={cardVariant as GameVariant}
                   onClick={() => toggleCard(index)}
-                  scale={isSelected ? 1.05 : 1}
-                  shadowColor={
-                    isSelected ? 'rgba(255, 255, 255, 0.5)' : undefined
+                  className={
+                    isSelected
+                      ? 'scale-[1.05] shadow-[0_7.5px_15px_rgba(255,255,255,0.5)]'
+                      : undefined
                   }
-                  shadowRadius={isSelected ? 15 : undefined}
-                  borderWidth={isSelected ? 2 : 0}
-                  borderColor={isSelected ? 'white' : 'transparent'}
-                  cursor="pointer"
+                  style={{ borderColor: isSelected ? 'white' : 'transparent' }}
                 >
                   <CardCorner $position="tl" />
                   <CardCorner $position="tr" />

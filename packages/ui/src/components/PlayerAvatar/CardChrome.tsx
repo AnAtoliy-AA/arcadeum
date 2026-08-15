@@ -19,7 +19,7 @@ interface CardChromeProps {
   /** Prestige glyph shown beside the name for VIP tiers. */
   roleGlyph?: string | null;
   testId?: string;
-  onPress?: () => void;
+  onClick?: () => void;
   /** The disc + halo zone, rendered between the chrome overlays and the name. */
   children: React.ReactNode;
 }
@@ -38,7 +38,7 @@ export function CardChrome({
   roleColor,
   roleGlyph,
   testId,
-  onPress,
+  onClick,
   children,
 }: CardChromeProps) {
   const bannerStyle: React.CSSProperties | undefined = bannerColor
@@ -61,9 +61,9 @@ export function CardChrome({
   return (
     <div
       data-testid={testId}
-      onClick={onPress}
+      onClick={onClick}
       style={{
-        cursor: onPress ? 'pointer' : 'default',
+        cursor: onClick ? 'pointer' : 'default',
         width: size === 'profile' ? '100%' : 220,
         minHeight: size === 'profile' ? 280 : undefined,
         borderRadius: 20,
@@ -110,11 +110,11 @@ export function CardChrome({
           data-testid={testId ? `${testId}-skin` : undefined}
         >
           <Typography
-            fontSize={9}
-            letterSpacing={1}
+            tracking="md"
             className="uppercase"
             color="#9ca3af"
-            fontWeight="800"
+            weight="800"
+            style={{ fontSize: 9 }}
           >
             {skinChip.prefix ? `${skinChip.prefix} · ` : ''}
             {skinChip.label}
@@ -124,8 +124,6 @@ export function CardChrome({
       {children}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
         <Typography
-          fontSize={24}
-          fontWeight="900"
           // Equipped name color wins; otherwise a VIP tier tints the name.
           color={
             nameColor && !isGradient(nameColor)
@@ -133,18 +131,18 @@ export function CardChrome({
               : (roleColor ?? '#f5f7ff')
           }
           data-testid={testId ? `${testId}-name` : undefined}
-          style={nameStyle}
+          style={{ ...nameStyle, fontSize: 24, fontWeight: 900 }}
         >
           {roleGlyph ? `${roleGlyph} ` : ''}
           {name}
         </Typography>
         {presenceLine ? (
           <Typography
-            fontSize={10}
-            letterSpacing={2}
+            tracking="lg"
             className="uppercase"
             color="#9ca3af"
-            fontWeight="700"
+            weight="700"
+            style={{ fontSize: 10 }}
           >
             {presenceLine}
           </Typography>

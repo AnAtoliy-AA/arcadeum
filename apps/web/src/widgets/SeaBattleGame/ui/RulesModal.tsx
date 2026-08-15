@@ -115,7 +115,7 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
                     className="box-border flex flex-col items-stretch bg-[rgba(255,255,255,0.03)] border border-[rgba(56,189,248,0.1)] rounded-[16px] p-3 gap-2 basis-[45%] grow"
                     key={idx}
                   >
-                    <div className="box-border flex flex-row justify-space-between items-center">
+                    <div className="box-border flex flex-row justify-between items-center">
                       <span className="box-border font-bold text-[#f8fafc]">
                         {ship?.name}
                       </span>

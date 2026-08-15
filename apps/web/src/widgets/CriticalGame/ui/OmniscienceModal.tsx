@@ -79,8 +79,7 @@ export default function OmniscienceModal({
                       <Card
                         $cardType={card}
                         $variant={cardVariant as GameVariant}
-                        width="100%"
-                        cursor="default"
+                        className="w-full cursor-default"
                       >
                         <CardCorner $position="tl" $variant={cardVariant} />
                         <CardCorner $position="tr" $variant={cardVariant} />

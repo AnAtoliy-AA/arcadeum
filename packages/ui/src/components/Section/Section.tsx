@@ -8,17 +8,11 @@ export type SectionProps = {
   variant?: 'legal';
   children: ReactNode;
   'data-testid'?: string;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: (e: unknown) => void;
   className?: string;
 };
 
 export const Section = forwardRef<HTMLDivElement, SectionProps>(
-  function Section(
-    { title, description, variant, onPress, onClick, children, className, ...rest },
-    ref,
-  ) {
+  function Section({ title, description, variant, children, className, ...rest }, ref) {
     return (
       <div
         ref={ref}
@@ -36,7 +30,6 @@ export const Section = forwardRef<HTMLDivElement, SectionProps>(
             : 'rounded-2xl p-5',
           className,
         )}
-        onClick={onClick ?? onPress}
         {...rest}
       >
         {title && (

@@ -51,7 +51,7 @@ export function Shell({
     <>
       <style>{ANIMATIONS}</style>
       {variant === 'success' ? <SparkleField /> : null}
-      <main
+      <div
         style={{
           minHeight: '70vh',
           display: 'flex',
@@ -83,7 +83,7 @@ export function Shell({
         >
           {children}
         </div>
-      </main>
+      </div>
     </>
   );
 }

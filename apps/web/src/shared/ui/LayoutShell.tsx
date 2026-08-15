@@ -52,18 +52,15 @@ function RouteChangeAnnouncer() {
 }
 
 export function LayoutShell({ children }: { children: ReactNode }) {
+  // Header / main / footer are direct children of <body>, which is the
+  // flex-column sticky-footer container (see styles/reset.scss). No extra
+  // wrapper element is needed.
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100dvh',
-      }}
-    >
+    <>
       <ConnectionBanner />
       <RouteChangeAnnouncer />
       {children}
       <GameMusic />
-    </div>
+    </>
   );
 }

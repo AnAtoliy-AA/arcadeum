@@ -47,7 +47,7 @@ export default async function GemPurchaseCancelPage({
   return (
     <>
       <style>{ANIMATIONS}</style>
-      <main
+      <div
         style={{
           minHeight: '70vh',
           display: 'flex',
@@ -178,7 +178,7 @@ export default async function GemPurchaseCancelPage({
             </Link>
           </div>
         </div>
-      </main>
+      </div>
     </>
   );
 }

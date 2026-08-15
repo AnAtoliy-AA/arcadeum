@@ -271,7 +271,7 @@ export const Select = memo(function Select({
                     'flex w-full items-center justify-between px-3 py-2 text-left text-[13px] transition-colors duration-100',
                     isSelected
                       ? 'font-semibold text-[var(--color)]'
-                      : 'text-[var(--textSecondary)] hover:text-[var(--color)]',
+                      : 'text-[var(--color)] hover:text-[var(--primary)]',
                   )}
                 >
                   {opt.label}

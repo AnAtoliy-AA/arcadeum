@@ -66,15 +66,15 @@ export const TableOfContents = memo(function TableOfContents({
               key={item.id}
               onClick={() => onSelect(item.id)}
               className={cx(
-                'text-left text-xs px-3 py-2 rounded-xl transition-all font-medium flex items-center justify-between',
+                'text-left text-sm px-3.5 py-2.5 rounded-xl transition-all font-medium flex items-center justify-between no-underline border border-transparent',
                 isActive
-                  ? cx('border font-semibold', accentClasses.active)
-                  : 'text-slate-400 hover:text-white hover:bg-white/5',
+                  ? cx('font-semibold shadow-sm', accentClasses.active)
+                  : 'text-slate-200 hover:text-white hover:bg-white/10 hover:border-white/10',
               )}
             >
               <span className="truncate">{item.title}</span>
               {isActive ? (
-                <span className={cx('w-1.5 h-1.5 rounded-full shrink-0 ml-2', accentClasses.dot)} />
+                <span className={cx('w-2 h-2 rounded-full shrink-0 ml-2 shadow-[0_0_8px_currentColor]', accentClasses.dot)} />
               ) : null}
             </button>
           );

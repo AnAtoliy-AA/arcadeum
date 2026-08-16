@@ -144,9 +144,11 @@ export function runAutoPlace(
   player.ships = [];
   player.placementComplete = false;
 
+  // Pre-build Map to avoid O(N) activeShips.find() per ship entry.
+  const activeShipMap = new Map(activeShips.map((s) => [s.id, s]));
   for (const shipId of Object.keys(placements)) {
     const cells = placements[shipId];
-    const shipConfig = activeShips.find((s) => s.id === shipId);
+    const shipConfig = activeShipMap.get(shipId);
     if (shipConfig) {
       const ship: Ship = {
         id: shipId,
@@ -187,7 +189,10 @@ export function runConfirmPlacement(
     maybeBuildScanWave(state);
     state.logs.push(makeLog('system', 'All ships placed! Battle begins!'));
   } else {
-    const readyCount = state.players.filter((p) => p.placementComplete).length;
+    const readyCount = state.players.reduce(
+      (n, p) => n + (p.placementComplete ? 1 : 0),
+      0,
+    );
     placementLogger.debug(
       `Player ${player.playerId} confirmed. Ready: ${readyCount}/${state.players.length}`,
     );
@@ -233,9 +238,11 @@ export function runBatchPlacement(
   }
   player.ships = [];
 
+  // Pre-build Map to avoid O(N) activeShips.find() per ship entry.
   const activeShips = getActiveShips(state.shipCount);
+  const activeShipMap = new Map(activeShips.map((s) => [s.id, s]));
   for (const shipData of payload.ships) {
-    const shipConfig = activeShips.find((s) => s.id === shipData.shipId);
+    const shipConfig = activeShipMap.get(shipData.shipId);
     if (shipConfig) {
       const ship: Ship = {
         id: shipData.shipId,

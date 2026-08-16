@@ -202,7 +202,7 @@ export const ru = {
   },
   cookies: {
     title: 'Политика использования файлов cookie',
-    lastUpdated: 'Последнее обновление: 25 марта 2026 г.',
+    lastUpdated: 'Последнее обновление: 16 августа 2026 г.',
     sections: {
       whatAreCookies: {
         title: 'Что такое файлы cookie?',

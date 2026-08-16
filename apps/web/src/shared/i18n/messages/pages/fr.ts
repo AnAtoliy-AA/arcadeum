@@ -198,7 +198,7 @@ export const fr = {
   },
   cookies: {
     title: 'Politique de Cookies',
-    lastUpdated: 'Dernière mise à jour : 25 mars 2026',
+    lastUpdated: 'Dernière mise à jour : 16 août 2026',
     sections: {
       whatAreCookies: {
         title: 'Que sont les cookies ?',

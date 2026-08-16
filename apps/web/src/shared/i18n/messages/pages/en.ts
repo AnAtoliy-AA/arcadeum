@@ -203,7 +203,7 @@ export const en = {
   },
   cookies: {
     title: 'Cookie Policy',
-    lastUpdated: 'Last updated: March 25, 2026',
+    lastUpdated: 'Last updated: August 16, 2026',
     sections: {
       whatAreCookies: {
         title: 'What Are Cookies?',

@@ -199,7 +199,7 @@ export const es = {
   },
   cookies: {
     title: 'Política de Cookies',
-    lastUpdated: 'Última actualización: 25 de marzo de 2026',
+    lastUpdated: 'Última actualización: 16 de agosto de 2026',
     sections: {
       whatAreCookies: {
         title: '¿Qué Son las Cookies?',

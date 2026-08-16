@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.31] - 2026-08-16
+
+### Added
+- add setting to control rules popup on room entry (ARC-settings)
+
+
 ## [1.25.30] - 2026-08-16
 
 ### Added

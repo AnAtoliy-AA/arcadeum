@@ -50,4 +50,12 @@ describe('settings-storage', () => {
     saveStoredSettings({ musicLastPlayedIndex: 0 });
     expect(loadStoredSettings().musicLastPlayedIndex).toBe(0);
   });
+
+  it('saves and loads the show-rules-on-room-entry setting', () => {
+    saveStoredSettings({ showRulesOnRoomEntry: false });
+    expect(loadStoredSettings().showRulesOnRoomEntry).toBe(false);
+
+    saveStoredSettings({ showRulesOnRoomEntry: true });
+    expect(loadStoredSettings().showRulesOnRoomEntry).toBe(true);
+  });
 });

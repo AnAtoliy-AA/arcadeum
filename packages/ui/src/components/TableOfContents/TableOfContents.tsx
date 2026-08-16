@@ -30,18 +30,18 @@ export const TableOfContents = memo(function TableOfContents({
 }: TableOfContentsProps): React.ReactElement {
   const accentClasses = {
     indigo: {
-      active: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
-      dot: 'bg-indigo-400',
+      active: 'bg-indigo-600/30 text-indigo-200 border-indigo-500/50 shadow-[0_0_12px_rgba(99,102,241,0.25)]',
+      dot: 'bg-indigo-400 text-indigo-400',
       text: 'text-indigo-400',
     },
     sky: {
-      active: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-      dot: 'bg-sky-400',
+      active: 'bg-sky-600/30 text-sky-200 border-sky-500/50 shadow-[0_0_12px_rgba(56,189,248,0.25)]',
+      dot: 'bg-sky-400 text-sky-400',
       text: 'text-sky-400',
     },
     emerald: {
-      active: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-      dot: 'bg-emerald-400',
+      active: 'bg-emerald-600/30 text-emerald-200 border-emerald-500/50 shadow-[0_0_12px_rgba(52,211,153,0.25)]',
+      dot: 'bg-emerald-400 text-emerald-400',
       text: 'text-emerald-400',
     },
   }[accentColor];
@@ -66,10 +66,10 @@ export const TableOfContents = memo(function TableOfContents({
               key={item.id}
               onClick={() => onSelect(item.id)}
               className={cx(
-                'text-left text-sm px-3.5 py-2.5 rounded-xl transition-all font-medium flex items-center justify-between no-underline border border-transparent',
+                'text-left text-sm px-3.5 py-2.5 rounded-xl transition-all font-medium flex items-center justify-between no-underline border',
                 isActive
-                  ? cx('font-semibold shadow-sm', accentClasses.active)
-                  : 'text-slate-200 hover:text-white hover:bg-white/10 hover:border-white/10',
+                  ? cx('font-semibold', accentClasses.active)
+                  : 'bg-transparent border-transparent text-slate-300 hover:text-white hover:bg-white/5 hover:border-white/10',
               )}
             >
               <span className="truncate">{item.title}</span>

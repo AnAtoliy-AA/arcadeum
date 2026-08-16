@@ -70,6 +70,7 @@ export class ShortsFactoryController {
       success: boolean;
       message: string;
       platforms?: string[];
+      failedPlatforms?: string[];
       pendingId?: string;
     },
   ): Promise<{ success: boolean }> {

@@ -181,7 +181,7 @@ export const by = {
   community: communityBy,
   cookies: {
     title: 'Палітыка выкарыстання файлаў cookie',
-    lastUpdated: 'Апошняе абнаўленне: 25 сакавіка 2026 г.',
+    lastUpdated: 'Апошняе абнаўленне: 16 жніўня 2026 г.',
     sections: {
       whatAreCookies: {
         title: 'Што такое файлы cookie?',

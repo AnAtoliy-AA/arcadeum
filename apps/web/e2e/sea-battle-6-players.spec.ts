@@ -161,17 +161,17 @@ test.describe('Sea Battle 6 Players Layout', () => {
     await navigateTo(page, `/games/rooms/${roomId}`);
     await waitForRoomReady(page);
 
-    // Verify layout is vertical (flex column)
+    // Verify layout is grid and renders 1 column on mobile portrait
     const container = page.getByTestId('sea-battle-grids-container');
     const display = await container.evaluate(
       (el) => window.getComputedStyle(el).display,
     );
-    // The grid container is flex by default
-    expect(display).toBe('flex');
-    const flexDirection = await container.evaluate(
-      (el) => window.getComputedStyle(el).flexDirection,
+    expect(display).toBe('grid');
+    const gridTemplateColumns = await container.evaluate(
+      (el) => window.getComputedStyle(el).gridTemplateColumns,
     );
-    expect(flexDirection).toBe('column');
+    const columns = gridTemplateColumns.split(' ').filter(Boolean).length;
+    expect(columns).toBe(1);
 
     // Check that boards are not too wide
     const firstBoard = page.getByTestId('player-board-name').first();

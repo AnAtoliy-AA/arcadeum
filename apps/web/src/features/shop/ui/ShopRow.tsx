@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { Typography } from '@arcadeum/ui';
 import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { ShopCard, type ShopCardLabels, type ShopCardMode } from './ShopCard';
@@ -162,17 +163,27 @@ export function ShopRow({
       data-active={isActive ? 'true' : 'false'}
     >
       <RowHost active={isActive} highlight={highlight}>
-        <div className="flex flex-row w-full items-end justify-between -mb-3">
-          <div className="flex flex-col items-stretch gap-2">
-            <span className="text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
-              {labels.eyebrow.replace('{count}', String(items.length))}
-            </span>
-            <span className="text-[24px] font-extrabold tracking-[-0.3px]">
+        <div className="flex flex-row w-full items-end justify-between px-1">
+          <div className="flex flex-col items-stretch gap-0">
+            <Typography uiSize="2xl" variant="heading">
               {labels.title}
-            </span>
+            </Typography>
+            <Typography
+              uiSize="xs"
+              variant="heading"
+              color="#94a3b8"
+              tracking="lg"
+              className="uppercase"
+            >
+              {labels.eyebrow.replace('{count}', String(items.length))}
+            </Typography>
           </div>
-          <span
-            className="text-[11px] tracking-[1px] uppercase font-bold text-[#94a3b8] cursor-pointer hover:text-[#f5f7ff]"
+          <Typography
+            uiSize="xs"
+            weight="700"
+            tracking="md"
+            color="#94a3b8"
+            className="uppercase cursor-pointer hover:text-[#f5f7ff]"
             onClick={toggleExpanded}
             role="button"
             tabIndex={0}
@@ -187,7 +198,7 @@ export function ShopRow({
             data-expanded={expanded ? 'true' : 'false'}
           >
             {expandLabel}
-          </span>
+          </Typography>
         </div>
 
         <Scroller expanded={expanded}>

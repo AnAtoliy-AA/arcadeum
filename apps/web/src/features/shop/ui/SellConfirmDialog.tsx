@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@arcadeum/ui';
+import { Button, Typography } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { DialogShell } from './dialogShell';
@@ -71,17 +71,20 @@ export function SellConfirmDialog({
   return (
     <DialogShell open={open} onClose={onClose} testId="sell-confirm-dialog">
       <div className="flex flex-col items-stretch gap-3">
-        <span className="text-[24px] font-bold">{labels.title}</span>
-        <span className="text-[18px]">
+        <Typography uiSize="2xl" weight="700">
+          {labels.title}
+        </Typography>
+        <Typography uiSize="lg">
           {labels.refund.replace('{amount}', formatNumber(refundCoins, locale))}
-        </span>
+        </Typography>
         {errorMsg ? (
-          <span
-            className="text-[var(--danger)] text-[14px]"
+          <Typography
+            color="var(--danger)"
+            uiSize="sm"
             data-testid="sell-error"
           >
             {errorMsg}
-          </span>
+          </Typography>
         ) : null}
         <div className="flex flex-row items-stretch gap-3 justify-end">
           <Button variant="outline" onClick={onClose} disabled={isPending}>

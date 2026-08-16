@@ -8,7 +8,7 @@ export const en: LegalMessages = {
   },
   terms: {
     title: 'Terms and Conditions',
-    lastUpdated: 'Last updated: December 21, 2024',
+    lastUpdated: 'Last updated: August 16, 2026',
     sections: {
       agreement: {
         title: '1. Agreement to Terms',
@@ -151,7 +151,7 @@ export const en: LegalMessages = {
   },
   privacy: {
     title: 'Privacy Policy',
-    lastUpdated: 'Last updated: December 21, 2024',
+    lastUpdated: 'Last updated: August 16, 2026',
     sections: {
       introduction: {
         title: '1. Introduction',

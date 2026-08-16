@@ -172,7 +172,7 @@
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(calc(var(--sb-grid-size, 10) * 50px + 70px), 1fr)
+    minmax(calc(var(--sb-grid-size, 10) * 30px + 70px), 1fr)
   );
   gap: 16px;
   width: 100%;

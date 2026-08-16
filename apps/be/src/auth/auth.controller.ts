@@ -30,6 +30,13 @@ import { RefreshTokenRequestDto } from './dtos/refresh-token-request.dto';
 import { ForgotPasswordDto } from './dtos/forgot-password.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { PasswordResetService } from './services/password-reset.service';
+import { ConfigService } from '@nestjs/config';
+import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
+import {
+  cookieCipherKey,
+  decryptTokenCookie,
+  encryptTokenCookie,
+} from '../common/utils/token-cookie-cipher.util';
 
 const COOKIE_MAX_AGE_15_MIN = 15 * 60 * 1000;
 const COOKIE_MAX_AGE_30_DAYS = 30 * 24 * 60 * 60 * 1000;
@@ -45,6 +52,7 @@ function getCookieDomain(req: Request): string | undefined {
 function setTokenCookies(
   res: Response,
   req: Request,
+  cookieKey: Buffer,
   accessToken: string,
   accessTokenExpiresAt: Date | null,
   refreshToken: string,
@@ -61,10 +69,13 @@ function setTokenCookies(
     refreshTokenExpiresAt.getTime() - Date.now() || COOKIE_MAX_AGE_30_DAYS;
 
   // Both cookies carry bearer credentials, so they must always be
-  // TLS-only — a conditional `secure` would leave the refresh token
-  // transmittable in clear text over plain HTTP. Browsers treat
-  // http://localhost as a secure context, so local dev keeps working.
-  res.cookie('access_token', accessToken, {
+  // TLS-only — a conditional `secure` would leave the token transmittable
+  // in clear text over plain HTTP. Browsers treat http://localhost as a
+  // secure context, so local dev keeps working.
+  //
+  // The values are AES-GCM encrypted before storage so the credentials
+  // are never persisted in clear text (CWE-312).
+  res.cookie('access_token', encryptTokenCookie(accessToken, cookieKey), {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
@@ -72,7 +83,7 @@ function setTokenCookies(
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
-  res.cookie('refresh_token', refreshToken, {
+  res.cookie('refresh_token', encryptTokenCookie(refreshToken, cookieKey), {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
@@ -99,10 +110,15 @@ function clearTokenCookies(res: Response, req: Request): void {
 
 @Controller('auth')
 export class AuthController {
+  private readonly cookieKey: Buffer;
+
   constructor(
     private readonly authService: AuthService,
     private readonly passwordReset: PasswordResetService,
-  ) {}
+    configService: ConfigService,
+  ) {
+    this.cookieKey = cookieCipherKey(resolveJwtSecret(configService));
+  }
 
   @Post('token')
   @Throttle({ auth: { limit: 10, ttl: 60_000 } })
@@ -126,6 +142,7 @@ export class AuthController {
     setTokenCookies(
       res,
       req,
+      this.cookieKey,
       result.accessToken,
       null,
       result.refreshToken ?? '',
@@ -171,6 +188,7 @@ export class AuthController {
     setTokenCookies(
       res,
       req,
+      this.cookieKey,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,
@@ -190,6 +208,7 @@ export class AuthController {
     setTokenCookies(
       res,
       req,
+      this.cookieKey,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,
@@ -205,14 +224,21 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthTokensResponse> {
+    const cookieToken = (req.cookies as Record<string, string>)?.refresh_token;
+    // Cookies written before this feature are plain text; accept them so
+    // existing sessions survive the deploy and get re-encrypted on next
+    // refresh.
     const rawToken =
       dto.refreshToken ||
-      (req.cookies as Record<string, string>)?.refresh_token ||
+      (cookieToken
+        ? (decryptTokenCookie(cookieToken, this.cookieKey) ?? cookieToken)
+        : '') ||
       '';
     const result = await this.authService.refreshToken(rawToken);
     setTokenCookies(
       res,
       req,
+      this.cookieKey,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,

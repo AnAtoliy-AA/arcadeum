@@ -16,6 +16,7 @@ import { adminBlockedIpsEn } from './admin-blocked-ips/en';
 import { adminUsersEn } from './admin-users/en';
 import { adminBulkRewardsEn } from './admin-bulk-rewards/en';
 import { friendsEn } from './friends/en';
+import { communityEn } from './community/en';
 
 export const en = {
   admin: {
@@ -177,33 +178,10 @@ export const en = {
     ],
     comingSoon: 'Articles are coming soon. Check back later!',
   },
-  community: {
-    title: 'Join the Community',
-    subtitle: 'Connect with fellow gamers worldwide',
-    description:
-      'Share strategies, discuss your favorite games, participate in community events, and make friends who love board games as much as you do.',
-    sections: {
-      discord: {
-        title: 'Discord',
-        description:
-          'Join our active community on Discord to discuss games, report bugs, and meet other players.',
-      },
-      twitter: {
-        title: 'Twitter / X',
-        description:
-          'Follow us for the latest news, updates, and announcements.',
-      },
-      github: {
-        title: 'Github',
-        description:
-          'Arcadeum is open-source. Contribute to the project on Github.',
-      },
-    },
-    comingSoon: 'Community hub is coming soon. Stay tuned!',
-  },
+  community: communityEn,
   cookies: {
     title: 'Cookie Policy',
-    lastUpdated: 'Last updated: March 25, 2026',
+    lastUpdated: 'Last updated: August 16, 2026',
     sections: {
       whatAreCookies: {
         title: 'What Are Cookies?',

@@ -81,18 +81,6 @@ export const AttackBoard = memo(function AttackBoard({
 
   const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
 
-  const sunkCellSet = useMemo(() => {
-    const set = new Set<string>();
-    players.forEach((p) => {
-      p.ships
-        .filter((s) => s.sunk)
-        .forEach((s) => {
-          s.cells.forEach((c) => set.add(`${p.playerId}-${c.row}-${c.col}`));
-        });
-    });
-    return set;
-  }, [players]);
-
   // Cache lastSonar/lastRadar across state updates — they may disappear
   // from the snapshot after a re-broadcast but should remain visible until
   // a new weapon is used or the game ends.
@@ -117,43 +105,48 @@ export const AttackBoard = memo(function AttackBoard({
   const effectiveLastSonar = snapshot?.lastSonar ?? cachedLastSonar;
   const effectiveLastRadar = snapshot?.lastRadar ?? cachedLastRadar;
 
-  // Scan wave: show all ships for a limited duration when battle starts (once only)
-  const SW_KEY = 'sb-scanwave-shown';
+  // Scan wave: show all ships for a limited duration when battle starts or room is re-entered
   const [scanWaveActive, setScanWaveActive] = useState(false);
   const scanWaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const playedScanWaveRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (snapshot?.phase === 'lobby' || snapshot?.phase === 'placement') {
-      sessionStorage.removeItem(SW_KEY);
+      playedScanWaveRef.current = null;
       if (scanWaveTimerRef.current) {
         clearTimeout(scanWaveTimerRef.current);
         scanWaveTimerRef.current = null;
       }
-      setTimeout(() => setScanWaveActive(false), 0);
+      setScanWaveActive(false);
       return;
     }
     const sw = snapshot?.lastScanWave;
     if (!sw || snapshot?.phase !== 'battle') return;
-    if (sessionStorage.getItem(SW_KEY)) return;
 
-    sessionStorage.setItem(SW_KEY, '1');
-    setTimeout(() => setScanWaveActive(true), 0);
+    // Trigger animation when entering battle or if lastScanWave changes
+    const waveId = JSON.stringify(sw.cells.map((c) => c.playerId));
+    if (playedScanWaveRef.current === waveId) return;
+
+    playedScanWaveRef.current = waveId;
+    setScanWaveActive(true);
+    if (scanWaveTimerRef.current) {
+      clearTimeout(scanWaveTimerRef.current);
+    }
     scanWaveTimerRef.current = setTimeout(() => {
       setScanWaveActive(false);
       scanWaveTimerRef.current = null;
     }, sw.duration * 1000);
   }, [snapshot?.lastScanWave, snapshot?.phase]);
 
-  const sonarHighlightSet = (() => {
+  const sonarHighlightSet = useMemo(() => {
     const ls = effectiveLastSonar;
     if (!ls) return null;
     const set = new Set<string>();
     ls.cells.forEach((c) => set.add(`${ls.targetId}-${c.row}-${c.col}`));
     return set;
-  })();
+  }, [effectiveLastSonar]);
 
-  // Map cellKey → state for sonar scanned cells (SHIP=1, EMPTY=0, etc.)
-  const sonarCellStates = (() => {
+  const sonarCellStates = useMemo(() => {
     const ls = effectiveLastSonar;
     if (!ls) return null;
     const map = new Map<string, number>();
@@ -161,18 +154,17 @@ export const AttackBoard = memo(function AttackBoard({
       map.set(`${ls.targetId}-${c.row}-${c.col}`, c.state),
     );
     return map;
-  })();
+  }, [effectiveLastSonar]);
 
-  const radarHighlightSet = (() => {
+  const radarHighlightSet = useMemo(() => {
     const lr = effectiveLastRadar;
     if (!lr) return null;
     const set = new Set<string>();
     lr.cells.forEach((c) => set.add(`${lr.targetId}-${c.row}-${c.col}`));
     return set;
-  })();
+  }, [effectiveLastRadar]);
 
-  // Map cellKey → state for radar scanned cells
-  const radarCellStates = (() => {
+  const radarCellStates = useMemo(() => {
     const lr = effectiveLastRadar;
     if (!lr) return null;
     const map = new Map<string, number>();
@@ -180,7 +172,7 @@ export const AttackBoard = memo(function AttackBoard({
       map.set(`${lr.targetId}-${c.row}-${c.col}`, c.state),
     );
     return map;
-  })();
+  }, [effectiveLastRadar]);
 
   // Scan wave: highlight sets for all opponents
   const scanWaveHighlightSets = useMemo(() => {
@@ -203,6 +195,26 @@ export const AttackBoard = memo(function AttackBoard({
     return { highlights: map, states: cellMap };
   }, [scanWaveActive, snapshot]);
 
+  // Pre-build team lookup for opponents map to avoid repeated teams.find() per render
+  const playerTeamMap = useMemo(() => {
+    if (!teams) return null;
+    const map = new Map<string, SeaBattleTeam>();
+    for (const team of teams) {
+      for (const pid of team.playerIds) {
+        map.set(pid, team);
+      }
+    }
+    return map;
+  }, [teams]);
+
+  const currentPlayerTeam = useMemo(
+    () =>
+      currentPlayer
+        ? (playerTeamMap?.get(currentPlayer.playerId) ?? undefined)
+        : undefined,
+    [currentPlayer, playerTeamMap],
+  );
+
   return (
     <MainGameArea data-testid="game-main-area">
       <SeaBattleGrids>
@@ -216,10 +228,7 @@ export const AttackBoard = memo(function AttackBoard({
             isCurrentTurn={currentPlayer.playerId === currentTurnPlayerId}
             isMyTurn={isMyTurn}
             disabled={disabled}
-            team={teams?.find((tt) =>
-              tt.playerIds.includes(currentPlayer.playerId),
-            )}
-            sunkCellSet={sunkCellSet}
+            team={currentPlayerTeam}
             shipCount={shipCount}
             t={t}
           />
@@ -227,9 +236,7 @@ export const AttackBoard = memo(function AttackBoard({
 
         {opponents.map((opponent) => {
           const isTeammate = !!teammateIds?.includes(opponent.playerId);
-          const team = teams?.find((tt) =>
-            tt.playerIds.includes(opponent.playerId),
-          );
+          const team = playerTeamMap?.get(opponent.playerId);
           const isSonarTarget =
             effectiveLastSonar?.targetId === opponent.playerId;
           const isRadarTarget =
@@ -251,26 +258,17 @@ export const AttackBoard = memo(function AttackBoard({
               disabled={disabled}
               isTeammate={isTeammate}
               team={team}
-              sunkCellSet={sunkCellSet}
               shipCount={shipCount}
-              onAttack={isTeammate ? undefined : onAttack}
               sonarHighlightCells={isSonarTarget ? sonarHighlightSet : null}
               sonarCellStates={isSonarTarget ? sonarCellStates : null}
               radarHighlightCells={isRadarTarget ? radarHighlightSet : null}
               radarCellStates={isRadarTarget ? radarCellStates : null}
               scanWaveHighlightCells={scanWaveSet}
               scanWaveCellStates={scanWaveStates}
-              weaponPreviewCells={
-                weaponPreviewType && weaponPreviewCells
-                  ? weaponPreviewCells
-                  : null
-              }
-              weaponPreviewType={
-                weaponPreviewType && weaponPreviewCells
-                  ? weaponPreviewType
-                  : null
-              }
-              onCellHover={isTeammate ? undefined : onCellHover}
+              weaponPreviewCells={weaponPreviewCells}
+              weaponPreviewType={weaponPreviewType}
+              onAttack={onAttack}
+              onCellHover={onCellHover}
               onCellHoverEnd={onCellHoverEnd}
               weaponMode={weaponMode}
               t={t}

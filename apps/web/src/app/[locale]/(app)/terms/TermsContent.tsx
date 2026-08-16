@@ -1,19 +1,29 @@
 'use client';
 
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { appConfig } from '@/shared/config/app-config';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { formatMessage } from '@/shared/i18n';
 import { useLanguage } from '@/shared/i18n/context';
-import Link from 'next/link';
 import {
   PageLayout,
   Container,
   GlassCard,
-  PageTitle,
   Typography,
-  Section,
+  AccentPill,
+  TableOfContents,
 } from '@arcadeum/ui';
+import {
+  ShieldIcon,
+  FileTextIcon,
+  MailIcon,
+} from '@arcadeum/ui/components/Icons/index';
 import type { TermsMessages, ContactMessages } from '@/shared/i18n/types';
+import {
+  TermsSectionGroup1,
+  TermsSectionGroup2,
+  TermsSectionGroup3,
+} from './TermsSections';
 
 export interface TermsContentProps {
   t?: TermsMessages;
@@ -39,281 +49,165 @@ export default function TermsContent({
   const t = (messages.legal?.terms as unknown as TermsMessages) || initialT;
   const contactT = messages.legal?.contact || initialContactT;
   const s = t?.sections;
+  const [activeSection, setActiveSection] = useState<string>('agreement');
+
+  const navItems = useMemo(() => {
+    const raw = [
+      { id: 'agreement', title: s?.agreement?.title ?? 'Agreement' },
+      { id: 'companyInfo', title: s?.companyInfo?.title ?? 'Company Info' },
+      { id: 'services', title: s?.services?.title ?? 'Services' },
+      { id: 'accounts', title: s?.accounts?.title ?? 'Accounts' },
+      { id: 'delivery', title: s?.delivery?.title ?? 'Delivery' },
+      { id: 'payment', title: s?.payment?.title ?? 'Payment' },
+      { id: 'refund', title: s?.refund?.title ?? 'Refund Policy' },
+      {
+        id: 'acceptableUse',
+        title: s?.acceptableUse?.title ?? 'Acceptable Use',
+      },
+      {
+        id: 'intellectualProperty',
+        title: s?.intellectualProperty?.title ?? 'Intellectual Property',
+      },
+      { id: 'liability', title: s?.liability?.title ?? 'Liability' },
+      ...(s?.crypto ? [{ id: 'crypto', title: s.crypto.title }] : []),
+      ...(s?.taxes ? [{ id: 'taxes', title: s.taxes.title }] : []),
+      { id: 'governingLaw', title: s?.governingLaw?.title ?? 'Governing Law' },
+      { id: 'contact', title: s?.contact?.title ?? 'Contact' },
+    ];
+    return raw.filter((item): item is { id: string; title: string } =>
+      Boolean(item.title),
+    );
+  }, [s]);
+
+  const scrollToSection = (id: string) => {
+    setActiveSection(id);
+    const element = document.getElementById(`section-${id}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
     <PageLayout>
-      <Container size="md">
-        <GlassCard>
-          <PageTitle size="xl" gradient>
-            {t?.title}
-          </PageTitle>
-          <Typography variant="caption" alpha="medium">
-            {t?.lastUpdated}
-          </Typography>
-        </GlassCard>
-
-        <Section variant="legal" title={s?.agreement?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {formatMessage(s?.agreement?.content, { appName: APP_NAME })}
-          </Typography>
-        </Section>
-
-        <Section variant="legal" title={s?.companyInfo?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            <strong>{s?.companyInfo?.companyName}</strong> {APP_NAME}
-            <br />
-            <strong>{s?.companyInfo?.legalName}</strong> {LEGAL_NAME}
-            <br />
-            <strong>{s?.companyInfo?.idCode}</strong> {ID_CODE}
-            <br />
-            <strong>{s?.companyInfo?.contactEmail}</strong> {SUPPORT_EMAIL}
-            <br />
-            <strong>{s?.companyInfo?.workingHours}</strong> {WORKING_HOURS}
-          </Typography>
-        </Section>
-
-        <Section variant="legal" title={s?.services?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {formatMessage(s?.services?.intro, { appName: APP_NAME })}
-          </Typography>
-          <div className="flex flex-col items-stretch pl-5 gap-2">
-            <ul
-              style={{
-                listStyleType: 'disc',
-                margin: 0,
-                paddingLeft: '1.25rem',
-              }}
-            >
-              {s?.services?.items?.map((item, index) => (
-                <li key={index}>
-                  <Typography variant="body" uiSize="md" alpha="high">
-                    {item}
-                  </Typography>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Section>
-
-        <Section variant="legal" title={s?.accounts?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {formatMessage(s?.accounts?.intro, { appName: APP_NAME })}
-          </Typography>
-          <div className="flex flex-col items-stretch pl-5 gap-2">
-            <ul
-              style={{
-                listStyleType: 'disc',
-                margin: 0,
-                paddingLeft: '1.25rem',
-              }}
-            >
-              {s?.accounts?.items?.map((item, index) => (
-                <li key={index}>
-                  <Typography variant="body" uiSize="md" alpha="high">
-                    {item}
-                  </Typography>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Section>
-
-        <Section variant="legal" title={s?.delivery?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {formatMessage(s?.delivery?.content, { appName: APP_NAME })}
-          </Typography>
-        </Section>
-
-        <Section variant="legal" title={s?.payment?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {s?.payment?.content}
-          </Typography>
-        </Section>
-
-        <Section variant="legal" title={s?.refund?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {s?.refund?.intro}
-          </Typography>
-          <div className="flex flex-col items-stretch pl-5 gap-2">
-            <ul
-              style={{
-                listStyleType: 'disc',
-                margin: 0,
-                paddingLeft: '1.25rem',
-              }}
-            >
-              <li>
-                <Typography variant="body" uiSize="md" alpha="high">
-                  <strong>{s?.refund?.items?.virtualCurrency}</strong>
-                </Typography>
-              </li>
-              <li>
-                <Typography variant="body" uiSize="md" alpha="high">
-                  <strong>{s?.refund?.items?.subscriptions}</strong>
-                </Typography>
-              </li>
-              <li>
-                <Typography variant="body" uiSize="md" alpha="high">
-                  <strong>{s?.refund?.items?.technicalIssues}</strong>
-                </Typography>
-              </li>
-              <li>
-                <Typography variant="body" uiSize="md" alpha="high">
-                  <strong>{s?.refund?.items?.processingTime}</strong>
-                </Typography>
-              </li>
-            </ul>
-          </div>
-          <Typography
-            className={'-mt-4'}
-            variant="body"
-            uiSize="md"
-            alpha="high"
+      <Container size="xl">
+        <div
+          className="flex flex-col gap-8 py-6"
+          data-testid="terms-page-wrapper"
+        >
+          {/* Hero Header */}
+          <GlassCard
+            style={{
+              background:
+                'radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.2) 0%, rgba(15, 23, 42, 0.6) 80%)',
+            }}
+            className="items-center text-center p-9"
           >
-            {s?.refund?.contact}{' '}
-            <Link href={routes.contact}>
-              <Typography className={'text-[var(--primary)] underline'}>
-                {contactT?.title}
-              </Typography>
-            </Link>
-            .
-          </Typography>
-        </Section>
+            <div className="flex flex-col gap-3 items-center max-w-[720px]">
+              <AccentPill accent="#818CF8">Legal & Governance</AccentPill>
 
-        <Section variant="legal" title={s?.acceptableUse?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {s?.acceptableUse?.intro}
-          </Typography>
-          <div className="flex flex-col items-stretch pl-5 gap-2">
-            <ul
-              style={{
-                listStyleType: 'disc',
-                margin: 0,
-                paddingLeft: '1.25rem',
-              }}
-            >
-              {s?.acceptableUse?.items?.map((item, index) => (
-                <li key={index}>
-                  <Typography variant="body" uiSize="md" alpha="high">
-                    {item}
-                  </Typography>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Section>
-
-        <Section variant="legal" title={s?.intellectualProperty?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {formatMessage(s?.intellectualProperty?.content, {
-              appName: APP_NAME,
-            })}
-          </Typography>
-        </Section>
-
-        <Section variant="legal" title={s?.liability?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {formatMessage(s?.liability?.content, { appName: APP_NAME })}
-          </Typography>
-        </Section>
-
-        {s?.crypto && (
-          <Section variant="legal" title={s?.crypto?.title}>
-            <Typography variant="body" uiSize="md" alpha="high">
-              {s?.crypto?.content}
-            </Typography>
-          </Section>
-        )}
-
-        {s?.arcPayments && (
-          <Section variant="legal" title={s?.arcPayments?.title}>
-            <Typography variant="body" uiSize="md" alpha="high">
-              {s?.arcPayments?.content}
-            </Typography>
-            <div className="flex flex-col items-stretch pl-5 gap-2">
-              <ul
-                style={{
-                  listStyleType: 'disc',
-                  margin: 0,
-                  paddingLeft: '1.25rem',
-                }}
-              >
-                {s?.arcPayments?.items?.map((item, index) => (
-                  <li key={index}>
-                    <Typography variant="body" uiSize="md" alpha="high">
-                      {item}
-                    </Typography>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Section>
-        )}
-
-        {s?.noCashout && (
-          <Section variant="legal" title={s?.noCashout?.title}>
-            <Typography variant="body" uiSize="md" alpha="high">
-              {s?.noCashout?.content}
-            </Typography>
-          </Section>
-        )}
-
-        {s?.notSecurity && (
-          <Section variant="legal" title={s?.notSecurity?.title}>
-            <Typography variant="body" uiSize="md" alpha="high">
-              {s?.notSecurity?.content}
-            </Typography>
-          </Section>
-        )}
-
-        {s?.taxes && (
-          <Section variant="legal" title={s?.taxes?.title}>
-            <Typography variant="body" uiSize="md" alpha="high">
-              {s?.taxes?.content}
-            </Typography>
-            <div className="flex flex-col items-stretch pl-5 gap-2">
-              <ul
-                style={{
-                  listStyleType: 'disc',
-                  margin: 0,
-                  paddingLeft: '1.25rem',
-                }}
-              >
-                {s?.taxes?.items?.map((item, index) => (
-                  <li key={index}>
-                    <Typography variant="body" uiSize="md" alpha="high">
-                      {item}
-                    </Typography>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {s?.taxes?.important && (
-              <div className="flex flex-col items-stretch -mt-4 p-4 rounded-lg bg-[rgba(234,_179,_8,_0.15)] border-l-[4px] border-l-[#eab308]">
+              <h1 className="m-0">
                 <Typography
-                  className={'font-bold'}
-                  variant="body"
-                  uiSize="md"
-                  alpha="high"
+                  variant="heading"
+                  uiSize="xl"
+                  gradient="primary"
+                  className="text-4xl font-extrabold tracking-tight"
                 >
-                  {s?.taxes?.important}
+                  {t?.title ?? 'Terms of Service'}
                 </Typography>
+              </h1>
+
+              {t?.lastUpdated && (
+                <Typography
+                  variant="caption"
+                  alpha="medium"
+                  className="text-xs uppercase tracking-wider"
+                >
+                  {t.lastUpdated}
+                </Typography>
+              )}
+
+              <Typography
+                variant="body"
+                uiSize="lg"
+                alpha="high"
+                className="mt-2 text-slate-300"
+              >
+                Please review our terms governing your use of the {APP_NAME}{' '}
+                platform, services, and digital assets.
+              </Typography>
+
+              {/* Quick links to sister legal pages */}
+              <div className="flex flex-wrap gap-3 justify-center mt-4">
+                <Link
+                  href={routes.privacy}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-indigo-400/40 hover:bg-white/10 text-xs font-semibold text-indigo-300 transition-all no-underline"
+                >
+                  <ShieldIcon size={14} />
+                  Privacy Policy
+                </Link>
+                <Link
+                  href={routes.cookies}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-sky-400/40 hover:bg-white/10 text-xs font-semibold text-sky-300 transition-all no-underline"
+                >
+                  <FileTextIcon size={14} />
+                  Cookie Policy
+                </Link>
+                <Link
+                  href={routes.contact}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-emerald-400/40 hover:bg-white/10 text-xs font-semibold text-emerald-300 transition-all no-underline"
+                >
+                  <MailIcon size={14} />
+                  {contactT?.title ?? 'Contact Us'}
+                </Link>
               </div>
-            )}
-          </Section>
-        )}
+            </div>
+          </GlassCard>
 
-        <Section variant="legal" title={s?.governingLaw?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {s?.governingLaw?.content}
-          </Typography>
-        </Section>
+          {/* Main Content Layout with Sidebar Navigation */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Sticky Table of Contents Sidebar */}
+            <aside className="lg:col-span-4 xl:col-span-3 sticky top-24 max-lg:hidden">
+              <TableOfContents
+                items={navItems}
+                activeId={activeSection}
+                onSelect={scrollToSection}
+                icon={<FileTextIcon size={16} />}
+                accentColor="indigo"
+              />
+            </aside>
 
-        <Section variant="legal" title={s?.contact?.title}>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {formatMessage(s?.contact?.content, { email: SUPPORT_EMAIL })}
-          </Typography>
-        </Section>
+            {/* Legal Text Column */}
+            <main className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6">
+              <TermsSectionGroup1
+                id="group-1"
+                t={t}
+                contactT={contactT}
+                LEGAL_NAME={LEGAL_NAME}
+                ID_CODE={ID_CODE}
+                SUPPORT_EMAIL={SUPPORT_EMAIL}
+                WORKING_HOURS={WORKING_HOURS}
+              />
+              <TermsSectionGroup2
+                id="group-2"
+                t={t}
+                contactT={contactT}
+                LEGAL_NAME={LEGAL_NAME}
+                ID_CODE={ID_CODE}
+                SUPPORT_EMAIL={SUPPORT_EMAIL}
+                WORKING_HOURS={WORKING_HOURS}
+              />
+              <TermsSectionGroup3
+                id="group-3"
+                t={t}
+                contactT={contactT}
+                LEGAL_NAME={LEGAL_NAME}
+                ID_CODE={ID_CODE}
+                SUPPORT_EMAIL={SUPPORT_EMAIL}
+                WORKING_HOURS={WORKING_HOURS}
+              />
+            </main>
+          </div>
+        </div>
       </Container>
     </PageLayout>
   );

@@ -16,6 +16,7 @@ import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
 import { adminUsersRu } from './admin-users/ru';
 import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
 import { friendsRu } from './friends/ru';
+import { communityRu } from './community/ru';
 export const ru = {
   admin: {
     title: 'Админ',
@@ -176,33 +177,10 @@ export const ru = {
     ],
     comingSoon: 'Статьи появятся скоро!',
   },
-  community: {
-    title: 'Присоединиться к сообществу',
-    subtitle: 'Общайтесь с игроками со всего мира',
-    description:
-      'Делитесь стратегиями, участвуйте в общественных мероприятиях и заводите друзей, которые так же любят настольные игры.',
-    sections: {
-      discord: {
-        title: 'Discord',
-        description:
-          'Присоединяйтесь к нашему сообществу в Discord, чтобы обсуждать игры, сообщать об ошибках и знакомиться с другими игроками.',
-      },
-      twitter: {
-        title: 'Twitter / X',
-        description:
-          'Следите за нами, чтобы узнавать последние новости, обновления и анонсы.',
-      },
-      github: {
-        title: 'Github',
-        description:
-          'Arcadeum — это проект с открытым исходным кодом. Вносите свой вклад в проект на Github.',
-      },
-    },
-    comingSoon: 'Сообщество скоро появится!',
-  },
+  community: communityRu,
   cookies: {
     title: 'Политика использования файлов cookie',
-    lastUpdated: 'Последнее обновление: 25 марта 2026 г.',
+    lastUpdated: 'Последнее обновление: 16 августа 2026 г.',
     sections: {
       whatAreCookies: {
         title: 'Что такое файлы cookie?',

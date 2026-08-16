@@ -9,16 +9,17 @@ import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useAudioCuesSetting } from '@/shared/hooks/useAudioCuesSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
+import { useShowRulesOnRoomEntry } from '@/shared/hooks/useShowRulesOnRoomEntry';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
 import { Section } from '@arcadeum/ui/components/Section/Section';
+import { Container } from '@arcadeum/ui/components/Container/Container';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { appConfig } from '@/shared/config/app-config';
 
 import {
-  Container,
   OptionList,
   PillGroup,
   AccountStatus,
@@ -138,6 +139,8 @@ export default function SettingsContent({
   const { soundEnabled, setSoundEnabled } = useSoundSetting();
   const { audioCuesEnabled, setAudioCuesEnabled } = useAudioCuesSetting();
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
+  const { showRulesOnRoomEntry, setShowRulesOnRoomEntry } =
+    useShowRulesOnRoomEntry();
   const { locale, setLocale, messages } = useLanguage();
 
   const settingsCopy = messages.settings ?? {};
@@ -208,6 +211,8 @@ export default function SettingsContent({
     settingsCopy.gameplayDescription ?? 'Customize your in-game experience.';
   const hapticsLabel = settingsCopy.hapticsLabel ?? 'Haptic Feedback';
   const audioCuesLabel = settingsCopy.audioCuesLabel ?? 'Audio Cues';
+  const showRulesLabel =
+    settingsCopy.showRulesLabel ?? 'Show rules on room entry';
 
   const aboutTitle = settingsCopy.aboutTitle ?? 'About';
   const aboutDescription =
@@ -234,6 +239,10 @@ export default function SettingsContent({
     setHapticsEnabled(!hapticsEnabled);
   }, [setHapticsEnabled, hapticsEnabled]);
 
+  const handleToggleShowRules = useCallback(() => {
+    setShowRulesOnRoomEntry(!showRulesOnRoomEntry);
+  }, [setShowRulesOnRoomEntry, showRulesOnRoomEntry]);
+
   const handleToggleMusic = useCallback(() => {
     setMusicEnabled(!musicEnabled);
   }, [setMusicEnabled, musicEnabled]);
@@ -252,7 +261,11 @@ export default function SettingsContent({
   return (
     <>
       <PageLayout>
-        <Container data-current-locale={locale}>
+        <Container
+          size="lg"
+          className="py-6 flex flex-col gap-8"
+          data-current-locale={locale}
+        >
           <PageTitle size="xl" gradient>
             {pageTitle}
           </PageTitle>
@@ -333,6 +346,18 @@ export default function SettingsContent({
                 checked={hapticsEnabled}
                 readOnly
                 aria-label={hapticsLabel}
+              />
+            </ToggleRow>
+            <ToggleRow
+              data-testid="show-rules-row"
+              onClick={handleToggleShowRules}
+            >
+              <ToggleLabel>{showRulesLabel}</ToggleLabel>
+              <ToggleInput
+                type="checkbox"
+                checked={showRulesOnRoomEntry}
+                readOnly
+                aria-label={showRulesLabel}
               />
             </ToggleRow>
           </Section>

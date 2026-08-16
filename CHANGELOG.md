@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.35] - 2026-08-16
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.25.34] - 2026-08-16
+
+### Added
+- add powerup replay, spectator visibility, and SCSS grid layout
+
+### Improved
+- delegate cell hover events and isolate sunkCellSet to eliminate redundant board rerenders
+- replace O(N) player finds with aliveMap in team-rotation utils and engine
+- eliminate O(N) finds with Maps/Sets, structuredClone, and memoize hot paths
+
+### Refactored
+- clean up dead UI components and optimize rendering
+
+
+## [1.25.33] - 2026-08-16
+
+### Added
+- rework cookie policy page with modern UI and sticky navigation
+- add reusable TableOfContents component to shared UI library and integrate into legal pages
+- rework terms and privacy policy pages with modern UI and sticky navigation
+
+### Fixed
+- render SettingsPage synchronously during SSR to prevent layout shift on refresh
+- center settings page layout using shared Container
+
+### Documentation
+- update lastUpdated date on cookies policy across all locales to August 2026
+- update lastUpdated date on legal terms and privacy policies to August 2026
+
+
+## [1.25.32] - 2026-08-16
+
+### Fixed
+- add missing communityBy import to by.ts
+
+
+## [1.25.31] - 2026-08-16
+
+### Added
+- add setting to control rules popup on room entry (ARC-settings)
+
+
+## [1.25.30] - 2026-08-16
+
+### Added
+- include error reasons for failed social platforms in Telegram breakdown (ARC-201) (ARC-201)
+- display failed platforms in Telegram breakdown (ARC-201) (ARC-201)
+
+
 ## [1.25.29] - 2026-08-16
 
 ### Fixed

@@ -9,9 +9,9 @@ type CommonProps = React.HTMLAttributes<HTMLDivElement> & {
 export const MainGameArea = ({ className, ...props }: CommonProps) => (
   <div
     className={cx(
-      'flex flex-col items-stretch gap-4 w-full flex-1 min-h-0 min-w-0 p-2',
-      'max-[1150px]:gap-3 max-[1150px]:p-1',
-      'max-[800px]:gap-2 max-[800px]:p-0',
+      'flex flex-col items-stretch gap-2 w-full flex-1 min-h-0 min-w-0 p-1',
+      'max-[1150px]:gap-2 max-[1150px]:p-0.5',
+      'max-[800px]:gap-1 max-[800px]:p-0',
       className,
     )}
     {...props}

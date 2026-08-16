@@ -1,5 +1,13 @@
 import type { SeaBattleState } from './sea-battle.types';
 
+// Build a playerId → alive map from state.players for O(1) lookups.
+// Used in hot paths called per-action and per-broadcast.
+function buildAliveMap(state: SeaBattleState): Map<string, boolean> {
+  const map = new Map<string, boolean>();
+  for (const p of state.players) map.set(p.playerId, p.alive);
+  return map;
+}
+
 export function getActiveTeam(state: SeaBattleState) {
   if (
     !state.teams ||
@@ -32,30 +40,27 @@ export function arePlayersOnSameTeam(
   return !!teamA && teamA.playerIds.includes(b);
 }
 
-export function isTeamAlive(state: SeaBattleState, teamId: string): boolean {
+export function isTeamAlive(
+  state: SeaBattleState,
+  teamId: string,
+  aliveMap?: Map<string, boolean>,
+): boolean {
   const team = state.teams?.find((t) => t.id === teamId);
   if (!team) return false;
-  return team.playerIds.some((pid) => {
-    const p = state.players.find((pp) => pp.playerId === pid);
-    return !!p?.alive;
-  });
+  const lookup = aliveMap ?? buildAliveMap(state);
+  return team.playerIds.some((pid) => lookup.get(pid) === true);
 }
 
-export function countAliveTeams(state: SeaBattleState): number {
+export function countAliveTeams(
+  state: SeaBattleState,
+  aliveMap?: Map<string, boolean>,
+): number {
   if (!state.teamOrder) return 0;
-  return state.teamOrder.filter((tid) => isTeamAlive(state, tid)).length;
+  const lookup = aliveMap ?? buildAliveMap(state);
+  return state.teamOrder.filter((tid) => isTeamAlive(state, tid, lookup))
+    .length;
 }
 
-/**
- * Move the dying player's team off them as the active shooter so the next
- * time that team plays it picks a live teammate. Without this, an eliminated
- * player whose team is still alive can leave currentTurnIndex pointing at a
- * dead player, deadlocking the game (bot service breaks on "alive=false";
- * humans see "Waiting for <Player>...").
- *
- * No-op when the dying player isn't their team's current shooter, or when no
- * live teammate remains (the team will then fail isTeamAlive and lose).
- */
 export function normalizeTeamShooterAfterDeath(
   state: SeaBattleState,
   deadPlayerId: string,
@@ -65,27 +70,18 @@ export function normalizeTeamShooterAfterDeath(
   if (!team) return;
   if (team.playerIds[team.currentShooterIndex] !== deadPlayerId) return;
 
+  const aliveMap = buildAliveMap(state);
   const n = team.playerIds.length;
   let next = team.currentShooterIndex;
   for (let step = 0; step < n; step++) {
     next = (next + 1) % n;
-    const candidate = state.players.find(
-      (p) => p.playerId === team.playerIds[next],
-    );
-    if (candidate?.alive) {
+    if (aliveMap.get(team.playerIds[next]) === true) {
       team.currentShooterIndex = next;
       return;
     }
   }
 }
 
-/**
- * Self-heal: walks every team's currentShooterIndex past dead players, skips
- * past any fully-dead active team, and re-syncs currentTurnIndex with the
- * resulting active shooter. Idempotent on healthy state — safe to run before
- * every action. Recovers games whose state was saved in a stuck shape (e.g.
- * by a pre-fix server version) without needing manual intervention.
- */
 export function healStuckTeamRotation(state: SeaBattleState): void {
   if (
     !state.teams ||
@@ -95,20 +91,18 @@ export function healStuckTeamRotation(state: SeaBattleState): void {
     return;
   }
 
+  // Build player alive map once for all lookups in this function.
+  const aliveMap = buildAliveMap(state);
+
   // Advance each team's shooter pointer past any dead player.
   for (const team of state.teams) {
-    const current = state.players.find(
-      (p) => p.playerId === team.playerIds[team.currentShooterIndex],
-    );
-    if (current?.alive) continue;
+    if (aliveMap.get(team.playerIds[team.currentShooterIndex]) === true)
+      continue;
     const n = team.playerIds.length;
     let next = team.currentShooterIndex;
     for (let step = 0; step < n; step++) {
       next = (next + 1) % n;
-      const candidate = state.players.find(
-        (p) => p.playerId === team.playerIds[next],
-      );
-      if (candidate?.alive) {
+      if (aliveMap.get(team.playerIds[next]) === true) {
         team.currentShooterIndex = next;
         break;
       }
@@ -119,7 +113,7 @@ export function healStuckTeamRotation(state: SeaBattleState): void {
   const teamCount = state.teamOrder.length;
   let nextTeam = state.currentTeamIndex;
   for (let step = 0; step < teamCount; step++) {
-    if (isTeamAlive(state, state.teamOrder[nextTeam])) break;
+    if (isTeamAlive(state, state.teamOrder[nextTeam], aliveMap)) break;
     nextTeam = (nextTeam + 1) % teamCount;
   }
   state.currentTeamIndex = nextTeam;
@@ -143,14 +137,13 @@ export function advanceTeamRotationOnMiss(state: SeaBattleState): void {
   const activeTeam = getActiveTeam(state);
   if (!activeTeam) return;
 
+  const aliveMap = buildAliveMap(state);
+
   const n = activeTeam.playerIds.length;
   let next = activeTeam.currentShooterIndex;
   for (let step = 0; step < n; step++) {
     next = (next + 1) % n;
-    const candidate = state.players.find(
-      (p) => p.playerId === activeTeam.playerIds[next],
-    );
-    if (candidate?.alive) break;
+    if (aliveMap.get(activeTeam.playerIds[next]) === true) break;
   }
   activeTeam.currentShooterIndex = next;
 
@@ -158,7 +151,7 @@ export function advanceTeamRotationOnMiss(state: SeaBattleState): void {
   let nextTeam = state.currentTeamIndex;
   for (let step = 0; step < teamCount; step++) {
     nextTeam = (nextTeam + 1) % teamCount;
-    if (isTeamAlive(state, state.teamOrder[nextTeam])) break;
+    if (isTeamAlive(state, state.teamOrder[nextTeam], aliveMap)) break;
   }
   state.currentTeamIndex = nextTeam;
 }

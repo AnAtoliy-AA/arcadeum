@@ -87,7 +87,7 @@ export const PlayerName = ({
 }: PlayerNameProps) => (
   <span
     className={cx(
-      'is_PlayerName m-0 text-[15px] font-semibold text-center max-[800px]:text-[13px]',
+      'is_PlayerName m-0 flex flex-row items-center justify-center gap-1.5 text-[15px] font-semibold text-center max-[800px]:text-[13px] min-w-0',
       className,
     )}
     style={{

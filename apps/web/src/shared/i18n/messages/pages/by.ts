@@ -16,6 +16,7 @@ import { adminBlockedIpsBy } from './admin-blocked-ips/by';
 import { adminUsersBy } from './admin-users/by';
 import { adminBulkRewardsBy } from './admin-bulk-rewards/by';
 import { friendsBy } from './friends/by';
+import { communityBy } from './community/by';
 
 export const by = {
   admin: {
@@ -177,33 +178,10 @@ export const by = {
     ],
     comingSoon: "Артыкулы з'явяцца хутка!",
   },
-  community: {
-    title: 'Далучыцца да супольнасці',
-    subtitle: 'Зносіцеся з гульцамі з усяго свету',
-    description:
-      'Дзяліцеся стратэгіямі, удзельнічайце ў мерапрыемствах і знаходзьце сяброў, якія таксама любяць настольныя гульні.',
-    sections: {
-      discord: {
-        title: 'Discord',
-        description:
-          'Далучайцеся да нашай супольнасці ў Discord, каб абмяркоўваць гульні, паведамляць пра памылкі і знаёміцца з іншымі гульцамі.',
-      },
-      twitter: {
-        title: 'Twitter / X',
-        description:
-          'Сачыце за намі, каб даведвацца пра апошнія навіны, абнаўленні і анонсы.',
-      },
-      github: {
-        title: 'Github',
-        description:
-          'Arcadeum — гэта праект з адкрытым зыходным кодам. Уносьце свой уклад у праект на Github.',
-      },
-    },
-    comingSoon: "Супольнасць хутка з'явіцца!",
-  },
+  community: communityBy,
   cookies: {
     title: 'Палітыка выкарыстання файлаў cookie',
-    lastUpdated: 'Апошняе абнаўленне: 25 сакавіка 2026 г.',
+    lastUpdated: 'Апошняе абнаўленне: 16 жніўня 2026 г.',
     sections: {
       whatAreCookies: {
         title: 'Што такое файлы cookie?',

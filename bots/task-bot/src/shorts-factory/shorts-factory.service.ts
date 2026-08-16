@@ -136,21 +136,33 @@ export class ShortsFactoryService {
 
   async sendResultMessage(result: {
     success: boolean;
-    message: string;
+    message?: string;
     platforms?: string[];
+    failedPlatforms?: Array<string | { platform: string; error?: string }>;
   }): Promise<void> {
     if (!this.adminChatId) return;
 
     const emoji = result.success ? '✅' : '❌';
-    const platformList = result.platforms?.length
+    const successList = result.platforms?.length
       ? '\n\n<b>Published to:</b>\n' +
         result.platforms.map((p) => `  ✅ ${p}`).join('\n')
       : '';
 
+    const failureList = result.failedPlatforms?.length
+      ? '\n\n<b>Failed on:</b>\n' +
+        result.failedPlatforms
+          .map((item) => {
+            if (typeof item === 'string') return `  ❌ ${item}`;
+            return `  ❌ <b>${item.platform}</b>: ${item.error ?? 'Unknown error'}`;
+          })
+          .join('\n')
+      : '';
+
     const text =
-      `${emoji} <b>Post ${result.success ? 'Succeeded' : 'Failed'}</b>\n\n` +
-      `${result.message}` +
-      platformList;
+      `${emoji} <b>Post ${result.success ? 'Completed' : 'Failed'}</b>\n\n` +
+      `${result.message ?? ''}` +
+      successList +
+      failureList;
 
     try {
       const bot = this.telegram.getBot();

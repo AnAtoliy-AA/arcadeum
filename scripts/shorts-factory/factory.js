@@ -1481,10 +1481,15 @@ async function publishToSocials(videoPath, caption) {
   }
 
   const successes = results.filter((r) => r.success);
+  const failures = results.filter((r) => !r.success);
   return {
     success: successes.length > 0,
     message: `Published to ${successes.map((r) => r.platform).join(', ') || 'none'}`,
     platforms: successes.map((r) => r.platform),
+    failedPlatforms: failures.map((r) => ({
+      platform: r.platform,
+      error: r.error,
+    })),
     results,
   };
 }

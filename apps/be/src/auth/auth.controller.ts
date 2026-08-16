@@ -138,8 +138,8 @@ export class AuthController {
 
   @Post('register')
   @Throttle({ auth: { limit: 5, ttl: 60_000 } })
-  register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  register(@Body() dto: RegisterDto, @Req() req: Request) {
+    return this.authService.register(dto, req.ip);
   }
 
   @Get('check/username/:username')
@@ -169,7 +169,7 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthTokensResponse> {
-    const result = await this.authService.login(dto);
+    const result = await this.authService.login(dto, req.ip);
     setTokenCookies(
       res,
       req,
@@ -188,7 +188,7 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthTokensResponse> {
-    const result = await this.authService.loginWithOAuth(dto);
+    const result = await this.authService.loginWithOAuth(dto, req.ip);
     setTokenCookies(
       res,
       req,

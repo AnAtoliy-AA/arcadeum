@@ -409,6 +409,7 @@ export class LeaderboardsService {
     const snapshot: LeaderboardSnapshotDto = {
       capturedAt: new Date().toISOString(),
       mode,
+      modes: [...GAME_MODE_VALUES],
       page,
       mythic,
       podium,

@@ -12,14 +12,14 @@ import { apiClient, ApiError } from '@/shared/lib/api-client';
 import { HttpStatus } from '@/shared/lib/http-status';
 
 const REGIONS: Region[] = ['na', 'eu', 'sa', 'asia', 'oceania', 'africa', 'me'];
-const COUNTRIES: Record<Region, string> = {
-  na: 'us',
-  eu: 'de',
-  sa: 'br',
-  asia: 'kr',
-  oceania: 'au',
-  africa: 'za',
-  me: 'ae',
+const COUNTRIES: Record<Region, string[]> = {
+  na: ['us', 'ca', 'mx'],
+  eu: ['de', 'fr', 'gb', 'pl', 'se'],
+  sa: ['br', 'ar', 'cl'],
+  asia: ['kr', 'jp', 'in', 'cn'],
+  oceania: ['au', 'nz'],
+  africa: ['za', 'ng', 'eg'],
+  me: ['ae', 'sa', 'il'],
 };
 const TIERS: Tier[] = [
   'bronze',
@@ -79,6 +79,8 @@ function makePlayer(rng: () => number, rank: number): LeaderboardPlayer {
           ? 'platinum'
           : (TIERS[Math.floor(rng() * 4)] ?? 'silver');
   const region: Region = REGIONS[Math.floor(rng() * REGIONS.length)] ?? 'eu';
+  const countries = COUNTRIES[region] ?? ['us'];
+  const countryCode = countries[Math.floor(rng() * countries.length)] ?? 'us';
   const rating = 2800 - rank * 8 + Math.floor(rng() * 30);
   const tagCount = 1 + Math.floor(rng() * 2);
   const gameTags = Array.from(
@@ -94,7 +96,7 @@ function makePlayer(rng: () => number, rank: number): LeaderboardPlayer {
       (NAMES[(rank - 1) % NAMES.length] ?? 'Player') +
       (rank > NAMES.length ? rank : ''),
     region,
-    countryCode: COUNTRIES[region],
+    countryCode,
     tier,
     rating,
     elo: rating + 80,
@@ -187,7 +189,7 @@ export function getMockPlayer(id: string): PlayerProfile {
     player,
     modeRanks: [
       { mode: 'all', rank: 247, rating: player.rating },
-      { mode: 'critical', rank: 18, rating: player.rating - 80 },
+      { mode: 'critical_v1', rank: 18, rating: player.rating - 80 },
     ],
     squad: {
       id: 'sq_1',
@@ -292,6 +294,18 @@ export async function getMockLeaderboard(
   return {
     capturedAt: new Date().toISOString(),
     mode,
+    modes: [
+      'all',
+      'critical_v1',
+      'sea_battle_v1',
+      'texas_holdem_v1',
+      'glimworm_v1',
+      'tic_tac_toe_v1',
+      'cascade_v1',
+      'chess_v1',
+      'checkers_v1',
+      'cat_dash_v1',
+    ],
     page,
     mythic,
     podium,

@@ -55,7 +55,7 @@ export class GameHistoryStatsService {
         ? await this.userModel
             .find({ _id: { $in: userIds } })
             .select(
-              'username role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId',
+              'username role countryCode equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId',
             )
             .lean()
             .exec()
@@ -67,6 +67,7 @@ export class GameHistoryStatsService {
         {
           username: u.username,
           role: u.role ?? null,
+          countryCode: u.countryCode ?? null,
           equippedAvatarId: u.equippedAvatarId ?? null,
           equippedBadgeId: u.equippedBadgeId ?? null,
           equippedNameColorId: u.equippedNameColorId ?? null,
@@ -87,6 +88,7 @@ export class GameHistoryStatsService {
         wins: entry.wins,
         losses: entry.losses,
         winRate: entry.winRate,
+        countryCode: userInfo?.countryCode ?? null,
         role: userInfo?.role ?? null,
         equippedAvatarId: userInfo?.equippedAvatarId ?? null,
         equippedBadgeId: userInfo?.equippedBadgeId ?? null,

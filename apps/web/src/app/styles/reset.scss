@@ -4,6 +4,13 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  /* Tailwind preflight is disabled (corePlugins.preflight: false), so the
+     border reset it normally provides must live here — otherwise
+     border-width utilities (.border, .border-b, ...) render with the
+     browser-default border-style: none and no border is visible. */
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
 }
 
 html {

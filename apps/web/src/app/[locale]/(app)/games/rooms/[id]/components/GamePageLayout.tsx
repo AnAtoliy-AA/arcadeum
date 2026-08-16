@@ -16,7 +16,7 @@ import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
-import { fullscreenStyles } from './styles';
+import { roomStyles } from './styles';
 import { GameRow, ChatPanel } from './layout-styles';
 
 interface GamePageLayoutProps {
@@ -210,8 +210,11 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
   return (
     <>
-      <style>{fullscreenStyles}</style>
-      <div ref={gameContainerRef} className="games-room-container">
+      <style>{roomStyles}</style>
+      <div
+        ref={gameContainerRef}
+        className="games-room-container flex flex-col flex-1 min-h-0 gap-4 max-[800px]:gap-2"
+      >
         {/* Drops out of fullscreen shortly after the game finishes so the
             player returns to the normal page chrome (header, rematch, nav). */}
         <AutoExitFullscreenOnFinish

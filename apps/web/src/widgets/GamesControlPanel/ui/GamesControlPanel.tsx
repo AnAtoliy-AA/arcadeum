@@ -17,6 +17,10 @@ import {
   ModalFooter,
   MaximizeIcon,
   MinimizeIcon,
+  VolumeOnIcon,
+  VolumeOffIcon,
+  MusicOnIcon,
+  MusicOffIcon,
 } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui';
 import { ShareGameMenu } from './ShareGameMenu';
@@ -105,7 +109,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
   return (
     <div
-      className={`flex flex-row items-center justify-start gap-4 flex-wrap max-[800px]:gap-2 max-[800px]:justify-center max-[800px]:py-2 max-[800px]:px-3 max-[800px]:rounded-[12px] py-3 px-6 bg-[var(--glassBg)] rounded-[16px] border border-[var(--glassBorder)] ${className}`}
+      className={`flex flex-row items-center justify-start gap-4 flex-wrap max-[800px]:gap-2 max-[800px]:justify-center max-[800px]:py-2 max-[800px]:px-3 max-[800px]:rounded-[12px] py-3 px-6 bg-[var(--glassBg)] rounded-[16px] border border-[var(--glassBorderStrong)] ${className}`}
       data-testid="games-control-panel"
     >
       {isSpectating && (
@@ -155,7 +159,11 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         title={t('settings.soundLabel')}
         data-testid="sound-toggle-button"
       >
-        {soundEnabled ? '🔊' : '🔇'}
+        {soundEnabled ? (
+          <VolumeOnIcon size={16} />
+        ) : (
+          <VolumeOffIcon size={16} />
+        )}
         <span className="max-[800px]:hidden">
           {' ' + t('settings.soundLabel')}
         </span>
@@ -172,7 +180,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         title={t('settings.musicLabel')}
         data-testid="music-toggle-button"
       >
-        {musicEnabled ? '🎵' : '🔕'}
+        {musicEnabled ? <MusicOnIcon size={16} /> : <MusicOffIcon size={16} />}
         <span className="max-[800px]:hidden">
           {' ' + t('settings.musicLabel')}
         </span>

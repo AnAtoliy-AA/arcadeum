@@ -97,6 +97,7 @@ export type ThemeTokens = {
   glass: {
     background: string;
     border: string;
+    borderStrong: string;
   };
   copyNotice: string;
 };

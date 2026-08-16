@@ -81,6 +81,7 @@ export const violetDarkTokens: ThemeTokens = {
   glass: {
     background: 'rgba(13, 10, 24, 0.72)',
     border: 'rgba(167, 139, 250, 0.12)',
+    borderStrong: 'rgba(167, 139, 250, 0.35)',
   },
   copyNotice: '#c4b5fd',
 };
@@ -166,6 +167,7 @@ export const violetLightTokens: ThemeTokens = {
   glass: {
     background: 'rgba(255, 255, 255, 0.72)',
     border: 'rgba(167, 139, 250, 0.15)',
+    borderStrong: 'rgba(167, 139, 250, 0.4)',
   },
   copyNotice: '#6d28d9',
 };

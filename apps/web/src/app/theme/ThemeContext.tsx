@@ -143,6 +143,10 @@ export function AppThemeProvider({
       // contrast with white button text (see themeDefinitions.ts).
       doc.style.setProperty('--glassBg', themeTokensValue.glass.background);
       doc.style.setProperty('--glassBorder', themeTokensValue.glass.border);
+      doc.style.setProperty(
+        '--glassBorderStrong',
+        themeTokensValue.glass.borderStrong,
+      );
 
       const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
       document.cookie = `app-theme=${resolvedTheme}; ${cookieOptions}`;

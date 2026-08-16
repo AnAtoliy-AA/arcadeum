@@ -23,8 +23,9 @@ export function GameRow({
 }
 
 /**
- * Chat panel — fixed 320px wide on desktop, full width below game on mobile/tablet.
- * Uses glassmorphism for a premium look and separates cleanly from the game.
+ * Chat panel — fixed 350px wide on desktop, full width below the game on
+ * mobile/tablet. Fills the room's row height (h-full) so it always fits the
+ * screen; internal scrolling handles message overflow.
  */
 export function ChatPanel({
   visible,
@@ -37,7 +38,7 @@ export function ChatPanel({
   return (
     <div
       className={cx(
-        'w-[350px] min-w-[350px] h-full min-h-[350px] shrink-0 rounded-2xl overflow-hidden max-[1150px]:w-full max-[1150px]:min-w-0 max-[1150px]:min-h-0 max-[1150px]:h-auto max-[1150px]:mt-2 max-[1150px]:rounded-lg',
+        'w-[350px] min-w-[350px] h-full min-h-0 shrink-0 rounded-2xl overflow-hidden max-[1150px]:w-full max-[1150px]:min-w-0 max-[1150px]:min-h-0 max-[1150px]:h-auto max-[1150px]:mt-2 max-[1150px]:rounded-lg',
         visible === false && 'hidden',
         className,
       )}

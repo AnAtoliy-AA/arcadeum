@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import {
@@ -72,7 +73,6 @@ import {
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
-import { saveStoredSettings } from '@/shared/lib/settings-storage';
 
 export function HeaderInteractive() {
   const isMounted = useIsMounted();
@@ -88,10 +88,11 @@ export function HeaderInteractive() {
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
     useMobileMenu();
 
+  const { musicEnabled, setMusicEnabled } = useMusicSetting();
+
   const toggleMusic = useCallback(() => {
-    saveStoredSettings({ musicEnabled: true });
-    window.dispatchEvent(new CustomEvent('arcadeum:toggle-music'));
-  }, []);
+    setMusicEnabled(!musicEnabled);
+  }, [musicEnabled, setMusicEnabled]);
 
   const navItems = useMemo(
     () => [

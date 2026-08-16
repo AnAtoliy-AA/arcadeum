@@ -71,6 +71,10 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
+  const toggleMusic = useCallback(() => {
+    setMusicEnabled(!musicEnabled);
+  }, [musicEnabled, setMusicEnabled]);
+
   const handleLeaveGame = useCallback(() => {
     if (isSpectating) {
       // If spectating, we can just leave the room UI
@@ -182,7 +186,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         variant="glass"
         size="sm"
         aria-pressed={musicEnabled}
-        onClick={() => setMusicEnabled(!musicEnabled)}
+        onClick={toggleMusic}
         aria-label={t('settings.musicLabel')}
         title={t('settings.musicLabel')}
         data-testid="music-toggle-button"

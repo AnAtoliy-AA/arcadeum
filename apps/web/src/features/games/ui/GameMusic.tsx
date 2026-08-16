@@ -24,7 +24,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     y: typeof window !== 'undefined' ? window.innerHeight - 200 : 600,
   });
 
-  if (!musicEnabled || !player.visible) return null;
+  if (!musicEnabled) return null;
 
   if (player.loading) {
     return (

@@ -1,7 +1,6 @@
 'use client';
 import type React from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { HEADER_HEIGHT } from '@/shared/config/layout';
 
 /**
  * Reusable Page container component.
@@ -9,8 +8,12 @@ import { HEADER_HEIGHT } from '@/shared/config/layout';
  */
 export type PageProps = React.HTMLAttributes<HTMLElement> & {
   /**
-   * When true, the page will fit exactly within the viewport
-   * by subtracting the header height and hiding overflow.
+   * When true, the page is capped to the viewport below the sticky header
+   * (100dvh minus the --header-height token). Inner layouts can then fill
+   * it with flex (flex-1/min-h-0) and scroll internally. The document shell
+   * is content-sized, so the cap is the anchor every flex chain resolves
+   * against — without it, tall game widgets would stretch the room (and the
+   * chat with it) past the screen.
    */
   fixedHeight?: boolean;
   /**
@@ -35,12 +38,13 @@ export function Page({
     <div
       className={cx(
         'flex flex-col items-stretch relative w-full',
-        fixedHeight ? 'overflow-y-auto' : 'overflow-y-visible',
+        fixedHeight
+          ? 'h-[calc(100dvh-var(--header-height))] min-h-0 overflow-y-auto'
+          : 'overflow-y-visible',
         withPadding ? 'p-5 max-[800px]:p-4' : 'p-0',
         className,
       )}
       style={{
-        ...(fixedHeight ? { height: `calc(100vh - ${HEADER_HEIGHT}px)` } : {}),
         ...(radialBackground
           ? {
               background:

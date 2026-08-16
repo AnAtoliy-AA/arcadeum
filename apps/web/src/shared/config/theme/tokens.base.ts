@@ -83,6 +83,7 @@ export const lightTokens: ThemeTokens = {
   glass: {
     background: 'rgba(255, 255, 255, 0.72)',
     border: 'rgba(0, 0, 0, 0.05)',
+    borderStrong: 'rgba(0, 0, 0, 0.28)',
   },
   copyNotice: '#2563eb',
 };
@@ -170,6 +171,7 @@ export const darkTokens: ThemeTokens = {
   glass: {
     background: 'rgba(15, 17, 18, 0.72)',
     border: 'rgba(255, 255, 255, 0.08)',
+    borderStrong: 'rgba(255, 255, 255, 0.22)',
   },
   copyNotice: '#38bdf8',
 };

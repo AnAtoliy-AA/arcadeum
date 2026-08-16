@@ -19,7 +19,7 @@ export function Panel({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'relative h-full w-full min-h-[360px] overflow-hidden rounded-[18px] border border-[var(--glassBorder)] bg-[var(--glassBg)]',
+        'relative flex h-full w-full min-h-[360px] flex-col items-stretch overflow-hidden rounded-[18px] border border-[var(--glassBorderStrong)] bg-[var(--glassBg)]',
         className,
       )}
       {...props}
@@ -31,7 +31,7 @@ export function Head({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch gap-[10px] border-b border-[var(--glassBorder)] px-3 pt-3 pb-2.5',
+        'flex flex-col items-stretch gap-[10px] border-b border-[var(--glassBorderStrong)] px-3 pt-3 pb-2.5',
         className,
       )}
       {...props}
@@ -167,7 +167,7 @@ export function Foot({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch gap-2 border-t border-[var(--glassBorder)] px-3.5 pt-2.5 pb-3',
+        'flex flex-col items-stretch gap-2 border-t border-[var(--glassBorderStrong)] px-3.5 pt-2.5 pb-3',
         className,
       )}
       {...props}
@@ -254,7 +254,7 @@ export function CollapsedShell({ className, ...props }: DivProps) {
   return (
     <div
       className={cx(
-        'flex h-11 w-full cursor-pointer flex-row items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 hover:border-[var(--glassBorderHover)]',
+        'flex h-11 w-full cursor-pointer flex-row items-center gap-2 rounded-full border border-[var(--glassBorderStrong)] bg-[var(--glassBg)] px-3 hover:border-[var(--glassBorderHover)]',
         className,
       )}
       {...props}

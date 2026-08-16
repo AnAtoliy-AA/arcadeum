@@ -46,27 +46,27 @@ export const FieldStatus = memo(function FieldStatus({
 
   return (
     <div className="flex flex-row justify-end items-center py-1 px-2 bg-[rgba(0,0,0,0.3)] rounded-2xl">
-      <div className="flex flex-row gap-6 items-center">
-        <div className="flex flex-row gap-2 items-center">
+      <div className="flex flex-row gap-3 items-center">
+        <div className="flex flex-row gap-1.5 items-center">
           <div
-            className="flex flex-col items-stretch w-[4px] h-[4px] rounded"
+            className="flex flex-col items-stretch w-[6px] h-[6px] rounded-[2px]"
             style={{ backgroundColor: theme.hitColor }}
           />
           <span
-            className="text-[40px] font-bold"
+            className="text-[15px] font-bold"
             style={{ color: theme.hitColor }}
           >
             {stats.hitCells}
           </span>
         </div>
-        <span className="text-[32px] text-[rgba(255,255,255,0.3)]">·</span>
-        <div className="flex flex-row gap-2 items-center">
+        <span className="text-[13px] text-[rgba(255,255,255,0.3)]">·</span>
+        <div className="flex flex-row gap-1.5 items-center">
           <div
-            className="flex flex-col items-stretch w-[4px] h-[4px] rounded"
+            className="flex flex-col items-stretch w-[6px] h-[6px] rounded-[2px]"
             style={{ backgroundColor: theme.missColor }}
           />
           <span
-            className="text-[40px] font-bold"
+            className="text-[15px] font-bold"
             style={{ color: theme.missColor }}
           >
             {stats.missCells}
@@ -74,7 +74,7 @@ export const FieldStatus = memo(function FieldStatus({
         </div>
       </div>
       <span
-        className="text-[40px] text-[rgba(255,255,255,0.5)] -ml-4"
+        className="text-[13px] text-[rgba(255,255,255,0.5)] ml-2"
         style={{ fontFamily: 'monospace' } as React.CSSProperties}
       >
         {stats.unexploredCells}/{stats.totalCells} (

@@ -2,7 +2,7 @@ import type { HTMLAttributes } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Input as UIInput } from '@arcadeum/ui';
 
-export const fullscreenStyles = `
+export const roomStyles = `
   .games-room-container.is-fullscreen {
     position: fixed !important;
     inset: 0 !important;

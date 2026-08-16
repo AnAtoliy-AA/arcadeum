@@ -278,6 +278,11 @@ export function Playlist({
     }),
   );
 
+  const enabledCount = useMemo(
+    () => tracks.filter((_, i) => enabledTracks.has(i)).length,
+    [tracks, enabledTracks],
+  );
+
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
@@ -309,7 +314,7 @@ export function Playlist({
           Playlist
         </Typography>
         <Typography uiSize="xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-          {filteredTracks.length}/{tracks.length}
+          {enabledCount}/{tracks.length}
         </Typography>
       </div>
       <div className="flex items-center gap-[8px] px-[4px]">

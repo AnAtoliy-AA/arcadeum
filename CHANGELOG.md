@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.26] - 2026-08-16
+
+### Added
+- unify music state and persist player settings
+
+### Fixed
+- reduce sea battle field status text size
+- distinct message bubble background in game chat
+- consistent control panel toggles and distinct chat message bubbles
+- viewport-fit game room, visible widget borders, chat layout
+
+### Refactored
+- extract shared glass bubble classes in ChatMessage
+
+
 ## [1.25.25] - 2026-08-16
 
 ### Added

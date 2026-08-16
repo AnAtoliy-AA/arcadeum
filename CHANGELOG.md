@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.28] - 2026-08-16
+
+### Fixed
+- run Release workflow only on main merges, not tag pushes
+
+
 ## [1.25.27] - 2026-08-16
 
 ### Fixed

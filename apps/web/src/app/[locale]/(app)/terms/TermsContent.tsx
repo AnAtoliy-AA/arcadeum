@@ -11,6 +11,7 @@ import {
   GlassCard,
   Typography,
   AccentPill,
+  TableOfContents,
 } from '@arcadeum/ui';
 import {
   ShieldIcon,
@@ -51,7 +52,7 @@ export default function TermsContent({
   const [activeSection, setActiveSection] = useState<string>('agreement');
 
   const navItems = useMemo(() => {
-    return [
+    const raw = [
       { id: 'agreement', title: s?.agreement?.title ?? 'Agreement' },
       { id: 'companyInfo', title: s?.companyInfo?.title ?? 'Company Info' },
       { id: 'services', title: s?.services?.title ?? 'Services' },
@@ -73,6 +74,9 @@ export default function TermsContent({
       { id: 'governingLaw', title: s?.governingLaw?.title ?? 'Governing Law' },
       { id: 'contact', title: s?.contact?.title ?? 'Contact' },
     ];
+    return raw.filter((item): item is { id: string; title: string } =>
+      Boolean(item.title),
+    );
   }, [s]);
 
   const scrollToSection = (id: string) => {
@@ -163,42 +167,13 @@ export default function TermsContent({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Sticky Table of Contents Sidebar */}
             <aside className="lg:col-span-4 xl:col-span-3 sticky top-24 max-lg:hidden">
-              <GlassCard className="p-5 bg-slate-900/70 border-white/10 rounded-2xl flex flex-col gap-3">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <Typography
-                    variant="heading"
-                    uiSize="sm"
-                    className="font-bold flex items-center gap-2"
-                  >
-                    <span className="text-indigo-400">
-                      <FileTextIcon size={16} />
-                    </span>
-                    Table of Contents
-                  </Typography>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 bg-white/5 px-2 py-0.5 rounded">
-                    {navItems.length} Sections
-                  </span>
-                </div>
-
-                <nav className="flex flex-col gap-1 max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
-                  {navItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => scrollToSection(item.id)}
-                      className={`text-left text-xs px-3 py-2 rounded-xl transition-all font-medium flex items-center justify-between ${
-                        activeSection === item.id
-                          ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold'
-                          : 'text-slate-400 hover:text-white hover:bg-white/5'
-                      }`}
-                    >
-                      <span className="truncate">{item.title}</span>
-                      {activeSection === item.id && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0 ml-2" />
-                      )}
-                    </button>
-                  ))}
-                </nav>
-              </GlassCard>
+              <TableOfContents
+                items={navItems}
+                activeId={activeSection}
+                onSelect={scrollToSection}
+                icon={<FileTextIcon size={16} />}
+                accentColor="indigo"
+              />
             </aside>
 
             {/* Legal Text Column */}

@@ -221,7 +221,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   // from the board border + team pill, and the avatar carries its own disc.
   // The md disc is ~72px, so a -36 offset centers it on the corner.
   const cornerAvatar = (
-    <div className="flex flex-col items-stretch absolute top-[-36px] left-[-36px] z-[11] pointer-events-none sb-header-avatar">
+    <div className="flex flex-col items-stretch absolute top-[-16px] left-[-16px] z-[11] pointer-events-none sb-header-avatar">
       <InGameAvatar
         playerId={player.playerId}
         name={resolveDisplayName(player.playerId, isMe ? 'You' : 'Unknown')}

@@ -64,6 +64,9 @@ function messageGroupClasses(isOwn: boolean, type: ChatMessageType): string {
 const MESSAGE_BUBBLE_BASE =
   'flex flex-col min-w-0 shrink transition-transform duration-150 ease-out hover:scale-[1.01]';
 
+const MESSAGE_BUBBLE_GLASS =
+  'rounded-2xl border border-[var(--glassBorderStrong)] backdrop-blur-[16px] shadow-[0_2px_4px_var(--shadowColor)]';
+
 function messageBubbleClasses(isOwn: boolean, type: ChatMessageType): string {
   if (type === 'system') {
     return cx(
@@ -81,10 +84,11 @@ function messageBubbleClasses(isOwn: boolean, type: ChatMessageType): string {
   }
   return cx(
     MESSAGE_BUBBLE_BASE,
+    MESSAGE_BUBBLE_GLASS,
     'px-4 py-2.5',
     isOwn
-      ? 'self-end rounded-2xl rounded-br bg-[linear-gradient(135deg,var(--primaryGradientStart)_0%,var(--primaryGradientEnd)_100%)] shadow-[0_4px_10px_color-mix(in_srgb,var(--primary)_30%,transparent)]'
-      : 'self-start rounded-2xl rounded-bl-lg border border-[var(--glassBorderStrong)] bg-[color:color-mix(in_srgb,var(--color)_14%,var(--background))] backdrop-blur-[16px] shadow-[0_2px_4px_var(--shadowColor)]',
+      ? 'self-end rounded-br bg-[color:color-mix(in_srgb,var(--neutral)_16%,var(--background))]'
+      : 'self-start rounded-bl-lg bg-[color:color-mix(in_srgb,var(--color)_14%,var(--background))]',
   );
 }
 
@@ -171,7 +175,7 @@ export const ChatMessage = memo(function ChatMessage({
               >
                 <Typography
                   uiSize="sm"
-                  color={isOwn ? '#f5f7ff' : 'var(--color)'}
+                  color="var(--color)"
                   className="text-left"
                 >
                   {isEncrypted ? '[Encrypted Message]' : (contentNode ?? content)}
@@ -180,7 +184,7 @@ export const ChatMessage = memo(function ChatMessage({
                   <Typography
                     uiSize="xs"
                     alpha="low"
-                    color={isOwn ? '#f5f7ff' : 'var(--color)'}
+                    color="var(--color)"
                     className="mt-1"
                     style={{ opacity: 0.7 }}
                   >
@@ -204,7 +208,7 @@ export const ChatMessage = memo(function ChatMessage({
         >
           <Typography
             uiSize="xs"
-            color={isOwn ? '#f5f7ff' : 'var(--color)'}
+            color="var(--color)"
             className="text-center italic"
           >
             {senderName && !isEncrypted ? (

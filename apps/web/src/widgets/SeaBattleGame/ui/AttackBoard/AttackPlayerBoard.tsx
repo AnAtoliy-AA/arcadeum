@@ -35,7 +35,6 @@ interface AttackPlayerBoardProps {
   disabled: boolean;
   isTeammate?: boolean;
   team?: SeaBattleTeam;
-  sunkCellSet: Set<string>;
   shipCount?: number;
   sonarHighlightCells?: Set<string> | null;
   sonarCellStates?: Map<string, number> | null;
@@ -63,7 +62,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   disabled,
   isTeammate = false,
   team,
-  sunkCellSet,
   shipCount,
   sonarHighlightCells,
   sonarCellStates,
@@ -84,6 +82,17 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   const boardSize = player.board.length || 10;
   const rowLbls = useMemo(() => rowLabels(boardSize), [boardSize]);
   const colLbls = useMemo(() => colLabels(boardSize), [boardSize]);
+
+  // Derive sunk cells only for this player — avoids invalidating all boards when one player's ship sinks
+  const sunkCellSet = useMemo(() => {
+    const set = new Set<string>();
+    player.ships
+      .filter((s) => s.sunk)
+      .forEach((s) => {
+        s.cells.forEach((c) => set.add(`${c.row}-${c.col}`));
+      });
+    return set;
+  }, [player.ships]);
 
   // Optimistic "shot fired" state: instantly mark the clicked cell as pending
   // so the player sees feedback without waiting for the server round-trip,
@@ -124,6 +133,25 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     [isMyTurn, isAttackDisabled, onAttack, player.playerId, weaponMode],
   );
 
+  const handleGridMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (isMe || !onCellHover) return;
+      const cell = (e.target as HTMLElement).closest('.sb-cell[data-row]');
+      if (!cell) return;
+      const row = cell.getAttribute('data-row');
+      const col = cell.getAttribute('data-col');
+      if (row !== null && col !== null) {
+        onCellHover(player.playerId, parseInt(row, 10), parseInt(col, 10));
+      }
+    },
+    [isMe, onCellHover, player.playerId],
+  );
+
+  const handleGridMouseLeave = useCallback(() => {
+    if (isMe || !onCellHoverEnd) return;
+    onCellHoverEnd();
+  }, [isMe, onCellHoverEnd]);
+
   const boardGrid = (
     <BoardGrid
       className={`sb-board-grid ${!isMe && showTargeting ? 'sb-my-turn' : ''}`}
@@ -134,12 +162,12 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
       }}
       gridSize={boardSize}
       onClick={handleGridClick}
+      onMouseMove={!isMe && onCellHover ? handleGridMouseMove : undefined}
+      onMouseLeave={!isMe && onCellHoverEnd ? handleGridMouseLeave : undefined}
     >
       {player.board.map((row, rIndex) =>
         row.map((cellState, cIndex) => {
-          const isSunk = sunkCellSet.has(
-            `${player.playerId}-${rIndex}-${cIndex}`,
-          );
+          const isSunk = sunkCellSet.has(`${rIndex}-${cIndex}`);
           const displayState =
             !isMe && isSunk
               ? CELL_STATE.HIT
@@ -198,14 +226,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               rIndex={rIndex}
               cIndex={cIndex}
               isMe={isMe}
-              onMouseEnter={
-                !isMe && onCellHover
-                  ? () => onCellHover(player.playerId, rIndex, cIndex)
-                  : undefined
-              }
-              onMouseLeave={
-                !isMe && onCellHoverEnd ? onCellHoverEnd : undefined
-              }
             />
           );
         }),

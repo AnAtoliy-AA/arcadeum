@@ -81,18 +81,6 @@ export const AttackBoard = memo(function AttackBoard({
 
   const idlePlayers = useGameStore((s: GameState) => s.idlePlayers);
 
-  const sunkCellSet = useMemo(() => {
-    const set = new Set<string>();
-    players.forEach((p) => {
-      p.ships
-        .filter((s) => s.sunk)
-        .forEach((s) => {
-          s.cells.forEach((c) => set.add(`${p.playerId}-${c.row}-${c.col}`));
-        });
-    });
-    return set;
-  }, [players]);
-
   // Cache lastSonar/lastRadar across state updates — they may disappear
   // from the snapshot after a re-broadcast but should remain visible until
   // a new weapon is used or the game ends.
@@ -241,7 +229,6 @@ export const AttackBoard = memo(function AttackBoard({
             isMyTurn={isMyTurn}
             disabled={disabled}
             team={currentPlayerTeam}
-            sunkCellSet={sunkCellSet}
             shipCount={shipCount}
             t={t}
           />
@@ -271,7 +258,6 @@ export const AttackBoard = memo(function AttackBoard({
               disabled={disabled}
               isTeammate={isTeammate}
               team={team}
-              sunkCellSet={sunkCellSet}
               shipCount={shipCount}
               sonarHighlightCells={isSonarTarget ? sonarHighlightSet : null}
               sonarCellStates={isSonarTarget ? sonarCellStates : null}

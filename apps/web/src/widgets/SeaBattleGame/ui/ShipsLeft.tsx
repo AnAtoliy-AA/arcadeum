@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Ship, getActiveShips } from '../types';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
@@ -9,7 +9,11 @@ interface ShipsLeftProps {
   shipCount?: number;
 }
 
-export function ShipsLeft({ ships, isMe, shipCount }: ShipsLeftProps) {
+export const ShipsLeft = memo(function ShipsLeft({
+  ships,
+  isMe,
+  shipCount,
+}: ShipsLeftProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
 
@@ -143,4 +147,4 @@ export function ShipsLeft({ ships, isMe, shipCount }: ShipsLeftProps) {
       )}
     </div>
   );
-}
+});

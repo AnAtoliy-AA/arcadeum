@@ -257,15 +257,17 @@ export const PlacementBoardGrid = memo(
     onDragLeave,
     t,
   }: PlacementBoardGridProps) => {
-    const { draggingKeys, pendingKeys, movingKeys } = useMemo(() => {
-      return {
-        draggingKeys: new Set(draggingCells.map((c) => `${c.row}-${c.col}`)),
-        pendingKeys: new Set(pendingCells.map((c) => `${c.row}-${c.col}`)),
-        movingKeys: new Set(
-          (movingShipCells ?? []).map((c) => `${c.row}-${c.col}`),
-        ),
-      };
-    }, [draggingCells, pendingCells, movingShipCells]);
+    const { draggingKeys, pendingKeys, movingKeys, hoveredKeys } =
+      useMemo(() => {
+        return {
+          draggingKeys: new Set(draggingCells.map((c) => `${c.row}-${c.col}`)),
+          pendingKeys: new Set(pendingCells.map((c) => `${c.row}-${c.col}`)),
+          movingKeys: new Set(
+            (movingShipCells ?? []).map((c) => `${c.row}-${c.col}`),
+          ),
+          hoveredKeys: new Set(hoveredCells.map((c) => `${c.row}-${c.col}`)),
+        };
+      }, [draggingCells, pendingCells, movingShipCells, hoveredCells]);
 
     const boardSize = gridSize ?? (board.length || 10);
     const rowLbls = useMemo(() => rowLabels(boardSize), [boardSize]);
@@ -304,12 +306,10 @@ export const PlacementBoardGrid = memo(
           >
             {board.map((row, rIndex) =>
               row.map((cellState, cIndex) => {
-                const isHovered = hoveredCells.some(
-                  (c) => c.row === rIndex && c.col === cIndex,
-                );
+                const cellKey = `${rIndex}-${cIndex}`;
+                const isHovered = hoveredKeys.has(cellKey);
                 const isInvalidCell = isHovered && isInvalidHover;
                 const isShipCell = cellState === CELL_STATE.SHIP;
-                const cellKey = `${rIndex}-${cIndex}`;
                 const isDraggingThisCell = draggingKeys.has(cellKey);
                 const isPendingCell = pendingKeys.has(cellKey);
                 const isMovingCell = movingKeys.has(cellKey);

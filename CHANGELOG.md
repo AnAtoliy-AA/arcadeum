@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.30] - 2026-08-16
+
+### Added
+- include error reasons for failed social platforms in Telegram breakdown (ARC-201) (ARC-201)
+- display failed platforms in Telegram breakdown (ARC-201) (ARC-201)
+
+
 ## [1.25.29] - 2026-08-16
 
 ### Fixed

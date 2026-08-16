@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import type { DragEvent } from 'react';
 import { colLabels, rowLabels, CELL_STATE } from '../../types';
 import type { ShipCell, ShipConfig, CellState } from '../../types';
@@ -257,14 +257,19 @@ export const PlacementBoardGrid = memo(
     onDragLeave,
     t,
   }: PlacementBoardGridProps) => {
-    const draggingKeys = new Set(draggingCells.map((c) => `${c.row}-${c.col}`));
-    const pendingKeys = new Set(pendingCells.map((c) => `${c.row}-${c.col}`));
-    const movingKeys = new Set(
-      (movingShipCells ?? []).map((c) => `${c.row}-${c.col}`),
-    );
+    const { draggingKeys, pendingKeys, movingKeys } = useMemo(() => {
+      return {
+        draggingKeys: new Set(draggingCells.map((c) => `${c.row}-${c.col}`)),
+        pendingKeys: new Set(pendingCells.map((c) => `${c.row}-${c.col}`)),
+        movingKeys: new Set(
+          (movingShipCells ?? []).map((c) => `${c.row}-${c.col}`),
+        ),
+      };
+    }, [draggingCells, pendingCells, movingShipCells]);
+
     const boardSize = gridSize ?? (board.length || 10);
-    const rowLbls = rowLabels(boardSize);
-    const colLbls = colLabels(boardSize);
+    const rowLbls = useMemo(() => rowLabels(boardSize), [boardSize]);
+    const colLbls = useMemo(() => colLabels(boardSize), [boardSize]);
     return (
       <PlayerSection
         backgroundColor={theme.boardBackground}

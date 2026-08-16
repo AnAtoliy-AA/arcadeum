@@ -1,5 +1,5 @@
 'use client';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import type { SeaBattlePlayerState, SeaBattleTeam } from '../../types';
 import { CELL_STATE, colLabels, rowLabels } from '../../types';
 import { ShipsLeft } from '../ShipsLeft';
@@ -82,8 +82,8 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   const isAttackDisabled = disabled || isTeammate;
   const showTargeting = isMyTurn && !isAttackDisabled;
   const boardSize = player.board.length || 10;
-  const rowLbls = rowLabels(boardSize);
-  const colLbls = colLabels(boardSize);
+  const rowLbls = useMemo(() => rowLabels(boardSize), [boardSize]);
+  const colLbls = useMemo(() => colLabels(boardSize), [boardSize]);
 
   // Optimistic "shot fired" state: instantly mark the clicked cell as pending
   // so the player sees feedback without waiting for the server round-trip,

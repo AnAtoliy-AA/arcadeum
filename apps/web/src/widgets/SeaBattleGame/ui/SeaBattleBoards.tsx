@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
@@ -125,7 +125,7 @@ export function SeaBattleBoards({
   }, []);
 
   // Compute preview cells for sonar (area scales with grid size, matching backend getSonarSide)
-  const sonarPreviewCells = (() => {
+  const sonarPreviewCells = useMemo(() => {
     if (weaponMode?.weapon !== 'sonar' || !hoveredCell) return null;
     const side = gridSize <= 10 ? 3 : gridSize <= 15 ? 5 : 7;
     const cells = new Set<string>();
@@ -141,10 +141,10 @@ export function SeaBattleBoards({
       }
     }
     return cells;
-  })();
+  }, [weaponMode, hoveredCell, gridSize]);
 
   // Compute preview cells for radar (band of rows/columns, matching backend getRadarLines)
-  const radarPreviewCells = (() => {
+  const radarPreviewCells = useMemo(() => {
     if (weaponMode?.weapon !== 'radar' || !hoveredCell) return null;
     const lines = gridSize <= 10 ? 1 : gridSize <= 15 ? 3 : 5;
     const halfWidth = Math.floor(lines / 2);
@@ -168,7 +168,7 @@ export function SeaBattleBoards({
       }
     }
     return cells;
-  })();
+  }, [weaponMode, hoveredCell, gridSize]);
 
   const isWeaponMode = weaponMode !== null;
 

@@ -13,36 +13,41 @@ export function ShipsLeft({ ships, isMe, shipCount }: ShipsLeftProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
 
-  const { activeShips, totalShips, sunkCount, isLargeFleet, groupedShips } =
-    useMemo(() => {
-      const active = getActiveShips(shipCount);
-      const total = active.length;
-      const sunkSet = new Set(
-        ships?.filter((s) => s.sunk).map((s) => s.id) ?? [],
-      );
+  const {
+    activeShips,
+    totalShips,
+    sunkCount,
+    isLargeFleet,
+    groupedShips,
+    sunkSet,
+  } = useMemo(() => {
+    const active = getActiveShips(shipCount);
+    const total = active.length;
+    const set = new Set(ships?.filter((s) => s.sunk).map((s) => s.id) ?? []);
 
-      // Single pass to build groups (if large fleet)
-      const groups = new Map<number, { total: number; alive: number }>();
-      for (let i = 0; i < active.length; i++) {
-        const cfg = active[i];
-        const isSunk = sunkSet.has(cfg.id);
-        const group = groups.get(cfg.size);
-        if (group) {
-          group.total++;
-          if (!isSunk) group.alive++;
-        } else {
-          groups.set(cfg.size, { total: 1, alive: isSunk ? 0 : 1 });
-        }
+    // Single pass to build groups (if large fleet)
+    const groups = new Map<number, { total: number; alive: number }>();
+    for (let i = 0; i < active.length; i++) {
+      const cfg = active[i];
+      const isSunk = set.has(cfg.id);
+      const group = groups.get(cfg.size);
+      if (group) {
+        group.total++;
+        if (!isSunk) group.alive++;
+      } else {
+        groups.set(cfg.size, { total: 1, alive: isSunk ? 0 : 1 });
       }
+    }
 
-      return {
-        activeShips: active,
-        totalShips: total,
-        sunkCount: sunkSet.size,
-        isLargeFleet: total > 10,
-        groupedShips: Array.from(groups.entries()),
-      };
-    }, [shipCount, ships]);
+    return {
+      activeShips: active,
+      totalShips: total,
+      sunkCount: set.size,
+      isLargeFleet: total > 10,
+      groupedShips: Array.from(groups.entries()),
+      sunkSet: set,
+    };
+  }, [shipCount, ships]);
 
   const aliveCount = totalShips - sunkCount;
 
@@ -105,8 +110,7 @@ export function ShipsLeft({ ships, isMe, shipCount }: ShipsLeftProps) {
       ) : (
         <div className="flex flex-row justify-between items-center w-full gap-1.5 sm:gap-2">
           {activeShips.map((config) => {
-            const isSunk =
-              ships?.find((s) => s.id === config.id)?.sunk ?? false;
+            const isSunk = sunkSet.has(config.id);
             return (
               <div
                 className="flex flex-row items-stretch gap-[1px] relative h-2.5 sm:h-3"

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.29] - 2026-08-16
+
+### Fixed
+- encrypt token cookies at rest
+- always set Secure flag on auth token cookies
+- show real country/region and all games
+
+
 ## [1.25.28] - 2026-08-16
 
 ### Fixed

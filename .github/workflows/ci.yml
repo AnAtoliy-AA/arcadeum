@@ -29,13 +29,10 @@ env:
 # Skip heavy work on version-bump pushes (skipped jobs still satisfy required
 # checks, unlike commits using [skip ci] which leave them pending forever).
 # PR events always run in full.
-x-skip-bump-push: &skip-bump-push
-  if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
-
 jobs:
   build:
     name: Build
-    <<: *skip-bump-push
+    if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -68,7 +65,7 @@ jobs:
 
   lint-and-test-unit:
     name: Lint & Unit Tests
-    <<: *skip-bump-push
+    if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
     runs-on: ubuntu-latest
     services:
       mongodb:
@@ -105,7 +102,7 @@ jobs:
 
   test-e2e-be:
     name: Backend E2E Tests
-    <<: *skip-bump-push
+    if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
     runs-on: ubuntu-latest
     services:
       mongodb:
@@ -135,7 +132,7 @@ jobs:
   web-e2e:
     name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/2)
     needs: build
-    <<: *skip-bump-push
+    if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

@@ -84,7 +84,7 @@ function messageBubbleClasses(isOwn: boolean, type: ChatMessageType): string {
     'px-4 py-2.5',
     isOwn
       ? 'self-end rounded-2xl rounded-br bg-[linear-gradient(135deg,var(--primaryGradientStart)_0%,var(--primaryGradientEnd)_100%)] shadow-[0_4px_10px_color-mix(in_srgb,var(--primary)_30%,transparent)]'
-      : 'self-start rounded-2xl rounded-bl-lg border border-[var(--glassBorder)] bg-[var(--glassBg)] backdrop-blur-[16px] shadow-[0_2px_4px_var(--shadowColor)]',
+      : 'self-start rounded-2xl rounded-bl-lg border border-[var(--glassBorderStrong)] bg-[color:color-mix(in_srgb,var(--color)_10%,var(--glassBg))] backdrop-blur-[16px] shadow-[0_2px_4px_var(--shadowColor)]',
   );
 }
 

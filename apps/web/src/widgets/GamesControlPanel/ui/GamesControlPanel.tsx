@@ -23,6 +23,7 @@ import {
   MusicOffIcon,
 } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { ShareGameMenu } from './ShareGameMenu';
 
 interface GamesControlPanelProps {
@@ -149,10 +150,13 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       </Button>
 
       <Button
-        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+        className={cx(
+          'max-[640px]:scale-[0.9] max-[640px]:px-2',
+          soundEnabled &&
+            '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+        )}
         variant="glass"
         size="sm"
-        active={soundEnabled}
         aria-pressed={soundEnabled}
         onClick={() => setSoundEnabled(!soundEnabled)}
         aria-label={t('settings.soundLabel')}
@@ -170,10 +174,13 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       </Button>
 
       <Button
-        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+        className={cx(
+          'max-[640px]:scale-[0.9] max-[640px]:px-2',
+          musicEnabled &&
+            '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+        )}
         variant="glass"
         size="sm"
-        active={musicEnabled}
         aria-pressed={musicEnabled}
         onClick={() => setMusicEnabled(!musicEnabled)}
         aria-label={t('settings.musicLabel')}

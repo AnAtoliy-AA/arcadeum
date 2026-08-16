@@ -14,11 +14,11 @@ import type { ThemePreference } from '@/shared/config/theme';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { PageTitle } from '@arcadeum/ui/components/PageTitle/PageTitle';
 import { Section } from '@arcadeum/ui/components/Section/Section';
+import { Container } from '@arcadeum/ui/components/Container/Container';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { appConfig } from '@/shared/config/app-config';
 
 import {
-  Container,
   OptionList,
   PillGroup,
   AccountStatus,
@@ -252,7 +252,11 @@ export default function SettingsContent({
   return (
     <>
       <PageLayout>
-        <Container data-current-locale={locale}>
+        <Container
+          size="lg"
+          className="py-6 flex flex-col gap-8"
+          data-current-locale={locale}
+        >
           <PageTitle size="xl" gradient>
             {pageTitle}
           </PageTitle>

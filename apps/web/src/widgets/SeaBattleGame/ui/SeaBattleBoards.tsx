@@ -231,7 +231,8 @@ export function SeaBattleBoards({
               style={{
                 display: 'flex',
                 gap: 8,
-                padding: '8px 16px',
+                padding: '2px 8px',
+                marginBottom: '-4px',
                 justifyContent: 'center',
                 flexWrap: 'wrap',
                 alignItems: 'center',

@@ -1,61 +1,218 @@
 'use client';
-import type { PageTranslations } from '@/shared/i18n/page-translations';
 
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { appConfig } from '@/shared/config/app-config';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   PageLayout,
   Container,
   GlassCard,
-  PageTitle,
   Typography,
+  AccentPill,
+  TableOfContents,
 } from '@arcadeum/ui';
+import {
+  FileTextIcon,
+  ShieldIcon,
+  MailIcon,
+  LockIcon,
+} from '@arcadeum/ui/components/Icons/index';
 
-interface CookiePolicyPageContentProps {
-  t?: PageTranslations;
+interface CookieSection {
+  title?: string;
+  content?: string;
+  intro?: string;
+  items?: string[];
 }
+
+export interface CookiePolicyPageContentProps {
+  t?: {
+    title?: string;
+    lastUpdated?: string;
+    sections?: Record<string, CookieSection>;
+  };
+}
+
+const APP_NAME = appConfig.appName;
 
 export default function CookiePolicyPageContent({
   t: initialT,
 }: CookiePolicyPageContentProps) {
   const { messages } = useLanguage();
-  const t =
-    (messages.pages?.cookies as unknown as PageTranslations) || initialT;
+  const routes = useRoutes();
+  const t = messages.pages?.cookies || initialT;
+  const sections = t?.sections as Record<string, CookieSection> | undefined;
+  const [activeSection, setActiveSection] = useState<string>('whatAreCookies');
+
+  const navItems = useMemo(() => {
+    if (!sections) return [];
+    return Object.entries(sections).map(([key, sec]) => ({
+      id: key,
+      title: sec.title || key,
+    }));
+  }, [sections]);
+
+  const scrollToSection = (id: string) => {
+    setActiveSection(id);
+    const element = document.getElementById(`section-${id}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
     <PageLayout>
-      <Container size="md">
-        <GlassCard>
-          <PageTitle size="xl" gradient>
-            {t?.title}
-          </PageTitle>
-          <Typography variant="body" uiSize="md" alpha="high">
-            {t?.description}
-          </Typography>
-        </GlassCard>
+      <Container size="xl">
+        <div
+          className="flex flex-col gap-8 py-6"
+          data-testid="cookies-page-wrapper"
+        >
+          {/* Hero Header */}
+          <GlassCard
+            style={{
+              background:
+                'radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.6) 80%)',
+            }}
+            className="items-center text-center p-9"
+          >
+            <div className="flex flex-col gap-3 items-center max-w-[720px]">
+              <AccentPill accent="#38BDF8">
+                Privacy & Data Preferences
+              </AccentPill>
 
-        {t?.sections &&
-          (
-            Object.values(t.sections) as { title: string; content?: string }[]
-          ).map((section, index: number) => (
-            <div
-              key={index}
-              style={{
-                marginTop: '2rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
-              }}
-            >
-              <Typography className={'font-bold'} variant="label" uiSize="lg">
-                {section.title}
-              </Typography>
-              {section.content && (
-                <Typography variant="body" uiSize="md" alpha="medium">
-                  {section.content}
+              <h1 className="m-0">
+                <Typography
+                  variant="heading"
+                  uiSize="xl"
+                  gradient="primary"
+                  className="text-4xl font-extrabold tracking-tight"
+                >
+                  {t?.title ?? 'Cookie Policy'}
+                </Typography>
+              </h1>
+
+              {t?.lastUpdated && (
+                <Typography
+                  variant="caption"
+                  alpha="medium"
+                  className="text-xs uppercase tracking-wider text-sky-300 font-semibold"
+                >
+                  {t.lastUpdated}
                 </Typography>
               )}
+
+              <Typography
+                variant="body"
+                uiSize="lg"
+                alpha="high"
+                className="mt-2 text-slate-300"
+              >
+                Learn how {APP_NAME} uses cookies and web storage to enhance
+                your gaming experience, remember settings, and protect user
+                data.
+              </Typography>
+
+              {/* Quick links to sister legal pages */}
+              <div className="flex flex-wrap gap-3 justify-center mt-4">
+                <Link
+                  href={routes.terms}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-indigo-400/40 hover:bg-white/10 text-xs font-semibold text-indigo-300 transition-all no-underline"
+                >
+                  <FileTextIcon size={14} />
+                  Terms of Service
+                </Link>
+                <Link
+                  href={routes.privacy}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-sky-400/40 hover:bg-white/10 text-xs font-semibold text-sky-300 transition-all no-underline"
+                >
+                  <ShieldIcon size={14} />
+                  Privacy Policy
+                </Link>
+                <Link
+                  href={routes.contact}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-emerald-400/40 hover:bg-white/10 text-xs font-semibold text-emerald-300 transition-all no-underline"
+                >
+                  <MailIcon size={14} />
+                  Contact Support
+                </Link>
+              </div>
             </div>
-          ))}
+          </GlassCard>
+
+          {/* Main Layout with Sidebar Navigation */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Sticky Table of Contents Sidebar */}
+            <aside className="lg:col-span-4 xl:col-span-3 sticky top-24 max-lg:hidden">
+              <TableOfContents
+                items={navItems}
+                activeId={activeSection}
+                onSelect={scrollToSection}
+                icon={<LockIcon size={16} />}
+                accentColor="sky"
+                title="Cookie Navigation"
+              />
+            </aside>
+
+            {/* Cookie Policy Content Cards */}
+            <main className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6">
+              {sections &&
+                Object.entries(sections).map(([key, sec]) => (
+                  <GlassCard
+                    key={key}
+                    id={`section-${key}`}
+                    className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0">
+                        <LockIcon size={20} />
+                      </div>
+                      <Typography
+                        variant="heading"
+                        uiSize="md"
+                        className="font-bold"
+                      >
+                        {sec.title}
+                      </Typography>
+                    </div>
+
+                    {sec.intro && (
+                      <Typography
+                        variant="body"
+                        uiSize="md"
+                        alpha="high"
+                        className="text-slate-300 leading-relaxed"
+                      >
+                        {sec.intro}
+                      </Typography>
+                    )}
+
+                    {sec.content && (
+                      <Typography
+                        variant="body"
+                        uiSize="md"
+                        alpha="high"
+                        className="text-slate-300 leading-relaxed"
+                      >
+                        {sec.content}
+                      </Typography>
+                    )}
+
+                    {sec.items && sec.items.length > 0 && (
+                      <ul className="flex flex-col gap-2 pl-4 list-disc text-slate-300 text-sm mt-1">
+                        {sec.items.map((item, index) => (
+                          <li key={index} className="leading-relaxed">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </GlassCard>
+                ))}
+            </main>
+          </div>
+        </div>
       </Container>
     </PageLayout>
   );

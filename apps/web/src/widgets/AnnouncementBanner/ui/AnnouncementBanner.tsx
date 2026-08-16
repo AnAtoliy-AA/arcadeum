@@ -2,10 +2,9 @@
 
 import { useState } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
-import { useActiveAnnouncement } from '../hooks/useActiveAnnouncement';
-import { addDismissed } from '../lib/dismissedStorage';
+import { addDismissed, writeDismissedCookie } from '../lib/dismissedStorage';
 import { isSafeCtaHref } from '../lib/ctaHrefSafety';
-import type { AnnouncementSeverity } from '../api';
+import type { AnnouncementPublicItem, AnnouncementSeverity } from '../api';
 
 interface BannerLabels {
   dismissAriaLabel: string;
@@ -24,11 +23,25 @@ const SEVERITY_ICON: Record<AnnouncementSeverity, string> = {
   critical: '⛔',
 };
 
-export function AnnouncementBanner(): React.ReactElement | null {
-  const { data: announcement, refetch } = useActiveAnnouncement();
+interface AnnouncementBannerProps {
+  /**
+   * Active announcement fetched server-side and rendered in the initial
+   * HTML. Passing it as a prop (instead of fetching on the client after
+   * hydration) keeps the banner out of the page flow until it is already
+   * rendered, avoiding the layout shift an empty-then-filled top bar
+   * would cause.
+   */
+  initialAnnouncement: AnnouncementPublicItem | null;
+}
+
+export function AnnouncementBanner({
+  initialAnnouncement,
+}: AnnouncementBannerProps): React.ReactElement | null {
   const { messages } = useLanguage();
+  const [dismissed, setDismissed] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
+  const announcement = dismissed ? null : initialAnnouncement;
   if (!announcement) return null;
 
   const labels =
@@ -50,8 +63,10 @@ export function AnnouncementBanner(): React.ReactElement | null {
   const hasBody = !!body;
 
   const handleDismiss = () => {
-    addDismissed({ id: announcement.id, updatedAt: announcement.updatedAt });
-    refetch();
+    const entry = { id: announcement.id, updatedAt: announcement.updatedAt };
+    addDismissed(entry);
+    writeDismissedCookie(entry);
+    setDismissed(true);
   };
 
   const toggleBody = () => {

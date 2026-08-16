@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.25] - 2026-08-16
+
+### Added
+- add shared AccentPill badge, use it in home featured games and shop rarity labels
+
+### Fixed
+- always mint theme CSS vars so button backgrounds survive reloads
+- replace option buttons with divs to avoid default white background
+- use var(--color) for dropdown option text instead of var(--textSecondary)
+- remove duplicate auth link and polish language select dropdown
+
+### Improved
+- eliminate announcement banner and font-swap layout shift (CLS)
+
+
 ## [1.25.24] - 2026-08-15
 
 ### Changed

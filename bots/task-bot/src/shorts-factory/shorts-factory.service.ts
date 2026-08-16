@@ -138,7 +138,7 @@ export class ShortsFactoryService {
     success: boolean;
     message?: string;
     platforms?: string[];
-    failedPlatforms?: string[];
+    failedPlatforms?: Array<string | { platform: string; error?: string }>;
   }): Promise<void> {
     if (!this.adminChatId) return;
 
@@ -150,7 +150,12 @@ export class ShortsFactoryService {
 
     const failureList = result.failedPlatforms?.length
       ? '\n\n<b>Failed on:</b>\n' +
-        result.failedPlatforms.map((p) => `  ❌ ${p}`).join('\n')
+        result.failedPlatforms
+          .map((item) => {
+            if (typeof item === 'string') return `  ❌ ${item}`;
+            return `  ❌ <b>${item.platform}</b>: ${item.error ?? 'Unknown error'}`;
+          })
+          .join('\n')
       : '';
 
     const text =

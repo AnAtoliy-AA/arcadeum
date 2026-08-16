@@ -48,16 +48,17 @@ function createLog(
 }
 
 function advanceToNextPlayer(state: SeaBattleState): void {
-  const alivePlayers = state.players.filter((p) => p.alive);
-  if (alivePlayers.length <= 1) return;
+  const aliveCount = state.players.reduce((n, p) => n + (p.alive ? 1 : 0), 0);
+  if (aliveCount <= 1) return;
+
+  // Build O(1) lookup map once instead of players.find() on each iteration.
+  const playerMap = new Map<string, SeaBattlePlayer>();
+  for (const p of state.players) playerMap.set(p.playerId, p);
 
   let nextIndex = state.currentTurnIndex;
   do {
     nextIndex = (nextIndex + 1) % state.playerOrder.length;
-    const nextPlayer = state.players.find(
-      (p) => p.playerId === state.playerOrder[nextIndex],
-    );
-    if (nextPlayer?.alive) {
+    if (playerMap.get(state.playerOrder[nextIndex])?.alive) {
       state.currentTurnIndex = nextIndex;
       return;
     }
@@ -210,13 +211,17 @@ function normalizeTeamShooterAfterDeath(
 function checkAndSetWinner(state: SeaBattleState): void {
   if (state.phase !== GAME_PHASE.BATTLE) return;
   if (state.teams && state.teamOrder) {
-    const aliveTeamIds = state.teamOrder.filter((tid) => {
-      const team = state.teams!.find((t) => t.id === tid);
-      return team?.playerIds.some((pid) => {
-        const p = state.players.find((pl) => pl.playerId === pid);
-        return p?.alive;
-      });
-    });
+    // Pre-build player alive map once to avoid nested .find() per team per player.
+    const aliveSet = new Set<string>();
+    for (const p of state.players) {
+      if (p.alive) aliveSet.add(p.playerId);
+    }
+    const teamMap = new Map<string, (typeof state.teams)[0]>();
+    for (const team of state.teams) teamMap.set(team.id, team);
+
+    const aliveTeamIds = state.teamOrder.filter((tid) =>
+      teamMap.get(tid)?.playerIds.some((pid) => aliveSet.has(pid)),
+    );
     if (aliveTeamIds.length <= 1) {
       const winningTeamId = aliveTeamIds[0];
       if (winningTeamId) {

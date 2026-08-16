@@ -21,8 +21,6 @@ interface AttackBoardCellProps {
   isWeaponPreview?: boolean;
   weaponPreviewType?: 'sonar' | 'radar' | null;
   isWeaponClickable?: boolean;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
 }
 
 export const AttackBoardCell = memo(function AttackBoardCell({
@@ -40,8 +38,6 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   isWeaponPreview = false,
   weaponPreviewType,
   isWeaponClickable = false,
-  onMouseEnter,
-  onMouseLeave,
 }: AttackBoardCellProps) {
   const icon = getCellIcon(isSunk, displayState);
   const animClass = getCellAnimClass(isSunk, displayState);
@@ -117,8 +113,6 @@ export const AttackBoardCell = memo(function AttackBoardCell({
       }}
       data-row={!isMe ? rIndex : undefined}
       data-col={!isMe ? cIndex : undefined}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
     >
       {icon && (
         <span

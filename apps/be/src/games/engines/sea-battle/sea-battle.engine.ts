@@ -243,16 +243,16 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
   }
 
   private advanceToNextPlayer(state: SeaBattleState): void {
-    const alivePlayers = state.players.filter((p) => p.alive);
-    if (alivePlayers.length <= 1) return;
+    const aliveCount = state.players.reduce((n, p) => n + (p.alive ? 1 : 0), 0);
+    if (aliveCount <= 1) return;
+
+    const playerMap = new Map<string, SeaBattlePlayer>();
+    for (const p of state.players) playerMap.set(p.playerId, p);
 
     let nextIndex = state.currentTurnIndex;
     do {
       nextIndex = (nextIndex + 1) % state.playerOrder.length;
-      const nextPlayer = state.players.find(
-        (p) => p.playerId === state.playerOrder[nextIndex],
-      );
-      if (nextPlayer?.alive) {
+      if (playerMap.get(state.playerOrder[nextIndex])?.alive) {
         state.currentTurnIndex = nextIndex;
         return;
       }
@@ -263,7 +263,8 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
     if (state.phase === GAME_PHASE.COMPLETED) return true;
     if (state.phase !== GAME_PHASE.BATTLE) return false;
     if (state.teams) return countAliveTeams(state) <= 1;
-    return state.players.filter((p) => p.alive).length <= 1;
+    const aliveCount = state.players.reduce((n, p) => n + (p.alive ? 1 : 0), 0);
+    return aliveCount <= 1;
   }
 
   getWinners(state: SeaBattleState): string[] {

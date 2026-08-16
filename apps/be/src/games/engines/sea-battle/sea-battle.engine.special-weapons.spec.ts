@@ -202,6 +202,12 @@ describe('SeaBattleEngine — special weapons (sonar & radar)', () => {
 
       const sanitizedA = engine.sanitizeStateForPlayer(state, 'a');
       expect(sanitizedA.lastSonar).toBeDefined();
+
+      const sanitizedSpectator = engine.sanitizeStateForPlayer(
+        state,
+        'watcher-123',
+      );
+      expect(sanitizedSpectator.lastSonar).toBeDefined();
     });
   });
 

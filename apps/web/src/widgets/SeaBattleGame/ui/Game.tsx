@@ -32,7 +32,7 @@ import { SeaBattleModals } from './SeaBattleModals';
 import { SeaBattleBoards } from './SeaBattleBoards';
 
 import { RulesModal } from './RulesModal';
-import './styles/animations.scss';
+import './styles/sea-battle.scss';
 
 export const SeaBattleGame = memo(function SeaBattleGame({
   roomId,
@@ -281,7 +281,15 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   const cardVariant = (room?.gameOptions?.variant ||
     room?.gameOptions?.cardVariant) as string | undefined;
 
-  const getTurnStatus = (): { text: string; variant: TurnStatusVariant } => {
+  const currentVariant = useMemo(
+    () => SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant),
+    [cardVariant],
+  );
+
+  const turnStatus = useMemo((): {
+    text: string;
+    variant: TurnStatusVariant;
+  } => {
     if (!snapshot) return { text: '', variant: 'default' };
     if (isGameOver)
       return {
@@ -311,23 +319,16 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       }),
       variant: 'waiting',
     };
-  };
-
-  const currentVariant = SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant);
-
-  const turnStatus = useMemo(
-    () => getTurnStatus(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      snapshot,
-      isGameOver,
-      isPlacementPhase,
-      isPlacementComplete,
-      currentTurnPlayer,
-      currentUserId,
-      resolveDisplayNameBound,
-    ],
-  );
+  }, [
+    snapshot,
+    isGameOver,
+    isPlacementPhase,
+    isPlacementComplete,
+    currentTurnPlayer,
+    currentUserId,
+    resolveDisplayNameBound,
+    t,
+  ]);
 
   const headerTitle = useMemo(
     () =>

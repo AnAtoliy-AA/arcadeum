@@ -9,7 +9,12 @@
 @font-face {
   font-family: 'Geist Variable';
   font-style: normal;
-  font-display: swap;
+  /* `optional`: the font is used only if already loaded when text first
+     paints; otherwise the metric-adjusted fallback stays for the pageview.
+     Removes the webfont from the LCP critical chain and eliminates the
+     font-swap layout shift (CLS). The font is preloaded, so Geist is still
+     used in the common case. */
+  font-display: optional;
   font-weight: 100 900;
   src: url('/fonts/geist-latin.woff2') format('woff2-variations');
   unicode-range:

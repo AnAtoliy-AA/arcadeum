@@ -1,5 +1,4 @@
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { appConfig } from '@/shared/config/app-config';
@@ -169,7 +168,7 @@ export default async function LocaleLayout({
               <AnnouncementBanner initialAnnouncement={announcement} />
               <Header />
               <main id="main-content" className="layout-main">
-                <Suspense>{children}</Suspense>
+                {children}
               </main>
               <LayoutFooter />
             </LayoutShell>

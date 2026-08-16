@@ -54,6 +54,7 @@ export * from './components/DownloadButtons';
 export * from './components/CountdownClock';
 export * from './components/FormPips';
 export * from './components/FilterChip/FilterChip';
+export * from './components/AccentPill/AccentPill';
 export * from './components/LiveChip';
 export * from './components/MythicSpotlight';
 export * from './components/RankBadge';

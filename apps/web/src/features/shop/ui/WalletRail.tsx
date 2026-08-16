@@ -1,6 +1,7 @@
 'use client';
 
 import { cx } from '@arcadeum/ui/utils/cx';
+import { Typography } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
@@ -63,40 +64,40 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
           backgroundColor="rgba(251,191,36,0.08)"
           borderColor="rgba(251,191,36,0.25)"
         >
-          <span className="text-[16px]">{COIN_GLYPH}</span>
-          <span
-            className="text-[18px] font-extrabold"
-            style={{ color: COIN_COLOR }}
-          >
+          <Typography uiSize="md">{COIN_GLYPH}</Typography>
+          <Typography uiSize="lg" weight="800" color={COIN_COLOR}>
             {fmt(coins)}
-          </span>
+          </Typography>
         </Tile>
         <Tile
           flex={1}
           backgroundColor="rgba(167,139,250,0.08)"
           borderColor="rgba(167,139,250,0.25)"
         >
-          <span className="text-[16px]">{GEM_GLYPH}</span>
-          <span
-            className="text-[18px] font-extrabold"
-            style={{ color: GEM_COLOR }}
-          >
+          <Typography uiSize="md">{GEM_GLYPH}</Typography>
+          <Typography uiSize="lg" weight="800" color={GEM_COLOR}>
             {fmt(gems)}
-          </span>
+          </Typography>
         </Tile>
       </div>
 
       {nextGemPack ? (
         <div className="flex flex-col items-stretch gap-6">
           <div className="flex flex-row justify-between items-center">
-            <span className="text-[48px] tracking-[1.4px] uppercase font-extrabold text-[#94a3b8]">
+            <Typography
+              uiSize="sm"
+              weight="800"
+              color="#94a3b8"
+              tracking="lg"
+              className="uppercase"
+            >
               {labels.nextPack.replace('{label}', nextGemPack.label)}
-            </span>
-            <span className="text-[11px] font-bold text-[#f5f7ff]">
+            </Typography>
+            <Typography uiSize="xs" weight="700" color="#f5f7ff">
               {labels.ofTarget
                 .replace('{current}', fmt(gems))
                 .replace('{target}', fmt(nextGemPack.target))}
-            </span>
+            </Typography>
           </div>
           <div
             className="flex flex-col items-stretch h-[6px] rounded-xl bg-[rgba(255,255,255,0.06)] overflow-hidden"

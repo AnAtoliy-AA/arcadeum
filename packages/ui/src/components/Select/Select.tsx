@@ -246,35 +246,44 @@ export const Select = memo(function Select({
           id={listboxId}
           role="listbox"
           onKeyDown={handleNavKey}
-          className="absolute left-0 right-0 z-[50] mt-2 max-h-72 overflow-y-auto rounded-[16px] border border-[var(--borderColorHover)] bg-[var(--background)] py-2 shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
+          className="absolute left-0 right-0 z-[50] mt-1 max-h-72 overflow-y-auto rounded-[12px] border border-[var(--glassBorder)] bg-[var(--background)] py-1 shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
         >
-          {optionList.map((opt, index) => (
-            <li
-              key={opt.value}
-              id={`${listboxId}-option-${opt.value}`}
-              ref={index === activeIndex ? activeOptionRef : undefined}
-              role="option"
-              aria-selected={opt.value === selectedValue}
-              onMouseEnter={() => setActiveIndex(index)}
-              className={cx(
-                index === activeIndex ? 'bg-[var(--backgroundHover)]' : '',
-              )}
-            >
-              <button
-                type="button"
-                tabIndex={-1}
-                onClick={() => handleSelect(opt.value)}
+          {optionList.map((opt, index) => {
+            const isSelected = opt.value === selectedValue;
+            return (
+              <li
+                key={opt.value}
+                id={`${listboxId}-option-${opt.value}`}
+                ref={index === activeIndex ? activeOptionRef : undefined}
+                role="option"
+                aria-selected={isSelected}
+                onMouseEnter={() => setActiveIndex(index)}
                 className={cx(
-                  'w-full px-4 py-2 text-left text-[14px] transition-colors duration-100',
-                  opt.value === selectedValue
-                    ? 'font-semibold text-[var(--color)]'
-                    : 'text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--color)]',
+                  'mx-1 rounded-[8px]',
+                  index === activeIndex ? 'bg-[var(--backgroundHover)]' : '',
                 )}
               >
-                {opt.label}
-              </button>
-            </li>
-          ))}
+                <div
+                  role="button"
+                  tabIndex={-1}
+                  onClick={() => handleSelect(opt.value)}
+                  className={cx(
+                    'flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left text-[13px] transition-colors duration-100',
+                    isSelected
+                      ? 'font-semibold text-[var(--color)]'
+                      : 'text-[var(--color)] hover:text-[var(--primary)]',
+                  )}
+                >
+                  {opt.label}
+                  {isSelected && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

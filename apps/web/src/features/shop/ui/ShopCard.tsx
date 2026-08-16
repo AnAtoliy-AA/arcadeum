@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { AccentPill, Typography } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
@@ -239,56 +240,50 @@ export function ShopCard({
         <div className="flex flex-row items-stretch absolute top-[8px] right-[8px] gap-4 pointer-events-none">
           {equipped ? (
             <Chip backgroundColor={`${accent}1f`} borderColor={`${accent}66`}>
-              <span className="text-[14px] tracking-[1px] uppercase font-extrabold ">
+              <Typography uiSize="sm" variant="label" weight="800">
                 {labels.equipped}
-              </span>
+              </Typography>
             </Chip>
           ) : owned ? (
             <Chip
               backgroundColor="rgba(255,255,255,0.06)"
               borderColor="rgba(255,255,255,0.18)"
             >
-              <span className="text-[14px] tracking-[1px] uppercase font-bold text-[#94a3b8]">
+              <Typography
+                uiSize="sm"
+                weight="700"
+                color="#94a3b8"
+                tracking="md"
+              >
                 {labels.owned}
-              </span>
+              </Typography>
             </Chip>
           ) : null}
         </div>
       </ArtBox>
 
       <div className="flex flex-col items-stretch px-3 py-2 gap-6">
-        <span
-          className="font-bold text-[#f5f7ff] line-clamp-1"
-          style={{ fontSize: small ? 12 : 13 }}
+        <Typography
+          uiSize={small ? 'xs' : 'sm'}
+          weight="700"
+          color="#f5f7ff"
+          className="line-clamp-1"
         >
           {name}
-        </span>
+        </Typography>
         <div className="flex flex-row items-center justify-between gap-6">
-          <div
-            className="flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"
-            style={{
-              backgroundColor: `${accent}14`,
-              borderColor: `${accent}44`,
-            }}
-          >
-            <div
-              className="flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
-              style={{ backgroundColor: accent }}
-            />
-            <span className="text-[14px] tracking-[1px] uppercase font-extrabold ">
-              {item.rarity}
-            </span>
-          </div>
+          <AccentPill accent={accent}>{item.rarity}</AccentPill>
           <div className="flex flex-row items-center gap-4">
-            <span className="text-[12px]">
+            <Typography uiSize="xs">
               {CURRENCY_GLYPH[item.priceCurrency]}
-            </span>
-            <span
-              className="text-[12px] font-extrabold"
-              style={{ color: CURRENCY_COLOR[item.priceCurrency] }}
+            </Typography>
+            <Typography
+              uiSize="xs"
+              weight="800"
+              color={CURRENCY_COLOR[item.priceCurrency]}
             >
               {formatNumber(item.priceAmount, locale)}
-            </span>
+            </Typography>
           </div>
         </div>
 
@@ -308,9 +303,15 @@ export function ShopCard({
           data-testid={`shop-card-action-${item.id}`}
           data-affordable={affordable ? 'true' : 'false'}
         >
-          <span className="text-[11px] tracking-[0.8px] uppercase font-extrabold text-[#f5f7ff]">
+          <Typography
+            uiSize="xs"
+            weight="800"
+            color="#f5f7ff"
+            tracking="sm"
+            className="uppercase"
+          >
             {actionLabel}
-          </span>
+          </Typography>
         </ActionButton>
 
         {/* ARC payment option */}
@@ -333,9 +334,15 @@ export function ShopCard({
                 borderColor: 'rgba(34,197,94,0.45)',
               }}
             >
-              <span className="text-[11px] tracking-[0.8px] uppercase font-extrabold text-[#22c55e]">
+              <Typography
+                uiSize="xs"
+                weight="800"
+                color="#22c55e"
+                tracking="sm"
+                className="uppercase"
+              >
                 {formatNumber(arcPrice, locale)} ARC
-              </span>
+              </Typography>
             </ActionButton>
           )}
 
@@ -364,8 +371,12 @@ export function ShopCard({
         !item.starter &&
         !equipped &&
         onSellRequest ? (
-          <span
-            className="text-[48px] tracking-[1px] uppercase font-bold text-[#94a3b8] cursor-pointer py-1 text-center hover:text-[#ef4444]"
+          <Typography
+            uiSize="3xl"
+            weight="600"
+            color="#94a3b8"
+            tracking="md"
+            className="uppercase cursor-pointer py-1 text-center hover:text-[#ef4444]"
             onClick={() => {
               track('shop.sell.click', {
                 itemId: item.id,
@@ -376,7 +387,7 @@ export function ShopCard({
             data-testid={`shop-card-sell-${item.id}`}
           >
             {labels.sell}
-          </span>
+          </Typography>
         ) : null}
       </div>
     </CardFrame>

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@arcadeum/ui';
+import { Button, Typography } from '@arcadeum/ui';
 
 export interface ShopSignInBannerLabels {
   title: string;
@@ -19,8 +19,12 @@ export function ShopSignInBanner({ labels }: ShopSignInBannerProps) {
       className="flex flex-col items-stretch gap-6 p-4 rounded-2xl border border-[rgba(96,165,250,0.35)] bg-[rgba(59,130,246,0.08)]"
       data-testid="shop-signin-banner"
     >
-      <span className="text-[20px] font-bold">{labels.title}</span>
-      <span className="text-[16px] text-[#94a3b8]">{labels.body}</span>
+      <Typography uiSize="xl" weight="700">
+        {labels.title}
+      </Typography>
+      <Typography uiSize="md" color="#94a3b8">
+        {labels.body}
+      </Typography>
       <div className="flex flex-row items-stretch">
         <Link href="/auth">
           <Button variant="primary" data-testid="shop-signin-cta">

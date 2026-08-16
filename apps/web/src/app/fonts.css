@@ -18,6 +18,22 @@
     U+2215, U+FEFF, U+FFFD;
 }
 
+/*
+ * Metric-adjusted Arial fallback for the Geist swap: the woff2 loads,
+ * text renders with Arial scaled to Geist's metrics (next/font's values),
+ * so the font swap causes no reflow/layout shift. Used via --font-geist-sans.
+ */
+@font-face {
+  font-family: 'Geist Fallback';
+  src: local(Arial);
+  font-style: normal;
+  font-weight: 100 900;
+  ascent-override: 95.94%;
+  descent-override: 28.16%;
+  line-gap-override: 0%;
+  size-adjust: 104.76%;
+}
+
 .font-geist-variable {
   --font-geist-sans: 'Geist Variable', 'Geist Fallback', sans-serif;
   font-family: var(--font-geist-sans);

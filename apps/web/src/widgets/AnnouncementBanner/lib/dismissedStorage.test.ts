@@ -1,5 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { addDismissed, getDismissed, isDismissed } from './dismissedStorage';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import {
+  addDismissed,
+  getDismissed,
+  isDismissed,
+  isDismissedInCookie,
+  writeDismissedCookie,
+  DISMISSED_COOKIE,
+} from './dismissedStorage';
 
 const KEY = 'arc:announcements:dismissed';
 
@@ -73,5 +80,48 @@ describe('dismissedStorage', () => {
     expect(all).toHaveLength(2);
     expect(all[0]?.id).toBe('good');
     expect(all[1]?.id).toBe('good2');
+  });
+});
+
+describe('dismissal cookie', () => {
+  afterEach(() => {
+    window.document.cookie = `${DISMISSED_COOKIE}=; path=/; max-age=0`;
+  });
+
+  it('isDismissedInCookie matches id + updatedAt', () => {
+    const entry = { id: 'a1', updatedAt: '2026-05-09T00:00:00Z' };
+    const raw = 'a1|2026-05-09T00%3A00%3A00Z';
+    expect(isDismissedInCookie(raw, entry)).toBe(true);
+    expect(
+      isDismissedInCookie(raw, { ...entry, updatedAt: '2026-05-10T00:00:00Z' }),
+    ).toBe(false);
+    expect(isDismissedInCookie(raw, { ...entry, id: 'other' })).toBe(false);
+  });
+
+  it('returns false for empty or malformed cookie values', () => {
+    const entry = { id: 'a1', updatedAt: '2026-05-09T00:00:00Z' };
+    expect(isDismissedInCookie(null, entry)).toBe(false);
+    expect(isDismissedInCookie('', entry)).toBe(false);
+    expect(isDismissedInCookie('no-separator', entry)).toBe(false);
+    expect(isDismissedInCookie('%zz%|%zz%', entry)).toBe(false);
+  });
+
+  it('writeDismissedCookie persists a value the server check accepts', () => {
+    writeDismissedCookie({ id: 'a1', updatedAt: '2026-05-09T00:00:00Z' });
+    const cookie = window.document.cookie;
+    expect(cookie).toContain(DISMISSED_COOKIE);
+    const raw = cookie
+      .split(';')
+      .map((c) => c.trim())
+      .find((c) => c.startsWith(`${DISMISSED_COOKIE}=`))
+      ?.split('=')
+      .slice(1)
+      .join('=');
+    expect(
+      isDismissedInCookie(raw ?? null, {
+        id: 'a1',
+        updatedAt: '2026-05-09T00:00:00Z',
+      }),
+    ).toBe(true);
   });
 });

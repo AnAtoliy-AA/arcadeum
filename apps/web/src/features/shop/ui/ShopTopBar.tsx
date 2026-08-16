@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { Typography } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { buildRoutes } from '@/shared/config/routes';
@@ -61,10 +62,13 @@ function NavLink({
   className?: string;
 } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
-    <span
+    <Typography
+      uiSize="sm"
+      weight="700"
+      tracking="sm"
+      color={color === '#f5f7ff' ? '#f5f7ff' : '#94a3b8'}
       className={cx(
-        'px-[10px] py-[6px] rounded-lg text-[14px] tracking-[0.5px] uppercase font-bold transition-colors',
-        color === '#f5f7ff' ? 'text-[#f5f7ff]' : 'text-[#94a3b8]',
+        'px-[10px] py-[6px] rounded-lg uppercase transition-colors',
         'hover:text-[#f5f7ff] hover:bg-[rgba(255,255,255,0.04)]',
         className,
       )}
@@ -121,12 +125,18 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
       data-testid="shop-top-bar"
     >
       <div className="flex flex-col items-stretch gap-2">
-        <span className="text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
+        <Typography
+          uiSize="3xl"
+          variant="heading"
+          color="#94a3b8"
+          tracking="lg"
+          className="uppercase"
+        >
           {labels.eyebrow}
-        </span>
-        <span className="text-[40px] font-black tracking-[-0.5px]">
+        </Typography>
+        <Typography uiSize="3xl" variant="heading">
           {labels.title}
-        </span>
+        </Typography>
       </div>
 
       <div
@@ -158,24 +168,24 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
 
       <div className="flex flex-row gap-2 items-center">
         <BalanceChip currency="coins" data-testid="shop-balance-coins">
-          <span className="text-[16px]">{COIN_GLYPH}</span>
-          <span className="text-[18px] font-bold" style={{ color: COIN_COLOR }}>
+          <Typography uiSize="md">{COIN_GLYPH}</Typography>
+          <Typography uiSize="lg" weight="700" color={COIN_COLOR}>
             {formatNumber(coins, locale)}
-          </span>
+          </Typography>
         </BalanceChip>
         <BalanceChip currency="gems" data-testid="shop-balance-gems">
-          <span className="text-[16px]">{GEM_GLYPH}</span>
-          <span className="text-[18px] font-bold" style={{ color: GEM_COLOR }}>
+          <Typography uiSize="md">{GEM_GLYPH}</Typography>
+          <Typography uiSize="lg" weight="700" color={GEM_COLOR}>
             {formatNumber(gems, locale)}
-          </span>
+          </Typography>
         </BalanceChip>
         <TopUpBtn onClick={handleTopUp} role="button" data-testid="shop-top-up">
-          <span className="text-[16px] font-bold" style={{ color: GEM_COLOR }}>
+          <Typography uiSize="md" weight="700" color={GEM_COLOR}>
             +
-          </span>
-          <span className="text-[14px] font-bold tracking-[0.5px]">
+          </Typography>
+          <Typography uiSize="sm" weight="700" tracking="sm">
             {labels.topUp}
-          </span>
+          </Typography>
         </TopUpBtn>
       </div>
     </div>

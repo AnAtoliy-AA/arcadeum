@@ -2,23 +2,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import type { AnnouncementPublicItem } from '../api';
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => children;
-
-const renderBanner = () =>
-  render(
-    <Wrapper>
-      <AnnouncementBanner />
-    </Wrapper>,
-  );
-
-const useActiveAnnouncementMock = vi.fn();
-vi.mock('../hooks/useActiveAnnouncement', () => ({
-  useActiveAnnouncement: () => useActiveAnnouncementMock(),
-}));
+const renderBanner = (announcement: AnnouncementPublicItem | null) =>
+  render(<AnnouncementBanner initialAnnouncement={announcement} />);
 
 const addDismissedMock = vi.fn();
+const writeDismissedCookieMock = vi.fn();
 vi.mock('../lib/dismissedStorage', () => ({
   addDismissed: (...args: unknown[]) => addDismissedMock(...args),
+  writeDismissedCookie: (...args: unknown[]) =>
+    writeDismissedCookieMock(...args),
 }));
 
 vi.mock('@/shared/i18n/context', () => ({
@@ -39,16 +31,9 @@ vi.mock('@/shared/i18n/context', () => ({
 
 import { AnnouncementBanner } from './AnnouncementBanner';
 
-const refetchMock = vi.fn();
-
-const setHook = (data: AnnouncementPublicItem | null) => {
-  useActiveAnnouncementMock.mockReturnValue({ data, refetch: refetchMock });
-};
-
 beforeEach(() => {
-  useActiveAnnouncementMock.mockReset();
   addDismissedMock.mockReset();
-  refetchMock.mockReset();
+  writeDismissedCookieMock.mockReset();
 });
 
 const baseAnn: AnnouncementPublicItem = {
@@ -59,42 +44,36 @@ const baseAnn: AnnouncementPublicItem = {
 };
 
 describe('AnnouncementBanner', () => {
-  it('renders nothing when hook returns null', () => {
-    setHook(null);
-    renderBanner();
+  it('renders nothing when initialAnnouncement is null', () => {
+    renderBanner(null);
     expect(screen.queryByTestId('announcement-banner')).not.toBeInTheDocument();
   });
 
   it('renders title with role=status for info', () => {
-    setHook(baseAnn);
-    renderBanner();
+    renderBanner(baseAnn);
     expect(screen.getByRole('status')).toBeInTheDocument();
     expect(screen.getByText('Tournament Friday')).toBeInTheDocument();
   });
 
   it('renders with role=alert for critical', () => {
-    setHook({ ...baseAnn, severity: 'critical' });
-    renderBanner();
+    renderBanner({ ...baseAnn, severity: 'critical' });
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
   it('hides close button for critical severity', () => {
-    setHook({ ...baseAnn, severity: 'critical' });
-    renderBanner();
+    renderBanner({ ...baseAnn, severity: 'critical' });
     expect(
       screen.queryByTestId('announcement-dismiss'),
     ).not.toBeInTheDocument();
   });
 
   it('shows close button for non-critical', () => {
-    setHook(baseAnn);
-    renderBanner();
+    renderBanner(baseAnn);
     expect(screen.getByTestId('announcement-dismiss')).toBeInTheDocument();
   });
 
-  it('clicking close calls addDismissed and refetch', () => {
-    setHook(baseAnn);
-    renderBanner();
+  it('clicking close calls addDismissed, writes the cookie, and hides the banner', () => {
+    renderBanner(baseAnn);
 
     fireEvent.click(screen.getByTestId('announcement-dismiss'));
 
@@ -102,16 +81,19 @@ describe('AnnouncementBanner', () => {
       id: 'a1',
       updatedAt: '2026-05-09T00:00:00Z',
     });
-    expect(refetchMock).toHaveBeenCalled();
+    expect(writeDismissedCookieMock).toHaveBeenCalledWith({
+      id: 'a1',
+      updatedAt: '2026-05-09T00:00:00Z',
+    });
+    expect(screen.queryByTestId('announcement-banner')).not.toBeInTheDocument();
   });
 
   it('renders CTA when ctaHref is safe https', () => {
-    setHook({
+    renderBanner({
       ...baseAnn,
       ctaLabel: 'View',
       ctaHref: 'https://example.com',
     });
-    renderBanner();
     const cta = screen.getByTestId('announcement-cta');
     expect(cta).toHaveAttribute('href', 'https://example.com');
     expect(cta).toHaveAttribute('target', '_blank');
@@ -119,36 +101,32 @@ describe('AnnouncementBanner', () => {
   });
 
   it('renders CTA without target=_blank for relative path', () => {
-    setHook({
+    renderBanner({
       ...baseAnn,
       ctaLabel: 'View',
       ctaHref: '/games/123',
     });
-    renderBanner();
     const cta = screen.getByTestId('announcement-cta');
     expect(cta).toHaveAttribute('href', '/games/123');
     expect(cta).not.toHaveAttribute('target');
   });
 
   it('hides CTA when ctaHref is unsafe (javascript:)', () => {
-    setHook({
+    renderBanner({
       ...baseAnn,
       ctaLabel: 'Click',
       ctaHref: 'javascript:alert(1)',
     });
-    renderBanner();
     expect(screen.queryByTestId('announcement-cta')).not.toBeInTheDocument();
   });
 
   it('hides CTA when ctaLabel is missing', () => {
-    setHook({ ...baseAnn, ctaHref: 'https://example.com' });
-    renderBanner();
+    renderBanner({ ...baseAnn, ctaHref: 'https://example.com' });
     expect(screen.queryByTestId('announcement-cta')).not.toBeInTheDocument();
   });
 
   it('expands body on title click when body present', () => {
-    setHook({ ...baseAnn, body: 'More details here' });
-    renderBanner();
+    renderBanner({ ...baseAnn, body: 'More details here' });
 
     expect(screen.queryByTestId('announcement-body')).not.toBeInTheDocument();
 
@@ -160,8 +138,7 @@ describe('AnnouncementBanner', () => {
   });
 
   it('does not expand if there is no body', () => {
-    setHook(baseAnn);
-    renderBanner();
+    renderBanner(baseAnn);
     fireEvent.click(screen.getByText('Tournament Friday'));
     expect(screen.queryByTestId('announcement-body')).not.toBeInTheDocument();
   });

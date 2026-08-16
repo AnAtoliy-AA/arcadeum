@@ -56,6 +56,7 @@ export default function LanguageSwitcher({
         value={locale}
         onValueChange={handleLocaleChange}
         options={options}
+        size="sm"
         aria-label="Select language"
         data-testid={testId}
       />

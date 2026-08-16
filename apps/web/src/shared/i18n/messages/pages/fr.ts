@@ -16,6 +16,7 @@ import { adminBlockedIpsFr } from './admin-blocked-ips/fr';
 import { adminUsersFr } from './admin-users/fr';
 import { adminBulkRewardsFr } from './admin-bulk-rewards/fr';
 import { friendsFr } from './friends/fr';
+import { communityFr } from './community/fr';
 export const fr = {
   admin: {
     title: 'Administration',
@@ -172,30 +173,7 @@ export const fr = {
     ],
     comingSoon: 'Les articles arrivent bientôt !',
   },
-  community: {
-    title: 'Rejoindre la Communauté',
-    subtitle: 'Connectez-vous avec des joueurs du monde entier',
-    description:
-      'Partagez des stratégies, participez à des événements communautaires et faites des amis qui aiment les jeux de société autant que vous.',
-    sections: {
-      discord: {
-        title: 'Discord',
-        description:
-          "Rejoignez notre communauté active sur Discord pour discuter des jeux, signaler des bogues et rencontrer d'autres joueurs.",
-      },
-      twitter: {
-        title: 'Twitter / X',
-        description:
-          'Suivez-nous pour les dernières nouvelles, mises à jour et annonces.',
-      },
-      github: {
-        title: 'Github',
-        description:
-          'Arcadeum est open-source. Contribuez au projet sur Github.',
-      },
-    },
-    comingSoon: 'La communauté arrive bientôt !',
-  },
+  community: communityFr,
   cookies: {
     title: 'Politique de Cookies',
     lastUpdated: 'Dernière mise à jour : 25 mars 2026',

@@ -221,11 +221,11 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   // from the board border + team pill, and the avatar carries its own disc.
   // The md disc is ~72px, so a -36 offset centers it on the corner.
   const cornerAvatar = (
-    <div className="flex flex-col items-stretch absolute top-[-16px] left-[-16px] z-[11] pointer-events-none sb-header-avatar">
+    <div className="flex flex-row items-center justify-center shrink-0 w-8 h-8 rounded-full overflow-hidden sb-header-avatar">
       <InGameAvatar
         playerId={player.playerId}
         name={resolveDisplayName(player.playerId, isMe ? 'You' : 'Unknown')}
-        size="md"
+        size="sm"
         data-testid={`sb-corner-avatar-${player.playerId}`}
       />
     </div>
@@ -285,13 +285,15 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             backdropFilter: 'blur(8px)',
           }}
         >
-          {cornerAvatar}
           <PlayerName
             data-testid="player-board-name"
             color={theme.textColor}
             style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
           >
-            {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
+            {cornerAvatar}
+            <span className="truncate">
+              {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
+            </span>
             {team && <TeamPill team={team} />}
             {idlePlayers.includes(player.playerId) && <IdleBadge />}
           </PlayerName>
@@ -385,17 +387,19 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         }}
         isTargetable={isMyTurn}
       >
-        {cornerAvatar}
         <PlayerName
           data-testid="player-board-name"
           color={theme.textColor}
           style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
         >
-          {t(
-            'games.sea_battle_v1.table.players.opponentBadge' as TranslationKey,
-          )}
-          {' · '}
-          {resolveDisplayName(player.playerId, 'Unknown')}
+          {cornerAvatar}
+          <span className="truncate">
+            {t(
+              'games.sea_battle_v1.table.players.opponentBadge' as TranslationKey,
+            )}
+            {' · '}
+            {resolveDisplayName(player.playerId, 'Unknown')}
+          </span>
           {team && <TeamPill team={team} />}
           {idlePlayers.includes(player.playerId) && <IdleBadge />}
         </PlayerName>

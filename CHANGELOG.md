@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.27] - 2026-08-16
+
+### Fixed
+- replace YAML anchors with plain job conditions
+- remove [skip ci] from version bump so release PR checks run
+
+
 ## [1.25.26] - 2026-08-16
 
 ### Added

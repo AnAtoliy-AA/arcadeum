@@ -225,7 +225,7 @@ function RankRow({
         </div>
       </div>
       <span className="w-[80px] text-[14px] opacity-[0.8] line-clamp-1">
-        {regionLabels[p.region] ?? p.region.toUpperCase()}
+        {p.region ? (regionLabels[p.region] ?? p.region.toUpperCase()) : '—'}
       </span>
       <div className="w-[240px] max-[800px]:hidden">
         <EnergyBar value={p.rating} max={max} />

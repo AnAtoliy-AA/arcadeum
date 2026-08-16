@@ -158,7 +158,10 @@ function Profile({
         {player.elo ? (
           <Stat label="ELO" value={formatNumber(player.elo, locale)} />
         ) : null}
-        <Stat label="Region" value={player.region.toUpperCase()} />
+        <Stat
+          label="Region"
+          value={player.region ? player.region.toUpperCase() : '—'}
+        />
       </div>
       <div className="flex flex-col items-stretch gap-2 w-full max-w-[520px]">
         <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">

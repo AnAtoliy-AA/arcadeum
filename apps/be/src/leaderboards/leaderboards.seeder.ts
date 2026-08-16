@@ -37,16 +37,16 @@ const NAMES = [
   'Hollowind',
   'Tessera',
 ];
-const COUNTRIES: Record<Region, string> = {
-  na: 'us',
-  eu: 'de',
-  sa: 'br',
-  asia: 'kr',
-  oceania: 'au',
-  africa: 'za',
-  me: 'ae',
+const COUNTRIES: Record<Region, string[]> = {
+  na: ['us', 'ca', 'mx'],
+  eu: ['de', 'fr', 'gb', 'pl', 'se'],
+  sa: ['br', 'ar', 'cl'],
+  asia: ['kr', 'jp', 'in', 'cn'],
+  oceania: ['au', 'nz'],
+  africa: ['za', 'ng', 'eg'],
+  me: ['ae', 'sa', 'il'],
 };
-const GAME_TAGS = ['Critical', 'Sea Battle'];
+const GAME_TAGS = ['Critical', 'Sea Battle', 'Chess', 'Checkers', 'Cascade'];
 
 function seededRandom(seed: number) {
   let s = seed || 1;
@@ -244,6 +244,8 @@ function buildEntry(
           : (TIER_VALUES[Math.floor(rng() * 4)] ?? 'silver');
   const region: Region =
     REGION_VALUES[Math.floor(rng() * REGION_VALUES.length)] ?? 'eu';
+  const countries = COUNTRIES[region] ?? ['us'];
+  const countryCode = countries[Math.floor(rng() * countries.length)] ?? 'us';
   const rating = 2800 - rank * 8 + Math.floor(rng() * 30);
   const tagCount = 1 + Math.floor(rng() * 2);
   const gameTags = Array.from(
@@ -258,7 +260,7 @@ function buildEntry(
       (NAMES[(rank - 1) % NAMES.length] ?? 'Player') +
       (rank > NAMES.length ? rank : ''),
     region,
-    countryCode: COUNTRIES[region],
+    countryCode,
     tier,
     rating,
     elo: rating + 80,

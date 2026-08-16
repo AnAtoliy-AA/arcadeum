@@ -295,15 +295,42 @@ export const fr = {
     ticker: { live: 'En direct' },
     modes: {
       all: { name: 'Tous les jeux', subtitle: 'Classement combiné', icon: '◎' },
-      critical: {
-        name: 'Critical',
+      critical_v1: {
+        name: 'Critique',
         subtitle: 'Cartes à enjeux',
         icon: '♠',
       },
-      sea_battle: {
+      sea_battle_v1: {
         name: 'Bataille navale',
         subtitle: 'Stratégie navale',
         icon: '⚓',
+      },
+      texas_holdem_v1: {
+        name: "Texas Hold'em Poker",
+        subtitle: 'Tables de poker',
+        icon: '♣',
+      },
+      glimworm_v1: { name: 'Glimworm', subtitle: 'Arène serpent', icon: '🐍' },
+      tic_tac_toe_v1: {
+        name: 'Morpion',
+        subtitle: 'Morpion classique',
+        icon: '✕',
+      },
+      cascade_v1: {
+        name: 'Cascade',
+        subtitle: 'Cascade de cartes',
+        icon: '▥',
+      },
+      chess_v1: { name: 'Échecs', subtitle: 'Stratégie classique', icon: '♞' },
+      checkers_v1: {
+        name: 'Dames',
+        subtitle: 'Classique de plateau',
+        icon: '●',
+      },
+      cat_dash_v1: {
+        name: 'Cat Dash',
+        subtitle: 'Course de chats',
+        icon: '🐱',
       },
     },
     cup: {

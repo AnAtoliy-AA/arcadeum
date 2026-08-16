@@ -30,13 +30,16 @@ import { RefreshTokenRequestDto } from './dtos/refresh-token-request.dto';
 import { ForgotPasswordDto } from './dtos/forgot-password.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { PasswordResetService } from './services/password-reset.service';
+import { ConfigService } from '@nestjs/config';
+import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
+import {
+  cookieCipherKey,
+  decryptTokenCookie,
+  encryptTokenCookie,
+} from '../common/utils/token-cookie-cipher.util';
 
 const COOKIE_MAX_AGE_15_MIN = 15 * 60 * 1000;
 const COOKIE_MAX_AGE_30_DAYS = 30 * 24 * 60 * 60 * 1000;
-
-function isSecureOrigin(req: Request): boolean {
-  return req.protocol === 'https' || req.get('x-forwarded-proto') === 'https';
-}
 
 function getCookieDomain(req: Request): string | undefined {
   const host = (req.get('host') ?? '').split(':')[0].toLowerCase();
@@ -49,12 +52,12 @@ function getCookieDomain(req: Request): string | undefined {
 function setTokenCookies(
   res: Response,
   req: Request,
+  cookieKey: Buffer,
   accessToken: string,
   accessTokenExpiresAt: Date | null,
   refreshToken: string,
   refreshTokenExpiresAt: Date,
 ): void {
-  const secure = isSecureOrigin(req);
   const domain = getCookieDomain(req);
   const maxAgeAccess = accessTokenExpiresAt
     ? Math.min(
@@ -65,19 +68,24 @@ function setTokenCookies(
   const maxAgeRefresh =
     refreshTokenExpiresAt.getTime() - Date.now() || COOKIE_MAX_AGE_30_DAYS;
 
-  // lgtm[js/clear-text-storage-sensitive-information]
-  res.cookie('access_token', accessToken, {
+  // Both cookies carry bearer credentials, so they must always be
+  // TLS-only — a conditional `secure` would leave the token transmittable
+  // in clear text over plain HTTP. Browsers treat http://localhost as a
+  // secure context, so local dev keeps working.
+  //
+  // The values are AES-GCM encrypted before storage so the credentials
+  // are never persisted in clear text (CWE-312).
+  res.cookie('access_token', encryptTokenCookie(accessToken, cookieKey), {
     httpOnly: true,
-    secure,
+    secure: true,
     sameSite: 'lax',
     ...(domain ? { domain } : {}),
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
-  // lgtm[js/clear-text-storage-sensitive-information]
-  res.cookie('refresh_token', refreshToken, {
+  res.cookie('refresh_token', encryptTokenCookie(refreshToken, cookieKey), {
     httpOnly: true,
-    secure,
+    secure: true,
     sameSite: 'lax',
     ...(domain ? { domain } : {}),
     path: '/',
@@ -86,12 +94,13 @@ function setTokenCookies(
 }
 
 function clearTokenCookies(res: Response, req: Request): void {
-  const secure = isSecureOrigin(req);
   const domain = getCookieDomain(req);
   const options = {
     path: '/',
     httpOnly: true,
-    secure,
+    // Must match the attributes the cookies were set with, otherwise
+    // browsers won't match them for deletion.
+    secure: true,
     sameSite: 'lax' as const,
     ...(domain ? { domain } : {}),
   };
@@ -101,10 +110,15 @@ function clearTokenCookies(res: Response, req: Request): void {
 
 @Controller('auth')
 export class AuthController {
+  private readonly cookieKey: Buffer;
+
   constructor(
     private readonly authService: AuthService,
     private readonly passwordReset: PasswordResetService,
-  ) {}
+    configService: ConfigService,
+  ) {
+    this.cookieKey = cookieCipherKey(resolveJwtSecret(configService));
+  }
 
   @Post('token')
   @Throttle({ auth: { limit: 10, ttl: 60_000 } })
@@ -128,6 +142,7 @@ export class AuthController {
     setTokenCookies(
       res,
       req,
+      this.cookieKey,
       result.accessToken,
       null,
       result.refreshToken ?? '',
@@ -138,8 +153,8 @@ export class AuthController {
 
   @Post('register')
   @Throttle({ auth: { limit: 5, ttl: 60_000 } })
-  register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  register(@Body() dto: RegisterDto, @Req() req: Request) {
+    return this.authService.register(dto, req.ip);
   }
 
   @Get('check/username/:username')
@@ -169,10 +184,11 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthTokensResponse> {
-    const result = await this.authService.login(dto);
+    const result = await this.authService.login(dto, req.ip);
     setTokenCookies(
       res,
       req,
+      this.cookieKey,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,
@@ -188,10 +204,11 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthTokensResponse> {
-    const result = await this.authService.loginWithOAuth(dto);
+    const result = await this.authService.loginWithOAuth(dto, req.ip);
     setTokenCookies(
       res,
       req,
+      this.cookieKey,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,
@@ -207,14 +224,21 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthTokensResponse> {
+    const cookieToken = (req.cookies as Record<string, string>)?.refresh_token;
+    // Cookies written before this feature are plain text; accept them so
+    // existing sessions survive the deploy and get re-encrypted on next
+    // refresh.
     const rawToken =
       dto.refreshToken ||
-      (req.cookies as Record<string, string>)?.refresh_token ||
+      (cookieToken
+        ? (decryptTokenCookie(cookieToken, this.cookieKey) ?? cookieToken)
+        : '') ||
       '';
     const result = await this.authService.refreshToken(rawToken);
     setTokenCookies(
       res,
       req,
+      this.cookieKey,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,

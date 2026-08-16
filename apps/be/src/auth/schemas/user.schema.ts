@@ -77,6 +77,14 @@ export class User {
   @Prop({ type: String, default: null })
   equippedBackgroundId?: string | null;
 
+  /**
+   * ISO 3166-1 alpha-2 country code, resolved from the user's IP at
+   * registration/login. Used by the leaderboard to show the real country
+   * flag and region. Null until the first successful geo lookup.
+   */
+  @Prop({ type: String, default: null })
+  countryCode?: string | null;
+
   @Prop({ type: Boolean, default: false })
   isBlocked!: boolean;
 

@@ -37,6 +37,7 @@ import { ReferralService } from '../referrals/referral.service';
 import { InventoryService } from '../shop/services/inventory.service';
 import { SignupRewardService } from './services';
 import { ModuleRef } from '@nestjs/core';
+import { GeoLookupService } from '../common/geo/geo-lookup.service';
 
 export type {
   OAuthTokenResponse,
@@ -57,6 +58,7 @@ export class AuthService {
     private readonly signupReward: SignupRewardService,
     private readonly moduleRef: ModuleRef,
     private readonly lockoutService: LoginLockoutService,
+    private readonly geoLookup: GeoLookupService,
   ) {}
 
   private async grantStarterItems(userId: string): Promise<void> {
@@ -65,6 +67,28 @@ export class AuthService {
       await inv.grantStarter(userId);
     } catch {
       // ShopInventoryBootstrap is the safety net.
+    }
+  }
+
+  /**
+   * Best-effort: resolve the country from the request IP and persist it on
+   * the user so the leaderboard can show a real flag/region. Never blocks
+   * or fails the auth flow — failures are swallowed.
+   */
+  private async attachCountryFromIp(
+    userId: string,
+    ip: string | null | undefined,
+  ): Promise<void> {
+    if (!ip) return;
+    try {
+      const countryCode = await this.geoLookup.getCountry(ip);
+      if (!countryCode) return;
+      await this.userModel.updateOne(
+        { _id: userId },
+        { $set: { countryCode } },
+      );
+    } catch {
+      // Non-critical
     }
   }
 
@@ -77,7 +101,10 @@ export class AuthService {
     return this.googleOAuth.exchangeCode(params);
   }
 
-  async register(data: RegisterDto): Promise<AuthUserProfile> {
+  async register(
+    data: RegisterDto,
+    ip?: string | null,
+  ): Promise<AuthUserProfile> {
     const email = data.email.toLowerCase();
     const username = data.username.trim();
     const usernameNormalized = username.toLowerCase();
@@ -117,6 +144,8 @@ export class AuthService {
     await this.grantStarterItems((created as UserDocument).id as string);
     await this.signupReward.grant((created as UserDocument).id as string);
 
+    void this.attachCountryFromIp((created as UserDocument).id as string, ip);
+
     return buildAuthUserProfile(created);
   }
 
@@ -142,7 +171,7 @@ export class AuthService {
     return { available: !exists };
   }
 
-  async login(data: LoginDto): Promise<AuthTokensResponse> {
+  async login(data: LoginDto, ip?: string | null): Promise<AuthTokensResponse> {
     const email = data.email.toLowerCase();
 
     if (await this.lockoutService.isLocked(email)) {
@@ -178,6 +207,11 @@ export class AuthService {
 
     await this.lockoutService.recordSuccess(email);
 
+    // Existing accounts predate country capture — backfill on login.
+    if (!user.countryCode) {
+      void this.attachCountryFromIp(String(user.id), ip);
+    }
+
     const payload: { sub: string; email: string; username: string } = {
       sub: String(user.id),
       email: user.email,
@@ -199,7 +233,10 @@ export class AuthService {
     };
   }
 
-  async loginWithOAuth(data: OAuthLoginDto): Promise<AuthTokensResponse> {
+  async loginWithOAuth(
+    data: OAuthLoginDto,
+    ip?: string | null,
+  ): Promise<AuthTokensResponse> {
     if (data.provider !== 'google') {
       throw new UnauthorizedException('Unsupported OAuth provider');
     }
@@ -230,6 +267,10 @@ export class AuthService {
 
     if (user.deletedAt) {
       throw new UnauthorizedException('Account has been removed');
+    }
+
+    if (!user.countryCode) {
+      void this.attachCountryFromIp(String(user.id), ip);
     }
 
     const payload: { sub: string; email: string; username: string } = {

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.34] - 2026-08-16
+
+### Added
+- add powerup replay, spectator visibility, and SCSS grid layout
+
+### Improved
+- delegate cell hover events and isolate sunkCellSet to eliminate redundant board rerenders
+- replace O(N) player finds with aliveMap in team-rotation utils and engine
+- eliminate O(N) finds with Maps/Sets, structuredClone, and memoize hot paths
+
+### Refactored
+- clean up dead UI components and optimize rendering
+
+
 ## [1.25.33] - 2026-08-16
 
 ### Added

@@ -90,17 +90,33 @@ export function sanitizeSeaBattleState(
   state: SeaBattleState,
   playerId: string,
 ): Partial<SeaBattleState> {
-  const sanitized = JSON.parse(JSON.stringify(state)) as SeaBattleState;
+  // structuredClone is faster than JSON.parse/stringify and correctly handles
+  // all nested types (Maps, Sets, typed arrays, etc.).
+  const sanitized: SeaBattleState = structuredClone(state);
 
+  // Build a viewer team membership Set once for O(1) lookups below.
   const viewerTeam = sanitized.teams?.find((t) =>
     t.playerIds.includes(playerId),
   );
   const viewerTeamId = viewerTeam?.id;
+  const viewerTeamMemberSet: Set<string> = viewerTeam
+    ? new Set(viewerTeam.playerIds)
+    : new Set();
+
+  // Build team-id lookup map for log filtering — avoids teams.find() per log.
+  const playerTeamIdMap = new Map<string, string>();
+  if (sanitized.teams) {
+    for (const team of sanitized.teams) {
+      for (const pid of team.playerIds) {
+        playerTeamIdMap.set(pid, team.id);
+      }
+    }
+  }
 
   for (const p of sanitized.players) {
     if (p.playerId === playerId) continue;
 
-    const sameTeam = !!viewerTeam && viewerTeam.playerIds.includes(p.playerId);
+    const sameTeam = viewerTeamMemberSet.has(p.playerId);
     const reveal = sameTeam && sanitized.hideShipsFromTeammates !== true;
 
     if (!reveal) {
@@ -125,23 +141,15 @@ export function sanitizeSeaBattleState(
     }
     if (log.scope === 'team') {
       if (!viewerTeamId) return false;
-      const senderTeam = sanitized.teams?.find((t) =>
-        t.playerIds.includes(log.senderId ?? ''),
-      );
-      return senderTeam?.id === viewerTeamId;
+      return playerTeamIdMap.get(log.senderId ?? '') === viewerTeamId;
     }
     return true;
   });
 
   const isPlaying = sanitized.players.some((p) => p.playerId === playerId);
 
-  const isTeammateOf = (otherId: string): boolean => {
-    if (!viewerTeamId) return false;
-    const otherTeam = sanitized.teams?.find((t) =>
-      t.playerIds.includes(otherId),
-    );
-    return otherTeam?.id === viewerTeamId;
-  };
+  const isTeammateOf = (otherId: string): boolean =>
+    !!viewerTeamId && playerTeamIdMap.get(otherId) === viewerTeamId;
 
   // Spectators (watchers not playing on an active opponent board) can see all superpower effects.
   // Active players only see sonar/radar if they are the attacker or a teammate of the attacker.

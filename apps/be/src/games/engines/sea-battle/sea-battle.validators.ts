@@ -156,11 +156,12 @@ function validateBatchPlacement(
   payload: BatchPlacementPayload,
 ): boolean {
   const activeShips = getActiveShips(state.shipCount);
-  const activeShipIds = new Set(activeShips.map((s) => s.id));
   const gSize = state.gridSize ?? BOARD_SIZE;
 
   if (payload.ships.length !== activeShips.length) return false;
 
+  // Pre-build O(1) lookup map to avoid O(N) activeShips.find() per ship entry.
+  const activeShipMap = new Map(activeShips.map((s) => [s.id, s]));
   const placedIds = new Set<string>();
   const virtualBoard: CellState[][] = Array.from({ length: gSize }, () =>
     Array<CellState>(gSize).fill(CELL_STATE.EMPTY),
@@ -179,10 +180,10 @@ function validateBatchPlacement(
 
   for (const ship of payload.ships) {
     if (!ship.shipId || !ship.cells || !Array.isArray(ship.cells)) return false;
-    if (!activeShipIds.has(ship.shipId)) return false;
+    const shipConfig = activeShipMap.get(ship.shipId);
+    if (!shipConfig) return false;
     if (placedIds.has(ship.shipId)) return false;
 
-    const shipConfig = activeShips.find((s) => s.id === ship.shipId)!;
     if (ship.cells.length !== shipConfig.size) return false;
 
     if (!areCellsValid(ship.cells)) return false;
@@ -213,7 +214,7 @@ function validateBatchPlacement(
     placedIds.add(ship.shipId);
   }
 
-  return placedIds.size === activeShipIds.size;
+  return placedIds.size === activeShipMap.size;
 }
 
 export function validateAutoPlace(state: SeaBattleState): boolean {

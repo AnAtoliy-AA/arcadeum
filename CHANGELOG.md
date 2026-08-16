@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.32] - 2026-08-16
+
+### Fixed
+- add missing communityBy import to by.ts
+
+
 ## [1.25.31] - 2026-08-16
 
 ### Added

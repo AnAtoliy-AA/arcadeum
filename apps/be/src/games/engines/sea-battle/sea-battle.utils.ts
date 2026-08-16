@@ -133,6 +133,8 @@ export function sanitizeSeaBattleState(
     return true;
   });
 
+  const isPlaying = sanitized.players.some((p) => p.playerId === playerId);
+
   const isTeammateOf = (otherId: string): boolean => {
     if (!viewerTeamId) return false;
     const otherTeam = sanitized.teams?.find((t) =>
@@ -141,7 +143,10 @@ export function sanitizeSeaBattleState(
     return otherTeam?.id === viewerTeamId;
   };
 
+  // Spectators (watchers not playing on an active opponent board) can see all superpower effects.
+  // Active players only see sonar/radar if they are the attacker or a teammate of the attacker.
   if (
+    isPlaying &&
     sanitized.lastSonar &&
     sanitized.lastSonar.attackerId !== playerId &&
     !isTeammateOf(sanitized.lastSonar.attackerId)
@@ -149,6 +154,7 @@ export function sanitizeSeaBattleState(
     delete sanitized.lastSonar;
   }
   if (
+    isPlaying &&
     sanitized.lastRadar &&
     sanitized.lastRadar.attackerId !== playerId &&
     !isTeammateOf(sanitized.lastRadar.attackerId)

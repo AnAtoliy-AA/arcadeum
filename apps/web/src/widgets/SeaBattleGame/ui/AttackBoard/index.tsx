@@ -117,27 +117,33 @@ export const AttackBoard = memo(function AttackBoard({
   const effectiveLastSonar = snapshot?.lastSonar ?? cachedLastSonar;
   const effectiveLastRadar = snapshot?.lastRadar ?? cachedLastRadar;
 
-  // Scan wave: show all ships for a limited duration when battle starts (once only)
-  const SW_KEY = 'sb-scanwave-shown';
+  // Scan wave: show all ships for a limited duration when battle starts or room is re-entered
   const [scanWaveActive, setScanWaveActive] = useState(false);
   const scanWaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const playedScanWaveRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (snapshot?.phase === 'lobby' || snapshot?.phase === 'placement') {
-      sessionStorage.removeItem(SW_KEY);
+      playedScanWaveRef.current = null;
       if (scanWaveTimerRef.current) {
         clearTimeout(scanWaveTimerRef.current);
         scanWaveTimerRef.current = null;
       }
-      setTimeout(() => setScanWaveActive(false), 0);
+      setScanWaveActive(false);
       return;
     }
     const sw = snapshot?.lastScanWave;
     if (!sw || snapshot?.phase !== 'battle') return;
-    if (sessionStorage.getItem(SW_KEY)) return;
 
-    sessionStorage.setItem(SW_KEY, '1');
-    setTimeout(() => setScanWaveActive(true), 0);
+    // Trigger animation when entering battle or if lastScanWave changes
+    const waveId = JSON.stringify(sw.cells.map((c) => c.playerId));
+    if (playedScanWaveRef.current === waveId) return;
+
+    playedScanWaveRef.current = waveId;
+    setScanWaveActive(true);
+    if (scanWaveTimerRef.current) {
+      clearTimeout(scanWaveTimerRef.current);
+    }
     scanWaveTimerRef.current = setTimeout(() => {
       setScanWaveActive(false);
       scanWaveTimerRef.current = null;

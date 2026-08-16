@@ -26,6 +26,7 @@ import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { InGameAvatar } from '@/features/games/ui';
+import { useShowRulesOnRoomEntry } from '@/shared/hooks/useShowRulesOnRoomEntry';
 
 import { SeaBattleModals } from './SeaBattleModals';
 import { SeaBattleBoards } from './SeaBattleBoards';
@@ -61,11 +62,14 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   // Rules visibility logic
   const [showRules, setShowRules] = useState(false);
   const [lastIsLobby, setLastIsLobby] = useState(false);
+  const { showRulesOnRoomEntry } = useShowRulesOnRoomEntry();
 
   // Sync showRules with isLobby change (auto-show rules when entering lobby)
   if (isLobby && !lastIsLobby) {
     setLastIsLobby(true);
-    setShowRules(true);
+    if (showRulesOnRoomEntry) {
+      setShowRules(true);
+    }
   } else if (!isLobby && lastIsLobby) {
     setLastIsLobby(false);
   }

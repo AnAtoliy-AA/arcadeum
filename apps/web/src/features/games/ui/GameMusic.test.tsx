@@ -8,6 +8,10 @@ import {
 } from '@testing-library/react';
 import { GameMusic } from './GameMusic';
 import { trackIndexForGame, FALLBACK_TRACKS } from './GameMusicUtils';
+import {
+  loadStoredSettings,
+  saveStoredSettings,
+} from '@/shared/lib/settings-storage';
 
 vi.mock('./GameMusicUtils', async (importOriginal) => {
   const mod = await importOriginal<typeof import('./GameMusicUtils')>();
@@ -21,8 +25,12 @@ const render = (ui: React.ReactElement) => rtlRender(ui);
 
 // Controllable mock of the music setting.
 let musicEnabled = false;
+export const setMusicEnabledMock = vi.fn();
 vi.mock('@/shared/hooks/useMusicSetting', () => ({
-  useMusicSetting: () => ({ musicEnabled, setMusicEnabled: vi.fn() }),
+  useMusicSetting: () => ({
+    musicEnabled,
+    setMusicEnabled: setMusicEnabledMock,
+  }),
 }));
 
 // Translation is keyed straight through so we can assert on the label keys.
@@ -96,6 +104,8 @@ function flushRaf(maxFrames = 20) {
 
 beforeEach(() => {
   musicEnabled = false;
+  setMusicEnabledMock.mockClear();
+  window.localStorage.clear();
   created.length = 0;
   rafQueue.length = 0;
   rafId = 0;
@@ -118,9 +128,6 @@ afterEach(() => {
 });
 
 const showPlayer = async () => {
-  act(() => {
-    window.dispatchEvent(new CustomEvent('arcadeum:toggle-music'));
-  });
   await flushPromises();
   flushAct();
 };
@@ -149,6 +156,54 @@ describe('GameMusic', () => {
     expect(mainAudioEl().volume).toBeGreaterThan(0);
     expect(mainAudioEl().volume).toBeLessThanOrEqual(1);
     expect(mainAudioEl().src).toContain('/music/');
+  });
+
+  it('disables music when the player is closed', async () => {
+    musicEnabled = true;
+    render(<GameMusic gameId="sea_battle_v1" />);
+    await showPlayer();
+    expect(screen.getByTestId('game-music-player')).toBeTruthy();
+    fireEvent.click(screen.getByTestId('game-music-close'));
+    expect(setMusicEnabledMock).toHaveBeenCalledWith(false);
+  });
+
+  it('restores the last played track from persisted state', async () => {
+    saveStoredSettings({ musicLastPlayedIndex: 2 });
+    musicEnabled = true;
+    render(<GameMusic gameId="sea_battle_v1" />);
+    await showPlayer();
+    expect(mainAudioEl().src).toContain(FALLBACK_TRACKS[2].src);
+  });
+
+  it('persists the last played track index when changing tracks', async () => {
+    musicEnabled = true;
+    render(<GameMusic gameId="sea_battle_v1" />);
+    await showPlayer();
+    fireEvent.click(screen.getByTestId('game-music-next'));
+    flushAct();
+    const saved = loadStoredSettings().musicLastPlayedIndex;
+    expect(typeof saved).toBe('number');
+    expect(FALLBACK_TRACKS[saved!]?.src).toBe(mainAudioEl().src);
+  });
+
+  it('restores unchecked tracks after a reload', async () => {
+    saveStoredSettings({
+      musicEnabledTracks: FALLBACK_TRACKS.map((_, i) => i).filter(
+        (i) => i !== 4,
+      ),
+    });
+    musicEnabled = true;
+    render(<GameMusic gameId="sea_battle_v1" />);
+    await showPlayer();
+    fireEvent.click(screen.getByTestId('game-music-playlist-toggle'));
+    const unchecked = screen.getByTestId(
+      'game-music-track-toggle-4',
+    ) as HTMLInputElement;
+    expect(unchecked.checked).toBe(false);
+    const checked = screen.getByTestId(
+      'game-music-track-toggle-0',
+    ) as HTMLInputElement;
+    expect(checked.checked).toBe(true);
   });
 
   it('starts at the default volume and applies slider changes to the audio', async () => {

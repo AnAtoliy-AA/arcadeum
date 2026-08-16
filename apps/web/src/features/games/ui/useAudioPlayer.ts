@@ -29,7 +29,6 @@ export interface AudioPlayerState {
   repeat: RepeatMode;
   miniMode: boolean;
   playlistOpen: boolean;
-  visible: boolean;
   currentTime: number;
   duration: number;
   trackDurations: Record<string, number>;
@@ -52,7 +51,6 @@ export interface AudioPlayerState {
   reorderTracks: (newTracks: readonly MusicTrack[]) => void;
   setMiniMode: React.Dispatch<React.SetStateAction<boolean>>;
   setPlaylistOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   closePlayer: () => void;
   seekTo: (time: number) => void;
   skipForward: () => void;
@@ -60,7 +58,7 @@ export interface AudioPlayerState {
 }
 
 export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
-  const { musicEnabled } = useMusicSetting();
+  const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const audioARef = useRef<HTMLAudioElement | null>(null);
   const audioBRef = useRef<HTMLAudioElement | null>(null);
   const activeSlotRef = useRef<'A' | 'B'>('A');
@@ -74,7 +72,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   const [repeat, setRepeat] = usePersistedState('musicRepeat', 'off');
   const [miniMode, setMiniMode] = useState(false);
   const [playlistOpen, setPlaylistOpen] = useState(false);
-  const [visible, setVisible] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [trackDurations, setTrackDurations] = useState<Record<string, number>>(
@@ -90,16 +87,10 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const tracksLoadedRef = useRef(false);
 
   useEffect(() => {
-    const handleToggle = () => setVisible((v) => !v);
-    window.addEventListener('arcadeum:toggle-music', handleToggle);
-    return () =>
-      window.removeEventListener('arcadeum:toggle-music', handleToggle);
-  }, []);
-
-  useEffect(() => {
-    if (!musicEnabled || !visible) return;
+    if (!musicEnabled) return;
     let dead = false;
     fetchTracks()
       .then((data) => {
@@ -110,17 +101,31 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
           d = order.map((i) => data[i]).filter(Boolean);
           if (d.length !== data.length) d = data;
         }
-        setTracks(d);
-        setIndex(trackIndexForGame(gameId, d.length));
         const saved = loadStoredSettings().musicEnabledTracks;
-        const savedLength = loadStoredSettings().musicTrackOrder?.length;
-        setEnabledTracks(
-          saved?.length && savedLength === d.length
-            ? new Set(saved.filter((i) => i < d.length))
-            : new Set(d.map((_, i) => i)),
+        const validSaved =
+          saved && saved.length > 0
+            ? saved.filter((i) => i >= 0 && i < d.length)
+            : null;
+        const initialEnabled = new Set(
+          validSaved && validSaved.length > 0 ? validSaved : d.map((_, i) => i),
         );
+        const savedIndex = loadStoredSettings().musicLastPlayedIndex;
+        let baseIndex =
+          typeof savedIndex === 'number' &&
+          savedIndex >= 0 &&
+          savedIndex < d.length
+            ? savedIndex
+            : trackIndexForGame(gameId, d.length);
+        let safety = d.length;
+        while (!initialEnabled.has(baseIndex) && safety-- > 0) {
+          baseIndex = (baseIndex + 1) % d.length;
+        }
+        setTracks(d);
+        setIndex(baseIndex);
+        setEnabledTracks(initialEnabled);
         setShuffleOrder(shuffleArray(d.length));
         setLoading(false);
+        tracksLoadedRef.current = true;
       })
       .catch(() => {
         if (!dead) {
@@ -131,7 +136,12 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     return () => {
       dead = true;
     };
-  }, [gameId, musicEnabled, visible]);
+  }, [gameId, musicEnabled]);
+
+  useEffect(() => {
+    if (!tracksLoadedRef.current) return;
+    saveStoredSettings({ musicLastPlayedIndex: index });
+  }, [index]);
 
   const volumeRef = useRef(volume);
   const enabledTracksRef = useRef(enabledTracks);
@@ -189,7 +199,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     audioRef.current = newAudio;
   }, []);
   useEffect(() => {
-    if (!musicEnabled || !visible) return;
+    if (!musicEnabled) return;
     if (!audioARef.current) {
       audioARef.current = new Audio();
       audioARef.current.preload = 'metadata';
@@ -265,7 +275,7 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
         events.forEach(([evt, fn]) => a.removeEventListener(evt, fn));
       });
     };
-  }, [musicEnabled, visible, index, crossfadeTo, track.src]);
+  }, [musicEnabled, index, crossfadeTo, track.src]);
   useEffect(() => {
     return () => {
       cancelAnimationFrame(crossfadeRafRef.current);
@@ -280,17 +290,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
       audioRef.current = null;
     };
   }, []);
-  useEffect(() => {
-    if (visible) return;
-    cancelAnimationFrame(crossfadeRafRef.current);
-    [audioARef.current, audioBRef.current].forEach((a) => {
-      if (a) {
-        a.pause();
-        a.src = '';
-      }
-    });
-    audioRef.current = null;
-  }, [visible]);
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
@@ -444,11 +443,10 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     if (audio && !audio.paused) {
       audio.pause();
     }
-    setVisible(false);
-  }, []);
+    setMusicEnabled(false);
+  }, [setMusicEnabled]);
   usePlayerKeyboard({
     enabled: musicEnabled,
-    visible,
     audioRef,
     volumeRef,
     togglePlay,
@@ -466,7 +464,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     repeat,
     miniMode,
     playlistOpen,
-    visible,
     currentTime,
     duration,
     trackDurations,
@@ -489,7 +486,6 @@ export function useAudioPlayer(gameId?: string | null): AudioPlayerState {
     reorderTracks,
     setMiniMode,
     setPlaylistOpen,
-    setVisible,
     closePlayer,
     seekTo,
     skipForward,

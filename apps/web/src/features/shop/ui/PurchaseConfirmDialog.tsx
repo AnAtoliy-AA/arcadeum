@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@arcadeum/ui';
+import { Button, Typography } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { DialogShell } from './dialogShell';
@@ -122,16 +122,20 @@ function PurchaseConfirmDialogInner({
         testId="purchase-confirm-dialog"
       >
         <div className="flex flex-col gap-3 items-center">
-          <span className="text-[48px]">✓</span>
-          <span className="text-[24px] font-bold">
+          <Typography uiSize="3xl">✓</Typography>
+          <Typography uiSize="2xl" weight="700">
             {labels.successTitle ?? 'Equipped'}
-          </span>
-          <span className="text-[16px] text-[var(--colorPress)] text-center">
+          </Typography>
+          <Typography
+            uiSize="md"
+            color="var(--colorPress)"
+            className="text-center"
+          >
             {(labels.successBody ?? '{name} is now equipped.').replace(
               '{name}',
               itemName,
             )}
-          </span>
+          </Typography>
           <Button onClick={onClose} data-testid="purchase-success-close">
             {labels.close ?? labels.cancel}
           </Button>
@@ -143,32 +147,37 @@ function PurchaseConfirmDialogInner({
   return (
     <DialogShell open={open} onClose={onClose} testId="purchase-confirm-dialog">
       <div className="flex flex-col items-stretch gap-3">
-        <span className="text-[24px] font-bold">{labels.title}</span>
+        <Typography uiSize="2xl" weight="700">
+          {labels.title}
+        </Typography>
         <div className="flex flex-col items-stretch gap-2">
-          <span className="text-[20px] font-semibold">{itemName}</span>
-          <span className="text-[16px] text-[var(--colorPress)]">
+          <Typography uiSize="xl" weight="600">
+            {itemName}
+          </Typography>
+          <Typography uiSize="md" color="var(--colorPress)">
             {itemDesc}
-          </span>
+          </Typography>
         </div>
         <div className="flex flex-row gap-3 items-center justify-between">
-          <span className="text-[18px] font-semibold">
+          <Typography uiSize="lg" weight="600">
             {item.priceAmount === 0
               ? labels.free
               : `${item.priceAmount} ${item.priceCurrency}`}
-          </span>
-          <span className="text-[14px] text-[var(--colorPress)]">
+          </Typography>
+          <Typography uiSize="sm" color="var(--colorPress)">
             {labels.yourBalance
               .replace('{amount}', formatNumber(balanceForCurrency, locale))
               .replace('{currency}', item.priceCurrency)}
-          </span>
+          </Typography>
         </div>
         {errorMsg ? (
-          <span
-            className="text-[var(--danger)] text-[14px]"
+          <Typography
+            color="var(--danger)"
+            uiSize="sm"
             data-testid="purchase-error"
           >
             {errorMsg}
-          </span>
+          </Typography>
         ) : null}
         <div className="flex flex-row items-stretch gap-3 justify-end">
           <Button variant="outline" onClick={onClose} disabled={isPending}>

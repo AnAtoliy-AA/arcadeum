@@ -12,6 +12,7 @@ export type StoredSettings = {
   musicRepeat?: 'off' | 'all' | 'one';
   musicEnabledTracks?: number[];
   musicTrackOrder?: number[];
+  musicLastPlayedIndex?: number;
   aiDifficulty?: 'easy' | 'medium' | 'hard';
 };
 
@@ -88,6 +89,10 @@ export function loadStoredSettings(): StoredSettings {
       parsed.musicTrackOrder.every((t) => typeof t === 'number')
     ) {
       settings.musicTrackOrder = parsed.musicTrackOrder;
+    }
+
+    if (typeof parsed.musicLastPlayedIndex === 'number') {
+      settings.musicLastPlayedIndex = parsed.musicLastPlayedIndex;
     }
 
     if (

@@ -42,4 +42,12 @@ describe('settings-storage', () => {
     window.localStorage.setItem(SETTINGS_STORAGE_KEY, 'invalid');
     expect(loadStoredSettings()).toEqual({});
   });
+
+  it('saves and loads the music last-played index', () => {
+    saveStoredSettings({ musicLastPlayedIndex: 4 });
+    expect(loadStoredSettings().musicLastPlayedIndex).toBe(4);
+
+    saveStoredSettings({ musicLastPlayedIndex: 0 });
+    expect(loadStoredSettings().musicLastPlayedIndex).toBe(0);
+  });
 });

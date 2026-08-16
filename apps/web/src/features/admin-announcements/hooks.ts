@@ -15,7 +15,7 @@ import {
   type CreateAnnouncementBody,
   type UpdateAnnouncementBody,
 } from './api';
-import { ACTIVE_ANNOUNCEMENT_REFRESH_KEY } from '@/widgets/AnnouncementBanner/hooks/useActiveAnnouncement';
+import { ACTIVE_ANNOUNCEMENT_REFRESH_KEY } from '@/widgets/AnnouncementBanner/api';
 
 export const ADMIN_ANNOUNCEMENTS_REFRESH_KEY = 'admin-announcements';
 

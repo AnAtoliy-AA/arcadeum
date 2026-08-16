@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { appConfig } from '@/shared/config/app-config';
 import { Header } from '@/widgets/header/ui/Header';
 import { AnnouncementBanner } from '@/widgets/AnnouncementBanner/ui/AnnouncementBanner';
+import { getActiveAnnouncement } from '@/widgets/AnnouncementBanner/server/getActiveAnnouncement';
 import { LayoutFooter } from '@/widgets/footer';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa/PWAContext';
@@ -106,11 +107,15 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const [authToken, seoMessages, initialMessages] = await Promise.all([
-    getServerAccessToken(),
-    loadSeo(locale),
-    getInitialTranslations(locale),
-  ]);
+  const [authToken, seoMessages, initialMessages, announcement] =
+    await Promise.all([
+      getServerAccessToken(),
+      loadSeo(locale),
+      getInitialTranslations(locale),
+      // Fetched in parallel with the layout deps and rendered into the
+      // initial HTML so the banner never appears after first paint (CLS).
+      getActiveAnnouncement(locale),
+    ]);
 
   const localeUrl = `${appConfig.siteUrl}/${locale}`;
   const routes = buildRoutes(locale);
@@ -161,7 +166,7 @@ export default async function LocaleLayout({
         <PWAProvider>
           <SoundProvider>
             <LayoutShell>
-              <AnnouncementBanner />
+              <AnnouncementBanner initialAnnouncement={announcement} />
               <Header />
               <main id="main-content" className="layout-main">
                 <Suspense>{children}</Suspense>

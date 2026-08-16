@@ -1,6 +1,7 @@
 'use client';
 
 import { cx } from '@arcadeum/ui/utils/cx';
+import { Typography } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
@@ -108,16 +109,29 @@ export function ShopSlotRing({
                 {item ? (
                   <ItemAsset item={item} size={32} />
                 ) : (
-                  <span className="text-[20px] text-[#6b7280]">·</span>
+                  <Typography uiSize="xl" color="#6b7280">
+                    ·
+                  </Typography>
                 )}
               </div>
               <div className="flex flex-col items-stretch flex-1 min-w-0 gap-2">
-                <span className="text-[40px] tracking-[1.2px] uppercase font-extrabold text-[#94a3b8]">
+                <Typography
+                  uiSize="xs"
+                  variant="label"
+                  color="#94a3b8"
+                  tracking="sm"
+                  className="uppercase"
+                >
                   {slotLabels.label}
-                </span>
-                <span className="text-[12px] font-bold text-[#f5f7ff] line-clamp-1">
+                </Typography>
+                <Typography
+                  uiSize="xs"
+                  weight="700"
+                  color="#f5f7ff"
+                  className="line-clamp-1"
+                >
                   {itemName}
-                </span>
+                </Typography>
               </div>
             </SlotTile>
           );

@@ -81,6 +81,7 @@ export const tealDarkTokens: ThemeTokens = {
   glass: {
     background: 'rgba(4, 15, 15, 0.72)',
     border: 'rgba(45, 212, 191, 0.12)',
+    borderStrong: 'rgba(45, 212, 191, 0.35)',
   },
   copyNotice: '#2dd4bf',
 };
@@ -166,6 +167,7 @@ export const tealLightTokens: ThemeTokens = {
   glass: {
     background: 'rgba(255, 255, 255, 0.72)',
     border: 'rgba(45, 212, 191, 0.15)',
+    borderStrong: 'rgba(45, 212, 191, 0.4)',
   },
   copyNotice: '#0d9488',
 };

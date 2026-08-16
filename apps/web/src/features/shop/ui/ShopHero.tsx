@@ -3,7 +3,7 @@
 import { useMemo, useTransition } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '@arcadeum/ui';
+import { Button, Typography } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
@@ -215,12 +215,15 @@ export function ShopHero({
                   className="flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
                   style={{ backgroundColor: accent }}
                 />
-                <span
-                  className="text-[11px] tracking-[1.5px] uppercase font-extrabold"
-                  style={{ color: accent }}
+                <Typography
+                  uiSize="xs"
+                  weight="800"
+                  color={accent}
+                  tracking="lg"
+                  className="uppercase"
                 >
                   {labels.tag}
-                </span>
+                </Typography>
               </HeroTag>
               {equipped ? (
                 <HeroTag
@@ -228,19 +231,25 @@ export function ShopHero({
                   borderColor={`${accent}55`}
                   data-testid="shop-hero-equipped-chip"
                 >
-                  <span
-                    className="text-[11px] tracking-[1.5px] uppercase font-extrabold"
-                    style={{ color: accent }}
+                  <Typography
+                    uiSize="xs"
+                    weight="800"
+                    color={accent}
+                    tracking="lg"
+                    className="uppercase"
                   >
                     {labels.equipped}
-                  </span>
+                  </Typography>
                 </HeroTag>
               ) : null}
             </div>
 
             <div className="flex flex-col items-stretch gap-1">
-              <span
-                className="text-[48px] font-black tracking-[-1px] text-[#f5f7ff]"
+              <Typography
+                uiSize="xl"
+                variant="heading"
+                color="#f5f7ff"
+                className="max-w-[640px]"
                 style={{
                   backgroundImage: `linear-gradient(135deg, ${accent}, #ffffff)`,
                   WebkitBackgroundClip: 'text',
@@ -249,10 +258,10 @@ export function ShopHero({
                 }}
               >
                 {itemName}
-              </span>
-              <span className="text-[18px] text-[#94a3b8] max-w-[640px]">
+              </Typography>
+              <Typography uiSize="lg" color="#94a3b8" className="max-w-[640px]">
                 {itemDesc} {labels.bodySuffix}
-              </span>
+              </Typography>
             </div>
 
             <div className="flex flex-row gap-3 items-center flex-wrap">
@@ -271,17 +280,18 @@ export function ShopHero({
                 data-action={action}
                 size="sm"
               >
-                <span
-                  className="text-[16px] font-extrabold"
-                  style={{ color: action === 'buy' ? '#0a0a0a' : '#f5f7ff' }}
+                <Typography
+                  uiSize="md"
+                  weight="800"
+                  color={action === 'buy' ? '#0a0a0a' : '#f5f7ff'}
                 >
                   {actionLabel}
-                </span>
+                </Typography>
                 {action === 'buy' ? (
-                  <span className="text-[14px] font-bold text-[#0a0a0a]">
+                  <Typography uiSize="sm" weight="700" color="#0a0a0a">
                     · {CURRENCY_GLYPH[item.priceCurrency]}{' '}
                     {formatNumber(item.priceAmount, locale)}
-                  </span>
+                  </Typography>
                 ) : null}
               </Button>
               <Link href="#shop-rail" style={{ textDecoration: 'none' }}>
@@ -291,9 +301,9 @@ export function ShopHero({
                   onMouseLeave={handleHoverOff}
                   data-testid="shop-hero-tryon"
                 >
-                  <span className="text-[16px] font-bold text-[#f5f7ff]">
+                  <Typography uiSize="md" weight="700" color="#f5f7ff">
                     {labels.tryOn} →
-                  </span>
+                  </Typography>
                 </div>
               </Link>
             </div>

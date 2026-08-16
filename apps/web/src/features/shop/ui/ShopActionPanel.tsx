@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@arcadeum/ui';
+import { AccentPill, Button, Typography } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
@@ -76,11 +76,12 @@ function Eyebrow({
   ...props
 }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
   return (
-    <span
-      className={cx(
-        'text-[10px] tracking-[1.4px] uppercase font-extrabold text-[#94a3b8]',
-        className,
-      )}
+    <Typography
+      uiSize="xs"
+      weight="800"
+      color="#94a3b8"
+      tracking="lg"
+      className={cx('uppercase', className)}
       {...props}
     />
   );
@@ -138,42 +139,26 @@ export function ShopActionPanel({
       >
         <Eyebrow>{actionLabels.previewingEyebrow}</Eyebrow>
         <div className="flex flex-col items-stretch gap-4">
-          <span className="text-[20px] font-extrabold text-[#f5f7ff]">
+          <Typography uiSize="xl" weight="800" color="#f5f7ff">
             {name}
-          </span>
-          <span className="text-[14px] text-[#94a3b8] line-clamp-4">
+          </Typography>
+          <Typography uiSize="sm" color="#94a3b8" className="line-clamp-4">
             {desc}
-          </span>
+          </Typography>
         </div>
-        <div className="flex flex-row gap-8 items-center justify-between">
-          <div
-            className="flex flex-row items-center gap-4 px-6 py-2 rounded-lg border"
-            style={{
-              backgroundColor: `${accent}14`,
-              borderColor: `${accent}44`,
-            }}
-          >
-            <div
-              className="flex flex-col items-stretch w-[6px] h-[6px] rounded-xl"
-              style={{ backgroundColor: accent }}
-            />
-            <span
-              className="text-[40px] tracking-[1px] uppercase font-extrabold"
-              style={{ color: accent }}
-            >
-              {hoverItem.rarity}
-            </span>
-          </div>
+        <div className="flex flex-row gap-6 items-center justify-between">
+          <AccentPill accent={accent}>{hoverItem.rarity}</AccentPill>
           <div className="flex flex-row items-center gap-4">
-            <span className="text-[14px]">
+            <Typography uiSize="sm">
               {CURRENCY_GLYPH[hoverItem.priceCurrency]}
-            </span>
-            <span
-              className="text-[18px] font-extrabold"
-              style={{ color: CURRENCY_COLOR[hoverItem.priceCurrency] }}
+            </Typography>
+            <Typography
+              uiSize="lg"
+              weight="800"
+              color={CURRENCY_COLOR[hoverItem.priceCurrency]}
             >
               {formatNumber(hoverItem.priceAmount, locale)}
-            </span>
+            </Typography>
           </div>
         </div>
       </PanelFrame>
@@ -205,25 +190,31 @@ export function ShopActionPanel({
       >
         <div className="flex flex-row justify-between items-center">
           <Eyebrow>{actionLabels.selectedSlotEyebrow}</Eyebrow>
-          <span
-            className="text-[48px] tracking-[1px] uppercase font-bold text-[#3b82f6] cursor-pointer"
+          <Typography
+            uiSize="sm"
+            weight="600"
+            color="#3b82f6"
+            tracking="md"
+            className="uppercase cursor-pointer"
             onClick={() => clearActiveSlot()}
             data-testid="shop-action-clear"
           >
             {actionLabels.clear}
-          </span>
+          </Typography>
         </div>
         <div className="flex flex-col items-stretch gap-4">
-          <span className="text-[20px] font-extrabold text-[#f5f7ff]">
+          <Typography uiSize="xl" weight="800" color="#f5f7ff">
             {slot.label}
-          </span>
-          <span className="text-[14px] text-[#94a3b8]">{slot.desc}</span>
+          </Typography>
+          <Typography uiSize="sm" color="#94a3b8">
+            {slot.desc}
+          </Typography>
         </div>
         <div className="flex flex-col items-stretch gap-4 p-2 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
           <Eyebrow>{actionLabels.equippedEyebrow}</Eyebrow>
-          <span className="text-[13px] font-bold text-[#f5f7ff]">
+          <Typography uiSize="sm" weight="700" color="#f5f7ff">
             {equippedName}
-          </span>
+          </Typography>
         </div>
         {canSell && equippedRow ? (
           <Button
@@ -273,12 +264,12 @@ export function ShopActionPanel({
     >
       <Eyebrow>{actionLabels.loadoutEyebrow}</Eyebrow>
       <div className="flex flex-col items-stretch gap-4">
-        <span className="text-[20px] font-extrabold text-[#f5f7ff]">
+        <Typography uiSize="md" weight="800" color="#f5f7ff">
           {actionLabels.idleTitle}
-        </span>
-        <span className="text-[14px] text-[#94a3b8]">
+        </Typography>
+        <Typography uiSize="xs" color="#94a3b8">
           {actionLabels.idleBody}
-        </span>
+        </Typography>
       </div>
       <WalletRail
         balance={balance}

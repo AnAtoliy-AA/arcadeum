@@ -83,6 +83,7 @@ export const neonDarkTokens: ThemeTokens = {
   glass: {
     background: 'rgba(6, 1, 27, 0.72)',
     border: 'rgba(245, 247, 255, 0.08)',
+    borderStrong: 'rgba(245, 247, 255, 0.24)',
   },
   copyNotice: '#81f1ff',
 };
@@ -170,6 +171,7 @@ export const neonLightTokens: ThemeTokens = {
   glass: {
     background: 'rgba(255, 255, 255, 0.8)',
     border: 'rgba(102, 69, 182, 0.3)',
+    borderStrong: 'rgba(102, 69, 182, 0.5)',
   },
   copyNotice: '#54e4ff',
 };

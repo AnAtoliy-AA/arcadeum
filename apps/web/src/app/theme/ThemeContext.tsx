@@ -113,17 +113,13 @@ export function AppThemeProvider({
     if (typeof document === 'undefined') return;
 
     const doc = document.documentElement;
-    const currentTheme = doc.getAttribute('data-theme');
-    const currentPreference = doc.getAttribute('data-theme-preference');
 
-    if (
-      currentTheme === resolvedTheme &&
-      currentPreference === themePreference
-    ) {
-      return;
-    }
-
-    // Fast synchronous writes — lightweight, needed immediately for FOUC prevention
+    // Fast synchronous writes — lightweight, needed immediately for FOUC prevention.
+    // NOTE: these must NOT be skipped when the attributes already match — the
+    // effect is the only place that mints the theme CSS variables, and SSR sets
+    // the attributes from cookies, so an early return here would leave
+    // var(--primary) etc. undefined and every themed background transparent
+    // (e.g. buttons) on reloads after the first visit.
     doc.setAttribute('data-theme', resolvedTheme);
     doc.setAttribute('data-theme-preference', themePreference);
 
@@ -147,6 +143,10 @@ export function AppThemeProvider({
       // contrast with white button text (see themeDefinitions.ts).
       doc.style.setProperty('--glassBg', themeTokensValue.glass.background);
       doc.style.setProperty('--glassBorder', themeTokensValue.glass.border);
+      doc.style.setProperty(
+        '--glassBorderStrong',
+        themeTokensValue.glass.borderStrong,
+      );
 
       const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
       document.cookie = `app-theme=${resolvedTheme}; ${cookieOptions}`;

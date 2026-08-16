@@ -53,6 +53,7 @@ export const themeBase = {
   glassBgHover: 'rgba(255, 255, 255, 0.12)',
   glassBorder: 'rgba(255, 255, 255, 0.1)',
   glassBorderHover: 'rgba(255, 255, 255, 0.16)',
+  glassBorderStrong: 'rgba(255, 255, 255, 0.22)',
   primaryGradientStart: '#0384c4',
   primaryGradientEnd: '#0284c7',
   secondaryGradientStart: '#4f46e5',
@@ -89,6 +90,7 @@ export const lightTheme = {
   infoText: '#0f172a',
   glassBg: 'rgba(255, 255, 255, 0.8)',
   glassBorder: 'rgba(0, 0, 0, 0.1)',
+  glassBorderStrong: 'rgba(0, 0, 0, 0.28)',
   backgroundRadialStart: 'rgba(96, 165, 250, 0.22)',
   backgroundRadialEnd: 'rgba(129, 140, 248, 0.18)',
 };

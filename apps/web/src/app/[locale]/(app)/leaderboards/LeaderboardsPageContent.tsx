@@ -31,6 +31,7 @@ import type {
   GameMode,
   LeaderboardPlayer,
   LeaderboardSnapshot,
+  Region,
 } from '@/entities/leaderboard/model/types';
 
 import { CupCountdown } from './_components/CupCountdown';
@@ -53,6 +54,11 @@ const PAGE_SIZE = 50;
 const SELF_ROW_FALLBACK_HEIGHT = 88;
 const SELF_ROW_PADDING = 32;
 const HEADER_OFFSET = 80;
+
+const regionLabel = (
+  region: Region | undefined,
+  labels: Record<string, string | undefined>,
+) => (region ? (labels[region] ?? region.toUpperCase()) : undefined);
 
 interface LeaderboardsPageContentProps {
   t?: PageTranslations;
@@ -235,8 +241,7 @@ export default function LeaderboardsPageContent({
   const errorT = (t?.errorState ?? {}) as { title?: string; retry?: string };
   const loadMoreLabel = (t?.loadMore as string) ?? 'Load more';
 
-  // BE applies the `q` / `scope` / `range` filters; we just render whatever
-  // the server returns.
+  // BE applies the `q` / `scope` / `range` filters; we just render the result.
   const filteredRows = useMemo(
     () => (accumulated.length > 0 ? accumulated : (data?.rows ?? [])),
     [accumulated, data?.rows],
@@ -324,9 +329,7 @@ export default function LeaderboardsPageContent({
                   rating={mythic.rating}
                   ratingDelta={mythic.ratingDelta}
                   streak={mythic.streak}
-                  region={
-                    regionLabels[mythic.region] ?? mythic.region.toUpperCase()
-                  }
+                  region={regionLabel(mythic.region, regionLabels)}
                   recentForm={mythic.recentForm}
                   portrait={
                     <EquippedPlayerAvatar
@@ -364,9 +367,7 @@ export default function LeaderboardsPageContent({
                     rating={second.rating}
                     wins={second.wins}
                     winrate={second.winrate}
-                    region={
-                      regionLabels[second.region] ?? second.region.toUpperCase()
-                    }
+                    region={regionLabel(second.region, regionLabels)}
                     placeLabel={mythicLabels.runnerUp ?? 'Runner · Up'}
                     avatar={
                       <EquippedPlayerAvatar
@@ -390,9 +391,7 @@ export default function LeaderboardsPageContent({
                       rating={third.rating}
                       wins={third.wins}
                       winrate={third.winrate}
-                      region={
-                        regionLabels[third.region] ?? third.region.toUpperCase()
-                      }
+                      region={regionLabel(third.region, regionLabels)}
                       placeLabel={mythicLabels.thirdPlace ?? '3rd · Place'}
                       avatar={
                         <EquippedPlayerAvatar
@@ -415,7 +414,12 @@ export default function LeaderboardsPageContent({
             </div>
           ) : null}
 
-          <GameModeTabs value={mode} onChange={handleModeChange} t={t} />
+          <GameModeTabs
+            modes={data?.modes ?? ['all']}
+            value={mode}
+            onChange={handleModeChange}
+            t={t}
+          />
           <div className="flex flex-row items-stretch gap-4 flex-wrap">
             <ClimbersFallersRail
               climbers={data?.climbers ?? []}

@@ -108,7 +108,7 @@ export const Container = memo(
           'max-[800px]:px-2 max-[800px]:pt-0 max-[800px]:pb-0 max-[800px]:rounded-[16px]',
           isMyTurn
             ? 'border-2 border-[rgba(34,197,94,0.8)] shadow-[0_0_30px_rgba(34,197,94,0.4)]'
-            : 'border border-[var(--glassBorder)]',
+            : 'border border-[var(--glassBorderStrong)] shadow-[0_0_0_1px_rgba(255,255,255,0.05)_inset,0_8px_24px_rgba(0,0,0,0.25)]',
           className,
         )}
         style={style}
@@ -137,7 +137,7 @@ export const GameHeader = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'flex flex-row items-center justify-between gap-3 px-7 py-2 bg-[var(--glassBg)] backdrop-blur-[16px] border-b border-b-[var(--glassBorder)] -mx-1 mt-0 sticky top-0 z-[30] shrink-0 max-[800px]:px-4 max-[800px]:py-2 max-[800px]:-mx-2 max-[800px]:mt-0 max-[800px]:top-0 max-[800px]:gap-1 max-[800px]:flex-nowrap',
+      'flex flex-row items-center justify-between gap-3 px-7 py-2 bg-[var(--glassBg)] backdrop-blur-[16px] border-b border-b-[var(--glassBorderStrong)] -mx-1 mt-0 sticky top-0 z-[30] shrink-0 max-[800px]:px-4 max-[800px]:py-2 max-[800px]:-mx-2 max-[800px]:mt-0 max-[800px]:top-0 max-[800px]:gap-1 max-[800px]:flex-nowrap',
       className,
     )}
     {...props}

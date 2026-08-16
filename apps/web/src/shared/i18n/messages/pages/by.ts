@@ -300,16 +300,39 @@ export const by = {
     ticker: { live: 'У эфіры' },
     modes: {
       all: { name: 'Усе гульні', subtitle: 'Зводны рэйтынг', icon: '◎' },
-      critical: {
+      critical_v1: {
         name: 'Critical',
         subtitle: 'Карты з высокімі стаўкамі',
         icon: '♠',
       },
-      sea_battle: {
+      sea_battle_v1: {
         name: 'Марскі бой',
         subtitle: 'Марская стратэгія',
         icon: '⚓',
       },
+      texas_holdem_v1: {
+        name: 'Тэхаскі Холдэн',
+        subtitle: 'Покерныя сталы',
+        icon: '♣',
+      },
+      glimworm_v1: {
+        name: 'Глімворм',
+        subtitle: 'Неонавая змейка',
+        icon: '🐍',
+      },
+      tic_tac_toe_v1: {
+        name: 'Крыжыкі-нулікі',
+        subtitle: 'Класічныя крыжыкі-нулікі',
+        icon: '✕',
+      },
+      cascade_v1: {
+        name: 'Cascade',
+        subtitle: 'Картачны каскад',
+        icon: '▥',
+      },
+      chess_v1: { name: 'Шахматы', subtitle: 'Класічныя шахматы', icon: '♞' },
+      checkers_v1: { name: 'Шашкі', subtitle: 'Настольная класіка', icon: '●' },
+      cat_dash_v1: { name: 'Cat Dash', subtitle: 'Каціныя гонкі', icon: '🐱' },
     },
     cup: {
       eyebrow: 'Турнір',

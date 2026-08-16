@@ -25,7 +25,7 @@ export function MobileLoginIndicator({
       data-testid={testId}
     >
       <span
-        className="hidden h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full border-[1.5px] transition-opacity hover:opacity-90 md:flex"
+        className="hidden h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full border-[1.5px] transition-opacity hover:opacity-90 sm:flex md:hidden"
         style={
           isAuthenticated
             ? {

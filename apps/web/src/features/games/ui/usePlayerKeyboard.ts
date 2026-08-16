@@ -4,7 +4,6 @@ import { useEffect, type RefObject } from 'react';
 
 interface UsePlayerKeyboardOpts {
   enabled: boolean;
-  visible: boolean;
   audioRef: RefObject<HTMLAudioElement | null>;
   volumeRef: RefObject<number>;
   togglePlay: () => void;
@@ -16,7 +15,6 @@ interface UsePlayerKeyboardOpts {
 
 export function usePlayerKeyboard({
   enabled,
-  visible,
   audioRef,
   volumeRef,
   togglePlay,
@@ -26,7 +24,7 @@ export function usePlayerKeyboard({
   setVolume,
 }: UsePlayerKeyboardOpts) {
   useEffect(() => {
-    if (!enabled || !visible) return;
+    if (!enabled) return;
     const handler = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
@@ -67,6 +65,5 @@ export function usePlayerKeyboard({
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- refs and setState setters are stable
-  }, [enabled, visible, togglePlay, seekTo, prev, next]);
+  }, [enabled, togglePlay, seekTo, prev, next, audioRef, volumeRef, setVolume]);
 }

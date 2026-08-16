@@ -1,5 +1,12 @@
 import { apiClient } from '@/shared/lib/api-client';
 
+/**
+ * Refresh-store key for the announcement query. Kept for the admin
+ * announcement hooks; the public banner is server-rendered and no longer
+ * subscribes (see server/getActiveAnnouncement).
+ */
+export const ACTIVE_ANNOUNCEMENT_REFRESH_KEY = 'announcement-active';
+
 export type AnnouncementSeverity = 'info' | 'warning' | 'critical';
 
 export interface AnnouncementPublicItem {

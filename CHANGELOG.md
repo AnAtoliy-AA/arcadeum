@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.29] - 2026-08-16
+
+### Fixed
+- encrypt token cookies at rest
+- always set Secure flag on auth token cookies
+- show real country/region and all games
+
+
+## [1.25.28] - 2026-08-16
+
+### Fixed
+- run Release workflow only on main merges, not tag pushes
+
+
+## [1.25.27] - 2026-08-16
+
+### Fixed
+- replace YAML anchors with plain job conditions
+- remove [skip ci] from version bump so release PR checks run
+
+
+## [1.25.26] - 2026-08-16
+
+### Added
+- unify music state and persist player settings
+
+### Fixed
+- reduce sea battle field status text size
+- distinct message bubble background in game chat
+- consistent control panel toggles and distinct chat message bubbles
+- viewport-fit game room, visible widget borders, chat layout
+
+### Refactored
+- extract shared glass bubble classes in ChatMessage
+
+
+## [1.25.25] - 2026-08-16
+
+### Added
+- add shared AccentPill badge, use it in home featured games and shop rarity labels
+
+### Fixed
+- always mint theme CSS vars so button backgrounds survive reloads
+- replace option buttons with divs to avoid default white background
+- use var(--color) for dropdown option text instead of var(--textSecondary)
+- remove duplicate auth link and polish language select dropdown
+
+### Improved
+- eliminate announcement banner and font-swap layout shift (CLS)
+
+
 ## [1.25.24] - 2026-08-15
 
 ### Changed

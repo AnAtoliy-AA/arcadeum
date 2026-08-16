@@ -25,7 +25,12 @@ import { gameMetadata } from '@/features/games/registry';
 import type { GameInitialData, GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
-import { CenteredContainer, LoadingContainer, GameWrapper } from './styles';
+import {
+  CenteredContainer,
+  LoadingContainer,
+  GameWrapper,
+  Container,
+} from './styles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
 import { PrivateRoomForm } from './PrivateRoomForm';
@@ -365,58 +370,67 @@ export default function GameRoomPage({
 
   return (
     <Page fixedHeight>
-      <GamePageLayout
-        roomId={roomId}
-        room={room}
-        session={initialSession as GameSessionSummary | null}
-        userId={snapshot.userId}
-        isAuthenticated={isAuthenticated}
-        inviteCode={room?.inviteCode}
-        isDisconnected={isDisconnected}
-        isReconnecting={isReconnecting}
-        isIdle={isIdle}
-        isSpectating={roomMode === 'watch'}
-        onReconnect={reconnect}
-        onShowRules={handleShowRules}
-      >
-        {({ isFullscreen, toggleFullscreen }) => {
-          const gameProps = gamePropsBase
-            ? { ...gamePropsBase, isFullscreen, toggleFullscreen }
-            : null;
+      <Container>
+        <GamePageLayout
+          roomId={roomId}
+          room={room}
+          session={initialSession as GameSessionSummary | null}
+          userId={snapshot.userId}
+          isAuthenticated={isAuthenticated}
+          inviteCode={room?.inviteCode}
+          isDisconnected={isDisconnected}
+          isReconnecting={isReconnecting}
+          isIdle={isIdle}
+          isSpectating={roomMode === 'watch'}
+          onReconnect={reconnect}
+          onShowRules={handleShowRules}
+        >
+          {({ isFullscreen, toggleFullscreen }) => {
+            const gameProps = gamePropsBase
+              ? { ...gamePropsBase, isFullscreen, toggleFullscreen }
+              : null;
 
-          return (
-            <GameWrapper>
-              <Suspense
-                fallback={
-                  <LoadingContainer>
-                    <span className="">{t('games.roomPage.loadingGame')}</span>
-                  </LoadingContainer>
-                }
-              >
-                {gameLoading && (
-                  <LoadingContainer>
-                    <span className="">{t('games.roomPage.loadingGame')}</span>
-                  </LoadingContainer>
-                )}
+            return (
+              <GameWrapper>
+                <Suspense
+                  fallback={
+                    <LoadingContainer>
+                      <span className="">
+                        {t('games.roomPage.loadingGame')}
+                      </span>
+                    </LoadingContainer>
+                  }
+                >
+                  {gameLoading && (
+                    <LoadingContainer>
+                      <span className="">
+                        {t('games.roomPage.loadingGame')}
+                      </span>
+                    </LoadingContainer>
+                  )}
 
-                {!gameLoading && !gameType && room && (
-                  <LoadingContainer>
-                    <span className="">
-                      {t('games.roomPage.errors.unsupportedGame', {
-                        gameId: room.gameId,
-                      })}
-                    </span>
-                  </LoadingContainer>
-                )}
+                  {!gameLoading && !gameType && room && (
+                    <LoadingContainer>
+                      <span className="">
+                        {t('games.roomPage.errors.unsupportedGame', {
+                          gameId: room.gameId,
+                        })}
+                      </span>
+                    </LoadingContainer>
+                  )}
 
-                {!gameLoading && isGameReady && gameType && gameProps && (
-                  <DynamicGameRenderer gameType={gameType} props={gameProps} />
-                )}
-              </Suspense>
-            </GameWrapper>
-          );
-        }}
-      </GamePageLayout>
+                  {!gameLoading && isGameReady && gameType && gameProps && (
+                    <DynamicGameRenderer
+                      gameType={gameType}
+                      props={gameProps}
+                    />
+                  )}
+                </Suspense>
+              </GameWrapper>
+            );
+          }}
+        </GamePageLayout>
+      </Container>
     </Page>
   );
 }

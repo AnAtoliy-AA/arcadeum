@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
-import { IconButton, LinkButton } from '@arcadeum/ui';
+import { AccentPill, IconButton, LinkButton } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes, useLocale } from '@/shared/config/useRoutes';
 import type { Routes } from '@/shared/config/routes';
@@ -94,13 +94,12 @@ export function HomeGameCard({
           className="featured-card-cover-link absolute inset-0 z-[1] flex items-end p-[18px] text-inherit no-underline focus-visible:rounded-2xl focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-[-4px]"
           aria-label={t(game.nameKey)}
         >
-          <span className="absolute left-[14px] top-[14px] inline-flex items-center whitespace-nowrap rounded-full border border-[color:color-mix(in_srgb,var(--game-accent)_35%,transparent)] bg-black/35 px-[9px] py-1 text-[10px] uppercase tracking-[0.16em] text-[color:color-mix(in_srgb,var(--game-accent)_80%,white)] backdrop-blur">
-            <span
-              className="mr-[6px] inline-block h-[5px] w-[5px] rounded-full bg-[var(--game-accent)] shadow-[0_0_8px_var(--game-accent)]"
-              aria-hidden
-            />
+          <AccentPill
+            accent={accent}
+            className="absolute left-[14px] top-[14px]"
+          >
             {game.genre} · {game.pace}
-          </span>
+          </AccentPill>
 
           {game.isDemo ? (
             <span

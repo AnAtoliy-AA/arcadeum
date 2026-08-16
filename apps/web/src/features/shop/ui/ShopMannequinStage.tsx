@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { PlayerAvatar } from '@arcadeum/ui';
+import { PlayerAvatar, Typography } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
@@ -63,12 +63,21 @@ export function ShopMannequinStage({
       : labels.stage.online;
 
   const topLeftOverlay = hoverItem ? (
-    <div className="flex flex-row items-center gap-6 px-8 py-4 rounded-[24px] border border-[rgba(34,197,94,0.55)] bg-[rgba(16,185,129,0.10)]">
-      <div className="flex flex-row items-stretch w-[6px] h-[6px] rounded-xl bg-[#22c55e]" />
-      <span className="text-[48px] tracking-[1px] uppercase font-extrabold text-[#10b981]">
+    <div className="flex flex-row items-center gap-4 px-4 py-2 rounded-xl border border-[rgba(34,197,94,0.55)] bg-[rgba(16,185,129,0.10)]">
+      <div className="flex flex-row items-stretch w-[5px] h-[5px] rounded-xl bg-[#22c55e]" />
+      <Typography
+        uiSize="sm"
+        variant="heading"
+        color="#10b981"
+        tracking="md"
+        weight="800"
+        className="uppercase"
+      >
         {labels.tryOn}
-      </span>
-      <span className="text-[11px] text-[#94a3b8]">· {hoverName}</span>
+      </Typography>
+      <Typography uiSize="xs" color="#94a3b8">
+        · {hoverName}
+      </Typography>
     </div>
   ) : null;
 

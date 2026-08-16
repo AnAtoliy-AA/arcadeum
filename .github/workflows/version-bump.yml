@@ -9,6 +9,11 @@ permissions:
 
 jobs:
   bump-version:
+    # Never re-bump the version for our own bump commit (prevents an infinite loop).
+    # We must NOT use [skip ci] here: a [skip ci] head commit suppresses all
+    # pull_request workflows for release PRs (develop -> staging/main), leaving
+    # required checks like check-pr-title in "Expected" state forever.
+    if: "${{ !startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version') }}"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -35,11 +40,11 @@ jobs:
           if [[ "$BRANCH_NAME" == "main" ]]; then
             # Minor bump: 1.23.4 -> 1.24.0
             NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[1]++; v[2]=0; v.join('.')")
-            COMMIT_MSG="chore: start next minor version v${NEW_VERSION} [skip ci]"
+            COMMIT_MSG="chore: start next minor version v${NEW_VERSION}"
           else
             # Patch bump: 1.23.4 -> 1.23.5
             NEW_VERSION=$(node -p "const v = '$CURRENT_VERSION'.split('.'); v[2]++; v.join('.')")
-            COMMIT_MSG="chore: bump version to v${NEW_VERSION} and update changelog [skip ci]"
+            COMMIT_MSG="chore: bump version to v${NEW_VERSION} and update changelog"
           fi
           
           # If tag already exists on remote, auto-increment patch until we find a free version

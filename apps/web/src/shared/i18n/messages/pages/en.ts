@@ -301,12 +301,39 @@ export const en = {
     ticker: { live: 'Live' },
     modes: {
       all: { name: 'All games', subtitle: 'Combined ladder', icon: '◎' },
-      critical: { name: 'Critical', subtitle: 'High-stakes cards', icon: '♠' },
-      sea_battle: {
+      critical_v1: {
+        name: 'Critical',
+        subtitle: 'High-stakes cards',
+        icon: '♠',
+      },
+      sea_battle_v1: {
         name: 'Sea Battle',
         subtitle: 'Naval strategy',
         icon: '⚓',
       },
+      texas_holdem_v1: {
+        name: "Texas Hold'em Poker",
+        subtitle: 'Poker tables',
+        icon: '♣',
+      },
+      glimworm_v1: {
+        name: 'Glimworm',
+        subtitle: 'Neon snake arena',
+        icon: '🐍',
+      },
+      tic_tac_toe_v1: {
+        name: 'Tic-Tac-Toe',
+        subtitle: 'Classic 3-in-a-row',
+        icon: '✕',
+      },
+      cascade_v1: {
+        name: 'Cascade',
+        subtitle: 'Card stacking',
+        icon: '▥',
+      },
+      chess_v1: { name: 'Chess', subtitle: 'Classic strategy', icon: '♞' },
+      checkers_v1: { name: 'Checkers', subtitle: 'Board classic', icon: '●' },
+      cat_dash_v1: { name: 'Cat Dash', subtitle: 'Cat racing', icon: '🐱' },
     },
     cup: {
       eyebrow: 'Tournament',

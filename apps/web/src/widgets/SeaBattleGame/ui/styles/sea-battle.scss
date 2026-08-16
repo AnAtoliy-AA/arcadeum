@@ -172,7 +172,7 @@
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(calc(var(--sb-grid-size, 10) * 28px + 70px), 1fr)
+    minmax(calc(var(--sb-grid-size, 10) * 50px + 70px), 1fr)
   );
   gap: 16px;
   width: 100%;
@@ -180,13 +180,6 @@
   justify-content: center;
   align-items: start;
   box-sizing: border-box;
-
-  @media (min-width: 1280px) {
-    grid-template-columns: repeat(
-      auto-fit,
-      minmax(calc(var(--sb-grid-size, 10) * 32px + 80px), 1fr)
-    );
-  }
 }
 
 .sb-grids-container > * {

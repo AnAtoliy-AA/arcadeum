@@ -34,10 +34,6 @@ import { PasswordResetService } from './services/password-reset.service';
 const COOKIE_MAX_AGE_15_MIN = 15 * 60 * 1000;
 const COOKIE_MAX_AGE_30_DAYS = 30 * 24 * 60 * 60 * 1000;
 
-function isSecureOrigin(req: Request): boolean {
-  return req.protocol === 'https' || req.get('x-forwarded-proto') === 'https';
-}
-
 function getCookieDomain(req: Request): string | undefined {
   const host = (req.get('host') ?? '').split(':')[0].toLowerCase();
   if (host === 'arcadeum.games' || host.endsWith('.arcadeum.games')) {
@@ -54,7 +50,6 @@ function setTokenCookies(
   refreshToken: string,
   refreshTokenExpiresAt: Date,
 ): void {
-  const secure = isSecureOrigin(req);
   const domain = getCookieDomain(req);
   const maxAgeAccess = accessTokenExpiresAt
     ? Math.min(
@@ -65,19 +60,21 @@ function setTokenCookies(
   const maxAgeRefresh =
     refreshTokenExpiresAt.getTime() - Date.now() || COOKIE_MAX_AGE_30_DAYS;
 
-  // lgtm[js/clear-text-storage-sensitive-information]
+  // Both cookies carry bearer credentials, so they must always be
+  // TLS-only — a conditional `secure` would leave the refresh token
+  // transmittable in clear text over plain HTTP. Browsers treat
+  // http://localhost as a secure context, so local dev keeps working.
   res.cookie('access_token', accessToken, {
     httpOnly: true,
-    secure,
+    secure: true,
     sameSite: 'lax',
     ...(domain ? { domain } : {}),
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
-  // lgtm[js/clear-text-storage-sensitive-information]
   res.cookie('refresh_token', refreshToken, {
     httpOnly: true,
-    secure,
+    secure: true,
     sameSite: 'lax',
     ...(domain ? { domain } : {}),
     path: '/',
@@ -86,12 +83,13 @@ function setTokenCookies(
 }
 
 function clearTokenCookies(res: Response, req: Request): void {
-  const secure = isSecureOrigin(req);
   const domain = getCookieDomain(req);
   const options = {
     path: '/',
     httpOnly: true,
-    secure,
+    // Must match the attributes the cookies were set with, otherwise
+    // browsers won't match them for deletion.
+    secure: true,
     sameSite: 'lax' as const,
     ...(domain ? { domain } : {}),
   };

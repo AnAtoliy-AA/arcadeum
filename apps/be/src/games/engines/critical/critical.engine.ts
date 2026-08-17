@@ -37,6 +37,7 @@ import {
 } from './critical-future.utils';
 import { dispatchTheftPackAction } from './critical-theft.utils';
 import { dispatchChaosPackAction } from './critical-chaos.utils';
+import { isAiDifficulty } from '../../ai-difficulty';
 import {
   dispatchDeityPackAction,
   executeCommitProphecy,
@@ -74,12 +75,17 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
     const orderedIds = shouldRandomize
       ? [...playerIds].sort(() => Math.random() - 0.5)
       : [...playerIds];
-    return createInitialCriticalState(
+    const state = createInitialCriticalState(
       orderedIds,
       expansions,
       allowActionCardCombos,
       customCards,
     );
+    const difficulty = config?.aiDifficulty;
+    if (isAiDifficulty(difficulty)) {
+      state.aiDifficulty = difficulty;
+    }
+    return state;
   }
 
   validateAction(

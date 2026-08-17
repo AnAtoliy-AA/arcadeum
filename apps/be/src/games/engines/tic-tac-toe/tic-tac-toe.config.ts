@@ -3,11 +3,17 @@ import {
   INFINITY_MARGIN_OPTIONS,
   INFINITY_WIN_LENGTH_OPTIONS,
 } from './tic-tac-toe.constants';
+import { isAiDifficulty } from '../../ai-difficulty';
 
 export function validateTicTacToeConfig(
   config: Record<string, unknown>,
 ): boolean {
   const options = config.options as Record<string, unknown> | undefined;
+  const difficulty = options?.aiDifficulty ?? config.aiDifficulty;
+  if (difficulty !== undefined && !isAiDifficulty(difficulty)) {
+    return false;
+  }
+
   const boardSize = options?.boardSize;
 
   if (boardSize !== undefined) {

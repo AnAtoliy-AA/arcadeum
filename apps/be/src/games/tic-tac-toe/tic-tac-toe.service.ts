@@ -30,6 +30,7 @@ import type {
 } from '../engines/tic-tac-toe/tic-tac-toe.types';
 import { TicTacToeBotService } from './tic-tac-toe-bot.service';
 import { GameBotWatchdog } from '../game-bot-watchdog';
+import { isAiDifficulty } from '../ai-difficulty';
 
 @Injectable()
 export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
@@ -208,6 +209,7 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
       teamMode: boolean;
       expansionMargin: number;
       infinityWinLength: number;
+      aiDifficulty: string;
     }>;
     const allowedSizes: number[] = [3, 5, 7, 9];
     const rawSize = r.boardSize;
@@ -234,6 +236,9 @@ export class TicTacToeService implements OnModuleInit, OnModuleDestroy {
       infinityWinLength: isWinLen(r.infinityWinLength)
         ? r.infinityWinLength
         : DEFAULT_OPTIONS.infinityWinLength,
+      aiDifficulty: isAiDifficulty(r.aiDifficulty)
+        ? r.aiDifficulty
+        : DEFAULT_OPTIONS.aiDifficulty,
     };
   }
 }

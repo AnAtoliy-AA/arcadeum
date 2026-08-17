@@ -1,4 +1,5 @@
 import { RULE_VARIANTS, VARIANTS } from './checkers.constants';
+import { isAiDifficulty } from '../../ai-difficulty';
 
 export function validateCheckersConfig(
   config: Record<string, unknown>,
@@ -22,6 +23,10 @@ export function validateCheckersConfig(
 
   const backwardCaptures = config.backwardCaptures;
   if (backwardCaptures !== undefined && typeof backwardCaptures !== 'boolean')
+    return false;
+
+  const botDifficulty = config.botDifficulty ?? config.aiDifficulty;
+  if (botDifficulty !== undefined && !isAiDifficulty(botDifficulty))
     return false;
 
   return true;

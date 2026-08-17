@@ -158,7 +158,8 @@ export class SeaBattleGateway implements GameMessageHandler {
         roomId,
         !!payload?.withBots,
         payload?.botCount as number | undefined,
-        payload?.difficulty as 'easy' | 'medium' | 'hard' | undefined,
+        payload?.difficulty as
+          'easy' | 'medium' | 'hard' | 'expert' | undefined,
         payload?.gridSize as number | undefined,
         payload?.shipCount as number | undefined,
         payload?.variant as string | undefined,

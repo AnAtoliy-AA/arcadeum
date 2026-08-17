@@ -12,8 +12,20 @@ import type {
   CascadeState,
 } from '../engines/cascade/cascade.types';
 import { isPlayable } from '../engines/cascade/cascade.utils';
+import type { AiDifficulty } from '../ai-difficulty';
 
 const MOVE_DELAY_MS = { min: 400, max: 1100 };
+
+/**
+ * Higher difficulties make fewer random mistakes. Easy bots pick a random
+ * playable card half the time; expert bots always follow the priority order.
+ */
+const DIFFICULTY_CONFIG: Record<AiDifficulty, { mistakeRate: number }> = {
+  easy: { mistakeRate: 0.5 },
+  medium: { mistakeRate: 0.1 },
+  hard: { mistakeRate: 0.03 },
+  expert: { mistakeRate: 0 },
+};
 
 /**
  * Reflex windows for the Last-Card race. The at-risk player (if a bot)
@@ -172,6 +184,25 @@ export class CascadeBotService {
       return { type: 'draw' };
     }
 
+    const difficulty = state.options.aiDifficulty ?? 'medium';
+    const config = DIFFICULTY_CONFIG[difficulty] ?? DIFFICULTY_CONFIG.medium;
+
+    // Random-mistake path: weaker bots sometimes play a random card (and
+    // easy bots may draw even with a legal play, wasting their turn).
+    if (Math.random() < config.mistakeRate) {
+      if (difficulty === 'easy' && Math.random() < 0.4) {
+        return { type: 'draw' };
+      }
+      const randomCard = playable[Math.floor(Math.random() * playable.length)];
+      const isWild =
+        randomCard.kind === 'WILD' || randomCard.kind === 'WILD_DRAW_FOUR';
+      return {
+        type: 'play',
+        cardId: randomCard.id,
+        chosenColor: isWild ? this.randomActiveColor() : undefined,
+      };
+    }
+
     // Priority order:
     // 1. If under a stack, must play a stack card (already filtered).
     // 2. Prefer color-matching number/action card over wilds.
@@ -242,6 +273,10 @@ export class CascadeBotService {
       }
     }
     return best;
+  }
+
+  private randomActiveColor(): ActiveColor {
+    return ACTIVE_COLORS[Math.floor(Math.random() * ACTIVE_COLORS.length)];
   }
 
   private async randomDelay(range: { min: number; max: number }) {

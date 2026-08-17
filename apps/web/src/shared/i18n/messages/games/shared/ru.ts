@@ -287,9 +287,11 @@ export const ruMessages = {
     difficultyEasy: 'Легко',
     difficultyMedium: 'Средне',
     difficultyHard: 'Сложно',
+    difficultyExpert: 'Эксперт',
     difficultyEasyDesc: 'Случайные ходы с редкими умными играми',
     difficultyMediumDesc: 'Умное наведение со стратегией блокировки',
     difficultyHardDesc: 'Точное наведение на основе вероятностей',
+    difficultyExpertDesc: 'Поиск максимальной глубины, без ошибок',
   },
   shared: {
     rules: {
@@ -396,5 +398,12 @@ export const ruMessages = {
     title: 'Выберите игру против ИИ',
     starting: 'Запуск...',
     allCategory: 'Все',
+  },
+  matchmaking: {
+    searchingTitle: 'Поиск соперника',
+    searchingSubtitle: 'Ищем матч для {{game}}...',
+    cancel: 'Отменить поиск',
+    estimatedWait: 'Ожидание: ~{{seconds}} с',
+    queuePosition: 'Позиция в очереди: {{position}} из {{total}}',
   },
 };

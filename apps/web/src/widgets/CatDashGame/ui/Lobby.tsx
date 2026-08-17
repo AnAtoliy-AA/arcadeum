@@ -185,6 +185,7 @@ export const CatDashLobby = memo(function CatDashLobby({
         maxPlayers={6}
         theme={lobbyTheme}
         enableBots
+        showDifficulty={false}
         optionsSlot={optionsSlot}
         onStartGame={onStartGame}
         onLeaveRoom={onLeaveRoom}

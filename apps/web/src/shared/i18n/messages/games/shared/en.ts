@@ -286,9 +286,11 @@ export const enMessages = {
     difficultyEasy: 'Easy',
     difficultyMedium: 'Medium',
     difficultyHard: 'Hard',
+    difficultyExpert: 'Expert',
     difficultyEasyDesc: 'Random moves with occasional smart plays',
     difficultyMediumDesc: 'Smart targeting with locked-on strategy',
     difficultyHardDesc: 'Probability-based precision targeting',
+    difficultyExpertDesc: 'Maximum-depth search, no mistakes',
   },
   shared: {
     rules: {
@@ -395,5 +397,12 @@ export const enMessages = {
     title: 'Pick a game to play vs AI',
     starting: 'Starting...',
     allCategory: 'All',
+  },
+  matchmaking: {
+    searchingTitle: 'Searching for Opponent',
+    searchingSubtitle: 'Finding a match for {{game}}...',
+    cancel: 'Cancel Matchmaking',
+    estimatedWait: 'Estimated wait: ~{{seconds}}s',
+    queuePosition: 'Position in queue: {{position}} of {{total}}',
   },
 };

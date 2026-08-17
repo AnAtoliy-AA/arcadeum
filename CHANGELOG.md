@@ -7,9 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.42] - 2026-08-17
+
+### Added
+- add expert difficulty selector, room option and lobby badge on web (ARC-880)
+- add difficulty tiers to tic-tac-toe, cascade and critical bots (ARC-880)
+- add expert difficulty tier to chess, checkers and sea battle (ARC-880)
+- add shared AiDifficulty type with expert tier and config validation (ARC-880)
+
+### Documentation
+- mark AI difficulty tiers as implemented in roadmap (ARC-880)
+
+
+## [1.25.41] - 2026-08-17
+
+### Added
+- show estimated wait and queue position in matchmaking modal (ARC-876)
+- improve matchmaking queue with per-game buckets and status events (ARC-876)
+
+### Documentation
+- mark matchmaking queue as implemented (ARC-876)
+
+
+## [1.25.40] - 2026-08-17
+
+### Fixed
+
+- fix oversized turn badge typography on sea battle player board (ARC-ui-fixes)
+- allow clearing selection on invalid combo click (ARC-ui-fixes)
+- improve mobile card selection and normalize CriticalGame typography (ARC-ui-fixes)
+- unify badges, remove AccentPill, and enhance lobby layout (ARC-ui-fixes)
+
 ## [1.25.39] - 2026-08-17
 
 ### Added
+
 - add screen-reader announcement strings to all locales
 - add grid roles and cell labels to sea battle boards
 - add keyboard navigation and announcements to tic-tac-toe
@@ -19,9 +51,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add shared a11y helpers for screen-reader announcements
 
 ### Documentation
+
 - add screen-reader support entry to changelog
 - mark screen reader support as implemented in roadmap
-
 
 ## [1.25.38] - 2026-08-17
 

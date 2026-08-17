@@ -23,6 +23,7 @@ describe('ChessBotService', () => {
       bot.setDifficulty('easy');
       bot.setDifficulty('medium');
       bot.setDifficulty('hard');
+      bot.setDifficulty('expert');
     });
   });
 
@@ -38,6 +39,22 @@ describe('ChessBotService', () => {
 
     it('should return a move from a complex position', () => {
       const state = engine.initializeState(['bot-1', 'p2']);
+      const move = bot.findBestMove(state);
+      expect(move).not.toBeNull();
+      expect(move?.from).toBeDefined();
+      expect(move?.to).toBeDefined();
+    });
+
+    it('should return a legal move on expert difficulty (sparse board)', () => {
+      const state = engine.initializeState(['bot-1', 'p2']);
+      state.botDifficulty = 'expert';
+      // Keep the deep search fast: only kings + a pawn each.
+      state.board = Array.from({ length: 8 }, () => Array<null>(8).fill(null));
+      state.board[7][4] = { type: 'king', color: 'white' }; // e1
+      state.board[0][4] = { type: 'king', color: 'black' }; // e8
+      state.board[6][4] = { type: 'pawn', color: 'white' }; // e2
+      state.board[1][4] = { type: 'pawn', color: 'black' }; // e7
+      state.currentTurnColor = 'white';
       const move = bot.findBestMove(state);
       expect(move).not.toBeNull();
       expect(move?.from).toBeDefined();

@@ -72,6 +72,7 @@ export default function GameRoomPage({
     },
     enabled: !!roomId,
     initialData: serverInitialData,
+    refetchOnMount: !serverInitialData,
   });
 
   const roomInfo = roomData?.room;

@@ -2,13 +2,11 @@
 
   0%,
   100% {
-    opacity: 0.7;
-    transform: scale(1);
+    opacity: 0.85;
   }
 
   50% {
     opacity: 1;
-    transform: scale(1.02);
   }
 }
 
@@ -16,13 +14,11 @@
 
   0%,
   100% {
-    opacity: 0.7;
-    transform: scale(1);
+    opacity: 0.85;
   }
 
   50% {
     opacity: 1;
-    transform: scale(1.02);
   }
 }
 
@@ -31,40 +27,10 @@
   0%,
   100% {
     opacity: 1;
-    transform: scale(1);
   }
 
   70% {
     opacity: 0.6;
-    transform: scale(1.08);
-  }
-}
-
-@keyframes glow-hit {
-
-  0%,
-  100% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-}
-
-@keyframes glow-sunk {
-
-  0%,
-  100% {
-    opacity: 0.7;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1.12);
   }
 }
 
@@ -73,12 +39,10 @@
   0%,
   100% {
     opacity: 0.5;
-    transform: scale(1);
   }
 
   50% {
     opacity: 1;
-    transform: scale(1.06);
   }
 }
 
@@ -87,12 +51,10 @@
   0%,
   100% {
     opacity: 0.6;
-    transform: scale(1);
   }
 
   50% {
     opacity: 1;
-    transform: scale(1.05);
   }
 }
 
@@ -133,11 +95,11 @@
 }
 
 .sb-glow-hit {
-  animation: glow-hit 2s ease-in-out infinite;
+  box-shadow: inset 0 0 8px rgba(251, 146, 60, 0.4);
 }
 
 .sb-glow-sunk {
-  animation: glow-sunk 1.5s ease-in-out infinite;
+  box-shadow: inset 0 0 8px rgba(239, 68, 68, 0.3);
 }
 
 .sb-valid-pulse {
@@ -161,11 +123,11 @@
 }
 
 .sb-icon-hit {
-  filter: drop-shadow(0 0 5px rgba(251, 146, 60, 0.9));
+  text-shadow: 0 0 5px rgba(251, 146, 60, 0.9);
 }
 
 .sb-icon-sunk {
-  filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.9));
+  text-shadow: 0 0 5px rgba(239, 68, 68, 0.9);
 }
 
 .sb-board-grid-layout {
@@ -179,6 +141,7 @@
   box-sizing: border-box;
   pointer-events: auto;
   touch-action: none;
+  contain: layout style;
 }
 
 .sb-board-with-labels-layout {
@@ -271,12 +234,10 @@
   0%,
   100% {
     opacity: 0.6;
-    transform: scale(1);
   }
 
   50% {
     opacity: 1;
-    transform: scale(1.05);
   }
 }
 
@@ -294,12 +255,10 @@
   0%,
   100% {
     opacity: 0.5;
-    transform: scale(1);
   }
 
   50% {
     opacity: 1;
-    transform: scale(1.05);
   }
 }
 
@@ -432,12 +391,10 @@
   0%,
   100% {
     opacity: 0.55;
-    transform: scale(0.95);
   }
 
   50% {
     opacity: 0.9;
-    transform: scale(1.1);
   }
 }
 
@@ -455,14 +412,3 @@
   animation: sb-missile-fly 1s cubic-bezier(0.45, 0, 0.9, 0.55) 0.3s both;
 }
 
-@keyframes sb-scanwave-pulse {
-  0% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1.08);
-  }
-}

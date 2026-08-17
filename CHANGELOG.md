@@ -7,13 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add coach-mode move hints for chess with an in-game enable toggle (ARC-883)
+
 ## [1.25.46] - 2026-08-17
 
 ### Fixed
+
 - replace bash-specific $(...) with cross-platform port resolver
 - resolve pnpm v11 compatibility issues
 
 ### Improved
+
 - remove GPU-heavy animations across app UI
 - remove GPU-heavy animations across all games
 - reduce GPU load in sea-battle animations
@@ -21,20 +27,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - replace box-shadow animations with GPU-composited transform/opacity
 
 ### Documentation
-- add MongoDB Docker setup to CONTRIBUTING.md
 
+- add MongoDB Docker setup to CONTRIBUTING.md
 
 ## [1.25.45] - 2026-08-17
 
 ### Added
+
 - add i18n keys for post-game analysis (ARC-882)
 - surface analysis behind a toggle in the chess result modal (ARC-882)
 - add post-game analysis UI components (ARC-882)
 - add chess position evaluator and analysis engine (ARC-882)
 
 ### Documentation
-- add changelog entry for chess post-game analysis (ARC-882)
 
+- add changelog entry for chess post-game analysis (ARC-882)
 
 ## [1.25.44] - 2026-08-17
 

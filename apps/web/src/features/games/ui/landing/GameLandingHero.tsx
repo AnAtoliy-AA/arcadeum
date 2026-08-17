@@ -16,6 +16,8 @@ export function GameLandingHero({
   chips,
   ctaQuickplayLabel = 'Quick Match (AI)',
   ctaQuickplayErrorLabel = 'Matchmaking Error',
+  ctaPlayHumanLabel,
+  ctaPlayHumanErrorLabel,
   browseRoomsLabel = 'Browse Active Rooms',
   createRoomLabel = 'Create Room',
   roomsHref,
@@ -75,6 +77,8 @@ export function GameLandingHero({
               gameId={gameId}
               ctaQuickplay={ctaQuickplayLabel}
               ctaQuickplayError={ctaQuickplayErrorLabel}
+              ctaPlayHuman={ctaPlayHumanLabel}
+              ctaPlayHumanError={ctaPlayHumanErrorLabel}
             />
 
             <Link href={roomsHref} className="box-border inline-flex">

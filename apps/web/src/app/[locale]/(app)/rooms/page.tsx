@@ -51,10 +51,7 @@ export default async function RoomsRoute({ params, searchParams }: PageProps) {
 
   return (
     <>
-      <JsonLd
-        id={`json-ld-rooms-${locale}`}
-        data={[breadcrumb]}
-      />
+      <JsonLd id={`json-ld-rooms-${locale}`} data={[breadcrumb]} />
       <Suspense fallback={<RoomsLoading />}>
         <RoomsDataFetcher searchParams={resolvedSearchParams} />
       </Suspense>
@@ -69,6 +66,8 @@ async function RoomsDataFetcher({
 }) {
   const accessToken = await getServerAccessToken();
 
+  const gameId =
+    typeof searchParams.gameId === 'string' ? searchParams.gameId : undefined;
   const status =
     typeof searchParams.status === 'string' ? searchParams.status : 'all';
   const participation =
@@ -89,6 +88,7 @@ async function RoomsDataFetcher({
         search,
         page,
         limit: 12,
+        gameId,
       },
       {
         token: accessToken || undefined,
@@ -99,5 +99,5 @@ async function RoomsDataFetcher({
     handleSsrFetchError('rooms', error);
   }
 
-  return <RoomsClient initialData={initialData} />;
+  return <RoomsClient initialData={initialData} gameId={gameId} />;
 }

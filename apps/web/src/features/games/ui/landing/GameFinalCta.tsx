@@ -11,6 +11,8 @@ export function GameFinalCta({
   gamesHref,
   ctaQuickplayLabel = 'Play Instant Match',
   ctaQuickplayErrorLabel = 'Matchmaking Error',
+  ctaPlayHumanLabel,
+  ctaPlayHumanErrorLabel,
   browseRoomsLabel = 'Browse Active Rooms',
   backToGamesLabel = 'All Games',
 }: GameFinalCtaProps) {
@@ -30,6 +32,8 @@ export function GameFinalCta({
           gameId={gameId}
           ctaQuickplay={ctaQuickplayLabel}
           ctaQuickplayError={ctaQuickplayErrorLabel}
+          ctaPlayHuman={ctaPlayHumanLabel}
+          ctaPlayHumanError={ctaPlayHumanErrorLabel}
         />
 
         <Link href={roomsHref} className="box-border inline-flex">

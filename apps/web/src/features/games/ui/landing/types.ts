@@ -34,6 +34,8 @@ export interface GameLandingHeroProps {
   chips?: string[];
   ctaQuickplayLabel?: string;
   ctaQuickplayErrorLabel?: string;
+  ctaPlayHumanLabel?: string;
+  ctaPlayHumanErrorLabel?: string;
   browseRoomsLabel?: string;
   createRoomLabel?: string;
   roomsHref: string;
@@ -153,6 +155,8 @@ export interface GameFinalCtaProps {
   gamesHref: string;
   ctaQuickplayLabel?: string;
   ctaQuickplayErrorLabel?: string;
+  ctaPlayHumanLabel?: string;
+  ctaPlayHumanErrorLabel?: string;
   browseRoomsLabel?: string;
   backToGamesLabel?: string;
 }

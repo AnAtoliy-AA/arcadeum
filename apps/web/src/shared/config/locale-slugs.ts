@@ -55,8 +55,8 @@ export type SlugKey = keyof typeof EN_SLUGS;
 
 /**
  * Localized first-segment slugs per locale. Nested segments
- * (e.g. `games/create`, `games/rooms`, `payment/success`) stay in
- * English to keep the change scoped to the top-level keyword.
+ * (e.g. `games/create`, `payment/success`) stay in English to keep the
+ * change scoped to the top-level keyword.
  *
  * Cyrillic locales (ru, by) use ASCII transliteration for cleaner
  * encoded URLs in browsers and Search Console.

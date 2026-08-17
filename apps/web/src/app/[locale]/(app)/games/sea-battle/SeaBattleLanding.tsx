@@ -155,6 +155,7 @@ export default function SeaBattleLanding({
         chips: landing.hero.chips,
         ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        ctaPlayHumanLabel: landing.hero.ctaPlayHuman,
         browseRoomsLabel: landing.hero.ctaRooms,
         createRoomLabel: landing.hero.ctaPlay,
         roomsHref,
@@ -220,6 +221,7 @@ export default function SeaBattleLanding({
         gamesHref,
         ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        ctaPlayHumanLabel: landing.hero.ctaPlayHuman,
         browseRoomsLabel: landing.hero.ctaRooms,
         backToGamesLabel: landing.breadcrumb.games,
       }}

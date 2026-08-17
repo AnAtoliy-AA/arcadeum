@@ -39,6 +39,8 @@ export function UnifiedGameLanding({
         chips={hero.chips}
         ctaQuickplayLabel={hero.ctaQuickplayLabel}
         ctaQuickplayErrorLabel={hero.ctaQuickplayErrorLabel}
+        ctaPlayHumanLabel={hero.ctaPlayHumanLabel}
+        ctaPlayHumanErrorLabel={hero.ctaPlayHumanErrorLabel}
         browseRoomsLabel={hero.browseRoomsLabel}
         createRoomLabel={hero.createRoomLabel}
         roomsHref={hero.roomsHref}
@@ -120,6 +122,8 @@ export function UnifiedGameLanding({
         gamesHref={finalCta.gamesHref}
         ctaQuickplayLabel={finalCta.ctaQuickplayLabel}
         ctaQuickplayErrorLabel={finalCta.ctaQuickplayErrorLabel}
+        ctaPlayHumanLabel={finalCta.ctaPlayHumanLabel}
+        ctaPlayHumanErrorLabel={finalCta.ctaPlayHumanErrorLabel}
         browseRoomsLabel={finalCta.browseRoomsLabel}
         backToGamesLabel={finalCta.backToGamesLabel}
       />

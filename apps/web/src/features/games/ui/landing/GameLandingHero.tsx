@@ -89,7 +89,7 @@ export function GameLandingHero({
 
             {createRoomHref ? (
               <Link href={createRoomHref} className="box-border inline-flex">
-                <Button variant="ghost" size="lg">
+                <Button variant="victory" size="lg">
                   {createRoomLabel}
                 </Button>
               </Link>

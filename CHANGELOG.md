@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.40] - 2026-08-17
+
+### Fixed
+- fix oversized turn badge typography on sea battle player board (ARC-ui-fixes)
+- allow clearing selection on invalid combo click (ARC-ui-fixes)
+- improve mobile card selection and normalize CriticalGame typography (ARC-ui-fixes)
+- unify badges, remove AccentPill, and enhance lobby layout (ARC-ui-fixes)
+
+
 ## [1.25.39] - 2026-08-17
 
 ### Added

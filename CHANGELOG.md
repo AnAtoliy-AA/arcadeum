@@ -7,18 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add chess post-game analysis with eval graph, mistake flags and move timeline (ARC-882)
+
 ## [1.25.44] - 2026-08-17
 
 ### Added
+
 - add i18n keys for ranked mode and tiers (ARC-881)
 - surface ranked mode across create flow, lobbies and results (ARC-881)
 - add web ranking model, api, store and RatingBadge (ARC-881)
 - add backend ranked ELO module and integrate with game results (ARC-881)
 
 ### Documentation
+
 - add changelog entry for ranked/ELO ratings (ARC-881)
 - mark ranked/ELO skill ratings as implemented (ARC-881)
-
 
 ## [1.25.43] - 2026-08-17
 

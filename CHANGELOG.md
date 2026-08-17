@@ -7,165 +7,182 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- screen-reader support for game boards: live announcements, keyboard navigation, and cell labels (ARC-897)
+
 ## [1.25.38] - 2026-08-17
 
 ### Added
-- rework home hero with multi-game showcase and vector art (ARC-hero-rework)
 
+- rework home hero with multi-game showcase and vector art (ARC-hero-rework)
 
 ## [1.25.37] - 2026-08-17
 
 ### Fixed
+
 - validate room id and use eq filter in Atlas mirror query
 - keep react-native 0.86.2 and expo-constants 18.x for Expo SDK 54
 
 ### Refactored
-- extract room participant utilities and use next router in BuyGemsButton
 
+- extract room participant utilities and use next router in BuyGemsButton
 
 ## [1.25.36] - 2026-08-17
 
 ### Improved
-- eliminate home page layout shift from streaming skeleton
 
+- eliminate home page layout shift from streaming skeleton
 
 ## [1.25.35] - 2026-08-16
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.25.34] - 2026-08-16
 
 ### Added
+
 - add powerup replay, spectator visibility, and SCSS grid layout
 
 ### Improved
+
 - delegate cell hover events and isolate sunkCellSet to eliminate redundant board rerenders
 - replace O(N) player finds with aliveMap in team-rotation utils and engine
 - eliminate O(N) finds with Maps/Sets, structuredClone, and memoize hot paths
 
 ### Refactored
-- clean up dead UI components and optimize rendering
 
+- clean up dead UI components and optimize rendering
 
 ## [1.25.33] - 2026-08-16
 
 ### Added
+
 - rework cookie policy page with modern UI and sticky navigation
 - add reusable TableOfContents component to shared UI library and integrate into legal pages
 - rework terms and privacy policy pages with modern UI and sticky navigation
 
 ### Fixed
+
 - render SettingsPage synchronously during SSR to prevent layout shift on refresh
 - center settings page layout using shared Container
 
 ### Documentation
+
 - update lastUpdated date on cookies policy across all locales to August 2026
 - update lastUpdated date on legal terms and privacy policies to August 2026
-
 
 ## [1.25.32] - 2026-08-16
 
 ### Fixed
-- add missing communityBy import to by.ts
 
+- add missing communityBy import to by.ts
 
 ## [1.25.31] - 2026-08-16
 
 ### Added
-- add setting to control rules popup on room entry (ARC-settings)
 
+- add setting to control rules popup on room entry (ARC-settings)
 
 ## [1.25.30] - 2026-08-16
 
 ### Added
+
 - include error reasons for failed social platforms in Telegram breakdown (ARC-201) (ARC-201)
 - display failed platforms in Telegram breakdown (ARC-201) (ARC-201)
-
 
 ## [1.25.29] - 2026-08-16
 
 ### Fixed
+
 - encrypt token cookies at rest
 - always set Secure flag on auth token cookies
 - show real country/region and all games
 
-
 ## [1.25.28] - 2026-08-16
 
 ### Fixed
-- run Release workflow only on main merges, not tag pushes
 
+- run Release workflow only on main merges, not tag pushes
 
 ## [1.25.27] - 2026-08-16
 
 ### Fixed
+
 - replace YAML anchors with plain job conditions
 - remove [skip ci] from version bump so release PR checks run
-
 
 ## [1.25.26] - 2026-08-16
 
 ### Added
+
 - unify music state and persist player settings
 
 ### Fixed
+
 - reduce sea battle field status text size
 - distinct message bubble background in game chat
 - consistent control panel toggles and distinct chat message bubbles
 - viewport-fit game room, visible widget borders, chat layout
 
 ### Refactored
-- extract shared glass bubble classes in ChatMessage
 
+- extract shared glass bubble classes in ChatMessage
 
 ## [1.25.25] - 2026-08-16
 
 ### Added
+
 - add shared AccentPill badge, use it in home featured games and shop rarity labels
 
 ### Fixed
+
 - always mint theme CSS vars so button backgrounds survive reloads
 - replace option buttons with divs to avoid default white background
 - use var(--color) for dropdown option text instead of var(--textSecondary)
 - remove duplicate auth link and polish language select dropdown
 
 ### Improved
-- eliminate announcement banner and font-swap layout shift (CLS)
 
+- eliminate announcement banner and font-swap layout shift (CLS)
 
 ## [1.25.24] - 2026-08-15
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.25.23] - 2026-08-15
 
 ### Added
+
 - format post result social platform list with checkmarks (ARC-201) (ARC-201)
 
 ### Fixed
+
 - add emoji definition in sendResultMessage (ARC-201) (ARC-201)
 - fix TikTok Postiz settings properties for successful posting (ARC-201) (ARC-201)
-
 
 ## [1.25.22] - 2026-08-15
 
 ### Improved
+
 - cut home page critical-path bytes for Lighthouse
 
 ### Refactored
-- remove redundant DOM wrappers and nested main landmarks
 
+- remove redundant DOM wrappers and nested main landmarks
 
 ## [1.25.21] - 2026-08-15
 
 ### Fixed
+
 - repair layouts and clicks broken by CSS-migration quirks
 
 ### Refactored
+
 - remove Tamagui runtime shims and migration leftovers
 - remove Tamagui migration leftovers and fix CI build
 - drop Tamagui migration leftovers after Tailwind switch
@@ -178,27 +195,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - migrate app shell from Tamagui to Tailwind classes
 
 ### Documentation
+
 - replace all Tamagui references with Tailwind guidance
 - mark tamagui-to-tailwind plan as complete
-
 
 ## [1.25.20] - 2026-08-15
 
 ### Added
+
 - optimize short video length to 15s total for maximum engagement (ARC-201) (ARC-201)
 - enhance short captions for virality & engagement (ARC-201) (ARC-201)
 
 ### Fixed
-- use domcontentloaded and 60s timeout to prevent navigation failures (ARC-201) (ARC-201)
 
+- use domcontentloaded and 60s timeout to prevent navigation failures (ARC-201) (ARC-201)
 
 ## [1.25.19] - 2026-08-15
 
 ### Added
+
 - footer dropdowns open by default on desktop (ARC-912) (ARC-912)
 - port home page to tailwind utility classes (ARC-912) (ARC-912)
 
 ### Fixed
+
 - resolve CodeQL warnings in Modal component (ARC-912) (ARC-912)
 - add modal focus management and select keyboard navigation (ARC-912) (ARC-912)
 - restore custom dropdown behavior in Select for e2e (ARC-912) (ARC-912)
@@ -212,112 +232,117 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - strip button animations in e2e and fix tailwind class override order (ARC-912) (ARC-912)
 
 ### Improved
+
 - drop tamagui from home route bundle and self-host font (ARC-912) (ARC-912)
 
 ### Refactored
+
 - dedupe hero variant data, fix hero locale, clean dead code (ARC-912) (ARC-912)
 - port button to tailwind and trim redundant props and variants (ARC-912) (ARC-912)
-
 
 ## [1.25.18] - 2026-08-13
 
 ### Added
+
 - add /version command to show bot versions (ARC-201) (ARC-201)
 - add Other Scenario regenerate button (ARC-201) (ARC-201)
 - support unlimited video regenerations via task-bot (ARC-201) (ARC-201)
 - add X/Twitter posting via Postiz (ARC-201) (ARC-201)
 
 ### Fixed
-- remove unused fs and exec imports in telegram service (ARC-201) (ARC-201)
 
+- remove unused fs and exec imports in telegram service (ARC-201) (ARC-201)
 
 ## [1.25.17] - 2026-08-12
 
 ### Fixed
-- replace Play & Earn CTA with Play Online Now gaming CTAs (ARC-201) (ARC-201)
 
+- replace Play & Earn CTA with Play Online Now gaming CTAs (ARC-201) (ARC-201)
 
 ## [1.25.16] - 2026-08-12
 
 ### Fixed
-- set mode 0o666 on pending json files for write access (ARC-201) (ARC-201)
 
+- set mode 0o666 on pending json files for write access (ARC-201) (ARC-201)
 
 ## [1.25.15] - 2026-08-12
 
 ### Fixed
+
 - clean up task-bot.handlers.ts syntax and exports (ARC-201) (ARC-201)
 - properly forward handleCallbackQuery to task-bot.callbacks (ARC-201) (ARC-201)
 - re-export handleCallbackQuery from task-bot.handlers (ARC-201) (ARC-201)
 
-
 ## [1.25.14] - 2026-08-12
 
 ### Fixed
-- process inline callback buttons for all users and add callback logging (ARC-201) (ARC-201)
 
+- process inline callback buttons for all users and add callback logging (ARC-201) (ARC-201)
 
 ## [1.25.13] - 2026-08-12
 
 ### Fixed
-- attach all command handlers and callback_query:data listener in onApplicationBootstrap (ARC-201) (ARC-201)
 
+- attach all command handlers and callback_query:data listener in onApplicationBootstrap (ARC-201) (ARC-201)
 
 ## [1.25.12] - 2026-08-12
 
 ### Fixed
-- handle sf_confirm approval callback and register /shorts in all_private_chats scope (ARC-201) (ARC-201)
 
+- handle sf_confirm approval callback and register /shorts in all_private_chats scope (ARC-201) (ARC-201)
 
 ## [1.25.11] - 2026-08-12
 
 ### Fixed
+
 - use port 4005 to avoid collision with be-dev
 - import ShortsFactoryModule in TaskBotModule
-
 
 ## [1.25.10] - 2026-08-12
 
 ### Added
+
 - move Shorts Factory trigger and video previews to task-bot (ARC-201) (ARC-201)
 
 ### Fixed
-- remove unused import in telegram service
 
+- remove unused import in telegram service
 
 ## [1.25.9] - 2026-08-12
 
 ### Fixed
-- fallback to telegram chat if video file not on local disk
 
+- fallback to telegram chat if video file not on local disk
 
 ## [1.25.8] - 2026-08-12
 
 ### Fixed
-- launch shorts factory process asynchronously without blocking on pollForApproval (ARC-201) (ARC-201)
 
+- launch shorts factory process asynchronously without blocking on pollForApproval (ARC-201) (ARC-201)
 
 ## [1.25.7] - 2026-08-12
 
 ### Added
-- register bot slash commands via setMyCommands (ARC-201) (ARC-201)
 
+- register bot slash commands via setMyCommands (ARC-201) (ARC-201)
 
 ## [1.25.6] - 2026-08-12
 
 ### Added
+
 - send video preview with confirm and regenerate inline buttons (ARC-201) (ARC-201)
 - add /shorts command to trigger shorts factory post from Telegram (ARC-201) (ARC-201)
 
 ### Fixed
+
 - remove unused stdout and stderr callback params to resolve eslint error (ARC-201) (ARC-201)
 - increase axios timeout for tg bot approval notification (ARC-201) (ARC-201)
 - fix root playwright browser installation and add website url to end card (ARC-201) (ARC-201)
 
-
 ## [1.25.5] - 2026-08-12
 
 ### Fixed
+
 - use dispatchEvent click calls and fix border-radius check for cross-browser stability in profile-menu and sea-battle E2E tests
 - load all translation bundles in getInitialTranslations to fix SSR hydration warnings on subpages
 - include settings, legal, notifications, referrals, battlePass, and chat in getInitialTranslations to resolve hydration warnings
@@ -334,59 +359,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - align Spinner test role with component implementation
 
 ### Improved
+
 - optimize home performance and fix hero card coordinates math
 - CSS-only spinners, lazy i18n, server-rendered hero, fix translation hydration
 - reduce main-thread work and improve interactivity
 
-
 ## [1.25.4] - 2026-08-11
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.25.3] - 2026-08-11
 
 ### Fixed
+
 - remove GPU-heavy animations from hero kicker, title, and background
 
 ### Refactored
-- remove dead CSS and orphaned class from hero perf cleanup
 
+- remove dead CSS and orphaned class from hero perf cleanup
 
 ## [1.25.2] - 2026-08-10
 
 ### Fixed
-- use ecosystem.config.js for BE start to fix CORS
 
+- use ecosystem.config.js for BE start to fix CORS
 
 ## [1.25.1] - 2026-08-10
 
 ### Fixed
-- copy scripts dir in Dockerfiles and remove stale git locks
 
+- copy scripts dir in Dockerfiles and remove stale git locks
 
 ## [1.25.0] - 2026-08-10
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.24.46] - 2026-08-10
 
 ### Fixed
-- wrap PWA feature text in Text component to fix console error
 
+- wrap PWA feature text in Text component to fix console error
 
 ## [1.24.45] - 2026-08-10
 
 ### Fixed
-- remove duplicate release poster and add Instagram channel
 
+- remove duplicate release poster and add Instagram channel
 
 ## [1.24.44] - 2026-08-10
 
 ### Fixed
+
 - open chat panel on mobile before assertions
 - fix in-game chat e2e tests by adding mock echo and fixing field names
 - use correct navigation URL in in-game-chat e2e tests
@@ -394,39 +421,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - persist session chat message deletion to OCI
 - catch NotFoundException from Atlas in postHistoryNote for quick-play rooms
 
-
 ## [1.24.43] - 2026-08-09
 
 ### Added
-- implement visual, audio and cli enhancements (ARC-SHORTS)
 
+- implement visual, audio and cli enhancements (ARC-SHORTS)
 
 ## [1.24.42] - 2026-08-09
 
 ### Improved
+
 - also gate audio element creation on player visibility
 - reduce network payloads by optimizing assets and deferring audio loading
-
 
 ## [1.24.41] - 2026-08-09
 
 ### Fixed
+
 - fix move logic, win conditions, and rules documentation
 - sync gamesTab rename and manifest update from ARC-logo-updates branch
-
 
 ## [1.24.40] - 2026-08-09
 
 ### Added
+
 - add more shop backgrounds and translations
 
 ### Fixed
-- sync gamesTab rename and manifest update from ARC-logo-updates branch
 
+- sync gamesTab rename and manifest update from ARC-logo-updates branch
 
 ## [1.24.39] - 2026-08-09
 
 ### Fixed
+
 - move connection banner to bottom of screen
 - prevent connection banner from blocking pointer events
 - keep socket connected for anonymous users on games page
@@ -436,19 +464,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - allow anonymous players to send in-game chat messages
 
 ### Documentation
-- add socket architecture reference
 
+- add socket architecture reference
 
 ## [1.24.38] - 2026-08-09
 
 ### Added
+
 - display logo in video end card
 - enhance scenarios, trim white screen and add platform link
-
 
 ## [1.24.37] - 2026-08-09
 
 ### Fixed
+
 - allow video presentation iframe autoplay on mobile safari (ARC-890) (ARC-890)
 - remove force:true from home games slider e2e clicks to fix webkit viewport failures
 - remove force:true from video presentation e2e click to fix Tablet Safari flake
@@ -458,141 +487,150 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - refactor public-announcements test to unit style to fix flaky SIGSEGV
 
 ### Improved
-- optimize home page performance
 
+- optimize home page performance
 
 ## [1.24.36] - 2026-08-09
 
 ### Fixed
-- use anonymous ID for unauthenticated players in quick match
 
+- use anonymous ID for unauthenticated players in quick match
 
 ## [1.24.35] - 2026-08-08
 
 ### Fixed
+
 - remove overflow hidden from chat GlassCard to fix pointer events
 - fix custom eslint set-state-in-effect rule in HeroCardStack
 - optimize pagespeed scores and accessibility, fix hydration mismatch and bg hover
 
-
 ## [1.24.34] - 2026-08-08
 
 ### Added
+
 - add global socket connection status tracking and reconnection banner
 
 ### Fixed
+
 - use try-catch in guardEmit to survive mock-overridden connected state
 - guard chat socket emit against transport crash in E2E
 - prevent ConnectionBanner from blocking E2E test selectors
 - reuse shared chatSocket instead of creating ad-hoc connections
 
 ### Refactored
+
 - use default reconnection for leaderboards socket
 - consolidate walletSocket into shared socket module
-
 
 ## [1.24.33] - 2026-08-07
 
 ### Added
-- add GeoIP redirection and sitemap/rich schema optimization (ARC-890) (ARC-890)
 
+- add GeoIP redirection and sitemap/rich schema optimization (ARC-890) (ARC-890)
 
 ## [1.24.32] - 2026-08-07
 
 ### Added
+
 - add Telegram approval flow for video review
 
 ### Fixed
+
 - replace dynamic require() with static imports for lint compliance
 - add Playwright install to CI/CD and fix Instagram post type
-
 
 ## [1.24.31] - 2026-08-07
 
 ### Fixed
-- fix CI workflow issues across multiple workflows
 
+- fix CI workflow issues across multiple workflows
 
 ## [1.24.30] - 2026-08-07
 
 ### Fixed
+
 - bot turn detection in team mode and mobile-menu e2e timeout
 - lint errors across web and backend (set-state-in-effect, unused imports, any assignments)
 - disable standalone output on Vercel for Next.js 16.3 compat
 
-
 ## [1.24.29] - 2026-08-07
 
 ### Fixed
-- scan wave shows once, weapon sizes, teammate visibility
 
+- scan wave shows once, weapon sizes, teammate visibility
 
 ## [1.24.28] - 2026-08-07
 
 ### Fixed
-- fix checkers multi-step validation and board orientation
 
+- fix checkers multi-step validation and board orientation
 
 ## [1.24.27] - 2026-08-07
 
 ### Added
+
 - use premium spritesheets for avatars and badges (ARC-777) (ARC-777)
 
 ### Fixed
-- decrypt socket payload in handleHistoryNote (ARC-777) (ARC-777)
 
+- decrypt socket payload in handleHistoryNote (ARC-777) (ARC-777)
 
 ## [1.24.26] - 2026-08-06
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.24.25] - 2026-08-06
 
 ### Added
+
 - game picker respects admin visibility and adds translations
 - use create-room game art in picker modal and lazy-load it
 - game picker modal uses SVG symbols and adds category tabs
 - play vs AI hero button opens game picker modal
 
 ### Fixed
+
 - reduce desktop hero padding to keep buttons visible
 - hero section buttons and card overflow on mobile
 
 ### Refactored
-- split oversized game services under 500-line limit
 
+- split oversized game services under 500-line limit
 
 ## [1.24.24] - 2026-08-06
 
 ### Added
-- add field status overlay showing hits, misses, and unexplored cells
 
+- add field status overlay showing hits, misses, and unexplored cells
 
 ## [1.24.23] - 2026-08-06
 
 ### Added
-- add settings gear icon for unauthenticated desktop users
 
+- add settings gear icon for unauthenticated desktop users
 
 ## [1.24.22] - 2026-08-05
 
 ### Added
+
 - admin update abbility to grant shop items to users
 
 ### Fixed
-- avoid any in query condition
 
+- avoid any in query condition
 
 ## [1.24.21] - 2026-08-05
 
 ### Added
+
 - lobby chat with message deletion
 - add scan wave weapon - reveal all ships at battle start
 - scale sonar/radar size with grid dimensions
 
 ### Fixed
+
 - eslint warnings
 - restore ChatLogEntry import in GameChat.tsx
 - resolve lint errors in gateway and sea-battle service
@@ -606,6 +644,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - always show sonar/radar buttons and disable when unavailable
 
 ### Refactored
+
 - extract ChatLogItem and chat helpers to reduce GameChat.tsx below 500 lines
 - clean up formatting in game services and gateway
 - extract SenderName component from ChatMessage
@@ -614,51 +653,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - simplify useGameRoomChat decryption logic
 - extract isSonarDisabled/isRadarDisabled booleans
 
-
 ## [1.24.20] - 2026-08-05
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.24.19] - 2026-08-04
 
 ### Fixed
-- keep ship placement in local state until confirm
 
+- keep ship placement in local state until confirm
 
 ## [1.24.18] - 2026-08-04
 
 ### Fixed
+
 - add @Optional() decorators to GameHistoryRematchService model injections
 - make Atlas connection optional in GameHistoryRematchService
 - add currentPlayerId to TicTacToeBoard for hover cursor with sign
 - fix sea battle rematch button and disable Vercel analytics in e2e
 
-
 ## [1.24.17] - 2026-08-04
 
 ### Fixed
+
 - skip Vercel analytics scripts in non-production environments
 
 ### Improved
+
 - fix MongoDB idle connections and batch N+1 queries (ARC-883)
 
 ### Refactored
-- consolidate game gateways into single-namespace handler registry (ARC-883)
 
+- consolidate game gateways into single-namespace handler registry (ARC-883)
 
 ## [1.24.16] - 2026-08-04
 
 ### Added
+
 - add 5 new premium cyber animal avatars
 - add Cyber Panda & Cyber Cheetah avatars
 - add Supernova and Synthwave themed cosmetics
 
-
 ## [1.24.15] - 2026-08-04
 
 ### Added
+
 - implement smooth serpentine winding curves and expand row padding (ARC-882) (ARC-882)
 - scale up board cells to 22px and tokens to 38px (ARC-882) (ARC-882)
 - scale up board cells, tokens, and turn badge sizes (ARC-882) (ARC-882)
@@ -671,6 +712,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add AI bot difficulty support for Chess and Checkers (ARC-880) (ARC-880)
 
 ### Fixed
+
 - fix matchmaking portal unmount logic and update E2E test scripts
 - replace Tamagui Dialog.Portal with direct createPortal to fix CI rendering
 - use locale-aware routes in footer to fix identical links a11y issue
@@ -681,75 +723,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - correct matchmaking and empty state text assertions
 - correct url assertion with literal comma in homepage test
 
-
 ## [1.24.14] - 2026-08-02
 
 ### Fixed
-- use ecosystem.config.js for PM2 and fix Socket.IO CORS on OCI
 
+- use ecosystem.config.js for PM2 and fix Socket.IO CORS on OCI
 
 ## [1.24.13] - 2026-08-02
 
 ### Added
+
 - enable PM2 cluster mode for 3x BE instances
 - add OCI deployment support with standalone output
-
 
 ## [1.24.12] - 2026-08-02
 
 ### Added
+
 - add @vercel/analytics for detailed performance monitoring
 
 ### Fixed
+
 - destructure wallet balance to pass ESLint rule
 - resolve all build warnings
-
 
 ## [1.24.11] - 2026-08-02
 
 ### Added
+
 - switch default MongoDB connection to Atlas for shared data
 - add Atlas-to-local MongoDB sync script
 - add reserve BE failover with automatic client-side fallback
 
 ### Fixed
-- archive abandoned games to Atlas before cleanup
 
+- archive abandoned games to Atlas before cleanup
 
 ## [1.24.10] - 2026-08-01
 
 ### Fixed
-- add missing providers to GitHubModule
 
+- add missing providers to GitHubModule
 
 ## [1.24.9] - 2026-08-01
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.24.8] - 2026-08-01
 
 ### Refactored
-- remove mimo engine, use opencode only
-- remove mimo engine, use opencode only
 
+- remove mimo engine, use opencode only
+- remove mimo engine, use opencode only
 
 ## [1.24.7] - 2026-08-01
 
 ### Documentation
-- update roadmap with growth plan and current status (ARC-ROADMAP)
 
+- update roadmap with growth plan and current status (ARC-ROADMAP)
 
 ## [1.24.6] - 2026-08-01
 
 ### Added
+
 - auto-cleanup old videos + Instagram + multi-theme (ARC-212) (ARC-212)
 - dual output (full video + short clip), stable selectors (ARC-212) (ARC-212)
 - add gameplay recording script (ARC-212) (ARC-212)
 - add arcadeum.games end card to videos
 
 ### Fixed
+
 - Instagram posting via Postiz (ARC-212) (ARC-212)
 - audio in shorts + random themes + varied card play (ARC-212) (ARC-212)
 - animated end card + faster navigation (ARC-212) (ARC-212)
@@ -760,19 +805,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fetch audio tracks dynamically from CDN tracks.json
 - fix OCI deployment and add multi-platform support
 
-
 ## [1.24.5] - 2026-08-01
 
 ### Added
+
 - cache achievement definitions in achievements service
 - add Redis caching to public announcements fetch
 - import AppCacheModule globally in Appmodule
 - add AppCacheModule configuration with Redis/Memory fallback support
 
 ### Fixed
+
 - resolve mongoose model typecast warning in achievements service cache
 
 ### Improved
+
 - implement Redis Pub/Sub adapter support in CompressedIoAdapter
 - implement active announcement cache eviction on mutations
 - enable Socket.IO WebSocket compression adapter
@@ -782,140 +829,145 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add compound index for player-stat-record query path
 
 ### Documentation
-- add environment variable documentation for APP_CACHE_TTL_SECONDS
 
+- add environment variable documentation for APP_CACHE_TTL_SECONDS
 
 ## [1.24.4] - 2026-08-01
 
 ### Added
+
 - add Cyber Falcon & Gorilla avatars and restrict ARC pricing to gems
 - add Cyber Leopard and Cyber Eagle Elite avatars
 - add 24 new premium cosmetics including magma, oceanic, and sakura themes
 
-
 ## [1.24.3] - 2026-07-31
 
 ### Fixed
+
 - resolve react-hooks/set-state-in-effect error in HeroBackground
 - remove aria-label mismatch on install PWA button
 
 ### Improved
+
 - optimize hero background images and split SCSS
 
 ### Refactored
-- simplify ObjectId string conversion in auth and payment-notes
 
+- simplify ObjectId string conversion in auth and payment-notes
 
 ## [1.24.2] - 2026-07-31
 
 ### Fixed
+
 - fix remaining CI failures from GamesPage and GameVariantSelector
 - fix @arcadeum/ui test failures from Tamagui duplicate packages
 - add parens for nullish coalescing in GameVariantSelector
 - resolve lint and backend e2e test failures from dependabot upgrades
 
-
 ## [1.24.1] - 2026-07-31
 
 ### Fixed
+
 - add standalone mongo transaction fallback to shop services
 - resolve cookie domain and standalone mongo transaction fallback
-
 
 ## [1.24.0] - 2026-07-31
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.179] - 2026-07-31
 
 ### Fixed
-- replace Math.random with crypto.randomInt in tic-tac-toe bot; explicit currency validation in wallet query
 
+- replace Math.random with crypto.randomInt in tic-tac-toe bot; explicit currency validation in wallet query
 
 ## [1.23.178] - 2026-07-31
 
 ### Fixed
-- update appleboy/ssh-action to v1.0.3 in deploy workflows
 
+- update appleboy/ssh-action to v1.0.3 in deploy workflows
 
 ## [1.23.177] - 2026-07-31
 
 ### Added
+
 - db health check
 
 ### Fixed
-- use ConnectionStates enum for readyState comparison
 
+- use ConnectionStates enum for readyState comparison
 
 ## [1.23.176] - 2026-07-31
 
 ### Fixed
+
 - use randomInt to avoid biased modulo in code generation
 - replace Math.random() with crypto APIs and sanitize query inputs
-
 
 ## [1.23.175] - 2026-07-31
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.174] - 2026-07-31
 
 ### Added
-- restyle hero h1 with Arcadeum Games two-line layout
 
+- restyle hero h1 with Arcadeum Games two-line layout
 
 ## [1.23.173] - 2026-07-31
 
 ### Added
-- rename H1 to Arcadeum Games (two lines)
 
+- rename H1 to Arcadeum Games (two lines)
 
 ## [1.23.172] - 2026-07-31
 
 ### Improved
-- disable3D effects and animation on mobile for faster LCP
 
+- disable3D effects and animation on mobile for faster LCP
 
 ## [1.23.171] - 2026-07-31
 
 ### Fixed
-- add image quality 80 to allowed qualities config
 
+- add image quality 80 to allowed qualities config
 
 ## [1.23.170] - 2026-07-31
 
 ### Fixed
+
 - equalize hero card sizing and vertical alignment
 
 ### Improved
-- optimize images, polyfills, lazy-load, bfcache headers
 
+- optimize images, polyfills, lazy-load, bfcache headers
 
 ## [1.23.169] - 2026-07-31
 
 ### Fixed
-- increase hero card fan offset for touch target spacing
 
+- increase hero card fan offset for touch target spacing
 
 ## [1.23.168] - 2026-07-31
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.167] - 2026-07-31
 
 ### Added
-- add dev OCI deploy, branch selection, api-dev.arcadeum.games, fix music URL
 
+- add dev OCI deploy, branch selection, api-dev.arcadeum.games, fix music URL
 
 ## [1.23.166] - 2026-07-30
 
 ### Fixed
+
 - make Atlas URI optional in all environments including production
 - register PlayerStats models on default connection for DI resolution
 - conditionally register Atlas MongooseModule.forFeature
@@ -923,63 +975,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add missing test providers for dual MongoDB services
 
 ### Refactored
-- rename MONGODB_URI to MONGODB_OCI_URI for clarity
 
+- rename MONGODB_URI to MONGODB_OCI_URI for clarity
 
 ## [1.23.165] - 2026-07-29
 
 ### Added
-- add neon and solar themed name colors and frames
 
+- add neon and solar themed name colors and frames
 
 ## [1.23.164] - 2026-07-29
 
 ### Fixed
-- show sea battle boards after game over (ARC-899)
 
+- show sea battle boards after game over (ARC-899)
 
 ## [1.23.163] - 2026-07-28
 
 ### Fixed
-- scope auth cookies to .arcadeum.games with SameSite=Lax
 
+- scope auth cookies to .arcadeum.games with SameSite=Lax
 
 ## [1.23.162] - 2026-07-28
 
 ### Fixed
-- support feedback preflight and production API domains
 
+- support feedback preflight and production API domains
 
 ## [1.23.161] - 2026-07-28
 
 ### Fixed
+
 - fix critical rules modal in active games
 - pass onOpenRules through widget tree and fix hand background bleed
 - lift RulesModal to Game.tsx outside widget tree
 - add background to Critical hand section so scene covers full widget
 - fix Critical card images not loading and rules modal not opening in lobby
 
-
 ## [1.23.160] - 2026-07-28
 
 ### Added
-- husky develop branch pysh protection
 
+- husky develop branch pysh protection
 
 ## [1.23.159] - 2026-07-28
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.23.158] - 2026-07-28
 
 ### Fixed
+
 - encrypt sensitive email storage to resolve CodeQL alert
 - add typeof guards, URL validation, crypto fixes, and workflow permissions for CodeQL compliance
 - correct CodeQL suppression comment query ID (ARC-XXX)
 - resolve all CodeQL security alerts across codebase
-
 
 ## [1.23.102] - 2026-07-27
 

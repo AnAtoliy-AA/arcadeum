@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTicTacToeTheme } from '../lib/TicTacToeThemeContext';
+import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import type {
   CellValue,
   TicTacToePlayer,
@@ -49,6 +50,7 @@ interface CellRendererProps {
   theme: TicTacToeTheme;
   cellStyle: React.CSSProperties;
   playerCursor?: string;
+  cellFocusProps: Record<string, unknown>;
   onCellClick: (row: number, col: number) => void;
   onHover: (row: number, col: number) => void;
   onLeave: () => void;
@@ -71,6 +73,7 @@ function CellRenderer({
   theme,
   cellStyle,
   playerCursor,
+  cellFocusProps,
   onCellClick,
   onHover,
   onLeave,
@@ -131,6 +134,7 @@ function CellRenderer({
           ? `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: ${ownerInfo.mark} mark`
           : `Row ${rowIdx - origin.row}, Column ${colIdx - origin.col}: empty`
       }
+      {...cellFocusProps}
       onClick={() => onCellClick(rowIdx, colIdx)}
       onMouseEnter={() => {
         if (!cell && !disabled) onHover(rowIdx, colIdx);
@@ -335,6 +339,13 @@ function TicTacToeBoardImpl({
         margin: '0 auto',
       };
 
+  const { gridProps, getCellProps } = useBoardKeyboardNavigation({
+    rows,
+    cols,
+    disabled: disabled || isScrollable,
+    onActivate: ({ row, col }) => onCellClick(row, col),
+  });
+
   const cellStyle: React.CSSProperties = isScrollable
     ? {
         width: `${CELL_PX}px`,
@@ -373,6 +384,7 @@ function TicTacToeBoardImpl({
         aria-label={ariaLabel}
         data-testid="ttt-board"
         style={gridStyle}
+        {...gridProps}
       >
         {board.map((row, rowIdx) =>
           row.map((cell, colIdx) => (
@@ -394,6 +406,7 @@ function TicTacToeBoardImpl({
               theme={theme}
               cellStyle={cellStyle}
               playerCursor={playerCursor}
+              cellFocusProps={getCellProps(rowIdx, colIdx)}
               onCellClick={handleCellClick}
               onHover={handleHover}
               onLeave={handleLeave}

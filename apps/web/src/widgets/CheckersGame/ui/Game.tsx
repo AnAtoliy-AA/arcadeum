@@ -157,6 +157,24 @@ function CheckersGameImpl({
     void handleRematch([], undefined);
   }, [handleRematch]);
 
+  const a11yAnnouncement = useMemo(() => {
+    if (!snapshot) return undefined;
+    if (isGameOver) {
+      if (snapshot.isDraw) return t('games.checkers_v1.gameOver.draw');
+      const result = computeGameResult(isGameOver, currentUserId, {
+        winnerId: snapshot.winnerId,
+        isDraw: snapshot.isDraw,
+        backendResult: undefined,
+      });
+      return t(
+        `games.checkers_v1.gameOver.${result === 'won' ? 'won' : 'lost'}`,
+      );
+    }
+    return myTurn
+      ? t('games.checkers_v1.status.yourTurn')
+      : t('games.checkers_v1.status.waiting');
+  }, [snapshot, isGameOver, myTurn, currentUserId, t]);
+
   const [selectedPiece, setSelectedPiece] = useState<{
     row: number;
     col: number;
@@ -377,6 +395,7 @@ function CheckersGameImpl({
         isMyTurn={myTurn}
         isGameOver={isGameOver}
         loading={!snapshot}
+        a11yAnnouncement={a11yAnnouncement}
         headerProps={{
           variantEmoji: variantTokens.emoji,
           title: 'Checkers',

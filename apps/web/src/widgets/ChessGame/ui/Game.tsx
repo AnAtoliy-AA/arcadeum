@@ -28,6 +28,7 @@ import {
 } from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
+import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoardPanel } from './ChessBoardPanel';
 import { PromotionModal } from './PromotionModal';
@@ -375,6 +376,19 @@ function ChessGameImpl({
   const onRematchClick = useCallback(() => {
     void handleRematch([], undefined);
   }, [handleRematch]);
+
+  const a11yAnnouncement = useMemo(
+    () =>
+      getChessA11yAnnouncement(
+        displaySnapshot,
+        isGameOver,
+        currentUserId,
+        resolveDisplayNameBound,
+        t,
+      ),
+    [displaySnapshot, isGameOver, currentUserId, resolveDisplayNameBound, t],
+  );
+
   if (!room) return null;
   if (isLobby)
     return (
@@ -458,6 +472,7 @@ function ChessGameImpl({
       isMyTurn={displayMyTurn}
       isGameOver={isGameOver}
       loading={!snapshot}
+      a11yAnnouncement={a11yAnnouncement}
       headerProps={{
         variantEmoji: '♟',
         title: t('games.chess_v1.name'),

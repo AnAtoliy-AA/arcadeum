@@ -152,6 +152,7 @@ export const esMessages = {
     },
     status: {
       turn: 'Turno de {{player}}',
+      yourTurn: 'Tu turno',
       white: 'Blancas',
       black: 'Negras',
       toMove: 'a mover',

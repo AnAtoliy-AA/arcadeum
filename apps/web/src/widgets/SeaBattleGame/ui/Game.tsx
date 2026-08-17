@@ -412,6 +412,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       <GameWidgetContainer
         headerProps={headerProps}
         isGameOver={isGameOver}
+        a11yAnnouncement={turnStatus.text}
         board={
           <SeaBattleBoards
             isPlacementPhase={isPlacementPhase}

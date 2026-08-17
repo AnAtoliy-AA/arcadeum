@@ -160,6 +160,12 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         borderColor: theme.cellBorder,
         ...(isTeammate ? { cursor: 'not-allowed' } : {}),
       }}
+      role="grid"
+      aria-label={
+        isMe
+          ? 'Your fleet'
+          : `${resolveDisplayName(player.playerId, 'Opponent')}'s board`
+      }
       gridSize={boardSize}
       onClick={handleGridClick}
       onMouseMove={!isMe && onCellHover ? handleGridMouseMove : undefined}

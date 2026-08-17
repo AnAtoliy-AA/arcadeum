@@ -7,6 +7,7 @@ import { SubtitleText } from './SubtitleText';
 import { TurnIndicator, resolveTurnStatus } from './TurnIndicator';
 import { EmoteBubble } from './EmoteBubble';
 import type { EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
+import { LiveRegion } from '@/shared/lib/a11y';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   WidgetFullscreenContext,
@@ -55,6 +56,8 @@ interface GameWidgetContainerProps {
   showChatPopup?: boolean;
   loading?: boolean;
   containerBackground?: string;
+  /** Screen-reader announcement for dynamic game events (turn, check, game over). */
+  a11yAnnouncement?: string;
 }
 
 export const GameWidgetContainer = React.memo(function GameWidgetContainer({
@@ -70,6 +73,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   showChatPopup = true,
   loading = false,
   containerBackground,
+  a11yAnnouncement,
 }: GameWidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const activeEmotes = useActiveEmotes();
@@ -204,6 +208,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             )}
             {modals}
           </Container>
+          {a11yAnnouncement && <LiveRegion message={a11yAnnouncement} />}
           {showChatPopup && <GameChatPopupOverlay />}
           {activeEmotes.emotes.map((emote) => (
             <EmoteBubble

@@ -158,6 +158,8 @@ export const ruMessages = {
     },
     status: {
       turn: 'Ход: {{player}}',
+      yourTurn: 'Ваш ход',
+      waiting: 'Ожидание противника...',
       winner: '{{player}} победил',
       draw: 'Ничья',
     },

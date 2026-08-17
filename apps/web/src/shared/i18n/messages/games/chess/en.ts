@@ -151,6 +151,7 @@ export const enMessages = {
     },
     status: {
       turn: "{{player}}'s turn",
+      yourTurn: 'Your turn',
       white: 'White',
       black: 'Black',
       toMove: 'to move',

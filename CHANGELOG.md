@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.25.45] - 2026-08-17
 
-- add chess post-game analysis with eval graph, mistake flags and move timeline (ARC-882)
+### Added
+- add i18n keys for post-game analysis (ARC-882)
+- surface analysis behind a toggle in the chess result modal (ARC-882)
+- add post-game analysis UI components (ARC-882)
+- add chess position evaluator and analysis engine (ARC-882)
+
+### Documentation
+- add changelog entry for chess post-game analysis (ARC-882)
+
 
 ## [1.25.44] - 2026-08-17
 

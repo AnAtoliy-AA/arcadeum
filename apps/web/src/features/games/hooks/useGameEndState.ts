@@ -3,6 +3,7 @@ import { useRematch } from './useRematch';
 import { useGameResultModal } from './useGameResultModal';
 import type { GameResult, ResultMessages } from './useGameResultModal';
 import type { GameSessionSummary, GameOptions } from '@/shared/types/games';
+import type { RatingDelta } from '@/features/ranking/model/types';
 
 export interface PlayerInfo {
   playerId: string;
@@ -46,6 +47,7 @@ export function useGameEndState({
   resultMessages,
   rematchGameOptions,
   players = [],
+  currentUserId,
 }: UseGameEndStateOptions) {
   const rematch = useRematch({ roomId, gameOptions: rematchGameOptions });
 
@@ -55,6 +57,16 @@ export function useGameEndState({
     resultMessages: defaultMessages,
     dismiss,
   } = useGameResultModal(session, result, resultMessages, isGameOver);
+
+  // On ranked matches the backend attaches `ratingDeltas` to
+  // `session.state.gameResult` — surface the local player's change so the
+  // result modal can show "+12 ★ Gold".
+  const ratingDelta = useMemo<RatingDelta | null>(() => {
+    if (!currentUserId || !session?.state) return null;
+    const gameResult = session.state.gameResult as
+      { ratingDeltas?: Record<string, RatingDelta> } | undefined;
+    return gameResult?.ratingDeltas?.[currentUserId] ?? null;
+  }, [session?.state, currentUserId]);
 
   const handleResultRematchClick = useCallback(() => {
     if (players.length > 1) {
@@ -71,6 +83,7 @@ export function useGameEndState({
       sharedResult,
       resultMessages: resultMessages || defaultMessages,
       dismissResult: dismiss,
+      ratingDelta,
 
       rematchLoading: rematch.rematchLoading,
       rematchError: rematch.rematchError,
@@ -96,6 +109,7 @@ export function useGameEndState({
       resultMessages,
       defaultMessages,
       dismiss,
+      ratingDelta,
       rematch.rematchLoading,
       rematch.rematchError,
       rematch.showRematchModal,

@@ -14,6 +14,7 @@ import { create } from 'zustand';
 export interface MatchmakingStatus {
   gameId: string;
   variant?: string;
+  ranked?: boolean;
   queueSize: number;
   position: number;
   estimatedWaitSeconds: number;
@@ -23,16 +24,18 @@ interface MatchmakingState {
   isQueued: boolean;
   gameId: string | null;
   variant: string | null;
+  ranked: boolean | null;
   startTime: number | null;
   queueSize: number | null;
   position: number | null;
   estimatedWaitSeconds: number | null;
-  startQueue: (gameId: string, variant?: string) => void;
+  startQueue: (gameId: string, variant?: string, ranked?: boolean) => void;
   stopQueue: () => void;
   setQueued: (
     queued: boolean,
     gameId?: string | null,
     variant?: string | null,
+    ranked?: boolean | null,
   ) => void;
   setStatus: (status: MatchmakingStatus) => void;
 }
@@ -41,15 +44,17 @@ export const useMatchmakingStore = create<MatchmakingState>((set, get) => ({
   isQueued: false,
   gameId: null,
   variant: null,
+  ranked: null,
   startTime: null,
   queueSize: null,
   position: null,
   estimatedWaitSeconds: null,
-  startQueue: (gameId, variant) => {
+  startQueue: (gameId, variant, ranked) => {
     set({
       isQueued: true,
       gameId,
       variant: variant ?? null,
+      ranked: ranked ?? null,
       startTime: Date.now(),
       queueSize: null,
       position: null,
@@ -63,6 +68,7 @@ export const useMatchmakingStore = create<MatchmakingState>((set, get) => ({
         isQueued: false,
         gameId: null,
         variant: null,
+        ranked: null,
         startTime: null,
         queueSize: null,
         position: null,
@@ -70,11 +76,12 @@ export const useMatchmakingStore = create<MatchmakingState>((set, get) => ({
       });
     }
   },
-  setQueued: (queued, gameId = null, variant = null) => {
+  setQueued: (queued, gameId = null, variant = null, ranked = null) => {
     set({
       isQueued: queued,
       gameId,
       variant,
+      ranked,
       startTime: queued ? Date.now() : null,
       queueSize: null,
       position: null,
@@ -95,7 +102,7 @@ export function useMatchmaking() {
   const store = useMatchmakingStore();
 
   const joinQueue = useCallback(
-    async (gameId: string, variant?: string) => {
+    async (gameId: string, variant?: string, ranked?: boolean) => {
       let userId = snapshot.userId;
       if (!userId) {
         await getAnonymousIdWithSignature();
@@ -103,11 +110,12 @@ export function useMatchmaking() {
       }
       if (!userId) return;
 
-      store.startQueue(gameId, variant);
+      store.startQueue(gameId, variant, ranked);
       void emitEncrypted(gameSocket, 'games.matchmaking.join', {
         userId,
         gameId,
         variant,
+        ranked,
       });
     },
     [snapshot.userId, store],
@@ -127,6 +135,7 @@ export function useMatchmaking() {
     isQueued: store.isQueued,
     gameId: store.gameId,
     variant: store.variant,
+    ranked: store.ranked,
     startTime: store.startTime,
     queueSize: store.queueSize,
     position: store.position,

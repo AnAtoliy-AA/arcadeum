@@ -4,14 +4,19 @@ import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { BotCountSelector, BotCountLabel } from './lobbyStyles';
 
-export type BotDifficulty = 'easy' | 'medium' | 'hard';
+export type BotDifficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
 interface DifficultySelectorProps {
   value: BotDifficulty;
   onChange: (difficulty: BotDifficulty) => void;
 }
 
-const DIFFICULTY_OPTIONS: BotDifficulty[] = ['easy', 'medium', 'hard'];
+const DIFFICULTY_OPTIONS: BotDifficulty[] = [
+  'easy',
+  'medium',
+  'hard',
+  'expert',
+];
 
 export function DifficultySelector({
   value,
@@ -23,6 +28,7 @@ export function DifficultySelector({
     easy: t('games.lobby.difficultyEasy'),
     medium: t('games.lobby.difficultyMedium'),
     hard: t('games.lobby.difficultyHard'),
+    expert: t('games.lobby.difficultyExpert'),
   };
 
   return (

@@ -293,10 +293,12 @@ export const esMessages = {
     difficultyEasy: 'Fácil',
     difficultyMedium: 'Media',
     difficultyHard: 'Difícil',
+    difficultyExpert: 'Experto',
     difficultyEasyDesc:
       'Movimientos aleatorios con jugadas inteligentes ocasionales',
     difficultyMediumDesc: 'Apuntado inteligente con estrategia de bloqueo',
     difficultyHardDesc: 'Apuntado de precisión basado en probabilidad',
+    difficultyExpertDesc: 'Búsqueda de profundidad máxima, sin errores',
   },
   shared: {
     rules: {

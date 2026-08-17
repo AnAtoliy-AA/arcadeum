@@ -286,9 +286,11 @@ export const byMessages = {
     difficultyEasy: 'Лёгка',
     difficultyMedium: 'Сярэдня',
     difficultyHard: 'Цяжка',
+    difficultyExpert: 'Эксперт',
     difficultyEasyDesc: 'Выпадковыя хады з рэдкімі разумнымі гульнямі',
     difficultyMediumDesc: 'Разумнае навядзенне са стратэгіяй блакіроўкі',
     difficultyHardDesc: 'Дакладнае навядзенне на аснове верагоднасцяў',
+    difficultyExpertDesc: 'Пошук максімальнай глыбіні, без памылак',
   },
   shared: {
     rules: {

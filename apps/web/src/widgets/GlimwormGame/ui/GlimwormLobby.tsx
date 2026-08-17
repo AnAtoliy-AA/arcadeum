@@ -265,6 +265,7 @@ export function GlimwormLobby({
       theme={GLIMWORM_THEME}
       optionsSlot={optionsSlot}
       enableBots={true}
+      showDifficulty={false}
     />
   );
 }

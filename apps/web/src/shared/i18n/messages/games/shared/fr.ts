@@ -294,10 +294,12 @@ export const frMessages = {
     difficultyEasy: 'Facile',
     difficultyMedium: 'Moyen',
     difficultyHard: 'Difficile',
+    difficultyExpert: 'Expert',
     difficultyEasyDesc:
       'Coups aléatoires avec des plays intelligents occasionnels',
     difficultyMediumDesc: 'Ciblage intelligent avec stratégie verrouillée',
     difficultyHardDesc: 'Ciblage de précision basé sur la probabilité',
+    difficultyExpertDesc: 'Recherche en profondeur maximale, sans erreur',
   },
   shared: {
     rules: {

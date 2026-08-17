@@ -21,12 +21,15 @@ jest.mock('../common/guards/geo-block.guard', () => ({
 jest.mock('../common/lib/geo-block-bootstrap', () => ({
   GeoBlockBootstrap: class {},
 }));
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { HydratedDocument, Model, Types } from 'mongoose';
 import { randomUUID } from 'crypto';
+import {
+  getSharedMongoUri,
+  closeTestDatabase,
+} from '../../test/integration-helpers';
 import { GemsModule } from './gems.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { WalletService } from '../wallet/wallet.service';
@@ -87,7 +90,7 @@ const buildPaypalGateway = () => {
 // ---------------------------------------------------------------------------
 
 describe('GemsModule (integration)', () => {
-  let replSet: MongoMemoryReplSet;
+  let moduleRef: TestingModule;
   let purchases: GemPurchasesService;
   let conversion: GemConversionService;
   let packages: GemPackagesService;
@@ -105,13 +108,12 @@ describe('GemsModule (integration)', () => {
     process.env.PAYPAL_RETURN_URL ??= 'http://test.local/payment/return';
     process.env.PAYPAL_CANCEL_URL ??= 'http://test.local/payment/cancel';
 
-    replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
-    const uri = replSet.getUri();
+    const uri = getSharedMongoUri();
     paypalGateway = buildPaypalGateway();
 
-    const moduleRef = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [
-        MongooseModule.forRoot(uri),
+        MongooseModule.forRoot(uri, { dbName: 'gems-integration' }),
         ConfigModule.forRoot({ isGlobal: true }),
         AuthModule,
         WalletModule,
@@ -146,7 +148,7 @@ describe('GemsModule (integration)', () => {
   }, 60_000);
 
   afterAll(async () => {
-    await replSet.stop();
+    await closeTestDatabase(moduleRef);
   }, 30_000);
 
   afterEach(async () => {

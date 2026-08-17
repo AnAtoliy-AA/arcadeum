@@ -14,9 +14,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import {
+  getSharedMongoUri,
+  closeTestDatabase,
+} from '../../../test/integration-helpers';
 import { GameVisibilityController } from './game-visibility.controller';
 import { GameVisibilityService } from './game-visibility.service';
 import { GameVisibility, GameVisibilitySchema } from './game-visibility.schema';
@@ -34,13 +37,13 @@ interface ExecCtxLike {
 
 describe('GameVisibility integration', () => {
   let app: INestApplication<App>;
-  let mongo: MongoMemoryServer;
+  let moduleRef: TestingModule;
 
   beforeAll(async () => {
-    mongo = await MongoMemoryServer.create();
-    const moduleRef: TestingModule = await Test.createTestingModule({
+    const uri = getSharedMongoUri();
+    moduleRef = await Test.createTestingModule({
       imports: [
-        MongooseModule.forRoot(mongo.getUri()),
+        MongooseModule.forRoot(uri, { dbName: 'game-visibility-integration' }),
         MongooseModule.forFeature([
           { name: GameVisibility.name, schema: GameVisibilitySchema },
         ]),
@@ -65,7 +68,7 @@ describe('GameVisibility integration', () => {
 
   afterAll(async () => {
     await app.close();
-    await mongo.stop();
+    await closeTestDatabase(moduleRef);
   }, 30_000);
 
   it('PUT then GET returns the new tier', async () => {

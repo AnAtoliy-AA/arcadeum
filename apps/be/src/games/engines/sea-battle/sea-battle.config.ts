@@ -1,8 +1,14 @@
 import { SHIPS, getDefaultShipCount } from './sea-battle.constants';
+import { isAiDifficulty } from '../../ai-difficulty';
 
 export function validateSeaBattleConfig(
   config: Record<string, unknown>,
 ): boolean {
+  const aiDifficulty = config.aiDifficulty;
+  if (aiDifficulty !== undefined && !isAiDifficulty(aiDifficulty)) {
+    return false;
+  }
+
   const gridSize = config.gridSize;
   if (gridSize !== undefined) {
     if (typeof gridSize !== 'number' || ![10, 15, 20].includes(gridSize)) {

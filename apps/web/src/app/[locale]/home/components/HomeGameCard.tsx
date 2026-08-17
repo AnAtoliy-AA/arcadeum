@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
-import { AccentPill, IconButton, LinkButton } from '@arcadeum/ui';
+import { Badge, IconButton, LinkButton } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes, useLocale } from '@/shared/config/useRoutes';
 import type { Routes } from '@/shared/config/routes';
@@ -94,12 +94,13 @@ export function HomeGameCard({
           className="featured-card-cover-link absolute inset-0 z-[1] flex items-end p-[18px] text-inherit no-underline focus-visible:rounded-2xl focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-[-4px]"
           aria-label={t(game.nameKey)}
         >
-          <AccentPill
+          <Badge
             accent={accent}
+            dot
             className="absolute left-[14px] top-[14px]"
           >
             {game.genre} · {game.pace}
-          </AccentPill>
+          </Badge>
 
           {game.isDemo ? (
             <span

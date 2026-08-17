@@ -19,6 +19,7 @@ interface HandZoneProps {
   isFullscreen?: boolean;
   showCardName: boolean;
   showCardDescription: boolean;
+  onClearSelection?: () => void;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
@@ -44,7 +45,7 @@ export function HandZone(props: HandZoneProps) {
   if (isMobile) {
     return (
       <div
-        className="flex flex-col items-stretch w-full gap-2 px-2 pt-2 -mx-2"
+        className="flex flex-col items-stretch w-full min-w-0 gap-2 px-2 pt-2"
         data-testid="hand-zone"
         data-layout="mobile"
       >
@@ -67,6 +68,7 @@ export function HandZone(props: HandZoneProps) {
           isFullscreen={props.isFullscreen}
           showCardName={props.showCardName}
           showCardDescription={props.showCardDescription}
+          onClearSelection={props.onClearSelection}
           onPlay={props.onPlay}
           onDraw={props.onDraw}
           onNope={props.onNope}
@@ -81,7 +83,7 @@ export function HandZone(props: HandZoneProps) {
 
   return (
     <div
-      className="flex flex-row items-stretch w-full gap-3 px-2 py-2 -mx-3"
+      className="flex flex-row items-stretch w-full min-w-0 gap-3 px-2 py-2"
       data-testid="hand-zone"
       data-layout="desktop"
     >
@@ -96,6 +98,7 @@ export function HandZone(props: HandZoneProps) {
         isFullscreen={props.isFullscreen}
         showCardName={props.showCardName}
         showCardDescription={props.showCardDescription}
+        onClearSelection={props.onClearSelection}
         onToggleCardName={props.onToggleCardName}
         onToggleCardDescription={props.onToggleCardDescription}
         onPlay={props.onPlay}

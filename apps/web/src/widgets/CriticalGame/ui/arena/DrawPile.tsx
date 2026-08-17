@@ -1,5 +1,4 @@
-'use client';
-
+import { Typography } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalCard } from '../../types';
 import { DeckDisplay } from '../DeckDisplay';
@@ -69,18 +68,24 @@ export function DrawPile({
       >
         <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
       </CardSlot>
-      <span
-        className="text-[12px] font-extrabold tracking-[0.4px] opacity-[0.85]"
+      <Typography
+        uiSize="xs"
+        weight="800"
+        alpha="high"
+        className="tracking-[0.4px]"
         data-testid="arena-draw-pile-count"
       >
         {t('games.table.state.deck')} · {count}
-      </span>
-      <span
-        className="text-[48px] font-semibold tracking-[0.4px] uppercase opacity-[0.6]"
+      </Typography>
+      <Typography
+        uiSize="xs"
+        weight="600"
+        alpha="medium"
+        className="uppercase tracking-[0.4px]"
         data-testid="arena-draw-pile-hint"
       >
         {t('games.table.arena.drawHint')}
-      </span>
+      </Typography>
     </div>
   );
 }

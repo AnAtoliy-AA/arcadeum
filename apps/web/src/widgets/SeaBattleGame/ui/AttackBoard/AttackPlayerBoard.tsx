@@ -267,33 +267,26 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           style={{ backgroundColor: theme.boardBackground }}
         >
           {showBadge && (
-            <div
-              className={`flex flex-row items-center gap-1 px-2 rounded-[8px] border ${isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}`}
-              style={{
-                backgroundColor: isCurrentTurn
-                  ? 'rgba(239,68,68,0.25)'
-                  : 'rgba(251,191,36,0.2)',
-                borderColor: isCurrentTurn
-                  ? 'rgba(239,68,68,0.4)'
-                  : 'rgba(245,158,11,0.4)',
-              }}
-            >
-              <span className="text-[48px]">{isCurrentTurn ? '🎯' : '🛡️'}</span>
-              <span
-                className="text-[40px] font-bold uppercase"
-                style={{
-                  color: isCurrentTurn ? 'var(--danger)' : 'var(--warning)',
-                }}
-              >
-                {isCurrentTurn
+            <BadgePill
+              icon={isCurrentTurn ? '🎯' : '🛡️'}
+              label={
+                isCurrentTurn
                   ? t(
                       'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
                     ).replace('🎯 ', '')
                   : t(
                       'games.sea_battle_v1.table.players.defendingBadge' as TranslationKey,
-                    )}
-              </span>
-            </div>
+                    )
+              }
+              bg={
+                isCurrentTurn ? 'rgba(239,68,68,0.25)' : 'rgba(251,191,36,0.2)'
+              }
+              border={
+                isCurrentTurn ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'
+              }
+              color={isCurrentTurn ? 'var(--danger)' : 'var(--warning)'}
+              className={isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}
+            />
           )}
         </BadgeWrapper>
         <PlayerSection

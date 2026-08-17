@@ -9,7 +9,6 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { getPosts } from '@/features/blog/registry';
 import BlogClient from './BlogClient';
-import { BlogPostList } from './BlogPostList';
 
 export async function generateMetadata({
   params,
@@ -20,12 +19,6 @@ export async function generateMetadata({
   return isLocale(locale) ? buildPageMetadata({ locale, page: 'blog' }) : {};
 }
 
-/**
- * Blog index page. Fetches translations and the published-post list on
- * the server, then hands them to the client view. The CollectionPage
- * JSON-LD carries real ItemList entries so Google can render the blog
- * as a curated list rather than an empty container.
- */
 export default async function BlogPage({
   params,
 }: {
@@ -36,7 +29,17 @@ export default async function BlogPage({
   const messages = await getTranslations(locale);
   const t = messages.pages?.blog;
   const routes = buildRoutes(locale);
-  const posts = getPosts(locale);
+  const rawPosts = getPosts(locale);
+
+  const posts = rawPosts.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt,
+    publishedAt: p.publishedAt,
+    readingTimeMinutes: p.readingTimeMinutes,
+    href: routes.blogPost(p.slug),
+    tags: p.tags,
+  }));
 
   const collectionPage = buildCollectionPageJsonLd({
     locale,
@@ -45,10 +48,11 @@ export default async function BlogPage({
     description: messages.seo?.blog?.description,
     items: posts.map((p) => ({
       name: p.title,
-      url: `${appConfig.siteUrl}${routes.blogPost(p.slug)}`,
+      url: `${appConfig.siteUrl}${p.href}`,
       description: p.excerpt,
     })),
   });
+
   const breadcrumb = buildBreadcrumbJsonLd({
     locale,
     homeLabel: messages.navigation?.homeTab ?? 'Home',
@@ -66,19 +70,7 @@ export default async function BlogPage({
         id={`json-ld-blog-${locale}`}
         data={[collectionPage, breadcrumb]}
       />
-      <BlogClient t={t} />
-      <BlogPostList
-        locale={locale}
-        posts={posts.map((p) => ({
-          slug: p.slug,
-          title: p.title,
-          excerpt: p.excerpt,
-          publishedAt: p.publishedAt,
-          readingTimeMinutes: p.readingTimeMinutes,
-          href: routes.blogPost(p.slug),
-          tags: p.tags,
-        }))}
-      />
+      <BlogClient t={t} posts={posts} locale={locale} />
     </>
   );
 }

@@ -49,7 +49,6 @@ export type FooterProps = {
   sections?: FooterSection[];
   craftedWithLoveLabel?: string;
   stableReleaseLabel?: string;
-  /** Extra classes applied to the <footer> element (e.g. responsive padding). */
   className?: string;
   'data-testid'?: string;
 };
@@ -70,31 +69,46 @@ const CURRENT_YEAR = 2026;
 type CollapsibleColumnProps = {
   title: string;
   children: ReactNode;
-  defaultOpen?: boolean;
+  defaultMobileOpen?: boolean;
 };
 
-const CollapsibleColumn = ({ title, children, defaultOpen = true }: CollapsibleColumnProps) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+const CollapsibleColumn = ({
+  title,
+  children,
+  defaultMobileOpen = false,
+}: CollapsibleColumnProps) => {
+  const [isOpen, setIsOpen] = useState(defaultMobileOpen);
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
 
   return (
-    <div className="flex min-w-[180px] flex-col gap-4 max-[800px]:min-w-full max-[800px]:gap-0 max-[800px]:border-b max-[800px]:border-[var(--glassBorder)] max-[800px]:pb-4">
-      <div
+    <div className="flex min-w-[180px] flex-col gap-4 max-[800px]:min-w-full max-[800px]:gap-0 max-[800px]:border-b max-[800px]:border-[var(--glassBorder)] max-[800px]:py-1">
+      <button
+        type="button"
         onClick={toggle}
-        className="flex cursor-pointer items-center justify-between py-4 max-[800px]:pointer-events-none max-[800px]:py-0 max-[800px]:pb-2"
+        aria-expanded={isOpen}
+        className="flex w-full cursor-pointer items-center justify-between py-4 text-left max-[800px]:py-3 min-[801px]:pointer-events-none"
       >
         <Typography variant="heading" uiSize="sm" weight="700" tracking="sm">
           {title.toUpperCase()}
         </Typography>
         <span
-          className="max-[800px]:hidden"
-          style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
+          className={cx(
+            'transition-transform duration-200 min-[801px]:hidden text-[var(--colorMuted)]',
+            isOpen ? 'rotate-180' : 'rotate-0',
+          )}
         >
           <ChevronDownIcon size={16} />
         </span>
-      </div>
+      </button>
 
-      <div className={cx('flex flex-col gap-3 max-[800px]:flex max-[800px]:pb-6 max-[800px]:pt-2 max-[800px]:items-center', !isOpen && 'hidden max-[800px]:flex')}>
+      <div
+        className={cx(
+          'flex flex-col gap-3 min-[801px]:flex',
+          isOpen
+            ? 'flex pb-4 pt-1 max-[800px]:items-start'
+            : 'hidden min-[801px]:flex',
+        )}
+      >
         {children}
       </div>
     </div>
@@ -181,22 +195,11 @@ export const Footer = memo(function Footer({
 
   return (
     <footer className={cx('w-full', className)} data-testid={dataTestId}>
-      <div
-        className="relative w-full pb-10 pt-12 backdrop-blur-[32px] backdrop-saturate-[1.8] max-[800px]:pb-8 max-[800px]:pt-10"
-        style={{ backgroundColor: 'var(--glassBg)' }}
-      >
-        {/* Top glow border */}
-        <div
-          className="pointer-events-none absolute left-0 right-0 top-0 h-px opacity-80"
-          style={{
-            background:
-              'linear-gradient(90deg, transparent 0%, var(--glass-border) 15%, var(--primaryGradientStart) 50%, var(--glass-border) 85%, transparent 100%)',
-          }}
-        />
+      <div className="relative w-full bg-[var(--glassBg)] pb-10 pt-12 backdrop-blur-[32px] backdrop-saturate-[1.8] max-[800px]:pb-8 max-[800px]:pt-10">
+        <div className="pointer-events-none absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--primaryGradientStart)] to-transparent opacity-80" />
         <Container size="xl">
           <div className="flex w-full flex-wrap justify-between gap-12 max-[800px]:flex-col max-[800px]:items-center max-[800px]:gap-0">
-            {/* Brand column */}
-            <div className="flex min-w-[320px] max-w-[600px] grow-[2] flex-col gap-6 max-[800px]:min-w-full max-[800px]:flex-grow-0 max-[800px]:flex-shrink-0 max-[800px]:items-center max-[800px]:pb-10 max-[800px]:mb-6 max-[800px]:border-b max-[800px]:border-[var(--glassBorder)]">
+            <div className="flex min-w-[320px] max-w-[600px] grow-[2] flex-col gap-6 max-[800px]:mb-6 max-[800px]:min-w-full max-[800px]:flex-grow-0 max-[800px]:flex-shrink-0 max-[800px]:items-center max-[800px]:border-b max-[800px]:border-[var(--glassBorder)] max-[800px]:pb-10">
               <div className="flex flex-col gap-4 max-[800px]:items-center">
                 <Typography
                   variant="heading"
@@ -210,15 +213,19 @@ export const Footer = memo(function Footer({
                 <Typography
                   uiSize="md"
                   alpha="medium"
-                  className="max-[800px]:text-center leading-[24px]"
-                  style={{ maxWidth: 500 }}
+                  className="max-w-[500px] leading-[24px] max-[800px]:text-center"
                 >
                   {description}
                 </Typography>
               </div>
 
               <div className="flex flex-col gap-4 max-[800px]:items-center">
-                <Typography variant="label" uiSize="xs" weight="700" tracking="xl">
+                <Typography
+                  variant="label"
+                  uiSize="xs"
+                  weight="700"
+                  tracking="xl"
+                >
                   {followUsLabel.toUpperCase()}
                 </Typography>
                 <div className="flex flex-wrap gap-3 max-[800px]:justify-center">
@@ -249,17 +256,18 @@ export const Footer = memo(function Footer({
             ))}
           </div>
 
-          {/* Bottom bar */}
           <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-[var(--borderColor)] pt-8 max-[800px]:mt-10 max-[800px]:flex-col max-[800px]:items-center">
             <div className="flex flex-col gap-1 max-[800px]:items-center">
-              <Typography uiSize="sm" alpha="medium" className="max-[800px]:text-center">
-                {copyrightLabel || `© ${CURRENT_YEAR} ${appName}. All rights reserved.`}
+              <Typography
+                uiSize="sm"
+                alpha="medium"
+                className="max-[800px]:text-center"
+              >
+                {copyrightLabel ||
+                  `© ${CURRENT_YEAR} ${appName}. All rights reserved.`}
               </Typography>
               <div className="flex items-center gap-2">
-                <span
-                  className="inline-block h-[6px] w-[6px] rounded-[3px]"
-                  style={{ backgroundColor: 'var(--success)' }}
-                />
+                <span className="inline-block h-[6px] w-[6px] rounded-[3px] bg-[var(--success)]" />
                 <Typography variant="label" uiSize="xs" tracking="xl">
                   {stableReleaseLabel} {versionLabel}
                 </Typography>

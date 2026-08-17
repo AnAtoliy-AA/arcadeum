@@ -1,8 +1,10 @@
+import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
-import { isLocale } from '@/shared/i18n';
-import type { Metadata } from 'next';
+import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
+import { buildRoutes } from '@/shared/config/routes';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
+import { JsonLd } from '@/shared/ui/JsonLd';
 import DevelopersClient from './DevelopersClient';
 
 export async function generateMetadata({
@@ -16,23 +18,31 @@ export async function generateMetadata({
     : {};
 }
 
-/**
- * Developers Page
- * Fetches translations on the server and passes them to DevelopersClient.
- * Use DevelopersClient for client-side only rendering to avoid SSR/client hydration mismatch.
- */
 export default async function DevelopersPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  const messages = await getTranslations();
+  const { locale: rawLocale } = await params;
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const messages = await getTranslations(locale);
   const t = messages.pages?.developers;
+  const routes = buildRoutes(locale);
+
+  const breadcrumb = buildBreadcrumbJsonLd({
+    locale,
+    homeLabel: messages.navigation?.homeTab ?? 'Home',
+    trail: [
+      {
+        name: messages.seo?.developers?.title ?? 'Developers',
+        url: routes.developers,
+      },
+    ],
+  });
 
   return (
     <>
-      <PageBreadcrumb locale={locale} page="developers" />
+      <JsonLd id={`json-ld-developers-${locale}`} data={[breadcrumb]} />
       <DevelopersClient t={t} />
     </>
   );

@@ -1,7 +1,7 @@
 'use client';
-import type { PageTranslations } from '@/shared/i18n/page-translations';
 
-import { useLanguage } from '@/shared/i18n/context';
+import { useState, useMemo } from 'react';
+import Link from 'next/link';
 import {
   PageLayout,
   Container,
@@ -9,123 +9,272 @@ import {
   PageTitle,
   Typography,
   Section,
+  Button,
 } from '@arcadeum/ui';
+import { useLanguage } from '@/shared/i18n/context';
+import { useRoutes } from '@/shared/config/useRoutes';
+import { cx } from '@arcadeum/ui/utils/cx';
+import type { helpEn } from '@/shared/i18n/messages/pages/help/en';
 
-interface HelpPageContentProps {
-  t?: PageTranslations;
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+    ? DeepPartial<U>[]
+    : T[P] extends readonly (infer U)[]
+      ? readonly DeepPartial<U>[]
+      : T[P] extends object
+        ? DeepPartial<T[P]>
+        : T[P];
+};
+
+export type HelpMessages = DeepPartial<typeof helpEn>;
+
+export interface HelpPageContentProps {
+  t?: HelpMessages;
 }
 
 export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
   const { messages } = useLanguage();
-  const t = (messages.pages?.help as unknown as PageTranslations) || initialT;
+  const routes = useRoutes();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [expandedFaqs, setExpandedFaqs] = useState<Record<number, boolean>>({});
+
+  const help = messages.pages?.help ?? initialT;
+  const status = help?.status;
+  const categories = help?.categories ?? [];
+  const faq = help?.faq;
+  const contact = help?.contactChannels;
+
+  const toggleFaq = (index: number) => {
+    setExpandedFaqs((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
+  const filteredFaqItems = useMemo(() => {
+    const items = faq?.items ?? [];
+    if (!searchQuery.trim()) {
+      return items;
+    }
+    const q = searchQuery.toLowerCase();
+    return items.filter(
+      (item) =>
+        Boolean(item?.question?.toLowerCase().includes(q)) ||
+        Boolean(item?.answer?.toLowerCase().includes(q)),
+    );
+  }, [faq?.items, searchQuery]);
 
   return (
     <PageLayout>
-      <Container size="md">
-        <GlassCard>
-          <PageTitle size="xl" gradient>
-            {t?.title}
-          </PageTitle>
-          <Typography variant="caption" alpha="medium">
-            {t?.subtitle}
-          </Typography>
-        </GlassCard>
+      <Container size="xl">
+        <div className="flex flex-col gap-10 py-6">
+          <div className="relative overflow-hidden rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-8 backdrop-blur-xl md:p-12">
+            <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[var(--primary)] opacity-15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-[var(--accent)] opacity-10 blur-3xl" />
 
-        <Section variant="legal">
-          <Typography variant="body" uiSize="md" alpha="high">
-            {t?.description}
-          </Typography>
-        </Section>
+            <div className="relative z-10 flex flex-col items-start gap-4 md:max-w-3xl">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
+                🛡️ {help?.subtitle ?? 'Guides & Knowledge Base'}
+              </span>
+              <PageTitle size="xl" gradient>
+                {help?.title ?? 'Help Center'}
+              </PageTitle>
+              <Typography variant="body" uiSize="lg" alpha="high">
+                {help?.description ??
+                  'Find answers to common questions, gameplay guides, and system troubleshooting.'}
+              </Typography>
 
-        {t?.features && (
-          <Section variant="legal">
-            <div className="flex flex-row items-stretch flex-wrap gap-4">
-              {(
-                t.features as ({ title: string; description: string } | null)[]
-              ).map((feature, index: number) => {
-                if (!feature) return null;
-                return (
-                  <GlassCard
-                    className={
-                      'flex-1 min-w-[280px] p-4 border border-[var(--borderColor)]'
-                    }
-                    key={index}
+              <div className="relative mt-2 w-full max-w-xl">
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={
+                    help?.searchPlaceholder ??
+                    'Search help guides, topics, and FAQs…'
+                  }
+                  className="w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-5 py-3.5 pl-12 text-sm text-[var(--color)] placeholder-[var(--colorMuted)] outline-none backdrop-blur-md transition-all duration-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+                />
+                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-[var(--colorMuted)]">
+                  🔍
+                </span>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 px-2 py-0.5 text-xs text-[var(--colorMuted)] hover:text-white"
                   >
-                    <div className="flex flex-col items-stretch gap-2">
-                      <Typography
-                        className={'font-bold'}
-                        variant="label"
-                        uiSize="md"
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-4 backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--success)] opacity-75" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-[var(--success)]" />
+              </span>
+              <Typography variant="label" uiSize="sm" weight="700">
+                {status?.operational ?? 'All Systems Operational'}
+              </Typography>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--colorMuted)]">
+              <span>{status?.gateway ?? 'WebSocket Gateway: 100% Online'}</span>
+              <span>•</span>
+              <span>{status?.cloud ?? 'Game Engine Cloud: Low Latency'}</span>
+            </div>
+          </div>
+
+          <Section>
+            <div className="flex flex-col gap-6">
+              <Typography variant="heading" uiSize="xl" weight="800">
+                Browse by Topic
+              </Typography>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {categories.map((category) => {
+                  const isSelected = selectedCategory === category?.id;
+                  return (
+                    <button
+                      key={category?.id ?? category?.title}
+                      type="button"
+                      onClick={() =>
+                        setSelectedCategory(
+                          isSelected ? null : (category?.id ?? null),
+                        )
+                      }
+                      className="cursor-pointer text-left"
+                    >
+                      <GlassCard
+                        className={cx(
+                          'flex h-full flex-col justify-between gap-4 p-6 transition-all duration-200 hover:-translate-y-1',
+                          isSelected
+                            ? 'border-[var(--primary)] bg-[var(--glassBg)] ring-2 ring-[var(--primary)]/30'
+                            : 'hover:border-[var(--glassBorder)]',
+                        )}
                       >
-                        {feature.title}
-                      </Typography>
-                      <Typography variant="body" uiSize="sm" alpha="medium">
-                        {feature.description}
-                      </Typography>
-                    </div>
-                  </GlassCard>
-                );
-              })}
+                        <div className="flex flex-col gap-3">
+                          <span className="text-3xl">{category?.icon}</span>
+                          <Typography
+                            variant="heading"
+                            uiSize="md"
+                            weight="700"
+                          >
+                            {category?.title}
+                          </Typography>
+                          <Typography variant="body" uiSize="sm" alpha="medium">
+                            {category?.description}
+                          </Typography>
+                        </div>
+                        <span className="text-xs font-semibold text-[var(--primary)]">
+                          {isSelected
+                            ? 'Selected Category ▾'
+                            : 'Explore Guides →'}
+                        </span>
+                      </GlassCard>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </Section>
-        )}
 
-        {(() => {
-          const faq = t?.faq as
-            | {
-                heading?: string;
-                items?: ({ question: string; answer: string } | null)[];
-              }
-            | undefined;
-          const items =
-            faq?.items?.filter(
-              (i): i is { question: string; answer: string } =>
-                !!i && !!i.question && !!i.answer,
-            ) ?? [];
-          if (!items.length) return null;
-          return (
-            <Section variant="legal">
-              {/*
-               * `id="faq"` is the anchor the FAQPage JSON-LD's
-               * SpeakableSpecification points at. Stable across builds
-               * (hashed class names) so Google Assistant
-               * can locate the block reliably.
-               */}
-              <div className="flex flex-col items-stretch gap-3" id="faq">
-                <Typography className={'font-bold'} variant="label" uiSize="lg">
-                  {faq?.heading}
+          <Section>
+            <div className="flex flex-col gap-6" id="faq">
+              <div className="flex items-center justify-between">
+                <Typography variant="heading" uiSize="xl" weight="800">
+                  {faq?.heading ?? 'Frequently Asked Questions'}
                 </Typography>
-                <div className="flex flex-col items-stretch gap-2">
-                  {items.map((item, index) => (
-                    <GlassCard
-                      className={'p-4 border border-[var(--borderColor)]'}
-                      key={index}
-                    >
-                      <div className="flex flex-col items-stretch gap-1">
-                        <Typography
-                          className={'font-bold'}
-                          variant="label"
-                          uiSize="md"
-                        >
-                          {item.question}
-                        </Typography>
-                        <Typography variant="body" uiSize="sm" alpha="medium">
-                          {item.answer}
-                        </Typography>
-                      </div>
-                    </GlassCard>
-                  ))}
-                </div>
+                {searchQuery && (
+                  <span className="text-xs text-[var(--colorMuted)]">
+                    {filteredFaqItems.length} result
+                    {filteredFaqItems.length === 1 ? '' : 's'}
+                  </span>
+                )}
               </div>
-            </Section>
-          );
-        })()}
 
-        <Section variant="legal">
-          <Typography variant="body" uiSize="md" alpha="medium">
-            {t?.comingSoon}
-          </Typography>
-        </Section>
+              {filteredFaqItems.length === 0 ? (
+                <GlassCard className="p-8 text-center">
+                  <Typography variant="body" uiSize="md" alpha="medium">
+                    {help?.noResults
+                      ? help.noResults.replace('{query}', searchQuery)
+                      : `No help articles found matching "${searchQuery}".`}
+                  </Typography>
+                </GlassCard>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {filteredFaqItems.map((item, idx) => {
+                    const isOpen = expandedFaqs[idx] ?? false;
+                    return (
+                      <GlassCard key={idx} className="p-0">
+                        <button
+                          type="button"
+                          onClick={() => toggleFaq(idx)}
+                          aria-expanded={isOpen}
+                          className="flex w-full cursor-pointer items-center justify-between p-5 text-left"
+                        >
+                          <Typography variant="label" uiSize="md" weight="700">
+                            {item?.question}
+                          </Typography>
+                          <span
+                            className={cx(
+                              'text-lg text-[var(--colorMuted)] transition-transform duration-200',
+                              isOpen ? 'rotate-180' : 'rotate-0',
+                            )}
+                          >
+                            ▾
+                          </span>
+                        </button>
+                        {isOpen && (
+                          <div className="border-t border-[var(--borderColor)] p-5 pt-3">
+                            <Typography
+                              variant="body"
+                              uiSize="sm"
+                              alpha="medium"
+                              className="leading-relaxed"
+                            >
+                              {item?.answer}
+                            </Typography>
+                          </div>
+                        )}
+                      </GlassCard>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </Section>
+
+          {contact && (
+            <div className="grid grid-cols-1 gap-6 rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-8 backdrop-blur-xl md:grid-cols-3 md:p-10">
+              <div className="flex flex-col gap-2 md:col-span-1">
+                <Typography variant="heading" uiSize="lg" weight="800">
+                  {contact.title}
+                </Typography>
+                <Typography variant="body" uiSize="sm" alpha="medium">
+                  {contact.subtitle}
+                </Typography>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-start gap-4 md:col-span-2 md:justify-end">
+                <Link href={routes.community}>
+                  <Button variant="secondary" size="md">
+                    💬 {contact.discord}
+                  </Button>
+                </Link>
+                <Link href={routes.contact}>
+                  <Button variant="primary" size="md">
+                    ✉️ {contact.tickets}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
       </Container>
     </PageLayout>
   );

@@ -1,4 +1,4 @@
-import { helpFaq } from './help-faq/by';
+import { helpBy } from './help/by';
 import { adminAnnouncementsBy } from './admin-announcements/by';
 import { adminTournamentsBy } from './admin-tournaments/by';
 import { walletBy } from './wallet/by';
@@ -17,6 +17,9 @@ import { adminUsersBy } from './admin-users/by';
 import { adminBulkRewardsBy } from './admin-bulk-rewards/by';
 import { friendsBy } from './friends/by';
 import { communityBy } from './community/by';
+import { rewardsBy } from './rewards/by';
+import { developersBy } from './developers/by';
+import { blogBy } from './blog/by';
 
 export const by = {
   admin: {
@@ -154,30 +157,7 @@ export const by = {
       },
     },
   },
-  blog: {
-    title: 'Гульнявы блог',
-    subtitle: 'Навіны, парады і гісторыі ад супольнасці',
-    description:
-      "Будзьце ў курсе апошніх кіраўніцтваў, аб'яў, стратэгічных парадаў і гісторый гульцоў з усяго свету.",
-    features: [
-      {
-        title: 'Апошнія навіны',
-        description:
-          'Даведвайцеся першымі пра новыя гульні, функцыі і абнаўленні.',
-      },
-      {
-        title: 'Парады профі',
-        description:
-          'Вывучайце прасунутыя стратэгіі ад топавых гульцоў супольнасці.',
-      },
-      {
-        title: 'Гісторыі гульцоў',
-        description:
-          'Чытайце пра вопыт і дасягненні нашых самых адданых геймераў.',
-      },
-    ],
-    comingSoon: "Артыкулы з'явяцца хутка!",
-  },
+  blog: blogBy,
   community: communityBy,
   cookies: {
     title: 'Палітыка выкарыстання файлаў cookie',
@@ -214,54 +194,8 @@ export const by = {
       },
     },
   },
-  developers: {
-    title: 'Распрацоўшчыкам',
-    subtitle: 'Стварайце на платформе Arcadeum',
-    description:
-      "Вывучайце нашы API і інструменты для распрацоўшчыкаў. Поўная дакументацыя і доступ да sandbox з'явяцца ў бліжэйшы час.",
-    features: [
-      {
-        title: 'REST API',
-        description:
-          'Доступ да дадзеных гульцоў, гісторыі гульняў і табліц лідараў праз бяспечны API.',
-      },
-      {
-        title: 'WebSocket падзеі',
-        description:
-          'Інтэгруйце гульнявыя абнаўленні ў рэжыме рэальнага часу ў свае праграмы.',
-      },
-      {
-        title: 'Sandbox асяроддзе',
-        description:
-          'Тестуйце свае інтэграцыі ў бяспечным асяроддзі перад запускам.',
-      },
-    ],
-    comingSoon: 'Партал распрацоўшчыкаў хутка адкрыецца!',
-  },
-  help: {
-    title: 'Цэнтр дапамогі',
-    subtitle: 'Знайдзіце адказы на пашыраныя пытанні',
-    description:
-      'Прагледзьце артыкулы аб гульнявым працэсе, кіраванні акаўнтам, аплаце і многім іншым. Наша каманда падтрымкі гатовая дапамагчы.',
-    features: [
-      {
-        title: 'Пошук па FAQ',
-        description: 'Хутка знаходзіце адказы ў нашай шырокай базе ведаў.',
-      },
-      {
-        title: 'Прамая падтрымка',
-        description:
-          'Стварыце тыкет і атрымайце персанальную дапамогу ад нашай каманды.',
-      },
-      {
-        title: 'Дапамога супольнасці',
-        description:
-          'Камунікуйце з іншымі гульцамі, каб дзяліцца парадамі і вырашаць праблемы.',
-      },
-    ],
-    faq: helpFaq,
-    comingSoon: "Цэнтр дапамогі хутка з'явіцца.",
-  },
+  developers: developersBy,
+  help: helpBy,
   leaderboards: {
     title: 'Табліцы лідараў',
     subtitle: 'Даведайцеся сваё месца сярод лепшых гульцоў',
@@ -429,29 +363,7 @@ export const by = {
     ],
     comingSoon: "Глабальнае табліцы лідараў хутка з'явяцца!",
   },
-  rewards: {
-    title: 'Узнагароды',
-    subtitle: 'Атрымлівайце эксклюзіўныя бонусы падчас гульні',
-    description:
-      'Наша праграма ўзнагароджання створана, каб падзякаваць самым актыўным гульцам. Зарабляйце ачкі за кожны матч і абменьвайце іх на прэміум-прадметы.',
-    features: [
-      {
-        title: 'Штодзённыя бонусы',
-        description: 'Заходзьце кожны дзень, каб забраць сваю ўзнагароду.',
-      },
-      {
-        title: 'Сезонныя пропускі',
-        description:
-          'Адкрывайце ўнікальныя ўзнагароды, удзельнічаючы ў сезонных падзеях.',
-      },
-      {
-        title: 'Рэферальная праграма',
-        description:
-          'Запрашайце сяброў і атрымлівайце бонусы за кожнага новага гульца.',
-      },
-    ],
-    comingSoon: 'Крама ўзнагарод хутка адкрыецца!',
-  },
+  rewards: rewardsBy,
   wallet: walletBy,
   gems: gemsBy,
   adminGemPackages: adminGemPackagesBy,

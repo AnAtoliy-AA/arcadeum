@@ -11,6 +11,7 @@ import {
   type BoardPosition,
   type PieceColor,
 } from '../types';
+import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import './styles/animations.scss';
 
 interface ChessBoardProps {
@@ -102,11 +103,36 @@ function ChessBoardImpl({
     return { ranks, files };
   }, [isFlipped]);
 
+  const { gridProps, getCellProps } = useBoardKeyboardNavigation({
+    rows: 8,
+    cols: 8,
+    disabled: !canInteractAny(),
+    onActivate: ({ row, col }) => {
+      const rank = rows.ranks[row];
+      const file = rows.files[col];
+      if (rank !== undefined && file !== undefined) {
+        onSquareClick(file, rank);
+      }
+    },
+  });
+
+  function canInteractAny(): boolean {
+    if (disabled) return false;
+    for (const rank of rows.ranks) {
+      for (const file of rows.files) {
+        const piece = board[rankToFile(rank)]?.[FILES.indexOf(file)] ?? null;
+        if (piece?.color === myColor) return true;
+      }
+    }
+    return false;
+  }
+
   return (
     <div
       role="grid"
       aria-label={ariaLabel ?? 'Chess'}
       data-testid="chess-board"
+      {...gridProps}
       style={{
         position: 'relative',
         width: '100%',
@@ -170,6 +196,8 @@ function ChessBoardImpl({
               else if (lastMoved) bgColor = 'rgba(56, 189, 248, 0.25)';
 
               const isLastFile = rows.files[rows.files.length - 1] === file;
+              const navRow = rows.ranks.indexOf(rank);
+              const navCol = rows.files.indexOf(file);
 
               return (
                 <div
@@ -177,6 +205,7 @@ function ChessBoardImpl({
                   role="gridcell"
                   data-testid={`chess-${file}${rank}`}
                   aria-label={`${file}${rank}${piece ? ` ${piece.color} ${piece.type}` : ''}${selected ? ' selected' : ''}${legalTarget ? ' legal move' : ''}`}
+                  {...getCellProps(navRow, navCol)}
                   draggable={isMyPiece && !disabled}
                   onClick={() => {
                     if (!disabled) onSquareClick(file, rank);

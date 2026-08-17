@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.38] - 2026-08-17
+
+### Added
+- rework home hero with multi-game showcase and vector art (ARC-hero-rework)
+
+
 ## [1.25.37] - 2026-08-17
 
 ### Fixed

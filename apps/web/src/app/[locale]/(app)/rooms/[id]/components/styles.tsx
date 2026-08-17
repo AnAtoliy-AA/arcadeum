@@ -31,8 +31,8 @@ export const formAnimationsCss = `
     100% { opacity: 1; transform: translateY(0) scale(1); }
   }
   @keyframes iconGlow {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.35), 0 4px 20px rgba(139,92,246,0.2); }
-    50% { box-shadow: 0 0 0 12px rgba(139,92,246,0), 0 4px 28px rgba(139,92,246,0.35); }
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
   }
   @keyframes fadeInUp {
     0% { opacity: 0; transform: translateY(8px); }

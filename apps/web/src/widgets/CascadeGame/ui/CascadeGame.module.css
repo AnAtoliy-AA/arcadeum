@@ -307,16 +307,10 @@
 @keyframes cascade-playable {
   0%,
   100% {
-    box-shadow:
-      0 0 0 2px rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.5),
-      0 0 14px rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.32),
-      0 6px 16px rgba(0, 0, 0, 0.4);
+    opacity: 0.8;
   }
   50% {
-    box-shadow:
-      0 0 0 3px rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.8),
-      0 0 26px rgba(var(--cascade-accent-rgb, 167, 139, 250), 0.55),
-      0 6px 16px rgba(0, 0, 0, 0.4);
+    opacity: 1;
   }
 }
 
@@ -813,10 +807,10 @@
 @keyframes cascade-pulse {
   0%,
   100% {
-    transform: scale(1);
+    opacity: 0.85;
   }
   50% {
-    transform: scale(1.06);
+    opacity: 1;
   }
 }
 

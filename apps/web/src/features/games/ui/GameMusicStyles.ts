@@ -8,8 +8,8 @@ export const playerStyles = `
   50% { opacity: 1; }
 }
 @keyframes gameMusicGlow {
-  0%, 100% { box-shadow: 0 8px 32px rgba(129,140,248,0.08), inset 0 1px 0 rgba(255,255,255,0.3); }
-  50% { box-shadow: 0 8px 40px rgba(129,140,248,0.15), inset 0 1px 0 rgba(255,255,255,0.35); }
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
 }
 .game-music-player {
   animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1);

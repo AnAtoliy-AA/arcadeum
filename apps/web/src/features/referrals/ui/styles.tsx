@@ -4,8 +4,8 @@ import { cx } from '@arcadeum/ui/utils/cx';
 // CSS for pseudo-states, keyframes, and hover effects — injected once in ReferralDashboard
 export const referralsStyles = `
   @keyframes referralsGlow {
-    0%, 100% { box-shadow: 0 0 8px rgba(87, 195, 255, 0.3); }
-    50% { box-shadow: 0 0 16px rgba(87, 195, 255, 0.5); }
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
   }
   .referrals-copy-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #7ad7ff; background: transparent; color: #7ad7ff; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .referrals-copy-btn:hover { background: #7ad7ff; color: #050316; }

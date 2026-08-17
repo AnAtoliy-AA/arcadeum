@@ -179,7 +179,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                   fill="#ffffff"
                   style={{
                     pointerEvents: 'none',
-                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.6)',
                   }}
                 >
                   {i + 1}
@@ -247,7 +247,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                   >
                     🏁
                   </text>
@@ -258,7 +258,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                   >
                     ⚡
                   </text>
@@ -269,7 +269,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                   >
                     ⭐
                   </text>
@@ -285,7 +285,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                   >
                     {space.type === 'obstacle'
                       ? '⚡'

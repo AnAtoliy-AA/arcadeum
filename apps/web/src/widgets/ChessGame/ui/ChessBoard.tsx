@@ -295,7 +295,7 @@ function ChessBoardImpl({
                       style={{
                         fontSize: 'clamp(1.2rem, 10cqw, 3.2rem)',
                         lineHeight: 1,
-                        filter: 'drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4))',
+                        textShadow: '0 2px 3px rgba(0, 0, 0, 0.4)',
                         userSelect: 'none',
                         position: 'relative',
                         zIndex: 2,

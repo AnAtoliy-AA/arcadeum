@@ -10,9 +10,9 @@ const cancelStyles = `
   }
 
   @keyframes cancelPulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    0% { opacity: 0.6; }
+    70% { opacity: 1; }
+    100% { opacity: 0.6; }
   }
 
   .cancel-container {

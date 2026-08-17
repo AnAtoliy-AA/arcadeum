@@ -119,6 +119,26 @@ export const enMessages = {
         draw: 'The game ended in a draw. Try a different variant?',
       },
     },
+    analysis: {
+      title: 'Post-game analysis',
+      view: 'View analysis',
+      back: 'Back to result',
+      centipawns: 'cp',
+      empty: 'Not enough moves to analyze.',
+      summary: {
+        inaccuracies: 'Inaccuracies',
+        mistakes: 'Mistakes',
+        blunders: 'Blunders',
+        turningPoint: 'Turning point',
+        finalEval: 'Final evaluation',
+      },
+      quality: {
+        good: 'Good',
+        inaccuracy: 'Inaccuracy',
+        mistake: 'Mistake',
+        blunder: 'Blunder',
+      },
+    },
     actions: {
       move: 'Move piece',
       resign: 'Resign',

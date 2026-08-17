@@ -120,6 +120,26 @@ export const esMessages = {
         draw: 'La partida terminó en empate. ¿Prueba otra variante?',
       },
     },
+    analysis: {
+      title: 'Análisis de la partida',
+      view: 'Ver análisis',
+      back: 'Volver al resultado',
+      centipawns: 'cp',
+      empty: 'No hay suficientes movimientos para analizar.',
+      summary: {
+        inaccuracies: 'Imprecisiones',
+        mistakes: 'Errores',
+        blunders: 'Errores graves',
+        turningPoint: 'Punto de inflexión',
+        finalEval: 'Evaluación final',
+      },
+      quality: {
+        good: 'Bien',
+        inaccuracy: 'Imprecisión',
+        mistake: 'Error',
+        blunder: 'Error grave',
+      },
+    },
     actions: {
       move: 'Mover pieza',
       resign: 'Rendirse',

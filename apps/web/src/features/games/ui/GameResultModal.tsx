@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { TranslationKey } from '@/shared/lib/useTranslation';
@@ -32,6 +32,16 @@ interface GameResultModalProps {
   messages?: { title: string; message?: string };
   /** Ranked-match ELO change for the local player (from ratingDeltas). */
   ratingDelta?: RatingDelta | null;
+  /**
+   * Optional post-game analysis panel shown behind a toggle button. When
+   * `content` renders a heavier component (charts, move lists), provide the
+   * localized toggle labels here so the shared modal stays i18n-agnostic.
+   */
+  analysis?: {
+    content: React.ReactNode;
+    viewLabel: string;
+    backLabel: string;
+  } | null;
 }
 
 // --- Tone (result) styles ---
@@ -61,6 +71,7 @@ export function GameResultModal({
   t,
   messages,
   ratingDelta,
+  analysis,
 }: GameResultModalProps) {
   const isClient = useSyncExternalStore(
     () => () => {},
@@ -70,6 +81,14 @@ export function GameResultModal({
 
   const media = useMediaQuery();
   const { play } = useSound();
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  // Reset the analysis toggle whenever the modal closes (render-phase
+  // adjustment — the recommended alternative to setState inside an effect).
+  const [lastOpen, setLastOpen] = useState(isOpen);
+  if (lastOpen !== isOpen) {
+    setLastOpen(isOpen);
+    if (!isOpen) setShowAnalysis(false);
+  }
   // Play the result sting once when the modal opens (not on every re-render).
   const playedForRef = useRef<GameResultKind | null>(null);
   useEffect(() => {
@@ -143,6 +162,34 @@ export function GameResultModal({
                 delta={ratingDelta.delta}
                 size="md"
               />
+            </div>
+          )}
+
+          {analysis && (
+            <div className="animate-fade-in-up-delay-4 mb-6 flex w-full flex-col gap-3">
+              {showAnalysis ? (
+                <>
+                  <div className="rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(10,14,22,0.6)] p-4">
+                    {analysis.content}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size={media.sm ? 'sm' : 'md'}
+                    onClick={() => setShowAnalysis(false)}
+                  >
+                    {analysis.backLabel}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size={media.sm ? 'sm' : 'md'}
+                  className="w-full"
+                  onClick={() => setShowAnalysis(true)}
+                >
+                  {analysis.viewLabel}
+                </Button>
+              )}
             </div>
           )}
 

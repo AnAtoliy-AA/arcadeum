@@ -58,4 +58,22 @@ describe('settings-storage', () => {
     saveStoredSettings({ showRulesOnRoomEntry: true });
     expect(loadStoredSettings().showRulesOnRoomEntry).toBe(true);
   });
+
+  it.each(['easy', 'medium', 'hard', 'expert'])(
+    'saves and loads the %s AI difficulty',
+    (d) => {
+      saveStoredSettings({
+        aiDifficulty: d as 'easy' | 'medium' | 'hard' | 'expert',
+      });
+      expect(loadStoredSettings().aiDifficulty).toBe(d);
+    },
+  );
+
+  it('ignores an invalid stored AI difficulty', () => {
+    window.localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({ aiDifficulty: 'impossible' }),
+    );
+    expect(loadStoredSettings().aiDifficulty).toBeUndefined();
+  });
 });

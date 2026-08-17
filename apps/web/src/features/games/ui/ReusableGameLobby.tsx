@@ -104,6 +104,7 @@ export function ReusableGameLobby({
   showReorderControls = true,
   showInvitedPlayers = true,
   enableBots = false,
+  showDifficulty = true,
   onRuleComingSoonChange,
 }: ReusableGameLobbyProps) {
   const {
@@ -120,6 +121,7 @@ export function ReusableGameLobby({
     difficultyEasyLabel = 'Easy',
     difficultyMediumLabel = 'Medium',
     difficultyHardLabel = 'Hard',
+    difficultyExpertLabel = 'Expert',
     deleteRoomLabel,
   } = labels;
   const { t } = useTranslation();
@@ -146,12 +148,12 @@ export function ReusableGameLobby({
   }, [room.gameId, onRuleComingSoonChange]);
 
   const [botCount, setBotCount] = useState(1);
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(
-    () => {
-      const settings = loadStoredSettings();
-      return settings.aiDifficulty ?? 'medium';
-    },
-  );
+  const [difficulty, setDifficulty] = useState<
+    'easy' | 'medium' | 'hard' | 'expert'
+  >(() => {
+    const settings = loadStoredSettings();
+    return settings.aiDifficulty ?? 'medium';
+  });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
   const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 6;
@@ -159,7 +161,13 @@ export function ReusableGameLobby({
 
   useEffect(() => {
     saveStoredSettings({ aiDifficulty: difficulty });
-  }, [difficulty]);
+    // Persist the selected difficulty as a room option so it is visible to
+    // every player in the lobby (difficulty badge) and flows into the game
+    // engine via `room.gameOptions` at session start.
+    if (enableBots && isHost && room.status === 'lobby') {
+      setOption({ aiDifficulty: difficulty });
+    }
+  }, [difficulty, enableBots, isHost, room.status, setOption]);
 
   const handleStart = React.useCallback(() => {
     const now = Date.now();
@@ -337,7 +345,7 @@ export function ReusableGameLobby({
                   </BotCountButtons>
                 </BotCountSelector>
               )}
-              {enableBots && room.playerCount === 1 && (
+              {enableBots && room.playerCount === 1 && showDifficulty && (
                 <BotCountSelector>
                   <BotCountLabel>
                     {difficultyLabel || 'AI Difficulty'}
@@ -351,6 +359,10 @@ export function ReusableGameLobby({
                           label: difficultyMediumLabel || 'Medium',
                         },
                         { key: 'hard', label: difficultyHardLabel || 'Hard' },
+                        {
+                          key: 'expert',
+                          label: difficultyExpertLabel || 'Expert',
+                        },
                       ] as const
                     ).map((d) => (
                       <BotCountButton
@@ -364,6 +376,21 @@ export function ReusableGameLobby({
                     ))}
                   </BotCountButtons>
                 </BotCountSelector>
+              )}
+              {enableBots && showDifficulty && (
+                <span
+                  data-testid="difficulty-badge"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(99,102,241,0.35)] bg-[rgba(99,102,241,0.12)] px-3 py-1 text-[12px] font-semibold text-[#a5b4fc]"
+                >
+                  🤖{' '}
+                  {difficulty === 'easy'
+                    ? difficultyEasyLabel || 'Easy'
+                    : difficulty === 'hard'
+                      ? difficultyHardLabel || 'Hard'
+                      : difficulty === 'expert'
+                        ? difficultyExpertLabel || 'Expert'
+                        : difficultyMediumLabel || 'Medium'}
+                </span>
               )}
             </HostControls>
           )}

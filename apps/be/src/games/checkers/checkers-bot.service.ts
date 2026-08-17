@@ -19,13 +19,18 @@ import {
   getOpponentId,
   isPlayerPiece,
 } from '../engines/checkers/checkers.utils';
+import type { AiDifficulty } from '../ai-difficulty';
 
 const MOVE_DELAY_MS = { min: 400, max: 1100 };
 
-const DIFFICULTY_CONFIG = {
+const DIFFICULTY_CONFIG: Record<
+  AiDifficulty,
+  { maxDepth: number; noiseRate: number }
+> = {
   easy: { maxDepth: 1, noiseRate: 0.4 },
   medium: { maxDepth: 3, noiseRate: 0.1 },
   hard: { maxDepth: 5, noiseRate: 0.0 },
+  expert: { maxDepth: 7, noiseRate: 0.0 },
 };
 
 @Injectable()

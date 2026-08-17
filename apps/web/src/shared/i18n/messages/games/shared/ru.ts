@@ -50,6 +50,7 @@ export const ruMessages = {
       private: 'Приватный',
     },
     fastRoom: 'Быстрая игра',
+    ranked: 'Рейтинг',
     gameLabel: 'Игра',
     createdLabel: 'Создан',
   },
@@ -134,6 +135,8 @@ export const ruMessages = {
     autoButton: 'Авто',
     fieldVisibility: 'Доступ',
     fieldNotes: 'Заметки (опционально)',
+    fieldRanked: 'Рейтинговый матч',
+    fieldRankedHint: 'Рейтинговые матчи влияют на ваш рейтинг ELO в этой игре.',
     notesPlaceholder: 'Добавьте заметки...',
     notesAria: 'Дополнительные заметки к залу',
     submitCreating: 'Создание...',
@@ -405,5 +408,16 @@ export const ruMessages = {
     cancel: 'Отменить поиск',
     estimatedWait: 'Ожидание: ~{{seconds}} с',
     queuePosition: 'Позиция в очереди: {{position}} из {{total}}',
+  },
+  ranking: {
+    ratingUpdated: 'Рейтинг обновлён',
+    tier: {
+      bronze: 'Бронза',
+      silver: 'Серебро',
+      gold: 'Золото',
+      platinum: 'Платина',
+      diamond: 'Алмаз',
+      master: 'Мастер',
+    },
   },
 };

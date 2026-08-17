@@ -19,6 +19,7 @@ function baseForm(): CreateRoomForm {
       spectators: false,
     },
     preset: 'custom',
+    ranked: false,
   };
 }
 
@@ -29,6 +30,7 @@ describe('applyPreset', () => {
     expect(out.maxPlayers).toBe(2);
     expect(out.rules.idle).toBe(true);
     expect(out.rules.spectators).toBe(true);
+    expect(out.ranked).toBe(true);
     expect(out.preset).toBe('ranked');
   });
 
@@ -58,6 +60,7 @@ describe('applyPreset', () => {
     const out = applyPreset(baseForm(), 'friends');
     expect(out.visibility).toBe('unlisted');
     expect(out.maxPlayers).toBe('auto');
+    expect(out.ranked).toBe(false);
   });
 
   it('every preset is reachable from the registry', () => {

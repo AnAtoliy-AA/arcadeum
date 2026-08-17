@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add ranked/ELO skill ratings with per-game tiers and ranked vs casual rooms (ARC-881)
+
 ## [1.25.43] - 2026-08-17
 
 ### Added
+
 - add icon to Rooms nav item in mobile menu (ARC-games-description-pages)
 - disable all start-game buttons on landings for disabled games (ARC-games-description-pages)
 - disable landing play buttons for admin-disabled games (ARC-games-description-pages)
@@ -18,30 +23,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rework game description pages with unified architecture and real theme variants (ARC-games-description-pages)
 
 ### Fixed
-- move room route to /rooms and restore human matchmaking (ARC-games-description-pages)
 
+- move room route to /rooms and restore human matchmaking (ARC-games-description-pages)
 
 ## [1.25.42] - 2026-08-17
 
 ### Added
+
 - add expert difficulty selector, room option and lobby badge on web (ARC-880)
 - add difficulty tiers to tic-tac-toe, cascade and critical bots (ARC-880)
 - add expert difficulty tier to chess, checkers and sea battle (ARC-880)
 - add shared AiDifficulty type with expert tier and config validation (ARC-880)
 
 ### Documentation
-- mark AI difficulty tiers as implemented in roadmap (ARC-880)
 
+- mark AI difficulty tiers as implemented in roadmap (ARC-880)
 
 ## [1.25.41] - 2026-08-17
 
 ### Added
+
 - show estimated wait and queue position in matchmaking modal (ARC-876)
 - improve matchmaking queue with per-game buckets and status events (ARC-876)
 
 ### Documentation
-- mark matchmaking queue as implemented (ARC-876)
 
+- mark matchmaking queue as implemented (ARC-876)
 
 ## [1.25.40] - 2026-08-17
 

@@ -82,6 +82,7 @@ import { CatDashBotService } from './cat-dash/cat-dash-bot.service';
 import { CatDashGateway } from './cat-dash.gateway';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
+import { RankingModule } from '../ranking/ranking.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
 import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.module';
@@ -136,6 +137,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameEnginesModule, // Import the game engines module
     forwardRef(() => AuthModule), // Import AuthModule for AuthService
     forwardRef(() => LeaderboardsModule),
+    RankingModule,
     WalletModule,
     EconomyModule,
     GameVisibilityModule,

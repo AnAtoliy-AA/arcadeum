@@ -1017,6 +1017,13 @@
   color: var(--gc-text-dim);
 }
 
+.fieldHint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--gc-text-faint);
+}
+
 .counter {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   font-size: 10px;

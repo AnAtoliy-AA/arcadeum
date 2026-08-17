@@ -33,6 +33,7 @@ export function GameEndModals({
         rematchLoading={gameEnd.rematchLoading}
         t={t}
         messages={gameEnd.resultMessages}
+        ratingDelta={gameEnd.ratingDelta}
       />
 
       {players.length > 1 && (

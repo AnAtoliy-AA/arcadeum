@@ -8,6 +8,8 @@ import { useSound } from '@/shared/lib/sound';
 import { Modal, CloseButton } from './SharedModal';
 import { VictoryCelebration } from './VictoryCelebration';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
+import type { RatingDelta } from '@/features/ranking/model/types';
 
 // --- Types ---
 
@@ -28,6 +30,8 @@ interface GameResultModalProps {
    * `games.table.${result}.title`/`.message`.
    */
   messages?: { title: string; message?: string };
+  /** Ranked-match ELO change for the local player (from ratingDeltas). */
+  ratingDelta?: RatingDelta | null;
 }
 
 // --- Tone (result) styles ---
@@ -56,6 +60,7 @@ export function GameResultModal({
   rematchLoading,
   t,
   messages,
+  ratingDelta,
 }: GameResultModalProps) {
   const isClient = useSyncExternalStore(
     () => () => {},
@@ -126,6 +131,20 @@ export function GameResultModal({
           <p className="animate-fade-in-up-delay-2 text-[20px] leading-[24px] text-center mb-8 text-[rgba(255,255,255,0.8)]">
             {body}
           </p>
+
+          {ratingDelta && (
+            <div className="animate-fade-in-up-delay-3 flex flex-col items-center gap-1 -mt-6 mb-8">
+              <span className="text-[13px] font-semibold uppercase tracking-[1.5px] text-[rgba(255,255,255,0.6)]">
+                {t('games.ranking.ratingUpdated')}
+              </span>
+              <RatingBadge
+                elo={ratingDelta.elo}
+                tier={ratingDelta.tier}
+                delta={ratingDelta.delta}
+                size="md"
+              />
+            </div>
+          )}
 
           <div className="animate-fade-in-up-delay-4 flex flex-col items-stretch gap-5 w-full">
             {onRematch && (

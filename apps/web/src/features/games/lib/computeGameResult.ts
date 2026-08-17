@@ -1,8 +1,11 @@
 import type { GameResult } from '../hooks/useGameResultModal';
+import type { RatingDelta } from '@/features/ranking/model/types';
 
 export interface BackendGameResult {
   winnerIds: string[];
   isDraw: boolean;
+  /** Present on ranked matches: per-user ELO change applied post-match. */
+  ratingDeltas?: Record<string, RatingDelta>;
 }
 
 /**

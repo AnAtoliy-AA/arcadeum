@@ -5,10 +5,9 @@
  * Tests cover: register-with-fee, insufficient-balance, unregister-refund,
  * cancel-refund-all, markComplete-prize, markComplete-idempotency.
  */
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { HydratedDocument, Model, Types } from 'mongoose';
 import { TournamentsService } from './tournaments.service';
 import { TournamentsModule } from './tournaments.module';
@@ -26,10 +25,15 @@ import {
   WalletTransaction,
   WalletTransactionDocument,
 } from '../wallet/schemas/wallet-transaction.schema';
-import { createTestUser, resetTestUsers } from '../../test/integration-helpers';
+import {
+  createTestUser,
+  resetTestUsers,
+  getSharedMongoUri,
+  closeTestDatabase,
+} from '../../test/integration-helpers';
 
 describe('TournamentsService (integration)', () => {
-  let replSet: MongoMemoryReplSet;
+  let moduleRef: TestingModule;
   let tournaments: TournamentsService;
   let wallet: WalletService;
   let userModel: Model<User>;
@@ -37,13 +41,12 @@ describe('TournamentsService (integration)', () => {
   let txModel: Model<WalletTransactionDocument>;
 
   beforeAll(async () => {
-    replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
-    const uri = replSet.getUri();
+    const uri = getSharedMongoUri();
 
-    const moduleRef = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
-        MongooseModule.forRoot(uri),
+        MongooseModule.forRoot(uri, { dbName: 'tournaments-integration' }),
         AuthModule,
         WalletModule,
         TournamentsModule,
@@ -68,7 +71,7 @@ describe('TournamentsService (integration)', () => {
   }, 60_000);
 
   afterAll(async () => {
-    await replSet.stop();
+    await closeTestDatabase(moduleRef);
   }, 30_000);
 
   afterEach(async () => {

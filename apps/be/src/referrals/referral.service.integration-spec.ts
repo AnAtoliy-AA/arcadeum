@@ -5,9 +5,8 @@
  * Tests cover: per-referral credit, tier-1 bonus at 3 referrals,
  * idempotency of tier bonus, duplicate referral guard.
  */
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { Model } from 'mongoose';
 import { ReferralService } from './referral.service';
 import { ReferralModule } from './referral.module';
@@ -21,10 +20,15 @@ import {
   WalletTransaction,
   WalletTransactionDocument,
 } from '../wallet/schemas/wallet-transaction.schema';
-import { createTestUser, resetTestUsers } from '../../test/integration-helpers';
+import {
+  createTestUser,
+  resetTestUsers,
+  getSharedMongoUri,
+  closeTestDatabase,
+} from '../../test/integration-helpers';
 
 describe('ReferralService (integration)', () => {
-  let replSet: MongoMemoryReplSet;
+  let moduleRef: TestingModule;
   let service: ReferralService;
   let wallet: WalletService;
   let userModel: Model<User>;
@@ -34,12 +38,11 @@ describe('ReferralService (integration)', () => {
   let referrerId: string;
 
   beforeAll(async () => {
-    replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
-    const uri = replSet.getUri();
+    const uri = getSharedMongoUri();
 
-    const moduleRef = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [
-        MongooseModule.forRoot(uri),
+        MongooseModule.forRoot(uri, { dbName: 'referrals-integration' }),
         AuthModule,
         WalletModule,
         ReferralModule,
@@ -64,7 +67,7 @@ describe('ReferralService (integration)', () => {
   }, 60_000);
 
   afterAll(async () => {
-    await replSet.stop();
+    await closeTestDatabase(moduleRef);
   }, 30_000);
 
   // Helper to create a user with a given referral code.

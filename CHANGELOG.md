@@ -7,9 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.25.39] - 2026-08-17
 
-- screen-reader support for game boards: live announcements, keyboard navigation, and cell labels (ARC-897)
+### Added
+- add screen-reader announcement strings to all locales
+- add grid roles and cell labels to sea battle boards
+- add keyboard navigation and announcements to tic-tac-toe
+- add cell labels, keyboard navigation, and announcements to checkers
+- add keyboard navigation and screen-reader announcements to chess
+- announce game events via live region in widget container
+- add shared a11y helpers for screen-reader announcements
+
+### Documentation
+- add screen-reader support entry to changelog
+- mark screen reader support as implemented in roadmap
+
 
 ## [1.25.38] - 2026-08-17
 

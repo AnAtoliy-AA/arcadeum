@@ -295,10 +295,19 @@ export class SeaBattleBotService {
 
         // Difficulty-based targeting
         const difficulty: AiDifficulty = state.aiDifficulty ?? 'medium';
+        const hasDamagedShip = target.ships.some(
+          (s: Ship) => s.hits > 0 && !s.sunk,
+        );
         let choice: { r: number; c: number } | null = null;
         if (difficulty === 'easy') {
           if (Math.random() < 0.3)
             choice = this.getSmartTarget(target, gridSize);
+        } else if (difficulty === 'expert') {
+          // Finish damaged ships first, then statistically hunt for new ones.
+          choice = hasDamagedShip
+            ? this.getSmartTarget(target, gridSize)
+            : this.getProbabilisticTarget(target, gridSize) ||
+              this.getSmartTarget(target, gridSize);
         } else if (difficulty === 'hard') {
           choice =
             this.getProbabilisticTarget(target, gridSize) ||

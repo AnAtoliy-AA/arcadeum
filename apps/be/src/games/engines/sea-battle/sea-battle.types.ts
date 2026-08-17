@@ -91,7 +91,7 @@ export interface SeaBattleState {
   [key: string]: unknown;
 }
 
-export type AiDifficulty = 'easy' | 'medium' | 'hard';
+export type AiDifficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
 export interface SeaBattleConfig {
   teams?: Array<{

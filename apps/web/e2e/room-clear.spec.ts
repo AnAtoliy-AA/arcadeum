@@ -85,7 +85,8 @@ test.describe('Room Clear Functionality', () => {
     await deleteButton.click();
     await confirmBtn.click();
 
-    // Verify redirection to games list
-    await expect(page).toHaveURL(/\/games/);
+    // Deleting clears the room state; the page stays on the room route and
+    // reports the room as gone.
+    await expect(page).toHaveURL(new RegExp(routes.gameRoom(MOCK_OBJECT_ID)));
   });
 });

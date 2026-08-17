@@ -9,6 +9,7 @@ export interface QueueEntry {
   socketId: string;
   gameId: string;
   variant?: string;
+  ranked?: boolean;
   timestamp: number;
   timeoutId: NodeJS.Timeout;
 }
@@ -16,6 +17,7 @@ export interface QueueEntry {
 export interface MatchmakingStatus {
   gameId: string;
   variant?: string;
+  ranked?: boolean;
   queueSize: number;
   position: number;
   estimatedWaitSeconds: number;
@@ -57,8 +59,9 @@ export class GameRoomsMatchmakingService {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TIMEOUT_MS;
   }
 
-  private queueKey(gameId: string, variant?: string): string {
-    return variant ? `${gameId}::${variant}` : gameId;
+  private queueKey(gameId: string, variant?: string, ranked?: boolean): string {
+    const base = variant ? `${gameId}::${variant}` : gameId;
+    return ranked ? `${base}::ranked` : `${base}::casual`;
   }
 
   joinQueue(
@@ -66,15 +69,16 @@ export class GameRoomsMatchmakingService {
     socketId: string,
     gameId: string,
     variant?: string,
+    ranked?: boolean,
     onSuccess?: (roomId: string) => void,
   ): void {
     this.logger.log(
-      `User ${userId} (socket ${socketId}) joining matchmaking queue for game ${gameId}${variant ? ` (${variant})` : ''}`,
+      `User ${userId} (socket ${socketId}) joining ${ranked ? 'ranked' : 'casual'} matchmaking queue for game ${gameId}${variant ? ` (${variant})` : ''}`,
     );
 
     this.leaveQueue(userId);
 
-    const match = this.findMatch(gameId, variant, userId);
+    const match = this.findMatch(gameId, variant, ranked, userId);
     if (match) {
       this.logger.log(
         `Match found between ${userId} and ${match.userId} for game ${gameId}`,
@@ -85,16 +89,23 @@ export class GameRoomsMatchmakingService {
         match.userId,
         gameId,
         variant,
+        ranked,
         onSuccess,
       );
       return;
     }
 
     const timeoutId = setTimeout(() => {
-      void this.handleMatchmakingTimeout(userId, gameId, variant, onSuccess);
+      void this.handleMatchmakingTimeout(
+        userId,
+        gameId,
+        variant,
+        ranked,
+        onSuccess,
+      );
     }, this.timeoutMs);
 
-    const key = this.queueKey(gameId, variant);
+    const key = this.queueKey(gameId, variant, ranked);
     let bucket = this.queue.get(key);
     if (!bucket) {
       bucket = new Map();
@@ -105,11 +116,12 @@ export class GameRoomsMatchmakingService {
       socketId,
       gameId,
       variant,
+      ranked,
       timestamp: Date.now(),
       timeoutId,
     });
 
-    this.emitStatus(userId, gameId, variant);
+    this.emitStatus(userId, gameId, variant, ranked);
   }
 
   leaveQueue(userId: string): void {
@@ -133,9 +145,10 @@ export class GameRoomsMatchmakingService {
   private findMatch(
     gameId: string,
     variant: string | undefined,
+    ranked: boolean | undefined,
     excludeUserId: string,
   ): QueueEntry | null {
-    const bucket = this.queue.get(this.queueKey(gameId, variant));
+    const bucket = this.queue.get(this.queueKey(gameId, variant, ranked));
     if (!bucket) return null;
     for (const entry of bucket.values()) {
       if (entry.userId !== excludeUserId) {
@@ -158,15 +171,19 @@ export class GameRoomsMatchmakingService {
     user2: string,
     gameId: string,
     variant?: string,
+    ranked?: boolean,
     onSuccess?: (roomId: string) => void,
   ): Promise<void> {
     try {
+      const gameOptions: Record<string, unknown> = { ranked: ranked === true };
+      if (variant) gameOptions.variant = variant;
+
       const room = await this.roomsService.createRoom(user1, {
         gameId,
         name: 'Open Match',
         visibility: 'public',
         maxPlayers: 2,
-        gameOptions: variant ? { variant } : undefined,
+        gameOptions,
       });
 
       const joined = await this.roomsService.joinRoom(
@@ -191,6 +208,7 @@ export class GameRoomsMatchmakingService {
     userId: string,
     gameId: string,
     variant?: string,
+    ranked?: boolean,
     onSuccess?: (roomId: string) => void,
   ): Promise<void> {
     const entry = this.findEntry(userId);
@@ -200,7 +218,7 @@ export class GameRoomsMatchmakingService {
 
     // Prefer pairing with anyone still queued for the same game over
     // dropping the player into a bot match.
-    const queuedOpponent = this.findMatch(gameId, variant, userId);
+    const queuedOpponent = this.findMatch(gameId, variant, ranked, userId);
     if (queuedOpponent) {
       this.logger.log(
         `Matchmaking timeout for user ${userId}; pairing with queued ${queuedOpponent.userId}`,
@@ -211,6 +229,7 @@ export class GameRoomsMatchmakingService {
         queuedOpponent.userId,
         gameId,
         variant,
+        ranked,
         onSuccess,
       );
       return;
@@ -235,14 +254,20 @@ export class GameRoomsMatchmakingService {
     }
   }
 
-  private emitStatus(userId: string, gameId: string, variant?: string): void {
-    const key = this.queueKey(gameId, variant);
+  private emitStatus(
+    userId: string,
+    gameId: string,
+    variant?: string,
+    ranked?: boolean,
+  ): void {
+    const key = this.queueKey(gameId, variant, ranked);
     const bucket = this.queue.get(key);
     const queueSize = bucket?.size ?? 0;
     const position = this.positionInBucket(bucket, userId);
     this.realtimeService.emitToUser(userId, 'games.matchmaking.status', {
       gameId,
       variant,
+      ranked,
       queueSize,
       position,
       estimatedWaitSeconds: this.estimateWaitSeconds(queueSize, position),
@@ -254,7 +279,7 @@ export class GameRoomsMatchmakingService {
     const bucket = this.queue.get(key);
     if (!bucket) return;
     for (const entry of bucket.values()) {
-      this.emitStatus(entry.userId, gameId, variant);
+      this.emitStatus(entry.userId, gameId, variant, entry.ranked);
     }
   }
 

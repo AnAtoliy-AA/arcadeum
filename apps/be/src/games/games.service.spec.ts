@@ -16,6 +16,7 @@ import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
 import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { PlayerStatsService } from './player-stats.service';
+import { RankingService } from '../ranking/ranking.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -26,6 +27,11 @@ describe('GamesService', () => {
   let roomsQuickplayService: jest.Mocked<GameRoomsQuickplayService>;
   let sessionsService: jest.Mocked<GameSessionsService>;
   let realtimeService: jest.Mocked<GamesRealtimeService>;
+  let mockRankingService: { recordRankedResult: jest.Mock };
+  let mockPostMatchService: {
+    onGameCompleted: jest.Mock;
+    payoutGameWin: jest.Mock;
+  };
   let module: TestingModule;
 
   beforeEach(async () => {
@@ -87,7 +93,7 @@ describe('GamesService', () => {
     const mockLeaderboardSync = {
       syncInMatch: jest.fn().mockResolvedValue(undefined),
     };
-    const mockPostMatchService = {
+    mockPostMatchService = {
       onGameCompleted: jest.fn().mockResolvedValue(undefined),
       payoutGameWin: jest.fn().mockResolvedValue(undefined),
     };
@@ -97,6 +103,9 @@ describe('GamesService', () => {
     const mockPlayerStats = {
       recordGameResult: jest.fn().mockResolvedValue(undefined),
       getPlayerStats: jest.fn().mockResolvedValue({}),
+    };
+    mockRankingService = {
+      recordRankedResult: jest.fn().mockResolvedValue({}),
     };
 
     const mockArchiveService = {
@@ -138,6 +147,7 @@ describe('GamesService', () => {
         { provide: GamePostMatchService, useValue: mockPostMatchService },
         { provide: GameRuleVisibilityService, useValue: mockRuleVisibility },
         { provide: PlayerStatsService, useValue: mockPlayerStats },
+        { provide: RankingService, useValue: mockRankingService },
       ],
     }).compile();
 
@@ -302,6 +312,93 @@ describe('GamesService', () => {
       await expect(service.startGameSession(dto, userId)).rejects.toThrow(
         'Only the host can start the game',
       );
+    });
+  });
+
+  describe('executeAction', () => {
+    it('records ELO and attaches ratingDeltas for a completed ranked room', async () => {
+      const userId = 'user1';
+      const session = {
+        id: 'session1',
+        roomId: 'room1',
+        gameId: 'chess_v1',
+        status: 'completed',
+        state: {
+          gameResult: { winnerIds: ['user1'], isDraw: false },
+        },
+      } as unknown as GameSessionSummary;
+      const room = {
+        id: 'room1',
+        gameId: 'chess_v1',
+        gameOptions: { ranked: true },
+      } as unknown as GameRoomSummary;
+      const players = ['user1', 'user2'];
+      const ratings = {
+        user1: { elo: 1216, delta: 16, tier: 'silver' },
+        user2: { elo: 1184, delta: -16, tier: 'bronze' },
+      };
+
+      sessionsService.executeAction.mockResolvedValue(session);
+      roomsService.getRoom.mockResolvedValue(room);
+      roomsService.getRoomParticipants.mockResolvedValue(players);
+      sessionsService.getWinners.mockResolvedValue(['user1']);
+      mockRankingService.recordRankedResult.mockResolvedValue(ratings);
+      realtimeService.emitActionExecuted.mockImplementation(async () => {});
+      roomsService.updateRoomStatus.mockResolvedValue(undefined as never);
+      mockPostMatchService.payoutGameWin.mockResolvedValue(undefined);
+      mockPostMatchService.onGameCompleted.mockResolvedValue(undefined);
+
+      const result = await service.executeAction(
+        'session1',
+        'move',
+        userId,
+        {},
+      );
+
+      expect(mockRankingService.recordRankedResult).toHaveBeenCalledWith(
+        players,
+        'chess_v1',
+        ['user1'],
+      );
+      expect(session.state.gameResult).toMatchObject({
+        winnerIds: ['user1'],
+        isDraw: false,
+        ratingDeltas: ratings,
+      });
+      expect(result).toBe(session);
+    });
+
+    it('skips ELO for a completed casual room', async () => {
+      const session = {
+        id: 'session1',
+        roomId: 'room1',
+        gameId: 'chess_v1',
+        status: 'completed',
+        state: { gameResult: { winnerIds: ['user1'], isDraw: false } },
+      } as unknown as GameSessionSummary;
+      const room = {
+        id: 'room1',
+        gameId: 'chess_v1',
+        gameOptions: { ranked: false },
+      } as unknown as GameRoomSummary;
+
+      sessionsService.executeAction.mockResolvedValue(session);
+      roomsService.getRoom.mockResolvedValue(room);
+      roomsService.getRoomParticipants.mockResolvedValue(['user1', 'user2']);
+      sessionsService.getWinners.mockResolvedValue(['user1']);
+      realtimeService.emitActionExecuted.mockImplementation(async () => {});
+      roomsService.updateRoomStatus.mockResolvedValue(undefined as never);
+
+      await service.executeAction('session1', 'move', 'user1', {});
+
+      expect(mockRankingService.recordRankedResult).not.toHaveBeenCalled();
+      expect(
+        (
+          session.state.gameResult as {
+            ratingDeltas?: unknown;
+          }
+        ).ratingDeltas,
+      ).toBeUndefined();
     });
   });
 });

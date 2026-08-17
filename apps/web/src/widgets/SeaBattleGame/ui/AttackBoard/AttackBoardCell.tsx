@@ -42,6 +42,19 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   const icon = getCellIcon(isSunk, displayState);
   const animClass = getCellAnimClass(isSunk, displayState);
 
+  const cellLabel = (() => {
+    const coord = `${String.fromCharCode(97 + cIndex)}${rIndex + 1}`;
+    const stateLabel =
+      displayState === CELL_STATE.HIT
+        ? 'hit'
+        : displayState === CELL_STATE.MISS
+          ? 'miss'
+          : isSunk
+            ? 'sunk'
+            : 'empty';
+    return `${coord} ${stateLabel}`;
+  })();
+
   const isShip = highlightCellState === 1; // CellState.SHIP
 
   const highlightStyle: React.CSSProperties =
@@ -111,6 +124,8 @@ export const AttackBoardCell = memo(function AttackBoardCell({
         ...previewStyle,
         ...(isWeaponPreview ? { cursor: 'crosshair' } : {}),
       }}
+      role="gridcell"
+      aria-label={cellLabel}
       data-row={!isMe ? rIndex : undefined}
       data-col={!isMe ? cIndex : undefined}
     >

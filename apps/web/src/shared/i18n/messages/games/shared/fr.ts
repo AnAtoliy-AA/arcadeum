@@ -51,6 +51,7 @@ export const frMessages = {
       private: 'Privée',
     },
     fastRoom: 'Partie rapide',
+    ranked: 'Classé',
     gameLabel: 'Jeu',
     createdLabel: 'Créé',
   },
@@ -135,6 +136,9 @@ export const frMessages = {
     autoButton: 'Auto',
     fieldVisibility: 'Visibilité',
     fieldNotes: 'Notes (optionnel)',
+    fieldRanked: 'Match classé',
+    fieldRankedHint:
+      'Les matchs classés affectent votre classement ELO pour ce jeu.',
     notesPlaceholder: 'Ajouter des notes...',
     notesAria: 'Notes supplémentaires pour la salle',
     submitCreating: 'Création...',
@@ -415,5 +419,16 @@ export const frMessages = {
     cancel: 'Annuler la recherche',
     estimatedWait: 'Attente estimée : ~{{seconds}}s',
     queuePosition: 'Position dans la file : {{position}} sur {{total}}',
+  },
+  ranking: {
+    ratingUpdated: 'Classement mis à jour',
+    tier: {
+      bronze: 'Bronze',
+      silver: 'Argent',
+      gold: 'Or',
+      platinum: 'Platine',
+      diamond: 'Diamant',
+      master: 'Maître',
+    },
   },
 };

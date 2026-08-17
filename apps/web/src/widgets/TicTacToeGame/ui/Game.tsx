@@ -149,6 +149,19 @@ function TicTacToeGameImpl({
     [options.variant],
   );
 
+  const a11yAnnouncement = useMemo(() => {
+    if (!snapshot) return undefined;
+    if (isGameOver) {
+      return t(
+        `games.tic_tac_toe_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+      );
+    }
+    if (currentEntryId && currentEntryId === currentUserId) {
+      return t('games.tic_tac_toe_v1.status.yourTurn');
+    }
+    return t('games.tic_tac_toe_v1.status.waiting');
+  }, [snapshot, isGameOver, result, currentEntryId, currentUserId, t]);
+
   if (!room) return null;
 
   // Lobby renders OUTSIDE GameWidgetContainer so it gets full page height
@@ -240,6 +253,7 @@ function TicTacToeGameImpl({
         variant={options.variant}
         isMyTurn={myTurn}
         isGameOver={isGameOver}
+        a11yAnnouncement={a11yAnnouncement}
         headerProps={{
           variantEmoji: variantTokens.emoji,
           title: 'Tic-Tac-Toe',

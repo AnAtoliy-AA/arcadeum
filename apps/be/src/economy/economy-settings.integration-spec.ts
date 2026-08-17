@@ -6,11 +6,14 @@
  * cache invalidation), resetToDefault (removes row + audit), listAll,
  * transactional rollback on audit-insert failure, concurrent setNumber.
  */
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { Model, Types } from 'mongoose';
+import {
+  getSharedMongoUri,
+  closeTestDatabase,
+} from '../../test/integration-helpers';
 import { EconomySettingsService } from './economy-settings.service';
 import { EconomyModule } from './economy.module';
 import { WalletModule } from '../wallet/wallet.module';
@@ -27,7 +30,7 @@ import {
 import { ECONOMY_KEYS } from './economy-keys';
 
 describe('EconomySettingsService (integration)', () => {
-  let replSet: MongoMemoryReplSet;
+  let moduleRef: TestingModule;
   let service: EconomySettingsService;
   let settingModel: Model<EconomySettingDocument>;
   let auditModel: Model<EconomySettingsAuditDocument>;
@@ -40,12 +43,11 @@ describe('EconomySettingsService (integration)', () => {
     // Ensure gem_to_coin_rate has no env override so it falls through to default
     delete process.env.GEM_TO_COIN_RATE;
 
-    replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
-    const uri = replSet.getUri();
+    const uri = getSharedMongoUri();
 
-    const moduleRef = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [
-        MongooseModule.forRoot(uri),
+        MongooseModule.forRoot(uri, { dbName: 'economy-integration' }),
         ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true }),
         AuthModule,
         WalletModule,
@@ -70,7 +72,7 @@ describe('EconomySettingsService (integration)', () => {
   }, 60_000);
 
   afterAll(async () => {
-    await replSet.stop();
+    await closeTestDatabase(moduleRef);
   }, 30_000);
 
   afterEach(async () => {

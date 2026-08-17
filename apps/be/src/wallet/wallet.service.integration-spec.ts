@@ -1,6 +1,5 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { Model } from 'mongoose';
 import { WalletService } from './wallet.service';
 import { WalletModule } from './wallet.module';
@@ -12,20 +11,28 @@ import {
   WalletTransactionDocument,
 } from './schemas/wallet-transaction.schema';
 import { AuthModule } from '../auth/auth.module';
-import { createTestUser, resetTestUsers } from '../../test/integration-helpers';
+import {
+  createTestUser,
+  resetTestUsers,
+  getSharedMongoUri,
+  closeTestDatabase,
+} from '../../test/integration-helpers';
 
 describe('WalletService (integration)', () => {
-  let replSet: MongoMemoryReplSet;
+  let moduleRef: TestingModule;
   let wallet: WalletService;
   let userModel: Model<User>;
   let txModel: Model<WalletTransactionDocument>;
 
   beforeAll(async () => {
-    replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
-    const uri = replSet.getUri();
+    const uri = getSharedMongoUri();
 
-    const moduleRef = await Test.createTestingModule({
-      imports: [MongooseModule.forRoot(uri), AuthModule, WalletModule],
+    moduleRef = await Test.createTestingModule({
+      imports: [
+        MongooseModule.forRoot(uri, { dbName: 'wallet-integration' }),
+        AuthModule,
+        WalletModule,
+      ],
     })
       .overrideProvider(WalletGateway)
       .useValue({ emitBalance: jest.fn() })
@@ -42,7 +49,7 @@ describe('WalletService (integration)', () => {
   }, 60_000);
 
   afterAll(async () => {
-    await replSet.stop();
+    await closeTestDatabase(moduleRef);
   }, 30_000);
 
   afterEach(async () => {

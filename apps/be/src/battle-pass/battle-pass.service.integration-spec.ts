@@ -1,8 +1,11 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { Model, Types } from 'mongoose';
+import {
+  getSharedMongoUri,
+  closeTestDatabase,
+} from '../../test/integration-helpers';
 
 jest.mock('@solana/web3.js', () => ({
   Connection: jest.fn().mockImplementation(() => ({})),
@@ -52,7 +55,7 @@ import { GameHistoryStatsService } from '../games/history/game-history-stats.ser
 // credits the wallet and grants the cosmetic, and that it's idempotent. XP is
 // stubbed (the stats source) so all tiers are unlocked deterministically.
 describe('BattlePassService (integration)', () => {
-  let replSet: MongoMemoryReplSet;
+  let moduleRef: TestingModule;
   let service: BattlePassService;
   let wallet: WalletService;
   let inventory: InventoryService;
@@ -61,11 +64,12 @@ describe('BattlePassService (integration)', () => {
   let invModel: Model<UserInventoryItemDocument>;
 
   beforeAll(async () => {
-    replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
-    const moduleRef = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
-        MongooseModule.forRoot(replSet.getUri()),
+        MongooseModule.forRoot(getSharedMongoUri(), {
+          dbName: 'battle-pass-integration',
+        }),
         MongooseModule.forFeature([
           { name: BattlePassProgress.name, schema: BattlePassProgressSchema },
           { name: User.name, schema: UserSchema },
@@ -113,7 +117,7 @@ describe('BattlePassService (integration)', () => {
   }, 60_000);
 
   afterAll(async () => {
-    await replSet.stop();
+    await closeTestDatabase(moduleRef);
   }, 30_000);
 
   afterEach(async () => {

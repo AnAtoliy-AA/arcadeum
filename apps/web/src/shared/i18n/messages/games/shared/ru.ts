@@ -397,4 +397,11 @@ export const ruMessages = {
     starting: 'Запуск...',
     allCategory: 'Все',
   },
+  matchmaking: {
+    searchingTitle: 'Поиск соперника',
+    searchingSubtitle: 'Ищем матч для {{game}}...',
+    cancel: 'Отменить поиск',
+    estimatedWait: 'Ожидание: ~{{seconds}} с',
+    queuePosition: 'Позиция в очереди: {{position}} из {{total}}',
+  },
 };

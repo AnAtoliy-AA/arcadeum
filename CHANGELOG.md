@@ -7,18 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- improved matchmaking queue with per-game waiting, status/estimated-wait events, and timeout pairing before bot fallback (ARC-876)
+
 ## [1.25.40] - 2026-08-17
 
 ### Fixed
+
 - fix oversized turn badge typography on sea battle player board (ARC-ui-fixes)
 - allow clearing selection on invalid combo click (ARC-ui-fixes)
 - improve mobile card selection and normalize CriticalGame typography (ARC-ui-fixes)
 - unify badges, remove AccentPill, and enhance lobby layout (ARC-ui-fixes)
 
-
 ## [1.25.39] - 2026-08-17
 
 ### Added
+
 - add screen-reader announcement strings to all locales
 - add grid roles and cell labels to sea battle boards
 - add keyboard navigation and announcements to tic-tac-toe
@@ -28,9 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add shared a11y helpers for screen-reader announcements
 
 ### Documentation
+
 - add screen-reader support entry to changelog
 - mark screen reader support as implemented in roadmap
-
 
 ## [1.25.38] - 2026-08-17
 

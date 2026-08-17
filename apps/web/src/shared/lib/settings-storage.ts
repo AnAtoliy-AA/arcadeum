@@ -15,6 +15,7 @@ export type StoredSettings = {
   musicLastPlayedIndex?: number;
   aiDifficulty?: 'easy' | 'medium' | 'hard' | 'expert';
   showRulesOnRoomEntry?: boolean;
+  coachHintsEnabled?: boolean;
 };
 
 const listeners = new Set<() => void>();
@@ -107,6 +108,10 @@ export function loadStoredSettings(): StoredSettings {
 
     if (typeof parsed.showRulesOnRoomEntry === 'boolean') {
       settings.showRulesOnRoomEntry = parsed.showRulesOnRoomEntry;
+    }
+
+    if (typeof parsed.coachHintsEnabled === 'boolean') {
+      settings.coachHintsEnabled = parsed.coachHintsEnabled;
     }
 
     return settings;

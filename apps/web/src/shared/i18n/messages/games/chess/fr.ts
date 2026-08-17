@@ -140,6 +140,16 @@ export const frMessages = {
         blunder: 'Faute grave',
       },
     },
+    coach: {
+      title: 'Conseils d\u2019entraîneur',
+      hint: 'Indice',
+      move: 'Coup suggéré : {{symbol}} en {{square}}',
+      capture: 'Coup suggéré : {{symbol}} en {{square}}, prendre {{target}}',
+      castleKing: 'Coup suggéré : petit roque',
+      castleQueen: 'Coup suggéré : grand roque',
+      promote:
+        'Coup suggéré : {{symbol}} en {{square}}, promouvoir en {{promotion}}',
+    },
     actions: {
       move: 'Déplacer la pièce',
       resign: 'Abandonner',

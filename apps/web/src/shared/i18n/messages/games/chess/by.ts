@@ -139,6 +139,16 @@ export const byMessages = {
         blunder: 'Зеўка',
       },
     },
+    coach: {
+      title: 'Падказкі трэнера',
+      hint: 'Падказка',
+      move: 'Рэкамендуемы ход: {{symbol}} на {{square}}',
+      capture: 'Рэкамендуемы ход: {{symbol}} на {{square}}, узяць {{target}}',
+      castleKing: 'Рэкамендуемы ход: кароткая ракіроўка',
+      castleQueen: 'Рэкамендуемы ход: доўгая ракіроўка',
+      promote:
+        'Рэкамендуемы ход: {{symbol}} на {{square}}, ператварыць у {{promotion}}',
+    },
     actions: {
       move: 'Зрабіць ход',
       resign: 'Здацца',

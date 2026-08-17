@@ -140,6 +140,17 @@ export const esMessages = {
         blunder: 'Error grave',
       },
     },
+    coach: {
+      title: 'Pistas de entrenador',
+      hint: 'Pista',
+      move: 'Jugada sugerida: {{symbol}} a {{square}}',
+      capture:
+        'Jugada sugerida: {{symbol}} a {{square}}, capturando {{target}}',
+      castleKing: 'Jugada sugerida: enroque corto',
+      castleQueen: 'Jugada sugerida: enroque largo',
+      promote:
+        'Jugada sugerida: {{symbol}} a {{square}}, coronar a {{promotion}}',
+    },
     actions: {
       move: 'Mover pieza',
       resign: 'Rendirse',

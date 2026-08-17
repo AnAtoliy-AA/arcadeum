@@ -5,7 +5,6 @@ import {
   GameWidgetContainer,
   RematchInvitationModal,
 } from '@/features/games/ui';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -16,6 +15,7 @@ import {
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
+import { ChessGameResultModal } from './ChessGameResultModal';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { ChessGameProps, ChessClientState } from '../types';
@@ -439,7 +439,7 @@ function ChessGameImpl({
   );
   const modals = (
     <>
-      <GameResultModal
+      <ChessGameResultModal
         isOpen={showResultModal}
         result={sharedResult}
         onClose={dismiss}
@@ -447,6 +447,7 @@ function ChessGameImpl({
         rematchLoading={rematchLoading}
         t={t}
         messages={resultMessages}
+        snapshot={displaySnapshot}
       />
       <RematchInvitationModal
         isOpen={!!invitation}

@@ -1,6 +1,4 @@
-'use client';
-
-import { CardsIcon, SkullIcon, IdleBadge } from '@arcadeum/ui';
+import { CardsIcon, SkullIcon, IdleBadge, Typography } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CriticalPlayerTableState, CriticalLogEntry } from '../../types';
 import { getPlayerColor } from '@/shared/lib/playerColors';
@@ -229,13 +227,15 @@ export function OpponentTile({
           )}
         </div>
         <div className="flex flex-row items-center gap-4 max-w-full">
-          <span
-            className="text-[12px] font-bold tracking-[0.3px] line-clamp-1"
+          <Typography
+            uiSize="xs"
+            weight="700"
+            className="tracking-[0.3px] line-clamp-1"
             style={{ maxWidth: isMobile ? 80 : 100 }}
             data-testid={`player-name-${player.playerId}`}
           >
             {displayName}
-          </span>
+          </Typography>
           {isIdle && <IdleBadge />}
         </div>
         {alive ? (
@@ -244,18 +244,20 @@ export function OpponentTile({
             data-testid={`player-stats-count-${player.playerId}`}
           >
             <CardsIcon size={11} />
-            <span className="text-[11px] font-extrabold tracking-[0.4px]">
+            <Typography uiSize="xs" weight="800" className="tracking-[0.4px]">
               {player.hand.length}
-            </span>
+            </Typography>
           </div>
         ) : (
-          <span
-            className="text-[48px] font-extrabold tracking-[1px] uppercase"
+          <Typography
+            uiSize="xs"
+            weight="800"
+            className="uppercase tracking-[1px]"
             style={{ color: ELIMINATED_RING }}
             data-testid={`player-eliminated-label-${player.playerId}`}
           >
             {t('games.table.players.eliminated')}
-          </span>
+          </Typography>
         )}
       </div>
     </div>

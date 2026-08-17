@@ -15,6 +15,7 @@ interface MobileHandBarProps {
   isFullscreen?: boolean;
   showCardName: boolean;
   showCardDescription: boolean;
+  onClearSelection?: () => void;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
@@ -46,6 +47,7 @@ export function MobileHandBar({
   isFullscreen,
   showCardName,
   showCardDescription,
+  onClearSelection,
   onPlay,
   onDraw,
   onNope,
@@ -190,6 +192,13 @@ export function MobileHandBar({
 
   if (!mounted || typeof document === 'undefined') return null;
 
+  const isInvalid = combo.kind === 'invalid';
+  const handleComboClick = isInvalid
+    ? onClearSelection
+    : canPlay
+      ? onPlay
+      : undefined;
+
   const bar = (
     <div data-testid="mobile-hand-bar" style={wrapperStyle}>
       <div style={rowStyle}>
@@ -213,18 +222,21 @@ export function MobileHandBar({
           type="button"
           data-testid="mobile-hand-bar-play"
           data-combo-kind={combo.kind}
-          disabled={!canPlay}
-          onClick={canPlay ? onPlay : undefined}
+          disabled={!canPlay && !isInvalid}
+          onClick={handleComboClick}
           style={{
-            ...buttonStyle({ primary: true, enabled: canPlay, flex: 3 }),
-            // Long combo labels would otherwise wrap or overflow on
-            // narrow phones — ellipsis keeps the row honest.
+            ...buttonStyle({
+              primary: true,
+              accent: isInvalid ? '#ef4444' : undefined,
+              enabled: canPlay || isInvalid,
+              flex: 3,
+            }),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}
         >
-          {combo.label}
+          {isInvalid ? `✕ ${combo.label}` : combo.label}
         </button>
         <button
           type="button"

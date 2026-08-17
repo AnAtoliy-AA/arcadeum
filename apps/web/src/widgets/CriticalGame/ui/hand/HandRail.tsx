@@ -36,6 +36,7 @@ interface HandRailProps {
   showCardDescription?: boolean;
   onToggleCardName?: () => void;
   onToggleCardDescription?: () => void;
+  onClearSelection?: () => void;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
@@ -136,6 +137,7 @@ export function HandRail({
   showCardDescription,
   onToggleCardName,
   onToggleCardDescription,
+  onClearSelection,
   onPlay,
   onDraw,
   onNope,
@@ -147,6 +149,12 @@ export function HandRail({
   const hasChrome = !!(onOpenRules || onToggleFullscreen);
   const defuseVariant =
     defuseCount === 0 ? DEFUSE_VARIANT.low : DEFUSE_VARIANT.ok;
+  const isInvalid = combo.kind === 'invalid';
+  const handleComboClick = isInvalid
+    ? onClearSelection
+    : canPlay
+      ? onPlay
+      : undefined;
 
   return (
     <div
@@ -211,26 +219,43 @@ export function HandRail({
             doesn't forward HTML title through. */}
         <div title={combo.label}>
           <RailButton
-            className={`h-[48px] w-full rounded-[12px] px-6 ${cx(
+            className={`h-[48px] w-full rounded-[12px] px-4 ${cx(
               canPlay
                 ? 'bg-[#34d399] hover:bg-[#22c55e] active:scale-[0.98]'
-                : 'bg-[rgba(255,255,255,0.07)]',
+                : isInvalid
+                  ? 'bg-[rgba(239,68,68,0.18)] border border-[rgba(239,68,68,0.45)] hover:bg-[rgba(239,68,68,0.28)] active:scale-[0.98]'
+                  : 'bg-[rgba(255,255,255,0.07)]',
             )}`}
             data-testid="hand-rail-play"
             data-combo-kind={combo.kind}
-            disabled={!canPlay}
-            onClick={canPlay ? onPlay : undefined}
+            disabled={!canPlay && !isInvalid}
+            onClick={handleComboClick}
           >
-            <Typography
-              uiSize="xs"
-              weight="800"
-              className={cx(
-                'text-center uppercase line-clamp-2',
-                canPlay ? 'text-[#062317]' : 'text-[rgba(255,255,255,0.5)]',
+            <div className="flex flex-col items-center justify-center">
+              <Typography
+                uiSize="xs"
+                weight="800"
+                className={cx(
+                  'text-center uppercase line-clamp-2',
+                  canPlay
+                    ? 'text-[#062317]'
+                    : isInvalid
+                      ? 'text-[#ef4444]'
+                      : 'text-[rgba(255,255,255,0.5)]',
+                )}
+              >
+                {combo.label}
+              </Typography>
+              {isInvalid && (
+                <Typography
+                  uiSize="xs"
+                  weight="700"
+                  className="text-[9px] text-[#ef4444] uppercase tracking-[0.5px] mt-0.5"
+                >
+                  ✕ {t('games.table.mobile.cancel')}
+                </Typography>
               )}
-            >
-              {combo.label}
-            </Typography>
+            </div>
           </RailButton>
         </div>
         <RailButton

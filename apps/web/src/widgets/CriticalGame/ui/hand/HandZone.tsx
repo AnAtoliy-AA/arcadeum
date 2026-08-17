@@ -19,6 +19,7 @@ interface HandZoneProps {
   isFullscreen?: boolean;
   showCardName: boolean;
   showCardDescription: boolean;
+  onClearSelection?: () => void;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
@@ -67,6 +68,7 @@ export function HandZone(props: HandZoneProps) {
           isFullscreen={props.isFullscreen}
           showCardName={props.showCardName}
           showCardDescription={props.showCardDescription}
+          onClearSelection={props.onClearSelection}
           onPlay={props.onPlay}
           onDraw={props.onDraw}
           onNope={props.onNope}
@@ -96,6 +98,7 @@ export function HandZone(props: HandZoneProps) {
         isFullscreen={props.isFullscreen}
         showCardName={props.showCardName}
         showCardDescription={props.showCardDescription}
+        onClearSelection={props.onClearSelection}
         onToggleCardName={props.onToggleCardName}
         onToggleCardDescription={props.onToggleCardDescription}
         onPlay={props.onPlay}

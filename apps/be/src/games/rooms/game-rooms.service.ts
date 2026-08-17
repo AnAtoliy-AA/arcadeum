@@ -411,9 +411,15 @@ export class GameRoomsService {
     upsert = false,
   ): Promise<void> {
     if (!this.atlasRoomModel) return;
+    if (typeof roomId !== 'string' || !Types.ObjectId.isValid(roomId)) {
+      this.logger.warn(
+        `Skipping Atlas mirror due to invalid room ID: ${roomId}`,
+      );
+      return;
+    }
     try {
       await this.atlasRoomModel.updateOne(
-        { _id: roomId },
+        { _id: { $eq: roomId } },
         { $set: patch },
         upsert ? { upsert: true } : undefined,
       );

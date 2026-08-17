@@ -407,4 +407,11 @@ export const frMessages = {
     starting: 'Démarrage...',
     allCategory: 'Tous',
   },
+  matchmaking: {
+    searchingTitle: "Recherche d'un adversaire",
+    searchingSubtitle: 'Recherche d’une partie pour {{game}}...',
+    cancel: 'Annuler la recherche',
+    estimatedWait: 'Attente estimée : ~{{seconds}}s',
+    queuePosition: 'Position dans la file : {{position}} sur {{total}}',
+  },
 };

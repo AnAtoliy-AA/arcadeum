@@ -396,4 +396,11 @@ export const enMessages = {
     starting: 'Starting...',
     allCategory: 'All',
   },
+  matchmaking: {
+    searchingTitle: 'Searching for Opponent',
+    searchingSubtitle: 'Finding a match for {{game}}...',
+    cancel: 'Cancel Matchmaking',
+    estimatedWait: 'Estimated wait: ~{{seconds}}s',
+    queuePosition: 'Position in queue: {{position}} of {{total}}',
+  },
 };

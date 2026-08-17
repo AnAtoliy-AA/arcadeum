@@ -405,4 +405,11 @@ export const esMessages = {
     starting: 'Iniciando...',
     allCategory: 'Todos',
   },
+  matchmaking: {
+    searchingTitle: 'Buscando oponente',
+    searchingSubtitle: 'Buscando una partida para {{game}}...',
+    cancel: 'Cancelar búsqueda',
+    estimatedWait: 'Espera estimada: ~{{seconds}}s',
+    queuePosition: 'Posición en la cola: {{position}} de {{total}}',
+  },
 };

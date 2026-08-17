@@ -396,4 +396,11 @@ export const byMessages = {
     starting: 'Запуск...',
     allCategory: 'Усе',
   },
+  matchmaking: {
+    searchingTitle: 'Пошук суперніка',
+    searchingSubtitle: 'Шукаем матч для {{game}}...',
+    cancel: 'Скасаваць пошук',
+    estimatedWait: 'Чаканне: ~{{seconds}} с',
+    queuePosition: 'Пазіцыя ў чарзе: {{position}} з {{total}}',
+  },
 };

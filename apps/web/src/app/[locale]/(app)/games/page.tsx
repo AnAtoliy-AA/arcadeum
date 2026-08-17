@@ -28,9 +28,15 @@ function resolveLocale(raw: string): Locale {
   return isLocale(raw) ? raw : DEFAULT_LOCALE;
 }
 
-function resolveCategory(type: string, genre: string): 'board' | 'card' | 'casual' {
+function resolveCategory(
+  type: string,
+  genre: string,
+): 'board' | 'card' | 'casual' {
   if (type === 'card') return 'card';
-  if (genre.toLowerCase().includes('race') || genre.toLowerCase().includes('arcade')) {
+  if (
+    genre.toLowerCase().includes('race') ||
+    genre.toLowerCase().includes('arcade')
+  ) {
     return 'casual';
   }
   return 'board';
@@ -52,11 +58,12 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
   const catalogGames: CatalogGameItem[] = featuredGames.map((g) => {
     const name = gamesNamespace?.[g.id]?.name ?? g.id;
     const description =
-      gamesNamespace?.[g.id]?.description ?? gamesNamespace?.[g.id]?.summary ?? '';
+      gamesNamespace?.[g.id]?.description ??
+      gamesNamespace?.[g.id]?.summary ??
+      '';
     const landingHref = g.landingHref
       ? `/${locale}${g.landingHref}`
       : routes.gameDetail(g.id);
-    const createRoomHref = `${routes.gameCreate}?gameId=${g.id}`;
 
     return {
       id: g.id,
@@ -69,7 +76,6 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
       players: g.players,
       duration: g.duration,
       landingHref,
-      createRoomHref,
       accentColor: g.accentColor ?? '#60a5fa',
       isPlayable: g.isPlayable,
       isDemo: g.isDemo,
@@ -127,7 +133,9 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
                 Play Free Online Games
               </h1>
               <p className="box-border m-0 text-sm sm:text-base md:text-lg text-[var(--foreground)] opacity-80 leading-relaxed">
-                Enjoy real-time board and card games directly in your browser with no download or signup. Challenge friends in private rooms or practice against intelligent AI bots.
+                Enjoy real-time board and card games directly in your browser
+                with no download or signup. Challenge friends in private rooms
+                or practice against intelligent AI bots.
               </p>
 
               <div className="box-border flex flex-wrap items-center justify-center gap-2 pt-2">

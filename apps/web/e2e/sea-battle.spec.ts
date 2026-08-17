@@ -127,20 +127,20 @@ test.describe('Sea Battle Game Flow', () => {
   test('should navigate to Sea Battle from link', async ({ page }) => {
     await navigateTo(page, routes.games);
 
-    // The /games catalog renders a "Create Room" link per game card —
-    // scope to the Sea Battle one by its create-room href.
-    const createLink = page
-      .locator('a[href*="/games/create?gameId=sea_battle_v1"]')
+    // The /games catalog renders one card per game; the whole card links to
+    // the game's landing page. Scope to the Sea Battle card by its href.
+    const seaBattleCard = page
+      .locator(`a[href="${routes.seaBattleLanding}"]`)
       .first();
-    await expect(createLink).toBeVisible();
-    await expect(createLink).toHaveAttribute(
+    await expect(seaBattleCard).toBeVisible();
+    await expect(seaBattleCard).toHaveAttribute(
       'href',
-      /\/games\/create\?gameId=sea_battle_v1/,
+      routes.seaBattleLanding,
     );
 
-    await createLink.click();
-    // Should navigate to create page
-    await expect(page).toHaveURL(/.*\/games\/create/);
+    await seaBattleCard.click();
+    // Should navigate to the Sea Battle landing page
+    await expect(page).toHaveURL(new RegExp(routes.seaBattleLanding));
   });
 
   // New test for Auto Placement UI

@@ -120,6 +120,26 @@ export const frMessages = {
         draw: "La partie s'est terminée par une nulle. Essayez une autre variante ?",
       },
     },
+    analysis: {
+      title: 'Analyse de la partie',
+      view: "Voir l'analyse",
+      back: 'Retour au résultat',
+      centipawns: 'cp',
+      empty: 'Pas assez de coups pour analyser.',
+      summary: {
+        inaccuracies: 'Imprécisions',
+        mistakes: 'Erreurs',
+        blunders: 'Fautes graves',
+        turningPoint: 'Point de bascule',
+        finalEval: 'Évaluation finale',
+      },
+      quality: {
+        good: 'Bon',
+        inaccuracy: 'Imprécision',
+        mistake: 'Erreur',
+        blunder: 'Faute grave',
+      },
+    },
     actions: {
       move: 'Déplacer la pièce',
       resign: 'Abandonner',

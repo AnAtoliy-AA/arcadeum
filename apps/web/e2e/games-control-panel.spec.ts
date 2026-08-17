@@ -21,7 +21,7 @@ test.describe('Games Control Panel Responsiveness', () => {
   test('should display full labels on desktop', async ({ page }) => {
     // Set desktop resolution
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto('/games/rooms/507f191e810c19729de860ea');
+    await page.goto('/rooms/507f191e810c19729de860ea');
 
     // Wait for the control panel to be visible
     const controlPanel = page.getByTestId('games-control-panel');
@@ -36,7 +36,7 @@ test.describe('Games Control Panel Responsiveness', () => {
   test('should hide labels and wrap on mobile', async ({ page }) => {
     // Set mobile resolution
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/games/rooms/507f191e810c19729de860ea');
+    await page.goto('/rooms/507f191e810c19729de860ea');
 
     // Fullscreen button should NOT have text, but icon should be visible
     const fullscreenBtn = page.getByTestId('fullscreen-button');

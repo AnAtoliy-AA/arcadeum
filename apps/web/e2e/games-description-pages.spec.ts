@@ -1,19 +1,24 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 const GAME_PAGES = [
-  { path: '/en/games/chess', slug: 'chess_v1', title: 'Chess' },
-  { path: '/en/games/sea-battle', slug: 'sea_battle_v1', title: 'Sea Battle' },
-  { path: '/en/games/checkers', slug: 'checkers_v1', title: 'Checkers' },
+  { path: routes.chessLanding, slug: 'chess_v1', title: 'Chess' },
   {
-    path: '/en/games/tic-tac-toe',
+    path: routes.seaBattleLanding,
+    slug: 'sea_battle_v1',
+    title: 'Sea Battle',
+  },
+  { path: routes.checkersLanding, slug: 'checkers_v1', title: 'Checkers' },
+  {
+    path: routes.ticTacToeLanding,
     slug: 'tic_tac_toe_v1',
     title: 'Tic-Tac-Toe',
   },
-  { path: '/en/games/cascade', slug: 'cascade_v1', title: 'Cascade' },
-  { path: '/en/games/cat-dash', slug: 'cat_dash_v1', title: 'Cat Dash' },
-  { path: '/en/games/glimworm', slug: 'glimworm_v1', title: 'Glimworm' },
-  { path: '/en/games/critical', slug: 'critical_v1', title: 'Critical' },
+  { path: routes.cascadeLanding, slug: 'cascade_v1', title: 'Cascade' },
+  { path: routes.catDashLanding, slug: 'cat_dash_v1', title: 'Cat Dash' },
+  { path: routes.glimwormLanding, slug: 'glimworm_v1', title: 'Glimworm' },
+  { path: routes.criticalLanding, slug: 'critical_v1', title: 'Critical' },
 ];
 
 test.describe('Games Description Landing Pages', () => {
@@ -74,7 +79,7 @@ test.describe('Games Description Landing Pages', () => {
   test('renders /games catalog page with game directory and filters', async ({
     page,
   }) => {
-    const res = await page.goto('/en/games', {
+    const res = await page.goto(routes.games, {
       waitUntil: 'domcontentloaded',
     });
     expect(res?.status()).toBe(200);
@@ -82,7 +87,7 @@ test.describe('Games Description Landing Pages', () => {
     const heading = page.locator('h1').first();
     await expect(heading).toBeVisible();
 
-    const gameCards = page.locator('a[href*="/en/games/"]');
+    const gameCards = page.locator(`a[href*="${routes.games}/"]`);
     await expect(gameCards.first()).toBeVisible();
 
     const catalogJsonLd = page.locator('script#json-ld-games-en');
@@ -94,7 +99,7 @@ test.describe('Games Description Landing Pages', () => {
   test('renders /rooms browser page with room list and filters', async ({
     page,
   }) => {
-    const res = await page.goto('/en/rooms', {
+    const res = await page.goto(routes.rooms, {
       waitUntil: 'domcontentloaded',
     });
     expect(res?.status()).toBe(200);

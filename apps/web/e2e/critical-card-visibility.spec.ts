@@ -8,6 +8,7 @@ import {
   waitForRoomReady,
   closeGameRulesModal,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Critical Card Visibility', () => {
   test.beforeEach(async ({ page }) => {
@@ -68,7 +69,7 @@ test.describe('Critical Card Visibility', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
     await closeGameRulesModal(page);
 

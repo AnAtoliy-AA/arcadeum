@@ -9,6 +9,7 @@ import {
   mockGameSocket,
   closeGameRulesModal,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Rules Modal', () => {
   test.beforeEach(async ({ page }) => {
@@ -32,7 +33,7 @@ test.describe('Sea Battle Rules Modal', () => {
 
     await mockGameSocket(page, roomId, userId, { gameId: 'sea_battle_v1' });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page, { autoCloseRules: false });
 
     // Check for modal presence using specialized locator
@@ -56,7 +57,7 @@ test.describe('Sea Battle Rules Modal', () => {
 
     await mockGameSocket(page, roomId, userId, { gameId: 'sea_battle_v1' });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page, { autoCloseRules: false });
 
     // Initial modal visible

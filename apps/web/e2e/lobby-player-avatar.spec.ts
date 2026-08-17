@@ -8,6 +8,7 @@ import {
   mockGameSocket,
   MOCK_OBJECT_ID,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Lobby Player Avatar & Host Badge', () => {
   const roomId = '507f191e810c19729de860ea';
@@ -45,7 +46,7 @@ test.describe('Lobby Player Avatar & Host Badge', () => {
   test('should display circular avatars and host badge for lobby members', async ({
     page,
   }) => {
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     const hostBadge = page.getByText('HOST', { exact: true });

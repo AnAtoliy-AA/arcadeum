@@ -6,6 +6,7 @@ import {
   MOCK_OBJECT_ID,
   mockGameSocket,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Popup Challenge', () => {
   test.beforeEach(async ({ page }) => {
@@ -95,7 +96,7 @@ test.describe('Sea Battle Popup Challenge', () => {
       },
     });
 
-    await page.goto(`/games/rooms/${roomId}`);
+    await page.goto(routes.gameRoom(roomId));
 
     // Wait for the game to be ready - this ensures socket and state are sync'd
     const main = page.locator('main').first();

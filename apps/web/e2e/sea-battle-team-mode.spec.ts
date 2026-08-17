@@ -9,6 +9,7 @@ import {
   waitForRoomReady,
   MOCK_OBJECT_ID,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 /**
  * Integration smoke tests for Sea Battle Team Mode UI.
@@ -153,7 +154,7 @@ test.describe('Sea Battle Team Mode UI smoke tests', () => {
     });
 
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     await expect(page.getByTestId('team-mode-toggle')).toBeVisible();
@@ -195,7 +196,7 @@ test.describe('Sea Battle Team Mode UI smoke tests', () => {
     });
 
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     await expect(page.getByTestId('team-slots-board')).toBeVisible();
@@ -240,7 +241,7 @@ test.describe('Sea Battle Team Mode UI smoke tests', () => {
     });
 
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     await expect(page.getByText(/eliminated/i).first()).toBeVisible();
@@ -279,7 +280,7 @@ test.describe('Sea Battle Team Mode UI smoke tests', () => {
     });
 
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // The viewer's own board renders alongside the three opponent boards.
@@ -324,7 +325,7 @@ test.describe('Sea Battle Team Mode UI smoke tests', () => {
 
     // Wide viewport: GamePageLayout opens the chat panel by default on >md.
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     const chatArea = page.getByTestId('game-chat-area');

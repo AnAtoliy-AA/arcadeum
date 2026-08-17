@@ -1,6 +1,7 @@
 import { expect, test, mockGameSocket } from './fixtures/test-utils';
 import { mockSession } from './fixtures/utils/auth';
 import { mockRoomInfo, waitForRoomReady } from './fixtures/utils/room';
+import { routes } from '../src/shared/config/routes';
 
 /**
  * ARC-757 — after a game finishes, the page should automatically leave
@@ -56,7 +57,7 @@ test.describe('Fullscreen auto-exit on game finish', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto(`/games/rooms/${roomId}`);
+    await page.goto(routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // The real "game finished" signal is a session snapshot — wait for its

@@ -8,6 +8,7 @@ import {
   waitForRoomReady,
   mockGameSocket,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 const VARIANTS = [
   'classic',
@@ -88,7 +89,7 @@ test.describe('Sea Battle Color Visibility', () => {
         },
       });
 
-      await navigateTo(page, `/games/rooms/${roomId}`);
+      await navigateTo(page, routes.gameRoom(roomId));
       await waitForRoomReady(page);
 
       // Verify we are in placement phase

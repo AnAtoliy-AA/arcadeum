@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.42] - 2026-08-17
+
+### Added
+- add expert difficulty selector, room option and lobby badge on web (ARC-880)
+- add difficulty tiers to tic-tac-toe, cascade and critical bots (ARC-880)
+- add expert difficulty tier to chess, checkers and sea battle (ARC-880)
+- add shared AiDifficulty type with expert tier and config validation (ARC-880)
+
+### Documentation
+- mark AI difficulty tiers as implemented in roadmap (ARC-880)
+
+
 ## [1.25.41] - 2026-08-17
 
 ### Added

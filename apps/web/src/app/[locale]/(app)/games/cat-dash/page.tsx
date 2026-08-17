@@ -123,7 +123,7 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
         rules={rules}
         gameId={CAT_DASH_SLUG}
         createRoomHref={`${routes.gameCreate}?gameId=${CAT_DASH_SLUG}`}
-        roomsHref={routes.games}
+        roomsHref={`${routes.rooms}?gameId=${CAT_DASH_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}
         locale={locale}

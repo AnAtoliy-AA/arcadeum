@@ -123,7 +123,7 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
         rules={rules}
         gameId={CHECKERS_SLUG}
         createRoomHref={`${routes.gameCreate}?gameId=${CHECKERS_SLUG}`}
-        roomsHref={routes.games}
+        roomsHref={`${routes.rooms}?gameId=${CHECKERS_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}
         locale={locale}

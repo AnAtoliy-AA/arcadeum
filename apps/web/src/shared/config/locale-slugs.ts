@@ -20,6 +20,7 @@ export const DEFAULT_LOCALE: Locale = 'en';
 export const EN_SLUGS = {
   auth: 'auth',
   games: 'games',
+  rooms: 'rooms',
   chat: 'chat',
   chats: 'chats',
   settings: 'settings',
@@ -65,6 +66,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
   es: {
     auth: 'acceso',
     games: 'juegos',
+    rooms: 'salas',
     chat: 'chat',
     chats: 'chats',
     settings: 'ajustes',
@@ -97,6 +99,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
   fr: {
     auth: 'connexion',
     games: 'jeux',
+    rooms: 'salons',
     chat: 'chat',
     chats: 'discussions',
     settings: 'parametres',
@@ -129,6 +132,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
   ru: {
     auth: 'vhod',
     games: 'igry',
+    rooms: 'komnaty',
     chat: 'chat',
     chats: 'chaty',
     settings: 'nastroyki',
@@ -161,6 +165,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
   by: {
     auth: 'uvakhod',
     games: 'hulni',
+    rooms: 'pakoi',
     chat: 'chat',
     chats: 'chaty',
     settings: 'nalady',

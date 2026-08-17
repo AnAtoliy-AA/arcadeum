@@ -127,7 +127,7 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
         rules={rules}
         gameId={CASCADE_SLUG}
         createRoomHref={`${routes.gameCreate}?gameId=${CASCADE_SLUG}`}
-        roomsHref={routes.games}
+        roomsHref={`${routes.rooms}?gameId=${CASCADE_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}
         homeLabel={messages.navigation?.homeTab ?? 'Home'}

@@ -144,7 +144,7 @@ export default async function CriticalLandingRoute({ params }: PageProps) {
       <CriticalLandingView
         landing={landing}
         gameId={CRITICAL_SLUG}
-        roomsHref={routes.gameDetail(CRITICAL_SLUG)}
+        roomsHref={`${routes.rooms}?gameId=${CRITICAL_SLUG}`}
         createRoomHref={`${routes.gameCreate}?gameId=${CRITICAL_SLUG}`}
         homeHref={routes.home}
         gamesHref={routes.games}

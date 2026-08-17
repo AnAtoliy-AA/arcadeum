@@ -3,7 +3,8 @@ import type { DeepPartial } from '../base-types';
 export const en = {
   homeTab: 'Home',
   chatsTab: 'Chats',
-  gamesTab: 'Rooms',
+  gamesTab: 'Games',
+  roomsTab: 'Rooms',
   historyTab: 'History',
   leaderboardsTab: 'Leaderboards',
   friendsTab: 'Friends',
@@ -21,7 +22,8 @@ export const en = {
 export const es = {
   homeTab: 'Inicio',
   chatsTab: 'Chats',
-  gamesTab: 'Salas',
+  gamesTab: 'Juegos',
+  roomsTab: 'Salas',
   historyTab: 'Historial',
   leaderboardsTab: 'Clasificaciones',
   friendsTab: 'Amigos',
@@ -39,7 +41,8 @@ export const es = {
 export const fr = {
   homeTab: 'Accueil',
   chatsTab: 'Discussions',
-  gamesTab: 'Salons',
+  gamesTab: 'Jeux',
+  roomsTab: 'Salons',
   historyTab: 'Historique',
   leaderboardsTab: 'Classements',
   friendsTab: 'Amis',
@@ -57,7 +60,8 @@ export const fr = {
 export const ru = {
   homeTab: 'Главная',
   chatsTab: 'Чаты',
-  gamesTab: 'Комнаты',
+  gamesTab: 'Игры',
+  roomsTab: 'Комнаты',
   historyTab: 'История',
   leaderboardsTab: 'Рейтинги',
   friendsTab: 'Друзья',
@@ -75,7 +79,8 @@ export const ru = {
 export const by = {
   homeTab: 'Галоўная',
   chatsTab: 'Чаты',
-  gamesTab: 'Пакоі',
+  gamesTab: 'Гульні',
+  roomsTab: 'Пакоі',
   historyTab: 'Гісторыя',
   leaderboardsTab: 'Рэйтынгі',
   friendsTab: 'Сябры',

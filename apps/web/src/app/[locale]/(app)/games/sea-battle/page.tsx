@@ -197,7 +197,7 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
       <SeaBattleLanding
         landing={landing}
         createRoomHref={`${routes.gameCreate}?gameId=${SEA_BATTLE_SLUG}`}
-        roomsHref={routes.gameDetail(SEA_BATTLE_SLUG)}
+        roomsHref={`${routes.rooms}?gameId=${SEA_BATTLE_SLUG}`}
         homeHref={routes.home}
         gamesHref={routes.games}
         locale={locale}

@@ -124,7 +124,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
         landing={landing}
         rules={rules}
         gameId={CHESS_SLUG}
-        roomsHref={routes.games}
+        roomsHref={`${routes.rooms}?gameId=${CHESS_SLUG}`}
         createRoomHref={`${routes.gameCreate}?gameId=${CHESS_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}

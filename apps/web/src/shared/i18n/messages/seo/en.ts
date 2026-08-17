@@ -9,8 +9,12 @@ export const en = {
     badge: 'Play with Friends or AI',
   },
   games: {
-    title: `Free Online Board Games · ${APP}`,
-    description: `Browse ${APP}'s catalog of free online board games. Find open rooms, create a private match for friends, or play against AI — all in your browser, no download required.`,
+    title: `Free Online Board Games & Card Games · ${APP}`,
+    description: `Explore the complete catalog of free online multiplayer games on ${APP}. Play Chess, Battleship, Checkers, Tic-Tac-Toe, Cascade, and more in your browser with no download.`,
+  },
+  rooms: {
+    title: `Live Game Rooms & Open Matches · ${APP}`,
+    description: `Browse active multiplayer rooms on ${APP}. Join open matches with players worldwide or create a custom room for friends.`,
   },
   gameCreate: {
     title: `Create a Game Room · ${APP}`,

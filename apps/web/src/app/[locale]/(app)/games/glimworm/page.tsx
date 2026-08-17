@@ -144,7 +144,7 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
       <GlimwormLandingView
         landing={landing}
         gameId={GLIMWORM_SLUG}
-        roomsHref={routes.gameDetail(GLIMWORM_SLUG)}
+        roomsHref={`${routes.rooms}?gameId=${GLIMWORM_SLUG}`}
         createRoomHref={`${routes.gameCreate}?gameId=${GLIMWORM_SLUG}`}
         homeHref={routes.home}
         gamesHref={routes.games}

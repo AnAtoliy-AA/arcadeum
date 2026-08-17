@@ -70,4 +70,36 @@ test.describe('Games Description Landing Pages', () => {
     const breadcrumb = page.locator('nav[aria-label="Breadcrumb"]').first();
     await expect(breadcrumb).toBeVisible();
   });
+
+  test('renders /games catalog page with game directory and filters', async ({
+    page,
+  }) => {
+    const res = await page.goto('/en/games', {
+      waitUntil: 'domcontentloaded',
+    });
+    expect(res?.status()).toBe(200);
+
+    const heading = page.locator('h1').first();
+    await expect(heading).toBeVisible();
+
+    const gameCards = page.locator('a[href*="/en/games/"]');
+    await expect(gameCards.first()).toBeVisible();
+
+    const catalogJsonLd = page.locator('script#json-ld-games-en');
+    await expect(catalogJsonLd).toHaveCount(1);
+    const jsonContent = await catalogJsonLd.textContent();
+    expect(jsonContent).toContain('CollectionPage');
+  });
+
+  test('renders /rooms browser page with room list and filters', async ({
+    page,
+  }) => {
+    const res = await page.goto('/en/rooms', {
+      waitUntil: 'domcontentloaded',
+    });
+    expect(res?.status()).toBe(200);
+
+    const roomsJsonLd = page.locator('script#json-ld-rooms-en');
+    await expect(roomsJsonLd).toHaveCount(1);
+  });
 });

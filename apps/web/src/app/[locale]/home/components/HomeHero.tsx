@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { LinkButton, SupportIcon } from '@arcadeum/ui';
 import { appConfig } from '@/shared/config/app-config';
@@ -8,33 +7,13 @@ import type { Locale } from '@/shared/i18n';
 import { HeroBackground } from './HeroBackground';
 import { HeroCardStack } from './HeroCardStack';
 import { HeroPlayVsAiButton } from './HeroPlayVsAiButton';
-import {
-  HERO_VARIANT_BG_IMAGES,
-  HERO_CARD_FAN_OFFSET,
-} from '../data/heroVariants';
-
-const HERO_CARDS = [
-  {
-    id: 'fantasy',
-    nameKey: 'games.critical_v1.variants.fantasy.name',
-    bgImage: HERO_VARIANT_BG_IMAGES[0],
-  },
-  {
-    id: 'galaxy',
-    nameKey: 'games.critical_v1.variants.galaxy.name',
-    bgImage: HERO_VARIANT_BG_IMAGES[1],
-  },
-  {
-    id: 'steampunk',
-    nameKey: 'games.critical_v1.variants.steampunk.name',
-    bgImage: HERO_VARIANT_BG_IMAGES[2],
-  },
-] as const;
+import { HeroGameCardArt } from './HeroGameCardArt';
+import { HERO_GAMES, HERO_CARD_FAN_OFFSET } from '../data/heroVariants';
 
 const FAN_OFFSET = HERO_CARD_FAN_OFFSET;
 
 const HERO_CARD_TRANSITION =
-  'transform 0.6s cubic-bezier(0.34,1.56,0.64,1), opacity 0.6s ease-out, box-shadow 0.3s ease';
+  'transform 0.6s cubic-bezier(0.34,1.56,0.64,1), opacity 0.6s ease-out, box-shadow 0.3s ease, border-color 0.3s ease';
 
 export default async function HomeHero({ locale }: { locale: Locale }) {
   const messages = await getHomeTranslations(locale);
@@ -45,10 +24,10 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
   const kicker = homeCopy.kicker ?? 'Free online board games';
   const tagline =
     homeCopy.tagline?.replace('{{appName}}', appConfig.appName) ??
-    `${appConfig.appName} is the ultimate platform to play board games online with friends.`;
+    `${appConfig.appName} is the ultimate platform to play free board games online with friends or solo vs AI — Battleship, strategy, cards, and more.`;
   const description =
     homeCopy.description?.replace('{{appName}}', appConfig.appName) ??
-    `Enjoy a wide variety of board games and tabletop experiences online. Create real-time game rooms, invite your friends, and let ${appConfig.appName} handle rules, scoring, and turns so you can focus on the fun.`;
+    `Enjoy a wide variety of free board games and tabletop experiences online. Challenge intelligent bots, create real-time game rooms, invite your friends, and let ${appConfig.appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
   const playWithBotsLabel = homeCopy.playWithBotsLabel ?? 'Play vs AI';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';
@@ -110,57 +89,80 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        {/* Server-rendered hero cards — images are in the initial HTML for LCP.
-            HeroCardStack adds pointer interactivity after hydration. */}
+        {/* Server-rendered multi-game hero cards — inlined vector art for instant LCP with 0 KB download latency */}
         <div
           data-testid="hero-visual"
           className="relative z-[1] my-4 flex h-[400px] w-full max-w-[600px] items-center justify-center px-6 min-[1151px]:my-0 min-[1151px]:h-[540px]"
         >
           <HeroCardStack playLabel={playLabel}>
-            {HERO_CARDS.map((card, index) => {
+            {HERO_GAMES.map((card, index) => {
               const x = (index - 1) * FAN_OFFSET;
-              const rotate = `${(index - 1) * 12}deg`;
+              const rotate = `${(index - 1) * 11}deg`;
               const gameName =
                 (gamesCopy as Record<string, Record<string, string>>)?.[card.id]
-                  ?.name ?? card.id;
+                  ?.name ??
+                (card.id === 'chess_v1'
+                  ? 'Chess'
+                  : card.id === 'cascade_v1'
+                    ? 'Cascade'
+                    : 'Sea Battle');
+
+              const cardTargetUrl = `/${locale}${card.landingHref}`;
 
               return (
                 <Link
-                  className="hero-card-main absolute isolate h-[380px] min-h-[48px] min-w-[48px] w-[280px] cursor-pointer touch-manipulation overflow-hidden rounded-3xl border border-white/[0.06] bg-[rgba(20,22,26,0.92)] text-inherit shadow-card no-underline [transform:var(--card-transform)]"
+                  className="hero-card-main group absolute isolate h-[380px] min-h-[48px] min-w-[48px] w-[280px] cursor-pointer touch-manipulation overflow-hidden rounded-3xl border border-white/10 bg-[rgba(15,18,24,0.95)] text-inherit shadow-card no-underline hover:border-white/30 [transform:var(--card-transform)]"
                   style={
                     {
                       '--card-x': `${x}px`,
                       '--card-y': '0px',
                       '--card-rotate': rotate,
-                      '--card-scale': index === 1 ? 1.04 : 1,
+                      '--card-scale': index === 1 ? 1.05 : 1,
                       transition: HERO_CARD_TRANSITION,
                     } as React.CSSProperties
                   }
                   key={card.id}
-                  href={`${routes.gameCreate}?variant=${card.id}`}
+                  href={cardTargetUrl}
                   prefetch={false}
                   data-testid={`hero-card-${index}`}
                 >
-                  <Image
-                    src={card.bgImage}
-                    alt={`${gameName} game card preview`}
-                    fill
-                    quality={55}
-                    sizes="(max-width: 1150px) 240px, 280px"
-                    placeholder="blur"
-                    blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCBmaWxsPSIjMzIzNTNkIiB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIvPjwvc3ZnPg=="
-                    className="hero-card-image absolute inset-0 z-0 h-full w-full select-none object-cover object-center [-webkit-user-drag:none]"
-                  />
-                  <div className="absolute left-0 right-0 top-0 z-[1] h-[45%] bg-scrim-top pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 right-0 z-[1] h-[50%] bg-scrim-bottom pointer-events-none" />
-                  <div className="absolute left-6 right-6 top-[22px] z-[2] text-[20px] font-semibold tracking-[-0.005em] text-white text-shadow-card-text">
-                    {gameName}
+                  {/* Embedded vector artwork */}
+                  <HeroGameCardArt gameId={card.id} />
+
+                  {/* Gradient overlays for contrast */}
+                  <div className="pointer-events-none absolute left-0 right-0 top-0 z-[1] h-[45%] bg-scrim-top" />
+                  <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-[1] h-[55%] bg-scrim-bottom" />
+
+                  {/* Top info badge */}
+                  <div className="absolute left-5 right-5 top-[20px] z-[2] flex items-center justify-between">
+                    <span className="text-[20px] font-extrabold tracking-[-0.01em] text-white text-shadow-card-text">
+                      {gameName}
+                    </span>
+                    <span
+                      className="rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em] text-white shadow-sm"
+                      style={{
+                        backgroundColor: card.accentColor + '33',
+                        borderColor: card.accentColor + '66',
+                        borderWidth: 1,
+                        color: card.accentColor,
+                      }}
+                    >
+                      {card.playersKey}P
+                    </span>
                   </div>
-                  <div className="absolute inset-x-0 bottom-[22px] z-[2] text-center text-[12px] font-bold uppercase tracking-[0.18em] text-white/[0.78] text-shadow-card-text">
-                    CRITICAL
+
+                  {/* Bottom tagline badge */}
+                  <div className="absolute inset-x-0 bottom-[22px] z-[2] text-center text-[12px] font-extrabold uppercase tracking-[0.2em] text-white/80 text-shadow-card-text">
+                    {card.id === 'chess_v1'
+                      ? 'STRATEGY · CLASSIC'
+                      : card.id === 'cascade_v1'
+                        ? 'CARD · MULTIPLAYER'
+                        : 'NAVAL · TACTICAL'}
                   </div>
+
+                  {/* Hover Play CTA */}
                   <span
-                    className="hero-card-play-cta absolute left-1/2 top-1/2 z-[4] -translate-x-1/2 -translate-y-1/2 scale-[0.92] whitespace-nowrap rounded-full bg-white/[0.92] px-7 py-3 text-[14px] font-bold uppercase tracking-[0.04em] text-[#0b0d10] opacity-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_8px_22px_rgba(0,0,0,0.45)] pointer-events-none"
+                    className="hero-card-play-cta pointer-events-none absolute left-1/2 top-1/2 z-[4] -translate-x-1/2 -translate-y-1/2 scale-[0.92] whitespace-nowrap rounded-full bg-white/[0.94] px-7 py-3 text-[14px] font-bold uppercase tracking-[0.05em] text-[#0b0d10] opacity-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_10px_25px_rgba(0,0,0,0.6)]"
                     style={{
                       transition: 'opacity 0.22s ease, transform 0.22s ease',
                     }}
@@ -168,9 +170,11 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
                   >
                     {playLabel}
                   </span>
+
+                  {/* Shimmer effect on hover */}
                   <span
                     aria-hidden
-                    className="hero-card-shimmer absolute inset-0 z-[3] -translate-x-full bg-card-shimmer transition-transform ease-in-out duration-[1.6s] pointer-events-none"
+                    className="hero-card-shimmer pointer-events-none absolute inset-0 z-[3] -translate-x-full bg-card-shimmer transition-transform duration-[1.6s] ease-in-out"
                   />
                 </Link>
               );

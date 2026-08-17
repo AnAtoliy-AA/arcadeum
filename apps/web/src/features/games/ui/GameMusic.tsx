@@ -31,9 +31,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
       <div
         className="fixed bottom-4 left-4 z-[1000] w-[200px] rounded-[28px] border border-[rgba(255,255,255,0.5)] px-3 py-3"
         style={{
-          backgroundColor: 'rgba(255,255,255,0.18)',
-          backdropFilter: 'blur(50px) saturate(1.6)',
-          WebkitBackdropFilter: 'blur(50px) saturate(1.6)',
+          backgroundColor: 'rgba(15, 23, 42, 0.85)',
         }}
       >
         <Typography uiSize="xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -72,9 +70,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
         data-testid="game-music-player"
         style={{
           width: player.miniMode ? 200 : 320,
-          backgroundColor: 'rgba(255,255,255,0.18)',
-          backdropFilter: 'blur(50px) saturate(1.6)',
-          WebkitBackdropFilter: 'blur(50px) saturate(1.6)',
+          backgroundColor: 'rgba(15, 23, 42, 0.85)',
           boxShadow:
             '0 8px 40px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 0 0.5px rgba(255,255,255,0.3)',
           background: (() => {

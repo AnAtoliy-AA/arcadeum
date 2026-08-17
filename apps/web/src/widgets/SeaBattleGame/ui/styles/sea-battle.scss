@@ -122,37 +122,30 @@
 
 .sb-breathe {
   animation: breathe 3s ease-in-out infinite;
-  will-change: transform, opacity;
 }
 
 .sb-section-danger-breathe {
   animation: danger-breathe 3s ease-in-out infinite;
-  will-change: transform, opacity;
 }
 
 .sb-badge-danger-breathe {
   animation: danger-breathe 2s ease-in-out infinite;
-  will-change: transform, opacity;
 }
 
 .sb-glow-hit {
   animation: glow-hit 2s ease-in-out infinite;
-  will-change: transform, opacity;
 }
 
 .sb-glow-sunk {
   animation: glow-sunk 1.5s ease-in-out infinite;
-  will-change: transform, opacity;
 }
 
 .sb-valid-pulse {
   animation: valid-pulse 1.2s ease-in-out infinite;
-  will-change: transform, opacity;
 }
 
 .sb-selected-glow {
   animation: selected-glow 1.5s ease-in-out infinite;
-  will-change: transform, opacity;
 }
 
 .sb-preview-fade {
@@ -290,7 +283,6 @@
 .sb-cell.sb-cell--moving {
   animation: sb-moving-pulse 1.2s ease-in-out infinite;
   cursor: pointer;
-  will-change: transform, opacity;
 }
 
 /* Pending-sync: shown on the optimistically-placed cells of a ship while
@@ -313,7 +305,6 @@
 
 .sb-cell.sb-cell--pending-sync {
   animation: sb-pending-sync 1.6s ease-in-out infinite;
-  will-change: transform, opacity;
 }
 
 /* Small rotate affordance on each placed multi-cell ship's head cell.
@@ -419,24 +410,20 @@
   0% {
     transform: translate(160%, -460%) rotate(135deg) scale(1.5);
     opacity: 0;
-    filter: drop-shadow(0 0 6px rgba(255, 200, 80, 0));
   }
 
   20% {
     opacity: 1;
-    filter: drop-shadow(0 0 8px rgba(255, 200, 80, 0.85));
   }
 
   85% {
     transform: translate(0, 0) rotate(135deg) scale(1);
     opacity: 1;
-    filter: drop-shadow(0 0 10px rgba(255, 120, 60, 0.95));
   }
 
   100% {
     transform: translate(0, 0) rotate(135deg) scale(0.4);
     opacity: 0;
-    filter: drop-shadow(0 0 14px rgba(255, 80, 40, 1));
   }
 }
 
@@ -462,7 +449,6 @@
   animation:
     sb-aim-snap 0.3s ease-out forwards,
     sb-impact-pulse 1.6s ease-in-out 1.3s infinite;
-  will-change: transform, opacity;
 }
 
 .sb-cell.sb-cell-pending .sb-missile {

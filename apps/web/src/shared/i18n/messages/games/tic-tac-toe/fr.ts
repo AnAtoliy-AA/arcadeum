@@ -160,6 +160,8 @@ export const frMessages = {
     },
     status: {
       turn: 'Tour de {{player}}',
+      yourTurn: 'À votre tour',
+      waiting: "En attente de l'adversaire...",
       winner: '{{player}} a gagné',
       draw: 'Match nul',
     },

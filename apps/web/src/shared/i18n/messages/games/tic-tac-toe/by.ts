@@ -159,6 +159,8 @@ export const byMessages = {
     },
     status: {
       turn: 'Ход: {{player}}',
+      yourTurn: 'Ваш ход',
+      waiting: 'Чаканне суперніка...',
       winner: '{{player}} перамог',
       draw: 'Нічыя',
     },

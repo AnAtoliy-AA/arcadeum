@@ -152,6 +152,7 @@ export const frMessages = {
     },
     status: {
       turn: 'Tour de {{player}}',
+      yourTurn: 'À votre tour',
       white: 'Blancs',
       black: 'Noirs',
       toMove: 'à jouer',
@@ -165,7 +166,7 @@ export const frMessages = {
       showAll: 'Tout afficher ({{count}})',
       copied: 'Copié !',
       spectating: "En train d'observer",
-      boardLabel: 'Plateau d\'échecs, {{color}} à jouer',
+      boardLabel: "Plateau d'échecs, {{color}} à jouer",
     },
   },
 };

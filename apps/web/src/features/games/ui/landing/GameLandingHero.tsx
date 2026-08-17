@@ -90,11 +90,19 @@ export function GameLandingHero({
             </Link>
 
             {createRoomHref ? (
-              <Link href={createRoomHref} className="box-border inline-flex">
-                <Button variant="victory" size="lg">
-                  {createRoomLabel}
-                </Button>
-              </Link>
+              comingSoon ? (
+                <span className="box-border inline-flex">
+                  <Button variant="victory" size="lg" disabled>
+                    {createRoomLabel}
+                  </Button>
+                </span>
+              ) : (
+                <Link href={createRoomHref} className="box-border inline-flex">
+                  <Button variant="victory" size="lg">
+                    {createRoomLabel}
+                  </Button>
+                </Link>
+              )
             ) : null}
           </div>
 

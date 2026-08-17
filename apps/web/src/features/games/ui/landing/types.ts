@@ -92,6 +92,8 @@ export interface GameThemesShowcaseProps {
   themes: GameThemeItem[];
   baseHref?: string;
   createRoomLabel?: string;
+  /** Game disabled by admin — theme cards stop linking to room creation. */
+  comingSoon?: boolean;
 }
 
 export interface GameRuleItem {

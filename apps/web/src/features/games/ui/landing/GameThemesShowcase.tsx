@@ -125,6 +125,7 @@ export function GameThemesShowcase({
   themes,
   baseHref,
   createRoomLabel = 'Play with Theme',
+  comingSoon = false,
 }: GameThemesShowcaseProps) {
   if (!themes || themes.length === 0) return null;
 
@@ -151,7 +152,10 @@ export function GameThemesShowcase({
 
       <div className="box-border grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
         {themes.map((theme) => {
-          const href = baseHref ? `${baseHref}?variant=${theme.id}` : undefined;
+          const href =
+            baseHref && !comingSoon
+              ? `${baseHref}?variant=${theme.id}`
+              : undefined;
           const visual = getThemeVisual(theme.id);
 
           const CardContent = (

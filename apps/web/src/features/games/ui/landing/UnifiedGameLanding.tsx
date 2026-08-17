@@ -76,6 +76,7 @@ export function UnifiedGameLanding({
           themes={themes.themes}
           baseHref={themes.baseHref}
           createRoomLabel={themes.createRoomLabel}
+          comingSoon={comingSoon}
         />
       ) : null}
 

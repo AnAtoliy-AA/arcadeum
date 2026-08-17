@@ -64,4 +64,5 @@ export const DEFAULT_OPTIONS = {
   teamMode: false,
   expansionMargin: 3 as InfinityMargin,
   infinityWinLength: 5 as InfinityWinLength,
+  aiDifficulty: 'medium' as import('../../ai-difficulty').AiDifficulty,
 };

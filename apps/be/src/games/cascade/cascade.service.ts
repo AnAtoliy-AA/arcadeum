@@ -31,6 +31,7 @@ import type {
 } from '../engines/cascade/cascade.types';
 import { CascadeBotService } from './cascade-bot.service';
 import { GameBotWatchdog } from '../game-bot-watchdog';
+import { isAiDifficulty } from '../ai-difficulty';
 
 @Injectable()
 export class CascadeService implements OnModuleInit, OnModuleDestroy {
@@ -234,6 +235,7 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
       mode: string;
       stackingEnabled: boolean;
       lastCardCallEnabled: boolean;
+      aiDifficulty: string;
     }>;
     const isValidMode = (m: unknown): m is Mode =>
       typeof m === 'string' && (MODES as ReadonlyArray<string>).includes(m);
@@ -247,6 +249,9 @@ export class CascadeService implements OnModuleInit, OnModuleDestroy {
         typeof r.lastCardCallEnabled === 'boolean'
           ? r.lastCardCallEnabled
           : DEFAULT_OPTIONS.lastCardCallEnabled,
+      aiDifficulty: isAiDifficulty(r.aiDifficulty)
+        ? r.aiDifficulty
+        : DEFAULT_OPTIONS.aiDifficulty,
     };
   }
 }

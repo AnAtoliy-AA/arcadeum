@@ -12,6 +12,7 @@ import type {
   PendingAction,
   Variant,
 } from './cascade.constants';
+import type { AiDifficulty } from '../../ai-difficulty';
 
 export interface CascadeCard {
   /** Unique runtime id used to address a card in a player's hand. */
@@ -37,6 +38,7 @@ export interface CascadeOptions {
    */
   lastCardCallEnabled: boolean;
   handLimit?: number;
+  aiDifficulty?: AiDifficulty;
 }
 
 /**

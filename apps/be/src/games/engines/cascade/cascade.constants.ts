@@ -71,6 +71,7 @@ export const DEFAULT_OPTIONS = {
    * Default ON; lobby host can disable for a friendlier mode.
    */
   lastCardCallEnabled: true,
+  aiDifficulty: 'medium' as import('../../ai-difficulty').AiDifficulty,
 };
 
 /** Penalty for being caught with one card unannounced. */

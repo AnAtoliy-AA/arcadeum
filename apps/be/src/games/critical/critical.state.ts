@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import { ChatScope } from '../engines/base/game-engine.interface';
 import { CriticalCard, CriticalExpansion } from './critical.constants';
+import type { AiDifficulty } from '../ai-difficulty';
 
 export * from './critical.constants';
 
@@ -82,6 +83,7 @@ export interface CriticalState {
   players: CriticalPlayerState[];
   logs: CriticalLogEntry[];
   allowActionCardCombos: boolean; // House rule: allow any matching cards for combos
+  aiDifficulty?: AiDifficulty;
   /**
    * Server-authoritative draw-elimination odds, populated on sanitize so
    * the web ThreatStrip can show an exact percentage instead of its

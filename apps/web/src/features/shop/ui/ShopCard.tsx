@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { AccentPill, Typography } from '@arcadeum/ui';
+import { Badge, Typography } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
@@ -272,7 +272,9 @@ export function ShopCard({
           {name}
         </Typography>
         <div className="flex flex-row items-center justify-between gap-6">
-          <AccentPill accent={accent}>{item.rarity}</AccentPill>
+          <Badge accent={accent} dot>
+            {item.rarity}
+          </Badge>
           <div className="flex flex-row items-center gap-4">
             <Typography uiSize="xs">
               {CURRENCY_GLYPH[item.priceCurrency]}

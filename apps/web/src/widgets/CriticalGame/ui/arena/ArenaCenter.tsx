@@ -18,6 +18,7 @@ interface ArenaCenterProps {
   hand: CriticalCard[];
   allowActionCardCombos: boolean;
   combo?: { kind: ComboKind; label: string };
+  onClearSelection?: () => void;
   // Threat strip
   deck: CriticalCard[];
   /** Server-authoritative overload odds; forwarded to ThreatStrip. */
@@ -51,6 +52,7 @@ export function ArenaCenter({
   hand,
   allowActionCardCombos,
   combo,
+  onClearSelection,
   deck,
   serverOverloadOdds,
   criticalsRemaining,
@@ -80,6 +82,7 @@ export function ArenaCenter({
         hand={hand}
         allowActionCardCombos={allowActionCardCombos}
         combo={combo}
+        onClearSelection={onClearSelection}
       />
       <ThreatStrip
         hand={hand}

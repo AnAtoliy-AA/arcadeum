@@ -7,6 +7,7 @@ import {
   IconButton,
   LobbyOptionSection,
 } from '@/features/games/ui';
+import { Typography } from '@arcadeum/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
@@ -123,17 +124,17 @@ export function CriticalLobby({
             }
             className="w-4 h-4 cursor-pointer accent-[var(--primary)]"
           />
-          <span
-            className="text-[16px]"
+          <Typography
+            uiSize="sm"
             style={{ opacity: ruleComingSoon.get('combos') ? 0.4 : 1 }}
           >
             {t('games.create.houseRuleActionCardCombos') ||
               'Action Card Combos'}
-          </span>
+          </Typography>
           {ruleComingSoon.get('combos') && (
-            <span className="text-[48px] text-[#f59e0b] font-semibold">
+            <Typography uiSize="xs" weight="600" className="text-[#f59e0b]">
               {t('games.create.comingSoon') || 'Coming Soon'}
-            </span>
+            </Typography>
           )}
         </div>
       </LobbyOptionSection>

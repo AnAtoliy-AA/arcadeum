@@ -10,7 +10,7 @@ import {
   Container,
   GlassCard,
   Typography,
-  AccentPill,
+  Badge,
   TableOfContents,
 } from '@arcadeum/ui';
 import {
@@ -103,7 +103,7 @@ export default function TermsContent({
             className="items-center text-center p-9"
           >
             <div className="flex flex-col gap-3 items-center max-w-[720px]">
-              <AccentPill accent="#818CF8">Legal & Governance</AccentPill>
+              <Badge accent="#818CF8">Legal & Governance</Badge>
 
               <h1 className="m-0">
                 <Typography

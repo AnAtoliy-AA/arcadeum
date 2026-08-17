@@ -8,6 +8,7 @@ import {
   mockGameSocket,
   checkNoBackendErrors,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Game Room Logic', () => {
   const roomId = MOCK_OBJECT_ID;
@@ -36,7 +37,7 @@ test.describe('Game Room Logic', () => {
     // Mock socket connection (optional, but good to avoid connection errors in console)
     // For now, valid API response is key.
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
 
     // Expect NO "game already started" error
     await expect(
@@ -60,7 +61,7 @@ test.describe('Game Room Logic', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
 
     // Expect NO "game already started" error
     await expect(
@@ -86,7 +87,7 @@ test.describe('Game Room Logic', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
 
     // Expect NO "game already started" error
     await expect(
@@ -108,7 +109,7 @@ test.describe('Game Room Logic', () => {
     });
 
     // Navigate with explicit watch mode
-    await navigateTo(page, `/games/rooms/${roomId}?mode=watch`);
+    await navigateTo(page, `${routes.gameRoom(roomId)}?mode=watch`);
 
     // Verify the "Spectating" badge is visible in the control panel
     const spectatingBadge = page.getByText(/spectating/i);

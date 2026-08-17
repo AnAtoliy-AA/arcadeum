@@ -10,7 +10,7 @@ import {
   Container,
   GlassCard,
   Typography,
-  AccentPill,
+  Badge,
   TableOfContents,
 } from '@arcadeum/ui';
 import {
@@ -78,9 +78,10 @@ export default function CookiePolicyPageContent({
             className="items-center text-center p-9"
           >
             <div className="flex flex-col gap-3 items-center max-w-[720px]">
-              <AccentPill accent="#38BDF8">
-                Privacy & Data Preferences
-              </AccentPill>
+              <Badge accent="#38BDF8">
+                {(t as { badge?: string } | undefined)?.badge ||
+                  'Trust & Transparency'}
+              </Badge>
 
               <h1 className="m-0">
                 <Typography

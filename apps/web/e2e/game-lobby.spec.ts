@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
 import { mockSession, navigateTo, handleRoute } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Game Lobby - Shared Functionality', () => {
   test.beforeEach(async ({ page }) => {
@@ -25,7 +26,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
     page,
   }) => {
     // Navigate to Critical game create page
-    await navigateTo(page, '/games/create?gameId=critical_v1');
+    await navigateTo(page, `${routes.gameCreate}?gameId=critical_v1`);
 
     // Look for the create button and attempt to create room
     const createBtn = page.getByTestId('create-room-button');
@@ -43,7 +44,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
       await createBtn.click();
 
       // Wait for navigation to room
-      await page.waitForURL(/\/games\/rooms\/.*/, {}).catch(() => {
+      await page.waitForURL(/\/rooms\/.*/, {}).catch(() => {
         // May not navigate if mocking doesn't create room
       });
 
@@ -63,7 +64,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
 
   test('should display Sea Battle game lobby', async ({ page }) => {
     // Navigate to Sea Battle create page
-    await navigateTo(page, '/games/create?gameId=sea_battle_v1');
+    await navigateTo(page, `${routes.gameCreate}?gameId=sea_battle_v1`);
 
     // Look for the create button
     const createBtn = page.getByRole('button', { name: /create/i });
@@ -81,7 +82,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
       await createBtn.click();
 
       // Wait for navigation to room
-      await page.waitForURL(/\/games\/rooms\/.*/, {}).catch(() => {
+      await page.waitForURL(/\/rooms\/.*/, {}).catch(() => {
         // May not navigate if mocking doesn't create room
       });
 
@@ -100,7 +101,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
   });
 
   test('should maintain responsive layout in lobby', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.games);
 
     // Test mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
@@ -136,7 +137,7 @@ test.describe('Game Lobby - Room Info Display', () => {
   });
 
   test('should display games list with multiple games', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.games);
 
     // Check for game options in list
     const pageContent = await page.content();
@@ -148,7 +149,7 @@ test.describe('Game Lobby - Room Info Display', () => {
   });
 
   test('should navigate between game types', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.games);
 
     // Look for game links
     const criticalLink = page.getByRole('link', { name: /critical/i }).first();
@@ -198,7 +199,7 @@ test.describe('Game Lobby - Room Info Display', () => {
       });
     });
 
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.rooms);
 
     const watchLink = page.getByRole('link', { name: /watch/i }).first();
     await expect(watchLink).toHaveAttribute('href', /\?mode=watch$/);

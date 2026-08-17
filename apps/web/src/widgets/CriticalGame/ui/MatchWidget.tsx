@@ -363,6 +363,11 @@ export function MatchWidget({
     [resolveDisplayName],
   );
 
+  const handleClearSelection = useCallback(() => {
+    setSelectedUids([]);
+    setTargetPlayerId(null);
+  }, [setSelectedUids]);
+
   const showHand = !!currentPlayer && currentPlayer.alive && !isGameOver;
 
   const showAutoplayBar = !isGameOver && !!currentPlayer;
@@ -412,6 +417,7 @@ export function MatchWidget({
             isMyTurn={isMyTurn}
             isGameOver={isGameOver}
             onDrawAndEnd={handleDrawAndEnd}
+            onClearSelection={handleClearSelection}
             hand={hand}
             allowActionCardCombos={allowActionCardCombos}
             combo={combo}
@@ -430,6 +436,7 @@ export function MatchWidget({
               cards={handCards}
               selectedUids={validSelectedUids}
               onToggleSelect={handleToggleSelect}
+              onClearSelection={handleClearSelection}
               combo={combo}
               defuseCount={defuseCount}
               canPlay={canPlay}

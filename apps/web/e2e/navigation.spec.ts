@@ -5,6 +5,7 @@ import {
   getIsMobile,
 } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Navigation', () => {
   test.beforeEach(async ({ page }) => {
@@ -74,7 +75,11 @@ test.describe('Navigation', () => {
       : page.getByTestId('nav-games');
     await expect(gamesLink).toBeVisible();
     await gamesLink.click();
-    await expect(page).toHaveURL(/\/games/, {});
+    // Desktop "Games" goes to the /games catalog; mobile "Rooms" goes to /rooms.
+    await expect(page).toHaveURL(
+      new RegExp(`${routes.games}|${routes.rooms}`),
+      {},
+    );
   });
 
   test('should navigate to auth page', async ({ page }) => {

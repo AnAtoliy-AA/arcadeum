@@ -9,6 +9,7 @@ import {
   ShieldIcon,
   SparklesIcon,
   SwordsIcon,
+  Typography,
 } from '@arcadeum/ui';
 import type { FC } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -113,10 +114,10 @@ export function HandCard({
 
   return (
     <div
-      className={`flex flex-col items-stretch rounded-[10px] border-[2px] bg-[rgba(8,12,20,0.85)] overflow-hidden relative shrink-0 w-[124px] h-[172px] transition-transform duration-150 ease-out ${disabled ? '' : 'hover:translate-y-[-4px]'} focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#34d399]`}
+      className={`flex flex-col items-stretch rounded-[10px] border-[2px] bg-[rgba(8,12,20,0.85)] overflow-hidden relative shrink-0 w-[124px] h-[172px] transition-all duration-150 ease-out select-none touch-manipulation ${disabled ? '' : 'hover:translate-y-[-4px] active:scale-[0.97]'} ${isSelected ? 'ring-2 ring-[#34d399] shadow-[0_0_15px_rgba(52,211,153,0.5)]' : ''} focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#34d399]`}
       style={{
         borderColor: borderColor,
-        transform: isSelected ? 'translateY(-8px)' : undefined,
+        transform: isSelected ? 'translateY(-12px)' : undefined,
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.7 : 1,
       }}
@@ -158,23 +159,40 @@ export function HandCard({
           data-testid={`hand-card-overlay-${card.uid}`}
         >
           {showName && (
-            <span
-              className="text-[11px] font-extrabold tracking-[0.4px] uppercase text-center line-clamp-1"
+            <Typography
+              uiSize="xs"
+              weight="800"
+              className="text-[10px] tracking-[0.4px] uppercase text-center line-clamp-1"
               style={{ color: borderColor }}
               data-testid={`hand-card-name-${card.uid}`}
             >
               {name}
-            </span>
+            </Typography>
           )}
           {showDescription && (
-            <span
-              className="text-[40px] leading-[12px] text-center line-clamp-2 text-[rgba(226,_232,_240,_0.88)]"
+            <Typography
+              uiSize="xs"
+              className="text-[10px] leading-[12px] text-center line-clamp-2 text-[rgba(226,_232,_240,_0.88)]"
               id={descriptionId}
               data-testid={descriptionId}
             >
               {description}
-            </span>
+            </Typography>
           )}
+        </div>
+      )}
+      {isSelected && (
+        <div
+          className="flex flex-col absolute top-[4px] left-[4px] w-[20px] h-[20px] rounded-[9999px] bg-[#34d399] items-center justify-center shadow-[0_0_8px_rgba(52,211,153,0.8)] z-10"
+          data-testid={`hand-card-selected-${card.uid}`}
+        >
+          <Typography
+            uiSize="xs"
+            weight="800"
+            className="text-[#062317] text-[11px] leading-none"
+          >
+            ✓
+          </Typography>
         </div>
       )}
       {!!count && count > 1 && (
@@ -183,12 +201,9 @@ export function HandCard({
           style={{ borderColor: borderColor }}
           data-testid={`hand-card-count-${card.uid}`}
         >
-          <span
-            className="text-[48px] font-extrabold"
-            style={{ color: borderColor }}
-          >
+          <Typography uiSize="xs" weight="800" style={{ color: borderColor }}>
             ×{count}
-          </span>
+          </Typography>
         </div>
       )}
     </div>

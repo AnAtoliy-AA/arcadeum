@@ -9,7 +9,7 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 const ORIGIN = 'https://test.local';
 const ROOM_ID = 'abc123';
 const INVITE_CODE = 'INV-9';
-const EXPECTED_URL = `${ORIGIN}/games/rooms/${ROOM_ID}?inviteCode=${INVITE_CODE}`;
+const EXPECTED_URL = `${ORIGIN}/en/rooms/${ROOM_ID}?inviteCode=${INVITE_CODE}`;
 const EXPECTED_TEXT = 'games.common.shareMessage';
 
 function renderMenu(
@@ -131,7 +131,7 @@ describe('ShareGameMenu', () => {
       fireEvent.click(screen.getByTestId('share-game-button'));
     });
     fireEvent.click(screen.getByTestId('share-via-telegram'));
-    const expectedUrl = `${ORIGIN}/games/rooms/${ROOM_ID}`;
+    const expectedUrl = `${ORIGIN}/en/rooms/${ROOM_ID}`;
     expect(openSpy).toHaveBeenLastCalledWith(
       `https://t.me/share/url?url=${encodeURIComponent(expectedUrl)}&text=${encodeURIComponent(EXPECTED_TEXT)}`,
       '_blank',

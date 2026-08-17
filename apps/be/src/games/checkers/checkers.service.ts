@@ -24,6 +24,7 @@ import type {
 } from '../engines/checkers/checkers.types';
 import { CheckersBotService } from './checkers-bot.service';
 import { GameBotWatchdog } from '../game-bot-watchdog';
+import { isAiDifficulty } from '../ai-difficulty';
 
 @Injectable()
 export class CheckersService implements OnModuleInit, OnModuleDestroy {
@@ -197,7 +198,8 @@ export class CheckersService implements OnModuleInit, OnModuleDestroy {
       ruleVariant: string;
       forcedCaptures: boolean;
       backwardCaptures: boolean;
-      botDifficulty: 'easy' | 'medium' | 'hard';
+      botDifficulty: string;
+      aiDifficulty: string;
     }>;
     return {
       variant: (r.variant as CheckersOptions['variant']) ?? 'classic',
@@ -205,9 +207,11 @@ export class CheckersService implements OnModuleInit, OnModuleDestroy {
         (r.ruleVariant as CheckersOptions['ruleVariant']) ?? 'american',
       forcedCaptures: r.forcedCaptures !== false,
       backwardCaptures: r.backwardCaptures === true,
-      botDifficulty: ['easy', 'medium', 'hard'].includes(r.botDifficulty!)
+      botDifficulty: isAiDifficulty(r.botDifficulty)
         ? r.botDifficulty
-        : 'medium',
+        : isAiDifficulty(r.aiDifficulty)
+          ? r.aiDifficulty
+          : 'medium',
     };
   }
 }

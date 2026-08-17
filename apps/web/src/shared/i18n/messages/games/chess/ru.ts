@@ -151,6 +151,7 @@ export const ruMessages = {
     },
     status: {
       turn: 'Ход {{player}}',
+      yourTurn: 'Ваш ход',
       white: 'Белые',
       black: 'Чёрные',
       toMove: 'ходят',

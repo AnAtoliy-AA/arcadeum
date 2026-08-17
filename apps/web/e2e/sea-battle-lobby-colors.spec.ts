@@ -8,6 +8,7 @@ import {
   waitForRoomReady,
   mockGameSocket,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Lobby Color Preview', () => {
   test.beforeEach(async ({ page }) => {
@@ -39,7 +40,7 @@ test.describe('Sea Battle Lobby Color Preview', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Check if color preview container is visible
@@ -87,7 +88,7 @@ test.describe('Sea Battle Lobby Color Preview', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Verify modern colors

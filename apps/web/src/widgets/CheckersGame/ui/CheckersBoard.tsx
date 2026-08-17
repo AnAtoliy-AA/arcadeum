@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
+import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import type { Board, CheckersPlayer } from '../types';
 
 interface CheckersBoardProps {
@@ -53,6 +54,24 @@ export function CheckersBoard({
     return isFlipped ? arr.reverse() : arr;
   }, [boardSize, isFlipped]);
 
+  const { gridProps, getCellProps } = useBoardKeyboardNavigation({
+    rows: boardSize,
+    cols: boardSize,
+    disabled,
+    onActivate: ({ row, col }) => handleClick(row, col),
+  });
+
+  const cellLabel = useCallback(
+    (row: number, col: number, piece: Board[number][number] | null) => {
+      const pos = `${String.fromCharCode(97 + col)}${row + 1}`;
+      if (!piece) return `${ariaLabel} ${pos} empty`;
+      const color = playerColorMap[piece.playerId] ?? 'unknown';
+      const type = piece.type === 'king' ? 'king' : 'man';
+      return `${ariaLabel} ${pos} ${color} ${type}`;
+    },
+    [ariaLabel, playerColorMap],
+  );
+
   return (
     <div
       className="flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[12px] overflow-hidden border-[2px]"
@@ -60,6 +79,7 @@ export function CheckersBoard({
       role="grid"
       aria-label={ariaLabel}
       data-testid="checkers-board"
+      {...gridProps}
     >
       {rows.map((row) => (
         <div
@@ -75,6 +95,8 @@ export function CheckersBoard({
             const isHighlighted =
               highlightedCell?.row === row && highlightedCell?.col === col;
             const pieceColor = piece ? playerColorMap[piece.playerId] : null;
+            const navRow = rows.indexOf(row);
+            const navCol = cols.indexOf(col);
 
             return (
               <div
@@ -92,7 +114,9 @@ export function CheckersBoard({
                 onClick={() => handleClick(row, col)}
                 key={`${row}-${col}`}
                 role="button"
+                aria-label={cellLabel(row, col, piece)}
                 data-testid={`checkers-cell-${row}-${col}`}
+                {...getCellProps(navRow, navCol)}
               >
                 {piece ? (
                   <div

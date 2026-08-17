@@ -248,34 +248,31 @@ export function LobbySidebar({
           ) : (
             members.map((member) => {
               const isRoomHost = member.id === room.hostId;
-              const avatarColor =
-                AVATAR_COLORS[member.displayName.length % AVATAR_COLORS.length];
               return (
                 <PlayerItem key={member.id} isHost={isRoomHost}>
-                  {member.equippedAvatarId ? (
-                    <InGameAvatar
-                      playerId={member.id}
-                      name={member.displayName}
-                      size="sm"
-                    />
-                  ) : (
-                    <LobbyPlayerAvatar backgroundColor={avatarColor}>
-                      <LobbyPlayerAvatarText>
-                        {getInitials(member.displayName)}
-                      </LobbyPlayerAvatarText>
-                    </LobbyPlayerAvatar>
-                  )}
+                  <InGameAvatar
+                    playerId={member.id}
+                    name={member.displayName}
+                    size="sm"
+                  />
                   <PlayerInfo>
-                    <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
-                    {isRoomHost && (
-                      <Badge variant="info" size="sm">
-                        HOST
-                      </Badge>
-                    )}
+                    <div className="flex flex-row flex-wrap items-center gap-1.5 min-w-0">
+                      <LobbyPlayerName
+                        className="break-words"
+                        title={member.displayName}
+                      >
+                        {member.displayName}
+                      </LobbyPlayerName>
+                      {isRoomHost && (
+                        <Badge variant="info" className="shrink-0">
+                          HOST
+                        </Badge>
+                      )}
+                    </div>
                   </PlayerInfo>
                   {onKickPlayer && !isRoomHost && (
                     <Button
-                      className="py-1 px-2 min-w-[auto]"
+                      className="py-1 px-2 min-w-[auto] shrink-0 ml-auto"
                       variant="danger"
                       ghost
                       size="sm"

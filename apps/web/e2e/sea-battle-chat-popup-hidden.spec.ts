@@ -11,6 +11,7 @@ import {
   createSeaBattleState,
   TestWindow,
 } from './fixtures/sea-battle-chat-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Chat Message Popup — suppression', () => {
   test.beforeEach(async ({ page }) => {
@@ -66,7 +67,7 @@ test.describe('Sea Battle Chat Message Popup — suppression', () => {
       },
     });
 
-    await page.goto(`/games/rooms/${roomId}`);
+    await page.goto(routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     await page.waitForFunction(

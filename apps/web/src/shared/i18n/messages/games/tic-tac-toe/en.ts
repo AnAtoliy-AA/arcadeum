@@ -152,6 +152,8 @@ export const enMessages = {
     },
     status: {
       turn: '{{player}}’s turn',
+      yourTurn: 'Your turn',
+      waiting: 'Waiting for the opponent...',
       winner: '{{player}} won',
       draw: 'Draw',
     },

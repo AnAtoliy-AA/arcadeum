@@ -1,7 +1,14 @@
+import { isAiDifficulty } from '../../ai-difficulty';
+
 export function validateCascadeConfig(
   config: Record<string, unknown>,
 ): boolean {
   const options = config.options as Record<string, unknown> | undefined;
+
+  const difficulty = options?.aiDifficulty ?? config.aiDifficulty;
+  if (difficulty !== undefined && !isAiDifficulty(difficulty)) {
+    return false;
+  }
 
   if (options?.handLimit !== undefined) {
     const hl = options.handLimit;

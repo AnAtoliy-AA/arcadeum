@@ -18,6 +18,7 @@ interface Props {
   variant?: string;
   errorLabel?: string;
   buttonVariant?: ButtonProps['variant'];
+  disabled?: boolean;
 }
 
 const ERROR_RESET_MS = 3500;
@@ -29,6 +30,7 @@ export function QuickplayButton({
   variant,
   errorLabel,
   buttonVariant = 'primary',
+  disabled = false,
 }: Props) {
   const router = useRouter();
   const routes = useRoutes();
@@ -44,6 +46,7 @@ export function QuickplayButton({
   }, [errored]);
 
   const handleClick = async () => {
+    if (disabled) return;
     setErrored(false);
     if (mode === 'human') {
       joinQueue(gameId, variant);
@@ -75,6 +78,7 @@ export function QuickplayButton({
       size="lg"
       onClick={handleClick}
       loading={loading}
+      disabled={disabled}
       aria-live="polite"
       data-testid={`quickplay-${mode}-button`}
     >

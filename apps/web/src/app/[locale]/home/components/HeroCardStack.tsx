@@ -11,14 +11,9 @@ import React, {
   type CSSProperties,
 } from 'react';
 import { useHeroBackgroundStore } from '../store/heroBackgroundStore';
-import {
-  HERO_CARD_FAN_OFFSET,
-  HERO_VARIANT_BG_IMAGES,
-} from '../data/heroVariants';
+import { HERO_CARD_FAN_OFFSET, HERO_GAMES } from '../data/heroVariants';
 
 const FAN_OFFSET = HERO_CARD_FAN_OFFSET;
-
-const HERO_BG_IMAGES = HERO_VARIANT_BG_IMAGES;
 
 function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
   const rect = stack.getBoundingClientRect();
@@ -34,17 +29,12 @@ type CardElement = React.ReactElement<{
   style?: CSSProperties;
 }>;
 
-/**
- * Active-card state, applied via cloneElement so the hovered card lifts
- * (transform + shadow) and its play CTA / shimmer activate. The descendant
- * selectors below replace the old `[data-hovered="N"] :nth-child(N)` CSS.
- */
 const ACTIVE_CLASSES =
   'hero-card-active z-[100] opacity-100 shadow-card-hover [&.hero-card-active_.hero-card-play-cta]:opacity-100 [&.hero-card-active_.hero-card-play-cta]:scale-100 [&.hero-card-active_.hero-card-shimmer]:translate-x-full motion-reduce:[&_.hero-card-play-cta]:scale-100 motion-reduce:[&_.hero-card-shimmer]:-translate-x-full motion-reduce:[&_.hero-card-shimmer]:transition-none';
 const BASE_CLASSES = [
   'z-0 opacity-80',
-  'z-[1] opacity-80',
   'z-[2] opacity-100',
+  'z-[1] opacity-80',
 ];
 
 export function HeroCardStack({
@@ -57,8 +47,8 @@ export function HeroCardStack({
   const stackRef = useRef<HTMLDivElement>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const rafRef = useRef(0);
-  const setBgImage = useHeroBackgroundStore((s) => s.setBgImage);
-  const resetBgImage = useHeroBackgroundStore((s) => s.resetBgImage);
+  const setActiveGameId = useHeroBackgroundStore((s) => s.setActiveGameId);
+  const reset = useHeroBackgroundStore((s) => s.reset);
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -77,11 +67,11 @@ export function HeroCardStack({
 
         const nextHovered = indexFromPointerX(e.clientX, stack);
         setHoveredIndex(nextHovered);
-        const bg = HERO_BG_IMAGES[nextHovered];
-        if (bg) setBgImage(bg);
+        const game = HERO_GAMES[nextHovered];
+        if (game) setActiveGameId(game.id);
       });
     },
-    [setBgImage],
+    [setActiveGameId],
   );
 
   const handlePointerLeave = useCallback(() => {
@@ -91,8 +81,8 @@ export function HeroCardStack({
     stack.style.setProperty('--tilt-x', '0deg');
     stack.style.setProperty('--tilt-y', '0deg');
     setHoveredIndex(null);
-    resetBgImage();
-  }, [resetBgImage]);
+    reset();
+  }, [reset]);
 
   return (
     <div
@@ -108,7 +98,7 @@ export function HeroCardStack({
         const card = child as CardElement;
         const isActive = hoveredIndex === index;
         const transform = isActive
-          ? `translate(var(--card-x), -20px) rotate(var(--card-rotate)) scale(1.05)`
+          ? `translate(var(--card-x), -22px) rotate(var(--card-rotate)) scale(1.06)`
           : `translate(var(--card-x), var(--card-y)) rotate(var(--card-rotate)) scale(var(--card-scale))`;
         return cloneElement(card, {
           className: `${card.props.className ?? ''} ${

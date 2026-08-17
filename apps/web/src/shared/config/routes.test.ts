@@ -11,7 +11,7 @@ describe('routes config', () => {
 
   it('default-locale dynamic routes use English slugs', () => {
     expect(routes.gameDetail('123')).toBe('/en/games/123');
-    expect(routes.gameRoom('abc')).toBe('/en/games/rooms/abc');
+    expect(routes.gameRoom('abc')).toBe('/en/rooms/abc');
     expect(routes.chatDetail('chat-1')).toBe('/en/chat/chat-1');
   });
 
@@ -36,7 +36,7 @@ describe('routes config', () => {
   it('Russian routes use ASCII transliteration', () => {
     const ru = buildRoutes('ru');
     expect(ru.settings).toBe('/ru/nastroyki');
-    expect(ru.gameRoom('abc')).toBe('/ru/igry/rooms/abc');
+    expect(ru.gameRoom('abc')).toBe('/ru/komnaty/abc');
     expect(ru.support).toBe('/ru/podderzhka');
   });
 

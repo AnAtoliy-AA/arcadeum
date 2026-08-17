@@ -7,6 +7,7 @@ import {
   waitForRoomReady,
   mockGameSocket,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 // The celebration FX layer (gold confetti / sparkles / bloom) is rendered
 // inside the shared GameResultModal on a win. This verifies it actually mounts
@@ -59,7 +60,7 @@ test.describe('Victory celebration', () => {
       roomJoinedPayload: { ...roomData, session: sessionData },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Entering an already-completed game should NOT auto-show the result modal.

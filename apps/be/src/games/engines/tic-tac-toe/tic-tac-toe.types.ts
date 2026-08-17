@@ -9,6 +9,7 @@ import type {
   InfinityWinLength,
   Variant,
 } from './tic-tac-toe.constants';
+import type { AiDifficulty } from '../../ai-difficulty';
 
 export interface TicTacToeOptions {
   variant: Variant;
@@ -16,6 +17,7 @@ export interface TicTacToeOptions {
   teamMode: boolean;
   expansionMargin: InfinityMargin;
   infinityWinLength: InfinityWinLength;
+  aiDifficulty?: AiDifficulty;
 }
 
 export type CellValue = string | null;

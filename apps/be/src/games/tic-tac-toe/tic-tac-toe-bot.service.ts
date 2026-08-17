@@ -80,10 +80,12 @@ export class TicTacToeBotService {
   }
 
   /**
-   * Pick a move for the bot. Strategy varies by boardSize:
-   * - 3 → perfect minimax (only ~9 cells, trivially fast)
-   * - 5 → heuristic: win → block → center bias
-   * - 7, 9, infinity → heuristic: win → block → random
+   * Pick a move for the bot. Strategy varies by boardSize and difficulty:
+   * - easy → mostly random moves (occasionally takes an obvious win)
+   * - 3×3 medium+ → perfect minimax (the game is solved at this size)
+   * - medium → heuristic: win → block → center bias (5×5) / random
+   * - hard → heuristic: win → block → center bias on every board
+   * - expert → win → block → line-potential search (like gomoku scoring)
    */
   pickMove(state: TicTacToeState, botId: string): PlaceMarkPayload | null {
     const ownerId = this.getOwnerId(state, botId);
@@ -92,6 +94,17 @@ export class TicTacToeBotService {
     const opponentIds = this.getOpponentIds(state, ownerId);
     const size = state.board.length;
     const boardSize = state.options.boardSize;
+    const difficulty = state.options.aiDifficulty ?? 'medium';
+
+    if (difficulty === 'easy') {
+      // Mostly random — only takes an obvious win 15% of the time so it
+      // still "plays" the game instead of auto-losing every time.
+      if (Math.random() < 0.15) {
+        const winMove = this.findWinningMove(state, ownerId);
+        if (winMove) return winMove;
+      }
+      return this.randomEmptyCell(state);
+    }
 
     if (boardSize === 3) {
       return this.minimaxMove(state, ownerId, opponentIds);
@@ -107,10 +120,115 @@ export class TicTacToeBotService {
       if (block) return block;
     }
 
-    if (size === 5) {
+    if (difficulty === 'expert') {
+      return this.linePotentialMove(state, ownerId, opponentIds);
+    }
+
+    if (difficulty === 'hard' || size === 5) {
       return this.centerBiasedRandom(state);
     }
+
     return this.randomEmptyCell(state);
+  }
+
+  /**
+   * Score every empty cell by the longest open line it belongs to (own
+   * potential plus the strongest opponent line it would block), then pick a
+   * random cell among the best scorers. This gives a competent "gomoku-ish"
+   * player on 5×5+ boards where full minimax is too expensive.
+   */
+  private linePotentialMove(
+    state: TicTacToeState,
+    ownerId: string,
+    opponentIds: string[],
+  ): PlaceMarkPayload | null {
+    const size = state.board.length;
+    const center = (size - 1) / 2;
+    const empties: Array<PlaceMarkPayload & { score: number }> = [];
+
+    for (let row = 0; row < size; row++) {
+      for (let col = 0; col < size; col++) {
+        if (state.board[row][col] !== null) continue;
+        const ownPotential = this.lineThroughPotential(
+          state.board,
+          row,
+          col,
+          ownerId,
+          size,
+          state.winLength,
+        );
+        let oppPotential = 0;
+        for (const opp of opponentIds) {
+          oppPotential = Math.max(
+            oppPotential,
+            this.lineThroughPotential(
+              state.board,
+              row,
+              col,
+              opp,
+              size,
+              state.winLength,
+            ),
+          );
+        }
+        const centerBias =
+          1 - (Math.abs(row - center) + Math.abs(col - center)) / size;
+        empties.push({
+          row,
+          col,
+          score: ownPotential * 2 + oppPotential + centerBias,
+        });
+      }
+    }
+
+    if (empties.length === 0) return null;
+    const maxScore = Math.max(...empties.map((e) => e.score));
+    const best = empties.filter((e) => e.score === maxScore);
+    const pick = best[Math.floor(Math.random() * best.length)];
+    return pick ? { row: pick.row, col: pick.col } : null;
+  }
+
+  /**
+   * Longest contiguous run of (empty | own cells) passing through (row,col)
+   * along any direction, capped at winLength — a proxy for how many winning
+   * lines that cell participates in.
+   */
+  private lineThroughPotential(
+    board: CellValue[][],
+    row: number,
+    col: number,
+    playerId: string,
+    size: number,
+    winLength: number,
+  ): number {
+    let best = 0;
+    const directions: Array<[number, number]> = [
+      [1, 0],
+      [0, 1],
+      [1, 1],
+      [1, -1],
+    ];
+    for (const [dr, dc] of directions) {
+      let count = 1;
+      for (let i = 1; i < winLength; i++) {
+        const nr = row + dr * i;
+        const nc = col + dc * i;
+        if (nr < 0 || nr >= size || nc < 0 || nc >= size) break;
+        const cell = board[nr][nc];
+        if (cell === null || cell === playerId) count++;
+        else break;
+      }
+      for (let i = 1; i < winLength; i++) {
+        const nr = row - dr * i;
+        const nc = col - dc * i;
+        if (nr < 0 || nr >= size || nc < 0 || nc >= size) break;
+        const cell = board[nr][nc];
+        if (cell === null || cell === playerId) count++;
+        else break;
+      }
+      if (count > best) best = count;
+    }
+    return best;
   }
 
   private findWinningMove(

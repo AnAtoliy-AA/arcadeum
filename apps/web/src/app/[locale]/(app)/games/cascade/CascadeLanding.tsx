@@ -1,10 +1,10 @@
-import Link from 'next/link';
-import { Container, PageLayout } from '@arcadeum/ui';
 import type { CascadeMessages } from '@/shared/i18n/messages/games/cascade';
-import styles from './CascadeLanding.module.scss';
-import { CascadeHero } from './CascadeHero';
-import { CascadeThemesGrid } from './CascadeThemesGrid';
-import { CascadeFinalCtaButtons } from './CascadeFinalCtaButtons';
+import {
+  UnifiedGameLanding,
+  getRelatedGames,
+} from '@/features/games/ui/landing';
+import type { Locale } from '@/shared/i18n';
+import { CascadeCardsVisual } from './CascadeCardsVisual';
 
 type CscMessages = CascadeMessages['cascade_v1'];
 type Landing = CscMessages['landing'];
@@ -23,6 +23,12 @@ interface Props {
   homeLabel: string;
   gamesLabel: string;
   backToGamesLabel: string;
+  locale: Locale;
+  translatedGames?: Record<
+    string,
+    { name?: string; description?: string } | undefined
+  >;
+  comingSoon?: boolean;
 }
 
 export default function CascadeLanding({
@@ -37,6 +43,9 @@ export default function CascadeLanding({
   homeLabel,
   gamesLabel,
   backToGamesLabel,
+  locale,
+  comingSoon = false,
+  translatedGames,
 }: Props) {
   if (!landing) return null;
 
@@ -44,101 +53,187 @@ export default function CascadeLanding({
     { key: 'players', icon: '👥', ...landing.highlights.players },
     { key: 'themes', icon: '🎨', ...landing.highlights.themes },
     { key: 'stacking', icon: '⚡', ...landing.highlights.stacking },
+    {
+      key: 'combos',
+      icon: '🔥',
+      title: 'Action Card Chains',
+      body: 'Counter attack cards with matching penalties to pass the draw burden to opponents.',
+    },
   ];
 
   const steps = [
-    { key: 'create', step: '1', ...landing.steps.create },
-    { key: 'join', step: '2', ...landing.steps.join },
-    { key: 'play', step: '3', ...landing.steps.play },
+    {
+      key: 'create',
+      stepNumber: 1,
+      ...landing.steps.create,
+      tip: 'Configure starting hand sizes and penalty stacking rules.',
+    },
+    {
+      key: 'join',
+      stepNumber: 2,
+      ...landing.steps.join,
+      tip: 'Supports up to 10 simultaneous players in a single room.',
+    },
+    {
+      key: 'play',
+      stepNumber: 3,
+      ...landing.steps.play,
+      tip: 'Match by color or number and save wild cards for tactical escapes.',
+    },
   ];
 
+  const rulesList = rules
+    ? [
+        { key: 'objective', head: 'Objective', body: rules.objective },
+        { key: 'steps', head: 'How Stacking Works', body: rules.steps },
+        { key: 'stacking', head: 'Penalty Defense', body: rules.stacking },
+      ]
+    : [];
+
+  const strategyTips = [
+    {
+      key: 'saveWilds',
+      title: 'Save Wilds for Emergencies',
+      body: 'Hold wild cards until you are forced into an unfavorable color to regain tempo.',
+    },
+    {
+      key: 'colorTracking',
+      title: 'Track Opponent Color Preferences',
+      body: 'Pay attention to what colors other players pass on and shift the active color away from them.',
+    },
+    {
+      key: 'stackDefend',
+      title: 'Keep +2 and +4 Counters',
+      body: 'Never play your last draw-card unnecessarily if you suspect a draw chain is coming.',
+    },
+  ];
+
+  const faqItems = Object.entries(landing.faq).map(([key, entry]) => {
+    const e = entry as { question: string; answer: string };
+    return {
+      key,
+      question: e.question,
+      answer: e.answer,
+    };
+  });
+
+  const themeKeys = [
+    'classic',
+    'neon',
+    'cosmic',
+    'arcane',
+    'cyberpunk',
+    'elemental',
+    'tropical',
+    'steampunk',
+  ] as const;
+  const themesList = variants
+    ? themeKeys.map((k) => ({
+        id: k,
+        name: variants[k]?.name ?? k,
+        description: variants[k]?.description,
+      }))
+    : [];
+
+  const relatedGames = getRelatedGames(locale, gameId, translatedGames);
+
   return (
-    <PageLayout>
-      <Container>
-        <div className={styles.root}>
-          <CascadeHero
-            title={landing.hero.title}
-            subtitle={landing.hero.subtitle}
-            gameId={gameId}
-            roomsHref={roomsHref}
-            ctaQuickplayLabel={landing.hero.ctaQuickplay}
-            ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
-            browseRoomsLabel={landing.hero.browseRooms}
-          />
-
-          <section className={styles.highlights}>
-            {highlights.map((h) => (
-              <div key={h.key} className={styles.highlightCard}>
-                <span className={styles.highlightIcon}>{h.icon}</span>
-                <h2 className={styles.highlightTitle}>{h.title}</h2>
-                <p className={styles.highlightBody}>{h.body}</p>
-              </div>
-            ))}
-          </section>
-
-          <section className={styles.steps}>
-            {steps.map((s) => (
-              <div key={s.key} className={styles.stepCard}>
-                <span className={styles.stepNumber}>{s.step}</span>
-                <h3 className={styles.stepTitle}>{s.title}</h3>
-                <p className={styles.stepBody}>{s.body}</p>
-              </div>
-            ))}
-          </section>
-
-          {variants ? (
-            <section className={styles.themes}>
-              <h2 className={styles.sectionTitle}>{landing.themes.title}</h2>
-              <p className={styles.sectionSubtitle}>
-                {landing.themes.subtitle}
-              </p>
-              <CascadeThemesGrid
-                variants={variants}
-                baseHref={createRoomHref}
-              />
-            </section>
-          ) : null}
-
-          {rules ? (
-            <section className={styles.rules}>
-              <h2 className={styles.sectionTitle}>{rules.title}</h2>
-              <p>{rules.objective}</p>
-              <p>{rules.steps}</p>
-              <p className={styles.rulesNote}>{rules.stacking}</p>
-            </section>
-          ) : null}
-
-          <section className={styles.faq}>
-            {Object.entries(landing.faq).map(([key, entry]) => {
-              const e = entry as { question: string; answer: string };
-              return (
-                <div key={key} className={styles.faqItem}>
-                  <h3 className={styles.faqQuestion}>{e.question}</h3>
-                  <p className={styles.faqAnswer}>{e.answer}</p>
-                </div>
-              );
-            })}
-          </section>
-
-          <CascadeFinalCtaButtons
-            gameId={gameId}
-            roomsHref={roomsHref}
-            gamesHref={gamesHref}
-            ctaQuickplayLabel={landing.hero.ctaQuickplay}
-            ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
-            browseRoomsLabel={landing.hero.browseRooms}
-            backToGamesLabel={backToGamesLabel}
-          />
-
-          <nav className={styles.breadcrumbs}>
-            <Link href={homeHref}>{homeLabel}</Link>
-            <span aria-hidden> / </span>
-            <Link href={gamesHref}>{gamesLabel}</Link>
-            <span aria-hidden> / </span>
-            <span>Cascade</span>
-          </nav>
-        </div>
-      </Container>
-    </PageLayout>
+    <UnifiedGameLanding
+      accentGlow="blue"
+      comingSoon={comingSoon}
+      breadcrumbs={[
+        { label: homeLabel, href: homeHref },
+        { label: gamesLabel, href: gamesHref },
+        { label: landing.hero.title ?? 'Cascade' },
+      ]}
+      hero={{
+        gameId,
+        title: landing.hero.title,
+        eyebrow: 'Fast Party Cards',
+        subtitle: landing.hero.subtitle,
+        intro:
+          'The fast-paced card shedding showdown with ruthless stacking penalties, color changes, and 4 themes.',
+        category: 'Card Game',
+        playersBadge: '2–10 Players',
+        durationBadge: '5–15 min',
+        difficultyBadge: 'Casual Party',
+        chips: [
+          'Stacking Penalties',
+          '4 Theme Decks',
+          'Up to 10 Players',
+          'Instant Quickplay',
+        ],
+        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        browseRoomsLabel: landing.hero.browseRooms,
+        createRoomLabel: 'Create Room',
+        roomsHref,
+        createRoomHref,
+        heroVisual: <CascadeCardsVisual />,
+      }}
+      highlights={{
+        title: 'Action-Packed Card Shedding',
+        kicker: 'Key Features',
+        items: highlights,
+      }}
+      howToPlay={{
+        title: 'How to Play Cascade',
+        kicker: 'Quick Start',
+        intro:
+          'Match cards by number, color, or symbol and be the first to empty your hand.',
+        steps,
+      }}
+      themes={
+        themesList.length > 0
+          ? {
+              title: landing.themes.title,
+              kicker: 'Deck Themes',
+              subtitle: landing.themes.subtitle,
+              themes: themesList,
+              baseHref: createRoomHref,
+              createRoomLabel: 'Play Deck',
+            }
+          : undefined
+      }
+      rules={
+        rulesList.length > 0
+          ? {
+              title: rules?.title ?? 'Rules & Mechanics',
+              kicker: 'Rulebook',
+              rules: rulesList,
+            }
+          : undefined
+      }
+      strategy={{
+        title: 'Winning Strategies & Combos',
+        kicker: 'Pro Tips',
+        intro:
+          'Learn how to counter draw chains and control the flow of the game.',
+        tips: strategyTips,
+      }}
+      faq={{
+        title: 'Frequently Asked Questions',
+        kicker: 'FAQ',
+        items: faqItems,
+      }}
+      relatedGames={{
+        title: 'More Multiplayer Card Games',
+        kicker: 'Discover',
+        currentGameSlug: gameId,
+        games: relatedGames,
+      }}
+      finalCta={{
+        gameId,
+        title: 'Jump Into the Next Round',
+        subtitle:
+          'Play against intelligent AI bots or host a high-stakes party game for up to 10 friends.',
+        roomsHref,
+        gamesHref,
+        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        browseRoomsLabel: landing.hero.browseRooms,
+        backToGamesLabel,
+      }}
+    />
   );
 }

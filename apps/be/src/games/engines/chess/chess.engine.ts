@@ -76,7 +76,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         ? (config.options as ChessEngineConfig)
         : config;
     const timeControl = opts?.timeControl ?? null;
-    const botDifficulty = opts?.botDifficulty ?? 'medium';
+    const botDifficulty = opts?.botDifficulty ?? opts?.aiDifficulty ?? 'medium';
     const clocks = timeControl
       ? ({
           white: {

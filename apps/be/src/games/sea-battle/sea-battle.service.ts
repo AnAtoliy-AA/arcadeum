@@ -21,6 +21,7 @@ import {
   MAX_PLAYERS_TEAM_MODE,
 } from '../engines/sea-battle/sea-battle.constants';
 import type { SeaBattleGameOptions } from '../rooms/sea-battle-team-config.types';
+import type { AiDifficulty } from '../engines/sea-battle/sea-battle.types';
 import { GameBotWatchdog } from '../game-bot-watchdog';
 
 interface PlaceShipPayload {
@@ -137,7 +138,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     withBots?: boolean,
     botCount?: number,
-    difficulty?: 'easy' | 'medium' | 'hard',
+    difficulty?: AiDifficulty,
     gridSize?: number,
     shipCount?: number,
     variant?: string,

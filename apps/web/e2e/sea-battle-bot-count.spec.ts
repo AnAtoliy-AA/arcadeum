@@ -10,6 +10,7 @@ import {
   checkNoBackendErrors,
   waitForRoomReady,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Bot Count Selection', () => {
   test.afterEach(async () => {
@@ -122,7 +123,7 @@ test.describe('Sea Battle Bot Count Selection', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
     await closeGameRulesModal(page);
 

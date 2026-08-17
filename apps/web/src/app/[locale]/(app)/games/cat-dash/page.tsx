@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import CatDashLanding from './CatDashLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const CAT_DASH_SLUG = 'cat_dash_v1';
 const CAT_DASH_MIN_PLAYERS = 2;
@@ -72,6 +73,7 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
       minPlayers: CAT_DASH_MIN_PLAYERS,
       maxPlayers: CAT_DASH_MAX_PLAYERS,
       genre: CAT_DASH_GENRE,
+      alternateName: ['Cat Dash Racing', 'Cat Race Online', 'Dice Cat Runner'],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -81,6 +83,7 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.catDashLanding}`;
+  const comingSoon = await isGameComingSoon(CAT_DASH_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -118,13 +121,25 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-cat-dash" data={jsonLd} />
       <CatDashLanding
         landing={landing}
+        comingSoon={comingSoon}
         variants={variants}
         rules={rules}
         gameId={CAT_DASH_SLUG}
         createRoomHref={`${routes.gameCreate}?gameId=${CAT_DASH_SLUG}`}
-        roomsHref={routes.games}
+        roomsHref={`${routes.rooms}?gameId=${CAT_DASH_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}
+        locale={locale}
+        navTranslations={{
+          homeTab: messages.navigation?.homeTab ?? 'Home',
+          gamesTab: messages.navigation?.gamesTab ?? 'Games',
+        }}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
+        }
       />
     </>
   );

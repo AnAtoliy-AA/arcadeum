@@ -256,7 +256,6 @@ describe('CriticalEngine', () => {
       });
       expect(state.deck.length).toBe(69);
     });
-
     it('should have 104 cards for 2 players with all expansions (+60 cards)', () => {
       const state = engine.initializeState(['p1', 'p2'], {
         expansions: ['theft', 'attack', 'future'],
@@ -273,6 +272,23 @@ describe('CriticalEngine', () => {
       });
       // Theft base: 61, default wildcards: 4, custom: 10 → +6 extra
       expect(state.deck.length).toBeGreaterThanOrEqual(67);
+    });
+  });
+
+  describe('AI difficulty', () => {
+    it.each(['easy', 'medium', 'hard', 'expert'])(
+      'stores %s aiDifficulty from config on the state',
+      (d) => {
+        const state = engine.initializeState(['p1', 'p2'], {
+          aiDifficulty: d,
+        });
+        expect(state.aiDifficulty).toBe(d);
+      },
+    );
+
+    it('defaults to no aiDifficulty when absent', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      expect(state.aiDifficulty).toBeUndefined();
     });
   });
 

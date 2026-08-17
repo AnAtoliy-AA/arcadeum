@@ -47,7 +47,7 @@ interface SeaBattleLobbyProps {
   onStartGame: (options?: {
     withBots?: boolean;
     botCount?: number;
-    difficulty?: 'easy' | 'medium' | 'hard';
+    difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
     gridSize?: number;
     shipCount?: number;
     variant?: string;
@@ -181,7 +181,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     (opts?: {
       withBots?: boolean;
       botCount?: number;
-      difficulty?: 'easy' | 'medium' | 'hard';
+      difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
     }) => {
       if (teamStartBlocked) return;
       setOption({

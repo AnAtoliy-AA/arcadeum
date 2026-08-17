@@ -293,10 +293,12 @@ export const esMessages = {
     difficultyEasy: 'Fácil',
     difficultyMedium: 'Media',
     difficultyHard: 'Difícil',
+    difficultyExpert: 'Experto',
     difficultyEasyDesc:
       'Movimientos aleatorios con jugadas inteligentes ocasionales',
     difficultyMediumDesc: 'Apuntado inteligente con estrategia de bloqueo',
     difficultyHardDesc: 'Apuntado de precisión basado en probabilidad',
+    difficultyExpertDesc: 'Búsqueda de profundidad máxima, sin errores',
   },
   shared: {
     rules: {
@@ -404,5 +406,12 @@ export const esMessages = {
     title: 'Elige un juego para jugar contra la IA',
     starting: 'Iniciando...',
     allCategory: 'Todos',
+  },
+  matchmaking: {
+    searchingTitle: 'Buscando oponente',
+    searchingSubtitle: 'Buscando una partida para {{game}}...',
+    cancel: 'Cancelar búsqueda',
+    estimatedWait: 'Espera estimada: ~{{seconds}}s',
+    queuePosition: 'Posición en la cola: {{position}} de {{total}}',
   },
 };

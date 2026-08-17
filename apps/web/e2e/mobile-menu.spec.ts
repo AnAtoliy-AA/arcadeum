@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { navigateTo } from './fixtures/utils/navigation';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Mobile Menu', () => {
   test.beforeEach(async ({ page, context }) => {
@@ -49,8 +50,8 @@ test.describe('Mobile Menu', () => {
     await expect(gamesLink).toBeVisible();
     await gamesLink.click();
 
-    // Should navigate to /games
-    await expect(page).toHaveURL(/\/games/);
+    // Should navigate to /rooms
+    await expect(page).toHaveURL(new RegExp(routes.rooms));
 
     // Menu should be closed
     await expect(menuButton).toHaveAttribute('aria-expanded', 'false');

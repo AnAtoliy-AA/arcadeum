@@ -3,6 +3,7 @@ import type {
   GamePlayerState,
 } from '../base/game-engine.interface';
 import type { ChessVariant, PieceColor, PieceType } from './chess.constants';
+import type { AiDifficulty } from '../../ai-difficulty';
 
 export type File = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h';
 export type Rank = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
@@ -46,6 +47,7 @@ export interface ChessPlayer extends GamePlayerState {
 export interface ChessOptions {
   variant: ChessVariant;
   timeControl: TimeControl | null;
+  botDifficulty?: AiDifficulty;
 }
 
 export type TimeControlType = 'blitz' | 'rapid' | 'classical';
@@ -71,7 +73,7 @@ export interface LegalMove {
 export interface ChessState extends BaseGameState {
   variant: ChessVariant;
   timeControl: TimeControl | null;
-  botDifficulty?: 'easy' | 'medium' | 'hard';
+  botDifficulty?: AiDifficulty;
   board: Board;
   currentTurnColor: PieceColor;
   castlingRights: CastlingRights;
@@ -105,5 +107,6 @@ export interface MovePayload {
 export interface ChessEngineConfig {
   timeControl?: TimeControl;
   variant?: ChessVariant;
-  botDifficulty?: 'easy' | 'medium' | 'hard';
+  botDifficulty?: AiDifficulty;
+  aiDifficulty?: AiDifficulty;
 }

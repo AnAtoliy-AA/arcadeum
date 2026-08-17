@@ -13,6 +13,7 @@ import {
 } from './chess-bot-utils';
 import type { GameSessionSummary } from '../../sessions/game-sessions.service';
 import { ChessService } from '../../chess/chess.service';
+import type { AiDifficulty } from '../../ai-difficulty';
 
 const INFINITY = 999999;
 const TT_SIZE = 1 << 20;
@@ -32,7 +33,7 @@ interface TTEntry {
   bestMove: ChessMove | null;
 }
 
-type BotDifficulty = 'easy' | 'medium' | 'hard';
+type BotDifficulty = AiDifficulty;
 
 interface DifficultyConfig {
   maxDepth: number;
@@ -60,6 +61,13 @@ const DIFFICULTY: Record<BotDifficulty, DifficultyConfig> = {
   hard: {
     maxDepth: 4,
     quiescenceDepth: 6,
+    useNullMove: true,
+    useLMR: true,
+    noiseCentipawns: 0,
+  },
+  expert: {
+    maxDepth: 6,
+    quiescenceDepth: 8,
     useNullMove: true,
     useLMR: true,
     noiseCentipawns: 0,

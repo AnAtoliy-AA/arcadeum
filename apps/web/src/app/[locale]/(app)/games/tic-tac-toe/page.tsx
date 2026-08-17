@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import TicTacToeLanding from './TicTacToeLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const TIC_TAC_TOE_SLUG = 'tic_tac_toe_v1';
 const TIC_TAC_TOE_MIN_PLAYERS = 2;
@@ -74,6 +75,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
       minPlayers: TIC_TAC_TOE_MIN_PLAYERS,
       maxPlayers: TIC_TAC_TOE_MAX_PLAYERS,
       genre: TIC_TAC_TOE_GENRE,
+      alternateName: ['Noughts and Crosses', 'Xs and Os', 'Gomoku Tic-Tac-Toe'],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -83,6 +85,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.ticTacToeLanding}`;
+  const comingSoon = await isGameComingSoon(TIC_TAC_TOE_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -120,13 +123,25 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-tic-tac-toe" data={jsonLd} />
       <TicTacToeLanding
         landing={landing}
+        comingSoon={comingSoon}
         variants={variants}
         rules={rules}
         gameId={TIC_TAC_TOE_SLUG}
         createRoomHref={`${routes.gameCreate}?gameId=${TIC_TAC_TOE_SLUG}`}
-        roomsHref={routes.games}
+        roomsHref={`${routes.rooms}?gameId=${TIC_TAC_TOE_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}
+        locale={locale}
+        navTranslations={{
+          homeTab: messages.navigation?.homeTab ?? 'Home',
+          gamesTab: messages.navigation?.gamesTab ?? 'Games',
+        }}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
+        }
       />
     </>
   );

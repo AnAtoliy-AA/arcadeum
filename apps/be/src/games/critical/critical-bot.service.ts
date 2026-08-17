@@ -3,6 +3,17 @@ import { CriticalService } from './critical.service';
 import { CriticalState, CriticalPlayerState } from './critical.state';
 import { CriticalCard } from './critical.constants';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
+import type { AiDifficulty } from '../ai-difficulty';
+
+const DIFFICULTY_CONFIG: Record<
+  AiDifficulty,
+  { playChance: number; nopeChance: number }
+> = {
+  easy: { playChance: 0.25, nopeChance: 0.3 },
+  medium: { playChance: 0.6, nopeChance: 0.8 },
+  hard: { playChance: 0.75, nopeChance: 0.9 },
+  expert: { playChance: 0.85, nopeChance: 0.95 },
+};
 
 @Injectable()
 export class CriticalBotService {
@@ -94,6 +105,9 @@ export class CriticalBotService {
     );
     if (!botPlayer || !botPlayer.alive) return;
 
+    const difficulty: AiDifficulty = state.aiDifficulty ?? 'medium';
+    const cfg = DIFFICULTY_CONFIG[difficulty] ?? DIFFICULTY_CONFIG.medium;
+
     const deckSize = Array.isArray(state.deck) ? state.deck.length : 0;
 
     // If deck is empty, bot can only play cards — skip draw logic
@@ -128,7 +142,7 @@ export class CriticalBotService {
       if (playableCards.length > 0) {
         const card =
           playableCards[Math.floor(Math.random() * playableCards.length)];
-        const target = this.getRandomOpponent(state, botId);
+        const target = this.pickTarget(state, botId, cfg);
         try {
           await this.criticalService.playActionByRoom(
             botId,
@@ -163,8 +177,8 @@ export class CriticalBotService {
 
       // If it's a hostile action from an opponent
       if (hostileActions.includes(actionType) && actionSender !== botId) {
-        // High chance to Nope an attack (80%)
-        if (Math.random() < 0.8) {
+        // Higher difficulty reacts more reliably
+        if (Math.random() < cfg.nopeChance) {
           try {
             await this.criticalService.playNopeByRoom(botId, session.roomId);
             return; // Turn ends/updates after Nope
@@ -206,10 +220,10 @@ export class CriticalBotService {
       ].includes(c as string),
     );
 
-    if (playableCards.length > 0 && Math.random() > 0.4) {
+    if (playableCards.length > 0 && Math.random() < cfg.playChance) {
       const card =
         playableCards[Math.floor(Math.random() * playableCards.length)];
-      const target = this.getRandomOpponent(state, botId);
+      const target = this.pickTarget(state, botId, cfg);
 
       try {
         // Play action
@@ -306,13 +320,27 @@ export class CriticalBotService {
     const actualCount = Math.min(count, deckSize);
     const topCards = state.deck.slice(0, actualCount);
 
-    // Simple strategy: Random shuffle
-    const shuffled = [...topCards].sort(() => Math.random() - 0.5);
+    const difficulty: AiDifficulty = state.aiDifficulty ?? 'medium';
+    let newOrder = [...topCards];
+    if (difficulty === 'expert') {
+      // Bury any bombs to the back so the next player won't draw them.
+      const bombs = newOrder.filter((c) => c === 'critical_event');
+      const rest = newOrder.filter((c) => c !== 'critical_event');
+      newOrder = [...rest, ...bombs];
+    } else if (difficulty === 'hard' && Math.random() < 0.5) {
+      // Hard bots bury bombs half the time, otherwise shuffle randomly.
+      const bombs = newOrder.filter((c) => c === 'critical_event');
+      const rest = newOrder.filter((c) => c !== 'critical_event');
+      newOrder = [...rest, ...bombs];
+    } else {
+      // Weak bots shuffle randomly.
+      newOrder = [...topCards].sort(() => Math.random() - 0.5);
+    }
 
     await this.criticalService.commitAlterFutureByRoom(
       botId,
       session.roomId,
-      shuffled,
+      newOrder,
     );
   }
 
@@ -324,5 +352,28 @@ export class CriticalBotService {
     const randomOpponent =
       opponents[Math.floor(Math.random() * opponents.length)];
     return randomOpponent ? randomOpponent.playerId : '';
+  }
+
+  /**
+   * Harder bots target the alive opponent holding the most cards (the
+   * biggest threat / richest Nope holder); weaker bots pick randomly.
+   */
+  private pickTarget(
+    state: CriticalState,
+    botId: string,
+    cfg: { playChance: number; nopeChance: number },
+  ): string {
+    const opponents = state.players.filter(
+      (p: CriticalPlayerState) => p.playerId !== botId && p.alive,
+    );
+    if (opponents.length === 0) return '';
+    if (cfg.nopeChance < 0.9) {
+      return this.getRandomOpponent(state, botId);
+    }
+    let best = opponents[0];
+    for (const opp of opponents) {
+      if ((opp.hand?.length ?? 0) > (best.hand?.length ?? 0)) best = opp;
+    }
+    return best ? best.playerId : '';
   }
 }

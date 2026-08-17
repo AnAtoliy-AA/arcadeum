@@ -61,23 +61,19 @@ export function useUrlHashState<T>(
   initial: T,
   options: UseUrlHashStateOptions<T>,
 ): [T, (next: T | ((prev: T) => T)) => void] {
-  // Callers should pass module-level constants for `serialize` /
-  // `deserialize` (or memoize them) so the dep arrays below stay stable
-  // across renders. Passing inline lambdas works but re-creates the
-  // `update` setter every render — fine for correctness, just wasted
-  // referential churn.
   const { serialize, deserialize } = options;
 
   const readFromHash = useCallback((): T => {
     if (typeof window === 'undefined') return initial;
     return deserialize(parseHash().get(key));
-    // `initial` is captured at first call; subsequent reads come from the hash.
   }, [key, initial, deserialize]);
 
   const [value, setValue] = useState<T>(readFromHash);
 
-  // Resync on external hash changes (Back/Forward, address-bar edit,
-  // links). Only this hook can write its own key so we don't loop.
+  useEffect(() => {
+    writeHash(key, serialize(value));
+  }, [key, value, serialize]);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const handler = () => setValue(readFromHash());
@@ -85,17 +81,9 @@ export function useUrlHashState<T>(
     return () => window.removeEventListener('hashchange', handler);
   }, [readFromHash]);
 
-  const update = useCallback(
-    (next: T | ((prev: T) => T)) => {
-      setValue((prev) => {
-        const resolved =
-          typeof next === 'function' ? (next as (prev: T) => T)(prev) : next;
-        writeHash(key, serialize(resolved));
-        return resolved;
-      });
-    },
-    [key, serialize],
-  );
+  const update = useCallback((next: T | ((prev: T) => T)) => {
+    setValue(next);
+  }, []);
 
   return [value, update];
 }

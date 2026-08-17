@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test, handleRoute } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Responsive Layout', () => {
   test.beforeEach(async ({ page }) => {
@@ -61,7 +62,7 @@ test.describe('Responsive Layout', () => {
   });
 
   test('should adjust grid layout on mobile', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.rooms);
 
     // In mobile, cards usually go full width (1 column)
     // Wait for at least one card to be visible before proceeding

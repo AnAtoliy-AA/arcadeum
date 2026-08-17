@@ -11,6 +11,7 @@ import {
   createSeaBattleState,
   TestWindow,
 } from './fixtures/sea-battle-chat-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Chat Message Popup', () => {
   test.use({
@@ -107,7 +108,7 @@ test.describe('Sea Battle Chat Message Popup', () => {
       },
     });
 
-    await page.goto(`/games/rooms/${roomId}`);
+    await page.goto(routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Wait for socket and store to be ready
@@ -225,7 +226,7 @@ test.describe('Sea Battle Chat Message Popup', () => {
       },
     });
 
-    await page.goto(`/games/rooms/${roomId}`);
+    await page.goto(routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Wait for socket and store to be ready
@@ -346,7 +347,7 @@ test.describe('Sea Battle Chat Message Popup', () => {
       },
     });
 
-    await page.goto(`/games/rooms/${roomId}`);
+    await page.goto(routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Wait for socket and store to be ready

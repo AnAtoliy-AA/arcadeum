@@ -6,10 +6,10 @@ import { useLanguage } from '@/shared/i18n/context';
 import { appConfig } from '@/shared/config/app-config';
 import {
   PageLayout,
+  Badge,
   Container,
   GlassCard,
   Typography,
-  AccentPill,
 } from '@arcadeum/ui';
 import {
   DiscordIcon,
@@ -168,9 +168,9 @@ export default function CommunityPageContent({
           >
             <div className="flex flex-col gap-3 items-center max-w-[720px]">
               {t?.badge && (
-                <AccentPill accent="#818CF8">
+                <Badge accent="#818CF8">
                   {(t.badge as string).toUpperCase()}
-                </AccentPill>
+                </Badge>
               )}
 
               <Typography
@@ -289,9 +289,7 @@ export default function CommunityPageContent({
                             <IconComponent size={24} />
                           </div>
                           {subtitle && (
-                            <AccentPill accent={net.color}>
-                              {subtitle}
-                            </AccentPill>
+                            <Badge accent={net.color}>{subtitle}</Badge>
                           )}
                         </div>
 

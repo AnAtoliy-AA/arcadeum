@@ -14,6 +14,7 @@ interface ArenaProps {
   isMyTurn: boolean;
   isGameOver: boolean;
   onDrawAndEnd: () => void;
+  onClearSelection?: () => void;
   // ArenaCenter passthrough
   hand: CriticalCard[];
   allowActionCardCombos: boolean;
@@ -50,6 +51,7 @@ export function Arena({
   isMyTurn,
   isGameOver,
   onDrawAndEnd,
+  onClearSelection,
   hand,
   allowActionCardCombos,
   combo,
@@ -88,6 +90,7 @@ export function Arena({
           hand={hand}
           allowActionCardCombos={allowActionCardCombos}
           combo={combo}
+          onClearSelection={onClearSelection}
           deck={deck}
           logs={logs}
           formatLogMessage={formatLogMessage}

@@ -9,6 +9,7 @@ import {
   checkNoBackendErrors,
   MOCK_OBJECT_ID,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 const ROOM_ID = '647f1a2b3c4d5e6f7a8b9c0d';
 const OPPONENT_ID = '647f1a2b3c4d5e6f7a8b9c0e';
@@ -56,7 +57,7 @@ test.describe('In-Game Chat Messaging', () => {
   });
 
   test('should send and receive lobby chat messages', async ({ page }) => {
-    await navigateTo(page, `/games/rooms/${ROOM_ID}`);
+    await navigateTo(page, routes.gameRoom(ROOM_ID));
     await waitForRoomReady(page);
 
     await openChatPanel(page);
@@ -77,7 +78,7 @@ test.describe('In-Game Chat Messaging', () => {
   });
 
   test('should receive messages from other players', async ({ page }) => {
-    await navigateTo(page, `/games/rooms/${ROOM_ID}`);
+    await navigateTo(page, routes.gameRoom(ROOM_ID));
     await waitForRoomReady(page);
 
     await openChatPanel(page);
@@ -103,7 +104,7 @@ test.describe('In-Game Chat Messaging', () => {
   });
 
   test('should display message character count', async ({ page }) => {
-    await navigateTo(page, `/games/rooms/${ROOM_ID}`);
+    await navigateTo(page, routes.gameRoom(ROOM_ID));
     await waitForRoomReady(page);
 
     await openChatPanel(page);
@@ -120,7 +121,7 @@ test.describe('In-Game Chat Messaging', () => {
   });
 
   test('should not send empty messages', async ({ page }) => {
-    await navigateTo(page, `/games/rooms/${ROOM_ID}`);
+    await navigateTo(page, routes.gameRoom(ROOM_ID));
     await waitForRoomReady(page);
 
     await openChatPanel(page);
@@ -138,7 +139,7 @@ test.describe('In-Game Chat Messaging', () => {
   });
 
   test('should respect 240 character limit', async ({ page }) => {
-    await navigateTo(page, `/games/rooms/${ROOM_ID}`);
+    await navigateTo(page, routes.gameRoom(ROOM_ID));
     await waitForRoomReady(page);
 
     await openChatPanel(page);
@@ -170,7 +171,7 @@ test.describe('In-Game Chat Messaging', () => {
 
     await mockGameSocket(page, ROOM_ID, 'anonymous');
 
-    await navigateTo(page, `/games/rooms/${ROOM_ID}`);
+    await navigateTo(page, routes.gameRoom(ROOM_ID));
     await waitForRoomReady(page);
 
     await openChatPanel(page);
@@ -182,7 +183,7 @@ test.describe('In-Game Chat Messaging', () => {
   });
 
   test('should switch between chat scopes', async ({ page }) => {
-    await navigateTo(page, `/games/rooms/${ROOM_ID}`);
+    await navigateTo(page, routes.gameRoom(ROOM_ID));
     await waitForRoomReady(page);
 
     await openChatPanel(page);
@@ -207,7 +208,7 @@ test.describe('In-Game Chat Messaging', () => {
   test('should receive multiple messages and display them in order', async ({
     page,
   }) => {
-    await navigateTo(page, `/games/rooms/${ROOM_ID}`);
+    await navigateTo(page, routes.gameRoom(ROOM_ID));
     await waitForRoomReady(page);
 
     await openChatPanel(page);
@@ -246,7 +247,7 @@ test.describe('In-Game Chat Messaging', () => {
   });
 
   test('should display chat panel with table chat title', async ({ page }) => {
-    await navigateTo(page, `/games/rooms/${ROOM_ID}`);
+    await navigateTo(page, routes.gameRoom(ROOM_ID));
     await waitForRoomReady(page);
 
     await openChatPanel(page);

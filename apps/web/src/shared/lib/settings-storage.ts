@@ -13,7 +13,7 @@ export type StoredSettings = {
   musicEnabledTracks?: number[];
   musicTrackOrder?: number[];
   musicLastPlayedIndex?: number;
-  aiDifficulty?: 'easy' | 'medium' | 'hard';
+  aiDifficulty?: 'easy' | 'medium' | 'hard' | 'expert';
   showRulesOnRoomEntry?: boolean;
 };
 
@@ -99,7 +99,8 @@ export function loadStoredSettings(): StoredSettings {
     if (
       parsed.aiDifficulty === 'easy' ||
       parsed.aiDifficulty === 'medium' ||
-      parsed.aiDifficulty === 'hard'
+      parsed.aiDifficulty === 'hard' ||
+      parsed.aiDifficulty === 'expert'
     ) {
       settings.aiDifficulty = parsed.aiDifficulty;
     }

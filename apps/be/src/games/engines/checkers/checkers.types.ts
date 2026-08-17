@@ -8,13 +8,14 @@ import type {
   RuleVariant,
   Variant,
 } from './checkers.constants';
+import type { AiDifficulty } from '../../ai-difficulty';
 
 export interface CheckersOptions {
   variant: Variant;
   ruleVariant: RuleVariant;
   forcedCaptures: boolean;
   backwardCaptures: boolean;
-  botDifficulty?: 'easy' | 'medium' | 'hard';
+  botDifficulty?: AiDifficulty;
 }
 
 export type PieceType = 'man' | 'king';

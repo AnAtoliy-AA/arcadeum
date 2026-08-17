@@ -151,6 +151,7 @@ export const byMessages = {
     },
     status: {
       turn: 'Хад {{player}}',
+      yourTurn: 'Ваш ход',
       white: 'Белыя',
       black: 'Чорныя',
       toMove: 'ходзяць',

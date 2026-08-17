@@ -1,12 +1,12 @@
 @keyframes auth-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55);
+    opacity: 0.55;
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+    opacity: 1;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    opacity: 0.55;
   }
 }
 

@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.25.41] - 2026-08-17
 
-- improved matchmaking queue with per-game waiting, status/estimated-wait events, and timeout pairing before bot fallback (ARC-876)
+### Added
+- show estimated wait and queue position in matchmaking modal (ARC-876)
+- improve matchmaking queue with per-game buckets and status events (ARC-876)
+
+### Documentation
+- mark matchmaking queue as implemented (ARC-876)
+
 
 ## [1.25.40] - 2026-08-17
 

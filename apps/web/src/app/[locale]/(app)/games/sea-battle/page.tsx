@@ -9,6 +9,7 @@ import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import SeaBattleLanding from './SeaBattleLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const SEA_BATTLE_SLUG = 'sea_battle_v1';
 const SEA_BATTLE_MIN_PLAYERS = 2;
@@ -80,6 +81,7 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
   const locale = resolveLocale(rawLocale);
   const routes = buildRoutes(locale);
   const pageUrl = `${appConfig.siteUrl}${routes.seaBattleLanding}`;
+  const comingSoon = await isGameComingSoon(SEA_BATTLE_SLUG);
   const messages = await getTranslations(locale);
   const landing = messages.games?.sea_battle_v1?.landing;
 
@@ -196,12 +198,20 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-sea-battle" data={jsonLd} />
       <SeaBattleLanding
         landing={landing}
+        comingSoon={comingSoon}
         createRoomHref={`${routes.gameCreate}?gameId=${SEA_BATTLE_SLUG}`}
-        roomsHref={routes.gameDetail(SEA_BATTLE_SLUG)}
+        roomsHref={`${routes.rooms}?gameId=${SEA_BATTLE_SLUG}`}
         homeHref={routes.home}
         gamesHref={routes.games}
+        locale={locale}
         rulesT={messages.games?.sea_battle_v1?.rules}
         variantsT={messages.games?.sea_battle_v1?.variants}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
+        }
       />
       <RelatedArticles
         locale={locale}

@@ -1,12 +1,10 @@
-import Link from 'next/link';
 import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
-import { Container, PageLayout } from '@arcadeum/ui';
-import styles from './SeaBattleLanding.module.scss';
-import { HIGHLIGHT_ICONS, Icon, STEP_ICONS } from './landingIcons';
-import { SeaBattleThemesGrid } from './SeaBattleThemesGrid';
-import { HeroVariantProvider } from './heroVariantContext';
-import { SeaBattleHero } from './SeaBattleHero';
-import { SeaBattleFinalCtaButtons } from './SeaBattleFinalCtaButtons';
+import {
+  UnifiedGameLanding,
+  getRelatedGames,
+} from '@/features/games/ui/landing';
+import type { Locale } from '@/shared/i18n';
+import { SeaBattleLandingBoard } from './SeaBattleLandingBoard';
 
 type SeaBattleMessages = SeaBattleGamesMessages['sea_battle_v1'];
 type Landing = SeaBattleMessages['landing'];
@@ -21,6 +19,12 @@ interface Props {
   roomsHref: string;
   homeHref: string;
   gamesHref: string;
+  locale: Locale;
+  translatedGames?: Record<
+    string,
+    { name?: string; description?: string } | undefined
+  >;
+  comingSoon?: boolean;
 }
 
 export default function SeaBattleLanding({
@@ -31,21 +35,44 @@ export default function SeaBattleLanding({
   roomsHref,
   homeHref,
   gamesHref,
+  locale,
+  comingSoon = false,
+  translatedGames,
 }: Props) {
   if (!landing) return null;
 
   const highlightCards = [
-    { key: 'players', ...landing.highlights.players },
-    { key: 'teams', ...landing.highlights.teams },
-    { key: 'themes', ...landing.highlights.themes },
-    { key: 'free', ...landing.highlights.free },
+    { key: 'players', icon: '👥', ...landing.highlights.players },
+    { key: 'teams', icon: '⚔️', ...landing.highlights.teams },
+    { key: 'themes', icon: '🎨', ...landing.highlights.themes },
+    { key: 'free', icon: '⚡', ...landing.highlights.free },
   ];
 
   const howToSteps = [
-    { key: 'create', ...landing.howToPlay.steps.create },
-    { key: 'place', ...landing.howToPlay.steps.place },
-    { key: 'fire', ...landing.howToPlay.steps.fire },
-    { key: 'win', ...landing.howToPlay.steps.win },
+    {
+      key: 'create',
+      stepNumber: 1,
+      ...landing.howToPlay.steps.create,
+      tip: 'Pick your board size and enable spectator slots if you want friends to watch.',
+    },
+    {
+      key: 'place',
+      stepNumber: 2,
+      ...landing.howToPlay.steps.place,
+      tip: 'Spread out ships to prevent clustered hits by enemy salvoes.',
+    },
+    {
+      key: 'fire',
+      stepNumber: 3,
+      ...landing.howToPlay.steps.fire,
+      tip: 'Use parity search (checkerboard targeting) to find larger ships efficiently.',
+    },
+    {
+      key: 'win',
+      stepNumber: 4,
+      ...landing.howToPlay.steps.win,
+      tip: 'Sinking an enemy ship grants a confirmation announcement.',
+    },
   ];
 
   const faqItems = Object.entries(landing.faq.items).map(([key, item]) => ({
@@ -80,203 +107,127 @@ export default function SeaBattleLanding({
       ]
     : [];
 
+  const themeKeys = [
+    'classic',
+    'modern',
+    'pixel',
+    'cartoon',
+    'cyber',
+    'vintage',
+    'nebula',
+    'forest',
+    'sunset',
+    'monochrome',
+  ] as const;
+
+  const themesList = themeKeys.map((k) => ({
+    id: k,
+    name: variantsT?.[k]?.name ?? k,
+    description: variantsT?.[k]?.description,
+  }));
+
+  const relatedGames = getRelatedGames(
+    locale,
+    'sea_battle_v1',
+    translatedGames,
+  );
+
+  const variantNames = Object.fromEntries(
+    themeKeys.map((k) => [k, variantsT?.[k]?.name ?? k]),
+  );
+
   return (
-    <HeroVariantProvider>
-      <PageLayout>
-        <Container size="lg">
-          <div className={styles.page}>
-            <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
-              <Link href={homeHref} className={styles.breadcrumbLink}>
-                {landing.breadcrumb.home}
-              </Link>
-              <span aria-hidden="true">/</span>
-              <Link href={gamesHref} className={styles.breadcrumbLink}>
-                {landing.breadcrumb.games}
-              </Link>
-              <span aria-hidden="true">/</span>
-              <span aria-current="page">{landing.breadcrumb.seaBattle}</span>
-            </nav>
-
-            <SeaBattleHero
-              landing={landing}
-              variantsT={variantsT}
-              createRoomHref={createRoomHref}
-              roomsHref={roomsHref}
-            />
-
-            <section className={styles.section}>
-              <header className={styles.sectionHead}>
-                <div className={styles.sectionTitleGroup}>
-                  <p className={styles.sectionKicker}>
-                    {landing.sections.highlightsKicker}
-                  </p>
-                  <h2 className={styles.sectionTitle}>
-                    {landing.highlights.title}
-                  </h2>
-                </div>
-              </header>
-              <div className={styles.highlightsGrid}>
-                {highlightCards.map((card) => (
-                  <article key={card.key} className={styles.highlight}>
-                    <div className={styles.highlightIcon}>
-                      <Icon name={HIGHLIGHT_ICONS[card.key] ?? 'check'} />
-                    </div>
-                    <h3 className={styles.highlightTitle}>{card.title}</h3>
-                    <p className={styles.highlightBody}>{card.body}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <header className={styles.sectionHead}>
-                <div className={styles.sectionTitleGroup}>
-                  <p className={styles.sectionKicker}>
-                    {landing.sections.howToKicker}
-                  </p>
-                  <h2 className={styles.sectionTitle}>
-                    {landing.howToPlay.title}
-                  </h2>
-                </div>
-              </header>
-              <ol className={styles.steps}>
-                {howToSteps.map((step, idx) => (
-                  <li key={step.key} className={styles.step}>
-                    <span className={styles.stepNumber}>{idx + 1}</span>
-                    <div className={styles.stepGlyph}>
-                      <Icon name={STEP_ICONS[idx] ?? 'check'} />
-                    </div>
-                    <h3 className={styles.stepTitle}>{step.title}</h3>
-                    <p className={styles.stepBody}>{step.body}</p>
-                  </li>
-                ))}
-              </ol>
-            </section>
-
-            <section className={styles.section}>
-              <header className={styles.sectionHead}>
-                <div className={styles.sectionTitleGroup}>
-                  <p className={styles.sectionKicker}>
-                    {landing.sections.themesKicker}
-                  </p>
-                  <h2 className={styles.sectionTitle}>
-                    {landing.sections.themesTitle}
-                  </h2>
-                  <p className={styles.sectionLead}>
-                    {landing.sections.themesLead}
-                  </p>
-                </div>
-              </header>
-              <SeaBattleThemesGrid
-                names={{
-                  classic: variantsT?.classic?.name,
-                  modern: variantsT?.modern?.name,
-                  pixel: variantsT?.pixel?.name,
-                  cartoon: variantsT?.cartoon?.name,
-                  cyber: variantsT?.cyber?.name,
-                  vintage: variantsT?.vintage?.name,
-                  nebula: variantsT?.nebula?.name,
-                  forest: variantsT?.forest?.name,
-                  sunset: variantsT?.sunset?.name,
-                  monochrome: variantsT?.monochrome?.name,
-                }}
-              />
-            </section>
-
-            {rulesT ? (
-              <section className={styles.section}>
-                <header className={styles.sectionHead}>
-                  <div className={styles.sectionTitleGroup}>
-                    <p className={styles.sectionKicker}>
-                      {landing.sections.rulesKicker}
-                    </p>
-                    <h2 className={styles.sectionTitle}>{rulesT.title}</h2>
-                  </div>
-                </header>
-                <div className={styles.rulesGrid}>
-                  {rules.map((r) => (
-                    <article key={r.key} className={styles.ruleCard}>
-                      <h3 className={styles.ruleHead}>{r.head}</h3>
-                      <p className={styles.ruleBody}>{r.body}</p>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            <section className={styles.section}>
-              <header className={styles.sectionHead}>
-                <div className={styles.sectionTitleGroup}>
-                  <p className={styles.sectionKicker}>
-                    {landing.sections.strategyKicker}
-                  </p>
-                  <h2 className={styles.sectionTitle}>
-                    {landing.strategy.title}
-                  </h2>
-                  <p className={styles.sectionLead}>{landing.strategy.intro}</p>
-                </div>
-              </header>
-              <div className={styles.tipsGrid}>
-                {strategyTips.map((tip) => (
-                  <article key={tip.key} className={styles.tipCard}>
-                    <h3 className={styles.tipTitle}>{tip.title}</h3>
-                    <p className={styles.tipBody}>{tip.body}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <header className={styles.sectionHead}>
-                <div className={styles.sectionTitleGroup}>
-                  <p className={styles.sectionKicker}>
-                    {landing.sections.aboutKicker}
-                  </p>
-                  <h2 className={styles.sectionTitle}>{landing.about.title}</h2>
-                </div>
-              </header>
-              <div className={styles.aboutProse}>
-                {landing.about.paragraphs.map((paragraph, idx) => (
-                  <p key={idx}>{paragraph}</p>
-                ))}
-              </div>
-            </section>
-
-            <section id="faq" className={styles.section}>
-              <header className={styles.sectionHead}>
-                <div className={styles.sectionTitleGroup}>
-                  <p className={styles.sectionKicker}>
-                    {landing.sections.faqKicker}
-                  </p>
-                  <h2 className={styles.sectionTitle}>{landing.faq.title}</h2>
-                </div>
-              </header>
-              <div className={styles.faq}>
-                {faqItems.map((item, idx) => (
-                  <details
-                    key={item.key}
-                    className={styles.faqItem}
-                    open={idx === 0}
-                  >
-                    <summary>{item.question}</summary>
-                    <p className={styles.faqAnswer}>{item.answer}</p>
-                  </details>
-                ))}
-              </div>
-            </section>
-
-            <section className={styles.finalCta}>
-              <h2 className={styles.finalCtaTitle}>
-                {landing.finalCta?.title ?? landing.hero.title}
-              </h2>
-              <p className={styles.finalCtaSub}>
-                {landing.finalCta?.subtitle ?? landing.hero.tagline}
-              </p>
-              <SeaBattleFinalCtaButtons landing={landing} />
-            </section>
-          </div>
-        </Container>
-      </PageLayout>
-    </HeroVariantProvider>
+    <UnifiedGameLanding
+      accentGlow="cyan"
+      comingSoon={comingSoon}
+      breadcrumbs={[
+        { label: landing.breadcrumb.home, href: homeHref },
+        { label: landing.breadcrumb.games, href: gamesHref },
+        { label: landing.breadcrumb.seaBattle },
+      ]}
+      hero={{
+        gameId: 'sea_battle_v1',
+        title: landing.hero.title,
+        eyebrow: landing.hero.eyebrow,
+        subtitle: landing.hero.tagline,
+        intro: landing.hero.intro,
+        category: 'Strategy',
+        playersBadge: '2–4 Players',
+        durationBadge: '15–25 min',
+        difficultyBadge: 'Naval Combat',
+        chips: landing.hero.chips,
+        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        ctaPlayHumanLabel: landing.hero.ctaPlayHuman,
+        browseRoomsLabel: landing.hero.ctaRooms,
+        createRoomLabel: landing.hero.ctaPlay,
+        roomsHref,
+        createRoomHref,
+        heroVisual: (
+          <SeaBattleLandingBoard
+            variantNames={variantNames}
+            label={landing.board.label}
+            cycleHint={landing.board.cycleHint}
+            cycleAriaLabel={landing.board.cycleAriaLabel}
+          />
+        ),
+      }}
+      highlights={{
+        title: landing.highlights.title,
+        kicker: landing.sections.highlightsKicker,
+        items: highlightCards,
+      }}
+      howToPlay={{
+        title: landing.howToPlay.title,
+        kicker: landing.sections.howToKicker,
+        steps: howToSteps,
+      }}
+      themes={{
+        title: landing.sections.themesTitle,
+        kicker: landing.sections.themesKicker,
+        subtitle: landing.sections.themesLead,
+        themes: themesList,
+        baseHref: createRoomHref,
+        createRoomLabel: 'Deploy with Theme',
+      }}
+      rules={
+        rules.length > 0
+          ? {
+              title: rulesT?.title ?? 'Naval Combat Rules',
+              kicker: landing.sections.rulesKicker,
+              rules,
+            }
+          : undefined
+      }
+      strategy={{
+        title: landing.strategy.title,
+        kicker: landing.sections.strategyKicker,
+        intro: landing.strategy.intro,
+        tips: strategyTips,
+      }}
+      faq={{
+        title: landing.faq.title,
+        kicker: landing.sections.faqKicker,
+        items: faqItems,
+      }}
+      relatedGames={{
+        title: 'More Tactical Battles',
+        kicker: 'Discover',
+        currentGameSlug: 'sea_battle_v1',
+        games: relatedGames,
+      }}
+      finalCta={{
+        gameId: 'sea_battle_v1',
+        title: landing.finalCta?.title ?? landing.hero.title,
+        subtitle: landing.finalCta?.subtitle ?? landing.hero.tagline,
+        roomsHref,
+        gamesHref,
+        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        ctaPlayHumanLabel: landing.hero.ctaPlayHuman,
+        browseRoomsLabel: landing.hero.ctaRooms,
+        backToGamesLabel: landing.breadcrumb.games,
+      }}
+    />
   );
 }

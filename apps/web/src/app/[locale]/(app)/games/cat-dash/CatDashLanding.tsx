@@ -1,187 +1,225 @@
-'use client';
+import type { CatDashMessages } from '@/shared/i18n/messages/games/cat-dash';
+import {
+  UnifiedGameLanding,
+  getRelatedGames,
+} from '@/features/games/ui/landing';
+import type { Locale } from '@/shared/i18n';
+import { CatDashVisual } from './CatDashVisual';
 
-import { CatDashHero } from './CatDashHero';
-import { CatDashThemesGrid } from './CatDashThemesGrid';
-import { CatDashFinalCtaButtons } from './CatDashFinalCtaButtons';
+type CdMessages = CatDashMessages['cat_dash_v1'];
+type Landing = CdMessages['landing'];
+type Variants = CdMessages['variants'];
+type Rules = CdMessages['rules'];
 
 interface CatDashLandingProps {
-  landing?: Record<string, unknown>;
-  variants?: Record<string, unknown>;
-  rules?: Record<string, unknown>;
+  landing?: Landing;
+  variants?: Variants;
+  rules?: Rules;
   gameId: string;
   createRoomHref: string;
   roomsHref: string;
   gamesHref: string;
   homeHref: string;
+  locale: Locale;
+  navTranslations?: {
+    homeTab: string;
+    gamesTab: string;
+  };
+  translatedGames?: Record<
+    string,
+    { name?: string; description?: string } | undefined
+  >;
+  comingSoon?: boolean;
 }
 
 export default function CatDashLanding({
   landing,
   variants,
+  rules,
   gameId,
   createRoomHref,
   roomsHref,
   gamesHref,
-  homeHref: _homeHref,
+  homeHref,
+  locale,
+  comingSoon = false,
+  navTranslations,
+  translatedGames,
 }: CatDashLandingProps) {
-  const hero = landing?.hero as Record<string, string> | undefined;
-  const highlights = landing?.highlights as
-    Record<string, { title?: string; body?: string }> | undefined;
-  const steps = landing?.steps as
-    Record<string, { title?: string; body?: string }> | undefined;
-  const faq = landing?.faq as
-    Record<string, { question?: string; answer?: string }> | undefined;
+  if (!landing) return null;
+
+  const highlights = [
+    { key: 'players', icon: '👥', ...landing.highlights.players },
+    { key: 'cats', icon: '🐱', ...landing.highlights.cats },
+    { key: 'themes', icon: '🎨', ...landing.highlights.themes },
+    {
+      key: 'obstacles',
+      icon: '🐾',
+      title: 'Interactive Hazards',
+      body: 'Dodge yarn traps, slippery milk spills, and burst forward with tuna speed boosts.',
+    },
+  ];
+
+  const steps = [
+    {
+      key: 'create',
+      stepNumber: 1,
+      ...landing.steps.create,
+      tip: 'Pick your track theme and set 1 to 3 laps for the race.',
+    },
+    {
+      key: 'join',
+      stepNumber: 2,
+      ...landing.steps.join,
+      tip: 'Race against friends or compete with smart bot runners.',
+    },
+    {
+      key: 'play',
+      stepNumber: 3,
+      ...landing.steps.play,
+      tip: 'Roll the dice, activate power-ups, and sprint across the finish line.',
+    },
+  ];
+
+  const rulesList = rules
+    ? [
+        { key: 'objective', head: 'Objective', body: rules.objective },
+        { key: 'howToPlay', head: 'Dice & Movement', body: rules.howToPlay },
+        { key: 'abilities', head: 'Cat Abilities', body: rules.abilities },
+        { key: 'trackSpaces', head: 'Track Spaces', body: rules.trackSpaces },
+      ]
+    : [];
+
+  const strategyTips = [
+    {
+      key: 'boostTiming',
+      title: 'Time Your Boosts',
+      body: 'Save speed boosts for straightaways or right after recovering from a hazard trap.',
+    },
+    {
+      key: 'hazards',
+      title: 'Guide Opponents Into Traps',
+      body: 'Position your cat to block safe lanes and force rival racers onto hazard tiles.',
+    },
+    {
+      key: 'finishSprint',
+      title: 'Final Lap Sprint',
+      body: 'Unleash all remaining stamina and power-ups on the final stretch to clinch victory.',
+    },
+  ];
+
+  const faqItems = Object.entries(landing.faq).map(([key, entry]) => {
+    const e = entry as { question: string; answer: string };
+    return {
+      key,
+      question: e.question,
+      answer: e.answer,
+    };
+  });
+
+  const themeKeys = ['neon', 'village', 'space', 'nature'] as const;
+  const themesList = variants
+    ? themeKeys.map((k) => ({
+        id: k,
+        name: variants[k]?.name ?? k,
+        description: variants[k]?.description,
+      }))
+    : [];
+
+  const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
   return (
-    <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 16px' }}>
-      <div className="flex flex-col items-stretch gap-8 py-8">
-        <CatDashHero
-          title={hero?.title ?? 'Cat Dash'}
-          subtitle={hero?.subtitle ?? 'Race your cat to victory!'}
-          gameId={gameId}
-          roomsHref={roomsHref}
-          ctaQuickplayLabel={hero?.ctaQuickplay ?? 'Play vs AI'}
-          ctaQuickplayErrorLabel={hero?.ctaQuickplayError ?? 'Try again'}
-          browseRoomsLabel={hero?.browseRooms ?? 'Browse rooms'}
-        />
-
-        {highlights && (
-          <div className="flex flex-col items-stretch gap-3">
-            <span className="text-[24px] font-bold">Why Cat Dash?</span>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: 16,
-              }}
-            >
-              {Object.values(highlights).map((h, i) => (
-                <div
-                  key={i}
-                  style={{
-                    padding: 20,
-                    backgroundColor: '#1e293b',
-                    borderRadius: 12,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: 16,
-                      marginBottom: 4,
-                    }}
-                  >
-                    {h.title}
-                  </div>
-                  <div style={{ fontSize: 14, color: '#94a3b8' }}>{h.body}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {steps && (
-          <div className="flex flex-col items-stretch gap-3">
-            <span className="text-[24px] font-bold">How to Play</span>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: 16,
-              }}
-            >
-              {Object.values(steps).map((s, i) => (
-                <div
-                  key={i}
-                  style={{
-                    padding: 20,
-                    backgroundColor: '#0f172a',
-                    borderRadius: 12,
-                    border: '1px solid #1e293b',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 14,
-                      backgroundColor: '#7c3aed',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 14,
-                      fontWeight: 'bold',
-                      marginBottom: 8,
-                    }}
-                  >
-                    {i + 1}
-                  </div>
-                  <div
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: 16,
-                      marginBottom: 4,
-                    }}
-                  >
-                    {s.title}
-                  </div>
-                  <div style={{ fontSize: 14, color: '#94a3b8' }}>{s.body}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {variants && (
-          <div className="flex flex-col items-stretch gap-3">
-            <span className="text-[24px] font-bold">Pick a Track</span>
-            <span className="text-[14px] text-[#94a3b8]">
-              Each theme gives the track a unique visual style.
-            </span>
-            <CatDashThemesGrid
-              variants={variants as never}
-              baseHref={createRoomHref}
-            />
-          </div>
-        )}
-
-        {faq && (
-          <div className="flex flex-col items-stretch gap-3" id="faq">
-            <span className="text-[24px] font-bold">FAQ</span>
-            {Object.values(faq).map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: 20,
-                  backgroundColor: '#1e293b',
-                  borderRadius: 12,
-                }}
-              >
-                <div style={{ fontWeight: 'bold', marginBottom: 4 }}>
-                  {item.question}
-                </div>
-                <div style={{ fontSize: 14, color: '#94a3b8' }}>
-                  {item.answer}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="flex flex-col gap-3 items-center py-4">
-          <span className="text-[20px] font-bold text-center">
-            Ready to Race?
-          </span>
-          <CatDashFinalCtaButtons
-            gameId={gameId}
-            roomsHref={roomsHref}
-            gamesHref={gamesHref}
-            ctaQuickplayLabel={hero?.ctaQuickplay ?? 'Play vs AI'}
-            ctaQuickplayErrorLabel={hero?.ctaQuickplayError ?? 'Try again'}
-            browseRoomsLabel={hero?.browseRooms ?? 'Browse rooms'}
-          />
-        </div>
-      </div>
-    </div>
+    <UnifiedGameLanding
+      accentGlow="orange"
+      comingSoon={comingSoon}
+      breadcrumbs={[
+        { label: navTranslations?.homeTab ?? 'Home', href: homeHref },
+        { label: navTranslations?.gamesTab ?? 'Games', href: gamesHref },
+        { label: landing.hero.title ?? 'Cat Dash' },
+      ]}
+      hero={{
+        gameId,
+        title: landing.hero.title,
+        eyebrow: 'Fast Multiplayer Race',
+        subtitle: landing.hero.subtitle,
+        intro:
+          'A high-energy cat racing dice game filled with speed boosts, hilarious hazards, and themed tracks.',
+        category: 'Race / Casual',
+        playersBadge: '2–6 Players',
+        durationBadge: '5–15 min',
+        difficultyBadge: 'Fun for All',
+        chips: ['Dice Racing', 'Speed Boosts', '4 Track Themes', '2-6 Players'],
+        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        browseRoomsLabel: landing.hero.browseRooms,
+        createRoomLabel: landing.hero.createRoom,
+        roomsHref,
+        createRoomHref,
+        heroVisual: <CatDashVisual />,
+      }}
+      highlights={{
+        title: 'Why You’ll Love Cat Dash',
+        kicker: 'Key Features',
+        items: highlights,
+      }}
+      howToPlay={{
+        title: 'How to Play Cat Dash',
+        kicker: 'Quick Start',
+        intro:
+          'Roll dice, activate powers, and be the first cat across the finish line.',
+        steps,
+      }}
+      themes={
+        themesList.length > 0
+          ? {
+              title: landing.themes.title,
+              kicker: 'Track Selection',
+              subtitle: landing.themes.subtitle,
+              themes: themesList,
+              baseHref: createRoomHref,
+              createRoomLabel: 'Race on Track',
+            }
+          : undefined
+      }
+      rules={
+        rulesList.length > 0
+          ? {
+              title: rules?.title ?? 'Rules & Racing Mechanics',
+              kicker: 'Rulebook',
+              rules: rulesList,
+            }
+          : undefined
+      }
+      strategy={{
+        title: 'Track Tactics & Strategies',
+        kicker: 'Pro Tips',
+        intro:
+          'Learn how to maximize dice rolls and dominate the leaderboards.',
+        tips: strategyTips,
+      }}
+      faq={{
+        title: 'Frequently Asked Questions',
+        kicker: 'FAQ',
+        items: faqItems,
+      }}
+      relatedGames={{
+        title: 'Discover More Fast Games',
+        kicker: 'Discover',
+        currentGameSlug: gameId,
+        games: relatedGames,
+      }}
+      finalCta={{
+        gameId,
+        title: 'Ready to Race?',
+        subtitle:
+          'Play against bots or challenge up to 5 friends in real-time cat racing mayhem.',
+        roomsHref,
+        gamesHref,
+        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        browseRoomsLabel: landing.hero.browseRooms,
+        backToGamesLabel: 'All Games',
+      }}
+    />
   );
 }

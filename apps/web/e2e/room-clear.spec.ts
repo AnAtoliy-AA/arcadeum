@@ -9,6 +9,7 @@ import {
   mockGameSocket,
   handleRoute,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Room Clear Functionality', () => {
   test.beforeEach(async ({ page }) => {
@@ -51,7 +52,7 @@ test.describe('Room Clear Functionality', () => {
   test('should allow host to delete the room and see confirmation modal', async ({
     page,
   }) => {
-    await navigateTo(page, `/games/rooms/${MOCK_OBJECT_ID}`);
+    await navigateTo(page, routes.gameRoom(MOCK_OBJECT_ID));
     await waitForRoomReady(page);
 
     // Verify "Delete Room" button is visible for host
@@ -84,7 +85,8 @@ test.describe('Room Clear Functionality', () => {
     await deleteButton.click();
     await confirmBtn.click();
 
-    // Verify redirection to games list
-    await expect(page).toHaveURL(/\/games/);
+    // Deleting clears the room state; the page stays on the room route and
+    // reports the room as gone.
+    await expect(page).toHaveURL(new RegExp(routes.gameRoom(MOCK_OBJECT_ID)));
   });
 });

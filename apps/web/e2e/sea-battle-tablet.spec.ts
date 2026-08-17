@@ -8,6 +8,7 @@ import {
   waitForRoomReady,
   MOCK_OBJECT_ID,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 const emptyBoard = () =>
   Array(10)
@@ -107,7 +108,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     });
 
     await page.setViewportSize({ width: 1024, height: 768 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     const mainArea = page.getByTestId('game-main-area');
@@ -159,7 +160,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     });
 
     await page.setViewportSize({ width: 768, height: 1024 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     const mainArea = page.getByTestId('game-main-area');
@@ -191,7 +192,7 @@ test.describe('Sea Battle Tablet Layout', () => {
     });
 
     await page.setViewportSize({ width: 1024, height: 768 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Board should be visible

@@ -8,6 +8,7 @@ import {
   mockGameSocket,
   waitForRoomReady,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Ships Left', () => {
   test.beforeEach(async ({ page }) => {
@@ -97,7 +98,7 @@ test.describe('Sea Battle Ships Left', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Wait for game to load with increased timeout

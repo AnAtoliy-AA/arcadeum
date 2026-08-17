@@ -34,6 +34,7 @@ type PathBuilder = (routes: ReturnType<typeof buildRoutes>) => string;
 const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   home: (r) => r.home,
   games: (r) => r.games,
+  rooms: (r) => r.rooms,
   gameCreate: (r) => r.gameCreate,
   seaBattleLanding: (r) => r.seaBattleLanding,
   criticalLanding: (r) => r.criticalLanding,

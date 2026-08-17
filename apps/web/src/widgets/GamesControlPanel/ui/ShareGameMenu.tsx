@@ -10,6 +10,7 @@ import {
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
+import { routes } from '@/shared/config/routes';
 
 interface ShareGameMenuProps {
   roomId: string;
@@ -102,7 +103,7 @@ function CopyLinkIcon() {
 
 function buildInviteUrl(roomId: string, inviteCode?: string): string {
   if (typeof window === 'undefined') return '';
-  return `${window.location.origin}/games/rooms/${roomId}${
+  return `${window.location.origin}${routes.gameRoom(roomId)}${
     inviteCode ? `?inviteCode=${inviteCode}` : ''
   }`;
 }

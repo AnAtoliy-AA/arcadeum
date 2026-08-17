@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import CheckersLanding from './CheckersLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const CHECKERS_SLUG = 'checkers_v1';
 const CHECKERS_MIN_PLAYERS = 2;
@@ -72,6 +73,7 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
       minPlayers: CHECKERS_MIN_PLAYERS,
       maxPlayers: CHECKERS_MAX_PLAYERS,
       genre: CHECKERS_GENRE,
+      alternateName: ['Draughts', 'Checkers Online', 'American Checkers'],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -81,6 +83,7 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.checkersLanding}`;
+  const comingSoon = await isGameComingSoon(CHECKERS_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -118,13 +121,25 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-checkers" data={jsonLd} />
       <CheckersLanding
         landing={landing}
+        comingSoon={comingSoon}
         variants={variants}
         rules={rules}
         gameId={CHECKERS_SLUG}
         createRoomHref={`${routes.gameCreate}?gameId=${CHECKERS_SLUG}`}
-        roomsHref={routes.games}
+        roomsHref={`${routes.rooms}?gameId=${CHECKERS_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}
+        locale={locale}
+        navTranslations={{
+          homeTab: messages.navigation?.homeTab ?? 'Home',
+          gamesTab: messages.navigation?.gamesTab ?? 'Games',
+        }}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
+        }
       />
     </>
   );

@@ -7,6 +7,7 @@ import {
   mockRoomInfo,
   waitForRoomReady,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle 6 Players Layout', () => {
   test.beforeEach(async ({ page }) => {
@@ -81,7 +82,7 @@ test.describe('Sea Battle 6 Players Layout', () => {
     });
 
     await page.setViewportSize({ width: 1920, height: 1080 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Verify 6 boards are rendered by checking player-board-name count
@@ -158,7 +159,7 @@ test.describe('Sea Battle 6 Players Layout', () => {
     });
 
     await page.setViewportSize({ width: 375, height: 812 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Verify layout is grid and renders 1 column on mobile portrait
@@ -223,7 +224,7 @@ test.describe('Sea Battle 6 Players Layout', () => {
 
     // iPhone 12 landscape: 844x390
     await page.setViewportSize({ width: 844, height: 390 });
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Verify 2 boards are visible in the same row

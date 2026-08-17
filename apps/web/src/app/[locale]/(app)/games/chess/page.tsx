@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import ChessLanding from './ChessLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const CHESS_SLUG = 'chess_v1';
 const CHESS_MIN_PLAYERS = 2;
@@ -73,6 +74,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
       minPlayers: CHESS_MIN_PLAYERS,
       maxPlayers: CHESS_MAX_PLAYERS,
       genre: CHESS_GENRE,
+      alternateName: ['Chess Online', 'Chess960', 'Fischer Random Chess'],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -82,6 +84,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.chessLanding}`;
+  const comingSoon = await isGameComingSoon(CHESS_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -121,15 +124,24 @@ export default async function ChessLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-chess" data={jsonLd} />
       <ChessLanding
         landing={landing}
+        comingSoon={comingSoon}
         rules={rules}
         gameId={CHESS_SLUG}
-        roomsHref={routes.games}
+        roomsHref={`${routes.rooms}?gameId=${CHESS_SLUG}`}
+        createRoomHref={`${routes.gameCreate}?gameId=${CHESS_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}
+        locale={locale}
         navTranslations={{
           homeTab: messages.navigation?.homeTab ?? 'Home',
           gamesTab: messages.navigation?.gamesTab ?? 'Games',
         }}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
+        }
       />
     </>
   );

@@ -96,7 +96,7 @@ test.describe('Critical Variant Selection', () => {
     await createBtn.click({ force: true });
 
     // The create button should trigger navigation to the room
-    await expect(page).toHaveURL(/\/games\/rooms\//, {});
+    await expect(page).toHaveURL(/\/rooms\//, {});
     await page.waitForLoadState('domcontentloaded');
     await waitForRoomReady(page);
 

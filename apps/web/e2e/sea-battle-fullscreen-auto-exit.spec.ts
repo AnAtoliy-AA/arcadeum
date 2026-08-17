@@ -11,6 +11,7 @@ import {
   createSeaBattleState,
   TestWindow,
 } from './fixtures/sea-battle-chat-utils';
+import { routes } from '../src/shared/config/routes';
 
 /**
  * ARC-757 — Sea Battle uses the widget-level fullscreen (the button inside the
@@ -55,7 +56,7 @@ test.describe('Sea Battle widget fullscreen auto-exit on finish', () => {
     });
 
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto(`/games/rooms/${roomId}`);
+    await page.goto(routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     await page.waitForFunction(

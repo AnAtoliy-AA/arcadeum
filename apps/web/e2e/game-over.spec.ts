@@ -7,6 +7,7 @@ import {
   waitForRoomReady,
   mockGameSocket,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Game Over Screen', () => {
   test.beforeEach(async ({ page }) => {
@@ -67,7 +68,7 @@ test.describe('Game Over Screen', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Entering an already-completed game should NOT auto-show the result modal.
@@ -130,7 +131,7 @@ test.describe('Game Over Screen', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Entering an already-completed game should NOT auto-show the result modal.

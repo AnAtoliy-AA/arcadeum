@@ -9,6 +9,7 @@ import {
   closeGameRulesModal,
   clickButtonByTestId,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Critical Single Player Mode', () => {
   test.beforeEach(async ({ page }) => {
@@ -85,7 +86,7 @@ test.describe('Critical Single Player Mode', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     await expect(page.getByRole('heading', { name: /Critical/i })).toBeVisible(
@@ -183,7 +184,7 @@ test.describe('Critical Single Player Mode', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     await closeGameRulesModal(page);

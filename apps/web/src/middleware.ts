@@ -56,16 +56,14 @@ const PRIVATE_SLUG_KEYS: ReadonlySet<SlugKey> = new Set([
   'payment',
   'wallet',
   'shop',
+  'rooms',
 ]);
 
 /**
  * Within /games, these sub-paths are private even though /games itself is
  * public. The middleware looks at the third URL segment to decide.
  */
-const PRIVATE_GAMES_SUBPATHS: ReadonlySet<string> = new Set([
-  'create',
-  'rooms',
-]);
+const PRIVATE_GAMES_SUBPATHS: ReadonlySet<string> = new Set(['create']);
 
 function isPrivatePath(locale: Locale, segmentsAfterLocale: string[]): boolean {
   const [first, second] = segmentsAfterLocale;

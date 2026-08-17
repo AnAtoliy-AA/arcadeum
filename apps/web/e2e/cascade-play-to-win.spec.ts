@@ -9,6 +9,7 @@ import {
   mockGameSocket,
   waitForRoomReady,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 interface EmittedEvent {
   event: string;
@@ -152,7 +153,7 @@ test.describe('Cascade play to win', () => {
       }, 50);
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
     await closeRulesModal(page);
 

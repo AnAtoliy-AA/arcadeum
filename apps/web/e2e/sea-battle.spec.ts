@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
 import { mockSession, navigateTo, handleRoute } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Game', () => {
   test.beforeEach(async ({ page }) => {
@@ -41,7 +42,7 @@ test.describe('Sea Battle Game', () => {
     });
 
     // Navigate to games list
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.games);
 
     // Check if Sea Battle or Naval Battle is visible in the list (translation aware)
     const seaBattleGame = page.getByText(
@@ -52,7 +53,7 @@ test.describe('Sea Battle Game', () => {
 
   test('should display game create page for Sea Battle', async ({ page }) => {
     // Navigate directly to Sea Battle create page
-    await navigateTo(page, '/games/create?gameId=sea_battle_v1');
+    await navigateTo(page, `${routes.gameCreate}?gameId=sea_battle_v1`);
 
     // Verify page loaded
     await expect(page.locator('body')).toContainText(/create|room|sea battle/i);
@@ -60,7 +61,7 @@ test.describe('Sea Battle Game', () => {
 
   test('should display lobby after room creation', async ({ page }) => {
     // Navigate to Sea Battle create page
-    await navigateTo(page, '/games/create?gameId=sea_battle_v1');
+    await navigateTo(page, `${routes.gameCreate}?gameId=sea_battle_v1`);
 
     // Fill room name if available
     const roomNameInput = page
@@ -78,14 +79,14 @@ test.describe('Sea Battle Game', () => {
       await createBtn.click();
 
       // Wait for navigation to room
-      await page.waitForURL(/\/games\/rooms\/.*/, {}).catch(() => {
+      await page.waitForURL(/\/rooms\/.*/, {}).catch(() => {
         // May not navigate if mocking doesn't create room
       });
     }
   });
 
   test('should handle games list navigation', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.games);
 
     // Verify games list is visible
     await expect(page.locator('body')).toContainText(/game|play/i);
@@ -108,7 +109,7 @@ test.describe('Sea Battle Game Flow', () => {
   });
 
   test('should maintain responsive layout', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.games);
 
     // Test mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
@@ -124,16 +125,22 @@ test.describe('Sea Battle Game Flow', () => {
   });
 
   test('should navigate to Sea Battle from link', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.games);
 
-    // Look for create room link
-    const createLink = page.getByRole('link', { name: 'Create Room' });
-    await expect(createLink).toBeVisible();
-    await expect(createLink).toHaveAttribute('href', '/games/create');
+    // The /games catalog renders one card per game; the whole card links to
+    // the game's landing page. Scope to the Sea Battle card by its href.
+    const seaBattleCard = page
+      .locator(`a[href="${routes.seaBattleLanding}"]`)
+      .first();
+    await expect(seaBattleCard).toBeVisible();
+    await expect(seaBattleCard).toHaveAttribute(
+      'href',
+      routes.seaBattleLanding,
+    );
 
-    await createLink.click();
-    // Should navigate to create page
-    await expect(page).toHaveURL(/.*\/games\/create/);
+    await seaBattleCard.click();
+    // Should navigate to the Sea Battle landing page
+    await expect(page).toHaveURL(new RegExp(routes.seaBattleLanding));
   });
 
   // New test for Auto Placement UI
@@ -173,7 +180,7 @@ test.describe('Sea Battle Game Flow', () => {
       });
     });
 
-    await navigateTo(page, '/games/rooms/507f191e810c19729de860eb');
+    await navigateTo(page, routes.gameRoom('507f191e810c19729de860eb'));
 
     // If the game component loads, we should find the placement board if state is right.
     // Without full backend mock, we might only check that we don't crash.

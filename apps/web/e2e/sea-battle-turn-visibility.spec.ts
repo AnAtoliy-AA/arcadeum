@@ -8,6 +8,7 @@ import {
   waitForRoomReady,
   MOCK_OBJECT_ID,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 const emptyBoard = () =>
   Array(10)
@@ -81,7 +82,7 @@ test.describe('Sea Battle Turn Visibility', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Opponent section should have TARGET badge
@@ -113,7 +114,7 @@ test.describe('Sea Battle Turn Visibility', () => {
       },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // My section should have DEFENDING badge

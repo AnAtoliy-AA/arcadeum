@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import CascadeLanding from './CascadeLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const CASCADE_SLUG = 'cascade_v1';
 const CASCADE_MIN_PLAYERS = 2;
@@ -72,6 +73,11 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
       minPlayers: CASCADE_MIN_PLAYERS,
       maxPlayers: CASCADE_MAX_PLAYERS,
       genre: CASCADE_GENRE,
+      alternateName: [
+        'Cascade Cards',
+        'Crazy Eights Online',
+        'Color Match Cards',
+      ],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -81,6 +87,7 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.cascadeLanding}`;
+  const comingSoon = await isGameComingSoon(CASCADE_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -118,17 +125,25 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-cascade" data={jsonLd} />
       <CascadeLanding
         landing={landing}
+        comingSoon={comingSoon}
         variants={variants}
         rules={rules}
         gameId={CASCADE_SLUG}
         createRoomHref={`${routes.gameCreate}?gameId=${CASCADE_SLUG}`}
-        roomsHref={routes.games}
+        roomsHref={`${routes.rooms}?gameId=${CASCADE_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}
         homeLabel={messages.navigation?.homeTab ?? 'Home'}
         gamesLabel={messages.navigation?.gamesTab ?? 'Games'}
         backToGamesLabel={
-          messages.games?.cascade_v1?.board?.backToGames ?? '← Games'
+          messages.games?.cascade_v1?.board?.backToGames ?? 'All Games'
+        }
+        locale={locale}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
         }
       />
     </>

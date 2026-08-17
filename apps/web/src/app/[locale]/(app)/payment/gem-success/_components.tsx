@@ -17,12 +17,12 @@ export const ANIMATIONS = `
     50%      { transform: translateY(-8px); }
   }
   @keyframes gem-glow {
-    0%, 100% { box-shadow: 0 0 30px rgba(167,139,250,0.35), 0 0 60px rgba(167,139,250,0.15); }
-    50%      { box-shadow: 0 0 50px rgba(167,139,250,0.5),  0 0 90px rgba(167,139,250,0.25); }
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
   }
   @keyframes gem-sparkle {
-    0%, 100% { opacity: 0; transform: scale(0); }
-    50%      { opacity: 1; transform: scale(1); }
+    0%, 100% { opacity: 0; }
+    50%      { opacity: 1; }
   }
   .gem-success-card {
     animation: gem-fade-in 0.45s ease-out 0.15s both;

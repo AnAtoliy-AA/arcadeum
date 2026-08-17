@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.25.45",
+  "version": "1.25.46",
   "private": true,
   "browserslist": [
     "chrome >= 93",
@@ -9,10 +9,10 @@
     "edge >= 93"
   ],
   "scripts": {
-    "dev": "rm -rf .next && next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
-    "dev:next": "rm -rf .next && next dev -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
+    "dev": "rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
+    "dev:next": "rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "build": "next build",
-    "start": "next start -p $(node ../../scripts/resolve-env-port.js .env.local WEB_PORT 3000)",
+    "start": "node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "storybook": "node scripts/patch-next-config.js && storybook dev -p 6006",

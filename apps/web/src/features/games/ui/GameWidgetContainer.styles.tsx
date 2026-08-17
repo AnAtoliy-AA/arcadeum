@@ -137,7 +137,7 @@ export const GameHeader = ({
 } & HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cx(
-      'flex flex-row items-center justify-between gap-3 px-7 py-2 bg-[var(--glassBg)] backdrop-blur-[16px] border-b border-b-[var(--glassBorderStrong)] -mx-1 mt-0 sticky top-0 z-[30] shrink-0 max-[800px]:px-4 max-[800px]:py-2 max-[800px]:-mx-2 max-[800px]:mt-0 max-[800px]:top-0 max-[800px]:gap-1 max-[800px]:flex-nowrap',
+      'flex flex-row items-center justify-between gap-3 px-7 py-2 bg-[var(--glassBg)] border-b border-b-[var(--glassBorderStrong)] -mx-1 mt-0 sticky top-0 z-[30] shrink-0 max-[800px]:px-4 max-[800px]:py-2 max-[800px]:-mx-2 max-[800px]:mt-0 max-[800px]:top-0 max-[800px]:gap-1 max-[800px]:flex-nowrap',
       className,
     )}
     {...props}

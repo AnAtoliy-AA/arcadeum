@@ -3,8 +3,8 @@
      block below replaces them so the pulse value interpolates on the
      compositor thread instead of re-rasterizing box-shadow each step. */
   @keyframes turnBannerDotPulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50%      { transform: scale(1.35); opacity: 0.6; }
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.6; }
   }
   [data-testid="turn-banner-dot"] {
     animation: turnBannerDotPulse 1.5s ease-in-out infinite;

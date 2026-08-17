@@ -36,7 +36,7 @@ const backgroundStyles = `
     top: -20%; left: -10%;
     width: 60%; height: 60%;
     background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
-    filter: blur(60px);
+    filter: blur(30px);
     animation: float 10s ease-in-out infinite;
   }
   .payment-bg::after {
@@ -45,7 +45,7 @@ const backgroundStyles = `
     bottom: -10%; right: -10%;
     width: 50%; height: 50%;
     background: radial-gradient(circle, rgba(147,51,234,0.15) 0%, transparent 70%);
-    filter: blur(60px);
+    filter: blur(30px);
     animation: float 8s ease-in-out infinite reverse;
   }
 `;

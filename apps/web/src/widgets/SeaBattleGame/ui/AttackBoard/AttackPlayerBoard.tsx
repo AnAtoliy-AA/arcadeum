@@ -301,7 +301,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
                 ? theme.hitColor
                 : theme.cellBorder,
             borderWidth: team ? 2 : undefined,
-            backdropFilter: 'blur(8px)',
           }}
         >
           <PlayerName
@@ -402,7 +401,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               ? theme.accentColor
               : theme.cellBorder,
           borderWidth: team ? 2 : undefined,
-          backdropFilter: 'blur(8px)',
         }}
         isTargetable={isMyTurn}
       >

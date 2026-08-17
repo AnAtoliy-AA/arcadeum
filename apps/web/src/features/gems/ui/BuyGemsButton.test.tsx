@@ -8,6 +8,12 @@ vi.mock('../server/gems.actions', () => ({
   buyGemsAction: (...args: unknown[]) => mockBuyGemsAction(...args),
 }));
 
+// Mock the app router so the component can navigate to /auth via router.push
+const mockRouterPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockRouterPush }),
+}));
+
 // Mock window.location.href assignment
 const locationMock = { href: '' };
 Object.defineProperty(window, 'location', {
@@ -101,7 +107,7 @@ describe('BuyGemsButton', () => {
     fireEvent.click(screen.getByTestId('buy-gems-btn-pkg-1'));
 
     await waitFor(() => {
-      expect(locationMock.href).toBe('/auth');
+      expect(mockRouterPush).toHaveBeenCalledWith('/auth');
     });
     expect(mockBuyGemsAction).not.toHaveBeenCalled();
   });
@@ -113,7 +119,7 @@ describe('BuyGemsButton', () => {
     fireEvent.click(screen.getByTestId('buy-gems-btn-pkg-1'));
 
     await waitFor(() => {
-      expect(locationMock.href).toBe('/auth');
+      expect(mockRouterPush).toHaveBeenCalledWith('/auth');
     });
     expect(alertMock).not.toHaveBeenCalled();
   });

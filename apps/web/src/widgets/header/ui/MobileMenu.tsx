@@ -38,6 +38,7 @@ import {
   TrophyIcon,
   UserIcon,
   WalletIcon,
+  PlayIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
@@ -57,6 +58,7 @@ type IconComponent = ComponentType<{ size?: number }>;
 
 const NAV_ICON_BY_SLUG: Record<string, IconComponent> = {
   games: CardsIcon,
+  rooms: PlayIcon,
   leaderboards: TrophyIcon,
   friends: UserIcon,
   shop: GiftIcon,

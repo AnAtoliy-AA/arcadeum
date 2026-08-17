@@ -98,15 +98,7 @@ function ChessGameImpl({
     )
   );
 
-  const coach = useChessCoach({
-    room,
-    currentUserId,
-    displaySnapshot,
-    myColor,
-    displayMyTurn,
-    isGameOver,
-    isSpectator,
-  });
+  const coach = useChessCoach({ room, currentUserId, displaySnapshot });
   const applyOptimisticMove = useCallback(
     (
       fromFile: File,

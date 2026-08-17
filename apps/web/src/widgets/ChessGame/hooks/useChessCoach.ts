@@ -5,7 +5,7 @@ import {
 } from '@/features/coach/lib/hint-generator';
 import { useCoachHintsSetting } from '@/shared/hooks/useCoachHintsSetting';
 import type { GameRoomSummary } from '@/shared/types/games';
-import type { ChessClientState, PieceColor } from '../types';
+import type { ChessClientState } from '../types';
 
 /**
  * Client-side coach-mode state for a chess game. Computes a best-move hint on
@@ -17,10 +17,6 @@ export interface UseChessCoachOptions {
   room: GameRoomSummary | null | undefined;
   currentUserId: string | null;
   displaySnapshot: ChessClientState | null;
-  myColor: PieceColor | null;
-  displayMyTurn: boolean;
-  isGameOver: boolean;
-  isSpectator: boolean;
 }
 
 export interface UseChessCoachResult {
@@ -39,10 +35,6 @@ export function useChessCoach({
   room,
   currentUserId,
   displaySnapshot,
-  myColor,
-  displayMyTurn,
-  isGameOver,
-  isSpectator,
 }: UseChessCoachOptions): UseChessCoachResult {
   const { coachHintsEnabled, setCoachHintsEnabled } = useCoachHintsSetting();
   const [hintState, setHintState] = useState<{
@@ -51,6 +43,22 @@ export function useChessCoach({
   } | null>(null);
 
   const isRanked = room?.gameOptions?.ranked === true;
+  const isGameOver = displaySnapshot?.phase === 'game_over';
+  const myColor =
+    displaySnapshot?.players.find((p) => p.playerId === currentUserId)?.color ??
+    null;
+  const displayMyTurn = !!(
+    displaySnapshot &&
+    currentUserId &&
+    displaySnapshot.players.some(
+      (p) =>
+        p.playerId === currentUserId &&
+        p.color === displaySnapshot.currentTurnColor,
+    )
+  );
+  const isSpectator =
+    !!currentUserId &&
+    !displaySnapshot?.players.some((p) => p.playerId === currentUserId);
   const visible = !!currentUserId && !isGameOver && !isSpectator && !isRanked;
   const hintPly = displaySnapshot?.moveHistory.length ?? 0;
   const hint = hintState && hintState.ply === hintPly ? hintState.hint : null;

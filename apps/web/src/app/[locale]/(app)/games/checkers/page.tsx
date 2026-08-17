@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import CheckersLanding from './CheckersLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const CHECKERS_SLUG = 'checkers_v1';
 const CHECKERS_MIN_PLAYERS = 2;
@@ -82,6 +83,7 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.checkersLanding}`;
+  const comingSoon = await isGameComingSoon(CHECKERS_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -119,6 +121,7 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-checkers" data={jsonLd} />
       <CheckersLanding
         landing={landing}
+        comingSoon={comingSoon}
         variants={variants}
         rules={rules}
         gameId={CHECKERS_SLUG}

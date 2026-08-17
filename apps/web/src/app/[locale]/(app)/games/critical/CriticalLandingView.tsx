@@ -21,6 +21,7 @@ interface Props {
     string,
     { name?: string; description?: string } | undefined
   >;
+  comingSoon?: boolean;
 }
 
 export function CriticalLandingView({
@@ -31,6 +32,7 @@ export function CriticalLandingView({
   homeHref,
   gamesHref,
   locale,
+  comingSoon = false,
   translatedGames,
 }: Props) {
   if (!landing) return null;
@@ -136,6 +138,7 @@ export function CriticalLandingView({
   return (
     <UnifiedGameLanding
       accentGlow="rose"
+      comingSoon={comingSoon}
       breadcrumbs={[
         { label: landing.breadcrumb.home, href: homeHref },
         { label: landing.breadcrumb.games, href: gamesHref },

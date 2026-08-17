@@ -23,6 +23,7 @@ export function UnifiedGameLanding({
   relatedGames,
   finalCta,
   extraSection,
+  comingSoon = false,
 }: UnifiedGameLandingProps) {
   return (
     <GameLandingLayout breadcrumbs={breadcrumbs} accentGlow={accentGlow}>
@@ -46,6 +47,7 @@ export function UnifiedGameLanding({
         roomsHref={hero.roomsHref}
         createRoomHref={hero.createRoomHref}
         heroVisual={hero.heroVisual}
+        comingSoon={comingSoon}
       />
 
       {highlights ? (
@@ -126,6 +128,7 @@ export function UnifiedGameLanding({
         ctaPlayHumanErrorLabel={finalCta.ctaPlayHumanErrorLabel}
         browseRoomsLabel={finalCta.browseRoomsLabel}
         backToGamesLabel={finalCta.backToGamesLabel}
+        comingSoon={comingSoon}
       />
     </GameLandingLayout>
   );

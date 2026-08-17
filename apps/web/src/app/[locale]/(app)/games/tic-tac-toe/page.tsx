@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import TicTacToeLanding from './TicTacToeLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const TIC_TAC_TOE_SLUG = 'tic_tac_toe_v1';
 const TIC_TAC_TOE_MIN_PLAYERS = 2;
@@ -84,6 +85,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.ticTacToeLanding}`;
+  const comingSoon = await isGameComingSoon(TIC_TAC_TOE_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -121,6 +123,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-tic-tac-toe" data={jsonLd} />
       <TicTacToeLanding
         landing={landing}
+        comingSoon={comingSoon}
         variants={variants}
         rules={rules}
         gameId={TIC_TAC_TOE_SLUG}

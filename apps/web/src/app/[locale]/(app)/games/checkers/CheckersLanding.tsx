@@ -29,6 +29,7 @@ interface Props {
     string,
     { name?: string; description?: string } | undefined
   >;
+  comingSoon?: boolean;
 }
 
 export default function CheckersLanding({
@@ -41,6 +42,7 @@ export default function CheckersLanding({
   gamesHref,
   homeHref,
   locale,
+  comingSoon = false,
   navTranslations,
   translatedGames,
 }: Props) {
@@ -137,6 +139,7 @@ export default function CheckersLanding({
   return (
     <UnifiedGameLanding
       accentGlow="orange"
+      comingSoon={comingSoon}
       breadcrumbs={[
         { label: navTranslations?.homeTab ?? 'Home', href: homeHref },
         { label: navTranslations?.gamesTab ?? 'Games', href: gamesHref },

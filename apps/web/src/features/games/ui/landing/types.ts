@@ -41,6 +41,8 @@ export interface GameLandingHeroProps {
   roomsHref: string;
   createRoomHref?: string;
   heroVisual?: ReactNode;
+  /** Game disabled by admin — quickplay buttons are rendered disabled. */
+  comingSoon?: boolean;
 }
 
 export interface GameHighlightItem {
@@ -159,6 +161,8 @@ export interface GameFinalCtaProps {
   ctaPlayHumanErrorLabel?: string;
   browseRoomsLabel?: string;
   backToGamesLabel?: string;
+  /** Game disabled by admin — quickplay buttons are rendered disabled. */
+  comingSoon?: boolean;
 }
 
 export interface UnifiedGameLandingProps {
@@ -187,4 +191,6 @@ export interface UnifiedGameLandingProps {
   relatedGames?: GameRelatedGamesProps;
   finalCta: GameFinalCtaProps;
   extraSection?: ReactNode;
+  /** Game disabled by admin — quickplay buttons are rendered disabled. */
+  comingSoon?: boolean;
 }

@@ -8,6 +8,7 @@ interface Props {
   ctaQuickplayError: string;
   ctaPlayHuman?: string;
   ctaPlayHumanError?: string;
+  disabled?: boolean;
 }
 
 export function QuickplayCta({
@@ -16,6 +17,7 @@ export function QuickplayCta({
   ctaQuickplayError,
   ctaPlayHuman,
   ctaPlayHumanError,
+  disabled = false,
 }: Props) {
   return (
     <>
@@ -24,6 +26,7 @@ export function QuickplayCta({
         label={ctaQuickplay}
         mode="ai"
         errorLabel={ctaQuickplayError}
+        disabled={disabled}
       />
       {ctaPlayHuman ? (
         <QuickplayButton
@@ -32,6 +35,7 @@ export function QuickplayCta({
           mode="human"
           buttonVariant="secondary"
           errorLabel={ctaPlayHumanError ?? ctaQuickplayError}
+          disabled={disabled}
         />
       ) : null}
     </>

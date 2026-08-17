@@ -24,6 +24,7 @@ interface Props {
     string,
     { name?: string; description?: string } | undefined
   >;
+  comingSoon?: boolean;
 }
 
 export default function SeaBattleLanding({
@@ -35,6 +36,7 @@ export default function SeaBattleLanding({
   homeHref,
   gamesHref,
   locale,
+  comingSoon = false,
   translatedGames,
 }: Props) {
   if (!landing) return null;
@@ -137,6 +139,7 @@ export default function SeaBattleLanding({
   return (
     <UnifiedGameLanding
       accentGlow="cyan"
+      comingSoon={comingSoon}
       breadcrumbs={[
         { label: landing.breadcrumb.home, href: homeHref },
         { label: landing.breadcrumb.games, href: gamesHref },

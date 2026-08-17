@@ -29,6 +29,7 @@ interface CatDashLandingProps {
     string,
     { name?: string; description?: string } | undefined
   >;
+  comingSoon?: boolean;
 }
 
 export default function CatDashLanding({
@@ -41,6 +42,7 @@ export default function CatDashLanding({
   gamesHref,
   homeHref,
   locale,
+  comingSoon = false,
   navTranslations,
   translatedGames,
 }: CatDashLandingProps) {
@@ -129,6 +131,7 @@ export default function CatDashLanding({
   return (
     <UnifiedGameLanding
       accentGlow="orange"
+      comingSoon={comingSoon}
       breadcrumbs={[
         { label: navTranslations?.homeTab ?? 'Home', href: homeHref },
         { label: navTranslations?.gamesTab ?? 'Games', href: gamesHref },

@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import CatDashLanding from './CatDashLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const CAT_DASH_SLUG = 'cat_dash_v1';
 const CAT_DASH_MIN_PLAYERS = 2;
@@ -82,6 +83,7 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.catDashLanding}`;
+  const comingSoon = await isGameComingSoon(CAT_DASH_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -119,6 +121,7 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-cat-dash" data={jsonLd} />
       <CatDashLanding
         landing={landing}
+        comingSoon={comingSoon}
         variants={variants}
         rules={rules}
         gameId={CAT_DASH_SLUG}

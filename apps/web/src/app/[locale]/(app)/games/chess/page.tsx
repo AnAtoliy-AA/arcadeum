@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import ChessLanding from './ChessLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const CHESS_SLUG = 'chess_v1';
 const CHESS_MIN_PLAYERS = 2;
@@ -83,6 +84,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.chessLanding}`;
+  const comingSoon = await isGameComingSoon(CHESS_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -122,6 +124,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-chess" data={jsonLd} />
       <ChessLanding
         landing={landing}
+        comingSoon={comingSoon}
         rules={rules}
         gameId={CHESS_SLUG}
         roomsHref={`${routes.rooms}?gameId=${CHESS_SLUG}`}

@@ -27,6 +27,7 @@ interface Props {
     string,
     { name?: string; description?: string } | undefined
   >;
+  comingSoon?: boolean;
 }
 
 export default function ChessLanding({
@@ -38,6 +39,7 @@ export default function ChessLanding({
   gamesHref,
   homeHref,
   locale,
+  comingSoon = false,
   navTranslations,
   translatedGames,
 }: Props) {
@@ -116,6 +118,7 @@ export default function ChessLanding({
   return (
     <UnifiedGameLanding
       accentGlow="amber"
+      comingSoon={comingSoon}
       breadcrumbs={[
         { label: navTranslations?.homeTab ?? 'Home', href: homeHref },
         { label: navTranslations?.gamesTab ?? 'Games', href: gamesHref },

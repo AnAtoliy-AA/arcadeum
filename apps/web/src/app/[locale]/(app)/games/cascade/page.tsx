@@ -9,6 +9,7 @@ import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import CascadeLanding from './CascadeLanding';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const CASCADE_SLUG = 'cascade_v1';
 const CASCADE_MIN_PLAYERS = 2;
@@ -86,6 +87,7 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
   ];
 
   const pageUrl = `${appConfig.siteUrl}${routes.cascadeLanding}`;
+  const comingSoon = await isGameComingSoon(CASCADE_SLUG);
 
   const faqItems = landing?.faq;
   if (faqItems) {
@@ -123,6 +125,7 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-cascade" data={jsonLd} />
       <CascadeLanding
         landing={landing}
+        comingSoon={comingSoon}
         variants={variants}
         rules={rules}
         gameId={CASCADE_SLUG}

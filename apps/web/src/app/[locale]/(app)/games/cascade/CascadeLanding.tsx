@@ -28,6 +28,7 @@ interface Props {
     string,
     { name?: string; description?: string } | undefined
   >;
+  comingSoon?: boolean;
 }
 
 export default function CascadeLanding({
@@ -43,6 +44,7 @@ export default function CascadeLanding({
   gamesLabel,
   backToGamesLabel,
   locale,
+  comingSoon = false,
   translatedGames,
 }: Props) {
   if (!landing) return null;
@@ -138,6 +140,7 @@ export default function CascadeLanding({
   return (
     <UnifiedGameLanding
       accentGlow="blue"
+      comingSoon={comingSoon}
       breadcrumbs={[
         { label: homeLabel, href: homeHref },
         { label: gamesLabel, href: gamesHref },

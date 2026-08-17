@@ -15,6 +15,7 @@ export function GameFinalCta({
   ctaPlayHumanErrorLabel,
   browseRoomsLabel = 'Browse Active Rooms',
   backToGamesLabel = 'All Games',
+  comingSoon = false,
 }: GameFinalCtaProps) {
   return (
     <section className="box-border relative my-10 p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[var(--glassBg)] to-[var(--primary)]/10 border border-[var(--borderColor)] backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col items-center text-center gap-6">
@@ -34,6 +35,7 @@ export function GameFinalCta({
           ctaQuickplayError={ctaQuickplayErrorLabel}
           ctaPlayHuman={ctaPlayHumanLabel}
           ctaPlayHumanError={ctaPlayHumanErrorLabel}
+          disabled={comingSoon}
         />
 
         <Link href={roomsHref} className="box-border inline-flex">

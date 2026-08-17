@@ -11,6 +11,7 @@ import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import { CriticalLandingView } from './CriticalLandingView';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const CRITICAL_SLUG = 'critical_v1';
 const CRITICAL_MIN_PLAYERS = 2;
@@ -73,6 +74,7 @@ export default async function CriticalLandingRoute({ params }: PageProps) {
   const locale = resolveLocale(rawLocale);
   const routes = buildRoutes(locale);
   const pageUrl = `${appConfig.siteUrl}${routes.criticalLanding}`;
+  const comingSoon = await isGameComingSoon(CRITICAL_SLUG);
   const messages = await getTranslations(locale);
   const landing = messages.games?.critical_v1?.landing;
   const gameName = messages.games?.critical_v1?.name ?? 'Critical';
@@ -143,6 +145,7 @@ export default async function CriticalLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-critical" data={jsonLd} />
       <CriticalLandingView
         landing={landing}
+        comingSoon={comingSoon}
         gameId={CRITICAL_SLUG}
         roomsHref={`${routes.rooms}?gameId=${CRITICAL_SLUG}`}
         createRoomHref={`${routes.gameCreate}?gameId=${CRITICAL_SLUG}`}

@@ -29,6 +29,7 @@ interface Props {
     string,
     { name?: string; description?: string } | undefined
   >;
+  comingSoon?: boolean;
 }
 
 export default function TicTacToeLanding({
@@ -41,6 +42,7 @@ export default function TicTacToeLanding({
   gamesHref,
   homeHref,
   locale,
+  comingSoon = false,
   navTranslations,
   translatedGames,
 }: Props) {
@@ -127,6 +129,7 @@ export default function TicTacToeLanding({
   return (
     <UnifiedGameLanding
       accentGlow="purple"
+      comingSoon={comingSoon}
       breadcrumbs={[
         { label: navTranslations?.homeTab ?? 'Home', href: homeHref },
         { label: navTranslations?.gamesTab ?? 'Games', href: gamesHref },

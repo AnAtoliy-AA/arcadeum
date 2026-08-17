@@ -11,6 +11,7 @@ import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import { GlimwormLandingView } from './GlimwormLandingView';
+import { isGameComingSoon } from '@/features/games/api.server';
 
 const GLIMWORM_SLUG = 'glimworm_v1';
 const GLIMWORM_MIN_PLAYERS = 2;
@@ -73,6 +74,7 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
   const locale = resolveLocale(rawLocale);
   const routes = buildRoutes(locale);
   const pageUrl = `${appConfig.siteUrl}${routes.glimwormLanding}`;
+  const comingSoon = await isGameComingSoon(GLIMWORM_SLUG);
   const messages = await getTranslations(locale);
   const landing = messages.games?.glimworm_v1?.landing;
   const gameName = messages.games?.glimworm_v1?.name ?? 'Glimworm';
@@ -143,6 +145,7 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
       <JsonLd id="json-ld-glimworm" data={jsonLd} />
       <GlimwormLandingView
         landing={landing}
+        comingSoon={comingSoon}
         gameId={GLIMWORM_SLUG}
         roomsHref={`${routes.rooms}?gameId=${GLIMWORM_SLUG}`}
         createRoomHref={`${routes.gameCreate}?gameId=${GLIMWORM_SLUG}`}

@@ -23,6 +23,7 @@ export function GameLandingHero({
   roomsHref,
   createRoomHref,
   heroVisual,
+  comingSoon = false,
 }: GameLandingHeroProps) {
   return (
     <header className="box-border relative w-full pt-6 pb-12 overflow-hidden">
@@ -79,6 +80,7 @@ export function GameLandingHero({
               ctaQuickplayError={ctaQuickplayErrorLabel}
               ctaPlayHuman={ctaPlayHumanLabel}
               ctaPlayHumanError={ctaPlayHumanErrorLabel}
+              disabled={comingSoon}
             />
 
             <Link href={roomsHref} className="box-border inline-flex">

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { AccentPill, Button, Typography } from '@arcadeum/ui';
+import { Badge, Button, Typography } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
@@ -147,7 +147,9 @@ export function ShopActionPanel({
           </Typography>
         </div>
         <div className="flex flex-row gap-6 items-center justify-between">
-          <AccentPill accent={accent}>{hoverItem.rarity}</AccentPill>
+          <Badge accent={accent} dot>
+            {hoverItem.rarity}
+          </Badge>
           <div className="flex flex-row items-center gap-4">
             <Typography uiSize="sm">
               {CURRENCY_GLYPH[hoverItem.priceCurrency]}

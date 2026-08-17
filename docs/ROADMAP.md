@@ -47,7 +47,7 @@
 | 4B. Stats Dashboard    | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented** |
 | 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | Not started     |
 | 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | Not started     |
-| 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | Partial         |
+| 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | **Implemented** |
 | 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | Not started     |
 | 4G. Daily Challenges   | —       | —                            | **Implemented** |
 | 4H. Season System      | ARC-899 | `ARC-899-season-system`      | Not started     |
@@ -978,6 +978,6 @@ The platform's core infrastructure is highly mature. Phase 1 is fully complete, 
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B).
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B).
 - **Next Priorities (Growth & Marketing)**: Run the Week 0 audit, instrument PostHog/Plausible tracking (funnel split by Solo vs. Social), update homepage CTAs to prominently feature AI/Solo play, build out dedicated SEO landing pages for Chess and remaining games, and deploy the dynamic QR code/share sheet invite upgrades.
 - **Next Engineering Priorities**: Improved Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Rating system (2F).

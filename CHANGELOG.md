@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.36] - 2026-08-17
+
+### Improved
+- eliminate home page layout shift from streaming skeleton
+
+
 ## [1.25.35] - 2026-08-16
 
 ### Changed

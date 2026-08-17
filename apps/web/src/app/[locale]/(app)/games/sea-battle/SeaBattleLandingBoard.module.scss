@@ -1,12 +1,12 @@
 .frame {
   position: relative;
   justify-self: center;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 0;
   max-width: 100%;
   width: fit-content;
-  /* No bg/border/shadow — the surrounding hero card is the frame. */
   background: transparent;
   border: none;
   box-shadow: none;
@@ -20,7 +20,7 @@
 }
 
 .scaler:hover {
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
 .scaler:focus-visible {
@@ -29,8 +29,6 @@
   border-radius: 6px;
 }
 
-/* Caption: glow dot + "Live preview" + theme name. Aria-hidden because
-   the button's own aria-label covers the same info more accessibly. */
 .caption {
   margin: 0.75rem 0 0;
   display: flex;
@@ -64,13 +62,8 @@
   flex-shrink: 0;
 }
 
-/* Hover/focus pill prompting the click-to-cycle interaction. Sits
-   well below the caption so the two don't visually overlap. */
 .cycleHint {
-  position: absolute;
-  bottom: -2.75rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
+  margin-top: 0.35rem;
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   font-family: var(--font-mono, monospace);
@@ -85,24 +78,24 @@
   );
   border: 1px solid color-mix(in srgb, var(--accent, #38bdf8) 40%, transparent);
   white-space: nowrap;
-  opacity: 0;
+  opacity: 0.85;
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
   pointer-events: none;
-  box-shadow: 0 4px 12px -4px var(--accent, #38bdf8);
+  box-shadow: 0 2px 8px -2px var(--accent, #38bdf8);
 }
 
 .frame:hover .cycleHint,
 .scaler:focus-visible ~ .cycleHint {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: scale(1.04);
 }
 
 @media (max-width: 880px) {
   .frame {
     justify-self: center;
-    padding: 0.5rem;
+    padding: 0.25rem;
   }
 }
 

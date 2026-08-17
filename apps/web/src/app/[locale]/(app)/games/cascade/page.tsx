@@ -72,6 +72,11 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
       minPlayers: CASCADE_MIN_PLAYERS,
       maxPlayers: CASCADE_MAX_PLAYERS,
       genre: CASCADE_GENRE,
+      alternateName: [
+        'Cascade Cards',
+        'Crazy Eights Online',
+        'Color Match Cards',
+      ],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -128,7 +133,14 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
         homeLabel={messages.navigation?.homeTab ?? 'Home'}
         gamesLabel={messages.navigation?.gamesTab ?? 'Games'}
         backToGamesLabel={
-          messages.games?.cascade_v1?.board?.backToGames ?? '← Games'
+          messages.games?.cascade_v1?.board?.backToGames ?? 'All Games'
+        }
+        locale={locale}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
         }
       />
     </>

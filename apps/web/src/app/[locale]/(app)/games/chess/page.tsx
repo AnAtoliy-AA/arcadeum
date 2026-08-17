@@ -73,6 +73,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
       minPlayers: CHESS_MIN_PLAYERS,
       maxPlayers: CHESS_MAX_PLAYERS,
       genre: CHESS_GENRE,
+      alternateName: ['Chess Online', 'Chess960', 'Fischer Random Chess'],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -124,12 +125,20 @@ export default async function ChessLandingRoute({ params }: PageProps) {
         rules={rules}
         gameId={CHESS_SLUG}
         roomsHref={routes.games}
+        createRoomHref={`${routes.gameCreate}?gameId=${CHESS_SLUG}`}
         gamesHref={routes.games}
         homeHref={routes.home}
+        locale={locale}
         navTranslations={{
           homeTab: messages.navigation?.homeTab ?? 'Home',
           gamesTab: messages.navigation?.gamesTab ?? 'Games',
         }}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
+        }
       />
     </>
   );

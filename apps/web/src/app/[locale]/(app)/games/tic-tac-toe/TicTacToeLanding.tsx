@@ -1,10 +1,10 @@
-import Link from 'next/link';
-import { Container, PageLayout } from '@arcadeum/ui';
 import type { TicTacToeMessages } from '@/shared/i18n/messages/games/tic-tac-toe';
-import styles from './TicTacToeLanding.module.scss';
-import { TicTacToeHero } from './TicTacToeHero';
-import { TicTacToeThemesGrid } from './TicTacToeThemesGrid';
-import { TicTacToeFinalCtaButtons } from './TicTacToeFinalCtaButtons';
+import {
+  UnifiedGameLanding,
+  getRelatedGames,
+} from '@/features/games/ui/landing';
+import type { Locale } from '@/shared/i18n';
+import { TicTacToeBoardVisual } from './TicTacToeBoardVisual';
 
 type TttMessages = TicTacToeMessages['tic_tac_toe_v1'];
 type Landing = TttMessages['landing'];
@@ -20,6 +20,15 @@ interface Props {
   roomsHref: string;
   gamesHref: string;
   homeHref: string;
+  locale: Locale;
+  navTranslations?: {
+    homeTab: string;
+    gamesTab: string;
+  };
+  translatedGames?: Record<
+    string,
+    { name?: string; description?: string } | undefined
+  >;
 }
 
 export default function TicTacToeLanding({
@@ -31,6 +40,9 @@ export default function TicTacToeLanding({
   roomsHref,
   gamesHref,
   homeHref,
+  locale,
+  navTranslations,
+  translatedGames,
 }: Props) {
   if (!landing) return null;
 
@@ -38,99 +50,174 @@ export default function TicTacToeLanding({
     { key: 'players', icon: '👥', ...landing.highlights.players },
     { key: 'sizes', icon: '🎯', ...landing.highlights.sizes },
     { key: 'themes', icon: '🎨', ...landing.highlights.themes },
+    {
+      key: 'gomoku',
+      icon: '⚡',
+      title: 'Extended Grids',
+      body: 'Scale beyond 3×3 up to 9×9 boards with Gomoku-style 5-in-a-row winning lines.',
+    },
   ];
 
   const steps = [
-    { key: 'create', step: '1', ...landing.steps.create },
-    { key: 'join', step: '2', ...landing.steps.join },
-    { key: 'play', step: '3', ...landing.steps.play },
+    {
+      key: 'create',
+      stepNumber: 1,
+      ...landing.steps.create,
+      tip: 'Select your preferred grid dimension from 3×3 up to 9×9.',
+    },
+    {
+      key: 'join',
+      stepNumber: 2,
+      ...landing.steps.join,
+      tip: 'Invite friends or test your wits against instant AI bots.',
+    },
+    {
+      key: 'play',
+      stepNumber: 3,
+      ...landing.steps.play,
+      tip: 'Block enemy alignments while crafting overlapping winning threats.',
+    },
   ];
 
+  const rulesList = rules
+    ? [
+        { key: 'steps', head: 'Turns & Placement', body: rules.steps },
+        { key: 'winLengths', head: 'Win Conditions', body: rules.winLengths },
+      ]
+    : [];
+
+  const strategyTips = [
+    {
+      key: 'center',
+      title: 'Claim the Center First',
+      body: 'Taking the central square in 3×3 gives you access to 4 possible winning lines.',
+    },
+    {
+      key: 'fork',
+      title: 'Create Double Threats (Forks)',
+      body: 'Position marks to threaten two separate 3-in-a-row lines simultaneously.',
+    },
+    {
+      key: 'corners',
+      title: 'Corner Tactics',
+      body: 'Opening with corner moves pressures your opponent to respond precisely or lose.',
+    },
+  ];
+
+  const faqItems = Object.entries(landing.faq).map(([key, entry]) => {
+    const e = entry as { question: string; answer: string };
+    return {
+      key,
+      question: e.question,
+      answer: e.answer,
+    };
+  });
+
+  const themeKeys = ['classic', 'neon', 'chalkboard', 'retro'] as const;
+  const themesList = variants
+    ? themeKeys.map((k) => ({
+        id: k,
+        name: variants[k]?.name ?? k,
+        description: variants[k]?.description,
+      }))
+    : [];
+
+  const relatedGames = getRelatedGames(locale, gameId, translatedGames);
+
   return (
-    <PageLayout>
-      <Container>
-        <div className={styles.root}>
-          <TicTacToeHero
-            title={landing.hero.title}
-            subtitle={landing.hero.subtitle}
-            gameId={gameId}
-            roomsHref={roomsHref}
-            ctaQuickplayLabel={landing.hero.ctaQuickplay}
-            ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
-            browseRoomsLabel={landing.hero.browseRooms}
-          />
-
-          <section className={styles.highlights}>
-            {highlights.map((h) => (
-              <div key={h.key} className={styles.highlightCard}>
-                <span className={styles.highlightIcon}>{h.icon}</span>
-                <h2 className={styles.highlightTitle}>{h.title}</h2>
-                <p className={styles.highlightBody}>{h.body}</p>
-              </div>
-            ))}
-          </section>
-
-          <section className={styles.steps}>
-            {steps.map((s) => (
-              <div key={s.key} className={styles.stepCard}>
-                <span className={styles.stepNumber}>{s.step}</span>
-                <h3 className={styles.stepTitle}>{s.title}</h3>
-                <p className={styles.stepBody}>{s.body}</p>
-              </div>
-            ))}
-          </section>
-
-          {variants ? (
-            <section className={styles.themes}>
-              <h2 className={styles.sectionTitle}>{landing.themes.title}</h2>
-              <p className={styles.sectionSubtitle}>
-                {landing.themes.subtitle}
-              </p>
-              <TicTacToeThemesGrid
-                variants={variants}
-                baseHref={createRoomHref}
-              />
-            </section>
-          ) : null}
-
-          {rules ? (
-            <section className={styles.rules}>
-              <h2 className={styles.sectionTitle}>{rules.title}</h2>
-              <p>{rules.steps}</p>
-              <p className={styles.rulesNote}>{rules.winLengths}</p>
-            </section>
-          ) : null}
-
-          <section className={styles.faq}>
-            {Object.entries(landing.faq).map(([key, entry]) => {
-              const e = entry as { question: string; answer: string };
-              return (
-                <div key={key} className={styles.faqItem}>
-                  <h3 className={styles.faqQuestion}>{e.question}</h3>
-                  <p className={styles.faqAnswer}>{e.answer}</p>
-                </div>
-              );
-            })}
-          </section>
-
-          <TicTacToeFinalCtaButtons
-            gameId={gameId}
-            roomsHref={roomsHref}
-            gamesHref={gamesHref}
-            ctaQuickplayLabel={landing.hero.ctaQuickplay}
-            ctaQuickplayErrorLabel={landing.hero.ctaQuickplayError}
-            browseRoomsLabel={landing.hero.browseRooms}
-          />
-
-          <nav className={styles.breadcrumbs}>
-            <Link href={homeHref}>Home</Link>
-            <span aria-hidden> / </span>
-            <Link href={gamesHref}>Games</Link>
-            <span aria-hidden> / </span>
-            <span>Tic-Tac-Toe</span>
-          </nav>
-        </div>
-      </Container>
-    </PageLayout>
+    <UnifiedGameLanding
+      accentGlow="purple"
+      breadcrumbs={[
+        { label: navTranslations?.homeTab ?? 'Home', href: homeHref },
+        { label: navTranslations?.gamesTab ?? 'Games', href: gamesHref },
+        { label: landing.hero.title ?? 'Tic-Tac-Toe' },
+      ]}
+      hero={{
+        gameId,
+        title: landing.hero.title,
+        eyebrow: 'Fast Quickplay',
+        subtitle: landing.hero.subtitle,
+        intro:
+          'The world’s most recognized grid duel enhanced with custom sizes (3×3 to 9×9) and visual themes.',
+        category: 'Casual / Board',
+        playersBadge: '2–5 Players',
+        durationBadge: '2–5 min',
+        difficultyBadge: 'Quick Fun',
+        chips: [
+          '3x3 to 9x9 Grids',
+          'Gomoku Mode',
+          'Multiplayer Rooms',
+          'Smart AI',
+        ],
+        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        browseRoomsLabel: landing.hero.browseRooms,
+        createRoomLabel: 'Create Room',
+        roomsHref,
+        createRoomHref,
+        heroVisual: <TicTacToeBoardVisual />,
+      }}
+      highlights={{
+        title: 'Simple Yet Infinitely Fun',
+        kicker: 'Key Features',
+        items: highlights,
+      }}
+      howToPlay={{
+        title: 'How to Play Tic-Tac-Toe',
+        kicker: 'Quick Start',
+        intro: 'Take turns placing Xs and Os to achieve consecutive lines.',
+        steps,
+      }}
+      themes={
+        themesList.length > 0
+          ? {
+              title: landing.themes.title,
+              kicker: 'Custom Visuals',
+              subtitle: landing.themes.subtitle,
+              themes: themesList,
+              baseHref: createRoomHref,
+              createRoomLabel: 'Play Theme',
+            }
+          : undefined
+      }
+      rules={
+        rulesList.length > 0
+          ? {
+              title: rules?.title ?? 'Rules & Win Conditions',
+              kicker: 'Rulebook',
+              rules: rulesList,
+            }
+          : undefined
+      }
+      strategy={{
+        title: 'Unbeatable Tactics & Strategies',
+        kicker: 'Pro Tips',
+        intro: 'Learn how to never lose a game of Tic-Tac-Toe.',
+        tips: strategyTips,
+      }}
+      faq={{
+        title: 'Frequently Asked Questions',
+        kicker: 'FAQ',
+        items: faqItems,
+      }}
+      relatedGames={{
+        title: 'Discover More Games',
+        kicker: 'Discover',
+        currentGameSlug: gameId,
+        games: relatedGames,
+      }}
+      finalCta={{
+        gameId,
+        title: 'Start a Match in Seconds',
+        subtitle:
+          'Play against bots or challenge friends across desktop and mobile devices.',
+        roomsHref,
+        gamesHref,
+        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
+        browseRoomsLabel: landing.hero.browseRooms,
+        backToGamesLabel: 'All Games',
+      }}
+    />
   );
 }

@@ -74,6 +74,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
       minPlayers: TIC_TAC_TOE_MIN_PLAYERS,
       maxPlayers: TIC_TAC_TOE_MAX_PLAYERS,
       genre: TIC_TAC_TOE_GENRE,
+      alternateName: ['Noughts and Crosses', 'Xs and Os', 'Gomoku Tic-Tac-Toe'],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -127,6 +128,17 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
         roomsHref={routes.games}
         gamesHref={routes.games}
         homeHref={routes.home}
+        locale={locale}
+        navTranslations={{
+          homeTab: messages.navigation?.homeTab ?? 'Home',
+          gamesTab: messages.navigation?.gamesTab ?? 'Games',
+        }}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
+        }
       />
     </>
   );

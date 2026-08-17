@@ -72,6 +72,7 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
       minPlayers: CAT_DASH_MIN_PLAYERS,
       maxPlayers: CAT_DASH_MAX_PLAYERS,
       genre: CAT_DASH_GENRE,
+      alternateName: ['Cat Dash Racing', 'Cat Race Online', 'Dice Cat Runner'],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -125,6 +126,17 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
         roomsHref={routes.games}
         gamesHref={routes.games}
         homeHref={routes.home}
+        locale={locale}
+        navTranslations={{
+          homeTab: messages.navigation?.homeTab ?? 'Home',
+          gamesTab: messages.navigation?.gamesTab ?? 'Games',
+        }}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
+        }
       />
     </>
   );

@@ -72,6 +72,7 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
       minPlayers: CHECKERS_MIN_PLAYERS,
       maxPlayers: CHECKERS_MAX_PLAYERS,
       genre: CHECKERS_GENRE,
+      alternateName: ['Draughts', 'Checkers Online', 'American Checkers'],
       breadcrumb: {
         home: messages.navigation?.homeTab ?? 'Home',
         games: messages.navigation?.gamesTab ?? 'Games',
@@ -125,6 +126,17 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
         roomsHref={routes.games}
         gamesHref={routes.games}
         homeHref={routes.home}
+        locale={locale}
+        navTranslations={{
+          homeTab: messages.navigation?.homeTab ?? 'Home',
+          gamesTab: messages.navigation?.gamesTab ?? 'Games',
+        }}
+        translatedGames={
+          messages.games as Record<
+            string,
+            { name?: string; description?: string } | undefined
+          >
+        }
       />
     </>
   );

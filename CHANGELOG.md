@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.43] - 2026-08-17
+
+### Added
+- add icon to Rooms nav item in mobile menu (ARC-games-description-pages)
+- disable all start-game buttons on landings for disabled games (ARC-games-description-pages)
+- disable landing play buttons for admin-disabled games (ARC-games-description-pages)
+- make /games catalog cards link to game landing pages (ARC-games-description-pages)
+- change game and rooms routes
+- rework game description pages with unified architecture and real theme variants (ARC-games-description-pages)
+
+### Fixed
+- move room route to /rooms and restore human matchmaking (ARC-games-description-pages)
+
+
 ## [1.25.42] - 2026-08-17
 
 ### Added

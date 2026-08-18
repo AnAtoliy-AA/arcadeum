@@ -166,6 +166,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     onDragLeave,
     handleDragEnd,
     draggingCells,
+    isTouchDevice,
     onTouchBoardPointerDown,
     touchDragJustEnded,
     resetTouchDragJustEnded,
@@ -390,6 +391,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
       pendingCells={pendingCells}
       shipHeadKeys={shipHeadKeys}
       isPlacementComplete={isPlacementComplete}
+      isTouchDragEnabled={isTouchDevice}
       movingShipCells={
         movingShipId
           ? (localShips.find((s) => s.id === movingShipId)?.cells ?? [])

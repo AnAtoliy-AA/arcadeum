@@ -108,9 +108,10 @@ test.describe('Modernized Content Pages and Footer', () => {
     page,
     isMobile,
   }) => {
+    const viewportWidth = page.viewportSize()?.width ?? 0;
     test.skip(
-      !isMobile,
-      'Mobile accordion test only applies to mobile viewports',
+      !isMobile || viewportWidth > 800,
+      'Footer accordion is only interactive below the 800px breakpoint',
     );
 
     await navigateTo(page, routes.home);

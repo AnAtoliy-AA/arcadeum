@@ -32,12 +32,54 @@ export interface HelpPageContentProps {
   t?: HelpMessages;
 }
 
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  'getting-started': [
+    'download',
+    'free',
+    'invite',
+    'friends',
+    'play',
+    'browser',
+    'install',
+  ],
+  'games-rules': ['ai', 'opponent', 'practice', 'rules', 'difficulty'],
+  'account-security': [
+    'account',
+    'security',
+    'password',
+    'privacy',
+    'profile',
+    'breaks',
+    'help',
+  ],
+  'rewards-economy': ['reward', 'coins', 'streak', 'quest', 'login', 'shop'],
+  'tournaments-ranking': [
+    'elo',
+    'rating',
+    'ranking',
+    'tier',
+    'competitive',
+    'tournament',
+  ],
+  'technical-support': [
+    'disconnect',
+    'websocket',
+    'gateway',
+    'network',
+    'reconnect',
+    'latency',
+    'breaks',
+  ],
+};
+
 export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
   const { messages } = useLanguage();
   const routes = useRoutes();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [expandedFaqs, setExpandedFaqs] = useState<Record<number, boolean>>({});
+  const [expandedFaqs, setExpandedFaqs] = useState<Record<number, boolean>>({
+    0: true,
+  });
 
   const help = messages.pages?.help ?? initialT;
   const status = help?.status;
@@ -52,18 +94,46 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
     }));
   };
 
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory((prev) => {
+      const next = prev === categoryId ? null : categoryId;
+      if (next) {
+        setExpandedFaqs({ 0: true });
+        const faqEl = document.getElementById('faq');
+        if (faqEl) {
+          faqEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+      return next;
+    });
+  };
+
   const filteredFaqItems = useMemo(() => {
-    const items = faq?.items ?? [];
-    if (!searchQuery.trim()) {
-      return items;
+    let items = faq?.items ?? [];
+
+    if (selectedCategory && CATEGORY_KEYWORDS[selectedCategory]) {
+      const keywords = CATEGORY_KEYWORDS[selectedCategory];
+      const matched = items.filter((item) => {
+        const text =
+          `${item?.question ?? ''} ${item?.answer ?? ''}`.toLowerCase();
+        return keywords.some((kw) => text.includes(kw));
+      });
+      if (matched.length > 0) {
+        items = matched;
+      }
     }
-    const q = searchQuery.toLowerCase();
-    return items.filter(
-      (item) =>
-        Boolean(item?.question?.toLowerCase().includes(q)) ||
-        Boolean(item?.answer?.toLowerCase().includes(q)),
-    );
-  }, [faq?.items, searchQuery]);
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      items = items.filter(
+        (item) =>
+          Boolean(item?.question?.toLowerCase().includes(q)) ||
+          Boolean(item?.answer?.toLowerCase().includes(q)),
+      );
+    }
+
+    return items;
+  }, [faq?.items, selectedCategory, searchQuery]);
 
   return (
     <PageLayout>
@@ -157,17 +227,11 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                       key={category?.id ?? category?.title}
                       role="button"
                       tabIndex={0}
-                      onClick={() =>
-                        setSelectedCategory(
-                          isSelected ? null : (category?.id ?? null),
-                        )
-                      }
+                      onClick={() => handleCategorySelect(category?.id ?? '')}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
-                          setSelectedCategory(
-                            isSelected ? null : (category?.id ?? null),
-                          );
+                          handleCategorySelect(category?.id ?? '');
                         }
                       }}
                       className="group w-full cursor-pointer text-left focus:outline-none"

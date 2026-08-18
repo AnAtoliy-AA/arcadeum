@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.50] - 2026-08-18
+
+### Added
+- wire dynamic markdown data into RoadmapClient and content (ARC-904) (ARC-904)
+- parse docs/ROADMAP.md dynamically on the server (ARC-904) (ARC-904)
+- use Arcadeum Games name across app config and pages (ARC-904) (ARC-904)
+- center icon badges and add feature status tracking (ARC-904) (ARC-904)
+
+### Fixed
+- ensure h1 level heading rendered for roadmap and changelog (ARC-904) (ARC-904)
+
+### Refactored
+- extract TierCard and StatusBadge into TierCard.tsx (ARC-904) (ARC-904)
+
+
 ## [1.25.49] - 2026-08-18
 
 ### Documentation

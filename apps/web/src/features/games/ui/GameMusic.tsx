@@ -89,12 +89,12 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           style={{ touchAction: 'none' }}
         >
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px]"
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[12px]"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.12)',
-              border: '1px solid rgba(255,255,255,0.25)',
+              backgroundColor: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.2)',
               boxShadow:
-                'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.3)',
+                'inset 0 1px 0 rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,0.3)',
               backgroundImage:
                 player.track?.spriteIndex != null
                   ? `url(${SPRITE_URL})`
@@ -113,19 +113,22 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
                 audioRef={player.audioRef}
               />
             )}
+            {player.isPlaying && (
+              <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+            )}
           </div>
-          <div className="min-w-0 flex-1 gap-[1px] overflow-hidden">
-            <Typography
-              className="game-music-title block truncate text-[13px] font-semibold"
-              style={{ color: 'rgba(255,255,255,0.95)' }}
-            >
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="flex items-center gap-1.5">
+              <Typography className="block text-[9px] font-semibold uppercase tracking-widest text-indigo-300">
+                Arcadeum
+              </Typography>
+              <span className="text-[8px] text-white/30">•</span>
+              <Typography className="block text-[9px] text-white/50">
+                Track {String(player.index + 1).padStart(2, '0')}
+              </Typography>
+            </div>
+            <Typography className="game-music-title block truncate text-[13px] font-bold text-white tracking-tight">
               {player.track?.title}
-            </Typography>
-            <Typography
-              className="block truncate text-[10px]"
-              style={{ color: 'rgba(255,255,255,0.55)' }}
-            >
-              Arcadeum
             </Typography>
           </div>
           <button
@@ -147,7 +150,7 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
+              e.currentTarget.style.color = '#ffffff';
               e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)';
             }}
             onMouseLeave={(e) => {

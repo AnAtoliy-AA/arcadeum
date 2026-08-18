@@ -58,7 +58,8 @@ export const MusicBtn = ({
   testId,
   ariaLabel,
   title,
-  color = 'rgba(255,255,255,0.85)',
+  color,
+  isActive = false,
   children,
   className = '',
 }: {
@@ -67,33 +68,46 @@ export const MusicBtn = ({
   ariaLabel: string;
   title?: string;
   color?: string;
+  isActive?: boolean;
   children: React.ReactNode;
   className?: string;
-}) => (
-  <button
-    className={`game-music-btn ${className}`}
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: '50%',
-      border: '1px solid rgba(255,255,255,0.25)',
-      background: 'rgba(255,255,255,0.12)',
-      color,
-      cursor: 'pointer',
-      flexShrink: 0,
-      boxShadow:
-        'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 6px rgba(0,0,0,0.3)',
-    }}
-    type="button"
-    onClick={onClick}
-    data-testid={testId}
-    aria-label={ariaLabel}
-    title={title || ariaLabel}
-  >
-    {children}
-  </button>
-);
+}) => {
+  const active =
+    isActive ||
+    (color != null &&
+      color !== 'rgba(255,255,255,0.4)' &&
+      color !== 'rgba(255,255,255,0.3)');
+  return (
+    <button
+      className={`game-music-btn ${className}`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '50%',
+        border: active
+          ? '1px solid rgba(129, 140, 248, 0.5)'
+          : '1px solid rgba(255, 255, 255, 0.18)',
+        background: active
+          ? 'rgba(99, 102, 241, 0.25)'
+          : 'rgba(255, 255, 255, 0.08)',
+        color: color || (active ? '#c7d2fe' : 'rgba(255, 255, 255, 0.75)'),
+        cursor: 'pointer',
+        flexShrink: 0,
+        boxShadow: active
+          ? '0 0 10px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+          : 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(0, 0, 0, 0.2)',
+      }}
+      type="button"
+      onClick={onClick}
+      data-testid={testId}
+      aria-label={ariaLabel}
+      title={title || ariaLabel}
+    >
+      {children}
+    </button>
+  );
+};
 
 export const PlayBtn = ({
   onClick,

@@ -14,13 +14,13 @@ export const playerStyles = `
 .game-music-player {
   animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 
-    0 20px 50px -10px rgba(0, 0, 0, 0.85),
-    0 10px 25px -5px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 24px 48px -12px rgba(0, 0, 0, 0.85),
+    0 12px 24px -6px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   transition: width 250ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 250ms ease, padding 250ms ease;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   cursor: grab;
 }
 .game-music-player:active {
@@ -31,7 +31,7 @@ export const playerStyles = `
   cursor: grabbing !important;
 }
 .game-music-player.is-playing {
-  animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1), gameMusicGlow 3s ease-in-out infinite;
+  animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 @media (prefers-reduced-motion: reduce) {
   .game-music-player { animation: gameMusicPlayerIn 300ms ease-out; }
@@ -39,7 +39,7 @@ export const playerStyles = `
 }
 .game-music-drag-handle {
   cursor: grab;
-  border-radius: 8px;
+  border-radius: 10px;
   transition: background-color 150ms ease;
   padding: 4px 6px;
   margin: -4px -6px;
@@ -48,7 +48,7 @@ export const playerStyles = `
   cursor: grabbing;
 }
 .game-music-drag-handle:hover {
-  background-color: rgba(255,255,255,0.1);
+  background-color: rgba(255,255,255,0.06);
 }
 .game-music-track-number {
   font-variant-numeric: tabular-nums;
@@ -59,37 +59,37 @@ export const playerStyles = `
   height: 4px;
   width: 100%;
   border-radius: 999px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
   cursor: pointer;
-  transition: height 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: height 150ms ease;
   outline: none;
 }
 .game-music-volume:hover {
-  height: 6px;
+  height: 5px;
 }
 .game-music-volume::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.85);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
-  cursor: pointer;
-  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease;
-}
-.game-music-volume::-webkit-slider-thumb:hover {
-  transform: scale(1.25);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 0 0 3px rgba(129,140,248,0.4);
-}
-.game-music-volume::-webkit-slider-thumb:active {
-  transform: scale(1.1);
-}
-.game-music-volume::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.4), 0 0 0 2px rgba(129,140,248,0.3);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(99,102,241,0.5);
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.game-music-volume::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6), 0 0 0 3px rgba(129,140,248,0.7);
+}
+.game-music-volume::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+}
+.game-music-volume::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(99,102,241,0.5);
   border: none;
   cursor: pointer;
 }
@@ -99,9 +99,9 @@ export const playerStyles = `
   height: 4px;
   width: 100%;
   border-radius: 999px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
   cursor: pointer;
-  transition: height 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: height 150ms ease;
   outline: none;
 }
 .game-music-progress:hover {
@@ -112,36 +112,22 @@ export const playerStyles = `
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.85);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.6);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 200ms ease, transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.game-music-progress:hover {
-  height: 6px;
-}
-.game-music-progress::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(129,140,248,0.4);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 2px rgba(99,102,241,0.6);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 200ms ease, transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 150ms ease, transform 150ms ease;
 }
 .game-music-progress:hover::-webkit-slider-thumb {
   opacity: 1;
-  transform: scale(1.2);
+  transform: scale(1.15);
 }
 .game-music-progress::-moz-range-thumb {
   width: 12px;
   height: 12px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(129,140,248,0.4);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 2px rgba(99,102,241,0.6);
   border: none;
   cursor: pointer;
 }
@@ -189,11 +175,12 @@ export const playerStyles = `
   transform: scale(0.98);
 }
 .game-music-track.active {
-  background-color: rgba(99, 102, 241, 0.25);
-  border: 1px solid rgba(129, 140, 248, 0.4);
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.28) 0%, rgba(168, 85, 247, 0.14) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 .game-music-track.active:hover {
-  background-color: rgba(99, 102, 241, 0.35);
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.38) 0%, rgba(168, 85, 247, 0.2) 100%);
 }
 .game-music-checkbox {
   -webkit-appearance: none;

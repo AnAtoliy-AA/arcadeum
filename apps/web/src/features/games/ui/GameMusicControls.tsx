@@ -461,7 +461,7 @@ export function ProgressBar({
         aria-label={label}
         style={{
           flex: 1,
-          background: `linear-gradient(to right, #818cf8 ${pct}%, rgba(255,255,255,0.12) ${pct}%)`,
+          background: `linear-gradient(to right, #6366f1 0%, #a855f7 ${pct}%, rgba(255,255,255,0.12) ${pct}%, rgba(255,255,255,0.12) 100%)`,
         }}
       />
       <Typography className="game-music-time min-w-[32px] text-right text-[10px] font-medium text-[rgba(255,255,255,0.7)]">

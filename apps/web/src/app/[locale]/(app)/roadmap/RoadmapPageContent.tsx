@@ -306,7 +306,7 @@ export default function RoadmapPageContent() {
                 uiSize="3xl"
                 gradient="primary"
               >
-                Arcadeum Roadmap
+                Arcadeum Games Roadmap
               </Typography>
               <Typography
                 className={'max-w-[600px]'}

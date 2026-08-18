@@ -106,7 +106,7 @@ function normalizeUploadDate(value: string): string {
 }
 
 function readAppConfig(): WebAppConfig {
-  const appName = trim(process.env.NEXT_PUBLIC_APP_NAME) ?? 'Arcadeum';
+  const appName = trim(process.env.NEXT_PUBLIC_APP_NAME) ?? 'Arcadeum Games';
   const appVersion = trim(process.env.NEXT_PUBLIC_APP_VERSION) ?? '0.0.0';
   const presentationVideoId = parseYouTubeVideoId(
     process.env.NEXT_PUBLIC_PRESENTATION_VIDEO_ID,
@@ -138,11 +138,12 @@ function readAppConfig(): WebAppConfig {
     },
     supportCta: {
       href: supportCtaHref,
-      label: 'Support Arcadeum',
+      label: 'Support Arcadeum Games',
     },
     downloads: {
       title: 'Install the app',
-      description: 'Install Arcadeum on your device for the best experience.',
+      description:
+        'Install Arcadeum Games on your device for the best experience.',
       iosHref: downloadIosHref,
       iosLabel: 'Download for iOS',
       androidHref: downloadAndroidHref,

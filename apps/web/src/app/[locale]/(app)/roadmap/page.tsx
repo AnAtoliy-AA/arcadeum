@@ -10,10 +10,9 @@ export async function generateMetadata({
   const { locale } = await params;
   const url = `${appConfig.siteUrl}/${locale}/roadmap`;
   return {
-    title: 'Roadmap — Arcadeum',
-    description:
-      'Explore the Arcadeum platform expansion roadmap — new games, ranked play, matchmaking, and more coming soon.',
-    openGraph: { title: 'Roadmap — Arcadeum', url },
+    title: `Roadmap — ${appConfig.appName}`,
+    description: `Explore the ${appConfig.appName} platform expansion roadmap — new games, ranked play, matchmaking, and more coming soon.`,
+    openGraph: { title: `Roadmap — ${appConfig.appName}`, url },
     alternates: { canonical: url },
   };
 }

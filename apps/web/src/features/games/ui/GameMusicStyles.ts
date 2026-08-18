@@ -19,8 +19,6 @@ export const playerStyles = `
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   transition: width 250ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 250ms ease, padding 250ms ease;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   cursor: grab;
 }
 .game-music-player:active {

@@ -29,9 +29,9 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   if (player.loading) {
     return (
       <div
-        className="fixed bottom-4 left-4 z-[1000] w-[200px] rounded-[28px] border border-white/20 px-3 py-3 shadow-2xl backdrop-blur-2xl"
+        className="fixed bottom-4 left-4 z-[1000] w-[200px] rounded-[28px] border border-white/20 px-3 py-3 shadow-2xl"
         style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.95)',
+          backgroundColor: '#0f172a',
         }}
       >
         <Typography uiSize="xs" style={{ color: 'rgba(255,255,255,0.85)' }}>
@@ -66,13 +66,13 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     <>
       <style>{playerStyles}</style>
       <div
-        className={`game-music-player fixed z-[1000] rounded-[28px] border border-white/20 px-3 py-3 backdrop-blur-2xl ${player.isPlaying ? 'is-playing' : ''}`}
+        className={`game-music-player fixed z-[1000] rounded-[28px] border border-white/20 px-3 py-3 ${player.isPlaying ? 'is-playing' : ''}`}
         data-testid="game-music-player"
         style={{
           width: player.miniMode ? 200 : 320,
           background: (() => {
             const hue = (player.index * 47) % 360;
-            return `linear-gradient(180deg, hsla(${hue}, 45%, 22%, 0.94) 0%, rgba(15, 23, 42, 0.96) 40%, rgba(8, 12, 22, 0.98) 100%)`;
+            return `linear-gradient(180deg, hsla(${hue}, 40%, 18%, 1) 0%, #0f172a 40%, #080c18 100%)`;
           })(),
           boxShadow:
             '0 20px 50px -10px rgba(0, 0, 0, 0.85), 0 10px 25px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',

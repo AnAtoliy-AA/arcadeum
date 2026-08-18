@@ -4,9 +4,9 @@ import { useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
-  type GameLobbyTheme,
   LobbyOptionSection,
   LobbyChipGroup,
+  getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RulesModal } from './RulesModal';
@@ -16,16 +16,10 @@ import { RULE_VARIANT_CONFIGS } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
-const getCheckersTheme = (variantId?: string): GameLobbyTheme => {
-  const variant = CHECKERS_VARIANTS.find((v) => v.id === variantId);
-  const lightGradient =
-    variant?.lightGradient ??
-    'linear-gradient(90deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%)';
-  return {
-    titleGradient: lightGradient,
-    variantGradient: lightGradient,
-    buttonGradient: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-  };
+const CHECKERS_LOBBY_THEME = {
+  fallbackLightGradient:
+    'linear-gradient(90deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%)',
+  buttonGradient: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
 };
 
 interface CheckersLobbyProps {
@@ -113,7 +107,16 @@ export function CheckersLobby({
   );
   const variant = options.variant;
   const ruleVariant = options.ruleVariant;
-  const lobbyTheme = useMemo(() => getCheckersTheme(variant), [variant]);
+  const lobbyTheme = useMemo(
+    () =>
+      getLobbyTheme(
+        CHECKERS_VARIANTS,
+        variant,
+        CHECKERS_LOBBY_THEME.fallbackLightGradient,
+        CHECKERS_LOBBY_THEME.buttonGradient,
+      ),
+    [variant],
+  );
   const variantName = useMemo(() => {
     const found = CHECKERS_VARIANTS.find((v) => v.id === variant);
     return found ? t(found.name) : undefined;

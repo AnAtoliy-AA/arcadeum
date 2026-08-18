@@ -3,8 +3,8 @@
 import React from 'react';
 import {
   ReusableGameLobby,
-  type GameLobbyTheme,
   IconButton,
+  getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { MIN_PLAYERS, getDefaultShipCount } from '../types';
@@ -18,17 +18,10 @@ import type { SeaBattleGameOptions } from '@/features/games/sea-battle/lobby';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
-const getSeaBattleTheme = (variantId?: string): GameLobbyTheme => {
-  const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
-  const lightGradient =
-    variant?.lightGradient ||
-    'linear-gradient(90deg, #93c5fd 0%, #7dd3fc 40%, #6ee7b7 70%, #93c5fd 100%)';
-
-  return {
-    titleGradient: lightGradient,
-    variantGradient: lightGradient,
-    buttonGradient: 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
-  };
+const SEA_BATTLE_LOBBY_THEME = {
+  fallbackLightGradient:
+    'linear-gradient(90deg, #93c5fd 0%, #7dd3fc 40%, #6ee7b7 70%, #93c5fd 100%)',
+  buttonGradient: 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
 };
 
 const getVariantInfo = (variantId?: string) => {
@@ -222,7 +215,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     setSelectedVariant(roomVariant);
   }, [roomVariant]);
 
-  const theme = getSeaBattleTheme(selectedVariant);
+  const theme = getLobbyTheme(
+    SEA_BATTLE_VARIANTS,
+    selectedVariant,
+    SEA_BATTLE_LOBBY_THEME.fallbackLightGradient,
+    SEA_BATTLE_LOBBY_THEME.buttonGradient,
+  );
   const variantInfo = getVariantInfo(selectedVariant);
 
   const getSubtitleText = () => {

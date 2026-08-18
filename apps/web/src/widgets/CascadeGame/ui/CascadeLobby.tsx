@@ -4,10 +4,10 @@ import { useMemo, useCallback } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
-  type GameLobbyTheme,
   LobbyOptionSection,
   LobbyChipGroup,
   LobbyToggle,
+  getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CASCADE_VARIANTS } from '../lib/constants';
@@ -35,16 +35,10 @@ interface CascadeLobbyProps {
   onShowRulesClose: () => void;
 }
 
-const getCascadeLobbyTheme = (variantId?: string): GameLobbyTheme => {
-  const v = CASCADE_VARIANTS.find((x) => x.id === variantId);
-  const lightGradient =
-    v?.lightGradient ??
-    'linear-gradient(90deg, #f8fafc 0%, #c4b5fd 50%, #f8fafc 100%)';
-  return {
-    titleGradient: lightGradient,
-    variantGradient: lightGradient,
-    buttonGradient: 'linear-gradient(135deg, #7c3aed 0%, #4338ca 100%)',
-  };
+const CASCADE_LOBBY_THEME = {
+  fallbackLightGradient:
+    'linear-gradient(90deg, #f8fafc 0%, #c4b5fd 50%, #f8fafc 100%)',
+  buttonGradient: 'linear-gradient(135deg, #7c3aed 0%, #4338ca 100%)',
 };
 
 function resolveOptions(raw: unknown): CascadeOptions {
@@ -211,7 +205,12 @@ export function CascadeLobby({
       gameName="Cascade"
       gameIcon={variantTokens.emoji}
       variantName={t(variantTokens.name)}
-      theme={getCascadeLobbyTheme(options.variant)}
+      theme={getLobbyTheme(
+        CASCADE_VARIANTS,
+        options.variant,
+        CASCADE_LOBBY_THEME.fallbackLightGradient,
+        CASCADE_LOBBY_THEME.buttonGradient,
+      )}
       optionsSlot={optionsSlot}
       rulesModalSlot={
         <RulesModal

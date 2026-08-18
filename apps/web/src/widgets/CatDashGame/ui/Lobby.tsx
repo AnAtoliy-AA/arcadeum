@@ -1,10 +1,7 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import {
-  ReusableGameLobby,
-  type GameLobbyTheme,
-} from '@/features/games/ui/ReusableGameLobby';
+import { ReusableGameLobby, getLobbyTheme } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CAT_DASH_VARIANTS } from '../lib/constants';
 import { CatDashRulesModal } from './RulesModal';
@@ -25,16 +22,10 @@ interface CatDashLobbyProps {
   onShowRulesClose?: () => void;
 }
 
-const getCatDashTheme = (variantId?: string): GameLobbyTheme => {
-  const variant = CAT_DASH_VARIANTS.find((v) => v.id === variantId);
-  const lightGradient =
-    variant?.lightGradient ??
-    'linear-gradient(90deg, #fff 0%, #c084fc 40%, #67e8f9 80%, #fff 100%)';
-  return {
-    titleGradient: lightGradient,
-    variantGradient: lightGradient,
-    buttonGradient: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)',
-  };
+const CAT_DASH_LOBBY_THEME = {
+  fallbackLightGradient:
+    'linear-gradient(90deg, #fff 0%, #c084fc 40%, #67e8f9 80%, #fff 100%)',
+  buttonGradient: 'linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)',
 };
 
 export const CatDashLobby = memo(function CatDashLobby({
@@ -65,7 +56,13 @@ export const CatDashLobby = memo(function CatDashLobby({
   );
 
   const lobbyTheme = useMemo(
-    () => getCatDashTheme(options.theme),
+    () =>
+      getLobbyTheme(
+        CAT_DASH_VARIANTS,
+        options.theme,
+        CAT_DASH_LOBBY_THEME.fallbackLightGradient,
+        CAT_DASH_LOBBY_THEME.buttonGradient,
+      ),
     [options.theme],
   );
 

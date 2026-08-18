@@ -5,8 +5,8 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
-  type GameLobbyTheme,
   LobbyOptionSection,
+  getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { VariantSelector } from './VariantSelector';
@@ -27,16 +27,10 @@ import {
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import type { BotDifficulty } from '@/features/games/ui/DifficultySelector';
 
-const getTicTacToeTheme = (variantId?: string): GameLobbyTheme => {
-  const variant = TIC_TAC_TOE_VARIANTS.find((v) => v.id === variantId);
-  const lightGradient =
-    variant?.lightGradient ??
-    'linear-gradient(90deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%)';
-  return {
-    titleGradient: lightGradient,
-    variantGradient: lightGradient,
-    buttonGradient: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-  };
+const TIC_TAC_TOE_LOBBY_THEME = {
+  fallbackLightGradient:
+    'linear-gradient(90deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%)',
+  buttonGradient: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
 };
 
 interface TicTacToeLobbyProps {
@@ -102,7 +96,16 @@ export function TicTacToeLobby({
     [room.gameOptions],
   );
   const variant = options.variant;
-  const lobbyTheme = useMemo(() => getTicTacToeTheme(variant), [variant]);
+  const lobbyTheme = useMemo(
+    () =>
+      getLobbyTheme(
+        TIC_TAC_TOE_VARIANTS,
+        variant,
+        TIC_TAC_TOE_LOBBY_THEME.fallbackLightGradient,
+        TIC_TAC_TOE_LOBBY_THEME.buttonGradient,
+      ),
+    [variant],
+  );
   const variantName = useMemo(() => {
     const found = TIC_TAC_TOE_VARIANTS.find((v) => v.id === variant);
     return found ? t(found.name) : undefined;

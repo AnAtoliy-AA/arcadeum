@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { PageLayout, Container, Typography, Section } from '@arcadeum/ui';
+import type { RoadmapData, Phase } from './roadmap-parser';
 import {
   TIERS,
   PHASES,
@@ -197,9 +198,11 @@ function TierCard({
 }
 
 function PhaseTimeline({
+  phases,
   hoveredPhase,
   onHover,
 }: {
+  phases: Phase[];
   hoveredPhase: number | null;
   onHover: (phase: number | null) => void;
 }) {
@@ -207,7 +210,7 @@ function PhaseTimeline({
   return (
     <div className="flex flex-col items-stretch gap-0 relative">
       <div className="absolute left-[15px] top-[20px] bottom-[20px] w-[2px] bg-[rgba(255,255,255,0.06)] rounded" />
-      {PHASES.map((p) => {
+      {phases.map((p) => {
         const totalDays = parseInt(p.days.split('–')[1] || p.days);
         const progress = Math.min((totalDays / maxDays) * 100, 100);
         const isHovered = hoveredPhase === p.phase;
@@ -251,26 +254,46 @@ function PhaseTimeline({
                   >
                     <Typography
                       className={'font-bold'}
-                      style={{ color: p.color }}
-                      variant="label"
+                      variant="caption"
                       uiSize="xs"
+                      style={{ color: p.color }}
                     >
                       Phase {p.phase}
                     </Typography>
                   </div>
-                  <Typography variant="caption" alpha="medium" uiSize="xs">
-                    {p.days} days
+                  {p.status && (
+                    <div className="px-2 py-0.5 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)]">
+                      <Typography variant="caption" uiSize="xs" alpha="medium">
+                        {p.status}
+                      </Typography>
+                    </div>
+                  )}
+                  <Typography variant="body" uiSize="sm" alpha="high">
+                    {p.features}
                   </Typography>
                 </div>
-                <Typography variant="body" uiSize="sm" alpha="high">
-                  {p.features}
-                </Typography>
-                <div className="h-[4px] rounded-lg bg-[rgba(255,255,255,0.05)] overflow-hidden">
+                <div className="w-full h-1 rounded bg-[rgba(255,255,255,0.06)] overflow-hidden">
                   <div
-                    className="h-[4px] rounded-lg opacity-[0.7]"
-                    style={{ backgroundColor: p.color, width: `${progress}%` }}
+                    className="h-full rounded"
+                    style={{
+                      width: `${progress}%`,
+                      backgroundColor: p.color,
+                    }}
                   />
                 </div>
+              </div>
+              <div className="flex flex-col items-end shrink-0 pl-2">
+                <Typography
+                  className={'font-bold'}
+                  variant="body"
+                  uiSize="sm"
+                  style={{ color: p.color }}
+                >
+                  {p.days}
+                </Typography>
+                <Typography variant="caption" uiSize="xs" alpha="medium">
+                  days est.
+                </Typography>
               </div>
             </div>
           </div>
@@ -280,8 +303,27 @@ function PhaseTimeline({
   );
 }
 
-export default function RoadmapPageContent() {
-  const [expandedTier, setExpandedTier] = useState<string | null>('tier1');
+export default function RoadmapPageContent({
+  initialData,
+}: {
+  initialData?: RoadmapData;
+}) {
+  const tiers =
+    initialData?.tiers && initialData.tiers.length > 0
+      ? initialData.tiers
+      : TIERS;
+  const phases =
+    initialData?.phases && initialData.phases.length > 0
+      ? initialData.phases
+      : PHASES;
+  const stats =
+    initialData?.stats && initialData.stats.length > 0
+      ? initialData.stats
+      : STATS;
+
+  const [expandedTier, setExpandedTier] = useState<string | null>(
+    tiers[0]?.id ?? 'tier1',
+  );
   const [hoveredPhase, setHoveredPhase] = useState<number | null>(null);
   const toggleTier = useCallback(
     (id: string) => setExpandedTier((prev) => (prev === id ? null : id)),
@@ -324,7 +366,7 @@ export default function RoadmapPageContent() {
               </div>
             </div>
             <div className="flex flex-row items-stretch flex-wrap gap-3">
-              {STATS.map((stat) => (
+              {stats.map((stat) => (
                 <div
                   className="flex flex-row px-4 py-3 rounded-xl gap-3 items-center bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] min-w-[140px] flex-1"
                   key={stat.label}
@@ -400,6 +442,7 @@ export default function RoadmapPageContent() {
                 Implementation Timeline
               </Typography>
               <PhaseTimeline
+                phases={phases}
                 hoveredPhase={hoveredPhase}
                 onHover={setHoveredPhase}
               />
@@ -415,7 +458,7 @@ export default function RoadmapPageContent() {
               >
                 Feature Tiers
               </Typography>
-              {TIERS.map((tier) => (
+              {tiers.map((tier) => (
                 <TierCard
                   key={tier.id}
                   tier={tier}

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { appConfig } from '@/shared/config/app-config';
+import { getRoadmapData } from './roadmap-parser';
 import RoadmapClient from './RoadmapClient';
 
 export async function generateMetadata({
@@ -18,5 +19,6 @@ export async function generateMetadata({
 }
 
 export default async function RoadmapPage() {
-  return <RoadmapClient />;
+  const roadmapData = await getRoadmapData();
+  return <RoadmapClient initialData={roadmapData} />;
 }

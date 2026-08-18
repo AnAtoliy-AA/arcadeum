@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import {
   PageLayout,
@@ -10,8 +8,8 @@ import {
   Section,
   Button,
 } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
-import { useRoutes } from '@/shared/config/useRoutes';
+import { buildRoutes } from '@/shared/config/routes';
+import { DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import type { developersEn } from '@/shared/i18n/messages/pages/developers/en';
 
 type DeepPartial<T> = {
@@ -28,18 +26,17 @@ export type DevelopersMessages = DeepPartial<typeof developersEn>;
 
 export interface DevelopersPageContentProps {
   t?: DevelopersMessages;
+  locale?: Locale;
 }
 
 export default function DevelopersPageContent({
-  t: initialT,
+  t,
+  locale = DEFAULT_LOCALE,
 }: DevelopersPageContentProps) {
-  const { messages } = useLanguage();
-  const routes = useRoutes();
-
-  const dev = messages.pages?.developers ?? initialT;
-  const stats = dev?.stats;
-  const features = dev?.features ?? [];
-  const cta = dev?.cta;
+  const routes = buildRoutes(locale);
+  const stats = t?.stats;
+  const features = t?.features ?? [];
+  const cta = t?.cta;
 
   return (
     <PageLayout>
@@ -51,13 +48,13 @@ export default function DevelopersPageContent({
 
             <div className="relative z-10 flex flex-col items-start gap-4 md:max-w-3xl">
               <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
-                ⚡ {dev?.subtitle ?? 'APIs & WebSocket Gateways'}
+                ⚡ {t?.subtitle ?? 'APIs & WebSocket Gateways'}
               </span>
               <PageTitle size="xl" gradient>
-                {dev?.title ?? 'Arcadeum Developer Platform'}
+                {t?.title ?? 'Arcadeum Developer Platform'}
               </PageTitle>
               <Typography variant="body" uiSize="lg" alpha="high">
-                {dev?.description ??
+                {t?.description ??
                   'Build custom bots, integrate tournament systems, and synchronize game state in real time with our open APIs.'}
               </Typography>
             </div>

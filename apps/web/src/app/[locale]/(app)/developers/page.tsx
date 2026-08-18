@@ -5,7 +5,7 @@ import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
 import { buildRoutes } from '@/shared/config/routes';
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
-import DevelopersClient from './DevelopersClient';
+import DevelopersPageContent from './DevelopersPageContent';
 
 export async function generateMetadata({
   params,
@@ -43,7 +43,7 @@ export default async function DevelopersPage({
   return (
     <>
       <JsonLd id={`json-ld-developers-${locale}`} data={[breadcrumb]} />
-      <DevelopersClient t={t} />
+      <DevelopersPageContent t={t} locale={locale} />
     </>
   );
 }

@@ -28,6 +28,7 @@ import {
 } from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
+import { useChessCoach } from '../hooks/useChessCoach';
 import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoardPanel } from './ChessBoardPanel';
@@ -97,6 +98,7 @@ function ChessGameImpl({
     )
   );
 
+  const coach = useChessCoach({ room, currentUserId, displaySnapshot });
   const applyOptimisticMove = useCallback(
     (
       fromFile: File,
@@ -427,6 +429,7 @@ function ChessGameImpl({
       legalMoves={legalMoves}
       lastMove={lastMove}
       kingPosition={kingPosition}
+      coach={coach}
       currentUserId={currentUserId}
       resolveName={resolveDisplayNameBound}
       t={t}

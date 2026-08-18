@@ -10,12 +10,12 @@ export type HeroBackdropProps = {
 
 const ORB_KEYFRAMES = `
 @keyframes arcadeum-orb-drift-a {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(40px, -20px) scale(1.05); }
+  0%, 100% { transform: translate(0, 0); opacity: 0.35; }
+  50% { transform: translate(40px, -20px); opacity: 0.5; }
 }
 @keyframes arcadeum-orb-drift-b {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-30px, 30px) scale(1.08); }
+  0%, 100% { transform: translate(0, 0); opacity: 0.3; }
+  50% { transform: translate(-30px, 30px); opacity: 0.45; }
 }
 `;
 
@@ -87,7 +87,7 @@ export function HeroBackdrop({
           height: 320,
           background:
             'radial-gradient(closest-side, rgba(167,139,250,0.45), transparent)',
-          filter: 'blur(60px)',
+          filter: 'blur(30px)',
           animation: 'arcadeum-orb-drift-a 14s ease-in-out infinite',
         }}
       />
@@ -102,7 +102,7 @@ export function HeroBackdrop({
           height: 280,
           background:
             'radial-gradient(closest-side, rgba(34,211,238,0.35), transparent)',
-          filter: 'blur(70px)',
+          filter: 'blur(35px)',
           animation: 'arcadeum-orb-drift-b 16s ease-in-out infinite',
         }}
       />

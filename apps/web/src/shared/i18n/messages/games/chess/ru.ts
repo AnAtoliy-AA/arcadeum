@@ -139,6 +139,16 @@ export const ruMessages = {
         blunder: 'Зевок',
       },
     },
+    coach: {
+      title: 'Подсказки тренера',
+      hint: 'Подсказка',
+      move: 'Рекомендуемый ход: {{symbol}} на {{square}}',
+      capture: 'Рекомендуемый ход: {{symbol}} на {{square}}, взять {{target}}',
+      castleKing: 'Рекомендуемый ход: короткая рокировка',
+      castleQueen: 'Рекомендуемый ход: длинная рокировка',
+      promote:
+        'Рекомендуемый ход: {{symbol}} на {{square}}, превратить в {{promotion}}',
+    },
     actions: {
       move: 'Сделать ход',
       resign: 'Сдаться',

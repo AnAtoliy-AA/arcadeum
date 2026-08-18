@@ -194,15 +194,12 @@
 @keyframes ambientGlow {
   0%,
   100% {
-    transform: translate(0, 0) scale(1);
     opacity: 0.25;
   }
   33% {
-    transform: translate(2%, 2%) scale(1.05);
     opacity: 0.35;
   }
   66% {
-    transform: translate(-2%, 1%) scale(0.98);
     opacity: 0.2;
   }
 }

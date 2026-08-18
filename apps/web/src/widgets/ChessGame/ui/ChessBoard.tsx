@@ -22,6 +22,7 @@ interface ChessBoardProps {
   selectedSquare: BoardPosition | null;
   legalMoves: BoardPosition[];
   lastMove: { from: BoardPosition; to: BoardPosition } | null;
+  hintMove?: { from: BoardPosition; to: BoardPosition } | null;
   isCheck: boolean;
   kingPosition: BoardPosition | null;
   ariaLabel?: string;
@@ -46,6 +47,7 @@ function ChessBoardImpl({
   selectedSquare,
   legalMoves,
   lastMove,
+  hintMove = null,
   isCheck,
   kingPosition,
   ariaLabel,
@@ -71,6 +73,14 @@ function ChessBoardImpl({
     ]);
   }, [lastMove]);
 
+  const hintMoveSet = useMemo(() => {
+    if (!hintMove) return new Set<string>();
+    return new Set([
+      `${hintMove.from.file}-${hintMove.from.rank}`,
+      `${hintMove.to.file}-${hintMove.to.rank}`,
+    ]);
+  }, [hintMove]);
+
   const isSelected = useCallback(
     (file: File, rank: Rank) =>
       selectedSquare?.file === file && selectedSquare?.rank === rank,
@@ -85,6 +95,11 @@ function ChessBoardImpl({
   const isLastMove = useCallback(
     (file: File, rank: Rank) => lastMoveSet.has(`${file}-${rank}`),
     [lastMoveSet],
+  );
+
+  const isHintMove = useCallback(
+    (file: File, rank: Rank) => hintMoveSet.has(`${file}-${rank}`),
+    [hintMoveSet],
   );
 
   const isKingInCheck = useCallback(
@@ -178,6 +193,7 @@ function ChessBoardImpl({
               const selected = isSelected(file, rank);
               const legalTarget = isLegalTarget(file, rank);
               const lastMoved = isLastMove(file, rank);
+              const hintMoved = isHintMove(file, rank);
               const kingCheck = isKingInCheck(file, rank);
               const hovered = hoveredSquare === `${file}-${rank}`;
               const isMyPiece = piece?.color === myColor;
@@ -193,6 +209,7 @@ function ChessBoardImpl({
                 : 'rgba(60, 75, 95, 0.8)';
               if (selected) bgColor = 'rgba(255, 215, 0, 0.35)';
               else if (kingCheck) bgColor = 'rgba(239, 68, 68, 0.4)';
+              else if (hintMoved) bgColor = 'rgba(16, 185, 129, 0.38)';
               else if (lastMoved) bgColor = 'rgba(56, 189, 248, 0.25)';
 
               const isLastFile = rows.files[rows.files.length - 1] === file;
@@ -204,7 +221,7 @@ function ChessBoardImpl({
                   key={`${file}-${rank}`}
                   role="gridcell"
                   data-testid={`chess-${file}${rank}`}
-                  aria-label={`${file}${rank}${piece ? ` ${piece.color} ${piece.type}` : ''}${selected ? ' selected' : ''}${legalTarget ? ' legal move' : ''}`}
+                  aria-label={`${file}${rank}${piece ? ` ${piece.color} ${piece.type}` : ''}${selected ? ' selected' : ''}${legalTarget ? ' legal move' : ''}${hintMoved ? ' suggested' : ''}`}
                   {...getCellProps(navRow, navCol)}
                   draggable={isMyPiece && !disabled}
                   onClick={() => {
@@ -273,6 +290,18 @@ function ChessBoardImpl({
                       }}
                     />
                   )}
+                  {hintMoved && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 2,
+                        borderRadius: '50%',
+                        border: '2px solid rgba(16, 185, 129, 0.8)',
+                        boxShadow: '0 0 8px rgba(16, 185, 129, 0.4)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  )}
                   {isLastFile && (
                     <span
                       style={{
@@ -295,7 +324,7 @@ function ChessBoardImpl({
                       style={{
                         fontSize: 'clamp(1.2rem, 10cqw, 3.2rem)',
                         lineHeight: 1,
-                        filter: 'drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4))',
+                        textShadow: '0 2px 3px rgba(0, 0, 0, 0.4)',
                         userSelect: 'none',
                         position: 'relative',
                         zIndex: 2,

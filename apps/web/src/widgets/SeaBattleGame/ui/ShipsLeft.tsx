@@ -58,7 +58,6 @@ export const ShipsLeft = memo(function ShipsLeft({
   return (
     <div
       className="flex flex-col items-stretch gap-1.5 p-2.5 bg-[rgba(15,23,42,0.85)] rounded-[12px] w-full border border-[rgba(255,255,255,0.15)] shadow-md sb-ships-remaining-container overflow-hidden"
-      style={{ backdropFilter: 'blur(12px)' }}
     >
       <div className="flex flex-row justify-between items-center w-full min-w-0">
         <span className="text-[11px] sm:text-[12px] text-[rgba(255,255,255,0.9)] font-bold uppercase tracking-[0.5px] truncate">

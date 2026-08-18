@@ -1,6 +1,6 @@
 {
   "name": "aicoapp-monorepo",
-  "version": "1.25.45",
+  "version": "1.25.47",
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {
@@ -39,10 +39,6 @@
   },
   "pnpm": {
     "overrides": {
-      "react": "19.1.0",
-      "react-dom": "19.1.0",
-      "react-test-renderer": "19.1.0",
-      "react-server-dom-webpack": "19.0.1",
       "shell-quote": "1.8.4",
       "handlebars": ">=4.7.9",
       "tar": ">=7.5.19"

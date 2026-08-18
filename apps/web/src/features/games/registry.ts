@@ -223,42 +223,46 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
   },
 };
 
-export type GameCategory = 'card' | 'board' | 'action' | 'strategy';
+/**
+ * i18n key for a category label. Unknown categories fall back to the raw
+ * string by returning `undefined` — callers must handle that.
+ */
+export const CATEGORY_LABEL_KEYS: Record<string, string> = {
+  'Card Game': 'games.shared.category.cardGame',
+  'Board Game': 'games.shared.category.boardGame',
+  Action: 'games.shared.category.action',
+  Strategy: 'games.shared.category.strategy',
+  Race: 'games.shared.category.race',
+};
 
-export interface GameCategoryInfo {
-  labelKey: string;
-  games: GameSlug[];
+export function getCategoryLabelKey(category: string): string | undefined {
+  return CATEGORY_LABEL_KEYS[category];
 }
 
 /**
- * Programmatic category → games grouping. New games should be added here
- * (plus to `gameMetadata`/`gameLoaders`) so the catalog can group thousands
- * of titles by genre without bespoke per-game wiring.
+ * Preferred tab order for catalog categories. New categories not listed here
+ * are appended after these, in first-seen order, so adding a game to
+ * `gameMetadata` is the only registration step needed.
  */
-export const GAME_CATEGORIES: Record<GameCategory, GameCategoryInfo> = {
-  card: {
-    labelKey: 'games.categories.card',
-    games: ['critical_v1', 'cascade_v1', 'texas_holdem_v1'],
-  },
-  board: {
-    labelKey: 'games.categories.board',
-    games: ['chess_v1', 'checkers_v1', 'tic_tac_toe_v1'],
-  },
-  action: {
-    labelKey: 'games.categories.action',
-    games: ['glimworm_v1', 'cat_dash_v1'],
-  },
-  strategy: {
-    labelKey: 'games.categories.strategy',
-    games: ['sea_battle_v1'],
-  },
-};
+const CATEGORY_ORDER = [
+  'Card Game',
+  'Board Game',
+  'Strategy',
+  'Action',
+] as const;
 
-export function getCategoryForGame(gameId: string): GameCategory | null {
-  for (const [category, info] of Object.entries(GAME_CATEGORIES) as Array<
-    [GameCategory, GameCategoryInfo]
-  >) {
-    if (info.games.includes(gameId as GameSlug)) return category;
+/**
+ * Derives the catalog category tabs from `gameMetadata`. A new game only
+ * needs an entry in `gameMetadata` (+ `gameLoaders`) — its category appears
+ * here automatically. Coming-soon/deprecated games are excluded so their
+ * genre does not create empty tabs.
+ */
+export function getVisibleGameCategories(): string[] {
+  const seen = new Set<string>();
+  for (const order of CATEGORY_ORDER) seen.add(order);
+  for (const meta of Object.values(gameMetadata)) {
+    if (meta.status === 'coming_soon' || meta.status === 'deprecated') continue;
+    seen.add(meta.category);
   }
-  return null;
+  return Array.from(seen);
 }

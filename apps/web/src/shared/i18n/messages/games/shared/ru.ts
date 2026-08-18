@@ -474,11 +474,4 @@ export const ruMessages = {
       description: 'Сюрприз-тема в каждой игре',
     },
   },
-  categories: {
-    all: 'Все игры',
-    card: 'Карточные игры',
-    board: 'Настольные игры',
-    action: 'Экшн',
-    strategy: 'Стратегия',
-  },
 };

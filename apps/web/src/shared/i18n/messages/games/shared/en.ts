@@ -473,11 +473,4 @@ export const enMessages = {
       description: 'Surprise theme each game',
     },
   },
-  categories: {
-    all: 'All Games',
-    card: 'Card Games',
-    board: 'Board Games',
-    action: 'Action',
-    strategy: 'Strategy',
-  },
 };

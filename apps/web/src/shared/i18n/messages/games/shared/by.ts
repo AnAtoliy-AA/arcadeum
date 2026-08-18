@@ -474,11 +474,4 @@ export const byMessages = {
       description: 'Сюрпрыз-тэма ў кожнай гульні',
     },
   },
-  categories: {
-    all: 'Усе гульні',
-    card: 'Картачныя гульні',
-    board: 'Настольныя гульні',
-    action: 'Экшн',
-    strategy: 'Стратэгія',
-  },
 };

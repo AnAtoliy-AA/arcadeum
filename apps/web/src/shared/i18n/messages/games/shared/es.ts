@@ -483,11 +483,4 @@ export const esMessages = {
       description: 'Tema sorpresa en cada partida',
     },
   },
-  categories: {
-    all: 'Todos los juegos',
-    card: 'Juegos de cartas',
-    board: 'Juegos de tablero',
-    action: 'Acción',
-    strategy: 'Estrategia',
-  },
 };

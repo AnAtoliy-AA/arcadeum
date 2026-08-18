@@ -485,11 +485,4 @@ export const frMessages = {
       description: 'Thème surprise à chaque partie',
     },
   },
-  categories: {
-    all: 'Tous les jeux',
-    card: 'Jeux de cartes',
-    board: 'Jeux de société',
-    action: 'Action',
-    strategy: 'Stratégie',
-  },
 };

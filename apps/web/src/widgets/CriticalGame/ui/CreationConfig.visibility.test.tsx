@@ -6,8 +6,6 @@ import {
   fireEvent,
   within,
 } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '@/shared/config/tamagui.config';
 import CreationConfig from './CreationConfig';
 import { gamesApi } from '@/features/games/api';
 
@@ -24,12 +22,10 @@ beforeEach(() => {
 
 function renderConfig() {
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <CreationConfig
-        options={{ cardVariant: 'cyberpunk' } as never}
-        onChange={vi.fn()}
-      />
-    </TamaguiProvider>,
+    <CreationConfig
+      options={{ cardVariant: 'cyberpunk' } as never}
+      onChange={vi.fn()}
+    />,
   );
 }
 
@@ -91,12 +87,10 @@ describe('Critical CreationConfig — variant visibility filter', () => {
     });
 
     render(
-      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-        <CreationConfig
-          options={{ cardVariant: 'cyberpunk' } as never}
-          onChange={onChangeSpy}
-        />
-      </TamaguiProvider>,
+      <CreationConfig
+        options={{ cardVariant: 'cyberpunk' } as never}
+        onChange={onChangeSpy}
+      />,
     );
 
     // Wait for the catalog effect to settle and cyberpunk tile to appear

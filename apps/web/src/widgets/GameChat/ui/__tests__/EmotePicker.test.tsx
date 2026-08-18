@@ -1,7 +1,5 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '@/shared/config/tamagui.config';
 import { EmotePicker, EMOTES, type EmoteId } from '../EmotePicker';
 
 function renderPicker(
@@ -10,11 +8,7 @@ function renderPicker(
   const onEmote = props.onEmote ?? vi.fn();
   return {
     onEmote,
-    ...render(
-      <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-        <EmotePicker onEmote={onEmote} disabled={props.disabled} />
-      </TamaguiProvider>,
-    ),
+    ...render(<EmotePicker onEmote={onEmote} disabled={props.disabled} />),
   };
 }
 

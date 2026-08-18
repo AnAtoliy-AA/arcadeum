@@ -1,15 +1,9 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { TextArea } from './TextArea';
 import { describe, it, expect, vi } from 'vitest';
 
 const render = (ui: React.ReactElement) => {
-  return rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>
-  );
+  return rtlRender(ui);
 };
 
 describe('TextArea', () => {
@@ -29,6 +23,6 @@ describe('TextArea', () => {
 
   it('renders in disabled state', () => {
     render(<TextArea disabled />);
-    expect(screen.getByRole('textbox')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('textbox')).toBeDisabled();
   });
 });

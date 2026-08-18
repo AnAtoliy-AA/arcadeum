@@ -55,7 +55,7 @@ export function RailPreviewArt({ gameId, themeId }: Props) {
 }
 
 // SSR-safe Sea Battle rail preview: the SVG poster renders both on the
-// server and during the first client paint; the real Tamagui-rendered board
+// server and during the first client paint; the real client-rendered board
 // overlays it once the dynamic chunk lands on the client.
 function SeaBattleRail({ themeId }: { themeId: string }) {
   const resolved = findSeaBattleTheme(themeId);

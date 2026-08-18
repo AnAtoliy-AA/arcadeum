@@ -61,18 +61,6 @@ vi.mock('@arcadeum/ui', () => ({
     />
   ),
   Typography: ({ children }: ChildrenProps) => <span>{children}</span>,
-  XStack: ({
-    children,
-    ...rest
-  }: ChildrenProps & { 'data-testid'?: string }) => (
-    <div data-testid={rest['data-testid']}>{children}</div>
-  ),
-  YStack: ({
-    children,
-    ...rest
-  }: ChildrenProps & { 'data-testid'?: string }) => (
-    <div data-testid={rest['data-testid']}>{children}</div>
-  ),
 }));
 
 import { TeamSetupPanel } from '../TeamSetupPanel';

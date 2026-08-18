@@ -1,6 +1,5 @@
 'use client';
-import { memo, useCallback, useState } from 'react';
-import { Text, XStack, YStack } from 'tamagui';
+import { memo, useCallback, useMemo, useState } from 'react';
 import type { SeaBattlePlayerState, SeaBattleTeam } from '../../types';
 import { CELL_STATE, colLabels, rowLabels } from '../../types';
 import { ShipsLeft } from '../ShipsLeft';
@@ -36,7 +35,6 @@ interface AttackPlayerBoardProps {
   disabled: boolean;
   isTeammate?: boolean;
   team?: SeaBattleTeam;
-  sunkCellSet: Set<string>;
   shipCount?: number;
   sonarHighlightCells?: Set<string> | null;
   sonarCellStates?: Map<string, number> | null;
@@ -64,7 +62,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   disabled,
   isTeammate = false,
   team,
-  sunkCellSet,
   shipCount,
   sonarHighlightCells,
   sonarCellStates,
@@ -83,8 +80,19 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   const isAttackDisabled = disabled || isTeammate;
   const showTargeting = isMyTurn && !isAttackDisabled;
   const boardSize = player.board.length || 10;
-  const rowLbls = rowLabels(boardSize);
-  const colLbls = colLabels(boardSize);
+  const rowLbls = useMemo(() => rowLabels(boardSize), [boardSize]);
+  const colLbls = useMemo(() => colLabels(boardSize), [boardSize]);
+
+  // Derive sunk cells only for this player — avoids invalidating all boards when one player's ship sinks
+  const sunkCellSet = useMemo(() => {
+    const set = new Set<string>();
+    player.ships
+      .filter((s) => s.sunk)
+      .forEach((s) => {
+        s.cells.forEach((c) => set.add(`${c.row}-${c.col}`));
+      });
+    return set;
+  }, [player.ships]);
 
   // Optimistic "shot fired" state: instantly mark the clicked cell as pending
   // so the player sees feedback without waiting for the server round-trip,
@@ -125,22 +133,47 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     [isMyTurn, isAttackDisabled, onAttack, player.playerId, weaponMode],
   );
 
+  const handleGridMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (isMe || !onCellHover) return;
+      const cell = (e.target as HTMLElement).closest('.sb-cell[data-row]');
+      if (!cell) return;
+      const row = cell.getAttribute('data-row');
+      const col = cell.getAttribute('data-col');
+      if (row !== null && col !== null) {
+        onCellHover(player.playerId, parseInt(row, 10), parseInt(col, 10));
+      }
+    },
+    [isMe, onCellHover, player.playerId],
+  );
+
+  const handleGridMouseLeave = useCallback(() => {
+    if (isMe || !onCellHoverEnd) return;
+    onCellHoverEnd();
+  }, [isMe, onCellHoverEnd]);
+
   const boardGrid = (
     <BoardGrid
-      gridSize={boardSize}
       className={`sb-board-grid ${!isMe && showTargeting ? 'sb-my-turn' : ''}`}
       style={{
         backgroundColor: theme.boardBackground,
         borderColor: theme.cellBorder,
         ...(isTeammate ? { cursor: 'not-allowed' } : {}),
       }}
+      role="grid"
+      aria-label={
+        isMe
+          ? 'Your fleet'
+          : `${resolveDisplayName(player.playerId, 'Opponent')}'s board`
+      }
+      gridSize={boardSize}
       onClick={handleGridClick}
+      onMouseMove={!isMe && onCellHover ? handleGridMouseMove : undefined}
+      onMouseLeave={!isMe && onCellHoverEnd ? handleGridMouseLeave : undefined}
     >
       {player.board.map((row, rIndex) =>
         row.map((cellState, cIndex) => {
-          const isSunk = sunkCellSet.has(
-            `${player.playerId}-${rIndex}-${cIndex}`,
-          );
+          const isSunk = sunkCellSet.has(`${rIndex}-${cIndex}`);
           const displayState =
             !isMe && isSunk
               ? CELL_STATE.HIT
@@ -199,14 +232,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               rIndex={rIndex}
               cIndex={cIndex}
               isMe={isMe}
-              onMouseEnter={
-                !isMe && onCellHover
-                  ? () => onCellHover(player.playerId, rIndex, cIndex)
-                  : undefined
-              }
-              onMouseLeave={
-                !isMe && onCellHoverEnd ? onCellHoverEnd : undefined
-              }
             />
           );
         }),
@@ -222,21 +247,14 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   // from the board border + team pill, and the avatar carries its own disc.
   // The md disc is ~72px, so a -36 offset centers it on the corner.
   const cornerAvatar = (
-    <YStack
-      className="sb-header-avatar"
-      position="absolute"
-      top={-36}
-      left={-36}
-      zIndex={11}
-      pointerEvents="none"
-    >
+    <div className="flex flex-row items-center justify-center shrink-0 relative sb-header-avatar">
       <InGameAvatar
         playerId={player.playerId}
         name={resolveDisplayName(player.playerId, isMe ? 'You' : 'Unknown')}
         size="md"
         data-testid={`sb-corner-avatar-${player.playerId}`}
       />
-    </YStack>
+    </div>
   );
 
   if (isMe) {
@@ -245,80 +263,80 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     return (
       <PlayerSectionWrapper>
         <BadgeWrapper
-          backgroundColor={theme.boardBackground}
-          borderRadius={8}
-          paddingHorizontal="$1.5"
-          top={-4}
+          className="px-1.5 top-[-4px] rounded-[8px]"
+          style={{ backgroundColor: theme.boardBackground }}
         >
           {showBadge && (
-            <XStack
-              alignItems="center"
-              gap="$1"
-              paddingHorizontal="$2"
-              paddingVertical="$0.5"
-              borderRadius={8}
-              borderWidth={1}
-              backgroundColor={
-                isCurrentTurn ? '$dangerBgSoft' : '$warningBgSoft'
-              }
-              borderColor={isCurrentTurn ? '$dangerBorder' : '$warningBorder'}
-              className={isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}
-            >
-              <Text fontSize={10}>{isCurrentTurn ? '🎯' : '🛡️'}</Text>
-              <Text
-                fontSize={9}
-                fontWeight="700"
-                color={isCurrentTurn ? '$danger' : '$warning'}
-                textTransform="uppercase"
-              >
-                {isCurrentTurn
+            <BadgePill
+              icon={isCurrentTurn ? '🎯' : '🛡️'}
+              label={
+                isCurrentTurn
                   ? t(
                       'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
                     ).replace('🎯 ', '')
                   : t(
                       'games.sea_battle_v1.table.players.defendingBadge' as TranslationKey,
-                    )}
-              </Text>
-            </XStack>
+                    )
+              }
+              bg={
+                isCurrentTurn ? 'rgba(239,68,68,0.25)' : 'rgba(251,191,36,0.2)'
+              }
+              border={
+                isCurrentTurn ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'
+              }
+              color={isCurrentTurn ? 'var(--danger)' : 'var(--warning)'}
+              className={isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}
+            />
           )}
         </BadgeWrapper>
         <PlayerSection
-          backgroundColor={theme.boardBackground}
-          borderColor={
-            team ? team.color : isDefending ? theme.hitColor : theme.cellBorder
-          }
-          borderWidth={team ? 2 : undefined}
           className={`sb-player-section-fit ${
             isDefending ? 'sb-section-danger-breathe' : ''
           }`}
-          backdropFilter="blur(8px)"
+          style={{
+            backgroundColor: theme.boardBackground,
+            borderColor: team
+              ? team.color
+              : isDefending
+                ? theme.hitColor
+                : theme.cellBorder,
+            borderWidth: team ? 2 : undefined,
+          }}
         >
-          {cornerAvatar}
           <PlayerName
             data-testid="player-board-name"
             color={theme.textColor}
             style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
           >
-            {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
+            {cornerAvatar}
+            <span className="truncate">
+              {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
+            </span>
             {team && <TeamPill team={team} />}
             {idlePlayers.includes(player.playerId) && <IdleBadge />}
           </PlayerName>
           <PlayerStats>
             <ShipsLeft ships={player.ships} isMe={true} shipCount={shipCount} />
           </PlayerStats>
-          <YStack position="relative" width="100%">
+          <div className="flex flex-col items-stretch relative w-full">
             <BoardWithLabels>
               <div />
               <ColLabels gridSize={boardSize}>
                 {colLbls.map((label) => (
-                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                  <Label
+                    key={label}
+                    style={{ color: theme.textSecondaryColor }}
+                  >
                     {label}
                   </Label>
                 ))}
               </ColLabels>
               <RowLabels gridSize={boardSize}>
                 {rowLbls.map((label) => (
-                  <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                  <Label
+                    key={label}
+                    style={{ color: theme.textSecondaryColor }}
+                  >
                     {label}
                   </Label>
                 ))}
@@ -326,7 +344,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               {boardGrid}
             </BoardWithLabels>
             <FieldStatus board={player.board} isMe={true} />
-          </YStack>
+          </div>
         </PlayerSection>
       </PlayerSectionWrapper>
     );
@@ -335,10 +353,8 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   return (
     <PlayerSectionWrapper>
       <BadgeWrapper
-        backgroundColor={theme.boardBackground}
-        borderRadius={8}
-        paddingHorizontal="$1.5"
-        top={-4}
+        className="px-1.5 top-[-4px] rounded-[8px]"
+        style={{ backgroundColor: theme.boardBackground }}
       >
         {isTeammate ? (
           <BadgePill
@@ -357,10 +373,9 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
           <BadgePill
             icon="🎯"
             label="ATTACKING"
-            bg="$dangerBgSoft"
-            border="$dangerBorder"
-            color="$danger"
-            className="sb-badge-danger-breathe"
+            bg="rgba(185,28,28,0.1)"
+            border="var(--dangerBorder)"
+            color="var(--danger)"
           />
         ) : isMyTurn ? (
           <BadgePill
@@ -368,42 +383,47 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             label={t(
               'games.sea_battle_v1.table.players.targetBadge' as TranslationKey,
             )}
-            bg="$infoBgSoft"
-            border="$infoBorder"
-            color="$info"
+            bg="rgba(99,102,241,0.1)"
+            border="rgba(87,195,255,0.4)"
+            color="var(--info)"
           />
         ) : null}
       </BadgeWrapper>
       <PlayerSection
-        isTargetable={isMyTurn}
-        backgroundColor={theme.boardBackground}
-        borderColor={
-          team ? team.color : isMyTurn ? theme.accentColor : theme.cellBorder
-        }
-        borderWidth={team ? 2 : undefined}
         className={`sb-player-section-fit ${
           isMyTurn && !team ? 'sb-breathe' : ''
         }`}
-        backdropFilter="blur(8px)"
+        style={{
+          backgroundColor: theme.boardBackground,
+          borderColor: team
+            ? team.color
+            : isMyTurn
+              ? theme.accentColor
+              : theme.cellBorder,
+          borderWidth: team ? 2 : undefined,
+        }}
+        isTargetable={isMyTurn}
       >
-        {cornerAvatar}
         <PlayerName
           data-testid="player-board-name"
           color={theme.textColor}
           style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
         >
-          {t(
-            'games.sea_battle_v1.table.players.opponentBadge' as TranslationKey,
-          )}
-          {' · '}
-          {resolveDisplayName(player.playerId, 'Unknown')}
+          {cornerAvatar}
+          <span className="truncate">
+            {t(
+              'games.sea_battle_v1.table.players.opponentBadge' as TranslationKey,
+            )}
+            {' · '}
+            {resolveDisplayName(player.playerId, 'Unknown')}
+          </span>
           {team && <TeamPill team={team} />}
           {idlePlayers.includes(player.playerId) && <IdleBadge />}
         </PlayerName>
         <PlayerStats>
           <ShipsLeft ships={player.ships} isMe={false} shipCount={shipCount} />
         </PlayerStats>
-        <YStack position="relative" width="100%">
+        <div className="flex flex-col items-stretch relative w-full">
           <BoardWithLabels>
             <div />
             <ColLabels gridSize={boardSize}>
@@ -423,7 +443,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             {boardGrid}
           </BoardWithLabels>
           <FieldStatus board={player.board} isMe={false} />
-        </YStack>
+        </div>
       </PlayerSection>
     </PlayerSectionWrapper>
   );

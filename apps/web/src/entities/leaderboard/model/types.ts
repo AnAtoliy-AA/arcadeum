@@ -1,14 +1,19 @@
-export type GameMode = 'all' | 'critical' | 'sea_battle';
+export type GameMode =
+  | 'all'
+  | 'critical_v1'
+  | 'sea_battle_v1'
+  | 'texas_holdem_v1'
+  | 'glimworm_v1'
+  | 'tic_tac_toe_v1'
+  | 'cascade_v1'
+  | 'chess_v1'
+  | 'checkers_v1'
+  | 'cat_dash_v1';
 
 export type Region = 'na' | 'eu' | 'sa' | 'asia' | 'oceania' | 'africa' | 'me';
 
 export type Tier =
-  | 'bronze'
-  | 'silver'
-  | 'gold'
-  | 'platinum'
-  | 'diamond'
-  | 'mythic';
+  'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'mythic';
 
 export type FormResult = 'W' | 'L' | 'D';
 
@@ -19,7 +24,8 @@ export type LeaderboardPlayer = {
   name: string;
   avatarUrl?: string;
   countryCode?: string;
-  region: Region;
+  /** Real region derived from the player's country. Undefined when unknown. */
+  region?: Region;
   tier: Tier;
   rating: number;
   elo?: number;
@@ -120,6 +126,8 @@ export type PlayerProfile = {
 export type LeaderboardSnapshot = {
   capturedAt: string;
   mode: GameMode;
+  /** Available modes returned by the server — render tabs from this list. */
+  modes: GameMode[];
   page: number;
   mythic: MythicPlayer | null;
   podium: [LeaderboardPlayer, LeaderboardPlayer, LeaderboardPlayer] | null;

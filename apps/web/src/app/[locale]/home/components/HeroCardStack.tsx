@@ -1,19 +1,19 @@
 'use client';
 
-import React, { useRef, useState, useCallback } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
-import { useRoutes } from '@/shared/config/useRoutes';
-import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
+import React, {
+  useRef,
+  useState,
+  useCallback,
+  Children,
+  isValidElement,
+  cloneElement,
+  type ReactNode,
+  type CSSProperties,
+} from 'react';
 import { useHeroBackgroundStore } from '../store/heroBackgroundStore';
+import { HERO_CARD_FAN_OFFSET, HERO_GAMES } from '../data/heroVariants';
 
-const HERO_VARIANT_IDS = ['fantasy', 'galaxy', 'steampunk'] as const;
-const MAX_TILT_DEG = 8;
-const FAN_OFFSET = 140;
+const FAN_OFFSET = HERO_CARD_FAN_OFFSET;
 
 function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
   const rect = stack.getBoundingClientRect();
@@ -24,137 +24,92 @@ function indexFromPointerX(clientX: number, stack: HTMLDivElement): number {
   return 1;
 }
 
-export function HeroCardStack({ playLabel }: { playLabel: string }) {
+type CardElement = React.ReactElement<{
+  className?: string;
+  style?: CSSProperties;
+}>;
+
+const ACTIVE_CLASSES =
+  'hero-card-active z-[100] opacity-100 shadow-card-hover [&.hero-card-active_.hero-card-play-cta]:opacity-100 [&.hero-card-active_.hero-card-play-cta]:scale-100 [&.hero-card-active_.hero-card-shimmer]:translate-x-full motion-reduce:[&_.hero-card-play-cta]:scale-100 motion-reduce:[&_.hero-card-shimmer]:-translate-x-full motion-reduce:[&_.hero-card-shimmer]:transition-none';
+const BASE_CLASSES = [
+  'z-0 opacity-80',
+  'z-[2] opacity-100',
+  'z-[1] opacity-80',
+];
+
+export function HeroCardStack({
+  children,
+  playLabel: _playLabel,
+}: {
+  children: ReactNode;
+  playLabel: string;
+}) {
   const stackRef = useRef<HTMLDivElement>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [isHydrated, setIsHydrated] = useState(false);
-  const pointerDownRef = useRef(false);
-  const { t } = useTranslation();
-  const routes = useRoutes();
-  const setBgImage = useHeroBackgroundStore((s) => s.setBgImage);
-  const resetBgImage = useHeroBackgroundStore((s) => s.resetBgImage);
-
-  React.useEffect(() => {
-    requestAnimationFrame(() => {
-      setIsHydrated(true);
-    });
-  }, []);
-
-  const heroCards = React.useMemo(() => {
-    return HERO_VARIANT_IDS.map((id) => {
-      const v = CARD_VARIANTS.find((c) => c.id === id);
-      return { id, nameKey: v?.name ?? '', bgImage: v?.bgImage };
-    });
-  }, []);
+  const rafRef = useRef(0);
+  const setActiveGameId = useHeroBackgroundStore((s) => s.setActiveGameId);
+  const reset = useHeroBackgroundStore((s) => s.reset);
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       const stack = stackRef.current;
       if (!stack) return;
-      if (
-        typeof window !== 'undefined' &&
-        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-      )
-        return;
-      const rect = stack.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width - 0.5;
-      const py = (e.clientY - rect.top) / rect.height - 0.5;
-      stack.style.setProperty('--tilt-x', `${px * MAX_TILT_DEG * 2}deg`);
-      stack.style.setProperty('--tilt-y', `${-py * MAX_TILT_DEG * 2}deg`);
-      if (!pointerDownRef.current) {
+
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        if (!stack) return;
+        const rect = stack.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width - 0.5;
+        const py = (e.clientY - rect.top) / rect.height - 0.5;
+
+        stack.style.setProperty('--tilt-x', `${px * 16}deg`);
+        stack.style.setProperty('--tilt-y', `${-py * 16}deg`);
+
         const nextHovered = indexFromPointerX(e.clientX, stack);
         setHoveredIndex(nextHovered);
-        const card = heroCards[nextHovered];
-        if (card?.bgImage) {
-          setBgImage(card.bgImage);
-        }
-      }
+        const game = HERO_GAMES[nextHovered];
+        if (game) setActiveGameId(game.id);
+      });
     },
-    [heroCards, setBgImage],
+    [setActiveGameId],
   );
-
-  const handlePointerDown = useCallback(() => {
-    pointerDownRef.current = true;
-  }, []);
-
-  const handlePointerUp = useCallback(() => {
-    pointerDownRef.current = false;
-  }, []);
 
   const handlePointerLeave = useCallback(() => {
     const stack = stackRef.current;
     if (!stack) return;
+    cancelAnimationFrame(rafRef.current);
     stack.style.setProperty('--tilt-x', '0deg');
     stack.style.setProperty('--tilt-y', '0deg');
-    pointerDownRef.current = false;
     setHoveredIndex(null);
-    resetBgImage();
-  }, [resetBgImage]);
+    reset();
+  }, [reset]);
 
   return (
-    <div data-testid="hero-visual" className="hero-visual-main fade-on-mount">
-      <div
-        ref={stackRef}
-        className="hero-card-stack-main hero-card-stack"
-        data-testid="hero-card-stack"
-        onPointerMove={handlePointerMove}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerLeave}
-      >
-        {heroCards.map((card, index) => {
-          const isLast = index === heroCards.length - 1;
-          const x = (index - 1) * FAN_OFFSET;
-          const rotate = `${(index - 1) * 12}deg`;
-          const y = 0;
-          const isActive = hoveredIndex === index;
-
-          return (
-            <Link
-              key={index}
-              href={`${routes.gameCreate}?variant=${card.id}`}
-              className={`hero-card-main${isActive ? ' hero-card-active' : ''}${isHydrated ? ' is-hydrated' : ''}`}
-              style={
-                {
-                  '--card-x': `${x}px`,
-                  '--card-y': `${y}px`,
-                  '--card-rotate': rotate,
-                  '--card-scale': index === 1 ? 1.04 : 1,
-                  zIndex: isActive ? 100 : index,
-                  opacity: isLast ? 1 : 0.8,
-                } as React.CSSProperties
-              }
-              data-testid={`hero-card-${index}`}
-            >
-              {card.bgImage ? (
-                <Image
-                  src={card.bgImage}
-                  alt={`${t(card.nameKey as TranslationKey)} game card preview`}
-                  fill
-                  priority
-                  quality={70}
-                  sizes="(max-width: 1150px) 240px, 280px"
-                  placeholder="blur"
-                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCBmaWxsPSIjMzIzNTNkIiB3aWR0aD0iMjgwIiBoZWlnaHQ9IjM4MCIvPjwvc3ZnPg=="
-                  className="hero-card-image"
-                />
-              ) : null}
-              <div className="hero-card-scrim hero-card-scrim-top" />
-              <div className="hero-card-scrim hero-card-scrim-bottom" />
-              <div className="hero-card-name">
-                {t(card.nameKey as TranslationKey) || card.nameKey}
-              </div>
-              <div className="hero-card-brand">CRITICAL</div>
-              <span
-                className="hero-card-play-cta"
-                data-testid={`hero-play-cta-${index}`}
-              >
-                {playLabel}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
+    <div
+      ref={stackRef}
+      className="hero-card-stack relative flex h-[400px] w-[380px] items-center justify-center [transform:scale(0.52)] [transform-style:preserve-3d] transition-transform duration-[250ms] ease-out motion-reduce:[transform:none] min-[481px]:[transform:scale(0.85)] min-[481px]:mb-10 min-[481px]:mt-[60px] min-[1151px]:mb-0 min-[1151px]:mt-0 min-[1151px]:[transform:perspective(600px)_rotateX(var(--tilt-y,0deg))_rotateY(var(--tilt-x,0deg))]"
+      data-testid="hero-card-stack"
+      data-hovered={hoveredIndex ?? ''}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+    >
+      {Children.map(children, (child, index) => {
+        if (!isValidElement(child)) return child;
+        const card = child as CardElement;
+        const isActive = hoveredIndex === index;
+        const transform = isActive
+          ? `translate(var(--card-x), -22px) rotate(var(--card-rotate)) scale(1.06)`
+          : `translate(var(--card-x), var(--card-y)) rotate(var(--card-rotate)) scale(var(--card-scale))`;
+        return cloneElement(card, {
+          className: `${card.props.className ?? ''} ${
+            isActive ? ACTIVE_CLASSES : (BASE_CLASSES[index] ?? '')
+          }`.trim(),
+          style: {
+            ...card.props.style,
+            '--card-transform': transform,
+          } as CSSProperties,
+        });
+      })}
     </div>
   );
 }

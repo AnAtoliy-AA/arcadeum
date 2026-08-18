@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { ProgressCircle, ProgressBar, WinRateBadge } from './Progress';
-import { YStack, XStack, Text, styled } from 'tamagui';
 
 const meta: Meta<typeof ProgressCircle> = {
   title: 'Shared/Progress',
@@ -206,59 +205,45 @@ export const StatsDashboard: Story = {
 };
 
 // Styled helpers
-const Row = styled(XStack, {
-  alignItems: 'center',
-  gap: '$5',
-});
+const Row = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={`flex items-center gap-5 ${className ?? ''}`} {...props} />
+);
 
-const Column = styled(YStack, {
-  alignItems: 'center',
-  gap: '$3',
-});
+const Column = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={`flex flex-col items-center gap-3 ${className ?? ''}`} {...props} />
+);
 
-const Label = styled(Text, {
-  fontSize: '$2',
-  color: '$color',
-  opacity: 0.7,
-});
+const Label = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) => (
+  <span className={`text-[14px] leading-[18px] text-[var(--color)] ${className ?? ''}`} {...props} />
+);
 
-const Stack = styled(YStack, {
-  gap: '$4',
-  width: 300,
-});
+const Stack = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={`flex flex-col gap-4 ${className ?? ''}`} style={{ width: 300 }} {...props} />
+);
 
-const BarContainer = styled(YStack, {
-  width: 300,
-});
+const BarContainer = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={className} style={{ width: 300 }} {...props} />
+);
 
-const Dashboard = styled(YStack, {
-  display: 'grid' as unknown as 'inherit',
-  gridTemplateColumns: 'repeat(3, 1fr)',
-  gap: '$4',
-  width: '100%',
-  maxWidth: 600,
-});
+const Dashboard = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={`w-full gap-4 ${className ?? ''}`}
+    style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', maxWidth: 600 }}
+    {...props}
+  />
+);
 
-const DashboardCard = styled(YStack, {
-  padding: '$5',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: '$5',
-  alignItems: 'center',
-  gap: '$4',
-});
+const DashboardCard = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={`flex flex-col items-center gap-4 rounded-3xl border border-[var(--borderColor)] p-5 ${className ?? ''}`}
+    {...props}
+  />
+);
 
-const CardTitle = styled(Text, {
-  fontSize: '$2',
-  fontWeight: '500',
-  color: '$color',
-  opacity: 0.8,
-});
+const CardTitle = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) => (
+  <span className={`text-[14px] font-medium text-[var(--color)] opacity-[0.8] ${className ?? ''}`} {...props} />
+);
 
-const BarText = styled(Text, {
-  marginTop: '$2',
-  fontSize: '$1',
-  color: '$color',
-  opacity: 0.7,
-  textAlign: 'center',
-});
+const BarText = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) => (
+  <span className={`mt-2 text-center text-[12px] text-[var(--color)] opacity-[0.7] ${className ?? ''}`} {...props} />
+);

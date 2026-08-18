@@ -1,75 +1,95 @@
 import React from 'react';
-import { styled, XStack, YStack, Text, H1, H2, Paragraph } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 // CSS for pseudo-states, keyframes, and hover effects — injected once in ReferralDashboard
 export const referralsStyles = `
   @keyframes referralsGlow {
-    0%, 100% { box-shadow: 0 0 8px rgba(87, 195, 255, 0.3); }
-    50% { box-shadow: 0 0 16px rgba(87, 195, 255, 0.5); }
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
   }
   .referrals-copy-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid #7ad7ff; background: transparent; color: #7ad7ff; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .referrals-copy-btn:hover { background: #7ad7ff; color: #050316; }
   .referrals-tier-card-unlocked { animation: referralsGlow 3s ease-in-out infinite; }
 `;
 
-export const DashboardContainer = styled(YStack, {
-  maxWidth: 720,
-  alignSelf: 'center',
-  gap: '$6',
-  padding: '$7',
-  $gtSm: {
-    paddingVertical: '$9',
-    paddingHorizontal: '$8',
-  },
-});
+function DashboardContainer({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-col items-stretch gap-6 p-7 max-w-[720px] self-center md:py-9 md:px-8',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-export const DashboardTitle = styled(H1, {
-  fontSize: '$8',
-  fontWeight: '700',
-  color: '$color',
-  margin: 0,
-});
+function DashboardTitle({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h1
+      className={`m-0 text-[32px] leading-[38px] font-bold text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const DashboardSubtitle = styled(Paragraph, {
-  fontSize: '$3',
-  color: 'rgba(236,239,238,0.45)',
-  marginTop: '-$2',
-  marginBottom: '$3',
-  lineHeight: '$relaxed',
-});
+function DashboardSubtitle({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={`-mt-2 mb-3 text-[16px] leading-[24px] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const CardTitle = styled(H2, {
-  name: 'CardTitle',
-  fontSize: '$4',
-  fontWeight: '600',
-  color: '$color',
-  marginBottom: '$3',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '$2',
-});
+function CardTitle({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h2
+      className={`flex flex-row items-center gap-2 mb-3 text-[18px] leading-[24px] font-semibold text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const CodeContainer = styled(XStack, {
-  alignItems: 'center',
-  gap: '$3',
-  padding: '$3',
-  paddingHorizontal: '$4',
-  backgroundColor: '$backgroundHover',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  borderRadius: 10,
-});
+function CodeContainer({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center gap-3 p-3 px-4 rounded-[10px] border border-[var(--borderColor)] bg-[var(--backgroundHover)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const CodeText = styled(Text, {
-  fontSize: '$5',
-  fontWeight: '700',
-  color: '$accent',
-  flex: 1,
-  style: {
-    fontFamily: "'SF Mono','Fira Code','Courier New',monospace",
-    letterSpacing: 2,
-  },
-});
+function CodeText({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`flex-1 text-[20px] leading-[28px] font-bold text-[var(--accent)] ${className ?? ''}`}
+      style={{
+        fontFamily: "'SF Mono','Fira Code','Courier New',monospace",
+        letterSpacing: '2px',
+      }}
+      {...props}
+    />
+  );
+}
 
 export function CopyButton({
   children,
@@ -84,105 +104,179 @@ export function CopyButton({
   );
 }
 
-export const ShareLinkRow = styled(XStack, {
-  alignItems: 'center',
-  gap: '$2',
-  marginTop: '$3',
-});
+function ShareLinkRow({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center gap-2 mt-3 ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const ShareLink = styled(Text, {
-  color: '$accent',
-  style: { wordBreak: 'break-all' },
-});
+function ShareLink({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[var(--accent)] ${className ?? ''}`}
+      style={{ wordBreak: 'break-all' }}
+      {...props}
+    />
+  );
+}
 
-export const ProgressSection = styled(YStack, {
-  gap: '$2',
-});
+function ProgressSection({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-col items-stretch gap-2 ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const ProgressLabel = styled(XStack, {
-  justifyContent: 'space-between',
-  alignItems: 'center',
-});
+function ProgressLabel({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-center justify-between ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const ProgressCount = styled(Text, {
-  fontWeight: '700',
-  fontSize: '$7',
-  color: '$color',
-});
+function ProgressCount({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[28px] leading-[34px] font-bold text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const ProgressTarget = styled(Text, {
-  fontWeight: '500',
-  color: 'rgba(236,239,238,0.45)',
-});
+function ProgressTarget({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`font-medium text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const TierList = styled(YStack, {
-  gap: '$4',
-});
+function TierList({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-col items-stretch gap-4 ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
 interface TierCardProps {
-  $unlocked: boolean;
+  unlocked: boolean;
   children: React.ReactNode;
   'data-testid'?: string;
   'data-unlocked'?: boolean;
 }
 
-export function TierCard({ $unlocked, children, ...props }: TierCardProps) {
+export function TierCard({ unlocked, children, ...props }: TierCardProps) {
   return (
-    <XStack
-      alignItems="flex-start"
-      gap="$4"
-      padding="$4"
-      borderRadius={12}
-      borderWidth={1}
-      borderColor={$unlocked ? '$primaryGradientStart' : '$borderColor'}
-      backgroundColor={
-        $unlocked ? 'rgba(122,215,255,0.12)' : '$backgroundHover'
-      }
-      opacity={$unlocked ? 1 : 0.6}
-      className={$unlocked ? 'referrals-tier-card-unlocked' : undefined}
-      style={{ transition: 'all 0.3s' }}
+    <div
+      className={cx(
+        'flex flex-row items-start gap-4 p-4 rounded-[12px] border',
+        unlocked && 'referrals-tier-card-unlocked',
+      )}
+      style={{
+        borderColor: unlocked
+          ? 'var(--primaryGradientStart)'
+          : 'var(--borderColor)',
+        backgroundColor: unlocked
+          ? 'rgba(122,215,255,0.12)'
+          : 'var(--backgroundHover)',
+        opacity: unlocked ? 1 : 0.6,
+      }}
       {...props}
     >
       {children}
-    </XStack>
+    </div>
   );
 }
 
 export function TierIcon({
-  $unlocked,
+  unlocked,
   children,
 }: {
-  $unlocked: boolean;
+  unlocked: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <Text fontSize="$6" opacity={$unlocked ? 1 : 0.4} flexShrink={0}>
+    <span
+      className="text-[24px] shrink-0"
+      style={{ opacity: unlocked ? 1 : 0.4 }}
+    >
       {children}
-    </Text>
+    </span>
   );
 }
 
-export const TierContent = styled(YStack, {
-  gap: '$2',
-  flex: 1,
-});
+function TierContent({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-col items-stretch gap-2 flex-1 ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const TierTitle = styled(Text, {
-  fontWeight: '600',
-  fontSize: '$3',
-  color: '$color',
-});
+function TierTitle({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[16px] leading-[20px] font-semibold text-[var(--color)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const TierDescription = styled(Text, {
-  fontSize: '$2',
-  color: 'rgba(236,239,238,0.45)',
-});
+function TierDescription({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[14px] leading-[18px] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
 export function TierBadge({
-  $unlocked,
+  unlocked,
   children,
 }: {
-  $unlocked: boolean;
+  unlocked: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -196,10 +290,10 @@ export function TierBadge({
         borderRadius: 6,
         alignSelf: 'flex-start',
         marginTop: '0.25rem',
-        background: $unlocked
+        background: unlocked
           ? 'linear-gradient(135deg, #10b981, #059669)'
           : 'rgba(107,114,128,0.3)',
-        color: $unlocked ? 'white' : 'rgba(255,255,255,0.5)',
+        color: unlocked ? 'white' : 'rgba(255,255,255,0.5)',
         display: 'inline-block',
       }}
     >
@@ -208,13 +302,47 @@ export function TierBadge({
   );
 }
 
-export const CopiedNotice = styled(Text, {
-  color: '$accent',
-  fontSize: '$2',
-  fontWeight: '500',
-});
+function CopiedNotice({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={`text-[14px] leading-[18px] font-medium text-[var(--accent)] ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
 
-export const BadgesRowContainer = styled(XStack, {
-  gap: '$2',
-  flexWrap: 'wrap',
-});
+function BadgesRowContainer({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`flex flex-row items-stretch gap-2 flex-wrap ${className ?? ''}`}
+      {...props}
+    />
+  );
+}
+
+export {
+  DashboardContainer,
+  DashboardTitle,
+  DashboardSubtitle,
+  CardTitle,
+  CodeContainer,
+  CodeText,
+  ShareLinkRow,
+  ShareLink,
+  ProgressSection,
+  ProgressLabel,
+  ProgressCount,
+  ProgressTarget,
+  TierList,
+  TierContent,
+  TierTitle,
+  TierDescription,
+  CopiedNotice,
+  BadgesRowContainer,
+};

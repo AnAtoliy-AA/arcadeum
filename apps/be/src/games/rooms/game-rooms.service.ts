@@ -39,8 +39,14 @@ import {
   validateMaxPlayers,
   validateHost,
   validateKick,
-  validateParticipantOrder,
 } from './game-rooms.validation';
+import {
+  isRoomParticipant,
+  addRoomParticipant,
+  removeRoomParticipant,
+  getRoomParticipantIds,
+  reorderRoomParticipants,
+} from './game-rooms.participants';
 import {
   OCI_CONNECTION,
   ATLAS_CONNECTION,
@@ -100,19 +106,13 @@ export class GameRoomsService {
     });
 
     // Mirror room to Atlas for history queries
-    if (this.atlasRoomModel) {
-      try {
-        await this.atlasRoomModel.findOneAndUpdate(
-          { _id: room._id },
-          { $set: room.toObject() },
-          { upsert: true },
-        );
-      } catch (err) {
-        this.logger.warn(
-          `Failed to mirror room ${room._id.toString()} to Atlas: ${(err as Error).message}`,
-        );
-      }
-    }
+    // toObject() returns the class-typed doc shape; widen via unknown to fit
+    // the helper's plain-record patch parameter.
+    await this.mirrorRoomToAtlas(
+      room._id.toString(),
+      room.toObject() as unknown as Record<string, unknown>,
+      true,
+    );
 
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
@@ -178,30 +178,14 @@ export class GameRoomsService {
   }
 
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
-    if (typeof roomId !== 'string') {
-      throw new NotFoundException('Invalid room ID');
-    }
-    if (!Types.ObjectId.isValid(roomId)) {
-      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
-    }
-    const room = await this.ociRoomModel
-      .findById(roomId)
-      .select('-password')
-      .lean()
-      .exec();
-
-    if (!room) {
-      throw new NotFoundException(`Room not found: ${roomId}`);
-    }
-
-    if (!this.canViewRoom(room as unknown as GameRoom, userId)) {
+    const room = await this.loadRoomEntity(roomId, {
+      lean: true,
+      select: '-password',
+    });
+    if (!this.canViewRoom(room, userId)) {
       throw new ForbiddenException('Cannot view this room');
     }
-
-    return this.gameRoomsMapper.prepareRoomSummary(
-      room as unknown as GameRoom,
-      userId,
-    );
+    return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
   async joinRoom(
@@ -219,7 +203,7 @@ export class GameRoomsService {
     }
 
     // Check if already a participant (allow rejoining even if game started)
-    const isParticipant = room.participants.some((p) => p.userId === userId);
+    const isParticipant = isRoomParticipant(room.participants, userId);
 
     if (isParticipant) {
       return {
@@ -238,10 +222,7 @@ export class GameRoomsService {
     validateMaxPlayers(room);
 
     // Add participant
-    room.participants.push({
-      userId,
-      joinedAt: new Date(),
-    });
+    addRoomParticipant(room, userId);
     room.updatedAt = new Date();
 
     await room.save();
@@ -256,11 +237,8 @@ export class GameRoomsService {
     if (typeof roomId !== 'string' || typeof userId !== 'string') {
       throw new BadRequestException('Invalid roomId or userId');
     }
-    const room = await this.ociRoomModel.findById(roomId).exec();
-    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
-    const isParticipant = room.participants.some((p) => p.userId === userId);
-    if (!isParticipant) {
-      room.participants.push({ userId, joinedAt: new Date() });
+    const room = await this.loadRoomEntity(roomId);
+    if (addRoomParticipant(room, userId)) {
       room.updatedAt = new Date();
       await room.save();
       return true;
@@ -285,7 +263,7 @@ export class GameRoomsService {
     }
 
     const isHost = room.hostId === userId;
-    const isParticipant = room.participants.some((p) => p.userId === userId);
+    const isParticipant = isRoomParticipant(room.participants, userId);
 
     if (!isHost && !isParticipant) {
       throw new BadRequestException('Not a member of this room');
@@ -307,7 +285,7 @@ export class GameRoomsService {
     }
 
     // Remove participant
-    room.participants = room.participants.filter((p) => p.userId !== userId);
+    removeRoomParticipant(room, userId);
 
     // If host left, assign new host (next player in list)
     if (isHost) {
@@ -357,47 +335,24 @@ export class GameRoomsService {
     roomId: string,
     status: GameRoomStatus,
   ): Promise<GameRoom> {
-    if (typeof roomId !== 'string') {
-      throw new NotFoundException('Invalid room ID');
-    }
-    if (!Types.ObjectId.isValid(roomId)) {
-      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
-    }
-    const room = await this.ociRoomModel.findById(roomId).exec();
-
-    if (!room) {
-      throw new NotFoundException(`Room not found: ${roomId}`);
-    }
+    const room = await this.loadRoomEntity(roomId);
 
     room.status = status;
     room.updatedAt = new Date();
     await room.save();
 
     // Mirror status update to Atlas
-    if (this.atlasRoomModel) {
-      try {
-        await this.atlasRoomModel.updateOne(
-          { _id: roomId },
-          { $set: { status, updatedAt: room.updatedAt } },
-        );
-      } catch (err) {
-        this.logger.warn(
-          `Failed to mirror room status to Atlas for room ${roomId}: ${(err as Error).message}`,
-        );
-      }
-    }
+    await this.mirrorRoomToAtlas(roomId, {
+      status,
+      updatedAt: room.updatedAt,
+    });
 
     return room;
   }
 
   async getRoomParticipants(roomId: string): Promise<string[]> {
-    if (typeof roomId !== 'string')
-      throw new NotFoundException('Invalid room ID');
-    if (!Types.ObjectId.isValid(roomId))
-      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
-    const room = await this.ociRoomModel.findById(roomId).lean().exec();
-    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
-    return room.participants.map((p) => p.userId);
+    const room = await this.loadRoomEntity(roomId, { lean: true });
+    return getRoomParticipantIds(room);
   }
 
   async updateRoomOptions(
@@ -407,10 +362,7 @@ export class GameRoomsService {
   ): Promise<GameRoomSummary> {
     if (typeof roomId !== 'string' || typeof userId !== 'string')
       throw new BadRequestException('Invalid roomId or userId');
-    if (!Types.ObjectId.isValid(roomId))
-      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
-    const room = await this.ociRoomModel.findById(roomId).exec();
-    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
+    const room = await this.loadRoomEntity(roomId);
     if (room.hostId !== userId)
       throw new ForbiddenException('Only the host can update room options');
     if (room.status !== 'lobby')
@@ -430,23 +382,59 @@ export class GameRoomsService {
   ): Promise<GameRoomSummary> {
     if (typeof roomId !== 'string' || typeof userId !== 'string')
       throw new BadRequestException('Invalid roomId or userId');
-    const room = await this.ociRoomModel.findById(roomId).exec();
-    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
-    validateHost(room.hostId, userId);
-    validateParticipantOrder(room.participants, newOrder);
-    const participantMap = new Map(room.participants.map((p) => [p.userId, p]));
-    room.participants = newOrder.map((id) => participantMap.get(id)!);
+    const room = await this.loadRoomEntity(roomId);
+    reorderRoomParticipants(room, userId, newOrder);
     room.updatedAt = new Date();
     await room.save();
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
+  }
+
+  private async loadRoomEntity(
+    roomId: string,
+    options: { lean?: boolean; select?: string } = {},
+  ): Promise<GameRoom> {
+    if (typeof roomId !== 'string')
+      throw new NotFoundException('Invalid room ID');
+    if (!Types.ObjectId.isValid(roomId))
+      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
+    const query = options.select
+      ? this.ociRoomModel.findById(roomId).select(options.select)
+      : this.ociRoomModel.findById(roomId);
+    const room = options.lean ? await query.lean().exec() : await query.exec();
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
+    return room as unknown as GameRoom;
+  }
+
+  private async mirrorRoomToAtlas(
+    roomId: string,
+    patch: Record<string, unknown>,
+    upsert = false,
+  ): Promise<void> {
+    if (!this.atlasRoomModel) return;
+    if (typeof roomId !== 'string' || !Types.ObjectId.isValid(roomId)) {
+      this.logger.warn(
+        `Skipping Atlas mirror due to invalid room ID: ${roomId}`,
+      );
+      return;
+    }
+    try {
+      await this.atlasRoomModel.updateOne(
+        { _id: { $eq: roomId } },
+        { $set: patch },
+        upsert ? { upsert: true } : undefined,
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Failed to mirror room to Atlas for room ${roomId}: ${(err as Error).message}`,
+      );
+    }
   }
 
   private canViewRoom(room: GameRoom, userId?: string | null): boolean {
     if (room.visibility === 'public') return true;
     if (!userId) return false;
     return (
-      room.hostId === userId ||
-      room.participants.some((p) => p.userId === userId)
+      room.hostId === userId || isRoomParticipant(room.participants, userId)
     );
   }
 
@@ -486,7 +474,13 @@ export class GameRoomsService {
     message: string,
     scope: string,
   ) {
-    return this.gameRoomsChatService.postRoomChat(roomId, userId, senderName, message, scope);
+    return this.gameRoomsChatService.postRoomChat(
+      roomId,
+      userId,
+      senderName,
+      message,
+      scope,
+    );
   }
 
   async deleteRoomChatMessage(
@@ -494,6 +488,10 @@ export class GameRoomsService {
     callerId: string,
     messageId: string,
   ) {
-    return this.gameRoomsChatService.deleteRoomChatMessage(roomId, callerId, messageId);
+    return this.gameRoomsChatService.deleteRoomChatMessage(
+      roomId,
+      callerId,
+      messageId,
+    );
   }
 }

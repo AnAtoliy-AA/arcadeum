@@ -12,7 +12,10 @@ export type StoredSettings = {
   musicRepeat?: 'off' | 'all' | 'one';
   musicEnabledTracks?: number[];
   musicTrackOrder?: number[];
-  aiDifficulty?: 'easy' | 'medium' | 'hard';
+  musicLastPlayedIndex?: number;
+  aiDifficulty?: 'easy' | 'medium' | 'hard' | 'expert';
+  showRulesOnRoomEntry?: boolean;
+  coachHintsEnabled?: boolean;
 };
 
 const listeners = new Set<() => void>();
@@ -90,12 +93,25 @@ export function loadStoredSettings(): StoredSettings {
       settings.musicTrackOrder = parsed.musicTrackOrder;
     }
 
+    if (typeof parsed.musicLastPlayedIndex === 'number') {
+      settings.musicLastPlayedIndex = parsed.musicLastPlayedIndex;
+    }
+
     if (
       parsed.aiDifficulty === 'easy' ||
       parsed.aiDifficulty === 'medium' ||
-      parsed.aiDifficulty === 'hard'
+      parsed.aiDifficulty === 'hard' ||
+      parsed.aiDifficulty === 'expert'
     ) {
       settings.aiDifficulty = parsed.aiDifficulty;
+    }
+
+    if (typeof parsed.showRulesOnRoomEntry === 'boolean') {
+      settings.showRulesOnRoomEntry = parsed.showRulesOnRoomEntry;
+    }
+
+    if (typeof parsed.coachHintsEnabled === 'boolean') {
+      settings.coachHintsEnabled = parsed.coachHintsEnabled;
     }
 
     return settings;

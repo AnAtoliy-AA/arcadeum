@@ -3,14 +3,12 @@
 import React from 'react';
 
 /**
- * PageLayout is a high-performance Client Component that provides the base 
+ * PageLayout is a Client Component that provides the base
  * structure and glassmorphism background for all pages.
- * 
- * By using a standard <main> element and static CSS classes instead of a Tamagui 
- * styled component here, we avoid the hydration overhead and attribute mismatches 
- * that occur with the Tamagui 'Main' component during SSR.
- * 
- * This approach restores maximum performance while ensuring perfect hydration stability.
+ *
+ * Renders a <div> (not <main>): every page already sits inside the
+ * layout's <main id="main-content"> landmark, so nesting another <main>
+ * would create a duplicated landmark and duplicate the skip-target id.
  */
 
 export interface PageLayoutProps {
@@ -22,13 +20,12 @@ export interface PageLayoutProps {
 
 export const PageLayout = ({ children, className = '', ...props }: PageLayoutProps) => {
   return (
-    <main
+    <div
       {...props}
-      id="main-content"
       className={`page-layout-glass-bg page-layout-base ${className}`}
     >
       {children}
-    </main>
+    </div>
   );
 };
 

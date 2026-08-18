@@ -1,16 +1,13 @@
-/* Home page styles — bundled into a single file for one HTTP round-trip.
- * See docs/superpowers/specs/2026-05-06-home-perf-phase-2-diagnostic-results.md
+/* Home route styles — bundled into a single file for one HTTP round-trip.
  *
- * Split into component-scoped partials to stay under the 500-line limit:
- *   hero-title.scss      — title shimmer, 3D text-shadow, rainbow overlay
- *   hero-background.scss — background image, gradient overlay, noise, delays
- *   hero-cards.scss      — card stack fan layout, hover/active states
- *   hero-buttons.scss    — CTA button styles
- *   presentation.scss    — slide deck component
+ * The home page itself is styled with Tailwind utilities (see
+ * tailwind.config.ts and src/app/[locale]/home/components) — this bundle
+ * now only carries cross-page helpers consumed by shared components that
+ * render on the home route:
+ *   animations-pages   — PageLayout glass bg, StartButton glow, shop FX,
+ *                        victory celebration FX
+ *   download-buttons   — StaticDownloadButtons (InstallAppCta widget)
  */
 
-@use 'hero-title' as *;
-@use 'hero-background' as *;
-@use 'hero-cards' as *;
-@use 'hero-buttons' as *;
-@use 'presentation' as *;
+@use '_download-buttons' as *;
+@use '../../../../styles/animations-pages' as *;

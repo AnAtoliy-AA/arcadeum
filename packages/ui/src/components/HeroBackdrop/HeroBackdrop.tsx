@@ -1,19 +1,21 @@
-import { YStack, View, styled } from 'tamagui';
 import type { ReactNode } from 'react';
+import { cx } from '../../utils/cx';
 
 export type HeroBackdropProps = {
   children?: ReactNode;
   testID?: string;
+  'data-testid'?: string;
+  className?: string;
 };
 
 const ORB_KEYFRAMES = `
 @keyframes arcadeum-orb-drift-a {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(40px, -20px) scale(1.05); }
+  0%, 100% { transform: translate(0, 0); opacity: 0.35; }
+  50% { transform: translate(40px, -20px); opacity: 0.5; }
 }
 @keyframes arcadeum-orb-drift-b {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-30px, 30px) scale(1.08); }
+  0%, 100% { transform: translate(0, 0); opacity: 0.3; }
+  50% { transform: translate(-30px, 30px); opacity: 0.45; }
 }
 `;
 
@@ -25,33 +27,38 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   document.head.appendChild(styleEl);
 }
 
-const Root = styled(YStack, {
-  name: 'HeroBackdrop',
-  position: 'relative',
-  overflow: 'hidden',
-  borderRadius: '$5',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  paddingHorizontal: '$6',
-  paddingVertical: '$8',
-  minHeight: 240,
-  gap: '$4',
-});
+const RootClasses = [
+  '',
+  'relative',
+  'flex',
+  'flex-col',
+  'gap-4',
+  'overflow-hidden',
+  'rounded-3xl',
+  'border',
+  'border-[var(--borderColor)]',
+  'px-6',
+  'py-8',
+  'min-h-[240px]',
+].join(' ');
 
-const Layer = styled(View, {
-  name: 'HeroLayer',
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  pointerEvents: 'none',
-});
+const LayerClasses = 'pointer-events-none absolute inset-0';
 
-export function HeroBackdrop({ children, testID }: HeroBackdropProps) {
+const ContentClasses = 'relative z-[1] flex flex-col gap-4';
+
+export function HeroBackdrop({
+  children,
+  testID,
+  'data-testid': dataTestId,
+  className,
+}: HeroBackdropProps) {
   return (
-    <Root testID={testID}>
-      <Layer
+    <div
+      data-testid={dataTestId ?? testID}
+      className={cx(RootClasses, className)}
+    >
+      <div
+        className={LayerClasses}
         style={{
           backgroundImage:
             'radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px)',
@@ -63,14 +70,16 @@ export function HeroBackdrop({ children, testID }: HeroBackdropProps) {
           opacity: 0.35,
         }}
       />
-      <Layer
+      <div
+        className={LayerClasses}
         style={{
           backgroundImage:
             'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
           backgroundSize: '48px 48px',
         }}
       />
-      <Layer
+      <div
+        className={LayerClasses}
         style={{
           top: -40,
           left: -40,
@@ -78,11 +87,12 @@ export function HeroBackdrop({ children, testID }: HeroBackdropProps) {
           height: 320,
           background:
             'radial-gradient(closest-side, rgba(167,139,250,0.45), transparent)',
-          filter: 'blur(60px)',
+          filter: 'blur(30px)',
           animation: 'arcadeum-orb-drift-a 14s ease-in-out infinite',
         }}
       />
-      <Layer
+      <div
+        className={LayerClasses}
         style={{
           top: 40,
           right: -60,
@@ -92,13 +102,11 @@ export function HeroBackdrop({ children, testID }: HeroBackdropProps) {
           height: 280,
           background:
             'radial-gradient(closest-side, rgba(34,211,238,0.35), transparent)',
-          filter: 'blur(70px)',
+          filter: 'blur(35px)',
           animation: 'arcadeum-orb-drift-b 16s ease-in-out infinite',
         }}
       />
-      <YStack zIndex={1} gap="$4" position="relative">
-        {children}
-      </YStack>
-    </Root>
+      <div className={ContentClasses}>{children}</div>
+    </div>
   );
 }

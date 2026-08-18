@@ -1,16 +1,9 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
 import { useState } from 'react';
-import config from '../../tamagui.config';
 import { FloatingLabelTextArea } from './FloatingLabelTextArea';
 import { describe, it, expect, vi } from 'vitest';
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('FloatingLabelTextArea', () => {
   it('renders the label', () => {

@@ -25,6 +25,7 @@ const {
   stat,
   readFile,
   writeFile,
+  chmod,
 } = require('fs/promises');
 const path = require('path');
 const axios = require('axios');
@@ -88,6 +89,7 @@ const CONFIG = {
   postizIntegrationId: process.env.POSTIZ_YOUTUBE_INTEGRATION_ID || '',
   postizInstagramId: process.env.POSTIZ_INSTAGRAM_INTEGRATION_ID || '',
   postizTiktokId: process.env.POSTIZ_TIKTOK_INTEGRATION_ID || '',
+  postizXId: process.env.POSTIZ_X_INTEGRATION_ID || '',
 
   // Telegram Bot API
   tgBotUrl: process.env.TG_BOT_URL || 'http://localhost:4001',
@@ -139,7 +141,10 @@ async function requestApproval(videoPath, caption, scenario) {
 
   // Save pending metadata
   const metadataPath = path.join(CONFIG.pendingDir, `${id}.json`);
-  await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+  await writeFile(metadataPath, JSON.stringify(pending, null, 2), {
+    mode: 0o666,
+  });
+  await chmod(metadataPath, 0o666).catch(() => {});
   log('info', `Saved pending video metadata: ${metadataPath}`);
 
   // Notify Telegram bot
@@ -147,13 +152,15 @@ async function requestApproval(videoPath, caption, scenario) {
     const response = await axios.post(
       `${CONFIG.tgBotUrl}/shorts-factory/pending`,
       pending,
-      { timeout: 10000 },
+      { timeout: 15000 },
     );
-    log('info', 'Notified Telegram bot for approval', {
-      messageId: response.data.messageId,
-    });
-    pending.messageId = response.data.messageId;
-    await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+
+    if (response.data?.messageId) {
+      pending.messageId = response.data.messageId;
+      await writeFile(metadataPath, JSON.stringify(pending, null, 2), {
+        mode: 0o666,
+      });
+    }
   } catch (err) {
     log('error', 'Failed to notify Telegram bot', { error: err.message });
     // Continue without approval if bot is unavailable
@@ -227,7 +234,7 @@ async function reportResult(id, success, message, platforms) {
         status: success ? 'posted' : 'failed',
         result: { success, message, platforms },
       },
-      { timeout: 10000 },
+      { timeout: 120000 },
     );
     log('info', 'Reported result to Telegram bot');
   } catch (err) {
@@ -262,7 +269,7 @@ const SCENARIOS = [
   // --- Week 1: Game Discovery ---
   {
     name: 'gameExplorer',
-    caption: 'Discover and play the best web3 games instantly! 🎮',
+    caption: 'Ready to level up? Discover next-gen web3 multiplayer games instantly on Arcadeum! ⚡🎮 #web3gaming #gaming',
     steps: [
       { type: 'navigate', url: '/en', wait: 2500 },
       {
@@ -282,7 +289,7 @@ const SCENARIOS = [
   },
   {
     name: 'seaBattleIntro',
-    caption: 'Classic Sea Battle reimagined on the blockchain! ⚓',
+    caption: 'Sink enemy fleets & claim real rewards! ⚓ Play Sea Battle live on Arcadeum 🔥 #seabattle #indiegames',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'click', selector: 'a[href*="/games/sea-battle"]', wait: 3000 },
@@ -297,7 +304,7 @@ const SCENARIOS = [
   },
   {
     name: 'criticalClicks',
-    caption: 'Test your reflexes in Critical! Can you survive? ⚡',
+    caption: 'Test your reaction speed in Critical! High stakes, fast turns, endless thrill ⚡🔥 #arcade #gaming',
     steps: [
       { type: 'navigate', url: '/en/games/critical', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -307,7 +314,7 @@ const SCENARIOS = [
   },
   {
     name: 'tictactoeFun',
-    caption: 'Classic Tic Tac Toe - play with friends or bots! ❌⭕',
+    caption: 'Think Tic-Tac-Toe is easy? Try competing for real ranks on Arcadeum! ❌⭕ #boardgames #onlinegaming',
     steps: [
       { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -321,7 +328,7 @@ const SCENARIOS = [
   },
   {
     name: 'cascadeChaos',
-    caption: 'Match cards and dominate the board in Cascade! 🎲',
+    caption: 'Master the ultimate card cascade! Outsmart opponents & flex your strategy 🎲🏆 #cardgame #strategy',
     steps: [
       { type: 'navigate', url: '/en/games/cascade', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -335,7 +342,7 @@ const SCENARIOS = [
   },
   {
     name: 'createYourGame',
-    caption: 'Launch your custom game rooms in seconds! 🛠️',
+    caption: 'Create your custom game room in under 10 seconds and challenge your friends! 🛠️🔥 #gamedev #multiplayer',
     steps: [
       { type: 'navigate', url: '/en/games/create', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -826,7 +833,7 @@ async function executeStep(page, step) {
     case 'navigate': {
       const url = `${CONFIG.baseUrl}${step.url}`;
       log('info', `Step: Navigate to ${url}`);
-      await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await waitForContent(page);
       if (step.wait) await sleep(step.wait);
       break;
@@ -1069,11 +1076,11 @@ function getTrackVolume(trackUrl) {
 }
 
 const END_CARD_CTAS = [
-  'arcadeum.games',
-  'Play & Earn Now!',
+  'Play Online Now!',
   'Join the Arena!',
-  'Ready to climb?',
-  'Claim your rewards!',
+  'Ready to Play?',
+  'Play Free Games!',
+  'Challenge Players!',
 ];
 
 function getScenarioTags(scenarioName) {
@@ -1121,13 +1128,13 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
   const trackVolume = getTrackVolume(audioTrack);
   log('info', `Selected audio track: ${audioTrack} with volume ${trackVolume}`);
 
-  // Calculate trim duration (cap at 8 seconds for social media, or use recorded length)
+  // Calculate trim duration (cap at 13 seconds for optimal 15s total duration with end card)
   const startOffsetSec = Math.max(0, startOffsetMs / 1000);
   const remainingDuration = Math.max(
-    2,
+    3,
     (recordedDuration - startOffsetMs) / 1000,
   );
-  const trimDuration = Math.min(remainingDuration, 8);
+  const trimDuration = Math.min(remainingDuration, 13);
   const fadeOutStart = Math.max(0, trimDuration - CONFIG.fadeOutDuration);
   const endCardDuration = 2;
 
@@ -1191,8 +1198,10 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
   );
   const endCardCta = randomElement(END_CARD_CTAS);
   const logoScale = Math.round(CONFIG.viewport.width * 0.45);
-  const fontSize = Math.round(CONFIG.viewport.width * 0.06);
-  const textOffsetY = Math.round(CONFIG.viewport.height * 0.08);
+  const fontSize = Math.round(CONFIG.viewport.width * 0.055);
+  const urlFontSize = Math.round(CONFIG.viewport.width * 0.07);
+  const textOffsetY = Math.round(CONFIG.viewport.height * 0.06);
+  const urlOffsetY = Math.round(CONFIG.viewport.height * 0.14);
 
   await runFFmpeg(
     [
@@ -1207,7 +1216,7 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
       '-i',
       `anullsrc=r=44100:cl=stereo`,
       '-filter_complex',
-      `[1:v]scale=${logoScale}:-1[logo];[0:v][logo]overlay=(W-w)/2:(H-h)/2-150:format=auto,drawtext=text='${endCardCta}':fontcolor=white:fontsize=${fontSize}:x=(w-text_w)/2:y=(h-text_h)/2+${textOffsetY}:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'[v]`,
+      `[1:v]scale=${logoScale}:-1[logo];[0:v][logo]overlay=(W-w)/2:(H-h)/2-180:format=auto,drawtext=text='${endCardCta}':fontcolor=white:fontsize=${fontSize}:x=(w-text_w)/2:y=(h-text_h)/2+${textOffsetY}:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)',drawtext=text='arcadeum.games':fontcolor=yellow:fontsize=${urlFontSize}:x=(w-text_w)/2:y=(h-text_h)/2+${urlOffsetY}:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'[v]`,
       '-map',
       '[v]',
       '-map',
@@ -1354,8 +1363,8 @@ async function publishToSocials(videoPath, caption) {
             .trim()
             .slice(0, 90),
           privacy_level: 'PUBLIC_TO_EVERYONE',
-          duet: false,
-          stitch: false,
+          duet: true,
+          stitch: true,
           comment: true,
           autoAddMusic: 'no',
           brand_content_toggle: false,
@@ -1367,9 +1376,29 @@ async function publishToSocials(videoPath, caption) {
     });
   }
 
+  if (CONFIG.postizXId) {
+    platforms.push({
+      id: CONFIG.postizXId,
+      type: 'X/Twitter',
+      buildPost: (uploadedFile, cap) => ({
+        integration: { id: CONFIG.postizXId },
+        value: [
+          {
+            content: cap.slice(0, 280),
+            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+          },
+        ],
+        settings: {
+          __type: 'twitter',
+          tweet_type: 'tweet',
+        },
+      }),
+    });
+  }
+
   if (platforms.length === 0) {
     throw new Error(
-      'At least one integration ID must be set (POSTIZ_YOUTUBE_INTEGRATION_ID, POSTIZ_INSTAGRAM_INTEGRATION_ID, or POSTIZ_TIKTOK_INTEGRATION_ID)',
+      'At least one integration ID must be set (POSTIZ_YOUTUBE_INTEGRATION_ID, POSTIZ_INSTAGRAM_INTEGRATION_ID, POSTIZ_TIKTOK_INTEGRATION_ID, or POSTIZ_X_INTEGRATION_ID)',
     );
   }
 
@@ -1452,10 +1481,15 @@ async function publishToSocials(videoPath, caption) {
   }
 
   const successes = results.filter((r) => r.success);
+  const failures = results.filter((r) => !r.success);
   return {
     success: successes.length > 0,
     message: `Published to ${successes.map((r) => r.platform).join(', ') || 'none'}`,
     platforms: successes.map((r) => r.platform),
+    failedPlatforms: failures.map((r) => ({
+      platform: r.platform,
+      error: r.error,
+    })),
     results,
   };
 }
@@ -1549,9 +1583,12 @@ async function main() {
         );
       }
     } else if (approval.regenerated) {
-      log('info', 'Regeneration requested, restarting...');
+      log(
+        'info',
+        'Regeneration requested — task-bot spawns a fresh run with --test-scenario',
+      );
       await cleanup();
-      return main(); // Recursive call to regenerate
+      process.exit(0);
     }
 
     // Step 5: Cleanup temporary files

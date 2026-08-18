@@ -3,7 +3,7 @@
 import { useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
-import { XStack, Select } from '@arcadeum/ui';
+import { Select } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
 
@@ -51,19 +51,15 @@ export default function LanguageSwitcher({
   );
 
   return (
-    <XStack
-      alignItems="center"
-      gap="$2"
-      $md={{ marginHorizontal: '$5' }}
-      className={className}
-    >
+    <div className={`flex items-center gap-2 md:mx-5 ${className ?? ''}`}>
       <Select
         value={locale}
         onValueChange={handleLocaleChange}
         options={options}
+        size="sm"
         aria-label="Select language"
         data-testid={testId}
       />
-    </XStack>
+    </div>
   );
 }

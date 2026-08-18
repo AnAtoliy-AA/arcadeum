@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useCallback, useMemo, useState } from 'react';
-import { YStack } from 'tamagui';
 import {
   GameWidgetContainer,
   RematchInvitationModal,
@@ -157,6 +156,24 @@ function CheckersGameImpl({
   const onRematchClick = useCallback(() => {
     void handleRematch([], undefined);
   }, [handleRematch]);
+
+  const a11yAnnouncement = useMemo(() => {
+    if (!snapshot) return undefined;
+    if (isGameOver) {
+      if (snapshot.isDraw) return t('games.checkers_v1.gameOver.draw');
+      const result = computeGameResult(isGameOver, currentUserId, {
+        winnerId: snapshot.winnerId,
+        isDraw: snapshot.isDraw,
+        backendResult: undefined,
+      });
+      return t(
+        `games.checkers_v1.gameOver.${result === 'won' ? 'won' : 'lost'}`,
+      );
+    }
+    return myTurn
+      ? t('games.checkers_v1.status.yourTurn')
+      : t('games.checkers_v1.status.waiting');
+  }, [snapshot, isGameOver, myTurn, currentUserId, t]);
 
   const [selectedPiece, setSelectedPiece] = useState<{
     row: number;
@@ -323,7 +340,7 @@ function CheckersGameImpl({
   }
 
   const board = (
-    <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
+    <div className="flex flex-col gap-3 items-stretch p-3 w-full">
       {snapshot && displayBoard ? (
         <>
           <TurnBadge
@@ -343,7 +360,7 @@ function CheckersGameImpl({
           />
         </>
       ) : null}
-    </YStack>
+    </div>
   );
 
   const modals = (
@@ -378,6 +395,7 @@ function CheckersGameImpl({
         isMyTurn={myTurn}
         isGameOver={isGameOver}
         loading={!snapshot}
+        a11yAnnouncement={a11yAnnouncement}
         headerProps={{
           variantEmoji: variantTokens.emoji,
           title: 'Checkers',

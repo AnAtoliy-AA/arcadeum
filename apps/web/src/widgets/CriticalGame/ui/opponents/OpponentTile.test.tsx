@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../../shared/config/tamagui.config';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({
@@ -44,11 +42,7 @@ function renderTile(
     resolveDisplayName: (_id, fb) => fb,
     ...override,
   };
-  return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <OpponentTile {...props} />
-    </TamaguiProvider>,
-  );
+  return render(<OpponentTile {...props} />);
 }
 
 describe('OpponentTile', () => {
@@ -101,7 +95,7 @@ describe('OpponentTile', () => {
   it('fires onSelect when the tile is clicked (alive opponent)', () => {
     const onSelect = vi.fn();
     renderTile({ onSelect });
-    // Tamagui maps `onPress` to a `click` listener on the web.
+    // onPress maps to a click listener on the web.
     screen.getByTestId('player-card-p1').click();
     expect(onSelect).toHaveBeenCalledTimes(1);
   });

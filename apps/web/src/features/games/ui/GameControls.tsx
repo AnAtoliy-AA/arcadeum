@@ -1,6 +1,7 @@
 import React from 'react';
-import { styled, YStack, XStack } from 'tamagui';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { Button } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 interface GameControlsProps {
   children: React.ReactNode;
@@ -14,52 +15,49 @@ interface GameControlsProps {
   onHelp?: () => void;
 }
 
-const ControlsContainer = styled(XStack, {
-  name: 'GameControls',
-  alignItems: 'center',
-  gap: '$3',
-  paddingHorizontal: '$4',
-  paddingVertical: '$3',
-  borderRadius: 8,
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: '$background',
-  flexWrap: 'wrap',
+const CONTROLS_VARIANT_CLASSES: Record<
+  'primary' | 'secondary' | 'minimal',
+  string
+> = {
+  primary: 'bg-[var(--background)] border-[var(--borderColor)]',
+  secondary: 'bg-[rgba(255,255,255,0.05)] border-[var(--borderColor)]',
+  minimal: 'bg-transparent border-transparent',
+};
 
-  $sm: {
-    gap: '$2',
-    paddingHorizontal: '$3',
-    paddingVertical: '$2',
-  },
+const ControlsContainer = ({
+  variant = 'primary',
+  className,
+  children,
+  ...props
+}: {
+  variant?: 'primary' | 'secondary' | 'minimal';
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-center gap-3 px-4 py-3 rounded-[8px] border flex-wrap max-[800px]:gap-2 max-[800px]:px-3 max-[800px]:py-2',
+      CONTROLS_VARIANT_CLASSES[variant],
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-  variants: {
-    variant: {
-      primary: {
-        backgroundColor: '$background',
-        borderColor: '$borderColor',
-      },
-      secondary: {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderColor: '$borderColor',
-      },
-      minimal: {
-        backgroundColor: 'transparent',
-        borderWidth: 0,
-        borderColor: 'transparent',
-        shadowColor: 'transparent',
-      },
-    },
-  } as const,
-});
-
-const ControlDivider = styled(YStack, {
-  name: 'ControlDivider',
-  width: 1,
-  height: 24,
-  backgroundColor: '$borderColor',
-  opacity: 0.3,
-  marginHorizontal: '$1',
-});
+const ControlDivider = ({
+  className,
+  ...props
+}: { className?: string } & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'w-[1px] h-6 bg-[var(--borderColor)] opacity-[0.3] mx-1',
+      className,
+    )}
+    {...props}
+  />
+);
 
 export function GameControls({
   children,

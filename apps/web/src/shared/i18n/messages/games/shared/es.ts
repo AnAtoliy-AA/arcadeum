@@ -51,6 +51,7 @@ export const esMessages = {
       private: 'Privada',
     },
     fastRoom: 'Partida rápida',
+    ranked: 'Clasificatoria',
     gameLabel: 'Juego',
     createdLabel: 'Creado',
   },
@@ -135,6 +136,9 @@ export const esMessages = {
     autoButton: 'Auto',
     fieldVisibility: 'Visibilidad',
     fieldNotes: 'Notas (opcional)',
+    fieldRanked: 'Partida clasificatoria',
+    fieldRankedHint:
+      'Las partidas clasificatorias afectan tu rating ELO en este juego.',
     notesPlaceholder: 'Agregar notas...',
     notesAria: 'Notas adicionales para la sala',
     submitCreating: 'Creando...',
@@ -293,10 +297,12 @@ export const esMessages = {
     difficultyEasy: 'Fácil',
     difficultyMedium: 'Media',
     difficultyHard: 'Difícil',
+    difficultyExpert: 'Experto',
     difficultyEasyDesc:
       'Movimientos aleatorios con jugadas inteligentes ocasionales',
     difficultyMediumDesc: 'Apuntado inteligente con estrategia de bloqueo',
     difficultyHardDesc: 'Apuntado de precisión basado en probabilidad',
+    difficultyExpertDesc: 'Búsqueda de profundidad máxima, sin errores',
   },
   shared: {
     rules: {
@@ -404,5 +410,23 @@ export const esMessages = {
     title: 'Elige un juego para jugar contra la IA',
     starting: 'Iniciando...',
     allCategory: 'Todos',
+  },
+  matchmaking: {
+    searchingTitle: 'Buscando oponente',
+    searchingSubtitle: 'Buscando una partida para {{game}}...',
+    cancel: 'Cancelar búsqueda',
+    estimatedWait: 'Espera estimada: ~{{seconds}}s',
+    queuePosition: 'Posición en la cola: {{position}} de {{total}}',
+  },
+  ranking: {
+    ratingUpdated: 'Rating actualizado',
+    tier: {
+      bronze: 'Bronce',
+      silver: 'Plata',
+      gold: 'Oro',
+      platinum: 'Platino',
+      diamond: 'Diamante',
+      master: 'Maestro',
+    },
   },
 };

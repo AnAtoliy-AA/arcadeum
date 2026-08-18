@@ -9,6 +9,7 @@ import {
   mockGameSocket,
   closeGameRulesModal,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Rules Modal', () => {
   test.beforeEach(async ({ page }) => {
@@ -32,7 +33,7 @@ test.describe('Sea Battle Rules Modal', () => {
 
     await mockGameSocket(page, roomId, userId, { gameId: 'sea_battle_v1' });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page, { autoCloseRules: false });
 
     // Check for modal presence using specialized locator
@@ -56,7 +57,7 @@ test.describe('Sea Battle Rules Modal', () => {
 
     await mockGameSocket(page, roomId, userId, { gameId: 'sea_battle_v1' });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page, { autoCloseRules: false });
 
     // Initial modal visible
@@ -114,7 +115,7 @@ test.describe('Sea Battle Rules Modal', () => {
     await expect(modal).toBeVisible({});
     await expect(modal).toContainText(/objective/i);
 
-    // Close using close button, with fallback for Tamagui animation timing
+    // Close using close button, with fallback for animation timing
     const closeBtn = page.getByTestId('modal-close-button').first();
     await closeBtn.click({ force: true });
     await closeGameRulesModal(page);

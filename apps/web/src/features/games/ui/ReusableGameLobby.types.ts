@@ -1,5 +1,4 @@
 import type React from 'react';
-import type { TamaguiElement } from 'tamagui';
 
 export interface GameLobbyTheme {
   titleGradient?: string;
@@ -15,12 +14,12 @@ export interface ReusableGameLobbyProps {
   startBusy: boolean;
   startDisabled?: boolean;
   isFullscreen?: boolean;
-  containerRef?: React.RefObject<TamaguiElement | null>;
+  containerRef?: React.RefObject<HTMLElement | null>;
   onToggleFullscreen?: () => void;
   onStartGame: (options?: {
     withBots?: boolean;
     botCount?: number;
-    difficulty?: 'easy' | 'medium' | 'hard';
+    difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
   }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onReinvite?: (userIds: string[]) => void;
@@ -64,6 +63,7 @@ export interface ReusableGameLobbyProps {
     difficultyEasyLabel?: string;
     difficultyMediumLabel?: string;
     difficultyHardLabel?: string;
+    difficultyExpertLabel?: string;
     deleteRoomLabel?: string;
     kickPlayerLabel?: string;
     leaveRoomLabel?: string;
@@ -85,6 +85,8 @@ export interface ReusableGameLobbyProps {
   showReorderControls?: boolean;
   showInvitedPlayers?: boolean;
   enableBots?: boolean;
+  /** Show the AI difficulty selector + badge when bots are enabled. Default true. */
+  showDifficulty?: boolean;
 
   // Catalog rule visibility — fired once after catalog loads so game-specific
   // lobbies can disable/exclude options without fetching the catalog themselves.

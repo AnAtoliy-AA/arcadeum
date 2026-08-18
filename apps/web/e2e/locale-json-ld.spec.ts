@@ -86,6 +86,11 @@ test.describe('Locale JSON-LD — structured data per page', () => {
     page,
   }) => {
     await page.goto('/en/games/sea-battle', { waitUntil: 'domcontentloaded' });
+    // The landing is server-rendered and streamed — on a cold dev-server
+    // compile (common on CI Firefox) DOMContentLoaded can fire on the shell
+    // before the route's JSON-LD block has streamed in. Wait for the block
+    // instead of assuming it exists at domcontentloaded.
+    await page.waitForSelector('#json-ld-sea-battle', { state: 'attached' });
     const blobs = await collectJsonLd(page);
     expect(findByType(blobs, 'VideoGame')).toBeDefined();
     expect(findByType(blobs, 'BreadcrumbList')).toBeDefined();

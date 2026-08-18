@@ -1,6 +1,6 @@
 'use client';
 
-import { Text, View, YStack } from 'tamagui';
+import { Typography } from '../Typography/Typography';
 import { getInitials, isGradient, pickSwatchColor } from './colors';
 import { BADGE_SIZE, DISC_SIZE, RING_WIDTH, type PlayerAvatarSize } from './constants';
 
@@ -52,7 +52,7 @@ export function AvatarDisc({
         }
       : {
           backgroundColor: `${frameColor}33`,
-          borderColor: frameColor as string,
+          borderColor: frameColor,
         }
     : {
         // No frame equipped: still paint a base disc (slate fill + faint ring)
@@ -84,15 +84,17 @@ export function AvatarDisc({
   const badgeSprite = badgeUrl ? BADGE_SPRITE_MAP[badgeUrl] : null;
 
   return (
-    <YStack
-      width={disc}
-      height={disc}
-      borderRadius={disc / 2}
-      alignItems="center"
-      justifyContent="center"
-      borderWidth={showFrame ? ring : 1}
-      position="relative"
+    <div
       style={{
+        width: disc,
+        height: disc,
+        borderRadius: disc / 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: showFrame ? ring : 1,
+        borderStyle: 'solid',
+        position: 'relative',
         ...ringHexBackground,
         ...(glowColor
           ? { boxShadow: `0 0 ${Math.round(disc * 0.4)}px ${glowColor}` }
@@ -101,51 +103,59 @@ export function AvatarDisc({
       data-testid={testId ? `${testId}-disc` : undefined}
     >
       {showFrame ? (
-        <View
-          position="absolute"
-          top={0}
-          right={0}
-          bottom={0}
-          left={0}
-          borderRadius={disc / 2}
-          pointerEvents="none"
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            borderRadius: disc / 2,
+            pointerEvents: 'none',
+          }}
           data-testid={testId ? `${testId}-frame` : undefined}
         />
       ) : null}
       {showAura ? (
-        <View
-          position="absolute"
-          top={-Math.round(disc * 0.15)}
-          right={-Math.round(disc * 0.15)}
-          bottom={-Math.round(disc * 0.15)}
-          left={-Math.round(disc * 0.15)}
-          borderRadius={disc}
-          pointerEvents="none"
+        <div
+          style={{
+            position: 'absolute',
+            top: -Math.round(disc * 0.15),
+            right: -Math.round(disc * 0.15),
+            bottom: -Math.round(disc * 0.15),
+            left: -Math.round(disc * 0.15),
+            borderRadius: disc,
+            pointerEvents: 'none',
+          }}
           data-testid={testId ? `${testId}-aura` : undefined}
         />
       ) : null}
       {showDiscBackground ? (
-        <View
-          position="absolute"
-          top={0}
-          right={0}
-          bottom={0}
-          left={0}
-          borderRadius={disc / 2}
-          pointerEvents="none"
-          style={discBackground}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            borderRadius: disc / 2,
+            pointerEvents: 'none',
+            ...discBackground,
+          }}
           data-testid={testId ? `${testId}-bg` : undefined}
         />
       ) : null}
       {avatarSprite ? (
-        <View
-          width={innerImage}
-          height={innerImage}
-          backgroundImage={`url(${avatarSprite.spritesheet})`}
-          backgroundSize={`${innerImage * avatarSprite.cols}px auto`}
-          backgroundPosition={`-${(avatarSprite.index % avatarSprite.cols) * innerImage}px -${Math.floor(avatarSprite.index / avatarSprite.cols) * innerImage}px`}
-          position="relative"
-          zIndex={1}
+        <div
+          style={{
+            width: innerImage,
+            height: innerImage,
+            backgroundImage: `url(${avatarSprite.spritesheet})`,
+            backgroundSize: `${innerImage * avatarSprite.cols}px auto`,
+            backgroundPosition: `-${(avatarSprite.index % avatarSprite.cols) * innerImage}px -${Math.floor(avatarSprite.index / avatarSprite.cols) * innerImage}px`,
+            position: 'relative',
+            zIndex: 1,
+          }}
         />
       ) : avatarUrl ? (
         <img
@@ -167,53 +177,58 @@ export function AvatarDisc({
           }}
         />
       ) : (
-        <Text
-          color="$white"
-          fontWeight="700"
-          fontSize={Math.max(12, Math.round(disc * 0.34))}
-          zIndex={1}
+        <Typography
+          color="#f5f7ff"
+          weight="700"
+          style={{ zIndex: 1, fontSize: Math.max(12, Math.round(disc * 0.34)) }}
         >
           {getInitials(name)}
-        </Text>
+        </Typography>
       )}
       {showBadge ? (
-        <View
-          position="absolute"
-          bottom={-Math.round(badge * 0.2)}
-          right={-Math.round(badge * 0.2)}
-          width={badge}
-          height={badge}
-          borderRadius={badge / 2}
-          backgroundColor="rgba(2,6,23,0.85)"
-          borderWidth={1}
-          borderColor="rgba(255,255,255,0.20)"
-          alignItems="center"
-          justifyContent="center"
-          // Sits above the avatar art/initials (both zIndex 1) so the corner
-          // badge is never clipped by a full-bleed avatar image.
-          zIndex={2}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: -Math.round(badge * 0.2),
+            right: -Math.round(badge * 0.2),
+            width: badge,
+            height: badge,
+            borderRadius: badge / 2,
+            backgroundColor: 'rgba(2,6,23,0.85)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: 'rgba(255,255,255,0.20)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            // Sits above the avatar art/initials (both zIndex 1) so the corner
+            // badge is never clipped by a full-bleed avatar image.
+            zIndex: 2,
+          }}
           data-testid={testId ? `${testId}-badge` : undefined}
         >
           {badgeSprite ? (
-            <View
-              backgroundImage={`url(${badgeSprite.spritesheet})`}
-              backgroundSize={`${Math.round(badge * 0.75) * badgeSprite.cols}px auto`}
-              backgroundPosition={`-${(badgeSprite.index % badgeSprite.cols) * Math.round(badge * 0.75)}px -${Math.floor(badgeSprite.index / badgeSprite.cols) * Math.round(badge * 0.75)}px`}
-              width={Math.round(badge * 0.75)}
-              height={Math.round(badge * 0.75)}
+            <div
+              style={{
+                backgroundImage: `url(${badgeSprite.spritesheet})`,
+                backgroundSize: `${Math.round(badge * 0.75) * badgeSprite.cols}px auto`,
+                backgroundPosition: `-${(badgeSprite.index % badgeSprite.cols) * Math.round(badge * 0.75)}px -${Math.floor(badgeSprite.index / badgeSprite.cols) * Math.round(badge * 0.75)}px`,
+                width: Math.round(badge * 0.75),
+                height: Math.round(badge * 0.75),
+              }}
             />
           ) : (
             <img
-              src={badgeUrl as string}
+              src={badgeUrl}
               alt=""
               width={Math.round(badge * 0.75)}
               height={Math.round(badge * 0.75)}
               style={{ objectFit: 'contain' }}
             />
           )}
-        </View>
+        </div>
       ) : null}
-    </YStack>
+    </div>
   );
 }
 

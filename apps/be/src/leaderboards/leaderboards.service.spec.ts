@@ -109,7 +109,7 @@ describe('LeaderboardsService', () => {
 
   it('forwards the mode-to-gameId mapping when fetching real stats', async () => {
     wireFlavor();
-    await service.getSnapshot({ mode: 'critical' });
+    await service.getSnapshot({ mode: 'critical_v1' });
     expect(historyStats.getLeaderboard).toHaveBeenCalledWith(
       expect.any(Number),
       0,
@@ -174,17 +174,21 @@ describe('LeaderboardsService', () => {
     entryModel.updateMany = jest.fn().mockReturnValue({
       exec: jest.fn().mockResolvedValue({ modifiedCount: 2 }),
     });
-    const matched = await service.markInMatch(['u1', 'u2'], true, 'critical');
+    const matched = await service.markInMatch(
+      ['u1', 'u2'],
+      true,
+      'critical_v1',
+    );
     expect(matched).toBe(2);
     expect(entryModel.updateMany).toHaveBeenCalledWith(
-      { userId: { $in: ['u1', 'u2'] }, mode: 'critical' },
+      { userId: { $in: ['u1', 'u2'] }, mode: 'critical_v1' },
       { $set: { isInMatch: true } },
     );
   });
 
   it('markInMatch is a no-op for empty user list', async () => {
     entryModel.updateMany = jest.fn();
-    const matched = await service.markInMatch([], true, 'critical');
+    const matched = await service.markInMatch([], true, 'critical_v1');
     expect(matched).toBe(0);
     expect(entryModel.updateMany).not.toHaveBeenCalled();
   });
@@ -231,7 +235,7 @@ describe('LeaderboardsService', () => {
     const profile = await service.getPlayer('me');
     expect(profile?.player.id).toBe('me');
     expect(profile?.modeRanks.length).toBe(2);
-    expect(profile?.modeRanks.find((m) => m.mode === 'critical')?.rank).toBe(
+    expect(profile?.modeRanks.find((m) => m.mode === 'critical_v1')?.rank).toBe(
       12,
     );
     expect(profile?.squad?.tag).toBe('EMBR');

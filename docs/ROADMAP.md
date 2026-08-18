@@ -25,15 +25,15 @@
 | 1D. Dark Mode          | —       | —                            | **Implemented** |
 | 1E. Undo/Take-Back     | ARC-874 | `ARC-874-undo-takeback`      | **Implemented** |
 | 1F. Password Rooms     | ARC-875 | `ARC-875-password-rooms`     | **Implemented** |
-| 2A. Matchmaking Queue  | ARC-876 | `ARC-876-matchmaking`        | Not started     |
+| 2A. Matchmaking Queue  | ARC-876 | `ARC-876-matchmaking`        | **Implemented** |
 | 2B. Chess Engine       | ARC-877 | `ARC-877-chess-engine`       | **Implemented** |
 | 2C. Checkers Engine    | ARC-878 | `ARC-878-checkers-engine`    | **Implemented** |
 | 2D. Audio Cues         | ARC-879 | `ARC-879-audio-cues`         | **Implemented** |
-| 2E. AI Difficulty      | ARC-880 | `ARC-880-ai-difficulty`      | Not started     |
-| 2F. Ranked/ELO         | ARC-881 | `ARC-881-ranked-elo`         | Not started     |
+| 2E. AI Difficulty      | ARC-880 | `ARC-880-ai-difficulty`      | **Implemented** |
+| 2F. Ranked/ELO         | ARC-881 | `ARC-881-ranked-elo`         | **Implemented** |
 | 2G. Achievements       | —       | —                            | **Implemented** |
-| 2H. Post-Game Analysis | ARC-882 | `ARC-882-post-game-analysis` | Not started     |
-| 2I. Coach Mode         | ARC-883 | `ARC-883-coach-mode`         | Not started     |
+| 2H. Post-Game Analysis | ARC-882 | `ARC-882-post-game-analysis` | **Implemented** |
+| 2I. Coach Mode         | ARC-883 | `ARC-883-coach-mode`         | **Implemented** |
 | 3A. Hearts/Spades      | ARC-884 | `ARC-884-hearts-spades`      | Not started     |
 | 3B. Backgammon         | ARC-885 | `ARC-885-backgammon`         | Not started     |
 | 3C. Pachisi            | ARC-886 | `ARC-886-pachisi`            | Not started     |
@@ -47,7 +47,7 @@
 | 4B. Stats Dashboard    | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented** |
 | 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | Not started     |
 | 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | Not started     |
-| 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | Partial         |
+| 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | **Implemented** |
 | 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | Not started     |
 | 4G. Daily Challenges   | —       | —                            | **Implemented** |
 | 4H. Season System      | ARC-899 | `ARC-899-season-system`      | Not started     |
@@ -133,7 +133,7 @@ Extend the existing `gameOptions` system with per-game structured configs.
 
 **Effort: Easy (1 day)**
 
-- Use Tamagui's built-in theme system (already configured in `tamagui.config.ts`)
+- Use the existing CSS-variable theme system (`ThemeContext` + `packages/ui/src/themeDefinitions.ts`) — `data-theme` on `<html>` swaps the `--*` tokens Tailwind classes read
 - Toggle between light/dark themes in settings
 - Persist preference in `localStorage` (existing pattern)
 - System default detection via `prefers-color-scheme`
@@ -879,7 +879,7 @@ Let community members define simple custom games.
 Port web game widgets to the Expo mobile app.
 
 - Reuse `IGameEngine` backend (no changes needed)
-- Port each game widget to React Native + Tamagui
+- Port each game widget to React Native (StyleSheet + useThemedStyles)
 - Touch-optimized board interactions (drag, tap, pinch-to-zoom)
 - Offline support via Expo's background fetch
 - Push notifications via Expo Push Service
@@ -964,20 +964,20 @@ This tier prioritizes marketing, positioning, acquisition channels, and viral lo
 
 The platform's core infrastructure is highly mature. Phase 1 is fully complete, and several advanced features from later phases are already shipped.
 
-| Phase / Focus                | Features & Ticket Scope                                                                                           | Est. Days | Status / Progress                                       |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------- |
-| **Phase 1: Core UX**         | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                         | 10        | **100% Completed**                                      |
-| **Phase 2: Growth & SEO**    | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning | 12        | **In Progress (Active Focus)**                          |
-| **Phase 3: Classic Games**   | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                         | 15        | **100% Completed**                                      |
-| **Phase 4: Competitive**     | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                       | 20        | **100% Completed**                                      |
-| **Phase 5: Retention**       | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                | 15        | Not started                                             |
-| **Phase 6: Card & Board**    | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                         | 25        | Not started                                             |
-| **Phase 7: Advanced Social** | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                 | 25        | **Spectator Mode Completed** (Rest Not started)         |
-| **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share Completed** (Offline/Mobile Partial) |
-| **Phase 9: Creator Tools**   | Visual Board Game Creator                                                                                         | 20        | Not started                                             |
+| Phase / Focus                | Features & Ticket Scope                                                                                           | Est. Days | Status / Progress                                                |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------- |
+| **Phase 1: Core UX**         | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                         | 10        | **100% Completed**                                               |
+| **Phase 2: Growth & SEO**    | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning | 12        | **In Progress (Active Focus)**                                   |
+| **Phase 3: Classic Games**   | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                         | 15        | **100% Completed**                                               |
+| **Phase 4: Competitive**     | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                       | 20        | **100% Completed**                                               |
+| **Phase 5: Retention**       | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                | 15        | **100% Completed**                                               |
+| **Phase 6: Card & Board**    | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                         | 25        | **Post-Game Analysis + Coach Mode Completed** (Rest Not started) |
+| **Phase 7: Advanced Social** | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                 | 25        | **Spectator Mode Completed** (Rest Not started)                  |
+| **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share Completed** (Offline/Mobile Partial)          |
+| **Phase 9: Creator Tools**   | Visual Board Game Creator                                                                                         | 20        | Not started                                                      |
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B).
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I).
 - **Next Priorities (Growth & Marketing)**: Run the Week 0 audit, instrument PostHog/Plausible tracking (funnel split by Solo vs. Social), update homepage CTAs to prominently feature AI/Solo play, build out dedicated SEO landing pages for Chess and remaining games, and deploy the dynamic QR code/share sheet invite upgrades.
-- **Next Engineering Priorities**: Improved Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Rating system (2F).
+- **Next Engineering Priorities**: Hearts/Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), AI-vs-AI (3H), Clans (3I), Game Nights (3J).

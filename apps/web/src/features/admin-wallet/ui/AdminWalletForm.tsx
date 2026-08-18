@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react';
 import { Button, GlassCard } from '@arcadeum/ui';
-import { XStack, YStack, Text } from 'tamagui';
 import {
   grantWalletAction,
   deductWalletAction,
@@ -88,11 +87,11 @@ export function AdminWalletForm({
     !isPending && Number.isInteger(parsedAmount) && parsedAmount > 0;
 
   return (
-    <GlassCard p="$3" gap="$3" data-testid="admin-wallet-form">
-      <YStack gap="$1">
-        <Text fontSize="$1" opacity={0.7}>
+    <GlassCard className={'p-3 gap-3'} data-testid="admin-wallet-form">
+      <div className="flex flex-col items-stretch gap-1">
+        <span className="text-[12px] opacity-[0.7]">
           {labels.currencyLabel}
-        </Text>
+        </span>
         <select
           data-testid="wallet-form-currency"
           value={currency}
@@ -102,12 +101,10 @@ export function AdminWalletForm({
           <option value="coins">Coins</option>
           <option value="gems">Gems</option>
         </select>
-      </YStack>
+      </div>
 
-      <YStack gap="$1">
-        <Text fontSize="$1" opacity={0.7}>
-          {labels.amountLabel}
-        </Text>
+      <div className="flex flex-col items-stretch gap-1">
+        <span className="text-[12px] opacity-[0.7]">{labels.amountLabel}</span>
         <input
           type="number"
           data-testid="wallet-form-amount"
@@ -118,12 +115,10 @@ export function AdminWalletForm({
           step={1}
           style={INPUT_STYLE}
         />
-      </YStack>
+      </div>
 
-      <YStack gap="$1">
-        <Text fontSize="$1" opacity={0.7}>
-          {labels.noteLabel}
-        </Text>
+      <div className="flex flex-col items-stretch gap-1">
+        <span className="text-[12px] opacity-[0.7]">{labels.noteLabel}</span>
         <textarea
           data-testid="wallet-form-note"
           value={note}
@@ -132,43 +127,39 @@ export function AdminWalletForm({
           maxLength={500}
           style={INPUT_STYLE}
         />
-      </YStack>
+      </div>
 
       {feedback?.kind === 'insufficient' && (
-        <Text
-          fontSize="$1"
-          color="$errorText"
+        <span
+          className="text-[12px] text-[var(--errorText)]"
           data-testid="wallet-form-error-insufficient"
         >
           {labels.errors.insufficient}
-        </Text>
+        </span>
       )}
       {feedback?.kind === 'generic' && (
-        <Text
-          fontSize="$1"
-          color="$errorText"
+        <span
+          className="text-[12px] text-[var(--errorText)]"
           data-testid="wallet-form-error-generic"
         >
           {labels.errors.generic}
-        </Text>
+        </span>
       )}
       {feedback?.kind === 'success' && (
-        <Text
-          fontSize="$1"
-          color="$color"
-          opacity={0.7}
+        <span
+          className="text-[12px] text-[var(--color)] opacity-[0.7]"
           data-testid="wallet-form-success"
         >
           {labels.success}
-        </Text>
+        </span>
       )}
 
-      <XStack gap="$2">
+      <div className="flex flex-row items-stretch gap-2">
         <Button
           variant="outline"
           size="sm"
           disabled={!canSubmit}
-          onPress={() => handleSubmit('grant')}
+          onClick={() => handleSubmit('grant')}
           data-testid="wallet-form-grant"
         >
           {isPending ? labels.submitting : labels.grant}
@@ -176,12 +167,12 @@ export function AdminWalletForm({
         <Button
           size="sm"
           disabled={!canSubmit}
-          onPress={() => handleSubmit('deduct')}
+          onClick={() => handleSubmit('deduct')}
           data-testid="wallet-form-deduct"
         >
           {isPending ? labels.submitting : labels.deduct}
         </Button>
-      </XStack>
+      </div>
     </GlassCard>
   );
 }

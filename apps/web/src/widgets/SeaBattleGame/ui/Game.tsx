@@ -26,12 +26,13 @@ import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { InGameAvatar } from '@/features/games/ui';
+import { useShowRulesOnRoomEntry } from '@/shared/hooks/useShowRulesOnRoomEntry';
 
 import { SeaBattleModals } from './SeaBattleModals';
 import { SeaBattleBoards } from './SeaBattleBoards';
 
 import { RulesModal } from './RulesModal';
-import './styles/animations.scss';
+import './styles/sea-battle.scss';
 
 export const SeaBattleGame = memo(function SeaBattleGame({
   roomId,
@@ -61,11 +62,14 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   // Rules visibility logic
   const [showRules, setShowRules] = useState(false);
   const [lastIsLobby, setLastIsLobby] = useState(false);
+  const { showRulesOnRoomEntry } = useShowRulesOnRoomEntry();
 
   // Sync showRules with isLobby change (auto-show rules when entering lobby)
   if (isLobby && !lastIsLobby) {
     setLastIsLobby(true);
-    setShowRules(true);
+    if (showRulesOnRoomEntry) {
+      setShowRules(true);
+    }
   } else if (!isLobby && lastIsLobby) {
     setLastIsLobby(false);
   }
@@ -277,7 +281,15 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   const cardVariant = (room?.gameOptions?.variant ||
     room?.gameOptions?.cardVariant) as string | undefined;
 
-  const getTurnStatus = (): { text: string; variant: TurnStatusVariant } => {
+  const currentVariant = useMemo(
+    () => SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant),
+    [cardVariant],
+  );
+
+  const turnStatus = useMemo((): {
+    text: string;
+    variant: TurnStatusVariant;
+  } => {
     if (!snapshot) return { text: '', variant: 'default' };
     if (isGameOver)
       return {
@@ -307,23 +319,16 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       }),
       variant: 'waiting',
     };
-  };
-
-  const currentVariant = SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant);
-
-  const turnStatus = useMemo(
-    () => getTurnStatus(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      snapshot,
-      isGameOver,
-      isPlacementPhase,
-      isPlacementComplete,
-      currentTurnPlayer,
-      currentUserId,
-      resolveDisplayNameBound,
-    ],
-  );
+  }, [
+    snapshot,
+    isGameOver,
+    isPlacementPhase,
+    isPlacementComplete,
+    currentTurnPlayer,
+    currentUserId,
+    resolveDisplayNameBound,
+    t,
+  ]);
 
   const headerTitle = useMemo(
     () =>
@@ -407,6 +412,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       <GameWidgetContainer
         headerProps={headerProps}
         isGameOver={isGameOver}
+        a11yAnnouncement={turnStatus.text}
         board={
           <SeaBattleBoards
             isPlacementPhase={isPlacementPhase}

@@ -51,6 +51,7 @@ export const frMessages = {
       private: 'Privée',
     },
     fastRoom: 'Partie rapide',
+    ranked: 'Classé',
     gameLabel: 'Jeu',
     createdLabel: 'Créé',
   },
@@ -135,6 +136,9 @@ export const frMessages = {
     autoButton: 'Auto',
     fieldVisibility: 'Visibilité',
     fieldNotes: 'Notes (optionnel)',
+    fieldRanked: 'Match classé',
+    fieldRankedHint:
+      'Les matchs classés affectent votre classement ELO pour ce jeu.',
     notesPlaceholder: 'Ajouter des notes...',
     notesAria: 'Notes supplémentaires pour la salle',
     submitCreating: 'Création...',
@@ -294,10 +298,12 @@ export const frMessages = {
     difficultyEasy: 'Facile',
     difficultyMedium: 'Moyen',
     difficultyHard: 'Difficile',
+    difficultyExpert: 'Expert',
     difficultyEasyDesc:
       'Coups aléatoires avec des plays intelligents occasionnels',
     difficultyMediumDesc: 'Ciblage intelligent avec stratégie verrouillée',
     difficultyHardDesc: 'Ciblage de précision basé sur la probabilité',
+    difficultyExpertDesc: 'Recherche en profondeur maximale, sans erreur',
   },
   shared: {
     rules: {
@@ -406,5 +412,23 @@ export const frMessages = {
     title: "Choisissez un jeu contre l'IA",
     starting: 'Démarrage...',
     allCategory: 'Tous',
+  },
+  matchmaking: {
+    searchingTitle: "Recherche d'un adversaire",
+    searchingSubtitle: 'Recherche d’une partie pour {{game}}...',
+    cancel: 'Annuler la recherche',
+    estimatedWait: 'Attente estimée : ~{{seconds}}s',
+    queuePosition: 'Position dans la file : {{position}} sur {{total}}',
+  },
+  ranking: {
+    ratingUpdated: 'Classement mis à jour',
+    tier: {
+      bronze: 'Bronze',
+      silver: 'Argent',
+      gold: 'Or',
+      platinum: 'Platine',
+      diamond: 'Diamant',
+      master: 'Maître',
+    },
   },
 };

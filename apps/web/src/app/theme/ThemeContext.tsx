@@ -9,16 +9,16 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { TamaguiProvider } from 'tamagui';
 
 import { useThemeStore } from './store/themeStore';
 import {
+  DEFAULT_THEME_NAME,
   ThemeName,
   ThemePreference,
   ThemeTokens,
   themeTokens,
 } from '@/shared/config/theme';
-import tamaguiConfig from '@/shared/config/tamagui.config';
+import { themeDefinitions } from '@arcadeum/ui/themeDefinitions';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -97,7 +97,7 @@ export function AppThemeProvider({
   );
 
   const resolvedTheme: ThemeName = useMemo(() => {
-    if (!isHydrated) return initialTheme || 'dark';
+    if (!isHydrated) return initialTheme || DEFAULT_THEME_NAME;
 
     if (themePreference === 'system') return systemTheme;
     return themePreference;
@@ -108,72 +108,57 @@ export function AppThemeProvider({
     [resolvedTheme],
   );
 
-  // Sync theme to document element
+  // Sync theme to document element — batch heavy DOM writes into idle callback
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
     const doc = document.documentElement;
-    const currentTheme = doc.getAttribute('data-theme');
-    const currentPreference = doc.getAttribute('data-theme-preference');
 
-    if (
-      currentTheme === resolvedTheme &&
-      currentPreference === themePreference &&
-      doc.classList.contains(`t_${resolvedTheme}`)
-    ) {
-      return;
-    }
-
+    // Fast synchronous writes — lightweight, needed immediately for FOUC prevention.
+    // NOTE: these must NOT be skipped when the attributes already match — the
+    // effect is the only place that mints the theme CSS variables, and SSR sets
+    // the attributes from cookies, so an early return here would leave
+    // var(--primary) etc. undefined and every themed background transparent
+    // (e.g. buttons) on reloads after the first visit.
     doc.setAttribute('data-theme', resolvedTheme);
     doc.setAttribute('data-theme-preference', themePreference);
 
-    // Update classes meticulously
-    doc.classList.forEach((c) => {
-      if (c.startsWith('t_')) doc.classList.remove(c);
-    });
-    doc.classList.add(`t_${resolvedTheme}`);
-
-    // Sync all theme tokens from the active Tamagui theme to CSS variables
-    // This handles both base tokens (color, background) and our custom high-contrast tokens
-    const activeTamaguiTheme = tamaguiConfig.themes[
-      resolvedTheme
-    ] as unknown as Record<
-      string,
-      { val?: string; variable?: string } | string
-    >;
-    if (activeTamaguiTheme) {
-      Object.entries(activeTamaguiTheme).forEach(([key, value]) => {
-        if (value) {
-          // Safely extract the variable value string
-          // Tamagui variables are often objects with a .get(), .val, or .variable property
-          const stringValue =
-            typeof value === 'object' && value !== null
-              ? value.val || value.variable || String(value)
-              : String(value);
-
-          if (
-            stringValue &&
-            typeof stringValue === 'string' &&
-            !stringValue.includes('[object')
-          ) {
-            doc.style.setProperty(`--${key}`, stringValue);
-            doc.style.setProperty(`--color-${key}`, stringValue);
+    // Defer expensive theme token iteration to idle time
+    const applyTokenWrites = () => {
+      const activeTheme = themeDefinitions[resolvedTheme];
+      if (activeTheme) {
+        Object.entries(activeTheme).forEach(([key, value]) => {
+          if (value && typeof value === 'string') {
+            doc.style.setProperty(`--${key}`, value);
+            doc.style.setProperty(`--color-${key}`, value);
           }
-        }
-      });
+        });
+      }
+
+      doc.style.setProperty('--background', themeTokensValue.background.base);
+      doc.style.setProperty('--foreground', themeTokensValue.text.primary);
+      doc.style.setProperty('--muted-foreground', themeTokensValue.text.muted);
+      // NOTE: `--primary` is deliberately NOT overridden here — it comes from
+      // themeDefinitions, which darkens it to #0369a1 for WCAG AA 4.5:1
+      // contrast with white button text (see themeDefinitions.ts).
+      doc.style.setProperty('--glassBg', themeTokensValue.glass.background);
+      doc.style.setProperty('--glassBorder', themeTokensValue.glass.border);
+      doc.style.setProperty(
+        '--glassBorderStrong',
+        themeTokensValue.glass.borderStrong,
+      );
+
+      const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
+      document.cookie = `app-theme=${resolvedTheme}; ${cookieOptions}`;
+      document.cookie = `app-theme-preference=${themePreference}; ${cookieOptions}`;
+    };
+
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(applyTokenWrites, { timeout: 200 });
+    } else {
+      // Safari fallback
+      setTimeout(applyTokenWrites, 0);
     }
-
-    // Explicitly sync foundational tokens for standard CSS fallbacks
-    doc.style.setProperty('--background', themeTokensValue.background.base);
-    doc.style.setProperty('--foreground', themeTokensValue.text.primary);
-    doc.style.setProperty('--muted-foreground', themeTokensValue.text.muted);
-    doc.style.setProperty('--primary', themeTokensValue.text.accent);
-    doc.style.setProperty('--glassBg', themeTokensValue.glass.background);
-    doc.style.setProperty('--glassBorder', themeTokensValue.glass.border);
-
-    const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
-    document.cookie = `app-theme=${resolvedTheme}; ${cookieOptions}`;
-    document.cookie = `app-theme-preference=${themePreference}; ${cookieOptions}`;
   }, [resolvedTheme, themeTokensValue, themePreference]);
 
   useEffect(() => {
@@ -200,13 +185,7 @@ export function AppThemeProvider({
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <TamaguiProvider
-        config={tamaguiConfig}
-        defaultTheme={resolvedTheme}
-        disableInjectCSS={process.env.NODE_ENV === 'production'}
-      >
-        {children}
-      </TamaguiProvider>
+      {children}
     </ThemeContext.Provider>
   );
 }

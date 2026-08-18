@@ -43,28 +43,11 @@ export default function HomeTokenInfo() {
       id="token"
       data-testid="token-section"
       ref={sectionRef}
-      style={{
-        maxWidth: '900px',
-        margin: '0 auto',
-        padding: '64px 16px',
-      }}
+      className="mx-auto max-w-[900px] px-4 py-16"
     >
-      <div
-        className="section-header-main"
-        data-reveal
-        data-reveal-delay="1"
-        style={{ textAlign: 'center', marginBottom: '40px' }}
-      >
-        <h2
-          className="section-title-main"
-          style={{ fontSize: '32px', fontWeight: 700, color: '#f4f4f5' }}
-        >
-          {title}
-        </h2>
-        <p
-          className="section-subtitle-main"
-          style={{ fontSize: '16px', color: '#a1a1aa', marginTop: '8px' }}
-        >
+      <div className="mb-10 flex w-full max-w-[1400px] flex-col items-center gap-3 px-4 text-center">
+        <h2 className="m-0 text-[32px] font-bold text-[#f4f4f5]">{title}</h2>
+        <p className="m-0 mt-2 max-w-[600px] text-[16px] text-[#a1a1aa]">
           {subtitle}
         </p>
       </div>
@@ -72,127 +55,47 @@ export default function HomeTokenInfo() {
       <div
         data-reveal
         data-reveal-delay="2"
-        style={{
-          borderRadius: '16px',
-          border: '1px solid rgba(52, 211, 153, 0.2)',
-          background: 'rgba(52, 211, 153, 0.05)',
-          padding: '32px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          gap: '20px',
-        }}
+        className="flex flex-col items-center gap-5 rounded-2xl border border-[rgba(52,211,153,0.2)] bg-[rgba(52,211,153,0.05)] p-8 text-center"
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="flex items-center gap-4">
           {metadata?.image ? (
             <Image
               src={metadata.image}
               alt={displayName}
               width={72}
               height={72}
-              style={{ borderRadius: '50%', objectFit: 'cover' }}
+              className="rounded-full object-cover"
               unoptimized
             />
           ) : (
-            <div
-              style={{
-                width: '72px',
-                height: '72px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #34d399, #059669)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '32px',
-                fontWeight: 700,
-                color: '#fff',
-                flexShrink: 0,
-              }}
-            >
+            <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#34d399,#059669)] text-[32px] font-bold text-white">
               A
             </div>
           )}
-          <div style={{ textAlign: 'left' }}>
-            <h3
-              style={{
-                fontSize: '24px',
-                fontWeight: 700,
-                color: '#f4f4f5',
-                margin: 0,
-              }}
-            >
+          <div className="text-left">
+            <h3 className="m-0 text-[24px] font-bold text-[#f4f4f5]">
               {displayName}
             </h3>
-            <span
-              style={{
-                fontSize: '14px',
-                color: '#34d399',
-                fontWeight: 600,
-                background: 'rgba(52, 211, 153, 0.12)',
-                padding: '2px 8px',
-                borderRadius: '4px',
-              }}
-            >
+            <span className="rounded-[4px] bg-[rgba(52,211,153,0.12)] px-2 py-0.5 text-[14px] font-semibold text-[#34d399]">
               {displayTicker}
             </span>
           </div>
         </div>
 
-        <p
-          style={{
-            fontSize: '15px',
-            color: '#a1a1aa',
-            lineHeight: 1.7,
-            maxWidth: '600px',
-            margin: 0,
-          }}
-        >
+        <p className="m-0 max-w-[600px] text-[15px] leading-[1.7] text-[#a1a1aa]">
           {displayDescription}
         </p>
 
-        <div
-          style={{
-            display: 'flex',
-            gap: '12px',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-          }}
-        >
+        <div className="flex flex-wrap justify-center gap-3">
           <Link
             href="/wallet"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '10px 24px',
-              borderRadius: '8px',
-              background: 'linear-gradient(135deg, #34d399, #059669)',
-              color: '#fff',
-              fontSize: '14px',
-              fontWeight: 600,
-              textDecoration: 'none',
-              transition: 'opacity 0.15s',
-            }}
+            className="inline-flex items-center gap-[6px] rounded-lg bg-[linear-gradient(135deg,#34d399,#059669)] px-6 py-2.5 text-[14px] font-semibold text-white no-underline transition-opacity duration-150 hover:opacity-80"
           >
             View Wallet
           </Link>
           <Link
             href="/token"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '10px 24px',
-              borderRadius: '8px',
-              background: 'rgba(255, 255, 255, 0.06)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#e4e4e7',
-              fontSize: '14px',
-              fontWeight: 600,
-              textDecoration: 'none',
-              transition: 'background 0.15s',
-            }}
+            className="inline-flex items-center gap-[6px] rounded-lg border border-white/12 bg-white/[0.06] px-6 py-2.5 text-[14px] font-semibold text-[#e4e4e7] no-underline transition-[background] duration-150 hover:bg-white/10"
           >
             Learn More
           </Link>
@@ -201,20 +104,7 @@ export default function HomeTokenInfo() {
               href={metadata.pumpfunUrl}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '10px 24px',
-                borderRadius: '8px',
-                background: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#e4e4e7',
-                fontSize: '14px',
-                fontWeight: 600,
-                textDecoration: 'none',
-                transition: 'background 0.15s',
-              }}
+              className="inline-flex items-center gap-[6px] rounded-lg border border-white/12 bg-white/[0.06] px-6 py-2.5 text-[14px] font-semibold text-[#e4e4e7] no-underline transition-[background] duration-150 hover:bg-white/10"
             >
               pump.fun ↗
             </a>

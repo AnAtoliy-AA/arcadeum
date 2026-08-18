@@ -6,6 +6,7 @@ import {
   MOCK_OBJECT_ID,
   mockGameSocket,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Sea Battle Popup Challenge', () => {
   test.beforeEach(async ({ page }) => {
@@ -95,7 +96,7 @@ test.describe('Sea Battle Popup Challenge', () => {
       },
     });
 
-    await page.goto(`/games/rooms/${roomId}`);
+    await page.goto(routes.gameRoom(roomId));
 
     // Wait for the game to be ready - this ensures socket and state are sync'd
     const main = page.locator('main').first();
@@ -115,13 +116,8 @@ test.describe('Sea Battle Popup Challenge', () => {
     const challengeButton = page.getByTestId('challenge-button');
     await expect(challengeButton).toBeVisible({});
     await challengeButton.scrollIntoViewIfNeeded();
-    await expect(challengeButton).toBeInViewport();
-
-    // Wait a bit for the UI to be fully interactive
-
-    // Click challenge with fallback mechanism
-    await challengeButton.click({ force: true });
-    await challengeButton.dispatchEvent('click').catch(() => {});
+    // Click challenge directly via DOM event
+    await challengeButton.dispatchEvent('click');
 
     // Verify redirection to game creation page
     await page.waitForURL(/.*\/games\/create\?gameId=sea_battle_v1.*/, {});

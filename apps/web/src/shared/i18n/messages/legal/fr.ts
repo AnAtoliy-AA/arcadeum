@@ -8,7 +8,7 @@ export const fr: LegalMessages = {
   },
   terms: {
     title: 'Conditions Générales',
-    lastUpdated: 'Dernière mise à jour : 21 décembre 2024',
+    lastUpdated: 'Dernière mise à jour : 16 août 2026',
     sections: {
       agreement: {
         title: '1. Acceptation des Conditions',
@@ -152,7 +152,7 @@ export const fr: LegalMessages = {
   },
   privacy: {
     title: 'Politique de Confidentialité',
-    lastUpdated: 'Dernière mise à jour : 21 décembre 2024',
+    lastUpdated: 'Dernière mise à jour : 16 août 2026',
     sections: {
       introduction: {
         title: '1. Introduction',

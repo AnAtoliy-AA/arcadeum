@@ -30,7 +30,7 @@ export function GlimwormDeathOverlay(): React.JSX.Element | null {
         fontFamily: 'system-ui, sans-serif',
       }}
     >
-      <div style={{ fontSize: 36, fontWeight: 'bold', letterSpacing: 1 }}>
+      <div style={{ fontSize: 36, fontWeight: 'bold', letterSpacing: '1px' }}>
         {t('games.glimworm_v1.death.youDied')}
       </div>
       {aliveOther && (

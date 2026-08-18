@@ -401,5 +401,25 @@ describe('CheckersEngine', () => {
     it('accepts backwardCaptures in config', () => {
       expect(engine.validateConfig({ backwardCaptures: true })).toBe(true);
     });
+
+    it.each(['easy', 'medium', 'hard', 'expert'])(
+      'accepts %s botDifficulty',
+      (d) => {
+        expect(engine.validateConfig({ botDifficulty: d })).toBe(true);
+      },
+    );
+
+    it.each(['easy', 'medium', 'hard', 'expert'])(
+      'accepts %s aiDifficulty',
+      (d) => {
+        expect(engine.validateConfig({ aiDifficulty: d })).toBe(true);
+      },
+    );
+
+    it('rejects an unknown bot difficulty', () => {
+      expect(engine.validateConfig({ botDifficulty: 'impossible' })).toBe(
+        false,
+      );
+    });
   });
 });

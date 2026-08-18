@@ -1,196 +1,47 @@
-import { styled, YStack, XStack, Text, TextArea } from 'tamagui';
-import { Button, ButtonProps, GameVariant } from '@arcadeum/ui';
-import { getVariantStyles } from './variants';
-import { TamaguiTheme } from './variants/types';
+import type { CSSProperties, ReactElement, ReactNode } from 'react';
+import { memo } from 'react';
 
-export const ScopeToggle = styled(XStack, {
-  name: 'ScopeToggle',
-  gap: '$2',
-  flexWrap: 'wrap',
-});
+import { cx } from '@arcadeum/ui/utils/cx';
 
-interface ScopeOptionProps extends Omit<ButtonProps, 'variant'> {
-  isActive?: boolean;
-  variant?: string; // string variant from game options
-}
-
-export const ScopeOption = ({
-  isActive,
-  $active,
-  variant,
-  $variant,
-  ...props
-}: ScopeOptionProps & { $active?: boolean; $variant?: string }) => (
-  <Button
-    variant={isActive || $active ? 'primary' : 'secondary'}
-    size="sm"
-    isActive={isActive || $active}
-    gameVariant={(variant || $variant) as GameVariant}
-    flex={1}
-    minWidth={120}
-    $xs={{ minWidth: 80 }}
-    {...props}
-  />
-);
-
-export const ChatInput = styled(TextArea, {
-  name: 'ChatInput',
-  width: '100%',
-  minHeight: 90,
-  borderRadius: 12,
-  padding: '$3',
-  fontSize: 14,
-  backgroundColor: '$background',
-  borderColor: '$borderColor',
-  borderWidth: 1,
-
-  focusStyle: {
-    borderColor: '$primary',
-    borderWidth: 2,
-  },
-
-  $short: {
-    minHeight: 60,
-    padding: '$2',
-  },
-
-  variants: {
-    $variant: (val: string, { theme }: { theme: TamaguiTheme }) => {
-      const config = getVariantStyles(val).chat;
-      return {
-        backgroundColor: config.getInputBackground?.(theme),
-        borderColor: config.getInputBorder?.(theme),
-        ...config.getInputStyles?.(),
-        focusStyle: {
-          borderColor: config.getInputFocusBorder?.(theme),
-          boxShadow: config.getInputFocusShadow?.(),
-        },
-      };
-    },
-  } as const,
-});
-
-export const ChatControls = styled(XStack, {
-  name: 'ChatControls',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: '$3',
-  flexWrap: 'wrap',
-  flexShrink: 0,
-});
-
-export const ChatHint = styled(Text, {
-  name: 'ChatHint',
-  fontSize: 12,
-  color: '$color',
-  opacity: 0.7,
-});
-
-export const ChatTurnStatus = styled(Text, {
-  name: 'ChatTurnStatus',
-  padding: '$2 $3',
-  backgroundColor: '$glassBg',
-  borderRadius: 8,
-  borderLeftWidth: 3,
-  borderLeftColor: '$primary',
-  marginBottom: '$1',
-
-  variants: {
-    $variant: (val: string) => {
-      const config = getVariantStyles(val).chat;
-      return {
-        ...config.getTurnStatusStyles?.(),
-      };
-    },
-  } as const,
-});
-
-export const ChatSendButton = ({
-  variant,
-  $variant,
-  ...props
-}: ButtonProps & { variant?: string; $variant?: string }) => (
-  <Button
-    variant="primary"
-    size="sm"
-    gameVariant={(variant || $variant) as GameVariant}
-    {...props}
-  />
-);
-
-export const EmptyState = styled(YStack, {
-  name: 'EmptyState',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '$4',
-  padding: '$9',
-});
-
-const StyledChatBubbleContainer = styled(YStack, {
-  name: 'ChatBubbleContainer',
-  position: 'absolute',
-  // log-pill aesthetic: soft glass bubble with blurred backdrop + tinted border
-  backgroundColor: 'rgba(15, 23, 42, 0.6)',
-  backdropFilter: 'blur(8px)',
-  paddingVertical: '$1',
-  paddingHorizontal: '$3',
-  borderRadius: 999,
-  elevation: 5,
-  borderWidth: 1,
-  borderColor: 'rgba(255, 255, 255, 0.14)',
-  maxWidth: 180,
-  zIndex: 100,
-
-  variants: {
-    $visible: {
-      true: { opacity: 1, scale: 1 },
-      false: { opacity: 0, scale: 0.9, pointerEvents: 'none' },
-    },
-    $position: {
-      top: { bottom: '100%', left: '50%', x: '-50%', marginBottom: 12 },
-      bottom: { top: '100%', left: '50%', x: '-50%', marginTop: 12 },
-      left: { top: '50%', right: '100%', y: '-50%', marginRight: 12 },
-      right: { top: '50%', left: '100%', y: '-50%', marginLeft: 12 },
-    },
-    $variant: (_val: unknown) => ({}),
-  } as const,
-});
-
-import { memo, type ReactElement, type ReactNode } from 'react';
+const CHAT_BUBBLE_POSITION_CLASS = {
+  top: 'bottom-full left-1/2 -translate-x-1/2 mb-3',
+  bottom: 'top-full left-1/2 -translate-x-1/2 mt-3',
+  left: 'top-1/2 right-full -translate-y-1/2 mr-3',
+  right: 'top-1/2 left-full -translate-y-1/2 ml-3',
+} as const;
 
 interface ChatBubbleContainerProps {
-  $visible: boolean;
-  $position?: 'top' | 'bottom' | 'left' | 'right';
+  visible: boolean;
+  position?: 'top' | 'bottom' | 'left' | 'right';
   children?: ReactNode;
-  $variant?: string;
+  variant?: string;
 }
 
 export const ChatBubbleContainer = memo(function ChatBubbleContainer({
-  $visible,
-  $position,
-  $variant,
+  visible,
+  position,
+  variant: _variant,
   style,
   ...props
-}: ChatBubbleContainerProps & { style?: React.CSSProperties }): ReactElement {
+}: ChatBubbleContainerProps & { style?: CSSProperties }): ReactElement {
   return (
-    <StyledChatBubbleContainer
-      $visible={$visible}
-      $position={$position}
-      $variant={$variant}
-      style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', ...style }}
+    <div
+      className={cx(
+        'flex flex-col items-stretch absolute py-1 px-3 rounded-full border border-[rgba(255,255,255,0.14)] max-w-[180px] z-[100] transition-all duration-150 ease-out',
+        visible
+          ? 'opacity-[1] scale-[1]'
+          : 'opacity-0 scale-[0.9] pointer-events-none',
+        position ? CHAT_BUBBLE_POSITION_CLASS[position] : undefined,
+      )}
+      style={{
+        wordBreak: 'break-word',
+        overflowWrap: 'anywhere',
+        backgroundColor: 'rgba(15, 23, 42, 0.6)',
+        backdropFilter: 'blur(8px)',
+        boxShadow: '0 2.5px 5px rgba(0, 0, 0, 0.3)',
+        ...style,
+      }}
       {...props}
     />
   );
-});
-
-export const LogSender = styled(Text, {
-  name: 'LogSender',
-  fontWeight: '700',
-
-  variants: {
-    $color: (_val: unknown) => ({
-      color: '$$color',
-    }),
-    $variant: (_val: unknown) => ({}),
-  } as const,
 });

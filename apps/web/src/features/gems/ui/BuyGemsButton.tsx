@@ -1,6 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { buyGemsAction } from '../server/gems.actions';
 
 interface BuyGemsButtonProps {
@@ -15,10 +16,11 @@ export function BuyGemsButton({
   isAuthenticated = true,
 }: BuyGemsButtonProps) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      window.location.href = '/auth';
+      router.push('/auth');
       return;
     }
 
@@ -31,7 +33,7 @@ export function BuyGemsButton({
       }
 
       if (result.error === 'unauthorized') {
-        window.location.href = '/auth';
+        router.push('/auth');
         return;
       }
 

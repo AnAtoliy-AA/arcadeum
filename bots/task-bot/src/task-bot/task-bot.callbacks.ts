@@ -23,6 +23,72 @@ export async function handleCallbackQuery(
   const data = ctx.callbackQuery?.data;
   if (!data) return;
 
+  if (
+    data.startsWith('sf_confirm:') ||
+    data.startsWith('sf_regenerate:') ||
+    data.startsWith('sf_regenerate_other:')
+  ) {
+    const parts = data.split(':');
+    const action = parts[0];
+    const videoId = parts[1];
+    const pendingDir = process.env.SHORTS_FACTORY_PENDING_DIR ?? '/opt/arcadeum/pending';
+    const path = await import('node:path');
+    const filePath = path.join(pendingDir, `${videoId}.json`);
+
+    service.logger.log(`Handling Shorts callback: ${data}`);
+    try {
+      const fs = await import('node:fs');
+      if (fs.existsSync(filePath)) {
+        const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        if (action === 'sf_confirm') {
+          content.status = 'approved';
+          fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
+          await ctx.answerCallbackQuery('✅ Video approved for posting!');
+          const oldCaption = ctx.callbackQuery?.message?.caption ?? '';
+          const newCaption =
+            oldCaption +
+            '\n\n✅ <b>APPROVED</b> — Video is now uploading to YouTube & socials!';
+          await ctx.editMessageCaption({
+            caption: newCaption,
+            parse_mode: 'HTML',
+          }).catch(() => {
+            return ctx.editMessageText(
+              '✅ <b>APPROVED</b> — Video is now uploading to YouTube & socials!',
+              { parse_mode: 'HTML' },
+            );
+          });
+        } else if (action === 'sf_regenerate' || action === 'sf_regenerate_other') {
+          content.status = 'regenerated';
+          fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
+          await ctx.answerCallbackQuery('🔄 Video regeneration requested!');
+          const oldCaption = ctx.callbackQuery?.message?.caption ?? '';
+          const label = action === 'sf_regenerate_other' ? 'NEW SCENARIO' : 'REGENERATION REQUESTED';
+          const newCaption = oldCaption + `\n\n🔄 <b>${label}</b>`;
+          await ctx.editMessageCaption({
+            caption: newCaption,
+            parse_mode: 'HTML',
+          }).catch(() => {
+            return ctx.editMessageText(`🔄 <b>${label}</b>`, {
+              parse_mode: 'HTML',
+            });
+          });
+
+          if (action === 'sf_regenerate_other') {
+            await spawnRegeneration(service);
+          } else {
+            await spawnRegeneration(service, content.scenario);
+          }
+        }
+      } else {
+        await ctx.answerCallbackQuery('⚠️ Pending task expired or not found');
+      }
+    } catch (err) {
+      service.logger.error(`Error handling callback ${data}: ${err}`);
+      await ctx.answerCallbackQuery('❌ Error processing callback');
+    }
+    return;
+  }
+
   if (data.startsWith('continue:') || data.startsWith('retry:') || data.startsWith('cancel:')) {
     const action = data.split(':')[0] as 'continue' | 'retry' | 'cancel';
     const retryKey = data.slice(data.indexOf(':') + 1);
@@ -175,6 +241,22 @@ export async function handleCallbackQuery(
   } else {
     await ctx.reply('Failed to create issue. Check gh auth status.');
   }
+}
+
+async function spawnRegeneration(
+  service: { logger: any },
+  scenario?: string,
+): Promise<void> {
+  const { exec } = await import('node:child_process');
+  const scenarioFlag = scenario
+    ? ` --test-scenario ${JSON.stringify(scenario)}`
+    : '';
+  const proc = exec(
+    `cd /opt/arcadeum && sudo xvfb-run -a node scripts/shorts-factory/factory.js${scenarioFlag}`,
+  );
+  proc.on('error', (err) => {
+    service.logger.error(`Shorts Factory regeneration spawn error: ${err.message}`);
+  });
 }
 
 async function queueImplementation(

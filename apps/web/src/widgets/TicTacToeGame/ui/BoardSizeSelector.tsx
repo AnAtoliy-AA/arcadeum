@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { XStack, YStack, Text } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
@@ -71,147 +70,106 @@ export function BoardSizeSelector({
   const isInfinity = internalSize === 'infinity';
 
   return (
-    <YStack gap="$2">
-      <Text fontSize="$3" fontWeight="600" color="$color">
+    <div className="flex flex-col items-stretch gap-2">
+      <span className="text-[16px] font-semibold text-[var(--color)]">
         {t('games.tic_tac_toe_v1.lobby.boardSize')}
-      </Text>
-      <XStack gap="$2" flexWrap="wrap">
+      </span>
+      <div className="flex flex-row items-stretch gap-2 flex-wrap">
         {BOARD_SIZES.map((size) => {
           const isActive = size === internalSize;
           return (
             <Button
+              className={`rounded-[10px] font-semibold min-w-[72px] overflow-hidden ${
+                isActive
+                  ? 'bg-[var(--primary,#3b82f6)] border-[var(--primary,#3b82f6)] hover:bg-[var(--primary,#3b82f6)]'
+                  : 'bg-[transparent] border-[var(--borderColor,#cbd5e1)] hover:bg-[rgba(255,255,255,0.05)]'
+              } ${disabled ? 'opacity-60' : 'opacity-100'}`}
+              style={{
+                color: isActive ? '#fff' : 'inherit',
+                height: 'auto',
+                flex: 0,
+              }}
               key={size}
               variant="chip"
               size="md"
               data-testid={`ttt-board-size-${size}`}
               disabled={disabled}
-              data-active={isActive}
-              backgroundColor={
-                isActive ? 'var(--primary, #3b82f6)' : 'transparent'
-              }
-              borderColor={
-                isActive
-                  ? 'var(--primary, #3b82f6)'
-                  : 'var(--borderColor, #cbd5e1)'
-              }
-              color={isActive ? '#fff' : 'inherit'}
-              hoverStyle={{
-                backgroundColor: isActive
-                  ? 'var(--primary, #3b82f6)'
-                  : 'rgba(255, 255, 255, 0.05)',
-              }}
-              borderRadius={10}
-              fontWeight={600}
-              opacity={disabled ? 0.6 : 1}
-              minWidth={72}
-              height="auto"
-              paddingVertical="$3"
-              flex={0}
-              overflow="hidden"
+              data-active={isActive ? 'on' : undefined}
               onClick={() => handlePick(size)}
             >
-              <YStack alignItems="center" gap={2}>
-                <Text>{size === 'infinity' ? '∞' : `${size}×${size}`}</Text>
-                <Text
-                  fontSize={11}
-                  fontWeight={500}
-                  opacity={isActive ? 0.85 : 0.65}
+              <div className="flex flex-col items-center gap-2">
+                <span className="">
+                  {size === 'infinity' ? '∞' : `${size}×${size}`}
+                </span>
+                <span
+                  className="text-[11px] font-medium"
+                  style={{ opacity: isActive ? 0.85 : 0.65 }}
                 >
                   {size === 'infinity'
                     ? t('games.tic_tac_toe_v1.lobby.infinityLabel')
                     : t('games.tic_tac_toe_v1.lobby.maxPlayersShort', {
                         n: String(MAX_PLAYERS_BY_BOARD_SIZE[size]),
                       })}
-                </Text>
-              </YStack>
+                </span>
+              </div>
             </Button>
           );
         })}
-      </XStack>
+      </div>
 
       {isInfinity && (
-        <YStack
-          gap="$3"
-          marginTop="$2"
-          padding="$3"
-          backgroundColor="rgba(99,102,241,0.08)"
-          borderRadius={10}
-        >
-          <YStack gap="$1">
-            <Text fontSize="$2" fontWeight="600" color="$color">
+        <div className="flex flex-col items-stretch gap-3 -mt-2 p-3 bg-[rgba(99,102,241,0.08)] rounded-[10px]">
+          <div className="flex flex-col items-stretch gap-1">
+            <span className="text-[14px] font-semibold text-[var(--color)]">
               {t('games.tic_tac_toe_v1.lobby.expansionMargin')}
-            </Text>
-            <XStack gap="$2" flexWrap="wrap">
+            </span>
+            <div className="flex flex-row items-stretch gap-2 flex-wrap">
               {INFINITY_MARGIN_OPTIONS.map((margin) => {
                 const isActive = margin === internalMargin;
                 return (
                   <Button
+                    className={`rounded-[8px] font-semibold text-[13px] ${
+                      isActive
+                        ? 'bg-[var(--primary,#3b82f6)] border-[var(--primary,#3b82f6)] hover:bg-[var(--primary,#3b82f6)]'
+                        : 'bg-[transparent] border-[var(--borderColor,#cbd5e1)] hover:bg-[rgba(255,255,255,0.05)]'
+                    } ${disabled ? 'opacity-60' : 'opacity-100'}`}
+                    style={{ color: isActive ? '#fff' : 'inherit' }}
                     key={margin}
                     variant="chip"
                     size="sm"
                     data-testid={`ttt-margin-${margin}`}
                     disabled={disabled}
-                    data-active={isActive}
-                    backgroundColor={
-                      isActive ? 'var(--primary, #3b82f6)' : 'transparent'
-                    }
-                    borderColor={
-                      isActive
-                        ? 'var(--primary, #3b82f6)'
-                        : 'var(--borderColor, #cbd5e1)'
-                    }
-                    color={isActive ? '#fff' : 'inherit'}
-                    hoverStyle={{
-                      backgroundColor: isActive
-                        ? 'var(--primary, #3b82f6)'
-                        : 'rgba(255, 255, 255, 0.05)',
-                    }}
-                    borderRadius={8}
-                    fontWeight={600}
-                    fontSize={13}
-                    opacity={disabled ? 0.6 : 1}
+                    data-active={isActive ? 'on' : undefined}
                     onClick={() => handleMarginChange(margin)}
                   >
                     {margin}
                   </Button>
                 );
               })}
-            </XStack>
-          </YStack>
+            </div>
+          </div>
 
-          <YStack gap="$1">
-            <Text fontSize="$2" fontWeight="600" color="$color">
+          <div className="flex flex-col items-stretch gap-1">
+            <span className="text-[14px] font-semibold text-[var(--color)]">
               {t('games.tic_tac_toe_v1.lobby.winCondition')}
-            </Text>
-            <XStack gap="$2" flexWrap="wrap">
+            </span>
+            <div className="flex flex-row items-stretch gap-2 flex-wrap">
               {INFINITY_WIN_LENGTH_OPTIONS.map((winLen) => {
                 const isActive = winLen === internalWinLength;
                 return (
                   <Button
+                    className={`rounded-[8px] font-semibold text-[13px] ${
+                      isActive
+                        ? 'bg-[var(--primary,#3b82f6)] border-[var(--primary,#3b82f6)] hover:bg-[var(--primary,#3b82f6)]'
+                        : 'bg-[transparent] border-[var(--borderColor,#cbd5e1)] hover:bg-[rgba(255,255,255,0.05)]'
+                    } ${disabled ? 'opacity-60' : 'opacity-100'}`}
+                    style={{ color: isActive ? '#fff' : 'inherit' }}
                     key={winLen}
                     variant="chip"
                     size="sm"
                     data-testid={`ttt-win-length-${winLen}`}
                     disabled={disabled}
-                    data-active={isActive}
-                    backgroundColor={
-                      isActive ? 'var(--primary, #3b82f6)' : 'transparent'
-                    }
-                    borderColor={
-                      isActive
-                        ? 'var(--primary, #3b82f6)'
-                        : 'var(--borderColor, #cbd5e1)'
-                    }
-                    color={isActive ? '#fff' : 'inherit'}
-                    hoverStyle={{
-                      backgroundColor: isActive
-                        ? 'var(--primary, #3b82f6)'
-                        : 'rgba(255, 255, 255, 0.05)',
-                    }}
-                    borderRadius={8}
-                    fontWeight={600}
-                    fontSize={13}
-                    opacity={disabled ? 0.6 : 1}
+                    data-active={isActive ? 'on' : undefined}
                     onClick={() => handleWinLengthChange(winLen)}
                   >
                     {t('games.tic_tac_toe_v1.lobby.inARow', {
@@ -220,10 +178,10 @@ export function BoardSizeSelector({
                   </Button>
                 );
               })}
-            </XStack>
-          </YStack>
-        </YStack>
+            </div>
+          </div>
+        </div>
       )}
-    </YStack>
+    </div>
   );
 }

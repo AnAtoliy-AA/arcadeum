@@ -119,6 +119,36 @@ export const ruMessages = {
         draw: 'Партия закончилась ничьей. Попробуйте другой вариант?',
       },
     },
+    analysis: {
+      title: 'Разбор партии',
+      view: 'Смотреть разбор',
+      back: 'К результату',
+      centipawns: 'cp',
+      empty: 'Недостаточно ходов для анализа.',
+      summary: {
+        inaccuracies: 'Неточности',
+        mistakes: 'Ошибки',
+        blunders: 'Зевки',
+        turningPoint: 'Переломный момент',
+        finalEval: 'Итоговая оценка',
+      },
+      quality: {
+        good: 'Хорошо',
+        inaccuracy: 'Неточность',
+        mistake: 'Ошибка',
+        blunder: 'Зевок',
+      },
+    },
+    coach: {
+      title: 'Подсказки тренера',
+      hint: 'Подсказка',
+      move: 'Рекомендуемый ход: {{symbol}} на {{square}}',
+      capture: 'Рекомендуемый ход: {{symbol}} на {{square}}, взять {{target}}',
+      castleKing: 'Рекомендуемый ход: короткая рокировка',
+      castleQueen: 'Рекомендуемый ход: длинная рокировка',
+      promote:
+        'Рекомендуемый ход: {{symbol}} на {{square}}, превратить в {{promotion}}',
+    },
     actions: {
       move: 'Сделать ход',
       resign: 'Сдаться',
@@ -151,6 +181,7 @@ export const ruMessages = {
     },
     status: {
       turn: 'Ход {{player}}',
+      yourTurn: 'Ваш ход',
       white: 'Белые',
       black: 'Чёрные',
       toMove: 'ходят',

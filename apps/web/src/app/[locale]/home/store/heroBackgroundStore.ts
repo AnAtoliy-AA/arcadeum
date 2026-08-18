@@ -1,17 +1,30 @@
 import { create } from 'zustand';
-
-const DEFAULT_HERO_BG = '/images/home/hero-bg.webp';
+import { HERO_GAMES } from '../data/heroVariants';
 
 interface HeroBackgroundState {
-  bgImage: string;
-  setBgImage: (src: string) => void;
-  resetBgImage: () => void;
+  activeGameId: string | null;
+  accentGlow: string;
+  setActiveGameId: (gameId: string | null) => void;
+  reset: () => void;
 }
 
+const DEFAULT_GLOW = 'rgba(20, 184, 166, 0.18)';
+
 export const useHeroBackgroundStore = create<HeroBackgroundState>((set) => ({
-  bgImage: DEFAULT_HERO_BG,
-  setBgImage: (src) => set({ bgImage: src }),
-  resetBgImage: () => set({ bgImage: DEFAULT_HERO_BG }),
+  activeGameId: null,
+  accentGlow: DEFAULT_GLOW,
+  setActiveGameId: (gameId) => {
+    if (!gameId) {
+      set({ activeGameId: null, accentGlow: DEFAULT_GLOW });
+      return;
+    }
+    const found = HERO_GAMES.find((g) => g.id === gameId);
+    set({
+      activeGameId: gameId,
+      accentGlow: found ? found.glowColor : DEFAULT_GLOW,
+    });
+  },
+  reset: () => set({ activeGameId: null, accentGlow: DEFAULT_GLOW }),
 }));
 
-export { DEFAULT_HERO_BG };
+export const DEFAULT_HERO_BG = '/images/home/hero-bg.webp';

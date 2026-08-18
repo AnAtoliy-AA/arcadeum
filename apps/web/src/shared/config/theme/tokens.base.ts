@@ -11,7 +11,7 @@ export const lightTokens: ThemeTokens = {
     primary: '#0f172a',
     secondary: '#1f2937',
     muted: 'rgba(71, 85, 105, 0.85)',
-    accent: '#2563eb',
+    accent: '#0369a1',
     accentSoft: '#4f46e5',
     onAccent: '#f8fafc',
     notice: '#1d4ed8',
@@ -83,6 +83,7 @@ export const lightTokens: ThemeTokens = {
   glass: {
     background: 'rgba(255, 255, 255, 0.72)',
     border: 'rgba(0, 0, 0, 0.05)',
+    borderStrong: 'rgba(0, 0, 0, 0.28)',
   },
   copyNotice: '#2563eb',
 };
@@ -98,7 +99,7 @@ export const darkTokens: ThemeTokens = {
     primary: '#ecefee',
     secondary: '#f3f4f5',
     muted: '#9ba1a6',
-    accent: '#38bdf8',
+    accent: '#0369a1',
     accentSoft: '#c084fc',
     onAccent: '#0f172a',
     notice: '#38bdf8',
@@ -170,6 +171,7 @@ export const darkTokens: ThemeTokens = {
   glass: {
     background: 'rgba(15, 17, 18, 0.72)',
     border: 'rgba(255, 255, 255, 0.08)',
+    borderStrong: 'rgba(255, 255, 255, 0.22)',
   },
   copyNotice: '#38bdf8',
 };

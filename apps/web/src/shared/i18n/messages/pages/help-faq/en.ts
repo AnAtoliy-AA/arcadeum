@@ -22,6 +22,21 @@ export const helpFaq = {
         'Yes. Most games offer a quick-play AI mode with adjustable difficulty so you can practice mechanics or play solo when no human opponent is around.',
     },
     {
+      question: 'What happens if I get disconnected during a live match?',
+      answer:
+        'Our WebSocket gateway maintains your match state for 60 seconds. If your network drops or you refresh the page, you will automatically reconnect to the active turn.',
+    },
+    {
+      question: 'How are competitive Elo ratings calculated?',
+      answer:
+        'Competitive matches use a dynamic Elo ranking system based on your opponent’s tier. Winning against higher-ranked opponents yields more rating points.',
+    },
+    {
+      question: 'How do I claim daily login and quest rewards?',
+      answer:
+        'Visit the Rewards page every calendar day to claim your streak coins. Daily and weekly quest progression updates automatically as you complete matches.',
+    },
+    {
       question: 'Where can I get help if something breaks?',
       answer:
         'Open the contact form from the support page and our team will reply within one business day. For urgent issues during a tournament, ping us on Discord for faster turnaround.',

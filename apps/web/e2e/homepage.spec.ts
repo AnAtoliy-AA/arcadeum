@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test, ensureNavigationVisible } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Home Page', () => {
   test.beforeEach(async ({ page }) => {
@@ -12,7 +13,7 @@ test.describe('Home Page', () => {
   });
 
   test('should load successfully', async ({ page }) => {
-    await expect(page).toHaveURL(/\/(en|es|fr|ru|by)\/?$/);
+    await expect(page).toHaveURL(/\/(?:en|es|fr|ru|by)?\/?$/);
   });
 
   test('should render hero section', async ({ page }) => {
@@ -50,7 +51,8 @@ test.describe('Home Page', () => {
     await expect(gamesLink).toBeVisible();
     await gamesLink.dispatchEvent('click');
 
-    await expect(page).toHaveURL(/\/games/);
+    // Desktop "Games" goes to the /games catalog; mobile "Rooms" goes to /rooms.
+    await expect(page).toHaveURL(new RegExp(`${routes.games}|${routes.rooms}`));
   });
 
   test('should render logo with correct link', async ({ page }) => {

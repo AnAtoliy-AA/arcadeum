@@ -50,6 +50,7 @@ export const ruMessages = {
       private: 'Приватный',
     },
     fastRoom: 'Быстрая игра',
+    ranked: 'Рейтинг',
     gameLabel: 'Игра',
     createdLabel: 'Создан',
   },
@@ -134,6 +135,8 @@ export const ruMessages = {
     autoButton: 'Авто',
     fieldVisibility: 'Доступ',
     fieldNotes: 'Заметки (опционально)',
+    fieldRanked: 'Рейтинговый матч',
+    fieldRankedHint: 'Рейтинговые матчи влияют на ваш рейтинг ELO в этой игре.',
     notesPlaceholder: 'Добавьте заметки...',
     notesAria: 'Дополнительные заметки к залу',
     submitCreating: 'Создание...',
@@ -287,9 +290,11 @@ export const ruMessages = {
     difficultyEasy: 'Легко',
     difficultyMedium: 'Средне',
     difficultyHard: 'Сложно',
+    difficultyExpert: 'Эксперт',
     difficultyEasyDesc: 'Случайные ходы с редкими умными играми',
     difficultyMediumDesc: 'Умное наведение со стратегией блокировки',
     difficultyHardDesc: 'Точное наведение на основе вероятностей',
+    difficultyExpertDesc: 'Поиск максимальной глубины, без ошибок',
   },
   shared: {
     rules: {
@@ -396,5 +401,23 @@ export const ruMessages = {
     title: 'Выберите игру против ИИ',
     starting: 'Запуск...',
     allCategory: 'Все',
+  },
+  matchmaking: {
+    searchingTitle: 'Поиск соперника',
+    searchingSubtitle: 'Ищем матч для {{game}}...',
+    cancel: 'Отменить поиск',
+    estimatedWait: 'Ожидание: ~{{seconds}} с',
+    queuePosition: 'Позиция в очереди: {{position}} из {{total}}',
+  },
+  ranking: {
+    ratingUpdated: 'Рейтинг обновлён',
+    tier: {
+      bronze: 'Бронза',
+      silver: 'Серебро',
+      gold: 'Золото',
+      platinum: 'Платина',
+      diamond: 'Алмаз',
+      master: 'Мастер',
+    },
   },
 };

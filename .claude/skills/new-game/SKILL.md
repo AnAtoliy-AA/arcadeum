@@ -109,9 +109,9 @@ if (isLobby) {
 }
 
 const board = (
-  <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
+  <div className="box-border flex w-full flex-col items-stretch gap-3 p-3">
     {snapshot ? <><TurnBadge .../><Board .../></> : null}
-  </YStack>
+  </div>
 );
 
 return (
@@ -270,7 +270,7 @@ Cover: landing (hero/highlights/steps/themes/rules/faq), lobby (variants/options
 - **BE service**: orchestration smoke
 - **BE bot**: difficulty-by-difficulty pickMove (use real engine state, not mocks — see lessons in [feedback_pull_develop_before_push](.claude/projects/.../memory/))
 - **Web hooks**: vitest for `useState`/`useActions`
-- **Web widget**: render test with `TamaguiProvider defaultTheme="light"`
+- **Web widget**: render test with the widget's own `<Name>ThemeProvider variant="classic">` wrapper (no global provider needed; classes resolve via CSS vars)
 - **Playwright e2e**: lobby → start → place move → win (can be deferred and listed as follow-up in PR)
 
 ### 11. Before-PR punch list
@@ -338,9 +338,9 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 
 10. **`GameRoomSummary.members`** (not `participants`); each member has `id` (not `userId`).
 
-11. **Tamagui prop strictness:** `Dialog` has no `animation` prop; `Button` has no `themeInverse` prop. Don't add either.
+11. **`GameWidgetContainer` props are strict.** Props are `board`, `modals`, `headerProps`, `variant`, `isMyTurn`, `isGameOver` — no `children`, no Tamagui style props. Board markup is a plain div with Tailwind classes (`box-border flex w-full flex-col items-stretch gap-3 p-3`).
 
-12. **`TamaguiProvider` test render** needs `defaultTheme="light"`.
+12. **Web widget render tests need no global provider.** The old `TamaguiProvider defaultTheme="light"` wrapper is gone — wrap renders in the widget's own `<Name>ThemeProvider variant="classic">` like `TicTacToeBoard.test.tsx` does. Theme tokens resolve from CSS variables with safe defaults, so assertion-only tests render fine bare.
 
 13. **`GameLogEntry` helper** options: `targetId?: string` — pass `undefined`, not `null`.
 
@@ -356,7 +356,7 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 
 19. **"Game Rules" button needs its modal wired in `RulesAccess`.** [RulesAccess.tsx](apps/web/src/features/games/ui/create/redesign/RulesAccess.tsx) always renders the button (it only hides for Glimworm). For every other game, you must add a `gameId === '<game>_v1' ? <NameRulesModal .../> : null` branch — otherwise clicking the button toggles `open` but no modal mounts. **Watch the prop name**: sea-battle/critical use `isOpen`, but tic-tac-toe's modal uses `open` — copy whichever name the modal you're wiring actually accepts.
 
-20. **`Dialog.Description` renders as `<p>` — only string/inline children allowed.** Putting a `<YStack>` (or any block element) inside `Dialog.Description` produces invalid HTML (`<div> cannot be a descendant of <p>`) and triggers React's hydration error. Keep `Dialog.Description` as a single short string (it's the `aria-describedby` summary anyway) and hoist any multi-block content out as a sibling of `Description` inside `Dialog.Content`. Or skip raw `Dialog` entirely — `@arcadeum/ui`'s `Modal` / `ModalContent` / `ModalHeader` / `ModalBody` primitives don't have this trap.
+20. **`Dialog.Description` renders as `<p>` — only string/inline children allowed.** Putting a block element (e.g. a `<div>` with Tailwind layout classes) inside `Dialog.Description` produces invalid HTML (`<div> cannot be a descendant of <p>`) and triggers React's hydration error. Keep `Dialog.Description` as a single short string (it's the `aria-describedby` summary anyway) and hoist any multi-block content out as a sibling of `Description` inside `Dialog.Content`. Or skip raw `Dialog` entirely — `@arcadeum/ui`'s `Modal` / `ModalContent` / `ModalHeader` / `ModalBody` primitives don't have this trap.
 
 21. **Don't write a per-game end-game modal.** Use `useGameEndState` + `GameEndModals`. The hook combines result computation, rematch logic, and modal state. The component renders all three modals (result, rematch player selection, rematch invitation) with consistent styling. If your game's copy doesn't match the shared `games.table.*` keys, pass `resultMessages={{ title, message? }}` to `useGameEndState`.
 

@@ -1,11 +1,11 @@
 'use client';
 
-import { YStack } from 'tamagui';
+import './../styles/hud.scss';
+
 import { TurnBanner } from '../TurnBanner';
 import { ThreatStrip } from '../ThreatStrip';
 import { FlashBanner } from '../FlashBanner';
 import { FlashHistory } from '../FlashHistory';
-import { HudStyles } from '../hudStyles';
 import { ComboCard, type ComboKind } from './ComboCard';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
 
@@ -18,6 +18,7 @@ interface ArenaCenterProps {
   hand: CriticalCard[];
   allowActionCardCombos: boolean;
   combo?: { kind: ComboKind; label: string };
+  onClearSelection?: () => void;
   // Threat strip
   deck: CriticalCard[];
   /** Server-authoritative overload odds; forwarded to ThreatStrip. */
@@ -51,6 +52,7 @@ export function ArenaCenter({
   hand,
   allowActionCardCombos,
   combo,
+  onClearSelection,
   deck,
   serverOverloadOdds,
   criticalsRemaining,
@@ -60,32 +62,16 @@ export function ArenaCenter({
   resolveDisplayName,
 }: ArenaCenterProps) {
   return (
-    <YStack
+    <div
+      className="flex flex-col flex-1 items-center justify-center gap-2 relative"
       data-testid="arena-center"
-      flex={1}
-      // No `minHeight` — the column should be content-sized so the
-      // arena card collapses around its actual content instead of
-      // reserving 180px of dead air below the threat strip at idle.
-      // The FlashBanner is absolutely positioned and doesn't push the
-      // stack, so the flow's natural height is the right floor.
-      alignItems="center"
-      justifyContent="center"
-      gap="$2"
-      position="relative"
     >
-      <HudStyles />
-      <YStack
+      <div
+        className="flex flex-col absolute top-[8px] left-0 right-0 items-center pointer-events-none z-[500]"
         data-testid="arena-flash-slot"
-        position="absolute"
-        top={8}
-        left={0}
-        right={0}
-        alignItems="center"
-        pointerEvents="none"
-        zIndex={5}
       >
         <FlashBanner logs={logs} formatMessage={formatLogMessage} />
-      </YStack>
+      </div>
       <TurnBanner
         isMyTurn={isMyTurn}
         currentPlayerName={currentPlayerName}
@@ -96,6 +82,7 @@ export function ArenaCenter({
         hand={hand}
         allowActionCardCombos={allowActionCardCombos}
         combo={combo}
+        onClearSelection={onClearSelection}
       />
       <ThreatStrip
         hand={hand}
@@ -114,6 +101,6 @@ export function ArenaCenter({
         formatMessage={formatLogMessage}
         resolveDisplayName={resolveDisplayName}
       />
-    </YStack>
+    </div>
   );
 }

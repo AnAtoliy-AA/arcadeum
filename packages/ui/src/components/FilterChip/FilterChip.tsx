@@ -1,60 +1,6 @@
-import { XStack, Text, styled } from 'tamagui';
+'use client';
+import { cx } from '../../utils/cx';
 import type { ReactNode } from 'react';
-
-const ChipRoot = styled(XStack, {
-  name: 'FilterChip',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '$1',
-  paddingHorizontal: '$4',
-  paddingVertical: 8,
-  borderRadius: '$4',
-  borderWidth: 1,
-  cursor: 'pointer',
-  userSelect: 'none',
-  transition: 'background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
-
-  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  borderColor: 'rgba(255, 255, 255, 0.1)',
-  shadowColor: 'rgba(0,0,0,0.3)',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 1,
-  shadowRadius: 1,
-
-  hoverStyle: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderColor: 'rgba(255, 255, 255, 0.16)',
-  },
-
-  pressStyle: {
-    scale: 0.97,
-  },
-
-  focusStyle: {
-    outlineWidth: 0,
-  },
-
-  variants: {
-    active: {
-      true: {
-        backgroundColor: 'rgba(255, 255, 255, 0.12)',
-        borderColor: 'rgba(255, 255, 255, 0.4)',
-      },
-    },
-    disabled: {
-      true: {
-        opacity: 0.4,
-        cursor: 'not-allowed',
-        pointerEvents: 'none',
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    active: false,
-    disabled: false,
-  },
-});
 
 export type FilterChipProps = {
   children: ReactNode;
@@ -76,23 +22,29 @@ export function FilterChip({
   'data-testid': testId,
 }: FilterChipProps) {
   return (
-    <ChipRoot
-      active={active}
+    <button
+      type="button"
+      onClick={onClick}
       disabled={disabled}
-      onPress={onClick}
       role="checkbox"
       aria-checked={active}
       aria-label={ariaLabel}
       aria-pressed={ariaPressed}
-      testID={testId}
+      data-testid={testId}
+      className={cx(
+        'inline-flex w-auto shrink-0 cursor-pointer select-none items-center justify-center gap-1',
+        'rounded-[16px] border px-4 py-2 text-[14px] font-semibold',
+        'transition-[background-color,border-color,box-shadow] duration-150',
+        'focus:outline-none',
+        active
+          ? 'border-[color:color-mix(in_srgb,var(--color)_40%,transparent)] bg-[color:color-mix(in_srgb,var(--color)_12%,transparent)] text-[var(--color)]'
+          : 'border-[color:color-mix(in_srgb,var(--color)_14%,transparent)] bg-[color:color-mix(in_srgb,var(--color)_6%,transparent)] text-[var(--textSecondary)]',
+        'hover:border-[color:color-mix(in_srgb,var(--color)_20%,transparent)] hover:bg-[color:color-mix(in_srgb,var(--color)_10%,transparent)]',
+        'active:scale-[0.97]',
+        disabled && 'pointer-events-none cursor-not-allowed opacity-40',
+      )}
     >
-      <Text
-        fontSize="$3"
-        fontWeight="600"
-        color={active ? '#ffffff' : 'rgba(255,255,255,0.7)'}
-      >
-        {children}
-      </Text>
-    </ChipRoot>
+      {children}
+    </button>
   );
 }

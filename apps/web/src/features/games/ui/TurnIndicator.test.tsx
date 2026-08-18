@@ -1,7 +1,5 @@
 import { render as rtlRender, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
 import { TurnIndicator, resolveTurnStatus } from './TurnIndicator';
 import { useGameChatStore } from '@/widgets/GameChat';
 
@@ -35,12 +33,7 @@ vi.mock('./InGameAvatar', () => ({
   ),
 }));
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('resolveTurnStatus', () => {
   it('maps game over → completed regardless of turn', () => {
@@ -104,7 +97,9 @@ describe('TurnIndicator', () => {
     expect(screen.getByTestId('turn-indicator-label')).toHaveTextContent(
       'Waiting…',
     );
-    expect(screen.queryByTestId('turn-indicator-avatar')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('turn-indicator-avatar'),
+    ).not.toBeInTheDocument();
   });
 
   it("shows 'Game over' and no avatar when the game is finished", () => {

@@ -8,6 +8,7 @@ import {
   mockGameSocket,
   MOCK_OBJECT_ID,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Lobby Refresh', () => {
   const roomId = '507f191e810c19729de860ea';
@@ -36,7 +37,7 @@ test.describe('Lobby Refresh', () => {
   test('should refresh room data when refresh button is clicked', async ({
     page,
   }) => {
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Wait for refresh button to be visible

@@ -1,5 +1,3 @@
-import { styled, YStack, Text } from 'tamagui';
-
 interface GameStatusMessageProps {
   currentPlayerAlive: boolean;
   isGameOver: boolean;
@@ -20,13 +18,15 @@ export function GameStatusMessage({
   if (!currentPlayerAlive) {
     return (
       <EmptyState>
-        <Text fontSize={64}>💀</Text>
-        <YStack alignItems="center">
-          <Text fontSize={20} fontWeight="bold">
+        <span className="text-[64px]">💀</span>
+        <div className="flex flex-col items-center">
+          <span className="text-[20px] font-bold">
             {t('games.table.eliminated.title')}
-          </Text>
-        </YStack>
-        <Text fontSize={16}>{t('games.table.eliminated.message')}</Text>
+          </span>
+        </div>
+        <span className="text-[16px]">
+          {t('games.table.eliminated.message')}
+        </span>
       </EmptyState>
     );
   }
@@ -34,16 +34,10 @@ export function GameStatusMessage({
   return null;
 }
 
-const EmptyState = styled(YStack, {
-  name: 'EmptyState',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '$3',
-  padding: '$8',
-  backgroundColor: 'rgba(15, 23, 42, 0.55)',
-  backdropFilter: 'blur(8px)',
-  borderRadius: 20,
-  borderWidth: 1,
-  borderColor: 'rgba(255, 255, 255, 0.14)',
-  marginTop: '$4',
-});
+function EmptyState({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 rounded-[20px] border border-[rgba(255,255,255,0.14)] bg-[rgba(15,23,42,0.55)] p-8 backdrop-blur-[8px] mt-4">
+      {children}
+    </div>
+  );
+}

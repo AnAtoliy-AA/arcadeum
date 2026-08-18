@@ -11,6 +11,7 @@ export function parseTask(
   autoArc = false,
   userId?: number,
   prefsService?: PreferencesService,
+  roadmapService?: RoadmapService,
 ): ParsedTask {
   let cleaned = text.trim();
 
@@ -72,8 +73,8 @@ export function parseTask(
   const title = titleMatch ? titleMatch[1].trim() : header;
 
   if (autoArc && !arc) {
-    const roadmapMatch = prefsService?.['roadmapService']?.matchRoadmapItem?.(title);
-    arc = roadmapMatch?.arc ?? prefsService?.['roadmapService']?.getNextArcNumber?.() ?? null;
+    const roadmapMatch = roadmapService?.matchRoadmapItem?.(title);
+    arc = roadmapMatch?.arc ?? roadmapService?.getNextArcNumber?.() ?? null;
   }
 
   if (requirements.length === 0) {

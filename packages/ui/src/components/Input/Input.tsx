@@ -1,75 +1,65 @@
-import { Input as TamaguiInput, styled, GetProps, TamaguiComponent } from 'tamagui';
+'use client';
+import { forwardRef } from 'react';
+import { cx } from '../../utils/cx';
+import { fieldBorderClasses } from '../../utils/fieldClasses';
 
-const StyledInput = styled(TamaguiInput, {
-  name: 'Input',
-  paddingHorizontal: '$4',
-  paddingVertical: '$3',
-  borderRadius: '$4',
-  borderWidth: 1,
-  backgroundColor: '$background',
-  borderColor: '$borderColor',
-  color: '$color',
-  fontSize: '$4',
-  fontFamily: '$body',
-
-  hoverStyle: {
-    borderColor: '$primary',
-  },
-
-  focusStyle: {
-    borderColor: '$primary',
-    borderWidth: 2,
-    outlineColor: 'transparent',
-  },
-
-  variants: {
-    size: {
-      sm: { height: 36, px: '$3', fontSize: '$3' },
-      md: { height: 48, px: '$4', fontSize: '$4' },
-      lg: { height: 60, px: '$5', fontSize: '$5' },
-    },
-    error: {
-      true: {
-        borderColor: '$error',
-        hoverStyle: { borderColor: '$error' },
-        focusStyle: { borderColor: '$error' },
-      },
-    },
-    fullWidth: {
-      true: {
-        width: '100%',
-      },
-    },
-  } as const,
-  defaultVariants: {
-    size: 'md',
-  },
-});
-
-export type InputProps = GetProps<typeof TamaguiInput> & {
+export type InputProps = {
   size?: 'sm' | 'md' | 'lg';
   error?: boolean;
   fullWidth?: boolean;
-  /** @deprecated Use onClick instead */
-  onPress?: () => void;
-  onClick?: (e: unknown) => void;
+  value?: string;
+  defaultValue?: string;
+  placeholder?: string;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  disabled?: boolean;
+  required?: boolean;
+  type?: string;
+  id?: string;
+  name?: string;
+  maxLength?: number;
+  min?: number | string;
+  max?: number | string;
+  autoComplete?: string;
+  'data-testid'?: string;
+  'aria-label'?: string;
+  'aria-required'?: boolean | string;
+  className?: string;
+  style?: React.CSSProperties;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'onChange'>;
+
+const sizeClasses: Record<NonNullable<InputProps['size']>, string> = {
+  sm: 'h-9 px-3 text-[14px]',
+  md: 'h-12 px-4 text-[16px]',
+  lg: 'h-[60px] px-5 text-[20px]',
 };
 
-import { filterProps } from '../../utils/filterProps';
-
-export const Input = StyledInput.styleable<InputProps>((
-  { size, error, fullWidth, onPress, onClick, ...props }, 
-  ref
-) => {
-  const filteredProps = filterProps({ ...props, onPress, onClick });
-
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    size = 'md',
+    error,
+    fullWidth,
+    className,
+    style,
+    onChange,
+    ...rest
+  },
+  ref,
+) {
   return (
-    <StyledInput
-      {...(filteredProps as unknown as GetProps<typeof StyledInput>)}
+    <input
       ref={ref}
-      size={size}
-      error={error}
-      fullWidth={fullWidth}
+      className={cx(
+        'rounded-[16px] border bg-[var(--background)] text-[var(--color)] outline-none transition-[border-color] duration-200',
+        sizeClasses[size],
+        fullWidth && 'w-full',
+        fieldBorderClasses(!!error),
+        className,
+      )}
+      style={style}
+      onChange={onChange}
+      {...rest}
     />
   );
 });

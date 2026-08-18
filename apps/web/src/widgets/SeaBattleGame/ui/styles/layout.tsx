@@ -1,57 +1,57 @@
-import { styled, XStack, YStack } from 'tamagui';
+import React from 'react';
 
-export const MainGameArea = styled(YStack, {
-  name: 'MainGameArea',
-  gap: '$4',
-  width: '100%',
-  flex: 1,
-  minHeight: 0,
-  minWidth: 0,
-  padding: '$2',
+import { cx } from '@arcadeum/ui/utils/cx';
 
-  $md: {
-    gap: '$3',
-    padding: '$1',
-  },
-  $sm: {
-    gap: '$2',
-    padding: 0,
-  },
-});
+type CommonProps = React.HTMLAttributes<HTMLDivElement> & {
+  className?: string;
+};
 
-export const GameBoardWrapper = styled(XStack, {
-  name: 'GameBoardWrapper',
-  gap: '$4',
-  flexWrap: 'wrap',
-  width: '100%',
-  justifyContent: 'center',
+export const MainGameArea = ({ className, ...props }: CommonProps) => (
+  <div
+    className={cx(
+      'flex flex-col items-stretch gap-2 w-full flex-1 min-h-0 min-w-0 p-1',
+      'max-[1150px]:gap-2 max-[1150px]:p-0.5',
+      'max-[800px]:gap-1 max-[800px]:p-0',
+      className,
+    )}
+    {...props}
+  />
+);
 
-  $md: {
-    flexDirection: 'column',
-    gap: '$3',
-  },
-  $sm: {
-    flexDirection: 'column',
-    gap: '$2',
-  },
-});
+export const GameBoardWrapper = ({ className, ...props }: CommonProps) => (
+  <div
+    className={cx(
+      'flex flex-row items-stretch gap-4 flex-wrap w-full justify-center',
+      'max-[1150px]:flex-col max-[1150px]:gap-3',
+      'max-[800px]:flex-col max-[800px]:gap-2',
+      className,
+    )}
+    {...props}
+  />
+);
 
-export const BoardContainer = styled(YStack, {
-  name: 'BoardContainer',
-  flex: 1,
-  maxWidth: 520,
-  width: '100%',
+type BoardContainerProps = CommonProps & {
+  alignSelf?: React.CSSProperties['alignSelf'];
+};
 
-  $md: {
-    flex: 0,
-    maxWidth: 500,
-    alignSelf: 'center',
-  },
-  $sm: {
-    flex: 0,
-    maxWidth: 'none',
-  },
-  $short: {
-    maxWidth: 420,
-  },
-});
+export const BoardContainer = ({
+  className,
+  alignSelf,
+  style,
+  ...props
+}: BoardContainerProps) => (
+  <div
+    className={cx(
+      'flex flex-col items-stretch flex-1 max-w-[520px] w-full',
+      'max-[1150px]:flex-[0] max-[1150px]:max-w-[500px] max-[1150px]:self-center',
+      'max-[800px]:flex-[0] max-[800px]:max-w-none',
+      '[@media(max-height:480px)]:max-w-[420px]',
+      className,
+    )}
+    style={{
+      ...(alignSelf ? { alignSelf } : {}),
+      ...(style ?? {}),
+    }}
+    {...props}
+  />
+);

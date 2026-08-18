@@ -1,7 +1,6 @@
 'use client';
 
 import { createPortal } from 'react-dom';
-import { YStack } from '@arcadeum/ui';
 import { BuyItemWithArc } from './BuyItemWithArc';
 
 interface ShopArcPaymentOverlayProps {
@@ -22,29 +21,11 @@ export function ShopArcPaymentOverlay({
   onCancel,
 }: ShopArcPaymentOverlayProps) {
   return createPortal(
-    <YStack
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      backgroundColor="rgba(0,0,0,0.9)"
-      zIndex={9999}
-      padding="$4"
-      alignItems="center"
-      justifyContent="center"
-      overflow="scroll"
+    <div
+      className="flex flex-col fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.9)] z-[9999] p-4 items-center justify-center overflow-scroll"
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      <YStack
-        backgroundColor="rgba(20,20,30,0.98)"
-        borderRadius="$4"
-        borderWidth={1}
-        borderColor="rgba(124,58,237,0.3)"
-        padding="$4"
-        width="100%"
-        maxWidth={360}
-      >
+      <div className="flex flex-col items-stretch bg-[rgba(20,20,30,0.98)] rounded-2xl border border-[rgba(124,58,237,0.3)] p-4 w-full max-w-[360px]">
         <BuyItemWithArc
           itemId={itemId}
           priceAmount={arcPrice}
@@ -53,8 +34,8 @@ export function ShopArcPaymentOverlay({
           onPurchased={onPurchased}
           onCancel={onCancel}
         />
-      </YStack>
-    </YStack>,
+      </div>
+    </div>,
     document.body,
   );
 }

@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { ErrorState } from '@arcadeum/ui';
-import { XStack } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 export default function Error({
@@ -20,11 +19,14 @@ export default function Error({
 
   return (
     <div className="main-outer">
-      <XStack
-        padding="$10"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
+      <div
+        style={{
+          padding: 40,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '50vh',
+        }}
       >
         <ErrorState
           title={t('common.error.title') || 'Something went wrong!'}
@@ -36,7 +38,7 @@ export default function Error({
           onRetry={() => reset()}
           retryLabel={t('common.error.retry') || 'Try again'}
         />
-      </XStack>
+      </div>
     </div>
   );
 }

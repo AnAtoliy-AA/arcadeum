@@ -20,8 +20,12 @@ export const en = {
     "Vibrate when it's your turn to play (mobile devices only).",
   soundLabel: 'Sound',
   audioCuesLabel: 'Audio Cues',
-  audioCuesDescription: 'Play sounds for game events like moves, turns, and attacks.',
+  audioCuesDescription:
+    'Play sounds for game events like moves, turns, and attacks.',
   musicLabel: 'Music',
+  showRulesLabel: 'Show rules on room entry',
+  showRulesDescription:
+    'Automatically open the rules popup when you enter a game room or lobby.',
   appearanceTitle: 'Appearance',
   appearanceDescription:
     'Choose a theme to use across the {{appName}} web experience.',
@@ -108,8 +112,12 @@ export const es = {
     'Vibrar cuando sea tu turno de jugar (solo dispositivos móviles).',
   soundLabel: 'Sonido',
   audioCuesLabel: 'Señales de Audio',
-  audioCuesDescription: 'Reproducir sonidos para eventos del juego como movimientos, turnos y ataques.',
+  audioCuesDescription:
+    'Reproducir sonidos para eventos del juego como movimientos, turnos y ataques.',
   musicLabel: 'Música',
+  showRulesLabel: 'Mostrar reglas al entrar a una sala',
+  showRulesDescription:
+    'Abrir automáticamente la ventana de reglas al entrar a una sala o lobby.',
   appearanceTitle: 'Apariencia',
   appearanceDescription:
     'Elige un tema para usar en toda la experiencia web de {{appName}}.',
@@ -202,8 +210,12 @@ export const fr = {
     "Vibrer quand c'est à votre tour de jouer (appareils mobiles uniquement).",
   soundLabel: 'Son',
   audioCuesLabel: 'Signaux Audio',
-  audioCuesDescription: 'Jouer des sons pour les événements du jeu comme les coups, les tours et les attaques.',
+  audioCuesDescription:
+    'Jouer des sons pour les événements du jeu comme les coups, les tours et les attaques.',
   musicLabel: 'Musique',
+  showRulesLabel: 'Afficher les règles à l\u2019entrée',
+  showRulesDescription:
+    'Ouvrir automatiquement la fenêtre de règles lorsque vous entrez dans une salle ou un lobby.',
   appearanceTitle: 'Apparence',
   appearanceDescription:
     "Choisissez un thème à utiliser sur l'ensemble de l'expérience web de {{appName}}.",
@@ -296,8 +308,12 @@ export const ru = {
     'Вибрировать, когда наступает ваш ход (только для мобильных устройств).',
   soundLabel: 'Звук',
   audioCuesLabel: 'Звуковые сигналы',
-  audioCuesDescription: 'Воспроизводить звуки для игровых событий: ходы, очереди и атаки.',
+  audioCuesDescription:
+    'Воспроизводить звуки для игровых событий: ходы, очереди и атаки.',
   musicLabel: 'Музыка',
+  showRulesLabel: 'Показывать правила при входе в комнату',
+  showRulesDescription:
+    'Автоматически открывать окно с правилами при входе в комнату или лобби.',
   appearanceTitle: 'Внешний вид',
   appearanceDescription: 'Выберите тему оформления для веб-версии {{appName}}.',
   themeOptions: {
@@ -387,8 +403,12 @@ export const by = {
     'Вібраваць, калі наступае ваш ход (толькі для мабільных прылад).',
   soundLabel: 'Гук',
   audioCuesLabel: 'Гукавыя сігналы',
-  audioCuesDescription: 'Прайграваць гукі для гульнявых падзей: хады, чаргі і атакі.',
+  audioCuesDescription:
+    'Прайграваць гукі для гульнявых падзей: хады, чаргі і атакі.',
   musicLabel: 'Музыка',
+  showRulesLabel: 'Паказваць правілы пры ўваходзе ў пакой',
+  showRulesDescription:
+    'Аўтаматычна адкрываць акно з правіламі пры ўваходзе ў пакой або лобі.',
   appearanceTitle: 'Знешні выгляд',
   appearanceDescription: 'Выберыце тэму афармлення для вэб-версіі {{appName}}.',
   themeOptions: {

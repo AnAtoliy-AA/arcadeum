@@ -3,14 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GameRoomMemberSummary } from '@/shared/types/games';
 import { Button, Badge } from '@arcadeum/ui';
-import { XStack } from 'tamagui';
-import {
-  PlayerItem,
-  LobbyPlayerAvatar,
-  PlayerInfo,
-  LobbyPlayerName,
-  LobbyPlayerAvatarText,
-} from './lobbyStyles';
+import { PlayerItem, PlayerInfo, LobbyPlayerName } from './lobbyStyles';
 import { InGameAvatar } from './InGameAvatar';
 
 // ============ Avatar Colors ============
@@ -61,40 +54,34 @@ export function SortablePlayerItem({
     cursor: isHost ? 'grab' : 'default',
   };
 
-  const avatarColor =
-    AVATAR_COLORS[member.displayName.length % AVATAR_COLORS.length];
-
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...(isHost ? { ...attributes, ...listeners } : {})}
     >
-      <PlayerItem $isHost={isRoomHost}>
-        {member.equippedAvatarId ? (
-          <InGameAvatar
-            playerId={member.id}
-            name={member.displayName}
-            size="sm"
-          />
-        ) : (
-          <LobbyPlayerAvatar backgroundColor={avatarColor}>
-            <LobbyPlayerAvatarText>
-              {member.displayName.slice(0, 2).toUpperCase()}
-            </LobbyPlayerAvatarText>
-          </LobbyPlayerAvatar>
-        )}
+      <PlayerItem isHost={isRoomHost}>
+        <InGameAvatar
+          playerId={member.id}
+          name={member.displayName}
+          size="sm"
+        />
         <PlayerInfo>
-          <LobbyPlayerName>{member.displayName}</LobbyPlayerName>
-          {isRoomHost && (
-            <Badge variant="info" size="sm">
-              HOST
-            </Badge>
-          )}
+          <div className="flex flex-row flex-wrap items-center gap-1.5 min-w-0">
+            <LobbyPlayerName className="break-words" title={member.displayName}>
+              {member.displayName}
+            </LobbyPlayerName>
+            {isRoomHost && (
+              <Badge variant="info" className="shrink-0">
+                HOST
+              </Badge>
+            )}
+          </div>
         </PlayerInfo>
         {isHost && totalCount > 1 && (
-          <XStack gap="$1">
+          <div className="flex flex-row items-center gap-1 shrink-0 ml-auto">
             <Button
+              className="py-1 px-2 min-w-[auto]"
               variant="ghost"
               size="sm"
               onClick={(e: { stopPropagation: () => void }) => {
@@ -102,13 +89,11 @@ export function SortablePlayerItem({
                 onMoveUp();
               }}
               disabled={index === 0}
-              paddingVertical="$1"
-              paddingHorizontal="$2"
-              minWidth="auto"
             >
               ↑
             </Button>
             <Button
+              className="py-1 px-2 min-w-[auto]"
               variant="ghost"
               size="sm"
               onClick={(e: { stopPropagation: () => void }) => {
@@ -116,26 +101,21 @@ export function SortablePlayerItem({
                 onMoveDown();
               }}
               disabled={index === totalCount - 1}
-              paddingVertical="$1"
-              paddingHorizontal="$2"
-              minWidth="auto"
             >
               ↓
             </Button>
-          </XStack>
+          </div>
         )}
         {onKick && !isRoomHost && (
           <Button
-            variant="ghost"
+            className="py-1 px-2 min-w-[auto] shrink-0 ml-auto"
+            variant="danger"
+            ghost
             size="sm"
             onClick={(e: { stopPropagation: () => void }) => {
               e.stopPropagation();
               onKick();
             }}
-            paddingVertical="$1"
-            paddingHorizontal="$2"
-            minWidth="auto"
-            style={{ color: '#ef4444' }}
           >
             ✕
           </Button>

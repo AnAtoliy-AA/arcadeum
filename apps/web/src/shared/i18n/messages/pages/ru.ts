@@ -1,4 +1,4 @@
-import { helpFaq } from './help-faq/ru';
+import { helpRu } from './help/ru';
 import { adminAnnouncementsRu } from './admin-announcements/ru';
 import { adminTournamentsRu } from './admin-tournaments/ru';
 import { walletRu } from './wallet/ru';
@@ -16,6 +16,11 @@ import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
 import { adminUsersRu } from './admin-users/ru';
 import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
 import { friendsRu } from './friends/ru';
+import { communityRu } from './community/ru';
+import { rewardsRu } from './rewards/ru';
+import { developersRu } from './developers/ru';
+import { blogRu } from './blog/ru';
+
 export const ru = {
   admin: {
     title: 'Админ',
@@ -152,57 +157,11 @@ export const ru = {
       },
     },
   },
-  blog: {
-    title: 'Игровой блог',
-    subtitle: 'Новости, советы и истории от сообщества',
-    description:
-      'Будьте в курсе последних гайдов, анонсов, стратегических советов и историй игроков со всего мира.',
-    features: [
-      {
-        title: 'Последние новости',
-        description:
-          'Узнавайте первыми о новых играх, функциях и обновлениях платформы.',
-      },
-      {
-        title: 'Советы профи',
-        description:
-          'Изучайте продвинутые стратегии от топовых игроков сообщества.',
-      },
-      {
-        title: 'Истории игроков',
-        description:
-          'Читайте об опыте и достижениях наших самых преданных геймеров.',
-      },
-    ],
-    comingSoon: 'Статьи появятся скоро!',
-  },
-  community: {
-    title: 'Присоединиться к сообществу',
-    subtitle: 'Общайтесь с игроками со всего мира',
-    description:
-      'Делитесь стратегиями, участвуйте в общественных мероприятиях и заводите друзей, которые так же любят настольные игры.',
-    sections: {
-      discord: {
-        title: 'Discord',
-        description:
-          'Присоединяйтесь к нашему сообществу в Discord, чтобы обсуждать игры, сообщать об ошибках и знакомиться с другими игроками.',
-      },
-      twitter: {
-        title: 'Twitter / X',
-        description:
-          'Следите за нами, чтобы узнавать последние новости, обновления и анонсы.',
-      },
-      github: {
-        title: 'Github',
-        description:
-          'Arcadeum — это проект с открытым исходным кодом. Вносите свой вклад в проект на Github.',
-      },
-    },
-    comingSoon: 'Сообщество скоро появится!',
-  },
+  blog: blogRu,
+  community: communityRu,
   cookies: {
     title: 'Политика использования файлов cookie',
-    lastUpdated: 'Последнее обновление: 25 марта 2026 г.',
+    lastUpdated: 'Последнее обновление: 16 августа 2026 г.',
     sections: {
       whatAreCookies: {
         title: 'Что такое файлы cookie?',
@@ -235,54 +194,8 @@ export const ru = {
       },
     },
   },
-  developers: {
-    title: 'Разработчикам',
-    subtitle: 'Создавайте на платформе Arcadeum',
-    description:
-      'Изучайте наши API и инструменты для разработчиков. Полная документация и доступ к sandbox появятся в ближайшее время.',
-    features: [
-      {
-        title: 'REST API',
-        description:
-          'Доступ к данным игроков, истории игр и таблицам лидеров через безопасный API.',
-      },
-      {
-        title: 'WebSocket события',
-        description:
-          'Интегрируйте игровые обновления в режиме реального времени в свои приложения.',
-      },
-      {
-        title: 'Sandbox окружение',
-        description:
-          'Тестируйте свои интеграции в безопасной среде перед запуском.',
-      },
-    ],
-    comingSoon: 'Портал разработчиков скоро откроется!',
-  },
-  help: {
-    title: 'Центр помощи',
-    subtitle: 'Найдите ответы на распространённые вопросы',
-    description:
-      'Просматривайте статьи об игровом процессе, управлении аккаунтом, оплате и многом другом. Наша команда поддержки готова помочь.',
-    features: [
-      {
-        title: 'Поиск по FAQ',
-        description: 'Быстро находите ответы в нашей обширной базе знаний.',
-      },
-      {
-        title: 'Прямая поддержка',
-        description:
-          'Создайте тикет и получите персональную помощь от нашей команды.',
-      },
-      {
-        title: 'Помощь сообщества',
-        description:
-          'Общайтесь с другими игроками, чтобы делиться советами и решать проблемы.',
-      },
-    ],
-    faq: helpFaq,
-    comingSoon: 'Центр помощи скоро появится.',
-  },
+  developers: developersRu,
+  help: helpRu,
   leaderboards: {
     title: 'Таблицы лидеров',
     subtitle: 'Узнайте своё место среди лучших игроков',
@@ -299,16 +212,47 @@ export const ru = {
     ticker: { live: 'В эфире' },
     modes: {
       all: { name: 'Все игры', subtitle: 'Сводный рейтинг', icon: '◎' },
-      critical: {
+      critical_v1: {
         name: 'Critical',
         subtitle: 'Карты с высокими ставками',
         icon: '♠',
       },
-      sea_battle: {
+      sea_battle_v1: {
         name: 'Морской бой',
         subtitle: 'Морская стратегия',
         icon: '⚓',
       },
+      texas_holdem_v1: {
+        name: 'Техасский Холдем',
+        subtitle: 'Покерные столы',
+        icon: '♣',
+      },
+      glimworm_v1: {
+        name: 'Глимворм',
+        subtitle: 'Неоновая змейка',
+        icon: '🐍',
+      },
+      tic_tac_toe_v1: {
+        name: 'Крестики-нолики',
+        subtitle: 'Классика 3 в ряд',
+        icon: '✕',
+      },
+      cascade_v1: {
+        name: 'Cascade',
+        subtitle: 'Карточный каскад',
+        icon: '▥',
+      },
+      chess_v1: {
+        name: 'Шахматы',
+        subtitle: 'Классические шахматы',
+        icon: '♞',
+      },
+      checkers_v1: {
+        name: 'Шашки',
+        subtitle: 'Настольная классика',
+        icon: '●',
+      },
+      cat_dash_v1: { name: 'Cat Dash', subtitle: 'Кошачьи гонки', icon: '🐱' },
     },
     cup: {
       eyebrow: 'Турнир',
@@ -426,29 +370,7 @@ export const ru = {
     ],
     comingSoon: 'Глобальные таблицы лидеров скоро появятся!',
   },
-  rewards: {
-    title: 'Награды',
-    subtitle: 'Получайте эксклюзивные бонусы во время игры',
-    description:
-      'Наша программа вознаграждений создана, чтобы поблагодарить самых активных игроков. Зарабатывайте очки за каждый матч и обменивайте их на премиум-предметы.',
-    features: [
-      {
-        title: 'Ежедневные бонусы',
-        description: 'Заходите каждый день, чтобы забрать свою награду.',
-      },
-      {
-        title: 'Сезонные пропуски',
-        description:
-          'Открывайте уникальные награды, участвуя в сезонных событиях.',
-      },
-      {
-        title: 'Реферальная программа',
-        description:
-          'Приглашайте друзей и получайте бонусы за каждого нового игрока.',
-      },
-    ],
-    comingSoon: 'Магазин наград скоро откроется!',
-  },
+  rewards: rewardsRu,
   wallet: walletRu,
   gems: gemsRu,
   adminGemPackages: adminGemPackagesRu,

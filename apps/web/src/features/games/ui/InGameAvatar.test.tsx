@@ -1,7 +1,5 @@
 import { render as rtlRender, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import config from '@/shared/config/tamagui.config';
 import { InGameAvatar } from './InGameAvatar';
 import * as cosmeticsHook from '@/features/shop/hooks/useEquippedCosmetics';
 import { useGameStore } from '@/features/games/store/gameStore';
@@ -9,12 +7,7 @@ import type { GameRoomSummary } from '@/shared/types/games';
 
 vi.mock('@/features/shop/hooks/useEquippedCosmetics');
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 const allNulls = {
   avatarUrl: null,

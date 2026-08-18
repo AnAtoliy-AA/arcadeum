@@ -1,16 +1,10 @@
 import React from 'react';
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { ServerLoadingNotice } from './ServerLoadingNotice';
 import { describe, it, expect } from 'vitest';
 
 const render = (ui: React.ReactElement) => {
-  return rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>
-  );
+  return rtlRender(ui);
 };
 
 describe('ServerLoadingNotice', () => {

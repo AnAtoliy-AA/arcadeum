@@ -1,4 +1,4 @@
-import { helpFaq } from './help-faq/fr';
+import { helpFr } from './help/fr';
 import { adminAnnouncementsFr } from './admin-announcements/fr';
 import { adminTournamentsFr } from './admin-tournaments/fr';
 import { walletFr } from './wallet/fr';
@@ -16,6 +16,11 @@ import { adminBlockedIpsFr } from './admin-blocked-ips/fr';
 import { adminUsersFr } from './admin-users/fr';
 import { adminBulkRewardsFr } from './admin-bulk-rewards/fr';
 import { friendsFr } from './friends/fr';
+import { communityFr } from './community/fr';
+import { rewardsFr } from './rewards/fr';
+import { developersFr } from './developers/fr';
+import { blogFr } from './blog/fr';
+
 export const fr = {
   admin: {
     title: 'Administration',
@@ -148,57 +153,11 @@ export const fr = {
       },
     },
   },
-  blog: {
-    title: 'Blog de Jeux',
-    subtitle: 'Actualités, conseils et histoires de la communauté',
-    description:
-      'Restez informé des derniers guides, annonces, conseils stratégiques et histoires de joueurs du monde entier.',
-    features: [
-      {
-        title: 'Dernières nouvelles',
-        description:
-          'Soyez le premier informé des nouveaux jeux, fonctionnalités et mises à jour.',
-      },
-      {
-        title: 'Conseils de pro',
-        description:
-          'Apprenez des stratégies avancées grâce aux meilleurs joueurs de la communauté.',
-      },
-      {
-        title: 'Histoires vécues',
-        description:
-          'Découvrez les expériences et les réussites de nos joueurs les plus dévoués.',
-      },
-    ],
-    comingSoon: 'Les articles arrivent bientôt !',
-  },
-  community: {
-    title: 'Rejoindre la Communauté',
-    subtitle: 'Connectez-vous avec des joueurs du monde entier',
-    description:
-      'Partagez des stratégies, participez à des événements communautaires et faites des amis qui aiment les jeux de société autant que vous.',
-    sections: {
-      discord: {
-        title: 'Discord',
-        description:
-          "Rejoignez notre communauté active sur Discord pour discuter des jeux, signaler des bogues et rencontrer d'autres joueurs.",
-      },
-      twitter: {
-        title: 'Twitter / X',
-        description:
-          'Suivez-nous pour les dernières nouvelles, mises à jour et annonces.',
-      },
-      github: {
-        title: 'Github',
-        description:
-          'Arcadeum est open-source. Contribuez au projet sur Github.',
-      },
-    },
-    comingSoon: 'La communauté arrive bientôt !',
-  },
+  blog: blogFr,
+  community: communityFr,
   cookies: {
     title: 'Politique de Cookies',
-    lastUpdated: 'Dernière mise à jour : 25 mars 2026',
+    lastUpdated: 'Dernière mise à jour : 16 août 2026',
     sections: {
       whatAreCookies: {
         title: 'Que sont les cookies ?',
@@ -231,55 +190,8 @@ export const fr = {
       },
     },
   },
-  developers: {
-    title: 'Développeurs',
-    subtitle: 'Construisez sur la plateforme Arcadeum',
-    description:
-      'Explorez nos APIs et outils pour développeurs. Documentation complète et accès sandbox disponibles prochainement.',
-    features: [
-      {
-        title: 'APIs RESTful',
-        description:
-          "Accédez aux données des joueurs, à l'historique et aux classements.",
-      },
-      {
-        title: 'Événements WebSocket',
-        description:
-          'Intégrez des mises à jour en temps réel dans vos propres applications.',
-      },
-      {
-        title: 'Environnement Sandbox',
-        description:
-          'Testez vos intégrations en toute sécurité avant la mise en production.',
-      },
-    ],
-    comingSoon: 'Le portail développeurs arrive bientôt !',
-  },
-  help: {
-    title: "Centre d'aide",
-    subtitle: 'Trouvez des réponses à vos questions',
-    description:
-      'Consultez des articles sur le gameplay, la gestion de compte, la facturation et plus encore. Notre équipe de support est prête à vous aider.',
-    features: [
-      {
-        title: 'FAQ complète',
-        description:
-          'Trouvez rapidement des réponses grâce à notre base de connaissances.',
-      },
-      {
-        title: 'Support direct',
-        description:
-          'Ouvrez un ticket et recevez une aide personnalisée de notre équipe.',
-      },
-      {
-        title: 'Aide communautaire',
-        description:
-          "Échangez avec d'autres joueurs pour obtenir des conseils de dépannage.",
-      },
-    ],
-    faq: helpFaq,
-    comingSoon: "Le centre d'aide arrive bientôt.",
-  },
+  developers: developersFr,
+  help: helpFr,
   leaderboards: {
     title: 'Classements',
     subtitle: 'Voyez où vous vous situez parmi les meilleurs joueurs',
@@ -295,15 +207,42 @@ export const fr = {
     ticker: { live: 'En direct' },
     modes: {
       all: { name: 'Tous les jeux', subtitle: 'Classement combiné', icon: '◎' },
-      critical: {
-        name: 'Critical',
+      critical_v1: {
+        name: 'Critique',
         subtitle: 'Cartes à enjeux',
         icon: '♠',
       },
-      sea_battle: {
+      sea_battle_v1: {
         name: 'Bataille navale',
         subtitle: 'Stratégie navale',
         icon: '⚓',
+      },
+      texas_holdem_v1: {
+        name: "Texas Hold'em Poker",
+        subtitle: 'Tables de poker',
+        icon: '♣',
+      },
+      glimworm_v1: { name: 'Glimworm', subtitle: 'Arène serpent', icon: '🐍' },
+      tic_tac_toe_v1: {
+        name: 'Morpion',
+        subtitle: 'Morpion classique',
+        icon: '✕',
+      },
+      cascade_v1: {
+        name: 'Cascade',
+        subtitle: 'Cascade de cartes',
+        icon: '▥',
+      },
+      chess_v1: { name: 'Échecs', subtitle: 'Stratégie classique', icon: '♞' },
+      checkers_v1: {
+        name: 'Dames',
+        subtitle: 'Classique de plateau',
+        icon: '●',
+      },
+      cat_dash_v1: {
+        name: 'Cat Dash',
+        subtitle: 'Course de chats',
+        icon: '🐱',
       },
     },
     cup: {
@@ -423,30 +362,7 @@ export const fr = {
     ],
     comingSoon: 'Les classements mondiaux arrivent bientôt !',
   },
-  rewards: {
-    title: 'Récompenses',
-    subtitle: 'Gagnez des bonus exclusifs en jouant',
-    description:
-      'Notre programme de récompenses est conçu pour remercier nos joueurs les plus actifs. Gagnez des points pour chaque match et échangez-les contre des objets premium.',
-    features: [
-      {
-        title: 'Bonus quotidiens',
-        description:
-          'Connectez-vous chaque jour pour réclamer votre récompense.',
-      },
-      {
-        title: 'Pass saisonniers',
-        description:
-          'Débloquez des récompenses en participant aux événements de saison.',
-      },
-      {
-        title: 'Programme de parrainage',
-        description:
-          'Invitez vos amis et gagnez des bonus pour chaque nouveau joueur.',
-      },
-    ],
-    comingSoon: 'La boutique de récompenses arrive bientôt !',
-  },
+  rewards: rewardsFr,
   wallet: walletFr,
   gems: gemsFr,
   adminGemPackages: adminGemPackagesFr,

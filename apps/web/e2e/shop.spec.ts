@@ -69,7 +69,7 @@ test.describe('Shop redesign · Showcase Locker', () => {
     // Dispatch the click via the DOM so it works under Mobile Chrome's
     // touch emulation (where Playwright's synthesized click can be
     // intercepted by overlapping footer chrome). `el.click()` always
-    // fires the React onClick / Tamagui onPress handler.
+    // fires the React onClick handler.
     await heroBuy.evaluate((el: HTMLElement) => el.click());
     await expect(page.getByTestId('purchase-confirm-dialog')).toBeVisible();
   });
@@ -85,7 +85,7 @@ test.describe('Shop redesign · Showcase Locker', () => {
     const firstAvatar = page.getByTestId('leaderboard-row-1-avatar');
     await expect(firstAvatar).toBeVisible({ timeout: 30000 });
 
-    // EquippedPlayerAvatar renders the circular YStack as the
+    // EquippedPlayerAvatar renders the circular disc as the
     // `${testid}-disc` element (see packages/ui PlayerAvatar).
     const avatarDisc = page.getByTestId('leaderboard-row-1-avatar-disc');
     await expect(avatarDisc).toBeVisible();
@@ -99,9 +99,9 @@ test.describe('Shop redesign · Showcase Locker', () => {
         height: rect.height,
       };
     });
-    // Tamagui resolves `borderRadius={disc / 2}` to a pixel value equal to
-    // half the disc width — that's what makes it a circle. Assert both
-    // that some radius is applied and that it matches the half-width.
+    // The avatar disc renders `borderRadius: disc / 2` (half the disc
+    // width) — that's what makes it a circle. Assert both that some radius
+    // is applied and that it matches the half-width.
     expect(borderRadius).not.toBe('0px');
     expect(borderRadius).not.toBe('');
     expect(Math.round(width)).toBe(Math.round(height));

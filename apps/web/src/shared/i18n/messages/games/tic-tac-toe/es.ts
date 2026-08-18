@@ -154,6 +154,8 @@ export const esMessages = {
     },
     status: {
       turn: 'Turno de {{player}}',
+      yourTurn: 'Tu turno',
+      waiting: 'Esperando al oponente...',
       winner: '{{player}} ganó',
       draw: 'Empate',
     },

@@ -1,7 +1,5 @@
 'use client';
 
-import { View } from 'tamagui';
-
 export const RAYS_SPIN_CLASS = 'arcadeum-player-avatar-rays-spin';
 
 // Inject the rays-spin keyframes once on the client. packages/ui has no CSS
@@ -68,16 +66,19 @@ interface RaysHaloProps {
 // in its parent. Sits behind the disc (the disc paints over the masked center).
 export function RaysHalo({ style, testId, haloSize }: RaysHaloProps) {
   return (
-    <View
-      position="absolute"
-      top="50%"
-      left="50%"
-      width={haloSize}
-      height={haloSize}
-      pointerEvents="none"
+    <div
       className={RAYS_SPIN_CLASS}
       data-testid={testId}
-      style={{ ...style, transform: 'translate(-50%, -50%)' }}
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: haloSize,
+        height: haloSize,
+        pointerEvents: 'none',
+        ...style,
+        transform: 'translate(-50%, -50%)',
+      }}
     />
   );
 }

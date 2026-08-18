@@ -2,8 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button } from '@arcadeum/ui';
 import { DialogShell } from '@/features/shop/ui/dialogShell';
 import {
   grantShopItemAction,
@@ -134,51 +133,46 @@ function AdminShopGrantDialogInner({
 
   return (
     <DialogShell open onClose={onClose} testId="admin-shop-grant-dialog">
-      <YStack gap="$3" style={{ minWidth: 320 }}>
-        <Text fontSize="$6" fontWeight="700">
+      <div
+        className="flex flex-col items-stretch gap-3"
+        style={{ minWidth: 320 }}
+      >
+        <span className="text-[24px] font-bold">
           {labels.grantDialog.title}
-        </Text>
+        </span>
 
         {/* User Picker */}
-        <YStack gap="$1" position="relative">
-          <Text fontSize="$2" color="$color">
+        <div className="flex flex-col items-stretch gap-1 relative">
+          <span className="text-[14px] text-[var(--color)]">
             {labels.grantDialog.userId}
-          </Text>
+          </span>
           {userId ? (
-            <XStack
-              padding="$2"
-              backgroundColor="$backgroundHover"
-              borderRadius="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <YStack>
-                <Text fontSize="$3" fontWeight="bold">
+            <div className="flex flex-row p-2 bg-[var(--backgroundHover)] rounded-lg border border-[var(--borderColor)] justify-between items-center">
+              <div className="flex flex-col items-stretch">
+                <span className="text-[16px] font-bold">
                   {selectedUser
                     ? `${selectedUser.displayName} (@${selectedUser.username})`
                     : userId}
-                </Text>
+                </span>
                 {selectedUser && (
-                  <Text fontSize="$1" color="$colorPress">
+                  <span className="text-[12px] text-[var(--colorPress)]">
                     {selectedUser.email}
-                  </Text>
+                  </span>
                 )}
-              </YStack>
+              </div>
               <Button
                 size="sm"
                 variant="outline"
-                onPress={() => {
+                onClick={() => {
                   setUserId('');
                   setSelectedUser(null);
                 }}
               >
                 Clear
               </Button>
-            </XStack>
+            </div>
           ) : (
-            <YStack position="relative">
+            <div className="flex flex-col items-stretch relative">
               <input
                 value={userSearchQuery}
                 onChange={(e) => handleUserSearchChange(e.target.value)}
@@ -187,90 +181,55 @@ function AdminShopGrantDialogInner({
                 autoComplete="new-password"
                 style={inputStyle}
               />
-              {(isUserSearching || (userSearchQuery.trim().length > 0 && userResults.length === 0)) && (
-                <YStack
-                  position="absolute"
-                  top="100%"
-                  left={0}
-                  right={0}
-                  backgroundColor="$background"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$3"
-                  maxHeight={200}
-                  overflowY="auto"
-                  zIndex={100}
-                  marginTop="$1"
-                  padding="$2"
-                >
+              {(isUserSearching ||
+                (userSearchQuery.trim().length > 0 &&
+                  userResults.length === 0)) && (
+                <div className="flex flex-col items-stretch absolute top-full left-0 right-0 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl max-h-[200px] overflow-y-auto z-[100] -mt-1 p-2">
                   {isUserSearching ? (
-                    <Text fontSize="$2" color="$colorPress" padding="$1">
+                    <span className="text-[14px] text-[var(--colorPress)] p-1">
                       Searching...
-                    </Text>
+                    </span>
                   ) : (
-                    <Text fontSize="$2" color="$colorPress" padding="$1">
+                    <span className="text-[14px] text-[var(--colorPress)] p-1">
                       No users found.
-                    </Text>
+                    </span>
                   )}
-                </YStack>
+                </div>
               )}
               {!isUserSearching && userResults.length > 0 && (
-                <YStack
-                  position="absolute"
-                  top="100%"
-                  left={0}
-                  right={0}
-                  backgroundColor="$background"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$3"
-                  maxHeight={200}
-                  overflowY="auto"
-                  zIndex={100}
-                  marginTop="$1"
-                >
+                <div className="flex flex-col items-stretch absolute top-full left-0 right-0 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl max-h-[200px] overflow-y-auto z-[100] -mt-1">
                   {userResults.map((u) => (
-                    <YStack
-                      key={u.id}
-                      padding="$2"
-                      hoverStyle={{ backgroundColor: '$backgroundHover' }}
-                      cursor="pointer"
-                      onPress={() => {
+                    <div
+                      className="flex flex-col items-stretch p-2 hover:bg-[var(--backgroundHover)] cursor-pointer"
+                      onClick={() => {
                         setUserId(u.id);
                         setSelectedUser(u);
                         setUserResults([]);
                         setUserSearchQuery('');
                       }}
+                      key={u.id}
                     >
-                      <Text fontSize="$3" fontWeight="bold">
+                      <span className="text-[16px] font-bold">
                         {u.displayName} (@{u.username})
-                      </Text>
-                      <Text fontSize="$1" color="$colorPress">
+                      </span>
+                      <span className="text-[12px] text-[var(--colorPress)]">
                         {u.email}
-                      </Text>
-                    </YStack>
+                      </span>
+                    </div>
                   ))}
-                </YStack>
+                </div>
               )}
-            </YStack>
+            </div>
           )}
-        </YStack>
+        </div>
 
         {/* Item Picker */}
-        <YStack gap="$1" position="relative">
-          <Text fontSize="$2" color="$color">
+        <div className="flex flex-col items-stretch gap-1 relative">
+          <span className="text-[14px] text-[var(--color)]">
             {labels.grantDialog.itemId}
-          </Text>
+          </span>
           {itemId ? (
-            <XStack
-              padding="$3"
-              backgroundColor="$backgroundHover"
-              borderRadius="$2"
-              borderWidth={1}
-              borderColor="$borderColor"
-              alignItems="center"
-              gap="$3"
-            >
+            <div className="flex flex-row p-3 bg-[var(--backgroundHover)] rounded-lg border border-[var(--borderColor)] items-center gap-3">
               <AdminShopItemPreview
                 size={48}
                 colorValue={itemInfo?.colorValue}
@@ -278,30 +237,28 @@ function AdminShopGrantDialogInner({
                 itemId={itemId}
               />
 
-              <YStack flex={1}>
-                <Text fontSize="$3" fontWeight="bold">
-                  {itemId}
-                </Text>
+              <div className="flex flex-col items-stretch flex-1">
+                <span className="text-[16px] font-bold">{itemId}</span>
                 {itemInfo && (
-                  <Text fontSize="$1" color="$colorPress">
+                  <span className="text-[12px] text-[var(--colorPress)]">
                     {labels.category[itemInfo.category]} •{' '}
-                    {labels.rarity[itemInfo.rarity]} •{' '}
-                    {itemInfo.priceAmount} {itemInfo.priceCurrency}
-                  </Text>
+                    {labels.rarity[itemInfo.rarity]} • {itemInfo.priceAmount}{' '}
+                    {itemInfo.priceCurrency}
+                  </span>
                 )}
-              </YStack>
+              </div>
               <Button
                 size="sm"
                 variant="outline"
-                onPress={() => {
+                onClick={() => {
                   setItemId('');
                 }}
               >
                 Clear
               </Button>
-            </XStack>
+            </div>
           ) : (
-            <YStack position="relative">
+            <div className="flex flex-col items-stretch relative">
               <input
                 value={itemSearchQuery}
                 onChange={(e) => setItemSearchQuery(e.target.value)}
@@ -311,20 +268,7 @@ function AdminShopGrantDialogInner({
                 style={inputStyle}
               />
               {itemSearchQuery.trim().length > 0 && (
-                <YStack
-                  position="absolute"
-                  top="100%"
-                  left={0}
-                  right={0}
-                  backgroundColor="$background"
-                  borderWidth={1}
-                  borderColor="$borderColor"
-                  borderRadius="$3"
-                  maxHeight={200}
-                  overflowY="auto"
-                  zIndex={100}
-                  marginTop="$1"
-                >
+                <div className="flex flex-col items-stretch absolute top-full left-0 right-0 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl max-h-[200px] overflow-y-auto z-[100] -mt-1">
                   {catalog
                     .filter((item) => {
                       const query = itemSearchQuery.toLowerCase();
@@ -335,17 +279,13 @@ function AdminShopGrantDialogInner({
                       );
                     })
                     .map((item) => (
-                      <XStack
-                        key={item.id}
-                        padding="$2"
-                        hoverStyle={{ backgroundColor: '$backgroundHover' }}
-                        cursor="pointer"
-                        onPress={() => {
+                      <div
+                        className="flex flex-row p-2 hover:bg-[var(--backgroundHover)] cursor-pointer items-center gap-2"
+                        onClick={() => {
                           setItemId(item.id);
                           setItemSearchQuery('');
                         }}
-                        alignItems="center"
-                        gap="$2"
+                        key={item.id}
                       >
                         <AdminShopItemPreview
                           size={24}
@@ -353,28 +293,28 @@ function AdminShopGrantDialogInner({
                           assetUrl={item.assetUrl}
                           itemId={item.id}
                         />
-                        <YStack>
-                          <Text fontSize="$3" fontWeight="bold">
+                        <div className="flex flex-col items-stretch">
+                          <span className="text-[16px] font-bold">
                             {item.id}
-                          </Text>
-                          <Text fontSize="$1" color="$colorPress">
+                          </span>
+                          <span className="text-[12px] text-[var(--colorPress)]">
                             {labels.category[item.category]} •{' '}
                             {labels.rarity[item.rarity]}
-                          </Text>
-                        </YStack>
-                      </XStack>
+                          </span>
+                        </div>
+                      </div>
                     ))}
-                </YStack>
+                </div>
               )}
-            </YStack>
+            </div>
           )}
-        </YStack>
+        </div>
 
         {/* Reason & Predefined Reasons */}
-        <YStack gap="$1">
-          <Text fontSize="$2" color="$color">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[14px] text-[var(--color)]">
             {labels.grantDialog.reason}
-          </Text>
+          </span>
           <input
             value={reason}
             onChange={(e) => setReason(e.target.value)}
@@ -383,49 +323,46 @@ function AdminShopGrantDialogInner({
             autoComplete="new-password"
             style={inputStyle}
           />
-          <Text fontSize="$1" color="$colorPress" marginTop="$1">
+          <span className="text-[12px] text-[var(--colorPress)] -mt-1">
             {labels.grantDialog.suggestedReasonsLabel}
-          </Text>
-          <XStack gap="$1.5" flexWrap="wrap" marginTop="$1">
+          </span>
+          <div className="flex flex-row items-stretch flex-wrap -mt-1">
             {Object.values(labels.grantDialog.reasons).map((text) => (
               <Button
+                className="py-1 px-2 text-[12px] rounded-[16px]"
                 key={text}
                 size="sm"
                 variant="outline"
-                onPress={() => setReason(text)}
-                padding="$1 $2"
-                fontSize="$1"
-                borderRadius="$4"
+                onClick={() => setReason(text)}
               >
                 {text}
               </Button>
             ))}
-          </XStack>
-        </YStack>
+          </div>
+        </div>
 
         {error ? (
-          <Text
-            color="$danger"
-            fontSize="$2"
+          <span
+            className="text-[var(--danger)] text-[14px]"
             data-testid="admin-shop-grant-error"
           >
             {error}
-          </Text>
+          </span>
         ) : null}
 
-        <XStack gap="$3" justifyContent="flex-end" marginTop="$2">
-          <Button variant="outline" onPress={onClose} disabled={isPending}>
+        <div className="flex flex-row items-stretch gap-3 justify-end -mt-2">
+          <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.grantDialog.cancel}
           </Button>
           <Button
-            onPress={handleGrant}
+            onClick={handleGrant}
             disabled={isPending}
             data-testid="admin-shop-grant-submit"
           >
             {labels.grantDialog.grant}
           </Button>
-        </XStack>
-      </YStack>
+        </div>
+      </div>
     </DialogShell>
   );
 }

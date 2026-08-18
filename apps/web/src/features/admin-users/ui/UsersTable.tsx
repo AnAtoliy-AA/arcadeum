@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Spinner, Text } from 'tamagui';
+import { Button, GlassCard } from '@arcadeum/ui';
+import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { AdminUserItem } from '../api';
 import type { UserRole } from '@/entities/session/model/types';
 import { UsersTableRow } from './UsersTableRow';
@@ -107,18 +107,18 @@ export function UsersTable({
 
   if (isLoading && items.length === 0) {
     return (
-      <YStack alignItems="center" padding="$5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
-      </YStack>
+      </div>
     );
   }
 
   if (!isLoading && items.length === 0) {
     return (
-      <GlassCard p="$5" alignItems="center" data-testid="users-table-empty">
-        <Text opacity={0.7}>
+      <GlassCard className={'p-5 items-center'} data-testid="users-table-empty">
+        <span className="opacity-[0.7]">
           {hasFilter ? labels.empty.noResults : labels.empty.noUsers}
-        </Text>
+        </span>
       </GlassCard>
     );
   }
@@ -134,46 +134,39 @@ export function UsersTable({
       .every((it) => selectedIds.has(it.id));
 
   return (
-    <YStack gap="$3" data-testid="users-table">
-      <XStack
-        alignItems="center"
-        justifyContent="space-between"
-        paddingHorizontal="$1"
-      >
-        <Text opacity={0.7} fontSize="$1">
+    <div
+      className="flex flex-col items-stretch gap-3"
+      data-testid="users-table"
+    >
+      <div className="flex flex-row items-center justify-between px-1">
+        <span className="opacity-[0.7] text-[12px]">
           {labels.totalLabel.replace('{total}', String(total))}
-        </Text>
-      </XStack>
+        </span>
+      </div>
 
-      <GlassCard p="$0" overflow="hidden">
-        <XStack
-          gap="$3"
-          alignItems="center"
-          paddingVertical="$2"
-          paddingHorizontal="$3"
-          backgroundColor="$backgroundFocus"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
+      <GlassCard className={'p-0 overflow-hidden'}>
+        <div
+          className="flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
           data-testid="users-table-header"
         >
-          <YStack width={32} alignItems="center">
+          <div className="flex flex-col w-[32px] items-center">
             <input
               type="checkbox"
               checked={allSelectableSelected}
               onChange={handleToggleAll}
               data-testid="select-all-checkbox"
             />
-          </YStack>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </div>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.username}
-          </Text>
-          <Text width={120} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="w-[120px] font-bold text-[12px] opacity-[0.85]">
             {labels.table.role}
-          </Text>
-          <Text width={150} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="w-[150px] font-bold text-[12px] opacity-[0.85]">
             {labels.table.actions}
-          </Text>
-        </XStack>
+          </span>
+        </div>
 
         {items.map((it, i) => (
           <UsersTableRow
@@ -202,70 +195,60 @@ export function UsersTable({
       </GlassCard>
 
       {selectedIds.size > 0 && (
-        <XStack
-          gap="$3"
-          alignItems="center"
-          justifyContent="space-between"
-          padding="$3"
-          borderRadius="$3"
-          backgroundColor="$backgroundFocus"
+        <div
+          className="flex flex-row gap-3 items-center justify-between p-3 rounded-xl bg-[var(--backgroundFocus)]"
           data-testid="bulk-actions-bar"
         >
-          <Text fontSize="$2" opacity={0.8}>
+          <span className="text-[14px] opacity-[0.8]">
             {labels.table.selectedCount.replace(
               '{count}',
               String(selectedIds.size),
             )}
-          </Text>
-          <XStack gap="$2">
+          </span>
+          <div className="flex flex-row items-stretch gap-2">
             <Button
               variant="outline"
               size="sm"
-              onPress={() => setSelectedIds(new Set())}
+              onClick={() => setSelectedIds(new Set())}
             >
               {labels.table.deselectAll}
             </Button>
             <Button
-              variant="outline"
+              variant="danger"
+              outline
               size="sm"
-              color="$red10"
-              onPress={handleBulkDelete}
+              onClick={handleBulkDelete}
               data-testid="bulk-delete-button"
             >
               {labels.table.deleteSelected}
             </Button>
-          </XStack>
-        </XStack>
+          </div>
+        </div>
       )}
 
-      <XStack
-        gap="$3"
-        alignItems="center"
-        justifyContent="center"
-        paddingTop="$2"
-      >
+      <div className="flex flex-row gap-3 items-center justify-center pt-2">
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page - 1)}
+          onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
         >
           {labels.pagination.prev}
         </Button>
-        <Text opacity={0.8} fontSize="$2">
+        <span className="opacity-[0.8] text-[14px]">
           {labels.pagination.of
             .replace('{current}', String(page))
             .replace('{total}', String(totalPages))}
-        </Text>
+        </span>
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page + 1)}
+          onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
         >
           {labels.pagination.next}
         </Button>
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

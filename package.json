@@ -1,11 +1,11 @@
 {
   "name": "aicoapp-monorepo",
-  "version": "1.24.46",
+  "version": "1.25.52",
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "postinstall": "node scripts/patch-tamagui-token-init.mjs",
+    "postinstall": "echo postinstall",
     "prepare": "husky",
     "predev": "rm -rf .turbo node_modules/.cache",
     "dev": "turbo run dev --parallel --filter be --filter web --filter \"@arcadeum/ui\"",
@@ -35,19 +35,10 @@
     "markdown-it": "^14.3.0",
     "prettier": "3.9.6",
     "standard-version": "^9.5.0",
-    "turbo": "^2.10.8"
+    "turbo": "^2.10.9"
   },
   "pnpm": {
     "overrides": {
-      "tamagui": "2.0.0-rc.23",
-      "@tamagui/core": "2.0.0-rc.23",
-      "@tamagui/web": "2.0.0-rc.23",
-      "@tamagui/shorthands": "2.0.0-rc.23",
-      "@tamagui/config": "2.0.0-rc.23",
-      "@tamagui/lucide-icons": "2.0.0-rc.23",
-      "react": "19.1.0",
-      "react-dom": "19.1.0",
-      "react-server-dom-webpack": "19.0.1",
       "shell-quote": "1.8.4",
       "handlebars": ">=4.7.9",
       "tar": ">=7.5.19"

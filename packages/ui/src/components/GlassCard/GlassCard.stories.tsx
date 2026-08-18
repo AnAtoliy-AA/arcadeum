@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { GlassCard } from './GlassCard';
 import { Typography } from '../Typography/Typography';
-import { YStack } from 'tamagui';
 
 const meta: Meta<typeof GlassCard> = {
   title: 'Shared/GlassCard',
@@ -31,12 +30,12 @@ export const Default: Story = {
   args: {
     animated: true,
     children: (
-      <YStack gap="$4">
+      <div className="flex flex-col gap-4">
         <Typography variant="heading" uiSize="2xl">Glass Card Title</Typography>
         <Typography variant="body">
           This is a premium glassmorphic card component used throughout the application for a modern aesthetic.
         </Typography>
-      </YStack>
+      </div>
     ),
   },
 };
@@ -45,12 +44,12 @@ export const Static: Story = {
   args: {
     animated: false,
     children: (
-      <YStack gap="$4">
+      <div className="flex flex-col gap-4">
         <Typography variant="heading" uiSize="xl">Static Card</Typography>
         <Typography variant="body">
           Animation is disabled for this variation.
         </Typography>
-      </YStack>
+      </div>
     ),
   },
 };
@@ -58,16 +57,16 @@ export const Static: Story = {
 export const CustomContent: Story = {
   args: {
     animated: true,
-    padding: '$10',
+    className: 'p-10',
     children: (
-      <YStack gap="$6" alignItems="center">
-        <Typography variant="heading" uiSize="3xl" color="$primary">
+      <div className="flex flex-col items-center gap-6">
+        <Typography variant="heading" uiSize="3xl" color="var(--primary)">
           Premium Experience
         </Typography>
-        <Typography variant="body" uiSize="sm" textAlign="center">
+        <Typography variant="body" uiSize="sm" className="text-center">
           Custom padding and centered content demonstration.
         </Typography>
-      </YStack>
+      </div>
     ),
   },
 };

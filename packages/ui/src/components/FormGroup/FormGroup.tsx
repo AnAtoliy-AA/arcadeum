@@ -1,47 +1,16 @@
-import { YStack, Text, styled, GetProps } from 'tamagui';
 import { memo } from 'react';
 import type { ReactNode } from 'react';
+import { cx } from '../../utils/cx';
 
-export type FormGroupProps = GetProps<typeof Container> & {
+export type FormGroupProps = {
   label?: string;
   htmlFor?: string;
   error?: string;
   required?: boolean;
   description?: string;
   children: ReactNode;
-};
-
-const Container = styled(YStack, {
-  name: 'FormGroup',
-  gap: '$2',
-  width: '100%',
-});
-
-const Label = styled(Text, {
-  name: 'FormLabel',
-  fontSize: '$3',
-  fontWeight: '600',
-  color: '$color',
-  letterSpacing: 0.5,
-  userSelect: 'none',
-});
-
-const RequiredText = styled(Text, {
-  color: '$error',
-  marginLeft: '$1',
-});
-
-const Description = styled(Text, {
-  fontSize: '$2',
-  color: '$color',
-  opacity: 0.6,
-});
-
-const ErrorText = styled(Text, {
-  fontSize: '$2',
-  color: '$error',
-  marginTop: '$1',
-});
+  className?: string;
+} & Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>;
 
 export const FormGroup = memo(function FormGroup({
   label,
@@ -50,21 +19,37 @@ export const FormGroup = memo(function FormGroup({
   required,
   description,
   children,
+  className,
+  style,
   ...rest
 }: FormGroupProps) {
   return (
-    <Container {...rest}>
+    <div
+      className={cx('flex w-full flex-col gap-2', className)}
+      style={style}
+      {...rest}
+    >
       {label && (
-        <label htmlFor={htmlFor} style={{ display: 'block', cursor: 'pointer' }}>
-          <Label>
+        <label htmlFor={htmlFor} className="block cursor-pointer">
+          <span className="select-none text-[16px] font-semibold tracking-[0.5px] text-[var(--color)]">
             {label}
-            {required && <RequiredText>*</RequiredText>}
-          </Label>
+            {required && (
+              <span className="ml-1 text-[var(--error)]">*</span>
+            )}
+          </span>
         </label>
       )}
-      {description && <Description>{description}</Description>}
+      {description && (
+        <span className="block text-[14px] text-[var(--color)] opacity-60">
+          {description}
+        </span>
+      )}
       {children}
-      {error && <ErrorText>⚠ {error}</ErrorText>}
-    </Container>
+      {error && (
+        <span className="mt-1 block text-[14px] text-[var(--error)]">
+          ⚠ {error}
+        </span>
+      )}
+    </div>
   );
 });

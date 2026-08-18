@@ -7,10 +7,6 @@ export const tableInfoStyles = {
   getTextGlow: () => VARIANT_COLORS.underwater.primary,
   getStatValueColor: (isWarning?: boolean) =>
     isWarning ? '#ef4444' : VARIANT_COLORS.underwater.primary,
-  getInfoCardBackground: () => 'rgba(15, 23, 42, 0.8)',
-  getInfoCardBorder: () => `${VARIANT_COLORS.underwater.primary}4d`,
-  getInfoCardShadow: () => '0 4px 20px rgba(0, 0, 0, 0.4)',
-  getInfoCardPattern: () => 'none',
   getStyles: () => ({
     backdropFilter: 'blur(16px)',
     borderRadius: '16px',
@@ -20,10 +16,8 @@ export const tableInfoStyles = {
     background: 'rgba(2, 6, 23, 0.4)',
     borderRadius: '12px',
     border: `1px solid ${VARIANT_COLORS.underwater.primary}26`,
-    hoverStyle: {
-      background: 'rgba(2, 6, 23, 0.6)',
-      borderColor: VARIANT_COLORS.underwater.primary,
-      transform: [{ scale: 1.05 }],
-    },
+    '--stat-hover-bg': 'rgba(2, 6, 23, 0.6)',
+    '--stat-hover-border': VARIANT_COLORS.underwater.primary,
+    '--stat-hover-transform': 'scale(1.05)',
   }),
 };

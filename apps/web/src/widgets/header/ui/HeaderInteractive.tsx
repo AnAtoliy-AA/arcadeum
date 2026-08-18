@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import {
@@ -72,7 +73,6 @@ import {
 import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
-import { saveStoredSettings } from '@/shared/lib/settings-storage';
 
 export function HeaderInteractive() {
   const isMounted = useIsMounted();
@@ -88,14 +88,16 @@ export function HeaderInteractive() {
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
     useMobileMenu();
 
+  const { musicEnabled, setMusicEnabled } = useMusicSetting();
+
   const toggleMusic = useCallback(() => {
-    saveStoredSettings({ musicEnabled: true });
-    window.dispatchEvent(new CustomEvent('arcadeum:toggle-music'));
-  }, []);
+    setMusicEnabled(!musicEnabled);
+  }, [musicEnabled, setMusicEnabled]);
 
   const navItems = useMemo(
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
+      { href: routes.rooms, label: t('navigation.roomsTab') },
       { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
       {
         href: '#',
@@ -150,7 +152,6 @@ export function HeaderInteractive() {
                   isActive={false}
                   accent={item.accent}
                   icon={item.icon}
-                  gap="$2"
                   onClick={item.onClick}
                   data-testid={`nav-${item.label.toLowerCase()}`}
                 >
@@ -164,7 +165,6 @@ export function HeaderInteractive() {
                   isActive={pathname === item.href}
                   accent={item.accent}
                   icon={item.icon}
-                  gap="$2"
                   data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
                   data-active={pathname === item.href ? 'true' : undefined}
                 >
@@ -190,12 +190,7 @@ export function HeaderInteractive() {
                   size="md"
                   aria-label={t('common.actions.support')}
                   tabIndex={-1}
-                  hoverStyle={{
-                    y: -2,
-                    transform: 'scale(1.1)',
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                    borderColor: 'rgba(255, 255, 255, 0.25)',
-                  }}
+                  className="hover:-translate-y-[2px] hover:scale-[1.1] hover:bg-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.25)]"
                 >
                   <SupportIcon size={20} />
                 </Button>
@@ -234,12 +229,7 @@ export function HeaderInteractive() {
                     size="md"
                     aria-label={t('navigation.settingsTab')}
                     tabIndex={-1}
-                    hoverStyle={{
-                      y: -2,
-                      transform: 'scale(1.1)',
-                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                      borderColor: 'rgba(255, 255, 255, 0.25)',
-                    }}
+                    className="hover:-translate-y-[2px] hover:scale-[1.1] hover:bg-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.25)]"
                   >
                     <GearIcon size={20} />
                   </Button>

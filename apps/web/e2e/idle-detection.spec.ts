@@ -9,6 +9,7 @@ import {
   checkNoBackendErrors,
   waitForRoomReady,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Idle Detection', () => {
   const roomId = MOCK_OBJECT_ID;
@@ -44,14 +45,13 @@ test.describe('Idle Detection', () => {
   test('should track idle players in store when idle_changed event is received', async ({
     page,
   }) => {
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     const idleBefore = await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
       const store = win.__ZUSTAND_GAME_STORE__ as
-        | { getState: () => { idlePlayers: string[] } }
-        | undefined;
+        { getState: () => { idlePlayers: string[] } } | undefined;
       return store?.getState?.()?.idlePlayers ?? [];
     });
     expect(idleBefore).toEqual([]);
@@ -83,8 +83,7 @@ test.describe('Idle Detection', () => {
     await page.waitForFunction(() => {
       const win = window as unknown as Record<string, unknown>;
       const store = win.__ZUSTAND_GAME_STORE__ as
-        | { getState: () => { idlePlayers: string[] } }
-        | undefined;
+        { getState: () => { idlePlayers: string[] } } | undefined;
       return store
         ?.getState?.()
         ?.idlePlayers?.includes('507f191e810c19729de860e2');
@@ -93,8 +92,7 @@ test.describe('Idle Detection', () => {
     const idleAfter = await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
       const store = win.__ZUSTAND_GAME_STORE__ as
-        | { getState: () => { idlePlayers: string[] } }
-        | undefined;
+        { getState: () => { idlePlayers: string[] } } | undefined;
       return store?.getState?.()?.idlePlayers ?? [];
     });
     expect(idleAfter).toContain('507f191e810c19729de860e2');
@@ -103,7 +101,7 @@ test.describe('Idle Detection', () => {
   test('should remove player from idle list when active event is received', async ({
     page,
   }) => {
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     await page.evaluate(() => {
@@ -155,8 +153,7 @@ test.describe('Idle Detection', () => {
     const idleAfterActive = await page.evaluate(() => {
       const win = window as unknown as Record<string, unknown>;
       const store = win.__ZUSTAND_GAME_STORE__ as
-        | { getState: () => { idlePlayers: string[] } }
-        | undefined;
+        { getState: () => { idlePlayers: string[] } } | undefined;
       return store?.getState?.()?.idlePlayers ?? [];
     });
     expect(idleAfterActive).not.toContain('507f191e810c19729de860e2');

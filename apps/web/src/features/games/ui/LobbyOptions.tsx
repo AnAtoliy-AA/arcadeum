@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { YStack, XStack, Text } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 
 interface LobbyOptionSectionProps {
@@ -16,23 +15,17 @@ export function LobbyOptionSection({
   hint,
 }: LobbyOptionSectionProps) {
   return (
-    <YStack gap="$2">
-      <Text
-        fontSize="$2"
-        fontWeight="600"
-        textTransform="uppercase"
-        letterSpacing={0.5}
-        color="$textSecondary"
-      >
+    <div className="flex flex-col items-stretch gap-2">
+      <span className="text-[14px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
         {title}
-      </Text>
+      </span>
       {children}
       {hint && (
-        <Text fontSize="$1" color="$textMuted" opacity={0.7}>
+        <span className="text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
           {hint}
-        </Text>
+        </span>
       )}
-    </YStack>
+    </div>
   );
 }
 
@@ -62,47 +55,51 @@ export function LobbyChipGroup({
   testIdPrefix = 'chip',
 }: LobbyChipGroupProps) {
   return (
-    <XStack gap="$2" flexWrap="wrap">
+    <div className="flex flex-row items-stretch gap-2 flex-wrap">
       {options.map((option) => {
         const isActive = value === option.id;
         const isDisabled = disabled || option.comingSoon;
         return (
           <Button
+            className={`rounded-[10px] font-medium text-[13px] ${
+              isActive
+                ? undefined
+                : 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.10)] text-[#cbd5e1] hover:bg-[rgba(255,255,255,0.08)]'
+            } ${
+              option.comingSoon
+                ? 'opacity-[0.4]'
+                : disabled && !isActive
+                  ? 'opacity-[0.5]'
+                  : ''
+            }`}
+            style={
+              isActive
+                ? {
+                    backgroundColor: `color-mix(in srgb, ${accentColor} 20%, transparent)`,
+                    borderColor: `color-mix(in srgb, ${accentColor} 80%, transparent)`,
+                    color: accentColor,
+                  }
+                : undefined
+            }
             key={option.id}
             variant="chip"
             size="sm"
             data-testid={`${testIdPrefix}-${option.id}`}
-            data-active={isActive}
+            data-active={isActive ? 'on' : undefined}
             disabled={isDisabled}
-            backgroundColor={
-              isActive ? `${accentColor}20` : 'rgba(255, 255, 255, 0.04)'
-            }
-            borderColor={
-              isActive ? `${accentColor}80` : 'rgba(255, 255, 255, 0.10)'
-            }
-            color={isActive ? accentColor : '#cbd5e1'}
-            hoverStyle={{
-              backgroundColor: isActive
-                ? `${accentColor}30`
-                : 'rgba(255, 255, 255, 0.08)',
-            }}
-            borderRadius={10}
-            fontWeight={500}
-            fontSize={13}
-            opacity={option.comingSoon ? 0.4 : disabled && !isActive ? 0.5 : 1}
-            onPress={() => !isDisabled && onChange(option.id)}
+            onClick={() => !isDisabled && onChange(option.id)}
           >
-            {option.emoji && <Text marginRight={2}>{option.emoji}</Text>}
+            {option.emoji && <span className="-mr-2">{option.emoji}</span>}
             {option.label}
             {option.comingSoon && (
-              <Text marginLeft={2} fontSize={10} opacity={0.85}>
+              <span className="-ml-2 text-[48px] opacity-[0.85]">
                 Coming Soon
-              </Text>
+              </span>
             )}
           </Button>
         );
       })}
-    </XStack>
+    </div>
   );
 }
 
@@ -122,8 +119,8 @@ export function LobbyToggle({
   hint,
 }: LobbyToggleProps) {
   return (
-    <YStack gap="$1">
-      <XStack alignItems="center" gap="$3">
+    <div className="flex flex-col items-stretch gap-1">
+      <div className="flex flex-row items-center gap-3">
         <input
           type="checkbox"
           checked={checked}
@@ -136,19 +133,20 @@ export function LobbyToggle({
             cursor: disabled ? 'not-allowed' : 'pointer',
           }}
         />
-        <Text
-          fontSize="$3"
-          fontWeight="500"
-          color={disabled ? '$textMuted' : '$color'}
+        <span
+          className="text-[16px] font-medium"
+          style={{
+            color: disabled ? 'rgba(180,180,200,0.7)' : 'var(--color)',
+          }}
         >
           {label}
-        </Text>
-      </XStack>
+        </span>
+      </div>
       {hint && (
-        <Text fontSize="$1" color="$textMuted" opacity={0.7} marginLeft={28}>
+        <span className="text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
           {hint}
-        </Text>
+        </span>
       )}
-    </YStack>
+    </div>
   );
 }

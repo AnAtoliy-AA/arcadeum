@@ -18,9 +18,10 @@ export const buildRoutes = (locale: Locale) => {
     // Games (top-level segment is translated; nested segments stay in
     // English to keep the diff scoped to the SEO-relevant keyword).
     games: `/${locale}/${s('games')}`,
+    rooms: `/${locale}/${s('rooms')}`,
     gameDetail: (id: string) => `/${locale}/${s('games')}/${id}`,
     gameCreate: `/${locale}/${s('games')}/create`,
-    gameRoom: (id: string) => `/${locale}/${s('games')}/rooms/${id}`,
+    gameRoom: (id: string) => `/${locale}/${s('rooms')}/${id}`,
     seaBattleLanding: `/${locale}/${s('games')}/sea-battle`,
     criticalLanding: `/${locale}/${s('games')}/critical`,
     glimwormLanding: `/${locale}/${s('games')}/glimworm`,

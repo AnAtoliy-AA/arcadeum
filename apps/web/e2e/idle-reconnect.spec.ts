@@ -9,6 +9,7 @@ import {
   checkNoBackendErrors,
   waitForRoomReady,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Idle Connection Overlay', () => {
   const roomId = MOCK_OBJECT_ID;
@@ -39,7 +40,7 @@ test.describe('Idle Connection Overlay', () => {
   test('should show connection overlay when socket disconnects', async ({
     page,
   }) => {
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Wait for store to be connected first
@@ -88,7 +89,7 @@ test.describe('Idle Connection Overlay', () => {
   });
 
   test('should reconnect when user clicks the overlay', async ({ page }) => {
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Wait for store to be connected first
@@ -148,7 +149,7 @@ test.describe('Idle Connection Overlay', () => {
   test('should keep game content visible beneath the overlay', async ({
     page,
   }) => {
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     // Wait for store to be connected first

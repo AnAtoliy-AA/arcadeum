@@ -4,6 +4,7 @@ import { useMutation } from '@/shared/hooks/useMutation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useSocket } from '@/shared/lib/socket';
 import { rematchApi } from '@/features/rematch/api';
+import { useRoutes } from '@/shared/config/useRoutes';
 import type { GameOptions } from '@/shared/types/games';
 
 interface UseRematchOptions {
@@ -41,6 +42,7 @@ export function useRematch({
   gameOptions,
 }: UseRematchOptions): UseRematchResult {
   const router = useRouter();
+  const routes = useRoutes();
   const { snapshot } = useSessionTokens();
   const [rematchError, setRematchError] = useState<string | null>(null);
   const [showRematchModal, setShowRematchModal] = useState(false);
@@ -107,7 +109,7 @@ export function useRematch({
           typeof data.room === 'string' ? data.room : data.room?.id;
         if (newRoomId) {
           setShowRematchModal(false);
-          router.push(`/games/rooms/${newRoomId}`);
+          router.push(routes.gameRoom(newRoomId));
         }
       },
       onError: (err) => {
@@ -209,9 +211,9 @@ export function useRematch({
   const handleAcceptInvitation = useCallback(() => {
     if (invitation) {
       setIsAcceptingInvitation(true);
-      router.push(`/games/rooms/${invitation.newRoomId}`);
+      router.push(routes.gameRoom(invitation.newRoomId));
     }
-  }, [invitation, router]);
+  }, [invitation, router, routes]);
 
   const handleDeclineInvitation = useCallback(() => {
     if (!invitation?.newRoomId) return;

@@ -11,7 +11,11 @@ export type LeaderboardPlayerDto = {
   prevRank?: number;
   name: string;
   countryCode?: string;
-  region: Region;
+  /**
+   * Real region derived from the player's geo-located country. Undefined
+   * for players whose country is unknown — the UI must not fabricate one.
+   */
+  region?: Region;
   tier: Tier;
   rating: number;
   elo?: number;
@@ -114,6 +118,12 @@ export type PlayerProfileDto = {
 export type LeaderboardSnapshotDto = {
   capturedAt: string;
   mode: GameMode;
+  /**
+   * All leaderboard modes available on this server (derived from the game
+   * catalog). Clients render the mode tabs from this list so a new game
+   * appears on the leaderboard without a frontend deploy.
+   */
+  modes: GameMode[];
   page: number;
   mythic: MythicPlayerDto | null;
   podium:

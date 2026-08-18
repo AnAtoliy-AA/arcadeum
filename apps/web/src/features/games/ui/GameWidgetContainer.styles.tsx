@@ -1,13 +1,8 @@
 import './scrollbar.scss';
-import React, { createContext, useContext } from 'react';
-import { styled, XStack, YStack, Text } from 'tamagui';
-import {
-  GameContainer as BaseGameContainer,
-  GameBoard as BaseGameBoard,
-  TableArea as BaseTableArea,
-  IconButton,
-} from '@arcadeum/ui';
-import { scrollbarStyles } from '@/shared/lib/styles';
+import React, { createContext, useContext, forwardRef, memo } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
+import { IconButton, type GameVariant } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import type { TurnContract } from './TurnIndicator';
 
 const WidgetFullscreenContext = createContext<boolean>(false);
@@ -59,264 +54,304 @@ export function ActiveEmotesProvider({
   );
 }
 
-export const Container = styled(BaseGameContainer, {
-  name: 'GameWidgetContainer',
-  gap: '$5',
-  paddingHorizontal: '$1',
-  paddingTop: 0,
-  paddingBottom: 0,
-  borderRadius: 24,
-  minHeight: 0,
-  position: 'relative',
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  backdropFilter: 'blur(20px)',
-  height: 'auto',
-  flexDirection: 'column',
-  minWidth: 0,
-  borderWidth: 1,
-  borderColor: '$glassBorder',
+export type ContainerProps = {
+  isMyTurn?: boolean;
+  isFullscreen?: boolean;
+  variant?: GameVariant;
+  className?: string;
+  style?: React.CSSProperties;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>;
 
-  ...scrollbarStyles,
+// Per-game ambient glow (same as @arcadeum/ui GameContainer's AmbientGlow).
+const AMBIENT_GLOW_BACKGROUNDS: Partial<Record<GameVariant, string>> = {
+  cyberpunk:
+    'radial-gradient(circle at 30% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 35%), radial-gradient(circle at 70% 70%, rgba(192, 38, 211, 0.12) 0%, transparent 35%)',
+  underwater:
+    'radial-gradient(circle at 30% 30%, rgba(34, 211, 238, 0.15) 0%, transparent 40%), radial-gradient(circle at 70% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 40%)',
+  crime:
+    'radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.1) 0%, transparent 60%)',
+  horror:
+    'radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 60%)',
+  adventure:
+    'radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 60%)',
+  'high-altitude-hike':
+    'radial-gradient(circle at 30% 30%, rgba(56, 189, 248, 0.15) 0%, transparent 40%), radial-gradient(circle at 70% 70%, rgba(248, 250, 252, 0.1) 0%, transparent 40%)',
+};
 
-  $sm: {
-    paddingHorizontal: '$2',
-    paddingTop: 0,
-    paddingBottom: 0,
-    borderRadius: 16,
-    overflowX: 'hidden',
-    overflowY: 'auto',
-  },
-
-  variants: {
-    $isMyTurn: {
-      true: {
-        borderWidth: 2,
-        borderColor: 'rgba(34, 197, 94, 0.8)',
-        shadowColor: 'rgba(34, 197, 94, 0.4)',
-      },
+export const Container = memo(
+  forwardRef<HTMLDivElement, ContainerProps>(function Container(
+    {
+      isMyTurn = false,
+      isFullscreen = false,
+      variant,
+      className,
+      style,
+      children,
+      ...props
     },
-    isFullscreen: {
-      true: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100vw',
-        height: '100vh',
-        maxWidth: '100vw',
-        maxHeight: '100vh',
-        borderRadius: 0,
-        background: '#151718',
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        zIndex: 1100,
-        paddingHorizontal: '$1',
-        paddingTop: 0,
-      },
-    },
-  } as const,
-});
+    ref,
+  ) {
+    const glowBackground = variant
+      ? AMBIENT_GLOW_BACKGROUNDS[variant]
+      : undefined;
 
-export const GameHeader = styled(XStack, {
-  name: 'GameWidgetHeader',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  gap: '$3',
-  paddingHorizontal: '$7',
-  paddingVertical: '$2',
-  backgroundColor: '$glassBg',
-  backdropFilter: 'blur(16px)',
-  borderBottomWidth: 1,
-  borderBottomColor: '$glassBorder',
-  marginHorizontal: '-$1',
-  marginTop: 0,
-  position: 'sticky',
-  top: 0,
-  zIndex: 30,
-  flexShrink: 0,
+    return (
+      <div
+        ref={ref}
+        className={cx(
+          'flex flex-col flex-1 w-full overflow-y-auto overflow-x-hidden bg-[var(--background)]',
+          'modern-scrollbar gap-5 px-1 pt-0 pb-0 min-h-0 h-auto min-w-0',
+          isFullscreen
+            ? 'fixed inset-0 w-screen h-screen max-w-screen max-h-screen rounded-none bg-[#151718] z-[1100] px-1 pt-0'
+            : 'relative rounded-[24px]',
+          'max-[800px]:px-2 max-[800px]:pt-0 max-[800px]:pb-0 max-[800px]:rounded-[16px]',
+          isMyTurn
+            ? 'border-2 border-[rgba(34,197,94,0.8)] shadow-[0_0_30px_rgba(34,197,94,0.4)]'
+            : 'border border-[var(--glassBorderStrong)] shadow-[0_0_0_1px_rgba(255,255,255,0.05)_inset,0_8px_24px_rgba(0,0,0,0.25)]',
+          className,
+        )}
+        style={style}
+        {...props}
+      >
+        {glowBackground && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-[-60%] top-[-60%] z-0 h-full w-[220%] opacity-50"
+            style={{ background: glowBackground }}
+          />
+        )}
+        {children}
+      </div>
+    );
+  }),
+);
 
-  $sm: {
-    paddingHorizontal: '$4',
-    paddingVertical: '$2',
-    marginHorizontal: '-$2',
-    marginTop: 0,
-    top: 0,
-    gap: '$1',
-    flexWrap: 'nowrap',
-  },
-});
+export const GameHeader = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-center justify-between gap-3 px-7 py-2 bg-[var(--glassBg)] border-b border-b-[var(--glassBorderStrong)] -mx-1 mt-0 sticky top-0 z-[30] shrink-0 max-[800px]:px-4 max-[800px]:py-2 max-[800px]:-mx-2 max-[800px]:mt-0 max-[800px]:top-0 max-[800px]:gap-1 max-[800px]:flex-nowrap',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const GameInfo = styled(XStack, {
-  name: 'GameWidgetHeaderInfo',
-  alignItems: 'center',
-  gap: '$2',
-  minWidth: 0,
-  flex: 1,
-  position: 'relative',
+export const GameInfo = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-center gap-2 min-w-0 flex-1 relative max-[800px]:min-w-0 max-[800px]:flex-1',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-  $sm: {
-    minWidth: 0,
-    flex: 1,
-  },
-});
+export const VariantIconBadge = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-col items-center justify-center w-[30px] h-[30px] rounded-[8px] bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.12)] shrink-0 max-[800px]:w-6 max-[800px]:h-6',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const VariantIconBadge = styled(YStack, {
-  name: 'GameWidgetVariantBadge',
-  width: 30,
-  height: 30,
-  borderRadius: 8,
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: 'rgba(255,255,255,0.08)',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.12)',
-  flexShrink: 0,
+export const GameTitle = ({
+  numberOfLines,
+  className,
+  children,
+  ...props
+}: {
+  numberOfLines?: number;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'text-[16px] font-extrabold tracking-[-0.3px] max-[800px]:text-[13px]',
+      numberOfLines ? 'line-clamp-1' : 'truncate',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-  $sm: {
-    width: 24,
-    height: 24,
-  },
-});
+export type TurnStatusVariant =
+  'completed' | 'yourTurn' | 'waiting' | 'default';
 
-export const GameTitle = styled(Text, {
-  name: 'GameWidgetTitle',
-  margin: 0,
-  fontSize: 16,
-  fontWeight: '800',
-  letterSpacing: -0.3,
-  numberOfLines: 1,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap' as never,
+const TURN_PILL_CLASSES: Record<TurnStatusVariant, string> = {
+  yourTurn: 'bg-[rgba(16,185,129,0.12)] border-[rgba(16,185,129,0.4)]',
+  waiting: 'bg-[rgba(234,179,8,0.1)] border-[rgba(234,179,8,0.35)]',
+  completed: 'bg-[rgba(148,163,184,0.1)] border-[rgba(148,163,184,0.25)]',
+  default: 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)]',
+};
 
-  $sm: {
-    fontSize: 13,
-  },
-});
+const TURN_TEXT_CLASSES: Record<TurnStatusVariant, string> = {
+  yourTurn: 'text-[var(--success)]',
+  waiting: 'text-[var(--warning)]',
+  completed: 'text-[var(--secondary)]',
+  default: 'text-[var(--color)] opacity-[0.7]',
+};
 
-export const TurnStatusPill = styled(XStack, {
-  name: 'GameWidgetTurnPill',
-  borderRadius: 20,
-  paddingHorizontal: '$3',
-  paddingVertical: '$1',
-  borderWidth: 1,
-  alignItems: 'center',
-  flexShrink: 0,
+export const TurnStatusPill = ({
+  status = 'default',
+  className,
+  children,
+  ...props
+}: {
+  status?: TurnStatusVariant;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-center rounded-[20px] px-3 py-1 border shrink-0',
+      TURN_PILL_CLASSES[status],
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-  variants: {
-    $status: {
-      yourTurn: {
-        backgroundColor: 'rgba(16,185,129,0.12)',
-        borderColor: 'rgba(16,185,129,0.4)',
-      },
-      waiting: {
-        backgroundColor: 'rgba(234,179,8,0.1)',
-        borderColor: 'rgba(234,179,8,0.35)',
-      },
-      completed: {
-        backgroundColor: 'rgba(148,163,184,0.1)',
-        borderColor: 'rgba(148,163,184,0.25)',
-      },
-      default: {
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        borderColor: 'rgba(255,255,255,0.1)',
-      },
-    },
-  } as const,
+export const TurnStatusText = ({
+  status = 'default',
+  className,
+  children,
+  ...props
+}: {
+  status?: TurnStatusVariant;
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLSpanElement>) => (
+  <span
+    className={cx(
+      'text-[14px] font-semibold',
+      TURN_TEXT_CLASSES[status],
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </span>
+);
 
-  defaultVariants: {
-    $status: 'default',
-  },
-});
-
-export const TurnStatusText = styled(Text, {
-  name: 'GameWidgetTurnText',
-  fontSize: 14,
-  fontWeight: '600',
-
-  variants: {
-    $status: {
-      yourTurn: { color: '$success' },
-      waiting: { color: '$warning' },
-      completed: { color: '$secondary' },
-      default: { color: '$color', opacity: 0.7 },
-    },
-  } as const,
-
-  defaultVariants: {
-    $status: 'default',
-  },
-});
-
-export const HeaderActions = styled(XStack, {
-  name: 'GameWidgetHeaderActions',
-  gap: '$2',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  justifyContent: 'flex-end',
-});
+export const HeaderActions = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-row items-center gap-2 flex-wrap justify-end',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 export const FullscreenButton = (
   props: React.ComponentProps<typeof IconButton>,
 ) => (
   <IconButton
+    className="p-2 active:bg-[rgba(255,255,255,0.2)]"
     size="sm"
-    padding="$2"
-    pressStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
     {...props}
   />
 );
 
-export const SharedGameBoard = styled(BaseGameBoard, {
-  name: 'SharedGameBoard',
-  gap: '$4',
-  zIndex: 20,
-  flexDirection: 'column',
-  position: 'relative',
-  width: '100%',
-  flex: 1,
-  minHeight: 0,
-  minWidth: 0,
-  overflow: 'visible',
+export const SharedGameBoard = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-col items-stretch gap-4 z-[20] relative w-full flex-1 min-h-0 min-w-0 overflow-visible max-[800px]:p-2',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-  $sm: {
-    padding: '$2',
-  },
-});
+export const SharedTableArea = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-col items-stretch gap-4 min-h-0 relative z-[1] w-full grow-0 shrink-0 basis-auto h-auto',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
-export const SharedTableArea = styled(BaseTableArea, {
-  name: 'SharedTableArea',
-  gap: '$4',
-  flexDirection: 'column',
-  minHeight: 0,
-  position: 'relative',
-  zIndex: 1,
-  width: '100%',
-  flexGrow: 0,
-  flexShrink: 0,
-  flexBasis: 'auto',
-  height: 'auto',
-});
-
-export const SharedHandSection = styled(YStack, {
-  name: 'SharedHandSection',
-  gap: '$4',
-  width: '100%',
-  flexShrink: 0,
-  zIndex: 30,
-  position: 'relative',
-  borderTopWidth: 1,
-  borderTopColor: '$borderColor',
-  paddingTop: '$4',
-});
-
-export type TurnStatusVariant =
-  | 'completed'
-  | 'yourTurn'
-  | 'waiting'
-  | 'default';
+export const SharedHandSection = ({
+  className,
+  children,
+  ...props
+}: {
+  className?: string;
+  children?: ReactNode;
+} & HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cx(
+      'flex flex-col items-stretch gap-4 w-full shrink-0 z-[30] relative border-t border-t-[var(--borderColor)] pt-4',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 export interface SharedHeaderProps {
   variantEmoji: string;

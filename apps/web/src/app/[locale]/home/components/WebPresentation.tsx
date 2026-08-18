@@ -5,10 +5,14 @@ import Image from 'next/image';
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  IconButton,
   MaximizeIcon,
   MinimizeIcon,
 } from '@arcadeum/ui';
 import { slides } from '../data/slides';
+
+const NAV_BUTTON_WRAPPER =
+  'pointer-events-auto absolute top-1/2 z-20 -translate-y-1/2 opacity-100 transition-[opacity,transform] duration-[300ms] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.1] hover:opacity-100 min-[1151px]:opacity-0 group-hover:min-[1151px]:opacity-100';
 
 export function WebPresentation() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -116,13 +120,16 @@ export function WebPresentation() {
   );
 
   return (
-    <div ref={containerRef} className="presentation-container">
+    <div
+      ref={containerRef}
+      className="presentation-container group relative aspect-[16/9] min-h-[200px] w-full self-stretch overflow-hidden rounded-[24px] border border-border-color bg-background shadow-[rgba(0,0,0,0.6)_0px_30px_60px] min-[1151px]:min-h-[500px] min-[1151px]:rounded-[32px]"
+    >
       {slides.map((slide, index) => {
         const isActive = index === currentSlide;
         return (
           <div
             key={slide.id}
-            className="presentation-slide"
+            className="absolute inset-0 h-full w-full"
             role="group"
             aria-roledescription="slide"
             aria-label={`${index + 1} of ${slides.length}: ${slide.title}`}
@@ -139,7 +146,7 @@ export function WebPresentation() {
                 src={slide.image}
                 alt={slide.title}
                 fill
-                priority={index === 0}
+                loading={index === 0 ? 'lazy' : undefined}
                 quality={70}
                 sizes="(max-width: 768px) 85vw, (max-width: 1200px) 70vw, 800px"
                 style={{
@@ -154,22 +161,16 @@ export function WebPresentation() {
         );
       })}
 
-      <div className="presentation-controls">
-        <div
-          className="presentation-top-bar"
-          style={{
-            background:
-              'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%)',
-          }}
-        >
-          <div className="presentation-progress-bar">
+      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between">
+        <div className="flex w-full justify-center bg-presentation-top p-4 pointer-events-auto">
+          <div className="flex h-[4px] w-full max-w-[600px] items-center gap-1">
             {slides.map((_, index) => {
               const isActive = index === currentSlide;
               const isViewed = index < currentSlide;
               return (
                 <div
                   key={index}
-                  className="presentation-progress-segment"
+                  className="h-full flex-1 cursor-pointer rounded-[2px] transition-[background-color] duration-200"
                   onClick={createSlideClickHandler(index)}
                   onKeyDown={createSlideKeyDownHandler(index)}
                   role="button"
@@ -192,52 +193,37 @@ export function WebPresentation() {
         </div>
 
         {/* Floating Navigation Buttons (Desktop) */}
-        <div
-          className="presentation-nav-container presentation-nav-left"
-          style={{
-            left: 16,
-            transform: 'translateY(-50%)',
-          }}
-        >
-          <button
-            className="presentation-btn-glass presentation-btn-glass-md"
+        <div className={NAV_BUTTON_WRAPPER} style={{ left: 16 }}>
+          <IconButton
+            variant="icon glass"
+            size="md"
             onClick={prevSlide}
             aria-label="Previous slide"
           >
             <ArrowLeftIcon size={24} />
-          </button>
+          </IconButton>
         </div>
 
-        <div
-          className="presentation-nav-container presentation-nav-right"
-          style={{
-            right: 16,
-            transform: 'translateY(-50%)',
-          }}
-        >
-          <button
-            className="presentation-btn-glass presentation-btn-glass-md"
+        <div className={NAV_BUTTON_WRAPPER} style={{ right: 16 }}>
+          <IconButton
+            variant="icon glass"
+            size="md"
             onClick={nextSlide}
             aria-label="Next slide"
           >
             <ArrowRightIcon size={24} />
-          </button>
+          </IconButton>
         </div>
 
-        <div
-          className="presentation-bottom-bar"
-          style={{
-            background:
-              'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
-          }}
-        >
-          <div className="presentation-counter">
+        <div className="flex items-center justify-between bg-presentation-bottom p-4 pointer-events-auto">
+          <div className="rounded-[20px] bg-black/30 px-3 py-1 text-[12px] font-medium text-white/90">
             {currentSlide + 1} / {slides.length}
           </div>
 
-          <div className="presentation-fullscreen-container">
-            <button
-              className="presentation-btn-glass presentation-btn-glass-sm"
+          <div className="pointer-events-auto">
+            <IconButton
+              variant="icon glass"
+              size="md"
               onClick={toggleFullscreen}
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >
@@ -246,7 +232,7 @@ export function WebPresentation() {
               ) : (
                 <MaximizeIcon size={20} />
               )}
-            </button>
+            </IconButton>
           </div>
         </div>
       </div>

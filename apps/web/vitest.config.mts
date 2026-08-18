@@ -9,17 +9,8 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     globals: true,
     reporters: process.env.CI ? 'verbose' : 'default',
-    pool: process.env.CI ? 'forks' : 'threads',
+    pool: 'forks',
     exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**', '**/.next/**'],
-    server: {
-      deps: {
-        // @tamagui/web ships both config.mjs and config.js. On Linux CI,
-        // Vite resolves to config.js via the extensionless "./config" import,
-        // creating a second module instance where tokensMerged is never set.
-        // Inlining forces Vite to pre-bundle the package into one instance.
-        inline: [/^@tamagui\/web/],
-      },
-    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

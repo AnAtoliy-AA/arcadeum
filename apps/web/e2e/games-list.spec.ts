@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
 import { navigateTo, handleRoute } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Games List Page', () => {
   test.beforeEach(async ({ page }) => {
@@ -33,7 +34,7 @@ test.describe('Games List Page', () => {
   });
 
   test('should load games page', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.games);
     await expect(page).toHaveURL(/\/games/);
     await expect(
       page.locator('h1, h2, [class*="Title"]').first(),
@@ -41,19 +42,17 @@ test.describe('Games List Page', () => {
   });
 
   test('should display filters and search', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.games);
     const searchInput = page
       .locator('input[type="search"], input[placeholder*="search" i]')
       .first();
     if (await searchInput.isVisible()) {
       await expect(searchInput).toBeVisible();
     }
-    const filters = page
-      .getByRole('checkbox')
-      .filter({
-        hasText:
-          /all|lobby|in progress|completed|все|лобби|в процессе|завершено/i,
-      });
+    const filters = page.getByRole('checkbox').filter({
+      hasText:
+        /all|lobby|in progress|completed|все|лобби|в процессе|завершено/i,
+    });
 
     await expect(async () => {
       expect(await filters.count()).toBeGreaterThan(0);
@@ -62,7 +61,7 @@ test.describe('Games List Page', () => {
   });
 
   test('should handle navigation to create room', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.rooms);
     await expect(
       page.getByRole('heading', { name: /Game Rooms/i }),
     ).toBeVisible({});
@@ -73,11 +72,13 @@ test.describe('Games List Page', () => {
     await expect(createLink).toBeVisible();
 
     const href = await createLink.getAttribute('href');
-    expect(href).toContain('/games/create');
+    expect(href).toContain(
+      routes.gameCreate.replace(/^\/(?:en|es|fr|ru|by)/, ''),
+    );
   });
 
   test('should display game cards or empty state', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.rooms);
     const mainContent = page.locator('main').first();
     await expect(mainContent).toBeVisible();
 
@@ -89,7 +90,7 @@ test.describe('Games List Page', () => {
   });
 
   test('should clear search and restore list', async ({ page }) => {
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.rooms);
     const searchInput = page
       .locator('input[type="search"], input[placeholder*="search" i]')
       .first();
@@ -121,7 +122,7 @@ test.describe('Games List Page', () => {
       });
     });
 
-    await navigateTo(page, '/games');
+    await navigateTo(page, routes.rooms);
 
     // Use toPass to handle hydration and fetch timing
     await expect(async () => {

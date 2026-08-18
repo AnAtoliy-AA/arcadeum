@@ -1,8 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { XStack, Text } from 'tamagui';
-import { PlayerAvatar } from '@arcadeum/ui';
+import { PlayerAvatar, Typography } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
@@ -64,30 +63,22 @@ export function ShopMannequinStage({
       : labels.stage.online;
 
   const topLeftOverlay = hoverItem ? (
-    <XStack
-      alignItems="center"
-      gap={6}
-      paddingHorizontal={8}
-      paddingVertical={4}
-      borderRadius={6}
-      borderWidth={1}
-      borderColor="rgba(34,197,94,0.55)"
-      backgroundColor="rgba(16,185,129,0.10)"
-    >
-      <XStack width={6} height={6} borderRadius={3} backgroundColor="#22c55e" />
-      <Text
-        fontSize={10}
-        letterSpacing={1}
-        textTransform="uppercase"
-        fontWeight="800"
-        color="$green11"
+    <div className="flex flex-row items-center gap-4 px-4 py-2 rounded-xl border border-[rgba(34,197,94,0.55)] bg-[rgba(16,185,129,0.10)]">
+      <div className="flex flex-row items-stretch w-[5px] h-[5px] rounded-xl bg-[#22c55e]" />
+      <Typography
+        uiSize="sm"
+        variant="heading"
+        color="#10b981"
+        tracking="md"
+        weight="800"
+        className="uppercase"
       >
         {labels.tryOn}
-      </Text>
-      <Text fontSize={11} color="$gray11">
+      </Typography>
+      <Typography uiSize="xs" color="#94a3b8">
         · {hoverName}
-      </Text>
-    </XStack>
+      </Typography>
+    </div>
   ) : null;
 
   // Signature of the previewed look — when it changes, the wrapper remounts and

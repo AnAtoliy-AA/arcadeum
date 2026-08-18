@@ -5,6 +5,7 @@ import { TaskBotModule } from './task-bot/task-bot.module';
 import { QueueModule } from './queue/queue.module';
 import { NotificationModule } from './notification/notification.module';
 import { CIModule } from './ci/ci.module';
+import { ShortsFactoryModule } from './shorts-factory/shorts-factory.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CIModule } from './ci/ci.module';
     TaskBotModule,
     NotificationModule,
     CIModule,
+    ShortsFactoryModule,
   ],
 })
 export class AppModule {}

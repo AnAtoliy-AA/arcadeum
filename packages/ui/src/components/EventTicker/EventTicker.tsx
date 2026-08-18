@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { XStack, View, Text, styled } from 'tamagui';
 import { LiveChip } from '../LiveChip/LiveChip';
+import { cx } from '../../utils/cx';
 
 export type TickerEvent = {
   who: string;
@@ -14,26 +14,32 @@ export type EventTickerProps = {
   intervalMs?: number;
   liveLabel?: string;
   testID?: string;
+  'data-testid'?: string;
+  className?: string;
 };
 
-const Root = styled(XStack, {
-  name: 'EventTicker',
-  alignItems: 'center',
-  gap: '$3',
-  paddingHorizontal: '$3',
-  paddingVertical: '$2',
-  borderRadius: '$3',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: 'rgba(255,255,255,0.02)',
-  overflow: 'hidden',
-});
+const RootClasses = [
+  '',
+  'flex',
+  'flex-row',
+  'items-center',
+  'gap-3',
+  'px-3',
+  'py-2',
+  'rounded-xl',
+  'border',
+  'border-[var(--borderColor)]',
+  'bg-[rgba(255,255,255,0.02)]',
+  'overflow-hidden',
+].join(' ');
 
 export function EventTicker({
   events,
   intervalMs = 2800,
   liveLabel = 'Live',
   testID,
+  'data-testid': dataTestId,
+  className,
 }: EventTickerProps) {
   const [index, setIndex] = useState(0);
 
@@ -51,25 +57,24 @@ export function EventTicker({
   if (!current) return null;
 
   return (
-    <Root testID={testID}>
+    <div
+      data-testid={dataTestId ?? testID}
+      className={cx(RootClasses, className)}
+    >
       <LiveChip label={liveLabel} />
-      <View
-        width={6}
-        height={6}
-        borderRadius={3}
-        backgroundColor={current.color ?? '#ec4899'}
+      <span
+        className="h-[6px] w-[6px] rounded-[3px]"
+        style={{ backgroundColor: current.color ?? '#ec4899' }}
       />
-      <Text
-        fontSize="$3"
-        fontWeight="700"
-        color={current.color ?? '$mythicAccent'}
-        numberOfLines={1}
+      <span
+        className="line-clamp-1 text-[16px] font-bold"
+        style={{ color: current.color ?? 'var(--mythicAccent)' }}
       >
         {current.who}
-      </Text>
-      <Text fontSize="$3" opacity={0.85} numberOfLines={1} flex={1}>
+      </span>
+      <span className="line-clamp-1 flex-1 text-[16px] opacity-[0.85]">
         {current.what}
-      </Text>
-    </Root>
+      </span>
+    </div>
   );
 }

@@ -21,6 +21,9 @@ import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
+import { RankingService } from '../ranking/ranking.service';
+import { recordRankedResultForSession } from './games.ranked-result';
+import { finalizeCompletedSession } from './games.completion';
 import { stripDisabledRules } from './games.service-rules';
 
 @Injectable()
@@ -42,6 +45,7 @@ export class GamesService {
     private readonly criticalService: CriticalService,
     private readonly leaderboardSync: GamesLeaderboardSyncService,
     private readonly postMatch: GamePostMatchService,
+    private readonly rankingService: RankingService,
     private readonly ruleVisibility: GameRuleVisibilityService,
   ) {}
 
@@ -263,7 +267,18 @@ export class GamesService {
       payload,
     });
 
-    // Emit real-time event
+    const isCompleted = session.status === 'completed';
+    // Ranked matches: apply ELO before broadcasting so the delta lands in `state.gameResult.ratingDeltas`.
+    const completedPlayers = isCompleted
+      ? await recordRankedResultForSession(
+          session,
+          this.roomsService,
+          this.sessionsService,
+          this.rankingService,
+          this.logger,
+        )
+      : null;
+
     await this.realtimeService.emitActionExecuted(
       session,
       action,
@@ -271,32 +286,18 @@ export class GamesService {
       (s, pId) => this.sanitizeForPlayer(s, pId),
     );
 
-    // Sync room status if game completed
-    if (session.status === 'completed') {
-      await this.roomsService.updateRoomStatus(session.roomId, 'completed');
-      const players = await this.roomsService.getRoomParticipants(
-        session.roomId,
-      );
-      await this.leaderboardSync.syncInMatch(players, false);
-      await this.postMatch.payoutGameWin(session);
-
-      // Archive completed session to Atlas
-      await this.archiveService.archiveSessionToAtlas(session);
-
-      // Post-match side effects (daily challenges, achievements)
-      try {
-        const winners = await this.sessionsService.getWinners(session.id);
-        await this.postMatch.onGameCompleted(
-          players,
-          session.gameId,
-          winners,
-          {},
-        );
-      } catch (err) {
-        this.logger.warn(
-          `Post-match processing failed for session ${session.id}: ${(err as Error).message}`,
-        );
-      }
+    if (isCompleted) {
+      const players =
+        completedPlayers ??
+        (await this.roomsService.getRoomParticipants(session.roomId));
+      await finalizeCompletedSession(session, players, {
+        roomsService: this.roomsService,
+        sessionsService: this.sessionsService,
+        leaderboardSync: this.leaderboardSync,
+        postMatch: this.postMatch,
+        archiveService: this.archiveService,
+        logger: this.logger,
+      });
     }
 
     return session;

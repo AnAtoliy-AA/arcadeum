@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { YStack } from 'tamagui';
+
 import { AvatarDisc } from './AvatarDisc';
 import { CardChrome } from './CardChrome';
 import { pickSwatchColor } from './colors';
@@ -37,7 +37,7 @@ export interface PlayerAvatarProps {
   /** Overlay rendered top-left (used by shop for the TRY-ON tag). card/profile only. */
   topLeftOverlay?: React.ReactNode;
   'data-testid'?: string;
-  onPress?: () => void;
+  onClick?: () => void;
 }
 
 export const PlayerAvatar = memo(function PlayerAvatar({
@@ -57,7 +57,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   skinChip,
   topLeftOverlay,
   'data-testid': testId,
-  onPress,
+  onClick,
 }: PlayerAvatarProps) {
   const disc = DISC_SIZE[size];
   const roleColor = getRoleTierColor(role);
@@ -89,12 +89,15 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   // center, so the glow radiates symmetrically around the avatar regardless of
   // any sibling content (name/presence) below it.
   const discZone = (
-    <YStack
-      width={disc}
-      height={disc}
-      alignItems="center"
-      justifyContent="center"
-      position="relative"
+    <div
+      style={{
+        width: disc,
+        height: disc,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+      }}
     >
       {showRays && raysBg ? (
         <RaysHalo
@@ -115,20 +118,23 @@ export const PlayerAvatar = memo(function PlayerAvatar({
         priority={priority}
         testId={testId}
       />
-    </YStack>
+    </div>
   );
 
   if (!showCardChrome) {
     return (
-      <YStack
+      <div
         data-testid={testId}
-        onPress={onPress}
-        cursor={onPress ? 'pointer' : 'default'}
-        alignItems="center"
-        justifyContent="center"
+        onClick={onClick}
+        style={{
+          cursor: onClick ? 'pointer' : 'default',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
         {discZone}
-      </YStack>
+      </div>
     );
   }
 
@@ -144,7 +150,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
       roleColor={roleColor}
       roleGlyph={roleGlyph}
       testId={testId}
-      onPress={onPress}
+      onClick={onClick}
     >
       {discZone}
     </CardChrome>

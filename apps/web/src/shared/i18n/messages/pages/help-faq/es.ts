@@ -4,27 +4,42 @@ export const helpFaq = {
     {
       question: '¿Necesito descargar algo para jugar?',
       answer:
-        'No. Arcadeum funciona en cualquier navegador moderno, ya sea en ordenador o móvil. Crea una sala, comparte el enlace y juega. También hay apps nativas para iOS y Android si las prefieres.',
+        'No. Arcadeum funciona en cualquier navegador moderno, tanto en móvil como en escritorio. Crea una sala, comparte el enlace y juega al instante.',
     },
     {
       question: '¿Arcadeum es gratis?',
       answer:
-        'Sí. Todos los juegos principales y el emparejamiento son gratuitos. Nos financiamos con patrocinios opcionales y cosméticos para mantener los servidores y desarrollar nuevos prototipos.',
+        'Sí. Todos los juegos y el emparejamiento son gratuitos. Nos financiamos mediante patrocinios opcionales y compras cosméticas.',
     },
     {
-      question: '¿Cómo invito a mis amigos a una partida?',
+      question: '¿Cómo invito a mis amigos?',
       answer:
-        'Crea una sala desde la página de Juegos y copia el enlace de invitación o compártelo. Tus amigos pueden unirse sin cuenta — iniciar sesión es opcional para partidas casuales.',
+        'Crea una sala desde la página de Juegos y copia el enlace de invitación para compartirlo. Tus amigos pueden unirse sin crear cuenta.',
     },
     {
-      question: '¿Puedo jugar contra una IA?',
+      question: '¿Puedo jugar contra la IA?',
       answer:
-        'Sí. La mayoría de los juegos tienen un modo rápido contra IA con dificultad ajustable para practicar mecánicas o jugar en solitario cuando no haya rivales humanos.',
+        'Sí. La mayoría de los juegos ofrecen modo contra IA con dificultad ajustable para practicar en solitario.',
     },
     {
-      question: '¿Dónde pido ayuda si algo no funciona?',
+      question: '¿Qué ocurre si pierdo la conexión durante una partida?',
       answer:
-        'Abre el formulario de contacto desde la página de soporte y te responderemos en un día laborable. Para urgencias durante un torneo, escríbenos por Discord para una respuesta más rápida.',
+        'Nuestra pasarela WebSocket guarda el estado durante 60 segundos para que puedas reconectarte de inmediato.',
+    },
+    {
+      question: '¿Cómo se calcula el rating Elo competitivo?',
+      answer:
+        'Las partidas clasificatorias utilizan un sistema Elo dinámico donde ganar contra rivales de mayor nivel otorga más puntos.',
+    },
+    {
+      question: '¿Cómo reclamo las recompensas diarias y de misiones?',
+      answer:
+        'Visita la página de Recompensas cada día para reclamar tu racha. El progreso de las misiones se actualiza tras cada partida.',
+    },
+    {
+      question: '¿Dónde pido ayuda si algo falla?',
+      answer:
+        'Utiliza el formulario en la página de soporte o únete a nuestro Discord para soporte rápido durante torneos.',
     },
   ],
 };

@@ -117,6 +117,11 @@ export function buildLabels(t: (k: TranslationKey) => string) {
       ),
       password: tr('games.password.label', 'Room Password (optional)'),
       passwordPlaceholder: tr('games.password.placeholder', 'Set a password'),
+      ranked: tr('games.create.fieldRanked', 'Ranked match'),
+      rankedHint: tr(
+        'games.create.fieldRankedHint',
+        'Ranked matches affect your ELO rating for this game.',
+      ),
     },
     rail: (defaultRoomName: string) => ({
       livePreview: tr('games.create.livePreview', 'LIVE PREVIEW'),

@@ -1,6 +1,5 @@
 'use client';
 
-import { YStack, Text } from 'tamagui';
 import {
   CardsIcon,
   EyeIcon,
@@ -10,6 +9,7 @@ import {
   ShieldIcon,
   SparklesIcon,
   SwordsIcon,
+  Typography,
 } from '@arcadeum/ui';
 import type { FC } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
@@ -51,7 +51,7 @@ const ROLE_BORDER: Record<CardRole, string> = {
   special: '#f472b6',
 };
 
-// Glow colours are now CSS-attribute-keyed in `hudStyles.tsx` (§4.1) —
+// Glow colours are now CSS-attribute-keyed in `styles/hud.scss` (§4.1) —
 // the ::after pseudo-element reads `data-role` and `data-selected` and
 // drives box-shadow + radius via custom properties. No JS payload.
 
@@ -111,11 +111,17 @@ export function HandCard({
   // dimensions stay constant across selection so the lift doesn't
   // displace neighbouring cards in the fan; the translateY + border
   // swap + glow are enough to read selection.
-  const width = 124;
-  const height = 172;
 
   return (
-    <YStack
+    <div
+      className={`flex flex-col items-stretch rounded-[10px] border-[2px] bg-[rgba(8,12,20,0.85)] overflow-hidden relative shrink-0 w-[124px] h-[172px] transition-all duration-150 ease-out select-none touch-manipulation ${disabled ? '' : 'hover:translate-y-[-4px] active:scale-[0.97]'} ${isSelected ? 'ring-2 ring-[#34d399] shadow-[0_0_15px_rgba(52,211,153,0.5)]' : ''} focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#34d399]`}
+      style={{
+        borderColor: borderColor,
+        transform: isSelected ? 'translateY(-12px)' : undefined,
+        cursor: disabled ? 'default' : 'pointer',
+        opacity: disabled ? 0.7 : 1,
+      }}
+      onClick={disabled ? undefined : onToggle}
       data-testid={`hand-card-${card.uid}`}
       data-card={card.id}
       data-role={role}
@@ -126,7 +132,6 @@ export function HandCard({
       aria-disabled={disabled}
       aria-label={name}
       aria-describedby={linkDescription ? descriptionId : undefined}
-      onPress={disabled ? undefined : onToggle}
       onKeyDown={
         disabled
           ? undefined
@@ -137,42 +142,6 @@ export function HandCard({
               }
             }
       }
-      width={width}
-      height={height}
-      borderRadius={10}
-      borderWidth={2}
-      borderColor={borderColor}
-      backgroundColor="rgba(8,12,20,0.85)"
-      overflow="hidden"
-      position="relative"
-      transform={isSelected ? [{ translateY: -8 }] : undefined}
-      cursor={disabled ? 'default' : 'pointer'}
-      opacity={disabled ? 0.7 : 1}
-      // Glow is driven by the `::after` rule in `hudStyles.tsx` keyed on
-      // `data-role` + `data-selected` (§4.1). No tamagui shadow props
-      // here so the glow doesn't double-paint and can animate via the
-      // compositor when selection toggles.
-      hoverStyle={
-        disabled
-          ? undefined
-          : {
-              transform: [{ translateY: isSelected ? -10 : -4 }],
-            }
-      }
-      // Visible focus ring for keyboard users — the card is tabbable via
-      // `tabIndex={0}` but had no `:focus-visible` style, so a keyboard
-      // tab through the hand previously gave no visual feedback at all.
-      focusStyle={
-        disabled
-          ? undefined
-          : {
-              outlineColor: SELECT_RING,
-              outlineWidth: 2,
-              outlineStyle: 'solid',
-              outlineOffset: 2,
-            }
-      }
-      flexShrink={0}
     >
       <CardArt
         cardId={card.id}
@@ -181,76 +150,63 @@ export function HandCard({
         testId={`hand-card-art-${card.uid}`}
       />
       {(showName || showDescription) && (
-        <YStack
-          data-testid={`hand-card-overlay-${card.uid}`}
-          position="absolute"
-          left={0}
-          right={0}
-          bottom={0}
-          paddingHorizontal={8}
-          paddingTop={14}
-          paddingBottom={8}
-          gap={2}
-          pointerEvents="none"
-          // Linear scrim so the text reads cleanly against the art
-          // without obscuring the upper half. Transparent at the top so
-          // the artwork stays visible.
+        <div
+          className="flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-8 pb-8 gap-2 pointer-events-none"
           style={{
             background:
               'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0) 100%)',
           }}
+          data-testid={`hand-card-overlay-${card.uid}`}
         >
           {showName && (
-            <Text
+            <Typography
+              uiSize="xs"
+              weight="800"
+              className="text-[10px] tracking-[0.4px] uppercase text-center line-clamp-1"
+              style={{ color: borderColor }}
               data-testid={`hand-card-name-${card.uid}`}
-              fontSize={11}
-              fontWeight="800"
-              letterSpacing={0.4}
-              textTransform="uppercase"
-              textAlign="center"
-              numberOfLines={1}
-              color={borderColor}
             >
               {name}
-            </Text>
+            </Typography>
           )}
           {showDescription && (
-            <Text
+            <Typography
+              uiSize="xs"
+              className="text-[10px] leading-[12px] text-center line-clamp-2 text-[rgba(226,_232,_240,_0.88)]"
               id={descriptionId}
               data-testid={descriptionId}
-              fontSize={9}
-              lineHeight={12}
-              textAlign="center"
-              numberOfLines={2}
-              color="rgba(226, 232, 240, 0.88)"
             >
               {description}
-            </Text>
+            </Typography>
           )}
-        </YStack>
+        </div>
+      )}
+      {isSelected && (
+        <div
+          className="flex flex-col absolute top-[4px] left-[4px] w-[20px] h-[20px] rounded-[9999px] bg-[#34d399] items-center justify-center shadow-[0_0_8px_rgba(52,211,153,0.8)] z-10"
+          data-testid={`hand-card-selected-${card.uid}`}
+        >
+          <Typography
+            uiSize="xs"
+            weight="800"
+            className="text-[#062317] text-[11px] leading-none"
+          >
+            ✓
+          </Typography>
+        </div>
       )}
       {!!count && count > 1 && (
-        <YStack
+        <div
+          className="flex flex-col absolute top-[4px] right-[4px] min-w-[20px] h-[20px] px-4 rounded-[9999px] bg-[rgba(0,0,0,0.75)] border items-center justify-center"
+          style={{ borderColor: borderColor }}
           data-testid={`hand-card-count-${card.uid}`}
-          position="absolute"
-          top={4}
-          right={4}
-          minWidth={20}
-          height={20}
-          paddingHorizontal={4}
-          borderRadius={9999}
-          backgroundColor="rgba(0,0,0,0.75)"
-          borderWidth={1}
-          borderColor={borderColor}
-          alignItems="center"
-          justifyContent="center"
         >
-          <Text fontSize={10} fontWeight="800" color={borderColor}>
+          <Typography uiSize="xs" weight="800" style={{ color: borderColor }}>
             ×{count}
-          </Text>
-        </YStack>
+          </Typography>
+        </div>
       )}
-    </YStack>
+    </div>
   );
 }
 
@@ -270,16 +226,9 @@ interface CardArtProps {
 function CardArt({ cardId, cardVariant, role, testId }: CardArtProps) {
   const showArt = hasArtFor(cardVariant, cardId);
   return (
-    <YStack
+    <div
+      className="flex flex-col absolute top-0 left-0 right-0 bottom-0 items-center justify-center bg-[rgba(0,0,0,0.45)]"
       data-testid={testId}
-      position="absolute"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      alignItems="center"
-      justifyContent="center"
-      backgroundColor="rgba(0,0,0,0.45)"
     >
       {showArt ? (
         <CardImage variant={cardVariant ?? ''} cardType={cardId} />
@@ -287,12 +236,15 @@ function CardArt({ cardId, cardVariant, role, testId }: CardArtProps) {
         (() => {
           const FallbackIcon = ROLE_FALLBACK_ICON[role];
           return (
-            <YStack opacity={0.55} data-testid={`hand-card-fallback-${role}`}>
+            <div
+              className="flex flex-col items-stretch opacity-[0.55]"
+              data-testid={`hand-card-fallback-${role}`}
+            >
               <FallbackIcon size={56} />
-            </YStack>
+            </div>
           );
         })()
       )}
-    </YStack>
+    </div>
   );
 }

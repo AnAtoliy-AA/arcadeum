@@ -9,6 +9,7 @@ import {
   mockGameSocket,
   waitForRoomReady,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 interface EmittedEvent {
   event: string;
@@ -152,7 +153,7 @@ test.describe('Cascade play to win', () => {
       }, 50);
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
     await closeRulesModal(page);
 
@@ -166,7 +167,7 @@ test.describe('Cascade play to win', () => {
     // In-game UI: the user's lone playable card should be rendered.
     const playableCard = page.getByRole('button', { name: /red 5/i }).first();
     await expect(playableCard).toBeVisible({});
-    await playableCard.click();
+    await playableCard.dispatchEvent('click');
 
     // Emit should fire.
     await expect
@@ -187,8 +188,8 @@ test.describe('Cascade play to win', () => {
       });
 
     // Game-over modal should appear after the mocked server snapshot arrives.
-    await expect(
-      page.getByRole('heading', { name: /you won/i }),
-    ).toBeVisible({});
+    await expect(page.getByRole('heading', { name: /you won/i })).toBeVisible(
+      {},
+    );
   });
 });

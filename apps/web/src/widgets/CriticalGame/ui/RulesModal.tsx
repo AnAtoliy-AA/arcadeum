@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import { XStack, YStack } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -30,47 +29,34 @@ interface RulesModalProps {
 }
 
 const RulesGrid = ({ children }: { children: React.ReactNode }) => (
-  <XStack flexWrap="wrap" gap="$4">
-    {children}
-  </XStack>
+  <div className="flex flex-row items-stretch flex-wrap gap-4">{children}</div>
 );
 
 const CardRuleItem = ({ children }: { children: React.ReactNode }) => (
-  <XStack
-    gap="$3"
-    alignItems="flex-start"
-    backgroundColor="rgba(255, 255, 255, 0.03)"
-    padding="$3"
-    borderRadius={12}
-    borderWidth={1}
-    borderColor="rgba(255, 255, 255, 0.05)"
-    width="100%"
-    $gtSm={{ width: 'calc(50% - 8px)' }}
-  >
+  <div className="flex flex-row gap-3 items-start bg-[rgba(255,_255,_255,_0.03)] p-3 rounded-[12px] border border-[rgba(255,_255,_255,_0.05)] w-full">
     {children}
-  </XStack>
+  </div>
 );
 
 const CardVisual = ({ children }: { children: React.ReactNode }) => (
-  <YStack flexShrink={0} width={80}>
+  <div className="flex flex-col items-stretch shrink-0 w-[80px]">
     {children}
-  </YStack>
+  </div>
 );
 
 const CardInfo = ({ children }: { children: React.ReactNode }) => (
-  <YStack gap="$1" flex={1}>
-    {children}
-  </YStack>
+  <div className="flex flex-col items-stretch gap-1 flex-1">{children}</div>
 );
 
 const CardName = ({ children }: { children: React.ReactNode }) => (
-  <RulesText fontWeight="700" fontSize="$4">
-    {children}
-  </RulesText>
+  <RulesText className="font-bold text-[18px]">{children}</RulesText>
 );
 
 const CardDescription = ({ children }: { children: React.ReactNode }) => (
-  <RulesText fontSize="$2" opacity={0.7} lineHeight={16}>
+  <RulesText
+    className="text-[14px]"
+    style={{ lineHeight: '16px', opacity: 0.7 }}
+  >
     {children}
   </RulesText>
 );
@@ -117,7 +103,7 @@ export function RulesModal({
   return (
     <Modal open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <ModalContent
-        $variant={currentVariant as GameVariant}
+        variant={currentVariant as GameVariant}
         style={{ maxWidth: 900 }}
         data-testid="rules-modal"
       >
@@ -127,7 +113,7 @@ export function RulesModal({
           </ModalTitle>
           <CloseButton
             onClick={onClose}
-            $variant={currentVariant as GameVariant}
+            variant={currentVariant as GameVariant}
             data-testid="modal-close-button"
           >
             <CloseIcon size={20} />
@@ -135,7 +121,7 @@ export function RulesModal({
         </ModalHeader>
 
         <ModalSection>
-          <SectionLabel $variant={currentVariant as GameVariant}>
+          <SectionLabel variant={currentVariant as GameVariant}>
             {t('games.critical_v1.rules.headers.objective' as TranslationKey)}
           </SectionLabel>
           <RulesText>
@@ -148,7 +134,7 @@ export function RulesModal({
 
         {isFastMode && (
           <ModalSection>
-            <SectionLabel $variant={currentVariant as GameVariant}>
+            <SectionLabel variant={currentVariant as GameVariant}>
               {t('games.critical_v1.rules.headers.fastGame' as TranslationKey)}
             </SectionLabel>
             <RulesText>
@@ -159,7 +145,7 @@ export function RulesModal({
 
         {isPrivate && (
           <ModalSection>
-            <SectionLabel $variant={currentVariant as GameVariant}>
+            <SectionLabel variant={currentVariant as GameVariant}>
               {t(
                 'games.critical_v1.rules.headers.privateRoom' as TranslationKey,
               )}
@@ -171,7 +157,7 @@ export function RulesModal({
         )}
 
         <ModalSection>
-          <SectionLabel $variant={currentVariant as GameVariant}>
+          <SectionLabel variant={currentVariant as GameVariant}>
             {t('games.critical_v1.rules.headers.gameplay' as TranslationKey)}
           </SectionLabel>
           <RulesText>
@@ -180,7 +166,7 @@ export function RulesModal({
         </ModalSection>
 
         <ModalSection>
-          <SectionLabel $variant={currentVariant as GameVariant}>
+          <SectionLabel variant={currentVariant as GameVariant}>
             {t('games.critical_v1.rules.headers.combos' as TranslationKey)}
           </SectionLabel>
           <RulesTextPre>
@@ -189,7 +175,7 @@ export function RulesModal({
         </ModalSection>
 
         <ModalSection>
-          <SectionLabel $variant={currentVariant as GameVariant}>
+          <SectionLabel variant={currentVariant as GameVariant}>
             {t('games.critical_v1.rules.headers.chat' as TranslationKey)}
           </SectionLabel>
           <RulesTextPre>
@@ -199,7 +185,7 @@ export function RulesModal({
 
         {CARD_GROUPS.map((group) => (
           <ModalSection key={group.id}>
-            <SectionLabel $variant={currentVariant as GameVariant}>
+            <SectionLabel variant={currentVariant as GameVariant}>
               {t(
                 `games.critical_v1.rules.cardGroups.${group.id}` as TranslationKey,
               )}
@@ -209,15 +195,15 @@ export function RulesModal({
                 <CardRuleItem key={cardKey}>
                   <CardVisual>
                     <Card
-                      $cardType={cardKey as CriticalCard}
-                      $variant={currentVariant as string}
-                      cursor="default"
+                      cardType={cardKey as CriticalCard}
+                      variant={currentVariant as string}
+                      className="cursor-default"
                     >
-                      <CardCorner $position="tl" $variant={currentVariant} />
-                      <CardCorner $position="tr" $variant={currentVariant} />
-                      <CardCorner $position="bl" $variant={currentVariant} />
-                      <CardCorner $position="br" $variant={currentVariant} />
-                      <CardFrame $variant={currentVariant} />
+                      <CardCorner position="tl" variant={currentVariant} />
+                      <CardCorner position="tr" variant={currentVariant} />
+                      <CardCorner position="bl" variant={currentVariant} />
+                      <CardCorner position="br" variant={currentVariant} />
+                      <CardFrame variant={currentVariant} />
                       <CardImage
                         variant={currentVariant ?? ''}
                         cardType={cardKey}

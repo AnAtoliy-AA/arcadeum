@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { ChatMessage } from '@arcadeum/ui';
-import { SYS_COLOR, SysText, SysTime, SysWrap } from './GameChat.styled';
+import { SYS_COLOR, SysText, SysTime, SysWrap } from './GameChat.styles';
 import { ChatSenderLabel } from './ChatSenderLabel';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
@@ -39,19 +39,20 @@ export function GameChatSystemRow({
   const color = SYS_COLOR[kind];
   return (
     <SysWrap
-      borderLeftColor={color}
-      backgroundColor={`color-mix(in srgb, ${color} 12%, transparent)`}
+      style={{
+        borderLeftColor: color,
+        backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)`,
+      }}
       data-testid="game-chat-system-row"
     >
-      <SysText flex={0} color={color} fontWeight="700">
+      <SysText style={{ flex: 0, color, fontWeight: 700 }}>
         {GLYPHS[kind]}
       </SysText>
       <SysText>
         {senderName ? (
           <>
             <SysText
-              color={senderColor ?? color}
-              fontWeight="700"
+              style={{ color: senderColor ?? color, fontWeight: 700 }}
               data-testid="system-row-sender"
             >
               {senderName}
@@ -60,8 +61,7 @@ export function GameChatSystemRow({
               <>
                 {' → '}
                 <SysText
-                  color={targetColor ?? color}
-                  fontWeight="700"
+                  style={{ color: targetColor ?? color, fontWeight: 700 }}
                   data-testid="system-row-target"
                 >
                   {targetName}

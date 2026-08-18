@@ -44,6 +44,8 @@ import { LobbyStartButton } from './LobbyStartButton';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
 import { HouseRulesSection } from './HouseRulesSection';
+import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
+import { useRankingStore } from '@/features/ranking/store/rankingStore';
 import type { ReusableGameLobbyProps } from './ReusableGameLobby.types';
 
 // Re-export all styles for games to use
@@ -104,6 +106,7 @@ export function ReusableGameLobby({
   showReorderControls = true,
   showInvitedPlayers = true,
   enableBots = false,
+  showDifficulty = true,
   onRuleComingSoonChange,
 }: ReusableGameLobbyProps) {
   const {
@@ -120,10 +123,23 @@ export function ReusableGameLobby({
     difficultyEasyLabel = 'Easy',
     difficultyMediumLabel = 'Medium',
     difficultyHardLabel = 'Hard',
+    difficultyExpertLabel = 'Expert',
     deleteRoomLabel,
   } = labels;
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const myRating = useRankingStore((s) => s.ratings[room.gameId]);
+  const loadMyRankings = useRankingStore((s) => s.loadMyRankings);
+
+  // Load the current user's ranked rating so ranked lobbies can show their
+  // tier badge without waiting for a result modal.
+  useEffect(() => {
+    if (userId) {
+      void loadMyRankings(userId);
+    }
+  }, [userId, loadMyRankings]);
+
+  const isRanked = room.gameOptions?.ranked === true;
 
   // Fetch catalog to determine which rules are excluded
   const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
@@ -147,7 +163,7 @@ export function ReusableGameLobby({
 
   const [botCount, setBotCount] = useState(1);
   const [difficulty, setDifficulty] = useState<
-    'easy' | 'medium' | 'hard'
+    'easy' | 'medium' | 'hard' | 'expert'
   >(() => {
     const settings = loadStoredSettings();
     return settings.aiDifficulty ?? 'medium';
@@ -159,7 +175,13 @@ export function ReusableGameLobby({
 
   useEffect(() => {
     saveStoredSettings({ aiDifficulty: difficulty });
-  }, [difficulty]);
+    // Persist the selected difficulty as a room option so it is visible to
+    // every player in the lobby (difficulty badge) and flows into the game
+    // engine via `room.gameOptions` at session start.
+    if (enableBots && isHost && room.status === 'lobby') {
+      setOption({ aiDifficulty: difficulty });
+    }
+  }, [difficulty, enableBots, isHost, room.status, setOption]);
 
   const handleStart = React.useCallback(() => {
     const now = Date.now();
@@ -232,26 +254,30 @@ export function ReusableGameLobby({
       <GameHeader>
         <GameInfo>
           <GameTitleText
-            background={theme.titleGradient}
             className={
               theme.titleGradient ? 'text-gradient shimmer-animated' : undefined
             }
-            style={theme.titleGradient ? { backgroundSize: '200% auto' } : {}}
+            style={{
+              background: theme.titleGradient,
+              ...(theme.titleGradient ? { backgroundSize: '200% auto' } : {}),
+            }}
           >
             {gameName}
             {variantName && (
               <>
                 {' '}
                 <VariantText
-                  background={theme.variantGradient}
                   className={
                     theme.variantGradient
                       ? 'text-gradient shimmer-animated'
                       : undefined
                   }
-                  style={
-                    theme.variantGradient ? { backgroundSize: '200% auto' } : {}
-                  }
+                  style={{
+                    background: theme.variantGradient,
+                    ...(theme.variantGradient
+                      ? { backgroundSize: '200% auto' }
+                      : {}),
+                  }}
                 >
                   : {variantName}
                 </VariantText>
@@ -269,6 +295,20 @@ export function ReusableGameLobby({
               <span>⚡</span>
               <span>{fastRoomLabel}</span>
             </FastBadge>
+          )}
+          {isRanked && (
+            <span
+              data-testid="lobby-ranked-badge"
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-[#facc15] bg-[rgba(250,204,21,0.18)] text-[#ffd700] shadow-[0_4px_12px_rgba(250,204,21,0.25)] shrink-0"
+            >
+              <span className="text-[12px]">★</span>
+              <span className="text-[10px] font-extrabold uppercase tracking-[0.8px]">
+                {t('games.rooms.ranked')}
+              </span>
+            </span>
+          )}
+          {isRanked && myRating && (
+            <RatingBadge elo={myRating.elo} tier={myRating.tier} size="sm" />
           )}
         </GameInfo>
         <HeaderActions>
@@ -324,7 +364,7 @@ export function ReusableGameLobby({
                       <BotCountButton
                         key={count}
                         data-testid={`bot-count-${count}`}
-                        $isActive={botCount === count}
+                        active={botCount === count}
                         onClick={() => setBotCount(count)}
                       >
                         {count}
@@ -333,7 +373,7 @@ export function ReusableGameLobby({
                   </BotCountButtons>
                 </BotCountSelector>
               )}
-              {enableBots && room.playerCount === 1 && (
+              {enableBots && room.playerCount === 1 && showDifficulty && (
                 <BotCountSelector>
                   <BotCountLabel>
                     {difficultyLabel || 'AI Difficulty'}
@@ -347,12 +387,16 @@ export function ReusableGameLobby({
                           label: difficultyMediumLabel || 'Medium',
                         },
                         { key: 'hard', label: difficultyHardLabel || 'Hard' },
+                        {
+                          key: 'expert',
+                          label: difficultyExpertLabel || 'Expert',
+                        },
                       ] as const
                     ).map((d) => (
                       <BotCountButton
                         key={d.key}
                         data-testid={`difficulty-${d.key}`}
-                        $isActive={difficulty === d.key}
+                        active={difficulty === d.key}
                         onClick={() => setDifficulty(d.key)}
                       >
                         {d.label}
@@ -360,6 +404,21 @@ export function ReusableGameLobby({
                     ))}
                   </BotCountButtons>
                 </BotCountSelector>
+              )}
+              {enableBots && showDifficulty && (
+                <span
+                  data-testid="difficulty-badge"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(99,102,241,0.35)] bg-[rgba(99,102,241,0.12)] px-3 py-1 text-[12px] font-semibold text-[#a5b4fc]"
+                >
+                  🤖{' '}
+                  {difficulty === 'easy'
+                    ? difficultyEasyLabel || 'Easy'
+                    : difficulty === 'hard'
+                      ? difficultyHardLabel || 'Hard'
+                      : difficulty === 'expert'
+                        ? difficultyExpertLabel || 'Expert'
+                        : difficultyMediumLabel || 'Medium'}
+                </span>
               )}
             </HostControls>
           )}

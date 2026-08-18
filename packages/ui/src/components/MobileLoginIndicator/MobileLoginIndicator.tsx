@@ -1,35 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { styled, XStack } from 'tamagui';
 import { UserIcon, LoginIcon } from '../Icons/index';
-
-const IndicatorCircle = styled(XStack, {
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: 34,
-  height: 34,
-  borderRadius: 999,
-  borderWidth: 1.5,
-  cursor: 'pointer',
-  display: 'none',
-  $md: { display: 'flex' },
-  hoverStyle: { opacity: 0.9 },
-
-  variants: {
-    isAuthenticated: {
-      true: {
-        background: 'linear-gradient(135deg, var(--primaryGradientStart), var(--primaryGradientEnd))',
-        borderColor: 'transparent',
-        color: '$white',
-      },
-      false: {
-        backgroundColor: '$glassBg',
-        borderColor: '$glassBorder',
-        color: '$neutral',
-      },
-    },
-  } as const,
-});
 
 export interface MobileLoginIndicatorProps {
   href: string;
@@ -53,9 +24,25 @@ export function MobileLoginIndicator({
       aria-label={title || (isAuthenticated ? 'User profile' : 'Login')}
       data-testid={testId}
     >
-      <IndicatorCircle isAuthenticated={isAuthenticated}>
+      <span
+        className="hidden h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-full border-[1.5px] transition-opacity hover:opacity-90 sm:flex md:hidden"
+        style={
+          isAuthenticated
+            ? {
+                background:
+                  'linear-gradient(135deg, var(--primaryGradientStart), var(--primaryGradientEnd))',
+                borderColor: 'transparent',
+                color: 'var(--white)',
+              }
+            : {
+                backgroundColor: 'var(--glassBg)',
+                borderColor: 'var(--glassBorder)',
+                color: 'var(--neutral)',
+              }
+        }
+      >
         {isAuthenticated ? <UserIcon size={18} /> : <LoginIcon size={18} />}
-      </IndicatorCircle>
+      </span>
     </Link>
   );
 }

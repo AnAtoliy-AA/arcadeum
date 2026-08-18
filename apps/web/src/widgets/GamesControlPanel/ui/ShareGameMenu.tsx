@@ -7,10 +7,10 @@ import {
   useState,
   type ReactElement,
 } from 'react';
-import { Text, XStack, YStack } from 'tamagui';
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
+import { routes } from '@/shared/config/routes';
 
 interface ShareGameMenuProps {
   roomId: string;
@@ -103,7 +103,7 @@ function CopyLinkIcon() {
 
 function buildInviteUrl(roomId: string, inviteCode?: string): string {
   if (typeof window === 'undefined') return '';
-  return `${window.location.origin}/games/rooms/${roomId}${
+  return `${window.location.origin}${routes.gameRoom(roomId)}${
     inviteCode ? `?inviteCode=${inviteCode}` : ''
   }`;
 }
@@ -216,9 +216,9 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
       style={{ position: 'relative', display: 'inline-flex' }}
     >
       <Button
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
         onClick={handleTrigger}
         aria-label={t('games.common.shareTooltip')}
         aria-haspopup="menu"
@@ -228,70 +228,47 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
         data-testid="share-game-button"
       >
         🔗
-        <Text $sm={{ display: 'none' }}>{' ' + t('games.common.share')}</Text>
+        <span className="max-[800px]:hidden">
+          {' ' + t('games.common.share')}
+        </span>
       </Button>
 
       {isOpen && (
-        <YStack
+        <div
+          className="flex flex-col items-stretch absolute top-full right-0 -mt-2 min-w-[220px] bg-[var(--glassBg)] border-[var(--glassBorder)] border rounded-[12px] p-2 gap-1 z-[100]"
           id="share-game-menu-popover"
           role="menu"
           aria-label={t('games.common.shareTooltip')}
           data-testid="share-game-popover"
-          position="absolute"
-          top="100%"
-          right={0}
-          marginTop="$2"
-          minWidth={220}
-          backgroundColor="$glassBg"
-          borderColor="$glassBorder"
-          borderWidth={1}
-          borderRadius={12}
-          padding="$2"
-          gap="$1"
-          zIndex={100}
         >
           {channels.map((c) => (
-            <XStack
+            <div
+              className="flex flex-row items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-[rgba(255,255,255,0.08)] focus:bg-[rgba(255,255,255,0.08)]"
+              onClick={() => handleChannelClick(c.href)}
               key={c.key}
               role="menuitem"
               tabIndex={0}
-              alignItems="center"
-              gap="$3"
-              paddingHorizontal="$3"
-              paddingVertical="$2"
-              borderRadius={8}
-              cursor="pointer"
-              hoverStyle={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
-              focusStyle={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
               data-testid={`share-via-${c.key}`}
-              onPress={() => handleChannelClick(c.href)}
             >
               {c.icon}
-              <Text fontSize={14}>{c.label}</Text>
-            </XStack>
+              <span className="text-[14px]">{c.label}</span>
+            </div>
           ))}
-          <XStack
+          <div
+            className="flex flex-row items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-[rgba(255,255,255,0.08)] focus:bg-[rgba(255,255,255,0.08)]"
+            onClick={handleCopy}
             role="menuitem"
             tabIndex={0}
-            alignItems="center"
-            gap="$3"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderRadius={8}
-            cursor="pointer"
-            hoverStyle={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
-            focusStyle={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
             data-testid="share-via-copy"
-            onPress={handleCopy}
           >
             <CopyLinkIcon />
-            <Text fontSize={14}>
+            <span className="text-[14px]">
               {isCopied
                 ? t('games.common.shareVia.copied')
                 : t('games.common.shareVia.copyLink')}
-            </Text>
-          </XStack>
-        </YStack>
+            </span>
+          </div>
+        </div>
       )}
     </div>
   );

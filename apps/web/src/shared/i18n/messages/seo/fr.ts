@@ -11,8 +11,12 @@ export const fr: DeepPartial<SeoMessages> = {
     badge: "Jouez avec des amis ou contre l'IA",
   },
   games: {
-    title: `Jeux de société gratuits en ligne · ${APP}`,
-    description: `Parcourez le catalogue ${APP} de jeux de société gratuits en ligne. Trouvez des salons ouverts, créez une partie privée entre amis ou affrontez l'IA — directement dans votre navigateur, sans téléchargement.`,
+    title: `Catalogue de Jeux de Société et Cartes Gratuits · ${APP}`,
+    description: `Découvrez tous les jeux en ligne multijoueurs gratuits sur ${APP}. Jouez aux échecs, bataille navale, dames, cascade et plus encore sans téléchargement.`,
+  },
+  rooms: {
+    title: `Salons de Jeu en Direct · ${APP}`,
+    description: `Parcourez les salons de jeu multijoueurs actifs sur ${APP}. Rejoignez des parties ouvertes ou créez votre propre salon privé pour vos amis.`,
   },
   gameCreate: {
     title: `Créer un salon · ${APP}`,

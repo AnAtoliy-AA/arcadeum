@@ -11,8 +11,12 @@ export const es: DeepPartial<SeoMessages> = {
     badge: 'Juega con amigos o con IA',
   },
   games: {
-    title: `Juegos de mesa gratis en línea · ${APP}`,
-    description: `Explora el catálogo de ${APP} con juegos de mesa gratis en línea. Encuentra salas abiertas, crea una partida privada con amigos o juega contra la IA — todo en tu navegador, sin descarga.`,
+    title: `Catálogo de Juegos de Mesa Online · ${APP}`,
+    description: `Explora el catálogo de juegos multijugador online en ${APP}. Juega ajedrez, batalla naval, damas, cascade y más en tu navegador.`,
+  },
+  rooms: {
+    title: `Salas de Juego en Vivo · ${APP}`,
+    description: `Explora salas de juego activas en ${APP}. Únete a partidas abiertas con jugadores de todo el mundo o crea salas privadas para amigos.`,
   },
   gameCreate: {
     title: `Crear una sala · ${APP}`,

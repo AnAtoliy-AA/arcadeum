@@ -9,7 +9,7 @@ import {
 /**
  * Slug keys whose pages we never want indexed (per-user dashboards,
  * payment flows, the OAuth callback, admin). Mirrors `PRIVATE_SLUG_KEYS`
- * in `src/proxy.ts` so robots.txt, the `x-robots-tag` header, and
+ * in `src/middleware.ts` so robots.txt, the `x-robots-tag` header, and
  * the sitemap give Google the same signal in three places. Belt and
  * braces — but cheap, and search-console reports get cleaner.
  */
@@ -25,6 +25,7 @@ const PRIVATE_SLUG_KEYS: readonly SlugKey[] = [
   'payment',
   'wallet',
   'shop',
+  'rooms',
 ];
 
 export default function robots(): MetadataRoute.Robots {
@@ -36,13 +37,11 @@ export default function robots(): MetadataRoute.Robots {
     PRIVATE_SLUG_KEYS.map((key) => `/${locale}/${LOCALE_SLUGS[locale][key]}/`),
   );
 
-  // /games is public, but creating or joining a specific room is not.
-  const gameRoomPaths = SUPPORTED_LOCALES.flatMap((locale) => {
+  // /games is public, but creating a room is not. Room detail pages live
+  // under /rooms, which is covered by PRIVATE_SLUG_KEYS above.
+  const gameCreatePaths = SUPPORTED_LOCALES.flatMap((locale) => {
     const gamesSlug = LOCALE_SLUGS[locale].games;
-    return [
-      `/${locale}/${gamesSlug}/create/`,
-      `/${locale}/${gamesSlug}/rooms/`,
-    ];
+    return [`/${locale}/${gamesSlug}/create/`];
   });
 
   return {
@@ -55,7 +54,7 @@ export default function robots(): MetadataRoute.Robots {
           '/admin/',
           '/api/',
           ...localizedPrivatePaths,
-          ...gameRoomPaths,
+          ...gameCreatePaths,
         ],
       },
       {
@@ -78,7 +77,7 @@ export default function robots(): MetadataRoute.Robots {
           '/api/',
           '/admin/',
           ...localizedPrivatePaths,
-          ...gameRoomPaths,
+          ...gameCreatePaths,
         ],
       },
     ],

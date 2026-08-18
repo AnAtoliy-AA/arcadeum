@@ -1,7 +1,7 @@
 'use client';
 
-import { XStack, YStack } from '@arcadeum/ui';
-import { Text, styled, YStack as Stack } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
+import { Typography } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
@@ -45,38 +45,28 @@ const SLOT_ORDER: ShopCategory[] = [
   'game_skin',
 ];
 
-const SlotTile = styled(Stack, {
-  name: 'ShopSlotTile',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 10,
-  padding: 10,
-  borderRadius: '$3',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.08)',
-  backgroundColor: 'rgba(255,255,255,0.02)',
-  cursor: 'pointer',
-  minHeight: 62,
-  hoverStyle: {
-    borderColor: 'rgba(255,255,255,0.22)',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-  },
-
-  variants: {
-    active: {
-      true: {
-        borderColor: 'rgba(96,165,250,0.6)',
-        backgroundColor: 'rgba(96,165,250,0.08)',
-      },
-    },
-    previewing: {
-      true: {
-        borderColor: 'rgba(34,197,94,0.6)',
-        backgroundColor: 'rgba(16,185,129,0.10)',
-      },
-    },
-  } as const,
-});
+function SlotTile({
+  active,
+  previewing,
+  className,
+  ...props
+}: {
+  active?: boolean;
+  previewing?: boolean;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-row items-center gap-[10px] p-[10px] rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] cursor-pointer min-h-[62px] transition-colors hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
+        active && 'border-[rgba(96,165,250,0.6)] bg-[rgba(96,165,250,0.08)]',
+        previewing && 'border-[rgba(34,197,94,0.6)] bg-[rgba(16,185,129,0.10)]',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
 export function ShopSlotRing({
   preview,
@@ -88,8 +78,11 @@ export function ShopSlotRing({
   const { t } = useTranslation();
 
   return (
-    <YStack gap="$2" data-testid="shop-slot-ring">
-      <XStack flexWrap="wrap" gap="$2">
+    <div
+      className="flex flex-col items-stretch gap-2"
+      data-testid="shop-slot-ring"
+    >
+      <div className="flex flex-row items-stretch flex-wrap gap-2">
         {SLOT_ORDER.map((slot) => {
           const slotLabels = labels[slot];
           const item = preview[slot] ?? null;
@@ -104,57 +97,46 @@ export function ShopSlotRing({
               key={slot}
               active={isActive}
               previewing={isPreviewing}
-              onPress={() => onSlotClick(slot)}
+              onClick={() => onSlotClick(slot)}
               role="button"
               tabIndex={0}
               data-testid={`shop-slot-${slot}`}
               data-active={isActive ? 'true' : 'false'}
               data-previewing={isPreviewing ? 'true' : 'false'}
-              width="48%"
-              $sm={{ width: '100%' }}
+              className="w-[48%] max-[800px]:w-full"
             >
-              <Stack
-                width={40}
-                height={40}
-                borderRadius="$2"
-                alignItems="center"
-                justifyContent="center"
-                backgroundColor="rgba(0,0,0,0.30)"
-                borderWidth={1}
-                borderColor="rgba(255,255,255,0.10)"
-                overflow="hidden"
-              >
+              <div className="flex flex-col w-[40px] h-[40px] rounded-lg items-center justify-center bg-[rgba(0,0,0,0.30)] border border-[rgba(255,255,255,0.10)] overflow-hidden">
                 {item ? (
                   <ItemAsset item={item} size={32} />
                 ) : (
-                  <Text fontSize={20} color="$gray10">
+                  <Typography uiSize="xl" color="#6b7280">
                     ·
-                  </Text>
+                  </Typography>
                 )}
-              </Stack>
-              <YStack flex={1} minWidth={0} gap={2}>
-                <Text
-                  fontSize={9}
-                  letterSpacing={1.2}
-                  textTransform="uppercase"
-                  fontWeight="800"
-                  color="$gray11"
+              </div>
+              <div className="flex flex-col items-stretch flex-1 min-w-0 gap-2">
+                <Typography
+                  uiSize="xs"
+                  variant="label"
+                  color="#94a3b8"
+                  tracking="sm"
+                  className="uppercase"
                 >
                   {slotLabels.label}
-                </Text>
-                <Text
-                  fontSize={12}
-                  fontWeight="700"
-                  color="$white"
-                  numberOfLines={1}
+                </Typography>
+                <Typography
+                  uiSize="xs"
+                  weight="700"
+                  color="#f5f7ff"
+                  className="line-clamp-1"
                 >
                   {itemName}
-                </Text>
-              </YStack>
+                </Typography>
+              </div>
             </SlotTile>
           );
         })}
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

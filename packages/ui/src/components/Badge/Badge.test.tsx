@@ -1,17 +1,9 @@
-import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
+import { render as rtlRender, screen } from '@testing-library/react';
 import { Badge } from './Badge';
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
-const render = (ui: React.ReactElement) => {
-  return rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>
-  );
-};
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('Badge', () => {
   it('renders children correctly', () => {

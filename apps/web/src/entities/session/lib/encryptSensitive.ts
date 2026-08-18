@@ -6,10 +6,8 @@ export function encryptSensitiveValue(value: string): string {
   }
   const encoder = new TextEncoder();
   const data = encoder.encode(value);
-  let binary = '';
-  for (let i = 0; i < data.byteLength; i += 1) {
-    binary += String.fromCharCode(data[i]);
-  }
+  // Use Uint8Array.reduce instead of byte-by-byte string concatenation
+  const binary = Array.from(data, (byte) => String.fromCharCode(byte)).join('');
   return btoa(binary);
 }
 

@@ -1,15 +1,8 @@
 import { render as rtlRender, screen } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import config from '../../tamagui.config';
 import { StatTile } from './StatTile';
 import { describe, it, expect } from 'vitest';
 
-const render = (ui: React.ReactElement) =>
-  rtlRender(
-    <TamaguiProvider config={config} defaultTheme="dark">
-      {ui}
-    </TamaguiProvider>,
-  );
+const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('StatTile', () => {
   it('renders the value and label', () => {

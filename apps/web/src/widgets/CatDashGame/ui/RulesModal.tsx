@@ -1,13 +1,13 @@
 'use client';
 
 import { memo } from 'react';
-import { YStack, Text, Button, ScrollView } from 'tamagui';
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalTitle,
   ModalBody,
+  Button,
 } from '@arcadeum/ui';
 
 interface RulesModalProps {
@@ -26,75 +26,63 @@ export const CatDashRulesModal = memo(function CatDashRulesModal({
           <ModalTitle>Cat Dash — Rules</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <ScrollView maxHeight={400}>
-            <YStack gap="$3" padding="$2">
-              <YStack gap="$1">
-                <Text fontWeight="bold" fontSize={14}>
-                  Goal
-                </Text>
-                <Text fontSize={13}>
+          <div className="overflow-auto max-h-[400px]">
+            <div className="flex flex-col items-stretch gap-3 p-2">
+              <div className="flex flex-col items-stretch gap-1">
+                <span className="font-bold text-[14px]">Goal</span>
+                <span className="text-[13px]">
                   Be the first cat to reach space 20 (the finish line). Each
                   turn, roll the dice and move forward that many spaces.
-                </Text>
-              </YStack>
-              <YStack gap="$1">
-                <Text fontWeight="bold" fontSize={14}>
-                  Dice Roll
-                </Text>
-                <Text fontSize={13}>
+                </span>
+              </div>
+              <div className="flex flex-col items-stretch gap-1">
+                <span className="font-bold text-[14px]">Dice Roll</span>
+                <span className="text-[13px]">
                   On your turn, click &quot;Roll Dice&quot; to move. You roll a
                   standard 6-sided die and move forward that many spaces.
-                </Text>
-              </YStack>
-              <YStack gap="$1">
-                <Text fontWeight="bold" fontSize={14}>
-                  Track Spaces
-                </Text>
-                <Text fontSize={13}>
+                </span>
+              </div>
+              <div className="flex flex-col items-stretch gap-1">
+                <span className="font-bold text-[14px]">Track Spaces</span>
+                <span className="text-[13px]">
                   🟢 Normal — no effect. 🔴 Obstacle — skip your next turn. 🟡
                   Bonus — roll again immediately. 🔵 Fork — choose a path
                   (multiple path tracks only).
-                </Text>
-              </YStack>
-              <YStack gap="$1">
-                <Text fontWeight="bold" fontSize={14}>
-                  Abilities
-                </Text>
-                <Text fontSize={13}>
+                </span>
+              </div>
+              <div className="flex flex-col items-stretch gap-1">
+                <span className="font-bold text-[14px]">Abilities</span>
+                <span className="text-[13px]">
                   Each cat has 2 unique abilities. Use power tokens (3 per game)
                   to activate them. Abilities can give you extra movement, block
                   opponents, or skip obstacles.
-                </Text>
-              </YStack>
-              <YStack gap="$1">
-                <Text fontWeight="bold" fontSize={14}>
-                  Cats
-                </Text>
-                <Text fontSize={13}>
+                </span>
+              </div>
+              <div className="flex flex-col items-stretch gap-1">
+                <span className="font-bold text-[14px]">Cats</span>
+                <span className="text-[13px]">
                   🐱 Neon Cat — Cyber theme. Digital Dash + Neon Shield. 🐱
                   Whiskers — Village theme. Extra Life + Purr Power. 🐱 Stardust
                   — Space theme. Warp Jump + Star Shield. 🐱 Felix — Nature
                   theme. Nature&apos;s Path + Wild Charge. 🐱 Shadow — Neon
                   theme. Shadow Step + Dark Cover. 🐱 Luna — Space theme. Lunar
                   Boost + Moon Shield.
-                </Text>
-              </YStack>
-              <YStack gap="$1">
-                <Text fontWeight="bold" fontSize={14}>
-                  Track Types
-                </Text>
-                <Text fontSize={13}>
+                </span>
+              </div>
+              <div className="flex flex-col items-stretch gap-1">
+                <span className="font-bold text-[14px]">Track Types</span>
+                <span className="text-[13px]">
                   Linear — straightforward race. Circular — features shortcuts
                   and obstacles. Multiple Paths — choose between forks with
                   risk/reward tradeoffs.
-                </Text>
-              </YStack>
-            </YStack>
-          </ScrollView>
+                </span>
+              </div>
+            </div>
+          </div>
         </ModalBody>
-        <YStack padding="$3">
-          <Button onPress={onClose}>Close</Button>
-        </YStack>
+        <div className="flex flex-col items-stretch p-3">
+          <Button onClick={onClose}>Close</Button>
+        </div>
       </ModalContent>
     </Modal>
   );

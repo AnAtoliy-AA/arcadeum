@@ -15,7 +15,14 @@
 
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
-const { readdir, unlink, mkdir, stat, readFile, writeFile } = require('fs/promises');
+const {
+  readdir,
+  unlink,
+  mkdir,
+  stat,
+  readFile,
+  writeFile,
+} = require('fs/promises');
 const path = require('path');
 const axios = require('axios');
 const FormData = require('form-data');
@@ -40,6 +47,7 @@ const CONFIG = {
   postizYouTubeId: process.env.POSTIZ_YOUTUBE_INTEGRATION_ID || '',
   postizInstagramId: process.env.POSTIZ_INSTAGRAM_INTEGRATION_ID || '',
   postizTiktokId: process.env.POSTIZ_TIKTOK_INTEGRATION_ID || '',
+  postizXId: process.env.POSTIZ_X_INTEGRATION_ID || '',
 };
 
 // ============================================================================
@@ -64,10 +72,15 @@ const GAMES = [
       { row: 2, col: 1 },
     ],
     async waitForGame(page) {
-      await page.waitForSelector('[data-testid="ttt-cell-0-0"], [data-testid="game-board-section"], [data-testid="turn-status-pill"]', { timeout: 20000 });
+      await page.waitForSelector(
+        '[data-testid="ttt-cell-0-0"], [data-testid="game-board-section"], [data-testid="turn-status-pill"]',
+        { timeout: 20000 },
+      );
     },
     async makeMove(page, move) {
-      const cell = page.locator(`[data-testid="ttt-cell-${move.row}-${move.col}"]`);
+      const cell = page.locator(
+        `[data-testid="ttt-cell-${move.row}-${move.col}"]`,
+      );
       if (await cell.isEnabled()) {
         await cell.click({ force: true });
         return true;
@@ -90,14 +103,20 @@ const GAMES = [
     _lastLabel: null,
     _stuckCount: 0,
     async waitForGame(page) {
-      await page.waitForSelector('[data-testid="cascade-turn-avatar"]', { timeout: 15000 });
+      await page.waitForSelector('[data-testid="cascade-turn-avatar"]', {
+        timeout: 15000,
+      });
       await page.waitForTimeout(2000);
     },
     async makeMove(page) {
       // If color picker overlay is open, dismiss it by clicking a color
-      const picker = page.locator('.CascadeGame-module__WaeW-q__pickerBackdrop');
-      if ((await picker.count()) > 0 && await picker.isVisible()) {
-        const colorBtn = page.locator('.CascadeGame-module__WaeW-q__pickerBackdrop button').first();
+      const picker = page.locator(
+        '.CascadeGame-module__WaeW-q__pickerBackdrop',
+      );
+      if ((await picker.count()) > 0 && (await picker.isVisible())) {
+        const colorBtn = page
+          .locator('.CascadeGame-module__WaeW-q__pickerBackdrop button')
+          .first();
         if ((await colorBtn.count()) > 0) {
           await colorBtn.click({ force: true });
           await sleep(500);
@@ -106,7 +125,9 @@ const GAMES = [
       }
 
       // Click enabled (playable) hand buttons — try a different card if stuck
-      const playable = page.locator('[data-testid="game-board-section"] button:not([disabled]):not([aria-label*="Draw"]):not([aria-label*="Discard"])');
+      const playable = page.locator(
+        '[data-testid="game-board-section"] button:not([disabled]):not([aria-label*="Draw"]):not([aria-label*="Discard"])',
+      );
       const count = await playable.count();
       if (count > 0) {
         // Get labels of all playable cards
@@ -126,7 +147,9 @@ const GAMES = [
 
         if (this._stuckCount >= 2) {
           // Draw a card instead
-          const drawPile = page.locator('[data-testid="game-board-section"] button[aria-label*="Draw"]');
+          const drawPile = page.locator(
+            '[data-testid="game-board-section"] button[aria-label*="Draw"]',
+          );
           if ((await drawPile.count()) > 0) {
             await drawPile.first().click({ force: true });
             this._stuckCount = 0;
@@ -141,7 +164,9 @@ const GAMES = [
         return true;
       }
       // If no playable cards, click the draw pile
-      const drawPile = page.locator('[data-testid="game-board-section"] button[aria-label*="Draw"]');
+      const drawPile = page.locator(
+        '[data-testid="game-board-section"] button[aria-label*="Draw"]',
+      );
       if ((await drawPile.count()) > 0) {
         await drawPile.first().click({ force: true });
         this._lastLabel = null;
@@ -166,15 +191,20 @@ const GAMES = [
     async waitForGame(page) {
       // Try hand-rail-play first, fallback to cascade-turn-avatar or any game indicator
       try {
-        await page.waitForSelector('[data-testid="hand-rail-play"]', { timeout: 10000 });
+        await page.waitForSelector('[data-testid="hand-rail-play"]', {
+          timeout: 10000,
+        });
       } catch {
-        await page.waitForSelector('[data-testid="game-board-section"], [data-testid="turn-status-pill"]', { timeout: 10000 });
+        await page.waitForSelector(
+          '[data-testid="game-board-section"], [data-testid="turn-status-pill"]',
+          { timeout: 10000 },
+        );
       }
       await page.waitForTimeout(2000);
     },
     async makeMove(page) {
       const playBtn = page.locator('[data-testid="hand-rail-play"]');
-      if ((await playBtn.count()) > 0 && await playBtn.isEnabled()) {
+      if ((await playBtn.count()) > 0 && (await playBtn.isEnabled())) {
         await playBtn.click({ force: true });
         return true;
       }
@@ -300,8 +330,17 @@ async function getAudioTracks() {
 // GAMEPLAY RECORDING (parameterized viewport)
 // ============================================================================
 
-async function recordSession(game, viewport, maxDurationMs, label, isMobile = false) {
-  log('info', `Recording ${label} session (${viewport.width}x${viewport.height})...`);
+async function recordSession(
+  game,
+  viewport,
+  maxDurationMs,
+  label,
+  isMobile = false,
+) {
+  log(
+    'info',
+    `Recording ${label} session (${viewport.width}x${viewport.height})...`,
+  );
 
   let browser = null;
 
@@ -310,7 +349,12 @@ async function recordSession(game, viewport, maxDurationMs, label, isMobile = fa
 
     browser = await chromium.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+      ],
     });
 
     const contextOptions = {
@@ -324,7 +368,8 @@ async function recordSession(game, viewport, maxDurationMs, label, isMobile = fa
     if (isMobile) {
       contextOptions.isMobile = true;
       contextOptions.hasTouch = true;
-      contextOptions.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1';
+      contextOptions.userAgent =
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1';
     }
 
     const context = await browser.newContext(contextOptions);
@@ -336,7 +381,9 @@ async function recordSession(game, viewport, maxDurationMs, label, isMobile = fa
 
     // Step 1: Wait for and click "Play vs AI now" button
     log('info', `${label}: looking for Play vs AI button...`);
-    const quickplayBtn = page.locator('[data-testid="quickplay-ai-button"]').first();
+    const quickplayBtn = page
+      .locator('[data-testid="quickplay-ai-button"]')
+      .first();
     await quickplayBtn.waitFor({ state: 'visible', timeout: 10000 });
     await quickplayBtn.click({ force: true });
     log('info', `${label}: clicked Play vs AI`);
@@ -347,11 +394,16 @@ async function recordSession(game, viewport, maxDurationMs, label, isMobile = fa
     await startBtn.waitFor({ state: 'visible', timeout: 15000 });
 
     // Select a random theme if available (Cascade has variant buttons)
-    const themes = await page.locator('[data-testid^="cascade-variant-"]').all();
+    const themes = await page
+      .locator('[data-testid^="cascade-variant-"]')
+      .all();
     if (themes.length > 0) {
       const randomTheme = themes[Math.floor(Math.random() * themes.length)];
       await randomTheme.click({ force: true });
-      log('info', `${label}: selected theme ${await randomTheme.getAttribute('data-testid')}`);
+      log(
+        'info',
+        `${label}: selected theme ${await randomTheme.getAttribute('data-testid')}`,
+      );
       await sleep(500);
     }
 
@@ -397,7 +449,10 @@ async function recordSession(game, viewport, maxDurationMs, label, isMobile = fa
     }
 
     const finalDuration = Date.now() - startTime;
-    log('info', `${label}: recorded ${moveCount} moves in ${(finalDuration / 1000).toFixed(1)}s`);
+    log(
+      'info',
+      `${label}: recorded ${moveCount} moves in ${(finalDuration / 1000).toFixed(1)}s`,
+    );
 
     await context.close();
     await browser.close();
@@ -427,14 +482,21 @@ function runFFmpeg(args, label) {
   return new Promise((resolve, reject) => {
     const ffmpeg = spawn('ffmpeg', args);
     let stderr = '';
-    ffmpeg.stdout.on('data', (d) => { stderr += d.toString(); });
-    ffmpeg.stderr.on('data', (d) => { stderr += d.toString(); });
+    ffmpeg.stdout.on('data', (d) => {
+      stderr += d.toString();
+    });
+    ffmpeg.stderr.on('data', (d) => {
+      stderr += d.toString();
+    });
     ffmpeg.on('close', (code) => {
       if (code === 0) {
         log('info', `FFmpeg (${label}) complete`);
         resolve();
       } else {
-        log('error', `FFmpeg (${label}) failed`, { code, stderr: stderr.slice(-500) });
+        log('error', `FFmpeg (${label}) failed`, {
+          code,
+          stderr: stderr.slice(-500),
+        });
         reject(new Error(`FFmpeg exited with code ${code}`));
       }
     });
@@ -443,7 +505,10 @@ function runFFmpeg(args, label) {
 }
 
 async function buildEndCard(timestamp, suffix, width, height) {
-  const endCardPath = path.join(CONFIG.outputDir, `gameplay-endcard-${suffix}-${timestamp}.mp4`);
+  const endCardPath = path.join(
+    CONFIG.outputDir,
+    `gameplay-endcard-${suffix}-${timestamp}.mp4`,
+  );
   const titleSize = height > width ? 80 : 64;
   const subtitleSize = height > width ? 32 : 24;
   const dur = CONFIG.endCardDuration;
@@ -459,14 +524,33 @@ async function buildEndCard(timestamp, suffix, width, height) {
 
   await runFFmpeg(
     [
-      '-f', 'lavfi', '-i', `color=c=black:s=${width}x${height}:d=${dur}:r=30`,
-      '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
-      '-vf', vf,
-      '-af', 'afade=t=in:st=0:d=0.3,afade=t=out:st=' + (dur - 0.5) + ':d=0.5',
-      '-t', String(dur),
-      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
-      '-c:a', 'aac', '-b:a', '128k',
-      '-shortest', '-y', endCardPath,
+      '-f',
+      'lavfi',
+      '-i',
+      `color=c=black:s=${width}x${height}:d=${dur}:r=30`,
+      '-f',
+      'lavfi',
+      '-i',
+      'anullsrc=r=44100:cl=stereo',
+      '-vf',
+      vf,
+      '-af',
+      'afade=t=in:st=0:d=0.3,afade=t=out:st=' + (dur - 0.5) + ':d=0.5',
+      '-t',
+      String(dur),
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-shortest',
+      '-y',
+      endCardPath,
     ],
     `end card (${suffix})`,
   );
@@ -475,15 +559,32 @@ async function buildEndCard(timestamp, suffix, width, height) {
 
 async function concatVideos(parts, outputPath, label) {
   const timestamp = Date.now();
-  const concatList = path.join(CONFIG.outputDir, `concat-${label}-${timestamp}.txt`);
+  const concatList = path.join(
+    CONFIG.outputDir,
+    `concat-${label}-${timestamp}.txt`,
+  );
   await writeFile(concatList, parts.map((p) => `file '${p}'`).join('\n'));
 
   await runFFmpeg(
     [
-      '-f', 'concat', '-safe', '0', '-i', concatList,
-      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
-      '-c:a', 'aac', '-b:a', '128k',
-      '-y', outputPath,
+      '-f',
+      'concat',
+      '-safe',
+      '0',
+      '-i',
+      concatList,
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      outputPath,
     ],
     `concat (${label})`,
   );
@@ -500,19 +601,39 @@ async function processFullVideo(rawVideoPath, recordedDuration) {
   const durationSec = Math.min(Math.ceil(recordedDuration / 1000), 70);
   const fadeStart = Math.max(0, durationSec - CONFIG.fadeOutDuration);
 
-  const mainPath = path.join(CONFIG.outputDir, `gameplay-full-main-${timestamp}.mp4`);
+  const mainPath = path.join(
+    CONFIG.outputDir,
+    `gameplay-full-main-${timestamp}.mp4`,
+  );
   const endCardPath = await buildEndCard(timestamp, 'full', 1920, 1080);
-  const outputPath = path.join(CONFIG.outputDir, `gameplay-full-${timestamp}.mp4`);
+  const outputPath = path.join(
+    CONFIG.outputDir,
+    `gameplay-full-${timestamp}.mp4`,
+  );
 
   await runFFmpeg(
     [
-      '-i', rawVideoPath,
-      '-i', audioTrack,
-      '-t', String(durationSec),
-      '-af', `afade=t=out:st=${fadeStart}:d=${CONFIG.fadeOutDuration}`,
-      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
-      '-c:a', 'aac', '-b:a', '128k',
-      '-y', '-shortest', mainPath,
+      '-i',
+      rawVideoPath,
+      '-i',
+      audioTrack,
+      '-t',
+      String(durationSec),
+      '-af',
+      `afade=t=out:st=${fadeStart}:d=${CONFIG.fadeOutDuration}`,
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      '-shortest',
+      mainPath,
     ],
     'full main video',
   );
@@ -531,32 +652,61 @@ async function processShortClip(rawVideoPath, recordedDuration) {
   const tracks = await getAudioTracks();
   const audioTrack = randomElement(tracks);
   const timestamp = Date.now();
-  const shortLen = randomInt(CONFIG.shortDuration.min, CONFIG.shortDuration.max);
+  const shortLen = randomInt(
+    CONFIG.shortDuration.min,
+    CONFIG.shortDuration.max,
+  );
   const totalSec = recordedDuration / 1000;
   // Start from 60% of the video to skip landing page / lobby
   const earliestStart = Math.max(0, totalSec * 0.6);
   const latestStart = Math.max(earliestStart, totalSec - shortLen - 2);
-  const clipStart = randomInt(Math.floor(earliestStart), Math.floor(latestStart));
+  const clipStart = randomInt(
+    Math.floor(earliestStart),
+    Math.floor(latestStart),
+  );
 
-  const mainPath = path.join(CONFIG.outputDir, `gameplay-short-main-${timestamp}.mp4`);
+  const mainPath = path.join(
+    CONFIG.outputDir,
+    `gameplay-short-main-${timestamp}.mp4`,
+  );
   const endCardPath = await buildEndCard(timestamp, 'short', 1080, 1920);
-  const outputPath = path.join(CONFIG.outputDir, `gameplay-short-${timestamp}.mp4`);
+  const outputPath = path.join(
+    CONFIG.outputDir,
+    `gameplay-short-${timestamp}.mp4`,
+  );
 
   // Scale from 430x932 (real mobile) to 1080x1920 (YouTube Shorts) and pad to fill
   // Audio: trim to match clip duration and apply fade out
   await runFFmpeg(
     [
-      '-ss', String(clipStart),
-      '-i', rawVideoPath,
-      '-i', audioTrack,
-      '-t', String(shortLen),
-      '-vf', `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black`,
-      '-af', `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
-      '-map', '0:v:0',
-      '-map', '1:a:0',
-      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
-      '-c:a', 'aac', '-b:a', '128k',
-      '-y', mainPath,
+      '-ss',
+      String(clipStart),
+      '-i',
+      rawVideoPath,
+      '-i',
+      audioTrack,
+      '-t',
+      String(shortLen),
+      '-vf',
+      `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black`,
+      '-af',
+      `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
+      '-map',
+      '0:v:0',
+      '-map',
+      '1:a:0',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      mainPath,
     ],
     'short highlight clip',
   );
@@ -591,23 +741,36 @@ async function uploadVideo(videoPath) {
 
 async function postToYouTube(uploadedFile, caption) {
   if (!CONFIG.postizYouTubeId) return null;
-  const headers = { Authorization: CONFIG.postizApiKey, 'Content-Type': 'application/json' };
+  const headers = {
+    Authorization: CONFIG.postizApiKey,
+    'Content-Type': 'application/json',
+  };
 
   const postData = {
     type: 'now',
     date: new Date().toISOString(),
     shortLink: false,
     tags: [],
-    posts: [{
-      integration: { id: CONFIG.postizYouTubeId },
-      value: [{ content: caption, image: [{ id: uploadedFile.id, path: uploadedFile.path }] }],
-      settings: {
-        __type: 'youtube',
-        title: caption.replace(/[🎮🏆⚡🕹️💰🚀🎯🔄❌⭕🎲🃏]/g, '').trim().slice(0, 100),
-        type: 'public',
-        selfDeclaredMadeForKids: 'no',
+    posts: [
+      {
+        integration: { id: CONFIG.postizYouTubeId },
+        value: [
+          {
+            content: caption,
+            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+          },
+        ],
+        settings: {
+          __type: 'youtube',
+          title: caption
+            .replace(/[🎮🏆⚡🕹️💰🚀🎯🔄❌⭕🎲🃏]/g, '')
+            .trim()
+            .slice(0, 100),
+          type: 'public',
+          selfDeclaredMadeForKids: 'no',
+        },
       },
-    }],
+    ],
   };
 
   const res = await axios.post(`${CONFIG.postizBaseUrl}/posts`, postData, {
@@ -619,18 +782,28 @@ async function postToYouTube(uploadedFile, caption) {
 
 async function postToInstagram(uploadedFile, caption) {
   if (!CONFIG.postizInstagramId) return null;
-  const headers = { Authorization: CONFIG.postizApiKey, 'Content-Type': 'application/json' };
+  const headers = {
+    Authorization: CONFIG.postizApiKey,
+    'Content-Type': 'application/json',
+  };
 
   const postData = {
     type: 'now',
     date: new Date().toISOString(),
     shortLink: false,
     tags: [],
-    posts: [{
-      integration: { id: CONFIG.postizInstagramId },
-      value: [{ content: caption, image: [{ id: uploadedFile.id, path: uploadedFile.path }] }],
-      settings: { __type: 'instagram', post_type: 'post' },
-    }],
+    posts: [
+      {
+        integration: { id: CONFIG.postizInstagramId },
+        value: [
+          {
+            content: caption,
+            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+          },
+        ],
+        settings: { __type: 'instagram', post_type: 'post' },
+      },
+    ],
   };
 
   const res = await axios.post(`${CONFIG.postizBaseUrl}/posts`, postData, {
@@ -642,27 +815,79 @@ async function postToInstagram(uploadedFile, caption) {
 
 async function postToTikTok(uploadedFile, caption) {
   if (!CONFIG.postizTiktokId) return null;
-  const headers = { Authorization: CONFIG.postizApiKey, 'Content-Type': 'application/json' };
+  const headers = {
+    Authorization: CONFIG.postizApiKey,
+    'Content-Type': 'application/json',
+  };
 
   const postData = {
     type: 'now',
     date: new Date().toISOString(),
     shortLink: false,
     tags: [],
-    posts: [{
-      integration: { id: CONFIG.postizTiktokId },
-      value: [{ content: caption, image: [{ id: uploadedFile.id, path: uploadedFile.path }] }],
-      settings: {
-        __type: 'tiktok',
-        title: caption.replace(/[🎮🏆⚡🕹️💰🚀🎯🔄❌⭕🎲🃏]/g, '').trim().slice(0, 90),
-        privacy_level: 'PUBLIC_TO_EVERYONE',
-        duet: false, stitch: false, comment: true,
-        autoAddMusic: 'no',
-        brand_content_toggle: false, brand_organic_toggle: false,
-        video_made_with_ai: false,
-        content_posting_method: 'DIRECT_POST',
+    posts: [
+      {
+        integration: { id: CONFIG.postizTiktokId },
+        value: [
+          {
+            content: caption,
+            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+          },
+        ],
+        settings: {
+          __type: 'tiktok',
+          title: caption
+            .replace(/[🎮🏆⚡🕹️💰🚀🎯🔄❌⭕🎲🃏]/g, '')
+            .trim()
+            .slice(0, 90),
+          privacy_level: 'PUBLIC_TO_EVERYONE',
+          duet: false,
+          stitch: false,
+          comment: true,
+          autoAddMusic: 'no',
+          brand_content_toggle: false,
+          brand_organic_toggle: false,
+          video_made_with_ai: false,
+          content_posting_method: 'DIRECT_POST',
+        },
       },
-    }],
+    ],
+  };
+
+  const res = await axios.post(`${CONFIG.postizBaseUrl}/posts`, postData, {
+    headers,
+    timeout: 120000,
+  });
+  return res.data;
+}
+
+async function postToX(uploadedFile, caption) {
+  if (!CONFIG.postizXId) return null;
+  const headers = {
+    Authorization: CONFIG.postizApiKey,
+    'Content-Type': 'application/json',
+  };
+
+  const postData = {
+    type: 'now',
+    date: new Date().toISOString(),
+    shortLink: false,
+    tags: [],
+    posts: [
+      {
+        integration: { id: CONFIG.postizXId },
+        value: [
+          {
+            content: caption.slice(0, 280),
+            image: [{ id: uploadedFile.id, path: uploadedFile.path }],
+          },
+        ],
+        settings: {
+          __type: 'twitter',
+          tweet_type: 'tweet',
+        },
+      },
+    ],
   };
 
   const res = await axios.post(`${CONFIG.postizBaseUrl}/posts`, postData, {
@@ -724,6 +949,15 @@ async function publishBoth(fullPath, shortPath, caption) {
         log('error', 'TikTok post failed', { error: err.message });
       }
     }
+
+    if (CONFIG.postizXId) {
+      try {
+        const xResult = await postToX(shortFile, caption);
+        log('info', 'X/Twitter posted', xResult);
+      } catch (err) {
+        log('error', 'X/Twitter post failed', { error: err.message });
+      }
+    }
   } catch (err) {
     log('error', 'Short clip upload failed', { error: err.message });
   }
@@ -750,7 +984,10 @@ async function main() {
     log('info', `Selected game: ${game.name}`);
 
     // --- Session 1: Desktop (1920x1080) for full video ---
-    const fullDuration = randomInt(CONFIG.fullDuration.min, CONFIG.fullDuration.max);
+    const fullDuration = randomInt(
+      CONFIG.fullDuration.min,
+      CONFIG.fullDuration.max,
+    );
     const desktopCapture = await recordSession(
       game,
       { width: 1920, height: 1080 },
@@ -770,8 +1007,14 @@ async function main() {
     );
 
     // --- Process both ---
-    const fullOutputPath = await processFullVideo(desktopCapture.videoPath, desktopCapture.duration);
-    const shortOutputPath = await processShortClip(mobileCapture.videoPath, mobileCapture.duration);
+    const fullOutputPath = await processFullVideo(
+      desktopCapture.videoPath,
+      desktopCapture.duration,
+    );
+    const shortOutputPath = await processShortClip(
+      mobileCapture.videoPath,
+      mobileCapture.duration,
+    );
 
     // --- Publish (skip in preview mode) ---
     if (previewMode) {

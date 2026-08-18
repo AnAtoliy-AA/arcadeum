@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../../../../shared/config/tamagui.config';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -13,11 +11,7 @@ import type { CriticalCard } from '../../types';
 function renderCard(
   props: React.ComponentProps<typeof ComboCard>,
 ): ReturnType<typeof render> {
-  return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <ComboCard {...props} />
-    </TamaguiProvider>,
-  );
+  return render(<ComboCard {...props} />);
 }
 
 describe('ComboCard', () => {

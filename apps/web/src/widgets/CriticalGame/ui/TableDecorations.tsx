@@ -10,7 +10,7 @@ import {
 import { GAME_VARIANT } from '../lib/constants';
 
 interface TableDecorationsProps {
-  $variant?: string;
+  variant?: string;
 }
 
 const ICE_CRYSTAL_CORNERS = ['tl', 'tr', 'bl', 'br'] as const;
@@ -24,7 +24,7 @@ const SNOWFLAKES = [...Array(20)].map((_, i) => ({
 }));
 
 export function TableDecorations({
-  $variant: currentVariant,
+  variant: currentVariant,
 }: TableDecorationsProps) {
   const snowflakes =
     currentVariant === GAME_VARIANT.HIGH_ALTITUDE_HIKE ? SNOWFLAKES : [];

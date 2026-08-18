@@ -1,7 +1,7 @@
-import { Progress as TamaguiProgress, YStack, XStack, Text, Circle } from 'tamagui';
 import { memo } from 'react';
 
-import { GameVariant } from '../Game/GameContainer';
+import { GAME_ACCENT_COLORS } from '../Game/gamePalette';
+import type { GameVariant } from '../Button/types';
 
 export type ProgressBarProps = {
   value: number;
@@ -9,34 +9,43 @@ export type ProgressBarProps = {
   color?: string;
   showLabel?: boolean;
   gameVariant?: GameVariant;
+  className?: string;
 };
 
 export const ProgressBar = memo(function ProgressBar({
   value,
   height = 8,
-  color = '$primary',
+  color = 'var(--primary)',
   showLabel = false,
   gameVariant,
+  className,
 }: ProgressBarProps) {
-  const getIndicatorColor = () => {
-    if (gameVariant === 'cyberpunk') return '$cyberpunkPrimary';
-    if (gameVariant === 'underwater') return '$underwaterPrimary';
-    if (gameVariant === 'crime') return '$crimePrimary';
-    if (gameVariant === 'horror') return '$horrorPrimary';
-    if (gameVariant === 'adventure') return '$adventurePrimary';
-    if (gameVariant === 'high-altitude-hike') return '$hikePrimary';
-    return color;
-  };
+  const indicatorColor = gameVariant
+    ? (GAME_ACCENT_COLORS[gameVariant] ?? color)
+    : color;
+  const clamped = Math.min(100, Math.max(0, value));
 
   return (
-    <YStack width="100%" gap="$2">
-      <TamaguiProgress value={value} height={height} backgroundColor="$borderColor">
-        <TamaguiProgress.Indicator backgroundColor={getIndicatorColor()} />
-      </TamaguiProgress>
+    <div className={`flex w-full flex-col gap-2 ${className ?? ''}`}>
+      <div
+        role="progressbar"
+        aria-valuenow={Math.round(clamped)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        className="w-full overflow-hidden rounded-full bg-[var(--borderColor)]"
+        style={{ height }}
+      >
+        <div
+          className="h-full rounded-full transition-[width] duration-300 ease-out"
+          style={{ width: `${clamped}%`, backgroundColor: indicatorColor }}
+        />
+      </div>
       {showLabel && (
-        <Text fontSize="$2" textAlign="right">{Math.round(value)}%</Text>
+        <span className="text-right text-[14px] leading-[18px]">
+          {Math.round(clamped)}%
+        </span>
       )}
-    </YStack>
+    </div>
   );
 });
 
@@ -54,22 +63,31 @@ export const ProgressCircle = memo(function ProgressCircle({
   value,
   size = 80,
   strokeWidth = 8,
-  color = '$primary',
+  color = 'var(--primary)',
   showLabel = true,
   suffix = '%',
 }: ProgressCircleProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (value / 100) * circumference;
+  const clamped = Math.min(100, Math.max(0, value));
+  const strokeDashoffset = circumference - (clamped / 100) * circumference;
 
   return (
-    <YStack width={size} height={size} alignItems="center" justifyContent="center" position="relative">
-      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
+      <svg
+        width={size}
+        height={size}
+        style={{ transform: 'rotate(-90deg)' }}
+        aria-hidden
+      >
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="$neutralBorder"
+          stroke="var(--borderColor)"
           strokeWidth={strokeWidth}
           fill="none"
         />
@@ -83,17 +101,24 @@ export const ProgressCircle = memo(function ProgressCircle({
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          style={{ color: 'var(--primary)', transition: 'stroke-dashoffset 0.5s ease' }}
+          style={{
+            color,
+            transition: 'stroke-dashoffset 0.5s ease',
+          }}
         />
       </svg>
-      <YStack position="absolute" inset={0} alignItems="center" justifyContent="center">
-        {showLabel && (
-          <Text fontWeight="700" fontSize="$4">{Math.round(value)}{suffix}</Text>
-        )}
-      </YStack>
-    </YStack>
+      {showLabel && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-[18px] font-bold leading-[24px]">
+            {Math.round(clamped)}
+            {suffix}
+          </span>
+        </div>
+      )}
+    </div>
   );
 });
+
 export type WinRateBadgeProps = {
   wins: number;
   losses: number;
@@ -103,25 +128,34 @@ export type WinRateBadgeProps = {
 
 const WIN_RATE_SIZE_MAP = { sm: 60, md: 80, lg: 100 } as const;
 
-export const WinRateBadge = memo(function WinRateBadge({ wins, losses, size = 'md', showStats = true }: WinRateBadgeProps) {
+export const WinRateBadge = memo(function WinRateBadge({
+  wins,
+  losses,
+  size = 'md',
+  showStats = true,
+}: WinRateBadgeProps) {
   const total = wins + losses;
   const winRate = total > 0 ? (wins / total) * 100 : 0;
 
   return (
-    <XStack gap="$4" alignItems="center">
+    <div className="flex flex-row items-center gap-4">
       <ProgressCircle value={winRate} size={WIN_RATE_SIZE_MAP[size]} />
       {showStats && (
-        <YStack>
-          <XStack gap="$2" alignItems="center">
-            <Circle size={8} backgroundColor="$success" />
-            <Text fontSize="$2" fontWeight="600">Wins: {wins}</Text>
-          </XStack>
-          <XStack gap="$2" alignItems="center">
-            <Circle size={8} backgroundColor="$danger" />
-            <Text fontSize="$2" fontWeight="600">Losses: {losses}</Text>
-          </XStack>
-        </YStack>
+        <div className="flex flex-col items-stretch gap-2">
+          <div className="flex flex-row items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[var(--success)]" />
+            <span className="text-[14px] font-semibold leading-[18px]">
+              Wins: {wins}
+            </span>
+          </div>
+          <div className="flex flex-row items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[var(--danger)]" />
+            <span className="text-[14px] font-semibold leading-[18px]">
+              Losses: {losses}
+            </span>
+          </div>
+        </div>
       )}
-    </XStack>
+    </div>
   );
 });

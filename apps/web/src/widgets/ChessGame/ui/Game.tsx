@@ -5,7 +5,6 @@ import {
   GameWidgetContainer,
   RematchInvitationModal,
 } from '@/features/games/ui';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -16,6 +15,7 @@ import {
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
+import { ChessGameResultModal } from './ChessGameResultModal';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { ChessGameProps, ChessClientState } from '../types';
@@ -28,6 +28,8 @@ import {
 } from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
+import { useChessCoach } from '../hooks/useChessCoach';
+import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoardPanel } from './ChessBoardPanel';
 import { PromotionModal } from './PromotionModal';
@@ -96,6 +98,7 @@ function ChessGameImpl({
     )
   );
 
+  const coach = useChessCoach({ room, currentUserId, displaySnapshot });
   const applyOptimisticMove = useCallback(
     (
       fromFile: File,
@@ -375,6 +378,19 @@ function ChessGameImpl({
   const onRematchClick = useCallback(() => {
     void handleRematch([], undefined);
   }, [handleRematch]);
+
+  const a11yAnnouncement = useMemo(
+    () =>
+      getChessA11yAnnouncement(
+        displaySnapshot,
+        isGameOver,
+        currentUserId,
+        resolveDisplayNameBound,
+        t,
+      ),
+    [displaySnapshot, isGameOver, currentUserId, resolveDisplayNameBound, t],
+  );
+
   if (!room) return null;
   if (isLobby)
     return (
@@ -413,6 +429,7 @@ function ChessGameImpl({
       legalMoves={legalMoves}
       lastMove={lastMove}
       kingPosition={kingPosition}
+      coach={coach}
       currentUserId={currentUserId}
       resolveName={resolveDisplayNameBound}
       t={t}
@@ -425,7 +442,7 @@ function ChessGameImpl({
   );
   const modals = (
     <>
-      <GameResultModal
+      <ChessGameResultModal
         isOpen={showResultModal}
         result={sharedResult}
         onClose={dismiss}
@@ -433,6 +450,7 @@ function ChessGameImpl({
         rematchLoading={rematchLoading}
         t={t}
         messages={resultMessages}
+        snapshot={displaySnapshot}
       />
       <RematchInvitationModal
         isOpen={!!invitation}
@@ -458,6 +476,7 @@ function ChessGameImpl({
       isMyTurn={displayMyTurn}
       isGameOver={isGameOver}
       loading={!snapshot}
+      a11yAnnouncement={a11yAnnouncement}
       headerProps={{
         variantEmoji: '♟',
         title: t('games.chess_v1.name'),

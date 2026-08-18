@@ -15,6 +15,7 @@ interface MobileHandBarProps {
   isFullscreen?: boolean;
   showCardName: boolean;
   showCardDescription: boolean;
+  onClearSelection?: () => void;
   onPlay: () => void;
   onDraw: () => void;
   onNope: () => void;
@@ -30,9 +31,9 @@ interface MobileHandBarProps {
  * so the bar stays thumb-reachable. Pairs with `paddingBottom: 64` on
  * the game body so cards don't hide under the bar.
  *
- * Uses raw inline styles rather than tamagui because:
+ * Uses raw inline styles because:
  *   - `position: fixed` + `env(safe-area-inset-bottom)` aren't part of
- *     the tamagui style surface
+ *     the Tailwind class surface
  *   - the bar lives outside the normal layout flow so flex/grid prop
  *     interplay doesn't help
  */
@@ -46,6 +47,7 @@ export function MobileHandBar({
   isFullscreen,
   showCardName,
   showCardDescription,
+  onClearSelection,
   onPlay,
   onDraw,
   onNope,
@@ -104,7 +106,7 @@ export function MobileHandBar({
     border: '1px solid rgba(255,255,255,0.10)',
     fontSize: 11,
     fontWeight: 800,
-    letterSpacing: 0.4,
+    letterSpacing: '0.4px',
     color: '#e2e8f0',
     background: 'rgba(255,255,255,0.04)',
     whiteSpace: 'nowrap',
@@ -141,7 +143,7 @@ export function MobileHandBar({
       color: opts.primary && opts.enabled ? '#0b0b0b' : '#ffffff',
       fontSize: 12,
       fontWeight: 800,
-      letterSpacing: 0.3,
+      letterSpacing: '0.3px',
       textTransform: 'uppercase',
       opacity: opts.enabled ? 1 : 0.6,
       cursor: opts.enabled ? 'pointer' : 'default',
@@ -184,11 +186,18 @@ export function MobileHandBar({
     color: '#e2e8f0',
     fontSize: 12,
     fontWeight: 700,
-    letterSpacing: 0.3,
+    letterSpacing: '0.3px',
     cursor: 'pointer',
   };
 
   if (!mounted || typeof document === 'undefined') return null;
+
+  const isInvalid = combo.kind === 'invalid';
+  const handleComboClick = isInvalid
+    ? onClearSelection
+    : canPlay
+      ? onPlay
+      : undefined;
 
   const bar = (
     <div data-testid="mobile-hand-bar" style={wrapperStyle}>
@@ -213,18 +222,21 @@ export function MobileHandBar({
           type="button"
           data-testid="mobile-hand-bar-play"
           data-combo-kind={combo.kind}
-          disabled={!canPlay}
-          onClick={canPlay ? onPlay : undefined}
+          disabled={!canPlay && !isInvalid}
+          onClick={handleComboClick}
           style={{
-            ...buttonStyle({ primary: true, enabled: canPlay, flex: 3 }),
-            // Long combo labels would otherwise wrap or overflow on
-            // narrow phones — ellipsis keeps the row honest.
+            ...buttonStyle({
+              primary: true,
+              accent: isInvalid ? '#ef4444' : undefined,
+              enabled: canPlay || isInvalid,
+              flex: 3,
+            }),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}
         >
-          {combo.label}
+          {isInvalid ? `✕ ${combo.label}` : combo.label}
         </button>
         <button
           type="button"

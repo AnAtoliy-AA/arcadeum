@@ -9,6 +9,29 @@ jest.mock('@/hooks/useThemedStyles', () => ({
 }));
 
 /* eslint-disable @typescript-eslint/no-require-imports */
+jest.mock('react-native/Libraries/Modal/Modal', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const MockModal = ({
+    children,
+    visible,
+    testID,
+  }: {
+    children?: React.ReactNode;
+    visible?: boolean;
+    testID?: string;
+  }) => {
+    if (!visible) return null;
+    return React.createElement(View, { testID }, children);
+  };
+  return {
+    __esModule: true,
+    default: MockModal,
+  };
+});
+/* eslint-enable @typescript-eslint/no-require-imports */
+
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { useThemedStyles } = require('@/hooks/useThemedStyles') as {
   useThemedStyles: jest.MockedFunction<typeof UseThemedStylesType>;
 };

@@ -9,6 +9,7 @@ import {
   handleRoute,
   navigateTo,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Anonymous Play', () => {
   const anonymousId = 'anon_test_user_123';
@@ -105,7 +106,7 @@ test.describe('Anonymous Play', () => {
     await expect(async () => {
       await page.getByTestId('create-room-button').click({ force: true });
       await expect(page).toHaveURL(
-        new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`),
+        new RegExp(routes.gameRoom(MOCK_OBJECT_ID)),
         {},
       );
     }).toPass({});
@@ -178,7 +179,7 @@ test.describe('Anonymous Play', () => {
       await expect(startBtn).toBeVisible();
       await startBtn.click({ force: true });
       await expect(page).toHaveURL(
-        new RegExp(`/games/rooms/${MOCK_OBJECT_ID}`),
+        new RegExp(routes.gameRoom(MOCK_OBJECT_ID)),
         {},
       );
     }).toPass({});

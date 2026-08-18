@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
-import { YStack } from 'tamagui';
 import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
@@ -150,6 +149,19 @@ function TicTacToeGameImpl({
     [options.variant],
   );
 
+  const a11yAnnouncement = useMemo(() => {
+    if (!snapshot) return undefined;
+    if (isGameOver) {
+      return t(
+        `games.tic_tac_toe_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+      );
+    }
+    if (currentEntryId && currentEntryId === currentUserId) {
+      return t('games.tic_tac_toe_v1.status.yourTurn');
+    }
+    return t('games.tic_tac_toe_v1.status.waiting');
+  }, [snapshot, isGameOver, result, currentEntryId, currentUserId, t]);
+
   if (!room) return null;
 
   // Lobby renders OUTSIDE GameWidgetContainer so it gets full page height
@@ -181,7 +193,7 @@ function TicTacToeGameImpl({
   }
 
   const board = (
-    <YStack gap="$3" alignItems="stretch" padding="$3" width="100%">
+    <div className="flex flex-col gap-3 items-stretch p-3 w-full">
       {snapshot ? (
         <>
           <TurnBadge
@@ -211,7 +223,7 @@ function TicTacToeGameImpl({
           />
         </>
       ) : null}
-    </YStack>
+    </div>
   );
 
   const inGameBoardSize = snapshot?.options.boardSize ?? options.boardSize;
@@ -241,6 +253,7 @@ function TicTacToeGameImpl({
         variant={options.variant}
         isMyTurn={myTurn}
         isGameOver={isGameOver}
+        a11yAnnouncement={a11yAnnouncement}
         headerProps={{
           variantEmoji: variantTokens.emoji,
           title: 'Tic-Tac-Toe',

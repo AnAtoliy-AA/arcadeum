@@ -1,63 +1,46 @@
-import { XStack, Text, styled } from 'tamagui';
+import { cx } from '../../utils/cx';
 
 export type DeltaChipProps = {
   from: number;
   to: number;
   testID?: string;
+  className?: string;
 };
 
-const Chip = styled(XStack, {
-  name: 'DeltaChip',
-  alignItems: 'center',
-  gap: 4,
-  paddingHorizontal: 8,
-  paddingVertical: 2,
-  borderRadius: 999,
-  borderWidth: 1,
-  variants: {
-    direction: {
-      up: {
-        borderColor: 'rgba(52,211,153,0.3)',
-        backgroundColor: 'rgba(52,211,153,0.15)',
-      },
-      down: {
-        borderColor: 'rgba(239,68,68,0.3)',
-        backgroundColor: 'rgba(239,68,68,0.15)',
-      },
-      flat: {
-        borderColor: '$borderColor',
-        backgroundColor: 'rgba(255,255,255,0.04)',
-      },
-    },
-  } as const,
-});
+type DeltaDirection = 'up' | 'down' | 'flat';
 
-export function DeltaChip({ from, to, testID }: DeltaChipProps) {
+const deltaChipClasses: Record<DeltaDirection, string> = {
+  up: 'border-[rgba(52,211,153,0.3)] bg-[rgba(52,211,153,0.15)]',
+  down: 'border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.15)]',
+  flat: 'border-[var(--borderColor)] bg-[rgba(255,255,255,0.04)]',
+};
+
+const deltaTextClasses: Record<DeltaDirection, string> = {
+  up: 'text-[var(--success)]',
+  down: 'text-[var(--danger)]',
+  flat: 'text-[var(--textSecondary)]',
+};
+
+export function DeltaChip({ from, to, testID, className }: DeltaChipProps) {
   const diff = from - to;
-  const direction: 'up' | 'down' | 'flat' =
-    diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
-  const color =
-    direction === 'up'
-      ? ('$success' as const)
-      : direction === 'down'
-        ? ('$danger' as const)
-        : ('$textSecondary' as const);
+  const direction: DeltaDirection = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
   const sign = diff > 0 ? '+' : diff < 0 ? '' : '±';
   return (
-    <Chip direction={direction as never} testID={testID}>
-      <Text fontSize="$1" opacity={0.7} letterSpacing={1}>
-        #{from}
-      </Text>
-      <Text fontSize="$1" opacity={0.5}>
-        →
-      </Text>
-      <Text fontSize="$1" opacity={0.95} letterSpacing={1}>
-        #{to}
-      </Text>
-      <Text fontSize="$1" fontWeight="700" color={color as never}>
+    <div
+      data-testid={testID}
+      className={cx(
+        'flex flex-row items-center gap-1 px-2 py-0.5 rounded-full border',
+        deltaChipClasses[direction],
+        className,
+      )}
+    >
+      <span className="text-[12px] opacity-70 tracking-[1px]">#{from}</span>
+      <span className="text-[12px] opacity-50">→</span>
+      <span className="text-[12px] opacity-95 tracking-[1px]">#{to}</span>
+      <span className={cx('text-[12px] font-bold', deltaTextClasses[direction])}>
         {sign}
         {Math.abs(diff)}
-      </Text>
-    </Chip>
+      </span>
+    </div>
   );
 }

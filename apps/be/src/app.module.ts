@@ -11,6 +11,7 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { PaymentsModule } from './payments/payments.module';
 import { ReferralModule } from './referrals/referral.module';
 import { LeaderboardsModule } from './leaderboards/leaderboards.module';
+import { RankingModule } from './ranking/ranking.module';
 import { AdminModule } from './admin/admin.module';
 import { AnnouncementsModule } from './announcements/announcements.module';
 import { TournamentsModule } from './tournaments/tournaments.module';
@@ -54,6 +55,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     PaymentsModule,
     ReferralModule,
     LeaderboardsModule,
+    RankingModule,
     AdminModule,
     AnnouncementsModule,
     TournamentsModule,

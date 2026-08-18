@@ -14,6 +14,9 @@ function baseState(overrides: Partial<CascadeState> = {}): CascadeState {
       mode: 'classic',
       stackingEnabled: true,
       lastCardCallEnabled: true,
+      // Expert is fully deterministic — the strategy assertions below rely
+      // on it. Randomness is covered by the difficulty-specific spec.
+      aiDifficulty: 'expert',
     },
     players: [
       { playerId: 'bot-1', alive: true, hand: [] },

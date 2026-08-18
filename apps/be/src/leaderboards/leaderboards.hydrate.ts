@@ -1,20 +1,20 @@
 import {
-  REGION_VALUES,
+  GAME_MODE_VALUES,
   type FormResult,
   type GameMode,
   type Region,
   type Tier,
 } from './schemas/leaderboard-entry.schema';
+import { regionForCountry } from './country-regions';
 import type {
   LeaderboardPlayerDto,
   RegionDistributionDto,
 } from './dtos/leaderboard-snapshot.dto';
 
-export const MODE_TO_GAME_ID: Record<GameMode, string | undefined> = {
-  all: undefined,
-  critical: 'critical_v1',
-  sea_battle: 'sea_battle_v1',
-};
+export const MODE_TO_GAME_ID: Record<GameMode, string | undefined> =
+  Object.fromEntries(
+    GAME_MODE_VALUES.map((mode) => [mode, mode === 'all' ? undefined : mode]),
+  );
 
 const TIERS_BY_TOP: Tier[] = [
   'mythic',
@@ -29,16 +29,6 @@ const TIERS_BY_TOP: Tier[] = [
   'bronze',
 ];
 
-const COUNTRIES_BY_REGION: Record<Region, string> = {
-  na: 'us',
-  eu: 'de',
-  sa: 'br',
-  asia: 'kr',
-  oceania: 'au',
-  africa: 'za',
-  me: 'ae',
-};
-
 export type RealLeaderboardEntry = {
   rank: number;
   playerId: string;
@@ -48,6 +38,8 @@ export type RealLeaderboardEntry = {
   losses: number;
   winRate: number;
   elo?: number;
+  /** Real ISO 3166-1 alpha-2 country code from the user's IP (lowercase). */
+  countryCode?: string | null;
   role?: string | null;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
@@ -105,21 +97,19 @@ function computeStreak(form: FormResult[]): number {
   return n;
 }
 
-function pickRegion(rng: () => number): Region {
-  return REGION_VALUES[Math.floor(rng() * REGION_VALUES.length)] ?? 'eu';
-}
-
 /**
  * Take a real leaderboard entry (computed from completed sessions) and
- * derive the synthetic per-player fields the page needs (region, tier,
- * recent form, streak, etc.) deterministically from the userId so they
- * stay stable across requests.
+ * derive the per-player fields the page needs (tier, recent form, streak,
+ * rating, etc.). Region and country come from the user's real geo data
+ * resolved via IP lookup — never fabricated. Players without a known
+ * country get no region/country and the UI falls back gracefully.
  */
 export function hydratePlayer(
   real: RealLeaderboardEntry,
 ): LeaderboardPlayerDto {
   const rng = rngFor(real.playerId);
-  const region = pickRegion(rng);
+  const countryCode = real.countryCode?.toLowerCase() || undefined;
+  const region: Region | undefined = regionForCountry(countryCode);
   const tier = tierForRank(real.rank);
   // Derive a rating from real wins/losses so it lines up with reality but
   // still differentiates ties on the page.
@@ -131,7 +121,7 @@ export function hydratePlayer(
     rank: real.rank,
     name: real.username,
     region,
-    countryCode: COUNTRIES_BY_REGION[region],
+    countryCode,
     tier,
     rating,
     elo: real.elo ?? rating + 80,
@@ -160,14 +150,15 @@ export function aggregateRegionsFromReal(
 ): RegionDistributionDto {
   if (entries.length === 0) return [];
   const counts = new Map<Region, number>();
+  let known = 0;
   for (const e of entries) {
-    const region = pickRegion(rngFor(e.playerId));
+    const region = regionForCountry(e.countryCode);
+    if (!region) continue;
+    known++;
     counts.set(region, (counts.get(region) ?? 0) + 1);
   }
-  const total = entries.length;
-  return REGION_VALUES.flatMap((region) => {
-    const count = counts.get(region) ?? 0;
-    if (count === 0) return [];
-    return [{ region, share: count / total }];
-  });
+  if (known === 0) return [];
+  return [...counts.entries()]
+    .map(([region, count]) => ({ region, share: count / known }))
+    .sort((a, b) => b.share - a.share);
 }

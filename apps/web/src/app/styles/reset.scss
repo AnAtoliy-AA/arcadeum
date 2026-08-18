@@ -4,6 +4,13 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  /* Tailwind preflight is disabled (corePlugins.preflight: false), so the
+     border reset it normally provides must live here — otherwise
+     border-width utilities (.border, .border-b, ...) render with the
+     browser-default border-style: none and no border is visible. */
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
 }
 
 html {
@@ -17,11 +24,36 @@ body {
   color: var(--foreground);
   min-height: 100dvh;
   font-family: var(--font-geist-sans), sans-serif;
+  /* Sticky-footer column layout: header / main / footer are direct body
+     children, main grows via .layout-main { flex: 1 }. */
+  display: flex;
+  flex-direction: column;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: inherit;
+  color: inherit;
+}
+
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: inherit;
 }
 
 /* Skip-to-content link: visually hidden until focused via keyboard (WCAG 2.4.1). */

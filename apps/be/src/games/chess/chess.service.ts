@@ -29,6 +29,11 @@ import type {
 import { ChessBotService } from '../engines/chess/chess-bot.service';
 import { getLegalMoves } from '../engines/chess/chess.move-generator';
 import { GameBotWatchdog } from '../game-bot-watchdog';
+import {
+  AI_DIFFICULTIES,
+  isAiDifficulty,
+  type AiDifficulty,
+} from '../ai-difficulty';
 
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 2;
@@ -97,13 +102,21 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
       throw new Error('Only the host can start the game');
     }
 
-    if (botDifficulty && ['easy', 'medium', 'hard'].includes(botDifficulty)) {
-      this.botService.setDifficulty(
-        botDifficulty as 'easy' | 'medium' | 'hard',
-      );
+    if (
+      botDifficulty &&
+      AI_DIFFICULTIES.includes(botDifficulty as AiDifficulty)
+    ) {
+      this.botService.setDifficulty(botDifficulty as AiDifficulty);
     }
 
     const options = this.resolveOptions(room.gameOptions);
+
+    if (
+      botDifficulty &&
+      AI_DIFFICULTIES.includes(botDifficulty as AiDifficulty)
+    ) {
+      options.botDifficulty = botDifficulty as AiDifficulty;
+    }
     const participants = await this.roomsService.getRoomParticipants(roomId);
     const playerIds = [...participants];
 
@@ -305,6 +318,8 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
         initialSeconds: number;
         incrementSeconds: number;
       } | null;
+      botDifficulty: string;
+      aiDifficulty: string;
     }>;
     const variant = CHESS_VARIANTS.includes(r.variant as ChessVariant)
       ? (r.variant as ChessVariant)
@@ -326,7 +341,12 @@ export class ChessService implements OnModuleInit, OnModuleDestroy {
         incrementSeconds: inc,
       };
     }
-    return { variant, timeControl };
+    const botDifficulty = isAiDifficulty(r.botDifficulty)
+      ? r.botDifficulty
+      : isAiDifficulty(r.aiDifficulty)
+        ? r.aiDifficulty
+        : undefined;
+    return { variant, timeControl, botDifficulty };
   }
 
   private backfillLegalMoves(session: GameSessionSummary) {

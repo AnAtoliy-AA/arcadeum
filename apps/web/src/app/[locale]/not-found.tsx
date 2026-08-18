@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function NotFound() {
   return (
-    <main
+    <div
       style={{
         minHeight: '60vh',
         display: 'flex',
@@ -56,6 +56,6 @@ export default function NotFound() {
           Games
         </Link>
       </div>
-    </main>
+    </div>
   );
 }

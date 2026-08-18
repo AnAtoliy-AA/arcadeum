@@ -135,10 +135,7 @@ test.describe('Game Room Creation', () => {
     const submitBtn = page.getByTestId('create-room-button');
     await submitBtn.dispatchEvent('click');
 
-    await expect(page).toHaveURL(
-      /\/games\/rooms\/507f1f77bcf86cd799439011/,
-      {},
-    );
+    await expect(page).toHaveURL(/\/rooms\/507f1f77bcf86cd799439011/, {});
   });
 
   test('should clear max players with Auto button', async ({ page }) => {

@@ -1,20 +1,14 @@
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { appConfig } from '@/shared/config/app-config';
 import { Header } from '@/widgets/header/ui/Header';
 import { AnnouncementBanner } from '@/widgets/AnnouncementBanner/ui/AnnouncementBanner';
+import { getActiveAnnouncement } from '@/widgets/AnnouncementBanner/server/getActiveAnnouncement';
 import { LayoutFooter } from '@/widgets/footer';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa/PWAContext';
-import dynamic from 'next/dynamic';
-
-const WalletLiveBridge = dynamic(() =>
-  import('@/features/wallet/ui/WalletLiveBridge').then(
-    (m) => m.WalletLiveBridge,
-  ),
-);
+import { RootModals } from './RootModals';
 import { SoundProvider } from '@/shared/lib/sound';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import {
@@ -23,7 +17,25 @@ import {
   localeToHreflang,
   type Locale,
 } from '@/shared/i18n';
-import { getTranslations } from '@/shared/i18n/server';
+import { getInitialTranslations } from '@/shared/i18n/server';
+
+/** Lazy-load only the seo namespace — avoids pulling 20+ modules into the RSC payload. */
+async function loadSeo(locale: Locale) {
+  switch (locale) {
+    case 'en':
+      return (await import('@/shared/i18n/messages/seo/en')).en;
+    case 'es':
+      return (await import('@/shared/i18n/messages/seo/es')).es;
+    case 'fr':
+      return (await import('@/shared/i18n/messages/seo/fr')).fr;
+    case 'ru':
+      return (await import('@/shared/i18n/messages/seo/ru')).ru;
+    case 'by':
+      return (await import('@/shared/i18n/messages/seo/by')).by;
+    default:
+      return (await import('@/shared/i18n/messages/seo/en')).en;
+  }
+}
 import { buildRoutes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { SCHEMA_LANGUAGE_MAP } from '@/shared/seo/schemaLanguageMap';
@@ -84,8 +96,6 @@ export async function generateMetadata({
   };
 }
 
-import { MatchmakingQueueModal } from '@/features/games/ui/MatchmakingQueue';
-
 export default async function LocaleLayout({
   children,
   params,
@@ -96,15 +106,20 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const [authToken, messages] = await Promise.all([
-    getServerAccessToken(),
-    getTranslations(locale),
-  ]);
+  const [authToken, seoMessages, initialMessages, announcement] =
+    await Promise.all([
+      getServerAccessToken(),
+      loadSeo(locale),
+      getInitialTranslations(locale),
+      // Fetched in parallel with the layout deps and rendered into the
+      // initial HTML so the banner never appears after first paint (CLS).
+      getActiveAnnouncement(locale),
+    ]);
 
   const localeUrl = `${appConfig.siteUrl}/${locale}`;
   const routes = buildRoutes(locale);
   const localizedDescription =
-    messages.seo?.home?.description ?? appConfig.seoDescription;
+    seoMessages.home?.description ?? appConfig.seoDescription;
   const inLanguage = SCHEMA_LANGUAGE_MAP[locale];
 
   // WebSite + SoftwareApplication structured data, localized via `inLanguage`
@@ -146,19 +161,18 @@ export default async function LocaleLayout({
   return (
     <>
       <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
-      <LanguageProvider locale={locale}>
+      <LanguageProvider locale={locale} initialMessages={initialMessages}>
         <PWAProvider>
           <SoundProvider>
             <LayoutShell>
-              <AnnouncementBanner />
+              <AnnouncementBanner initialAnnouncement={announcement} />
               <Header />
               <main id="main-content" className="layout-main">
-                <Suspense>{children}</Suspense>
+                {children}
               </main>
               <LayoutFooter />
             </LayoutShell>
-            {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
-            <MatchmakingQueueModal />
+            <RootModals authToken={authToken} />
           </SoundProvider>
         </PWAProvider>
       </LanguageProvider>

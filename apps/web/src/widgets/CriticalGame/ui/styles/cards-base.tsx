@@ -1,56 +1,57 @@
-import { styled, YStack } from 'tamagui';
+import type { CSSProperties, HTMLAttributes } from 'react';
 
-export const Card = styled(YStack, {
-  name: 'Card',
-  aspectRatio: 2 / 3,
-  borderRadius: 16,
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '$2',
-  padding: '$3',
-  cursor: 'pointer',
-  position: 'relative',
-  overflow: 'hidden',
-  backgroundColor: '$background',
-  borderWidth: 2,
-  borderColor: '$borderColor',
+import { cx } from '@arcadeum/ui/utils/cx';
 
-  variants: {
-    isSticker: {
-      true: {
-        borderWidth: 0,
-        backgroundColor: 'transparent',
-      },
-    },
-    $variant: (val: string) => {
-      if (val === 'cyberpunk') {
-        return {
-          borderRadius: 4,
-          borderColor: '#06b6d4',
-        };
-      }
-      if (val === 'underwater') {
-        return {
-          borderRadius: 24,
-          borderColor: '#22d3ee',
-        };
-      }
-      return {};
-    },
-    $cardType: (_val: unknown) => ({}),
-    $index: (_val: unknown) => ({}),
-  } as const,
+/**
+ * Shared card surface styling (no background — derivatives override it).
+ * Hover/press scale factors are CSS-variable driven so derived cards
+ * (DeckCard, HandCard, SelectableCard, …) can override them inline.
+ */
+export const CARD_SURFACE_CLASS =
+  'flex flex-col items-center justify-center gap-2 p-3 cursor-pointer relative overflow-hidden rounded-[16px] border-2 border-[var(--borderColor)] aspect-[2/3] transition-transform duration-150 ease-out hover:scale-[var(--card-hover-scale,1.05)] hover:border-[var(--primary)] active:scale-[var(--card-press-scale,0.98)]';
 
-  hoverStyle: {
-    scale: 1.05,
-    borderColor: '$primary',
-    elevation: 8,
-  },
+const CARD_VARIANT_CLASS = {
+  cyberpunk: 'rounded-[4px] border-[#06b6d4]',
+  underwater: 'rounded-[24px] border-[#22d3ee]',
+} as const;
 
-  pressStyle: {
-    scale: 0.98,
-  },
-});
+type CardProps = {
+  className?: string;
+  style?: CSSProperties;
+  variant?: string;
+  cardType?: unknown;
+  index?: unknown;
+  isSticker?: boolean;
+} & HTMLAttributes<HTMLDivElement>;
+
+/**
+ * Base playing-card surface. `cardType` / `index` are no-op props kept for
+ * compatibility with call sites that pass them — they don't affect styling.
+ */
+export function Card({
+  className,
+  variant,
+  cardType: _cardType,
+  index: _index,
+  isSticker,
+  style,
+  ...props
+}: CardProps) {
+  return (
+    <div
+      className={cx(
+        CARD_SURFACE_CLASS,
+        isSticker ? 'border-0 bg-transparent' : 'bg-[var(--background)]',
+        variant
+          ? CARD_VARIANT_CLASS[variant as keyof typeof CARD_VARIANT_CLASS]
+          : undefined,
+        className,
+      )}
+      style={style}
+      {...props}
+    />
+  );
+}
 
 export function GradientScrim() {
   return (

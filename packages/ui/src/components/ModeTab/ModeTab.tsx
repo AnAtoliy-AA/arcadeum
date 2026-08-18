@@ -1,5 +1,6 @@
-import { XStack, YStack, View, Text, styled } from 'tamagui';
+'use client';
 import type { KeyboardEvent } from 'react';
+import { cx } from '../../utils/cx';
 
 export type ModeTabProps = {
   id: string;
@@ -11,44 +12,14 @@ export type ModeTabProps = {
   onSelect?: () => void;
   onKeyDown?: (e: KeyboardEvent<HTMLDivElement>) => void;
   testID?: string;
+  className?: string;
 };
 
-const Card = styled(XStack, {
-  name: 'ModeTab',
-  alignItems: 'center',
-  gap: '$3',
-  paddingHorizontal: '$3',
-  paddingVertical: '$3',
-  borderRadius: '$3',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: 'rgba(255,255,255,0.02)',
-  cursor: 'pointer',
-  minWidth: 200,
-  borderTopWidth: 2,
-  hoverStyle: { backgroundColor: 'rgba(255,255,255,0.04)' },
-  focusStyle: { outlineWidth: 0, borderColor: '$mythicAccent' },
-  variants: {
-    active: {
-      true: {
-        borderTopColor: '$mythicAccent',
-        backgroundColor: 'rgba(236,72,153,0.06)',
-      },
-      false: {
-        borderTopColor: '$borderColor',
-      },
-    },
-  } as const,
-});
+const modeTabCardClasses =
+  'flex flex-row items-center gap-3 px-3 py-3 rounded-xl border border-t-2 border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] cursor-pointer min-w-[200px] hover:bg-[rgba(255,255,255,0.04)] focus:outline-none focus:border-[var(--mythicAccent)]';
 
-const IconTile = styled(View, {
-  name: 'ModeTabIconTile',
-  width: 36,
-  height: 36,
-  borderRadius: '$2',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
+const modeTabActiveClasses =
+  'border-t-[var(--mythicAccent)] bg-[rgba(236,72,153,0.06)]';
 
 export function ModeTab({
   id,
@@ -60,30 +31,34 @@ export function ModeTab({
   onSelect,
   onKeyDown,
   testID,
+  className,
 }: ModeTabProps) {
   return (
-    <Card
-      active={active}
+    <div
+      className={cx(
+        modeTabCardClasses,
+        active ? modeTabActiveClasses : 'border-t-[var(--borderColor)]',
+        className,
+      )}
       role="tab"
       aria-selected={active}
       tabIndex={active ? 0 : -1}
-      onPress={onSelect}
+      onClick={onSelect}
       onKeyDown={onKeyDown}
-      testID={testID ?? `mode-tab-${id}`}
+      data-testid={testID ?? `mode-tab-${id}`}
     >
-      <IconTile style={{ background: gradient }}>
-        <Text fontSize="$5">{icon}</Text>
-      </IconTile>
-      <YStack gap={2} flex={1}>
-        <Text fontSize="$3" fontWeight="700">
-          {name}
-        </Text>
+      <div
+        className="flex items-center justify-center h-9 w-9 rounded-lg"
+        style={{ background: gradient }}
+      >
+        <span className="text-[20px]">{icon}</span>
+      </div>
+      <div className="flex flex-col gap-[2px] flex-1">
+        <span className="text-[16px] font-bold">{name}</span>
         {subtitle ? (
-          <Text fontSize="$1" opacity={0.7}>
-            {subtitle}
-          </Text>
+          <span className="text-[12px] opacity-70">{subtitle}</span>
         ) : null}
-      </YStack>
-    </Card>
+      </div>
+    </div>
   );
 }

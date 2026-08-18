@@ -1,8 +1,9 @@
 'use client';
 
-import { YStack, XStack, Text, Button, styled } from 'tamagui';
 import { useState, useCallback, memo } from 'react';
 import type { ReactNode } from 'react';
+import { Button } from '../Button';
+import { cx } from '../../utils/cx';
 
 export type CollapsibleSectionProps = {
   title?: string;
@@ -12,17 +13,8 @@ export type CollapsibleSectionProps = {
   hideLabel?: string;
   headerContent?: ReactNode;
   children: ReactNode;
+  className?: string;
 };
-
-const StyledSection = styled(YStack, {
-  name: 'CollapsibleSection',
-  gap: '$2',
-  padding: '$4',
-  borderRadius: '$4',
-  borderWidth: 1,
-  borderColor: '$borderColor',
-  backgroundColor: '$background',
-});
 
 export const CollapsibleSection = memo(function CollapsibleSection({
   title,
@@ -32,37 +24,50 @@ export const CollapsibleSection = memo(function CollapsibleSection({
   hideLabel = 'Hide',
   headerContent,
   children,
+  className,
 }: CollapsibleSectionProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   const toggle = useCallback(() => setIsExpanded((prev) => !prev), []);
 
   return (
-    <StyledSection>
-      <XStack justifyContent="space-between" alignItems="center">
-        <XStack alignItems="center" gap="$3">
+    <div
+      className={cx(
+        'flex w-full flex-col gap-2 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-4 backdrop-blur-md',
+        className,
+      )}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
           {title && (
-            <Text fontSize="$4" fontWeight="600" color="$color">
+            <span className="text-[18px] font-semibold text-[var(--color)]">
               {title}
-            </Text>
+            </span>
           )}
           {headerContent}
-        </XStack>
-        <Button size="$2" variant="outlined" onClick={toggle}>
-          <XStack alignItems="center" gap="$1">
-            <Text fontSize="$2">{isExpanded ? hideLabel : showLabel}</Text>
-            <Text fontSize="$2" rotate={isExpanded ? '0deg' : '180deg'}>
+        </div>
+        <Button variant="outline" size="sm" onClick={toggle}>
+          <span className="flex items-center gap-1">
+            <span className="text-[14px]">
+              {isExpanded ? hideLabel : showLabel}
+            </span>
+            <span
+              className={cx(
+                'text-[14px] transition-transform duration-200',
+                isExpanded ? '' : 'rotate-180',
+              )}
+            >
               ▼
-            </Text>
-          </XStack>
+            </span>
+          </span>
         </Button>
-      </XStack>
+      </div>
       {description && (
-        <Text fontSize="$2" opacity={0.6} marginBottom="$2">
+        <span className="mb-2 block text-[14px] text-[var(--color)] opacity-60">
           {description}
-        </Text>
+        </span>
       )}
       {isExpanded && children}
-    </StyledSection>
+    </div>
   );
 });

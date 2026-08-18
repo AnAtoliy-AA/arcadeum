@@ -62,7 +62,7 @@ export function SettingsLauncher() {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   button: {
     position: 'absolute',

@@ -50,6 +50,7 @@ export const byMessages = {
       private: 'Прыватны',
     },
     fastRoom: 'Хуткая гульня',
+    ranked: 'Рэйтынг',
     gameLabel: 'Гульня',
     createdLabel: 'Створана',
   },
@@ -134,6 +135,9 @@ export const byMessages = {
     autoButton: 'Аўта',
     fieldVisibility: 'Доступ',
     fieldNotes: 'Заўвагі (опцыя)',
+    fieldRanked: 'Рэйтынгавы матч',
+    fieldRankedHint:
+      'Рэйтынгавыя матчы ўплываюць на ваш рэйтынг ELO у гэтай гульні.',
     notesPlaceholder: 'Дадайце заўвагі...',
     notesAria: 'Дадатковыя заўвагі да зала',
     submitCreating: 'Стварэнне...',
@@ -286,9 +290,11 @@ export const byMessages = {
     difficultyEasy: 'Лёгка',
     difficultyMedium: 'Сярэдня',
     difficultyHard: 'Цяжка',
+    difficultyExpert: 'Эксперт',
     difficultyEasyDesc: 'Выпадковыя хады з рэдкімі разумнымі гульнямі',
     difficultyMediumDesc: 'Разумнае навядзенне са стратэгіяй блакіроўкі',
     difficultyHardDesc: 'Дакладнае навядзенне на аснове верагоднасцяў',
+    difficultyExpertDesc: 'Пошук максімальнай глыбіні, без памылак',
   },
   shared: {
     rules: {
@@ -395,5 +401,23 @@ export const byMessages = {
     title: 'Выбярыце гульню супраць ІІ',
     starting: 'Запуск...',
     allCategory: 'Усе',
+  },
+  matchmaking: {
+    searchingTitle: 'Пошук суперніка',
+    searchingSubtitle: 'Шукаем матч для {{game}}...',
+    cancel: 'Скасаваць пошук',
+    estimatedWait: 'Чаканне: ~{{seconds}} с',
+    queuePosition: 'Пазіцыя ў чарзе: {{position}} з {{total}}',
+  },
+  ranking: {
+    ratingUpdated: 'Рэйтынг абноўлены',
+    tier: {
+      bronze: 'Бронза',
+      silver: 'Срэбра',
+      gold: 'Золата',
+      platinum: 'Плаціна',
+      diamond: 'Дыямент',
+      master: 'Майстар',
+    },
   },
 };

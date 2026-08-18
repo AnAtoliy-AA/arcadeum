@@ -1,7 +1,6 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { YStack, XStack, Text } from 'tamagui';
 import { useCatDashTheme } from '../lib/CatDashThemeContext';
 import type { CatDashClientState } from '../types';
 
@@ -84,7 +83,7 @@ export const CatDashBoard = memo(function CatDashBoard({
   const spaceRadius = 22;
 
   return (
-    <YStack gap="$3" alignItems="center" width="100%" padding="$3">
+    <div className="flex flex-col gap-3 items-center w-full p-3">
       <svg
         viewBox={`0 0 ${svgW} ${svgH}`}
         width="100%"
@@ -180,7 +179,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                   fill="#ffffff"
                   style={{
                     pointerEvents: 'none',
-                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.6)',
                   }}
                 >
                   {i + 1}
@@ -248,7 +247,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                   >
                     🏁
                   </text>
@@ -259,7 +258,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                   >
                     ⚡
                   </text>
@@ -270,7 +269,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                   >
                     ⭐
                   </text>
@@ -286,7 +285,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                   >
                     {space.type === 'obstacle'
                       ? '⚡'
@@ -302,87 +301,73 @@ export const CatDashBoard = memo(function CatDashBoard({
       </svg>
 
       {/* Player legend */}
-      <XStack gap="$3" flexWrap="wrap" justifyContent="center">
+      <div className="flex flex-row items-stretch gap-3 flex-wrap justify-center">
         {snapshot.players.map((player) => {
           const isCurrent =
             snapshot.players[snapshot.currentPlayerIndex]?.playerId ===
             player.playerId;
           return (
-            <XStack
-              key={player.playerId}
-              gap="$3"
-              alignItems="center"
-              opacity={player.isReady ? 1 : 0.4}
-              backgroundColor={
-                isCurrent ? 'rgba(124,58,237,0.15)' : 'rgba(255,255,255,0.03)'
-              }
-              paddingHorizontal="$4"
-              paddingVertical="$3"
-              borderRadius="$4"
-              borderWidth={1.5}
-              borderColor={
-                isCurrent ? tokens.playerBorder : 'rgba(255,255,255,0.08)'
-              }
+            <div
+              className="flex flex-row gap-3 items-center px-4 py-3 rounded-2xl border-[1.5px]"
               style={{
-                boxShadow: isCurrent
-                  ? `0 0 12px ${tokens.playerBorder}55`
-                  : 'none',
-                transition: 'all 0.2s ease',
+                opacity: player.isReady ? 1 : 0.4,
+                backgroundColor: isCurrent
+                  ? 'rgba(124,58,237,0.15)'
+                  : 'rgba(255,255,255,0.03)',
+                borderColor: isCurrent
+                  ? tokens.playerBorder
+                  : 'rgba(255,255,255,0.08)',
               }}
+              key={player.playerId}
             >
               <RealisticCat catId={player.catId} size={28} />
-              <Text
-                fontSize={14}
-                fontWeight={isCurrent ? 'bold' : 'normal'}
-                color={CAT_COLORS[player.catId] ?? tokens.text}
+              <span
+                className="text-[14px]"
+                style={{
+                  fontWeight: isCurrent ? 'bold' : 'normal',
+                  color: CAT_COLORS[player.catId] ?? tokens.text,
+                }}
               >
                 {resolveName(player.playerId)}
-              </Text>
-              <Text fontSize={12} color={tokens.textSecondary}>
+              </span>
+              <span
+                className="text-[12px]"
+                style={{ color: tokens.textSecondary }}
+              >
                 🎲 {player.powerTokens}
-              </Text>
-            </XStack>
+              </span>
+            </div>
           );
         })}
-      </XStack>
+      </div>
 
       {/* Legend */}
-      <XStack gap="$3" justifyContent="center" flexWrap="wrap">
-        <XStack gap="$1" alignItems="center">
-          <XStack
-            width={12}
-            height={12}
-            backgroundColor="#22c55e"
-            borderRadius={6}
-          />
-          <Text fontSize={9} color={tokens.textSecondary}>
+      <div className="flex flex-row items-stretch gap-3 justify-center flex-wrap">
+        <div className="flex flex-row gap-1 items-center">
+          <div className="flex flex-row items-stretch w-[12px] h-[12px] bg-[#22c55e] rounded-[24px]" />
+          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
             Start
-          </Text>
-        </XStack>
-        <XStack gap="$1" alignItems="center">
-          <XStack
-            width={12}
-            height={12}
-            backgroundColor="#f59e0b"
-            borderRadius={6}
-          />
-          <Text fontSize={9} color={tokens.textSecondary}>
+          </span>
+        </div>
+        <div className="flex flex-row gap-1 items-center">
+          <div className="flex flex-row items-stretch w-[12px] h-[12px] bg-[#f59e0b] rounded-[24px]" />
+          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
             Finish
-          </Text>
-        </XStack>
-        <XStack gap="$1" alignItems="center">
-          <Text fontSize={10}>⚡</Text>
-          <Text fontSize={9} color={tokens.textSecondary}>
+          </span>
+        </div>
+        <div className="flex flex-row gap-1 items-center">
+          <span className="text-[48px]">⚡</span>
+          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
             Obstacle
-          </Text>
-        </XStack>
-        <XStack gap="$1" alignItems="center">
-          <Text fontSize={10}>⭐</Text>
-          <Text fontSize={9} color={tokens.textSecondary}>
+          </span>
+        </div>
+        <div className="flex flex-row gap-1 items-center">
+          <span className="text-[48px]">⭐</span>
+          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
             Bonus
-          </Text>
-        </XStack>
-      </XStack>
-    </YStack>
+          </span>
+        </div>
+      </div>
+    </div>
   );
 });

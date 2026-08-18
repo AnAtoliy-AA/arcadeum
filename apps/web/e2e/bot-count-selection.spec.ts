@@ -9,6 +9,7 @@ import {
   checkNoBackendErrors,
   waitForRoomReady,
 } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Bot Count Selection', () => {
   test.afterEach(async () => {
@@ -43,7 +44,7 @@ test.describe('Bot Count Selection', () => {
       roomJoinedPayload: { gameId: 'critical_v1', maxPlayers: 5 },
     });
 
-    await navigateTo(page, `/games/rooms/${roomId}`);
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     await page.waitForFunction(() => window.gameSocket);

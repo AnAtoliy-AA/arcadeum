@@ -33,6 +33,7 @@ export function GameEndModals({
         rematchLoading={gameEnd.rematchLoading}
         t={t}
         messages={gameEnd.resultMessages}
+        ratingDelta={gameEnd.ratingDelta}
       />
 
       {players.length > 1 && (
@@ -53,8 +54,15 @@ export function GameEndModals({
         isOpen={!!gameEnd.invitation}
         senderName={gameEnd.invitation?.hostName || ''}
         message={gameEnd.invitation?.message}
+        hostId={gameEnd.invitation?.hostId}
+        roomId={gameEnd.invitation?.newRoomId}
+        timeLeft={gameEnd.invitationTimeLeft}
         onAccept={gameEnd.handleAcceptInvitation}
         onDecline={gameEnd.handleDeclineInvitation}
+        onBlockRematch={gameEnd.handleBlockRematch}
+        onBlockUser={gameEnd.handleBlockUser}
+        accepting={gameEnd.isAcceptingInvitation}
+        cardVariant={cardVariant}
         t={t}
       />
     </>

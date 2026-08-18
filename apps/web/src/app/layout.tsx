@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist } from 'next/font/google';
 
 import './globals.scss';
+import './fonts.css';
 
 import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
@@ -11,18 +11,18 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 
 import BrowserRegistry from './BrowserRegistry';
-import { setupTamagui } from '@/shared/config/tamagui.config';
-import { ThemeName, ThemePreference } from '@/shared/config/theme';
+import {
+  DEFAULT_THEME_NAME,
+  ThemeName,
+  ThemePreference,
+} from '@/shared/config/theme';
 import { DEFAULT_LOCALE, isLocale } from '@/shared/i18n';
 import { AppThemeProvider } from '@/app/theme/ThemeContext';
 import { LazySessionRoleSync } from '@/shared/ui/LazySessionRoleSync';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-});
+// Self-hosted Geist variable font — the .font-geist-variable class (fonts.css)
+// sets the font stack and exposes --font-geist-sans for SCSS consumers.
+const FONT_CLASS = 'font-geist-variable';
 
 // NOTE: openGraph.locale is set per-locale in [locale]/layout.tsx
 // generateMetadata — no need to duplicate it here.
@@ -79,17 +79,14 @@ export const viewport: Viewport = {
   themeColor: '#151718',
 };
 
-// Prime Tamagui config as early as possible on the server
-setupTamagui();
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const fontClassName = `${geistSans.variable} ${geistSans.className}`;
   const cookieStore = await cookies();
-  const theme = (cookieStore.get('app-theme')?.value as ThemeName) || 'dark';
+  const theme =
+    (cookieStore.get('app-theme')?.value as ThemeName) || DEFAULT_THEME_NAME;
   const themePreference =
     (cookieStore.get('app-theme-preference')?.value as ThemePreference) ||
     'dark';
@@ -136,7 +133,6 @@ export default async function RootLayout({
   return (
     <html
       lang={htmlLang}
-      className={`t_${theme}`}
       data-theme={theme}
       data-theme-preference={themePreference}
     >
@@ -146,6 +142,13 @@ export default async function RootLayout({
          * R2 CDN hosts game cover images and assets loaded eagerly.
          * YouTube preconnects moved to presentation section (loaded on click).
          */}
+        <link
+          rel="preload"
+          href="/fonts/geist-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         {process.env.NEXT_PUBLIC_CDN_URL && (
           <>
             <link rel="preconnect" href={process.env.NEXT_PUBLIC_CDN_URL} />
@@ -166,7 +169,7 @@ export default async function RootLayout({
         )}
         <JsonLd data={jsonLd} />
       </head>
-      <body className={fontClassName}>
+      <body className={FONT_CLASS}>
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>

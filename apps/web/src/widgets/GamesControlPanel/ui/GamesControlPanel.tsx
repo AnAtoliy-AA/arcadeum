@@ -2,7 +2,6 @@
 
 import { useCallback, useState, type RefObject } from 'react';
 import { useRouter } from 'next/navigation';
-import { Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
@@ -18,8 +17,13 @@ import {
   ModalFooter,
   MaximizeIcon,
   MinimizeIcon,
+  VolumeOnIcon,
+  VolumeOffIcon,
+  MusicOnIcon,
+  MusicOffIcon,
 } from '@arcadeum/ui';
-import { Button, XStack, YStack } from '@arcadeum/ui';
+import { Button } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { ShareGameMenu } from './ShareGameMenu';
 
 interface GamesControlPanelProps {
@@ -67,6 +71,10 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
+  const toggleMusic = useCallback(() => {
+    setMusicEnabled(!musicEnabled);
+  }, [musicEnabled, setMusicEnabled]);
+
   const handleLeaveGame = useCallback(() => {
     if (isSpectating) {
       // If spectating, we can just leave the room UI
@@ -105,59 +113,27 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   };
 
   return (
-    <XStack
-      className={className}
+    <div
+      className={`flex flex-row items-center justify-start gap-4 flex-wrap max-[800px]:gap-2 max-[800px]:justify-center max-[800px]:py-2 max-[800px]:px-3 max-[800px]:rounded-[12px] py-3 px-6 bg-[var(--glassBg)] rounded-[16px] border border-[var(--glassBorderStrong)] ${className}`}
       data-testid="games-control-panel"
-      alignItems="center"
-      justifyContent="flex-start"
-      gap="$4"
-      flexWrap="wrap"
-      $sm={{
-        gap: '$2',
-        justifyContent: 'center',
-        paddingVertical: '$2',
-        paddingHorizontal: '$3',
-        borderRadius: 12,
-      }}
-      paddingVertical="$3"
-      paddingHorizontal="$6"
-      backgroundColor="$glassBg"
-      borderRadius={16}
-      borderWidth={1}
-      borderColor="$glassBorder"
-      position="relative"
-      zIndex={50}
     >
       {isSpectating && (
-        <XStack
-          backgroundColor="rgba(56, 189, 248, 0.15)"
-          borderColor="rgba(56, 189, 248, 0.4)"
-          borderWidth={1}
-          paddingHorizontal="$3"
-          paddingVertical="$2"
-          borderRadius={20}
-          alignItems="center"
-          gap="$2"
+        <div
+          className="flex flex-row bg-[rgba(56,_189,_248,_0.15)] border-[rgba(56,_189,_248,_0.4)] border px-3 py-2 rounded-[20px] items-center gap-2"
           aria-label="Spectating mode"
           data-testid="spectating-indicator"
         >
-          <Text fontSize={14}>👁️</Text>
-          <Text
-            fontSize={11}
-            fontWeight="800"
-            color="$blue10"
-            textTransform="uppercase"
-            letterSpacing={1}
-          >
+          <span className="text-[14px]">👁️</span>
+          <span className="text-[11px] font-extrabold text-[#0284c7] uppercase tracking-[1px]">
             {t('games.table.controlPanel.spectating') || 'Spectating'}
-          </Text>
-        </XStack>
+          </span>
+        </div>
       )}
 
       <Button
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
         data-testid="fullscreen-button"
         onClick={toggleFullscreen}
         aria-label={
@@ -172,63 +148,77 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         }
       >
         {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
-        <Text $sm={{ display: 'none' }}>
+        <span className="max-[800px]:hidden">
           {' ' + t('games.table.controlPanel.fullscreen')}
-        </Text>
+        </span>
       </Button>
 
       <Button
+        className={cx(
+          'max-[640px]:scale-[0.9] max-[640px]:px-2',
+          soundEnabled &&
+            '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+        )}
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
-        isActive={soundEnabled}
         aria-pressed={soundEnabled}
         onClick={() => setSoundEnabled(!soundEnabled)}
         aria-label={t('settings.soundLabel')}
         title={t('settings.soundLabel')}
         data-testid="sound-toggle-button"
       >
-        {soundEnabled ? '🔊' : '🔇'}
-        <Text $sm={{ display: 'none' }}>{' ' + t('settings.soundLabel')}</Text>
+        {soundEnabled ? (
+          <VolumeOnIcon size={16} />
+        ) : (
+          <VolumeOffIcon size={16} />
+        )}
+        <span className="max-[800px]:hidden">
+          {' ' + t('settings.soundLabel')}
+        </span>
       </Button>
 
       <Button
+        className={cx(
+          'max-[640px]:scale-[0.9] max-[640px]:px-2',
+          musicEnabled &&
+            '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+        )}
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
-        isActive={musicEnabled}
         aria-pressed={musicEnabled}
-        onClick={() => setMusicEnabled(!musicEnabled)}
+        onClick={toggleMusic}
         aria-label={t('settings.musicLabel')}
         title={t('settings.musicLabel')}
         data-testid="music-toggle-button"
       >
-        {musicEnabled ? '🎵' : '🔕'}
-        <Text $sm={{ display: 'none' }}>{' ' + t('settings.musicLabel')}</Text>
+        {musicEnabled ? <MusicOnIcon size={16} /> : <MusicOffIcon size={16} />}
+        <span className="max-[800px]:hidden">
+          {' ' + t('settings.musicLabel')}
+        </span>
       </Button>
 
       {onShowRules && (
         <Button
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
           variant="glass"
           size="sm"
-          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
           onClick={onShowRules}
           aria-label={t('games.table.controlPanel.rules') || 'Game Rules'}
           title={t('games.table.controlPanel.rules') || 'Game Rules'}
           data-testid="show-rules-button"
         >
           📖
-          <Text $sm={{ display: 'none' }}>
+          <span className="max-[800px]:hidden">
             {' ' + (t('games.table.controlPanel.rules') || 'Rules')}
-          </Text>
+          </span>
         </Button>
       )}
 
       {onToggleChat && (
         <Button
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
           variant="glass"
           size="sm"
-          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
           onClick={onToggleChat}
           data-testid="toggle-chat-button"
           aria-label={
@@ -236,43 +226,36 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           }
         >
           💬
-          <Text $sm={{ display: 'none' }}>
+          <span className="max-[800px]:hidden">
             {' ' +
               (showChat
                 ? t('games.table.chat.hide')
                 : t('games.table.chat.show'))}
-          </Text>
+          </span>
         </Button>
       )}
 
       {showMoveControls && (
-        <XStack
-          gap="$1"
-          borderWidth={1}
-          borderColor="$borderColor"
-          padding="$1"
-          scale={1}
-          $sm={{ scale: 0.9 }}
+        <div
+          className="flex flex-row items-stretch gap-1 border border-[var(--borderColor)] p-1 scale-[1] max-[800px]:scale-[0.9]"
           data-testid="move-controls"
         >
           <Button
+            className="p-[4px] min-w-[32px]"
             variant="glass"
             size="sm"
-            p="$1"
-            minWidth={32}
             onClick={() => handleMove('up')}
             title={t('games.table.controlPanel.moveControls.shortcuts.up')}
             data-testid="move-up-button"
           >
             ↑
           </Button>
-          <YStack gap="$1">
-            <XStack gap="$1">
+          <div className="flex flex-col items-stretch gap-1">
+            <div className="flex flex-row items-stretch gap-1">
               <Button
+                className="p-[4px] min-w-[32px]"
                 variant="glass"
                 size="sm"
-                p="$1"
-                minWidth={32}
                 onClick={() => handleMove('left')}
                 title={t(
                   'games.table.controlPanel.moveControls.shortcuts.left',
@@ -282,10 +265,9 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
                 ←
               </Button>
               <Button
+                className="p-[4px] min-w-[32px]"
                 variant="glass"
                 size="sm"
-                p="$1"
-                minWidth={32}
                 onClick={() => handleCenterView()}
                 title={t(
                   'games.table.controlPanel.moveControls.shortcuts.center',
@@ -295,10 +277,9 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
                 ⚡
               </Button>
               <Button
+                className="p-[4px] min-w-[32px]"
                 variant="glass"
                 size="sm"
-                p="$1"
-                minWidth={32}
                 onClick={() => handleMove('right')}
                 title={t(
                   'games.table.controlPanel.moveControls.shortcuts.right',
@@ -307,37 +288,34 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
               >
                 →
               </Button>
-            </XStack>
-          </YStack>
+            </div>
+          </div>
           <Button
+            className="p-[4px] min-w-[32px]"
             variant="glass"
             size="sm"
-            p="$1"
-            minWidth={32}
             onClick={() => handleMove('down')}
             title={t('games.table.controlPanel.moveControls.shortcuts.down')}
             data-testid="move-down-button"
           >
             ↓
           </Button>
-        </XStack>
+        </div>
       )}
 
       {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
 
       {isGameOver && onRematch && (
         <Button
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2 active:scale-[0.95]"
           variant="primary"
           size="sm"
-          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
           onClick={onRematch}
           disabled={rematchLoading}
           data-testid="rematch-button"
-          animation="quick"
-          pressStyle={{ scale: 0.95 }}
         >
           🔄
-          <Text $sm={{ display: 'none' }}>
+          <span className="max-[800px]:hidden">
             {' ' +
               (rematchLoading
                 ? t(
@@ -346,14 +324,14 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
                 : t(
                     'games.table.rematch.button' as import('@/shared/lib/useTranslation').TranslationKey,
                   ) || 'Play Again')}
-          </Text>
+          </span>
         </Button>
       )}
 
       <Button
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         variant="glass"
         size="sm"
-        $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
         onClick={handleExitRoom}
         aria-label={t('games.table.controlPanel.exitRoom') || 'Exit'}
         title={
@@ -363,16 +341,16 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         data-testid="exit-room-button"
       >
         🏃
-        <Text $sm={{ display: 'none' }}>
+        <span className="max-[800px]:hidden">
           {' ' + (t('games.table.controlPanel.exitRoom') || 'Exit')}
-        </Text>
+        </span>
       </Button>
 
       {snapshot.userId && (
         <Button
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
           variant="danger"
           size="sm"
-          $sm={{ scale: 0.9, paddingHorizontal: '$2' }}
           onClick={handleLeaveGame}
           aria-label={t('games.table.controlPanel.leaveRoom')}
           title={
@@ -382,9 +360,9 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           data-testid="leave-game-button"
         >
           🚪
-          <Text $sm={{ display: 'none' }}>
+          <span className="max-[800px]:hidden">
             {' ' + t('games.table.controlPanel.leaveRoom')}
-          </Text>
+          </span>
         </Button>
       )}
 
@@ -394,54 +372,40 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
             <ModalTitle>{t('games.table.controlPanel.leaveRoom')}</ModalTitle>
           </ModalHeader>
           <ModalBody>
-            <YStack gap="$4" alignItems="center" paddingVertical="$4">
-              <YStack
-                width={80}
-                height={80}
-                borderRadius={40}
-                backgroundColor="rgba(239, 68, 68, 0.1)"
-                alignItems="center"
-                justifyContent="center"
-                marginBottom="$2"
-              >
-                <Text fontSize={32}>🚪</Text>
-              </YStack>
-              <Text
-                textAlign="center"
-                fontSize={16}
-                lineHeight={24}
-                opacity={0.8}
-                fontWeight="500"
-              >
+            <div className="flex flex-col gap-4 items-center py-4">
+              <div className="flex flex-col w-[80px] h-[80px] rounded-[40px] bg-[rgba(239,_68,_68,_0.1)] items-center justify-center -mb-2">
+                <span className="text-[32px]">🚪</span>
+              </div>
+              <span className="text-center text-[16px] leading-[24px] opacity-[0.8] font-medium">
                 {t('games.table.controlPanel.leaveConfirmMessage') ||
                   'Are you sure you want to leave the game? You will be removed from the participants list.'}
-              </Text>
-            </YStack>
+              </span>
+            </div>
           </ModalBody>
           <ModalFooter>
-            <XStack gap="$3" justifyContent="center" width="100%">
+            <div className="flex flex-row items-stretch gap-3 justify-center w-full">
               <Button
+                className="rounded-[12px]"
+                style={{ flex: 1 }}
                 variant="secondary"
                 size="lg"
-                flex={1}
                 onClick={() => setShowLeaveConfirm(false)}
-                borderRadius={12}
               >
                 {t('games.common.cancel') || 'Cancel'}
               </Button>
               <Button
+                className="rounded-[12px]"
+                style={{ flex: 1 }}
                 variant="danger"
                 size="lg"
-                flex={1}
                 onClick={handleConfirmLeave}
-                borderRadius={12}
               >
                 {t('games.table.controlPanel.leaveRoom')}
               </Button>
-            </XStack>
+            </div>
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </XStack>
+    </div>
   );
 }

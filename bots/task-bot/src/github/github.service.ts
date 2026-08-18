@@ -8,7 +8,9 @@ import { GitHubApiService } from './github.api.service';
 import { GitHubGitService } from './github.git.service';
 import {
   GitHubIssue,
+  GitHubIssueView,
   GitHubIssueListItem,
+  GitHubPRView,
   GitHubReview,
   GitHubIssueBody,
 } from './github.types';
@@ -40,7 +42,7 @@ export class GitHubService {
     return this.api.triggerWorkflow(issueNumber, engine);
   }
 
-  viewIssue(issueNum: string): GitHubIssue | null {
+  viewIssue(issueNum: string): GitHubIssueView | null {
     return this.api.viewIssue(issueNum);
   }
 
@@ -48,7 +50,7 @@ export class GitHubService {
     return this.api.viewIssueSimple(issueNum);
   }
 
-  viewPr(prNum: string): GitHubServiceTypes.GitHubPR | null {
+  viewPr(prNum: string): GitHubPRView | null {
     return this.api.viewPr(prNum);
   }
 
@@ -93,7 +95,7 @@ export class GitHubService {
     branchName: string,
     baseBranch: string,
     cwd?: string,
-    engine: 'opencode',
+    engine: 'opencode' = 'opencode',
   ): { success: boolean; message: string } {
     return this.git.resolveConflicts(branchName, baseBranch, cwd, engine);
   }
@@ -199,6 +201,7 @@ export class GitHubService {
 
       const escapedPrompt = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
+      const cli = 'opencode';
       const runArgs = ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions'];
       await this.spawnAsync(cli, runArgs, {
         cwd,
@@ -344,6 +347,7 @@ export class GitHubService {
 
       this.git.installDeps(cwd);
 
+      const cli = 'opencode';
       const runArgs = ['run', escapedPrompt, '-m', 'opencode/mimo-v2.5-free', '--dangerously-skip-permissions'];
       await this.spawnAsync(cli, runArgs, {
         cwd,

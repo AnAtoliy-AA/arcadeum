@@ -7,7 +7,7 @@ import {
   IconButton,
   LobbyOptionSection,
 } from '@/features/games/ui';
-import { TamaguiElement, XStack, Switch, Text } from 'tamagui';
+import { Typography } from '@arcadeum/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
@@ -46,7 +46,7 @@ export interface CriticalLobbyProps {
   isHost: boolean;
   startBusy: boolean;
   isFullscreen: boolean;
-  containerRef?: React.RefObject<TamaguiElement | null>;
+  containerRef?: React.RefObject<HTMLElement | null>;
   onToggleFullscreen: () => void;
   onStartGame: (options?: { withBots?: boolean; botCount?: number }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
@@ -107,28 +107,36 @@ export function CriticalLobby({
           hostId={userId}
           currentVariant={cardVariant}
         />
-        <XStack alignItems="center" gap="$2" paddingTop="$2">
-          <Switch
+        <div className="flex flex-row items-center gap-2 pt-2">
+          <input
+            type="checkbox"
             checked={
               !!(room.gameOptions as Record<string, unknown>)
                 ?.allowActionCardCombos
             }
             disabled={!!ruleComingSoon.get('combos')}
-            onCheckedChange={(val) => setOption({ allowActionCardCombos: val })}
-            size="$2"
+            onChange={(e) =>
+              setOption({ allowActionCardCombos: e.target.checked })
+            }
+            aria-label={
+              t('games.create.houseRuleActionCardCombos') ||
+              'Action Card Combos'
+            }
+            className="w-4 h-4 cursor-pointer accent-[var(--primary)]"
+          />
+          <Typography
+            uiSize="sm"
+            style={{ opacity: ruleComingSoon.get('combos') ? 0.4 : 1 }}
           >
-            <Switch.Thumb />
-          </Switch>
-          <Text fontSize="$3" opacity={ruleComingSoon.get('combos') ? 0.4 : 1}>
             {t('games.create.houseRuleActionCardCombos') ||
               'Action Card Combos'}
-          </Text>
+          </Typography>
           {ruleComingSoon.get('combos') && (
-            <Text fontSize={10} color="#f59e0b" fontWeight="600">
+            <Typography uiSize="xs" weight="600" className="text-[#f59e0b]">
               {t('games.create.comingSoon') || 'Coming Soon'}
-            </Text>
+            </Typography>
           )}
-        </XStack>
+        </div>
       </LobbyOptionSection>
     ) : null;
 
@@ -157,7 +165,9 @@ export function CriticalLobby({
         isHost={isHost}
         startBusy={startBusy}
         isFullscreen={isFullscreen}
-        containerRef={containerRef}
+        // ReusableGameLobby.types accepts HTMLElement refs; HTMLElement
+        // is not assignable to it, so narrow the ref type for the handoff.
+        containerRef={containerRef as React.RefObject<never>}
         onToggleFullscreen={onToggleFullscreen}
         onStartGame={onStartGame}
         onReorderPlayers={onReorderPlayers}

@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { XStack } from 'tamagui';
 import { ModeTab } from './ModeTab';
 
 const meta: Meta<typeof ModeTab> = {
@@ -18,7 +17,7 @@ const GRADIENTS = {
 
 export const Row: Story = {
   render: () => (
-    <XStack gap="$3" flexWrap="wrap" role="tablist">
+    <div className="flex">
       <ModeTab
         id="all"
         name="All games"
@@ -41,6 +40,6 @@ export const Row: Story = {
         icon="♢"
         gradient={GRADIENTS.werewolf}
       />
-    </XStack>
+    </div>
   ),
 };

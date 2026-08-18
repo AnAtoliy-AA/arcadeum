@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
-import { YStack } from 'tamagui';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
+import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import type { Board, CheckersPlayer } from '../types';
 
 interface CheckersBoardProps {
@@ -54,23 +54,39 @@ export function CheckersBoard({
     return isFlipped ? arr.reverse() : arr;
   }, [boardSize, isFlipped]);
 
+  const { gridProps, getCellProps } = useBoardKeyboardNavigation({
+    rows: boardSize,
+    cols: boardSize,
+    disabled,
+    onActivate: ({ row, col }) => handleClick(row, col),
+  });
+
+  const cellLabel = useCallback(
+    (row: number, col: number, piece: Board[number][number] | null) => {
+      const pos = `${String.fromCharCode(97 + col)}${row + 1}`;
+      if (!piece) return `${ariaLabel} ${pos} empty`;
+      const color = playerColorMap[piece.playerId] ?? 'unknown';
+      const type = piece.type === 'king' ? 'king' : 'man';
+      return `${ariaLabel} ${pos} ${color} ${type}`;
+    },
+    [ariaLabel, playerColorMap],
+  );
+
   return (
-    <YStack
-      width="100%"
-      maxWidth={480}
-      aspectRatio="1/1"
-      alignSelf="center"
-      borderRadius={12}
-      overflow="hidden"
-      borderWidth={2}
-      borderColor={theme.darkSquare}
-      style={{ background: theme.boardBackground, boxSizing: 'border-box' }}
+    <div
+      className="flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[12px] overflow-hidden border-[2px]"
+      style={{ aspectRatio: '1/1', borderColor: theme.darkSquare }}
       role="grid"
       aria-label={ariaLabel}
       data-testid="checkers-board"
+      {...gridProps}
     >
       {rows.map((row) => (
-        <YStack key={row} flexDirection="row" flex={1} role="row">
+        <div
+          className="flex items-stretch flex-row flex-1"
+          key={row}
+          role="row"
+        >
           {cols.map((col) => {
             const isDarkSquare = (row + col) % 2 === 1;
             const piece = board[row][col];
@@ -79,53 +95,41 @@ export function CheckersBoard({
             const isHighlighted =
               highlightedCell?.row === row && highlightedCell?.col === col;
             const pieceColor = piece ? playerColorMap[piece.playerId] : null;
+            const navRow = rows.indexOf(row);
+            const navCol = cols.indexOf(col);
 
             return (
-              <YStack
-                key={`${row}-${col}`}
-                flex={1}
-                alignItems="center"
-                justifyContent="center"
-                cursor={disabled ? 'default' : 'pointer'}
-                backgroundColor={
-                  isSelected
+              <div
+                className="flex flex-col flex-1 items-center justify-center"
+                style={{
+                  cursor: disabled ? 'default' : 'pointer',
+                  backgroundColor: isSelected
                     ? theme.selectedPiece
                     : isHighlighted
                       ? 'rgba(99, 102, 241, 0.35)'
                       : isDarkSquare
                         ? theme.darkSquare
-                        : theme.lightSquare
-                }
-                style={{
-                  boxSizing: 'border-box',
-                  aspectRatio: '1/1',
+                        : theme.lightSquare,
                 }}
+                onClick={() => handleClick(row, col)}
+                key={`${row}-${col}`}
                 role="button"
+                aria-label={cellLabel(row, col, piece)}
                 data-testid={`checkers-cell-${row}-${col}`}
-                onPress={() => handleClick(row, col)}
+                {...getCellProps(navRow, navCol)}
               >
                 {piece ? (
-                  <YStack
-                    width="70%"
-                    height="70%"
-                    borderRadius={9999}
-                    alignItems="center"
-                    justifyContent="center"
-                    backgroundColor={
-                      pieceColor === 'light'
-                        ? theme.lightPiece
-                        : theme.darkPiece
-                    }
-                    borderWidth={2}
-                    borderColor={
-                      pieceColor === 'light'
-                        ? theme.lightPieceBorder
-                        : theme.darkPieceBorder
-                    }
+                  <div
+                    className="flex flex-col w-[70%] h-[70%] rounded-[9999px] items-center justify-center border-[2px]"
                     style={{
-                      boxShadow: isSelected
-                        ? `0 0 12px ${theme.selectedPiece}`
-                        : 'none',
+                      backgroundColor:
+                        pieceColor === 'light'
+                          ? theme.lightPiece
+                          : theme.darkPiece,
+                      borderColor:
+                        pieceColor === 'light'
+                          ? theme.lightPieceBorder
+                          : theme.darkPieceBorder,
                     }}
                   >
                     {piece.type === 'king' ? (
@@ -140,13 +144,13 @@ export function CheckersBoard({
                         ♚
                       </span>
                     ) : null}
-                  </YStack>
+                  </div>
                 ) : null}
-              </YStack>
+              </div>
             );
           })}
-        </YStack>
+        </div>
       ))}
-    </YStack>
+    </div>
   );
 }

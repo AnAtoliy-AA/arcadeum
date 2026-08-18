@@ -5,7 +5,7 @@
  * background-clip-text style. Falls back to neutral props when null.
  */
 export interface NameColorRenderProps {
-  /** Pass to Tamagui Text `color` prop or React `style.color`. */
+  /** Pass to React `style.color`. */
   color?: string;
   /** Pass to the underlying element via `style={...}` for gradient names. */
   style?: React.CSSProperties;

@@ -7,11 +7,14 @@
  *    and creates the per-user state doc.
  *  - Second claim same UTC day throws DailyRewardAlreadyClaimedError.
  */
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
-import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { Model, Types } from 'mongoose';
+import {
+  getSharedMongoUri,
+  closeTestDatabase,
+} from '../../test/integration-helpers';
 import { DailyRewardsService } from './daily-rewards.service';
 import { DailyRewardAlreadyClaimedError } from './daily-rewards.errors';
 import { DailyRewardsModule } from './daily-rewards.module';
@@ -32,7 +35,7 @@ import {
 import { todayUtc } from './streak';
 
 describe('DailyRewardsService (integration)', () => {
-  let replSet: MongoMemoryReplSet;
+  let moduleRef: TestingModule;
   let service: DailyRewardsService;
   let wallet: WalletService;
   let userModel: Model<User>;
@@ -42,13 +45,12 @@ describe('DailyRewardsService (integration)', () => {
   let userId: string;
 
   beforeAll(async () => {
-    replSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
-    const uri = replSet.getUri();
+    const uri = getSharedMongoUri();
 
-    const moduleRef = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
-        MongooseModule.forRoot(uri),
+        MongooseModule.forRoot(uri, { dbName: 'daily-rewards-integration' }),
         AuthModule,
         WalletModule,
         EconomyModule,
@@ -76,7 +78,7 @@ describe('DailyRewardsService (integration)', () => {
   }, 60_000);
 
   afterAll(async () => {
-    await replSet.stop();
+    await closeTestDatabase(moduleRef);
   }, 30_000);
 
   beforeEach(async () => {

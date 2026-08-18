@@ -1,0 +1,481 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { Typography } from '@arcadeum/ui';
+import type { RepeatMode } from '../lib/GameMusicUtils';
+import { PlaylistIcon, MinimizeIcon, MaximizeIcon } from './GameMusicVisuals';
+import { VolumeIcon, MusicBtn, PlayBtn } from './GameMusicButtons';
+
+interface TransportRowProps {
+  isPlaying: boolean;
+  onPrev: () => void;
+  onTogglePlay: () => void;
+  onNext: () => void;
+  onStop?: () => void;
+  labels: {
+    play: string;
+    pause: string;
+    prev: string;
+    next: string;
+    stop: string;
+  };
+  size?: 'sm' | 'md';
+}
+
+function TransportRow({
+  isPlaying,
+  onPrev,
+  onTogglePlay,
+  onNext,
+  onStop,
+  labels,
+  size = 'md',
+}: TransportRowProps) {
+  const iconSize = size === 'sm' ? 14 : 18;
+  const playIconSize = size === 'sm' ? 16 : 22;
+  const stopIconSize = size === 'sm' ? 12 : 16;
+  const gap = size === 'sm' ? 4 : 6;
+
+  return (
+    <div className="flex items-center justify-center" style={{ gap }}>
+      <MusicBtn
+        onClick={onPrev}
+        testId="game-music-prev"
+        ariaLabel={labels.prev}
+      >
+        <svg
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
+        </svg>
+      </MusicBtn>
+      <PlayBtn
+        onClick={onTogglePlay}
+        testId="game-music-playpause"
+        ariaLabel={isPlaying ? labels.pause : labels.play}
+      >
+        {isPlaying ? (
+          <svg
+            width={playIconSize}
+            height={playIconSize}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+          </svg>
+        ) : (
+          <svg
+            width={playIconSize}
+            height={playIconSize}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M7 4.5v15a1 1 0 0 0 1.54.84l11.5-7.5a1 1 0 0 0 0-1.68L8.54 3.66A1 1 0 0 0 7 4.5Z" />
+          </svg>
+        )}
+      </PlayBtn>
+      <MusicBtn
+        onClick={onNext}
+        testId="game-music-next"
+        ariaLabel={labels.next}
+      >
+        <svg
+          width={iconSize}
+          height={iconSize}
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M16 18h2V6h-2zM6 18l8.5-6L6 6z" />
+        </svg>
+      </MusicBtn>
+      {onStop && (
+        <MusicBtn
+          onClick={onStop}
+          testId="game-music-stop"
+          ariaLabel={labels.stop}
+        >
+          <svg
+            width={stopIconSize}
+            height={stopIconSize}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+          </svg>
+        </MusicBtn>
+      )}
+    </div>
+  );
+}
+
+interface TransportControlsProps {
+  isPlaying: boolean;
+  shuffle: boolean;
+  repeat: RepeatMode;
+  playlistOpen: boolean;
+  volume: number;
+  onTogglePlay: () => void;
+  onStop: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  onToggleShuffle: () => void;
+  onCycleRepeat: () => void;
+  onTogglePlaylist: () => void;
+  onToggleMiniMode: () => void;
+  onVolumeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSkipForward: () => void;
+  onSkipBack: () => void;
+  labels: {
+    play: string;
+    pause: string;
+    stop: string;
+    prev: string;
+    next: string;
+    shuffleOn: string;
+    shuffleOff: string;
+    repeatOff: string;
+    repeatAll: string;
+    repeatOne: string;
+    playlistShow: string;
+    playlistHide: string;
+    minimize: string;
+    maximize: string;
+    volume: string;
+    skipForward: string;
+    skipBack: string;
+  };
+}
+
+export function TransportControls({
+  isPlaying,
+  shuffle,
+  repeat,
+  playlistOpen,
+  volume,
+  onTogglePlay,
+  onStop,
+  onNext,
+  onPrev,
+  onToggleShuffle,
+  onCycleRepeat,
+  onTogglePlaylist,
+  onToggleMiniMode,
+  onVolumeChange,
+  onSkipForward,
+  onSkipBack,
+  labels,
+}: TransportControlsProps) {
+  return (
+    <div className="flex flex-col gap-[10px]">
+      <div className="flex items-center gap-[14px] px-1">
+        <div
+          className="game-music-volume-icon flex shrink-0 min-w-[32px] justify-start"
+          style={{ color: 'var(--textSecondary, rgba(255,255,255,0.75))' }}
+        >
+          <VolumeIcon level={volume} />
+        </div>
+        <input
+          className="game-music-volume"
+          data-testid="game-music-volume"
+          type="range"
+          min={0}
+          max={100}
+          step={5}
+          value={Math.round(volume * 100)}
+          onChange={onVolumeChange}
+          aria-label={labels.volume}
+          style={{
+            flex: 1,
+            background: `linear-gradient(to right, var(--primary, #818cf8) 0%, var(--primary, #818cf8) ${Math.round(volume * 100)}%, color-mix(in srgb, var(--color, #fff) 12%, transparent) ${Math.round(volume * 100)}%, color-mix(in srgb, var(--color, #fff) 12%, transparent) 100%)`,
+          }}
+        />
+        <Typography
+          className="game-music-time min-w-[32px] text-right text-[10px] font-medium"
+          style={{ color: 'var(--textSecondary, rgba(255,255,255,0.7))' }}
+        >
+          {Math.round(volume * 100)}%
+        </Typography>
+      </div>
+
+      <TransportRow
+        isPlaying={isPlaying}
+        onPrev={onPrev}
+        onTogglePlay={onTogglePlay}
+        onNext={onNext}
+        onStop={onStop}
+        labels={labels}
+      />
+
+      <div className="flex items-center justify-between px-0.5">
+        <div className="flex items-center gap-[4px]">
+          <MusicBtn
+            onClick={onToggleShuffle}
+            testId="game-music-shuffle"
+            ariaLabel={shuffle ? labels.shuffleOn : labels.shuffleOff}
+            color={shuffle ? '#818cf8' : 'rgba(255,255,255,0.4)'}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22" />
+              <path d="m18 2 4 4-4 4" />
+              <path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2" />
+              <path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8" />
+              <path d="m18 14 4 4-4 4" />
+            </svg>
+          </MusicBtn>
+          <MusicBtn
+            onClick={onSkipBack}
+            testId="game-music-skip-back"
+            ariaLabel={labels.skipBack}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m11 17-5-5 5-5" />
+              <path d="m18 17-5-5 5-5" />
+            </svg>
+          </MusicBtn>
+          <MusicBtn
+            onClick={onSkipForward}
+            testId="game-music-skip-forward"
+            ariaLabel={labels.skipForward}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m13 17 5-5-5-5" />
+              <path d="m6 17 5-5-5-5" />
+            </svg>
+          </MusicBtn>
+          <MusicBtn
+            onClick={onCycleRepeat}
+            testId="game-music-repeat"
+            ariaLabel={
+              repeat === 'off'
+                ? labels.repeatOff
+                : repeat === 'all'
+                  ? labels.repeatAll
+                  : labels.repeatOne
+            }
+            color={repeat !== 'off' ? '#818cf8' : 'rgba(255,255,255,0.4)'}
+          >
+            {repeat === 'one' ? (
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m17 2 4 4-4 4" />
+                <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+                <path d="m7 22-4-4 4-4" />
+                <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+                <text
+                  x="12"
+                  y="15"
+                  textAnchor="middle"
+                  fill="currentColor"
+                  stroke="none"
+                  fontSize="8"
+                  fontWeight="bold"
+                >
+                  1
+                </text>
+              </svg>
+            ) : (
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m17 2 4 4-4 4" />
+                <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+                <path d="m7 22-4-4 4-4" />
+                <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+              </svg>
+            )}
+          </MusicBtn>
+        </div>
+        <div className="flex items-center gap-[4px]">
+          <MusicBtn
+            onClick={onTogglePlaylist}
+            testId="game-music-playlist-toggle"
+            ariaLabel={playlistOpen ? labels.playlistHide : labels.playlistShow}
+            color={playlistOpen ? '#818cf8' : 'rgba(255,255,255,0.4)'}
+          >
+            <PlaylistIcon size={16} />
+          </MusicBtn>
+          <MusicBtn
+            onClick={onToggleMiniMode}
+            testId="game-music-minimize"
+            ariaLabel={labels.minimize}
+            color="rgba(255,255,255,0.3)"
+          >
+            <MinimizeIcon size={14} />
+          </MusicBtn>
+        </div>
+      </div>
+    </div>
+  );
+}
+interface MiniControlsProps {
+  isPlaying: boolean;
+  onTogglePlay: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onStop: () => void;
+  onToggleMiniMode: () => void;
+  labels: {
+    play: string;
+    pause: string;
+    prev: string;
+    next: string;
+    stop: string;
+    maximize: string;
+  };
+}
+
+export function MiniControls({
+  isPlaying,
+  onTogglePlay,
+  onPrev,
+  onNext,
+  onStop,
+  onToggleMiniMode,
+  labels,
+}: MiniControlsProps) {
+  return (
+    <div className="flex items-center gap-[4px]">
+      <TransportRow
+        isPlaying={isPlaying}
+        onPrev={onPrev}
+        onTogglePlay={onTogglePlay}
+        onNext={onNext}
+        onStop={onStop}
+        labels={labels}
+        size="sm"
+      />
+      <MusicBtn
+        onClick={onToggleMiniMode}
+        testId="game-music-maximize"
+        ariaLabel={labels.maximize}
+        color="rgba(255,255,255,0.4)"
+        className="game-music-mini-expand"
+      >
+        <MaximizeIcon size={14} />
+      </MusicBtn>
+    </div>
+  );
+}
+
+interface ProgressBarProps {
+  currentTime: number;
+  duration: number;
+  onSeek: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  label: string;
+}
+
+export function ProgressBar({
+  currentTime,
+  duration,
+  onSeek,
+  label,
+}: ProgressBarProps) {
+  const [smoothTime, setSmoothTime] = useState(currentTime);
+  const lastUpdateRef = useRef(currentTime);
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    lastUpdateRef.current = currentTime;
+  });
+
+  useEffect(() => {
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = (now - last) / 1000;
+      last = now;
+      setSmoothTime((prev) => {
+        const target = lastUpdateRef.current;
+        if (Math.abs(prev - target) > 0.5) return target;
+        if (duration <= 0) return target;
+        const next = prev + dt;
+        return next > duration ? duration : next;
+      });
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [duration]);
+  const formatTime = (s: number) => {
+    if (!isFinite(s)) return '0:00';
+    return `${Math.floor(s / 60)}:${Math.floor(s % 60)
+      .toString()
+      .padStart(2, '0')}`;
+  };
+  const pct = duration > 0 ? (smoothTime / duration) * 100 : 0;
+  return (
+    <div className="flex w-full items-center gap-[14px] px-1">
+      <Typography
+        className="game-music-time min-w-[32px] text-[10px] font-medium"
+        style={{ color: 'var(--textSecondary, rgba(255,255,255,0.7))' }}
+      >
+        {formatTime(smoothTime)}
+      </Typography>
+      <input
+        className="game-music-progress"
+        data-testid="game-music-progress"
+        type="range"
+        min={0}
+        max={duration || 0}
+        step={1}
+        value={currentTime}
+        onChange={onSeek}
+        aria-label={label}
+        style={{
+          flex: 1,
+          background: `linear-gradient(to right, var(--primary, #6366f1) 0%, var(--accent, var(--primary, #a855f7)) ${pct}%, color-mix(in srgb, var(--color, #fff) 12%, transparent) ${pct}%, color-mix(in srgb, var(--color, #fff) 12%, transparent) 100%)`,
+        }}
+      />
+      <Typography
+        className="game-music-time min-w-[32px] text-right text-[10px] font-medium"
+        style={{ color: 'var(--textSecondary, rgba(255,255,255,0.7))' }}
+      >
+        {formatTime(duration)}
+      </Typography>
+    </div>
+  );
+}

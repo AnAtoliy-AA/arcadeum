@@ -1,19 +1,6 @@
 'use client';
 
-import React from 'react';
-import type { Preview, Decorator } from '@storybook/nextjs-vite';
-import { ThemeName } from '../src/shared/config/theme';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '../src/shared/config/tamagui.config';
-
-const withThemeProvider: Decorator = (Story, context) => {
-  const theme = (context.globals.theme || 'neonDark') as ThemeName;
-  return (
-    <TamaguiProvider config={tamaguiConfig} defaultTheme={theme}>
-      <Story />
-    </TamaguiProvider>
-  );
-};
+import type { Preview } from '@storybook/nextjs-vite';
 
 const preview: Preview = {
   parameters: {
@@ -44,7 +31,6 @@ const preview: Preview = {
   initialGlobals: {
     theme: 'neonDark',
   },
-  decorators: [withThemeProvider],
 };
 
 export default preview;

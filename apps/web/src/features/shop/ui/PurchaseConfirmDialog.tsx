@@ -2,8 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, YStack, XStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Button, Typography } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { DialogShell } from './dialogShell';
@@ -122,69 +121,77 @@ function PurchaseConfirmDialogInner({
         onClose={onClose}
         testId="purchase-confirm-dialog"
       >
-        <YStack gap="$3" alignItems="center">
-          <Text fontSize={48}>✓</Text>
-          <Text fontSize="$6" fontWeight="700">
+        <div className="flex flex-col gap-3 items-center">
+          <Typography uiSize="3xl">✓</Typography>
+          <Typography uiSize="2xl" weight="700">
             {labels.successTitle ?? 'Equipped'}
-          </Text>
-          <Text fontSize="$3" color="$colorPress" textAlign="center">
+          </Typography>
+          <Typography
+            uiSize="md"
+            color="var(--colorPress)"
+            className="text-center"
+          >
             {(labels.successBody ?? '{name} is now equipped.').replace(
               '{name}',
               itemName,
             )}
-          </Text>
-          <Button onPress={onClose} data-testid="purchase-success-close">
+          </Typography>
+          <Button onClick={onClose} data-testid="purchase-success-close">
             {labels.close ?? labels.cancel}
           </Button>
-        </YStack>
+        </div>
       </DialogShell>
     );
   }
 
   return (
     <DialogShell open={open} onClose={onClose} testId="purchase-confirm-dialog">
-      <YStack gap="$3">
-        <Text fontSize="$6" fontWeight="700">
+      <div className="flex flex-col items-stretch gap-3">
+        <Typography uiSize="2xl" weight="700">
           {labels.title}
-        </Text>
-        <YStack gap="$2">
-          <Text fontSize="$5" fontWeight="600">
+        </Typography>
+        <div className="flex flex-col items-stretch gap-2">
+          <Typography uiSize="xl" weight="600">
             {itemName}
-          </Text>
-          <Text fontSize="$3" color="$colorPress">
+          </Typography>
+          <Typography uiSize="md" color="var(--colorPress)">
             {itemDesc}
-          </Text>
-        </YStack>
-        <XStack gap="$3" alignItems="center" justifyContent="space-between">
-          <Text fontSize="$4" fontWeight="600">
+          </Typography>
+        </div>
+        <div className="flex flex-row gap-3 items-center justify-between">
+          <Typography uiSize="lg" weight="600">
             {item.priceAmount === 0
               ? labels.free
               : `${item.priceAmount} ${item.priceCurrency}`}
-          </Text>
-          <Text fontSize="$2" color="$colorPress">
+          </Typography>
+          <Typography uiSize="sm" color="var(--colorPress)">
             {labels.yourBalance
               .replace('{amount}', formatNumber(balanceForCurrency, locale))
               .replace('{currency}', item.priceCurrency)}
-          </Text>
-        </XStack>
+          </Typography>
+        </div>
         {errorMsg ? (
-          <Text color="$danger" fontSize="$2" data-testid="purchase-error">
+          <Typography
+            color="var(--danger)"
+            uiSize="sm"
+            data-testid="purchase-error"
+          >
             {errorMsg}
-          </Text>
+          </Typography>
         ) : null}
-        <XStack gap="$3" justifyContent="flex-end">
-          <Button variant="outline" onPress={onClose} disabled={isPending}>
+        <div className="flex flex-row items-stretch gap-3 justify-end">
+          <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
           <Button
-            onPress={handleConfirm}
+            onClick={handleConfirm}
             disabled={!hasFunds || isPending}
             data-testid="purchase-confirm-button"
           >
             {labels.buy}
           </Button>
-        </XStack>
-      </YStack>
+        </div>
+      </div>
     </DialogShell>
   );
 }

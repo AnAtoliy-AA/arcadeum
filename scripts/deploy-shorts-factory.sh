@@ -13,12 +13,15 @@ pnpm install --frozen-lockfile
 
 echo "==> Installing Playwright browsers..."
 npx playwright install chromium
-npx playwright install-deps chromium
+sudo npx playwright install chromium
+npx playwright install-deps chromium 2>/dev/null || true
 
-echo "==> Creating directories..."
+echo "==> Creating directories and setting permissions..."
 mkdir -p raw_captures
 mkdir -p output
-mkdir -p pending
+sudo mkdir -p pending
+sudo chown -R ubuntu:ubuntu pending 2>/dev/null || true
+sudo chmod -R 777 pending 2>/dev/null || true
 
 echo "==> Deploy complete!"
 echo ""

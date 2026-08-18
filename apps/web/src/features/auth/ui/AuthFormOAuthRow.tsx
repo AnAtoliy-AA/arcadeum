@@ -1,7 +1,6 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { XStack, YStack } from 'tamagui';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { AppleGlyph, DiscordGlyph, GoogleGlyph } from './AuthProviderIcons';
 import {
@@ -50,7 +49,8 @@ export function AuthFormOAuthRow({
   ];
 
   return (
-    <XStack
+    <div
+      className="flex flex-row items-stretch"
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -68,7 +68,7 @@ export function AuthFormOAuthRow({
           onClick={() => onSelect(p.id)}
         />
       ))}
-    </XStack>
+    </div>
   );
 }
 
@@ -109,9 +109,9 @@ function ProviderButton({
         transition: 'background-color 160ms ease, border-color 160ms ease',
       }}
     >
-      <YStack alignItems="center" justifyContent="center">
+      <div className="flex flex-col items-center justify-center">
         {provider.icon}
-      </YStack>
+      </div>
       <Typography variant="body" uiSize="sm" weight="600">
         {provider.shortLabel}
       </Typography>

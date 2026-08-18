@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { YStack, XStack, Text, Switch } from 'tamagui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -125,7 +125,7 @@ export function TicTacToeLobby({
   };
 
   const optionsSlot = (
-    <YStack gap="$4">
+    <div className="flex flex-col items-stretch gap-4">
       <VariantSelector
         roomId={room.id}
         hostId={userId}
@@ -143,26 +143,38 @@ export function TicTacToeLobby({
         onWinLengthChange={handleWinLengthChange}
       />
       <LobbyOptionSection title={t('games.tic_tac_toe_v1.lobby.teamMode')}>
-        <XStack alignItems="center" gap="$3">
-          <Switch
-            checked={internalTeamMode}
-            onCheckedChange={handleTeamModeToggle}
+        <div className="flex flex-row items-center gap-3">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={internalTeamMode}
+            aria-label={t('games.tic_tac_toe_v1.lobby.teamMode')}
             disabled={!isHost}
-            size="$2"
+            onClick={() => handleTeamModeToggle(!internalTeamMode)}
+            className={cx(
+              'h-6 w-11 rounded-full p-1 transition-colors duration-200 ease-out',
+              internalTeamMode ? 'bg-[#2563eb]' : 'bg-[rgba(255,255,255,0.15)]',
+              !isHost && 'cursor-not-allowed opacity-50',
+            )}
           >
-            <Switch.Thumb />
-          </Switch>
-        </XStack>
+            <span
+              className={cx(
+                'block h-4 w-4 rounded-full bg-white transition-transform duration-200 ease-out',
+                internalTeamMode ? 'translate-x-5' : 'translate-x-0',
+              )}
+            />
+          </button>
+        </div>
       </LobbyOptionSection>
       {internalTeamMode ? (
         <TicTacToeTeamPanel room={room} isHost={isHost} />
       ) : null}
-      <Text fontSize="$3" opacity={0.7}>
+      <span className="text-[16px] opacity-[0.7]">
         {options.boardSize === 'infinity'
           ? t('games.tic_tac_toe_v1.lobby.winCondition')
           : t('games.tic_tac_toe_v1.rules.winLengths')}
-      </Text>
-    </YStack>
+      </span>
+    </div>
   );
 
   return (

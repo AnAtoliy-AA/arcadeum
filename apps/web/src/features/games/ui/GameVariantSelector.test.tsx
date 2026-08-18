@@ -1,9 +1,7 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { TamaguiProvider } from 'tamagui';
 import { GameVariantSelector } from './GameVariantSelector';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
-import { config } from '@/shared/config/tamagui.config';
 
 const mockEmit = vi.fn();
 vi.mock('@/shared/lib/socket', () => ({
@@ -15,6 +13,37 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/en',
   useSearchParams: () => new URLSearchParams(),
 }));
+
+vi.mock('@/shared/i18n', async () => {
+  const actual =
+    await vi.importActual<typeof import('@/shared/i18n')>('@/shared/i18n');
+  return {
+    ...actual,
+    loadMessages: vi.fn(async () => ({
+      common: {},
+      pages: {},
+      home: {},
+      settings: {},
+      support: {},
+      auth: {},
+      navigation: {},
+      chat: {},
+      chatList: {},
+      games: {},
+      history: {},
+      payments: {},
+      legal: {},
+      stats: {},
+      pwa: {},
+      referrals: {},
+      seo: {},
+      notifications: {},
+      battlePass: {},
+      musicPlayer: {},
+      wallet: {},
+    })),
+  };
+});
 
 interface MockSelectProps {
   value?: string;
@@ -52,10 +81,8 @@ vi.mock('@arcadeum/ui', () => ({
 
 const render = (ui: React.ReactElement) => {
   return rtlRender(
-    <LanguageProvider locale="en">
-      <TamaguiProvider config={config} defaultTheme="dark">
-        {ui}
-      </TamaguiProvider>
+    <LanguageProvider locale="en" initialMessages={{}}>
+      {ui}
     </LanguageProvider>,
   );
 };

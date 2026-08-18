@@ -1,6 +1,6 @@
 'use client';
-import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Spinner, Text, View } from 'tamagui';
+import { Button, GlassCard } from '@arcadeum/ui';
+import { Spinner } from '@/shared/ui/CSSSpinner';
 import type { AdminPaymentNoteItem } from '../api';
 
 export interface AdminPaymentsTableLabels {
@@ -57,18 +57,21 @@ export function AdminPaymentsTable({
 }: AdminPaymentsTableProps) {
   if (isLoading && items.length === 0) {
     return (
-      <YStack alignItems="center" padding="$5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
-      </YStack>
+      </div>
     );
   }
 
   if (!isLoading && items.length === 0) {
     return (
-      <GlassCard p="$5" alignItems="center" data-testid="admin-payments-empty">
-        <Text opacity={0.7}>
+      <GlassCard
+        className={'p-5 items-center'}
+        data-testid="admin-payments-empty"
+      >
+        <span className="opacity-[0.7]">
           {hasFilter ? labels.empty.noResults : labels.empty.noNotes}
-        </Text>
+        </span>
       </GlassCard>
     );
   }
@@ -76,137 +79,114 @@ export function AdminPaymentsTable({
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <YStack gap="$3" data-testid="admin-payments-table">
-      <Text opacity={0.7} fontSize="$1" paddingHorizontal="$1">
+    <div
+      className="flex flex-col items-stretch gap-3"
+      data-testid="admin-payments-table"
+    >
+      <span className="opacity-[0.7] text-[12px] px-1">
         {labels.totalLabel.replace('{total}', String(total))}
-      </Text>
+      </span>
 
-      <GlassCard p="$0" overflow="hidden">
+      <GlassCard className={'p-0 overflow-hidden'}>
         {labels.header && (
-          <XStack
-            gap="$3"
-            alignItems="center"
-            paddingVertical="$2"
-            paddingHorizontal="$3"
-            backgroundColor="$backgroundFocus"
-            borderBottomWidth={1}
-            borderColor="$borderColor"
+          <div
+            className="flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
             data-testid="admin-payments-header"
           >
-            <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+            <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
               {labels.header.user}
-            </Text>
-            <Text
-              width={120}
-              textAlign="right"
-              fontWeight="700"
-              fontSize="$1"
-              opacity={0.85}
-            >
+            </span>
+            <span className="w-[120px] text-right font-bold text-[12px] opacity-[0.85]">
               {labels.header.amount}
-            </Text>
-            <Text
+            </span>
+            <span
+              className="font-bold text-[12px] opacity-[0.85]"
               style={{ flex: 2 }}
-              fontWeight="700"
-              fontSize="$1"
-              opacity={0.85}
             >
               {labels.header.note}
-            </Text>
-            <Text width={88} fontWeight="700" fontSize="$1" opacity={0.85}>
+            </span>
+            <span className="w-[88px] font-bold text-[12px] opacity-[0.85]">
               {labels.header.visibility}
-            </Text>
-            <Text width={140} fontWeight="700" fontSize="$1" opacity={0.85}>
+            </span>
+            <span className="w-[140px] font-bold text-[12px] opacity-[0.85]">
               {labels.header.createdAt}
-            </Text>
-          </XStack>
+            </span>
+          </div>
         )}
 
         {items.map((it, i) => (
-          <XStack
+          <div
+            className="flex flex-row gap-3 items-center py-2 px-3 hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
+            style={{
+              backgroundColor:
+                i % 2 === 1 ? 'var(--backgroundFocus)' : undefined,
+            }}
             key={it.id}
-            gap="$3"
-            alignItems="center"
-            paddingVertical="$2"
-            paddingHorizontal="$3"
-            backgroundColor={i % 2 === 1 ? '$backgroundFocus' : undefined}
-            hoverStyle={{ backgroundColor: '$backgroundHover' }}
-            borderBottomWidth={1}
-            borderColor="$borderColor"
             data-testid={`payment-row-${it.id}`}
           >
-            <View flex={1} minWidth={0}>
-              <Text fontWeight="700" numberOfLines={1}>
+            <div className="flex-1 min-w-0">
+              <span className="font-bold line-clamp-1">
                 {it.displayName ?? labels.anonymous}
-              </Text>
-              <Text
-                opacity={0.5}
-                fontSize="$1"
-                numberOfLines={1}
+              </span>
+              <span
+                className="opacity-[0.5] text-[12px] line-clamp-1"
                 style={{ fontFamily: 'monospace' }}
               >
                 {it.transactionId}
-              </Text>
-            </View>
-            <Text width={120} textAlign="right" fontWeight="600">
+              </span>
+            </div>
+            <span className="w-[120px] text-right font-semibold">
               {formatAmount(it.amount, it.currency)}
-            </Text>
-            <span style={{ flex: 2 }} title={it.note}>
-              <Text>{truncate(it.note, 200)}</Text>
             </span>
-            <View
-              width={88}
-              paddingHorizontal="$2"
-              paddingVertical="$1"
-              borderRadius="$2"
-              backgroundColor={it.isPublic ? '$green3' : '$gray3'}
-              alignSelf="center"
+            <span style={{ flex: 2 }} title={it.note}>
+              <span className="">{truncate(it.note, 200)}</span>
+            </span>
+            <div
+              className="w-[88px] px-2 py-1 rounded-lg self-center"
+              style={{
+                backgroundColor: it.isPublic ? '#11301f' : '#1c1d21',
+              }}
               data-testid={`visibility-${it.id}`}
             >
-              <Text
-                fontSize="$1"
-                fontWeight="700"
-                color={it.isPublic ? '$green9' : '$gray9'}
-                textAlign="center"
+              <span
+                className="text-[12px] font-bold text-center"
+                style={{
+                  color: it.isPublic ? '#3dd68c' : '#6e7683',
+                }}
               >
                 {it.isPublic ? labels.chipPublic : labels.chipPrivate}
-              </Text>
-            </View>
-            <Text width={140} opacity={0.6} fontSize="$1">
+              </span>
+            </div>
+            <span className="w-[140px] opacity-[0.6] text-[12px]">
               {new Date(it.createdAt).toLocaleString()}
-            </Text>
-          </XStack>
+            </span>
+          </div>
         ))}
       </GlassCard>
 
-      <XStack
-        gap="$3"
-        alignItems="center"
-        justifyContent="center"
-        paddingTop="$2"
-      >
+      <div className="flex flex-row gap-3 items-center justify-center pt-2">
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page - 1)}
+          onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
         >
           {labels.pagination.prev}
         </Button>
-        <Text opacity={0.8} fontSize="$2">
+        <span className="opacity-[0.8] text-[14px]">
           {labels.pagination.of
             .replace('{current}', String(page))
             .replace('{total}', String(totalPages))}
-        </Text>
+        </span>
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page + 1)}
+          onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
         >
           {labels.pagination.next}
         </Button>
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

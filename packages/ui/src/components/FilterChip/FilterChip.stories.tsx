@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { XStack } from 'tamagui';
 import { FilterChip } from './FilterChip';
 
 const meta: Meta<typeof FilterChip> = {
@@ -46,7 +45,7 @@ export const MultiSelect: Story = {
         selected.length === 0 || selected.length === options.length - 1;
 
       return (
-        <XStack gap="$2" flexWrap="wrap">
+        <div className="flex">
           {options.map((opt) => (
             <FilterChip
               key={opt}
@@ -56,7 +55,7 @@ export const MultiSelect: Story = {
               {opt === 'all' ? 'All' : opt.replace('_', ' ')}
             </FilterChip>
           ))}
-        </XStack>
+        </div>
       );
     }
     return <Example />;

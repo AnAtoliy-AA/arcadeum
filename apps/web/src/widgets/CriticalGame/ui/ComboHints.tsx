@@ -83,7 +83,7 @@ export function ComboHints({
       borderRadius: 9999,
       fontSize: 10.5,
       fontWeight: 700,
-      letterSpacing: 0.4,
+      letterSpacing: '0.4px',
       textTransform: 'uppercase',
       color: isActive
         ? '#0b0b0b'

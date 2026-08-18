@@ -1,4 +1,4 @@
-import { styled, YStack, XStack, Text, useMedia } from 'tamagui';
+import { memo, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { Ship, getActiveShips } from '../types';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
@@ -9,121 +9,141 @@ interface ShipsLeftProps {
   shipCount?: number;
 }
 
-const ShipsContainer = styled(YStack, {
-  name: 'ShipsContainer',
-  gap: '$2',
-  padding: '$3',
-  backgroundColor: 'rgba(0,0,0,0.4)',
-  borderRadius: 12,
-  width: '100%',
-  borderWidth: 1,
-  borderColor: 'rgba(255,255,255,0.1)',
-  // Animation is handled via CSS transition in animations.css
-  // to avoid TypeScript augmentation issues with the 'animation' prop.
-
-  hoverStyle: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderColor: 'rgba(255,255,255,0.2)',
-    scale: 1.005,
-    y: -2,
-  },
-});
-
-export function ShipsLeft({ ships, isMe, shipCount }: ShipsLeftProps) {
+export const ShipsLeft = memo(function ShipsLeft({
+  ships,
+  isMe,
+  shipCount,
+}: ShipsLeftProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
-  const media = useMedia();
-  const isMobile = !media.gtSm;
-  const sortedConfig = [...getActiveShips(shipCount)].sort(
-    (a, b) => b.size - a.size,
-  );
-  const totalShips = sortedConfig.length;
-  const sunkCount = ships?.filter((s) => s.sunk).length ?? 0;
+
+  const {
+    activeShips,
+    totalShips,
+    sunkCount,
+    isLargeFleet,
+    groupedShips,
+    sunkSet,
+  } = useMemo(() => {
+    const active = getActiveShips(shipCount);
+    const total = active.length;
+    const set = new Set(ships?.filter((s) => s.sunk).map((s) => s.id) ?? []);
+
+    // Single pass to build groups (if large fleet)
+    const groups = new Map<number, { total: number; alive: number }>();
+    for (let i = 0; i < active.length; i++) {
+      const cfg = active[i];
+      const isSunk = set.has(cfg.id);
+      const group = groups.get(cfg.size);
+      if (group) {
+        group.total++;
+        if (!isSunk) group.alive++;
+      } else {
+        groups.set(cfg.size, { total: 1, alive: isSunk ? 0 : 1 });
+      }
+    }
+
+    return {
+      activeShips: active,
+      totalShips: total,
+      sunkCount: set.size,
+      isLargeFleet: total > 10,
+      groupedShips: Array.from(groups.entries()),
+      sunkSet: set,
+    };
+  }, [shipCount, ships]);
+
   const aliveCount = totalShips - sunkCount;
 
   return (
-    <ShipsContainer
-      style={{ backdropFilter: 'blur(12px)' } as React.CSSProperties}
-      className="sb-ships-remaining-container"
+    <div
+      className="flex flex-col items-stretch gap-1.5 p-2.5 bg-[rgba(15,23,42,0.85)] rounded-[12px] w-full border border-[rgba(255,255,255,0.15)] shadow-md sb-ships-remaining-container overflow-hidden"
     >
-      <XStack justifyContent="space-between" alignItems="center" width="100%">
-        <Text
-          fontSize={12}
-          color="rgba(255,255,255,0.8)"
-          fontWeight="700"
-          textTransform="uppercase"
-          letterSpacing={1}
-        >
+      <div className="flex flex-row justify-between items-center w-full min-w-0">
+        <span className="text-[11px] sm:text-[12px] text-[rgba(255,255,255,0.9)] font-bold uppercase tracking-[0.5px] truncate">
           {t('games.sea_battle_v1.table.state.shipsRemaining')}
-        </Text>
-        <Text
-          fontSize={14}
-          color={aliveCount === 0 ? '$error' : '$success'}
-          fontWeight="900"
-          style={
-            {
-              fontFamily: 'monospace',
-              textShadow:
-                aliveCount > 0
-                  ? '0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.3)'
-                  : 'none',
-            } as React.CSSProperties
-          }
+        </span>
+        <span
+          className="text-[13px] sm:text-[14px] font-black shrink-0 ml-1 px-2 py-0.5 rounded-md bg-[rgba(0,0,0,0.4)]"
+          style={{
+            color: aliveCount === 0 ? 'var(--error)' : 'var(--success)',
+          }}
         >
           {aliveCount}/{totalShips}
-        </Text>
-      </XStack>
+        </span>
+      </div>
 
-      <XStack
-        justifyContent="space-between"
-        alignItems="center"
-        gap={isMobile ? 6 : 10}
-        width="100%"
-      >
-        {sortedConfig.map((config) => {
-          const isSunk = ships?.find((s) => s.id === config.id)?.sunk ?? false;
-          return (
-            <XStack
-              key={config.id}
-              gap={1}
-              opacity={isSunk ? 0.2 : 1}
-              flex={config.size}
-              height={isMobile ? 10 : 14}
-              position="relative"
-              data-title={config.name}
-              data-size={config.size}
-              data-sunk={isSunk.toString()}
+      {isLargeFleet && groupedShips ? (
+        <div className="flex flex-row flex-wrap items-center gap-1.5 w-full pt-0.5">
+          {groupedShips.map(([size, stat]) => (
+            <div
+              key={size}
+              className="flex flex-row items-center gap-1 px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] text-[11px] font-semibold"
+              style={{
+                opacity: stat.alive === 0 ? 0.35 : 1,
+              }}
             >
-              {Array.from({ length: config.size }).map((_, i) => (
-                <YStack
-                  key={i}
-                  flex={1}
-                  height="100%"
-                  backgroundColor={
-                    isSunk
-                      ? theme.hitColor
-                      : isMe
-                        ? theme.primaryColor
-                        : theme.textSecondaryColor
-                  }
-                  borderWidth={1}
-                  borderColor="rgba(0,0,0,0.4)"
-                  borderRadius={2}
-                  style={
-                    !isSunk
-                      ? ({
-                          boxShadow: `inset 0 1px 1px rgba(255,255,255,0.2), 0 0 8px ${
-                            isMe ? theme.primaryColor : 'rgba(255,255,255,0.2)'
-                          }`,
-                        } as React.CSSProperties)
-                      : {}
-                  }
-                />
-              ))}
-            </XStack>
-          );
-        })}
-      </XStack>
-    </ShipsContainer>
+              <div className="flex flex-row gap-[1px]">
+                {Array.from({ length: size }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-1.5 h-3 rounded-[1px]"
+                    style={{
+                      backgroundColor:
+                        stat.alive === 0
+                          ? theme.hitColor
+                          : isMe
+                            ? theme.primaryColor
+                            : '#38bdf8',
+                    }}
+                  />
+                ))}
+              </div>
+              <span
+                className="ml-0.5 font-bold"
+                style={{
+                  color: stat.alive === 0 ? theme.hitColor : '#ffffff',
+                }}
+              >
+                ×{stat.alive}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-row justify-between items-center w-full gap-1.5 sm:gap-2">
+          {activeShips.map((config) => {
+            const isSunk = sunkSet.has(config.id);
+            return (
+              <div
+                className="flex flex-row items-stretch gap-[1px] relative h-2.5 sm:h-3"
+                style={{
+                  opacity: isSunk ? 0.25 : 1,
+                  flex: config.size,
+                }}
+                key={config.id}
+                data-title={config.name}
+                data-size={config.size}
+                data-sunk={isSunk.toString()}
+              >
+                {Array.from({ length: config.size }).map((_, i) => (
+                  <div
+                    className="flex flex-col items-stretch flex-1 h-full border border-[rgba(0,0,0,0.5)] rounded-[2px]"
+                    style={{
+                      backgroundColor: isSunk
+                        ? theme.hitColor
+                        : isMe
+                          ? theme.primaryColor
+                          : theme.textSecondaryColor,
+                    }}
+                    key={i}
+                  />
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
-}
+});

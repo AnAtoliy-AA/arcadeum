@@ -14,6 +14,7 @@ interface ArenaProps {
   isMyTurn: boolean;
   isGameOver: boolean;
   onDrawAndEnd: () => void;
+  onClearSelection?: () => void;
   // ArenaCenter passthrough
   hand: CriticalCard[];
   allowActionCardCombos: boolean;
@@ -37,7 +38,7 @@ interface ArenaProps {
  * widget layout. The center column hosts the turn pill, combo intent
  * card, threat strip, and an absolutely-positioned flash banner.
  *
- * Layout lives in CSS now (`.match-arena` in `hudStyles.tsx`) — desktop
+ * Layout lives in CSS now (`.match-arena` in `styles/hud.scss`) — desktop
  * is a 3-column grid, mobile re-stacks via `grid-template-areas` to
  * `center / center` over `draw / discard`. The JS `isNarrow` flip
  * stays only for the pile / center children whose internal layout
@@ -50,6 +51,7 @@ export function Arena({
   isMyTurn,
   isGameOver,
   onDrawAndEnd,
+  onClearSelection,
   hand,
   allowActionCardCombos,
   combo,
@@ -88,6 +90,7 @@ export function Arena({
           hand={hand}
           allowActionCardCombos={allowActionCardCombos}
           combo={combo}
+          onClearSelection={onClearSelection}
           deck={deck}
           logs={logs}
           formatLogMessage={formatLogMessage}

@@ -1,7 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { TamaguiProvider } from 'tamagui';
-import tamaguiConfig from '@/shared/config/tamagui.config';
 import { ShareGameMenu } from './ShareGameMenu';
 
 vi.mock('@/shared/lib/useTranslation', () => ({
@@ -11,7 +9,7 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 const ORIGIN = 'https://test.local';
 const ROOM_ID = 'abc123';
 const INVITE_CODE = 'INV-9';
-const EXPECTED_URL = `${ORIGIN}/games/rooms/${ROOM_ID}?inviteCode=${INVITE_CODE}`;
+const EXPECTED_URL = `${ORIGIN}/en/rooms/${ROOM_ID}?inviteCode=${INVITE_CODE}`;
 const EXPECTED_TEXT = 'games.common.shareMessage';
 
 function renderMenu(
@@ -20,9 +18,7 @@ function renderMenu(
   const inviteCode =
     'inviteCode' in props ? (props.inviteCode ?? undefined) : INVITE_CODE;
   return render(
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <ShareGameMenu roomId={props.roomId ?? ROOM_ID} inviteCode={inviteCode} />
-    </TamaguiProvider>,
+    <ShareGameMenu roomId={props.roomId ?? ROOM_ID} inviteCode={inviteCode} />,
   );
 }
 
@@ -135,7 +131,7 @@ describe('ShareGameMenu', () => {
       fireEvent.click(screen.getByTestId('share-game-button'));
     });
     fireEvent.click(screen.getByTestId('share-via-telegram'));
-    const expectedUrl = `${ORIGIN}/games/rooms/${ROOM_ID}`;
+    const expectedUrl = `${ORIGIN}/en/rooms/${ROOM_ID}`;
     expect(openSpy).toHaveBeenLastCalledWith(
       `https://t.me/share/url?url=${encodeURIComponent(expectedUrl)}&text=${encodeURIComponent(EXPECTED_TEXT)}`,
       '_blank',

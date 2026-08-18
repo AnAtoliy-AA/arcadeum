@@ -50,6 +50,7 @@ export const enMessages = {
       private: 'Private',
     },
     fastRoom: 'Fast Room',
+    ranked: 'Ranked',
     gameLabel: 'Game',
     createdLabel: 'Created',
   },
@@ -134,6 +135,8 @@ export const enMessages = {
     autoButton: 'Auto',
     fieldVisibility: 'Visibility',
     fieldNotes: 'Notes (optional)',
+    fieldRanked: 'Ranked match',
+    fieldRankedHint: 'Ranked matches affect your ELO rating for this game.',
     notesPlaceholder: 'Add notes...',
     notesAria: 'Additional notes for the room',
     submitCreating: 'Creating...',
@@ -286,9 +289,11 @@ export const enMessages = {
     difficultyEasy: 'Easy',
     difficultyMedium: 'Medium',
     difficultyHard: 'Hard',
+    difficultyExpert: 'Expert',
     difficultyEasyDesc: 'Random moves with occasional smart plays',
     difficultyMediumDesc: 'Smart targeting with locked-on strategy',
     difficultyHardDesc: 'Probability-based precision targeting',
+    difficultyExpertDesc: 'Maximum-depth search, no mistakes',
   },
   shared: {
     rules: {
@@ -395,5 +400,23 @@ export const enMessages = {
     title: 'Pick a game to play vs AI',
     starting: 'Starting...',
     allCategory: 'All',
+  },
+  matchmaking: {
+    searchingTitle: 'Searching for Opponent',
+    searchingSubtitle: 'Finding a match for {{game}}...',
+    cancel: 'Cancel Matchmaking',
+    estimatedWait: 'Estimated wait: ~{{seconds}}s',
+    queuePosition: 'Position in queue: {{position}} of {{total}}',
+  },
+  ranking: {
+    ratingUpdated: 'Rating updated',
+    tier: {
+      bronze: 'Bronze',
+      silver: 'Silver',
+      gold: 'Gold',
+      platinum: 'Platinum',
+      diamond: 'Diamond',
+      master: 'Master',
+    },
   },
 };

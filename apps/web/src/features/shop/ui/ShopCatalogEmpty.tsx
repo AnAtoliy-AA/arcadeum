@@ -1,7 +1,6 @@
 'use client';
 
-import { YStack } from '@arcadeum/ui';
-import { Text } from 'tamagui';
+import { Typography } from '@arcadeum/ui';
 
 export interface ShopCatalogEmptyLabels {
   title: string;
@@ -14,21 +13,16 @@ export function ShopCatalogEmpty({
   labels: ShopCatalogEmptyLabels;
 }) {
   return (
-    <YStack
-      gap={6}
-      padding="$4"
-      borderRadius="$4"
-      borderWidth={1}
-      borderColor="rgba(252,165,165,0.30)"
-      backgroundColor="rgba(239,68,68,0.08)"
+    <div
+      className="flex flex-col items-stretch gap-6 p-4 rounded-2xl border border-[rgba(252,165,165,0.30)] bg-[rgba(239,68,68,0.08)]"
       data-testid="shop-catalog-empty"
     >
-      <Text fontSize="$5" fontWeight="700">
+      <Typography uiSize="xl" weight="700">
         {labels.title}
-      </Text>
-      <Text fontSize="$3" color="$gray11">
+      </Typography>
+      <Typography uiSize="md" color="#94a3b8">
         {labels.body}
-      </Text>
-    </YStack>
+      </Typography>
+    </div>
   );
 }

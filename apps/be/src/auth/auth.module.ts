@@ -30,6 +30,7 @@ import { AuthThrottlerGuard } from './lib/auth-throttler.guard';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 import { MailerModule } from '../support/mailer.module';
 import { RateStateModule } from '../common/rate-state';
+import { GeoModule } from '../common/geo/geo.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { RateStateModule } from '../common/rate-state';
     ConfigModule,
     MailerModule,
     RateStateModule,
+    GeoModule,
     // Self-register ThrottlerModule so AuthThrottlerGuard's deps resolve
     // even when AuthModule is loaded outside the full app.module graph
     // (e.g. integration tests that wire AuthModule directly into a

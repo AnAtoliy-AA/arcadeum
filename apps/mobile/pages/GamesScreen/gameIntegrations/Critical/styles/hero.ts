@@ -24,7 +24,7 @@ export const getHeroStyles = (palette: Palette) => {
       titleText,
     },
   } = palette;
-  const fill = StyleSheet.absoluteFillObject;
+  const fill = StyleSheet.absoluteFill;
 
   return {
     headerCard: {

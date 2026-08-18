@@ -1,6 +1,6 @@
 'use client';
-import { Button, GlassCard, YStack, XStack } from '@arcadeum/ui';
-import { Spinner, Text } from 'tamagui';
+import { Button, GlassCard } from '@arcadeum/ui';
+import { Spinner } from '@/shared/ui/CSSSpinner';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   type AdminAnnouncementItem,
@@ -45,9 +45,9 @@ export interface AdminAnnouncementsTableProps {
 }
 
 const SEVERITY_COLOR: Record<AnnouncementSeverity, string> = {
-  info: '$infoBgSoft',
-  warning: '$warningBgSoft',
-  critical: '$errorBgSoft',
+  info: 'rgba(99,102,241,0.1)',
+  warning: 'rgba(251,191,36,0.2)',
+  critical: 'rgba(239,68,68,0.25)',
 };
 
 const truncate = (s: string, n: number) =>
@@ -69,22 +69,21 @@ export function AdminAnnouncementsTable({
 
   if (isLoading && items.length === 0) {
     return (
-      <YStack alignItems="center" padding="$5">
+      <div className="flex flex-col items-center p-5">
         <Spinner />
-      </YStack>
+      </div>
     );
   }
 
   if (!isLoading && items.length === 0) {
     return (
       <GlassCard
-        p="$5"
-        alignItems="center"
+        className={'p-5 items-center'}
         data-testid="announcements-table-empty"
       >
-        <Text opacity={0.7}>
+        <span className="opacity-[0.7]">
           {hasFilter ? labels.empty.noResults : labels.empty.noAnnouncements}
-        </Text>
+        </span>
       </GlassCard>
     );
   }
@@ -94,109 +93,99 @@ export function AdminAnnouncementsTable({
   const end = Math.min(total, page * pageSize);
 
   return (
-    <YStack gap="$3" data-testid="announcements-table">
-      <Text opacity={0.7} fontSize="$1" paddingHorizontal="$1">
+    <div
+      className="flex flex-col items-stretch gap-3"
+      data-testid="announcements-table"
+    >
+      <span className="opacity-[0.7] text-[12px] px-1">
         {labels.totalLabel
           .replace('{start}', String(start))
           .replace('{end}', String(end))
           .replace('{total}', String(total))}
-      </Text>
+      </span>
 
-      <GlassCard p="$0" overflow="hidden">
-        <XStack
-          paddingVertical="$2"
-          paddingHorizontal="$3"
-          backgroundColor="$backgroundFocus"
-          borderBottomWidth={1}
-          borderColor="$borderColor"
-          gap="$3"
+      <GlassCard className={'p-0 overflow-hidden'}>
+        <div
+          className="flex flex-row items-stretch py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)] gap-3"
           data-testid="announcements-table-header"
         >
-          <Text flex={3} fontWeight="700" fontSize="$1" opacity={0.85}>
+          <span className="flex-[3] font-bold text-[12px] opacity-[0.85]">
             {labels.table.title}
-          </Text>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.severity}
-          </Text>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.audience}
-          </Text>
-          <Text flex={2} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-[2] font-bold text-[12px] opacity-[0.85]">
             {labels.table.window}
-          </Text>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.createdBy}
-          </Text>
-          <Text flex={1} fontWeight="700" fontSize="$1" opacity={0.85}>
+          </span>
+          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
             {labels.table.actions}
-          </Text>
-        </XStack>
+          </span>
+        </div>
 
         {items.map((item, i) => {
           const fullTitle = item.content.en.title;
           return (
-            <XStack
+            <div
+              className="flex flex-row py-2 px-3 gap-3 items-center hover:bg-[var(--backgroundHover)] border-b border-[var(--borderColor)]"
+              style={{
+                backgroundColor:
+                  i % 2 === 1 ? 'var(--backgroundFocus)' : undefined,
+              }}
               key={item.id}
-              paddingVertical="$2"
-              paddingHorizontal="$3"
-              gap="$3"
-              alignItems="center"
-              backgroundColor={i % 2 === 1 ? '$backgroundFocus' : undefined}
-              hoverStyle={{ backgroundColor: '$backgroundHover' }}
-              borderBottomWidth={1}
-              borderColor="$borderColor"
               data-testid={`announcement-row-${item.id}`}
             >
-              <YStack flex={3}>
+              <div className="flex flex-col items-stretch flex-[3]">
                 <span title={fullTitle}>
-                  <Text>{truncate(fullTitle, 60)}</Text>
+                  <span className="">{truncate(fullTitle, 60)}</span>
                 </span>
-              </YStack>
-              <YStack flex={1}>
-                <XStack
-                  paddingHorizontal="$2"
-                  paddingVertical="$1"
-                  borderRadius="$2"
-                  backgroundColor={SEVERITY_COLOR[item.severity]}
-                  alignSelf="flex-start"
+              </div>
+              <div className="flex flex-col items-stretch flex-1">
+                <div
+                  className="flex flex-row items-stretch px-2 py-1 rounded-lg self-start"
+                  style={{
+                    backgroundColor: SEVERITY_COLOR[item.severity],
+                  }}
                 >
-                  <Text fontSize="$1">
+                  <span className="text-[12px]">
                     {labels.severityLabels[item.severity]}
-                  </Text>
-                </XStack>
-              </YStack>
-              <Text flex={1}>{labels.audienceLabels[item.audience]}</Text>
-              <YStack flex={2} gap="$1">
-                <Text fontSize="$1">
+                  </span>
+                </div>
+              </div>
+              <span className="flex-1">
+                {labels.audienceLabels[item.audience]}
+              </span>
+              <div className="flex flex-col items-stretch flex-[2] gap-1">
+                <span className="text-[12px]">
                   {formatWindow(
                     item.startsAt,
                     item.endsAt,
                     locale,
                     labels.windowLabels,
                   )}
-                </Text>
+                </span>
                 {item.status === 'active' && (
-                  <XStack
-                    paddingHorizontal="$2"
-                    paddingVertical={2}
-                    borderRadius="$2"
-                    backgroundColor="$successBgSoft"
-                    alignSelf="flex-start"
-                  >
-                    <Text fontSize="$1" fontWeight="600">
+                  <div className="flex flex-row items-stretch px-2 py-2 rounded-lg bg-[rgba(4,_120,_87,_0.1)] self-start">
+                    <span className="text-[12px] font-semibold">
                       {labels.table.nowPill}
-                    </Text>
-                  </XStack>
+                    </span>
+                  </div>
                 )}
-              </YStack>
-              <Text flex={1} fontSize="$1" opacity={0.8}>
+              </div>
+              <span className="flex-1 text-[12px] opacity-[0.8]">
                 {item.createdBy?.displayName ?? '—'}
-              </Text>
-              <XStack flex={1} gap="$2">
+              </span>
+              <div className="flex flex-row items-stretch flex-1 gap-2">
                 <Button
                   size="sm"
                   variant="outline"
-                  onPress={() => onEdit(item)}
+                  onClick={() => onEdit(item)}
                   data-testid={`edit-${item.id}`}
                 >
                   {labels.edit}
@@ -204,45 +193,40 @@ export function AdminAnnouncementsTable({
                 <Button
                   size="sm"
                   variant="outline"
-                  onPress={() => onDelete(item)}
+                  onClick={() => onDelete(item)}
                   data-testid={`delete-${item.id}`}
                 >
                   {labels.delete}
                 </Button>
-              </XStack>
-            </XStack>
+              </div>
+            </div>
           );
         })}
       </GlassCard>
 
-      <XStack
-        gap="$3"
-        alignItems="center"
-        justifyContent="center"
-        paddingTop="$2"
-      >
+      <div className="flex flex-row gap-3 items-center justify-center pt-2">
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page - 1)}
+          onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
         >
           {labels.pagination.prev}
         </Button>
-        <Text opacity={0.8} fontSize="$2">
+        <span className="opacity-[0.8] text-[14px]">
           {labels.pagination.of
             .replace('{current}', String(page))
             .replace('{total}', String(totalPages))}
-        </Text>
+        </span>
         <Button
           variant="outline"
           size="sm"
-          onPress={() => onPageChange(page + 1)}
+          onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
         >
           {labels.pagination.next}
         </Button>
-      </XStack>
-    </YStack>
+      </div>
+    </div>
   );
 }

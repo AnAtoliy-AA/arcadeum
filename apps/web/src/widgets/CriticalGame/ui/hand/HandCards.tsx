@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, type CSSProperties } from 'react';
-import { XStack } from 'tamagui';
 import { HandCard } from './HandCard';
 import type { HandCardInstance } from '../../lib/combo';
 
@@ -49,40 +48,18 @@ export function HandCards({
   }, [cards]);
 
   return (
-    <XStack
-      data-testid="hand-cards"
-      flex={1}
-      flexWrap="nowrap"
-      alignItems="flex-end"
-      justifyContent="center"
-      gap="$2"
-      // paddingTop reserves clearance for the lift + fan bounding-box
-      // growth. Fanned (desktop): -8 lift + ~7px quadratic offsetY +
-      // rotation growth → 24 covers it. Unfanned (mobile): no fan
-      // growth, only the lift + hairline cushion → 14 is enough. The
-      // extra 10px matters on phones where the sticky bar adds its own
-      // safe-area padding below.
-      paddingTop={isFanned ? 24 : 14}
-      paddingBottom={12}
-      paddingHorizontal="$2"
-      width="100%"
-      // Single horizontally scrolling row — never wraps to a second row.
+    <div
+      className="flex flex-row flex-1 flex-nowrap items-end justify-start gap-2 pb-12 px-4 w-full overflow-x-auto overflow-y-visible touch-pan-x overscroll-x-contain no-scrollbar max-[800px]:flex-[0] max-[800px]:basis-[auto] max-[800px]:w-full max-[800px]:min-h-[200px]"
       style={{
-        overflowX: 'auto',
-        overflowY: 'visible',
+        paddingTop: isFanned ? 24 : 14,
         WebkitMaskImage: EDGE_FADE_MASK,
         maskImage: EDGE_FADE_MASK,
+        WebkitOverflowScrolling: 'touch',
       }}
-      $sm={{
-        flex: 0,
-        flexBasis: 'auto',
-        width: '100%',
-        minHeight: 200,
-        justifyContent: 'flex-start',
-      }}
+      data-testid="hand-cards"
     >
       {cards.map((card, i) => {
-        // §4.4 — fan transform lives in CSS now (see `hudStyles.tsx`);
+        // §4.4 — fan transform lives in CSS now (see `styles/hud.scss`);
         // we only set the index/count custom properties here. JS does
         // not compute the transform per render. CSS reads `--hand-index`
         // / `--hand-count` and produces the rotate + translateY.
@@ -103,10 +80,10 @@ export function HandCards({
         } as CSSProperties & Record<'--hand-index' | '--hand-count', number>;
         return (
           <div
-            key={card.uid}
             className="crit-hand-card-wrapper"
-            data-fan={isFanned ? 'true' : 'false'}
             style={wrapperStyle}
+            key={card.uid}
+            data-fan={isFanned ? 'true' : 'false'}
           >
             <HandCard
               card={card}
@@ -121,6 +98,6 @@ export function HandCards({
           </div>
         );
       })}
-    </XStack>
+    </div>
   );
 }

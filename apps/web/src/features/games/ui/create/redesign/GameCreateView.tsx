@@ -76,6 +76,7 @@ function initialForm(
       spectators: true,
     },
     preset: 'custom',
+    ranked: false,
   };
 }
 
@@ -84,34 +85,35 @@ function toApiVisibility(v: Visibility): 'public' | 'private' {
 }
 
 function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
+  let options: Record<string, unknown>;
   if (form.gameId === 'critical_v1') {
-    return {
+    options = {
       expansionPacks: form.expansionPackIds.filter((id) => id !== 'core'),
     };
-  }
-  if (form.gameId === 'chess_v1') {
-    return {
+  } else if (form.gameId === 'chess_v1') {
+    options = {
       variant: form.themeId || 'standard',
     };
-  }
-  if (form.gameId === 'sea_battle_v1') {
-    return {
+  } else if (form.gameId === 'sea_battle_v1') {
+    options = {
       variant: form.themeId || 'classic',
       gridSize: 10,
       shipCount: 10,
     };
-  }
-  if (form.gameId === 'checkers_v1') {
-    return {
+  } else if (form.gameId === 'checkers_v1') {
+    options = {
       variant: form.themeId || 'classic',
     };
-  }
-  if (form.gameId === 'cat_dash_v1') {
-    return {
+  } else if (form.gameId === 'cat_dash_v1') {
+    options = {
       theme: form.themeId || 'village',
     };
+  } else {
+    options = {};
   }
-  return {};
+  // Ranked flag rides in gameOptions so every consumer (room cards, lobby,
+  // post-match ELO) can read it without a schema change.
+  return { ...options, ranked: form.ranked };
 }
 
 export function GameCreateView() {
@@ -186,6 +188,7 @@ export function GameCreateView() {
         | 'notes'
         | 'password'
         | 'preset'
+        | 'ranked'
       >
     >,
   ) {
@@ -316,7 +319,7 @@ export function GameCreateView() {
 
   return (
     <PageLayout>
-      <main className={s.page}>
+      <div className={s.page}>
         <Container size="lg">
           <div className={s.container}>
             <header className={`${s.head} ${s.fade}`}>
@@ -404,7 +407,7 @@ export function GameCreateView() {
             </div>
           </div>
         </Container>
-      </main>
+      </div>
     </PageLayout>
   );
 }

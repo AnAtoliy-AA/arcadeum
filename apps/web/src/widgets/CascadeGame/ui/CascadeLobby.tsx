@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useCallback } from 'react';
-import { YStack, Text } from 'tamagui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
@@ -145,7 +144,7 @@ export function CascadeLobby({
   };
 
   const optionsSlot = (
-    <YStack gap="$4">
+    <div className="flex flex-col items-stretch gap-4">
       {isHost && (
         <LobbyOptionSection title={t('games.create.sectionVariant') || 'Theme'}>
           <LobbyChipGroup
@@ -159,14 +158,14 @@ export function CascadeLobby({
       )}
 
       {!isHost && (
-        <YStack gap="$1">
-          <Text color="#fff" fontWeight="600">
+        <div className="flex flex-col items-stretch gap-1">
+          <span className="text-[#fff] font-semibold">
             {variantTokens.emoji} {t(variantTokens.name)}
-          </Text>
-          <Text color="#cbd5e1" fontSize={13}>
+          </span>
+          <span className="text-[#cbd5e1] text-[13px]">
             {t(variantTokens.description)}
-          </Text>
-        </YStack>
+          </span>
+        </div>
       )}
 
       {isHost && (
@@ -199,7 +198,7 @@ export function CascadeLobby({
         }
         disabled={!isHost}
       />
-    </YStack>
+    </div>
   );
 
   return (

@@ -5,6 +5,7 @@ import {
   getIsMobile,
 } from './fixtures/test-utils';
 import { navigateTo } from './fixtures/test-utils';
+import { routes } from '../src/shared/config/routes';
 
 test.describe('Navigation', () => {
   test.beforeEach(async ({ page }) => {
@@ -34,8 +35,7 @@ test.describe('Navigation', () => {
     const onPageError = (err: Error) => {
       if (
         err.message.includes('ChunkLoadError') ||
-        err.message.includes('Failed to load chunk') ||
-        err.message.includes("Can't find Tamagui")
+        err.message.includes('Failed to load chunk')
       ) {
         chunkLoadError = true;
       }
@@ -57,8 +57,8 @@ test.describe('Navigation', () => {
     }
     page.off('pageerror', onPageError);
 
-    // Increased timeout for check and ensure we wait for URL to be exactly /
-    await expect(page).toHaveURL(/\/(en|es|fr|ru|by)\/?$/, {});
+    // Increased timeout for check and ensure we wait for URL to be exactly / or /locale
+    await expect(page).toHaveURL(/\/(?:en|es|fr|ru|by)?\/?$/, {});
 
     // Wait for hydration on the home page
     await expect(page.locator('html')).toHaveAttribute(
@@ -75,13 +75,17 @@ test.describe('Navigation', () => {
       : page.getByTestId('nav-games');
     await expect(gamesLink).toBeVisible();
     await gamesLink.click();
-    await expect(page).toHaveURL(/\/games/, {});
+    // Desktop "Games" goes to the /games catalog; mobile "Rooms" goes to /rooms.
+    await expect(page).toHaveURL(
+      new RegExp(`${routes.games}|${routes.rooms}`),
+      {},
+    );
   });
 
   test('should navigate to auth page', async ({ page }) => {
     if (getIsMobile(page)) {
       // On mobile, login lives inside the drawer (the header indicator is
-      // hidden at $sm). Open the menu and click the drawer login CTA.
+      // hidden at small screens). Open the menu and click the drawer login CTA.
       await page.getByTestId('mobile-menu-button').click();
       const loginLink = page
         .getByTestId('mobile-nav')

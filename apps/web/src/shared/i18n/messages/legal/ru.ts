@@ -8,7 +8,7 @@ export const ru: LegalMessages = {
   },
   terms: {
     title: 'Условия использования',
-    lastUpdated: 'Последнее обновление: 21 декабря 2024 г.',
+    lastUpdated: 'Последнее обновление: 16 августа 2026 г.',
     sections: {
       agreement: {
         title: '1. Согласие с условиями',
@@ -152,7 +152,7 @@ export const ru: LegalMessages = {
   },
   privacy: {
     title: 'Политика конфиденциальности',
-    lastUpdated: 'Последнее обновление: 21 декабря 2024 г.',
+    lastUpdated: 'Последнее обновление: 16 августа 2026 г.',
     sections: {
       introduction: {
         title: '1. Введение',

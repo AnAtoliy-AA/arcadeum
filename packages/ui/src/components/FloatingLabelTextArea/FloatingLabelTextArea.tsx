@@ -7,12 +7,7 @@ import {
   type ChangeEvent,
   type CSSProperties,
 } from 'react';
-import {
-  TextArea as TamaguiTextArea,
-  YStack,
-  styled,
-  useTheme,
-} from 'tamagui';
+import { cx } from '../../utils/cx';
 
 export type FloatingLabelTextAreaProps = {
   id?: string;
@@ -28,47 +23,13 @@ export type FloatingLabelTextAreaProps = {
   minLength?: number;
   maxLength?: number;
   rows?: number;
+  className?: string;
   'data-testid'?: string;
 };
 
-const Wrapper = styled(YStack, {
-  name: 'FloatingLabelTextAreaWrapper',
-  position: 'relative',
-  variants: {
-    fullWidth: {
-      true: { width: '100%' },
-    },
-  } as const,
-});
-
-const StyledFlTextArea = styled(TamaguiTextArea, {
-  name: 'FloatingLabelTextAreaField',
-  paddingTop: 24,
-  paddingBottom: 28,
-  paddingHorizontal: 14,
-  borderRadius: '$3',
-  borderWidth: 1,
-  backgroundColor: '$background',
-  borderColor: '$borderColor',
-  color: '$color',
-  fontSize: 15,
-  width: '100%',
-  minHeight: 200,
-  hoverStyle: { borderColor: '$primary' },
-  focusStyle: {
-    borderColor: '$accent',
-    borderWidth: 2,
-    outlineColor: 'transparent',
-  },
-  variants: {
-    error: {
-      true: {
-        borderColor: '$danger',
-        focusStyle: { borderColor: '$danger' },
-      },
-    },
-  } as const,
-});
+const accent = 'var(--accent)';
+const background = 'var(--background)';
+const textSecondary = 'var(--textSecondary)';
 
 const baseLabelStyle: CSSProperties = {
   position: 'absolute',
@@ -98,11 +59,11 @@ export const FloatingLabelTextArea = forwardRef<
     minLength,
     maxLength,
     rows,
+    className,
     'data-testid': testId,
   },
   ref,
 ) {
-  const theme = useTheme();
   const generatedId = useId();
   const id = idProp ?? generatedId;
   const isControlled = valueProp !== undefined;
@@ -110,11 +71,6 @@ export const FloatingLabelTextArea = forwardRef<
   const value = isControlled ? valueProp : internal;
   const [focused, setFocused] = useState(false);
   const filled = (value ?? '').length > 0;
-
-  const accent = theme.accent?.get?.() ?? '#38bdf8';
-  const background = theme.background?.get?.() ?? '#06011b';
-  const textSecondary = theme.textSecondary?.get?.() ?? '#8e9196';
-  const warning = theme.warning?.get?.() ?? '#f59e0b';
 
   const isFloated = focused || filled;
   const labelStyle: CSSProperties = isFloated
@@ -144,34 +100,32 @@ export const FloatingLabelTextArea = forwardRef<
 
   const length = (value ?? '').length;
   const warn = maxLength ? length > maxLength * 0.85 : false;
-  const counterStyle: CSSProperties = {
-    position: 'absolute',
-    right: 12,
-    bottom: 8,
-    fontSize: 11,
-    fontVariantNumeric: 'tabular-nums',
-    color: warn ? warning : textSecondary,
-    pointerEvents: 'none',
-  };
 
   return (
-    <Wrapper fullWidth={fullWidth}>
-      <StyledFlTextArea
-        ref={ref as never}
+    <div
+      className={cx('relative', fullWidth && 'w-full', className)}
+    >
+      <textarea
+        ref={ref}
         id={id}
         name={name}
         value={value ?? ''}
-        onChange={handleChange as never}
+        onChange={handleChange}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         required={required}
         disabled={disabled}
-        error={error}
         rows={rows}
         minLength={minLength}
         maxLength={maxLength}
         placeholder=" "
         data-testid={testId}
+        className={cx(
+          'min-h-[200px] w-full rounded-[12px] border bg-[var(--background)] px-3.5 pb-7 pt-6 text-[15px] text-[var(--color)] outline-none transition-[border-color] duration-150',
+          error
+            ? 'border-[var(--danger)]'
+            : 'border-[var(--borderColor)] hover:border-[var(--primary)] focus:border-[2px] focus:border-[var(--accent)]',
+        )}
       />
       <label htmlFor={id} style={labelStyle}>
         {label}
@@ -180,11 +134,16 @@ export const FloatingLabelTextArea = forwardRef<
         ) : null}
       </label>
       {maxLength ? (
-        <span style={counterStyle}>
+        <span
+          className={cx(
+            'pointer-events-none absolute bottom-2 right-3 text-[11px] tabular-nums',
+            warn ? 'text-[var(--warning)]' : 'text-[var(--textSecondary)]',
+          )}
+        >
           {length} / {maxLength}
         </span>
       ) : null}
-    </Wrapper>
+    </div>
   );
 });
 

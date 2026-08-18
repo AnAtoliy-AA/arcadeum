@@ -1,5 +1,4 @@
 import React from 'react';
-import { YStack, Text } from 'tamagui';
 import {
   Modal,
   ModalContent,
@@ -57,49 +56,49 @@ const TargetedAttackModal: React.FC<TargetedAttackModalProps> = ({
     <Modal open={isOpen}>
       <ModalContent
         onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
-        $variant={cardVariant as GameVariant}
+        variant={cardVariant as GameVariant}
       >
-        <ModalHeader $variant={cardVariant as GameVariant}>
-          <ModalTitle $variant={cardVariant as GameVariant}>
+        <ModalHeader variant={cardVariant as GameVariant}>
+          <ModalTitle variant={cardVariant as GameVariant}>
             {emoji} {t(titleKey)}
           </ModalTitle>
-          <CloseButton onClick={onClose} $variant={cardVariant as GameVariant}>
+          <CloseButton onClick={onClose} variant={cardVariant as GameVariant}>
             ×
           </CloseButton>
         </ModalHeader>
         <ModalSection>
-          <SectionLabel $variant={cardVariant as GameVariant}>
+          <SectionLabel variant={cardVariant as GameVariant}>
             {t(selectPlayerKey)}
           </SectionLabel>
-          <Text fontSize="$3" opacity={0.8} marginBottom="$4">
+          <span className="text-[16px] opacity-[0.8] -mb-4">
             {t(descriptionKey)}
-          </Text>
+          </span>
           <OptionGrid>
             {aliveOpponents.map((opponent) => (
               <OptionButton
                 key={opponent.playerId}
-                $selected={selectedTarget === opponent.playerId}
-                $variant={cardVariant as GameVariant}
+                active={selectedTarget === opponent.playerId}
+                gameVariant={cardVariant as GameVariant}
                 onClick={() => onSelectTarget(opponent.playerId)}
                 disabled={
                   opponent.hand.length === 0 &&
                   false /* Opponents don't need cards to be attacked */
                 }
               >
-                <Text fontSize="$6">🎮</Text>
-                <YStack>
-                  <Text>
+                <span className="text-[24px]">🎮</span>
+                <div className="flex flex-col items-stretch">
+                  <span className="">
                     {resolveDisplayName(
                       opponent.playerId,
                       `Player ${opponent.playerId.slice(0, 8)}`,
                     )}
-                  </Text>
-                  <Text fontSize="$2" opacity={0.7}>
+                  </span>
+                  <span className="text-[14px] opacity-[0.7]">
                     {t('games.table.modals.favor.cardsCount', {
                       count: opponent.hand.length,
                     })}
-                  </Text>
-                </YStack>
+                  </span>
+                </div>
               </OptionButton>
             ))}
           </OptionGrid>

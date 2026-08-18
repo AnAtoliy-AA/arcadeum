@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Typography } from '@arcadeum/ui';
-import type { RepeatMode } from './GameMusicUtils';
+import type { RepeatMode } from '../lib/GameMusicUtils';
 import { PlaylistIcon, MinimizeIcon, MaximizeIcon } from './GameMusicVisuals';
 import { VolumeIcon, MusicBtn, PlayBtn } from './GameMusicButtons';
 
@@ -173,7 +173,7 @@ export function TransportControls({
       <div className="flex items-center gap-[14px] px-1">
         <div
           className="game-music-volume-icon flex shrink-0 min-w-[32px] justify-start"
-          style={{ color: 'rgba(255,255,255,0.6)' }}
+          style={{ color: 'var(--textSecondary, rgba(255,255,255,0.75))' }}
         >
           <VolumeIcon level={volume} />
         </div>
@@ -189,10 +189,13 @@ export function TransportControls({
           aria-label={labels.volume}
           style={{
             flex: 1,
-            background: `linear-gradient(to right, rgba(129,140,248,0.8) 0%, rgba(129,140,248,0.8) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) ${Math.round(volume * 100)}%, rgba(255,255,255,0.12) 100%)`,
+            background: `linear-gradient(to right, var(--primary, #818cf8) 0%, var(--primary, #818cf8) ${Math.round(volume * 100)}%, color-mix(in srgb, var(--color, #fff) 12%, transparent) ${Math.round(volume * 100)}%, color-mix(in srgb, var(--color, #fff) 12%, transparent) 100%)`,
           }}
         />
-        <Typography className="game-music-time min-w-[32px] text-right text-[10px] font-medium text-[rgba(255,255,255,0.55)]">
+        <Typography
+          className="game-music-time min-w-[32px] text-right text-[10px] font-medium"
+          style={{ color: 'var(--textSecondary, rgba(255,255,255,0.7))' }}
+        >
           {Math.round(volume * 100)}%
         </Typography>
       </div>
@@ -446,7 +449,10 @@ export function ProgressBar({
   const pct = duration > 0 ? (smoothTime / duration) * 100 : 0;
   return (
     <div className="flex w-full items-center gap-[14px] px-1">
-      <Typography className="game-music-time min-w-[32px] text-[10px] font-medium text-[rgba(255,255,255,0.55)]">
+      <Typography
+        className="game-music-time min-w-[32px] text-[10px] font-medium"
+        style={{ color: 'var(--textSecondary, rgba(255,255,255,0.7))' }}
+      >
         {formatTime(smoothTime)}
       </Typography>
       <input
@@ -461,10 +467,13 @@ export function ProgressBar({
         aria-label={label}
         style={{
           flex: 1,
-          background: `linear-gradient(to right, #818cf8 ${pct}%, rgba(255,255,255,0.12) ${pct}%)`,
+          background: `linear-gradient(to right, var(--primary, #6366f1) 0%, var(--accent, var(--primary, #a855f7)) ${pct}%, color-mix(in srgb, var(--color, #fff) 12%, transparent) ${pct}%, color-mix(in srgb, var(--color, #fff) 12%, transparent) 100%)`,
         }}
       />
-      <Typography className="game-music-time min-w-[32px] text-right text-[10px] font-medium text-[rgba(255,255,255,0.55)]">
+      <Typography
+        className="game-music-time min-w-[32px] text-right text-[10px] font-medium"
+        style={{ color: 'var(--textSecondary, rgba(255,255,255,0.7))' }}
+      >
         {formatTime(duration)}
       </Typography>
     </div>

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent, screen } from '@testing-library/react';
-import { Playlist } from './GameMusicPlaylist';
-import { FALLBACK_TRACKS } from './GameMusicUtils';
+import { Playlist } from '../ui/GameMusicPlaylist';
+import { FALLBACK_TRACKS } from '../lib/GameMusicUtils';
 
 vi.mock('@arcadeum/ui', () => ({
   Typography: ({

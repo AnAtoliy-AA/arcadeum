@@ -3,7 +3,8 @@
 import { Typography } from '@arcadeum/ui';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { useAudioPlayer } from './useAudioPlayer';
+import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { useDraggable } from '../hooks/useDraggable';
 import {
   TransportControls,
   MiniControls,
@@ -11,9 +12,8 @@ import {
 } from './GameMusicControls';
 import { Playlist } from './GameMusicPlaylist';
 import { EqualizerVisualization } from './GameMusicVisuals';
-import { useDraggable } from './useDraggable';
 import { playerStyles } from './GameMusicStyles';
-import { SPRITE_URL, SPRITE_SIZE, SPRITE_COLS } from './GameMusicUtils';
+import { SPRITE_URL, SPRITE_SIZE, SPRITE_COLS } from '../lib/GameMusicUtils';
 
 export function GameMusic({ gameId }: { gameId?: string | null }) {
   const { musicEnabled } = useMusicSetting();
@@ -29,12 +29,16 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   if (player.loading) {
     return (
       <div
-        className="fixed bottom-4 left-4 z-[1000] w-[200px] rounded-[28px] border border-[rgba(255,255,255,0.5)] px-3 py-3"
+        className="fixed bottom-4 left-4 z-[1000] w-[200px] rounded-[28px] px-3 py-3 shadow-2xl"
         style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.85)',
+          backgroundColor: 'var(--background, #0f172a)',
+          border: '1px solid var(--borderColor, rgba(255,255,255,0.2))',
         }}
       >
-        <Typography uiSize="xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
+        <Typography
+          uiSize="xs"
+          style={{ color: 'var(--color, rgba(255,255,255,0.85))' }}
+        >
           Loading music…
         </Typography>
       </div>
@@ -66,17 +70,17 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     <>
       <style>{playerStyles}</style>
       <div
-        className={`game-music-player fixed z-[1000] rounded-[28px] border border-[rgba(255,255,255,0.5)] px-3 py-3 ${player.isPlaying ? 'is-playing' : ''}`}
+        className={`game-music-player fixed z-[1000] rounded-[28px] px-3 py-3 ${player.isPlaying ? 'is-playing' : ''}`}
         data-testid="game-music-player"
         style={{
           width: player.miniMode ? 200 : 320,
-          backgroundColor: 'rgba(15, 23, 42, 0.85)',
-          boxShadow:
-            '0 8px 40px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 0 0.5px rgba(255,255,255,0.3)',
           background: (() => {
             const hue = (player.index * 47) % 360;
-            return `linear-gradient(180deg, hsla(${hue},40%,70%,0.2) 0%, rgba(255,255,255,0.1) 35%, hsla(${hue},30%,60%,0.15) 100%)`;
+            return `linear-gradient(180deg, color-mix(in srgb, hsla(${hue}, 45%, 35%, 1) 18%, var(--background, #0f172a)) 0%, var(--background, #0f172a) 40%, color-mix(in srgb, var(--background, #0f172a) 85%, black) 100%)`;
           })(),
+          border: '1px solid var(--borderColor, rgba(255,255,255,0.2))',
+          boxShadow:
+            '0 20px 50px -10px rgba(0, 0, 0, 0.85), 0 10px 25px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
           left: pos.x,
           top: pos.y,
         }}
@@ -90,12 +94,13 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           style={{ touchAction: 'none' }}
         >
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px]"
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[12px]"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.25)',
-              border: '1px solid rgba(255,255,255,0.45)',
+              backgroundColor:
+                'color-mix(in srgb, var(--color, #fff) 8%, transparent)',
+              border: '1px solid var(--borderColor, rgba(255,255,255,0.2))',
               boxShadow:
-                'inset 0 1px 0 rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.08)',
+                'inset 0 1px 0 rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,0.3)',
               backgroundImage:
                 player.track?.spriteIndex != null
                   ? `url(${SPRITE_URL})`
@@ -114,19 +119,44 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
                 audioRef={player.audioRef}
               />
             )}
+            {player.isPlaying && (
+              <span
+                className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full"
+                style={{
+                  backgroundColor: 'var(--primary, #34d399)',
+                  boxShadow: '0 0 6px var(--primary, rgba(52,211,153,0.8))',
+                }}
+              />
+            )}
           </div>
-          <div className="min-w-0 flex-1 gap-[1px] overflow-hidden">
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="flex items-center gap-1.5">
+              <Typography
+                className="block text-[9px] font-semibold uppercase tracking-widest"
+                style={{ color: 'var(--primary, #818cf8)' }}
+              >
+                Arcadeum
+              </Typography>
+              <span
+                className="text-[8px]"
+                style={{ color: 'var(--textSecondary, rgba(255,255,255,0.4))' }}
+              >
+                •
+              </span>
+              <Typography
+                className="block text-[9px]"
+                style={{
+                  color: 'var(--textSecondary, rgba(255,255,255,0.55))',
+                }}
+              >
+                Track {String(player.index + 1).padStart(2, '0')}
+              </Typography>
+            </div>
             <Typography
-              className="game-music-title block truncate text-[13px] font-semibold"
-              style={{ color: 'rgba(255,255,255,0.95)' }}
+              className="game-music-title block truncate text-[13px] font-bold tracking-tight"
+              style={{ color: 'var(--color, #ffffff)' }}
             >
               {player.track?.title}
-            </Typography>
-            <Typography
-              className="block truncate text-[10px]"
-              style={{ color: 'rgba(255,255,255,0.55)' }}
-            >
-              Arcadeum
             </Typography>
           </div>
           <button
@@ -143,16 +173,18 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'rgba(255,255,255,0.5)',
+              color: 'var(--textSecondary, rgba(255,255,255,0.5))',
               transition: 'color 150ms ease, background-color 150ms ease',
               flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.12)';
+              e.currentTarget.style.color = 'var(--color, #ffffff)';
+              e.currentTarget.style.backgroundColor =
+                'color-mix(in srgb, var(--color, #fff) 12%, transparent)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
+              e.currentTarget.style.color =
+                'var(--textSecondary, rgba(255,255,255,0.5))';
               e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >

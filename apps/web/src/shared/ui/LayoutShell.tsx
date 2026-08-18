@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { ConnectionBanner } from './ConnectionBanner';
 
 const GameMusic = dynamic(
-  () => import('@/features/games/ui/GameMusic').then((m) => m.GameMusic),
+  () => import('@/widgets/GameMusic').then((m) => m.GameMusic),
   { ssr: false },
 );
 

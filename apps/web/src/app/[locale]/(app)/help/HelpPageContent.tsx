@@ -74,13 +74,17 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
             <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-[var(--accent)] opacity-10 blur-3xl" />
 
             <div className="relative z-10 flex flex-col items-start gap-4 md:max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[var(--accent,#38bdf8)]">
                 🛡️ {help?.subtitle ?? 'Guides & Knowledge Base'}
               </span>
               <PageTitle size="xl" gradient>
                 {help?.title ?? 'Help Center'}
               </PageTitle>
-              <Typography variant="body" uiSize="lg" alpha="high">
+              <Typography
+                variant="body"
+                uiSize="lg"
+                className="text-slate-200 leading-relaxed"
+              >
                 {help?.description ??
                   'Find answers to common questions, gameplay guides, and system troubleshooting.'}
               </Typography>
@@ -94,16 +98,16 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                     help?.searchPlaceholder ??
                     'Search help guides, topics, and FAQs…'
                   }
-                  className="w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-5 py-3.5 pl-12 text-sm text-[var(--color)] placeholder-[var(--colorMuted)] outline-none backdrop-blur-md transition-all duration-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
+                  className="w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-5 py-3.5 pl-12 text-sm text-white placeholder-slate-400 outline-none backdrop-blur-md transition-all duration-200 focus:border-[var(--accent,#38bdf8)] focus:ring-2 focus:ring-[var(--accent,#38bdf8)]/20"
                 />
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-[var(--colorMuted)]">
+                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-slate-400">
                   🔍
                 </span>
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 px-2 py-0.5 text-xs text-[var(--colorMuted)] hover:text-white"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-300 hover:text-white"
                   >
                     ✕
                   </button>
@@ -118,11 +122,16 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--success)] opacity-75" />
                 <span className="relative inline-flex h-3 w-3 rounded-full bg-[var(--success)]" />
               </span>
-              <Typography variant="label" uiSize="sm" weight="700">
+              <Typography
+                variant="label"
+                uiSize="sm"
+                weight="700"
+                className="text-white"
+              >
                 {status?.operational ?? 'All Systems Operational'}
               </Typography>
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--colorMuted)]">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300">
               <span>{status?.gateway ?? 'WebSocket Gateway: 100% Online'}</span>
               <span>•</span>
               <span>{status?.cloud ?? 'Game Engine Cloud: Low Latency'}</span>
@@ -131,7 +140,12 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
 
           <Section>
             <div className="flex flex-col gap-6">
-              <Typography variant="heading" uiSize="xl" weight="800">
+              <Typography
+                variant="heading"
+                uiSize="xl"
+                weight="800"
+                className="text-white"
+              >
                 Browse by Topic
               </Typography>
 
@@ -139,22 +153,31 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                 {categories.map((category) => {
                   const isSelected = selectedCategory === category?.id;
                   return (
-                    <button
+                    <div
                       key={category?.id ?? category?.title}
-                      type="button"
+                      role="button"
+                      tabIndex={0}
                       onClick={() =>
                         setSelectedCategory(
                           isSelected ? null : (category?.id ?? null),
                         )
                       }
-                      className="w-full cursor-pointer border-0 bg-transparent p-0 text-left focus:outline-none"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedCategory(
+                            isSelected ? null : (category?.id ?? null),
+                          );
+                        }
+                      }}
+                      className="group w-full cursor-pointer text-left focus:outline-none"
                     >
                       <GlassCard
                         className={cx(
                           'flex h-full flex-col justify-between gap-4 p-6 transition-all duration-200 hover:-translate-y-1',
                           isSelected
-                            ? 'border-[var(--primary)] bg-[var(--glassBg)] ring-2 ring-[var(--primary)]/30'
-                            : 'hover:border-[var(--glassBorder)]',
+                            ? 'border-[var(--accent,#38bdf8)] bg-[var(--glassBg)] ring-2 ring-[var(--accent,#38bdf8)]/30'
+                            : 'hover:border-white/20',
                         )}
                       >
                         <div className="flex flex-col gap-3">
@@ -163,20 +186,25 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                             variant="heading"
                             uiSize="md"
                             weight="700"
+                            className="text-white group-hover:text-[var(--accent,#38bdf8)] transition-colors"
                           >
                             {category?.title}
                           </Typography>
-                          <Typography variant="body" uiSize="sm" alpha="medium">
+                          <Typography
+                            variant="body"
+                            uiSize="sm"
+                            className="text-slate-300 leading-relaxed"
+                          >
                             {category?.description}
                           </Typography>
                         </div>
-                        <span className="text-xs font-semibold text-[var(--primary)]">
+                        <span className="text-xs font-bold text-[var(--accent,#38bdf8)] group-hover:underline">
                           {isSelected
                             ? 'Selected Category ▾'
                             : 'Explore Guides →'}
                         </span>
                       </GlassCard>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -186,22 +214,34 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
           <Section>
             <div className="flex flex-col gap-6" id="faq">
               <div className="flex items-center justify-between">
-                <Typography variant="heading" uiSize="xl" weight="800">
+                <Typography
+                  variant="heading"
+                  uiSize="xl"
+                  weight="800"
+                  className="text-white"
+                >
                   {faq?.heading ?? 'Frequently Asked Questions'}
                 </Typography>
-                {searchQuery && (
-                  <span className="text-xs text-[var(--colorMuted)]">
-                    {filteredFaqItems.length} result
-                    {filteredFaqItems.length === 1 ? '' : 's'}
-                  </span>
+                {selectedCategory && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategory(null)}
+                    className="cursor-pointer border-0 bg-transparent text-xs font-bold text-[var(--accent,#38bdf8)] hover:underline"
+                  >
+                    Show all FAQs
+                  </button>
                 )}
               </div>
 
               {filteredFaqItems.length === 0 ? (
                 <GlassCard className="p-8 text-center">
-                  <Typography variant="body" uiSize="md" alpha="medium">
-                    {help?.noResults
-                      ? help.noResults.replace('{query}', searchQuery)
+                  <Typography
+                    variant="body"
+                    uiSize="md"
+                    className="text-slate-300"
+                  >
+                    {selectedCategory
+                      ? 'No articles found in this category.'
                       : `No help articles found matching "${searchQuery}".`}
                   </Typography>
                 </GlassCard>
@@ -210,19 +250,19 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                   {filteredFaqItems.map((item, idx) => {
                     const isOpen = expandedFaqs[idx] ?? false;
                     return (
-                      <GlassCard key={idx} className="p-0">
+                      <GlassCard key={idx} className="overflow-hidden p-0">
                         <button
                           type="button"
                           onClick={() => toggleFaq(idx)}
                           aria-expanded={isOpen}
-                          className="flex w-full cursor-pointer items-center justify-between bg-transparent text-[var(--color)] p-5 text-left"
+                          className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent p-5 text-left text-white hover:bg-white/[0.04] transition-colors"
                         >
-                          <Typography variant="label" uiSize="md" weight="700">
+                          <span className="text-base font-bold text-white">
                             {item?.question}
-                          </Typography>
+                          </span>
                           <span
                             className={cx(
-                              'text-lg text-[var(--colorMuted)] transition-transform duration-200',
+                              'text-lg text-[var(--accent,#38bdf8)] transition-transform duration-200',
                               isOpen ? 'rotate-180' : 'rotate-0',
                             )}
                           >
@@ -230,12 +270,11 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                           </span>
                         </button>
                         {isOpen && (
-                          <div className="border-t border-[var(--borderColor)] p-5 pt-3">
+                          <div className="border-t border-[var(--glassBorder)] p-5 pt-3">
                             <Typography
                               variant="body"
                               uiSize="sm"
-                              alpha="medium"
-                              className="leading-relaxed"
+                              className="text-slate-200 leading-relaxed"
                             >
                               {item?.answer}
                             </Typography>
@@ -252,10 +291,19 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
           {contact && (
             <div className="grid grid-cols-1 gap-6 rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-8 backdrop-blur-xl md:grid-cols-3 md:p-10">
               <div className="flex flex-col gap-2 md:col-span-1">
-                <Typography variant="heading" uiSize="lg" weight="800">
+                <Typography
+                  variant="heading"
+                  uiSize="lg"
+                  weight="800"
+                  className="text-white"
+                >
                   {contact.title}
                 </Typography>
-                <Typography variant="body" uiSize="sm" alpha="medium">
+                <Typography
+                  variant="body"
+                  uiSize="sm"
+                  className="text-slate-300 leading-relaxed"
+                >
                   {contact.subtitle}
                 </Typography>
               </div>

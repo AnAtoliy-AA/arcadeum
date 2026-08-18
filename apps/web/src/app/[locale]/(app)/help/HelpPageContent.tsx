@@ -215,7 +215,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                           type="button"
                           onClick={() => toggleFaq(idx)}
                           aria-expanded={isOpen}
-                          className="flex w-full cursor-pointer items-center justify-between bg-transparent p-5 text-left"
+                          className="flex w-full cursor-pointer items-center justify-between bg-transparent text-[var(--color)] p-5 text-left"
                         >
                           <Typography variant="label" uiSize="md" weight="700">
                             {item?.question}

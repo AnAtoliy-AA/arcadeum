@@ -37,11 +37,11 @@ const variantClasses: Record<
   NonNullable<TypographyProps['variant']>,
   string
 > = {
-  heading: 'typography-variant-heading',
-  subheading: 'typography-variant-subheading',
-  body: 'typography-variant-body',
-  label: 'typography-variant-label',
-  caption: 'typography-variant-caption',
+  heading: 'typography-variant-heading text-[var(--color)]',
+  subheading: 'typography-variant-subheading text-[var(--color)]',
+  body: 'typography-variant-body text-[var(--color)]',
+  label: 'typography-variant-label text-[var(--color)]',
+  caption: 'typography-variant-caption text-[var(--color)]',
 };
 
 const gradientClasses: Record<

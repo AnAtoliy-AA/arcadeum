@@ -70,14 +70,14 @@ export const playerStyles = `
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(99,102,241,0.5);
+  background: var(--primary, #6366f1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 2px var(--primary);
   cursor: pointer;
   transition: transform 150ms ease, box-shadow 150ms ease;
 }
 .game-music-volume::-webkit-slider-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.6), 0 0 0 3px rgba(129,140,248,0.7);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6), 0 0 0 3px var(--accent, var(--primary));
 }
 .game-music-volume::-webkit-slider-thumb:active {
   transform: scale(1.05);
@@ -86,8 +86,8 @@ export const playerStyles = `
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 2px rgba(99,102,241,0.5);
+  background: var(--primary, #6366f1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 2px var(--primary);
   border: none;
   cursor: pointer;
 }
@@ -110,8 +110,8 @@ export const playerStyles = `
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 2px rgba(99,102,241,0.6);
+  background: var(--primary, #6366f1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 2px var(--accent, var(--primary));
   cursor: pointer;
   opacity: 0;
   transition: opacity 150ms ease, transform 150ms ease;
@@ -124,8 +124,8 @@ export const playerStyles = `
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 2px rgba(99,102,241,0.6);
+  background: var(--primary, #6366f1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 2px var(--accent, var(--primary));
   border: none;
   cursor: pointer;
 }
@@ -167,27 +167,27 @@ export const playerStyles = `
   margin: 0 4px;
 }
 .game-music-track:hover {
-  background-color: rgba(255,255,255,0.12);
+  background-color: color-mix(in srgb, var(--color, #fff) 10%, transparent);
 }
 .game-music-track:active {
   transform: scale(0.98);
 }
 .game-music-track.active {
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.28) 0%, rgba(168, 85, 247, 0.14) 100%);
-  border: 1px solid rgba(129, 140, 248, 0.45);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary, #6366f1) 28%, transparent) 0%, color-mix(in srgb, var(--accent, var(--primary, #818cf8)) 14%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--primary, #6366f1) 50%, transparent);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 .game-music-track.active:hover {
-  background: linear-gradient(90deg, rgba(99, 102, 241, 0.38) 0%, rgba(168, 85, 247, 0.2) 100%);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary, #6366f1) 38%, transparent) 0%, color-mix(in srgb, var(--accent, var(--primary, #818cf8)) 20%, transparent) 100%);
 }
 .game-music-checkbox {
   -webkit-appearance: none;
   appearance: none;
   width: 14px;
   height: 14px;
-  border: 1px solid rgba(255,255,255,0.35);
+  border: 1px solid var(--borderColor, rgba(255,255,255,0.35));
   border-radius: 4px;
-  background: rgba(255,255,255,0.15);
+  background: color-mix(in srgb, var(--color, #fff) 12%, transparent);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
@@ -195,11 +195,11 @@ export const playerStyles = `
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .game-music-checkbox:hover {
-  border-color: rgba(255,255,255,0.6);
+  border-color: var(--primary, rgba(255,255,255,0.6));
   transform: scale(1.1);
 }
 .game-music-checkbox:checked {
-  background: linear-gradient(135deg, #818cf8, #6366f1);
+  background: linear-gradient(135deg, var(--primary, #818cf8), var(--accent, #6366f1));
   border-color: transparent;
 }
 .game-music-checkbox:checked::after {
@@ -219,16 +219,16 @@ export const playerStyles = `
   transform: none;
 }
 .game-music-checkbox:disabled:hover {
-  border-color: rgba(255,255,255,0.25);
+  border-color: var(--borderColor, rgba(255,255,255,0.25));
   transform: none;
 }
 .playing-bar {
   display: inline-block;
   width: 2.5px;
-  background: rgba(255,255,255,0.9);
+  background: var(--primary, #818cf8);
   border-radius: 1px;
   animation: playingBars 0.8s ease-in-out infinite;
-  box-shadow: 0 0 4px rgba(255,255,255,0.4);
+  box-shadow: 0 0 4px var(--primary, rgba(255,255,255,0.4));
 }
 .playing-bar-1 { height: 8px; animation-delay: 0s; }
 .playing-bar-2 { height: 12px; animation-delay: 0.15s; }
@@ -240,7 +240,7 @@ export const playerStyles = `
 .eq-bar {
   display: inline-block;
   width: 2px;
-  background: linear-gradient(to top, #818cf8, #c084fc);
+  background: linear-gradient(to top, var(--primary, #818cf8), var(--accent, #c084fc));
   border-radius: 1px;
   transition: height 80ms ease;
 }

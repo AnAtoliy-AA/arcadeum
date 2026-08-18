@@ -132,7 +132,9 @@ function SortableTrackItem({
           <Typography
             className="min-w-[16px] font-medium"
             style={{
-              color: isActive ? '#a5b4fc' : 'rgba(255,255,255,0.6)',
+              color: isActive
+                ? 'var(--primary, #a5b4fc)'
+                : 'var(--textSecondary, rgba(255,255,255,0.6))',
             }}
             uiSize="xs"
           >
@@ -140,13 +142,13 @@ function SortableTrackItem({
           </Typography>
         )}
         <Typography
-          className={`flex-1 truncate text-[12px] ${isActive ? 'font-semibold text-white' : 'font-normal'}`}
+          className={`flex-1 truncate text-[12px] ${isActive ? 'font-semibold' : 'font-normal'}`}
           style={{
             color: isActive
-              ? '#ffffff'
+              ? 'var(--color, #ffffff)'
               : isEnabled
-                ? 'rgba(255,255,255,0.9)'
-                : 'rgba(255,255,255,0.5)',
+                ? 'var(--color, rgba(255,255,255,0.9))'
+                : 'var(--textSecondary, rgba(255,255,255,0.5))',
           }}
         >
           {track.title}
@@ -154,7 +156,7 @@ function SortableTrackItem({
         {duration > 0 && (
           <Typography
             className="min-w-[32px] shrink-0 text-right font-medium"
-            style={{ color: 'rgba(255,255,255,0.55)' }}
+            style={{ color: 'var(--textSecondary, rgba(255,255,255,0.55))' }}
             uiSize="xs"
           >
             {formatTime(duration)}
@@ -177,21 +179,25 @@ function SortableTrackItem({
               width: '24px',
               height: '24px',
               borderRadius: '50%',
-              border: '1px solid rgba(255,255,255,0.25)',
-              background: 'rgba(255,255,255,0.12)',
-              color: 'rgba(255,255,255,0.85)',
+              border: '1px solid var(--borderColor, rgba(255,255,255,0.25))',
+              background:
+                'color-mix(in srgb, var(--color, #fff) 10%, transparent)',
+              color: 'var(--color, rgba(255,255,255,0.85))',
               cursor: 'pointer',
               flexShrink: 0,
               padding: 0,
               transition: 'background-color 150ms ease, color 150ms ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.25)';
-              e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.background =
+                'color-mix(in srgb, var(--color, #fff) 20%, transparent)';
+              e.currentTarget.style.color = 'var(--color, #ffffff)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.12)';
-              e.currentTarget.style.color = 'rgba(255,255,255,0.85)';
+              e.currentTarget.style.background =
+                'color-mix(in srgb, var(--color, #fff) 10%, transparent)';
+              e.currentTarget.style.color =
+                'var(--color, rgba(255,255,255,0.85))';
             }}
           >
             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
@@ -300,18 +306,23 @@ export function Playlist({
   return (
     <div
       className="flex flex-col gap-[6px] pb-[6px] mb-[4px] border-b game-music-playlist"
-      style={{ borderBottomColor: 'rgba(255,255,255,0.12)' }}
+      style={{
+        borderBottomColor: 'var(--borderColor, rgba(255,255,255,0.12))',
+      }}
       data-testid="game-music-playlist"
     >
       <div className="flex items-center gap-[8px] px-[4px]">
         <Typography
           className="font-semibold uppercase tracking-[0.5px]"
-          style={{ color: 'rgba(255,255,255,0.85)' }}
+          style={{ color: 'var(--color, rgba(255,255,255,0.85))' }}
           uiSize="xs"
         >
           Playlist
         </Typography>
-        <Typography uiSize="xs" style={{ color: 'rgba(255,255,255,0.55)' }}>
+        <Typography
+          uiSize="xs"
+          style={{ color: 'var(--textSecondary, rgba(255,255,255,0.55))' }}
+        >
           {enabledCount}/{tracks.length}
         </Typography>
       </div>
@@ -326,9 +337,10 @@ export function Playlist({
             fontSize: 11,
             padding: '5px 8px',
             borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.2)',
-            background: 'rgba(15, 23, 42, 0.7)',
-            color: '#ffffff',
+            border: '1px solid var(--borderColor, rgba(255,255,255,0.2))',
+            background:
+              'color-mix(in srgb, var(--background, #0f172a) 80%, black)',
+            color: 'var(--color, #ffffff)',
             outline: 'none',
           }}
         />
@@ -339,26 +351,42 @@ export function Playlist({
             fontSize: 11,
             padding: '5px 6px',
             borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.2)',
-            background: 'rgba(15, 23, 42, 0.7)',
-            color: '#ffffff',
+            border: '1px solid var(--borderColor, rgba(255,255,255,0.2))',
+            background:
+              'color-mix(in srgb, var(--background, #0f172a) 80%, black)',
+            color: 'var(--color, #ffffff)',
             outline: 'none',
             cursor: 'pointer',
           }}
         >
-          <option value="default" className="bg-slate-900 text-white">
+          <option
+            value="default"
+            className="bg-[var(--background)] text-[var(--color)]"
+          >
             Default
           </option>
-          <option value="title-asc" className="bg-slate-900 text-white">
+          <option
+            value="title-asc"
+            className="bg-[var(--background)] text-[var(--color)]"
+          >
             Title A→Z
           </option>
-          <option value="title-desc" className="bg-slate-900 text-white">
+          <option
+            value="title-desc"
+            className="bg-[var(--background)] text-[var(--color)]"
+          >
             Title Z→A
           </option>
-          <option value="duration-asc" className="bg-slate-900 text-white">
+          <option
+            value="duration-asc"
+            className="bg-[var(--background)] text-[var(--color)]"
+          >
             Duration ↑
           </option>
-          <option value="duration-desc" className="bg-slate-900 text-white">
+          <option
+            value="duration-desc"
+            className="bg-[var(--background)] text-[var(--color)]"
+          >
             Duration ↓
           </option>
         </select>

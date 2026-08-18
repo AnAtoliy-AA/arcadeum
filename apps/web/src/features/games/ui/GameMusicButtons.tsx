@@ -86,17 +86,21 @@ export const MusicBtn = ({
         justifyContent: 'center',
         borderRadius: '50%',
         border: active
-          ? '1px solid rgba(129, 140, 248, 0.5)'
-          : '1px solid rgba(255, 255, 255, 0.18)',
+          ? '1px solid var(--primary, #818cf8)'
+          : '1px solid var(--borderColor, rgba(255, 255, 255, 0.18))',
         background: active
-          ? 'rgba(99, 102, 241, 0.25)'
-          : 'rgba(255, 255, 255, 0.08)',
-        color: color || (active ? '#c7d2fe' : 'rgba(255, 255, 255, 0.75)'),
+          ? 'color-mix(in srgb, var(--primary, #6366f1) 25%, transparent)'
+          : 'color-mix(in srgb, var(--color, #fff) 8%, transparent)',
+        color:
+          color ||
+          (active
+            ? 'var(--primary, #c7d2fe)'
+            : 'var(--color, rgba(255, 255, 255, 0.75))'),
         cursor: 'pointer',
         flexShrink: 0,
         boxShadow: active
-          ? '0 0 10px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
-          : 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(0, 0, 0, 0.2)',
+          ? '0 0 10px color-mix(in srgb, var(--primary, #6366f1) 35%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+          : 'inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2px 6px rgba(0, 0, 0, 0.2)',
       }}
       type="button"
       onClick={onClick}
@@ -129,13 +133,15 @@ export const PlayBtn = ({
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: '50%',
-      border: '1px solid rgba(165,180,252,0.45)',
-      background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-      color: '#ffffff',
+      border:
+        '1px solid color-mix(in srgb, var(--primaryText, #fff) 30%, var(--primary, #6366f1))',
+      background:
+        'linear-gradient(135deg, var(--primaryGradientStart, var(--primary, #6366f1)), var(--primaryGradientEnd, var(--secondary, #4f46e5)))',
+      color: 'var(--primaryText, #ffffff)',
       cursor: 'pointer',
       flexShrink: 0,
       boxShadow:
-        'inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 14px rgba(99,102,241,0.45)',
+        'inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 14px color-mix(in srgb, var(--primary, #6366f1) 45%, transparent)',
     }}
     type="button"
     onClick={onClick}

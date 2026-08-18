@@ -39,7 +39,6 @@ export default function DevelopersPageContent({
   const dev = messages.pages?.developers ?? initialT;
   const stats = dev?.stats;
   const features = dev?.features ?? [];
-  const specs = dev?.specs;
   const cta = dev?.cta;
 
   return (
@@ -128,60 +127,6 @@ export default function DevelopersPageContent({
               </div>
             </div>
           </Section>
-
-          {specs && (
-            <Section>
-              <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-1">
-                  <Typography variant="heading" uiSize="xl" weight="800">
-                    {specs.title ?? 'Endpoints & Specifications'}
-                  </Typography>
-                  <Typography variant="body" uiSize="sm" alpha="medium">
-                    {specs.subtitle ??
-                      'Standards-compliant REST & WebSocket endpoints'}
-                  </Typography>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                  <GlassCard className="flex flex-col gap-2 p-5">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--colorMuted)]">
-                      REST API Gateway
-                    </span>
-                    <span className="font-mono text-sm font-bold text-[var(--primary)]">
-                      {specs.restBase}
-                    </span>
-                    <span className="text-xs text-[var(--colorMuted)]">
-                      HTTP/2 with JSON payloads & rate limits
-                    </span>
-                  </GlassCard>
-
-                  <GlassCard className="flex flex-col gap-2 p-5">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--colorMuted)]">
-                      WebSocket Gateway
-                    </span>
-                    <span className="font-mono text-sm font-bold text-[var(--success)]">
-                      {specs.wsEndpoint}
-                    </span>
-                    <span className="text-xs text-[var(--colorMuted)]">
-                      Socket.IO v4 with binary state compression
-                    </span>
-                  </GlassCard>
-
-                  <GlassCard className="flex flex-col gap-2 p-5">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--colorMuted)]">
-                      Sandbox Environment
-                    </span>
-                    <span className="font-mono text-sm font-bold text-[var(--gold)]">
-                      {specs.sandboxBase}
-                    </span>
-                    <span className="text-xs text-[var(--colorMuted)]">
-                      Mock users & test tokens enabled
-                    </span>
-                  </GlassCard>
-                </div>
-              </div>
-            </Section>
-          )}
 
           <div className="flex flex-col items-center justify-between gap-6 rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-8 text-center backdrop-blur-xl md:flex-row md:p-10 md:text-left">
             <div className="flex max-w-xl flex-col gap-2">

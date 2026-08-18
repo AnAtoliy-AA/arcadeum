@@ -72,7 +72,7 @@ test.describe('Modernized Content Pages and Footer', () => {
     await expect(jsonLd.first()).toBeAttached();
   });
 
-  test('developers page renders stats, architecture cards, and specs', async ({
+  test('developers page renders stats, architecture cards, and community links', async ({
     page,
   }) => {
     await navigateTo(page, routes.developers);
@@ -89,8 +89,8 @@ test.describe('Modernized Content Pages and Footer', () => {
       }),
     ).toBeVisible();
 
-    await expect(page.getByText(/REST API Gateway/i).first()).toBeVisible();
-    await expect(page.getByText(/WebSocket Gateway/i).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: /GitHub/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Discord/i })).toBeVisible();
   });
 
   test('footer does not contain Sea Battle link', async ({ page }) => {

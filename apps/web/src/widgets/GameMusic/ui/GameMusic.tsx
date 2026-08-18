@@ -3,7 +3,8 @@
 import { Typography } from '@arcadeum/ui';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { useAudioPlayer } from './useAudioPlayer';
+import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { useDraggable } from '../hooks/useDraggable';
 import {
   TransportControls,
   MiniControls,
@@ -11,9 +12,8 @@ import {
 } from './GameMusicControls';
 import { Playlist } from './GameMusicPlaylist';
 import { EqualizerVisualization } from './GameMusicVisuals';
-import { useDraggable } from './useDraggable';
 import { playerStyles } from './GameMusicStyles';
-import { SPRITE_URL, SPRITE_SIZE, SPRITE_COLS } from './GameMusicUtils';
+import { SPRITE_URL, SPRITE_SIZE, SPRITE_COLS } from '../lib/GameMusicUtils';
 
 export function GameMusic({ gameId }: { gameId?: string | null }) {
   const { musicEnabled } = useMusicSetting();

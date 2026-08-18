@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Typography } from '@arcadeum/ui';
-import type { RepeatMode } from './GameMusicUtils';
+import type { RepeatMode } from '../lib/GameMusicUtils';
 import { PlaylistIcon, MinimizeIcon, MaximizeIcon } from './GameMusicVisuals';
 import { VolumeIcon, MusicBtn, PlayBtn } from './GameMusicButtons';
 

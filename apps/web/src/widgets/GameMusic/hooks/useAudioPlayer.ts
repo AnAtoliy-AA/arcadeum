@@ -15,7 +15,7 @@ import {
   DEFAULT_VOLUME,
   type MusicTrack,
   type RepeatMode,
-} from './GameMusicUtils';
+} from '../lib/GameMusicUtils';
 import { usePlayerKeyboard } from './usePlayerKeyboard';
 
 const CROSSFADE_MS = 1200;

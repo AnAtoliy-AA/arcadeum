@@ -39,7 +39,9 @@ export function useDraggable(initial: Position) {
     (e: React.PointerEvent) => {
       if (e.button !== 0) return;
       const target = e.target as HTMLElement;
-      const interactive = target.closest('button, input, a, select, textarea, [role="button"]');
+      const interactive = target.closest(
+        'button, input, a, select, textarea, [role="button"]',
+      );
       if (interactive) return;
 
       const player = target.closest('.game-music-player') as HTMLElement | null;

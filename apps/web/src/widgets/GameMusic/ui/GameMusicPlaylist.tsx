@@ -26,7 +26,7 @@ import {
   SPRITE_URL,
   SPRITE_SIZE,
   SPRITE_COLS,
-} from './GameMusicUtils';
+} from '../lib/GameMusicUtils';
 import { PlayingBars } from './GameMusicVisuals';
 
 interface SortableTrackItemProps {

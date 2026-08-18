@@ -5,6 +5,7 @@ import type { DragEvent } from 'react';
 import type { ShipCell, CellState, Ship, ShipConfig } from '../types';
 import { CELL_STATE } from '../types';
 import { getCells, canPlace, cellsEqual } from './drag-helpers';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 interface UseDragPlacementArgs {
   board: CellState[][];
@@ -85,7 +86,8 @@ export function useDragPlacement({
   setHoveredCells,
   setIsInvalidHover,
 }: UseDragPlacementArgs) {
-  const isTouchDevice = useRef(false);
+  const isTouchDeviceRef = useRef(false);
+  const { pointerCoarse: isTouchDevice } = useMediaQuery();
   const [isDragging, setIsDragging] = useState(false);
   const [draggingCells, setDraggingCells] = useState<ShipCell[]>([]);
   const dragMode = useRef<DragMode>(null);
@@ -117,13 +119,13 @@ export function useDragPlacement({
   });
 
   useEffect(() => {
-    isTouchDevice.current = window.matchMedia('(pointer: coarse)').matches;
-  }, []);
+    isTouchDeviceRef.current = isTouchDevice;
+  }, [isTouchDevice]);
 
   const getDragProps = useCallback(
     (shipId: string): DragProps => {
       const isPlaced = placedShipIds.has(shipId);
-      if (isTouchDevice.current || isPlaced) {
+      if (isTouchDeviceRef.current || isPlaced) {
         return { draggable: false, onDragStart: () => {} };
       }
       return {
@@ -145,7 +147,7 @@ export function useDragPlacement({
 
   const getBoardCellDragProps = useCallback(
     (row: number, col: number): DragProps => {
-      if (isTouchDevice.current || placementComplete) {
+      if (isTouchDeviceRef.current || placementComplete) {
         return { draggable: false, onDragStart: () => {} };
       }
       const ship = ships.find((s) =>
@@ -296,7 +298,7 @@ export function useDragPlacement({
 
   const onTouchBoardPointerDown = useCallback(
     (row: number, col: number, e: React.PointerEvent) => {
-      if (!isTouchDevice.current || placementComplete) return;
+      if (!isTouchDeviceRef.current || placementComplete) return;
 
       const ship = ships.find((s) =>
         s.cells.some((c) => c.row === row && c.col === col),
@@ -453,6 +455,7 @@ export function useDragPlacement({
     handleDragEnd,
     isDragging,
     draggingCells,
+    isTouchDevice,
     onTouchBoardPointerDown,
     touchDragJustEnded,
     resetTouchDragJustEnded: useCallback(() => {

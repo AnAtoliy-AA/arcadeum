@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.52] - 2026-08-18
+
+### Fixed
+- allow page scroll on mobile board touches
+
+
+## [1.25.51] - 2026-08-18
+
+### Added
+- wire theme CSS variables and tokens into music player (ARC-905) (ARC-905)
+
+### Improved
+- remove backdrop-filter blur in music player in favor of opaque background (ARC-905) (ARC-905)
+
+### Refactored
+- extract game music player into standalone widget (ARC-905) (ARC-905)
+
+
 ## [1.25.50] - 2026-08-18
 
 ### Added

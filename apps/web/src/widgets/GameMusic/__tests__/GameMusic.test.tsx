@@ -6,15 +6,15 @@ import {
   screen,
   act,
 } from '@testing-library/react';
-import { GameMusic } from './GameMusic';
-import { trackIndexForGame, FALLBACK_TRACKS } from './GameMusicUtils';
+import { GameMusic } from '../ui/GameMusic';
+import { trackIndexForGame, FALLBACK_TRACKS } from '../lib/GameMusicUtils';
 import {
   loadStoredSettings,
   saveStoredSettings,
 } from '@/shared/lib/settings-storage';
 
-vi.mock('./GameMusicUtils', async (importOriginal) => {
-  const mod = await importOriginal<typeof import('./GameMusicUtils')>();
+vi.mock('../lib/GameMusicUtils', async (importOriginal) => {
+  const mod = await importOriginal<typeof import('../lib/GameMusicUtils')>();
   return {
     ...mod,
     fetchTracks: vi.fn().mockResolvedValue(mod.FALLBACK_TRACKS),
@@ -23,7 +23,6 @@ vi.mock('./GameMusicUtils', async (importOriginal) => {
 
 const render = (ui: React.ReactElement) => rtlRender(ui);
 
-// Controllable mock of the music setting.
 let musicEnabled = false;
 export const setMusicEnabledMock = vi.fn();
 vi.mock('@/shared/hooks/useMusicSetting', () => ({
@@ -33,7 +32,6 @@ vi.mock('@/shared/hooks/useMusicSetting', () => ({
   }),
 }));
 
-// Translation is keyed straight through so we can assert on the label keys.
 vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
@@ -224,7 +222,6 @@ describe('GameMusic', () => {
     render(<GameMusic gameId="sea_battle_v1" />);
     await showPlayer();
     const audio = mainAudioEl();
-    // Music does not auto-play on mount — starts paused.
     expect(audio.paused).toBe(true);
 
     fireEvent.click(screen.getByTestId('game-music-playpause'));

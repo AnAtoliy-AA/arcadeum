@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.25.47] - 2026-08-18
 
-- add coach-mode move hints for chess with an in-game enable toggle (ARC-883)
+### Added
+- add coach-mode move hints for chess (ARC-883)
+
+### Refactored
+- derive coach flags in hook to fit line limit (ARC-883)
+
+### Documentation
+- add changelog entry for coach mode (ARC-883)
+
 
 ## [1.25.46] - 2026-08-17
 

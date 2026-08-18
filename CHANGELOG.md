@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.48] - 2026-08-18
+
+### Added
+- connect help page category cards to dynamic FAQ filtering (ARC-883)
+- modernize content pages, SEO structured data, and mobile footer (ARC-883)
+
+### Fixed
+- enhance text contrast and colors on help page (ARC-883)
+- reset button styling to transparent background and inherit text color (ARC-883)
+- prevent nested h2 inside h1 by supporting as prop and level on Typography (ARC-883)
+- avoid nested heading in AuthBrandPanel headline accent (ARC-883)
+- render semantic headings in Typography and fix footer e2e (ARC-883)
+
+### Refactored
+- render DevelopersPageContent directly as Server Component (ARC-883)
+- remove Endpoints & Specs section from developers page (ARC-883)
+- remove SDK code snippet section from developers page (ARC-883)
+
+
 ## [1.25.47] - 2026-08-18
 
 ### Added

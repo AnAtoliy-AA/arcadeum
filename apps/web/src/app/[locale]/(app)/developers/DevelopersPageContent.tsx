@@ -75,10 +75,10 @@ export default function DevelopersPageContent({
 
             <GlassCard className="flex flex-col gap-1 p-5 text-center">
               <span className="text-2xl font-black text-[var(--gold)]">
-                {stats?.rateLimit ?? '120 req/min'}
+                {stats?.rateLimit ?? '100 req/min'}
               </span>
               <span className="text-xs font-semibold text-[var(--colorMuted)]">
-                {stats?.rateLimitLabel ?? 'Free Tier API'}
+                {stats?.rateLimitLabel ?? 'Per-IP Rate Limit'}
               </span>
             </GlassCard>
 
@@ -87,7 +87,7 @@ export default function DevelopersPageContent({
                 {stats?.uptime ?? '99.99%'}
               </span>
               <span className="text-xs font-semibold text-[var(--colorMuted)]">
-                {stats?.uptimeLabel ?? 'Uptime'}
+                {stats?.uptimeLabel ?? 'Platform Uptime'}
               </span>
             </GlassCard>
 

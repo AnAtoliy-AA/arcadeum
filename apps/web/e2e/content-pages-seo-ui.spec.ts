@@ -80,7 +80,7 @@ test.describe('Modernized Content Pages and Footer', () => {
 
     await expect(page.locator('h1')).toBeVisible();
     await expect(page.getByText(/< 50ms/i).first()).toBeVisible();
-    await expect(page.getByText(/120 req\/min/i).first()).toBeVisible();
+    await expect(page.getByText(/100 req\/min/i).first()).toBeVisible();
     await expect(page.getByText(/REST & WS/i).first()).toBeVisible();
 
     await expect(

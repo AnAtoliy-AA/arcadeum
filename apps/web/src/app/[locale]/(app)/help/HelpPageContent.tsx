@@ -147,7 +147,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                           isSelected ? null : (category?.id ?? null),
                         )
                       }
-                      className="cursor-pointer text-left"
+                      className="w-full cursor-pointer border-0 bg-transparent p-0 text-left focus:outline-none"
                     >
                       <GlassCard
                         className={cx(

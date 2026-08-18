@@ -35,6 +35,27 @@ a {
   text-decoration: none;
 }
 
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: inherit;
+  color: inherit;
+}
+
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: inherit;
+}
+
 /* Skip-to-content link: visually hidden until focused via keyboard (WCAG 2.4.1). */
 .skip-link {
   position: absolute;

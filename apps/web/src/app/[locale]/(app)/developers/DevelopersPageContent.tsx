@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import {
   PageLayout,
@@ -13,7 +12,6 @@ import {
 } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { cx } from '@arcadeum/ui/utils/cx';
 import type { developersEn } from '@/shared/i18n/messages/pages/developers/en';
 
 type DeepPartial<T> = {
@@ -32,89 +30,17 @@ export interface DevelopersPageContentProps {
   t?: DevelopersMessages;
 }
 
-const CODE_SNIPPETS: Record<string, string> = {
-  typescript: `import { ArcadeumClient } from '@arcadeum/sdk';
-
-const client = new ArcadeumClient({
-  apiKey: process.env.ARCADEUM_API_KEY,
-});
-
-// Join a live chess room and listen for state transitions
-const room = await client.rooms.join('room_9a8f7c');
-
-room.on('gameState', (state) => {
-  console.log('Turn:', state.activePlayer, 'FEN:', state.fen);
-});
-
-// Dispatch authoritative player action
-await room.sendAction({ type: 'MOVE', from: 'e2', to: 'e4' });`,
-
-  python: `from arcadeum import ArcadeumBot, GameVariant
-
-bot = ArcadeumBot(token="bot_sec_918237")
-
-@bot.on_game_start
-def handle_start(room_id, variant):
-    print(f"Match started in {room_id} with {variant}")
-
-@bot.on_turn
-def make_decision(game_state):
-    best_move = bot.minimax(game_state, depth=4)
-    return bot.play_action(best_move)
-
-bot.run_forever()`,
-
-  curl: `# Fetch active live game rooms
-curl -X GET "https://api.arcadeum.net/v1/rooms" \\
-  -H "Authorization: Bearer <YOUR_API_KEY>" \\
-  -H "Content-Type: application/json"
-
-# Create a private game room
-curl -X POST "https://api.arcadeum.net/v1/rooms" \\
-  -H "Authorization: Bearer <YOUR_API_KEY>" \\
-  -H "Content-Type: application/json" \\
-  -d '{"game": "chess_v1", "isPrivate": true, "timerSeconds": 300}'`,
-
-  websocket: `// Socket.IO raw event integration
-const socket = io('wss://socket.arcadeum.net', {
-  auth: { token: 'jwt_player_token' },
-  transports: ['websocket'],
-});
-
-socket.on('connect', () => {
-  socket.emit('room:subscribe', { roomId: 'room_123' });
-});
-
-socket.on('game:action', (payload) => {
-  console.log('Action received:', payload);
-});`,
-};
-
 export default function DevelopersPageContent({
   t: initialT,
 }: DevelopersPageContentProps) {
   const { messages } = useLanguage();
   const routes = useRoutes();
-  const [activeTab, setActiveTab] = useState<
-    'typescript' | 'python' | 'curl' | 'websocket'
-  >('typescript');
-  const [copied, setCopied] = useState(false);
 
   const dev = messages.pages?.developers ?? initialT;
   const stats = dev?.stats;
-  const sdkHero = dev?.sdkHero;
   const features = dev?.features ?? [];
   const specs = dev?.specs;
   const cta = dev?.cta;
-
-  const copySnippet = () => {
-    const text = CODE_SNIPPETS[activeTab];
-    if (text && typeof navigator !== 'undefined') {
-      navigator.clipboard.writeText(text);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    }
-  };
 
   return (
     <PageLayout>
@@ -126,14 +52,14 @@ export default function DevelopersPageContent({
 
             <div className="relative z-10 flex flex-col items-start gap-4 md:max-w-3xl">
               <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
-                ⚡ {dev?.subtitle ?? 'SDKs, APIs & WebSocket Gateways'}
+                ⚡ {dev?.subtitle ?? 'APIs & WebSocket Gateways'}
               </span>
               <PageTitle size="xl" gradient>
                 {dev?.title ?? 'Arcadeum Developer Platform'}
               </PageTitle>
               <Typography variant="body" uiSize="lg" alpha="high">
                 {dev?.description ??
-                  'Build custom bots, integrate tournament systems, and synchronize game state in real time with our open-source toolkits.'}
+                  'Build custom bots, integrate tournament systems, and synchronize game state in real time with our open APIs.'}
               </Typography>
             </div>
           </div>
@@ -168,71 +94,13 @@ export default function DevelopersPageContent({
 
             <GlassCard className="flex flex-col gap-1 p-5 text-center">
               <span className="text-2xl font-black text-[var(--color)]">
-                {stats?.sdk ?? 'v1.4'}
+                {stats?.sdk ?? 'REST & WS'}
               </span>
               <span className="text-xs font-semibold text-[var(--colorMuted)]">
-                {stats?.sdkLabel ?? 'SDK Release'}
+                {stats?.sdkLabel ?? 'API Gateways'}
               </span>
             </GlassCard>
           </div>
-
-          <Section>
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <Typography variant="heading" uiSize="xl" weight="800">
-                  {sdkHero?.title ?? 'Code in Your Language of Choice'}
-                </Typography>
-                <Typography variant="body" uiSize="md" alpha="medium">
-                  {sdkHero?.subtitle ??
-                    'Connect to game rooms in less than 10 lines of code.'}
-                </Typography>
-              </div>
-
-              <div className="overflow-hidden rounded-2xl border border-[var(--glassBorder)] bg-[#0d1117] shadow-2xl">
-                <div className="flex flex-wrap items-center justify-between border-b border-white/10 bg-white/5 px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    {(
-                      ['typescript', 'python', 'curl', 'websocket'] as const
-                    ).map((tab) => (
-                      <button
-                        key={tab}
-                        type="button"
-                        onClick={() => setActiveTab(tab)}
-                        className={cx(
-                          'cursor-pointer rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all',
-                          activeTab === tab
-                            ? 'bg-[var(--primary)] text-white shadow-sm'
-                            : 'text-[var(--colorMuted)] hover:text-white',
-                        )}
-                      >
-                        {tab === 'typescript'
-                          ? (sdkHero?.tabs?.typescript ?? 'TypeScript')
-                          : tab === 'python'
-                            ? (sdkHero?.tabs?.python ?? 'Python')
-                            : tab === 'curl'
-                              ? (sdkHero?.tabs?.curl ?? 'cURL / REST')
-                              : (sdkHero?.tabs?.websocket ?? 'WebSocket')}
-                      </button>
-                    ))}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={copySnippet}
-                    className="cursor-pointer rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-[var(--colorMuted)] transition-all hover:border-[var(--primary)] hover:text-white"
-                  >
-                    {copied
-                      ? (sdkHero?.copied ?? '✓ Copied')
-                      : (sdkHero?.copyCode ?? 'Copy Code')}
-                  </button>
-                </div>
-
-                <div className="overflow-x-auto p-6 font-mono text-sm leading-relaxed text-gray-200">
-                  <pre>{CODE_SNIPPETS[activeTab]}</pre>
-                </div>
-              </div>
-            </div>
-          </Section>
 
           <Section>
             <div className="flex flex-col gap-6">

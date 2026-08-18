@@ -72,7 +72,7 @@ test.describe('Modernized Content Pages and Footer', () => {
     await expect(jsonLd.first()).toBeAttached();
   });
 
-  test('developers page renders stats, tabbed code viewer, and specs', async ({
+  test('developers page renders stats, architecture cards, and specs', async ({
     page,
   }) => {
     await navigateTo(page, routes.developers);
@@ -81,11 +81,13 @@ test.describe('Modernized Content Pages and Footer', () => {
     await expect(page.locator('h1')).toBeVisible();
     await expect(page.getByText(/< 50ms/i).first()).toBeVisible();
     await expect(page.getByText(/120 req\/min/i).first()).toBeVisible();
-    await expect(page.getByText(/ArcadeumClient/i).first()).toBeVisible();
+    await expect(page.getByText(/REST & WS/i).first()).toBeVisible();
 
-    const pythonTab = page.getByRole('button', { name: /Python/i });
-    await pythonTab.click();
-    await expect(page.getByText(/ArcadeumBot/i).first()).toBeVisible();
+    await expect(
+      page.getByRole('heading', {
+        name: /Platform Architecture & Capabilities/i,
+      }),
+    ).toBeVisible();
 
     await expect(page.getByText(/REST API Gateway/i).first()).toBeVisible();
     await expect(page.getByText(/WebSocket Gateway/i).first()).toBeVisible();

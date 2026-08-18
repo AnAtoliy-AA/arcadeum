@@ -1,11 +1,14 @@
 'use client';
-import { forwardRef } from 'react';
+import { createElement, forwardRef } from 'react';
 import { cx } from '../../utils/cx';
+
+export type TypographyLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 export type TypographyProps = {
   children?: React.ReactNode;
   uiSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
   variant?: 'heading' | 'subheading' | 'body' | 'label' | 'caption';
+  level?: TypographyLevel;
   gradient?: 'primary' | 'gold' | 'silver';
   weight?: '400' | '500' | '600' | '700' | '800';
   alpha?: 'low' | 'medium' | 'high';
@@ -18,7 +21,7 @@ export type TypographyProps = {
   title?: string;
   id?: string;
   ref?: React.Ref<HTMLElement>;
-} & React.HTMLAttributes<HTMLSpanElement>;
+} & React.HTMLAttributes<HTMLElement>;
 
 const uiSizeClasses: Record<NonNullable<TypographyProps['uiSize']>, string> = {
   xs: 'typography-size-xs',
@@ -30,7 +33,10 @@ const uiSizeClasses: Record<NonNullable<TypographyProps['uiSize']>, string> = {
   '3xl': 'typography-size-3xl',
 };
 
-const variantClasses: Record<NonNullable<TypographyProps['variant']>, string> = {
+const variantClasses: Record<
+  NonNullable<TypographyProps['variant']>,
+  string
+> = {
   heading: 'typography-variant-heading',
   subheading: 'typography-variant-subheading',
   body: 'typography-variant-body',
@@ -38,7 +44,10 @@ const variantClasses: Record<NonNullable<TypographyProps['variant']>, string> = 
   caption: 'typography-variant-caption',
 };
 
-const gradientClasses: Record<NonNullable<TypographyProps['gradient']>, string> = {
+const gradientClasses: Record<
+  NonNullable<TypographyProps['gradient']>,
+  string
+> = {
   primary: 'typography-gradient-primary',
   gold: 'typography-gradient-gold',
   silver: 'typography-gradient-silver',
@@ -58,11 +67,31 @@ const alphaOpacities: Record<NonNullable<TypographyProps['alpha']>, number> = {
   high: 0.95,
 };
 
-const trackingSpacings: Record<NonNullable<TypographyProps['tracking']>, number> = {
+const trackingSpacings: Record<
+  NonNullable<TypographyProps['tracking']>,
+  number
+> = {
   sm: 0.5,
   md: 1,
   lg: 2,
   xl: 3,
+};
+
+const headingTagByVariant: Record<
+  Extract<NonNullable<TypographyProps['variant']>, 'heading' | 'subheading'>,
+  'h2' | 'h3'
+> = {
+  heading: 'h2',
+  subheading: 'h3',
+};
+
+const headingTags: Record<TypographyLevel, string> = {
+  1: 'h1',
+  2: 'h2',
+  3: 'h3',
+  4: 'h4',
+  5: 'h5',
+  6: 'h6',
 };
 
 export const Typography = forwardRef<HTMLElement, TypographyProps>(
@@ -71,6 +100,7 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
       children,
       uiSize = 'md',
       variant = 'body',
+      level,
       gradient,
       weight,
       alpha,
@@ -86,18 +116,25 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
     },
     ref,
   ) {
-    const spanProps = rest as React.HTMLAttributes<HTMLSpanElement>;
+    const spanProps = rest as React.HTMLAttributes<HTMLElement>;
     const typographyStyle: React.CSSProperties = {
       ...(alpha ? { opacity: alphaOpacities[alpha] } : null),
       ...(tracking ? { letterSpacing: trackingSpacings[tracking] } : null),
       ...(color ? { color } : null),
     };
-    return (
-      <span
-        ref={ref as React.Ref<HTMLSpanElement>}
-        id={id}
-        title={title}
-        className={cx(
+    const tag =
+      variant === 'heading' || variant === 'subheading'
+        ? level
+          ? headingTags[level]
+          : headingTagByVariant[variant]
+        : 'span';
+    return createElement(
+      tag,
+      {
+        ref,
+        id,
+        title,
+        className: cx(
           uiSizeClasses[uiSize],
           variantClasses[variant],
           gradient && gradientClasses[gradient],
@@ -105,12 +142,11 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
           textCenter && 'typography-text-center',
           textRight && 'typography-text-right',
           className,
-        )}
-        style={{ ...typographyStyle, ...style }}
-        {...spanProps}
-      >
-        {children}
-      </span>
+        ),
+        style: { ...typographyStyle, ...style },
+        ...spanProps,
+      },
+      children,
     );
   },
 );

@@ -142,7 +142,7 @@ test.describe('Modernized Content Pages and Footer', () => {
 
     await expect(page.locator('h1')).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: /Arcadeum Roadmap/i }),
+      page.getByRole('heading', { name: /Arcadeum Games Roadmap/i }),
     ).toBeVisible();
     await expect(page.getByText(/Quick Wins/i).first()).toBeVisible();
     await expect(page.getByText(/Core Additions/i).first()).toBeVisible();

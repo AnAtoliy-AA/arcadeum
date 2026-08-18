@@ -201,6 +201,7 @@ export default function ChangelogView({
             <Typography
               className={'font-extrabold'}
               variant="heading"
+              level={1}
               uiSize="3xl"
               gradient="primary"
             >

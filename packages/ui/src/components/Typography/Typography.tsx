@@ -6,6 +6,7 @@ export type TypographyLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 export type TypographyProps = {
   children?: React.ReactNode;
+  as?: string;
   uiSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
   variant?: 'heading' | 'subheading' | 'body' | 'label' | 'caption';
   level?: TypographyLevel;
@@ -98,6 +99,7 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
   function Typography(
     {
       children,
+      as: asTag,
       uiSize = 'md',
       variant = 'body',
       level,
@@ -123,11 +125,12 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
       ...(color ? { color } : null),
     };
     const tag =
-      variant === 'heading' || variant === 'subheading'
+      asTag ??
+      (variant === 'heading' || variant === 'subheading'
         ? level
           ? headingTags[level]
           : headingTagByVariant[variant]
-        : 'span';
+        : 'span');
     return createElement(
       tag,
       {

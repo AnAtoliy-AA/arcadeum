@@ -105,16 +105,15 @@ export default function TermsContent({
             <div className="flex flex-col gap-3 items-center max-w-[720px]">
               <Badge accent="#818CF8">Legal & Governance</Badge>
 
-              <h1 className="m-0">
-                <Typography
-                  variant="heading"
-                  uiSize="xl"
-                  gradient="primary"
-                  className="text-4xl font-extrabold tracking-tight"
-                >
-                  {t?.title ?? 'Terms of Service'}
-                </Typography>
-              </h1>
+              <Typography
+                variant="heading"
+                level={1}
+                uiSize="xl"
+                gradient="primary"
+                className="m-0 text-4xl font-extrabold tracking-tight"
+              >
+                {t?.title ?? 'Terms of Service'}
+              </Typography>
 
               {t?.lastUpdated && (
                 <Typography

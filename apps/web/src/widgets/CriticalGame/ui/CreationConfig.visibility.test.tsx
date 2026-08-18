@@ -93,15 +93,15 @@ describe('Critical CreationConfig — variant visibility filter', () => {
 
     // Wait for the catalog effect to settle and cyberpunk tile to appear
     await waitFor(() => {
-      expect(screen.getByTestId('variant-tile-cyberpunk')).toBeInTheDocument();
+      expect(screen.getByTestId('theme-cyberpunk')).toBeInTheDocument();
     });
 
     // cyberpunk: interactive (not aria-disabled)
-    const cyberpunkTile = screen.getByTestId('variant-tile-cyberpunk');
+    const cyberpunkTile = screen.getByTestId('theme-cyberpunk');
     expect(cyberpunkTile).not.toHaveAttribute('aria-disabled', 'true');
 
     // crime: disabled with a coming-soon badge
-    const crimeTile = screen.getByTestId('variant-tile-crime');
+    const crimeTile = screen.getByTestId('theme-crime');
     expect(crimeTile).toHaveAttribute('aria-disabled', 'true');
     // The identity t() mock returns the key itself; the key used for the badge is games.create.comingSoon
     expect(

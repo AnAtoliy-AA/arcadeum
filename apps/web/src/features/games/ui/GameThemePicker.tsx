@@ -15,11 +15,17 @@ export interface GameThemePickerOption {
   id: string;
   /** i18n key or plain label */
   nameKey?: string;
+  /** Plain label (fallback when no i18n key) */
+  name?: string;
   /** i18n key or plain label */
   descriptionKey?: string;
+  /** Plain description (fallback when no i18n key) */
+  description?: string;
   emoji?: string;
   gradient?: string;
   disabled?: boolean;
+  /** Renders a "Coming soon" badge and disables the option. */
+  comingSoon?: boolean;
 }
 
 export interface GameThemePickerProps {
@@ -72,22 +78,27 @@ export function GameThemePicker({
     : pickerOptions;
 
   const resolveName = (option: GameThemePickerOption): string => {
-    if (option.nameKey?.startsWith('games.')) {
-      return t(option.nameKey as TranslationKey) || option.nameKey;
+    if (option.nameKey) {
+      if (option.nameKey.startsWith('games.')) {
+        return t(option.nameKey as TranslationKey) || option.nameKey;
+      }
+      return option.nameKey;
     }
-    return option.nameKey ?? option.id;
+    return option.name ?? option.id;
   };
 
   const resolveDescription = (
     option: GameThemePickerOption,
   ): string | undefined => {
-    if (!option.descriptionKey) return undefined;
-    if (option.descriptionKey.startsWith('games.')) {
-      return (
-        t(option.descriptionKey as TranslationKey) || option.descriptionKey
-      );
+    if (option.descriptionKey) {
+      if (option.descriptionKey.startsWith('games.')) {
+        return (
+          t(option.descriptionKey as TranslationKey) || option.descriptionKey
+        );
+      }
+      return option.descriptionKey;
     }
-    return option.descriptionKey;
+    return option.description;
   };
 
   return (
@@ -105,14 +116,19 @@ export function GameThemePicker({
         {visible.map((option) => {
           const theme = THEME_INDEX.get(option.id);
           const active = selectedTheme === option.id;
+          const comingSoon = option.comingSoon || false;
           const disabled =
-            option.disabled || (showComingSoon && !theme) || false;
+            option.disabled ||
+            comingSoon ||
+            (showComingSoon && !theme) ||
+            false;
           return (
             <button
               key={option.id}
               type="button"
               role="radio"
               aria-checked={active}
+              aria-disabled={disabled || undefined}
               disabled={disabled}
               data-testid={`theme-${option.id}`}
               onClick={() => onSelect(option.id)}
@@ -124,6 +140,14 @@ export function GameThemePicker({
                 disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
               )}
             >
+              {comingSoon ? (
+                <span
+                  data-testid="coming-soon-badge"
+                  className="absolute right-2 top-2 z-10 rounded-full bg-[var(--foreground)]/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--background)]"
+                >
+                  {t('games.create.comingSoon') || 'Coming Soon'}
+                </span>
+              ) : null}
               <div className="flex h-16 w-full items-center justify-center overflow-hidden rounded-xl text-3xl">
                 {renderThumbnail && theme ? (
                   renderThumbnail(theme)

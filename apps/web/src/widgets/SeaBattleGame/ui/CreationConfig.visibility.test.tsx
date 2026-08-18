@@ -94,15 +94,15 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('variant-tile-classic')).toBeInTheDocument();
+      expect(screen.getByTestId('theme-classic')).toBeInTheDocument();
     });
 
     // classic: interactive
-    const classicTile = screen.getByTestId('variant-tile-classic');
+    const classicTile = screen.getByTestId('theme-classic');
     expect(classicTile).not.toHaveAttribute('aria-disabled', 'true');
 
     // cyber: disabled with badge
-    const cyberTile = screen.getByTestId('variant-tile-cyber');
+    const cyberTile = screen.getByTestId('theme-cyber');
     expect(cyberTile).toHaveAttribute('aria-disabled', 'true');
     expect(
       within(cyberTile).getByTestId('coming-soon-badge'),

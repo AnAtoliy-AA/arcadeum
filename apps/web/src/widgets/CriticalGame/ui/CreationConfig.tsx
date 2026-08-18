@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTranslation, TranslationKey } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
 import {
   ExpansionId,
@@ -12,20 +12,12 @@ import { RulesModal } from '@/widgets/CriticalGame/ui/RulesModal';
 import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
 import { Section } from '@arcadeum/ui/components/Section/Section';
 import { Button } from '@arcadeum/ui/components/Button/Button';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import {
-  GameSelector,
-  GameTileName,
-  GameTileSummary,
-  SelectionIndicator,
-  GameTileIcon,
   ExpansionGrid,
   ExpansionCheckbox,
   ExpansionLabel,
   ExpansionBadge,
-  ComingSoonBadge,
-  ThemeHeader,
-  GameTileItem,
-  GameTileContainer,
 } from '@/features/games/ui/create/styles';
 
 interface CriticalGameOptions {
@@ -66,16 +58,15 @@ export default function CriticalCreationConfig({
     };
   }, []);
 
-  const visibleVariants =
-    allowedVariants === null
-      ? CARD_VARIANTS.map((v) => ({ ...v, comingSoon: false }))
-      : CARD_VARIANTS.filter((v) =>
-          allowedVariants.some((a) => a.id === v.id),
-        ).map((v) => ({
-          ...v,
-          comingSoon:
-            allowedVariants.find((a) => a.id === v.id)?.comingSoon ?? false,
-        }));
+  const pickerOptions = CARD_VARIANTS.map((variant) => ({
+    id: variant.id,
+    nameKey: variant.name,
+    descriptionKey: variant.description,
+    emoji: variant.emoji,
+    gradient: variant.gradient,
+    comingSoon: allowedVariants?.find((a) => a.id === variant.id)?.comingSoon,
+    disabled: variant.disabled,
+  }));
 
   // Initialize defaults if empty
   useEffect(() => {
@@ -107,63 +98,22 @@ export default function CriticalCreationConfig({
       />
 
       <Section title={t('games.create.sectionVariant') || 'Game Theme'}>
-        <ThemeHeader>
-          <Button
-            variant="link"
-            size="sm"
-            type="button"
-            className="mb-4 text-[var(--accent)]"
-            onClick={() => setShowRules(true)}
-            data-testid="view-rules-button"
-          >
-            📖 {t('games.rules.button') || 'View Game Rules'}
-          </Button>
-        </ThemeHeader>
-        <GameSelector>
-          {visibleVariants.map((variant) => {
-            const isComingSoon = variant.comingSoon;
-            const isDisabled = variant.disabled || isComingSoon;
-            return (
-              <GameTileContainer
-                key={variant.id}
-                data-testid={`variant-tile-${variant.id}`}
-                aria-disabled={isDisabled || undefined}
-                disabled={isDisabled}
-                onClick={() =>
-                  !isDisabled && handleUpdate({ cardVariant: variant.id })
-                }
-              >
-                <GameTileItem
-                  active={options.cardVariant === variant.id}
-                  disabled={isDisabled}
-                >
-                  {!isDisabled && (
-                    <SelectionIndicator
-                      active={options.cardVariant === variant.id}
-                    />
-                  )}
-                  {isDisabled && (
-                    <ComingSoonBadge data-testid="coming-soon-badge">
-                      {t('games.create.comingSoon') || 'Coming Soon'}
-                    </ComingSoonBadge>
-                  )}
-                  <GameTileIcon
-                    className={variant.gradient ? 'text-gradient' : undefined}
-                    style={{ background: variant.gradient || undefined }}
-                  >
-                    {variant.emoji}
-                  </GameTileIcon>
-                  <GameTileName>
-                    {t(variant.name as TranslationKey)}
-                  </GameTileName>
-                  <GameTileSummary>
-                    {t(variant.description as TranslationKey)}
-                  </GameTileSummary>
-                </GameTileItem>
-              </GameTileContainer>
-            );
-          })}
-        </GameSelector>
+        <Button
+          variant="link"
+          size="sm"
+          type="button"
+          className="mb-4 text-[var(--accent)]"
+          onClick={() => setShowRules(true)}
+          data-testid="view-rules-button"
+        >
+          📖 {t('games.rules.button') || 'View Game Rules'}
+        </Button>
+        <GameThemePicker
+          selectedTheme={options.cardVariant || 'cyberpunk'}
+          onSelect={(id) => handleUpdate({ cardVariant: id })}
+          options={pickerOptions}
+          allowedThemes={allowedVariants?.map((a) => a.id)}
+        />
       </Section>
 
       <Section title={t('games.create.sectionHouseRules')}>

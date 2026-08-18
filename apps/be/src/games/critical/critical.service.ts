@@ -1,94 +1,53 @@
-import {
-  Inject,
-  Injectable,
-  Logger,
-  OnModuleDestroy,
-  OnModuleInit,
-  forwardRef,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import { CriticalActionsService } from '../actions/critical/critical-actions.service';
-import { StartGameSessionResult } from '../games.types';
-import { GameSessionSummary } from '../sessions/game-sessions.service';
+import type { StartGameSessionResult } from '../games.types';
 import { CriticalBotService } from './critical-bot.service';
-import { GameBotWatchdog } from '../game-bot-watchdog';
+import { BaseGameService } from '../common/base-game.service';
+
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = 6;
 
 @Injectable()
-export class CriticalService implements OnModuleInit, OnModuleDestroy {
-  private readonly logger = new Logger(CriticalService.name);
-  private readonly watchdog: GameBotWatchdog;
+export class CriticalService extends BaseGameService<Record<string, unknown>> {
+  protected readonly logger = new Logger(CriticalService.name);
+  readonly gameId = 'critical_v1';
+  readonly gameName = 'Critical';
+  readonly minPlayers = MIN_PLAYERS;
+  readonly maxPlayers = MAX_PLAYERS;
+
+  private readonly criticalActions: CriticalActionsService;
 
   constructor(
-    private readonly roomsService: GameRoomsService,
-    private readonly sessionsService: GameSessionsService,
-    private readonly realtimeService: GamesRealtimeService,
-    private readonly criticalActions: CriticalActionsService,
+    roomsService: GameRoomsService,
+    sessionsService: GameSessionsService,
+    realtimeService: GamesRealtimeService,
+    criticalActions: CriticalActionsService,
     @Inject(forwardRef(() => CriticalBotService))
-    private readonly botService: CriticalBotService,
-    @InjectConnection() private readonly mongoConnection: Connection,
+    botService: CriticalBotService,
+    @InjectConnection() mongoConnection: Connection,
   ) {
-    this.watchdog = new GameBotWatchdog(
-      'critical_v1',
+    super(
+      roomsService,
       sessionsService,
+      realtimeService,
       botService,
       mongoConnection,
     );
+    this.criticalActions = criticalActions;
   }
 
-  onModuleInit() {
-    this.watchdog.start();
-  }
-
-  onModuleDestroy() {
-    this.watchdog.stop();
-  }
-
-  /**
-   * Find session by room ID and trigger bot logic if needed
-   */
-  async findSessionByRoom(roomId: string) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (session) {
-      return this.checkAndSyncRoomStatus(session);
-    }
-    return null;
-  }
-
-  async completeSession(sessionId: string, roomId: string): Promise<void> {
-    await this.sessionsService.updateSessionState({
-      sessionId,
-      state: {},
-      status: 'completed',
-    });
-    await this.roomsService.updateRoomStatus(roomId, 'completed');
-  }
-
-  // ========== Private Helper ==========
-
-  private async checkAndSyncRoomStatus(session: GameSessionSummary) {
-    if (session.status === 'completed') {
-      await this.roomsService.updateRoomStatus(session.roomId, 'completed');
-    } else {
-      // Trigger bot logic asynchronously
-      this.botService.checkAndPlay(session).catch((err: unknown) => {
-        const message = err instanceof Error ? err.message : String(err);
-        const stack = err instanceof Error ? err.stack : undefined;
-        this.logger.error(
-          `Error in bot turn for room ${session.roomId}: ${message}`,
-          stack,
-        );
-      });
-    }
-    return session;
+  protected resolveOptions(raw: unknown): Record<string, unknown> {
+    return (raw as Record<string, unknown> | null | undefined) ?? {};
   }
 
   async drawCard(sessionId: string, userId: string) {
     const session = await this.criticalActions.drawCard(sessionId, userId);
-    return this.checkAndSyncRoomStatus(session);
+    return this.afterSessionStep(session);
   }
 
   async playActionCard(
@@ -101,7 +60,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       userId,
       payload,
     );
-    return this.checkAndSyncRoomStatus(session);
+    return this.afterSessionStep(session);
   }
 
   async playCatCombo(
@@ -118,7 +77,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       userId,
       payload,
     );
-    return this.checkAndSyncRoomStatus(session);
+    return this.afterSessionStep(session);
   }
 
   async playFavor(
@@ -133,12 +92,12 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       userId,
       payload,
     );
-    return this.checkAndSyncRoomStatus(session);
+    return this.afterSessionStep(session);
   }
 
   async seeFuture(sessionId: string, userId: string) {
     const session = await this.criticalActions.seeFuture(sessionId, userId);
-    return this.checkAndSyncRoomStatus(session);
+    return this.afterSessionStep(session);
   }
 
   async defuse(
@@ -151,20 +110,20 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       userId,
       payload,
     );
-    return this.checkAndSyncRoomStatus(session);
+    return this.afterSessionStep(session);
   }
 
   // ========== Legacy / Compatibility Wrappers ==========
 
   /**
-   * Start an Critical session (backward compatibility)
+   * Start a Critical session (backward compatibility)
    */
   async startSession(
     userId: string,
     roomId?: string,
-    engine?: string,
     withBots?: boolean,
     botCount?: number,
+    engine?: string,
   ): Promise<StartGameSessionResult> {
     let effectiveRoomId = roomId;
     if (!effectiveRoomId) {
@@ -199,7 +158,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
     }
 
     // Check minimum players unless withBots is true
-    if (room.playerCount < 2 && !withBots) {
+    if (room.playerCount < MIN_PLAYERS && !withBots) {
       throw new Error('Need at least 2 players to start the game');
     }
 
@@ -224,7 +183,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       await this.roomsService.getRoomParticipants(effectiveRoomId);
 
     if (withBots) {
-      // Actually, if botCount is provided, we add exactly that many bots.
+      // If botCount is provided, we add exactly that many bots.
       // If not, we default to 4 total players (3 bots for 1 human) for Critical.
       const targetBotCount = botCount !== undefined ? botCount : 3;
       for (let i = 0; i < targetBotCount; i++) {
@@ -256,7 +215,8 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       },
     );
 
-    return { room: updatedRoom, session };
+    const updatedSession = await this.afterSessionStep(session);
+    return { room: updatedRoom, session: updatedSession };
   }
 
   /**
@@ -284,7 +244,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
         cardsToUnstash: options?.cardsToUnstash,
       },
     );
-    return this.checkAndSyncRoomStatus(updatedSession);
+    return this.afterSessionStep(updatedSession);
   }
 
   /**
@@ -329,7 +289,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
         requestedDiscardCard: payload.requestedDiscardCard,
       },
     );
-    return this.checkAndSyncRoomStatus(updatedSession);
+    return this.afterSessionStep(updatedSession);
   }
 
   async playFavorByRoom(
@@ -346,7 +306,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
         targetPlayerId,
       },
     );
-    return this.checkAndSyncRoomStatus(updatedSession);
+    return this.afterSessionStep(updatedSession);
   }
 
   async giveFavorCardByRoom(
@@ -363,14 +323,14 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
         cardToGive,
       },
     );
-    return this.checkAndSyncRoomStatus(updatedSession);
+    return this.afterSessionStep(updatedSession);
   }
 
   async seeTheFutureByRoom(userId: string, roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
     if (!session) throw new Error('Session not found');
     const result = await this.criticalActions.seeFuture(session.id, userId);
-    await this.checkAndSyncRoomStatus(result);
+    await this.afterSessionStep(result);
 
     const topCards =
       result.state &&
@@ -390,12 +350,12 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       userId,
       { position },
     );
-    return this.checkAndSyncRoomStatus(updatedSession);
+    return this.afterSessionStep(updatedSession);
   }
 
   async playNope(sessionId: string, userId: string) {
     const session = await this.criticalActions.playNope(sessionId, userId);
-    return this.checkAndSyncRoomStatus(session);
+    return this.afterSessionStep(session);
   }
 
   async playNopeByRoom(userId: string, roomId: string) {
@@ -405,7 +365,7 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       session.id,
       userId,
     );
-    return this.checkAndSyncRoomStatus(updatedSession);
+    return this.afterSessionStep(updatedSession);
   }
   async commitAlterFutureByRoom(
     userId: string,
@@ -419,6 +379,6 @@ export class CriticalService implements OnModuleInit, OnModuleDestroy {
       userId,
       { newOrder },
     );
-    return this.checkAndSyncRoomStatus(updatedSession);
+    return this.afterSessionStep(updatedSession);
   }
 }

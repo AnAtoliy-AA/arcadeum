@@ -316,7 +316,13 @@ export class GamesController {
     }
 
     // Default to Critical (legacy behavior)
-    return this.criticalService.startSession(user.userId, roomId, dto.engine);
+    return this.criticalService.startSession(
+      user.userId,
+      roomId,
+      undefined,
+      undefined,
+      dto.engine,
+    );
   }
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/leave')

@@ -1,54 +1,26 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
-import type {
-  GameMessageHandler,
-  GameMessageHandlerFn,
-} from './game-message-handler.interface';
-
+import type { GameMessageHandlerFn } from './game-message-handler.interface';
 import { CriticalService } from './critical/critical.service';
 import {
-  extractRoomAndUser,
+  BaseGameGateway,
   extractString,
   handleError,
+  maybeEncrypt,
   validatePayloadUserId,
-} from './games.gateway.utils';
-import { maybeEncrypt } from '../common/utils/socket-encryption.util';
+} from './common/base-game.gateway';
 
 @Injectable()
-export class CriticalGateway implements GameMessageHandler {
-  private readonly logger = new Logger(CriticalGateway.name);
+export class CriticalGateway extends BaseGameGateway<Record<string, unknown>> {
+  protected readonly logger = new Logger(CriticalGateway.name);
+  protected readonly eventPrefix = 'games';
 
-  constructor(private readonly criticalService: CriticalService) {}
-
-  private handleException(params: {
-    error: unknown;
-    action: string;
-    roomId?: string;
-    userId?: string;
-    userMessage: string;
-  }) {
-    const { error, action, roomId, userId, userMessage } = params;
-    handleError(
-      this.logger,
-      error,
-      { action, roomId: roomId || '', userId: userId || '' },
-      userMessage,
-    );
+  constructor(protected readonly gameService: CriticalService) {
+    super();
   }
 
-  readonly handlers: Record<string, GameMessageHandlerFn> = {
-    'games.session.start': (client, payload) =>
-      this.handleSessionStart(client, payload),
-    'games.session.play_defuse': (client, payload) =>
-      this.handleSessionPlayDefuse(client, payload),
-    'games.session.play_nope': (client, payload) =>
-      this.handleSessionPlayNope(client, payload),
-    'games.session.commit_alter_future': (client, payload) =>
-      this.handleSessionCommitAlterFuture(client, payload),
-  };
-
-  private async handleSessionStart(
+  protected override async handleSessionStart(
     client: Socket,
     payload: Record<string, unknown>,
   ): Promise<void> {
@@ -63,125 +35,94 @@ export class CriticalGateway implements GameMessageHandler {
     validatePayloadUserId(client, userId);
 
     try {
-      const result = await this.criticalService.startSession(
+      const result = await this.gameService.startSession(
         userId,
         roomId,
-        engine,
         withBots,
         payload?.botCount as number | undefined,
+        engine,
       );
 
       client.emit('games.session.started', maybeEncrypt(result));
     } catch (error) {
-      this.handleException({
+      handleError(
+        this.logger,
         error,
-        action: 'start Critical session',
-        roomId: roomId || 'unknown',
-        userId,
-        userMessage: 'Unable to start session.',
-      });
+        {
+          action: 'start Critical session',
+          roomId: roomId || 'unknown',
+          userId,
+        },
+        'Unable to start session.',
+      );
     }
   }
 
-  private async handleSessionPlayDefuse(
-    client: Socket,
-    payload: Record<string, unknown>,
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    const position =
-      typeof payload?.position === 'number' ? payload.position : undefined;
+  protected getGameHandlers(): Record<string, GameMessageHandlerFn> {
+    return {
+      'games.session.play_defuse': this.wrapHandler(
+        'play Defuse card',
+        async (client, payload, roomId, userId) => {
+          const position =
+            typeof payload?.position === 'number'
+              ? payload.position
+              : undefined;
 
-    if (position === undefined || position < 0) {
-      throw new WsException(
-        'position is required and must be a non-negative number.',
-      );
-    }
+          if (position === undefined || position < 0) {
+            throw new WsException(
+              'position is required and must be a non-negative number.',
+            );
+          }
 
-    validatePayloadUserId(client, userId);
+          await this.gameService.defuseByRoom(userId, roomId, position);
 
-    try {
-      await this.criticalService.defuseByRoom(userId, roomId, position);
+          client.emit(
+            'games.session.defuse.played',
+            maybeEncrypt({
+              roomId,
+              userId,
+              position,
+            }),
+          );
+        },
+      ),
+      'games.session.play_nope': this.wrapHandler(
+        'play Nope card',
+        async (client, _payload, roomId, userId) => {
+          await this.gameService.playNopeByRoom(userId, roomId);
 
-      client.emit(
-        'games.session.defuse.played',
-        maybeEncrypt({
-          roomId,
-          userId,
-          position,
-        }),
-      );
-    } catch (error) {
-      this.handleException({
-        error,
-        action: 'play Defuse card',
-        roomId,
-        userId,
-        userMessage: 'Unable to play Defuse card.',
-      });
-    }
-  }
+          client.emit(
+            'games.session.nope.played',
+            maybeEncrypt({
+              roomId,
+              userId,
+            }),
+          );
+        },
+      ),
+      'games.session.commit_alter_future': this.wrapHandler(
+        'commit alter future',
+        async (client, payload, roomId, userId) => {
+          const newOrder = Array.isArray(payload.newOrder)
+            ? payload.newOrder
+            : [];
 
-  private async handleSessionPlayNope(
-    client: Socket,
-    payload: Record<string, unknown>,
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
+          await this.gameService.commitAlterFutureByRoom(
+            userId,
+            roomId,
+            newOrder as string[],
+          );
 
-    validatePayloadUserId(client, userId);
-
-    try {
-      await this.criticalService.playNopeByRoom(userId, roomId);
-
-      client.emit(
-        'games.session.nope.played',
-        maybeEncrypt({
-          roomId,
-          userId,
-        }),
-      );
-    } catch (error) {
-      this.handleException({
-        error,
-        action: 'play Nope card',
-        roomId,
-        userId,
-        userMessage: 'Unable to play Nope card.',
-      });
-    }
-  }
-
-  private async handleSessionCommitAlterFuture(
-    client: Socket,
-    payload: Record<string, unknown>,
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    const newOrder = Array.isArray(payload.newOrder) ? payload.newOrder : [];
-
-    validatePayloadUserId(client, userId);
-
-    try {
-      await this.criticalService.commitAlterFutureByRoom(
-        userId,
-        roomId,
-        newOrder as string[],
-      );
-
-      client.emit(
-        'games.session.action.played',
-        maybeEncrypt({
-          roomId,
-          userId,
-          action: 'commit_alter_future',
-        }),
-      );
-    } catch (error) {
-      this.handleException({
-        error,
-        action: 'commit alter future',
-        roomId,
-        userId,
-        userMessage: 'Unable to commit alter future.',
-      });
-    }
+          client.emit(
+            'games.session.action.played',
+            maybeEncrypt({
+              roomId,
+              userId,
+              action: 'commit_alter_future',
+            }),
+          );
+        },
+      ),
+    };
   }
 }

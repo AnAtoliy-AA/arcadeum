@@ -86,7 +86,7 @@ const CollapsibleColumn = ({
         type="button"
         onClick={toggle}
         aria-expanded={isOpen}
-        className="flex w-full cursor-pointer items-center justify-between py-4 text-left max-[800px]:py-3 min-[801px]:pointer-events-none"
+        className="flex w-full cursor-pointer items-center justify-between bg-transparent py-4 text-left max-[800px]:py-3 min-[801px]:pointer-events-none"
       >
         <Typography variant="heading" uiSize="sm" weight="700" tracking="sm">
           {title.toUpperCase()}

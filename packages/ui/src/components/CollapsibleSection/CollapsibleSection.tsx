@@ -33,7 +33,7 @@ export const CollapsibleSection = memo(function CollapsibleSection({
   return (
     <div
       className={cx(
-        'flex w-full flex-col gap-2 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] p-4',
+        'flex w-full flex-col gap-2 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-4 backdrop-blur-md',
         className,
       )}
     >

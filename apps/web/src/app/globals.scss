@@ -37,11 +37,11 @@
 .typography-size-xl { font-size: 20px; line-height: 30px; }
 .typography-size-2xl { font-size: 24px; line-height: 32px; }
 .typography-size-3xl { font-size: 32px; line-height: 40px; }
-.typography-variant-heading { font-weight: 800; letter-spacing: -0.5px; }
-.typography-variant-subheading { font-weight: 700; letter-spacing: -0.2px; }
-.typography-variant-body { font-weight: 400; }
-.typography-variant-label { font-weight: 600; letter-spacing: 1px; }
-.typography-variant-caption { font-weight: 400; opacity: 0.6; }
+.typography-variant-heading { font-weight: 800; letter-spacing: -0.5px; color: var(--color, #ecefee); }
+.typography-variant-subheading { font-weight: 700; letter-spacing: -0.2px; color: var(--color, #ecefee); }
+.typography-variant-body { font-weight: 400; color: var(--color, #ecefee); }
+.typography-variant-label { font-weight: 600; letter-spacing: 1px; color: var(--color, #ecefee); }
+.typography-variant-caption { font-weight: 400; opacity: 0.6; color: var(--color, #ecefee); }
 .typography-weight-400 { font-weight: 400; }
 .typography-weight-500 { font-weight: 500; }
 .typography-weight-600 { font-weight: 600; }

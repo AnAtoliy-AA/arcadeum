@@ -83,16 +83,15 @@ export default function CookiePolicyPageContent({
                   'Trust & Transparency'}
               </Badge>
 
-              <h1 className="m-0">
-                <Typography
-                  variant="heading"
-                  uiSize="xl"
-                  gradient="primary"
-                  className="text-4xl font-extrabold tracking-tight"
-                >
-                  {t?.title ?? 'Cookie Policy'}
-                </Typography>
-              </h1>
+              <Typography
+                variant="heading"
+                level={1}
+                uiSize="xl"
+                gradient="primary"
+                className="m-0 text-4xl font-extrabold tracking-tight"
+              >
+                {t?.title ?? 'Cookie Policy'}
+              </Typography>
 
               {t?.lastUpdated && (
                 <Typography

@@ -1,4 +1,4 @@
-import { helpFaq } from './help-faq/es';
+import { helpEs } from './help/es';
 import { adminAnnouncementsEs } from './admin-announcements/es';
 import { adminTournamentsEs } from './admin-tournaments/es';
 import { walletEs } from './wallet/es';
@@ -17,6 +17,9 @@ import { adminUsersEs } from './admin-users/es';
 import { adminBulkRewardsEs } from './admin-bulk-rewards/es';
 import { friendsEs } from './friends/es';
 import { communityEs } from './community/es';
+import { rewardsEs } from './rewards/es';
+import { developersEs } from './developers/es';
+import { blogEs } from './blog/es';
 
 export const es = {
   admin: {
@@ -150,30 +153,7 @@ export const es = {
       },
     },
   },
-  blog: {
-    title: 'Blog de Juegos',
-    subtitle: 'Noticias, consejos e historias de la comunidad',
-    description:
-      'Mantente al día con las últimas guías, anuncios, consejos de estrategia e historias de jugadores de todo el mundo.',
-    features: [
-      {
-        title: 'Últimas noticias',
-        description:
-          'Infórmate antes que nadie sobre nuevos juegos, funciones y actualizaciones.',
-      },
-      {
-        title: 'Consejos PRO',
-        description:
-          'Aprende estrategias avanzadas de los mejores jugadores de la comunidad.',
-      },
-      {
-        title: 'Historias de la comunidad',
-        description:
-          'Lee sobre las experiencias y logros de nuestros jugadores más dedicados.',
-      },
-    ],
-    comingSoon: '¡Los artículos llegarán pronto!',
-  },
+  blog: blogEs,
   community: communityEs,
   cookies: {
     title: 'Política de Cookies',
@@ -210,55 +190,8 @@ export const es = {
       },
     },
   },
-  developers: {
-    title: 'Desarrolladores',
-    subtitle: 'Construye sobre la plataforma Arcadeum',
-    description:
-      'Explora nuestras APIs y herramientas para desarrolladores. Documentación completa y acceso sandbox disponibles próximamente.',
-    features: [
-      {
-        title: 'APIs RESTful',
-        description:
-          'Accede a datos de jugadores, historial de juegos y clasificaciones.',
-      },
-      {
-        title: 'Eventos WebSocket',
-        description:
-          'Integra actualizaciones en tiempo real en tus propias aplicaciones.',
-      },
-      {
-        title: 'Entorno Sandbox',
-        description:
-          'Prueba tus integraciones en un entorno seguro antes de salir a producción.',
-      },
-    ],
-    comingSoon: '¡El portal para desarrolladores llegará pronto!',
-  },
-  help: {
-    title: 'Centro de Ayuda',
-    subtitle: 'Encuentra respuestas a preguntas frecuentes',
-    description:
-      'Consulta artículos sobre juego, gestión de cuentas, facturación y más. Si no encuentras lo que buscas, nuestro equipo de soporte está listo para ayudarte.',
-    features: [
-      {
-        title: 'Preguntas frecuentes',
-        description:
-          'Encuentra respuestas rápidas en nuestra amplia base de conocimientos.',
-      },
-      {
-        title: 'Soporte directo',
-        description:
-          'Abre un ticket de soporte y recibe ayuda personalizada de nuestro equipo.',
-      },
-      {
-        title: 'Ayuda de la comunidad',
-        description:
-          'Conecta con otros jugadores para compartir consejos y trucos.',
-      },
-    ],
-    faq: helpFaq,
-    comingSoon: 'El centro de ayuda llegará pronto.',
-  },
+  developers: developersEs,
+  help: helpEs,
   leaderboards: {
     title: 'Clasificaciones',
     subtitle: 'Descubre tu posición entre los mejores jugadores',
@@ -428,32 +361,10 @@ export const es = {
         description: 'Revisa tu desempeño pasado y observa cómo has mejorado.',
       },
     ],
-    comingSoon: '¡Las clasificaciones globales llegarán pronto!',
+    comingSoon:
+      '¡Las tablas de clasificación globales estarán disponibles pronto!',
   },
-  rewards: {
-    title: 'Recompensas',
-    subtitle: 'Gana bonos exclusivos mientras juegas',
-    description:
-      'Nuestro programa de recompensas está diseñado para agradecer a nuestros jugadores más activos. Gana puntos por cada partida y canjéalos por artículos premium.',
-    features: [
-      {
-        title: 'Bonos diarios',
-        description:
-          'Inicia sesión cada día para reclamar tu recompensa diaria.',
-      },
-      {
-        title: 'Pases de temporada',
-        description:
-          'Desbloquea una ruta de recompensas participando en eventos estacionales.',
-      },
-      {
-        title: 'Programa de referidos',
-        description:
-          'Invita a tus amigos y gana bonos por cada nuevo jugador que se una.',
-      },
-    ],
-    comingSoon: '¡La tienda de recompensas llegará pronto!',
-  },
+  rewards: rewardsEs,
   wallet: walletEs,
   gems: gemsEs,
   adminGemPackages: adminGemPackagesEs,

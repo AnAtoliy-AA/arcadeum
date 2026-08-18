@@ -1,15 +1,9 @@
 'use client';
-import dynamic from 'next/dynamic';
-import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
-import type { RewardsPageContentProps } from './RewardsPageContent';
 
-const RewardsPageDynamic = dynamic(() => import('./RewardsPageContent'), {
-  ssr: false,
-  loading: () => <PageLoading layout="standard" />,
-});
+import RewardsPageContent, {
+  type RewardsPageContentProps,
+} from './RewardsPageContent';
 
-const RewardsClient = (props: RewardsPageContentProps) => {
-  return <RewardsPageDynamic {...props} />;
-};
-
-export default RewardsClient;
+export default function RewardsClient({ t }: RewardsPageContentProps) {
+  return <RewardsPageContent t={t} />;
+}

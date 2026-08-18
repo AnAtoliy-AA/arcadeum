@@ -1,30 +1,45 @@
 export const helpFaq = {
-  heading: 'Questions fréquentes',
+  heading: 'Foire aux questions',
   items: [
     {
-      question: 'Faut-il télécharger quelque chose pour jouer ?',
+      question: 'Dois-je télécharger une application pour jouer ?',
       answer:
-        'Non. Arcadeum fonctionne dans tout navigateur moderne, sur ordinateur ou mobile. Créez une salle, partagez le lien et jouez. Des applications natives iOS et Android sont également disponibles.',
+        'Non. Arcadeum fonctionne directement dans votre navigateur web, sur ordinateur ou mobile. Créez un salon, partagez le lien et jouez instantanément.',
     },
     {
       question: 'Arcadeum est-il gratuit ?',
       answer:
-        'Oui. Tous les jeux principaux et le matchmaking sont gratuits. Nous nous finançons grâce à des parrainages facultatifs et à des éléments cosmétiques pour maintenir les serveurs et développer de nouveaux prototypes.',
+        'Oui. Tous les jeux principaux et le matchmaking sont gratuits. Nous nous finançons grâce aux cosmétiques et soutiens optionnels.',
     },
     {
-      question: 'Comment inviter des amis à une partie ?',
+      question: 'Comment inviter des amis dans une partie ?',
       answer:
-        "Créez une salle depuis la page Jeux puis copiez le lien d'invitation ou partagez-le directement. Vos amis peuvent rejoindre sans compte — la connexion est facultative pour le jeu occasionnel.",
+        'Créez un salon depuis la page Jeux puis copiez le lien d’invitation. Vos amis peuvent rejoindre sans inscription.',
     },
     {
       question: 'Puis-je jouer contre une IA ?',
       answer:
-        "Oui. La plupart des jeux proposent un mode rapide contre l'IA avec difficulté réglable pour s'entraîner ou jouer en solo lorsque personne n'est disponible.",
+        'Oui. La plupart des jeux intègrent un mode contre IA avec difficulté réglable pour vous entraîner.',
     },
     {
-      question: "Où obtenir de l'aide en cas de problème ?",
+      question: 'Que se passe-t-il en cas de déconnexion ?',
       answer:
-        'Ouvrez le formulaire de contact depuis la page support et notre équipe vous répondra sous un jour ouvré. Pour les urgences en tournoi, contactez-nous sur Discord pour une réponse plus rapide.',
+        'Notre passerelle WebSocket conserve votre état de jeu pendant 60 secondes pour vous reconnecter automatiquement.',
+    },
+    {
+      question: 'Comment le classement Elo compétitif est-il calculé ?',
+      answer:
+        'Les matchs compétitifs utilisent un algorithme Elo dynamique récompensant davantage les victoires contre des joueurs mieux classés.',
+    },
+    {
+      question: 'Comment récupérer mes récompenses quotidiennes ?',
+      answer:
+        'Rendez-vous sur la page Récompenses chaque jour pour valider votre série. Les quêtes progressent automatiquement.',
+    },
+    {
+      question: 'Où obtenir de l’aide en cas de problème ?',
+      answer:
+        'Utilisez le formulaire de support ou écrivez-nous sur notre Discord pour une assistance rapide.',
     },
   ],
 };

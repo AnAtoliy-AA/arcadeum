@@ -1,16 +1,9 @@
 'use client';
-import type { PageTranslations } from '@/shared/i18n/page-translations';
 
-import dynamic from 'next/dynamic';
-import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
+import DevelopersPageContent, {
+  type DevelopersPageContentProps,
+} from './DevelopersPageContent';
 
-const DevelopersPageDynamic = dynamic(() => import('./DevelopersPageContent'), {
-  ssr: false,
-  loading: () => <PageLoading layout="standard" />,
-});
-
-const DevelopersClient = (props: { t?: PageTranslations }) => {
-  return <DevelopersPageDynamic {...props} />;
-};
-
-export default DevelopersClient;
+export default function DevelopersClient({ t }: DevelopersPageContentProps) {
+  return <DevelopersPageContent t={t} />;
+}

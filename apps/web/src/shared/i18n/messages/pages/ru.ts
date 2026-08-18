@@ -1,4 +1,4 @@
-import { helpFaq } from './help-faq/ru';
+import { helpRu } from './help/ru';
 import { adminAnnouncementsRu } from './admin-announcements/ru';
 import { adminTournamentsRu } from './admin-tournaments/ru';
 import { walletRu } from './wallet/ru';
@@ -17,6 +17,10 @@ import { adminUsersRu } from './admin-users/ru';
 import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
 import { friendsRu } from './friends/ru';
 import { communityRu } from './community/ru';
+import { rewardsRu } from './rewards/ru';
+import { developersRu } from './developers/ru';
+import { blogRu } from './blog/ru';
+
 export const ru = {
   admin: {
     title: 'Админ',
@@ -153,30 +157,7 @@ export const ru = {
       },
     },
   },
-  blog: {
-    title: 'Игровой блог',
-    subtitle: 'Новости, советы и истории от сообщества',
-    description:
-      'Будьте в курсе последних гайдов, анонсов, стратегических советов и историй игроков со всего мира.',
-    features: [
-      {
-        title: 'Последние новости',
-        description:
-          'Узнавайте первыми о новых играх, функциях и обновлениях платформы.',
-      },
-      {
-        title: 'Советы профи',
-        description:
-          'Изучайте продвинутые стратегии от топовых игроков сообщества.',
-      },
-      {
-        title: 'Истории игроков',
-        description:
-          'Читайте об опыте и достижениях наших самых преданных геймеров.',
-      },
-    ],
-    comingSoon: 'Статьи появятся скоро!',
-  },
+  blog: blogRu,
   community: communityRu,
   cookies: {
     title: 'Политика использования файлов cookie',
@@ -213,54 +194,8 @@ export const ru = {
       },
     },
   },
-  developers: {
-    title: 'Разработчикам',
-    subtitle: 'Создавайте на платформе Arcadeum',
-    description:
-      'Изучайте наши API и инструменты для разработчиков. Полная документация и доступ к sandbox появятся в ближайшее время.',
-    features: [
-      {
-        title: 'REST API',
-        description:
-          'Доступ к данным игроков, истории игр и таблицам лидеров через безопасный API.',
-      },
-      {
-        title: 'WebSocket события',
-        description:
-          'Интегрируйте игровые обновления в режиме реального времени в свои приложения.',
-      },
-      {
-        title: 'Sandbox окружение',
-        description:
-          'Тестируйте свои интеграции в безопасной среде перед запуском.',
-      },
-    ],
-    comingSoon: 'Портал разработчиков скоро откроется!',
-  },
-  help: {
-    title: 'Центр помощи',
-    subtitle: 'Найдите ответы на распространённые вопросы',
-    description:
-      'Просматривайте статьи об игровом процессе, управлении аккаунтом, оплате и многом другом. Наша команда поддержки готова помочь.',
-    features: [
-      {
-        title: 'Поиск по FAQ',
-        description: 'Быстро находите ответы в нашей обширной базе знаний.',
-      },
-      {
-        title: 'Прямая поддержка',
-        description:
-          'Создайте тикет и получите персональную помощь от нашей команды.',
-      },
-      {
-        title: 'Помощь сообщества',
-        description:
-          'Общайтесь с другими игроками, чтобы делиться советами и решать проблемы.',
-      },
-    ],
-    faq: helpFaq,
-    comingSoon: 'Центр помощи скоро появится.',
-  },
+  developers: developersRu,
+  help: helpRu,
   leaderboards: {
     title: 'Таблицы лидеров',
     subtitle: 'Узнайте своё место среди лучших игроков',
@@ -435,29 +370,7 @@ export const ru = {
     ],
     comingSoon: 'Глобальные таблицы лидеров скоро появятся!',
   },
-  rewards: {
-    title: 'Награды',
-    subtitle: 'Получайте эксклюзивные бонусы во время игры',
-    description:
-      'Наша программа вознаграждений создана, чтобы поблагодарить самых активных игроков. Зарабатывайте очки за каждый матч и обменивайте их на премиум-предметы.',
-    features: [
-      {
-        title: 'Ежедневные бонусы',
-        description: 'Заходите каждый день, чтобы забрать свою награду.',
-      },
-      {
-        title: 'Сезонные пропуски',
-        description:
-          'Открывайте уникальные награды, участвуя в сезонных событиях.',
-      },
-      {
-        title: 'Реферальная программа',
-        description:
-          'Приглашайте друзей и получайте бонусы за каждого нового игрока.',
-      },
-    ],
-    comingSoon: 'Магазин наград скоро откроется!',
-  },
+  rewards: rewardsRu,
   wallet: walletRu,
   gems: gemsRu,
   adminGemPackages: adminGemPackagesRu,

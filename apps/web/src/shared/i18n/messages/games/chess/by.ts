@@ -119,6 +119,36 @@ export const byMessages = {
         draw: 'Партыя скончылася нічыяй. Паспрабуйце іншы варыянт?',
       },
     },
+    analysis: {
+      title: 'Разбор партыі',
+      view: 'Глядзець разбор',
+      back: 'Да выніку',
+      centipawns: 'cp',
+      empty: 'Недастаткова хадоў для аналізу.',
+      summary: {
+        inaccuracies: 'Недакладнасці',
+        mistakes: 'Памылкі',
+        blunders: 'Зеўкі',
+        turningPoint: 'Пераломны момант',
+        finalEval: 'Выніковая ацэнка',
+      },
+      quality: {
+        good: 'Добра',
+        inaccuracy: 'Недакладнасць',
+        mistake: 'Памылка',
+        blunder: 'Зеўка',
+      },
+    },
+    coach: {
+      title: 'Падказкі трэнера',
+      hint: 'Падказка',
+      move: 'Рэкамендуемы ход: {{symbol}} на {{square}}',
+      capture: 'Рэкамендуемы ход: {{symbol}} на {{square}}, узяць {{target}}',
+      castleKing: 'Рэкамендуемы ход: кароткая ракіроўка',
+      castleQueen: 'Рэкамендуемы ход: доўгая ракіроўка',
+      promote:
+        'Рэкамендуемы ход: {{symbol}} на {{square}}, ператварыць у {{promotion}}',
+    },
     actions: {
       move: 'Зрабіць ход',
       resign: 'Здацца',

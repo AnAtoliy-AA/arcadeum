@@ -1,4 +1,4 @@
-import { helpFaq } from './help-faq/en';
+import { helpEn } from './help/en';
 import { adminAnnouncementsEn } from './admin-announcements/en';
 import { adminTournamentsEn } from './admin-tournaments/en';
 import { walletEn } from './wallet/en';
@@ -17,6 +17,9 @@ import { adminUsersEn } from './admin-users/en';
 import { adminBulkRewardsEn } from './admin-bulk-rewards/en';
 import { friendsEn } from './friends/en';
 import { communityEn } from './community/en';
+import { rewardsEn } from './rewards/en';
+import { developersEn } from './developers/en';
+import { blogEn } from './blog/en';
 
 export const en = {
   admin: {
@@ -154,30 +157,7 @@ export const en = {
       },
     },
   },
-  blog: {
-    title: 'Gaming Blog',
-    subtitle: 'News, tips, and stories from the community',
-    description:
-      'Stay updated with the latest game guides, platform announcements, strategy tips, and stories from players around the world.',
-    features: [
-      {
-        title: 'Latest News',
-        description:
-          'Get the first look at new games, features, and platform updates.',
-      },
-      {
-        title: 'Pro Tips',
-        description:
-          'Learn advanced strategies and tips from the top-ranked players in the community.',
-      },
-      {
-        title: 'Community Stories',
-        description:
-          'Read about the experiences and achievements of our most dedicated gamers.',
-      },
-    ],
-    comingSoon: 'Articles are coming soon. Check back later!',
-  },
+  blog: blogEn,
   community: communityEn,
   cookies: {
     title: 'Cookie Policy',
@@ -214,55 +194,8 @@ export const en = {
       },
     },
   },
-  developers: {
-    title: 'Developers',
-    subtitle: 'Build on top of the Arcadeum platform',
-    description:
-      'Explore our APIs, webhooks, and developer tools to integrate Arcadeum into your own projects. Full documentation and sandbox access available.',
-    features: [
-      {
-        title: 'RESTful APIs',
-        description:
-          'Access player data, game history, and leaderboards through our secure REST APIs.',
-      },
-      {
-        title: 'WebSocket Events',
-        description:
-          'Integrate real-time game updates and notifications into your own applications.',
-      },
-      {
-        title: 'Sandboxed Environment',
-        description:
-          'Test your integrations in a risk-free environment before going live.',
-      },
-    ],
-    comingSoon: 'Developer portal is coming soon. Join the waitlist!',
-  },
-  help: {
-    title: 'Help Center',
-    subtitle: 'Find answers to common questions',
-    description:
-      "Browse articles about gameplay, account management, billing, and more. If you can't find what you're looking for, our support team is ready to help.",
-    features: [
-      {
-        title: 'Searchable FAQ',
-        description:
-          'Quickly find answers to your questions through our extensive knowledge base.',
-      },
-      {
-        title: 'Direct Support',
-        description:
-          'Open a support ticket and get personalized help from our dedicated team.',
-      },
-      {
-        title: 'Community Help',
-        description:
-          'Connect with other players to share troubleshooting tips and gameplay advice.',
-      },
-    ],
-    faq: helpFaq,
-    comingSoon: 'Help center is coming soon.',
-  },
+  developers: developersEn,
+  help: helpEn,
   leaderboards: {
     title: 'Leaderboards',
     subtitle: 'See where you rank among top players',
@@ -429,30 +362,7 @@ export const en = {
     ],
     comingSoon: 'Global leaderboards are coming soon!',
   },
-  rewards: {
-    title: 'Rewards',
-    subtitle: 'Earn exclusive bonuses as you play',
-    description:
-      'Our rewards program is designed to thank our most active players. Earn points for every match, unlock seasonal badges, and trade your hard-earned bonuses for premium in-game items.',
-    features: [
-      {
-        title: 'Daily Bonuses',
-        description:
-          'Sign in every day to claim your daily reward and maintain your streak.',
-      },
-      {
-        title: 'Seasonal Passes',
-        description:
-          'Unlock a dedicated track of rewards by participating in seasonal events.',
-      },
-      {
-        title: 'Referral Program',
-        description:
-          'Invite your friends to Arcadeum and earn bonuses for every new player who joins.',
-      },
-    ],
-    comingSoon: 'Rewards shop is coming soon. Start earning points today!',
-  },
+  rewards: rewardsEn,
   wallet: walletEn,
   gems: gemsEn,
   adminGemPackages: adminGemPackagesEn,

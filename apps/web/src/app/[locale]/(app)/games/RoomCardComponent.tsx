@@ -21,6 +21,7 @@ import {
   ParticipantsLabel,
   FastBadge,
   FastBadgeText,
+  RankedBadge,
   BadgeIcon,
   RoomMeta,
   MetaGrid,
@@ -131,6 +132,13 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               <BadgeIcon>⚡</BadgeIcon>
               <FastBadgeText>{t('games.rooms.fastRoom')}</FastBadgeText>
             </FastBadge>
+          )}
+
+          {room.gameOptions?.ranked === true && (
+            <RankedBadge data-testid="ranked-badge">
+              <BadgeIcon>★</BadgeIcon>
+              <FastBadgeText>{t('games.rooms.ranked')}</FastBadgeText>
+            </RankedBadge>
           )}
         </RoomHeader>
 

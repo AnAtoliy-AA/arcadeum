@@ -20,6 +20,8 @@ export interface CreateRoomForm {
     spectators: boolean;
   };
   preset: PresetId;
+  /** Ranked match — drives ELO rating updates for this room. */
+  ranked: boolean;
 }
 
 export const ROOM_NAME_MAX = 40;

@@ -51,6 +51,7 @@ export const esMessages = {
       private: 'Privada',
     },
     fastRoom: 'Partida rápida',
+    ranked: 'Clasificatoria',
     gameLabel: 'Juego',
     createdLabel: 'Creado',
   },
@@ -135,6 +136,9 @@ export const esMessages = {
     autoButton: 'Auto',
     fieldVisibility: 'Visibilidad',
     fieldNotes: 'Notas (opcional)',
+    fieldRanked: 'Partida clasificatoria',
+    fieldRankedHint:
+      'Las partidas clasificatorias afectan tu rating ELO en este juego.',
     notesPlaceholder: 'Agregar notas...',
     notesAria: 'Notas adicionales para la sala',
     submitCreating: 'Creando...',
@@ -413,5 +417,16 @@ export const esMessages = {
     cancel: 'Cancelar búsqueda',
     estimatedWait: 'Espera estimada: ~{{seconds}}s',
     queuePosition: 'Posición en la cola: {{position}} de {{total}}',
+  },
+  ranking: {
+    ratingUpdated: 'Rating actualizado',
+    tier: {
+      bronze: 'Bronce',
+      silver: 'Plata',
+      gold: 'Oro',
+      platinum: 'Platino',
+      diamond: 'Diamante',
+      master: 'Maestro',
+    },
   },
 };

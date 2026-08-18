@@ -1,17 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
+import BlogPageContent, { type BlogPageContentProps } from './BlogPageContent';
 
-import type { BlogTranslations } from './BlogPageContent';
-
-const BlogPageDynamic = dynamic(() => import('./BlogPageContent'), {
-  ssr: false,
-  loading: () => <PageLoading layout="standard" />,
-});
-
-const BlogClient = (props: { t?: BlogTranslations }) => {
-  return <BlogPageDynamic {...props} />;
-};
-
-export default BlogClient;
+export default function BlogClient({ t, posts, locale }: BlogPageContentProps) {
+  return <BlogPageContent t={t} posts={posts} locale={locale} />;
+}

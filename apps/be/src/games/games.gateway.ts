@@ -456,16 +456,27 @@ export class GamesGateway {
       userId: string;
       gameId: string;
       variant?: string;
+      ranked?: boolean;
     },
   ): void {
     const userId = extractString(payload, 'userId');
     const gameId = extractString(payload, 'gameId');
     const variant = payload.variant ? String(payload.variant) : undefined;
+    const ranked = payload.ranked === true;
 
     this.validateUserId(client, userId);
 
-    this.matchmakingService.joinQueue(userId, client.id, gameId, variant);
-    client.emit('games.matchmaking.joined', maybeEncrypt({ gameId, variant }));
+    this.matchmakingService.joinQueue(
+      userId,
+      client.id,
+      gameId,
+      variant,
+      ranked,
+    );
+    client.emit(
+      'games.matchmaking.joined',
+      maybeEncrypt({ gameId, variant, ranked }),
+    );
   }
 
   @SubscribeMessage('games.matchmaking.leave')

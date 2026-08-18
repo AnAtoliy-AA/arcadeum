@@ -1,7 +1,4 @@
-'use client';
-import type { PageTranslations } from '@/shared/i18n/page-translations';
-
-import { useLanguage } from '@/shared/i18n/context';
+import Link from 'next/link';
 import {
   PageLayout,
   Container,
@@ -9,75 +6,153 @@ import {
   PageTitle,
   Typography,
   Section,
+  Button,
 } from '@arcadeum/ui';
+import { buildRoutes } from '@/shared/config/routes';
+import { DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
+import type { developersEn } from '@/shared/i18n/messages/pages/developers/en';
 
-interface DevelopersPageContentProps {
-  t?: PageTranslations;
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends (infer U)[]
+    ? DeepPartial<U>[]
+    : T[P] extends readonly (infer U)[]
+      ? readonly DeepPartial<U>[]
+      : T[P] extends object
+        ? DeepPartial<T[P]>
+        : T[P];
+};
+
+export type DevelopersMessages = DeepPartial<typeof developersEn>;
+
+export interface DevelopersPageContentProps {
+  t?: DevelopersMessages;
+  locale?: Locale;
 }
 
 export default function DevelopersPageContent({
-  t: initialT,
+  t,
+  locale = DEFAULT_LOCALE,
 }: DevelopersPageContentProps) {
-  const { messages } = useLanguage();
-  const t =
-    (messages.pages?.developers as unknown as PageTranslations) || initialT;
+  const routes = buildRoutes(locale);
+  const stats = t?.stats;
+  const features = t?.features ?? [];
+  const cta = t?.cta;
 
   return (
     <PageLayout>
-      <Container size="md">
-        <GlassCard>
-          <PageTitle size="xl" gradient>
-            {t?.title}
-          </PageTitle>
-          <Typography variant="caption" alpha="medium">
-            {t?.subtitle}
-          </Typography>
-        </GlassCard>
+      <Container size="xl">
+        <div className="flex flex-col gap-10 py-6">
+          <div className="relative overflow-hidden rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-8 backdrop-blur-xl md:p-12">
+            <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[var(--primary)] opacity-15 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-[var(--success)] opacity-10 blur-3xl" />
 
-        <Section variant="legal">
-          <Typography variant="body" uiSize="md" alpha="high">
-            {t?.description}
-          </Typography>
-        </Section>
+            <div className="relative z-10 flex flex-col items-start gap-4 md:max-w-3xl">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
+                ⚡ {t?.subtitle ?? 'APIs & WebSocket Gateways'}
+              </span>
+              <PageTitle size="xl" gradient>
+                {t?.title ?? 'Arcadeum Developer Platform'}
+              </PageTitle>
+              <Typography variant="body" uiSize="lg" alpha="high">
+                {t?.description ??
+                  'Build custom bots, integrate tournament systems, and synchronize game state in real time with our open APIs.'}
+              </Typography>
+            </div>
+          </div>
 
-        {t?.features && (
-          <Section variant="legal">
-            <div className="flex flex-row items-stretch flex-wrap gap-4">
-              {(
-                t.features as ({ title: string; description: string } | null)[]
-              ).map((feature, index: number) => {
-                if (!feature) return null;
-                return (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <GlassCard className="flex flex-col gap-1 p-5 text-center">
+              <span className="text-2xl font-black text-[var(--primary)]">
+                {stats?.latency ?? '< 50ms'}
+              </span>
+              <span className="text-xs font-semibold text-[var(--colorMuted)]">
+                {stats?.latencyLabel ?? 'WebSocket Latency'}
+              </span>
+            </GlassCard>
+
+            <GlassCard className="flex flex-col gap-1 p-5 text-center">
+              <span className="text-2xl font-black text-[var(--gold)]">
+                {stats?.rateLimit ?? '100 req/min'}
+              </span>
+              <span className="text-xs font-semibold text-[var(--colorMuted)]">
+                {stats?.rateLimitLabel ?? 'Per-IP Rate Limit'}
+              </span>
+            </GlassCard>
+
+            <GlassCard className="flex flex-col gap-1 p-5 text-center">
+              <span className="text-2xl font-black text-[var(--success)]">
+                {stats?.uptime ?? '99.99%'}
+              </span>
+              <span className="text-xs font-semibold text-[var(--colorMuted)]">
+                {stats?.uptimeLabel ?? 'Platform Uptime'}
+              </span>
+            </GlassCard>
+
+            <GlassCard className="flex flex-col gap-1 p-5 text-center">
+              <span className="text-2xl font-black text-[var(--color)]">
+                {stats?.sdk ?? 'REST & WS'}
+              </span>
+              <span className="text-xs font-semibold text-[var(--colorMuted)]">
+                {stats?.sdkLabel ?? 'API Gateways'}
+              </span>
+            </GlassCard>
+          </div>
+
+          <Section>
+            <div className="flex flex-col gap-6">
+              <Typography variant="heading" uiSize="xl" weight="800">
+                Platform Architecture & Capabilities
+              </Typography>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {features.map((feat, idx) => (
                   <GlassCard
-                    className={
-                      'flex-1 min-w-[280px] p-4 border border-[var(--borderColor)]'
-                    }
-                    key={index}
+                    key={idx}
+                    className="flex flex-col justify-between gap-4 p-6 transition-all duration-200 hover:-translate-y-1"
                   >
-                    <div className="flex flex-col items-stretch gap-2">
-                      <Typography
-                        className={'font-bold'}
-                        variant="label"
-                        uiSize="md"
-                      >
-                        {feature.title}
+                    <div className="flex flex-col gap-3">
+                      <span className="text-3xl">{feat?.icon}</span>
+                      <Typography variant="heading" uiSize="md" weight="700">
+                        {feat?.title}
                       </Typography>
                       <Typography variant="body" uiSize="sm" alpha="medium">
-                        {feature.description}
+                        {feat?.description}
                       </Typography>
                     </div>
                   </GlassCard>
-                );
-              })}
+                ))}
+              </div>
             </div>
           </Section>
-        )}
 
-        <Section variant="legal">
-          <Typography variant="body" uiSize="md" alpha="medium">
-            {t?.comingSoon}
-          </Typography>
-        </Section>
+          <div className="flex flex-col items-center justify-between gap-6 rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-8 text-center backdrop-blur-xl md:flex-row md:p-10 md:text-left">
+            <div className="flex max-w-xl flex-col gap-2">
+              <Typography variant="heading" uiSize="lg" weight="800">
+                {cta?.title ?? 'Start Building on Arcadeum'}
+              </Typography>
+              <Typography variant="body" uiSize="sm" alpha="medium">
+                {cta?.description ??
+                  'Explore our open-source tools or join fellow developers in our Discord channel.'}
+              </Typography>
+            </div>
+            <div className="flex flex-wrap items-center gap-4">
+              <a
+                href="https://github.com/AnAtoliy-AA/arcadeum"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="secondary" size="md">
+                  📦 {cta?.githubBtn ?? 'GitHub'}
+                </Button>
+              </a>
+              <Link href={routes.community}>
+                <Button variant="primary" size="md">
+                  💬 {cta?.discordBtn ?? 'Discord'}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
       </Container>
     </PageLayout>
   );

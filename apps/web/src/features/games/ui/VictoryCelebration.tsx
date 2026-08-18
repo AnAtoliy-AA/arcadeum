@@ -159,7 +159,6 @@ export function VictoryCelebration({ tone }: { tone: CelebrationTone }) {
             borderRadius: '50%',
             background:
               'radial-gradient(circle, #ffffff 0%, rgba(255,230,102,0.8) 45%, transparent 70%)',
-            boxShadow: '0 0 8px rgba(255, 230, 102, 0.9)',
             animation: `sparkle-rise ${s.duration}s ease-in ${s.delay}s infinite`,
           }}
         />

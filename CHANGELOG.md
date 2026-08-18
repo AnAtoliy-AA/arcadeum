@@ -7,9 +7,108 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.50] - 2026-08-18
+
+### Added
+- wire dynamic markdown data into RoadmapClient and content (ARC-904) (ARC-904)
+- parse docs/ROADMAP.md dynamically on the server (ARC-904) (ARC-904)
+- use Arcadeum Games name across app config and pages (ARC-904) (ARC-904)
+- center icon badges and add feature status tracking (ARC-904) (ARC-904)
+
+### Fixed
+- ensure h1 level heading rendered for roadmap and changelog (ARC-904) (ARC-904)
+
+### Refactored
+- extract TierCard and StatusBadge into TierCard.tsx (ARC-904) (ARC-904)
+
+
+## [1.25.49] - 2026-08-18
+
+### Documentation
+- mark tier 2 fully complete in roadmap (ARC-883)
+
+
+## [1.25.48] - 2026-08-18
+
+### Added
+- connect help page category cards to dynamic FAQ filtering (ARC-883)
+- modernize content pages, SEO structured data, and mobile footer (ARC-883)
+
+### Fixed
+- enhance text contrast and colors on help page (ARC-883)
+- reset button styling to transparent background and inherit text color (ARC-883)
+- prevent nested h2 inside h1 by supporting as prop and level on Typography (ARC-883)
+- avoid nested heading in AuthBrandPanel headline accent (ARC-883)
+- render semantic headings in Typography and fix footer e2e (ARC-883)
+
+### Refactored
+- render DevelopersPageContent directly as Server Component (ARC-883)
+- remove Endpoints & Specs section from developers page (ARC-883)
+- remove SDK code snippet section from developers page (ARC-883)
+
+
+## [1.25.47] - 2026-08-18
+
+### Added
+- add coach-mode move hints for chess (ARC-883)
+
+### Refactored
+- derive coach flags in hook to fit line limit (ARC-883)
+
+### Documentation
+- add changelog entry for coach mode (ARC-883)
+
+
+## [1.25.46] - 2026-08-17
+
+### Fixed
+
+- replace bash-specific $(...) with cross-platform port resolver
+- resolve pnpm v11 compatibility issues
+
+### Improved
+
+- remove GPU-heavy animations across app UI
+- remove GPU-heavy animations across all games
+- reduce GPU load in sea-battle animations
+- remove GPU-killing backdrop-filter blur effects
+- replace box-shadow animations with GPU-composited transform/opacity
+
+### Documentation
+
+- add MongoDB Docker setup to CONTRIBUTING.md
+
+## [1.25.45] - 2026-08-17
+
+### Added
+
+- add i18n keys for post-game analysis (ARC-882)
+- surface analysis behind a toggle in the chess result modal (ARC-882)
+- add post-game analysis UI components (ARC-882)
+- add chess position evaluator and analysis engine (ARC-882)
+
+### Documentation
+
+- add changelog entry for chess post-game analysis (ARC-882)
+
+## [1.25.44] - 2026-08-17
+
+### Added
+
+- add i18n keys for ranked mode and tiers (ARC-881)
+- surface ranked mode across create flow, lobbies and results (ARC-881)
+- add web ranking model, api, store and RatingBadge (ARC-881)
+- add backend ranked ELO module and integrate with game results (ARC-881)
+
+### Documentation
+
+- add changelog entry for ranked/ELO ratings (ARC-881)
+- mark ranked/ELO skill ratings as implemented (ARC-881)
+
 ## [1.25.43] - 2026-08-17
 
 ### Added
+
 - add icon to Rooms nav item in mobile menu (ARC-games-description-pages)
 - disable all start-game buttons on landings for disabled games (ARC-games-description-pages)
 - disable landing play buttons for admin-disabled games (ARC-games-description-pages)
@@ -18,30 +117,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rework game description pages with unified architecture and real theme variants (ARC-games-description-pages)
 
 ### Fixed
-- move room route to /rooms and restore human matchmaking (ARC-games-description-pages)
 
+- move room route to /rooms and restore human matchmaking (ARC-games-description-pages)
 
 ## [1.25.42] - 2026-08-17
 
 ### Added
+
 - add expert difficulty selector, room option and lobby badge on web (ARC-880)
 - add difficulty tiers to tic-tac-toe, cascade and critical bots (ARC-880)
 - add expert difficulty tier to chess, checkers and sea battle (ARC-880)
 - add shared AiDifficulty type with expert tier and config validation (ARC-880)
 
 ### Documentation
-- mark AI difficulty tiers as implemented in roadmap (ARC-880)
 
+- mark AI difficulty tiers as implemented in roadmap (ARC-880)
 
 ## [1.25.41] - 2026-08-17
 
 ### Added
+
 - show estimated wait and queue position in matchmaking modal (ARC-876)
 - improve matchmaking queue with per-game buckets and status events (ARC-876)
 
 ### Documentation
-- mark matchmaking queue as implemented (ARC-876)
 
+- mark matchmaking queue as implemented (ARC-876)
 
 ## [1.25.40] - 2026-08-17
 

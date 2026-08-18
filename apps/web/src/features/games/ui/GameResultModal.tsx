@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { TranslationKey } from '@/shared/lib/useTranslation';
@@ -8,6 +8,8 @@ import { useSound } from '@/shared/lib/sound';
 import { Modal, CloseButton } from './SharedModal';
 import { VictoryCelebration } from './VictoryCelebration';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
+import type { RatingDelta } from '@/features/ranking/model/types';
 
 // --- Types ---
 
@@ -28,6 +30,18 @@ interface GameResultModalProps {
    * `games.table.${result}.title`/`.message`.
    */
   messages?: { title: string; message?: string };
+  /** Ranked-match ELO change for the local player (from ratingDeltas). */
+  ratingDelta?: RatingDelta | null;
+  /**
+   * Optional post-game analysis panel shown behind a toggle button. When
+   * `content` renders a heavier component (charts, move lists), provide the
+   * localized toggle labels here so the shared modal stays i18n-agnostic.
+   */
+  analysis?: {
+    content: React.ReactNode;
+    viewLabel: string;
+    backLabel: string;
+  } | null;
 }
 
 // --- Tone (result) styles ---
@@ -56,6 +70,8 @@ export function GameResultModal({
   rematchLoading,
   t,
   messages,
+  ratingDelta,
+  analysis,
 }: GameResultModalProps) {
   const isClient = useSyncExternalStore(
     () => () => {},
@@ -65,6 +81,14 @@ export function GameResultModal({
 
   const media = useMediaQuery();
   const { play } = useSound();
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  // Reset the analysis toggle whenever the modal closes (render-phase
+  // adjustment — the recommended alternative to setState inside an effect).
+  const [lastOpen, setLastOpen] = useState(isOpen);
+  if (lastOpen !== isOpen) {
+    setLastOpen(isOpen);
+    if (!isOpen) setShowAnalysis(false);
+  }
   // Play the result sting once when the modal opens (not on every re-render).
   const playedForRef = useRef<GameResultKind | null>(null);
   useEffect(() => {
@@ -126,6 +150,48 @@ export function GameResultModal({
           <p className="animate-fade-in-up-delay-2 text-[20px] leading-[24px] text-center mb-8 text-[rgba(255,255,255,0.8)]">
             {body}
           </p>
+
+          {ratingDelta && (
+            <div className="animate-fade-in-up-delay-3 flex flex-col items-center gap-1 -mt-6 mb-8">
+              <span className="text-[13px] font-semibold uppercase tracking-[1.5px] text-[rgba(255,255,255,0.6)]">
+                {t('games.ranking.ratingUpdated')}
+              </span>
+              <RatingBadge
+                elo={ratingDelta.elo}
+                tier={ratingDelta.tier}
+                delta={ratingDelta.delta}
+                size="md"
+              />
+            </div>
+          )}
+
+          {analysis && (
+            <div className="animate-fade-in-up-delay-4 mb-6 flex w-full flex-col gap-3">
+              {showAnalysis ? (
+                <>
+                  <div className="rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(10,14,22,0.6)] p-4">
+                    {analysis.content}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size={media.sm ? 'sm' : 'md'}
+                    onClick={() => setShowAnalysis(false)}
+                  >
+                    {analysis.backLabel}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size={media.sm ? 'sm' : 'md'}
+                  className="w-full"
+                  onClick={() => setShowAnalysis(true)}
+                >
+                  {analysis.viewLabel}
+                </Button>
+              )}
+            </div>
+          )}
 
           <div className="animate-fade-in-up-delay-4 flex flex-col items-stretch gap-5 w-full">
             {onRematch && (

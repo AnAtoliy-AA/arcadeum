@@ -2,126 +2,23 @@
 
 import { useState, useCallback } from 'react';
 import { PageLayout, Container, Typography, Section } from '@arcadeum/ui';
-import { TIERS, PHASES, STATS, type Tier } from './roadmap-data';
+import type { RoadmapData, Phase } from './roadmap-parser';
+import {
+  TIERS,
+  PHASES,
+  STATS,
+  type Tier,
+  type TierFeature,
+} from './roadmap-data';
 
-function TierCard({
-  tier,
-  isExpanded,
-  onToggle,
-}: {
-  tier: Tier;
-  isExpanded: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div
-      className="flex flex-col items-stretch rounded-2xl overflow-hidden"
-      style={{
-        background: isExpanded ? tier.gradient : 'rgba(255,255,255,0.02)',
-        borderWidth: 1,
-        borderColor: isExpanded ? `${tier.color}30` : 'rgba(255,255,255,0.06)',
-      }}
-    >
-      <div
-        className="flex flex-col items-stretch active:opacity-[0.8] cursor-pointer p-4"
-        onClick={onToggle}
-      >
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-row gap-3 items-center flex-1">
-            <div
-              className="w-[40px] h-[40px] rounded-xl items-center justify-center"
-              style={{ backgroundColor: `${tier.color}20` }}
-            >
-              <Typography uiSize="lg">{tier.icon}</Typography>
-            </div>
-            <div className="flex flex-col items-stretch flex-1 gap-1">
-              <div className="flex flex-row items-center gap-2">
-                <Typography
-                  className={'font-bold'}
-                  variant="heading"
-                  uiSize="md"
-                >
-                  {tier.label}
-                </Typography>
-                <div
-                  className="px-2 rounded-[9999px] border"
-                  style={{
-                    backgroundColor: `${tier.color}15`,
-                    borderColor: `${tier.color}30`,
-                  }}
-                >
-                  <Typography variant="caption" uiSize="xs" color={tier.color}>
-                    {tier.features.length} features
-                  </Typography>
-                </div>
-              </div>
-              <Typography variant="caption" alpha="medium">
-                {tier.effort}
-              </Typography>
-            </div>
-          </div>
-          <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
-            <Typography
-              className={'font-bold'}
-              variant="body"
-              uiSize="sm"
-              alpha="medium"
-            >
-              {isExpanded ? '−' : '+'}
-            </Typography>
-          </div>
-        </div>
-      </div>
-
-      {isExpanded && (
-        <div className="flex flex-col items-stretch gap-0">
-          <div className="-mx-4 border-b border-b-[rgba(255,255,255,0.06)]" />
-          <div className="flex flex-col items-stretch p-4 gap-2">
-            {tier.features.map((f, idx) => (
-              <div
-                className="flex flex-row p-3 rounded-xl gap-3 items-start"
-                style={{
-                  background:
-                    idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
-                }}
-                key={f.title}
-              >
-                <div
-                  className="-mt-1 w-[6px] h-[6px] rounded-[9999px] opacity-[0.6] shrink-0"
-                  style={{ backgroundColor: tier.color }}
-                />
-                <div className="flex flex-col items-stretch flex-1 gap-1">
-                  <div className="flex flex-row justify-between items-center">
-                    <Typography
-                      className={'font-bold'}
-                      variant="label"
-                      uiSize="sm"
-                    >
-                      {f.title}
-                    </Typography>
-                    <div className="px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
-                      <Typography variant="caption" uiSize="xs" alpha="medium">
-                        {f.effort}
-                      </Typography>
-                    </div>
-                  </div>
-                  <Typography variant="body" uiSize="sm" alpha="medium">
-                    {f.desc}
-                  </Typography>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+import { TierCard } from './TierCard';
 
 function PhaseTimeline({
+  phases,
   hoveredPhase,
   onHover,
 }: {
+  phases: Phase[];
   hoveredPhase: number | null;
   onHover: (phase: number | null) => void;
 }) {
@@ -129,7 +26,7 @@ function PhaseTimeline({
   return (
     <div className="flex flex-col items-stretch gap-0 relative">
       <div className="absolute left-[15px] top-[20px] bottom-[20px] w-[2px] bg-[rgba(255,255,255,0.06)] rounded" />
-      {PHASES.map((p) => {
+      {phases.map((p) => {
         const totalDays = parseInt(p.days.split('–')[1] || p.days);
         const progress = Math.min((totalDays / maxDays) * 100, 100);
         const isHovered = hoveredPhase === p.phase;
@@ -142,11 +39,10 @@ function PhaseTimeline({
             onMouseLeave={() => onHover(null)}
           >
             <div
-              className="absolute left-[8px] top-[50%] w-[16px] h-[16px] rounded-[9999px] border-[3px]"
+              className="absolute left-[8px] top-[24px] w-[16px] h-[16px] rounded-[9999px] border-[3px] -translate-y-1/2 transition-transform duration-200"
               style={{
                 backgroundColor: p.color,
                 borderColor: isHovered ? p.color : 'rgba(255,255,255,0.1)',
-                transform: isHovered ? 'translateY(-8px)' : 'none',
                 boxShadow: isHovered ? `0 0 12px ${p.color}40` : 'none',
               }}
             />
@@ -162,37 +58,96 @@ function PhaseTimeline({
                   : 'rgba(255,255,255,0.04)',
               }}
             >
-              <div className="flex flex-col items-stretch flex-1 gap-2">
-                <div className="flex flex-row items-center gap-2">
+              <div className="flex flex-col items-stretch flex-1 gap-2 min-w-0">
+                <div className="flex flex-row items-center gap-2.5 flex-wrap">
                   <div
-                    className="px-2 py-1 rounded-[9999px] border"
+                    className="px-2.5 py-1 rounded-[9999px] border shrink-0 flex items-center justify-center"
                     style={{
                       backgroundColor: `${p.color}20`,
                       borderColor: `${p.color}40`,
                     }}
                   >
                     <Typography
-                      className={'font-bold'}
-                      style={{ color: p.color }}
-                      variant="label"
+                      className={'font-bold whitespace-nowrap'}
+                      variant="caption"
                       uiSize="xs"
+                      style={{ color: p.color }}
                     >
                       Phase {p.phase}
                     </Typography>
                   </div>
-                  <Typography variant="caption" alpha="medium" uiSize="xs">
-                    {p.days} days
-                  </Typography>
+                  {p.title && (
+                    <Typography
+                      className={'font-bold'}
+                      variant="body"
+                      uiSize="sm"
+                      alpha="high"
+                    >
+                      {p.title}
+                    </Typography>
+                  )}
+                  {p.status && (
+                    <div
+                      className="px-2.5 py-0.5 rounded-[9999px] border shrink-0"
+                      style={{
+                        backgroundColor: p.status.includes('100%')
+                          ? 'rgba(34,197,94,0.15)'
+                          : p.status.includes('In Progress')
+                            ? 'rgba(245,158,11,0.15)'
+                            : 'rgba(255,255,255,0.06)',
+                        borderColor: p.status.includes('100%')
+                          ? 'rgba(34,197,94,0.3)'
+                          : p.status.includes('In Progress')
+                            ? 'rgba(245,158,11,0.3)'
+                            : 'rgba(255,255,255,0.1)',
+                      }}
+                    >
+                      <Typography
+                        className={
+                          p.status.includes('100%')
+                            ? 'font-bold text-[#22c55e]'
+                            : p.status.includes('In Progress')
+                              ? 'font-bold text-[#f59e0b]'
+                              : ''
+                        }
+                        variant="caption"
+                        uiSize="xs"
+                        alpha={
+                          p.status.includes('100%') || p.status.includes('In Progress')
+                            ? 'high'
+                            : 'medium'
+                        }
+                      >
+                        {p.status}
+                      </Typography>
+                    </div>
+                  )}
                 </div>
-                <Typography variant="body" uiSize="sm" alpha="high">
+                <Typography variant="body" uiSize="sm" alpha="medium">
                   {p.features}
                 </Typography>
-                <div className="h-[4px] rounded-lg bg-[rgba(255,255,255,0.05)] overflow-hidden">
+                <div className="w-full h-1 rounded bg-[rgba(255,255,255,0.06)] overflow-hidden">
                   <div
-                    className="h-[4px] rounded-lg opacity-[0.7]"
-                    style={{ backgroundColor: p.color, width: `${progress}%` }}
+                    className="h-full rounded"
+                    style={{
+                      width: `${progress}%`,
+                      backgroundColor: p.color,
+                    }}
                   />
                 </div>
+              </div>
+              <div className="flex flex-col items-end shrink-0 pl-2">
+                <Typography
+                  className={'font-bold'}
+                  variant="body"
+                  uiSize="sm"
+                  style={{ color: p.color }}
+                >
+                  {p.days}
+                </Typography>
+                <Typography variant="caption" uiSize="xs" alpha="medium">
+                  days est.
+                </Typography>
               </div>
             </div>
           </div>
@@ -202,8 +157,27 @@ function PhaseTimeline({
   );
 }
 
-export default function RoadmapPageContent() {
-  const [expandedTier, setExpandedTier] = useState<string | null>('tier1');
+export default function RoadmapPageContent({
+  initialData,
+}: {
+  initialData?: RoadmapData;
+}) {
+  const tiers =
+    initialData?.tiers && initialData.tiers.length > 0
+      ? initialData.tiers
+      : TIERS;
+  const phases =
+    initialData?.phases && initialData.phases.length > 0
+      ? initialData.phases
+      : PHASES;
+  const stats =
+    initialData?.stats && initialData.stats.length > 0
+      ? initialData.stats
+      : STATS;
+
+  const [expandedTier, setExpandedTier] = useState<string | null>(
+    tiers[0]?.id ?? 'tier1',
+  );
   const [hoveredPhase, setHoveredPhase] = useState<number | null>(null);
   const toggleTier = useCallback(
     (id: string) => setExpandedTier((prev) => (prev === id ? null : id)),
@@ -225,10 +199,11 @@ export default function RoadmapPageContent() {
               <Typography
                 className={'font-extrabold'}
                 variant="heading"
+                level={1}
                 uiSize="3xl"
                 gradient="primary"
               >
-                Arcadeum Roadmap
+                Arcadeum Games Roadmap
               </Typography>
               <Typography
                 className={'max-w-[600px]'}
@@ -246,7 +221,7 @@ export default function RoadmapPageContent() {
               </div>
             </div>
             <div className="flex flex-row items-stretch flex-wrap gap-3">
-              {STATS.map((stat) => (
+              {stats.map((stat) => (
                 <div
                   className="flex flex-row px-4 py-3 rounded-xl gap-3 items-center bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] min-w-[140px] flex-1"
                   key={stat.label}
@@ -322,6 +297,7 @@ export default function RoadmapPageContent() {
                 Implementation Timeline
               </Typography>
               <PhaseTimeline
+                phases={phases}
                 hoveredPhase={hoveredPhase}
                 onHover={setHoveredPhase}
               />
@@ -337,7 +313,7 @@ export default function RoadmapPageContent() {
               >
                 Feature Tiers
               </Typography>
-              {TIERS.map((tier) => (
+              {tiers.map((tier) => (
                 <TierCard
                   key={tier.id}
                   tier={tier}

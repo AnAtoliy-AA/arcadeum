@@ -144,13 +144,22 @@ Add screenshots or screen recordings to demonstrate UI changes.
     git remote add upstream https://github.com/AnAtoliy-AA/arcadeum.git
     ```
 
-3.  **Install dependencies**:
+3.  **Start MongoDB** (required for the backend):
+
+    ```bash
+    docker run -d --name arcadeum-mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password mongo:7
+    ```
+
+    To stop: `docker stop arcadeum-mongo`  
+    To remove: `docker rm arcadeum-mongo`
+
+4.  **Install dependencies**:
 
     ```bash
     pnpm install
     ```
 
-4.  **Set up pre-commit hooks** (automatically installed during `pnpm install`):
+5.  **Set up pre-commit hooks** (automatically installed during `pnpm install`):
     - Linting and formatting will run automatically before each commit
     - If you need to bypass for testing: `git commit --no-verify`
 

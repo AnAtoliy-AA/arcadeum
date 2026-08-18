@@ -194,6 +194,21 @@ export function FastBadge({
   );
 }
 
+export function RankedBadge({
+  className,
+  ...props
+}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cx(
+        'flex flex-row items-center gap-1 px-3 py-1 rounded-lg bg-[rgba(250,204,21,0.18)] border border-[#facc15] text-[#ffd700] shadow-[0_4px_12px_rgba(250,204,21,0.25)] shrink-0',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export function FastBadgeText({
   className,
   ...props

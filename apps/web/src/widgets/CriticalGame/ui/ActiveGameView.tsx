@@ -410,6 +410,7 @@ export function ActiveGameView({
                 handleBlockRematch: rematch.handleBlockRematch,
                 handleBlockUser: rematch.handleBlockUser,
                 resultMessages: undefined,
+                ratingDelta: null,
               }}
               players={snapshot.players.map((p) => ({
                 playerId: p.playerId,

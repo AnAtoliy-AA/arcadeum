@@ -9,6 +9,8 @@ import {
   GameInfoPanel,
   ActionsBar,
 } from './ChessPanelComponents';
+import { CoachControls } from '@/features/coach/ui/CoachControls';
+import type { UseChessCoachResult } from '../hooks/useChessCoach';
 import type { ChessClientState, BoardPosition, File, Rank } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
@@ -28,6 +30,7 @@ interface ChessBoardPanelProps {
   legalMoves: BoardPosition[];
   lastMove: { from: BoardPosition; to: BoardPosition } | null;
   kingPosition: BoardPosition | null;
+  coach: UseChessCoachResult;
   currentUserId: string | null;
   resolveName: (id: string) => string;
   t: TranslateFn;
@@ -54,6 +57,7 @@ function ChessBoardPanelImpl({
   legalMoves,
   lastMove,
   kingPosition,
+  coach,
   currentUserId,
   resolveName,
   t,
@@ -91,6 +95,8 @@ function ChessBoardPanelImpl({
           to: snapshot.moveHistory[hoveredMoveIdx].to,
         }
       : lastMove;
+
+  const coachVisible = coach.visible;
 
   return (
     <div className="chess-layout">
@@ -189,6 +195,9 @@ function ChessBoardPanelImpl({
           selectedSquare={selectedSquare}
           legalMoves={legalMoves}
           lastMove={highlightMove}
+          hintMove={
+            coach.hint ? { from: coach.hint.from, to: coach.hint.to } : null
+          }
           isCheck={snapshot.isCheck}
           kingPosition={kingPosition}
           ariaLabel={t('games.chess_v1.status.boardLabel', {
@@ -229,6 +238,17 @@ function ChessBoardPanelImpl({
           onAcceptDraw={onAcceptDraw}
           t={t}
         />
+
+        {coachVisible && (
+          <CoachControls
+            enabled={coach.enabled}
+            hintAvailable={coach.hintAvailable}
+            hint={coach.hint}
+            t={t}
+            onToggle={coach.toggleEnabled}
+            onHint={coach.requestHint}
+          />
+        )}
       </div>
     </div>
   );

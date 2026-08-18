@@ -88,8 +88,6 @@ export const AttackBoardCell = memo(function AttackBoardCell({
                 boxShadow: '0 0 12px 4px rgba(251, 191, 36, 0.9)',
                 borderColor: '#f59e0b',
                 backgroundColor: 'rgba(251, 191, 36, 0.25)',
-                animation:
-                  'sb-scanwave-pulse 0.5s ease-in-out infinite alternate',
               }
             : {
                 boxShadow: '0 0 4px 1px rgba(251, 191, 36, 0.3)',

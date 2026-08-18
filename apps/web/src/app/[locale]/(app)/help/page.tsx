@@ -1,12 +1,12 @@
+import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildFaqJsonLd, type FaqQuestion } from '@/shared/seo/faqJsonLd';
-import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
-import { isLocale, type Locale } from '@/shared/i18n';
+import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
 import { JsonLd } from '@/shared/ui/JsonLd';
-import type { Metadata } from 'next';
 import HelpClient from './HelpClient';
 
 export async function generateMetadata({
@@ -18,24 +18,28 @@ export async function generateMetadata({
   return isLocale(locale) ? buildPageMetadata({ locale, page: 'help' }) : {};
 }
 
-/**
- * Help Page
- * Fetches translations on the server and passes them to HelpClient.
- * Use HelpClient for client-side only rendering to avoid SSR/client hydration mismatch.
- */
 export default async function HelpPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  const safeLocale: Locale = isLocale(locale) ? locale : 'en';
-  const messages = await getTranslations(safeLocale);
+  const { locale: rawLocale } = await params;
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const messages = await getTranslations(locale);
   const t = messages.pages?.help;
+  const routes = buildRoutes(locale);
 
-  // FAQ JSON-LD must mirror visible content on the page (Google's
-  // structured-data guidelines). The same `items` array drives both the
-  // rendered <details>/<summary> list and the schema, so they can't drift.
+  const breadcrumb = buildBreadcrumbJsonLd({
+    locale,
+    homeLabel: messages.navigation?.homeTab ?? 'Home',
+    trail: [
+      {
+        name: messages.seo?.help?.title ?? 'Help Center',
+        url: routes.help,
+      },
+    ],
+  });
+
   const faqItems: FaqQuestion[] = Array.isArray(t?.faq?.items)
     ? (t.faq.items as FaqQuestion[]).filter(
         (item): item is FaqQuestion =>
@@ -45,21 +49,19 @@ export default async function HelpPage({
       )
     : [];
 
-  const helpUrl = `${appConfig.siteUrl}${buildRoutes(safeLocale).help}`;
+  const helpUrl = `${appConfig.siteUrl}${routes.help}`;
   const faqJsonLd = buildFaqJsonLd({
-    locale: safeLocale,
+    locale,
     questions: faqItems,
     pageUrl: helpUrl,
-    // `#faq` is the FAQ block on HelpPageContent. Marking it speakable
-    // is a hint to Google Assistant / voice surfaces about which slice
-    // of the page is safe to read aloud in response to a spoken query.
     speakableSelectors: ['#faq'],
   });
 
+  const jsonLdData = faqJsonLd ? [breadcrumb, faqJsonLd] : [breadcrumb];
+
   return (
     <>
-      {faqJsonLd ? <JsonLd id="json-ld-help-faq" data={faqJsonLd} /> : null}
-      <PageBreadcrumb locale={locale} page="help" />
+      <JsonLd id={`json-ld-help-${locale}`} data={jsonLdData} />
       <HelpClient t={t} />
     </>
   );

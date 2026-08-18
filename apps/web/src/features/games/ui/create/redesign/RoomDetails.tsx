@@ -1,6 +1,7 @@
 import s from './GameCreateView.module.scss';
 import { GAMES, type GameId } from './data/themes';
 import { NOTES_MAX, ROOM_NAME_MAX, type CreateRoomForm } from './data/form';
+import { Toggle } from '@arcadeum/ui';
 
 interface Labels {
   roomName: string;
@@ -18,6 +19,8 @@ interface Labels {
   notesPlaceholder: string;
   password: string;
   passwordPlaceholder: string;
+  ranked: string;
+  rankedHint: string;
 }
 
 interface Props {
@@ -34,6 +37,7 @@ interface Props {
         | 'notes'
         | 'password'
         | 'preset'
+        | 'ranked'
       >
     >,
   ) => void;
@@ -201,6 +205,23 @@ export function RoomDetails({ gameId, form, labels, onChange }: Props) {
             onChange({ notes: e.target.value, preset: 'custom' })
           }
         />
+      </div>
+
+      <div className={s.field}>
+        <div className={s.fieldLabel}>
+          <span>{labels.ranked}</span>
+          <Toggle
+            checked={form.ranked}
+            onCheckedChange={(next) =>
+              onChange({ ranked: next, preset: 'custom' })
+            }
+            ariaLabel={labels.ranked}
+            testId="ranked-toggle"
+            onLabel="★"
+            offLabel=""
+          />
+        </div>
+        <p className={s.fieldHint}>{labels.rankedHint}</p>
       </div>
 
       <div className={s.field}>

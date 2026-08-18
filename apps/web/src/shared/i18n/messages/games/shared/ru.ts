@@ -420,4 +420,65 @@ export const ruMessages = {
       master: 'Мастер',
     },
   },
+  themes: {
+    cyberpunk: {
+      name: 'Киберпанк',
+      description: 'Неоновое антиутопическое будущее',
+    },
+    horror: {
+      name: 'Ужасы',
+      description: 'Тёмная и пугающая атмосфера',
+    },
+    adventure: {
+      name: 'Приключения',
+      description: 'Эпические квесты и исследования',
+    },
+    fantasy: {
+      name: 'Фэнтези',
+      description: 'Волшебные миры и мифические существа',
+    },
+    western: {
+      name: 'Вестерн',
+      description: 'Дикий Запад',
+    },
+    galaxy: {
+      name: 'Галактика',
+      description: 'Исследование дальнего космоса',
+    },
+    egypt: {
+      name: 'Египет',
+      description: 'Загадки Древнего Египта',
+    },
+    steampunk: {
+      name: 'Стимпанк',
+      description: 'Викторианские механические чудеса',
+    },
+    zen: {
+      name: 'Дзен',
+      description: 'Умиротворённая японская эстетика',
+    },
+    underwater: {
+      name: 'Подводный',
+      description: 'Глубины океана',
+    },
+    crime: {
+      name: 'Криминал',
+      description: 'Нуарный преступный мир',
+    },
+    'high-altitude-hike': {
+      name: 'Высокогорье',
+      description: 'Экспедиция на вершину горы',
+    },
+    random: {
+      name: 'Случайный',
+      description: 'Сюрприз-тема в каждой игре',
+    },
+  },
+  categories: {
+    all: 'Все игры',
+    card: 'Карточные игры',
+    board: 'Настольные игры',
+    action: 'Экшн',
+    strategy: 'Стратегия',
+  },
 };

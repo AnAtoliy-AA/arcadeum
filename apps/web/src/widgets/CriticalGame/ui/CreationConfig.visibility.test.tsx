@@ -48,12 +48,10 @@ describe('Critical CreationConfig — variant visibility filter', () => {
     renderConfig();
 
     await waitFor(() => {
-      expect(
-        screen.queryByText(/games\.critical_v1\.variants\.crime\.name/),
-      ).toBeNull();
+      expect(screen.queryByText(/games\.themes\.crime\.name/)).toBeNull();
     });
     expect(
-      screen.getByText(/games\.critical_v1\.variants\.cyberpunk\.name/),
+      screen.getByText(/games\.themes\.cyberpunk\.name/),
     ).toBeInTheDocument();
   });
 
@@ -64,7 +62,7 @@ describe('Critical CreationConfig — variant visibility filter', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/games\.critical_v1\.variants\.crime\.name/),
+        screen.getByText(/games\.themes\.crime\.name/),
       ).toBeInTheDocument();
     });
   });

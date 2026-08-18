@@ -429,4 +429,65 @@ export const esMessages = {
       master: 'Maestro',
     },
   },
+  themes: {
+    cyberpunk: {
+      name: 'Cyberpunk',
+      description: 'Futuro distópico iluminado por neón',
+    },
+    horror: {
+      name: 'Terror',
+      description: 'Atmósfera oscura y aterradora',
+    },
+    adventure: {
+      name: 'Aventura',
+      description: 'Búsquedas épicas y exploración',
+    },
+    fantasy: {
+      name: 'Fantasía',
+      description: 'Reinos mágicos y criaturas míticas',
+    },
+    western: {
+      name: 'Oeste',
+      description: 'La frontera del lejano oeste',
+    },
+    galaxy: {
+      name: 'Galaxia',
+      description: 'Exploración del espacio profundo',
+    },
+    egypt: {
+      name: 'Egipto',
+      description: 'Misterios del antiguo Egipto',
+    },
+    steampunk: {
+      name: 'Steampunk',
+      description: 'Maravillas mecánicas de la era victoriana',
+    },
+    zen: {
+      name: 'Zen',
+      description: 'Estética japonesa serena',
+    },
+    underwater: {
+      name: 'Submarino',
+      description: 'Profundidades del océano',
+    },
+    crime: {
+      name: 'Crimen',
+      description: 'Submundo de detectives noir',
+    },
+    'high-altitude-hike': {
+      name: 'Alta montaña',
+      description: 'Expedición a la cima',
+    },
+    random: {
+      name: 'Aleatorio',
+      description: 'Tema sorpresa en cada partida',
+    },
+  },
+  categories: {
+    all: 'Todos los juegos',
+    card: 'Juegos de cartas',
+    board: 'Juegos de tablero',
+    action: 'Acción',
+    strategy: 'Estrategia',
+  },
 };

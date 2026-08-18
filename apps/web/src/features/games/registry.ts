@@ -222,3 +222,43 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     status: 'coming_soon',
   },
 };
+
+export type GameCategory = 'card' | 'board' | 'action' | 'strategy';
+
+export interface GameCategoryInfo {
+  labelKey: string;
+  games: GameSlug[];
+}
+
+/**
+ * Programmatic category → games grouping. New games should be added here
+ * (plus to `gameMetadata`/`gameLoaders`) so the catalog can group thousands
+ * of titles by genre without bespoke per-game wiring.
+ */
+export const GAME_CATEGORIES: Record<GameCategory, GameCategoryInfo> = {
+  card: {
+    labelKey: 'games.categories.card',
+    games: ['critical_v1', 'cascade_v1', 'texas_holdem_v1'],
+  },
+  board: {
+    labelKey: 'games.categories.board',
+    games: ['chess_v1', 'checkers_v1', 'tic_tac_toe_v1'],
+  },
+  action: {
+    labelKey: 'games.categories.action',
+    games: ['glimworm_v1', 'cat_dash_v1'],
+  },
+  strategy: {
+    labelKey: 'games.categories.strategy',
+    games: ['sea_battle_v1'],
+  },
+};
+
+export function getCategoryForGame(gameId: string): GameCategory | null {
+  for (const [category, info] of Object.entries(GAME_CATEGORIES) as Array<
+    [GameCategory, GameCategoryInfo]
+  >) {
+    if (info.games.includes(gameId as GameSlug)) return category;
+  }
+  return null;
+}

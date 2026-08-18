@@ -420,4 +420,65 @@ export const byMessages = {
       master: 'Майстар',
     },
   },
+  themes: {
+    cyberpunk: {
+      name: 'Кіберпанк',
+      description: 'Неонавая антыўтапічная будучыня',
+    },
+    horror: {
+      name: 'Жахі',
+      description: 'Цёмная і палохаючая атмасфера',
+    },
+    adventure: {
+      name: 'Прыгоды',
+      description: 'Эпічныя квэсты і даследаванні',
+    },
+    fantasy: {
+      name: 'Фэнтэзі',
+      description: 'Чароўныя светы і міфічныя істоты',
+    },
+    western: {
+      name: 'Вестэрн',
+      description: 'Дзікі Захад',
+    },
+    galaxy: {
+      name: 'Галактыка',
+      description: 'Даследаванне дальняга космасу',
+    },
+    egypt: {
+      name: 'Егіпет',
+      description: 'Загадкі Старажытнага Егіпта',
+    },
+    steampunk: {
+      name: 'Стымпанк',
+      description: 'Віктарыянскія механічныя цуды',
+    },
+    zen: {
+      name: 'Дзэн',
+      description: 'Спакойная японская эстэтыка',
+    },
+    underwater: {
+      name: 'Падводны',
+      description: 'Глыбіні акіяна',
+    },
+    crime: {
+      name: 'Крымінал',
+      description: 'Нуарны крымінальны свет',
+    },
+    'high-altitude-hike': {
+      name: 'Высакагор’е',
+      description: 'Экспедыцыя на вяршыню гары',
+    },
+    random: {
+      name: 'Выпадковы',
+      description: 'Сюрпрыз-тэма ў кожнай гульні',
+    },
+  },
+  categories: {
+    all: 'Усе гульні',
+    card: 'Картачныя гульні',
+    board: 'Настольныя гульні',
+    action: 'Экшн',
+    strategy: 'Стратэгія',
+  },
 };

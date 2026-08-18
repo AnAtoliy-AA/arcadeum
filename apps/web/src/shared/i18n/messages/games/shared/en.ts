@@ -419,4 +419,65 @@ export const enMessages = {
       master: 'Master',
     },
   },
+  themes: {
+    cyberpunk: {
+      name: 'Cyberpunk',
+      description: 'Neon-lit dystopian future',
+    },
+    horror: {
+      name: 'Horror',
+      description: 'Dark and terrifying atmosphere',
+    },
+    adventure: {
+      name: 'Adventure',
+      description: 'Epic quests and exploration',
+    },
+    fantasy: {
+      name: 'Fantasy',
+      description: 'Magical realms and mythical creatures',
+    },
+    western: {
+      name: 'Western',
+      description: 'Wild West frontier',
+    },
+    galaxy: {
+      name: 'Galaxy',
+      description: 'Deep space exploration',
+    },
+    egypt: {
+      name: 'Egypt',
+      description: 'Ancient Egyptian mysteries',
+    },
+    steampunk: {
+      name: 'Steampunk',
+      description: 'Victorian-era mechanical wonders',
+    },
+    zen: {
+      name: 'Zen',
+      description: 'Peaceful Japanese aesthetics',
+    },
+    underwater: {
+      name: 'Underwater',
+      description: 'Deep ocean depths',
+    },
+    crime: {
+      name: 'Crime',
+      description: 'Noir detective underworld',
+    },
+    'high-altitude-hike': {
+      name: 'High Altitude',
+      description: 'Mountain summit expedition',
+    },
+    random: {
+      name: 'Random',
+      description: 'Surprise theme each game',
+    },
+  },
+  categories: {
+    all: 'All Games',
+    card: 'Card Games',
+    board: 'Board Games',
+    action: 'Action',
+    strategy: 'Strategy',
+  },
 };

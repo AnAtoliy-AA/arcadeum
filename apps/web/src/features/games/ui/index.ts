@@ -15,6 +15,11 @@ export { GameResultModal } from './GameResultModal';
 export { RematchModal } from './RematchModal';
 export { RematchInvitationModal } from './RematchInvitationModal';
 export { GameVariantSelector } from './GameVariantSelector';
+export {
+  GameThemePicker,
+  type GameThemePickerProps,
+  type GameThemePickerOption,
+} from './GameThemePicker';
 export { InGameAvatar, type InGameAvatarProps } from './InGameAvatar';
 export { EmoteBubble } from './EmoteBubble';
 export {

@@ -139,6 +139,16 @@ export const enMessages = {
         blunder: 'Blunder',
       },
     },
+    coach: {
+      title: 'Coach hints',
+      hint: 'Hint',
+      move: 'Suggested move: {{symbol}} to {{square}}',
+      capture: 'Suggested move: {{symbol}} to {{square}}, capturing {{target}}',
+      castleKing: 'Suggested move: castle kingside',
+      castleQueen: 'Suggested move: castle queenside',
+      promote:
+        'Suggested move: {{symbol}} to {{square}}, promote to {{promotion}}',
+    },
     actions: {
       move: 'Move piece',
       resign: 'Resign',

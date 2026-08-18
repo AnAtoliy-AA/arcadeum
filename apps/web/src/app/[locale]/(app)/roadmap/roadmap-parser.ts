@@ -23,6 +23,7 @@ export type Tier = {
 
 export type Phase = {
   phase: number;
+  title: string;
   features: string;
   days: string;
   color: string;
@@ -245,17 +246,19 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
   const phases: Phase[] = [];
   let phaseNum = 1;
   const phaseRowRegex =
-    /^\|\s*\*\*Phase\s*(\d+):?\s*([^|]*)\*\*\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/i;
+    /^\|\s*\*\*Phase\s*(\d+)(?::\s*([^|*]+))?\*\*\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/i;
 
   for (const line of lines) {
     const match = line.match(phaseRowRegex);
     if (match) {
-      const [, pNum, , featuresRaw, daysRaw, statusRaw] = match;
+      const [, pNum, pTitle, featuresRaw, daysRaw, statusRaw] = match;
+      const cleanStatus = statusRaw.replace(/\*\*/g, '').trim();
       phases.push({
         phase: parseInt(pNum, 10),
+        title: (pTitle || '').trim(),
         features: featuresRaw.trim(),
         days: daysRaw.trim(),
-        status: statusRaw.trim(),
+        status: cleanStatus,
         color: PHASE_COLORS[(phaseNum - 1) % PHASE_COLORS.length],
       });
       phaseNum++;
@@ -269,59 +272,74 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
       : [
           {
             phase: 1,
-            features: 'Stats + Emotes + House Rules + Dark Mode + Undo',
+            title: 'Core UX',
+            features: 'Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms',
             days: '10',
+            status: '100% Completed',
             color: '#22c55e',
           },
           {
             phase: 2,
-            features: 'Viral invite loops + QR codes + SEO landing pages',
+            title: 'Growth & SEO',
+            features: 'Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics',
             days: '12',
+            status: 'In Progress (Active Focus)',
             color: '#3b82f6',
           },
           {
             phase: 3,
-            features: 'Chess Engine + Checkers Engine + Audio Cues',
+            title: 'Classic Games',
+            features: 'Chess Engine + Checkers Engine + Audio Cues + Chess Clock',
             days: '15',
+            status: '100% Completed',
             color: '#6366f1',
           },
           {
             phase: 4,
-            features:
-              'Achievements + Daily Challenges + Tournaments + Leaderboards',
+            title: 'Competitive',
+            features: 'Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization',
             days: '20',
+            status: '100% Completed',
             color: '#a855f7',
           },
           {
             phase: 5,
-            features: 'Matchmaking Queue + AI Difficulty + Ranked/ELO',
+            title: 'Retention',
+            features: 'Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings',
             days: '15',
+            status: '100% Completed',
             color: '#f59e0b',
           },
           {
             phase: 6,
-            features:
-              'Hearts + Spades + Backgammon + Pachisi + Analysis + Coach',
+            title: 'Card & Board',
+            features: 'Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach',
             days: '25',
+            status: 'Post-Game Analysis + Coach Mode Completed (Rest Not started)',
             color: '#f97316',
           },
           {
             phase: 7,
-            features: 'Go + Clans + Game Nights + Replays + Spectator Mode',
+            title: 'Advanced Social',
+            features: 'Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode',
             days: '25',
+            status: 'Spectator Mode Completed (Rest Not started)',
             color: '#ec4899',
           },
           {
             phase: 8,
-            features:
-              'PWA + Push Notifications + Offline Mode + Share + Mobile',
+            title: 'Platform Growth',
+            features: 'PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port',
             days: '30',
+            status: 'PWA, Push, Share Completed (Offline/Mobile Partial)',
             color: '#14b8a6',
           },
           {
             phase: 9,
+            title: 'Creator Tools',
             features: 'Visual Board Game Creator',
             days: '20',
+            status: 'Not started',
             color: '#06b6d4',
           },
         ];

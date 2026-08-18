@@ -59,6 +59,8 @@ Pure frontend feature. No backend changes needed.
 
     expect(data.phases).toHaveLength(1);
     expect(data.phases[0].phase).toBe(1);
+    expect(data.phases[0].title).toBe('Core UX');
+    expect(data.phases[0].status).toBe('100% Completed');
     expect(data.phases[0].features).toContain('Stats tracking');
 
     expect(data.stats).toEqual([

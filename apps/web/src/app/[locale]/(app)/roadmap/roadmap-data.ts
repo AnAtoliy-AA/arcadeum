@@ -331,6 +331,7 @@ export const TIERS: Tier[] = [
 export const PHASES = [
   {
     phase: 1,
+    title: 'Core UX',
     features:
       'Stats + Emotes + House Rules + Dark Mode + Undo + Password Rooms',
     days: '8–12',
@@ -338,42 +339,49 @@ export const PHASES = [
   },
   {
     phase: 2,
+    title: 'Growth & SEO',
     features: 'Chess + Checkers + AI Difficulty + Audio + Coach Mode',
     days: '14–20',
     color: '#3b82f6',
   },
   {
     phase: 3,
+    title: 'Classic Games',
     features: 'Matchmaking Queue + Ranked/ELO + Achievements + Leaderboards',
     days: '15–20',
     color: '#6366f1',
   },
   {
     phase: 4,
+    title: 'Competitive',
     features: 'Hearts + Spades + Backgammon + Pachisi + Post-game Analysis',
     days: '22–28',
     color: '#a855f7',
   },
   {
     phase: 5,
+    title: 'Retention',
     features: 'Go + Clans + Game Nights + Replays + Spectator Mode',
     days: '28–38',
     color: '#f59e0b',
   },
   {
     phase: 6,
+    title: 'Card & Board',
     features: 'Tournaments + Seasons + Daily Challenges + Colorblind + A11y',
     days: '20–28',
     color: '#f97316',
   },
   {
     phase: 7,
+    title: 'Advanced Social',
     features: 'PWA + Offline + Push Notifications + Share + Timer System',
     days: '10–16',
     color: '#ec4899',
   },
   {
     phase: 8,
+    title: 'Platform Growth',
     features: 'Board Game Creator + Mobile Port + Monetization',
     days: '35–51',
     color: '#14b8a6',

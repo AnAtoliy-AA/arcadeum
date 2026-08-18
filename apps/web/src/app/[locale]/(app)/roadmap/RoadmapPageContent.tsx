@@ -39,11 +39,10 @@ function PhaseTimeline({
             onMouseLeave={() => onHover(null)}
           >
             <div
-              className="absolute left-[8px] top-[50%] w-[16px] h-[16px] rounded-[9999px] border-[3px]"
+              className="absolute left-[8px] top-[24px] w-[16px] h-[16px] rounded-[9999px] border-[3px] -translate-y-1/2 transition-transform duration-200"
               style={{
                 backgroundColor: p.color,
                 borderColor: isHovered ? p.color : 'rgba(255,255,255,0.1)',
-                transform: isHovered ? 'translateY(-8px)' : 'none',
                 boxShadow: isHovered ? `0 0 12px ${p.color}40` : 'none',
               }}
             />
@@ -59,17 +58,17 @@ function PhaseTimeline({
                   : 'rgba(255,255,255,0.04)',
               }}
             >
-              <div className="flex flex-col items-stretch flex-1 gap-2">
-                <div className="flex flex-row items-center gap-2">
+              <div className="flex flex-col items-stretch flex-1 gap-2 min-w-0">
+                <div className="flex flex-row items-center gap-2.5 flex-wrap">
                   <div
-                    className="px-2 py-1 rounded-[9999px] border"
+                    className="px-2.5 py-1 rounded-[9999px] border shrink-0 flex items-center justify-center"
                     style={{
                       backgroundColor: `${p.color}20`,
                       borderColor: `${p.color}40`,
                     }}
                   >
                     <Typography
-                      className={'font-bold'}
+                      className={'font-bold whitespace-nowrap'}
                       variant="caption"
                       uiSize="xs"
                       style={{ color: p.color }}
@@ -77,17 +76,56 @@ function PhaseTimeline({
                       Phase {p.phase}
                     </Typography>
                   </div>
+                  {p.title && (
+                    <Typography
+                      className={'font-bold'}
+                      variant="body"
+                      uiSize="sm"
+                      alpha="high"
+                    >
+                      {p.title}
+                    </Typography>
+                  )}
                   {p.status && (
-                    <div className="px-2 py-0.5 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)]">
-                      <Typography variant="caption" uiSize="xs" alpha="medium">
+                    <div
+                      className="px-2.5 py-0.5 rounded-[9999px] border shrink-0"
+                      style={{
+                        backgroundColor: p.status.includes('100%')
+                          ? 'rgba(34,197,94,0.15)'
+                          : p.status.includes('In Progress')
+                            ? 'rgba(245,158,11,0.15)'
+                            : 'rgba(255,255,255,0.06)',
+                        borderColor: p.status.includes('100%')
+                          ? 'rgba(34,197,94,0.3)'
+                          : p.status.includes('In Progress')
+                            ? 'rgba(245,158,11,0.3)'
+                            : 'rgba(255,255,255,0.1)',
+                      }}
+                    >
+                      <Typography
+                        className={
+                          p.status.includes('100%')
+                            ? 'font-bold text-[#22c55e]'
+                            : p.status.includes('In Progress')
+                              ? 'font-bold text-[#f59e0b]'
+                              : ''
+                        }
+                        variant="caption"
+                        uiSize="xs"
+                        alpha={
+                          p.status.includes('100%') || p.status.includes('In Progress')
+                            ? 'high'
+                            : 'medium'
+                        }
+                      >
                         {p.status}
                       </Typography>
                     </div>
                   )}
-                  <Typography variant="body" uiSize="sm" alpha="high">
-                    {p.features}
-                  </Typography>
                 </div>
+                <Typography variant="body" uiSize="sm" alpha="medium">
+                  {p.features}
+                </Typography>
                 <div className="w-full h-1 rounded bg-[rgba(255,255,255,0.06)] overflow-hidden">
                   <div
                     className="h-full rounded"

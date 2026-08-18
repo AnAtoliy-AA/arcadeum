@@ -133,4 +133,31 @@ test.describe('Modernized Content Pages and Footer', () => {
     await platformToggle.click();
     await expect(platformToggle).toHaveAttribute('aria-expanded', 'false');
   });
+
+  test('roadmap page renders feature tiers and status badges', async ({
+    page,
+  }) => {
+    await navigateTo(page, routes.roadmap);
+    await page.waitForLoadState('domcontentloaded');
+
+    await expect(page.locator('h1')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Arcadeum Roadmap/i }),
+    ).toBeVisible();
+    await expect(page.getByText(/Quick Wins/i).first()).toBeVisible();
+    await expect(page.getByText(/Core Additions/i).first()).toBeVisible();
+    await expect(page.getByText('Implemented').first()).toBeVisible();
+    await expect(page.getByText(/ARC-871/i).first()).toBeVisible();
+  });
+
+  test('changelog page renders releases and changes', async ({ page }) => {
+    await navigateTo(page, routes.changelog);
+    await page.waitForLoadState('domcontentloaded');
+
+    await expect(page.locator('h1')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Changelog/i }),
+    ).toBeVisible();
+    await expect(page.getByText(/changes/i).first()).toBeVisible();
+  });
 });

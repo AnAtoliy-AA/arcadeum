@@ -2,7 +2,49 @@
 
 import { useState, useCallback } from 'react';
 import { PageLayout, Container, Typography, Section } from '@arcadeum/ui';
-import { TIERS, PHASES, STATS, type Tier } from './roadmap-data';
+import {
+  TIERS,
+  PHASES,
+  STATS,
+  type Tier,
+  type TierFeature,
+} from './roadmap-data';
+
+function StatusBadge({ status }: { status: TierFeature['status'] }) {
+  if (status === 'implemented') {
+    return (
+      <div className="px-2 py-0.5 rounded-[9999px] bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)] shrink-0">
+        <Typography
+          className={'font-bold text-[#22c55e]'}
+          variant="caption"
+          uiSize="xs"
+        >
+          Implemented
+        </Typography>
+      </div>
+    );
+  }
+  if (status === 'partial') {
+    return (
+      <div className="px-2 py-0.5 rounded-[9999px] bg-[rgba(245,158,11,0.15)] border border-[rgba(245,158,11,0.3)] shrink-0">
+        <Typography
+          className={'font-bold text-[#f59e0b]'}
+          variant="caption"
+          uiSize="xs"
+        >
+          In Progress
+        </Typography>
+      </div>
+    );
+  }
+  return (
+    <div className="px-2 py-0.5 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] shrink-0">
+      <Typography variant="caption" uiSize="xs" alpha="medium">
+        Planned
+      </Typography>
+    </div>
+  );
+}
 
 function TierCard({
   tier,
@@ -13,6 +55,10 @@ function TierCard({
   isExpanded: boolean;
   onToggle: () => void;
 }) {
+  const implementedCount = tier.features.filter(
+    (f) => f.status === 'implemented',
+  ).length;
+
   return (
     <div
       className="flex flex-col items-stretch rounded-2xl overflow-hidden"
@@ -29,13 +75,13 @@ function TierCard({
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-row gap-3 items-center flex-1">
             <div
-              className="w-[40px] h-[40px] rounded-xl items-center justify-center"
+              className="w-[40px] h-[40px] rounded-xl flex items-center justify-center shrink-0"
               style={{ backgroundColor: `${tier.color}20` }}
             >
               <Typography uiSize="lg">{tier.icon}</Typography>
             </div>
             <div className="flex flex-col items-stretch flex-1 gap-1">
-              <div className="flex flex-row items-center gap-2">
+              <div className="flex flex-row items-center gap-2 flex-wrap">
                 <Typography
                   className={'font-bold'}
                   variant="heading"
@@ -54,13 +100,18 @@ function TierCard({
                     {tier.features.length} features
                   </Typography>
                 </div>
+                <div className="px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
+                  <Typography variant="caption" uiSize="xs" alpha="medium">
+                    {implementedCount}/{tier.features.length} done
+                  </Typography>
+                </div>
               </div>
               <Typography variant="caption" alpha="medium">
                 {tier.effort}
               </Typography>
             </div>
           </div>
-          <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
+          <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] flex items-center justify-center shrink-0">
             <Typography
               className={'font-bold'}
               variant="body"
@@ -87,22 +138,49 @@ function TierCard({
                 key={f.title}
               >
                 <div
-                  className="-mt-1 w-[6px] h-[6px] rounded-[9999px] opacity-[0.6] shrink-0"
-                  style={{ backgroundColor: tier.color }}
+                  className="mt-1.5 w-[6px] h-[6px] rounded-[9999px] opacity-[0.6] shrink-0"
+                  style={{
+                    backgroundColor:
+                      f.status === 'implemented'
+                        ? '#22c55e'
+                        : f.status === 'partial'
+                          ? '#f59e0b'
+                          : tier.color,
+                  }}
                 />
                 <div className="flex flex-col items-stretch flex-1 gap-1">
-                  <div className="flex flex-row justify-between items-center">
-                    <Typography
-                      className={'font-bold'}
-                      variant="label"
-                      uiSize="sm"
-                    >
-                      {f.title}
-                    </Typography>
-                    <div className="px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
-                      <Typography variant="caption" uiSize="xs" alpha="medium">
-                        {f.effort}
+                  <div className="flex flex-row justify-between items-center gap-2 flex-wrap">
+                    <div className="flex flex-row items-center gap-2 flex-wrap">
+                      <Typography
+                        className={'font-bold'}
+                        variant="label"
+                        uiSize="sm"
+                      >
+                        {f.title}
                       </Typography>
+                      {f.arc && (
+                        <div className="px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)]">
+                          <Typography
+                            variant="caption"
+                            uiSize="xs"
+                            alpha="medium"
+                          >
+                            {f.arc}
+                          </Typography>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-row items-center gap-2">
+                      <StatusBadge status={f.status} />
+                      <div className="px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
+                        <Typography
+                          variant="caption"
+                          uiSize="xs"
+                          alpha="medium"
+                        >
+                          {f.effort}
+                        </Typography>
+                      </div>
                     </div>
                   </div>
                   <Typography variant="body" uiSize="sm" alpha="medium">

@@ -83,7 +83,7 @@ function VersionCard({
                 {totalChanges} changes
               </Typography>
             </div>
-            <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
+            <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] flex items-center justify-center shrink-0">
               <Typography
                 className={'font-bold'}
                 variant="body"

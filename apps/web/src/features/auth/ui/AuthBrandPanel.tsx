@@ -112,7 +112,7 @@ function BrandHero({
         >
           {brand.headlinePrefix}{' '}
           <Typography
-            variant="heading"
+            variant="body"
             weight="800"
             style={{
               fontSize: 80,

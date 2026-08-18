@@ -58,7 +58,7 @@ export const MusicBtn = ({
   testId,
   ariaLabel,
   title,
-  color = 'rgba(255,255,255,0.7)',
+  color = 'rgba(255,255,255,0.85)',
   children,
   className = '',
 }: {
@@ -77,13 +77,13 @@ export const MusicBtn = ({
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: '50%',
-      border: '1px solid rgba(255,255,255,0.35)',
-      background: 'rgba(255,255,255,0.15)',
+      border: '1px solid rgba(255,255,255,0.25)',
+      background: 'rgba(255,255,255,0.12)',
       color,
       cursor: 'pointer',
       flexShrink: 0,
       boxShadow:
-        'inset 0 1px 0 rgba(255,255,255,0.5), 0 1px 4px rgba(0,0,0,0.04)',
+        'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 6px rgba(0,0,0,0.3)',
     }}
     type="button"
     onClick={onClick}
@@ -115,13 +115,13 @@ export const PlayBtn = ({
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: '50%',
-      border: '1px solid rgba(255,255,255,0.45)',
-      background: 'rgba(255,255,255,0.22)',
-      color: 'rgba(255,255,255,0.9)',
+      border: '1px solid rgba(165,180,252,0.45)',
+      background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+      color: '#ffffff',
       cursor: 'pointer',
       flexShrink: 0,
       boxShadow:
-        'inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 10px rgba(0,0,0,0.04)',
+        'inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 14px rgba(99,102,241,0.45)',
     }}
     type="button"
     onClick={onClick}

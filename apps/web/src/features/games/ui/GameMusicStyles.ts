@@ -14,12 +14,13 @@ export const playerStyles = `
 .game-music-player {
   animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 
-    0 8px 40px rgba(0,0,0,0.04),
-    inset 0 1px 0 rgba(255,255,255,0.7),
-    inset 0 -1px 0 rgba(255,255,255,0.1),
-    inset 0 0 0 0.5px rgba(255,255,255,0.3);
+    0 20px 50px -10px rgba(0, 0, 0, 0.85),
+    0 10px 25px -5px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   transition: width 250ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 250ms ease, padding 250ms ease;
-  background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 35%, rgba(255,255,255,0.15) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   cursor: grab;
 }
 .game-music-player:active {
@@ -182,26 +183,26 @@ export const playerStyles = `
   margin: 0 4px;
 }
 .game-music-track:hover {
-  background-color: rgba(255,255,255,0.1);
+  background-color: rgba(255,255,255,0.12);
 }
 .game-music-track:active {
   transform: scale(0.98);
 }
 .game-music-track.active {
-  background-color: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.2);
+  background-color: rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(129, 140, 248, 0.4);
 }
 .game-music-track.active:hover {
-  background-color: rgba(255,255,255,0.2);
+  background-color: rgba(99, 102, 241, 0.35);
 }
 .game-music-checkbox {
   -webkit-appearance: none;
   appearance: none;
   width: 14px;
   height: 14px;
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.35);
   border-radius: 4px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.15);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
@@ -209,7 +210,7 @@ export const playerStyles = `
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .game-music-checkbox:hover {
-  border-color: rgba(255,255,255,0.5);
+  border-color: rgba(255,255,255,0.6);
   transform: scale(1.1);
 }
 .game-music-checkbox:checked {
@@ -239,10 +240,10 @@ export const playerStyles = `
 .playing-bar {
   display: inline-block;
   width: 2.5px;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.9);
   border-radius: 1px;
   animation: playingBars 0.8s ease-in-out infinite;
-  box-shadow: 0 0 4px rgba(255,255,255,0.3);
+  box-shadow: 0 0 4px rgba(255,255,255,0.4);
 }
 .playing-bar-1 { height: 8px; animation-delay: 0s; }
 .playing-bar-2 { height: 12px; animation-delay: 0.15s; }
@@ -282,15 +283,15 @@ export const playerStyles = `
   flex-shrink: 0;
 }
 .game-music-btn:hover {
-  background-color: rgba(255,255,255,0.1);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  background-color: rgba(255,255,255,0.2) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .game-music-btn:active {
   transform: scale(0.9);
 }
 .game-music-play-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, box-shadow 200ms ease;
-  box-shadow: 0 2px 12px rgba(129,140,248,0.3);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
   width: 34px !important;
   height: 34px !important;
   min-width: 34px !important;
@@ -299,8 +300,8 @@ export const playerStyles = `
   flex-shrink: 0;
 }
 .game-music-play-btn:hover {
-  background-color: rgba(255,255,255,0.15) !important;
-  box-shadow: 0 4px 16px rgba(129,140,248,0.4);
+  background-color: rgba(129, 140, 248, 0.35) !important;
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.55);
 }
 .game-music-play-btn:active {
   transform: scale(0.88);

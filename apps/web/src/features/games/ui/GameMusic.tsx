@@ -29,12 +29,12 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
   if (player.loading) {
     return (
       <div
-        className="fixed bottom-4 left-4 z-[1000] w-[200px] rounded-[28px] border border-[rgba(255,255,255,0.5)] px-3 py-3"
+        className="fixed bottom-4 left-4 z-[1000] w-[200px] rounded-[28px] border border-white/20 px-3 py-3 shadow-2xl backdrop-blur-2xl"
         style={{
-          backgroundColor: 'rgba(15, 23, 42, 0.85)',
+          backgroundColor: 'rgba(15, 23, 42, 0.95)',
         }}
       >
-        <Typography uiSize="xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
+        <Typography uiSize="xs" style={{ color: 'rgba(255,255,255,0.85)' }}>
           Loading music…
         </Typography>
       </div>
@@ -66,17 +66,16 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
     <>
       <style>{playerStyles}</style>
       <div
-        className={`game-music-player fixed z-[1000] rounded-[28px] border border-[rgba(255,255,255,0.5)] px-3 py-3 ${player.isPlaying ? 'is-playing' : ''}`}
+        className={`game-music-player fixed z-[1000] rounded-[28px] border border-white/20 px-3 py-3 backdrop-blur-2xl ${player.isPlaying ? 'is-playing' : ''}`}
         data-testid="game-music-player"
         style={{
           width: player.miniMode ? 200 : 320,
-          backgroundColor: 'rgba(15, 23, 42, 0.85)',
-          boxShadow:
-            '0 8px 40px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 0 0.5px rgba(255,255,255,0.3)',
           background: (() => {
             const hue = (player.index * 47) % 360;
-            return `linear-gradient(180deg, hsla(${hue},40%,70%,0.2) 0%, rgba(255,255,255,0.1) 35%, hsla(${hue},30%,60%,0.15) 100%)`;
+            return `linear-gradient(180deg, hsla(${hue}, 45%, 22%, 0.94) 0%, rgba(15, 23, 42, 0.96) 40%, rgba(8, 12, 22, 0.98) 100%)`;
           })(),
+          boxShadow:
+            '0 20px 50px -10px rgba(0, 0, 0, 0.85), 0 10px 25px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
           left: pos.x,
           top: pos.y,
         }}
@@ -92,10 +91,10 @@ export function GameMusic({ gameId }: { gameId?: string | null }) {
           <div
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px]"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.25)',
-              border: '1px solid rgba(255,255,255,0.45)',
+              backgroundColor: 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.25)',
               boxShadow:
-                'inset 0 1px 0 rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.08)',
+                'inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.3)',
               backgroundImage:
                 player.track?.spriteIndex != null
                   ? `url(${SPRITE_URL})`

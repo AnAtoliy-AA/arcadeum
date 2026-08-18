@@ -217,6 +217,7 @@ interface PlacementBoardGridProps {
   pendingCells: ShipCell[];
   shipHeadKeys: Set<string>;
   isPlacementComplete: boolean;
+  isTouchDragEnabled?: boolean;
   movingShipCells?: ShipCell[];
   onTouchBoardPointerDown?: (
     row: number,
@@ -246,6 +247,7 @@ export const PlacementBoardGrid = memo(
     pendingCells,
     shipHeadKeys,
     isPlacementComplete,
+    isTouchDragEnabled = false,
     movingShipCells,
     onTouchBoardPointerDown,
     onCellHover,
@@ -329,7 +331,9 @@ export const PlacementBoardGrid = memo(
                     isInvalidCell={isInvalidCell}
                     isClickable={!!selectedShip}
                     isShipDraggable={
-                      isShipCell && !isPlacementComplete && dragProps.draggable
+                      isShipCell &&
+                      !isPlacementComplete &&
+                      (dragProps.draggable || isTouchDragEnabled)
                     }
                     isDraggingThisCell={isDraggingThisCell}
                     isPendingCell={isPendingCell}

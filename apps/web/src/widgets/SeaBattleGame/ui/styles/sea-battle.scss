@@ -140,7 +140,6 @@
   overflow: hidden;
   box-sizing: border-box;
   pointer-events: auto;
-  touch-action: none;
   contain: layout style;
 }
 
@@ -219,6 +218,7 @@
 
 .sb-cell.sb-cell--ship-draggable {
   cursor: grab;
+  touch-action: none;
 }
 
 .sb-cell.sb-cell--ship-draggable:active {

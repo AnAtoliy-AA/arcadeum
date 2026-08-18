@@ -83,7 +83,7 @@ function VersionCard({
                 {totalChanges} changes
               </Typography>
             </div>
-            <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] items-center justify-center">
+            <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] flex items-center justify-center shrink-0">
               <Typography
                 className={'font-bold'}
                 variant="body"
@@ -201,6 +201,7 @@ export default function ChangelogView({
             <Typography
               className={'font-extrabold'}
               variant="heading"
+              level={1}
               uiSize="3xl"
               gradient="primary"
             >
@@ -212,7 +213,7 @@ export default function ChangelogView({
               uiSize="md"
               alpha="medium"
             >
-              All notable changes to Arcadeum are documented here. Follow
+              All notable changes to Arcadeum Games are documented here. Follow
               Semantic Versioning.
             </Typography>
             <div className="px-3 py-1 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] self-start">

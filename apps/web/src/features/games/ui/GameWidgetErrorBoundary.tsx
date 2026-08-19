@@ -19,7 +19,6 @@ export interface GameWidgetErrorBoundaryProps {
 
 interface GameWidgetErrorBoundaryState {
   hasError: boolean;
-  error: Error | null;
 }
 
 interface InnerProps {
@@ -36,10 +35,10 @@ class GameWidgetErrorBoundaryInner extends Component<
   InnerProps,
   GameWidgetErrorBoundaryState
 > {
-  state: GameWidgetErrorBoundaryState = { hasError: false, error: null };
+  state: GameWidgetErrorBoundaryState = { hasError: false };
 
-  static getDerivedStateFromError(error: Error): GameWidgetErrorBoundaryState {
-    return { hasError: true, error };
+  static getDerivedStateFromError(): GameWidgetErrorBoundaryState {
+    return { hasError: true };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
@@ -53,7 +52,7 @@ class GameWidgetErrorBoundaryInner extends Component<
   }
 
   reset = (): void => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false });
   };
 
   render(): ReactNode {

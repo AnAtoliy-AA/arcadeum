@@ -31,9 +31,18 @@ export { UndoButton } from './UndoButton';
 export { GameEndModals } from './GameEndModals';
 export { GameIdleTimer, type GameIdleTimerProps } from './GameIdleTimer';
 export {
+  GameMoveHistory,
+  type GameMoveHistoryProps,
+  type GameLogEntry,
+} from './GameMoveHistory';
+export {
   GameForfeitModal,
   type GameForfeitModalProps,
 } from './GameForfeitModal';
+export {
+  GameWidgetErrorBoundary,
+  type GameWidgetErrorBoundaryProps,
+} from './GameWidgetErrorBoundary';
 export {
   LobbyOptionSection,
   LobbyChipGroup,

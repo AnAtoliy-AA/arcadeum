@@ -1,5 +1,5 @@
-import type { SeaBattleVariant } from '@/widgets/SeaBattleGame/lib/constants';
-import { VARIANT_THEMES } from '@/widgets/SeaBattleGame/lib/theme';
+import type { SeaBattleVariant } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
+import { VARIANT_THEMES } from '@/widgets/StrategyGames/SeaBattleGame/lib/theme';
 
 const BOARD_PATTERN: number[] = [
   0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 1, 1, 3, 3, 3, 3,

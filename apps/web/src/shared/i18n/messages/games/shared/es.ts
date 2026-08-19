@@ -271,6 +271,11 @@ export const esMessages = {
       joinButton: 'Unirse',
     },
   },
+  widgetError: {
+    title: 'Algo salió mal',
+    message: 'Este juego encontró un error inesperado. Inténtalo de nuevo.',
+    retry: 'Reintentar',
+  },
   inviteCode: {
     title: 'Unirse a un Juego Privado',
     label: 'Ingresa Código',

@@ -264,6 +264,11 @@ export const enMessages = {
       joinButton: 'Join Room',
     },
   },
+  widgetError: {
+    title: 'Something went wrong',
+    message: 'This game hit an unexpected error. Try again to keep playing.',
+    retry: 'Try again',
+  },
   inviteCode: {
     title: 'Join a Private Game',
     label: 'Enter Invite Code',

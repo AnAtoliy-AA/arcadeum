@@ -284,7 +284,7 @@ export const CRITICAL_THEMES: CriticalTheme[] = [
 ];
 
 // Sea Battle theme registry. Each `id` matches a SeaBattleVariant in
-// `apps/web/src/widgets/SeaBattleGame/lib/constants.ts`.
+// `apps/web/src/widgets/StrategyGames/SeaBattleGame/lib/constants.ts`.
 export interface SeaBattleThemeMeta {
   id: string;
   name: string;

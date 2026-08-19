@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getVariantStyles } from '@/widgets/CriticalGame/ui/styles/variants';
+import { getVariantStyles } from '@/widgets/CardGames/CriticalGame/ui/styles/variants';
 
 const loaded = new Set<string>();
 

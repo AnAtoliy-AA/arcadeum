@@ -272,6 +272,12 @@ export const frMessages = {
       joinButton: 'Rejoindre',
     },
   },
+  widgetError: {
+    title: 'Quelque chose s’est mal passé',
+    message:
+      'Ce jeu a rencontré une erreur inattendue. Réessayez pour continuer.',
+    retry: 'Réessayer',
+  },
   inviteCode: {
     title: 'Rejoindre une Partie Privée',
     label: "Code d'invitation",

@@ -80,11 +80,7 @@ function CheckersGameImpl({
   );
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'checkers_v1');
-  useGameChatIntegration(
-    snapshot?.logs as never,
-    sendChat,
-    resolveDisplayNameBound,
-  );
+  useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
   const {
     rematchLoading,

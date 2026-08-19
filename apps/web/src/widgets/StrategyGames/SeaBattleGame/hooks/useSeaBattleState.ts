@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
+import { getSessionState } from '@/features/games/lib';
 import type {
   SeaBattleSnapshot,
   SeaBattlePlayerState,
@@ -28,13 +29,10 @@ export function useSeaBattleState({
     initialSession,
   });
 
-  const snapshot: SeaBattleSnapshot | null = useMemo(() => {
-    if (session?.state) {
-      return session.state as unknown as SeaBattleSnapshot;
-    }
-
-    return null;
-  }, [session]);
+  const snapshot: SeaBattleSnapshot | null = useMemo(
+    () => getSessionState<SeaBattleSnapshot>(session),
+    [session],
+  );
 
   const currentPlayer: SeaBattlePlayerState | null = useMemo(() => {
     if (!snapshot || !currentUserId) return null;

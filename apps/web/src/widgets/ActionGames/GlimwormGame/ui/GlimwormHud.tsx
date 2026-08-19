@@ -64,10 +64,14 @@ export function GlimwormHud(
   const localInput = useGlimwormStore((s) => s.localInput);
   const [now, setNow] = useState<number>(() => Date.now());
 
+  // Only tick the countdown clock while an end-of-round timer is actually
+  // shown; otherwise the 4×/sec re-render is pure waste.
+  const endsAt = snapshot?.endsAt ?? null;
   useEffect(() => {
+    if (endsAt === null) return;
     const id = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(id);
-  }, []);
+  }, [endsAt]);
 
   // Stable Bot 1, Bot 2, … indexing based on insertion order in the snapshot.
   // Computed before the early return so the hook order is consistent.
@@ -81,6 +85,11 @@ export function GlimwormHud(
     return m;
   }, [snapshot]);
 
+  const top5 = useMemo(() => {
+    if (!snapshot) return [];
+    return [...snapshot.worms].sort((a, b) => b.score - a.score).slice(0, 5);
+  }, [snapshot]);
+
   if (!snapshot) return null;
 
   const self = snapshot.worms.find((w) => w.self);
@@ -88,10 +97,6 @@ export function GlimwormHud(
     snapshot.endsAt !== null ? Math.max(0, snapshot.endsAt - now) : null;
   const seconds =
     timeRemainingMs !== null ? Math.ceil(timeRemainingMs / 1000) : null;
-
-  const top5 = [...snapshot.worms]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 5);
 
   const handleUsePowerup = () => {
     setInput({ angle: localInput.angle, usePowerup: true });

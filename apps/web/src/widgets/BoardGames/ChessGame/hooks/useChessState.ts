@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
+import { getSessionState } from '@/features/games/lib';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 import type { ChessClientState } from '../types';
 
@@ -25,12 +26,10 @@ export function useChessState({
       initialSession,
     });
 
-  const snapshot: ChessClientState | null = useMemo(() => {
-    if (session?.state) {
-      return session.state as unknown as ChessClientState;
-    }
-    return null;
-  }, [session]);
+  const snapshot: ChessClientState | null = useMemo(
+    () => getSessionState<ChessClientState>(session),
+    [session],
+  );
 
   const currentPlayerId = useMemo(() => {
     if (!snapshot) return null;

@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
+import { getSessionState } from '@/features/games/lib';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 import type { CatDashClientState } from '../types';
 
@@ -25,12 +26,10 @@ export function useCatDashState({
       initialSession,
     });
 
-  const snapshot: CatDashClientState | null = useMemo(() => {
-    if (session?.state) {
-      return session.state as unknown as CatDashClientState;
-    }
-    return null;
-  }, [session]);
+  const snapshot: CatDashClientState | null = useMemo(
+    () => getSessionState<CatDashClientState>(session),
+    [session],
+  );
 
   const currentEntryId = snapshot
     ? (snapshot.players[snapshot.currentPlayerIndex]?.playerId ?? null)

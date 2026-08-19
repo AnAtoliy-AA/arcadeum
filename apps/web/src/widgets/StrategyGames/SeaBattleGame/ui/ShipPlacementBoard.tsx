@@ -340,13 +340,16 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     ],
   );
 
-  const handleCellClick = (row: number, col: number) => {
-    if (touchDragJustEnded.current) {
-      resetTouchDragJustEnded();
-      return;
-    }
-    handleCellClickInner(row, col);
-  };
+  const handleCellClick = useCallback(
+    (row: number, col: number) => {
+      if (touchDragJustEnded.current) {
+        resetTouchDragJustEnded();
+        return;
+      }
+      handleCellClickInner(row, col);
+    },
+    [handleCellClickInner, resetTouchDragJustEnded, touchDragJustEnded],
+  );
 
   const handleRotate = useCallback(() => setIsVertical((p) => !p), []);
 

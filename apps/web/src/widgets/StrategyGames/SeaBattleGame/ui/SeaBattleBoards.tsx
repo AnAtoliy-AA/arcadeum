@@ -119,6 +119,18 @@ export function SeaBattleBoards({
     [weaponMode, onSonar, onRadar],
   );
 
+  const handleCellHover = useCallback(
+    (playerId: string, row: number, col: number) => {
+      setWeaponMode((prev) =>
+        prev ? { ...prev, targetPlayerId: playerId } : prev,
+      );
+      setHoveredCell({ row, col });
+    },
+    [],
+  );
+
+  const handleCellHoverEnd = useCallback(() => setHoveredCell(null), []);
+
   const cancelWeaponMode = useCallback(() => {
     setWeaponMode(null);
     setHoveredCell(null);
@@ -409,19 +421,8 @@ export function SeaBattleBoards({
                 : radarPreviewCells
             }
             weaponPreviewType={weaponMode?.weapon ?? null}
-            onCellHover={
-              isWeaponMode
-                ? (playerId: string, row: number, col: number) => {
-                    setWeaponMode((prev) =>
-                      prev ? { ...prev, targetPlayerId: playerId } : prev,
-                    );
-                    setHoveredCell({ row, col });
-                  }
-                : undefined
-            }
-            onCellHoverEnd={
-              isWeaponMode ? () => setHoveredCell(null) : undefined
-            }
+            onCellHover={isWeaponMode ? handleCellHover : undefined}
+            onCellHoverEnd={isWeaponMode ? handleCellHoverEnd : undefined}
             weaponMode={isWeaponMode}
           />
         </>

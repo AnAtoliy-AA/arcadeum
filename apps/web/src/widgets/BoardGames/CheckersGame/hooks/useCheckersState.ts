@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
+import { getSessionState } from '@/features/games/lib';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 import type { CheckersClientState } from '../types';
 
@@ -25,12 +26,10 @@ export function useCheckersState({
       initialSession,
     });
 
-  const snapshot: CheckersClientState | null = useMemo(() => {
-    if (session?.state) {
-      return session.state as unknown as CheckersClientState;
-    }
-    return null;
-  }, [session]);
+  const snapshot: CheckersClientState | null = useMemo(
+    () => getSessionState<CheckersClientState>(session),
+    [session],
+  );
 
   const currentTurnUserId = snapshot
     ? snapshot.playerOrder[snapshot.currentTurnIndex]

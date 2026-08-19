@@ -85,6 +85,14 @@ function TicTacToeGameImpl({
     userId: currentUserId,
   });
 
+  const handleCellClick = useCallback(
+    (row: number, col: number) => {
+      useGameChatStore.getState().setPersistedCell(null);
+      placeMark(row, col);
+    },
+    [placeMark],
+  );
+
   const resolveDisplayNameBound = useCallback(
     (id?: string | null) =>
       resolveDisplayName(id, {
@@ -99,11 +107,7 @@ function TicTacToeGameImpl({
   // session history-note event (the BE appends it to the session logs and
   // rebroadcasts, so it shows in the shared panel + popup).
   const sendChat = useGameChatSend(roomId, currentUserId, 'tic_tac_toe_v1');
-  useGameChatIntegration(
-    snapshot?.logs as never,
-    sendChat,
-    resolveDisplayNameBound,
-  );
+  useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,
@@ -216,10 +220,7 @@ function TicTacToeGameImpl({
             highlightedCell={effectiveHighlight}
             currentPlayerId={currentUserId}
             ariaLabel={`Tic-Tac-Toe ${snapshot.options.boardSize}x${snapshot.options.boardSize} board`}
-            onCellClick={(row, col) => {
-              useGameChatStore.getState().setPersistedCell(null);
-              placeMark(row, col);
-            }}
+            onCellClick={handleCellClick}
           />
         </>
       ) : null}

@@ -101,7 +101,7 @@ function CascadeGameImpl({
   );
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'cascade_v1');
-  useGameChatIntegration(snapshot?.logs as never, sendChat);
+  useGameChatIntegration(snapshot?.logs, sendChat);
 
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winnerId,

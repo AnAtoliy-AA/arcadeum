@@ -113,6 +113,14 @@ export function useDragPlacement({
   const boardRef = useRef(board);
   const onMoveShipRef = useRef(onMoveShip);
 
+  // Stable per-cell drag props so memoized placement cells keep a consistent
+  // onDragStart identity across hover-driven re-renders. Cleared whenever the
+  // fleet layout actually changes (ship placed/moved or placement completes).
+  const boardDragPropsCacheRef = useRef(new Map<string, DragProps>());
+  useEffect(() => {
+    boardDragPropsCacheRef.current.clear();
+  }, [ships, placementComplete, isTouchDevice]);
+
   useEffect(() => {
     boardRef.current = board;
     onMoveShipRef.current = onMoveShip;
@@ -147,6 +155,9 @@ export function useDragPlacement({
 
   const getBoardCellDragProps = useCallback(
     (row: number, col: number): DragProps => {
+      const cacheKey = `${row}:${col}`;
+      const cached = boardDragPropsCacheRef.current.get(cacheKey);
+      if (cached) return cached;
       if (isTouchDeviceRef.current || placementComplete) {
         return { draggable: false, onDragStart: () => {} };
       }
@@ -156,7 +167,7 @@ export function useDragPlacement({
       if (!ship) {
         return { draggable: false, onDragStart: () => {} };
       }
-      return {
+      const props: DragProps = {
         draggable: true,
         onDragStart: (e: DragEvent<HTMLElement>) => {
           e.dataTransfer.effectAllowed = 'move';
@@ -178,6 +189,8 @@ export function useDragPlacement({
           setSelectedShipId(null);
         },
       };
+      boardDragPropsCacheRef.current.set(cacheKey, props);
+      return props;
     },
     [ships, placementComplete, setSelectedShipId],
   );

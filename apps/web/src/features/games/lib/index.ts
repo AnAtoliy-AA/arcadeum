@@ -12,3 +12,5 @@ export { GamePropsFactory, GamePropsGuards } from './gameProps';
 export { resolveDisplayName } from './resolveDisplayName';
 
 export { SHARED_THEMES, getThemeById, type GameTheme } from './shared-themes';
+
+export { getSessionState } from './sessionState';

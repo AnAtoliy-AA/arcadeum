@@ -181,11 +181,7 @@ function ChessGameImpl({
     [currentUserId, room, displaySnapshot],
   );
   const sendChat = useGameChatSend(roomId, currentUserId, 'chess_v1');
-  useGameChatIntegration(
-    snapshot?.logs as never,
-    sendChat,
-    resolveDisplayNameBound,
-  );
+  useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
   const {
     rematchLoading,
     handleRematch,

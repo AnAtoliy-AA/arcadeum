@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
+import { getSessionState } from '@/features/games/lib';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 import type { TicTacToeClientState } from '../types';
 
@@ -25,12 +26,10 @@ export function useTicTacToeState({
       initialSession,
     });
 
-  const snapshot: TicTacToeClientState | null = useMemo(() => {
-    if (session?.state) {
-      return session.state as unknown as TicTacToeClientState;
-    }
-    return null;
-  }, [session]);
+  const snapshot: TicTacToeClientState | null = useMemo(
+    () => getSessionState<TicTacToeClientState>(session),
+    [session],
+  );
 
   const currentEntryId = snapshot
     ? snapshot.playerOrder[snapshot.currentTurnIndex]

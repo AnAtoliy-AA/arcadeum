@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import type { ChessClientState } from '../types';
 import { generateMoveList, generatePGN } from '../lib/pgn';
 
 interface MoveListProps {
   state: ChessClientState;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: (key: any, params?: Record<string, string | number>) => string;
+  t: (
+    key: import('@/shared/lib/useTranslation').TranslationKey,
+    params?: Record<string, string | number>,
+  ) => string;
   onMoveHover?: (moveIndex: number | null) => void;
 }
 
@@ -15,24 +17,34 @@ export function MoveList({ state, t: _t, onMoveHover }: MoveListProps) {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [hoveredMove, setHoveredMove] = useState<number | null>(null);
-  const moves = generateMoveList(state);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const pairs: {
-    white: string;
-    black: string;
-    num: number;
-    whiteIdx: number;
-    blackIdx: number;
-  }[] = [];
-  for (let i = 0; i < moves.length; i += 2) {
-    pairs.push({
-      num: Math.floor(i / 2) + 1,
-      white: moves[i] ?? '',
-      black: moves[i + 1] ?? '',
-      whiteIdx: i,
-      blackIdx: i + 1,
-    });
-  }
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
+
+  const pairs = useMemo(() => {
+    const moves = generateMoveList(state);
+    const result: {
+      white: string;
+      black: string;
+      num: number;
+      whiteIdx: number;
+      blackIdx: number;
+    }[] = [];
+    for (let i = 0; i < moves.length; i += 2) {
+      result.push({
+        num: Math.floor(i / 2) + 1,
+        white: moves[i] ?? '',
+        black: moves[i + 1] ?? '',
+        whiteIdx: i,
+        blackIdx: i + 1,
+      });
+    }
+    return result;
+  }, [state]);
 
   const visiblePairs = expanded ? pairs : pairs.slice(-8);
 
@@ -40,7 +52,8 @@ export function MoveList({ state, t: _t, onMoveHover }: MoveListProps) {
     const pgn = generatePGN(state);
     navigator.clipboard.writeText(pgn).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
     });
   }, [state]);
 

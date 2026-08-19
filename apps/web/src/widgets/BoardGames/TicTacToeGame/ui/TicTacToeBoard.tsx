@@ -346,15 +346,19 @@ function TicTacToeBoardImpl({
     onActivate: ({ row, col }) => onCellClick(row, col),
   });
 
-  const cellStyle: React.CSSProperties = isScrollable
-    ? {
-        width: `${CELL_PX}px`,
-        height: `${CELL_PX}px`,
-        fontSize: '1.1rem',
-      }
-    : {
-        fontSize: `clamp(0.85rem, ${(55 / Math.max(rows, cols)).toFixed(1)}cqw, 3rem)`,
-      };
+  const cellStyle: React.CSSProperties = useMemo(
+    () =>
+      isScrollable
+        ? {
+            width: `${CELL_PX}px`,
+            height: `${CELL_PX}px`,
+            fontSize: '1.1rem',
+          }
+        : {
+            fontSize: `clamp(0.85rem, ${(55 / Math.max(rows, cols)).toFixed(1)}cqw, 3rem)`,
+          },
+    [isScrollable, rows, cols],
+  );
 
   return (
     <div

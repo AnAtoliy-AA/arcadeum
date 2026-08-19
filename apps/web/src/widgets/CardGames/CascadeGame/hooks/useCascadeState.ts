@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
+import { getSessionState } from '@/features/games/lib';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 import type { CascadeClientState } from '../types';
 
@@ -24,12 +25,10 @@ export function useCascadeState({
     initialSession,
   });
 
-  const snapshot: CascadeClientState | null = useMemo(() => {
-    if (session?.state) {
-      return session.state as unknown as CascadeClientState;
-    }
-    return null;
-  }, [session]);
+  const snapshot: CascadeClientState | null = useMemo(
+    () => getSessionState<CascadeClientState>(session),
+    [session],
+  );
 
   const currentEntryId = snapshot
     ? (snapshot.playerOrder[snapshot.currentTurnIndex] ?? null)

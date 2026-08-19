@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
 import type { ChatScope } from '@/shared/types/games';
 
@@ -63,12 +63,19 @@ export function useGameActions(
 ): UseGameActionsReturn {
   const { roomId, userId, gameType, setActionBusy, onActionComplete } = options;
 
+  // Keep the latest callback in a ref so the listener effect below only
+  // depends on gameType and doesn't tear down/re-register on every render.
+  const onActionCompleteRef = useRef(onActionComplete);
+  useEffect(() => {
+    onActionCompleteRef.current = onActionComplete;
+  }, [onActionComplete]);
+
   // Setup game-specific listeners
   useEffect(() => {
     if (!gameType) return;
 
     const handleActionComplete = () => {
-      onActionComplete?.();
+      onActionCompleteRef.current?.();
     };
 
     if (gameType === 'critical_v1') {
@@ -110,7 +117,7 @@ export function useGameActions(
         );
       }
     };
-  }, [gameType, onActionComplete]);
+  }, [gameType]);
 
   // Critical actions
   const startCritical = useCallback(

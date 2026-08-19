@@ -79,11 +79,7 @@ function CatDashGameImpl({
   );
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'cat_dash_v1');
-  useGameChatIntegration(
-    snapshot?.logs as never,
-    sendChat,
-    resolveDisplayNameBound,
-  );
+  useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
   const result = computeGameResult(isGameOver, currentUserId, {
     winnerId: snapshot?.winner,

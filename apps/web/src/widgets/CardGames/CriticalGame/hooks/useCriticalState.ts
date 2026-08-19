@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useCallback } from 'react';
 import { useGameSession, useGameActions } from '@/features/games/hooks';
+import { getSessionState } from '@/features/games/lib';
 import { gameSocket } from '@/shared/lib/socket';
 import type { CriticalSnapshot, CriticalPlayerState } from '../types';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
@@ -64,10 +65,10 @@ export function useCriticalState({
     [roomId, accessToken],
   );
 
-  const snapshot: CriticalSnapshot | null = useMemo(() => {
-    if (!session?.state) return null;
-    return session.state as unknown as CriticalSnapshot;
-  }, [session]);
+  const snapshot: CriticalSnapshot | null = useMemo(
+    () => getSessionState<CriticalSnapshot>(session),
+    [session],
+  );
 
   const currentPlayer: CriticalPlayerState | null = useMemo(() => {
     if (!snapshot || !currentUserId) return null;

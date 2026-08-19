@@ -5,7 +5,7 @@ import { MatchWidgetGrid } from './styles/layout';
 import { Arena } from './arena/Arena';
 import { OpponentsRow } from './opponents/OpponentsRow';
 import { HandZone } from './hand/HandZone';
-import { IdleTimerDisplay } from './IdleTimerDisplay';
+import { GameIdleTimer } from '@/features/games/ui';
 import { AutoplayControls } from './AutoplayControls';
 import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
 import {
@@ -388,14 +388,13 @@ export function MatchWidget({
                 flexWrap: 'wrap',
               }}
             >
-              <IdleTimerDisplay
+              <GameIdleTimer
                 enabled={idleTimerEnabled}
                 isMyTurn={isMyTurn}
                 canAct={canAct}
                 onTimeout={handleIdleTimeout}
                 autoplayTriggered={idleTimerTriggered}
                 onStop={handleStopAutoplay}
-                t={t}
               />
               <AutoplayControls autoplayState={autoplayState} t={t} />
             </div>

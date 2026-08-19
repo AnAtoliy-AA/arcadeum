@@ -379,6 +379,17 @@ export const esMessages = {
         accept: 'Aceptar',
       },
     },
+    forfeit: {
+      title: '00bfAbandonar la partida?',
+      message: '00bfSeguro que quieres abandonar? Tu oponente gana.',
+      confirm: 'Abandonar',
+      cancel: 'Cancelar',
+    },
+    idleTimer: {
+      countdown: 'Autoplay en {{seconds}}s',
+      active: 'Autoplay activo',
+      stop: 'Detener',
+    },
   },
   undo: {
     request: 'Solicitar deshacer',

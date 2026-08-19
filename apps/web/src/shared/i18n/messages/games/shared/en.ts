@@ -369,6 +369,17 @@ export const enMessages = {
         accept: 'Accept',
       },
     },
+    forfeit: {
+      title: 'Forfeit game?',
+      message: 'Are you sure you want to forfeit? Your opponent wins.',
+      confirm: 'Forfeit',
+      cancel: 'Cancel',
+    },
+    idleTimer: {
+      countdown: 'Autoplay in {{seconds}}s',
+      active: 'Autoplay Active',
+      stop: 'Stop',
+    },
   },
   undo: {
     request: 'Request Undo',

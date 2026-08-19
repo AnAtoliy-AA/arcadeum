@@ -3,7 +3,6 @@ export { useCriticalModals } from './useCriticalModals';
 export { useRematch } from '@/features/games/hooks';
 export { useAutoplay } from './useAutoplay';
 export { useWebGameHaptics } from './useWebGameHaptics';
-export { useIdleTimer } from './useIdleTimer';
 export { useGameRoom } from '@/features/games/hooks';
 export { useSeeTheFutureFromLogs } from './useSeeTheFutureFromLogs';
 export { useOmniscienceFromLogs } from './useOmniscienceFromLogs';

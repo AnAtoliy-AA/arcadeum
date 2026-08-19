@@ -19,3 +19,8 @@ export { usePendingStart } from './usePendingStart';
 export { useGameEndState } from './useGameEndState';
 export type { UseGameEndStateOptions, PlayerInfo } from './useGameEndState';
 export { useGameTheme } from './useGameTheme';
+export { useGameIdleTimer } from './useGameIdleTimer';
+export type {
+  UseGameIdleTimerOptions,
+  UseGameIdleTimerReturn,
+} from './useGameIdleTimer';

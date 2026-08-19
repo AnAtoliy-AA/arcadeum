@@ -1,25 +1,28 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Button } from '@arcadeum/ui';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
+import { useGameIdleTimer } from '@/features/games/hooks/useGameIdleTimer';
 
-import { useIdleTimer } from '../hooks/useIdleTimer';
-
-interface IdleTimerDisplayProps {
+export interface GameIdleTimerProps {
   enabled: boolean;
   isMyTurn: boolean;
   canAct: boolean;
   onTimeout: () => void;
   autoplayTriggered: boolean;
   onStop: () => void;
-  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
-function Container({ children }: { children?: React.ReactNode }) {
+function Container({ children }: { children?: ReactNode }) {
   return <div className="my-2">{children}</div>;
 }
 
-function CountdownContainer({ children }: { children?: React.ReactNode }) {
+function CountdownContainer({ children }: { children?: ReactNode }) {
   return (
     <div className="flex flex-row items-center justify-center gap-2 rounded-lg border border-[rgba(251,191,36,0.4)] bg-[rgba(251,191,36,0.15)] px-4 py-[10px]">
       {children}
@@ -27,16 +30,12 @@ function CountdownContainer({ children }: { children?: React.ReactNode }) {
   );
 }
 
-function TimerEmoji({ children }: { children?: React.ReactNode }) {
-  return <span className="text-[18px]">{children}</span>;
-}
-
 function CountdownText({
   isRunning,
   children,
 }: {
   isRunning: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }) {
   return (
     <span
@@ -50,7 +49,7 @@ function CountdownText({
   );
 }
 
-function ActiveContainer({ children }: { children?: React.ReactNode }) {
+function ActiveContainer({ children }: { children?: ReactNode }) {
   return (
     <div className="flex flex-row items-center justify-between gap-4 rounded-lg border border-[rgba(34,197,94,0.4)] bg-[rgba(34,197,94,0.15)] px-4 py-[10px]">
       {children}
@@ -58,15 +57,11 @@ function ActiveContainer({ children }: { children?: React.ReactNode }) {
   );
 }
 
-function ActiveBadge({ children }: { children?: React.ReactNode }) {
+function ActiveBadge({ children }: { children?: ReactNode }) {
   return <div className="flex flex-row items-center gap-2">{children}</div>;
 }
 
-function RobotEmoji({ children }: { children?: React.ReactNode }) {
-  return <span className="text-[18px]">{children}</span>;
-}
-
-function ActiveText({ children }: { children?: React.ReactNode }) {
+function ActiveText({ children }: { children?: ReactNode }) {
   return (
     <span className="text-[14px] leading-[18px] font-semibold text-[rgb(34,197,94)]">
       {children}
@@ -75,20 +70,21 @@ function ActiveText({ children }: { children?: React.ReactNode }) {
 }
 
 /**
- * Displays the idle timer countdown and autoplay status.
- * Shows countdown when timer is active.
- * Shows "Autoplay Active" badge with stop button when autoplay was triggered by timer.
+ * Shared idle-timer + autoplay status UI for turn-based games. Shows the
+ * countdown while the timer is active and a "Autoplay Active" badge with a
+ * stop button once the timer has triggered autoplay. Uses the shared
+ * `useGameIdleTimer` hook and `games.table.idleTimer.*` i18n keys.
  */
-export function IdleTimerDisplay({
+export function GameIdleTimer({
   enabled,
   isMyTurn,
   canAct,
   onTimeout,
   autoplayTriggered,
   onStop,
-  t,
-}: IdleTimerDisplayProps) {
-  const { secondsRemaining, isActive, isRunning } = useIdleTimer({
+}: GameIdleTimerProps) {
+  const { t } = useTranslation();
+  const { secondsRemaining, isActive, isRunning } = useGameIdleTimer({
     enabled,
     isMyTurn,
     canAct,
@@ -104,11 +100,14 @@ export function IdleTimerDisplay({
       <Container>
         <ActiveContainer>
           <ActiveBadge>
-            <RobotEmoji>🤖</RobotEmoji>
-            <ActiveText>{t('games.table.idleTimer.active')}</ActiveText>
+            <span className="text-[18px]">🤖</span>
+            <ActiveText>
+              {t('games.table.idleTimer.active' as TranslationKey) ||
+                'Autoplay Active'}
+            </ActiveText>
           </ActiveBadge>
           <Button variant="danger" size="sm" onClick={onStop}>
-            {t('games.table.idleTimer.stop')}
+            {t('games.table.idleTimer.stop' as TranslationKey) || 'Stop'}
           </Button>
         </ActiveContainer>
       </Container>
@@ -118,9 +117,11 @@ export function IdleTimerDisplay({
   return (
     <Container>
       <CountdownContainer>
-        <TimerEmoji>⏱️</TimerEmoji>
+        <span className="text-[18px]">⏱️</span>
         <CountdownText isRunning={isRunning}>
-          {t('games.table.idleTimer.countdown', { seconds: secondsRemaining })}
+          {t('games.table.idleTimer.countdown' as TranslationKey, {
+            seconds: String(secondsRemaining),
+          }) || `Autoplay in ${secondsRemaining}s`}
         </CountdownText>
       </CountdownContainer>
     </Container>

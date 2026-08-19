@@ -166,8 +166,8 @@ vi.mock('./styles/layout', () => ({
   ),
 }));
 
-vi.mock('./IdleTimerDisplay', () => ({
-  IdleTimerDisplay: () => <div data-testid="idle-timer-stub" />,
+vi.mock('@/features/games/ui/GameIdleTimer', () => ({
+  GameIdleTimer: () => <div data-testid="idle-timer-stub" />,
 }));
 
 vi.mock('./AutoplayControls', () => ({

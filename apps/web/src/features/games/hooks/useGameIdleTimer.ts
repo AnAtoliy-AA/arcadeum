@@ -6,14 +6,14 @@ import { IDLE_TIMER_DURATION_SEC } from '@/shared/config/game';
 
 const IDLE_TIMEOUT_SECONDS = IDLE_TIMER_DURATION_SEC;
 
-interface UseIdleTimerOptions {
+export interface UseGameIdleTimerOptions {
   enabled: boolean;
   isMyTurn: boolean;
   canAct: boolean;
   onTimeout: () => void;
 }
 
-interface UseIdleTimerReturn {
+export interface UseGameIdleTimerReturn {
   secondsRemaining: number;
   isActive: boolean;
   isRunning: boolean;
@@ -21,16 +21,16 @@ interface UseIdleTimerReturn {
 }
 
 /**
- * Hook to manage idle timer for autoplay trigger.
- * Counts down from configured duration when it's the player's turn.
- * Calls onTimeout when timer reaches 0.
+ * Idle timer for turn-based autoplay. Counts down from the configured
+ * duration while it is the player's turn and they can act, then fires
+ * `onTimeout`. Shared across games so autoplay behavior stays consistent.
  */
-export function useIdleTimer({
+export function useGameIdleTimer({
   enabled,
   isMyTurn,
   canAct,
   onTimeout,
-}: UseIdleTimerOptions): UseIdleTimerReturn {
+}: UseGameIdleTimerOptions): UseGameIdleTimerReturn {
   const [secondsRemaining, setSecondsRemaining] =
     useState(IDLE_TIMEOUT_SECONDS);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);

@@ -381,6 +381,17 @@ export const frMessages = {
         accept: 'Accepter',
       },
     },
+    forfeit: {
+      title: 'Abandonner la partie?',
+      message: 'Voulez-vous vraiment abandonner? Votre adversaire gagne.',
+      confirm: 'Abandonner',
+      cancel: 'Annuler',
+    },
+    idleTimer: {
+      countdown: 'Autoplay dans {{seconds}}s',
+      active: 'Autoplay actif',
+      stop: 'Arr00eater',
+    },
   },
   undo: {
     request: 'Demander annulation',

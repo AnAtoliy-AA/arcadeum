@@ -29,6 +29,11 @@ export {
 } from './TurnIndicator';
 export { UndoButton } from './UndoButton';
 export { GameEndModals } from './GameEndModals';
+export { GameIdleTimer, type GameIdleTimerProps } from './GameIdleTimer';
+export {
+  GameForfeitModal,
+  type GameForfeitModalProps,
+} from './GameForfeitModal';
 export {
   LobbyOptionSection,
   LobbyChipGroup,

@@ -24,6 +24,16 @@ export interface GeoBlockResult {
   isVpn?: boolean;
 }
 
+/**
+ * Validate an IP is a syntactically valid IP literal before it is embedded
+ * in an outbound lookup URL. Returning a fresh value here (rather than
+ * reusing the raw header string) breaks the taint flow CodeQL tracks for
+ * the SSRF query — only a validated literal can reach the URL sink.
+ */
+function safeIpLiteral(ip: string): string | null {
+  return isIP(ip) === 0 ? null : ip;
+}
+
 @Injectable()
 export class GeoBlockService {
   private readonly logger = new Logger(GeoBlockService.name);
@@ -106,12 +116,11 @@ export class GeoBlockService {
   }
 
   private async getCountry(ip: string): Promise<string | null> {
-    // Guard against SSRF: only a syntactically valid IP literal may be
-    // embedded in the outbound lookup URL.
-    if (isIP(ip) === 0) return null;
+    const validated = safeIpLiteral(ip);
+    if (!validated) return null;
     try {
       const res = await fetch(
-        `http://ip-api.com/json/${ip}?fields=countryCode`,
+        `http://ip-api.com/json/${validated}?fields=countryCode`,
       );
       if (!res.ok) return null;
       const data = (await res.json()) as { countryCode?: string };
@@ -123,13 +132,14 @@ export class GeoBlockService {
   }
 
   private async checkVpn(ip: string): Promise<boolean> {
-    if (isIP(ip) === 0) return false;
+    const validated = safeIpLiteral(ip);
+    if (!validated) return false;
     try {
       const apiKey = this.config.get<string>('VPN_CHECK_API_KEY');
       if (!apiKey) return false;
 
       const res = await fetch(
-        `https://ipqualityscore.com/api/json/ip/${apiKey}/${ip}`,
+        `https://ipqualityscore.com/api/json/ip/${apiKey}/${validated}`,
       );
       if (!res.ok) return false;
       const data = (await res.json()) as { proxy?: boolean; vpn?: boolean };

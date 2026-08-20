@@ -96,11 +96,13 @@ export class GamesController {
             user.userId,
             dto.gameId,
             dto.variant,
+            dto.theme,
           )
         : await this.gamesService.quickplay(
             user.userId,
             dto.gameId,
             dto.variant,
+            dto.theme,
           );
     return { room };
   }

@@ -3,6 +3,7 @@ import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
   TIC_TAC_TOE_THEMES,
+  GLIMWORM_THEMES,
   GAMES,
   themesFor,
   findCriticalTheme,
@@ -17,7 +18,7 @@ describe('themes registry', () => {
     expect(GAMES.sea_battle_v1.hasExpansion).toBe(false);
     expect(GAMES.sea_battle_v1.hasThemes).toBe(true);
     expect(GAMES.glimworm_v1.hasExpansion).toBe(false);
-    expect(GAMES.glimworm_v1.hasThemes).toBe(false);
+    expect(GAMES.glimworm_v1.hasThemes).toBe(true);
     expect(GAMES.tic_tac_toe_v1.hasExpansion).toBe(false);
     expect(GAMES.tic_tac_toe_v1.hasThemes).toBe(true);
   });
@@ -43,7 +44,7 @@ describe('themes registry', () => {
   it('themesFor returns the correct list per game', () => {
     expect(themesFor('critical_v1')).toBe(CRITICAL_THEMES);
     expect(themesFor('sea_battle_v1')).toBe(SEA_BATTLE_THEMES);
-    expect(themesFor('glimworm_v1')).toEqual([]);
+    expect(themesFor('glimworm_v1')).toBe(GLIMWORM_THEMES);
     expect(themesFor('tic_tac_toe_v1')).toBe(TIC_TAC_TOE_THEMES);
   });
 

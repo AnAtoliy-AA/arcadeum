@@ -55,7 +55,7 @@ export const GAMES: Record<GameId, GameMeta> = {
     kind: 'Arcade',
     category: 'Action',
     hasExpansion: false,
-    hasThemes: false,
+    hasThemes: true,
     rules: ['idle', 'spectators'],
   },
   tic_tac_toe_v1: {
@@ -91,7 +91,7 @@ export const GAMES: Record<GameId, GameMeta> = {
     kind: 'Board · strategy',
     category: 'Board Game',
     hasExpansion: false,
-    hasThemes: false,
+    hasThemes: true,
     rules: ['idle', 'spectators'],
   },
   checkers_v1: {
@@ -295,6 +295,22 @@ export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
 export { CAT_DASH_THEMES, findCatDashTheme, type CatDashThemeMeta };
 
+export interface GlimwormThemeMeta {
+  id: string;
+  name: string;
+  desc: string;
+  color: string;
+}
+
+export const GLIMWORM_THEMES: GlimwormThemeMeta[] = SHARED_THEMES.filter(
+  (t) => t.id !== 'random',
+).map((t) => ({
+  id: t.id,
+  name: t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/-/g, ' '),
+  desc: t.descriptionKey,
+  color: t.colors.primary,
+}));
+
 export function themesFor(gameId: GameId) {
   if (gameId === 'critical_v1') return CRITICAL_THEMES;
   if (gameId === 'sea_battle_v1') return SEA_BATTLE_THEMES;
@@ -303,6 +319,7 @@ export function themesFor(gameId: GameId) {
   if (gameId === 'chess_v1') return CHESS_THEMES;
   if (gameId === 'checkers_v1') return CHECKERS_THEMES;
   if (gameId === 'cat_dash_v1') return CAT_DASH_THEMES;
+  if (gameId === 'glimworm_v1') return GLIMWORM_THEMES;
   return [];
 }
 export function findCriticalTheme(id: string | undefined): CriticalTheme {

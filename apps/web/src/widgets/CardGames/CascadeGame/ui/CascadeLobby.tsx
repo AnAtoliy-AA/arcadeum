@@ -43,6 +43,7 @@ const CASCADE_LOBBY_THEME = {
 
 function resolveOptions(raw: unknown): CascadeOptions {
   const r = (raw ?? {}) as Partial<{
+    theme: string;
     variant: string;
     mode: string;
     stackingEnabled: boolean;
@@ -52,8 +53,10 @@ function resolveOptions(raw: unknown): CascadeOptions {
   const mode: CascadeMode = knownModes.includes(r.mode as CascadeMode)
     ? (r.mode as CascadeMode)
     : 'classic';
+  const theme = (r.theme ?? r.variant ?? 'adventure') as CascadeVariant;
   return {
-    variant: (r.variant ?? 'cosmic') as CascadeVariant,
+    variant: theme,
+    theme,
     mode,
     stackingEnabled: mode !== 'pure',
     lastCardCallEnabled:

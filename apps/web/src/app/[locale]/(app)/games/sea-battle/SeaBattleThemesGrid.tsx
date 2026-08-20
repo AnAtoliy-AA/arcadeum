@@ -5,11 +5,11 @@ import { SeaBattleThemePreview } from '@/widgets/StrategyGames/SeaBattleGame/ui/
 import styles from './SeaBattleThemesGrid.module.scss';
 
 const VARIANTS = [
+  'adventure',
   'cyberpunk',
   'underwater',
   'crime',
   'horror',
-  'adventure',
   'high-altitude-hike',
   'galaxy',
   'fantasy',

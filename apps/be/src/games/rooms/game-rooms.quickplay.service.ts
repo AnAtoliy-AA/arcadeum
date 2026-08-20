@@ -48,10 +48,16 @@ export class GameRoomsQuickplayService {
     userId: string,
     gameId: string,
     variant?: string,
+    theme?: string,
   ): Promise<GameRoomSummary> {
     validateGameId(gameId);
     const botId = `bot-${randomBytes(5).toString('hex')}`;
     const now = new Date();
+    const effectiveTheme = theme || 'adventure';
+    const gameOptions: Record<string, unknown> = {
+      ...(variant ? { variant } : {}),
+      theme: effectiveTheme,
+    };
     const room = await this.gameRoomModel.create({
       gameId,
       name: 'Quick Match',
@@ -63,7 +69,7 @@ export class GameRoomsQuickplayService {
         { userId: botId, joinedAt: now },
       ],
       status: 'lobby',
-      gameOptions: variant ? { variant } : {},
+      gameOptions,
       createdAt: now,
       updatedAt: now,
     });
@@ -76,6 +82,7 @@ export class GameRoomsQuickplayService {
     userId: string,
     gameId: string,
     variant?: string,
+    theme?: string,
   ): Promise<GameRoomSummary> {
     if (typeof userId !== 'string') {
       throw new BadRequestException('Invalid userId');
@@ -156,12 +163,17 @@ export class GameRoomsQuickplayService {
       return joined.room;
     }
 
+    const effectiveTheme = theme || 'adventure';
+    const gameOptions: Record<string, unknown> = {
+      ...(variant ? { variant } : {}),
+      theme: effectiveTheme,
+    };
     const room = await this.gameRoomsService.createRoom(userId, {
       gameId,
       name: 'Open Match',
       visibility: 'public',
       maxPlayers: 2,
-      gameOptions: variant ? { variant } : undefined,
+      gameOptions,
     });
     this.realtimeService.emitRoomCreated(room);
     return room;

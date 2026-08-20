@@ -70,7 +70,10 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   onRefresh,
   t,
 }: SeaBattleLobbyProps) {
-  const roomVariant = (room.gameOptions?.variant as string) || 'classic';
+  const roomVariant =
+    (room.gameOptions?.theme as string) ||
+    (room.gameOptions?.variant as string) ||
+    'adventure';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
   const { setOption } = useRoomOptions({
     roomId: room.id,
@@ -98,7 +101,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     (variantId: string) => {
       if (variantId === selectedVariant) return;
       setSelectedVariant(variantId);
-      setOption({ variant: variantId });
+      setOption({ variant: variantId, theme: variantId });
     },
     [setOption, selectedVariant],
   );
@@ -120,13 +123,15 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     if (
       opts.gridSize === undefined ||
       opts.shipCount === undefined ||
-      opts.variant === undefined
+      opts.variant === undefined ||
+      opts.theme === undefined
     ) {
       const gs = (opts.gridSize as number) ?? 10;
       setOption({
         gridSize: opts.gridSize ?? gs,
         shipCount: opts.shipCount ?? getDefaultShipCount(gs),
         variant: opts.variant ?? 'classic',
+        theme: opts.theme ?? opts.variant ?? 'adventure',
       });
     }
   }, [room.id, room.status, room.gameOptions, setOption]);

@@ -64,23 +64,36 @@ export class GamesService {
 
   async createRoom(userId: string, dto: CreateGameRoomDto) {
     const room = await this.roomsService.createRoom(userId, dto);
-
-    // Emit real-time event
     this.realtimeService.emitRoomCreated(room);
-
     return room;
   }
 
-  async quickplay(userId: string, gameId: string, variant?: string) {
+  async quickplay(
+    userId: string,
+    gameId: string,
+    variant?: string,
+    theme?: string,
+  ) {
     return this.roomsQuickplayService.createQuickplayRoom(
       userId,
       gameId,
       variant,
+      theme,
     );
   }
 
-  async findHumanMatch(userId: string, gameId: string, variant?: string) {
-    return this.roomsQuickplayService.findHumanMatch(userId, gameId, variant);
+  async findHumanMatch(
+    userId: string,
+    gameId: string,
+    variant?: string,
+    theme?: string,
+  ) {
+    return this.roomsQuickplayService.findHumanMatch(
+      userId,
+      gameId,
+      variant,
+      theme,
+    );
   }
 
   async listRooms(filters: ListRoomsFilters = {}, viewerId?: string) {

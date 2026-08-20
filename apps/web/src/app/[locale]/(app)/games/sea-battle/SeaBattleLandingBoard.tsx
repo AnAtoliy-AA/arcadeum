@@ -6,11 +6,11 @@ import { SeaBattleThemePreview } from '@/widgets/StrategyGames/SeaBattleGame/ui/
 import styles from './SeaBattleLandingBoard.module.scss';
 
 const ROTATING_THEMES = [
+  'adventure',
   'cyberpunk',
   'underwater',
   'crime',
   'horror',
-  'adventure',
   'high-altitude-hike',
   'galaxy',
   'fantasy',
@@ -33,7 +33,7 @@ interface Props {
 }
 
 export function SeaBattleLandingBoard({
-  initialTheme = 'cyberpunk',
+  initialTheme = 'adventure',
   themeNames,
   label,
   cycleHint,

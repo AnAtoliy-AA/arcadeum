@@ -9,7 +9,7 @@ import {
 } from '@/features/games/ui';
 import { Typography } from '@arcadeum/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { CARD_VARIANTS, RANDOM_VARIANT, GAME_VARIANT } from '../lib/constants';
+import { CARD_VARIANTS, RANDOM_VARIANT } from '../lib/constants';
 import { VariantSelector } from './VariantSelector';
 import { RulesModal } from './RulesModal';
 import { TranslationKey } from '@/shared/lib/useTranslation';
@@ -86,7 +86,11 @@ export function CriticalLobby({
     new Map(),
   );
 
-  const cardVariant = room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
+  const cardVariant =
+    (room.gameOptions?.theme as string) ||
+    (room.gameOptions?.cardVariant as string) ||
+    (room.gameOptions?.variant as string) ||
+    'adventure';
   const variantInfo = getVariantInfo(cardVariant);
   const theme = getCriticalTheme(cardVariant);
   const isFastMode = room.gameOptions?.idleTimerEnabled;

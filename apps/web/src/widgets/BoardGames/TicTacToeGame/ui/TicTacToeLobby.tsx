@@ -54,6 +54,7 @@ interface TicTacToeLobbyProps {
 
 function resolveOptions(raw: unknown): TicTacToeOptions {
   const r = (raw ?? {}) as Partial<{
+    theme: string;
     variant: string;
     boardSize: number | string;
     teamMode: boolean;
@@ -65,8 +66,10 @@ function resolveOptions(raw: unknown): TicTacToeOptions {
   const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
     n === 1 || n === 2 || n === 3;
   const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
+  const theme = (r.theme ?? r.variant ?? 'adventure') as TicTacToeVariant;
   return {
-    variant: (r.variant ?? 'classic') as TicTacToeVariant,
+    variant: theme,
+    theme,
     boardSize: isAllowedSize(r.boardSize) ? r.boardSize : 3,
     teamMode: !!r.teamMode,
     expansionMargin: isMargin(r.expansionMargin) ? r.expansionMargin : 3,

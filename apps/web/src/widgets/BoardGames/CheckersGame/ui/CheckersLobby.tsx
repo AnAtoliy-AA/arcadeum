@@ -43,13 +43,14 @@ interface CheckersLobbyProps {
 
 function resolveOptions(raw: unknown): CheckersOptions {
   const r = (raw ?? {}) as Partial<{
+    theme: string;
     variant: string;
     ruleVariant: string;
     forcedCaptures: boolean;
     backwardCaptures: boolean;
   }>;
   return {
-    variant: (r.variant ?? 'classic') as CheckersVariant,
+    variant: (r.theme ?? r.variant ?? 'adventure') as CheckersVariant,
     ruleVariant: (r.ruleVariant ?? 'american') as RuleVariant,
     forcedCaptures: r.forcedCaptures !== false,
     backwardCaptures: r.backwardCaptures === true,

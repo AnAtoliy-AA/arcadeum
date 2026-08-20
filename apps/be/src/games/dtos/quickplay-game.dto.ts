@@ -35,4 +35,9 @@ export class QuickplayGameDto {
   @IsString()
   @MaxLength(40)
   variant?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  theme?: string;
 }

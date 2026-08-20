@@ -348,6 +348,7 @@ function CheckersGameImpl({
         gameEnd={gameEnd}
         players={players}
         currentUserId={currentUserId}
+        theme={variant}
         t={t}
       />
       <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />

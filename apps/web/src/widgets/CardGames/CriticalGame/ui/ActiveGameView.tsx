@@ -422,6 +422,8 @@ export function ActiveGameView({
                 alive: p.alive,
               }))}
               currentUserId={currentUserId}
+              cardVariant={cardVariant}
+              theme={cardVariant}
               t={t}
             />
           </>

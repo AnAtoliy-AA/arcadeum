@@ -193,6 +193,7 @@ function CatDashGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
+        theme={options.theme}
         t={t}
       />
       <CatDashRulesModal

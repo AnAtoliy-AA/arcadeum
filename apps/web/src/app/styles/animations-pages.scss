@@ -185,7 +185,99 @@
   }
 }
 
-/*
- * prefers-reduced-motion: handled by the canonical ruleset in
- * utilities.scss — not duplicated here to avoid conflicting values.
- */
+@keyframes celebration-ember-fall {
+  0% {
+    transform: translateY(-5vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.7;
+  }
+
+  80% {
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateY(105vh) translateX(25px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+.celebration-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.celebration-bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70vmin;
+  height: 70vmin;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  filter: blur(24px);
+  animation: celebration-bloom 3.2s ease-in-out infinite;
+}
+
+.celebration-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40vmin;
+  height: 40vmin;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  border-width: 2px;
+  border-style: solid;
+  animation: celebration-burst 1.1s ease-out forwards;
+}
+
+.celebration-confetti-particle {
+  position: absolute;
+  top: -16px;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.celebration-sparkle-particle {
+  position: absolute;
+  animation-name: sparkle-rise;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+
+.celebration-ember-particle {
+  position: absolute;
+  top: -16px;
+  animation-name: celebration-ember-fall;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+}
+
+@for $i from 0 through 39 {
+  .particle-slot-#{$i} {
+    left: #{($i * 29) % 96 + 2}%;
+    animation-delay: #{($i % 12) * 0.18}s;
+    animation-duration: #{2.4 + (($i % 6) * 0.45)}s;
+  }
+
+  .sparkle-slot-#{$i} {
+    left: #{($i * 47) % 94 + 3}%;
+    bottom: #{($i * 19) % 40 + 5}%;
+    animation-delay: #{($i % 9) * 0.28}s;
+    animation-duration: #{2.0 + (($i % 5) * 0.4)}s;
+  }
+}

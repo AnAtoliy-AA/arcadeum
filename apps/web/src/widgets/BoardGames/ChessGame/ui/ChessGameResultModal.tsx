@@ -2,6 +2,8 @@
 
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { PostGameAnalysis } from '@/features/analysis/ui/PostGameAnalysis';
+import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
+import type { GameTheme } from '@/features/games/lib/shared-themes';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { ChessClientState } from '../types';
 import type { SharedResult } from '@/features/games/hooks/useGameResultModal';
@@ -15,6 +17,8 @@ interface ChessGameResultModalProps {
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   messages?: { title: string; message: string };
   snapshot: ChessClientState | null;
+  theme?: GameTheme | string;
+  stats?: GameResultStats;
 }
 
 export function ChessGameResultModal({
@@ -26,7 +30,17 @@ export function ChessGameResultModal({
   t,
   messages,
   snapshot,
+  theme,
+  stats,
 }: ChessGameResultModalProps) {
+  const computedStats: GameResultStats | undefined =
+    stats ??
+    (snapshot
+      ? {
+          turns: snapshot.moveHistory.length,
+        }
+      : undefined);
+
   return (
     <GameResultModal
       isOpen={isOpen}
@@ -36,6 +50,8 @@ export function ChessGameResultModal({
       rematchLoading={rematchLoading}
       t={t}
       messages={messages}
+      theme={theme}
+      stats={computedStats}
       analysis={
         snapshot
           ? {

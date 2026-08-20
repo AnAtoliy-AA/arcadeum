@@ -191,12 +191,15 @@ function CascadeGameImpl({
     </div>
   );
 
+  const visualTheme = options.theme ?? options.variant ?? 'cyberpunk';
+
   const modals = (
     <>
       <GameEndModals
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
+        theme={visualTheme}
         t={t}
       />
       <RulesModal
@@ -206,8 +209,6 @@ function CascadeGameImpl({
       />
     </>
   );
-
-  const visualTheme = options.theme ?? options.variant ?? 'cyberpunk';
 
   return (
     <CascadeThemeProvider variant={visualTheme}>

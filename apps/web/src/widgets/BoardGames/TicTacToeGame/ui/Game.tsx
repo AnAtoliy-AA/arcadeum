@@ -231,6 +231,7 @@ function TicTacToeGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
+        theme={visualTheme}
         t={t}
       />
       <RulesModal

@@ -115,22 +115,8 @@ export default function GlimwormGame(
           turnStatusText: statusText,
         }}
         board={
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              height: '100%',
-              minHeight: 480,
-            }}
-          >
-            <div
-              ref={canvasRef}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: '#06070d',
-              }}
-            />
+          <div className="relative h-full min-h-[480px] w-full">
+            <div ref={canvasRef} className="absolute inset-0 bg-[#06070d]" />
             <GlimwormHud isHost={isHost} onRestart={handleRestart} />
             <GlimwormDeathOverlay />
             {isCountdown && <GlimwormCountdown />}
@@ -140,6 +126,7 @@ export default function GlimwormGame(
                 isHost={isHost}
                 onRematch={handleRematch}
                 onLobby={handleRestart}
+                theme={themeVariant}
               />
             )}
           </div>

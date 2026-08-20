@@ -63,6 +63,7 @@ export function SeaBattleModals({
         players={players}
         currentUserId={currentUserId}
         cardVariant={cardVariant}
+        theme={cardVariant}
         t={t}
         onRematch={onRematch}
       />

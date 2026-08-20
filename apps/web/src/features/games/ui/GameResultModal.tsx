@@ -178,7 +178,10 @@ export function GameResultModal({
 
             <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-slate-300">
               <span>{resolvedTheme.emoji}</span>
-              <span>{resolvedTheme.id.replace(/-/g, ' ')}</span>
+              <span>
+                {t(`games.themes.${resolvedTheme.id}.name` as TranslationKey) ||
+                  resolvedTheme.id.replace(/-/g, ' ')}
+              </span>
             </div>
           </div>
 
@@ -204,7 +207,7 @@ export function GameResultModal({
 
           {stats && (
             <div className="animate-fade-in-up-delay-3 mb-5 w-full">
-              <GameResultStatsGrid stats={stats} />
+              <GameResultStatsGrid stats={stats} t={t} />
             </div>
           )}
 

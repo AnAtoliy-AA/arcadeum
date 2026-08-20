@@ -10,7 +10,7 @@ import {
   useGameRoomActions,
   usePendingStart,
 } from '@/features/games/hooks';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
 import { useCascadeActions } from '../hooks/useCascadeActions';
@@ -199,7 +199,7 @@ function CascadeGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
-        gameName="Cascade"
+        gameName={t('games.names.cascade' as TranslationKey) || 'Cascade'}
         theme={visualTheme}
         t={t}
       />

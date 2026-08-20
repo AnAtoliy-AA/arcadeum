@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import type { TranslationKey } from '@/shared/lib/useTranslation';
 
 export interface GameStatItem {
   id: string;
@@ -18,11 +19,13 @@ export interface GameResultStats {
 
 interface GameResultStatsGridProps {
   stats: GameResultStats;
+  t?: (key: TranslationKey) => string;
   className?: string;
 }
 
 export function GameResultStatsGrid({
   stats,
+  t,
   className,
 }: GameResultStatsGridProps) {
   const items: GameStatItem[] = [];
@@ -30,7 +33,9 @@ export function GameResultStatsGrid({
   if (stats.duration !== undefined) {
     items.push({
       id: 'duration',
-      label: 'Duration',
+      label: t
+        ? t('games.table.stats.duration' as TranslationKey)
+        : 'Duration',
       value:
         typeof stats.duration === 'number'
           ? `${Math.floor(stats.duration / 60)}:${String(stats.duration % 60).padStart(2, '0')}`
@@ -41,7 +46,9 @@ export function GameResultStatsGrid({
   if (stats.turns !== undefined) {
     items.push({
       id: 'turns',
-      label: 'Turns / Moves',
+      label: t
+        ? t('games.table.stats.turns' as TranslationKey)
+        : 'Turns / Moves',
       value: stats.turns,
     });
   }
@@ -49,7 +56,7 @@ export function GameResultStatsGrid({
   if (stats.score !== undefined) {
     items.push({
       id: 'score',
-      label: 'Score',
+      label: t ? t('games.table.stats.score' as TranslationKey) : 'Score',
       value: stats.score,
     });
   }
@@ -57,7 +64,9 @@ export function GameResultStatsGrid({
   if (stats.accuracy !== undefined) {
     items.push({
       id: 'accuracy',
-      label: 'Accuracy',
+      label: t
+        ? t('games.table.stats.accuracy' as TranslationKey)
+        : 'Accuracy',
       value: stats.accuracy,
     });
   }

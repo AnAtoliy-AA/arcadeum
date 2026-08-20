@@ -360,6 +360,26 @@ export const enMessages = {
       title: 'Defeat',
       message: 'Tough luck this time. Ready for another round?',
     },
+    draw: {
+      title: 'Draw',
+      message: 'The match ended in a tie.',
+    },
+    stats: {
+      duration: 'Duration',
+      turns: 'Turns / Moves',
+      score: 'Score',
+      accuracy: 'Accuracy',
+    },
+    names: {
+      chess: 'Chess',
+      checkers: 'Checkers',
+      ticTacToe: 'Tic-Tac-Toe',
+      critical: 'Exploding Cats',
+      cascade: 'Cascade',
+      catDash: 'Cat Dash',
+      seaBattle: 'Sea Battle',
+      glimworm: 'Glimworm',
+    },
     rematch: {
       title: 'Play Again?',
       description: 'Select the players you want to invite for a rematch.',

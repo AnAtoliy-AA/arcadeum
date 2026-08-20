@@ -372,6 +372,26 @@ export const frMessages = {
       title: 'Défaite',
       message: 'Pas de chance cette fois. Prêt pour une autre manche ?',
     },
+    draw: {
+      title: 'Égalité',
+      message: 'La partie s’est terminée par une égalité.',
+    },
+    stats: {
+      duration: 'Durée',
+      turns: 'Tours / Coups',
+      score: 'Score',
+      accuracy: 'Précision',
+    },
+    names: {
+      chess: 'Échecs',
+      checkers: 'Dames',
+      ticTacToe: 'Morpion',
+      critical: 'Chatons Explosifs',
+      cascade: 'Cascade',
+      catDash: 'Cat Dash',
+      seaBattle: 'Bataille Navale',
+      glimworm: 'Glimworm',
+    },
     rematch: {
       title: 'Rejouer ?',
       description:

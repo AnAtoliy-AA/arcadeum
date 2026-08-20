@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
 import { RulesModal } from './RulesModal';
 import { GameEndModals } from '@/features/games/ui';
 import type { SeaBattleSnapshot } from '../types';
@@ -62,7 +62,7 @@ export function SeaBattleModals({
         gameEnd={gameEnd}
         players={players}
         currentUserId={currentUserId}
-        gameName="Sea Battle"
+        gameName={t('games.names.seaBattle' as TranslationKey) || 'Sea Battle'}
         cardVariant={cardVariant}
         theme={cardVariant}
         t={t}

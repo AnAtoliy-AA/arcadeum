@@ -422,7 +422,10 @@ export function ActiveGameView({
                 alive: p.alive,
               }))}
               currentUserId={currentUserId}
-              gameName="Exploding Cats"
+              gameName={
+                t('games.names.critical' as TranslationKey) ||
+                'Exploding Cats'
+              }
               cardVariant={cardVariant}
               theme={cardVariant}
               t={t}

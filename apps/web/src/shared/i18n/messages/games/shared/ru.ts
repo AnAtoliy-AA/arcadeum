@@ -361,6 +361,26 @@ export const ruMessages = {
       title: 'Поражение',
       message: 'В этот раз не повезло. Готовы к следующему раунду?',
     },
+    draw: {
+      title: 'Ничья',
+      message: 'Матч завершился вничью.',
+    },
+    stats: {
+      duration: 'Длительность',
+      turns: 'Ходы',
+      score: 'Счёт',
+      accuracy: 'Точность',
+    },
+    names: {
+      chess: 'Шахматы',
+      checkers: 'Шашки',
+      ticTacToe: 'Крестики-Нолики',
+      critical: 'Взрывные котята',
+      cascade: 'Каскад',
+      catDash: 'Кот Рывок',
+      seaBattle: 'Морской бой',
+      glimworm: 'Глимворм',
+    },
     rematch: {
       title: 'Сыграть еще?',
       description: 'Выберите игроков, которых вы хотите пригласить на реванш.',

@@ -45,7 +45,7 @@ export function ChessGameResultModal({
     <GameResultModal
       isOpen={isOpen}
       result={result}
-      gameName="Chess"
+      gameName={t('games.names.chess' as TranslationKey) || 'Chess'}
       onClose={onClose}
       onRematch={onRematch}
       rematchLoading={rematchLoading}

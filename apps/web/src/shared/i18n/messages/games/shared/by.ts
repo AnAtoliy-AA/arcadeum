@@ -361,6 +361,26 @@ export const byMessages = {
       title: 'Параза',
       message: 'Гэтым разам не пашанцавала. Гатовыя да наступнага раўнда?',
     },
+    draw: {
+      title: 'Нічыя',
+      message: 'Матч скончыўся ўнічыю.',
+    },
+    stats: {
+      duration: 'Трываласць',
+      turns: 'Хады',
+      score: 'Лік',
+      accuracy: 'Дакладнасць',
+    },
+    names: {
+      chess: 'Шахматы',
+      checkers: 'Шашкі',
+      ticTacToe: 'Крыжыкі-Нулікі',
+      critical: 'Выбуховыя кацяняты',
+      cascade: 'Каскад',
+      catDash: 'Кот Рывок',
+      seaBattle: 'Марскі бой',
+      glimworm: 'Глімворм',
+    },
     rematch: {
       title: 'Згуляць яшчэ?',
       description: 'Выберыце гульцоў, якіх вы хочаце запрасіць на рэванш.',

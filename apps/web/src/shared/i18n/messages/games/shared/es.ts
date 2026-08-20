@@ -369,6 +369,26 @@ export const esMessages = {
       title: 'Derrota',
       message: 'Mala suerte esta vez. ¿Listo para otra ronda?',
     },
+    draw: {
+      title: 'Empate',
+      message: 'La partida terminó en empate.',
+    },
+    stats: {
+      duration: 'Duración',
+      turns: 'Turnos / Movimientos',
+      score: 'Puntuación',
+      accuracy: 'Precisión',
+    },
+    names: {
+      chess: 'Ajedrez',
+      checkers: 'Damas',
+      ticTacToe: 'Tres en Raya',
+      critical: 'Gatos Explosivos',
+      cascade: 'Cascade',
+      catDash: 'Cat Dash',
+      seaBattle: 'Batalla Naval',
+      glimworm: 'Glimworm',
+    },
     rematch: {
       title: '¿Jugar de nuevo?',
       description:

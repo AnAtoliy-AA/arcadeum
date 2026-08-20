@@ -10,7 +10,7 @@ import {
   useGameEndState,
 } from '@/features/games/hooks';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { Board, CheckersGameProps, MoveStep, RuleVariant } from '../types';
 import { RULE_VARIANT_CONFIGS } from '../types';
@@ -348,7 +348,7 @@ function CheckersGameImpl({
         gameEnd={gameEnd}
         players={players}
         currentUserId={currentUserId}
-        gameName="Checkers"
+        gameName={t('games.names.checkers' as TranslationKey) || 'Checkers'}
         theme={variant}
         t={t}
       />

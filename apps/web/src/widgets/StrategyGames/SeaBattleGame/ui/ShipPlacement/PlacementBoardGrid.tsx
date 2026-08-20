@@ -149,21 +149,27 @@ const PlacementBoardCell = memo(
       .filter(Boolean)
       .join(' ');
 
+    const isShip = cellState === CELL_STATE.SHIP;
     const showRotateButton =
       isShipHead && !!onRotateButton && !isDraggingThisCell;
 
     return (
       <BoardCell
         style={{
-          backgroundColor: getCellBg(
-            cellState,
-            theme,
-            isHovered,
-            isInvalidCell,
-          ),
-          borderColor: isInvalidCell ? 'rgba(239,68,68,0.6)' : theme.cellBorder,
+          background:
+            isShip && !isInvalidCell
+              ? 'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)'
+              : getCellBg(cellState, theme, isHovered, isInvalidCell),
+          borderColor: isInvalidCell
+            ? 'rgba(239,68,68,0.6)'
+            : isShip
+              ? '#64748b'
+              : theme.cellBorder,
           borderRadius: parseInt(theme.borderRadius) || 4,
           opacity: isDraggingThisCell ? 0.4 : undefined,
+          boxShadow: isShip
+            ? 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.5)'
+            : undefined,
         }}
         data-row={rIndex}
         data-col={cIndex}
@@ -184,6 +190,9 @@ const PlacementBoardCell = memo(
         onDrop={handleDrop}
         onDragLeave={onDragLeave}
       >
+        {isShip && (
+          <div className="w-[6px] h-[6px] rounded-full bg-[#cbd5e1] opacity-75 shadow-sm pointer-events-none mx-auto" />
+        )}
         {showRotateButton ? (
           <span
             role="button"

@@ -37,5 +37,21 @@ describe('Container', () => {
     expect(el).toHaveAttribute('id', 'custom-id');
     expect(el).toHaveClass('custom-class');
   });
+
+  it('forwards arbitrary HTML attributes', () => {
+    render(
+      <Container
+        data-current-locale="es"
+        data-testid="attr-container"
+        onClick={() => {}}
+        aria-label="wrapper"
+      >
+        Content
+      </Container>,
+    );
+    const el = screen.getByTestId('attr-container');
+    expect(el).toHaveAttribute('data-current-locale', 'es');
+    expect(el).toHaveAttribute('aria-label', 'wrapper');
+  });
 });
 

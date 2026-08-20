@@ -1,4 +1,5 @@
 import { resolveApiBase } from '@/shared/lib/api-base';
+import { ApiError } from '@/shared/lib/api-client';
 
 import { type UserRole } from '../model/types';
 
@@ -45,11 +46,12 @@ function api(url: string): string {
 
 async function readJson<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    if (res.status === 401) {
-      throw new Error('Unauthorized');
-    }
-    const text = await res.text();
-    throw new Error(text || `Request failed (${res.status})`);
+    const text = await res.text().catch(() => '');
+    throw new ApiError(
+      text || `Request failed (${res.status})`,
+      res.status,
+      text,
+    );
   }
   return (await res.json()) as T;
 }
@@ -188,17 +190,13 @@ export async function refreshSession(
 }
 
 export async function refreshSessionFromCookie(): Promise<LoginResponse> {
-  try {
-    const res = await fetch(api('/auth/refresh'), {
-      method: 'POST',
-      headers: apiHeaders(),
-      credentials: 'include',
-      body: JSON.stringify({}),
-    });
-    return readJson<LoginResponse>(res);
-  } catch {
-    throw new Error('No session to refresh');
-  }
+  const res = await fetch(api('/auth/refresh'), {
+    method: 'POST',
+    headers: apiHeaders(),
+    credentials: 'include',
+    body: JSON.stringify({}),
+  });
+  return readJson<LoginResponse>(res);
 }
 
 export async function logoutSession(): Promise<void> {

@@ -5,16 +5,8 @@ import type { ThrottlerStorage } from '@nestjs/throttler';
 import { Reflector } from '@nestjs/core';
 import { isE2EMode } from '../../support/lib/e2e-mode';
 import { IpBlockService } from './ip-block.guard';
+import { extractClientIp } from '../utils/client-ip.util';
 import type { Request } from 'express';
-
-interface RequestWithIp {
-  ip?: string;
-  socket?: { remoteAddress?: string };
-}
-
-function extractIp(req: RequestWithIp): string {
-  return req.ip ?? req.socket?.remoteAddress ?? 'unknown';
-}
 
 @Injectable()
 export class GlobalThrottlerGuard extends ThrottlerGuard {
@@ -36,11 +28,13 @@ export class GlobalThrottlerGuard extends ThrottlerGuard {
     throttlerLimitDetail: ThrottlerLimitDetail,
   ): Promise<void> {
     const request = context.switchToHttp().getRequest<Request>();
-    void this.ipBlockService.record429(extractIp(request));
+    void this.ipBlockService.record429(extractClientIp(request));
     return super.throwThrottlingException(context, throttlerLimitDetail);
   }
 
   protected override getTracker(req: Record<string, unknown>): Promise<string> {
-    return Promise.resolve(extractIp(req as RequestWithIp));
+    // The throttler hands us a generic object; the Express request shape is
+    // known at runtime. Cast via `unknown` to satisfy TS's overlap check.
+    return Promise.resolve(extractClientIp(req as unknown as Request));
   }
 }

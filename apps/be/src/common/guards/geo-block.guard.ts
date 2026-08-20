@@ -13,6 +13,7 @@ import {
   type GeoBlockedCountryDocument,
 } from '../schemas/geo-blocked-country.schema';
 import { EconomySettingsService } from '../../economy/economy-settings.service';
+import { extractClientIp } from '../utils/client-ip.util';
 import type { Request } from 'express';
 
 export interface GeoBlockResult {
@@ -141,7 +142,7 @@ export class GeoBlockGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const ip = request.ip ?? request.socket?.remoteAddress ?? 'unknown';
+    const ip = extractClientIp(request);
 
     const result = await this.geoBlock.checkIp(ip);
     if (result.blocked) {

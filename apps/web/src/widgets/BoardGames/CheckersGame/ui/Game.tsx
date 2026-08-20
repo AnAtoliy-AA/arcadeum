@@ -1,20 +1,14 @@
 'use client';
 
 import { memo, useCallback, useMemo, useState } from 'react';
-import {
-  GameWidgetContainer,
-  RematchInvitationModal,
-} from '@/features/games/ui';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
+import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
   useGameChatSend,
-  useRematch,
   useGameRoomActions,
-  useGameResultModal,
   useGameResult,
+  useGameEndState,
 } from '@/features/games/hooks';
-import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
@@ -82,14 +76,6 @@ function CheckersGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'checkers_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
-  const {
-    rematchLoading,
-    handleRematch,
-    invitation,
-    handleAcceptInvitation,
-    handleDeclineInvitation,
-  } = useRematch({ roomId });
-
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
       if (!accessToken || !roomId) return;
@@ -111,12 +97,14 @@ function CheckersGameImpl({
     t,
   });
 
-  const { showResultModal, sharedResult, dismiss } = useGameResultModal(
+  const gameEnd = useGameEndState({
+    roomId,
+    currentUserId,
     session,
+    isGameOver,
     result,
     resultMessages,
-    isGameOver,
-  );
+  });
 
   const variant = useMemo(
     () => (room?.gameOptions as Record<string, string>)?.variant ?? 'classic',
@@ -140,19 +128,20 @@ function CheckersGameImpl({
     [variant],
   );
 
-  const onRematchClick = useCallback(() => {
-    void handleRematch([], undefined);
-  }, [handleRematch]);
+  const players = useMemo(
+    () =>
+      snapshot?.players.map((p) => ({
+        playerId: p.playerId,
+        displayName: resolveDisplayNameBound(p.playerId),
+        alive: true,
+      })) ?? [],
+    [snapshot?.players, resolveDisplayNameBound],
+  );
 
   const a11yAnnouncement = useMemo(() => {
     if (!snapshot) return undefined;
     if (isGameOver) {
       if (snapshot.isDraw) return t('games.checkers_v1.gameOver.draw');
-      const result = computeGameResult(isGameOver, currentUserId, {
-        winnerId: snapshot.winnerId,
-        isDraw: snapshot.isDraw,
-        backendResult: undefined,
-      });
       return t(
         `games.checkers_v1.gameOver.${result === 'won' ? 'won' : 'lost'}`,
       );
@@ -160,7 +149,7 @@ function CheckersGameImpl({
     return myTurn
       ? t('games.checkers_v1.status.yourTurn')
       : t('games.checkers_v1.status.waiting');
-  }, [snapshot, isGameOver, myTurn, currentUserId, t]);
+  }, [snapshot, isGameOver, myTurn, result, t]);
 
   const [selectedPiece, setSelectedPiece] = useState<{
     row: number;
@@ -352,21 +341,10 @@ function CheckersGameImpl({
 
   const modals = (
     <>
-      <GameResultModal
-        isOpen={showResultModal}
-        result={sharedResult}
-        onClose={dismiss}
-        onRematch={result ? onRematchClick : undefined}
-        rematchLoading={rematchLoading}
-        t={t}
-        messages={resultMessages}
-      />
-      <RematchInvitationModal
-        isOpen={!!invitation}
-        senderName={invitation?.hostName || ''}
-        message={invitation?.message}
-        onAccept={handleAcceptInvitation}
-        onDecline={handleDeclineInvitation}
+      <GameEndModals
+        gameEnd={gameEnd}
+        players={players}
+        currentUserId={currentUserId}
         t={t}
       />
       <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />

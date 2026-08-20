@@ -10,7 +10,10 @@ jest.mock('grammy', () => {
 
   return {
     Bot: jest.fn().mockImplementation(() => ({
-      api: { sendMessage: mockSendMessage },
+      api: {
+        sendMessage: mockSendMessage,
+        setMyCommands: jest.fn().mockResolvedValue({}),
+      },
       command: mockCommand,
       on: mockOn,
       start: mockStart,

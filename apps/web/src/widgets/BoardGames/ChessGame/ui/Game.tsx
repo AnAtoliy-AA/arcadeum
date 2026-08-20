@@ -17,16 +17,11 @@ import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { ChessGameProps, ChessClientState } from '../types';
-import {
-  FILES,
-  type Board,
-  type BoardPosition,
-  type File,
-  type PieceType,
-} from '../types';
+import { FILES, type BoardPosition, type File, type PieceType } from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
 import { useChessCoach } from '../hooks/useChessCoach';
+import { calculateOptimisticChessState } from '../lib/optimisticMove';
 import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoardPanel } from './ChessBoardPanel';
@@ -107,66 +102,17 @@ function ChessGameImpl({
       promotion?: PieceType,
     ) => {
       if (!snapshot) return;
-      const fromRow = 8 - fromRank,
-        fromCol = FILES.indexOf(fromFile),
-        toRow = 8 - toRank,
-        toCol = FILES.indexOf(toFile);
-      const piece = snapshot.board[fromRow]?.[fromCol];
-      if (!piece) return;
-      const newBoard: Board = snapshot.board.map((row) => [...row]);
-      newBoard[toRow][toCol] = promotion
-        ? { type: promotion, color: piece.color }
-        : piece;
-      newBoard[fromRow][fromCol] = null;
-
-      const isCastle = piece.type === 'king' && Math.abs(toCol - fromCol) === 2;
-      let isCastleFlag = false;
-      if (isCastle) {
-        isCastleFlag = true;
-        if (toCol === 6) {
-          const rookCol = newBoard[toRow].findIndex(
-            (p) => p?.type === 'rook' && p.color === piece.color,
-          );
-          if (rookCol > toCol) {
-            newBoard[toRow][5] = newBoard[toRow][rookCol];
-            newBoard[toRow][rookCol] = null;
-          }
-        } else if (toCol === 2) {
-          let rookCol = -1;
-          for (let c = toCol - 1; c >= 0; c--) {
-            if (newBoard[toRow][c]?.type === 'rook') {
-              rookCol = c;
-              break;
-            }
-          }
-          if (rookCol >= 0) {
-            newBoard[toRow][3] = newBoard[toRow][rookCol];
-            newBoard[toRow][rookCol] = null;
-          }
-        }
+      const next = calculateOptimisticChessState(
+        snapshot,
+        fromFile,
+        fromRank,
+        toFile,
+        toRank,
+        promotion,
+      );
+      if (next) {
+        setOptimisticState(next);
       }
-
-      setOptimisticState({
-        ...snapshot,
-        board: newBoard,
-        currentTurnColor:
-          snapshot.currentTurnColor === 'white' ? 'black' : 'white',
-        moveHistory: [
-          ...snapshot.moveHistory,
-          {
-            from: { file: fromFile, rank: fromRank },
-            to: { file: toFile, rank: toRank },
-            piece,
-            captured: snapshot.board[toRow]?.[toCol] ?? null,
-            promotion: promotion ?? null,
-            isCastle: isCastleFlag,
-            isEnPassant: false,
-            notation: '',
-          },
-        ],
-        legalMovesForCurrentPlayer: [],
-        isCheck: false,
-      });
     },
     [snapshot],
   );

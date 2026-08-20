@@ -97,9 +97,10 @@ export function ActiveGameModals({
   const pendingFavorKey = snapshot?.pendingFavor
     ? `${snapshot.pendingFavor.targetId}-${snapshot.pendingFavor.requesterId}`
     : null;
-  const prevPendingFavorKey = useState(pendingFavorKey);
-  if (pendingFavorKey !== prevPendingFavorKey[0]) {
-    prevPendingFavorKey[1](pendingFavorKey);
+  const [prevPendingFavorKey, setPrevPendingFavorKey] =
+    useState(pendingFavorKey);
+  if (pendingFavorKey !== prevPendingFavorKey) {
+    setPrevPendingFavorKey(pendingFavorKey);
     if (giveFavorDismissed) setGiveFavorDismissed(false);
   }
 

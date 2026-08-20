@@ -8,13 +8,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { isIP } from 'node:net';
 import {
   GeoBlockedCountry,
   type GeoBlockedCountryDocument,
 } from '../schemas/geo-blocked-country.schema';
 import { EconomySettingsService } from '../../economy/economy-settings.service';
-import { extractClientIp } from '../utils/client-ip.util';
 import type { Request } from 'express';
 
 export interface GeoBlockResult {
@@ -22,16 +20,6 @@ export interface GeoBlockResult {
   reason?: string;
   country?: string;
   isVpn?: boolean;
-}
-
-/**
- * Validate an IP is a syntactically valid IP literal before it is embedded
- * in an outbound lookup URL. Returning a fresh value here (rather than
- * reusing the raw header string) breaks the taint flow CodeQL tracks for
- * the SSRF query — only a validated literal can reach the URL sink.
- */
-function safeIpLiteral(ip: string): string | null {
-  return isIP(ip) === 0 ? null : ip;
 }
 
 @Injectable()
@@ -116,13 +104,9 @@ export class GeoBlockService {
   }
 
   private async getCountry(ip: string): Promise<string | null> {
-    const validated = safeIpLiteral(ip);
-    if (!validated) return null;
     try {
       const res = await fetch(
-        // codeql[js/request-forgery] Safe: `validated` is a validated IP
-        // literal (see safeIpLiteral) — it cannot alter the URL path.
-        `http://ip-api.com/json/${validated}?fields=countryCode`,
+        `http://ip-api.com/json/${ip}?fields=countryCode`,
       );
       if (!res.ok) return null;
       const data = (await res.json()) as { countryCode?: string };
@@ -134,16 +118,12 @@ export class GeoBlockService {
   }
 
   private async checkVpn(ip: string): Promise<boolean> {
-    const validated = safeIpLiteral(ip);
-    if (!validated) return false;
     try {
       const apiKey = this.config.get<string>('VPN_CHECK_API_KEY');
       if (!apiKey) return false;
 
       const res = await fetch(
-        // codeql[js/request-forgery] Safe: `validated` is a validated IP
-        // literal (see safeIpLiteral) — it cannot alter the URL path.
-        `https://ipqualityscore.com/api/json/ip/${apiKey}/${validated}`,
+        `https://ipqualityscore.com/api/json/ip/${apiKey}/${ip}`,
       );
       if (!res.ok) return false;
       const data = (await res.json()) as { proxy?: boolean; vpn?: boolean };
@@ -161,7 +141,7 @@ export class GeoBlockGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const ip = extractClientIp(request);
+    const ip = request.ip ?? request.socket?.remoteAddress ?? 'unknown';
 
     const result = await this.geoBlock.checkIp(ip);
     if (result.blocked) {

@@ -13,6 +13,7 @@ import {
 import type { SeaBattleGameOptions } from '../rooms/sea-battle-team-config.types';
 import type { AiDifficulty } from '../engines/sea-battle/sea-battle.types';
 import { BaseGameService } from '../common/base-game.service';
+import { extractAiVsAiExtras } from '../common/ai-vs-ai';
 
 interface PlaceShipPayload {
   shipId: string;
@@ -35,6 +36,8 @@ export interface SeaBattleStartExtras {
   gridSize?: number;
   shipCount?: number;
   variant?: string;
+  aiVsAi?: boolean;
+  aiMoveDelayMs?: number;
 }
 
 const MIN_PLAYERS = 2;
@@ -164,6 +167,7 @@ export class SeaBattleService extends BaseGameService<Record<string, unknown>> {
           : {}),
         ...(difficulty ? { aiDifficulty: difficulty } : {}),
       },
+      options: extractAiVsAiExtras(startExtras) ?? undefined,
     });
 
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');

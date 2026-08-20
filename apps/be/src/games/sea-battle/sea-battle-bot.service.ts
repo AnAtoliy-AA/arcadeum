@@ -17,6 +17,7 @@ import {
   getTeamForPlayer,
 } from '../engines/sea-battle/team-rotation.utils';
 import { getSmartTarget, getProbabilisticTarget } from './bot-targeting';
+import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
 
 const LOCK_TIMEOUT_MS = 60000;
 const PROCESSING_ENTRY_TTL_MS = 120_000;
@@ -74,7 +75,7 @@ export class SeaBattleBotService {
       const hasAliveHuman = state.players.some(
         (p: SeaBattlePlayer) => p.alive && !this.isBot(p.playerId),
       );
-      if (!hasAliveHuman) {
+      if (!hasAliveHuman && !isAiVsAiSession(session)) {
         this.logger.log(
           `No alive humans in room ${session.roomId} — completing session`,
         );
@@ -212,7 +213,12 @@ export class SeaBattleBotService {
       let currentSession = sessionSnapshot;
 
       while (isStillMyTurn) {
-        await this.randomDelay(ATTACK_DELAY_MS);
+        const aiDelay = getAiMoveDelayMs(sessionSnapshot);
+        if (aiDelay !== null) {
+          await this.sleep(aiDelay);
+        } else {
+          await this.randomDelay(ATTACK_DELAY_MS);
+        }
 
         const state = currentSession.state as unknown as SeaBattleState;
         const gridSize = state.gridSize ?? BOARD_SIZE;

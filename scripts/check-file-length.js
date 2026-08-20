@@ -12,6 +12,7 @@ const ALLOW_LIST = new Set([
   // long translated strings onto their own lines (see apps/web/eslint.config.mjs
   // for the matching max-lines exemption). Follow-up: extract the shared games
   // messages into focused modules (ARC-916).
+  'apps/web/src/shared/i18n/messages/games/shared/en.ts',
   'apps/web/src/shared/i18n/messages/games/shared/es.ts',
   'apps/web/src/shared/i18n/messages/games/shared/fr.ts',
   'apps/web/src/shared/i18n/messages/games/shared/ru.ts',

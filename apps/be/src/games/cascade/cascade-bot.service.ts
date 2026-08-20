@@ -13,6 +13,7 @@ import type {
 } from '../engines/cascade/cascade.types';
 import { isPlayable } from '../engines/cascade/cascade.utils';
 import type { AiDifficulty } from '../ai-difficulty';
+import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
 
 const MOVE_DELAY_MS = { min: 400, max: 1100 };
 
@@ -64,7 +65,7 @@ export class CascadeBotService {
     const hasAliveHuman = state.players.some(
       (p) => p.alive && !this.isBot(p.playerId),
     );
-    if (!hasAliveHuman) {
+    if (!hasAliveHuman && !isAiVsAiSession(session)) {
       this.logger.log(
         `No alive humans in room ${session.roomId} — completing session`,
       );
@@ -87,7 +88,12 @@ export class CascadeBotService {
     this.processing.add(lockKey);
 
     try {
-      await this.randomDelay(MOVE_DELAY_MS);
+      const aiDelay = getAiMoveDelayMs(session);
+      if (aiDelay !== null) {
+        await this.randomDelay({ min: aiDelay, max: aiDelay });
+      } else {
+        await this.randomDelay(MOVE_DELAY_MS);
+      }
       const move = this.pickMove(state, currentId);
       if (!move) return;
       if (move.type === 'play') {

@@ -14,6 +14,7 @@ import {
 import type { GameSessionSummary } from '../../sessions/game-sessions.service';
 import { ChessService } from '../../chess/chess.service';
 import type { AiDifficulty } from '../../ai-difficulty';
+import { getAiMoveDelayMs } from '../../common/ai-vs-ai';
 
 const INFINITY = 999999;
 const TT_SIZE = 1 << 20;
@@ -135,10 +136,9 @@ export class ChessBotService {
         startTime,
       );
       if (!move) return;
-
-      const elapsed = Date.now() - startTime;
-      const minDelay = 300;
-      const delay = Math.max(minDelay, Math.min(800, 1500 - elapsed));
+      const delay =
+        getAiMoveDelayMs(session) ??
+        Math.max(300, Math.min(800, 1500 - Date.now() + startTime));
       await new Promise((r) => setTimeout(r, delay));
 
       if (this.moveFn) {

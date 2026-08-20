@@ -40,6 +40,7 @@ interface GetRoomsParams {
   page?: number;
   limit?: number;
   gameId?: string;
+  aiVsAi?: boolean;
 }
 
 export interface GetRoomsResponse {
@@ -227,6 +228,22 @@ export const gamesApi = {
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
       { gameId, mode: 'ai', variant, theme },
+      rest,
+    );
+  },
+
+  createAiVsAi: async (
+    gameId: string,
+    options?: ApiClientOptions & {
+      variant?: string;
+      theme?: string;
+      aiMoveDelayMs?: number;
+    },
+  ): Promise<CreateRoomResponse> => {
+    const { variant, theme, aiMoveDelayMs, ...rest } = options ?? {};
+    return apiClient.post<CreateRoomResponse>(
+      '/games/ai-vs-ai',
+      { gameId, variant, theme, aiMoveDelayMs },
       rest,
     );
   },

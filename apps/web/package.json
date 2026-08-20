@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.25.58",
+  "version": "1.25.59",
   "private": true,
   "browserslist": [
     "chrome >= 93",

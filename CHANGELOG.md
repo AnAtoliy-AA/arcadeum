@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.59] - 2026-08-20
+
+### Added
+- AI vs AI spectator rooms (ARC-890) (ARC-890)
+
+
 ## [1.25.58] - 2026-08-20
 
 ### Added

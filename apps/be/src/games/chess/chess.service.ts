@@ -80,11 +80,13 @@ export class ChessService extends BaseGameService<ChessOptions> {
     roomId: string,
     withBots?: boolean,
     botCount?: number,
-    botDifficulty?: string,
+    botDifficultyOrExtras?: string | Record<string, unknown>,
   ) {
-    return super.startSession(userId, roomId, withBots, botCount, {
-      botDifficulty,
-    });
+    const extras =
+      typeof botDifficultyOrExtras === 'string'
+        ? { botDifficulty: botDifficultyOrExtras }
+        : botDifficultyOrExtras;
+    return super.startSession(userId, roomId, withBots, botCount, extras);
   }
 
   override async findSessionByRoom(roomId: string) {

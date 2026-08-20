@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.60] - 2026-08-20
+
+### Fixed
+- forward HTML attributes in Container, restoring settings locale marker (ARC-919) (ARC-919)
+- add mobile side padding to Container and fix mode i18n fallback (ARC-919) (ARC-919)
+
+### Refactored
+- replace Container prop spread with explicit attribute forwarding (ARC-919) (ARC-919)
+
+
 ## [1.25.59] - 2026-08-20
 
 ### Added

@@ -205,18 +205,38 @@
   }
 }
 
+@keyframes celebration-fall {
+  0% {
+    transform: translateY(-24px) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+
+  25% {
+    transform: translateY(28vh) translateX(16px) rotate(160deg);
+  }
+
+  50% {
+    transform: translateY(56vh) translateX(-14px) rotate(340deg);
+  }
+
+  75% {
+    transform: translateY(82vh) translateX(12px) rotate(520deg);
+  }
+
+  100% {
+    transform: translateY(108vh) translateX(-8px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
 .celebration-layer {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
   height: 100dvh;
   pointer-events: none;
   overflow: hidden;
-  z-index: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+  z-index: 1205;
 }
 
 .celebration-bloom {
@@ -246,10 +266,11 @@
 
 .celebration-confetti-particle {
   position: absolute;
-  top: -16px;
-  animation-name: fall;
+  top: -24px;
+  animation-name: celebration-fall;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  will-change: transform;
 }
 
 .celebration-sparkle-particle {
@@ -257,6 +278,7 @@
   animation-name: sparkle-rise;
   animation-timing-function: ease-in;
   animation-iteration-count: infinite;
+  will-change: transform;
 }
 
 .celebration-ember-particle {
@@ -265,19 +287,22 @@
   animation-name: celebration-ember-fall;
   animation-timing-function: ease-out;
   animation-iteration-count: infinite;
+  will-change: transform;
 }
 
-@for $i from 0 through 39 {
+@for $i from 0 through 79 {
   .particle-slot-#{$i} {
-    left: #{($i * 29) % 96 + 2}%;
-    animation-delay: #{($i % 12) * 0.18}s;
-    animation-duration: #{2.4 + (($i % 6) * 0.45)}s;
+    left: #{($i * 1.22) + 0.8}%;
+    animation-delay: #{($i % 20) * 0.12}s;
+    animation-duration: #{2.2 + (($i % 10) * 0.3)}s;
   }
+}
 
+@for $i from 0 through 47 {
   .sparkle-slot-#{$i} {
-    left: #{($i * 47) % 94 + 3}%;
-    bottom: #{($i * 19) % 40 + 5}%;
-    animation-delay: #{($i % 9) * 0.28}s;
-    animation-duration: #{2.0 + (($i % 5) * 0.4)}s;
+    left: #{($i * 2.05) + 1}%;
+    bottom: #{($i * 17) % 45 + 5}%;
+    animation-delay: #{($i % 12) * 0.2}s;
+    animation-duration: #{1.8 + (($i % 6) * 0.35)}s;
   }
 }

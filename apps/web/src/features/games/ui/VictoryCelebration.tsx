@@ -49,22 +49,22 @@ export function VictoryCelebration({ tone, theme }: VictoryCelebrationProps) {
 
   const confettiItems = useMemo(() => {
     if (tone !== 'victory') return [];
-    return Array.from({ length: 32 }).map((_, i) => ({
-      slotClass: `particle-slot-${i % 40}`,
+    return Array.from({ length: 80 }).map((_, i) => ({
+      slotClass: `particle-slot-${i}`,
       bgClass:
         DEFAULT_VICTORY_BG_CLASSES[i % DEFAULT_VICTORY_BG_CLASSES.length],
       sizeClass:
-        i % 3 === 0 ? 'w-3 h-3' : i % 2 === 0 ? 'w-2.5 h-2.5' : 'w-2 h-2',
+        i % 3 === 0 ? 'w-3.5 h-3.5' : i % 2 === 0 ? 'w-2.5 h-2.5' : 'w-2 h-2',
       roundClass: i % 2 === 0 ? 'rounded-full' : 'rounded-sm',
     }));
   }, [tone]);
 
   const sparkleItems = useMemo(() => {
     if (tone === 'defeat') return [];
-    const count = tone === 'victory' ? 24 : 12;
+    const count = tone === 'victory' ? 48 : 24;
     return Array.from({ length: count }).map((_, i) => ({
-      slotClass: `sparkle-slot-${i % 40}`,
-      sizeClass: i % 2 === 0 ? 'w-2 h-2' : 'w-1.5 h-1.5',
+      slotClass: `sparkle-slot-${i}`,
+      sizeClass: i % 2 === 0 ? 'w-2.5 h-2.5' : 'w-1.5 h-1.5',
       bgClass:
         tone === 'victory'
           ? 'bg-amber-200 shadow-[0_0_8px_rgba(255,215,0,0.8)]'
@@ -74,8 +74,8 @@ export function VictoryCelebration({ tone, theme }: VictoryCelebrationProps) {
 
   const emberItems = useMemo(() => {
     if (tone !== 'defeat') return [];
-    return Array.from({ length: 16 }).map((_, i) => ({
-      slotClass: `particle-slot-${(i * 3) % 40}`,
+    return Array.from({ length: 40 }).map((_, i) => ({
+      slotClass: `particle-slot-${(i * 2) % 80}`,
       bgClass: DEFEAT_BG_CLASSES[i % DEFEAT_BG_CLASSES.length],
       sizeClass: i % 3 === 0 ? 'w-2.5 h-2.5' : 'w-1.5 h-1.5',
     }));

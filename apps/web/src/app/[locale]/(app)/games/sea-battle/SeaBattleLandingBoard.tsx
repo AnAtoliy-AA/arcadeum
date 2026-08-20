@@ -5,7 +5,7 @@ import { SeaBattleThemeProvider } from '@/widgets/StrategyGames/SeaBattleGame/li
 import { SeaBattleThemePreview } from '@/widgets/StrategyGames/SeaBattleGame/ui/SeaBattleThemePreview';
 import styles from './SeaBattleLandingBoard.module.scss';
 
-const ROTATING_VARIANTS = [
+const ROTATING_THEMES = [
   'cyberpunk',
   'underwater',
   'crime',
@@ -20,40 +20,42 @@ const ROTATING_VARIANTS = [
   'zen',
 ] as const;
 
-type Variant = (typeof ROTATING_VARIANTS)[number];
+type Theme = (typeof ROTATING_THEMES)[number];
 
 interface Props {
-  initialVariant?: Variant;
-  variantNames?: Partial<Record<Variant, string>>;
+  initialTheme?: Theme;
+  themeNames?: Partial<Record<Theme, string>>;
   label: string;
   cycleHint: string;
   cycleAriaLabel: string;
-  onVariantChange?: (variant: Variant) => void;
+  onThemeChange?: (theme: Theme) => void;
+  onVariantChange?: (theme: Theme) => void;
 }
 
 export function SeaBattleLandingBoard({
-  initialVariant = 'cyberpunk',
-  variantNames,
+  initialTheme = 'cyberpunk',
+  themeNames,
   label,
   cycleHint,
   cycleAriaLabel,
+  onThemeChange,
   onVariantChange,
 }: Props) {
-  const [variant, setVariant] = useState<Variant>(initialVariant);
-  const variantName =
-    variantNames?.[variant] ??
-    variant.charAt(0).toUpperCase() + variant.slice(1).replace(/-/g, ' ');
+  const [theme, setTheme] = useState<Theme>(initialTheme);
+  const themeName =
+    themeNames?.[theme] ??
+    theme.charAt(0).toUpperCase() + theme.slice(1).replace(/-/g, ' ');
 
   const cycle = () => {
-    const idx = ROTATING_VARIANTS.indexOf(variant);
+    const idx = ROTATING_THEMES.indexOf(theme);
     const next =
-      ROTATING_VARIANTS[(idx + 1) % ROTATING_VARIANTS.length] ??
-      ROTATING_VARIANTS[0];
-    setVariant(next);
+      ROTATING_THEMES[(idx + 1) % ROTATING_THEMES.length] ?? ROTATING_THEMES[0];
+    setTheme(next);
+    onThemeChange?.(next);
     onVariantChange?.(next);
   };
 
-  const ariaLabel = cycleAriaLabel.replace('{{variant}}', variantName);
+  const ariaLabel = cycleAriaLabel.replace('{{variant}}', themeName);
 
   return (
     <div className={styles.frame}>
@@ -64,15 +66,15 @@ export function SeaBattleLandingBoard({
         aria-label={ariaLabel}
         data-testid="sea-battle-landing-board"
       >
-        <SeaBattleThemeProvider variant={variant}>
-          <SeaBattleThemePreview selectedVariant={variant} cellSize={20} />
+        <SeaBattleThemeProvider variant={theme}>
+          <SeaBattleThemePreview selectedVariant={theme} cellSize={20} />
         </SeaBattleThemeProvider>
       </button>
       <p className={styles.caption} aria-hidden="true">
         <span className={styles.captionDot} />
         <span>{label}</span>
         <span aria-hidden="true">·</span>
-        <span className={styles.captionName}>{variantName}</span>
+        <span className={styles.captionName}>{themeName}</span>
       </p>
       <span className={styles.cycleHint} aria-hidden="true">
         {cycleHint}

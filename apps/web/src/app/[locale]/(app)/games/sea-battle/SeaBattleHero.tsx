@@ -6,7 +6,7 @@ import styles from './SeaBattleLanding.module.scss';
 import { Icon } from './landingIcons';
 import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 import { SeaBattleLandingBoard } from './SeaBattleLandingBoard';
-import { useHeroVariant } from './heroVariantContext';
+import { useHeroTheme } from './heroVariantContext';
 
 const SEA_BATTLE_GAME_ID = 'sea_battle_v1';
 
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export function SeaBattleHero({ landing, createRoomHref, roomsHref }: Props) {
-  const { variant, setVariant } = useHeroVariant();
+  const { theme, setTheme } = useHeroTheme();
 
   return (
     <section className={styles.hero}>
@@ -39,7 +39,7 @@ export function SeaBattleHero({ landing, createRoomHref, roomsHref }: Props) {
             mode="ai"
             label={landing.hero.ctaQuickplay}
             errorLabel={landing.hero.ctaQuickplayError}
-            variant={variant}
+            theme={theme}
           />
           <QuickplayButton
             gameId={SEA_BATTLE_GAME_ID}
@@ -47,7 +47,7 @@ export function SeaBattleHero({ landing, createRoomHref, roomsHref }: Props) {
             buttonVariant="secondary"
             label={landing.hero.ctaPlayHuman}
             errorLabel={landing.hero.ctaQuickplayError}
-            variant={variant}
+            theme={theme}
           />
           <span className={styles.heroCtaDivider} aria-hidden="true" />
           <Link href={createRoomHref} className={styles.heroCtaLink}>
@@ -71,7 +71,7 @@ export function SeaBattleHero({ landing, createRoomHref, roomsHref }: Props) {
         label={landing.board.label}
         cycleHint={landing.board.cycleHint}
         cycleAriaLabel={landing.board.cycleAriaLabel}
-        onVariantChange={setVariant}
+        onThemeChange={setTheme}
       />
     </section>
   );

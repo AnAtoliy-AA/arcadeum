@@ -5,6 +5,7 @@ import { gameMetadata } from '@/features/games/registry';
 export interface GameDisplayInfo {
   displayName: string;
   variantName?: string;
+  themeName?: string;
   gradient?: string;
 }
 
@@ -19,32 +20,48 @@ export function resolveGameDisplayInfo(
     gameMetadata[normalizedId as keyof typeof gameMetadata]?.name ??
     normalizedId;
 
+  const themeId =
+    (options?.theme as string | undefined) ??
+    (options?.cardVariant as string | undefined);
+
   const variantId =
     (options?.variant as string | undefined) ??
-    (options?.cardVariant as string | undefined) ??
-    (options?.theme as string | undefined);
+    (options?.mode as string | undefined);
 
-  if (!variantId || variantId === 'random') {
-    return { displayName: baseName };
+  let themeName: string | undefined;
+  let gradient: string | undefined;
+  if (themeId && themeId !== 'random') {
+    const sharedTheme = SHARED_THEMES.find((t) => t.id === themeId);
+    if (sharedTheme) {
+      themeName = sharedTheme.nameKey;
+      gradient = sharedTheme.gradient;
+    }
   }
 
-  const sharedTheme = SHARED_THEMES.find((t) => t.id === variantId);
-  if (sharedTheme) {
-    return {
-      displayName: `${baseName}: ${sharedTheme.nameKey}`,
-      variantName: sharedTheme.nameKey,
-      gradient: sharedTheme.gradient,
-    };
+  let variantName: string | undefined;
+  if (variantId && variantId !== 'random') {
+    const glimwormMode = GLIMWORM_MODES?.find((m) => m.id === variantId);
+    if (glimwormMode) {
+      variantName = glimwormMode.name;
+      gradient = gradient ?? glimwormMode.gradient;
+    } else {
+      const sharedTheme = SHARED_THEMES.find((t) => t.id === variantId);
+      if (sharedTheme) {
+        themeName = themeName ?? sharedTheme.nameKey;
+        gradient = gradient ?? sharedTheme.gradient;
+      } else {
+        variantName = variantId;
+      }
+    }
   }
 
-  const glimwormMode = GLIMWORM_MODES?.find((m) => m.id === variantId);
-  if (glimwormMode) {
-    return {
-      displayName: `${baseName}: ${glimwormMode.name}`,
-      variantName: glimwormMode.name,
-      gradient: glimwormMode.gradient,
-    };
-  }
+  const suffix = variantName ?? themeName;
+  const displayName = suffix ? `${baseName}: ${suffix}` : baseName;
 
-  return { displayName: baseName };
+  return {
+    displayName,
+    variantName,
+    themeName,
+    gradient,
+  };
 }

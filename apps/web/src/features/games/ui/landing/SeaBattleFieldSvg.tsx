@@ -11,11 +11,12 @@ const COL_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 const ROW_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 interface Props {
-  variant: string;
+  theme?: string;
+  variant?: string;
 }
 
-export function SeaBattleFieldSvg({ variant }: Props) {
-  const theme = getTheme(variant);
+export function SeaBattleFieldSvg({ theme: themeProp, variant }: Props) {
+  const theme = getTheme(themeProp ?? variant);
 
   const w = 240;
   const h = 230;

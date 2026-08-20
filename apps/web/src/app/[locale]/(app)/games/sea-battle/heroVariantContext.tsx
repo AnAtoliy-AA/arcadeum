@@ -2,25 +2,39 @@
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
-interface HeroVariantContextValue {
+interface HeroThemeContextValue {
+  theme: string;
+  setTheme: (theme: string) => void;
   variant: string;
   setVariant: (variant: string) => void;
 }
 
-const HeroVariantContext = createContext<HeroVariantContextValue>({
-  variant: 'classic',
+const HeroThemeContext = createContext<HeroThemeContextValue>({
+  theme: 'cyberpunk',
+  setTheme: () => {},
+  variant: 'cyberpunk',
   setVariant: () => {},
 });
 
-export function HeroVariantProvider({ children }: { children: ReactNode }) {
-  const [variant, setVariant] = useState<string>('classic');
+export function HeroThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<string>('cyberpunk');
   return (
-    <HeroVariantContext.Provider value={{ variant, setVariant }}>
+    <HeroThemeContext.Provider
+      value={{
+        theme,
+        setTheme,
+        variant: theme,
+        setVariant: setTheme,
+      }}
+    >
       {children}
-    </HeroVariantContext.Provider>
+    </HeroThemeContext.Provider>
   );
 }
 
-export function useHeroVariant() {
-  return useContext(HeroVariantContext);
+export function useHeroTheme() {
+  return useContext(HeroThemeContext);
 }
+
+export const HeroVariantProvider = HeroThemeProvider;
+export const useHeroVariant = useHeroTheme;

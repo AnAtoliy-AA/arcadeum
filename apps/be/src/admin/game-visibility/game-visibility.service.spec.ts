@@ -2,7 +2,6 @@ import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { GameVisibilityService } from './game-visibility.service';
 import { GameVisibility } from './game-visibility.schema';
-import { SHARED_VISUAL_THEMES } from '../../games/common/shared-themes';
 
 function makeModelMock(rows: Array<Record<string, unknown>>) {
   return {
@@ -248,7 +247,5 @@ it('listForAdmin returns the full catalog joined with tiers (defaults to all)', 
   );
   const texas = rows.find((r) => r.gameId === 'texas_holdem_v1');
   expect(texas?.tier).toBe('all');
-  expect(texas?.variants).toEqual(
-    SHARED_VISUAL_THEMES.map((variantId) => ({ variantId, tier: 'all' })),
-  );
+  expect(texas?.variants).toEqual([{ variantId: 'standard', tier: 'all' }]);
 });

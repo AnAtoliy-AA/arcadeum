@@ -9,7 +9,11 @@ export type ContainerProps = {
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
-} & React.HTMLAttributes<HTMLDivElement>;
+  id?: string;
+  'data-testid'?: string;
+  'data-current-locale'?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+};
 
 const sizeClasses: Record<ContainerSize, string> = {
   sm: 'max-w-[600px]',
@@ -24,20 +28,25 @@ export function Container({
   className,
   style,
   children,
-  ...rest
+  id,
+  'data-testid': dataTestId,
+  'data-current-locale': dataCurrentLocale,
+  onClick,
 }: ContainerProps) {
   return (
     <div
+      id={id}
+      data-testid={dataTestId}
+      data-current-locale={dataCurrentLocale}
+      onClick={onClick}
       className={cx(
         'mx-auto w-full px-4 sm:px-6 lg:px-8',
         sizeClasses[size],
         className,
       )}
       style={style}
-      {...rest}
     >
       {children}
     </div>
   );
 }
-

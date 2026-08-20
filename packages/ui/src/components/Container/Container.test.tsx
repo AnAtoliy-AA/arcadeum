@@ -38,20 +38,20 @@ describe('Container', () => {
     expect(el).toHaveClass('custom-class');
   });
 
-  it('forwards arbitrary HTML attributes', () => {
+  it('forwards supported HTML attributes', () => {
     render(
       <Container
+        id="attr-id"
         data-current-locale="es"
         data-testid="attr-container"
         onClick={() => {}}
-        aria-label="wrapper"
       >
         Content
       </Container>,
     );
     const el = screen.getByTestId('attr-container');
+    expect(el).toHaveAttribute('id', 'attr-id');
     expect(el).toHaveAttribute('data-current-locale', 'es');
-    expect(el).toHaveAttribute('aria-label', 'wrapper');
   });
 });
 

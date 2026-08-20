@@ -6,11 +6,20 @@ import {
   getAiMoveDelayMs,
   isAiVsAiSession,
 } from './ai-vs-ai';
+import type { GameSessionSummary } from '../sessions/game-sessions.service';
 
-function session(options?: Record<string, unknown>): {
-  options?: Record<string, unknown>;
-} {
-  return options === undefined ? {} : { options };
+function session(options?: Record<string, unknown>): GameSessionSummary {
+  return {
+    id: 's-1',
+    roomId: 'r-1',
+    gameId: 'g-1',
+    engine: 'test',
+    status: 'active',
+    state: {},
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    ...(options === undefined ? {} : { options }),
+  };
 }
 
 describe('ai-vs-ai helpers', () => {

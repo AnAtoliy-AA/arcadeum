@@ -3,6 +3,7 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
 import { TicTacToeBoardVisual } from './TicTacToeBoardVisual';
 
@@ -34,7 +35,7 @@ interface Props {
 
 export default function TicTacToeLanding({
   landing,
-  variants,
+  variants: _variants,
   rules,
   gameId,
   createRoomHref,
@@ -115,14 +116,13 @@ export default function TicTacToeLanding({
     };
   });
 
-  const themeKeys = ['classic', 'neon', 'chalkboard', 'retro'] as const;
-  const themesList = variants
-    ? themeKeys.map((k) => ({
-        id: k,
-        name: variants[k]?.name ?? k,
-        description: variants[k]?.description,
-      }))
-    : [];
+  const themesList = SHARED_THEMES.filter((t) => t.id !== 'random').map(
+    (t) => ({
+      id: t.id,
+      name: t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/-/g, ' '),
+      description: t.descriptionKey,
+    }),
+  );
 
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 

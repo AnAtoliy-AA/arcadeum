@@ -73,7 +73,7 @@ export const frMessages = {
       themes: {
         title: 'Choisis l’ambiance',
         subtitle:
-          'Chaque variante restylise le plateau, les marques et la grille.',
+          'Chaque thème redéfinit le plateau, les marques et la grille.',
       },
       faq: {
         sizes: {

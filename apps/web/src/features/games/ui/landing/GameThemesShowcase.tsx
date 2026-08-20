@@ -154,7 +154,7 @@ export function GameThemesShowcase({
         {themes.map((theme) => {
           const href =
             baseHref && !comingSoon
-              ? `${baseHref}?variant=${theme.id}`
+              ? `${baseHref}?theme=${theme.id}`
               : undefined;
           const visual = getThemeVisual(theme.id);
 
@@ -167,7 +167,7 @@ export function GameThemesShowcase({
                   {theme.preview ? (
                     theme.preview
                   ) : isSeaBattle ? (
-                    <SeaBattleFieldSvg variant={theme.id} />
+                    <SeaBattleFieldSvg theme={theme.id} />
                   ) : hasRealArt ? (
                     <div className="box-border w-full h-full flex items-center justify-center pointer-events-none select-none">
                       <GameArt

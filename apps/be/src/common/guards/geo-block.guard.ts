@@ -119,9 +119,9 @@ export class GeoBlockService {
     const validated = safeIpLiteral(ip);
     if (!validated) return null;
     try {
-      // codeql[js/request-forgery] Safe: `validated` is a validated IP
-      // literal (see safeIpLiteral) — it cannot alter the URL path.
       const res = await fetch(
+        // codeql[js/request-forgery] Safe: `validated` is a validated IP
+        // literal (see safeIpLiteral) — it cannot alter the URL path.
         `http://ip-api.com/json/${validated}?fields=countryCode`,
       );
       if (!res.ok) return null;
@@ -140,9 +140,9 @@ export class GeoBlockService {
       const apiKey = this.config.get<string>('VPN_CHECK_API_KEY');
       if (!apiKey) return false;
 
-      // codeql[js/request-forgery] Safe: `validated` is a validated IP
-      // literal (see safeIpLiteral) — it cannot alter the URL path.
       const res = await fetch(
+        // codeql[js/request-forgery] Safe: `validated` is a validated IP
+        // literal (see safeIpLiteral) — it cannot alter the URL path.
         `https://ipqualityscore.com/api/json/ip/${apiKey}/${validated}`,
       );
       if (!res.ok) return false;

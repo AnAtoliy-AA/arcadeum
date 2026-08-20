@@ -15,6 +15,7 @@ import { gameSocket } from '@/shared/lib/socket';
 import { GameWidgetContainer } from '@/features/games/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
+import { GlimwormThemeProvider } from './lib/GlimwormThemeContext';
 
 export default function GlimwormGame(
   props: BaseGameWidgetProps,
@@ -90,51 +91,59 @@ export default function GlimwormGame(
       ? t('games.glimworm_v1.status.roundOver')
       : t('games.glimworm_v1.status.inPlay');
 
+  const themeVariant =
+    (room.gameOptions?.theme as string | undefined) ??
+    (room.gameOptions?.cardVariant as string | undefined) ??
+    (room.gameOptions?.variant as string | undefined) ??
+    'cyberpunk';
+
   return (
-    <GameWidgetContainer
-      isMyTurn={false}
-      isGameOver={isEnded}
-      headerProps={{
-        variantEmoji: '🪱',
-        title: t('games.glimworm_v1.name'),
-        subtitle: room.name,
-        turnStatusVariant: isCountdown
-          ? 'waiting'
-          : isEnded
-            ? 'completed'
-            : 'default',
-        turnStatusText: statusText,
-      }}
-      board={
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            height: '100%',
-            minHeight: 480,
-          }}
-        >
+    <GlimwormThemeProvider variant={themeVariant}>
+      <GameWidgetContainer
+        isMyTurn={false}
+        isGameOver={isEnded}
+        headerProps={{
+          variantEmoji: '🪱',
+          title: t('games.glimworm_v1.name'),
+          subtitle: room.name,
+          turnStatusVariant: isCountdown
+            ? 'waiting'
+            : isEnded
+              ? 'completed'
+              : 'default',
+          turnStatusText: statusText,
+        }}
+        board={
           <div
-            ref={canvasRef}
             style={{
-              position: 'absolute',
-              inset: 0,
-              background: '#06070d',
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              minHeight: 480,
             }}
-          />
-          <GlimwormHud isHost={isHost} onRestart={handleRestart} />
-          <GlimwormDeathOverlay />
-          {isCountdown && <GlimwormCountdown />}
-          {!isCountdown && !isEnded && <GlimwormControlsHint />}
-          {isEnded && (
-            <GlimwormResultOverlay
-              isHost={isHost}
-              onRematch={handleRematch}
-              onLobby={handleRestart}
+          >
+            <div
+              ref={canvasRef}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: '#06070d',
+              }}
             />
-          )}
-        </div>
-      }
-    />
+            <GlimwormHud isHost={isHost} onRestart={handleRestart} />
+            <GlimwormDeathOverlay />
+            {isCountdown && <GlimwormCountdown />}
+            {!isCountdown && !isEnded && <GlimwormControlsHint />}
+            {isEnded && (
+              <GlimwormResultOverlay
+                isHost={isHost}
+                onRematch={handleRematch}
+                onLobby={handleRestart}
+              />
+            )}
+          </div>
+        }
+      />
+    </GlimwormThemeProvider>
   );
 }

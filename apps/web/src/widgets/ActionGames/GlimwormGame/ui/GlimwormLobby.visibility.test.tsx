@@ -57,8 +57,8 @@ describe('GlimwormLobby — variant visibility (coming-soon)', () => {
           gameId: 'glimworm_v1',
           comingSoon: false,
           variants: [
-            { id: 'battle_royale', comingSoon: false },
-            { id: 'time_attack', comingSoon: false },
+            { id: 'cyberpunk', comingSoon: false },
+            { id: 'underwater', comingSoon: false },
           ],
           rules: [],
         },
@@ -69,18 +69,16 @@ describe('GlimwormLobby — variant visibility (coming-soon)', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId('glimworm-variant-battle_royale'),
+        screen.getByTestId('glimworm-variant-cyberpunk'),
       ).toBeInTheDocument();
     });
 
-    const battleRoyaleTile = screen.getByTestId(
-      'glimworm-variant-battle_royale',
-    );
-    expect(battleRoyaleTile).not.toHaveAttribute('aria-disabled', 'true');
+    const cyberpunkTile = screen.getByTestId('glimworm-variant-cyberpunk');
+    expect(cyberpunkTile).not.toHaveAttribute('aria-disabled', 'true');
 
-    const timeAttackTile = screen.getByTestId('glimworm-variant-time_attack');
-    expect(timeAttackTile).toBeInTheDocument();
-    expect(timeAttackTile).not.toHaveAttribute('aria-disabled', 'true');
+    const underwaterTile = screen.getByTestId('glimworm-variant-underwater');
+    expect(underwaterTile).toBeInTheDocument();
+    expect(underwaterTile).not.toHaveAttribute('aria-disabled', 'true');
   });
 
   it('renders a coming-soon variant as disabled with a badge, and click is a no-op', async () => {
@@ -90,8 +88,8 @@ describe('GlimwormLobby — variant visibility (coming-soon)', () => {
           gameId: 'glimworm_v1',
           comingSoon: false,
           variants: [
-            { id: 'battle_royale', comingSoon: false },
-            { id: 'time_attack', comingSoon: true },
+            { id: 'cyberpunk', comingSoon: false },
+            { id: 'underwater', comingSoon: true },
           ],
           rules: [],
         },
@@ -102,25 +100,18 @@ describe('GlimwormLobby — variant visibility (coming-soon)', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByTestId('glimworm-variant-battle_royale'),
+        screen.getByTestId('glimworm-variant-cyberpunk'),
       ).toBeInTheDocument();
     });
 
-    // battle_royale: active by default, not coming-soon
-    const battleRoyaleTile = screen.getByTestId(
-      'glimworm-variant-battle_royale',
-    );
-    expect(battleRoyaleTile).not.toHaveAttribute('aria-disabled', 'true');
+    const cyberpunkTile = screen.getByTestId('glimworm-variant-cyberpunk');
+    expect(cyberpunkTile).not.toHaveAttribute('aria-disabled', 'true');
 
-    // time_attack: coming-soon — disabled with badge
-    const timeAttackTile = screen.getByTestId('glimworm-variant-time_attack');
-    expect(timeAttackTile).toHaveAttribute('aria-disabled', 'true');
+    const underwaterTile = screen.getByTestId('glimworm-variant-underwater');
+    expect(underwaterTile).toHaveAttribute('aria-disabled', 'true');
 
-    // Clicking time_attack must not change the selected variant
-    fireEvent.click(timeAttackTile);
-    // After click, battle_royale should still not have aria-disabled
-    // and time_attack should still be aria-disabled (state did not switch)
-    expect(battleRoyaleTile).not.toHaveAttribute('aria-disabled', 'true');
-    expect(timeAttackTile).toHaveAttribute('aria-disabled', 'true');
+    fireEvent.click(underwaterTile);
+    expect(cyberpunkTile).not.toHaveAttribute('aria-disabled', 'true');
+    expect(underwaterTile).toHaveAttribute('aria-disabled', 'true');
   });
 });

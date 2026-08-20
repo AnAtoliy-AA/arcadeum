@@ -10,6 +10,7 @@ export const cyberpunkVariantStyles: Partial<VariantStyleConfig> = {
     ...baseVariantStyles.scene,
     sceneBgGradient:
       'radial-gradient(circle at 50% 20%, rgba(121, 40, 202, 0.24) 0%, rgba(10, 5, 30, 1) 45%, rgba(0, 0, 0, 1) 100%)',
+    sceneBackgroundImage: '/images/variants/cyberpunk_bg.webp',
     gridLineColorA: 'rgba(255, 0, 128, 0.28)',
     gridLineColorB: 'rgba(0, 223, 216, 0.18)',
     horizonGradient:

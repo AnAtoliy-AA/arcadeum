@@ -35,12 +35,18 @@ export const INFINITY_WIN_LENGTH_OPTIONS = [4, 5] as const;
 export type InfinityWinLength = (typeof INFINITY_WIN_LENGTH_OPTIONS)[number];
 
 export const TIC_TAC_TOE_VARIANT_IDS = [
-  'classic',
-  'neon',
-  'paper',
-  'pixel',
-  'chalkboard',
-  'retro',
+  'cyberpunk',
+  'underwater',
+  'crime',
+  'horror',
+  'adventure',
+  'high-altitude-hike',
+  'galaxy',
+  'fantasy',
+  'western',
+  'egypt',
+  'steampunk',
+  'zen',
 ] as const;
 export type TicTacToeVariant = (typeof TIC_TAC_TOE_VARIANT_IDS)[number];
 

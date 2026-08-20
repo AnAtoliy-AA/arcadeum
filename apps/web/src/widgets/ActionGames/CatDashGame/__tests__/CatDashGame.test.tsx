@@ -8,13 +8,13 @@ import type { CatDashClientState } from '../types';
 
 function renderWithTheme(ui: React.ReactNode) {
   return render(
-    <CatDashThemeProvider variant="village">{ui}</CatDashThemeProvider>,
+    <CatDashThemeProvider variant="cyberpunk">{ui}</CatDashThemeProvider>,
   );
 }
 
 const mockSnapshot: CatDashClientState = {
   trackType: 'linear',
-  theme: 'village',
+  theme: 'cyberpunk',
   columns: 10,
   trackLength: 21,
   currentPlayerIndex: 0,

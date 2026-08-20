@@ -4,23 +4,22 @@ import { SeaBattleThemeProvider } from '@/widgets/StrategyGames/SeaBattleGame/li
 import { SeaBattleThemePreview } from '@/widgets/StrategyGames/SeaBattleGame/ui/SeaBattleThemePreview';
 import styles from './SeaBattleThemesGrid.module.scss';
 
-// Order matches the i18n variants block in sea-battle messages.
 const VARIANTS = [
-  'classic',
-  'modern',
-  'pixel',
-  'cartoon',
-  'cyber',
-  'vintage',
-  'nebula',
-  'forest',
-  'sunset',
-  'monochrome',
+  'cyberpunk',
+  'underwater',
+  'crime',
+  'horror',
+  'adventure',
+  'high-altitude-hike',
+  'galaxy',
+  'fantasy',
+  'western',
+  'egypt',
+  'steampunk',
+  'zen',
 ] as const;
 
 interface Props {
-  /** Display name per variant, keyed by variant id — taken straight
-   * from the existing sea_battle_v1.variants.{variant}.name i18n keys. */
   names: Partial<Record<(typeof VARIANTS)[number], string>>;
 }
 

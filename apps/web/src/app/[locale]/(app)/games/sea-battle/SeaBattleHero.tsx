@@ -11,21 +11,14 @@ import { useHeroVariant } from './heroVariantContext';
 const SEA_BATTLE_GAME_ID = 'sea_battle_v1';
 
 type Landing = SeaBattleGamesMessages['sea_battle_v1']['landing'];
-type Variants = SeaBattleGamesMessages['sea_battle_v1']['variants'];
 
 interface Props {
   landing: Landing;
-  variantsT?: Variants;
   createRoomHref: string;
   roomsHref: string;
 }
 
-export function SeaBattleHero({
-  landing,
-  variantsT,
-  createRoomHref,
-  roomsHref,
-}: Props) {
+export function SeaBattleHero({ landing, createRoomHref, roomsHref }: Props) {
   const { variant, setVariant } = useHeroVariant();
 
   return (
@@ -75,18 +68,6 @@ export function SeaBattleHero({
         </ul>
       </div>
       <SeaBattleLandingBoard
-        variantNames={{
-          classic: variantsT?.classic?.name,
-          modern: variantsT?.modern?.name,
-          cyber: variantsT?.cyber?.name,
-          nebula: variantsT?.nebula?.name,
-          pixel: variantsT?.pixel?.name,
-          vintage: variantsT?.vintage?.name,
-          forest: variantsT?.forest?.name,
-          cartoon: variantsT?.cartoon?.name,
-          sunset: variantsT?.sunset?.name,
-          monochrome: variantsT?.monochrome?.name,
-        }}
         label={landing.board.label}
         cycleHint={landing.board.cycleHint}
         cycleAriaLabel={landing.board.cycleAriaLabel}

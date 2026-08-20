@@ -10,6 +10,7 @@ export const horrorFullVariantStyles: Partial<VariantStyleConfig> = {
     ...baseVariantStyles.scene,
     sceneBgGradient:
       'radial-gradient(circle at 50% 20%, rgba(121, 40, 202, 0.24) 0%, rgba(8, 0, 15, 1) 45%, rgba(0, 0, 0, 1) 100%)',
+    sceneBackgroundImage: '/images/variants/horror_bg.webp',
     gridLineColorA: 'rgba(121, 40, 202, 0.28)',
     gridLineColorB: 'rgba(255, 0, 128, 0.18)',
     horizonGradient:

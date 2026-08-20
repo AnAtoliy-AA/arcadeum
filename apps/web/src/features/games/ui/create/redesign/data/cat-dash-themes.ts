@@ -1,41 +1,20 @@
+import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
+
 export interface CatDashThemeMeta {
   id: string;
   name: string;
   desc: string;
   color: string;
-  emoji: string;
 }
 
-export const CAT_DASH_THEMES: ReadonlyArray<CatDashThemeMeta> = [
-  {
-    id: 'neon',
-    name: 'Neon Cyber',
-    desc: 'Glowing cyberpunk cityscape',
-    color: '#7c3aed',
-    emoji: '🐱',
-  },
-  {
-    id: 'village',
-    name: 'Classic Village',
-    desc: 'Cozy countryside racing',
-    color: '#059669',
-    emoji: '🏘️',
-  },
-  {
-    id: 'space',
-    name: 'Space Cats',
-    desc: 'Zero-gravity cosmic race',
-    color: '#4338ca',
-    emoji: '🚀',
-  },
-  {
-    id: 'nature',
-    name: 'Nature Wild',
-    desc: 'Forest and meadow trails',
-    color: '#166534',
-    emoji: '🌿',
-  },
-];
+export const CAT_DASH_THEMES: CatDashThemeMeta[] = SHARED_THEMES.filter(
+  (t) => t.id !== 'random',
+).map((t) => ({
+  id: t.id,
+  name: t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/-/g, ' '),
+  desc: t.descriptionKey,
+  color: t.colors.primary,
+}));
 
 export function findCatDashTheme(id: string | undefined): CatDashThemeMeta {
   return CAT_DASH_THEMES.find((t) => t.id === id) ?? CAT_DASH_THEMES[0];

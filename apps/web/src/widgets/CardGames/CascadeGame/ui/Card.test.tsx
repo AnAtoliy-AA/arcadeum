@@ -8,11 +8,11 @@ import type { CascadeCard } from '../types';
 // Card's aria-label can be asserted against the themed name without booting
 // the full i18n stack.
 const THEMED_NAMES: Record<string, string> = {
-  'games.cascade_v1.themedCards.cosmic.SKIP': 'Eclipse',
-  'games.cascade_v1.themedCards.cosmic.REVERSE': 'Wormhole',
-  'games.cascade_v1.themedCards.cosmic.DRAW_TWO': 'Meteor Shower',
-  'games.cascade_v1.themedCards.cosmic.WILD': 'Singularity',
-  'games.cascade_v1.themedCards.cosmic.WILD_DRAW_FOUR': 'Supernova',
+  'games.cascade_v1.themedCards.cyberpunk.SKIP': 'Eclipse',
+  'games.cascade_v1.themedCards.cyberpunk.REVERSE': 'Wormhole',
+  'games.cascade_v1.themedCards.cyberpunk.DRAW_TWO': 'Meteor Shower',
+  'games.cascade_v1.themedCards.cyberpunk.WILD': 'Singularity',
+  'games.cascade_v1.themedCards.cyberpunk.WILD_DRAW_FOUR': 'Supernova',
   'games.cascade_v1.cardColors.R': 'Red',
   'games.cascade_v1.cardColors.B': 'Blue',
   'games.cascade_v1.cardColors.G': 'Green',
@@ -28,7 +28,7 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 
 function renderCard(props: React.ComponentProps<typeof Card>) {
   return render(
-    <CascadeThemeProvider variant="cosmic">
+    <CascadeThemeProvider variant="cyberpunk">
       <Card {...props} />
     </CascadeThemeProvider>,
   );
@@ -51,16 +51,14 @@ describe('Card', () => {
     renderCard({ card, faceDown: true });
     const btn = screen.getByRole('button', { name: /hidden card/i });
     expect(btn).toBeInTheDocument();
-    // The numeric value should NOT be in the face-down rendering.
     expect(btn).not.toHaveTextContent('1');
   });
 
   it('renders symbols for action cards from the active theme and uses the themed name in aria-label', () => {
     const card: CascadeCard = { id: 's', color: 'G', kind: 'SKIP' };
     renderCard({ card });
-    // Cosmic theme renames SKIP → Eclipse and uses ◐ as the glyph.
     const btn = screen.getByRole('button', { name: /green eclipse/i });
-    expect(btn).toHaveTextContent('◐');
+    expect(btn).toHaveTextContent('⊘');
   });
 
   it('uses the themed name for wild cards (no color prefix)', () => {

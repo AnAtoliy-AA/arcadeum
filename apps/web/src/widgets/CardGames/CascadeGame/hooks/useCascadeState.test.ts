@@ -22,7 +22,7 @@ vi.mock('@/features/games/hooks', () => ({
 const cascadeState: CascadeClientState = {
   phase: 'playing',
   options: {
-    variant: 'cosmic',
+    variant: 'cyberpunk',
     mode: 'classic',
     stackingEnabled: true,
     lastCardCallEnabled: true,

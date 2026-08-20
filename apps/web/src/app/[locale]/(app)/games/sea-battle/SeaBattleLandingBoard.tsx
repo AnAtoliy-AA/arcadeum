@@ -6,36 +6,33 @@ import { SeaBattleThemePreview } from '@/widgets/StrategyGames/SeaBattleGame/ui/
 import styles from './SeaBattleLandingBoard.module.scss';
 
 const ROTATING_VARIANTS = [
-  'classic',
-  'modern',
-  'cyber',
-  'nebula',
-  'pixel',
-  'vintage',
-  'forest',
-  'cartoon',
-  'sunset',
-  'monochrome',
+  'cyberpunk',
+  'underwater',
+  'crime',
+  'horror',
+  'adventure',
+  'high-altitude-hike',
+  'galaxy',
+  'fantasy',
+  'western',
+  'egypt',
+  'steampunk',
+  'zen',
 ] as const;
 
 type Variant = (typeof ROTATING_VARIANTS)[number];
 
 interface Props {
   initialVariant?: Variant;
-  /** Localised display name per variant (from sea_battle_v1.variants.{id}.name). */
-  variantNames: Partial<Record<Variant, string>>;
-  /** Localised "Live preview" label. */
+  variantNames?: Partial<Record<Variant, string>>;
   label: string;
-  /** Localised "Click to change theme" hover hint. */
   cycleHint: string;
-  /** Localised aria-label template containing `{{variant}}`. */
   cycleAriaLabel: string;
-  /** Bubble the cycled variant up to the parent so Quickplay can use it. */
   onVariantChange?: (variant: Variant) => void;
 }
 
 export function SeaBattleLandingBoard({
-  initialVariant = 'classic',
+  initialVariant = 'cyberpunk',
   variantNames,
   label,
   cycleHint,
@@ -43,7 +40,9 @@ export function SeaBattleLandingBoard({
   onVariantChange,
 }: Props) {
   const [variant, setVariant] = useState<Variant>(initialVariant);
-  const variantName = variantNames[variant] ?? variant;
+  const variantName =
+    variantNames?.[variant] ??
+    variant.charAt(0).toUpperCase() + variant.slice(1).replace(/-/g, ' ');
 
   const cycle = () => {
     const idx = ROTATING_VARIANTS.indexOf(variant);

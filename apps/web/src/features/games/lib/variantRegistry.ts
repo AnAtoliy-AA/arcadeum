@@ -1,6 +1,5 @@
-import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
-import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
-import { SEA_BATTLE_VARIANTS } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
+import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
+import { GLIMWORM_MODES } from '@/features/games/lib/glimwormVariants';
 import { gameMetadata } from '@/features/games/registry';
 
 export interface GameDisplayInfo {
@@ -9,59 +8,10 @@ export interface GameDisplayInfo {
   gradient?: string;
 }
 
-type ResolverFn = (
-  options: Record<string, unknown> | undefined,
-  baseName: string,
-) => GameDisplayInfo;
-
-const criticalResolver: ResolverFn = (options, baseName) => {
-  if (!options?.cardVariant || options.cardVariant === 'random') {
-    return { displayName: baseName };
-  }
-  const variant = CARD_VARIANTS.find((v) => v.id === options.cardVariant);
-  return {
-    displayName: variant ? `${baseName}: ${variant.name}` : baseName,
-    variantName: variant?.name,
-    gradient: variant?.gradient,
-  };
-};
-
-const seaBattleResolver: ResolverFn = (options, baseName) => {
-  const variantId =
-    (options?.variant as string) || (options?.cardVariant as string);
-
-  if (!variantId) return { displayName: baseName };
-
-  const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
-  return {
-    displayName: variant ? `${baseName}: ${variant.name}` : baseName,
-    variantName: variant?.name,
-    gradient: variant?.gradient,
-  };
-};
-
-const glimwormResolver: ResolverFn = (options, baseName) => {
-  const variantId = options?.variant as string | undefined;
-  if (!variantId) return { displayName: baseName };
-  const variant = GLIMWORM_VARIANTS.find((v) => v.id === variantId);
-  return {
-    displayName: variant ? `${baseName}: ${variant.name}` : baseName,
-    variantName: variant?.name,
-    gradient: variant?.gradient,
-  };
-};
-
-const REGISTRY: Record<string, ResolverFn> = {
-  critical_v1: criticalResolver,
-  sea_battle_v1: seaBattleResolver,
-  glimworm_v1: glimwormResolver,
-};
-
 export function resolveGameDisplayInfo(
   gameId: string,
   options?: Record<string, unknown>,
 ): GameDisplayInfo {
-  // Map legacy IDs if needed
   const normalizedId =
     gameId === 'exploding_kittens_v1' ? 'critical_v1' : gameId;
 
@@ -69,9 +19,31 @@ export function resolveGameDisplayInfo(
     gameMetadata[normalizedId as keyof typeof gameMetadata]?.name ??
     normalizedId;
 
-  const resolver = REGISTRY[normalizedId];
-  if (resolver) {
-    return resolver(options, baseName);
+  const variantId =
+    (options?.variant as string | undefined) ??
+    (options?.cardVariant as string | undefined) ??
+    (options?.theme as string | undefined);
+
+  if (!variantId || variantId === 'random') {
+    return { displayName: baseName };
+  }
+
+  const sharedTheme = SHARED_THEMES.find((t) => t.id === variantId);
+  if (sharedTheme) {
+    return {
+      displayName: `${baseName}: ${sharedTheme.nameKey}`,
+      variantName: sharedTheme.nameKey,
+      gradient: sharedTheme.gradient,
+    };
+  }
+
+  const glimwormMode = GLIMWORM_MODES?.find((m) => m.id === variantId);
+  if (glimwormMode) {
+    return {
+      displayName: `${baseName}: ${glimwormMode.name}`,
+      variantName: glimwormMode.name,
+      gradient: glimwormMode.gradient,
+    };
   }
 
   return { displayName: baseName };

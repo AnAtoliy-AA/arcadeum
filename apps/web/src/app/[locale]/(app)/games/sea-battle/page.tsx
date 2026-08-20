@@ -205,7 +205,6 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
         gamesHref={routes.games}
         locale={locale}
         rulesT={messages.games?.sea_battle_v1?.rules}
-        variantsT={messages.games?.sea_battle_v1?.variants}
         translatedGames={
           messages.games as Record<
             string,

@@ -34,7 +34,7 @@ export function CatDashThemeProvider({
 export function useCatDashTheme(): CatDashThemeContextValue {
   const ctx = useContext(CatDashThemeContext);
   if (!ctx) {
-    return { variant: 'neon', tokens: getTheme('neon') };
+    return { variant: 'cyberpunk', tokens: getTheme('cyberpunk') };
   }
   return ctx;
 }

@@ -7,11 +7,18 @@ export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 2;
 
 export const CHECKERS_VARIANT_IDS = [
-  'classic',
-  'neon',
-  'wood',
-  'marble',
-  'neon_glow',
+  'cyberpunk',
+  'underwater',
+  'crime',
+  'horror',
+  'adventure',
+  'high-altitude-hike',
+  'galaxy',
+  'fantasy',
+  'western',
+  'egypt',
+  'steampunk',
+  'zen',
 ] as const;
 export type CheckersVariant = (typeof CHECKERS_VARIANT_IDS)[number];
 

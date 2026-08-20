@@ -36,14 +36,14 @@ const THEMED_KINDS = [
 export function RulesModal({
   open,
   onClose,
-  variant = 'cosmic',
+  variant = 'cyberpunk',
 }: RulesModalProps) {
   const { t } = useTranslation();
   const activeVariant: CascadeVariant = (
     CASCADE_VARIANT_IDS as ReadonlyArray<string>
   ).includes(variant)
     ? variant
-    : 'cosmic';
+    : 'cyberpunk';
 
   const sections = [
     {

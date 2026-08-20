@@ -10,6 +10,7 @@ export const crimeFullVariantStyles: Partial<VariantStyleConfig> = {
     ...baseVariantStyles.scene,
     sceneBgGradient:
       'radial-gradient(circle at 50% 20%, rgba(245, 166, 35, 0.24) 0%, rgba(25, 15, 5, 1) 45%, rgba(0, 0, 0, 1) 100%)',
+    sceneBackgroundImage: '/images/variants/crime_bg.webp',
     gridLineColorA: 'rgba(245, 166, 35, 0.28)',
     gridLineColorB: 'rgba(248, 231, 28, 0.18)',
     horizonGradient:

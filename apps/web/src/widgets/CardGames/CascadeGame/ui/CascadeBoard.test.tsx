@@ -40,7 +40,7 @@ function makeSnapshot(
   return {
     phase: 'playing',
     options: {
-      variant: 'cosmic',
+      variant: 'cyberpunk',
       mode: 'classic',
       stackingEnabled: true,
       lastCardCallEnabled: true,

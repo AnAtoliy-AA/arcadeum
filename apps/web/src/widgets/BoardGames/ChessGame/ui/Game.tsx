@@ -28,6 +28,7 @@ import { ChessBoardPanel } from './ChessBoardPanel';
 import { ChessGameResultModal } from './ChessGameResultModal';
 import { PromotionModal } from './PromotionModal';
 import { RulesModal } from './RulesModal';
+import { ChessThemeProvider } from '../lib/ChessThemeContext';
 
 function ChessGameImpl({
   roomId,
@@ -406,28 +407,35 @@ function ChessGameImpl({
       />
     </>
   );
+  const themeVariant =
+    (room?.gameOptions?.cardVariant as string | undefined) ??
+    (room?.gameOptions?.variant as string | undefined) ??
+    'cyberpunk';
+
   return (
-    <GameWidgetContainer
-      board={board}
-      modals={modals}
-      isMyTurn={displayMyTurn}
-      isGameOver={isGameOver}
-      loading={!snapshot}
-      a11yAnnouncement={a11yAnnouncement}
-      headerProps={{
-        variantEmoji: '♟',
-        title: t('games.chess_v1.name'),
-        subtitle: room?.name,
-        turn: {
-          onClockUserId:
-            displaySnapshot?.players.find(
-              (p) => p.color === displaySnapshot.currentTurnColor,
-            )?.playerId ?? null,
-          isMyTurn: myTurn,
-          isGameOver,
-        },
-      }}
-    />
+    <ChessThemeProvider variant={themeVariant}>
+      <GameWidgetContainer
+        board={board}
+        modals={modals}
+        isMyTurn={displayMyTurn}
+        isGameOver={isGameOver}
+        loading={!snapshot}
+        a11yAnnouncement={a11yAnnouncement}
+        headerProps={{
+          variantEmoji: '♟',
+          title: t('games.chess_v1.name'),
+          subtitle: room?.name,
+          turn: {
+            onClockUserId:
+              displaySnapshot?.players.find(
+                (p) => p.color === displaySnapshot.currentTurnColor,
+              )?.playerId ?? null,
+            isMyTurn: myTurn,
+            isGameOver,
+          },
+        }}
+      />
+    </ChessThemeProvider>
   );
 }
 export default memo(ChessGameImpl);

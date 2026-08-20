@@ -10,6 +10,7 @@ export const underwaterVariantStyles: Partial<VariantStyleConfig> = {
     ...baseVariantStyles.scene,
     sceneBgGradient:
       'radial-gradient(circle at 50% 20%, rgba(0, 124, 240, 0.24) 0%, rgba(0, 20, 50, 1) 45%, rgba(0, 0, 0, 1) 100%)',
+    sceneBackgroundImage: '/images/variants/underwater_bg.webp',
     gridLineColorA: 'rgba(0, 124, 240, 0.28)',
     gridLineColorB: 'rgba(0, 223, 216, 0.18)',
     horizonGradient:

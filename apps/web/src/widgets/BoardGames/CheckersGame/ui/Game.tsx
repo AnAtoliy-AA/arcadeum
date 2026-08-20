@@ -348,6 +348,7 @@ function CheckersGameImpl({
         gameEnd={gameEnd}
         players={players}
         currentUserId={currentUserId}
+        gameName="Checkers"
         theme={variant}
         t={t}
       />

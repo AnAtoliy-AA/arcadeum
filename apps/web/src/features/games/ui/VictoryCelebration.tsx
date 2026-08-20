@@ -60,15 +60,11 @@ export function VictoryCelebration({ tone, theme }: VictoryCelebrationProps) {
   }, [tone]);
 
   const sparkleItems = useMemo(() => {
-    if (tone === 'defeat') return [];
-    const count = tone === 'victory' ? 48 : 24;
-    return Array.from({ length: count }).map((_, i) => ({
+    if (tone !== 'draw') return [];
+    return Array.from({ length: 24 }).map((_, i) => ({
       slotClass: `sparkle-slot-${i}`,
       sizeClass: i % 2 === 0 ? 'w-2.5 h-2.5' : 'w-1.5 h-1.5',
-      bgClass:
-        tone === 'victory'
-          ? 'bg-amber-200 shadow-[0_0_8px_rgba(255,215,0,0.8)]'
-          : 'bg-cyan-200 shadow-[0_0_8px_rgba(56,189,248,0.8)]',
+      bgClass: 'bg-cyan-200 shadow-[0_0_8px_rgba(56,189,248,0.8)]',
     }));
   }, [tone]);
 

@@ -422,6 +422,7 @@ export function ActiveGameView({
                 alive: p.alive,
               }))}
               currentUserId={currentUserId}
+              gameName="Exploding Cats"
               cardVariant={cardVariant}
               theme={cardVariant}
               t={t}

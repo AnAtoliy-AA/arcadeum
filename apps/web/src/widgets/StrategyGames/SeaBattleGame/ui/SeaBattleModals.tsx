@@ -62,6 +62,7 @@ export function SeaBattleModals({
         gameEnd={gameEnd}
         players={players}
         currentUserId={currentUserId}
+        gameName="Sea Battle"
         cardVariant={cardVariant}
         theme={cardVariant}
         t={t}

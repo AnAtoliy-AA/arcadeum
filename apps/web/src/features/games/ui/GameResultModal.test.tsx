@@ -13,11 +13,12 @@ vi.mock('@/shared/hooks/useMediaQuery', () => ({
 const mockT = (key: string) => key;
 
 describe('GameResultModal', () => {
-  it('renders victory state with title, theme and celebration', () => {
+  it('renders victory state with title, gameName, theme and celebration', () => {
     render(
       <GameResultModal
         isOpen={true}
         result="victory"
+        gameName="Chess"
         theme="cyberpunk"
         t={mockT}
       />,
@@ -27,6 +28,7 @@ describe('GameResultModal', () => {
     expect(modal).toBeInTheDocument();
     expect(modal).toHaveAttribute('data-theme', 'cyberpunk');
     expect(modal).toHaveAttribute('data-tone', 'victory');
+    expect(screen.getByText('Chess')).toBeInTheDocument();
     expect(screen.getByTestId('game-result-title')).toBeInTheDocument();
     expect(screen.getByTestId('victory-celebration')).toBeInTheDocument();
   });

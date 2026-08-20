@@ -26,6 +26,7 @@ export type GameResultKind = 'victory' | 'defeat' | 'draw';
 export interface GameResultModalProps {
   isOpen: boolean;
   result: GameResultKind | null;
+  gameName?: string;
   onRematch?: () => void;
   onClose?: () => void;
   rematchLoading?: boolean;
@@ -76,6 +77,7 @@ function resolveTheme(
 export function GameResultModal({
   isOpen,
   result,
+  gameName,
   onRematch,
   onClose,
   rematchLoading,
@@ -159,17 +161,25 @@ export function GameResultModal({
             TONE_CONTAINER_BORDER[result],
           )}
         >
-          {onClose && (
-            <div className="absolute right-4 top-4">
-              <CloseButton onClick={onClose} data-testid="modal-close-button">
-                <CloseIcon size={20} />
-              </CloseButton>
-            </div>
-          )}
+          <div className="relative mb-3 flex w-full flex-col items-center justify-center gap-1.5 pt-1">
+            {onClose && (
+              <div className="absolute right-0 top-0">
+                <CloseButton onClick={onClose} data-testid="modal-close-button">
+                  <CloseIcon size={18} />
+                </CloseButton>
+              </div>
+            )}
 
-          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-300">
-            <span>{resolvedTheme.emoji}</span>
-            <span>{resolvedTheme.id.replace(/-/g, ' ')}</span>
+            {gameName && (
+              <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                {gameName}
+              </span>
+            )}
+
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <span>{resolvedTheme.emoji}</span>
+              <span>{resolvedTheme.id.replace(/-/g, ' ')}</span>
+            </div>
           </div>
 
           <div className="mb-4 flex flex-col items-center gap-1">

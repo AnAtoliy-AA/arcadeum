@@ -199,6 +199,7 @@ function CascadeGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
+        gameName="Cascade"
         theme={visualTheme}
         t={t}
       />

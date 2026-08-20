@@ -89,6 +89,7 @@ export function GlimwormResultOverlay({
     <GameResultModal
       isOpen={isOpen}
       result={resultKind}
+      gameName="Glimworm"
       onClose={() => {
         setIsOpen(false);
         onLobby?.();

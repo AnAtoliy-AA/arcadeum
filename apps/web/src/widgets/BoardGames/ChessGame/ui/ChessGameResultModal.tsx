@@ -45,6 +45,7 @@ export function ChessGameResultModal({
     <GameResultModal
       isOpen={isOpen}
       result={result}
+      gameName="Chess"
       onClose={onClose}
       onRematch={onRematch}
       rematchLoading={rematchLoading}

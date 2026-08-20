@@ -12,6 +12,7 @@ interface GameEndModalsProps {
   gameEnd: UseGameEndStateResult;
   players: Array<{ playerId: string; displayName: string; alive: boolean }>;
   currentUserId: string | null;
+  gameName?: string;
   cardVariant?: string;
   theme?: GameTheme | string;
   stats?: GameResultStats;
@@ -24,6 +25,7 @@ export function GameEndModals({
   gameEnd,
   players,
   currentUserId,
+  gameName,
   cardVariant,
   theme,
   stats,
@@ -38,6 +40,7 @@ export function GameEndModals({
       <GameResultModal
         isOpen={gameEnd.showResultModal}
         result={gameEnd.sharedResult}
+        gameName={gameName}
         onClose={gameEnd.dismissResult}
         onRematch={onRematch ?? gameEnd.handleResultRematchClick}
         rematchLoading={gameEnd.rematchLoading}

@@ -231,6 +231,7 @@ function TicTacToeGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
+        gameName="Tic-Tac-Toe"
         theme={visualTheme}
         t={t}
       />

@@ -193,6 +193,7 @@ function CatDashGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
+        gameName="Cat Dash"
         theme={options.theme}
         t={t}
       />

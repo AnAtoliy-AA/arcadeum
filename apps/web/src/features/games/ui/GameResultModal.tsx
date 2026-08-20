@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { TranslationKey } from '@/shared/lib/useTranslation';
@@ -125,15 +126,15 @@ export function GameResultModal({
   const body =
     messages?.message ?? t(`games.table.${result}.message` as TranslationKey);
 
-  return (
+  const modalNode = (
     <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
       <div
         className={cx(
-          'fixed left-0 top-0 z-[1199] h-[100dvh] w-screen backdrop-blur-md',
+          'fixed inset-0 z-[1199] h-[100dvh] w-screen backdrop-blur-md',
           TONE_BACKDROP_CLASSES[result],
         )}
       />
-      <div className="fixed left-0 top-0 z-[1200] flex h-[100dvh] w-screen items-center justify-center p-4">
+      <div className="fixed inset-0 z-[1200] flex h-[100dvh] w-screen items-center justify-center p-4">
         <div
           data-testid="game-result-modal"
           data-theme={resolvedTheme.id}
@@ -261,4 +262,8 @@ export function GameResultModal({
       <VictoryCelebration tone={result} theme={resolvedTheme} />
     </Modal>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(modalNode, document.body)
+    : modalNode;
 }

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.57] - 2026-08-20
+
+### Fixed
+- base main version bump on develop head so push is fast-forward
+- push version bump to the triggering branch, not develop
+- decrypt encrypted cookies forwarded as bearer tokens (ARC-914) (ARC-914)
+
+
 ## [1.25.56] - 2026-08-20
 
 ### Added

@@ -21,7 +21,7 @@ export interface AuthenticatedUser {
   username: string;
 }
 
-function extractJwtFromRequest(
+export function extractJwtFromRequest(
   req: {
     headers: Record<string, string | string[] | undefined>;
     cookies?: Record<string, string>;
@@ -30,7 +30,12 @@ function extractJwtFromRequest(
 ): string | null {
   const authHeader = req.headers.authorization;
   if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-    return authHeader.slice(7);
+    const token = authHeader.slice(7);
+    // The web SSR layer forwards the httpOnly cookie value as a Bearer
+    // token, so after ARC-914 that value can be AES-encrypted ciphertext.
+    // Accept both plain JWTs and encrypted cookie values; a plain JWT
+    // fails the GCM auth tag and falls through to the raw value.
+    return decryptTokenCookie(token, cookieKey) ?? token;
   }
   const cookie = req.cookies?.access_token;
   if (cookie) {

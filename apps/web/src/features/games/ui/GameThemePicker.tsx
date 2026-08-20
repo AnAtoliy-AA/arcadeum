@@ -29,12 +29,13 @@ export interface GameThemePickerOption {
 }
 
 export interface GameThemePickerProps {
-  selectedTheme: string;
+  selectedTheme?: string;
   onSelect: (themeId: string) => void;
   /** Restrict the visible themes to this set (defaults to SHARED_THEMES ids). */
   allowedThemes?: string[];
   /** Render themes outside `allowedThemes` as disabled ("coming soon"). */
   showComingSoon?: boolean;
+  disabled?: boolean;
   options?: GameThemePickerOption[];
   className?: string;
   /** Optional custom thumbnail renderer (falls back to emoji + gradient). */
@@ -52,10 +53,11 @@ const THEME_INDEX = new Map<string, GameTheme>(
  * New games get a theme picker for free by passing `allowedThemes`.
  */
 export function GameThemePicker({
-  selectedTheme,
+  selectedTheme = 'adventure',
   onSelect,
   allowedThemes,
   showComingSoon = false,
+  disabled: overallDisabled = false,
   options,
   className,
   renderThumbnail,
@@ -118,6 +120,7 @@ export function GameThemePicker({
           const active = selectedTheme === option.id;
           const comingSoon = option.comingSoon || false;
           const disabled =
+            overallDisabled ||
             option.disabled ||
             comingSoon ||
             (showComingSoon && !theme) ||

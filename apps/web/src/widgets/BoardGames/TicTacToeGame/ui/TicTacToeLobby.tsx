@@ -6,10 +6,10 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
   LobbyOptionSection,
+  GameThemePicker,
   getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { VariantSelector } from './VariantSelector';
 import { BoardSizeSelector } from './BoardSizeSelector';
 import { TicTacToeTeamPanel } from './TicTacToeTeamPanel';
 import { RulesModal } from './RulesModal';
@@ -132,12 +132,15 @@ export function TicTacToeLobby({
 
   const optionsSlot = (
     <div className="flex flex-col items-stretch gap-4">
-      <VariantSelector
-        roomId={room.id}
-        hostId={userId}
-        currentVariant={variant}
-        disabled={!isHost}
-      />
+      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <GameThemePicker
+          selectedTheme={variant}
+          onSelect={(themeId) =>
+            setOption({ theme: themeId, variant: themeId })
+          }
+          disabled={!isHost}
+        />
+      </LobbyOptionSection>
       <BoardSizeSelector
         roomId={room.id}
         hostId={userId}

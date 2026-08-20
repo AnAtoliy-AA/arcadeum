@@ -5,7 +5,7 @@ import {
   ReusableGameLobby,
   IconButton,
   LobbyOptionSection,
-  LobbyChipGroup,
+  GameThemePicker,
   getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
@@ -242,22 +242,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // Theme picker + preview only — team mode controls now live in the
   // dedicated SeaBattleTeamPanel above the lobby so they don't compete with
   // the Start button for stacking context.
-  const variantChipOptions = SEA_BATTLE_VARIANTS.map((variant) => ({
-    id: variant.id,
-    label: t(variant.name as TranslationKey),
-    emoji: variant.emoji,
-  }));
-
   const variantPicker = (
-    <LobbyOptionSection
-      title={t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
-    >
-      <LobbyChipGroup
-        options={variantChipOptions}
-        value={selectedVariant}
-        onChange={handleVariantSelect}
-        accentColor="#60a5fa"
-        testIdPrefix="sea-battle-variant"
+    <LobbyOptionSection title={t('games.create.sectionVariant')}>
+      <GameThemePicker
+        selectedTheme={selectedVariant}
+        onSelect={handleVariantSelect}
+        disabled={!isHost}
       />
     </LobbyOptionSection>
   );

@@ -1,16 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 import {
   ReusableGameLobby,
   type GameLobbyTheme,
   IconButton,
   LobbyOptionSection,
+  GameThemePicker,
 } from '@/features/games/ui';
 import { Typography } from '@arcadeum/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CARD_VARIANTS, RANDOM_VARIANT } from '../lib/constants';
-import { VariantSelector } from './VariantSelector';
 import { RulesModal } from './RulesModal';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
@@ -104,43 +105,53 @@ export function CriticalLobby({
   };
 
   const optionsSlot =
-    isHost && room.status === 'lobby' ? (
-      <LobbyOptionSection title="Game Options">
-        <VariantSelector
-          roomId={room.id}
-          hostId={userId}
-          currentVariant={cardVariant}
+    room.status === 'lobby' ? (
+      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <GameThemePicker
+          selectedTheme={cardVariant}
+          onSelect={(themeId) =>
+            setOption({
+              theme: themeId,
+              cardVariant: themeId,
+              variant: themeId,
+            })
+          }
+          disabled={!isHost}
         />
-        <div className="flex flex-row items-center gap-2 pt-2">
-          <input
-            type="checkbox"
-            checked={
-              !!(room.gameOptions as Record<string, unknown>)
-                ?.allowActionCardCombos
-            }
-            disabled={!!ruleComingSoon.get('combos')}
-            onChange={(e) =>
-              setOption({ allowActionCardCombos: e.target.checked })
-            }
-            aria-label={
-              t('games.create.houseRuleActionCardCombos') ||
-              'Action Card Combos'
-            }
-            className="w-4 h-4 cursor-pointer accent-[var(--primary)]"
-          />
-          <Typography
-            uiSize="sm"
-            style={{ opacity: ruleComingSoon.get('combos') ? 0.4 : 1 }}
-          >
-            {t('games.create.houseRuleActionCardCombos') ||
-              'Action Card Combos'}
-          </Typography>
-          {ruleComingSoon.get('combos') && (
-            <Typography uiSize="xs" weight="600" className="text-[#f59e0b]">
-              {t('games.create.comingSoon') || 'Coming Soon'}
+        {isHost ? (
+          <div className="flex flex-row items-center gap-2 pt-2">
+            <input
+              type="checkbox"
+              checked={
+                !!(room.gameOptions as Record<string, unknown>)
+                  ?.allowActionCardCombos
+              }
+              disabled={!!ruleComingSoon.get('combos')}
+              onChange={(e) =>
+                setOption({ allowActionCardCombos: e.target.checked })
+              }
+              aria-label={
+                t('games.create.houseRuleActionCardCombos') ||
+                'Action Card Combos'
+              }
+              className="w-4 h-4 cursor-pointer accent-[var(--primary)]"
+            />
+            <Typography
+              uiSize="sm"
+              className={cx(
+                ruleComingSoon.get('combos') ? 'opacity-40' : 'opacity-100',
+              )}
+            >
+              {t('games.create.houseRuleActionCardCombos') ||
+                'Action Card Combos'}
             </Typography>
-          )}
-        </div>
+            {ruleComingSoon.get('combos') && (
+              <Typography uiSize="xs" weight="600" className="text-[#f59e0b]">
+                {t('games.create.comingSoon') || 'Coming Soon'}
+              </Typography>
+            )}
+          </div>
+        ) : null}
       </LobbyOptionSection>
     ) : null;
 

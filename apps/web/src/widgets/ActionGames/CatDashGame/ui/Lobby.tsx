@@ -6,6 +6,7 @@ import {
   ReusableGameLobby,
   LobbyOptionSection,
   LobbyChipGroup,
+  GameThemePicker,
   getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
@@ -91,22 +92,13 @@ export const CatDashLobby = memo(function CatDashLobby({
     setOption({ trackLength: Number(len) });
   };
 
-  const themeOptions = CAT_DASH_VARIANTS.map((v) => ({
-    id: v.id,
-    label: t(v.name),
-    emoji: v.emoji,
-  }));
-
   const optionsSlot = (
     <div className="flex flex-col items-stretch gap-3 p-2">
-      <LobbyOptionSection title={t('games.cat_dash_v1.lobby.theme')}>
-        <LobbyChipGroup
-          options={themeOptions}
-          value={options.theme ?? CAT_DASH_VARIANTS[0].id}
-          onChange={handleThemeChange}
+      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <GameThemePicker
+          selectedTheme={options.theme ?? 'adventure'}
+          onSelect={handleThemeChange}
           disabled={!isHost}
-          accentColor="#7c3aed"
-          testIdPrefix="catdash-theme"
         />
       </LobbyOptionSection>
 

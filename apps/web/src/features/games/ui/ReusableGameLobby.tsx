@@ -257,10 +257,14 @@ export function ReusableGameLobby({
             className={
               theme.titleGradient ? 'text-gradient shimmer-animated' : undefined
             }
-            style={{
-              background: theme.titleGradient,
-              ...(theme.titleGradient ? { backgroundSize: '200% auto' } : {}),
-            }}
+            style={
+              theme.titleGradient
+                ? {
+                    backgroundImage: theme.titleGradient,
+                    backgroundSize: '200% auto',
+                  }
+                : undefined
+            }
           >
             {gameName}
             {variantName && (
@@ -272,12 +276,14 @@ export function ReusableGameLobby({
                       ? 'text-gradient shimmer-animated'
                       : undefined
                   }
-                  style={{
-                    background: theme.variantGradient,
-                    ...(theme.variantGradient
-                      ? { backgroundSize: '200% auto' }
-                      : {}),
-                  }}
+                  style={
+                    theme.variantGradient
+                      ? {
+                          backgroundImage: theme.variantGradient,
+                          backgroundSize: '200% auto',
+                        }
+                      : undefined
+                  }
                 >
                   : {variantName}
                 </VariantText>

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.56] - 2026-08-20
+
+### Added
+- unified interactive theme previews on game landings (ARC-917) (ARC-917)
+- unify GameThemePicker across all 8 game lobbies (ARC-917) (ARC-917)
+- make adventure/classic default theme and render ThemePicker (ARC-917) (ARC-917)
+- bind landing theme showcases to SHARED_THEMES (ARC-917) (ARC-917)
+- separate visual themes and gameplay logic variants (ARC-917) (ARC-917)
+- unify visual themes across all games (ARC-917) (ARC-917)
+
+### Fixed
+- update GameThemePicker to responsive grid layout (ARC-917) (ARC-917)
+- fix lobby container layout and prevent center overflow (ARC-917) (ARC-917)
+- translate theme names and descriptions on game landings (ARC-917) (ARC-917)
+- streamline theme resolution across lobbies and backend quickplay (ARC-917) (ARC-917)
+- fix theme selection navigation and atmospheric backgrounds (ARC-917) (ARC-917)
+- add safety check to game-visibility integration spec cleanup (ARC-917) (ARC-917)
+
+
 ## [1.25.55] - 2026-08-20
 
 ### Fixed

@@ -6,7 +6,7 @@ import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { useSound } from '@/shared/lib/sound';
-import { Modal, CloseButton } from './SharedModal';
+import { CloseButton } from './SharedModal';
 import { VictoryCelebration } from './VictoryCelebration';
 import {
   GameResultStatsGrid,

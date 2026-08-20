@@ -168,6 +168,26 @@ export function CheckersBoard({
                     ) : null}
                   </div>
                 ) : null}
+                {navCol === cols.length - 1 && (
+                  <span
+                    className="absolute right-1 top-0.5 text-[9px] font-bold opacity-60 pointer-events-none"
+                    style={{
+                      color: isDarkSquare ? '#e2e8f0' : '#475569',
+                    }}
+                  >
+                    {8 - row}
+                  </span>
+                )}
+                {navRow === rows.length - 1 && (
+                  <span
+                    className="absolute left-1 bottom-0.5 text-[9px] font-bold opacity-60 pointer-events-none"
+                    style={{
+                      color: isDarkSquare ? '#e2e8f0' : '#475569',
+                    }}
+                  >
+                    {String.fromCharCode(97 + col)}
+                  </span>
+                )}
               </div>
             );
           })}

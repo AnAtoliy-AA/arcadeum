@@ -55,6 +55,7 @@ interface ChessCellProps {
   isMyPiece: boolean;
   canInteract: boolean;
   isLastFile: boolean;
+  isBottomRank: boolean;
   disabled: boolean;
   cellFocusProps: Record<string, unknown>;
   onSquareClick: (file: File, rank: Rank) => void;
@@ -83,6 +84,7 @@ function ChessCell({
   isMyPiece,
   canInteract,
   isLastFile,
+  isBottomRank,
   disabled,
   cellFocusProps,
   onSquareClick,
@@ -187,14 +189,31 @@ function ChessCell({
             right: 3,
             top: 2,
             fontSize: 10,
-            fontWeight: 600,
-            opacity: 0.4,
-            color: '#fff',
+            fontWeight: 700,
+            opacity: 0.6,
+            color: isLight ? '#475569' : '#e2e8f0',
             lineHeight: 1,
             pointerEvents: 'none',
           }}
         >
           {rank}
+        </span>
+      )}
+      {isBottomRank && (
+        <span
+          style={{
+            position: 'absolute',
+            left: 3,
+            bottom: 2,
+            fontSize: 10,
+            fontWeight: 700,
+            opacity: 0.6,
+            color: isLight ? '#475569' : '#e2e8f0',
+            lineHeight: 1,
+            pointerEvents: 'none',
+          }}
+        >
+          {file}
         </span>
       )}
       {symbol && (
@@ -410,6 +429,7 @@ function ChessBoardImpl({
                   isMyPiece={isMyPiece}
                   canInteract={canInteract}
                   isLastFile={isLastFile}
+                  isBottomRank={rows.ranks[rows.ranks.length - 1] === rank}
                   disabled={disabled}
                   cellFocusProps={getCellProps(navRow, navCol)}
                   onSquareClick={onSquareClick}

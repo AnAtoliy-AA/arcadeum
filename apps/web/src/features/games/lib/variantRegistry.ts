@@ -9,6 +9,27 @@ export interface GameDisplayInfo {
   gradient?: string;
 }
 
+const GAME_MODE_TRANSLATION_KEYS: Record<string, Record<string, string>> = {
+  cascade_v1: {
+    classic: 'games.cascade_v1.modes.classic.name',
+    pure: 'games.cascade_v1.modes.pure.name',
+    speed: 'games.cascade_v1.modes.speed.name',
+  },
+  glimworm_v1: {
+    classic: 'games.glimworm_v1.modes.classic.name',
+    battle_royale: 'games.glimworm_v1.modes.battle_royale.name',
+    speed: 'games.glimworm_v1.modes.speed.name',
+  },
+  chess_v1: {
+    standard: 'games.chess_v1.lobby.standard',
+    chess960: 'games.chess_v1.lobby.chess960',
+  },
+  checkers_v1: {
+    standard: 'games.checkers_v1.lobby.standard',
+    giveaway: 'games.checkers_v1.lobby.giveaway',
+  },
+};
+
 export function resolveGameDisplayInfo(
   gameId: string,
   options?: Record<string, unknown>,
@@ -40,17 +61,22 @@ export function resolveGameDisplayInfo(
 
   let variantName: string | undefined;
   if (variantId && variantId !== 'random') {
-    const glimwormMode = GLIMWORM_MODES?.find((m) => m.id === variantId);
-    if (glimwormMode) {
-      variantName = glimwormMode.name;
-      gradient = gradient ?? glimwormMode.gradient;
+    const modeKey = GAME_MODE_TRANSLATION_KEYS[normalizedId]?.[variantId];
+    if (modeKey) {
+      variantName = modeKey;
     } else {
-      const sharedTheme = SHARED_THEMES.find((t) => t.id === variantId);
-      if (sharedTheme) {
-        themeName = themeName ?? sharedTheme.nameKey;
-        gradient = gradient ?? sharedTheme.gradient;
+      const glimwormMode = GLIMWORM_MODES?.find((m) => m.id === variantId);
+      if (glimwormMode) {
+        variantName = glimwormMode.name;
+        gradient = gradient ?? glimwormMode.gradient;
       } else {
-        variantName = variantId;
+        const sharedTheme = SHARED_THEMES.find((t) => t.id === variantId);
+        if (sharedTheme) {
+          themeName = themeName ?? sharedTheme.nameKey;
+          gradient = gradient ?? sharedTheme.gradient;
+        } else {
+          variantName = variantId;
+        }
       }
     }
   }

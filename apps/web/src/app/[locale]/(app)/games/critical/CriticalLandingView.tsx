@@ -3,6 +3,7 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
 import { CriticalCardsVisual } from './CriticalCardsVisual';
 
@@ -133,6 +134,14 @@ export function CriticalLandingView({
     answer: item.answer,
   }));
 
+  const themesList = SHARED_THEMES.filter((t) => t.id !== 'random').map(
+    (t) => ({
+      id: t.id,
+      name: t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/-/g, ' '),
+      description: t.descriptionKey,
+    }),
+  );
+
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
   return (
@@ -172,6 +181,14 @@ export function CriticalLandingView({
         title: landing.howToPlay.title,
         kicker: landing.sections.howToKicker,
         steps: howToSteps,
+      }}
+      themes={{
+        title: 'Custom Card Visual Themes',
+        kicker: 'Visual Styles',
+        subtitle: 'Explore distinct visual aesthetics and card designs.',
+        themes: themesList,
+        baseHref: createRoomHref,
+        createRoomLabel: 'Play Theme',
       }}
       rules={{
         title: 'Core Rules & Bomb Defusal',

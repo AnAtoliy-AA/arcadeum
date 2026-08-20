@@ -92,28 +92,30 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
     };
   } else if (form.gameId === 'chess_v1') {
     options = {
-      variant: form.themeId || 'standard',
+      variant: 'standard',
     };
   } else if (form.gameId === 'sea_battle_v1') {
     options = {
-      variant: form.themeId || 'classic',
+      variant: 'classic',
       gridSize: 10,
       shipCount: 10,
     };
   } else if (form.gameId === 'checkers_v1') {
     options = {
-      variant: form.themeId || 'classic',
+      variant: 'american',
     };
   } else if (form.gameId === 'cat_dash_v1') {
     options = {
-      theme: form.themeId || 'village',
+      variant: 'standard',
     };
   } else {
     options = {};
   }
-  // Ranked flag rides in gameOptions so every consumer (room cards, lobby,
-  // post-match ELO) can read it without a schema change.
-  return { ...options, ranked: form.ranked };
+  return {
+    ...options,
+    theme: form.themeId || 'cyberpunk',
+    ranked: form.ranked,
+  };
 }
 
 export function GameCreateView() {
@@ -126,7 +128,8 @@ export function GameCreateView() {
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
   const urlGameId = parseInitialGameId(searchParams?.get('gameId'));
-  const urlVariant = searchParams?.get('variant') ?? undefined;
+  const urlVariant =
+    searchParams?.get('theme') ?? searchParams?.get('variant') ?? undefined;
 
   const defaultRoomName = useMemo(() => {
     const playerName = snapshot.displayName || snapshot.username || 'Anonymous';
@@ -155,10 +158,11 @@ export function GameCreateView() {
       const params = new URLSearchParams(searchParams?.toString());
       params.set('gameId', next.gameId);
       if (next.themeId) {
-        params.set('variant', next.themeId);
+        params.set('theme', next.themeId);
       } else {
-        params.delete('variant');
+        params.delete('theme');
       }
+      params.delete('variant');
       router.replace(`${routes.games}/create?${params.toString()}`, {
         scroll: false,
       });
@@ -166,13 +170,12 @@ export function GameCreateView() {
     [router, searchParams, routes.games],
   );
 
-  // Sync the URL with the resolved default theme on mount so deep links
-  // like /games/create?gameId=critical_v1 (no variant) land on
-  // /games/create?gameId=critical_v1&variant=<default>. Keeps the
-  // browser address bar honest about what the form is rendering and lets
-  // existing e2e coverage assert `/variant=/` against the new layout.
   useEffect(() => {
-    if (form.themeId && !searchParams?.get('variant')) {
+    if (
+      form.themeId &&
+      !searchParams?.get('theme') &&
+      !searchParams?.get('variant')
+    ) {
       updateUrl({ gameId: form.gameId, themeId: form.themeId });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

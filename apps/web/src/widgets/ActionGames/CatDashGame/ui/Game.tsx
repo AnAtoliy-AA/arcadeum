@@ -205,6 +205,7 @@ function CatDashGameImpl({
   return (
     <CatDashThemeProvider variant={options.theme as CatDashVariant}>
       <GameWidgetContainer
+        theme={options.theme}
         board={board}
         modals={modals}
         variant={options.theme}

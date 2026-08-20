@@ -81,6 +81,7 @@ export interface TicTacToeTeam {
 
 export interface TicTacToeOptions {
   variant: TicTacToeVariant;
+  theme?: string;
   boardSize: BoardSize;
   teamMode: boolean;
   expansionMargin: InfinityMargin;

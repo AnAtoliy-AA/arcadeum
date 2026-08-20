@@ -107,7 +107,10 @@ function CheckersGameImpl({
   });
 
   const variant = useMemo(
-    () => (room?.gameOptions as Record<string, string>)?.variant ?? 'classic',
+    () =>
+      (room?.gameOptions as Record<string, string>)?.theme ??
+      (room?.gameOptions as Record<string, string>)?.variant ??
+      'cyberpunk',
     [room?.gameOptions],
   );
 
@@ -354,6 +357,7 @@ function CheckersGameImpl({
   return (
     <CheckersThemeProvider variant={variant}>
       <GameWidgetContainer
+        theme={variant}
         board={board}
         modals={modals}
         variant={variant}

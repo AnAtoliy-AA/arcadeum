@@ -25,4 +25,27 @@ test.describe('Themes and Variants separation', () => {
     );
     await expect(quickplayHuman).toBeVisible();
   });
+
+  test('clicking theme card on landing navigates to create room with theme param', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/games/tic-tac-toe');
+    const themeLink = page.locator('a[href*="theme="]').first();
+    await expect(themeLink).toBeVisible();
+    const href = await themeLink.getAttribute('href');
+    expect(href).toContain('gameId=tic_tac_toe_v1');
+    expect(href).toContain('theme=');
+    expect(href).not.toContain('??');
+  });
+
+  test('chess landing renders visual theme showcase with links', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/games/chess');
+    const themeLink = page.locator('a[href*="theme="]').first();
+    await expect(themeLink).toBeVisible();
+    const href = await themeLink.getAttribute('href');
+    expect(href).toContain('gameId=chess_v1');
+    expect(href).toContain('theme=');
+  });
 });

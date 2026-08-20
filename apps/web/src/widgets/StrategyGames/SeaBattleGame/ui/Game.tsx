@@ -269,7 +269,8 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     resolveActorColor,
   );
 
-  const cardVariant = (room?.gameOptions?.variant ||
+  const cardVariant = (room?.gameOptions?.theme ||
+    room?.gameOptions?.variant ||
     room?.gameOptions?.cardVariant) as string | undefined;
 
   const currentVariant = useMemo(
@@ -398,6 +399,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   return (
     <SeaBattleThemeProvider variant={cardVariant}>
       <GameWidgetContainer
+        theme={cardVariant}
         headerProps={headerProps}
         isGameOver={isGameOver}
         a11yAnnouncement={turnStatus.text}

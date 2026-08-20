@@ -65,6 +65,7 @@ export interface CascadeCard {
 
 export interface CascadeOptions {
   variant: CascadeVariant;
+  theme?: string;
   mode: CascadeMode;
   stackingEnabled: boolean;
   /**

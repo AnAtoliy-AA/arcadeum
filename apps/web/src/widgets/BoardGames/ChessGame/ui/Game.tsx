@@ -408,6 +408,7 @@ function ChessGameImpl({
     </>
   );
   const themeVariant =
+    (room?.gameOptions?.theme as string | undefined) ??
     (room?.gameOptions?.cardVariant as string | undefined) ??
     (room?.gameOptions?.variant as string | undefined) ??
     'cyberpunk';
@@ -415,6 +416,7 @@ function ChessGameImpl({
   return (
     <ChessThemeProvider variant={themeVariant}>
       <GameWidgetContainer
+        theme={themeVariant}
         board={board}
         modals={modals}
         isMyTurn={displayMyTurn}

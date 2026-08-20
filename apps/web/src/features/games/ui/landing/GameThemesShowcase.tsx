@@ -152,9 +152,10 @@ export function GameThemesShowcase({
 
       <div className="box-border grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
         {themes.map((theme) => {
+          const separator = baseHref?.includes('?') ? '&' : '?';
           const href =
             baseHref && !comingSoon
-              ? `${baseHref}?theme=${theme.id}`
+              ? `${baseHref}${separator}theme=${theme.id}`
               : undefined;
           const visual = getThemeVisual(theme.id);
 

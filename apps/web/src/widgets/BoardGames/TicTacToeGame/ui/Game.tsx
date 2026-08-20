@@ -159,12 +159,14 @@ function TicTacToeGameImpl({
 
   if (!room) return null;
 
+  const visualTheme = options.theme ?? options.variant ?? 'cyberpunk';
+
   // Lobby renders OUTSIDE GameWidgetContainer so it gets full page height
   // (sea-battle does the same). The container's `board` slot is sized for
   // the in-game grid and squeezes anything else.
   if (isLobby) {
     return (
-      <TicTacToeThemeProvider variant={options.variant}>
+      <TicTacToeThemeProvider variant={visualTheme}>
         <TicTacToeLobby
           room={room}
           userId={currentUserId ?? ''}
@@ -238,8 +240,9 @@ function TicTacToeGameImpl({
   );
 
   return (
-    <TicTacToeThemeProvider variant={options.variant}>
+    <TicTacToeThemeProvider variant={visualTheme}>
       <GameWidgetContainer
+        theme={visualTheme}
         board={board}
         modals={modals}
         variant={options.variant}

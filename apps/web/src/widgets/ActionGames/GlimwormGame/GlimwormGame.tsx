@@ -100,6 +100,7 @@ export default function GlimwormGame(
   return (
     <GlimwormThemeProvider variant={themeVariant}>
       <GameWidgetContainer
+        theme={themeVariant}
         isMyTurn={false}
         isGameOver={isEnded}
         headerProps={{

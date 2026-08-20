@@ -3,6 +3,7 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
 import { GlimwormVisual } from './GlimwormVisual';
 
@@ -133,6 +134,14 @@ export function GlimwormLandingView({
     answer: item.answer,
   }));
 
+  const themesList = SHARED_THEMES.filter((t) => t.id !== 'random').map(
+    (t) => ({
+      id: t.id,
+      name: t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/-/g, ' '),
+      description: t.descriptionKey,
+    }),
+  );
+
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
   return (
@@ -172,6 +181,14 @@ export function GlimwormLandingView({
         title: landing.howToPlay.title,
         kicker: landing.sections.howToKicker,
         steps: howToSteps,
+      }}
+      themes={{
+        title: 'Glow Arena Visual Themes',
+        kicker: 'Custom Visuals',
+        subtitle: 'Customize the arena backdrop and aesthetic vibes.',
+        themes: themesList,
+        baseHref: createRoomHref,
+        createRoomLabel: 'Play Theme',
       }}
       rules={{
         title: 'Arena Mechanics & Physics',

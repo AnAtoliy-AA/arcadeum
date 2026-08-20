@@ -3,6 +3,7 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
 import { ChessBoardVisual } from './ChessBoardVisual';
 
@@ -113,6 +114,14 @@ export default function ChessLanding({
     };
   });
 
+  const themesList = SHARED_THEMES.filter((t) => t.id !== 'random').map(
+    (t) => ({
+      id: t.id,
+      name: t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/-/g, ' '),
+      description: t.descriptionKey,
+    }),
+  );
+
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
   return (
@@ -155,6 +164,14 @@ export default function ChessLanding({
         intro:
           'Start playing in seconds without installing apps or signing up.',
         steps,
+      }}
+      themes={{
+        title: 'Custom Chess Visuals',
+        kicker: 'Customization',
+        subtitle: 'Choose your board aesthetics and atmosphere.',
+        themes: themesList,
+        baseHref: createRoomHref,
+        createRoomLabel: 'Play Theme',
       }}
       rules={
         rulesList.length > 0

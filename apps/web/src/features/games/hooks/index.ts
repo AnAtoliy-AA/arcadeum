@@ -10,6 +10,7 @@ export { useFullscreen } from './useFullscreen';
 export { useAutoExitFullscreen } from './useAutoExitFullscreen';
 export { useGameRoomActions } from './useGameRoomActions';
 export { useGameResultModal } from './useGameResultModal';
+export { useGameResult } from './useGameResult';
 export type {
   GameResult,
   SharedResult,

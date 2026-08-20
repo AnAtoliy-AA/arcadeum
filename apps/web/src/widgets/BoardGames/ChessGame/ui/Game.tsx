@@ -11,11 +11,9 @@ import {
   useRematch,
   useGameRoomActions,
   useGameResultModal,
+  useGameResult,
 } from '@/features/games/hooks';
-import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
-import { ChessGameResultModal } from './ChessGameResultModal';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { ChessGameProps, ChessClientState } from '../types';
@@ -32,6 +30,7 @@ import { useChessCoach } from '../hooks/useChessCoach';
 import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoardPanel } from './ChessBoardPanel';
+import { ChessGameResultModal } from './ChessGameResultModal';
 import { PromotionModal } from './PromotionModal';
 import { RulesModal } from './RulesModal';
 
@@ -198,37 +197,33 @@ function ChessGameImpl({
     },
     [roomId, accessToken],
   );
-  const result = computeGameResult(isGameOver, currentUserId, {
-    winnerId: displaySnapshot?.players.find(
+  const winnerId =
+    displaySnapshot?.players.find(
       (p) => p.color === displaySnapshot.winnerColor,
-    )?.playerId,
-    isDraw:
-      displaySnapshot?.isStalemate ||
-      displaySnapshot?.isDrawByRepetition ||
-      displaySnapshot?.isDrawByFiftyMoveRule ||
-      displaySnapshot?.isInsufficientMaterial ||
-      displaySnapshot?.isDrawByAgreement,
-    backendResult: (session?.state as Record<string, unknown>)?.gameResult as
-      | import('@/features/games/lib/computeGameResult').BackendGameResult
-      | undefined,
+    )?.playerId ?? null;
+  const isDraw = !!(
+    displaySnapshot?.isStalemate ||
+    displaySnapshot?.isDrawByRepetition ||
+    displaySnapshot?.isDrawByFiftyMoveRule ||
+    displaySnapshot?.isInsufficientMaterial ||
+    displaySnapshot?.isDrawByAgreement
+  );
+  const { result, resultMessages } = useGameResult({
+    session,
+    isGameOver,
+    currentUserId,
+    gameId: 'chess_v1',
+    gameOverKey: 'games.chess_v1.gameOver',
+    winnerId,
+    isDraw,
+    t,
   });
-  useRecordGameResult(result, 'chess_v1', session?.id);
-  const { showResultModal, sharedResult, resultMessages, dismiss } =
-    useGameResultModal(
-      session,
-      result,
-      result
-        ? {
-            title: t(
-              `games.chess_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-            message: t(
-              `games.chess_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-          }
-        : undefined,
-      isGameOver,
-    );
+  const { showResultModal, sharedResult, dismiss } = useGameResultModal(
+    session,
+    result,
+    resultMessages,
+    isGameOver,
+  );
 
   const isFlipped = myColor === 'black';
   const lastMove = useMemo(() => {

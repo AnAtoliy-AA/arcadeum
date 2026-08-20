@@ -81,21 +81,24 @@ export function CascadeBoard({
     [launchFly],
   );
 
-  const handleCardClick = (card: CascadeCard) => {
-    if (!myTurn || disabled) return;
-    // Unplayable card on your turn: shake it instead of a dead click.
-    if (!playableIds.has(card.id)) {
-      setShakeId(card.id);
-      window.setTimeout(() => setShakeId(null), 400);
-      return;
-    }
-    if (card.kind === 'WILD' || card.kind === 'WILD_DRAW_FOUR') {
-      setPendingWildCard(card.id);
-      return;
-    }
-    flyToDiscard(card.id, card);
-    onPlayCard(card.id);
-  };
+  const handleCardClick = useCallback(
+    (card: CascadeCard) => {
+      if (!myTurn || disabled) return;
+      // Unplayable card on your turn: shake it instead of a dead click.
+      if (!playableIds.has(card.id)) {
+        setShakeId(card.id);
+        window.setTimeout(() => setShakeId(null), 400);
+        return;
+      }
+      if (card.kind === 'WILD' || card.kind === 'WILD_DRAW_FOUR') {
+        setPendingWildCard(card.id);
+        return;
+      }
+      flyToDiscard(card.id, card);
+      onPlayCard(card.id);
+    },
+    [myTurn, disabled, playableIds, flyToDiscard, onPlayCard],
+  );
 
   const handlePickColor = (color: ActiveColor) => {
     if (!pendingWildCard) return;
@@ -286,7 +289,7 @@ export function CascadeBoard({
                   playable={isPlayableCard}
                   disabled={!myTurn || disabled}
                   dimmed={myTurn && !disabled && !isPlayableCard}
-                  onClick={() => handleCardClick(c)}
+                  onClick={handleCardClick}
                 />
               </div>
             );

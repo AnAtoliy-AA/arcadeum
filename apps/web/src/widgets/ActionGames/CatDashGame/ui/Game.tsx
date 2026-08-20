@@ -6,11 +6,10 @@ import {
   useGameChatIntegration,
   useGameChatSend,
   useGameEndState,
+  useGameResult,
   useGameRoomActions,
 } from '@/features/games/hooks';
-import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CatDashGameProps } from '../types';
 import { useCatDashState } from '../hooks/useCatDashState';
@@ -58,12 +57,7 @@ function CatDashGameImpl({
       initialSession,
     });
 
-  const {
-    startSession,
-    rollDice,
-    useAbility: _useAbility,
-    choosePath: _choosePath,
-  } = useCatDashActions({
+  const { startSession, rollDice } = useCatDashActions({
     roomId,
     userId: currentUserId,
   });
@@ -81,14 +75,15 @@ function CatDashGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'cat_dash_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
-  const result = computeGameResult(isGameOver, currentUserId, {
+  const { result, resultMessages } = useGameResult({
+    session,
+    isGameOver,
+    currentUserId,
+    gameId: 'cat_dash_v1',
+    gameOverKey: 'games.cat_dash_v1.gameOver',
     winnerId: snapshot?.winner,
-    backendResult: (session?.state as Record<string, unknown>)?.gameResult as
-      | import('@/features/games/lib/computeGameResult').BackendGameResult
-      | undefined,
+    t,
   });
-
-  useRecordGameResult(result, 'cat_dash_v1', session?.id);
 
   const gameEnd = useGameEndState({
     roomId,
@@ -96,16 +91,7 @@ function CatDashGameImpl({
     session,
     isGameOver,
     result,
-    resultMessages: result
-      ? {
-          title: t(
-            `games.cat_dash_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}` as never,
-          ),
-          message: t(
-            `games.cat_dash_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}` as never,
-          ),
-        }
-      : undefined,
+    resultMessages,
   });
 
   const options = useMemo(

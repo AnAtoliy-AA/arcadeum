@@ -43,8 +43,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   accessToken,
   showRulesOpen,
   onShowRulesClose,
-  isFullscreen: _isFullscreen,
-  toggleFullscreen: _toggleFullscreen,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
 

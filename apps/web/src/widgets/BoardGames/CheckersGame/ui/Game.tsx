@@ -12,10 +12,10 @@ import {
   useRematch,
   useGameRoomActions,
   useGameResultModal,
+  useGameResult,
 } from '@/features/games/hooks';
 import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { Board, CheckersGameProps, MoveStep, RuleVariant } from '../types';
@@ -100,32 +100,23 @@ function CheckersGameImpl({
     [roomId, accessToken],
   );
 
-  const result = computeGameResult(isGameOver, currentUserId, {
+  const { result, resultMessages } = useGameResult({
+    session,
+    isGameOver,
+    currentUserId,
+    gameId: 'checkers_v1',
+    gameOverKey: 'games.checkers_v1.gameOver',
     winnerId: snapshot?.winnerId,
     isDraw: snapshot?.isDraw,
-    backendResult: (session?.state as Record<string, unknown>)?.gameResult as
-      | import('@/features/games/lib/computeGameResult').BackendGameResult
-      | undefined,
+    t,
   });
 
-  useRecordGameResult(result, 'checkers_v1', session?.id);
-
-  const { showResultModal, sharedResult, resultMessages, dismiss } =
-    useGameResultModal(
-      session,
-      result,
-      result
-        ? {
-            title: t(
-              `games.checkers_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-            message: t(
-              `games.checkers_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-            ),
-          }
-        : undefined,
-      isGameOver,
-    );
+  const { showResultModal, sharedResult, dismiss } = useGameResultModal(
+    session,
+    result,
+    resultMessages,
+    isGameOver,
+  );
 
   const variant = useMemo(
     () => (room?.gameOptions as Record<string, string>)?.variant ?? 'classic',

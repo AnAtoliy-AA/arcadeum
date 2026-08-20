@@ -6,11 +6,10 @@ import {
   useGameChatIntegration,
   useGameChatSend,
   useGameEndState,
+  useGameResult,
   useGameRoomActions,
   usePendingStart,
 } from '@/features/games/hooks';
-import { computeGameResult } from '@/features/games/lib/computeGameResult';
-import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
@@ -103,14 +102,15 @@ function CascadeGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'cascade_v1');
   useGameChatIntegration(snapshot?.logs, sendChat);
 
-  const result = computeGameResult(isGameOver, currentUserId, {
+  const { result, resultMessages } = useGameResult({
+    session,
+    isGameOver,
+    currentUserId,
+    gameId: 'cascade_v1',
+    gameOverKey: 'games.cascade_v1.gameOver',
     winnerId: snapshot?.winnerId,
-    backendResult: (session?.state as Record<string, unknown>)?.gameResult as
-      | import('@/features/games/lib/computeGameResult').BackendGameResult
-      | undefined,
+    t,
   });
-
-  useRecordGameResult(result, 'cascade_v1', session?.id);
 
   const gameEnd = useGameEndState({
     roomId,
@@ -118,16 +118,7 @@ function CascadeGameImpl({
     session,
     isGameOver,
     result,
-    resultMessages: result
-      ? {
-          title: t(
-            `games.cascade_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-          ),
-          message: t(
-            `games.cascade_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-          ),
-        }
-      : undefined,
+    resultMessages,
   });
 
   const options = useMemo(

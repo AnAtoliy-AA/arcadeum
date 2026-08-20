@@ -20,7 +20,7 @@ interface CardProps {
    * player's turn so a click can trigger the "illegal move" shake.
    */
   dimmed?: boolean;
-  onClick?: () => void;
+  onClick?: (card: CascadeCard) => void;
   size?: 'sm' | 'md' | 'lg';
   ariaLabel?: string;
 }
@@ -76,7 +76,7 @@ function CardImpl({
   return (
     <button
       type="button"
-      onClick={isClickable ? onClick : undefined}
+      onClick={isClickable ? () => onClick(card) : undefined}
       disabled={disabled || !isClickable}
       aria-label={resolvedLabel}
       aria-pressed={selected || undefined}

@@ -6,11 +6,10 @@ import {
   useGameChatIntegration,
   useGameChatSend,
   useGameEndState,
+  useGameResult,
   useGameRoomActions,
 } from '@/features/games/hooks';
-import { computeGameResult } from '@/features/games/lib/computeGameResult';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useGameChatStore } from '@/widgets/GameChat';
 import type { TicTacToeGameProps } from '../types';
@@ -109,15 +108,16 @@ function TicTacToeGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'tic_tac_toe_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
-  const result = computeGameResult(isGameOver, currentUserId, {
+  const { result, resultMessages } = useGameResult({
+    session,
+    isGameOver,
+    currentUserId,
+    gameId: 'tic_tac_toe_v1',
+    gameOverKey: 'games.tic_tac_toe_v1.gameOver',
     winnerId: snapshot?.winnerId,
     isDraw: snapshot?.isDraw,
-    backendResult: (session?.state as Record<string, unknown>)?.gameResult as
-      | import('@/features/games/lib/computeGameResult').BackendGameResult
-      | undefined,
+    t,
   });
-
-  useRecordGameResult(result, 'tic_tac_toe_v1', session?.id);
 
   const gameEnd = useGameEndState({
     roomId,
@@ -125,16 +125,7 @@ function TicTacToeGameImpl({
     session,
     isGameOver,
     result,
-    resultMessages: result
-      ? {
-          title: t(
-            `games.tic_tac_toe_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-          ),
-          message: t(
-            `games.tic_tac_toe_v1.gameOver.messages.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
-          ),
-        }
-      : undefined,
+    resultMessages,
   });
 
   const options = useMemo(

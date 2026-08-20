@@ -43,13 +43,6 @@ export interface UseGameActionsReturn {
   playDefuse: (position: number) => void;
   commitAlterFuture: (newOrder: string[]) => void;
 
-  // Texas Hold'em actions
-  startHoldem: (startingChips?: number) => void;
-  holdemAction: (
-    action: 'fold' | 'check' | 'call' | 'raise',
-    raiseAmount?: number,
-  ) => void;
-
   // Common actions
   postHistoryNote: (message: string, scope: ChatScope) => void;
 }
@@ -89,12 +82,6 @@ export function useGameActions(
       gameSocket.on('games.session.cat_combo.played', handleActionComplete);
       gameSocket.on('games.session.defuse.played', handleActionComplete);
       gameSocket.on('games.session.nope.played', handleActionComplete);
-    } else if (gameType === 'texas_holdem_v1') {
-      gameSocket.on('games.session.holdem_started', handleActionComplete);
-      gameSocket.on(
-        'games.session.holdem_action.performed',
-        handleActionComplete,
-      );
     }
 
     return () => {
@@ -109,12 +96,6 @@ export function useGameActions(
         gameSocket.off('games.session.cat_combo.played', handleActionComplete);
         gameSocket.off('games.session.defuse.played', handleActionComplete);
         gameSocket.off('games.session.nope.played', handleActionComplete);
-      } else if (gameType === 'texas_holdem_v1') {
-        gameSocket.off('games.session.holdem_started', handleActionComplete);
-        gameSocket.off(
-          'games.session.holdem_action.performed',
-          handleActionComplete,
-        );
       }
     };
   }, [gameType]);
@@ -245,34 +226,6 @@ export function useGameActions(
     [roomId, userId, setActionBusy],
   );
 
-  // Texas Hold'em actions
-  const startHoldem = useCallback(
-    (startingChips: number = 1000) => {
-      if (!userId) return;
-      setActionBusy?.('start');
-      gameSocket.emit('games.session.start_holdem', {
-        roomId,
-        userId,
-        engine: 'texas_holdem_v1',
-        startingChips,
-      });
-    },
-    [roomId, userId, setActionBusy],
-  );
-
-  const holdemAction = useCallback(
-    (action: 'fold' | 'check' | 'call' | 'raise', raiseAmount?: number) => {
-      if (!userId) return;
-      gameSocket.emit('games.session.holdem_action', {
-        roomId,
-        userId,
-        action,
-        raiseAmount,
-      });
-    },
-    [roomId, userId],
-  );
-
   // Common actions
   const postHistoryNote = useCallback(
     (message: string, scope: ChatScope) => {
@@ -300,10 +253,6 @@ export function useGameActions(
     playEventCombo,
     playDefuse,
     commitAlterFuture,
-
-    // Texas Hold'em
-    startHoldem,
-    holdemAction,
 
     // Common
     postHistoryNote,

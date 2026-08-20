@@ -1,3 +1,5 @@
+import { themesRu } from './themes';
+
 export const ruMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -335,6 +337,16 @@ export const ruMessages = {
     title: '💤 Вы неактивны',
     message: 'Пошевелите мышкой или нажмите клавишу, чтобы продолжить',
   },
+  names: {
+    chess: 'Шахматы',
+    checkers: 'Шашки',
+    ticTacToe: 'Крестики-Нолики',
+    critical: 'Взрывные котята',
+    cascade: 'Каскад',
+    catDash: 'Кот Рывок',
+    seaBattle: 'Морской бой',
+    glimworm: 'Глимворм',
+  },
   table: {
     controlPanel: {
       spectating: 'Наблюдение',
@@ -370,16 +382,6 @@ export const ruMessages = {
       turns: 'Ходы',
       score: 'Счёт',
       accuracy: 'Точность',
-    },
-    names: {
-      chess: 'Шахматы',
-      checkers: 'Шашки',
-      ticTacToe: 'Крестики-Нолики',
-      critical: 'Взрывные котята',
-      cascade: 'Каскад',
-      catDash: 'Кот Рывок',
-      seaBattle: 'Морской бой',
-      glimworm: 'Глимворм',
     },
     rematch: {
       title: 'Сыграть еще?',
@@ -463,58 +465,5 @@ export const ruMessages = {
     cycleHint: 'Нажмите, чтобы сменить тему',
     cycleAriaLabel: 'Сменить тему превью, сейчас {{variant}}',
   },
-  themes: {
-    cyberpunk: {
-      name: 'Киберпанк',
-      description: 'Неоновое антиутопическое будущее',
-    },
-    horror: {
-      name: 'Ужасы',
-      description: 'Тёмная и пугающая атмосфера',
-    },
-    adventure: {
-      name: 'Приключения',
-      description: 'Эпические квесты и исследования',
-    },
-    fantasy: {
-      name: 'Фэнтези',
-      description: 'Волшебные миры и мифические существа',
-    },
-    western: {
-      name: 'Вестерн',
-      description: 'Дикий Запад',
-    },
-    galaxy: {
-      name: 'Галактика',
-      description: 'Исследование дальнего космоса',
-    },
-    egypt: {
-      name: 'Египет',
-      description: 'Загадки Древнего Египта',
-    },
-    steampunk: {
-      name: 'Стимпанк',
-      description: 'Викторианские механические чудеса',
-    },
-    zen: {
-      name: 'Дзен',
-      description: 'Умиротворённая японская эстетика',
-    },
-    underwater: {
-      name: 'Подводный',
-      description: 'Глубины океана',
-    },
-    crime: {
-      name: 'Криминал',
-      description: 'Нуарный преступный мир',
-    },
-    'high-altitude-hike': {
-      name: 'Высокогорье',
-      description: 'Экспедиция на вершину горы',
-    },
-    random: {
-      name: 'Случайный',
-      description: 'Сюрприз-тема в каждой игре',
-    },
-  },
+  themes: themesRu,
 };

@@ -179,8 +179,14 @@ export function GameResultModal({
             <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-slate-300">
               <span>{resolvedTheme.emoji}</span>
               <span>
-                {t(`games.themes.${resolvedTheme.id}.name` as TranslationKey) ||
-                  resolvedTheme.id.replace(/-/g, ' ')}
+                {(() => {
+                  const rawTheme = t(
+                    `games.themes.${resolvedTheme.id}.name` as TranslationKey,
+                  );
+                  return rawTheme && !rawTheme.startsWith('games.themes.')
+                    ? rawTheme
+                    : resolvedTheme.id.replace(/-/g, ' ');
+                })()}
               </span>
             </div>
           </div>

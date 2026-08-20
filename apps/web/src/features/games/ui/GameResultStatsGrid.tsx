@@ -23,6 +23,16 @@ interface GameResultStatsGridProps {
   className?: string;
 }
 
+function getLabel(
+  t: ((key: TranslationKey) => string) | undefined,
+  key: TranslationKey,
+  fallback: string,
+): string {
+  if (!t) return fallback;
+  const translated = t(key);
+  return translated && translated !== key ? translated : fallback;
+}
+
 export function GameResultStatsGrid({
   stats,
   t,
@@ -33,9 +43,11 @@ export function GameResultStatsGrid({
   if (stats.duration !== undefined) {
     items.push({
       id: 'duration',
-      label: t
-        ? t('games.table.stats.duration' as TranslationKey)
-        : 'Duration',
+      label: getLabel(
+        t,
+        'games.table.stats.duration' as TranslationKey,
+        'Duration',
+      ),
       value:
         typeof stats.duration === 'number'
           ? `${Math.floor(stats.duration / 60)}:${String(stats.duration % 60).padStart(2, '0')}`
@@ -46,9 +58,11 @@ export function GameResultStatsGrid({
   if (stats.turns !== undefined) {
     items.push({
       id: 'turns',
-      label: t
-        ? t('games.table.stats.turns' as TranslationKey)
-        : 'Turns / Moves',
+      label: getLabel(
+        t,
+        'games.table.stats.turns' as TranslationKey,
+        'Turns / Moves',
+      ),
       value: stats.turns,
     });
   }
@@ -56,7 +70,7 @@ export function GameResultStatsGrid({
   if (stats.score !== undefined) {
     items.push({
       id: 'score',
-      label: t ? t('games.table.stats.score' as TranslationKey) : 'Score',
+      label: getLabel(t, 'games.table.stats.score' as TranslationKey, 'Score'),
       value: stats.score,
     });
   }
@@ -64,9 +78,11 @@ export function GameResultStatsGrid({
   if (stats.accuracy !== undefined) {
     items.push({
       id: 'accuracy',
-      label: t
-        ? t('games.table.stats.accuracy' as TranslationKey)
-        : 'Accuracy',
+      label: getLabel(
+        t,
+        'games.table.stats.accuracy' as TranslationKey,
+        'Accuracy',
+      ),
       value: stats.accuracy,
     });
   }

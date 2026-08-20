@@ -1,3 +1,5 @@
+import { themesFr } from './themes';
+
 export const frMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -346,6 +348,16 @@ export const frMessages = {
     title: '💤 Vous êtes inactif',
     message: 'Bougez votre souris ou appuyez sur une touche pour reprendre',
   },
+  names: {
+    chess: 'Échecs',
+    checkers: 'Dames',
+    ticTacToe: 'Morpion',
+    critical: 'Chatons Explosifs',
+    cascade: 'Cascade',
+    catDash: 'Cat Dash',
+    seaBattle: 'Bataille Navale',
+    glimworm: 'Glimworm',
+  },
   table: {
     controlPanel: {
       spectating: 'Spectateur',
@@ -381,16 +393,6 @@ export const frMessages = {
       turns: 'Tours / Coups',
       score: 'Score',
       accuracy: 'Précision',
-    },
-    names: {
-      chess: 'Échecs',
-      checkers: 'Dames',
-      ticTacToe: 'Morpion',
-      critical: 'Chatons Explosifs',
-      cascade: 'Cascade',
-      catDash: 'Cat Dash',
-      seaBattle: 'Bataille Navale',
-      glimworm: 'Glimworm',
     },
     rematch: {
       title: 'Rejouer ?',
@@ -473,58 +475,5 @@ export const frMessages = {
     cycleHint: 'Cliquez pour changer le thème',
     cycleAriaLabel: 'Changer le thème de l’aperçu, actuellement {{variant}}',
   },
-  themes: {
-    cyberpunk: {
-      name: 'Cyberpunk',
-      description: 'Futur dystopique illuminé au néon',
-    },
-    horror: {
-      name: 'Horreur',
-      description: 'Atmosphère sombre et terrifiante',
-    },
-    adventure: {
-      name: 'Aventure',
-      description: 'Quêtes épiques et exploration',
-    },
-    fantasy: {
-      name: 'Fantastique',
-      description: 'Royaumes magiques et créatures mythiques',
-    },
-    western: {
-      name: 'Western',
-      description: 'La frontière du Far West',
-    },
-    galaxy: {
-      name: 'Galaxie',
-      description: 'Exploration de l’espace lointain',
-    },
-    egypt: {
-      name: 'Égypte',
-      description: 'Mystères de l’Égypte ancienne',
-    },
-    steampunk: {
-      name: 'Steampunk',
-      description: 'Merveilles mécaniques victoriennes',
-    },
-    zen: {
-      name: 'Zen',
-      description: 'Esthétique japonaise paisible',
-    },
-    underwater: {
-      name: 'Sous-marin',
-      description: 'Profondeurs de l’océan',
-    },
-    crime: {
-      name: 'Crime',
-      description: 'Milieu détective noir',
-    },
-    'high-altitude-hike': {
-      name: 'Haute altitude',
-      description: 'Expédition au sommet',
-    },
-    random: {
-      name: 'Aléatoire',
-      description: 'Thème surprise à chaque partie',
-    },
-  },
+  themes: themesFr,
 };

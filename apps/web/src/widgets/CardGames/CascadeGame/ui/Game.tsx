@@ -199,7 +199,10 @@ function CascadeGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
-        gameName={t('games.names.cascade' as TranslationKey) || 'Cascade'}
+        gameName={(() => {
+          const raw = t('games.names.cascade' as TranslationKey);
+          return raw && raw !== 'games.names.cascade' ? raw : 'Cascade';
+        })()}
         theme={visualTheme}
         t={t}
       />

@@ -41,11 +41,15 @@ export function ChessGameResultModal({
         }
       : undefined);
 
+  const rawName = t('games.names.chess' as TranslationKey);
+  const resolvedGameName =
+    rawName && rawName !== 'games.names.chess' ? rawName : 'Chess';
+
   return (
     <GameResultModal
       isOpen={isOpen}
       result={result}
-      gameName={t('games.names.chess' as TranslationKey) || 'Chess'}
+      gameName={resolvedGameName}
       onClose={onClose}
       onRematch={onRematch}
       rematchLoading={rematchLoading}

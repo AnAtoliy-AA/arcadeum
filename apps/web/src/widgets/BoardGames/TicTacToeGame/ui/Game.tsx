@@ -231,7 +231,10 @@ function TicTacToeGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
-        gameName={t('games.names.ticTacToe' as TranslationKey) || 'Tic-Tac-Toe'}
+        gameName={(() => {
+          const raw = t('games.names.ticTacToe' as TranslationKey);
+          return raw && raw !== 'games.names.ticTacToe' ? raw : 'Tic-Tac-Toe';
+        })()}
         theme={visualTheme}
         t={t}
       />

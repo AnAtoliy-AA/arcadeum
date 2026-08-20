@@ -89,7 +89,10 @@ export function GlimwormResultOverlay({
     <GameResultModal
       isOpen={isOpen}
       result={resultKind}
-      gameName={t('games.names.glimworm' as TranslationKey) || 'Glimworm'}
+      gameName={(() => {
+        const raw = t('games.names.glimworm' as TranslationKey);
+        return raw && raw !== 'games.names.glimworm' ? raw : 'Glimworm';
+      })()}
       onClose={() => {
         setIsOpen(false);
         onLobby?.();

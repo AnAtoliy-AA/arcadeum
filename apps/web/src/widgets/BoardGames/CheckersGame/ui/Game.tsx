@@ -348,7 +348,10 @@ function CheckersGameImpl({
         gameEnd={gameEnd}
         players={players}
         currentUserId={currentUserId}
-        gameName={t('games.names.checkers' as TranslationKey) || 'Checkers'}
+        gameName={(() => {
+          const raw = t('games.names.checkers' as TranslationKey);
+          return raw && raw !== 'games.names.checkers' ? raw : 'Checkers';
+        })()}
         theme={variant}
         t={t}
       />

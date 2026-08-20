@@ -62,7 +62,10 @@ export function SeaBattleModals({
         gameEnd={gameEnd}
         players={players}
         currentUserId={currentUserId}
-        gameName={t('games.names.seaBattle' as TranslationKey) || 'Sea Battle'}
+        gameName={(() => {
+          const raw = t('games.names.seaBattle' as TranslationKey);
+          return raw && raw !== 'games.names.seaBattle' ? raw : 'Sea Battle';
+        })()}
         cardVariant={cardVariant}
         theme={cardVariant}
         t={t}

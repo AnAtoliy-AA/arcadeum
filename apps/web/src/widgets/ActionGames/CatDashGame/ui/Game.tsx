@@ -193,7 +193,10 @@ function CatDashGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
-        gameName={t('games.names.catDash' as TranslationKey) || 'Cat Dash'}
+        gameName={(() => {
+          const raw = t('games.names.catDash' as TranslationKey);
+          return raw && raw !== 'games.names.catDash' ? raw : 'Cat Dash';
+        })()}
         theme={options.theme}
         t={t}
       />

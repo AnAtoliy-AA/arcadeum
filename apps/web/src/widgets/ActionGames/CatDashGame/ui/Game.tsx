@@ -10,7 +10,7 @@ import {
   useGameRoomActions,
 } from '@/features/games/hooks';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
 import type { CatDashGameProps } from '../types';
 import { useCatDashState } from '../hooks/useCatDashState';
 import { useCatDashActions } from '../hooks/useCatDashActions';
@@ -193,6 +193,11 @@ function CatDashGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
+        gameName={(() => {
+          const raw = t('games.names.catDash' as TranslationKey);
+          return raw && raw !== 'games.names.catDash' ? raw : 'Cat Dash';
+        })()}
+        theme={options.theme}
         t={t}
       />
       <CatDashRulesModal

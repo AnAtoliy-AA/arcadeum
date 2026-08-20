@@ -10,7 +10,7 @@ import {
   useGameRoomActions,
   usePendingStart,
 } from '@/features/games/hooks';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
 import { useCascadeActions } from '../hooks/useCascadeActions';
@@ -191,12 +191,19 @@ function CascadeGameImpl({
     </div>
   );
 
+  const visualTheme = options.theme ?? options.variant ?? 'cyberpunk';
+
   const modals = (
     <>
       <GameEndModals
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
+        gameName={(() => {
+          const raw = t('games.names.cascade' as TranslationKey);
+          return raw && raw !== 'games.names.cascade' ? raw : 'Cascade';
+        })()}
+        theme={visualTheme}
         t={t}
       />
       <RulesModal
@@ -206,8 +213,6 @@ function CascadeGameImpl({
       />
     </>
   );
-
-  const visualTheme = options.theme ?? options.variant ?? 'cyberpunk';
 
   return (
     <CascadeThemeProvider variant={visualTheme}>

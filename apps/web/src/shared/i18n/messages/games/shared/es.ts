@@ -1,3 +1,5 @@
+import { themesEs } from './themes';
+
 export const esMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -343,6 +345,16 @@ export const esMessages = {
     title: '💤 Estás inactivo',
     message: 'Mueve el ratón o pulsa una tecla para continuar',
   },
+  names: {
+    chess: 'Ajedrez',
+    checkers: 'Damas',
+    ticTacToe: 'Tres en Raya',
+    critical: 'Gatos Explosivos',
+    cascade: 'Cascade',
+    catDash: 'Cat Dash',
+    seaBattle: 'Batalla Naval',
+    glimworm: 'Glimworm',
+  },
   table: {
     controlPanel: {
       spectating: 'Espectador',
@@ -368,6 +380,16 @@ export const esMessages = {
     defeat: {
       title: 'Derrota',
       message: 'Mala suerte esta vez. ¿Listo para otra ronda?',
+    },
+    draw: {
+      title: 'Empate',
+      message: 'La partida terminó en empate.',
+    },
+    stats: {
+      duration: 'Duración',
+      turns: 'Turnos / Movimientos',
+      score: 'Puntuación',
+      accuracy: 'Precisión',
     },
     rematch: {
       title: '¿Jugar de nuevo?',
@@ -450,58 +472,5 @@ export const esMessages = {
     cycleHint: 'Haz clic para cambiar el tema',
     cycleAriaLabel: 'Cambiar tema de la vista previa, actualmente {{variant}}',
   },
-  themes: {
-    cyberpunk: {
-      name: 'Cyberpunk',
-      description: 'Futuro distópico iluminado por neón',
-    },
-    horror: {
-      name: 'Terror',
-      description: 'Atmósfera oscura y aterradora',
-    },
-    adventure: {
-      name: 'Aventura',
-      description: 'Búsquedas épicas y exploración',
-    },
-    fantasy: {
-      name: 'Fantasía',
-      description: 'Reinos mágicos y criaturas míticas',
-    },
-    western: {
-      name: 'Oeste',
-      description: 'La frontera del lejano oeste',
-    },
-    galaxy: {
-      name: 'Galaxia',
-      description: 'Exploración del espacio profundo',
-    },
-    egypt: {
-      name: 'Egipto',
-      description: 'Misterios del antiguo Egipto',
-    },
-    steampunk: {
-      name: 'Steampunk',
-      description: 'Maravillas mecánicas de la era victoriana',
-    },
-    zen: {
-      name: 'Zen',
-      description: 'Estética japonesa serena',
-    },
-    underwater: {
-      name: 'Submarino',
-      description: 'Profundidades del océano',
-    },
-    crime: {
-      name: 'Crimen',
-      description: 'Submundo de detectives noir',
-    },
-    'high-altitude-hike': {
-      name: 'Alta montaña',
-      description: 'Expedición a la cima',
-    },
-    random: {
-      name: 'Aleatorio',
-      description: 'Tema sorpresa en cada partida',
-    },
-  },
+  themes: themesEs,
 };

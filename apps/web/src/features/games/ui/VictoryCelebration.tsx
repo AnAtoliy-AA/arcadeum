@@ -1,166 +1,141 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
+import {
+  getThemeById,
+  SHARED_THEMES,
+  type GameTheme,
+} from '@/features/games/lib/shared-themes';
 
 export type CelebrationTone = 'victory' | 'defeat' | 'draw';
 
-const LAYER_CLASSES =
-  'flex flex-col items-stretch fixed top-0 left-0 w-screen h-[100dvh] pointer-events-none overflow-hidden z-0';
+interface VictoryCelebrationProps {
+  tone: CelebrationTone;
+  theme?: GameTheme | string | null;
+}
 
-// Gold-weighted palette for wins; muted cool flecks for losses.
-const VICTORY_COLORS = [
-  '#FFD700',
-  '#ffe866',
-  '#ff9500',
-  '#ffffff',
-  '#a855f7',
-  '#22d3ee',
+const DEFAULT_VICTORY_BG_CLASSES = [
+  'bg-amber-400',
+  'bg-yellow-300',
+  'bg-orange-400',
+  'bg-white',
+  'bg-purple-500',
+  'bg-cyan-400',
+  'bg-rose-400',
+  'bg-emerald-400',
 ];
-const DEFEAT_COLORS = ['#64748b', '#475569', '#94a3b8'];
 
-type ToneConfig = {
-  confettiCount: number;
-  confettiColors: string[];
-  sparkleCount: number;
-  bloomColor: string;
-  burst: boolean;
-};
+const DEFEAT_BG_CLASSES = [
+  'bg-slate-500',
+  'bg-slate-600',
+  'bg-red-500',
+  'bg-rose-700',
+  'bg-zinc-600',
+];
 
-const TONE_CONFIG: Record<CelebrationTone, ToneConfig> = {
-  victory: {
-    confettiCount: 80,
-    confettiColors: VICTORY_COLORS,
-    sparkleCount: 28,
-    bloomColor: 'rgba(255, 215, 0, 0.45)',
-    burst: true,
-  },
-  defeat: {
-    confettiCount: 16,
-    confettiColors: DEFEAT_COLORS,
-    sparkleCount: 0,
-    bloomColor: 'rgba(100, 116, 139, 0.3)',
-    burst: false,
-  },
-  draw: {
-    confettiCount: 0,
-    confettiColors: [],
-    sparkleCount: 12,
-    bloomColor: 'rgba(148, 163, 184, 0.32)',
-    burst: false,
-  },
-};
-
-// Deterministic spread so SSR and client markup match (no Math.random).
-function buildConfetti(count: number, colors: string[]) {
-  return Array.from({ length: count }).map((_, i) => ({
-    left: (i * 37) % 100,
-    delay: (i % 10) * 0.18,
-    duration: 3 + (i % 5) * 0.4,
-    size: 6 + (i % 4) * 3,
-    color: colors[i % colors.length],
-    rounded: i % 3 === 0,
-  }));
+function resolveTheme(
+  themeInput: GameTheme | string | null | undefined,
+): GameTheme {
+  if (!themeInput) return SHARED_THEMES[0];
+  if (typeof themeInput === 'string') {
+    return getThemeById(themeInput) ?? SHARED_THEMES[0];
+  }
+  return themeInput;
 }
 
-function buildSparkles(count: number) {
-  return Array.from({ length: count }).map((_, i) => ({
-    left: (i * 53) % 100,
-    bottom: (i * 17) % 40,
-    delay: (i % 8) * 0.35,
-    duration: 2.4 + (i % 4) * 0.5,
-    size: 4 + (i % 3) * 4,
-  }));
-}
+export function VictoryCelebration({ tone, theme }: VictoryCelebrationProps) {
+  const resolvedTheme = resolveTheme(theme);
 
-/**
- * Full-bleed celebratory FX layer for the end-of-game result. Tone-aware:
- * a dense gold confetti + rising sparkles + radial bloom for wins, a restrained
- * version for draws, and a sparse muted variant for losses. Purely decorative
- * (pointer-events: none); animations collapse automatically under
- * `prefers-reduced-motion` via the global rule in `animations.css`.
- */
-export function VictoryCelebration({ tone }: { tone: CelebrationTone }) {
-  const config = TONE_CONFIG[tone];
-  const confetti = useMemo(
-    () => buildConfetti(config.confettiCount, config.confettiColors),
-    [config.confettiCount, config.confettiColors],
-  );
-  const sparkles = useMemo(
-    () => buildSparkles(config.sparkleCount),
-    [config.sparkleCount],
-  );
+  const confettiItems = useMemo(() => {
+    if (tone !== 'victory') return [];
+    return Array.from({ length: 80 }).map((_, i) => ({
+      slotClass: `particle-slot-${i}`,
+      bgClass:
+        DEFAULT_VICTORY_BG_CLASSES[i % DEFAULT_VICTORY_BG_CLASSES.length],
+      sizeClass:
+        i % 3 === 0 ? 'w-3.5 h-3.5' : i % 2 === 0 ? 'w-2.5 h-2.5' : 'w-2 h-2',
+      roundClass: i % 2 === 0 ? 'rounded-full' : 'rounded-sm',
+    }));
+  }, [tone]);
+
+  const sparkleItems = useMemo(() => {
+    if (tone !== 'draw') return [];
+    return Array.from({ length: 24 }).map((_, i) => ({
+      slotClass: `sparkle-slot-${i}`,
+      sizeClass: i % 2 === 0 ? 'w-2.5 h-2.5' : 'w-1.5 h-1.5',
+      bgClass: 'bg-cyan-200 shadow-[0_0_8px_rgba(56,189,248,0.8)]',
+    }));
+  }, [tone]);
+
+  const emberItems = useMemo(() => {
+    if (tone !== 'defeat') return [];
+    return Array.from({ length: 40 }).map((_, i) => ({
+      slotClass: `particle-slot-${(i * 2) % 80}`,
+      bgClass: DEFEAT_BG_CLASSES[i % DEFEAT_BG_CLASSES.length],
+      sizeClass: i % 3 === 0 ? 'w-2.5 h-2.5' : 'w-1.5 h-1.5',
+    }));
+  }, [tone]);
+
+  const bloomColorClass =
+    tone === 'victory'
+      ? 'bg-[radial-gradient(circle,rgba(255,215,0,0.35)_0%,transparent_70%)]'
+      : tone === 'defeat'
+        ? 'bg-[radial-gradient(circle,rgba(239,68,68,0.2)_0%,transparent_70%)]'
+        : 'bg-[radial-gradient(circle,rgba(148,163,184,0.25)_0%,transparent_70%)]';
+
+  const burstColorClass =
+    tone === 'victory'
+      ? 'border-amber-400/60 shadow-[0_0_30px_rgba(255,215,0,0.5)]'
+      : '';
 
   return (
     <div
-      className={LAYER_CLASSES}
+      className="celebration-layer"
       aria-hidden
       data-testid="victory-celebration"
+      data-theme={resolvedTheme.id}
     >
-      {/* Breathing radial bloom behind the card. */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          width: '70vmin',
-          height: '70vmin',
-          transform: 'translate(-50%, -50%)',
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${config.bloomColor} 0%, transparent 70%)`,
-          filter: 'blur(20px)',
-          animation: 'celebration-bloom 3.2s ease-in-out infinite',
-        }}
-      />
+      <div className={cx('celebration-bloom', bloomColorClass)} />
 
-      {/* One-shot expanding ring on reveal (wins only). */}
-      {config.burst ? (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            width: '40vmin',
-            height: '40vmin',
-            transform: 'translate(-50%, -50%)',
-            borderRadius: '50%',
-            border: '2px solid rgba(255, 215, 0, 0.6)',
-            animation: 'celebration-burst 1.1s ease-out forwards',
-          }}
-        />
-      ) : null}
+      {tone === 'victory' && (
+        <div className={cx('celebration-burst', burstColorClass)} />
+      )}
 
-      {/* Falling confetti. */}
-      {confetti.map((p, i) => (
+      {confettiItems.map((item, idx) => (
         <div
-          key={`c-${i}`}
-          style={{
-            position: 'absolute',
-            top: -12,
-            left: `${p.left}%`,
-            width: p.size,
-            height: p.size,
-            backgroundColor: p.color,
-            borderRadius: p.rounded ? '50%' : 2,
-            animation: `fall ${p.duration}s linear ${p.delay}s infinite`,
-          }}
+          key={`c-${idx}`}
+          className={cx(
+            'celebration-confetti-particle',
+            item.slotClass,
+            item.bgClass,
+            item.sizeClass,
+            item.roundClass,
+          )}
         />
       ))}
 
-      {/* Rising sparkles. */}
-      {sparkles.map((s, i) => (
+      {sparkleItems.map((item, idx) => (
         <div
-          key={`s-${i}`}
-          style={{
-            position: 'absolute',
-            bottom: `${s.bottom}%`,
-            left: `${s.left}%`,
-            width: s.size,
-            height: s.size,
-            borderRadius: '50%',
-            background:
-              'radial-gradient(circle, #ffffff 0%, rgba(255,230,102,0.8) 45%, transparent 70%)',
-            animation: `sparkle-rise ${s.duration}s ease-in ${s.delay}s infinite`,
-          }}
+          key={`s-${idx}`}
+          className={cx(
+            'celebration-sparkle-particle rounded-full',
+            item.slotClass,
+            item.sizeClass,
+            item.bgClass,
+          )}
+        />
+      ))}
+
+      {emberItems.map((item, idx) => (
+        <div
+          key={`e-${idx}`}
+          className={cx(
+            'celebration-ember-particle rounded-full',
+            item.slotClass,
+            item.bgClass,
+            item.sizeClass,
+          )}
         />
       ))}
     </div>

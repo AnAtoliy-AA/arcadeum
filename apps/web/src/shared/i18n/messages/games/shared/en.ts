@@ -1,3 +1,5 @@
+import { themesEn } from './themes';
+
 export const enMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -334,6 +336,16 @@ export const enMessages = {
     title: '💤 You are idle',
     message: 'Move your mouse or press a key to resume',
   },
+  names: {
+    chess: 'Chess',
+    checkers: 'Checkers',
+    ticTacToe: 'Tic-Tac-Toe',
+    critical: 'Exploding Cats',
+    cascade: 'Cascade',
+    catDash: 'Cat Dash',
+    seaBattle: 'Sea Battle',
+    glimworm: 'Glimworm',
+  },
   table: {
     controlPanel: {
       spectating: 'Spectating',
@@ -359,6 +371,16 @@ export const enMessages = {
     defeat: {
       title: 'Defeat',
       message: 'Tough luck this time. Ready for another round?',
+    },
+    draw: {
+      title: 'Draw',
+      message: 'The match ended in a tie.',
+    },
+    stats: {
+      duration: 'Duration',
+      turns: 'Turns / Moves',
+      score: 'Score',
+      accuracy: 'Accuracy',
     },
     rematch: {
       title: 'Play Again?',
@@ -440,58 +462,5 @@ export const enMessages = {
     cycleHint: 'Click to change theme',
     cycleAriaLabel: 'Cycle theme preview, currently {{variant}}',
   },
-  themes: {
-    cyberpunk: {
-      name: 'Cyberpunk',
-      description: 'Neon-lit dystopian future',
-    },
-    horror: {
-      name: 'Horror',
-      description: 'Dark and terrifying atmosphere',
-    },
-    adventure: {
-      name: 'Adventure',
-      description: 'Epic quests and exploration',
-    },
-    fantasy: {
-      name: 'Fantasy',
-      description: 'Magical realms and mythical creatures',
-    },
-    western: {
-      name: 'Western',
-      description: 'Wild West frontier',
-    },
-    galaxy: {
-      name: 'Galaxy',
-      description: 'Deep space exploration',
-    },
-    egypt: {
-      name: 'Egypt',
-      description: 'Ancient Egyptian mysteries',
-    },
-    steampunk: {
-      name: 'Steampunk',
-      description: 'Victorian-era mechanical wonders',
-    },
-    zen: {
-      name: 'Zen',
-      description: 'Peaceful Japanese aesthetics',
-    },
-    underwater: {
-      name: 'Underwater',
-      description: 'Deep ocean depths',
-    },
-    crime: {
-      name: 'Crime',
-      description: 'Noir detective underworld',
-    },
-    'high-altitude-hike': {
-      name: 'High Altitude',
-      description: 'Mountain summit expedition',
-    },
-    random: {
-      name: 'Random',
-      description: 'Surprise theme each game',
-    },
-  },
+  themes: themesEn,
 };

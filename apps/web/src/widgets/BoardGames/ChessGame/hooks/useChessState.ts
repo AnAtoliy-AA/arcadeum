@@ -57,15 +57,18 @@ export function useChessState({
     currentPlayerId === currentUserId
   );
 
-  const isGameOver =
-    snapshot?.phase === 'game_over' ||
-    snapshot?.isCheckmate ||
-    snapshot?.isStalemate ||
-    snapshot?.winnerColor !== null ||
-    snapshot?.isDrawByRepetition ||
-    snapshot?.isDrawByFiftyMoveRule ||
-    snapshot?.isInsufficientMaterial ||
-    snapshot?.isDrawByAgreement;
+  const isGameOver = Boolean(
+    session?.status === 'completed' ||
+      (snapshot &&
+        (snapshot.phase === 'game_over' ||
+          Boolean(snapshot.isCheckmate) ||
+          Boolean(snapshot.isStalemate) ||
+          Boolean(snapshot.winnerColor) ||
+          Boolean(snapshot.isDrawByRepetition) ||
+          Boolean(snapshot.isDrawByFiftyMoveRule) ||
+          Boolean(snapshot.isInsufficientMaterial) ||
+          Boolean(snapshot.isDrawByAgreement))),
+  );
 
   return {
     session,

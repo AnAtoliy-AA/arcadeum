@@ -11,7 +11,12 @@ export {
   type ReusableGameLobbyProps,
   IconButton,
 } from './ReusableGameLobby';
-export { GameResultModal } from './GameResultModal';
+export { GameResultModal, type GameResultModalProps } from './GameResultModal';
+export {
+  GameResultStatsGrid,
+  type GameResultStats,
+  type GameStatItem,
+} from './GameResultStatsGrid';
 export { RematchModal } from './RematchModal';
 export { RematchInvitationModal } from './RematchInvitationModal';
 export { GameVariantSelector } from './GameVariantSelector';

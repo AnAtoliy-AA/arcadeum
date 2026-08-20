@@ -5,7 +5,7 @@ import {
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { CascadeCardsVisual } from './CascadeCardsVisual';
+import { CascadeLandingPreview } from './CascadeLandingPreview';
 
 type CscMessages = CascadeMessages['cascade_v1'];
 type Landing = CscMessages['landing'];
@@ -157,7 +157,7 @@ export default function CascadeLanding({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <CascadeCardsVisual />,
+        heroVisual: <CascadeLandingPreview />,
       }}
       highlights={{
         title: 'Action-Packed Card Shedding',

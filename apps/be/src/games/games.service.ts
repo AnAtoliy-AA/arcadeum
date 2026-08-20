@@ -152,13 +152,7 @@ export class GamesService {
     }
 
     // Trigger bot if exists
-    if (session) {
-      if (room.gameId === 'sea_battle_v1') {
-        await this.seaBattleService.findSessionByRoom(room.id);
-      } else if (room.gameId === 'critical_v1') {
-        await this.criticalService.findSessionByRoom(room.id);
-      }
-    }
+    if (session) await this.touchEngineSession(session);
 
     return { room, session };
   }
@@ -219,8 +213,6 @@ export class GamesService {
     return result;
   }
 
-  // ========== Session Operations ==========
-
   /**
    * Start a game session
    */
@@ -230,18 +222,14 @@ export class GamesService {
   ): Promise<StartGameSessionResult> {
     const { roomId } = dto;
 
-    // Get room
     const room = await this.roomsService.getRoom(roomId, userId);
 
-    // Ensure user is the host
     if (room.hostId !== userId) {
       throw new Error('Only the host can start the game');
     }
 
-    // Get player IDs
     const playerIds = await this.roomsService.getRoomParticipants(roomId);
 
-    // Create session
     const session = await this.sessionsService.createSession({
       roomId,
       gameId: room.gameId,
@@ -249,7 +237,6 @@ export class GamesService {
       config: { engine: dto.engine, ...room.gameOptions },
     });
 
-    // Update room status
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
     const updatedRoom = { ...room, status: 'in_progress' as const };
 
@@ -327,8 +314,6 @@ export class GamesService {
   async revertLastMove(sessionId: string) {
     return this.sessionsService.revertToPreviousState(sessionId);
   }
-
-  // ========== History Operations ==========
 
   async listHistoryForUser(
     userId: string,
@@ -448,17 +433,17 @@ export class GamesService {
     return this.roomsService.deleteRoomChatMessage(roomId, callerId, messageId);
   }
 
-  // ========== Utility Operations ==========
-
   async findSessionByRoom(roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (session) {
-      if (session.gameId === 'sea_battle_v1')
-        await this.seaBattleService.findSessionByRoom(roomId);
-      else if (session.gameId === 'critical_v1')
-        await this.criticalService.findSessionByRoom(roomId);
-    }
+    if (session) await this.touchEngineSession(session);
     return session;
+  }
+
+  private async touchEngineSession(session: GameSessionSummary) {
+    if (session.gameId === 'sea_battle_v1')
+      await this.seaBattleService.findSessionByRoom(session.roomId);
+    else if (session.gameId === 'critical_v1')
+      await this.criticalService.findSessionByRoom(session.roomId);
   }
 
   async ensureParticipant(roomId: string, userId: string) {

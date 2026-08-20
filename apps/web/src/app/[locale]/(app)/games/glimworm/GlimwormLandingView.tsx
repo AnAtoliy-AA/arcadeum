@@ -5,7 +5,7 @@ import {
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { GlimwormVisual } from './GlimwormVisual';
+import { GlimwormLandingPreview } from './GlimwormLandingPreview';
 
 type GlimwormMessages = GlimwormGamesMessages['glimworm_v1'];
 type Landing = GlimwormMessages['landing'];
@@ -167,7 +167,7 @@ export function GlimwormLandingView({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <GlimwormVisual />,
+        heroVisual: <GlimwormLandingPreview />,
       }}
       highlights={{
         title: 'High-Stakes Glow Arena Action',

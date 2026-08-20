@@ -52,7 +52,7 @@ const eslintConfig = defineConfig([
   // long translated strings onto their own lines. Exempt from max-lines
   // (ARC-916: extract shared messages into focused modules).
   {
-    files: ['**/shared/i18n/messages/games/shared/{es,fr}.ts'],
+    files: ['**/shared/i18n/messages/games/shared/{es,fr,ru,by}.ts'],
     rules: {
       'max-lines': 'off',
     },

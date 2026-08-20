@@ -448,6 +448,11 @@ export const frMessages = {
       master: 'Maître',
     },
   },
+  landing: {
+    previewLabel: 'Aperçu en direct',
+    cycleHint: 'Cliquez pour changer le thème',
+    cycleAriaLabel: 'Changer le thème de l’aperçu, actuellement {{variant}}',
+  },
   themes: {
     cyberpunk: {
       name: 'Cyberpunk',

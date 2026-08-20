@@ -5,7 +5,7 @@ import {
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { TicTacToeBoardVisual } from './TicTacToeBoardVisual';
+import { TicTacToeLandingPreview } from './TicTacToeLandingPreview';
 
 type TttMessages = TicTacToeMessages['tic_tac_toe_v1'];
 type Landing = TttMessages['landing'];
@@ -155,7 +155,7 @@ export default function TicTacToeLanding({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <TicTacToeBoardVisual />,
+        heroVisual: <TicTacToeLandingPreview />,
       }}
       highlights={{
         title: 'Simple Yet Infinitely Fun',

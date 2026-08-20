@@ -445,6 +445,11 @@ export const esMessages = {
       master: 'Maestro',
     },
   },
+  landing: {
+    previewLabel: 'Vista previa',
+    cycleHint: 'Haz clic para cambiar el tema',
+    cycleAriaLabel: 'Cambiar tema de la vista previa, actualmente {{variant}}',
+  },
   themes: {
     cyberpunk: {
       name: 'Cyberpunk',

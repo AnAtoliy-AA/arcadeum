@@ -14,6 +14,8 @@ const ALLOW_LIST = new Set([
   // messages into focused modules (ARC-916).
   'apps/web/src/shared/i18n/messages/games/shared/es.ts',
   'apps/web/src/shared/i18n/messages/games/shared/fr.ts',
+  'apps/web/src/shared/i18n/messages/games/shared/ru.ts',
+  'apps/web/src/shared/i18n/messages/games/shared/by.ts',
 ]);
 
 const IGNORE_DIRS = new Set([

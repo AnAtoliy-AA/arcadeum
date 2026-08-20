@@ -438,6 +438,11 @@ export const byMessages = {
       master: 'Майстар',
     },
   },
+  landing: {
+    previewLabel: 'Жывое прадпрагляд',
+    cycleHint: 'Націсніце, каб змяніць тэму',
+    cycleAriaLabel: 'Змяніць тэму прадпрагляду, зараз {{variant}}',
+  },
   themes: {
     cyberpunk: {
       name: 'Кіберпанк',

@@ -5,7 +5,7 @@ import {
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { CheckersBoardVisual } from './CheckersBoardVisual';
+import { CheckersLandingPreview } from './CheckersLandingPreview';
 
 type CkMessages = CheckersMessages['checkers_v1'];
 type Landing = CkMessages['landing'];
@@ -160,7 +160,7 @@ export default function CheckersLanding({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <CheckersBoardVisual />,
+        heroVisual: <CheckersLandingPreview />,
       }}
       highlights={{
         title: 'Classic Board Mechanics, Modern Feel',

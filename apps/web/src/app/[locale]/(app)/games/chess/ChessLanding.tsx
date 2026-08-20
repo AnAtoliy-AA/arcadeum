@@ -5,7 +5,7 @@ import {
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { ChessBoardVisual } from './ChessBoardVisual';
+import { ChessLandingPreview } from './ChessLandingPreview';
 
 type ChessMsg = ChessMessages['chess_v1'];
 type Landing = ChessMsg['landing'];
@@ -148,7 +148,7 @@ export default function ChessLanding({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <ChessBoardVisual />,
+        heroVisual: <ChessLandingPreview />,
       }}
       highlights={{
         title: 'Built for Serious Chess Players',

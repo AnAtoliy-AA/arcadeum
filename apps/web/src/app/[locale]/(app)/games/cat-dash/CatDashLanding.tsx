@@ -5,7 +5,7 @@ import {
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { CatDashVisual } from './CatDashVisual';
+import { CatDashLandingPreview } from './CatDashLandingPreview';
 
 type CdMessages = CatDashMessages['cat_dash_v1'];
 type Landing = CdMessages['landing'];
@@ -152,7 +152,7 @@ export default function CatDashLanding({
         createRoomLabel: landing.hero.createRoom,
         roomsHref,
         createRoomHref,
-        heroVisual: <CatDashVisual />,
+        heroVisual: <CatDashLandingPreview />,
       }}
       highlights={{
         title: 'Why You’ll Love Cat Dash',

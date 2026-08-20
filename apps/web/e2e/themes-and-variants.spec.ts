@@ -18,11 +18,13 @@ test.describe('Themes and Variants separation', () => {
     page,
   }) => {
     await navigateTo(page, '/games/sea-battle');
-    const quickplayAi = page.locator('[data-testid="quickplay-ai-button"]');
+    const quickplayAi = page
+      .locator('[data-testid="quickplay-ai-button"]')
+      .first();
     await expect(quickplayAi).toBeVisible();
-    const quickplayHuman = page.locator(
-      '[data-testid="quickplay-human-button"]',
-    );
+    const quickplayHuman = page
+      .locator('[data-testid="quickplay-human-button"]')
+      .first();
     await expect(quickplayHuman).toBeVisible();
   });
 

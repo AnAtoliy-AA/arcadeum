@@ -20,6 +20,7 @@ import s from './GameCreateView.module.scss';
 import { SectionGroup } from './SectionGroup';
 import { QuickPresets } from './QuickPresets';
 import { GamePicker } from './GamePicker';
+import { ThemePicker } from './ThemePicker';
 import { ExpansionPacks } from './ExpansionPacks';
 import { RoomDetails } from './RoomDetails';
 import { HouseRules } from './HouseRules';
@@ -50,16 +51,23 @@ function parseInitialGameId(raw: string | null | undefined): GameId {
   return VISIBLE_GAMES[0];
 }
 
+function defaultThemeFor(gameId: GameId): string {
+  const themes = themesFor(gameId);
+  const preferred = themes.find(
+    (t) => t.id === 'adventure' || t.id === 'classic',
+  );
+  return preferred?.id ?? themes[0]?.id ?? 'adventure';
+}
+
 function initialForm(
   gameId: GameId,
   themeId: string | undefined,
   defaultRoomName: string,
 ): CreateRoomForm {
   const themes = themesFor(gameId);
+  const defaultTheme = defaultThemeFor(gameId);
   const resolvedTheme =
-    themeId && themes.some((t) => t.id === themeId)
-      ? themeId
-      : (themes[0]?.id ?? '');
+    themeId && themes.some((t) => t.id === themeId) ? themeId : defaultTheme;
   return {
     gameId,
     themeId: resolvedTheme,
@@ -113,7 +121,7 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   }
   return {
     ...options,
-    theme: form.themeId || 'cyberpunk',
+    theme: form.themeId || 'adventure',
     ranked: form.ranked,
   };
 }
@@ -173,8 +181,7 @@ export function GameCreateView() {
   useEffect(() => {
     if (
       form.themeId &&
-      !searchParams?.get('theme') &&
-      !searchParams?.get('variant')
+      (!searchParams?.get('theme') || searchParams?.get('variant'))
     ) {
       updateUrl({ gameId: form.gameId, themeId: form.themeId });
     }
@@ -200,8 +207,7 @@ export function GameCreateView() {
   }
 
   function setGameId(newGameId: GameId) {
-    const themes = themesFor(newGameId);
-    const themeId = themes[0]?.id ?? '';
+    const themeId = defaultThemeFor(newGameId);
     const game = GAMES[newGameId];
     let maxPlayers = form.maxPlayers;
     if (
@@ -219,6 +225,11 @@ export function GameCreateView() {
         newGameId === 'critical_v1' ? form.expansionPackIds : ['core'],
     });
     updateUrl({ gameId: newGameId, themeId });
+  }
+
+  function setThemeId(themeId: string) {
+    setForm((prev) => ({ ...prev, themeId, preset: 'custom' }));
+    updateUrl({ gameId: form.gameId, themeId });
   }
 
   function setExpansionPackIds(ids: string[]) {
@@ -314,8 +325,11 @@ export function GameCreateView() {
   const L = useMemo(() => buildLabels(t), [t]);
 
   const game = GAMES[form.gameId];
+  const themes = themesFor(form.gameId);
+  const hasThemes = themes.length > 0;
   let n = 1;
   const numGame = String(n++).padStart(2, '0');
+  const numTheme = hasThemes ? String(n++).padStart(2, '0') : null;
   const numExpansion = game.hasExpansion ? String(n++).padStart(2, '0') : null;
   const numRules = String(n++).padStart(2, '0');
   const numDetails = String(n++).padStart(2, '0');
@@ -358,6 +372,16 @@ export function GameCreateView() {
                     onChange={setGameId}
                   />
                 </SectionGroup>
+
+                {numTheme ? (
+                  <SectionGroup num={numTheme} title={L.sectionTheme}>
+                    <ThemePicker
+                      gameId={form.gameId}
+                      value={form.themeId}
+                      onChange={setThemeId}
+                    />
+                  </SectionGroup>
+                ) : null}
 
                 {numExpansion ? (
                   <SectionGroup

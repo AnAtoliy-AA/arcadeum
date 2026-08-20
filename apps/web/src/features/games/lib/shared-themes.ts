@@ -34,3 +34,21 @@ const THEME_INDEX = new Map<string, GameTheme>(
 export function getThemeById(themeId: string): GameTheme | undefined {
   return THEME_INDEX.get(themeId);
 }
+
+export function getTranslatedSharedThemes(
+  themeMessages?: Record<
+    string,
+    { name?: string; description?: string } | undefined
+  >,
+): Array<{ id: string; name: string; description?: string }> {
+  return SHARED_THEMES.filter((t) => t.id !== 'random').map((t) => {
+    const msg = themeMessages?.[t.id];
+    const defaultName =
+      t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/-/g, ' ');
+    return {
+      id: t.id,
+      name: msg?.name ?? defaultName,
+      description: msg?.description,
+    };
+  });
+}

@@ -3,7 +3,7 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
-import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
+import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
 import { ChessBoardVisual } from './ChessBoardVisual';
 
@@ -114,13 +114,10 @@ export default function ChessLanding({
     };
   });
 
-  const themesList = SHARED_THEMES.filter((t) => t.id !== 'random').map(
-    (t) => ({
-      id: t.id,
-      name: t.id.charAt(0).toUpperCase() + t.id.slice(1).replace(/-/g, ' '),
-      description: t.descriptionKey,
-    }),
-  );
+  const themeMessages = translatedGames?.themes as
+    | Record<string, { name?: string; description?: string } | undefined>
+    | undefined;
+  const themesList = getTranslatedSharedThemes(themeMessages);
 
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 

@@ -28,7 +28,14 @@ export const byMessages = {
         joined: 'Я ўдзельнік',
         not_joined: 'Не ўдзельнічаю',
       },
+      aiVsAiLabel: 'Рэжым',
+      aiVsAi: 'ШІ супраць ШІ',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Глядзець ШІ супраць ШІ',
+    error: 'Не атрымалася запусціць — паспрабуйце яшчэ раз',
+    delayLabel: 'Затрымка ходу',
   },
   rooms: {
     status: {

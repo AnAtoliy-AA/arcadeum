@@ -20,6 +20,7 @@ import {
   isPlayerPiece,
 } from '../engines/checkers/checkers.utils';
 import type { AiDifficulty } from '../ai-difficulty';
+import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
 
 const MOVE_DELAY_MS = { min: 400, max: 1100 };
 
@@ -55,7 +56,7 @@ export class CheckersBotService {
     const hasAliveHuman = state.players.some(
       (p) => p.alive && !this.isBot(p.playerId),
     );
-    if (!hasAliveHuman) {
+    if (!hasAliveHuman && !isAiVsAiSession(session)) {
       this.logger.log(
         `No alive humans in room ${session.roomId} — completing session`,
       );
@@ -71,7 +72,12 @@ export class CheckersBotService {
     this.processing.add(lockKey);
 
     try {
-      await this.randomDelay(MOVE_DELAY_MS);
+      const aiDelay = getAiMoveDelayMs(session);
+      if (aiDelay !== null) {
+        await this.randomDelay({ min: aiDelay, max: aiDelay });
+      } else {
+        await this.randomDelay(MOVE_DELAY_MS);
+      }
       const move = this.pickMove(state, currentBotId);
       if (!move) return;
       await this.checkersService.movePiece(currentBotId, session.roomId, move);

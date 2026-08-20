@@ -28,7 +28,14 @@ export const ruMessages = {
         joined: 'Я участник',
         not_joined: 'Не участвую',
       },
+      aiVsAiLabel: 'Режим',
+      aiVsAi: 'ИИ против ИИ',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Смотреть ИИ против ИИ',
+    error: 'Не удалось запустить — попробуйте ещё раз',
+    delayLabel: 'Задержка хода',
   },
   rooms: {
     status: {

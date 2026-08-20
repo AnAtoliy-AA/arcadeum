@@ -5,6 +5,8 @@ import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import { Badge, Button } from '@arcadeum/ui';
 import type { GameLandingHeroProps } from './types';
 import { useGameLandingTheme } from './GameLandingThemeContext';
+import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
+import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 
 export function GameLandingHero({
   gameId,
@@ -94,6 +96,14 @@ export function GameLandingHero({
               ctaPlayHumanError={ctaPlayHumanErrorLabel}
               disabled={comingSoon}
             />
+
+            {!comingSoon && isAiVsAiSupported(gameId) ? (
+              <AIvsAIViewer
+                gameId={gameId}
+                theme={theme}
+                buttonVariant="outline"
+              />
+            ) : null}
 
             <Link href={roomsHref} className="box-border inline-flex">
               <Button variant="secondary" size="lg">

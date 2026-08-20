@@ -43,6 +43,20 @@ export function serializeStatusFilterToUrl(
 export type GamesParticipationFilter =
   'all' | 'hosting' | 'joined' | 'not_joined';
 
+export type GamesAiVsAiFilter = 'all' | 'ai_vs_ai';
+
+export function parseAiVsAiFilterFromUrl(
+  raw: string | null,
+): GamesAiVsAiFilter {
+  return raw === 'ai_vs_ai' ? 'ai_vs_ai' : 'all';
+}
+
+export function serializeAiVsAiFilterToUrl(
+  filter: GamesAiVsAiFilter,
+): string | undefined {
+  return filter === 'ai_vs_ai' ? 'ai_vs_ai' : undefined;
+}
+
 export type GamesCategoryFilter = string;
 
 /**

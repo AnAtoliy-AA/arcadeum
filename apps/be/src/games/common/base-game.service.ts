@@ -12,6 +12,7 @@ import {
   GameBotWatchdog,
   type PreCheckFn,
 } from '../game-bot-watchdog';
+import { extractAiVsAiExtras } from './ai-vs-ai';
 
 /**
  * Shared base class for every game service. Encapsulates the session
@@ -92,6 +93,8 @@ export abstract class BaseGameService<
 
     const options = this.resolveOptions(room.gameOptions);
     await this.applyStartExtras(userId, roomId, options, startExtras);
+    const aiExtras = extractAiVsAiExtras(startExtras);
+    if (aiExtras) Object.assign(options, aiExtras);
     const maxPlayersForSession = this.getMaxPlayersForOptions(options);
 
     const participants = await this.roomsService.getRoomParticipants(roomId);
@@ -128,6 +131,7 @@ export abstract class BaseGameService<
       gameId: this.gameId,
       playerIds,
       config,
+      options: aiExtras ?? undefined,
     });
 
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');

@@ -29,7 +29,14 @@ export const esMessages = {
         joined: 'Unido',
         not_joined: 'No unido',
       },
+      aiVsAiLabel: 'Modalidad',
+      aiVsAi: 'IA contra IA',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Ver IA contra IA',
+    error: 'No se pudo iniciar — inténtalo de nuevo',
+    delayLabel: 'Retraso entre jugadas',
   },
   rooms: {
     status: {

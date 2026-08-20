@@ -1,5 +1,4 @@
-import type { SeaBattleVariant } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
-import { VARIANT_THEMES } from '@/widgets/StrategyGames/SeaBattleGame/lib/theme';
+import { getTheme } from '@/widgets/StrategyGames/SeaBattleGame/lib/theme';
 
 const BOARD_PATTERN: number[] = [
   0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 1, 1, 3, 3, 3, 3,
@@ -12,12 +11,12 @@ const COL_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 const ROW_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 interface Props {
-  variant: string;
+  theme?: string;
+  variant?: string;
 }
 
-export function SeaBattleFieldSvg({ variant }: Props) {
-  const theme =
-    VARIANT_THEMES[variant as SeaBattleVariant] || VARIANT_THEMES.classic;
+export function SeaBattleFieldSvg({ theme: themeProp, variant }: Props) {
+  const theme = getTheme(themeProp ?? variant);
 
   const w = 240;
   const h = 230;

@@ -7,6 +7,7 @@ import {
   LobbyOptionSection,
   LobbyChipGroup,
   LobbyToggle,
+  GameThemePicker,
   getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
@@ -43,6 +44,7 @@ const CASCADE_LOBBY_THEME = {
 
 function resolveOptions(raw: unknown): CascadeOptions {
   const r = (raw ?? {}) as Partial<{
+    theme: string;
     variant: string;
     mode: string;
     stackingEnabled: boolean;
@@ -52,8 +54,10 @@ function resolveOptions(raw: unknown): CascadeOptions {
   const mode: CascadeMode = knownModes.includes(r.mode as CascadeMode)
     ? (r.mode as CascadeMode)
     : 'classic';
+  const theme = (r.theme ?? r.variant ?? 'adventure') as CascadeVariant;
   return {
-    variant: (r.variant ?? 'cosmic') as CascadeVariant,
+    variant: theme,
+    theme,
     mode,
     stackingEnabled: mode !== 'pure',
     lastCardCallEnabled:
@@ -96,12 +100,6 @@ export function CascadeLobby({
     [options.variant],
   );
 
-  const variantOptions = CASCADE_VARIANTS.map((v) => ({
-    id: v.id,
-    label: t(v.name),
-    emoji: v.emoji,
-  }));
-
   const modeOptions = [
     {
       id: 'classic',
@@ -139,28 +137,15 @@ export function CascadeLobby({
 
   const optionsSlot = (
     <div className="flex flex-col items-stretch gap-4">
-      {isHost && (
-        <LobbyOptionSection title={t('games.create.sectionVariant') || 'Theme'}>
-          <LobbyChipGroup
-            options={variantOptions}
-            value={options.variant}
-            onChange={(v) => handleOptionChange({ variant: v })}
-            accentColor="#fbbf24"
-            testIdPrefix="cascade-variant"
-          />
-        </LobbyOptionSection>
-      )}
-
-      {!isHost && (
-        <div className="flex flex-col items-stretch gap-1">
-          <span className="text-[#fff] font-semibold">
-            {variantTokens.emoji} {t(variantTokens.name)}
-          </span>
-          <span className="text-[#cbd5e1] text-[13px]">
-            {t(variantTokens.description)}
-          </span>
-        </div>
-      )}
+      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <GameThemePicker
+          selectedTheme={options.variant}
+          onSelect={(themeId) =>
+            handleOptionChange({ theme: themeId, variant: themeId })
+          }
+          disabled={!isHost}
+        />
+      </LobbyOptionSection>
 
       {isHost && (
         <LobbyOptionSection

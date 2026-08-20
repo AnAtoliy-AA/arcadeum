@@ -4,4 +4,4 @@ import { createGameThemeContext } from '@/features/games/lib/createGameThemeCont
 import { getCheckersTheme, type CheckersTheme } from './theme';
 
 export const { Provider: CheckersThemeProvider, useTheme: useCheckersTheme } =
-  createGameThemeContext<CheckersTheme>(getCheckersTheme, 'classic');
+  createGameThemeContext<CheckersTheme>(getCheckersTheme, 'cyberpunk');

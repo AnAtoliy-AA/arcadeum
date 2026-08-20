@@ -23,7 +23,7 @@ beforeEach(() => {
 function renderConfig() {
   return render(
     <CreationConfig
-      options={{ variant: 'classic' } as never}
+      options={{ variant: 'cyberpunk' } as never}
       onChange={vi.fn()}
     />,
   );
@@ -37,23 +37,21 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
           gameId: 'sea_battle_v1',
           comingSoon: false,
           variants: [
-            { id: 'classic', comingSoon: false },
-            { id: 'pixel', comingSoon: false },
+            { id: 'cyberpunk', comingSoon: false },
+            { id: 'fantasy', comingSoon: false },
           ],
           rules: [],
-        }, // cyber hidden
+        },
       ],
     });
 
     renderConfig();
 
     await waitFor(() => {
-      expect(
-        screen.queryByText(/games\.sea_battle_v1\.variants\.cyber\.name/),
-      ).toBeNull();
+      expect(screen.queryByText(/games\.themes\.underwater\.name/)).toBeNull();
     });
     expect(
-      screen.getByText(/games\.sea_battle_v1\.variants\.classic\.name/),
+      screen.getByText(/games\.themes\.cyberpunk\.name/),
     ).toBeInTheDocument();
   });
 
@@ -64,7 +62,7 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/games\.sea_battle_v1\.variants\.cyber\.name/),
+        screen.getByText(/games\.themes\.underwater\.name/),
       ).toBeInTheDocument();
     });
   });
@@ -78,8 +76,8 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
           gameId: 'sea_battle_v1',
           comingSoon: false,
           variants: [
-            { id: 'classic', comingSoon: false },
-            { id: 'cyber', comingSoon: true },
+            { id: 'cyberpunk', comingSoon: false },
+            { id: 'underwater', comingSoon: true },
           ],
           rules: [],
         },
@@ -88,30 +86,27 @@ describe('Sea Battle CreationConfig — variant visibility filter', () => {
 
     render(
       <CreationConfig
-        options={{ variant: 'classic' } as never}
+        options={{ variant: 'cyberpunk' } as never}
         onChange={onChangeSpy}
       />,
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId('theme-classic')).toBeInTheDocument();
+      expect(screen.getByTestId('theme-cyberpunk')).toBeInTheDocument();
     });
 
-    // classic: interactive
-    const classicTile = screen.getByTestId('theme-classic');
-    expect(classicTile).not.toHaveAttribute('aria-disabled', 'true');
+    const cyberpunkTile = screen.getByTestId('theme-cyberpunk');
+    expect(cyberpunkTile).not.toHaveAttribute('aria-disabled', 'true');
 
-    // cyber: disabled with badge
-    const cyberTile = screen.getByTestId('theme-cyber');
-    expect(cyberTile).toHaveAttribute('aria-disabled', 'true');
+    const underwaterTile = screen.getByTestId('theme-underwater');
+    expect(underwaterTile).toHaveAttribute('aria-disabled', 'true');
     expect(
-      within(cyberTile).getByTestId('coming-soon-badge'),
+      within(underwaterTile).getByTestId('coming-soon-badge'),
     ).toBeInTheDocument();
 
-    // Click is a no-op
-    fireEvent.click(cyberTile);
+    fireEvent.click(underwaterTile);
     expect(onChangeSpy).not.toHaveBeenCalledWith(
-      expect.objectContaining({ variant: 'cyber' }),
+      expect.objectContaining({ variant: 'underwater' }),
     );
   });
 });

@@ -207,9 +207,12 @@ function CascadeGameImpl({
     </>
   );
 
+  const visualTheme = options.theme ?? options.variant ?? 'cyberpunk';
+
   return (
-    <CascadeThemeProvider variant={options.variant}>
+    <CascadeThemeProvider variant={visualTheme}>
       <GameWidgetContainer
+        theme={visualTheme}
         board={board}
         modals={modals}
         variant={options.variant}

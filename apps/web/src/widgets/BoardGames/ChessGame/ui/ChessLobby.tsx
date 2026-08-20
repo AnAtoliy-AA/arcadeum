@@ -7,6 +7,7 @@ import {
   type GameLobbyTheme,
   LobbyOptionSection,
   LobbyChipGroup,
+  GameThemePicker,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
@@ -69,10 +70,12 @@ export function ChessLobby({
 
   const options = useMemo(() => {
     const raw = (room.gameOptions ?? {}) as Partial<{
+      theme: string;
       variant: string;
       timeControl: TimeControl | null;
     }>;
     return {
+      theme: (raw.theme as string) || 'adventure',
       variant: (raw.variant ?? 'standard') as ChessVariant,
       timeControl: (raw.timeControl ?? null) as TimeControl | null,
     };
@@ -132,6 +135,13 @@ export function ChessLobby({
 
   const optionsSlot = (
     <div className="flex flex-col items-stretch gap-4">
+      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <GameThemePicker
+          selectedTheme={options.theme}
+          onSelect={(themeId) => setOption({ theme: themeId })}
+          disabled={!isHost}
+        />
+      </LobbyOptionSection>
       <LobbyOptionSection title={t('games.chess_v1.lobby.variant')}>
         <LobbyChipGroup
           options={variantOptions}

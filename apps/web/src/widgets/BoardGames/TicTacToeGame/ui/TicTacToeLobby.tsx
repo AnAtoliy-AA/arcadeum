@@ -6,10 +6,10 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   ReusableGameLobby,
   LobbyOptionSection,
+  GameThemePicker,
   getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { VariantSelector } from './VariantSelector';
 import { BoardSizeSelector } from './BoardSizeSelector';
 import { TicTacToeTeamPanel } from './TicTacToeTeamPanel';
 import { RulesModal } from './RulesModal';
@@ -54,6 +54,7 @@ interface TicTacToeLobbyProps {
 
 function resolveOptions(raw: unknown): TicTacToeOptions {
   const r = (raw ?? {}) as Partial<{
+    theme: string;
     variant: string;
     boardSize: number | string;
     teamMode: boolean;
@@ -65,8 +66,10 @@ function resolveOptions(raw: unknown): TicTacToeOptions {
   const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
     n === 1 || n === 2 || n === 3;
   const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
+  const theme = (r.theme ?? r.variant ?? 'adventure') as TicTacToeVariant;
   return {
-    variant: (r.variant ?? 'classic') as TicTacToeVariant,
+    variant: theme,
+    theme,
     boardSize: isAllowedSize(r.boardSize) ? r.boardSize : 3,
     teamMode: !!r.teamMode,
     expansionMargin: isMargin(r.expansionMargin) ? r.expansionMargin : 3,
@@ -129,12 +132,15 @@ export function TicTacToeLobby({
 
   const optionsSlot = (
     <div className="flex flex-col items-stretch gap-4">
-      <VariantSelector
-        roomId={room.id}
-        hostId={userId}
-        currentVariant={variant}
-        disabled={!isHost}
-      />
+      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <GameThemePicker
+          selectedTheme={variant}
+          onSelect={(themeId) =>
+            setOption({ theme: themeId, variant: themeId })
+          }
+          disabled={!isHost}
+        />
+      </LobbyOptionSection>
       <BoardSizeSelector
         roomId={room.id}
         hostId={userId}

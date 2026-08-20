@@ -67,31 +67,44 @@ Wire into [apps/be/src/games/games.module.ts](apps/be/src/games/games.module.ts)
 
 ### 4. Backend catalog
 
-Add the game to [apps/be/src/games/games.catalog.ts](apps/be/src/games/games.catalog.ts):
+Add the game to [apps/be/src/games/games.catalog.ts](apps/be/src/games/games.catalog.ts) using `SHARED_VISUAL_THEMES`:
 ```ts
-{ gameId: '<game>_v1', variants: ['classic', 'neon', ...] },
+{
+  gameId: '<game>_v1',
+  startMode: 'immediate', // or 'placement'
+  themes: [...SHARED_VISUAL_THEMES],
+  modes: ['speed', 'team_2v2'], // game-specific rules only (or [] if none)
+  variants: [...SHARED_VISUAL_THEMES, 'speed', 'team_2v2'],
+  rules: [...],
+}
 ```
 This entry **also drives `/admin/games` visibility** — without it, admins can't see the game.
 
-### 5. Web widget
+### 5. Web widget & Visual Themes
 
-Create `apps/web/src/widgets/<Name>Game/`:
+All games share unified visual themes (colors, backgrounds, gradients, emojis). Create `apps/web/src/widgets/<Name>Game/`:
 ```
 types/index.ts              ← props, state, options, log entry types
-lib/constants.ts            ← VARIANTS array — id, name (i18n key), emoji, gradient
-lib/theme.ts                ← getTheme(variant) → token map (board/cell/mark colors…)
-lib/<Name>ThemeContext.tsx  ← Provider + useTheme hook
+lib/constants.ts            ← <NAME>_VARIANTS mapped directly from SHARED_THEMES
+lib/theme-adapter.ts        ← sharedThemeTo<Name>(theme: GameTheme): <Name>Theme
+lib/theme.ts                ← get<Name>Theme(variant?: string) dynamically calling getThemeById + adapter
+lib/<Name>ThemeContext.tsx  ← createGameThemeContext<NameTheme>(get<Name>Theme, 'cyberpunk')
 hooks/useState.ts           ← Zustand selector → derived snapshot
 hooks/useActions.ts         ← gameSocket.emit wrappers — strings MUST match BE gateway
 hooks/index.ts              ← barrel re-export
-ui/Game.tsx                 ← root; default-export memoized
+ui/Game.tsx                 ← root; default-export memoized; wraps shell in <NameThemeProvider variant={variant}>
 ui/Lobby.tsx                ← wraps shared ReusableGameLobby, supplies an optionsSlot
-ui/Board.tsx                ← in-game UI
+ui/Board.tsx                ← in-game UI using use<Name>Theme() tokens
 ui/TurnBadge.tsx
 ui/RulesModal.tsx           ← in-game rules (uses @arcadeum/ui Modal primitives)
 index.ts                    ← barrel — must default-export the memoized Game
                               (the registry does import('@/widgets/<Name>Game'))
 ```
+
+#### How Theme Propagation Works:
+1. `apps/web/src/features/games/lib/shared-themes.ts` (`SHARED_THEMES`) and `apps/be/src/games/common/shared-themes.ts` (`SHARED_VISUAL_THEMES`) are the single sources of truth.
+2. When a new theme is added to `SHARED_THEMES` (with palette tokens, emoji, nameKey, descriptionKey, and background artwork in `apps/web/public/images/variants/<id>_bg.webp`), it automatically appears in **all existing and future games** through their respective `theme-adapter.ts`.
+3. Game modes/rules (`modes`: standard, chess960, battle_royale) must remain separate from visual themes (`themes`: cyberpunk, underwater, zen, etc.).
 
 **Critical Game.tsx pattern** (mirror sea-battle exactly):
 

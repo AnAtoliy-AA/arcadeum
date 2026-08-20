@@ -107,7 +107,7 @@ export const BoardBackground = memo(function BoardBackground({
         </pattern>
       </defs>
       <rect width={svgW} height={svgH} fill="url(#bgGlow)" rx={20} />
-      {variant === 'neon' && (
+      {variant === 'cyberpunk' && (
         <rect
           width={svgW}
           height={svgH}
@@ -116,7 +116,7 @@ export const BoardBackground = memo(function BoardBackground({
           pointerEvents="none"
         />
       )}
-      {variant === 'space' && (
+      {variant === 'galaxy' && (
         <rect
           width={svgW}
           height={svgH}
@@ -125,7 +125,7 @@ export const BoardBackground = memo(function BoardBackground({
           pointerEvents="none"
         />
       )}
-      {variant === 'village' && (
+      {variant === 'adventure' && (
         <rect
           width={svgW}
           height={svgH}
@@ -134,7 +134,7 @@ export const BoardBackground = memo(function BoardBackground({
           pointerEvents="none"
         />
       )}
-      {variant === 'nature' && (
+      {variant === 'zen' && (
         <rect
           width={svgW}
           height={svgH}

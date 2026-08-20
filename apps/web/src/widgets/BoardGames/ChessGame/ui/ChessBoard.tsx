@@ -11,6 +11,7 @@ import {
   type BoardPosition,
   type PieceColor,
 } from '../types';
+import { useChessTheme } from '../lib/ChessThemeContext';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import './styles/animations.scss';
 
@@ -89,14 +90,15 @@ function ChessCell({
   onHover,
   onDragOver,
 }: ChessCellProps) {
+  const theme = useChessTheme();
   const square = `${file}-${rank}`;
   const symbol = piece ? PIECE_SYMBOLS[piece.type][piece.color] : null;
 
-  let bgColor = isLight ? 'rgba(160, 180, 200, 0.35)' : 'rgba(60, 75, 95, 0.8)';
-  if (selected) bgColor = 'rgba(255, 215, 0, 0.35)';
-  else if (kingCheck) bgColor = 'rgba(239, 68, 68, 0.4)';
+  let bgColor = isLight ? theme.lightSquare : theme.darkSquare;
+  if (selected) bgColor = theme.selectedSquare;
+  else if (kingCheck) bgColor = theme.checkSquare;
   else if (hintMoved) bgColor = 'rgba(16, 185, 129, 0.38)';
-  else if (lastMoved) bgColor = 'rgba(56, 189, 248, 0.25)';
+  else if (lastMoved) bgColor = theme.lastMoveSquare;
 
   return (
     <div

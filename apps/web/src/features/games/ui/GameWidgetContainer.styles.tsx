@@ -3,6 +3,7 @@ import React, { createContext, useContext, forwardRef, memo } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { IconButton, type GameVariant } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { getThemeById } from '@/features/games/lib/shared-themes';
 import type { TurnContract } from './TurnIndicator';
 
 const WidgetFullscreenContext = createContext<boolean>(false);
@@ -57,13 +58,14 @@ export function ActiveEmotesProvider({
 export type ContainerProps = {
   isMyTurn?: boolean;
   isFullscreen?: boolean;
-  variant?: GameVariant;
+  variant?: GameVariant | string;
+  theme?: string;
+  bgImage?: string;
   className?: string;
   style?: React.CSSProperties;
   children?: ReactNode;
 } & HTMLAttributes<HTMLDivElement>;
 
-// Per-game ambient glow (same as @arcadeum/ui GameContainer's AmbientGlow).
 const AMBIENT_GLOW_BACKGROUNDS: Partial<Record<GameVariant, string>> = {
   cyberpunk:
     'radial-gradient(circle at 30% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 35%), radial-gradient(circle at 70% 70%, rgba(192, 38, 211, 0.12) 0%, transparent 35%)',
@@ -85,6 +87,8 @@ export const Container = memo(
       isMyTurn = false,
       isFullscreen = false,
       variant,
+      theme,
+      bgImage,
       className,
       style,
       children,
@@ -93,8 +97,15 @@ export const Container = memo(
     ref,
   ) {
     const glowBackground = variant
-      ? AMBIENT_GLOW_BACKGROUNDS[variant]
+      ? AMBIENT_GLOW_BACKGROUNDS[variant as GameVariant]
       : undefined;
+
+    const themeObj = theme
+      ? getThemeById(theme)
+      : variant
+        ? getThemeById(variant)
+        : undefined;
+    const resolvedBgImage = bgImage ?? themeObj?.bgImage;
 
     return (
       <div
@@ -114,6 +125,13 @@ export const Container = memo(
         style={style}
         {...props}
       >
+        {resolvedBgImage && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-25"
+            style={{ backgroundImage: `url(${resolvedBgImage})` }}
+          />
+        )}
         {glowBackground && (
           <div
             aria-hidden

@@ -5,7 +5,7 @@ import {
   ReusableGameLobby,
   IconButton,
   LobbyOptionSection,
-  LobbyChipGroup,
+  GameThemePicker,
   getLobbyTheme,
 } from '@/features/games/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
@@ -18,7 +18,6 @@ import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';
 import { HouseRulesPanel } from './HouseRulesPanel';
 import type { SeaBattleGameOptions } from '@/features/games/sea-battle/lobby';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 const SEA_BATTLE_LOBBY_THEME = {
   fallbackLightGradient:
@@ -70,13 +69,15 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   onRefresh,
   t,
 }: SeaBattleLobbyProps) {
-  const roomVariant = (room.gameOptions?.variant as string) || 'classic';
+  const roomVariant =
+    (room.gameOptions?.theme as string) ||
+    (room.gameOptions?.variant as string) ||
+    'adventure';
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
   const { setOption } = useRoomOptions({
     roomId: room.id,
     userId: userId ?? '',
   });
-  const media = useMediaQuery();
 
   const roomOpts = (room.gameOptions ?? {}) as Record<string, unknown>;
   const [currentGridSize, setCurrentGridSize] = React.useState<number>(
@@ -89,16 +90,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const [ruleComingSoon, setRuleComingSoon] = React.useState<
     Map<string, boolean>
   >(new Map());
-  // gtSm = wide enough for side-by-side preview + vertical list. Below that
-  // (web mobile / narrow tablets) we flip to a horizontal scrollable list
-  // sitting above the preview so the field doesn't get squeezed.
-  const themeListHorizontal = !media.gtSm;
 
   const handleVariantSelect = React.useCallback(
     (variantId: string) => {
       if (variantId === selectedVariant) return;
       setSelectedVariant(variantId);
-      setOption({ variant: variantId });
+      setOption({ variant: variantId, theme: variantId });
     },
     [setOption, selectedVariant],
   );
@@ -120,13 +117,15 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     if (
       opts.gridSize === undefined ||
       opts.shipCount === undefined ||
-      opts.variant === undefined
+      opts.variant === undefined ||
+      opts.theme === undefined
     ) {
       const gs = (opts.gridSize as number) ?? 10;
       setOption({
         gridSize: opts.gridSize ?? gs,
         shipCount: opts.shipCount ?? getDefaultShipCount(gs),
         variant: opts.variant ?? 'classic',
+        theme: opts.theme ?? opts.variant ?? 'adventure',
       });
     }
   }, [room.id, room.status, room.gameOptions, setOption]);
@@ -237,22 +236,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   // Theme picker + preview only — team mode controls now live in the
   // dedicated SeaBattleTeamPanel above the lobby so they don't compete with
   // the Start button for stacking context.
-  const variantChipOptions = SEA_BATTLE_VARIANTS.map((variant) => ({
-    id: variant.id,
-    label: t(variant.name as TranslationKey),
-    emoji: variant.emoji,
-  }));
-
   const variantPicker = (
-    <LobbyOptionSection
-      title={t('games.sea_battle_v1.table.lobby.theme' as TranslationKey)}
-    >
-      <LobbyChipGroup
-        options={variantChipOptions}
-        value={selectedVariant}
-        onChange={handleVariantSelect}
-        accentColor="#60a5fa"
-        testIdPrefix="sea-battle-variant"
+    <LobbyOptionSection title={t('games.create.sectionVariant')}>
+      <GameThemePicker
+        selectedTheme={selectedVariant}
+        onSelect={handleVariantSelect}
+        disabled={!isHost}
       />
     </LobbyOptionSection>
   );
@@ -278,23 +267,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     <>
       {teamPanelSlot}
       {isHost && room.status === 'lobby' ? (
-        themeListHorizontal ? (
-          <div className="flex flex-col items-stretch gap-3 w-full min-w-0">
-            {variantPicker}
-            <SeaBattleThemeProvider variant={selectedVariant}>
-              <SeaBattleThemePreview selectedVariant={selectedVariant} />
-            </SeaBattleThemeProvider>
-          </div>
-        ) : (
-          <div className="flex flex-row gap-4 w-full min-w-0 items-stretch">
-            <SeaBattleThemeProvider variant={selectedVariant}>
-              <SeaBattleThemePreview selectedVariant={selectedVariant} />
-            </SeaBattleThemeProvider>
-            <div className="flex flex-col items-stretch gap-2 flex-1 min-w-0 min-h-0">
-              {variantPicker}
-            </div>
-          </div>
-        )
+        <div className="flex flex-col items-center gap-4 w-full min-w-0">
+          {variantPicker}
+          <SeaBattleThemeProvider variant={selectedVariant}>
+            <SeaBattleThemePreview selectedVariant={selectedVariant} />
+          </SeaBattleThemeProvider>
+        </div>
       ) : null}
 
       {isHost && room.status === 'lobby' && (

@@ -7,6 +7,7 @@ import { GAME_CATALOG } from './games.catalog';
 import {
   type CatalogResponse,
   type CatalogGame,
+  type CatalogTheme,
   type CatalogVariant,
 } from './games.types';
 import type { GameRoomSummary } from './rooms/game-rooms.types';
@@ -49,6 +50,7 @@ export class GamesCatalogService {
         games.push({
           gameId: entry.gameId,
           comingSoon: true,
+          themes: [],
           variants: [],
           rules: entry.rules.map((r) => ({
             ruleId: r.ruleId,
@@ -57,6 +59,11 @@ export class GamesCatalogService {
         });
         continue;
       }
+
+      const themes: CatalogTheme[] = entry.themes.map((t) => ({
+        id: t,
+        comingSoon: false,
+      }));
 
       const variants: CatalogVariant[] = [];
       for (const v of entry.variants) {
@@ -73,6 +80,7 @@ export class GamesCatalogService {
       games.push({
         gameId: entry.gameId,
         comingSoon: false,
+        themes,
         variants,
         rules,
       });

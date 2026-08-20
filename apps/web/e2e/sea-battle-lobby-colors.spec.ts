@@ -9,24 +9,41 @@ import {
   mockGameSocket,
 } from './fixtures/test-utils';
 import { routes } from '../src/shared/config/routes';
+import { getTheme } from '../src/widgets/StrategyGames/SeaBattleGame/lib/theme';
+
+/** Convert a hex color (e.g. `#FF4D4D`) to the computed-style `rgb(r, g, b)` format. */
+function toRgb(hex: string): string {
+  const clean = hex.replace('#', '');
+  const value =
+    clean.length === 3
+      ? clean
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : clean;
+  const num = Number.parseInt(value, 16);
+  return `rgb(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255})`;
+}
 
 test.describe('Sea Battle Lobby Color Preview', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
 
-  test('should show color preview in the lobby and update when variant changes', async ({
+  test('should show color preview in the lobby and update when theme changes', async ({
     page,
   }) => {
     const roomId = MOCK_OBJECT_ID;
+    const adventureTheme = getTheme('adventure');
+    const cyberpunkTheme = getTheme('cyberpunk');
 
-    // Start with classic variant
+    // Start with the adventure (default) theme
     await mockRoomInfo(page, {
       room: {
         id: roomId,
         name: 'Lobby Color Test Room',
         gameId: 'sea_battle_v1',
-        gameOptions: { variant: 'classic' },
+        gameOptions: { theme: 'adventure' },
         status: 'lobby',
         playerCount: 1,
       },
@@ -36,7 +53,7 @@ test.describe('Sea Battle Lobby Color Preview', () => {
       gameId: 'sea_battle_v1',
       roomJoinedPayload: {
         status: 'lobby',
-        gameOptions: { variant: 'classic' },
+        gameOptions: { theme: 'adventure' },
       },
     });
 
@@ -47,28 +64,28 @@ test.describe('Sea Battle Lobby Color Preview', () => {
     const colorPreview = page.getByTestId('color-preview-container');
     await expect(colorPreview).toBeVisible({});
 
-    // Verify classic colors (approximate check of background-color)
+    // Verify adventure colors from the theme constants
     const shipSwatch = page.getByTestId('color-swatch-ship');
     await expect(shipSwatch).toHaveCSS(
       'background-color',
-      'rgb(148, 163, 184)',
+      toRgb(adventureTheme.shipColor),
       {},
-    ); // #94a3b8
+    );
 
     const hitSwatch = page.getByTestId('color-swatch-hit');
     await expect(hitSwatch).toHaveCSS(
       'background-color',
-      'rgb(239, 68, 68)',
+      toRgb(adventureTheme.hitColor),
       {},
-    ); // #ef4444
+    );
 
-    // Change variant to modern
+    // Change theme to cyberpunk
     await mockRoomInfo(page, {
       room: {
         id: roomId,
         name: 'Lobby Color Test Room',
         gameId: 'sea_battle_v1',
-        gameOptions: { variant: 'modern' },
+        gameOptions: { theme: 'cyberpunk' },
         status: 'lobby',
         playerCount: 1,
       },
@@ -84,23 +101,23 @@ test.describe('Sea Battle Lobby Color Preview', () => {
       gameId: 'sea_battle_v1',
       roomJoinedPayload: {
         status: 'lobby',
-        gameOptions: { variant: 'modern' },
+        gameOptions: { theme: 'cyberpunk' },
       },
     });
 
     await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
-    // Verify modern colors
+    // Verify cyberpunk colors from the theme constants
     await expect(shipSwatch).toHaveCSS(
       'background-color',
-      'rgb(87, 195, 255)',
+      toRgb(cyberpunkTheme.shipColor),
       {},
-    ); // #57c3ff
+    );
     await expect(hitSwatch).toHaveCSS(
       'background-color',
-      'rgb(255, 75, 75)',
+      toRgb(cyberpunkTheme.hitColor),
       {},
-    ); // #ff4b4b
+    );
   });
 });

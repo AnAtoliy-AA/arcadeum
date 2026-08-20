@@ -29,17 +29,20 @@ export interface GameThemePickerOption {
 }
 
 export interface GameThemePickerProps {
-  selectedTheme: string;
+  selectedTheme?: string;
   onSelect: (themeId: string) => void;
   /** Restrict the visible themes to this set (defaults to SHARED_THEMES ids). */
   allowedThemes?: string[];
   /** Render themes outside `allowedThemes` as disabled ("coming soon"). */
   showComingSoon?: boolean;
+  disabled?: boolean;
   options?: GameThemePickerOption[];
   className?: string;
   /** Optional custom thumbnail renderer (falls back to emoji + gradient). */
   renderThumbnail?: (theme: GameTheme) => ReactNode;
   label?: string;
+  /** Display layout: 'grid' (default, multi-column wrap) or 'scroll' (horizontal scroll) */
+  layout?: 'grid' | 'scroll';
 }
 
 const THEME_INDEX = new Map<string, GameTheme>(
@@ -47,19 +50,22 @@ const THEME_INDEX = new Map<string, GameTheme>(
 );
 
 /**
- * Shared visual-theme picker. Renders a horizontal strip of theme cards
- * driven by `SHARED_THEMES` (plus optional game-specific extra options).
- * New games get a theme picker for free by passing `allowedThemes`.
+ * Shared Visual Theme Picker.
+ *
+ * Renders the unified theme catalog (`SHARED_THEMES`) with colorful
+ * gradients, emoji icons, active indicators, and disabled states.
  */
 export function GameThemePicker({
-  selectedTheme,
+  selectedTheme = 'adventure',
   onSelect,
   allowedThemes,
   showComingSoon = false,
+  disabled: overallDisabled = false,
   options,
   className,
   renderThumbnail,
   label,
+  layout = 'grid',
 }: GameThemePickerProps) {
   const { t } = useTranslation();
 
@@ -102,14 +108,21 @@ export function GameThemePicker({
   };
 
   return (
-    <div className={cx('flex flex-col gap-3', className)}>
+    <div
+      className={cx('flex flex-col gap-3 w-full max-w-full min-w-0', className)}
+    >
       {label ? (
         <span className="text-sm font-semibold text-[var(--foreground)]">
           {label}
         </span>
       ) : null}
       <div
-        className="flex gap-3 overflow-x-auto pb-2"
+        className={cx(
+          'w-full max-w-full min-w-0 p-1',
+          layout === 'grid'
+            ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3'
+            : 'flex gap-3 overflow-x-auto pb-2 scroll-smooth',
+        )}
         role="radiogroup"
         aria-label={label ?? 'Theme'}
       >
@@ -118,6 +131,7 @@ export function GameThemePicker({
           const active = selectedTheme === option.id;
           const comingSoon = option.comingSoon || false;
           const disabled =
+            overallDisabled ||
             option.disabled ||
             comingSoon ||
             (showComingSoon && !theme) ||
@@ -133,7 +147,10 @@ export function GameThemePicker({
               data-testid={`theme-${option.id}`}
               onClick={() => onSelect(option.id)}
               className={cx(
-                'relative flex min-w-[120px] flex-col gap-2 rounded-2xl border p-3 text-left transition-all duration-200',
+                'relative flex flex-col gap-2 rounded-2xl border p-3 text-left transition-all duration-200',
+                layout === 'scroll'
+                  ? 'min-w-[120px] max-w-[140px] shrink-0'
+                  : 'w-full min-w-0',
                 active
                   ? 'border-[var(--primary)] bg-[var(--primary)]/10 ring-2 ring-[var(--primary)]/40'
                   : 'border-[var(--borderColor)] bg-[var(--glassBg)] hover:border-[var(--primary)]/60',

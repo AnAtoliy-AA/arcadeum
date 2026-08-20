@@ -6,6 +6,6 @@ import type { CascadeVariant } from '../types';
 
 export const { Provider: CascadeThemeProvider, useTheme: useCascadeTheme } =
   createGameThemeContext<CascadeThemeTokens>(
-    (variant) => getTheme((variant as CascadeVariant) ?? 'cosmic'),
-    'cosmic',
+    (variant) => getTheme((variant as CascadeVariant) ?? 'cyberpunk'),
+    'cyberpunk',
   );

@@ -51,6 +51,8 @@ interface GameWidgetContainerProps {
   handSection?: React.ReactNode;
   modals?: React.ReactNode;
   variant?: string;
+  theme?: string;
+  bgImage?: string;
   isMyTurn?: boolean;
   isGameOver?: boolean;
   showChatPopup?: boolean;
@@ -68,6 +70,8 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   handSection,
   modals,
   variant,
+  theme,
+  bgImage,
   isMyTurn,
   isGameOver,
   showChatPopup = true,
@@ -182,6 +186,8 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
             isMyTurn={!!isMyTurn}
             isFullscreen={isFullscreen}
             variant={variant as Parameters<typeof Container>[0]['variant']}
+            theme={theme}
+            bgImage={bgImage}
             data-testid="game-widget-container"
           >
             {renderedHeader}

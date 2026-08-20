@@ -7,7 +7,6 @@ import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { CriticalLobby } from './CriticalLobby';
 import { ActiveGameView } from './ActiveGameView';
 import { RulesModal } from './RulesModal';
-import { GAME_VARIANT } from '../lib/constants';
 
 export default function CriticalGame({
   roomId,
@@ -53,7 +52,11 @@ export default function CriticalGame({
     onShowRulesClose();
   }, [onShowRulesClose]);
 
-  const cardVariant = room?.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
+  const cardVariant =
+    (room?.gameOptions?.theme as string) ||
+    (room?.gameOptions?.cardVariant as string) ||
+    (room?.gameOptions?.variant as string) ||
+    'adventure';
 
   if (!room) return null;
 

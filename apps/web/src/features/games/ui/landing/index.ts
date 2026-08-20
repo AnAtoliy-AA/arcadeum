@@ -1,4 +1,6 @@
 export * from './types';
+export * from './GameLandingThemeContext';
+export * from './GameLandingPreview';
 export * from './GameLandingHero';
 export * from './GameHighlightsGrid';
 export * from './GameHowToPlay';

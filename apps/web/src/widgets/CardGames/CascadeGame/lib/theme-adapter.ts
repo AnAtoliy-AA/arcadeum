@@ -1,14 +1,7 @@
 import type { GameTheme } from '@/features/games/lib/shared-themes';
-import { THEMES, type CascadeThemeTokens } from './theme';
+import type { CascadeThemeTokens } from './theme';
 
-/**
- * Maps a shared visual theme (from `@/features/games/lib/shared-themes`) onto
- * the Cascade theme token shape. Shared themes that Cascade has no dedicated
- * variant for fall back to the cosmic symbols/palette while still adopting the
- * shared theme's colors.
- */
 export function sharedThemeToCascade(theme: GameTheme): CascadeThemeTokens {
-  const base = THEMES.cosmic;
   const rgb = (hex: string): string => {
     const clean = hex.replace('#', '');
     const value =
@@ -19,6 +12,7 @@ export function sharedThemeToCascade(theme: GameTheme): CascadeThemeTokens {
             .join('')
         : clean;
     const num = Number.parseInt(value, 16);
+    if (Number.isNaN(num)) return '255, 0, 128';
     return `${(num >> 16) & 255},${(num >> 8) & 255},${num & 255}`;
   };
 
@@ -31,8 +25,27 @@ export function sharedThemeToCascade(theme: GameTheme): CascadeThemeTokens {
     cardText: theme.colors.text,
     accent: theme.colors.primary,
     accentRGB: rgb(theme.colors.primary),
-    palette: base.palette,
-    colorNames: base.colorNames,
-    symbols: base.symbols,
+    palette: {
+      R: theme.colors.playerPalette[0] ?? '#ef4444',
+      Y: theme.colors.playerPalette[1] ?? '#fbbf24',
+      G: theme.colors.playerPalette[2] ?? '#10b981',
+      B: theme.colors.playerPalette[3] ?? '#3b82f6',
+      W: theme.colors.surface ?? '#1f1b3d',
+    },
+    colorNames: {
+      R: 'Red',
+      Y: 'Yellow',
+      G: 'Green',
+      B: 'Blue',
+      W: 'Wild',
+    },
+    symbols: {
+      SKIP: '⊘',
+      REVERSE: '↺',
+      DRAW_TWO: '+2',
+      WILD: '★',
+      WILD_DRAW_FOUR: '+4',
+    },
+    bgImage: theme.bgImage,
   };
 }

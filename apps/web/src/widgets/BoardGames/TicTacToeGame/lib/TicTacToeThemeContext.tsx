@@ -4,4 +4,4 @@ import { createGameThemeContext } from '@/features/games/lib/createGameThemeCont
 import { getTicTacToeTheme, type TicTacToeTheme } from './theme';
 
 export const { Provider: TicTacToeThemeProvider, useTheme: useTicTacToeTheme } =
-  createGameThemeContext<TicTacToeTheme>(getTicTacToeTheme, 'classic');
+  createGameThemeContext<TicTacToeTheme>(getTicTacToeTheme, 'cyberpunk');

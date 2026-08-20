@@ -22,6 +22,7 @@ export const highAltitudeHikeVariantStyles: Partial<VariantStyleConfig> = {
     ...baseVariantStyles.scene,
     sceneBgGradient:
       'radial-gradient(circle at 50% 20%, rgba(125, 211, 252, 0.24) 0%, rgba(5, 15, 40, 1) 45%, rgba(0, 0, 0, 1) 100%)',
+    sceneBackgroundImage: '/images/variants/high-altitude-hike_bg.webp',
     gridLineColorA: 'rgba(125, 211, 252, 0.28)',
     gridLineColorB: 'rgba(30, 58, 138, 0.35)',
     horizonGradient:

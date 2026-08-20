@@ -28,7 +28,7 @@ import { GameEndModals, GameWidgetContainer } from '@/features/games/ui';
 import { MatchWidget } from './MatchWidget';
 import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';
-import { CRITICAL_VARIANTS, GAME_VARIANT } from '../lib/constants';
+import { CRITICAL_VARIANTS } from '../lib/constants';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
 import type { GameVariant } from '@arcadeum/ui';
@@ -93,7 +93,11 @@ export function ActiveGameView({
   const { t } = useTranslation();
   const media = useMediaQuery();
   const isMobile = media.sm;
-  const cardVariant = room.gameOptions?.cardVariant || GAME_VARIANT.CYBERPUNK;
+  const cardVariant =
+    (room.gameOptions?.theme as string) ||
+    (room.gameOptions?.cardVariant as string) ||
+    (room.gameOptions?.variant as string) ||
+    'adventure';
   const scenePalette = useMemo(
     () => getVariantStyles(cardVariant).scene,
     [cardVariant],

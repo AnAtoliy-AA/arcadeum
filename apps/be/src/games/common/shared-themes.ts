@@ -4,11 +4,11 @@
  * from game-specific rule variants (modes).
  */
 export const SHARED_VISUAL_THEMES = [
+  'adventure',
   'cyberpunk',
   'underwater',
   'crime',
   'horror',
-  'adventure',
   'high-altitude-hike',
   'galaxy',
   'fantasy',

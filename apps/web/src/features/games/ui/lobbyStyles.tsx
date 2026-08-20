@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { getThemeById } from '@/features/games/lib/shared-themes';
 
 export {
   Button,
@@ -40,7 +41,7 @@ export const CenterSection = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center justify-center gap-5 flex-1 min-h-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:justify-start max-[1023px]:gap-4 max-[800px]:flex-[0] max-[800px]:min-h-[unset] max-[800px]:justify-start',
+      'flex flex-col items-center justify-center gap-5 flex-1 min-w-0 max-w-full min-h-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:justify-start max-[1023px]:gap-4 max-[800px]:flex-[0] max-[800px]:min-h-[unset] max-[800px]:justify-start',
       className,
     )}
     style={style}
@@ -326,19 +327,41 @@ export const VariantSelectorWrapper = ({
 
 export type GameContainerStylesProps = {
   className?: string;
+  theme?: string;
+  variant?: string;
+  bgImage?: string;
+  style?: CSSProperties;
   children?: ReactNode;
 };
 
 export const GameContainer = forwardRef<unknown, GameContainerStylesProps>(
-  function GameContainer({ className, children }, ref) {
+  function GameContainer(
+    { className, theme, variant, bgImage, style, children },
+    ref,
+  ) {
+    const themeObj = theme
+      ? getThemeById(theme)
+      : variant
+        ? getThemeById(variant)
+        : undefined;
+    const resolvedBgImage = bgImage ?? themeObj?.bgImage;
+
     return (
       <div
         ref={ref as React.Ref<HTMLDivElement>}
         className={cx(
-          'flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-x-hidden bg-[var(--background)] max-[1023px]:min-h-0 max-[1023px]:flex-1',
+          'relative flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-x-hidden bg-[var(--background)] max-[1023px]:min-h-0 max-[1023px]:flex-1',
           className,
         )}
+        style={style}
       >
+        {resolvedBgImage && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-20"
+            style={{ backgroundImage: `url(${resolvedBgImage})` }}
+          />
+        )}
         {children}
       </div>
     );

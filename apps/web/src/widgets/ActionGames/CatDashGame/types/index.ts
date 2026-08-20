@@ -8,8 +8,7 @@ export const MAX_PLAYERS = 6;
 export const TRACK_TYPES = ['linear', 'circular', 'multiple'] as const;
 export type TrackType = (typeof TRACK_TYPES)[number];
 
-export const THEMES = ['neon', 'village', 'space', 'nature'] as const;
-export type Theme = (typeof THEMES)[number];
+export type Theme = CatDashVariant;
 
 export const CAT_IDS = [
   'neon',
@@ -22,10 +21,18 @@ export const CAT_IDS = [
 export type CatId = (typeof CAT_IDS)[number];
 
 export const CAT_DASH_VARIANT_IDS = [
-  'neon',
-  'village',
-  'space',
-  'nature',
+  'cyberpunk',
+  'underwater',
+  'crime',
+  'horror',
+  'adventure',
+  'high-altitude-hike',
+  'galaxy',
+  'fantasy',
+  'western',
+  'egypt',
+  'steampunk',
+  'zen',
 ] as const;
 export type CatDashVariant = (typeof CAT_DASH_VARIANT_IDS)[number];
 

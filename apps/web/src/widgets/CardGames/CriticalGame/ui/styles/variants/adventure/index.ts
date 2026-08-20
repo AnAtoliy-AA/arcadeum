@@ -10,6 +10,7 @@ export const adventureFullVariantStyles: Partial<VariantStyleConfig> = {
     ...baseVariantStyles.scene,
     sceneBgGradient:
       'radial-gradient(circle at 50% 20%, rgba(79, 86, 107, 0.32) 0%, rgba(10, 10, 15, 1) 45%, rgba(0, 0, 0, 1) 100%)',
+    sceneBackgroundImage: '/images/variants/adventure_bg.webp',
     gridLineColorA: 'rgba(79, 86, 107, 0.35)',
     gridLineColorB: 'rgba(255, 77, 77, 0.18)',
     horizonGradient:

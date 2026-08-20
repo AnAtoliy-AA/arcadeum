@@ -3,8 +3,9 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { CheckersBoardVisual } from './CheckersBoardVisual';
+import { CheckersLandingPreview } from './CheckersLandingPreview';
 
 type CkMessages = CheckersMessages['checkers_v1'];
 type Landing = CkMessages['landing'];
@@ -34,7 +35,7 @@ interface Props {
 
 export default function CheckersLanding({
   landing,
-  variants,
+  variants: _variants,
   rules,
   gameId,
   createRoomHref,
@@ -125,14 +126,10 @@ export default function CheckersLanding({
     };
   });
 
-  const themeKeys = ['classic', 'neon', 'wood', 'marble', 'neon_glow'] as const;
-  const themesList = variants
-    ? themeKeys.map((k) => ({
-        id: k,
-        name: variants[k]?.name ?? k,
-        description: variants[k]?.description,
-      }))
-    : [];
+  const themeMessages = translatedGames?.themes as
+    | Record<string, { name?: string; description?: string } | undefined>
+    | undefined;
+  const themesList = getTranslatedSharedThemes(themeMessages);
 
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
@@ -163,7 +160,7 @@ export default function CheckersLanding({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <CheckersBoardVisual />,
+        heroVisual: <CheckersLandingPreview />,
       }}
       highlights={{
         title: 'Classic Board Mechanics, Modern Feel',

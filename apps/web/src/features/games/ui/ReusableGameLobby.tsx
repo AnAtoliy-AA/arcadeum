@@ -237,8 +237,13 @@ export function ReusableGameLobby({
     return 'Waiting for host to start...';
   }, [room.status, enableBots, room.playerCount, minPlayers, isHost]);
 
+  const visualTheme =
+    (room.gameOptions?.theme as string | undefined) ??
+    (room.gameOptions?.variant as string | undefined) ??
+    'cyberpunk';
+
   return (
-    <GameContainer ref={containerRef}>
+    <GameContainer ref={containerRef} theme={visualTheme}>
       {rulesModalSlot}
 
       <ConfirmationModal

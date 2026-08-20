@@ -8,7 +8,13 @@ describe('CARD_VARIANTS bgImage field', () => {
     expect(v?.bgImage).toBe(`/images/variants/${file}`);
   };
 
-  it('populates bgImage for the 6 variants with shipped artwork', () => {
+  it('populates bgImage for all 12 variants with shipped artwork', () => {
+    expectImage('cyberpunk', 'cyberpunk_bg.webp');
+    expectImage('underwater', 'underwater_bg.webp');
+    expectImage('crime', 'crime_bg.webp');
+    expectImage('horror', 'horror_bg.webp');
+    expectImage('adventure', 'adventure_bg.webp');
+    expectImage('high-altitude-hike', 'high-altitude-hike_bg.webp');
     expectImage('egypt', 'egypt_bg.webp');
     expectImage('fantasy', 'fantasy_bg.webp');
     expectImage('galaxy', 'galaxy_bg.webp');
@@ -17,22 +23,8 @@ describe('CARD_VARIANTS bgImage field', () => {
     expectImage('zen', 'zen_bg.webp');
   });
 
-  it('leaves bgImage undefined for variants without shipped artwork', () => {
-    const noArtIds = [
-      'cyberpunk',
-      'underwater',
-      'crime',
-      'horror',
-      'adventure',
-      'high-altitude-hike',
-      'random',
-    ];
-    for (const id of noArtIds) {
-      const v = CARD_VARIANTS.find((c) => c.id === id);
-      expect(
-        v?.bgImage,
-        `variant ${id} should not have bgImage`,
-      ).toBeUndefined();
-    }
+  it('leaves bgImage undefined for random', () => {
+    const v = CARD_VARIANTS.find((c) => c.id === 'random');
+    expect(v?.bgImage).toBeUndefined();
   });
 });

@@ -438,6 +438,11 @@ export const ruMessages = {
       master: 'Мастер',
     },
   },
+  landing: {
+    previewLabel: 'Живой превью',
+    cycleHint: 'Нажмите, чтобы сменить тему',
+    cycleAriaLabel: 'Сменить тему превью, сейчас {{variant}}',
+  },
   themes: {
     cyberpunk: {
       name: 'Киберпанк',

@@ -30,6 +30,7 @@ import {
 
 function resolveOptions(raw: unknown): TicTacToeOptions {
   const r = (raw ?? {}) as Partial<{
+    theme: string;
     variant: string;
     boardSize: number | string;
     teamMode: boolean;
@@ -41,8 +42,10 @@ function resolveOptions(raw: unknown): TicTacToeOptions {
   const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
     n === 1 || n === 2 || n === 3;
   const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
+  const theme = (r.theme ?? r.variant ?? 'adventure') as TicTacToeVariant;
   return {
-    variant: (r.variant ?? 'classic') as TicTacToeVariant,
+    variant: theme,
+    theme,
     boardSize: isSize(r.boardSize) ? r.boardSize : 3,
     teamMode: !!r.teamMode,
     expansionMargin: isMargin(r.expansionMargin) ? r.expansionMargin : 3,
@@ -159,12 +162,14 @@ function TicTacToeGameImpl({
 
   if (!room) return null;
 
+  const visualTheme = options.theme ?? options.variant ?? 'cyberpunk';
+
   // Lobby renders OUTSIDE GameWidgetContainer so it gets full page height
   // (sea-battle does the same). The container's `board` slot is sized for
   // the in-game grid and squeezes anything else.
   if (isLobby) {
     return (
-      <TicTacToeThemeProvider variant={options.variant}>
+      <TicTacToeThemeProvider variant={visualTheme}>
         <TicTacToeLobby
           room={room}
           userId={currentUserId ?? ''}
@@ -238,8 +243,9 @@ function TicTacToeGameImpl({
   );
 
   return (
-    <TicTacToeThemeProvider variant={options.variant}>
+    <TicTacToeThemeProvider variant={visualTheme}>
       <GameWidgetContainer
+        theme={visualTheme}
         board={board}
         modals={modals}
         variant={options.variant}

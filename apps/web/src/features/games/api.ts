@@ -6,6 +6,11 @@ import type {
   GameSessionSummary,
 } from '@/shared/types/games';
 
+export interface CatalogTheme {
+  id: string;
+  comingSoon: boolean;
+}
+
 export interface CatalogVariant {
   id: string;
   comingSoon: boolean;
@@ -19,6 +24,7 @@ export interface CatalogRule {
 export interface CatalogGame {
   gameId: string;
   comingSoon: boolean;
+  themes?: CatalogTheme[];
   variants: CatalogVariant[];
   rules: CatalogRule[];
 }
@@ -215,24 +221,24 @@ export const gamesApi = {
 
   quickplay: async (
     gameId: string,
-    options?: ApiClientOptions & { variant?: string },
+    options?: ApiClientOptions & { variant?: string; theme?: string },
   ): Promise<CreateRoomResponse> => {
-    const { variant, ...rest } = options ?? {};
+    const { variant, theme, ...rest } = options ?? {};
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
-      { gameId, mode: 'ai', variant },
+      { gameId, mode: 'ai', variant, theme },
       rest,
     );
   },
 
   findHumanMatch: async (
     gameId: string,
-    options?: ApiClientOptions & { variant?: string },
+    options?: ApiClientOptions & { variant?: string; theme?: string },
   ): Promise<CreateRoomResponse> => {
-    const { variant, ...rest } = options ?? {};
+    const { variant, theme, ...rest } = options ?? {};
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
-      { gameId, mode: 'human', variant },
+      { gameId, mode: 'human', variant, theme },
       rest,
     );
   },

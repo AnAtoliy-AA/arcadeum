@@ -435,6 +435,11 @@ export const enMessages = {
       master: 'Master',
     },
   },
+  landing: {
+    previewLabel: 'Live preview',
+    cycleHint: 'Click to change theme',
+    cycleAriaLabel: 'Cycle theme preview, currently {{variant}}',
+  },
   themes: {
     cyberpunk: {
       name: 'Cyberpunk',

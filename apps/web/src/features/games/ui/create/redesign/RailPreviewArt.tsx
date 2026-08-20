@@ -2,8 +2,8 @@
 
 import { useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { handWithUids } from '@/widgets/CriticalGame/lib/combo';
-import type { CriticalCard } from '@/widgets/CriticalGame/types';
+import { handWithUids } from '@/widgets/CardGames/CriticalGame/lib/combo';
+import type { CriticalCard } from '@/widgets/CardGames/CriticalGame/types';
 import { GameArt } from './art/GameArt';
 import { CriticalCardPoster } from './art/CriticalCardPoster';
 import { SeaBattleBoardPoster } from './art/SeaBattleBoardPoster';

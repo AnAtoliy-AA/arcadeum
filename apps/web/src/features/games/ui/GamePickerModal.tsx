@@ -17,7 +17,11 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import dynamic from 'next/dynamic';
-import { gameMetadata, gameLoaders } from '@/features/games/registry';
+import {
+  gameMetadata,
+  gameLoaders,
+  getCategoryLabelKey,
+} from '@/features/games/registry';
 import { GameArt } from '@/features/games/ui/create/redesign/art/GameArt';
 import { CriticalMiniCluster } from '@/features/games/ui/create/redesign/art/CriticalMiniCluster';
 import { SeaBattleBoardPoster } from '@/features/games/ui/create/redesign/art/SeaBattleBoardPoster';
@@ -41,14 +45,6 @@ interface GamePickerModalProps {
 const ALL_AI_GAMES = Object.values(gameMetadata).filter(
   (g) => g.supportsAI && g.slug in gameLoaders,
 );
-
-const CATEGORY_KEY: Record<string, string> = {
-  'Card Game': 'games.shared.category.cardGame',
-  'Board Game': 'games.shared.category.boardGame',
-  Action: 'games.shared.category.action',
-  Strategy: 'games.shared.category.strategy',
-  Race: 'games.shared.category.race',
-};
 
 function GameTilePreview({ gameId }: { gameId: GameId }) {
   if (gameId === 'critical_v1') {
@@ -175,7 +171,7 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
               >
                 {cat === 'All'
                   ? t('games.gamePicker.allCategory')
-                  : t((CATEGORY_KEY[cat] ?? cat) as TranslationKey)}
+                  : t((getCategoryLabelKey(cat) ?? cat) as TranslationKey)}
               </button>
             ))}
           </div>
@@ -263,7 +259,7 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
                       }}
                     >
                       {t(
-                        (CATEGORY_KEY[game.category] ??
+                        (getCategoryLabelKey(game.category) ??
                           game.category) as TranslationKey,
                       )}
                     </div>

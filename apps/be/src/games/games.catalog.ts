@@ -1,3 +1,5 @@
+import { SHARED_VISUAL_THEMES } from './common/shared-themes';
+
 export interface GameCatalogRule {
   ruleId: string;
   label: string;
@@ -8,6 +10,11 @@ export type GameStartMode = 'immediate' | 'placement';
 
 export interface GameCatalogEntry {
   gameId: string;
+  /** Visual skins shared across games (subset of SHARED_VISUAL_THEMES). */
+  themes: ReadonlyArray<string>;
+  /** Game-specific rule variants (modes), e.g. 'pure', 'speed', 'team_2v2'. */
+  modes: ReadonlyArray<string>;
+  /** Backward-compatible union of themes + modes. */
   variants: ReadonlyArray<string>;
   rules: ReadonlyArray<GameCatalogRule>;
   startMode: GameStartMode;
@@ -17,21 +24,9 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'critical_v1',
     startMode: 'immediate',
-    variants: [
-      'cyberpunk',
-      'underwater',
-      'crime',
-      'horror',
-      'adventure',
-      'high-altitude-hike',
-      'galaxy',
-      'fantasy',
-      'western',
-      'egypt',
-      'steampunk',
-      'zen',
-      'random',
-    ],
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: [],
+    variants: [...SHARED_VISUAL_THEMES],
     rules: [
       {
         ruleId: 'combos',
@@ -56,6 +51,19 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'sea_battle_v1',
     startMode: 'placement',
+    themes: [
+      'classic',
+      'modern',
+      'pixel',
+      'cartoon',
+      'cyber',
+      'vintage',
+      'nebula',
+      'forest',
+      'sunset',
+      'monochrome',
+    ],
+    modes: ['speed', 'battle_royale', 'team_2v2'],
     variants: [
       'classic',
       'modern',
@@ -118,12 +126,16 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'texas_holdem_v1',
     startMode: 'immediate',
+    themes: [],
+    modes: [],
     variants: [],
     rules: [],
   },
   {
     gameId: 'glimworm_v1',
     startMode: 'immediate',
+    themes: [],
+    modes: ['battle_royale', 'time_attack', 'lives_heats'],
     variants: ['battle_royale', 'time_attack', 'lives_heats'],
     rules: [
       {
@@ -143,6 +155,8 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'tic_tac_toe_v1',
     startMode: 'immediate',
+    themes: ['classic', 'neon', 'paper', 'pixel', 'chalkboard', 'retro'],
+    modes: [],
     variants: ['classic', 'neon', 'paper', 'pixel', 'chalkboard', 'retro'],
     rules: [
       {
@@ -162,6 +176,17 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'cascade_v1',
     startMode: 'immediate',
+    themes: [
+      'cosmic',
+      'arcane',
+      'cyberpunk',
+      'elemental',
+      'classic',
+      'neon',
+      'tropical',
+      'steampunk',
+    ],
+    modes: ['pure', 'speed'],
     variants: [
       'cosmic',
       'arcane',
@@ -192,6 +217,8 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'chess_v1',
     startMode: 'immediate',
+    themes: [],
+    modes: ['standard', 'chess960'],
     variants: ['standard', 'chess960'],
     rules: [
       {
@@ -211,6 +238,8 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'checkers_v1',
     startMode: 'immediate',
+    themes: ['classic', 'neon', 'wood', 'marble', 'neon_glow'],
+    modes: [],
     variants: ['classic', 'neon', 'wood', 'marble', 'neon_glow'],
     rules: [
       {
@@ -235,6 +264,8 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'cat_dash_v1',
     startMode: 'immediate',
+    themes: ['neon', 'village', 'space', 'nature'],
+    modes: [],
     variants: ['neon', 'village', 'space', 'nature'],
     rules: [
       {

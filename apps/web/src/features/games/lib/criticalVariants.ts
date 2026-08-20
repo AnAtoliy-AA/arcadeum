@@ -1,3 +1,7 @@
+// Backward-compat re-export. The canonical theme registry now lives in
+// './shared-themes' so every game can share the same visual themes.
+import { SHARED_THEMES } from './shared-themes';
+
 export const CARD_VARIANTS: {
   id: string;
   name: string;
@@ -6,102 +10,11 @@ export const CARD_VARIANTS: {
   gradient: string;
   bgImage?: string;
   disabled?: boolean;
-}[] = [
-  {
-    id: 'cyberpunk',
-    name: 'games.critical_v1.variants.cyberpunk.name',
-    description: 'games.critical_v1.variants.cyberpunk.description',
-    emoji: '🤖',
-    gradient: 'linear-gradient(135deg, #FF0080 0%, #7928CA 100%)',
-  },
-  {
-    id: 'underwater',
-    name: 'games.critical_v1.variants.underwater.name',
-    description: 'games.critical_v1.variants.underwater.description',
-    emoji: '🦑',
-    gradient: 'linear-gradient(135deg, #007CF0 0%, #00DFD8 100%)',
-  },
-  {
-    id: 'crime',
-    name: 'games.critical_v1.variants.crime.name',
-    description: 'games.critical_v1.variants.crime.description',
-    emoji: '🕵️‍♀️',
-    gradient: 'linear-gradient(135deg, #F5A623 0%, #F8E71C 100%)',
-  },
-  {
-    id: 'horror',
-    name: 'games.critical_v1.variants.horror.name',
-    description: 'games.critical_v1.variants.horror.description',
-    emoji: '👻',
-    gradient: 'linear-gradient(135deg, #7928CA 0%, #FF0080 100%)',
-  },
-  {
-    id: 'adventure',
-    name: 'games.critical_v1.variants.adventure.name',
-    description: 'games.critical_v1.variants.adventure.description',
-    emoji: '🏔️',
-    gradient: 'linear-gradient(135deg, #4F566B 0%, #FF4D4D 100%)',
-  },
-  {
-    id: 'high-altitude-hike',
-    name: 'games.critical_v1.variants.high-altitude-hike.name',
-    description: 'games.critical_v1.variants.high-altitude-hike.description',
-    emoji: '🏔️',
-    gradient: 'linear-gradient(135deg, #7dd3fc 0%, #1e3a8a 100%)',
-  },
-  {
-    id: 'galaxy',
-    name: 'games.critical_v1.variants.galaxy.name',
-    description: 'games.critical_v1.variants.galaxy.description',
-    emoji: '🌌',
-    gradient: 'linear-gradient(135deg, #6b21a8 0%, #1e1b4b 100%)',
-    bgImage: '/images/variants/galaxy_bg.webp',
-  },
-  {
-    id: 'fantasy',
-    name: 'games.critical_v1.variants.fantasy.name',
-    description: 'games.critical_v1.variants.fantasy.description',
-    emoji: '🐉',
-    gradient: 'linear-gradient(135deg, #065f46 0%, #d4af37 100%)',
-    bgImage: '/images/variants/fantasy_bg.webp',
-  },
-  {
-    id: 'western',
-    name: 'games.critical_v1.variants.western.name',
-    description: 'games.critical_v1.variants.western.description',
-    emoji: '🤠',
-    gradient: 'linear-gradient(135deg, #9a3412 0%, #fde68a 100%)',
-    bgImage: '/images/variants/western_bg.webp',
-  },
-  {
-    id: 'egypt',
-    name: 'games.critical_v1.variants.egypt.name',
-    description: 'games.critical_v1.variants.egypt.description',
-    emoji: '🏺',
-    gradient: 'linear-gradient(135deg, #b45309 0%, #1e3a8a 100%)',
-    bgImage: '/images/variants/egypt_bg.webp',
-  },
-  {
-    id: 'steampunk',
-    name: 'games.critical_v1.variants.steampunk.name',
-    description: 'games.critical_v1.variants.steampunk.description',
-    emoji: '⚙️',
-    gradient: 'linear-gradient(135deg, #78350f 0%, #fef3c7 100%)',
-    bgImage: '/images/variants/steampunk_bg.webp',
-  },
-  {
-    id: 'zen',
-    name: 'games.critical_v1.variants.zen.name',
-    description: 'games.critical_v1.variants.zen.description',
-    emoji: '🏮',
-    gradient: 'linear-gradient(135deg, #db2777 0%, #1e1b4b 100%)',
-    bgImage: '/images/variants/zen_bg.webp',
-  },
-  {
-    id: 'random',
-    name: 'games.critical_v1.variants.random.name',
-    description: 'games.critical_v1.variants.random.description',
-    emoji: '🎲',
-    gradient: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-  },
-];
+}[] = SHARED_THEMES.map((t) => ({
+  id: t.id,
+  name: t.nameKey,
+  description: t.descriptionKey,
+  emoji: t.emoji,
+  gradient: t.gradient,
+  bgImage: t.bgImage,
+}));

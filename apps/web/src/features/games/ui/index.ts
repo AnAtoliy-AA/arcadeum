@@ -15,6 +15,11 @@ export { GameResultModal } from './GameResultModal';
 export { RematchModal } from './RematchModal';
 export { RematchInvitationModal } from './RematchInvitationModal';
 export { GameVariantSelector } from './GameVariantSelector';
+export {
+  GameThemePicker,
+  type GameThemePickerProps,
+  type GameThemePickerOption,
+} from './GameThemePicker';
 export { InGameAvatar, type InGameAvatarProps } from './InGameAvatar';
 export { EmoteBubble } from './EmoteBubble';
 export {
@@ -24,11 +29,26 @@ export {
 } from './TurnIndicator';
 export { UndoButton } from './UndoButton';
 export { GameEndModals } from './GameEndModals';
+export { GameIdleTimer, type GameIdleTimerProps } from './GameIdleTimer';
+export {
+  GameMoveHistory,
+  type GameMoveHistoryProps,
+  type GameLogEntry,
+} from './GameMoveHistory';
+export {
+  GameForfeitModal,
+  type GameForfeitModalProps,
+} from './GameForfeitModal';
+export {
+  GameWidgetErrorBoundary,
+  type GameWidgetErrorBoundaryProps,
+} from './GameWidgetErrorBoundary';
 export {
   LobbyOptionSection,
   LobbyChipGroup,
   LobbyToggle,
 } from './LobbyOptions';
+export { getLobbyTheme } from './lobbyTheme';
 export { MatchmakingQueueModal, useMatchmaking } from './MatchmakingQueue';
 export { QuickplayButton } from './QuickplayButton';
 export * from './landing';

@@ -41,12 +41,12 @@ export interface FeaturedGame {
 }
 
 import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
-import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
+import { SEA_BATTLE_VARIANTS } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
-import { TIC_TAC_TOE_VARIANTS } from '@/widgets/TicTacToeGame/lib/constants';
-import { CASCADE_VARIANTS } from '@/widgets/CascadeGame/lib/constants';
-import { CHESS_VARIANTS } from '@/widgets/ChessGame/lib/constants';
-import { CHECKERS_VARIANTS } from '@/widgets/CheckersGame/lib/constants';
+import { TIC_TAC_TOE_VARIANTS } from '@/widgets/BoardGames/TicTacToeGame/lib/constants';
+import { CASCADE_VARIANTS } from '@/widgets/CardGames/CascadeGame/lib/constants';
+import { CHESS_VARIANTS } from '@/widgets/BoardGames/ChessGame/lib/constants';
+import { CHECKERS_VARIANTS } from '@/widgets/BoardGames/CheckersGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {

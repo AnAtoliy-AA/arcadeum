@@ -1,45 +1,34 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
-import type {
-  GameMessageHandler,
-  GameMessageHandlerFn,
-} from './game-message-handler.interface';
-
+import type { GameMessageHandlerFn } from './game-message-handler.interface';
 import { ChessService } from './chess/chess.service';
+import type { ChessOptions } from './engines/chess/chess.types';
 import {
+  BaseGameGateway,
   extractRoomAndUser,
   handleError,
+  maybeEncrypt,
   validatePayloadUserId,
-} from './games.gateway.utils';
-import { maybeEncrypt } from '../common/utils/socket-encryption.util';
+} from './common/base-game.gateway';
 
 @Injectable()
-export class ChessGateway implements GameMessageHandler {
-  private readonly logger = new Logger(ChessGateway.name);
+export class ChessGateway extends BaseGameGateway<ChessOptions> {
+  protected readonly logger = new Logger(ChessGateway.name);
+  protected readonly eventPrefix = 'chess';
 
-  constructor(private readonly chessService: ChessService) {}
+  constructor(protected readonly gameService: ChessService) {
+    super();
+  }
 
-  readonly handlers: Record<string, GameMessageHandlerFn> = {
-    'chess.session.start': (client, payload) =>
-      this.handleSessionStart(client, payload),
-    'chess.session.move': (client, payload) => this.handleMove(client, payload),
-    'chess.session.resign': (client, payload) =>
-      this.handleForfeit(client, payload),
-    'chess.session.draw_offer': (client, payload) =>
-      this.handleDrawOffer(client, payload),
-    'chess.session.draw_accept': (client, payload) =>
-      this.handleDrawAccept(client, payload),
-  };
-
-  private async handleSessionStart(
+  protected override async handleSessionStart(
     client: Socket,
     payload: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     try {
-      const result = await this.chessService.startSession(
+      const result = await this.gameService.startSession(
         userId,
         roomId,
         !!payload?.withBots,
@@ -57,109 +46,71 @@ export class ChessGateway implements GameMessageHandler {
     }
   }
 
-  private async handleMove(
-    client: Socket,
-    payload: Record<string, unknown>,
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    validatePayloadUserId(client, userId);
-    if (
-      !payload?.fromFile ||
-      !payload?.fromRank ||
-      !payload?.toFile ||
-      !payload?.toRank
-    ) {
-      throw new WsException('fromFile, fromRank, toFile, toRank are required');
-    }
-    try {
-      await this.chessService.move(userId, roomId, {
-        fromFile: payload.fromFile as string,
-        fromRank: payload.fromRank as number,
-        toFile: payload.toFile as string,
-        toRank: payload.toRank as number,
-        promotion: payload.promotion as string | undefined,
-      });
-      client.emit(
-        'chess.session.moved',
-        maybeEncrypt({
-          roomId,
-          userId,
-          fromFile: payload.fromFile,
-          fromRank: payload.fromRank,
-          toFile: payload.toFile,
-          toRank: payload.toRank,
-        }),
-      );
-    } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        { action: 'move', roomId, userId },
-        'Unable to make move.',
-      );
-    }
-  }
-
-  private async handleForfeit(
-    client: Socket,
-    payload: Record<string, unknown>,
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    validatePayloadUserId(client, userId);
-    try {
-      await this.chessService.forfeit(userId, roomId);
-      client.emit('chess.session.resigned', maybeEncrypt({ roomId, userId }));
-    } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        { action: 'resign', roomId, userId },
-        'Unable to resign.',
-      );
-    }
-  }
-
-  private async handleDrawOffer(
-    client: Socket,
-    payload: Record<string, unknown>,
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    validatePayloadUserId(client, userId);
-    try {
-      await this.chessService.drawOffer(userId, roomId);
-      client.emit(
-        'chess.session.draw_offered',
-        maybeEncrypt({ roomId, userId }),
-      );
-    } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        { action: 'draw offer', roomId, userId },
-        'Unable to offer draw.',
-      );
-    }
-  }
-
-  private async handleDrawAccept(
-    client: Socket,
-    payload: Record<string, unknown>,
-  ): Promise<void> {
-    const { roomId, userId } = extractRoomAndUser(payload);
-    validatePayloadUserId(client, userId);
-    try {
-      await this.chessService.drawAccept(userId, roomId);
-      client.emit(
-        'chess.session.draw_accepted',
-        maybeEncrypt({ roomId, userId }),
-      );
-    } catch (error) {
-      handleError(
-        this.logger,
-        error,
-        { action: 'draw accept', roomId, userId },
-        'Unable to accept draw.',
-      );
-    }
+  protected getGameHandlers(): Record<string, GameMessageHandlerFn> {
+    return {
+      'chess.session.move': this.wrapHandler(
+        'move',
+        async (client, payload, roomId, userId) => {
+          if (
+            !payload?.fromFile ||
+            !payload?.fromRank ||
+            !payload?.toFile ||
+            !payload?.toRank
+          ) {
+            throw new WsException(
+              'fromFile, fromRank, toFile, toRank are required',
+            );
+          }
+          await this.gameService.move(userId, roomId, {
+            fromFile: payload.fromFile as string,
+            fromRank: payload.fromRank as number,
+            toFile: payload.toFile as string,
+            toRank: payload.toRank as number,
+            promotion: payload.promotion as string | undefined,
+          });
+          client.emit(
+            'chess.session.moved',
+            maybeEncrypt({
+              roomId,
+              userId,
+              fromFile: payload.fromFile,
+              fromRank: payload.fromRank,
+              toFile: payload.toFile,
+              toRank: payload.toRank,
+            }),
+          );
+        },
+      ),
+      'chess.session.resign': this.wrapHandler(
+        'resign',
+        async (client, _payload, roomId, userId) => {
+          await this.gameService.forfeit(userId, roomId);
+          client.emit(
+            'chess.session.resigned',
+            maybeEncrypt({ roomId, userId }),
+          );
+        },
+      ),
+      'chess.session.draw_offer': this.wrapHandler(
+        'draw offer',
+        async (client, _payload, roomId, userId) => {
+          await this.gameService.drawOffer(userId, roomId);
+          client.emit(
+            'chess.session.draw_offered',
+            maybeEncrypt({ roomId, userId }),
+          );
+        },
+      ),
+      'chess.session.draw_accept': this.wrapHandler(
+        'draw accept',
+        async (client, _payload, roomId, userId) => {
+          await this.gameService.drawAccept(userId, roomId);
+          client.emit(
+            'chess.session.draw_accepted',
+            maybeEncrypt({ roomId, userId }),
+          );
+        },
+      ),
+    };
   }
 }

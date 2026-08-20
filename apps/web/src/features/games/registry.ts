@@ -7,14 +7,14 @@ export const gameLoaders: Record<
   string,
   () => Promise<{ default: React.ComponentType<BaseGameWidgetProps> }>
 > = {
-  critical_v1: () => import('@/widgets/CriticalGame'),
-  sea_battle_v1: () => import('@/widgets/SeaBattleGame'),
-  glimworm_v1: () => import('@/widgets/GlimwormGame'),
-  tic_tac_toe_v1: () => import('@/widgets/TicTacToeGame'),
-  cascade_v1: () => import('@/widgets/CascadeGame'),
-  chess_v1: () => import('@/widgets/ChessGame'),
-  checkers_v1: () => import('@/widgets/CheckersGame'),
-  cat_dash_v1: () => import('@/widgets/CatDashGame'),
+  critical_v1: () => import('@/widgets/CardGames/CriticalGame'),
+  sea_battle_v1: () => import('@/widgets/StrategyGames/SeaBattleGame'),
+  glimworm_v1: () => import('@/widgets/ActionGames/GlimwormGame'),
+  tic_tac_toe_v1: () => import('@/widgets/BoardGames/TicTacToeGame'),
+  cascade_v1: () => import('@/widgets/CardGames/CascadeGame'),
+  chess_v1: () => import('@/widgets/BoardGames/ChessGame'),
+  checkers_v1: () => import('@/widgets/BoardGames/CheckersGame'),
+  cat_dash_v1: () => import('@/widgets/ActionGames/CatDashGame'),
   // Add more games as they are implemented
 } as const;
 
@@ -34,7 +34,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     version: '1.0.0',
     supportsAI: true,
     tags: ['cards', 'party', 'fun', 'strategy'],
-    implementationPath: '@/widgets/CriticalGame',
+    implementationPath: '@/widgets/CardGames/CriticalGame',
     lastUpdated: '2024-01-01',
     status: 'active',
   },
@@ -70,7 +70,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     version: '1.0.0',
     supportsAI: true,
     tags: ['action', 'arena', 'real-time', 'snake', 'casual'],
-    implementationPath: '@/widgets/GlimwormGame',
+    implementationPath: '@/widgets/ActionGames/GlimwormGame',
     lastUpdated: '2026-05-02',
     status: 'beta',
   },
@@ -88,7 +88,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     version: '1.0.0',
     supportsAI: true,
     tags: ['strategy', 'classic', 'naval'],
-    implementationPath: '@/widgets/SeaBattleGame',
+    implementationPath: '@/widgets/StrategyGames/SeaBattleGame',
     lastUpdated: '2024-01-30',
     status: 'beta',
   },
@@ -107,7 +107,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     version: '1.0.0',
     supportsAI: true,
     tags: ['board', 'strategy', 'classic'],
-    implementationPath: '@/widgets/ChessGame',
+    implementationPath: '@/widgets/BoardGames/ChessGame',
     lastUpdated: '2024-01-01',
     status: 'experimental',
   },
@@ -125,7 +125,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     version: '1.0.0',
     supportsAI: true,
     tags: ['board', 'strategy', 'classic'],
-    implementationPath: '@/widgets/CheckersGame',
+    implementationPath: '@/widgets/BoardGames/CheckersGame',
     lastUpdated: '2024-01-01',
     status: 'experimental',
   },
@@ -144,7 +144,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     version: '1.0.0',
     supportsAI: true,
     tags: ['cards', 'casual', 'family', 'matching', 'classic'],
-    implementationPath: '@/widgets/CascadeGame',
+    implementationPath: '@/widgets/CardGames/CascadeGame',
     lastUpdated: '2026-05-26',
     status: 'beta',
   },
@@ -162,7 +162,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     version: '1.0.0',
     supportsAI: true,
     tags: ['board', 'classic', 'casual', 'quick', 'strategy'],
-    implementationPath: '@/widgets/TicTacToeGame',
+    implementationPath: '@/widgets/BoardGames/TicTacToeGame',
     lastUpdated: '2026-05-26',
     status: 'beta',
   },
@@ -217,8 +217,52 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     version: '1.0.0',
     supportsAI: true,
     tags: ['cats', 'race', 'dice', 'family', 'fun'],
-    implementationPath: '@/widgets/CatDashGame',
+    implementationPath: '@/widgets/ActionGames/CatDashGame',
     lastUpdated: '2026-07-23',
     status: 'coming_soon',
   },
 };
+
+/**
+ * i18n key for a category label. Unknown categories fall back to the raw
+ * string by returning `undefined` — callers must handle that.
+ */
+export const CATEGORY_LABEL_KEYS: Record<string, string> = {
+  'Card Game': 'games.shared.category.cardGame',
+  'Board Game': 'games.shared.category.boardGame',
+  Action: 'games.shared.category.action',
+  Strategy: 'games.shared.category.strategy',
+  Race: 'games.shared.category.race',
+};
+
+export function getCategoryLabelKey(category: string): string | undefined {
+  return CATEGORY_LABEL_KEYS[category];
+}
+
+/**
+ * Preferred tab order for catalog categories. New categories not listed here
+ * are appended after these, in first-seen order, so adding a game to
+ * `gameMetadata` is the only registration step needed.
+ */
+const CATEGORY_ORDER = [
+  'Card Game',
+  'Board Game',
+  'Strategy',
+  'Action',
+] as const;
+
+/**
+ * Derives the catalog category tabs from `gameMetadata`. A new game only
+ * needs an entry in `gameMetadata` (+ `gameLoaders`) — its category appears
+ * here automatically. Coming-soon/deprecated games are excluded so their
+ * genre does not create empty tabs.
+ */
+export function getVisibleGameCategories(): string[] {
+  const seen = new Set<string>();
+  for (const order of CATEGORY_ORDER) seen.add(order);
+  for (const meta of Object.values(gameMetadata)) {
+    if (meta.status === 'coming_soon' || meta.status === 'deprecated') continue;
+    seen.add(meta.category);
+  }
+  return Array.from(seen);
+}

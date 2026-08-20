@@ -264,6 +264,11 @@ export const enMessages = {
       joinButton: 'Join Room',
     },
   },
+  widgetError: {
+    title: 'Something went wrong',
+    message: 'This game hit an unexpected error. Try again to keep playing.',
+    retry: 'Try again',
+  },
   inviteCode: {
     title: 'Join a Private Game',
     label: 'Enter Invite Code',
@@ -369,6 +374,17 @@ export const enMessages = {
         accept: 'Accept',
       },
     },
+    forfeit: {
+      title: 'Forfeit game?',
+      message: 'Are you sure you want to forfeit? Your opponent wins.',
+      confirm: 'Forfeit',
+      cancel: 'Cancel',
+    },
+    idleTimer: {
+      countdown: 'Autoplay in {{seconds}}s',
+      active: 'Autoplay Active',
+      stop: 'Stop',
+    },
   },
   undo: {
     request: 'Request Undo',
@@ -417,6 +433,60 @@ export const enMessages = {
       platinum: 'Platinum',
       diamond: 'Diamond',
       master: 'Master',
+    },
+  },
+  themes: {
+    cyberpunk: {
+      name: 'Cyberpunk',
+      description: 'Neon-lit dystopian future',
+    },
+    horror: {
+      name: 'Horror',
+      description: 'Dark and terrifying atmosphere',
+    },
+    adventure: {
+      name: 'Adventure',
+      description: 'Epic quests and exploration',
+    },
+    fantasy: {
+      name: 'Fantasy',
+      description: 'Magical realms and mythical creatures',
+    },
+    western: {
+      name: 'Western',
+      description: 'Wild West frontier',
+    },
+    galaxy: {
+      name: 'Galaxy',
+      description: 'Deep space exploration',
+    },
+    egypt: {
+      name: 'Egypt',
+      description: 'Ancient Egyptian mysteries',
+    },
+    steampunk: {
+      name: 'Steampunk',
+      description: 'Victorian-era mechanical wonders',
+    },
+    zen: {
+      name: 'Zen',
+      description: 'Peaceful Japanese aesthetics',
+    },
+    underwater: {
+      name: 'Underwater',
+      description: 'Deep ocean depths',
+    },
+    crime: {
+      name: 'Crime',
+      description: 'Noir detective underworld',
+    },
+    'high-altitude-hike': {
+      name: 'High Altitude',
+      description: 'Mountain summit expedition',
+    },
+    random: {
+      name: 'Random',
+      description: 'Surprise theme each game',
     },
   },
 };

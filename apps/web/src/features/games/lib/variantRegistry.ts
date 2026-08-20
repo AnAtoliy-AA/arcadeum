@@ -1,6 +1,6 @@
 import { CARD_VARIANTS } from '@/features/games/lib/criticalVariants';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
-import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
+import { SEA_BATTLE_VARIANTS } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
 import { gameMetadata } from '@/features/games/registry';
 
 export interface GameDisplayInfo {

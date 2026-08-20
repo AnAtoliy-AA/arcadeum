@@ -12,6 +12,7 @@ import type {
   GamesCategoryFilter,
 } from '../types';
 import { ALL_STATUS_VALUES, STATUS_VALUES, GAME_CATEGORIES } from '../types';
+import { getCategoryLabelKey } from '@/features/games/registry';
 
 interface GamesFiltersProps {
   searchQuery: string;
@@ -38,13 +39,6 @@ const PARTICIPATION_KEYS = {
   joined: 'games.lounge.filters.participation.joined',
   not_joined: 'games.lounge.filters.participation.not_joined',
 } as const;
-
-const CATEGORY_LABELS: Record<string, string> = {
-  'Card Game': 'games.shared.category.cardGame',
-  'Board Game': 'games.shared.category.boardGame',
-  Strategy: 'games.shared.tags.strategy',
-  Action: 'games.shared.tags.action',
-};
 
 export function GamesFilters({
   searchQuery,
@@ -102,7 +96,7 @@ export function GamesFilters({
             {categoryFilter === '' ? ' ✓' : ''}
           </FilterChip>
           {GAME_CATEGORIES.map((cat) => {
-            const labelKey = CATEGORY_LABELS[cat];
+            const labelKey = getCategoryLabelKey(cat);
             const label = labelKey ? t(labelKey as TranslationKey) : cat;
             const isActive = categoryFilter === cat;
             return (

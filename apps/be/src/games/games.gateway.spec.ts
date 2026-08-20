@@ -50,7 +50,7 @@ describe('CriticalGateway', () => {
       findSessionByRoom: mockFindSessionByRoom,
     } as unknown as jest.Mocked<CriticalService>;
 
-    gateway = new CriticalGateway(criticalService, mockJwt, mockConfig);
+    gateway = new CriticalGateway(criticalService);
 
     actionsGateway = new CriticalActionsGateway(
       gamesService,
@@ -104,9 +104,9 @@ describe('CriticalGateway', () => {
       expect(mockStartSession).toHaveBeenCalledWith(
         'host-456',
         'room-123',
-        'custom-engine',
         false,
         undefined,
+        'custom-engine',
       );
       expect(mockEmit).toHaveBeenCalledWith(
         'games.session.started',

@@ -271,6 +271,11 @@ export const esMessages = {
       joinButton: 'Unirse',
     },
   },
+  widgetError: {
+    title: 'Algo salió mal',
+    message: 'Este juego encontró un error inesperado. Inténtalo de nuevo.',
+    retry: 'Reintentar',
+  },
   inviteCode: {
     title: 'Unirse a un Juego Privado',
     label: 'Ingresa Código',
@@ -379,6 +384,17 @@ export const esMessages = {
         accept: 'Aceptar',
       },
     },
+    forfeit: {
+      title: '00bfAbandonar la partida?',
+      message: '00bfSeguro que quieres abandonar? Tu oponente gana.',
+      confirm: 'Abandonar',
+      cancel: 'Cancelar',
+    },
+    idleTimer: {
+      countdown: 'Autoplay en {{seconds}}s',
+      active: 'Autoplay activo',
+      stop: 'Detener',
+    },
   },
   undo: {
     request: 'Solicitar deshacer',
@@ -427,6 +443,60 @@ export const esMessages = {
       platinum: 'Platino',
       diamond: 'Diamante',
       master: 'Maestro',
+    },
+  },
+  themes: {
+    cyberpunk: {
+      name: 'Cyberpunk',
+      description: 'Futuro distópico iluminado por neón',
+    },
+    horror: {
+      name: 'Terror',
+      description: 'Atmósfera oscura y aterradora',
+    },
+    adventure: {
+      name: 'Aventura',
+      description: 'Búsquedas épicas y exploración',
+    },
+    fantasy: {
+      name: 'Fantasía',
+      description: 'Reinos mágicos y criaturas míticas',
+    },
+    western: {
+      name: 'Oeste',
+      description: 'La frontera del lejano oeste',
+    },
+    galaxy: {
+      name: 'Galaxia',
+      description: 'Exploración del espacio profundo',
+    },
+    egypt: {
+      name: 'Egipto',
+      description: 'Misterios del antiguo Egipto',
+    },
+    steampunk: {
+      name: 'Steampunk',
+      description: 'Maravillas mecánicas de la era victoriana',
+    },
+    zen: {
+      name: 'Zen',
+      description: 'Estética japonesa serena',
+    },
+    underwater: {
+      name: 'Submarino',
+      description: 'Profundidades del océano',
+    },
+    crime: {
+      name: 'Crimen',
+      description: 'Submundo de detectives noir',
+    },
+    'high-altitude-hike': {
+      name: 'Alta montaña',
+      description: 'Expedición a la cima',
+    },
+    random: {
+      name: 'Aleatorio',
+      description: 'Tema sorpresa en cada partida',
     },
   },
 };

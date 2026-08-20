@@ -1,4 +1,5 @@
 import { GetRoomsResponse } from '@/features/games/api';
+import { getVisibleGameCategories } from '@/features/games/registry';
 
 export interface GamesClientProps {
   initialData: GetRoomsResponse | null;
@@ -44,11 +45,11 @@ export type GamesParticipationFilter =
 
 export type GamesCategoryFilter = string;
 
-export const GAME_CATEGORIES = [
-  'Card Game',
-  'Board Game',
-  'Strategy',
-  'Action',
-] as const;
+/**
+ * Category tabs for the games lounge, derived from the game registry so a
+ * new game's category shows up automatically once it is added to
+ * `gameMetadata`.
+ */
+export const GAME_CATEGORIES = getVisibleGameCategories() as readonly string[];
 
 export type GamesViewMode = 'grid' | 'list';

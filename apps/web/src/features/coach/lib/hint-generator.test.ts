@@ -2,7 +2,10 @@ import { describe, it, expect } from 'vitest';
 import { getChessHint, applyMove } from './hint-generator';
 import { chessHintLabel } from '../ui/hint-label';
 import { parseFenPiecePlacement } from '@/features/analysis/lib/fen';
-import type { LegalMove, ChessPiece } from '@/widgets/ChessGame/types';
+import type {
+  LegalMove,
+  ChessPiece,
+} from '@/widgets/BoardGames/ChessGame/types';
 
 function boardFromFen(fen: string) {
   return parseFenPiecePlacement(fen);

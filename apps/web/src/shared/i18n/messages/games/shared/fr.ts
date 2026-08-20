@@ -272,6 +272,12 @@ export const frMessages = {
       joinButton: 'Rejoindre',
     },
   },
+  widgetError: {
+    title: 'Quelque chose s’est mal passé',
+    message:
+      'Ce jeu a rencontré une erreur inattendue. Réessayez pour continuer.',
+    retry: 'Réessayer',
+  },
   inviteCode: {
     title: 'Rejoindre une Partie Privée',
     label: "Code d'invitation",
@@ -381,6 +387,17 @@ export const frMessages = {
         accept: 'Accepter',
       },
     },
+    forfeit: {
+      title: 'Abandonner la partie?',
+      message: 'Voulez-vous vraiment abandonner? Votre adversaire gagne.',
+      confirm: 'Abandonner',
+      cancel: 'Annuler',
+    },
+    idleTimer: {
+      countdown: 'Autoplay dans {{seconds}}s',
+      active: 'Autoplay actif',
+      stop: 'Arr00eater',
+    },
   },
   undo: {
     request: 'Demander annulation',
@@ -429,6 +446,60 @@ export const frMessages = {
       platinum: 'Platine',
       diamond: 'Diamant',
       master: 'Maître',
+    },
+  },
+  themes: {
+    cyberpunk: {
+      name: 'Cyberpunk',
+      description: 'Futur dystopique illuminé au néon',
+    },
+    horror: {
+      name: 'Horreur',
+      description: 'Atmosphère sombre et terrifiante',
+    },
+    adventure: {
+      name: 'Aventure',
+      description: 'Quêtes épiques et exploration',
+    },
+    fantasy: {
+      name: 'Fantastique',
+      description: 'Royaumes magiques et créatures mythiques',
+    },
+    western: {
+      name: 'Western',
+      description: 'La frontière du Far West',
+    },
+    galaxy: {
+      name: 'Galaxie',
+      description: 'Exploration de l’espace lointain',
+    },
+    egypt: {
+      name: 'Égypte',
+      description: 'Mystères de l’Égypte ancienne',
+    },
+    steampunk: {
+      name: 'Steampunk',
+      description: 'Merveilles mécaniques victoriennes',
+    },
+    zen: {
+      name: 'Zen',
+      description: 'Esthétique japonaise paisible',
+    },
+    underwater: {
+      name: 'Sous-marin',
+      description: 'Profondeurs de l’océan',
+    },
+    crime: {
+      name: 'Crime',
+      description: 'Milieu détective noir',
+    },
+    'high-altitude-hike': {
+      name: 'Haute altitude',
+      description: 'Expédition au sommet',
+    },
+    random: {
+      name: 'Aléatoire',
+      description: 'Thème surprise à chaque partie',
     },
   },
 };

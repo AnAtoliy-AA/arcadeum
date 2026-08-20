@@ -253,35 +253,12 @@ export function ReusableGameLobby({
 
       <GameHeader>
         <GameInfo>
-          <GameTitleText
-            className={
-              theme.titleGradient ? 'text-gradient shimmer-animated' : undefined
-            }
-            style={{
-              background: theme.titleGradient,
-              ...(theme.titleGradient ? { backgroundSize: '200% auto' } : {}),
-            }}
-          >
+          <GameTitleText gradient={theme.titleGradient}>
             {gameName}
             {variantName && (
-              <>
-                {' '}
-                <VariantText
-                  className={
-                    theme.variantGradient
-                      ? 'text-gradient shimmer-animated'
-                      : undefined
-                  }
-                  style={{
-                    background: theme.variantGradient,
-                    ...(theme.variantGradient
-                      ? { backgroundSize: '200% auto' }
-                      : {}),
-                  }}
-                >
-                  : {variantName}
-                </VariantText>
-              </>
+              <VariantText gradient={theme.variantGradient}>
+                {` : ${variantName}`}
+              </VariantText>
             )}
           </GameTitleText>
           <RoomNameBadge>

@@ -93,6 +93,10 @@ export const enMessages = {
     lobby: {
       theme: 'Track theme',
       trackType: 'Track type',
+      columns: 'Board width (columns)',
+      columnsUnit: 'columns',
+      trackLength: 'Track length (spaces)',
+      spacesUnit: 'spaces',
       startWithBots: 'Start with bots',
       addBot: 'Add bot',
       waitingForPlayers: 'Waiting for players…',

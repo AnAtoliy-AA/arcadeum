@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.53] - 2026-08-20
+
+### Added
+- add TikTok app review demo video generator (ARC-916) (ARC-916)
+- extract shared GameIdleTimer and GameForfeitModal (ARC-916) (ARC-916)
+- add shared theme system and theme picker (ARC-916) (ARC-916)
+
+### Fixed
+- fix games categories e2e test route and chip role (ARC-916) (ARC-916)
+- use backgroundImage instead of shorthand background to prevent style collision (ARC-916) (ARC-916)
+- drop unused error state from GameWidgetErrorBoundary (ARC-916) (ARC-916)
+
+### Improved
+- memo chat popup overlay, use shared room actions in SeaBattle (ARC-916) (ARC-916)
+- fix widget re-renders and socket listener churn (ARC-916) (ARC-916)
+
+### Refactored
+- remove ...props from room card components (ARC-916) (ARC-916)
+- remove ...props from lobby components and convert inline styles to tailwind (ARC-916) (ARC-916)
+- optimize chess and checkers widgets, fix telegram test (ARC-916) (ARC-916)
+- extract shared useGameResult + dead code removal (ARC-916) (ARC-916)
+- shared lobby chips, error boundary, move history + widget reorg (ARC-916) (ARC-916)
+- derive catalog category tabs from game registry (ARC-916) (ARC-916)
+- extract shared getLobbyTheme helper (ARC-916) (ARC-916)
+- use shared GameThemePicker in Critical and Sea Battle configs (ARC-916) (ARC-916)
+- extract shared game service and gateway base classes (ARC-916) (ARC-916)
+
+
 ## [1.25.52] - 2026-08-18
 
 ### Fixed

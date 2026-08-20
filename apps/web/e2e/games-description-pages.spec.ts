@@ -107,4 +107,22 @@ test.describe('Games Description Landing Pages', () => {
     const roomsJsonLd = page.locator('script#json-ld-rooms-en');
     await expect(roomsJsonLd).toHaveCount(1);
   });
+
+  test('game landing has side padding on mobile viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    const response = await page.goto(routes.ticTacToeLanding, {
+      waitUntil: 'domcontentloaded',
+    });
+    expect(response?.status()).toBe(200);
+
+    const heading = page.locator('h1').first();
+    await expect(heading).toBeVisible();
+
+    const box = await heading.boundingBox();
+    expect(box).not.toBeNull();
+    if (box) {
+      expect(box.x).toBeGreaterThanOrEqual(12);
+      expect(box.x + box.width).toBeLessThanOrEqual(375 - 12);
+    }
+  });
 });

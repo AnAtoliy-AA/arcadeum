@@ -41,7 +41,7 @@ export const CenterSection = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center justify-center gap-5 flex-1 min-h-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:justify-start max-[1023px]:gap-4 max-[800px]:flex-[0] max-[800px]:min-h-[unset] max-[800px]:justify-start',
+      'flex flex-col items-center justify-center gap-5 flex-1 min-w-0 max-w-full min-h-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:justify-start max-[1023px]:gap-4 max-[800px]:flex-[0] max-[800px]:min-h-[unset] max-[800px]:justify-start',
       className,
     )}
     style={style}

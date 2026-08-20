@@ -18,7 +18,6 @@ import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';
 import { HouseRulesPanel } from './HouseRulesPanel';
 import type { SeaBattleGameOptions } from '@/features/games/sea-battle/lobby';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
 const SEA_BATTLE_LOBBY_THEME = {
   fallbackLightGradient:
@@ -79,7 +78,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     roomId: room.id,
     userId: userId ?? '',
   });
-  const media = useMediaQuery();
 
   const roomOpts = (room.gameOptions ?? {}) as Record<string, unknown>;
   const [currentGridSize, setCurrentGridSize] = React.useState<number>(
@@ -92,10 +90,6 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   const [ruleComingSoon, setRuleComingSoon] = React.useState<
     Map<string, boolean>
   >(new Map());
-  // gtSm = wide enough for side-by-side preview + vertical list. Below that
-  // (web mobile / narrow tablets) we flip to a horizontal scrollable list
-  // sitting above the preview so the field doesn't get squeezed.
-  const themeListHorizontal = !media.gtSm;
 
   const handleVariantSelect = React.useCallback(
     (variantId: string) => {
@@ -273,23 +267,12 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     <>
       {teamPanelSlot}
       {isHost && room.status === 'lobby' ? (
-        themeListHorizontal ? (
-          <div className="flex flex-col items-stretch gap-3 w-full min-w-0">
-            {variantPicker}
-            <SeaBattleThemeProvider variant={selectedVariant}>
-              <SeaBattleThemePreview selectedVariant={selectedVariant} />
-            </SeaBattleThemeProvider>
-          </div>
-        ) : (
-          <div className="flex flex-row gap-4 w-full min-w-0 items-stretch">
-            <SeaBattleThemeProvider variant={selectedVariant}>
-              <SeaBattleThemePreview selectedVariant={selectedVariant} />
-            </SeaBattleThemeProvider>
-            <div className="flex flex-col items-stretch gap-2 flex-1 min-w-0 min-h-0">
-              {variantPicker}
-            </div>
-          </div>
-        )
+        <div className="flex flex-col items-center gap-4 w-full min-w-0">
+          {variantPicker}
+          <SeaBattleThemeProvider variant={selectedVariant}>
+            <SeaBattleThemePreview selectedVariant={selectedVariant} />
+          </SeaBattleThemeProvider>
+        </div>
       ) : null}
 
       {isHost && room.status === 'lobby' && (

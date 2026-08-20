@@ -12,7 +12,7 @@ export const Sidebar = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-stretch gap-4 w-[300px] max-[1023px]:w-full max-[800px]:w-full',
+      'flex flex-col items-stretch gap-4 w-[300px] shrink-0 max-[1023px]:w-full max-[800px]:w-full',
       className,
     )}
   >

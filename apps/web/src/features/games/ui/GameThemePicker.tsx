@@ -104,14 +104,16 @@ export function GameThemePicker({
   };
 
   return (
-    <div className={cx('flex flex-col gap-3', className)}>
+    <div
+      className={cx('flex flex-col gap-3 w-full max-w-full min-w-0', className)}
+    >
       {label ? (
         <span className="text-sm font-semibold text-[var(--foreground)]">
           {label}
         </span>
       ) : null}
       <div
-        className="flex gap-3 overflow-x-auto pb-2"
+        className="flex gap-3 overflow-x-auto pb-2 w-full max-w-full min-w-0"
         role="radiogroup"
         aria-label={label ?? 'Theme'}
       >
@@ -136,7 +138,7 @@ export function GameThemePicker({
               data-testid={`theme-${option.id}`}
               onClick={() => onSelect(option.id)}
               className={cx(
-                'relative flex min-w-[120px] flex-col gap-2 rounded-2xl border p-3 text-left transition-all duration-200',
+                'relative flex min-w-[120px] max-w-[140px] shrink-0 flex-col gap-2 rounded-2xl border p-3 text-left transition-all duration-200',
                 active
                   ? 'border-[var(--primary)] bg-[var(--primary)]/10 ring-2 ring-[var(--primary)]/40'
                   : 'border-[var(--borderColor)] bg-[var(--glassBg)] hover:border-[var(--primary)]/60',

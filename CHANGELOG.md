@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.55] - 2026-08-20
+
+### Fixed
+- include @swc/helpers esm in Next standalone output
+
+
 ## [1.25.54] - 2026-08-20
 
 ### Fixed

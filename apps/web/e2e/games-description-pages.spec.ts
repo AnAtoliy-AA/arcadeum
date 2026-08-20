@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 import { routes } from '../src/shared/config/routes';
 
 const GAME_PAGES = [
@@ -79,16 +79,50 @@ test.describe('Games Description Landing Pages', () => {
   test('renders /games catalog page with game directory and filters', async ({
     page,
   }) => {
-    const res = await page.goto(routes.games, {
-      waitUntil: 'domcontentloaded',
-    });
-    expect(res?.status()).toBe(200);
+    await navigateTo(page, routes.games);
 
     const heading = page.locator('h1').first();
     await expect(heading).toBeVisible();
 
-    const gameCards = page.locator(`a[href*="${routes.games}/"]`);
-    await expect(gameCards.first()).toBeVisible();
+    const catalogCards = page.locator('[data-testid^="games-catalog-card-"]');
+    await expect(catalogCards.first()).toBeVisible();
+    await expect(catalogCards).toHaveCount(8);
+
+    const chessCard = page.locator(
+      '[data-testid="games-catalog-card-chess_v1"]',
+    );
+    await expect(chessCard).toBeVisible();
+    await expect(
+      chessCard.locator('[data-testid="game-card-play-chess_v1"]'),
+    ).toBeVisible();
+    await expect(
+      chessCard.locator('[data-testid="game-card-rules-chess_v1"]'),
+    ).toBeVisible();
+
+    const boardFilter = page.locator('[data-testid="category-filter-board"]');
+    await expect(boardFilter).toBeVisible();
+    await boardFilter.click();
+    await expect(
+      page.locator('[data-testid="games-catalog-card-chess_v1"]'),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-testid="games-catalog-card-critical_v1"]'),
+    ).toHaveCount(0);
+
+    const searchInput = page.locator('[data-testid="games-catalog-search"]');
+    await expect(searchInput).toBeVisible();
+    await searchInput.fill('Sea Battle');
+    await expect(
+      page.locator('[data-testid="games-catalog-card-sea_battle_v1"]'),
+    ).toBeVisible();
+    await expect(
+      page.locator('[data-testid="games-catalog-card-chess_v1"]'),
+    ).toHaveCount(0);
+
+    const allFilter = page.locator('[data-testid="category-filter-all"]');
+    await allFilter.click();
+    await searchInput.fill('');
+    await expect(catalogCards).toHaveCount(8);
 
     const catalogJsonLd = page.locator('script#json-ld-games-en');
     await expect(catalogJsonLd).toHaveCount(1);
@@ -106,5 +140,20 @@ test.describe('Games Description Landing Pages', () => {
 
     const roomsJsonLd = page.locator('script#json-ld-rooms-en');
     await expect(roomsJsonLd).toHaveCount(1);
+  });
+
+  test('game landing has side padding on mobile viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await navigateTo(page, routes.ticTacToeLanding);
+
+    const heading = page.locator('h1').first();
+    await expect(heading).toBeVisible();
+
+    const box = await heading.boundingBox();
+    expect(box).not.toBeNull();
+    if (box) {
+      expect(box.x).toBeGreaterThanOrEqual(12);
+      expect(box.x + box.width).toBeLessThanOrEqual(375 - 12);
+    }
   });
 });

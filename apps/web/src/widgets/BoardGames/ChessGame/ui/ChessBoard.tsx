@@ -199,10 +199,14 @@ function ChessCell({
       )}
       {symbol && (
         <span
+          className="select-none transition-transform hover:scale-105"
           style={{
-            fontSize: 'clamp(1.2rem, 10cqw, 3.2rem)',
+            fontSize: 'clamp(1.3rem, 11cqw, 3.4rem)',
             lineHeight: 1,
-            textShadow: '0 2px 3px rgba(0, 0, 0, 0.4)',
+            filter:
+              piece?.color === 'white'
+                ? 'drop-shadow(0 3px 5px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 1px rgba(255, 255, 255, 0.8))'
+                : 'drop-shadow(0 3px 5px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))',
             userSelect: 'none',
             position: 'relative',
             zIndex: 2,

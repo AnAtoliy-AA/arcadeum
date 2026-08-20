@@ -10,7 +10,7 @@ import {
   useGameRoomActions,
 } from '@/features/games/hooks';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
 import { useGameChatStore } from '@/widgets/GameChat';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -231,6 +231,11 @@ function TicTacToeGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
+        gameName={(() => {
+          const raw = t('games.names.ticTacToe' as TranslationKey);
+          return raw && raw !== 'games.names.ticTacToe' ? raw : 'Tic-Tac-Toe';
+        })()}
+        theme={visualTheme}
         t={t}
       />
       <RulesModal

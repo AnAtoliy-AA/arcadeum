@@ -1,42 +1,40 @@
 'use client';
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { useSound } from '@/shared/lib/sound';
 import { Modal, CloseButton } from './SharedModal';
 import { VictoryCelebration } from './VictoryCelebration';
+import {
+  GameResultStatsGrid,
+  type GameResultStats,
+} from './GameResultStatsGrid';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import type { RatingDelta } from '@/features/ranking/model/types';
+import {
+  getThemeById,
+  SHARED_THEMES,
+  type GameTheme,
+} from '@/features/games/lib/shared-themes';
 
-// --- Types ---
+export type GameResultKind = 'victory' | 'defeat' | 'draw';
 
-type GameResultKind = 'victory' | 'defeat' | 'draw';
-
-interface GameResultModalProps {
+export interface GameResultModalProps {
   isOpen: boolean;
   result: GameResultKind | null;
+  gameName?: string;
   onRematch?: () => void;
   onClose?: () => void;
   rematchLoading?: boolean;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
-  /**
-   * Per-game override for the headline + body copy. Use this when the
-   * game has its own end-state vocabulary (e.g. tic-tac-toe ships
-   * `gameOver.won/lost/draw`) and the shared `games.table.*` keys would
-   * be wrong. When omitted, the modal falls back to
-   * `games.table.${result}.title`/`.message`.
-   */
   messages?: { title: string; message?: string };
-  /** Ranked-match ELO change for the local player (from ratingDeltas). */
   ratingDelta?: RatingDelta | null;
-  /**
-   * Optional post-game analysis panel shown behind a toggle button. When
-   * `content` renders a heavier component (charts, move lists), provide the
-   * localized toggle labels here so the shared modal stays i18n-agnostic.
-   */
+  theme?: GameTheme | string | null;
+  stats?: GameResultStats | null;
   analysis?: {
     content: React.ReactNode;
     viewLabel: string;
@@ -44,33 +42,50 @@ interface GameResultModalProps {
   } | null;
 }
 
-// --- Tone (result) styles ---
-
 const TONE_BACKDROP_CLASSES: Record<GameResultKind, string> = {
   victory:
-    'bg-[radial-gradient(circle_at_center,rgba(255,215,0,0.1)_0%,rgba(0,0,0,0.95)_100%)]',
+    'bg-[radial-gradient(circle_at_center,rgba(255,215,0,0.15)_0%,rgba(5,7,15,0.95)_100%)]',
   defeat:
-    'bg-[radial-gradient(circle_at_center,rgba(255,77,77,0.08)_0%,rgba(0,0,0,0.95)_100%)]',
-  draw: 'bg-[radial-gradient(circle_at_center,rgba(148,163,184,0.1)_0%,rgba(0,0,0,0.95)_100%)]',
+    'bg-[radial-gradient(circle_at_center,rgba(239,68,68,0.12)_0%,rgba(5,7,15,0.95)_100%)]',
+  draw: 'bg-[radial-gradient(circle_at_center,rgba(148,163,184,0.14)_0%,rgba(5,7,15,0.95)_100%)]',
 };
 
 const TONE_TITLE_CLASSES: Record<GameResultKind, string> = {
-  victory: 'text-[#FFD700] [text-shadow:0_0_20px_rgba(255,215,0,0.4)]',
-  defeat: 'text-[#ff4d4d] [text-shadow:0_0_20px_rgba(255,77,77,0.4)]',
-  draw: 'text-[#cbd5e1] [text-shadow:0_0_20px_rgba(148,163,184,0.4)]',
+  victory:
+    'bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 bg-clip-text text-transparent [filter:drop-shadow(0_0_24px_rgba(255,215,0,0.5))]',
+  defeat:
+    'bg-gradient-to-r from-red-400 via-rose-500 to-red-600 bg-clip-text text-transparent [filter:drop-shadow(0_0_24px_rgba(239,68,68,0.5))]',
+  draw: 'bg-gradient-to-r from-slate-200 via-slate-300 to-slate-400 bg-clip-text text-transparent [filter:drop-shadow(0_0_20px_rgba(148,163,184,0.4))]',
 };
 
-// --- Main Component ---
+const TONE_CONTAINER_BORDER: Record<GameResultKind, string> = {
+  victory: 'border-amber-400/30 shadow-[0_20px_80px_rgba(255,215,0,0.15)]',
+  defeat: 'border-red-500/25 shadow-[0_20px_80px_rgba(239,68,68,0.12)]',
+  draw: 'border-slate-400/25 shadow-[0_20px_80px_rgba(148,163,184,0.1)]',
+};
+
+function resolveTheme(
+  themeInput: GameTheme | string | null | undefined,
+): GameTheme {
+  if (!themeInput) return SHARED_THEMES[0];
+  if (typeof themeInput === 'string') {
+    return getThemeById(themeInput) ?? SHARED_THEMES[0];
+  }
+  return themeInput;
+}
 
 export function GameResultModal({
   isOpen,
   result,
+  gameName,
   onRematch,
   onClose,
   rematchLoading,
   t,
   messages,
   ratingDelta,
+  theme,
+  stats,
   analysis,
 }: GameResultModalProps) {
   const isClient = useSyncExternalStore(
@@ -82,14 +97,13 @@ export function GameResultModal({
   const media = useMediaQuery();
   const { play } = useSound();
   const [showAnalysis, setShowAnalysis] = useState(false);
-  // Reset the analysis toggle whenever the modal closes (render-phase
-  // adjustment — the recommended alternative to setState inside an effect).
   const [lastOpen, setLastOpen] = useState(isOpen);
+
   if (lastOpen !== isOpen) {
     setLastOpen(isOpen);
     if (!isOpen) setShowAnalysis(false);
   }
-  // Play the result sting once when the modal opens (not on every re-render).
+
   const playedForRef = useRef<GameResultKind | null>(null);
   useEffect(() => {
     if (!isOpen || !result) {
@@ -102,8 +116,18 @@ export function GameResultModal({
     else if (result === 'defeat') play('lose');
   }, [isOpen, result, play]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose?.();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !result || !isClient) return null;
 
+  const resolvedTheme = resolveTheme(theme);
   const isVictory = result === 'victory';
   const isDraw = result === 'draw';
   const emoji = isVictory ? '🏆' : isDraw ? '🤝' : '💀';
@@ -113,32 +137,68 @@ export function GameResultModal({
   const body =
     messages?.message ?? t(`games.table.${result}.message` as TranslationKey);
 
-  return (
-    <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
+  const modalNode = (
+    <div
+      data-testid="game-result-container"
+      className="fixed inset-0 z-[1200] overflow-hidden"
+    >
       <div
         className={cx(
-          'fixed top-0 left-0 w-screen h-[100dvh] z-[1199] backdrop-blur-[12px]',
+          'fixed inset-0 z-0 h-[100dvh] w-screen backdrop-blur-md',
           TONE_BACKDROP_CLASSES[result],
         )}
       />
-      <div className="fixed top-0 left-0 w-screen h-[100dvh] z-[1200] flex items-center justify-center">
-        <div className="animate-entrance flex flex-col items-center p-10 bg-[rgba(255,255,255,0.03)] backdrop-blur-[40px] rounded-[40px] border border-[rgba(255,255,255,0.1)] border-t-[rgba(255,255,255,0.2)] border-l-[rgba(255,255,255,0.15)] shadow-[0_40px_100px_rgba(0,0,0,0.8)] max-w-[90%] w-[520px] max-h-[90dvh] overflow-y-auto relative max-[800px]:p-5 max-[800px]:rounded-[24px] max-[800px]:w-[95%]">
-          {onClose && (
-            <div className="flex flex-row items-stretch absolute">
-              <CloseButton onClick={onClose} data-testid="modal-close-button">
-                <CloseIcon size={20} />
-              </CloseButton>
-            </div>
-          )}
 
-          <div className="flex flex-col items-center gap-2 -mb-6">
-            <span className="text-[80px] -mb-2 animate-[float_3s_ease-in-out_infinite]">
+      <VictoryCelebration tone={result} theme={resolvedTheme} />
+
+      <div className="fixed inset-0 z-10 flex h-[100dvh] w-screen items-center justify-center p-4">
+        <div
+          data-testid="game-result-modal"
+          data-theme={resolvedTheme.id}
+          data-tone={result}
+          className={cx(
+            'animate-entrance relative flex max-h-[92dvh] w-[540px] max-w-[95%] flex-col items-center overflow-y-auto rounded-3xl border bg-slate-950/85 p-6 backdrop-blur-2xl transition-all sm:p-8',
+            TONE_CONTAINER_BORDER[result],
+          )}
+        >
+          <div className="relative mb-3 flex w-full flex-col items-center justify-center gap-1.5 pt-1">
+            {onClose && (
+              <div className="absolute right-0 top-0">
+                <CloseButton onClick={onClose} data-testid="modal-close-button">
+                  <CloseIcon size={18} />
+                </CloseButton>
+              </div>
+            )}
+
+            {gameName && (
+              <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                {gameName}
+              </span>
+            )}
+
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <span>{resolvedTheme.emoji}</span>
+              <span>
+                {(() => {
+                  const rawTheme = t(
+                    `games.themes.${resolvedTheme.id}.name` as TranslationKey,
+                  );
+                  return rawTheme && !rawTheme.startsWith('games.themes.')
+                    ? rawTheme
+                    : resolvedTheme.id.replace(/-/g, ' ');
+                })()}
+              </span>
+            </div>
+          </div>
+
+          <div className="mb-4 flex flex-col items-center gap-1">
+            <span className="animate-[float_3s_ease-in-out_infinite] text-6xl select-none sm:text-7xl">
               {emoji}
             </span>
             <h1
               data-testid="game-result-title"
               className={cx(
-                'text-[56px] font-extrabold text-center uppercase tracking-[2px]',
+                'text-center text-4xl font-black uppercase tracking-wider sm:text-5xl',
                 TONE_TITLE_CLASSES[result],
                 isVictory && 'animate-pulse',
               )}
@@ -147,13 +207,19 @@ export function GameResultModal({
             </h1>
           </div>
 
-          <p className="animate-fade-in-up-delay-2 text-[20px] leading-[24px] text-center mb-8 text-[rgba(255,255,255,0.8)]">
+          <p className="animate-fade-in-up-delay-2 mb-5 text-center text-base leading-relaxed text-slate-300 sm:text-lg">
             {body}
           </p>
 
+          {stats && (
+            <div className="animate-fade-in-up-delay-3 mb-5 w-full">
+              <GameResultStatsGrid stats={stats} t={t} />
+            </div>
+          )}
+
           {ratingDelta && (
-            <div className="animate-fade-in-up-delay-3 flex flex-col items-center gap-1 -mt-6 mb-8">
-              <span className="text-[13px] font-semibold uppercase tracking-[1.5px] text-[rgba(255,255,255,0.6)]">
+            <div className="animate-fade-in-up-delay-3 mb-6 flex flex-col items-center gap-1">
+              <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">
                 {t('games.ranking.ratingUpdated')}
               </span>
               <RatingBadge
@@ -166,10 +232,10 @@ export function GameResultModal({
           )}
 
           {analysis && (
-            <div className="animate-fade-in-up-delay-4 mb-6 flex w-full flex-col gap-3">
+            <div className="animate-fade-in-up-delay-4 mb-5 flex w-full flex-col gap-3">
               {showAnalysis ? (
                 <>
-                  <div className="rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(10,14,22,0.6)] p-4">
+                  <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
                     {analysis.content}
                   </div>
                   <Button
@@ -193,7 +259,7 @@ export function GameResultModal({
             </div>
           )}
 
-          <div className="animate-fade-in-up-delay-4 flex flex-col items-stretch gap-5 w-full">
+          <div className="animate-fade-in-up-delay-4 flex w-full flex-col gap-3">
             {onRematch && (
               <Button
                 variant={isVictory ? 'primary' : 'secondary'}
@@ -202,7 +268,7 @@ export function GameResultModal({
                 disabled={rematchLoading}
                 data-testid="rematch-button"
                 showShimmer={isVictory}
-                className={isVictory ? 'active:scale-[0.95]' : undefined}
+                className={isVictory ? 'active:scale-95' : undefined}
               >
                 {rematchLoading
                   ? t('games.table.rematch.loading' as TranslationKey)
@@ -210,7 +276,7 @@ export function GameResultModal({
               </Button>
             )}
 
-            <LinkButton href="/" className="mt-2 w-full" variant="secondary">
+            <LinkButton href="/" className="w-full" variant="secondary">
               {t('games.common.actions.backToHome' as TranslationKey)}
             </LinkButton>
 
@@ -226,8 +292,10 @@ export function GameResultModal({
           </div>
         </div>
       </div>
-
-      <VictoryCelebration tone={result} />
-    </Modal>
+    </div>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(modalNode, document.body)
+    : modalNode;
 }

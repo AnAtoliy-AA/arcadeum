@@ -422,6 +422,14 @@ export function ActiveGameView({
                 alive: p.alive,
               }))}
               currentUserId={currentUserId}
+              gameName={(() => {
+                const raw = t('games.names.critical' as TranslationKey);
+                return raw && raw !== 'games.names.critical'
+                  ? raw
+                  : 'Exploding Cats';
+              })()}
+              cardVariant={cardVariant}
+              theme={cardVariant}
               t={t}
             />
           </>

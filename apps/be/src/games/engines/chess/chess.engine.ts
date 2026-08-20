@@ -35,6 +35,7 @@ import { updateCastlingRights } from './chess.castling';
 const ACTION = {
   MOVE: 'move',
   RESIGN: 'resign',
+  FORFEIT: 'forfeit',
   DRAW_OFFER: 'draw_offer',
   DRAW_ACCEPT: 'draw_accept',
 } as const;
@@ -159,7 +160,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       return this.isValidMove(state, movePayload);
     }
 
-    if (action === ACTION.RESIGN) {
+    if (action === ACTION.RESIGN || action === ACTION.FORFEIT) {
       return state.players.some((p) => p.playerId === context.userId);
     }
 
@@ -190,7 +191,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     if (action === ACTION.MOVE) {
       return this.executeMove(state, context, payload as MovePayload);
     }
-    if (action === ACTION.RESIGN) {
+    if (action === ACTION.RESIGN || action === ACTION.FORFEIT) {
       return this.executeResign(state, context);
     }
     if (action === ACTION.DRAW_OFFER) {
@@ -249,8 +250,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     if (this.isGameOver(state)) return [];
     const player = state.players.find((p) => p.playerId === playerId);
     if (!player || player.color !== state.currentTurnColor)
-      return [ACTION.RESIGN];
-    return [ACTION.MOVE, ACTION.RESIGN];
+      return [ACTION.RESIGN, ACTION.FORFEIT];
+    return [ACTION.MOVE, ACTION.RESIGN, ACTION.FORFEIT];
   }
 
   private isValidMove(state: ChessState, payload: MovePayload): boolean {

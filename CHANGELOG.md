@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.58] - 2026-08-20
+
+### Added
+- show game name and theme in two rows and fix full-screen celebration (ARC-918) (ARC-918)
+- enhance win lose screen with game themes and match stats (ARC-918) (ARC-918)
+
+### Fixed
+- fix fen serialization, i18n deep merge and resign result modal (ARC-918) (ARC-918)
+- support forfeit action and add translations for game results (ARC-918) (ARC-918)
+- remove nested flex container around full-screen celebration layer (ARC-918) (ARC-918)
+- move victory celebration animation classes to global animations.scss (ARC-918) (ARC-918)
+- portal GameResultModal to body for unconstrained full-width celebration (ARC-918) (ARC-918)
+- ensure full-width 80-slot uniform confetti spread (ARC-918) (ARC-918)
+
+
 ## [1.25.57] - 2026-08-20
 
 ### Fixed

@@ -23,6 +23,32 @@ const GAME_LOADERS: Record<string, GameLoader> = {
   catDash: () => import('./cat-dash/index'),
 };
 
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>,
+): Record<string, unknown> {
+  for (const key of Object.keys(source)) {
+    const sourceVal = source[key];
+    const targetVal = target[key];
+    if (
+      sourceVal &&
+      typeof sourceVal === 'object' &&
+      !Array.isArray(sourceVal) &&
+      targetVal &&
+      typeof targetVal === 'object' &&
+      !Array.isArray(targetVal)
+    ) {
+      target[key] = deepMerge(
+        { ...(targetVal as Record<string, unknown>) },
+        sourceVal as Record<string, unknown>,
+      );
+    } else {
+      target[key] = sourceVal;
+    }
+  }
+  return target;
+}
+
 export async function loadGames(
   locale: Locale,
 ): Promise<Record<string, unknown>> {
@@ -33,9 +59,11 @@ export async function loadGames(
     }),
   );
 
-  const result: Record<string, unknown> = {};
+  let result: Record<string, unknown> = {};
   for (const entry of entries) {
-    Object.assign(result, entry);
+    if (entry) {
+      result = deepMerge(result, entry);
+    }
   }
   return result;
 }

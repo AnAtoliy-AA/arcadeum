@@ -378,6 +378,12 @@ function ChessGameImpl({
       onAcceptDraw={acceptDraw}
     />
   );
+  const themeVariant =
+    (room?.gameOptions?.theme as string | undefined) ??
+    (room?.gameOptions?.cardVariant as string | undefined) ??
+    (room?.gameOptions?.variant as string | undefined) ??
+    'cyberpunk';
+
   const modals = (
     <>
       <ChessGameResultModal
@@ -389,6 +395,7 @@ function ChessGameImpl({
         t={t}
         messages={resultMessages}
         snapshot={displaySnapshot}
+        theme={themeVariant}
       />
       <RematchInvitationModal
         isOpen={!!invitation}
@@ -407,11 +414,6 @@ function ChessGameImpl({
       />
     </>
   );
-  const themeVariant =
-    (room?.gameOptions?.theme as string | undefined) ??
-    (room?.gameOptions?.cardVariant as string | undefined) ??
-    (room?.gameOptions?.variant as string | undefined) ??
-    'cyberpunk';
 
   return (
     <ChessThemeProvider variant={themeVariant}>

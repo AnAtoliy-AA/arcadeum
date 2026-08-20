@@ -1,3 +1,5 @@
+import { themesBy } from './themes';
+
 export const byMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -342,6 +344,16 @@ export const byMessages = {
     title: '💤 Вы бяздзейнічаеце',
     message: 'Рухайце мышшу альбо націсніце любую клавішу для вяртання',
   },
+  names: {
+    chess: 'Шахматы',
+    checkers: 'Шашкі',
+    ticTacToe: 'Крыжыкі-Нулікі',
+    critical: 'Выбуховыя кацяняты',
+    cascade: 'Каскад',
+    catDash: 'Кот Рывок',
+    seaBattle: 'Марскі бой',
+    glimworm: 'Глімворм',
+  },
   table: {
     controlPanel: {
       spectating: 'Назіранне',
@@ -367,6 +379,16 @@ export const byMessages = {
     defeat: {
       title: 'Параза',
       message: 'Гэтым разам не пашанцавала. Гатовыя да наступнага раўнда?',
+    },
+    draw: {
+      title: 'Нічыя',
+      message: 'Матч скончыўся ўнічыю.',
+    },
+    stats: {
+      duration: 'Трываласць',
+      turns: 'Хады',
+      score: 'Лік',
+      accuracy: 'Дакладнасць',
     },
     rematch: {
       title: 'Згуляць яшчэ?',
@@ -450,58 +472,5 @@ export const byMessages = {
     cycleHint: 'Націсніце, каб змяніць тэму',
     cycleAriaLabel: 'Змяніць тэму прадпрагляду, зараз {{variant}}',
   },
-  themes: {
-    cyberpunk: {
-      name: 'Кіберпанк',
-      description: 'Неонавая антыўтапічная будучыня',
-    },
-    horror: {
-      name: 'Жахі',
-      description: 'Цёмная і палохаючая атмасфера',
-    },
-    adventure: {
-      name: 'Прыгоды',
-      description: 'Эпічныя квэсты і даследаванні',
-    },
-    fantasy: {
-      name: 'Фэнтэзі',
-      description: 'Чароўныя светы і міфічныя істоты',
-    },
-    western: {
-      name: 'Вестэрн',
-      description: 'Дзікі Захад',
-    },
-    galaxy: {
-      name: 'Галактыка',
-      description: 'Даследаванне дальняга космасу',
-    },
-    egypt: {
-      name: 'Егіпет',
-      description: 'Загадкі Старажытнага Егіпта',
-    },
-    steampunk: {
-      name: 'Стымпанк',
-      description: 'Віктарыянскія механічныя цуды',
-    },
-    zen: {
-      name: 'Дзэн',
-      description: 'Спакойная японская эстэтыка',
-    },
-    underwater: {
-      name: 'Падводны',
-      description: 'Глыбіні акіяна',
-    },
-    crime: {
-      name: 'Крымінал',
-      description: 'Нуарны крымінальны свет',
-    },
-    'high-altitude-hike': {
-      name: 'Высакагор’е',
-      description: 'Экспедыцыя на вяршыню гары',
-    },
-    random: {
-      name: 'Выпадковы',
-      description: 'Сюрпрыз-тэма ў кожнай гульні',
-    },
-  },
+  themes: themesBy,
 };

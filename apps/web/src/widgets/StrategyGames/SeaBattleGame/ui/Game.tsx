@@ -9,8 +9,7 @@ import type { SeaBattleGameProps } from '../types';
 import { MIN_PLAYERS } from '../types';
 import { useSeaBattleState } from '../hooks/useSeaBattleState';
 import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
-import { useGameStore, type GameState } from '@/features/games/store/gameStore';
-import { useGameEndState } from '@/features/games/hooks';
+import { useGameEndState, useGameRoomActions } from '@/features/games/hooks';
 import { useGameChatIntegration } from '@/features/games/hooks';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
@@ -46,14 +45,8 @@ export const SeaBattleGame = memo(function SeaBattleGame({
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
 
-  const storeRoom = useGameStore((s: GameState) => s.room);
-  const storeDeleteRoom = useGameStore((s: GameState) => s.deleteRoom);
-  const storeKickPlayer = useGameStore((s: GameState) => s.kickPlayer);
-  const storeLeaveRoom = useGameStore((s: GameState) => s.leaveRoom);
-  const storeRefreshRoom = useGameStore((s: GameState) => s.refreshRoom);
-
-  const room =
-    (storeRoom?.id === roomId ? storeRoom : null) || initialRoom || null;
+  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
+    useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -377,19 +370,16 @@ export const SeaBattleGame = memo(function SeaBattleGame({
           onStartGame={handleStartGame}
           onReorderPlayers={handleReorderPlayers}
           onShowRules={setShowRules}
-          onDeleteRoom={() => storeDeleteRoom(roomId)}
+          onDeleteRoom={onDeleteRoom}
           onKickPlayer={
             currentUserId
-              ? (targetUserId) =>
-                  storeKickPlayer(roomId, targetUserId, currentUserId)
+              ? (targetUserId) => onKickPlayer(targetUserId, currentUserId)
               : undefined
           }
           onLeaveRoom={
-            currentUserId
-              ? () => storeLeaveRoom(roomId, currentUserId)
-              : undefined
+            currentUserId ? () => onLeaveRoom(currentUserId) : undefined
           }
-          onRefresh={() => storeRefreshRoom(roomId)}
+          onRefresh={onRefresh}
           t={t}
         />
         <RulesModal

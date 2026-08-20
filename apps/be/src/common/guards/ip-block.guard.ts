@@ -4,9 +4,11 @@ import {
   CanActivate,
   ExecutionContext,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { isE2EMode } from '../../support/lib/e2e-mode';
 import { RATE_STATE_STORE } from '../rate-state';
 import type { RateStateStore } from '../rate-state';
+import { extractClientIp } from '../utils/client-ip.util';
 import type { Request } from 'express';
 
 const BLOCKED_PREFIX = 'ipblock:blocked:';
@@ -18,35 +20,62 @@ function parseIpList(raw: string): string[] {
   return Array.isArray(parsed) ? (parsed as string[]) : [];
 }
 
+function readInt(value: string | undefined, fallback: number): number {
+  if (value === undefined || value.trim() === '') return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
+}
+
 /**
  * IP block service that tracks failed requests and blocks abusive IPs.
  * Uses a shared RateStateStore for persistence across restarts and instances.
+ *
+ * Thresholds are configurable via env so ops can tune them without a redeploy:
+ *   IP_BLOCK_FAILURE_THRESHOLD   (default 100)  429s within the window
+ *   IP_BLOCK_WINDOW_MS           (default 60_000)
+ *   IP_BLOCK_DURATION_MS         (default 15 min)
+ *   IP_BLOCK_SEVERE_DURATION_MS  (default 60 min)
  */
 @Injectable()
 export class IpBlockService {
+  private readonly failureThreshold: number;
+  private readonly failureWindowMs: number;
+  private readonly blockDurationMs: number;
+  private readonly severeBlockDurationMs: number;
+
   constructor(
     @Inject(RATE_STATE_STORE) private readonly store: RateStateStore,
-  ) {}
-
-  private readonly FAILURE_THRESHOLD = 50;
-  private readonly FAILURE_WINDOW_MS = 60_000;
-  private readonly BLOCK_DURATION_MS = 15 * 60 * 1000;
-  private readonly SEVERE_BLOCK_DURATION_MS = 60 * 60 * 1000;
+    config?: ConfigService,
+  ) {
+    this.failureThreshold = readInt(
+      config?.get('IP_BLOCK_FAILURE_THRESHOLD'),
+      100,
+    );
+    this.failureWindowMs = readInt(config?.get('IP_BLOCK_WINDOW_MS'), 60_000);
+    this.blockDurationMs = readInt(
+      config?.get('IP_BLOCK_DURATION_MS'),
+      15 * 60 * 1000,
+    );
+    this.severeBlockDurationMs = readInt(
+      config?.get('IP_BLOCK_SEVERE_DURATION_MS'),
+      60 * 60 * 1000,
+    );
+  }
 
   async record429(ip: string): Promise<void> {
     const count = await this.store.increment(
       FAIL_PREFIX + ip,
-      this.FAILURE_WINDOW_MS,
+      this.failureWindowMs,
     );
 
-    if (count >= this.FAILURE_THRESHOLD) {
-      await this.block(ip, this.BLOCK_DURATION_MS, 'Repeated 429 responses');
+    if (count >= this.failureThreshold) {
+      await this.block(ip, this.blockDurationMs, 'Repeated 429 responses');
       await this.store.delete(FAIL_PREFIX + ip);
     }
   }
 
   async recordSevereAbuse(ip: string, reason: string): Promise<void> {
-    await this.block(ip, this.SEVERE_BLOCK_DURATION_MS, reason);
+    await this.block(ip, this.severeBlockDurationMs, reason);
     await this.store.delete(FAIL_PREFIX + ip);
     void reason;
   }
@@ -94,7 +123,7 @@ export class IpBlockService {
         await this.store.setString(
           ALL_BLOCKED_KEY,
           JSON.stringify(stillBlocked),
-          this.SEVERE_BLOCK_DURATION_MS,
+          this.severeBlockDurationMs,
         );
       }
     }
@@ -121,7 +150,7 @@ export class IpBlockService {
       await this.store.setString(
         ALL_BLOCKED_KEY,
         JSON.stringify(allBlocked),
-        Math.max(durationMs, this.SEVERE_BLOCK_DURATION_MS),
+        Math.max(durationMs, this.severeBlockDurationMs),
       );
     }
   }
@@ -137,7 +166,7 @@ export class IpBlockService {
       await this.store.setString(
         ALL_BLOCKED_KEY,
         JSON.stringify(filtered),
-        this.SEVERE_BLOCK_DURATION_MS,
+        this.severeBlockDurationMs,
       );
     }
   }
@@ -151,8 +180,7 @@ export class IpBlockGuard implements CanActivate {
     if (isE2EMode()) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
-    const ip = request.ip ?? request.socket?.remoteAddress ?? 'unknown';
 
-    return !(await this.ipBlockService.isBlocked(ip));
+    return !(await this.ipBlockService.isBlocked(extractClientIp(request)));
   }
 }

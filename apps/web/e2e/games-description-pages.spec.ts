@@ -92,12 +92,7 @@ test.describe('Games Description Landing Pages', () => {
       '[data-testid="games-catalog-card-chess_v1"]',
     );
     await expect(chessCard).toBeVisible();
-    await expect(
-      chessCard.locator('[data-testid="game-card-play-chess_v1"]'),
-    ).toBeVisible();
-    await expect(
-      chessCard.locator('[data-testid="game-card-rules-chess_v1"]'),
-    ).toBeVisible();
+    await expect(chessCard).toHaveAttribute('href', '/en/games/chess');
 
     const boardFilter = page.locator('[data-testid="category-filter-board"]');
     await expect(boardFilter).toBeVisible();

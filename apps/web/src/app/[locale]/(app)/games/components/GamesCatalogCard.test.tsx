@@ -53,7 +53,7 @@ const mockDisabledGame: CatalogGameItem = {
 };
 
 describe('GamesCatalogCard', () => {
-  it('renders game details correctly', () => {
+  it('renders game details correctly and links to landing page', () => {
     render(<GamesCatalogCard game={mockGame} />);
 
     expect(screen.getByText('Chess')).toBeInTheDocument();
@@ -64,36 +64,24 @@ describe('GamesCatalogCard', () => {
     expect(screen.getByText('👥 2')).toBeInTheDocument();
     expect(screen.getByText('⏱ 15 min')).toBeInTheDocument();
     expect(screen.getByText('Ready')).toBeInTheDocument();
+
+    const cardLink = screen.getByTestId('games-catalog-card-chess_v1');
+    expect(cardLink).toHaveAttribute('href', '/en/games/chess');
   });
 
-  it('renders Play button with proper deep link', () => {
-    render(<GamesCatalogCard game={mockGame} />);
-
-    const playBtn = screen.getByTestId('game-card-play-chess_v1');
-    expect(playBtn).toHaveAttribute('href', '/en/games/chess');
-    expect(playBtn).toHaveTextContent('Play Now');
-  });
-
-  it('renders Rules button linking to how-to-play anchor', () => {
-    render(<GamesCatalogCard game={mockGame} />);
-
-    const rulesBtn = screen.getByTestId('game-card-rules-chess_v1');
-    expect(rulesBtn).toHaveAttribute('href', '/en/games/chess#how-to-play');
-  });
-
-  it('renders Demo badge and Try Demo CTA for demo games', () => {
+  it('renders Demo badge for demo games', () => {
     render(<GamesCatalogCard game={mockDemoGame} />);
 
     expect(screen.getByText('Demo')).toBeInTheDocument();
-    const playBtn = screen.getByTestId('game-card-play-glimworm_v1');
-    expect(playBtn).toHaveTextContent('Try Demo');
+    const cardLink = screen.getByTestId('games-catalog-card-glimworm_v1');
+    expect(cardLink).toHaveAttribute('href', '/en/games/glimworm');
   });
 
   it('renders disabled state when game is not playable', () => {
     render(<GamesCatalogCard game={mockDisabledGame} />);
 
-    expect(screen.getAllByText('Disabled')).toHaveLength(2);
-    const playBtn = screen.getByTestId('game-card-play-future_game');
-    expect(playBtn).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('Disabled')).toBeInTheDocument();
+    const cardLink = screen.getByTestId('games-catalog-card-future_game');
+    expect(cardLink).toHaveAttribute('aria-disabled', 'true');
   });
 });

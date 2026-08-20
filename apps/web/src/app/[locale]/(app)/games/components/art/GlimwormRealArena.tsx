@@ -4,7 +4,7 @@ export function GlimwormRealArena() {
   return (
     <svg
       viewBox="0 0 360 220"
-      preserveAspectRatio="xMidYMid slice"
+      preserveAspectRatio="xMidYMid meet"
       className="w-full h-full select-none"
       aria-hidden="true"
     >

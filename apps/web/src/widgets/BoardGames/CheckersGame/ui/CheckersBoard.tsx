@@ -74,8 +74,12 @@ export function CheckersBoard({
 
   return (
     <div
-      className="flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[12px] overflow-hidden border-[2px]"
-      style={{ aspectRatio: '1/1', borderColor: theme.darkSquare }}
+      className="flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[14px] overflow-hidden border-[3px] shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
+      style={{
+        aspectRatio: '1/1',
+        borderColor: '#44403c',
+        backgroundColor: '#1c1917',
+      }}
       role="grid"
       aria-label={ariaLabel}
       data-testid="checkers-board"

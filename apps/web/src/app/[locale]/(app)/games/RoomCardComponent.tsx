@@ -65,9 +65,10 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
 
   const translatedGameName =
     t(`games.${room.gameId}.name` as TranslationKey) || rawDisplayName;
-  const translatedVariantName = variantName
-    ? t(variantName as TranslationKey)
-    : undefined;
+  const translatedVariantName =
+    variantName && variantName.includes('.')
+      ? t(variantName as TranslationKey)
+      : variantName;
   const gameName = translatedVariantName
     ? `${translatedGameName}: ${translatedVariantName}`
     : translatedGameName;

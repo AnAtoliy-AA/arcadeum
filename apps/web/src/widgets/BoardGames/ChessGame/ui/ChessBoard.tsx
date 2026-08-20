@@ -382,12 +382,12 @@ function ChessBoardImpl({
           zIndex: 1,
           width: '100%',
           aspectRatio: '1 / 1',
-          borderRadius: 10,
+          borderRadius: 14,
           overflow: 'hidden',
-          backgroundColor: 'rgba(15, 20, 30, 0.95)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: '#1c1917',
+          border: '3px solid #44403c',
           boxShadow:
-            '0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.05) inset',
+            '0 12px 36px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
           display: 'flex',
           flexDirection: 'column',
         }}

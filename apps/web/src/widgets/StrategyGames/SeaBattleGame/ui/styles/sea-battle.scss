@@ -137,25 +137,28 @@
   grid-template-columns: repeat(var(--sb-grid-size, 10), 1fr) !important;
   grid-template-rows: repeat(var(--sb-grid-size, 10), 1fr) !important;
   aspect-ratio: 1;
-  padding: 4px;
+  padding: 6px;
+  gap: 2px;
   width: 100%;
   overflow: hidden;
   box-sizing: border-box;
   pointer-events: auto;
   contain: layout style;
   border-radius: 12px;
-  background-color: rgba(6, 12, 24, 0.7);
-  box-shadow: inset 0 0 16px rgba(6, 182, 212, 0.08);
+  background-color: rgba(10, 18, 36, 0.85);
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0.04) 45%, transparent 70%),
+    radial-gradient(circle at 50% 50%, transparent 28%, rgba(56, 189, 248, 0.06) 29%, transparent 30%),
+    radial-gradient(circle at 50% 50%, transparent 58%, rgba(56, 189, 248, 0.06) 59%, transparent 60%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.12), 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 .sb-board-with-labels-layout {
   display: grid !important;
   grid-template-columns: auto minmax(0, 1fr) !important;
-  /* `auto minmax(0, 1fr)` so the board row stretches to fill the parent's
-     remaining height. In unconstrained parents (placement screen), 1fr
-     collapses to content size, preserving prior behavior. */
   grid-template-rows: auto minmax(0, 1fr) !important;
-  gap: 2px;
+  gap: 3px;
   width: 100%;
   max-width: 100%;
   min-height: 0;
@@ -204,13 +207,16 @@
 
 .sb-label {
   font-size: 11px;
+  font-weight: 700;
   width: 100%;
   height: 100%;
   text-align: center;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  opacity: 0.6;
+  opacity: 0.75;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
 }
 
 .sb-cell {
@@ -219,6 +225,7 @@
   position: relative;
   border-width: 1px;
   border-style: solid;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .sb-cell.sb-cell--ship-draggable {

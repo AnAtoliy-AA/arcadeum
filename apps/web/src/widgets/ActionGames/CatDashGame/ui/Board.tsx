@@ -342,28 +342,40 @@ export const CatDashBoard = memo(function CatDashBoard({
       </div>
 
       {/* Legend */}
-      <div className="flex flex-row items-stretch gap-3 justify-center flex-wrap">
-        <div className="flex flex-row gap-1 items-center">
-          <div className="flex flex-row items-stretch w-[12px] h-[12px] bg-[#22c55e] rounded-[24px]" />
-          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
+      <div className="flex flex-row items-stretch gap-4 justify-center flex-wrap pt-1">
+        <div className="flex flex-row gap-1.5 items-center">
+          <div className="w-[10px] h-[10px] bg-[#22c55e] rounded-full shadow-[0_0_6px_#22c55e]" />
+          <span
+            className="text-xs font-semibold"
+            style={{ color: tokens.textSecondary }}
+          >
             Start
           </span>
         </div>
-        <div className="flex flex-row gap-1 items-center">
-          <div className="flex flex-row items-stretch w-[12px] h-[12px] bg-[#f59e0b] rounded-[24px]" />
-          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
+        <div className="flex flex-row gap-1.5 items-center">
+          <div className="w-[10px] h-[10px] bg-[#f59e0b] rounded-full shadow-[0_0_6px_#f59e0b]" />
+          <span
+            className="text-xs font-semibold"
+            style={{ color: tokens.textSecondary }}
+          >
             Finish
           </span>
         </div>
-        <div className="flex flex-row gap-1 items-center">
-          <span className="text-[48px]">⚡</span>
-          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
+        <div className="flex flex-row gap-1.5 items-center">
+          <span className="text-sm">⚡</span>
+          <span
+            className="text-xs font-semibold"
+            style={{ color: tokens.textSecondary }}
+          >
             Obstacle
           </span>
         </div>
-        <div className="flex flex-row gap-1 items-center">
-          <span className="text-[48px]">⭐</span>
-          <span className="text-[40px]" style={{ color: tokens.textSecondary }}>
+        <div className="flex flex-row gap-1.5 items-center">
+          <span className="text-sm">⭐</span>
+          <span
+            className="text-xs font-semibold"
+            style={{ color: tokens.textSecondary }}
+          >
             Bonus
           </span>
         </div>

@@ -32,9 +32,15 @@ import type {
   GamesParticipationFilter,
   GamesStatusFilter,
   GamesCategoryFilter,
+  GamesAiVsAiFilter,
   GamesViewMode,
 } from './types';
-import { parseStatusFilterFromUrl, serializeStatusFilterToUrl } from './types';
+import {
+  parseStatusFilterFromUrl,
+  serializeStatusFilterToUrl,
+  parseAiVsAiFilterFromUrl,
+  serializeAiVsAiFilterToUrl,
+} from './types';
 
 const PAGE_SIZE = 12;
 
@@ -68,6 +74,9 @@ export default function GamesPage({
   );
   const participationFilter =
     (searchParams?.get('participation') as GamesParticipationFilter) || 'all';
+  const aiVsAiFilter = parseAiVsAiFilterFromUrl(
+    searchParams?.get('aiVsAi') ?? null,
+  );
   const initialSearchQuery = searchParams?.get('search') || '';
   const categoryFilterParam = searchParams?.get('category') || '';
 
@@ -125,6 +134,13 @@ export default function GamesPage({
   const handleParticipationChange = useCallback(
     (participation: GamesParticipationFilter) => {
       updateParams({ participation });
+    },
+    [updateParams],
+  );
+
+  const handleAiVsAiChange = useCallback(
+    (filter: GamesAiVsAiFilter) => {
+      updateParams({ aiVsAi: serializeAiVsAiFilterToUrl(filter) });
     },
     [updateParams],
   );
@@ -199,6 +215,7 @@ export default function GamesPage({
       'list',
       serializedStatus ?? 'all',
       participationFilter,
+      aiVsAiFilter,
       deferredSearchQuery,
       gameId ?? null,
       snapshot.accessToken,
@@ -208,6 +225,7 @@ export default function GamesPage({
         {
           status: serializedStatus,
           participation: participationFilter,
+          aiVsAi: aiVsAiFilter === 'ai_vs_ai',
           search: deferredSearchQuery || undefined,
           page: pageParam as number,
           limit: PAGE_SIZE,
@@ -290,6 +308,8 @@ export default function GamesPage({
           onParticipationChange={handleParticipationChange}
           categoryFilter={categoryFilter}
           onCategoryChange={handleCategoryChange}
+          aiVsAiFilter={aiVsAiFilter}
+          onAiVsAiChange={handleAiVsAiChange}
           isAuthenticated={!!snapshot.accessToken}
         />
 

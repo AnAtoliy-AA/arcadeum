@@ -56,6 +56,7 @@ export interface ListRoomsFilters {
   userId?: string;
   participation?:
     'host' | 'participant' | 'any' | 'hosting' | 'joined' | 'not_joined';
+  aiVsAi?: boolean;
   page?: number;
   limit?: number;
 }

@@ -42,6 +42,10 @@ export class GameRoomsQueryBuilder {
       }
     }
 
+    if (filters.aiVsAi) {
+      query['gameOptions.aiVsAi'] = true;
+    }
+
     if (filters.participation && filters.userId) {
       switch (filters.participation) {
         case 'host':

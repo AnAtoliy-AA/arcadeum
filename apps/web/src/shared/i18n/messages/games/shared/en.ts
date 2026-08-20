@@ -30,7 +30,14 @@ export const enMessages = {
         joined: 'Joined',
         not_joined: 'Not Joined',
       },
+      aiVsAiLabel: 'Mode',
+      aiVsAi: 'AI vs AI',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Watch AI vs AI',
+    error: "Couldn't start — try again",
+    delayLabel: 'Move delay',
   },
   rooms: {
     status: {

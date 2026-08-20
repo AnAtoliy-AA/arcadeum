@@ -270,6 +270,28 @@ export function RankedBadge({
   );
 }
 
+export function AiVsAiBadge({
+  className,
+  'data-testid': dataTestId,
+  children,
+}: {
+  className?: string;
+  'data-testid'?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div
+      data-testid={dataTestId}
+      className={cx(
+        'flex flex-row items-center gap-1 px-3 py-1 rounded-lg bg-[rgba(99,102,241,0.18)] border border-[#818cf8] text-[#a5b4fc] shadow-[0_4px_12px_rgba(99,102,241,0.25)] shrink-0',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
 export function FastBadgeText({
   className,
   children,

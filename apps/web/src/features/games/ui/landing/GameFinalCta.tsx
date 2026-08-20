@@ -5,6 +5,8 @@ import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import { Button } from '@arcadeum/ui';
 import type { GameFinalCtaProps } from './types';
 import { useGameLandingTheme } from './GameLandingThemeContext';
+import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
+import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 
 export function GameFinalCta({
   gameId,
@@ -43,6 +45,10 @@ export function GameFinalCta({
           ctaPlayHumanError={ctaPlayHumanErrorLabel}
           disabled={comingSoon}
         />
+
+        {!comingSoon && isAiVsAiSupported(gameId) ? (
+          <AIvsAIViewer gameId={gameId} theme={theme} />
+        ) : null}
 
         <Link href={roomsHref} className="box-border inline-flex">
           <Button variant="secondary" size="lg">

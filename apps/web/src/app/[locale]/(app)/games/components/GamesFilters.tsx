@@ -10,6 +10,7 @@ import type {
   GamesParticipationFilter,
   GamesStatusFilter,
   GamesCategoryFilter,
+  GamesAiVsAiFilter,
 } from '../types';
 import { ALL_STATUS_VALUES, STATUS_VALUES, GAME_CATEGORIES } from '../types';
 import { getCategoryLabelKey } from '@/features/games/registry';
@@ -23,6 +24,8 @@ interface GamesFiltersProps {
   onParticipationChange: (participation: GamesParticipationFilter) => void;
   categoryFilter: GamesCategoryFilter;
   onCategoryChange: (category: GamesCategoryFilter) => void;
+  aiVsAiFilter: GamesAiVsAiFilter;
+  onAiVsAiChange: (filter: GamesAiVsAiFilter) => void;
   isAuthenticated: boolean;
 }
 
@@ -49,6 +52,8 @@ export function GamesFilters({
   onParticipationChange,
   categoryFilter,
   onCategoryChange,
+  aiVsAiFilter,
+  onAiVsAiChange,
   isAuthenticated,
 }: GamesFiltersProps) {
   const { t } = useTranslation();
@@ -136,6 +141,33 @@ export function GamesFilters({
                 aria-pressed={isActive}
               >
                 {label || value}
+                {isActive ? ' ✓' : ''}
+              </FilterChip>
+            );
+          })}
+        </FilterChips>
+      </FilterGroup>
+
+      <FilterGroup>
+        <FilterLabel>
+          {t('games.lounge.filters.aiVsAiLabel') || 'Mode'}
+        </FilterLabel>
+        <FilterChips>
+          {(['all', 'ai_vs_ai'] as const).map((value) => {
+            const label =
+              value === 'all'
+                ? t('games.lounge.filters.status.all') || 'All'
+                : t('games.lounge.filters.aiVsAi') || 'AI vs AI';
+            const isActive = aiVsAiFilter === value;
+            return (
+              <FilterChip
+                key={value}
+                active={isActive}
+                onClick={() => onAiVsAiChange(value)}
+                aria-label={`Filter by mode: ${label}`}
+                aria-pressed={isActive}
+              >
+                {label}
                 {isActive ? ' ✓' : ''}
               </FilterChip>
             );

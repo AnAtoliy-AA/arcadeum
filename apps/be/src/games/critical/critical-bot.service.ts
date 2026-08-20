@@ -4,6 +4,7 @@ import { CriticalState, CriticalPlayerState } from './critical.state';
 import { CriticalCard } from './critical.constants';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
 import type { AiDifficulty } from '../ai-difficulty';
+import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
 
 const DIFFICULTY_CONFIG: Record<
   AiDifficulty,
@@ -38,7 +39,7 @@ export class CriticalBotService {
       const hasAliveHuman = state.players.some(
         (p: CriticalPlayerState) => p.alive && !this.isBot(p.playerId),
       );
-      if (!hasAliveHuman) {
+      if (!hasAliveHuman && !isAiVsAiSession(session)) {
         this.logger.log(
           `No alive humans in room ${session.roomId} — completing session`,
         );
@@ -97,7 +98,12 @@ export class CriticalBotService {
 
   private async playTurn(session: GameSessionSummary, botId: string) {
     // Simulate thinking time
-    await this.sleep(1500 + Math.random() * 1000);
+    const aiDelay = getAiMoveDelayMs(session);
+    if (aiDelay !== null) {
+      await this.sleep(aiDelay);
+    } else {
+      await this.sleep(1500 + Math.random() * 1000);
+    }
 
     const state = session.state as unknown as CriticalState;
     const botPlayer = state.players.find(

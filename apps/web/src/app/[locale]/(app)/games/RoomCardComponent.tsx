@@ -22,6 +22,7 @@ import {
   FastBadge,
   FastBadgeText,
   RankedBadge,
+  AiVsAiBadge,
   BadgeIcon,
   RoomMeta,
   MetaGrid,
@@ -127,6 +128,15 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               <BadgeIcon>★</BadgeIcon>
               <FastBadgeText>{t('games.rooms.ranked')}</FastBadgeText>
             </RankedBadge>
+          )}
+
+          {room.gameOptions?.aiVsAi === true && (
+            <AiVsAiBadge data-testid="ai-vs-ai-badge">
+              <BadgeIcon>🤖</BadgeIcon>
+              <FastBadgeText>
+                {t('games.lounge.filters.aiVsAi') || 'AI vs AI'}
+              </FastBadgeText>
+            </AiVsAiBadge>
           )}
         </RoomHeader>
 

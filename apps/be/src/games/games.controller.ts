@@ -28,6 +28,8 @@ import { StartGameDto } from './dtos/start-game.dto';
 import { LeaveGameRoomDto } from './dtos/leave-game-room.dto';
 import { DeleteGameRoomDto } from './dtos/delete-game-room.dto';
 import { QuickplayGameDto } from './dtos/quickplay-game.dto';
+import { CreateAiVsAiGameDto } from './dtos/create-ai-vs-ai.dto';
+import { AiVsAiService } from './ai-vs-ai/ai-vs-ai.service';
 import { RoomInfoDto } from './dtos/room-info.dto';
 import { UpdateRoomOptionsDto } from './dtos/update-room-options.dto';
 import { InvitePlayersDto } from './dtos/invite-players.dto';
@@ -48,6 +50,7 @@ export class GamesController {
     private readonly catalogService: GamesCatalogService,
     private readonly criticalService: CriticalService,
     private readonly texasHoldemService: TexasHoldemService,
+    private readonly aiVsAiService: AiVsAiService,
   ) {}
 
   @UseGuards(JwtOptionalAuthGuard)
@@ -108,6 +111,19 @@ export class GamesController {
   }
 
   @UseGuards(JwtOptionalAuthGuard)
+  @Post('ai-vs-ai')
+  async createAiVsAi(@Req() req: Request, @Body() dto: CreateAiVsAiGameDto) {
+    const user = req.user as AuthenticatedUser | null;
+    if (!user) {
+      throw new BadRequestException('Missing user context');
+    }
+    const role = await this.catalogService.resolveRole(user.userId);
+    await this.catalogService.assertVisible(role, dto.gameId, dto.variant);
+    const room = await this.aiVsAiService.createAIvsAIRoom(user.userId, dto);
+    return { room };
+  }
+
+  @UseGuards(JwtOptionalAuthGuard)
   @Get('rooms')
   async listRooms(
     @Req() req: Request,
@@ -118,6 +134,7 @@ export class GamesController {
     @Query('search') search?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('aiVsAi') aiVsAi?: string,
   ): Promise<Awaited<ReturnType<GamesService['listRooms']>>> {
     const user = req.user as AuthenticatedUser | undefined | null;
     const statusFilters = parseStatusFilters(statusParam);
@@ -134,6 +151,7 @@ export class GamesController {
       statuses: statusFilters.length ? statusFilters : undefined,
       visibility: visibilityFilters.length ? visibilityFilters : undefined,
       participation: participationFilter,
+      aiVsAi: aiVsAi === 'true',
       page: pageNum,
       limit: limitNum,
     });

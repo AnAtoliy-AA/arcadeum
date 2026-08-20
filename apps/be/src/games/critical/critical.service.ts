@@ -8,6 +8,7 @@ import { CriticalActionsService } from '../actions/critical/critical-actions.ser
 import type { StartGameSessionResult } from '../games.types';
 import { CriticalBotService } from './critical-bot.service';
 import { BaseGameService } from '../common/base-game.service';
+import { extractAiVsAiExtras } from '../common/ai-vs-ai';
 
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 6;
@@ -124,6 +125,7 @@ export class CriticalService extends BaseGameService<Record<string, unknown>> {
     withBots?: boolean,
     botCount?: number,
     engine?: string,
+    startExtras?: Record<string, unknown>,
   ): Promise<StartGameSessionResult> {
     let effectiveRoomId = roomId;
     if (!effectiveRoomId) {
@@ -196,6 +198,7 @@ export class CriticalService extends BaseGameService<Record<string, unknown>> {
       gameId: room.gameId,
       playerIds,
       config: { engine, ...room.gameOptions },
+      options: extractAiVsAiExtras(startExtras) ?? undefined,
     });
 
     await this.roomsService.updateRoomStatus(effectiveRoomId, 'in_progress');

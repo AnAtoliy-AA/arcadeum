@@ -31,7 +31,14 @@ export const frMessages = {
         joined: 'Rejoint',
         not_joined: 'Non rejoint',
       },
+      aiVsAiLabel: 'Mode',
+      aiVsAi: 'IA contre IA',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Regarder IA contre IA',
+    error: 'Impossible de démarrer — réessayez',
+    delayLabel: 'Délai entre coups',
   },
   rooms: {
     status: {

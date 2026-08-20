@@ -15,6 +15,7 @@ import {
   isBoardFull,
 } from '../engines/tic-tac-toe/tic-tac-toe.utils';
 import { randomInt } from 'crypto';
+import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
 
 const MOVE_DELAY_MS = { min: 400, max: 1100 };
 
@@ -48,7 +49,7 @@ export class TicTacToeBotService {
     const hasAliveHuman = state.players.some(
       (p) => p.alive && !this.isBot(p.playerId),
     );
-    if (!hasAliveHuman) {
+    if (!hasAliveHuman && !isAiVsAiSession(session)) {
       this.logger.log(
         `No alive humans in room ${session.roomId} — completing session`,
       );
@@ -64,7 +65,12 @@ export class TicTacToeBotService {
     this.processing.add(lockKey);
 
     try {
-      await this.randomDelay(MOVE_DELAY_MS);
+      const aiDelay = getAiMoveDelayMs(session);
+      if (aiDelay !== null) {
+        await this.randomDelay({ min: aiDelay, max: aiDelay });
+      } else {
+        await this.randomDelay(MOVE_DELAY_MS);
+      }
       const move = this.pickMove(state, currentShooterId);
       if (!move) return;
       await this.ticTacToeService.placeMark(

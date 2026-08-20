@@ -114,6 +114,15 @@ export function GameResultModal({
     else if (result === 'defeat') play('lose');
   }, [isOpen, result, play]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose?.();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !result || !isClient) return null;
 
   const resolvedTheme = resolveTheme(theme);
@@ -127,14 +136,20 @@ export function GameResultModal({
     messages?.message ?? t(`games.table.${result}.message` as TranslationKey);
 
   const modalNode = (
-    <Modal open={isOpen} onOpenChange={(val) => !val && onClose?.()}>
+    <div
+      data-testid="game-result-container"
+      className="fixed inset-0 z-[1200] overflow-hidden"
+    >
       <div
         className={cx(
-          'fixed inset-0 z-[1199] h-[100dvh] w-screen backdrop-blur-md',
+          'fixed inset-0 z-0 h-[100dvh] w-screen backdrop-blur-md',
           TONE_BACKDROP_CLASSES[result],
         )}
       />
-      <div className="fixed inset-0 z-[1200] flex h-[100dvh] w-screen items-center justify-center p-4">
+
+      <VictoryCelebration tone={result} theme={resolvedTheme} />
+
+      <div className="fixed inset-0 z-10 flex h-[100dvh] w-screen items-center justify-center p-4">
         <div
           data-testid="game-result-modal"
           data-theme={resolvedTheme.id}
@@ -258,9 +273,7 @@ export function GameResultModal({
           </div>
         </div>
       </div>
-
-      <VictoryCelebration tone={result} theme={resolvedTheme} />
-    </Modal>
+    </div>
   );
 
   return typeof document !== 'undefined'

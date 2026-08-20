@@ -8,6 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { isIP } from 'node:net';
 import {
   GeoBlockedCountry,
   type GeoBlockedCountryDocument,
@@ -105,6 +106,9 @@ export class GeoBlockService {
   }
 
   private async getCountry(ip: string): Promise<string | null> {
+    // Guard against SSRF: only a syntactically valid IP literal may be
+    // embedded in the outbound lookup URL.
+    if (isIP(ip) === 0) return null;
     try {
       const res = await fetch(
         `http://ip-api.com/json/${ip}?fields=countryCode`,
@@ -119,6 +123,7 @@ export class GeoBlockService {
   }
 
   private async checkVpn(ip: string): Promise<boolean> {
+    if (isIP(ip) === 0) return false;
     try {
       const apiKey = this.config.get<string>('VPN_CHECK_API_KEY');
       if (!apiKey) return false;

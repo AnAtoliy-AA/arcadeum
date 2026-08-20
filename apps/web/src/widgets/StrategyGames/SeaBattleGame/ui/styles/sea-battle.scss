@@ -95,11 +95,11 @@
 }
 
 .sb-glow-hit {
-  box-shadow: inset 0 0 8px rgba(251, 146, 60, 0.4);
+  box-shadow: inset 0 0 10px rgba(249, 115, 22, 0.6), 0 0 8px rgba(249, 115, 22, 0.4);
 }
 
 .sb-glow-sunk {
-  box-shadow: inset 0 0 8px rgba(239, 68, 68, 0.3);
+  box-shadow: inset 0 0 12px rgba(239, 68, 68, 0.6), 0 0 10px rgba(239, 68, 68, 0.5);
 }
 
 .sb-valid-pulse {
@@ -123,11 +123,13 @@
 }
 
 .sb-icon-hit {
-  text-shadow: 0 0 5px rgba(251, 146, 60, 0.9);
+  text-shadow: 0 0 8px rgba(251, 146, 60, 1), 0 0 16px rgba(239, 68, 68, 0.8);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .sb-icon-sunk {
-  text-shadow: 0 0 5px rgba(239, 68, 68, 0.9);
+  text-shadow: 0 0 8px rgba(239, 68, 68, 1), 0 0 16px rgba(185, 28, 28, 0.8);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .sb-board-grid-layout {
@@ -141,6 +143,9 @@
   box-sizing: border-box;
   pointer-events: auto;
   contain: layout style;
+  border-radius: 12px;
+  background-color: rgba(6, 12, 24, 0.7);
+  box-shadow: inset 0 0 16px rgba(6, 182, 212, 0.08);
 }
 
 .sb-board-with-labels-layout {

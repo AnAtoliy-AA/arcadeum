@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.54] - 2026-08-20
+
+### Fixed
+- place codeql suppression comment on the URL sink line
+- suppress codeql SSRF false positive on validated IP lookups
+- break taint flow for geo/vpn lookup URLs via validated helper
+- validate IP literal before embedding in geo/vpn lookup URLs
+- resilient session restore after refresh with backoff and cross-tab dedupe
+- resolve real client IP for rate limiting and raise refresh throttle
+
+
 ## [1.25.53] - 2026-08-20
 
 ### Added

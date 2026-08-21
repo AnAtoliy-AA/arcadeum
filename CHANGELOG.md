@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.63] - 2026-08-21
+
+### Fixed
+- fix failing post-merge CI jobs
+- use correct Buffer modes for release posts to Facebook and Threads
+
+
 ## [1.25.62] - 2026-08-21
 
 ### Added

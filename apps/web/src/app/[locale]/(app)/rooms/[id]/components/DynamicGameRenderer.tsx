@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { gameFactory, type BaseGameWidgetProps } from '@/features/games';
+import { GameWidgetErrorBoundary } from '@/features/games/ui';
 import { type GameType } from '@/features/games/hooks';
 import { ErrorContainer } from './styles';
 
@@ -44,5 +45,16 @@ export const DynamicGameRenderer: React.FC<DynamicGameRendererProps> = ({
     );
   }
 
-  return React.createElement(LoadedGame, props);
+  return (
+    <GameWidgetErrorBoundary
+      resetKey={`${gameType}-${props.room?.id ?? ''}`}
+      onError={(error) => {
+        if (typeof window !== 'undefined') {
+          console.error('[GameWidgetErrorBoundary]', gameType, error);
+        }
+      }}
+    >
+      {React.createElement(LoadedGame, props)}
+    </GameWidgetErrorBoundary>
+  );
 };

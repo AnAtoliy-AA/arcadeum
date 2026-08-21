@@ -62,7 +62,11 @@ export interface UserSummary {
   email?: string | null;
 }
 
-// Catalog response types
+export interface CatalogTheme {
+  id: string;
+  comingSoon: boolean;
+}
+
 export interface CatalogVariant {
   id: string;
   comingSoon: boolean;
@@ -76,6 +80,7 @@ export interface CatalogRule {
 export interface CatalogGame {
   gameId: string;
   comingSoon: boolean;
+  themes: CatalogTheme[];
   variants: CatalogVariant[];
   rules: CatalogRule[];
 }

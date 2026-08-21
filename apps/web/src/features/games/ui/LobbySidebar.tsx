@@ -311,12 +311,12 @@ export function LobbySidebar({
             <CardTitle>{invitedPlayersLabel}</CardTitle>
             <PlayerList>
               {pendingInvited.map((u) => (
-                <PlayerItem key={u.id} style={{ opacity: 0.7 }}>
+                <PlayerItem key={u.id} className="opacity-70">
                   <LobbyPlayerAvatar
+                    className="grayscale"
                     backgroundColor={
                       AVATAR_COLORS[u.displayName.length % AVATAR_COLORS.length]
                     }
-                    style={{ filter: 'grayscale(1)' }}
                   >
                     <LobbyPlayerAvatarText>
                       {getInitials(u.displayName)}
@@ -329,25 +329,21 @@ export function LobbySidebar({
                 </PlayerItem>
               ))}
               {pendingDeclined.map((u) => (
-                <PlayerItem key={u.id} style={{ opacity: 0.5 }}>
-                  <div
-                    style={{ display: 'flex', alignItems: 'center', flex: 1 }}
-                  >
+                <PlayerItem key={u.id} className="opacity-50">
+                  <div className="flex flex-1 items-center">
                     <LobbyPlayerAvatar
                       backgroundColor="#ccc"
-                      style={{ filter: 'grayscale(1)' }}
+                      className="grayscale"
                     >
                       <LobbyPlayerAvatarText>
                         {getInitials(u.displayName)}
                       </LobbyPlayerAvatarText>
                     </LobbyPlayerAvatar>
                     <PlayerInfo>
-                      <LobbyPlayerName
-                        style={{ textDecoration: 'line-through' }}
-                      >
+                      <LobbyPlayerName className="line-through">
                         {u.displayName}
                       </LobbyPlayerName>
-                      <InfoLabel style={{ color: '#ef4444' }}>
+                      <InfoLabel className="text-[#ef4444]">
                         {declinedLabel}
                       </InfoLabel>
                     </PlayerInfo>
@@ -395,9 +391,7 @@ export function LobbySidebar({
         {room.inviteCode && (
           <InfoRow>
             <InfoLabel>{inviteCodeLabel}</InfoLabel>
-            <InfoValue
-              style={{ fontFamily: 'monospace', letterSpacing: '1px' }}
-            >
+            <InfoValue className="font-mono tracking-[1px]">
               {room.inviteCode}
             </InfoValue>
           </InfoRow>
@@ -408,7 +402,7 @@ export function LobbySidebar({
         <DeleteButton
           onClick={onDeleteRoom}
           size="md"
-          style={{ marginTop: 8, boxShadow: '0 0px 0px transparent' }}
+          className="mt-2 shadow-none"
         >
           {deleteRoomLabel}
         </DeleteButton>

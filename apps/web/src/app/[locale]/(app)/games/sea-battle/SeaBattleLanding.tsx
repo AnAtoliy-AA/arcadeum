@@ -4,17 +4,16 @@ import {
   getRelatedGames,
 } from '@/features/games/ui/landing';
 import type { Locale } from '@/shared/i18n';
+import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import { SeaBattleLandingBoard } from './SeaBattleLandingBoard';
 
 type SeaBattleMessages = SeaBattleGamesMessages['sea_battle_v1'];
 type Landing = SeaBattleMessages['landing'];
 type Rules = SeaBattleMessages['rules'];
-type Variants = SeaBattleMessages['variants'];
 
 interface Props {
   landing?: Landing;
   rulesT?: Rules;
-  variantsT?: Variants;
   createRoomHref: string;
   roomsHref: string;
   homeHref: string;
@@ -30,7 +29,6 @@ interface Props {
 export default function SeaBattleLanding({
   landing,
   rulesT,
-  variantsT,
   createRoomHref,
   roomsHref,
   homeHref,
@@ -107,33 +105,15 @@ export default function SeaBattleLanding({
       ]
     : [];
 
-  const themeKeys = [
-    'classic',
-    'modern',
-    'pixel',
-    'cartoon',
-    'cyber',
-    'vintage',
-    'nebula',
-    'forest',
-    'sunset',
-    'monochrome',
-  ] as const;
-
-  const themesList = themeKeys.map((k) => ({
-    id: k,
-    name: variantsT?.[k]?.name ?? k,
-    description: variantsT?.[k]?.description,
-  }));
+  const themeMessages = translatedGames?.themes as
+    | Record<string, { name?: string; description?: string } | undefined>
+    | undefined;
+  const themesList = getTranslatedSharedThemes(themeMessages);
 
   const relatedGames = getRelatedGames(
     locale,
     'sea_battle_v1',
     translatedGames,
-  );
-
-  const variantNames = Object.fromEntries(
-    themeKeys.map((k) => [k, variantsT?.[k]?.name ?? k]),
   );
 
   return (
@@ -165,7 +145,6 @@ export default function SeaBattleLanding({
         createRoomHref,
         heroVisual: (
           <SeaBattleLandingBoard
-            variantNames={variantNames}
             label={landing.board.label}
             cycleHint={landing.board.cycleHint}
             cycleAriaLabel={landing.board.cycleAriaLabel}

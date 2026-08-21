@@ -88,6 +88,10 @@ export const byMessages = {
     lobby: {
       theme: 'Тэма трасы',
       trackType: 'Тып трасы',
+      columns: 'Шырыня поля (калонкі)',
+      columnsUnit: 'кал.',
+      trackLength: 'Даўжыня трасы (клеткі)',
+      spacesUnit: 'клетак',
       startWithBots: 'Пачаць з ботамі',
       addBot: 'Дадаць бота',
       waitingForPlayers: 'Чаканне гульцоў…',

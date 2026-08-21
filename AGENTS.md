@@ -31,6 +31,13 @@
 - **Reuse `@arcadeum/ui` components** — run `/check-ui-components` before writing any UI component. It audits the full component catalog, identifies reuse opportunities, and guides adding new components to `packages/ui` when nothing fits.
 - **Handle all UI states** — every data-fetching UI must handle loading, error, and empty states explicitly.
 
+### Game Visual Themes & Variants
+
+- **Unified Shared Themes across ALL games** — all games (current and future) MUST use the unified visual themes defined in `apps/web/src/features/games/lib/shared-themes.ts` (`SHARED_THEMES`) and `apps/be/src/games/common/shared-themes.ts` (`SHARED_VISUAL_THEMES`).
+- **Separate Themes from Modes** — visual themes (`cyberpunk`, `underwater`, `zen`, etc.) are skins/palettes/backgrounds. Game modes (`standard`, `chess960`, `battle_royale`, `speed`) are gameplay rules. Never conflate them.
+- **Theme Adapter Pattern** — every game widget must implement `lib/theme-adapter.ts` (`sharedThemeTo<Game>(theme: GameTheme): <Game>Theme`), `lib/theme.ts` (`get<Game>Theme(variant?: string)`), and `lib/<Game>ThemeContext.tsx` (`createGameThemeContext`).
+- **Adding New Themes** — when adding a new theme to `SHARED_THEMES` (with background image and palette tokens), it MUST automatically propagate to all games without altering individual game engines.
+
 ### i18n
 
 - **No hardcoded user-facing strings** — all text must go through the i18n system (`getTranslations()` on web server components, `useTranslation()` on web client/mobile). Add keys to all locale files (`en`, `ru`, `es`, `fr`, `by`).

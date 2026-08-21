@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { LoginResponse } from '../api/authApi';
 import { refreshSession } from '../api/authApi';
+import { acquireRefreshLock } from '../lib/refreshLock';
 import type {
   SessionProviderId,
   SessionTokensSnapshot,
@@ -180,6 +181,12 @@ export const useSessionStore = create<SessionState>()(
       refreshTokens: async () => {
         const state = get() as SessionState;
         if (state.refreshInFlight) {
+          return state.snapshot;
+        }
+
+        // Another tab refreshed within the lock window — skip so we don't
+        // race a rotated cookie (one tab would get 401 and drop the session).
+        if (!acquireRefreshLock()) {
           return state.snapshot;
         }
 

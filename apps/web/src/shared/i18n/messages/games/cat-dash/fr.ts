@@ -97,6 +97,10 @@ export const frMessages = {
     lobby: {
       theme: 'Thème de piste',
       trackType: 'Type de piste',
+      columns: 'Largeur du plateau (colonnes)',
+      columnsUnit: 'colonnes',
+      trackLength: 'Longueur de la piste (cases)',
+      spacesUnit: 'cases',
       startWithBots: 'Jouer avec des bots',
       addBot: 'Ajouter un bot',
       waitingForPlayers: 'En attente de joueurs…',

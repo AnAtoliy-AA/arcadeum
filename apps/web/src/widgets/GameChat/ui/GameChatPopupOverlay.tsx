@@ -1,10 +1,14 @@
 'use client';
 
+import { memo } from 'react';
 import { useGameChatStore } from '../store/gameChatStore';
 import { useLatestChatMessage } from '../hooks/useLatestChatMessage';
 import { ChatMessagePopup } from './ChatMessagePopup';
 
-export function GameChatPopupOverlay() {
+// No props — reads the chat store directly. Memoized so it doesn't re-render
+// every time the surrounding game widget re-renders (only when chat state
+// actually changes).
+export const GameChatPopupOverlay = memo(function GameChatPopupOverlay() {
   const logs = useGameChatStore((s) => s.logs);
   const gameResolveDisplayName = useGameChatStore((s) => s.resolveDisplayName);
   const fallbackResolveDisplayName = useGameChatStore(
@@ -50,4 +54,4 @@ export function GameChatPopupOverlay() {
       isOwn={isOwn}
     />
   );
-}
+});

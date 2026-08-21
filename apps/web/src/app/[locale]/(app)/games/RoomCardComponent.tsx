@@ -22,6 +22,7 @@ import {
   FastBadge,
   FastBadgeText,
   RankedBadge,
+  AiVsAiBadge,
   BadgeIcon,
   RoomMeta,
   MetaGrid,
@@ -64,9 +65,10 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
 
   const translatedGameName =
     t(`games.${room.gameId}.name` as TranslationKey) || rawDisplayName;
-  const translatedVariantName = variantName
-    ? t(variantName as TranslationKey)
-    : undefined;
+  const translatedVariantName =
+    variantName && variantName.includes('.')
+      ? t(variantName as TranslationKey)
+      : variantName;
   const gameName = translatedVariantName
     ? `${translatedGameName}: ${translatedVariantName}`
     : translatedGameName;
@@ -101,14 +103,9 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
       data-testid="room-card"
     >
       <div
-        style={
+        className={
           viewMode === 'list'
-            ? {
-                display: 'grid',
-                gridTemplateColumns: '1fr 110px 120px 80px 80px 120px 200px',
-                alignItems: 'center',
-                gap: '0 1rem',
-              }
+            ? 'grid grid-cols-[1fr_110px_120px_80px_80px_120px_200px] items-center gap-x-4 max-[768px]:flex max-[768px]:flex-col max-[768px]:gap-2'
             : undefined
         }
       >
@@ -117,14 +114,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             <h3 className={cardStyles.roomTitle} title={room.name}>
               {room.name}
             </h3>
-            <GameName
-              className={variantGradient ? 'text-gradient' : undefined}
-              style={
-                variantGradient ? { backgroundImage: variantGradient } : {}
-              }
-            >
-              {gameName}
-            </GameName>
+            <GameName gradient={variantGradient}>{gameName}</GameName>
           </div>
 
           {room.gameOptions?.idleTimerEnabled && (
@@ -139,6 +129,15 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
               <BadgeIcon>★</BadgeIcon>
               <FastBadgeText>{t('games.rooms.ranked')}</FastBadgeText>
             </RankedBadge>
+          )}
+
+          {room.gameOptions?.aiVsAi === true && (
+            <AiVsAiBadge data-testid="ai-vs-ai-badge">
+              <BadgeIcon>🤖</BadgeIcon>
+              <FastBadgeText>
+                {t('games.lounge.filters.aiVsAi') || 'AI vs AI'}
+              </FastBadgeText>
+            </AiVsAiBadge>
           )}
         </RoomHeader>
 
@@ -230,13 +229,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                   {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
                     <div className={cardStyles.avatarOverlap}>
                       <div className="flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
-                        <MetaLabel
-                          style={{
-                            opacity: 1,
-                            fontSize: 10,
-                            fontWeight: '700',
-                          }}
-                        >
+                        <MetaLabel className="opacity-100 text-[10px] font-bold">
                           +{room.members.length - MAX_VISIBLE_PARTICIPANTS}
                         </MetaLabel>
                       </div>
@@ -275,9 +268,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                 room.members.length > MAX_VISIBLE_PARTICIPANTS && (
                   <div className={cardStyles.avatarOverlap}>
                     <div className="flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
-                      <MetaLabel
-                        style={{ opacity: 1, fontSize: 10, fontWeight: '700' }}
-                      >
+                      <MetaLabel className="opacity-100 text-[10px] font-bold">
                         +{room.members.length - MAX_VISIBLE_PARTICIPANTS}
                       </MetaLabel>
                     </div>

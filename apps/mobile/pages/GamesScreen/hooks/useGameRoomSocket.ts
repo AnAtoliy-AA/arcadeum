@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Alert } from 'react-native';
-import type { Router } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 import { showGlobalError } from '@/components/ui/ErrorToastProvider';
 import {
@@ -23,7 +23,7 @@ interface UseGameRoomSocketParams {
   hydrated: boolean;
   userId: string | undefined;
   deleting: boolean;
-  router: Router;
+  router: ReturnType<typeof useRouter>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (...args: any[]) => string;
   setRoom: React.Dispatch<React.SetStateAction<GameRoomSummary | null>>;

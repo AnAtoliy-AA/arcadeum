@@ -31,9 +31,21 @@ jobs:
       - name: Calculate and apply version bump
         shell: bash
         run: |
-          CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
           BRANCH_NAME="${{ github.ref_name }}"
-          
+
+          # A push to main means a release just landed. The next-minor bump
+          # must land on develop (main keeps the released version, develop
+          # continues as 1.26.x). Base the bump on develop's head instead of
+          # main's checkout so the push below is always a fast-forward — even
+          # when develop moved past the release cut while the release PRs
+          # were in review.
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            git fetch origin develop
+            git checkout -B bump-base origin/develop
+          fi
+
+          CURRENT_VERSION=$(node -p "require('./apps/web/package.json').version")
+
           echo "Current Version: $CURRENT_VERSION"
           echo "Branch: $BRANCH_NAME"
           
@@ -86,6 +98,17 @@ jobs:
           git commit -m "$COMMIT_MSG"
           
           git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
-          git push origin HEAD:develop
+
+          # Push with retry — develop may have moved while we were bumping.
+          MAX_RETRIES=5
+          for i in $(seq 1 $MAX_RETRIES); do
+            git push origin HEAD:develop && break
+            echo "Push failed (attempt $i/$MAX_RETRIES), pulling and retrying..."
+            git pull --rebase origin develop
+            if [ "$i" -eq "$MAX_RETRIES" ]; then
+              echo "Failed to push after $MAX_RETRIES attempts"
+              exit 1
+            fi
+          done
           git push origin "v$NEW_VERSION"
 

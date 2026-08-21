@@ -20,6 +20,7 @@ import s from './GameCreateView.module.scss';
 import { SectionGroup } from './SectionGroup';
 import { QuickPresets } from './QuickPresets';
 import { GamePicker } from './GamePicker';
+import { ThemePicker } from './ThemePicker';
 import { ExpansionPacks } from './ExpansionPacks';
 import { RoomDetails } from './RoomDetails';
 import { HouseRules } from './HouseRules';
@@ -50,16 +51,23 @@ function parseInitialGameId(raw: string | null | undefined): GameId {
   return VISIBLE_GAMES[0];
 }
 
+function defaultThemeFor(gameId: GameId): string {
+  const themes = themesFor(gameId);
+  const preferred = themes.find(
+    (t) => t.id === 'adventure' || t.id === 'classic',
+  );
+  return preferred?.id ?? themes[0]?.id ?? 'adventure';
+}
+
 function initialForm(
   gameId: GameId,
   themeId: string | undefined,
   defaultRoomName: string,
 ): CreateRoomForm {
   const themes = themesFor(gameId);
+  const defaultTheme = defaultThemeFor(gameId);
   const resolvedTheme =
-    themeId && themes.some((t) => t.id === themeId)
-      ? themeId
-      : (themes[0]?.id ?? '');
+    themeId && themes.some((t) => t.id === themeId) ? themeId : defaultTheme;
   return {
     gameId,
     themeId: resolvedTheme,
@@ -92,28 +100,30 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
     };
   } else if (form.gameId === 'chess_v1') {
     options = {
-      variant: form.themeId || 'standard',
+      variant: 'standard',
     };
   } else if (form.gameId === 'sea_battle_v1') {
     options = {
-      variant: form.themeId || 'classic',
+      variant: 'classic',
       gridSize: 10,
       shipCount: 10,
     };
   } else if (form.gameId === 'checkers_v1') {
     options = {
-      variant: form.themeId || 'classic',
+      variant: 'american',
     };
   } else if (form.gameId === 'cat_dash_v1') {
     options = {
-      theme: form.themeId || 'village',
+      variant: 'standard',
     };
   } else {
     options = {};
   }
-  // Ranked flag rides in gameOptions so every consumer (room cards, lobby,
-  // post-match ELO) can read it without a schema change.
-  return { ...options, ranked: form.ranked };
+  return {
+    ...options,
+    theme: form.themeId || 'adventure',
+    ranked: form.ranked,
+  };
 }
 
 export function GameCreateView() {
@@ -126,7 +136,8 @@ export function GameCreateView() {
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
   const urlGameId = parseInitialGameId(searchParams?.get('gameId'));
-  const urlVariant = searchParams?.get('variant') ?? undefined;
+  const urlVariant =
+    searchParams?.get('theme') ?? searchParams?.get('variant') ?? undefined;
 
   const defaultRoomName = useMemo(() => {
     const playerName = snapshot.displayName || snapshot.username || 'Anonymous';
@@ -155,10 +166,11 @@ export function GameCreateView() {
       const params = new URLSearchParams(searchParams?.toString());
       params.set('gameId', next.gameId);
       if (next.themeId) {
-        params.set('variant', next.themeId);
+        params.set('theme', next.themeId);
       } else {
-        params.delete('variant');
+        params.delete('theme');
       }
+      params.delete('variant');
       router.replace(`${routes.games}/create?${params.toString()}`, {
         scroll: false,
       });
@@ -166,13 +178,11 @@ export function GameCreateView() {
     [router, searchParams, routes.games],
   );
 
-  // Sync the URL with the resolved default theme on mount so deep links
-  // like /games/create?gameId=critical_v1 (no variant) land on
-  // /games/create?gameId=critical_v1&variant=<default>. Keeps the
-  // browser address bar honest about what the form is rendering and lets
-  // existing e2e coverage assert `/variant=/` against the new layout.
   useEffect(() => {
-    if (form.themeId && !searchParams?.get('variant')) {
+    if (
+      form.themeId &&
+      (!searchParams?.get('theme') || searchParams?.get('variant'))
+    ) {
       updateUrl({ gameId: form.gameId, themeId: form.themeId });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -197,8 +207,7 @@ export function GameCreateView() {
   }
 
   function setGameId(newGameId: GameId) {
-    const themes = themesFor(newGameId);
-    const themeId = themes[0]?.id ?? '';
+    const themeId = defaultThemeFor(newGameId);
     const game = GAMES[newGameId];
     let maxPlayers = form.maxPlayers;
     if (
@@ -216,6 +225,11 @@ export function GameCreateView() {
         newGameId === 'critical_v1' ? form.expansionPackIds : ['core'],
     });
     updateUrl({ gameId: newGameId, themeId });
+  }
+
+  function setThemeId(themeId: string) {
+    setForm((prev) => ({ ...prev, themeId, preset: 'custom' }));
+    updateUrl({ gameId: form.gameId, themeId });
   }
 
   function setExpansionPackIds(ids: string[]) {
@@ -311,8 +325,11 @@ export function GameCreateView() {
   const L = useMemo(() => buildLabels(t), [t]);
 
   const game = GAMES[form.gameId];
+  const themes = themesFor(form.gameId);
+  const hasThemes = themes.length > 0;
   let n = 1;
   const numGame = String(n++).padStart(2, '0');
+  const numTheme = hasThemes ? String(n++).padStart(2, '0') : null;
   const numExpansion = game.hasExpansion ? String(n++).padStart(2, '0') : null;
   const numRules = String(n++).padStart(2, '0');
   const numDetails = String(n++).padStart(2, '0');
@@ -355,6 +372,16 @@ export function GameCreateView() {
                     onChange={setGameId}
                   />
                 </SectionGroup>
+
+                {numTheme ? (
+                  <SectionGroup num={numTheme} title={L.sectionTheme}>
+                    <ThemePicker
+                      gameId={form.gameId}
+                      value={form.themeId}
+                      onChange={setThemeId}
+                    />
+                  </SectionGroup>
+                ) : null}
 
                 {numExpansion ? (
                   <SectionGroup

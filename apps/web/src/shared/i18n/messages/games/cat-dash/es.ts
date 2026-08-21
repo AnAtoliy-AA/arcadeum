@@ -94,6 +94,10 @@ export const esMessages = {
     lobby: {
       theme: 'Tema de pista',
       trackType: 'Tipo de pista',
+      columns: 'Ancho del tablero (columnas)',
+      columnsUnit: 'columnas',
+      trackLength: 'Longitud de la pista (espacios)',
+      spacesUnit: 'espacios',
       startWithBots: 'Empezar con bots',
       addBot: 'Añadir bot',
       waitingForPlayers: 'Esperando jugadores…',

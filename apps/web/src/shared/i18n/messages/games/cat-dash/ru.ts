@@ -89,6 +89,10 @@ export const ruMessages = {
     lobby: {
       theme: 'Тема трассы',
       trackType: 'Тип трассы',
+      columns: 'Ширина поля (колонки)',
+      columnsUnit: 'кол.',
+      trackLength: 'Длина трассы (клетки)',
+      spacesUnit: 'клеток',
       startWithBots: 'Начать с ботами',
       addBot: 'Добавить бота',
       waitingForPlayers: 'Ожидание игроков…',

@@ -1,20 +1,10 @@
-import {
-  Inject,
-  Injectable,
-  Logger,
-  OnModuleDestroy,
-  OnModuleInit,
-  forwardRef,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
 import { GameRoomsService } from '../rooms/game-rooms.service';
-import {
-  GameSessionsService,
-  GameSessionSummary,
-} from '../sessions/game-sessions.service';
+import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GamesRealtimeService } from '../games.realtime.service';
-import { StartGameSessionResult } from '../games.types';
+import type { StartGameSessionResult } from '../games.types';
 import { SeaBattleBotService } from './sea-battle-bot.service';
 import {
   MAX_PLAYERS,
@@ -22,7 +12,8 @@ import {
 } from '../engines/sea-battle/sea-battle.constants';
 import type { SeaBattleGameOptions } from '../rooms/sea-battle-team-config.types';
 import type { AiDifficulty } from '../engines/sea-battle/sea-battle.types';
-import { GameBotWatchdog } from '../game-bot-watchdog';
+import { BaseGameService } from '../common/base-game.service';
+import { extractAiVsAiExtras } from '../common/ai-vs-ai';
 
 interface PlaceShipPayload {
   shipId: string;
@@ -40,93 +31,44 @@ interface AttackPayload {
   col: number;
 }
 
+export interface SeaBattleStartExtras {
+  difficulty?: AiDifficulty;
+  gridSize?: number;
+  shipCount?: number;
+  variant?: string;
+  aiVsAi?: boolean;
+  aiMoveDelayMs?: number;
+}
+
+const MIN_PLAYERS = 2;
+
 @Injectable()
-export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
-  private readonly logger = new Logger(SeaBattleService.name);
-  private readonly watchdog: GameBotWatchdog;
+export class SeaBattleService extends BaseGameService<Record<string, unknown>> {
+  protected readonly logger = new Logger(SeaBattleService.name);
+  readonly gameId = 'sea_battle_v1';
+  readonly gameName = 'Sea Battle';
+  readonly minPlayers = MIN_PLAYERS;
+  readonly maxPlayers = MAX_PLAYERS;
 
   constructor(
-    private readonly roomsService: GameRoomsService,
-    private readonly sessionsService: GameSessionsService,
-    private readonly realtimeService: GamesRealtimeService,
+    roomsService: GameRoomsService,
+    sessionsService: GameSessionsService,
+    realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => SeaBattleBotService))
-    private readonly botService: SeaBattleBotService,
-    @InjectConnection() private readonly mongoConnection: Connection,
+    botService: SeaBattleBotService,
+    @InjectConnection() mongoConnection: Connection,
   ) {
-    this.watchdog = new GameBotWatchdog(
-      'sea_battle_v1',
+    super(
+      roomsService,
       sessionsService,
+      realtimeService,
       botService,
       mongoConnection,
     );
   }
 
-  onModuleInit() {
-    this.watchdog.start();
-  }
-
-  onModuleDestroy() {
-    this.watchdog.stop();
-  }
-
-  /**
-   * Find a session by room ID
-   */
-  async findSessionByRoom(roomId: string) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (session) {
-      return this.checkAndSyncRoomStatus(session);
-    }
-    return null;
-  }
-
-  /**
-   * Complete a game session (e.g. when no human players remain alive)
-   */
-  async completeSession(sessionId: string, roomId: string): Promise<void> {
-    await this.sessionsService.updateSessionState({
-      sessionId,
-      state: {},
-      status: 'completed',
-    });
-    await this.roomsService.updateRoomStatus(roomId, 'completed');
-  }
-
-  private async checkAndSyncRoomStatus(session: GameSessionSummary) {
-    if (session.status === 'completed') {
-      await this.roomsService.updateRoomStatus(session.roomId, 'completed');
-    } else {
-      // Trigger bot logic asynchronously
-      this.botService.checkAndPlay(session).catch((err: unknown) => {
-        const message = err instanceof Error ? err.message : String(err);
-        const stack = err instanceof Error ? err.stack : undefined;
-        this.logger.error(
-          `Error in bot turn for room ${session.roomId}: ${message}`,
-          stack,
-        );
-      });
-    }
-    return session;
-  }
-
-  private async emitSessionUpdate(session: GameSessionSummary) {
-    await this.realtimeService.emitSessionSnapshot(
-      session.roomId,
-      session,
-      // Use the in-memory session — sanitizeSummaryForPlayer is a pure
-      // engine transform, no DB read. Wrapped in Promise.resolve to fit the
-      // async sanitizer signature.
-      (s, pId) => {
-        const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
-        if (sanitized && typeof sanitized === 'object') {
-          return Promise.resolve({
-            ...s,
-            state: sanitized as Record<string, unknown>,
-          });
-        }
-        return Promise.resolve(s);
-      },
-    );
+  protected resolveOptions(raw: unknown): Record<string, unknown> {
+    return (raw as Record<string, unknown> | null | undefined) ?? {};
   }
 
   /**
@@ -138,10 +80,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     withBots?: boolean,
     botCount?: number,
-    difficulty?: AiDifficulty,
-    gridSize?: number,
-    shipCount?: number,
-    variant?: string,
+    startExtras: SeaBattleStartExtras = {},
   ): Promise<StartGameSessionResult> {
     const room = await this.roomsService.getRoom(roomId, userId);
 
@@ -150,6 +89,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     }
 
     const opts = (room.gameOptions ?? {}) as SeaBattleGameOptions;
+    const { difficulty, gridSize, shipCount, variant } = startExtras;
 
     // Client-side values override stale room.gameOptions (race condition fix)
     if (gridSize !== undefined) opts.gridSize = gridSize;
@@ -189,7 +129,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    if (playerIds.length < 2) {
+    if (playerIds.length < MIN_PLAYERS) {
       throw new Error('Not enough players to start Sea Battle (minimum 2)');
     }
 
@@ -227,6 +167,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
           : {}),
         ...(difficulty ? { aiDifficulty: difficulty } : {}),
       },
+      options: extractAiVsAiExtras(startExtras) ?? undefined,
     });
 
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
@@ -246,7 +187,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
       },
     );
 
-    const updatedSession = await this.checkAndSyncRoomStatus(session);
+    const updatedSession = await this.afterSessionStep(session);
     return { room: updatedRoom, session: updatedSession };
   }
 
@@ -258,19 +199,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     payload: PlaceShipPayload,
   ) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (!session) throw new Error('Session not found');
-
-    const updatedSession = await this.sessionsService.executeAction({
-      sessionId: session.id,
-      userId,
-      action: 'placeShip',
-      payload,
-    });
-
-    await this.checkAndSyncRoomStatus(updatedSession);
-    await this.emitSessionUpdate(updatedSession);
-    return updatedSession;
+    return this.runAction(userId, roomId, 'placeShip', payload);
   }
 
   /**
@@ -281,19 +210,7 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     payload: MoveShipPayload,
   ) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (!session) throw new Error('Session not found');
-
-    const updatedSession = await this.sessionsService.executeAction({
-      sessionId: session.id,
-      userId,
-      action: 'moveShip',
-      payload,
-    });
-
-    await this.checkAndSyncRoomStatus(updatedSession);
-    await this.emitSessionUpdate(updatedSession);
-    return updatedSession;
+    return this.runAction(userId, roomId, 'moveShip', payload);
   }
 
   /**
@@ -304,38 +221,19 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     roomId: string,
     ships?: Array<{ shipId: string; cells: { row: number; col: number }[] }>,
   ) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (!session) throw new Error('Session not found');
-
-    const updatedSession = await this.sessionsService.executeAction({
-      sessionId: session.id,
+    return this.runAction(
       userId,
-      action: 'confirmPlacement',
-      payload: ships ? { ships } : {},
-    });
-
-    await this.checkAndSyncRoomStatus(updatedSession);
-    await this.emitSessionUpdate(updatedSession);
-    return updatedSession;
+      roomId,
+      'confirmPlacement',
+      ships ? { ships } : {},
+    );
   }
 
   /**
    * Attack an opponent's cell
    */
   async attackByRoom(userId: string, roomId: string, payload: AttackPayload) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (!session) throw new Error('Session not found');
-
-    const updatedSession = await this.sessionsService.executeAction({
-      sessionId: session.id,
-      userId,
-      action: 'attack',
-      payload,
-    });
-
-    await this.checkAndSyncRoomStatus(updatedSession);
-    await this.emitSessionUpdate(updatedSession);
-    return updatedSession;
+    return this.runAction(userId, roomId, 'attack', payload);
   }
 
   /**
@@ -347,56 +245,20 @@ export class SeaBattleService implements OnModuleInit, OnModuleDestroy {
     action: string,
     payload: Record<string, unknown>,
   ) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (!session) throw new Error('Session not found');
-
-    const updatedSession = await this.sessionsService.executeAction({
-      sessionId: session.id,
-      userId,
-      action,
-      payload,
-    });
-
-    await this.checkAndSyncRoomStatus(updatedSession);
-    await this.emitSessionUpdate(updatedSession);
-    return updatedSession;
+    return this.runAction(userId, roomId, action, payload);
   }
 
   /**
    * Reset ship placement
    */
   async resetPlacementByRoom(userId: string, roomId: string) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (!session) throw new Error('Session not found');
-
-    const updatedSession = await this.sessionsService.executeAction({
-      sessionId: session.id,
-      userId,
-      action: 'resetPlacement',
-      payload: {},
-    });
-
-    await this.checkAndSyncRoomStatus(updatedSession);
-    await this.emitSessionUpdate(updatedSession);
-    return updatedSession;
+    return this.runAction(userId, roomId, 'resetPlacement', {});
   }
 
   /**
    * Auto place ships for a player
    */
   async autoPlaceShipsByRoom(userId: string, roomId: string) {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (!session) throw new Error('Session not found');
-
-    const updatedSession = await this.sessionsService.executeAction({
-      sessionId: session.id,
-      userId,
-      action: 'autoPlace',
-      payload: {},
-    });
-
-    await this.checkAndSyncRoomStatus(updatedSession);
-    await this.emitSessionUpdate(updatedSession);
-    return updatedSession;
+    return this.runAction(userId, roomId, 'autoPlace', {});
   }
 }

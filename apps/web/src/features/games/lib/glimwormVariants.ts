@@ -1,4 +1,6 @@
-export const GLIMWORM_VARIANTS: {
+import { SHARED_THEMES } from './shared-themes';
+
+export const GLIMWORM_MODES: {
   id: string;
   name: string;
   description: string;
@@ -28,3 +30,20 @@ export const GLIMWORM_VARIANTS: {
     gradient: 'linear-gradient(135deg, #FF5E5E 0%, #FFB05E 100%)',
   },
 ];
+
+export const GLIMWORM_VARIANTS: {
+  id: string;
+  name: string;
+  description: string;
+  emoji: string;
+  gradient: string;
+  bgImage?: string;
+  disabled?: boolean;
+}[] = SHARED_THEMES.map((t) => ({
+  id: t.id,
+  name: t.nameKey,
+  description: t.descriptionKey,
+  emoji: t.emoji,
+  gradient: t.gradient,
+  bgImage: t.bgImage,
+}));

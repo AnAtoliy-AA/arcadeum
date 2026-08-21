@@ -65,7 +65,7 @@ export const enMessages = {
       },
       themes: {
         title: 'Pick a vibe',
-        subtitle: 'Each variant restyles the board, marks, and grid.',
+        subtitle: 'Each theme restyles the board, marks, and grid.',
       },
       faq: {
         sizes: {

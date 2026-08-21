@@ -1,4 +1,4 @@
-import { getTicTacToeTheme } from '@/widgets/TicTacToeGame/lib/theme';
+import { getTicTacToeTheme } from '@/widgets/BoardGames/TicTacToeGame/lib/theme';
 import type { TicTacToeThemeMeta } from '../data/themes';
 
 interface Props {

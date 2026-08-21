@@ -245,8 +245,7 @@ it('listForAdmin returns the full catalog joined with tiers (defaults to all)', 
       { variantId: 'lives_heats', tier: 'all' },
     ]),
   );
-  // texas_holdem_v1 is the only game without variants in GAME_CATALOG today.
   const texas = rows.find((r) => r.gameId === 'texas_holdem_v1');
   expect(texas?.tier).toBe('all');
-  expect(texas?.variants).toEqual([]);
+  expect(texas?.variants).toEqual([{ variantId: 'standard', tier: 'all' }]);
 });

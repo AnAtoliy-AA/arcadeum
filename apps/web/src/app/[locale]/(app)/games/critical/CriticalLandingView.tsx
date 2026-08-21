@@ -3,8 +3,9 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { CriticalCardsVisual } from './CriticalCardsVisual';
+import { CriticalLandingPreview } from './CriticalLandingPreview';
 
 type CriticalMessages = CriticalGamesMessages['critical_v1'];
 type Landing = CriticalMessages['landing'];
@@ -133,6 +134,11 @@ export function CriticalLandingView({
     answer: item.answer,
   }));
 
+  const themeMessages = translatedGames?.themes as
+    | Record<string, { name?: string; description?: string } | undefined>
+    | undefined;
+  const themesList = getTranslatedSharedThemes(themeMessages);
+
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
   return (
@@ -161,7 +167,7 @@ export function CriticalLandingView({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <CriticalCardsVisual />,
+        heroVisual: <CriticalLandingPreview />,
       }}
       highlights={{
         title: 'Ruthless Card Party Mechanics',
@@ -172,6 +178,14 @@ export function CriticalLandingView({
         title: landing.howToPlay.title,
         kicker: landing.sections.howToKicker,
         steps: howToSteps,
+      }}
+      themes={{
+        title: 'Custom Card Visual Themes',
+        kicker: 'Visual Styles',
+        subtitle: 'Explore distinct visual aesthetics and card designs.',
+        themes: themesList,
+        baseHref: createRoomHref,
+        createRoomLabel: 'Play Theme',
       }}
       rules={{
         title: 'Core Rules & Bomb Defusal',

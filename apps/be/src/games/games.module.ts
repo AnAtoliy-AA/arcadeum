@@ -27,6 +27,7 @@ import { TexasHoldemGateway } from './texas-holdem.gateway';
 import { SeaBattleGateway } from './sea-battle.gateway';
 // Game handlers — plain services, not gateways (single-namespace architecture)
 import { GameEnginesModule } from './engines/engines.module';
+import { AiVsAiService } from './ai-vs-ai/ai-vs-ai.service';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameRoomsMapper } from './rooms/game-rooms.mapper';
 import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
@@ -191,6 +192,8 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Cat Dash
     CatDashService,
     CatDashBotService,
+    // AI vs AI
+    AiVsAiService,
     // Utilities
     GameUtilitiesService,
     // Facade service (main entry point)

@@ -1,8 +1,8 @@
 import {
   getTheme,
   type CascadeThemeTokens,
-} from '@/widgets/CascadeGame/lib/theme';
-import type { CascadeVariant } from '@/widgets/CascadeGame/types';
+} from '@/widgets/CardGames/CascadeGame/lib/theme';
+import type { CascadeVariant } from '@/widgets/CardGames/CascadeGame/types';
 import type { CascadeThemeMeta } from '../data/themes';
 
 interface Props {

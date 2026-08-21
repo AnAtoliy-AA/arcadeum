@@ -77,8 +77,8 @@ test.describe('Game Room Creation', () => {
     await expect(page.locator('h1, h2, [class*="Title"]').first()).toBeVisible(
       {},
     );
-    // Wait for dynamic component to mount and set the default variant in URL
-    await expect(page).toHaveURL(/variant=/);
+    // Wait for dynamic component to mount and set the default theme in URL
+    await expect(page).toHaveURL(/theme=/);
   });
 
   test('should load creation page with correct game selected', async ({

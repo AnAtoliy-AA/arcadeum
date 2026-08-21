@@ -1,83 +1,34 @@
 'use client';
 
-import { useState } from 'react';
-import { SeaBattleThemeProvider } from '@/widgets/SeaBattleGame/lib/SeaBattleThemeContext';
-import { SeaBattleThemePreview } from '@/widgets/SeaBattleGame/ui/SeaBattleThemePreview';
-import styles from './SeaBattleLandingBoard.module.scss';
-
-const ROTATING_VARIANTS = [
-  'classic',
-  'modern',
-  'cyber',
-  'nebula',
-  'pixel',
-  'vintage',
-  'forest',
-  'cartoon',
-  'sunset',
-  'monochrome',
-] as const;
-
-type Variant = (typeof ROTATING_VARIANTS)[number];
+import { SeaBattleThemeProvider } from '@/widgets/StrategyGames/SeaBattleGame/lib/SeaBattleThemeContext';
+import { SeaBattleThemePreview } from '@/widgets/StrategyGames/SeaBattleGame/ui/SeaBattleThemePreview';
+import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 
 interface Props {
-  initialVariant?: Variant;
-  /** Localised display name per variant (from sea_battle_v1.variants.{id}.name). */
-  variantNames: Partial<Record<Variant, string>>;
-  /** Localised "Live preview" label. */
+  themeNames?: Partial<Record<string, string>>;
   label: string;
-  /** Localised "Click to change theme" hover hint. */
   cycleHint: string;
-  /** Localised aria-label template containing `{{variant}}`. */
   cycleAriaLabel: string;
-  /** Bubble the cycled variant up to the parent so Quickplay can use it. */
-  onVariantChange?: (variant: Variant) => void;
 }
 
 export function SeaBattleLandingBoard({
-  initialVariant = 'classic',
-  variantNames,
+  themeNames,
   label,
   cycleHint,
   cycleAriaLabel,
-  onVariantChange,
 }: Props) {
-  const [variant, setVariant] = useState<Variant>(initialVariant);
-  const variantName = variantNames[variant] ?? variant;
-
-  const cycle = () => {
-    const idx = ROTATING_VARIANTS.indexOf(variant);
-    const next =
-      ROTATING_VARIANTS[(idx + 1) % ROTATING_VARIANTS.length] ??
-      ROTATING_VARIANTS[0];
-    setVariant(next);
-    onVariantChange?.(next);
-  };
-
-  const ariaLabel = cycleAriaLabel.replace('{{variant}}', variantName);
-
   return (
-    <div className={styles.frame}>
-      <button
-        type="button"
-        onClick={cycle}
-        className={styles.scaler}
-        aria-label={ariaLabel}
-        data-testid="sea-battle-landing-board"
-      >
-        <SeaBattleThemeProvider variant={variant}>
-          <SeaBattleThemePreview selectedVariant={variant} cellSize={20} />
+    <GameLandingPreview
+      themeNames={themeNames}
+      label={label}
+      cycleHint={cycleHint}
+      cycleAriaLabel={cycleAriaLabel}
+      testId="sea-battle-landing-board"
+      render={(themeId) => (
+        <SeaBattleThemeProvider variant={themeId}>
+          <SeaBattleThemePreview selectedVariant={themeId} cellSize={20} />
         </SeaBattleThemeProvider>
-      </button>
-      <p className={styles.caption} aria-hidden="true">
-        <span className={styles.captionDot} />
-        <span>{label}</span>
-        <span aria-hidden="true">·</span>
-        <span className={styles.captionName}>{variantName}</span>
-      </p>
-      <span className={styles.cycleHint} aria-hidden="true">
-        {cycleHint}
-      </span>
-    </div>
+      )}
+    />
   );
 }

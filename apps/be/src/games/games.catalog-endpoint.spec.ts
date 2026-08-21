@@ -4,6 +4,7 @@ import { GamesService } from './games.service';
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 import { GamesCatalogService } from './games-catalog.service';
+import { AiVsAiService } from './ai-vs-ai/ai-vs-ai.service';
 import { GAME_CATALOG } from './games.catalog';
 import type { CatalogResponse, CatalogGame } from './games.types';
 
@@ -30,6 +31,7 @@ function buildController(catalog: GamesCatalogService): GamesController {
     catalog,
     {} as unknown as CriticalService,
     {} as unknown as TexasHoldemService,
+    {} as unknown as AiVsAiService,
   );
 }
 

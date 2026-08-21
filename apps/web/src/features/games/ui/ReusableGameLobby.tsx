@@ -237,8 +237,13 @@ export function ReusableGameLobby({
     return 'Waiting for host to start...';
   }, [room.status, enableBots, room.playerCount, minPlayers, isHost]);
 
+  const visualTheme =
+    (room.gameOptions?.theme as string | undefined) ??
+    (room.gameOptions?.variant as string | undefined) ??
+    'cyberpunk';
+
   return (
-    <GameContainer ref={containerRef}>
+    <GameContainer ref={containerRef} theme={visualTheme}>
       {rulesModalSlot}
 
       <ConfirmationModal
@@ -253,35 +258,12 @@ export function ReusableGameLobby({
 
       <GameHeader>
         <GameInfo>
-          <GameTitleText
-            className={
-              theme.titleGradient ? 'text-gradient shimmer-animated' : undefined
-            }
-            style={{
-              background: theme.titleGradient,
-              ...(theme.titleGradient ? { backgroundSize: '200% auto' } : {}),
-            }}
-          >
+          <GameTitleText gradient={theme.titleGradient}>
             {gameName}
             {variantName && (
-              <>
-                {' '}
-                <VariantText
-                  className={
-                    theme.variantGradient
-                      ? 'text-gradient shimmer-animated'
-                      : undefined
-                  }
-                  style={{
-                    background: theme.variantGradient,
-                    ...(theme.variantGradient
-                      ? { backgroundSize: '200% auto' }
-                      : {}),
-                  }}
-                >
-                  : {variantName}
-                </VariantText>
-              </>
+              <VariantText gradient={theme.variantGradient}>
+                {` : ${variantName}`}
+              </VariantText>
             )}
           </GameTitleText>
           <RoomNameBadge>

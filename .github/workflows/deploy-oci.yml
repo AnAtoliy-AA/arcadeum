@@ -119,6 +119,11 @@ jobs:
             pnpm --filter be build
             pnpm --filter tg-bot build
 
+            if [ ! -f "$DEPLOY_DIR/apps/be/dist/src/main.js" ]; then
+              echo "ERROR: BE build did not produce dist/src/main.js"
+              exit 1
+            fi
+
             pm2 delete arcadeum-be 2>/dev/null || true
             pm2 start "$DEPLOY_DIR/apps/be/ecosystem.config.js"
             pm2 save
@@ -154,6 +159,11 @@ jobs:
 
             pnpm install --frozen-lockfile
             pnpm --filter be build
+
+            if [ ! -f "$DEPLOY_DIR/apps/be/dist/src/main.js" ]; then
+              echo "ERROR: BE build did not produce dist/src/main.js"
+              exit 1
+            fi
 
             pm2 restart arcadeum-be-reserve || \
               pm2 start /opt/arcadeum/scripts/start-be-reserve.sh --name arcadeum-be-reserve

@@ -74,8 +74,12 @@ export function CheckersBoard({
 
   return (
     <div
-      className="flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[12px] overflow-hidden border-[2px]"
-      style={{ aspectRatio: '1/1', borderColor: theme.darkSquare }}
+      className="flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[14px] overflow-hidden border-[3px] shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
+      style={{
+        aspectRatio: '1/1',
+        borderColor: '#44403c',
+        backgroundColor: '#1c1917',
+      }}
       role="grid"
       aria-label={ariaLabel}
       data-testid="checkers-board"
@@ -100,7 +104,7 @@ export function CheckersBoard({
 
             return (
               <div
-                className="flex flex-col flex-1 items-center justify-center"
+                className="flex flex-col flex-1 items-center justify-center relative select-none"
                 style={{
                   cursor: disabled ? 'default' : 'pointer',
                   backgroundColor: isSelected
@@ -120,32 +124,74 @@ export function CheckersBoard({
               >
                 {piece ? (
                   <div
-                    className="flex flex-col w-[70%] h-[70%] rounded-[9999px] items-center justify-center border-[2px]"
+                    className="relative flex flex-col w-[76%] h-[76%] rounded-full items-center justify-center shadow-lg transition-transform active:scale-95"
                     style={{
                       backgroundColor:
                         pieceColor === 'light'
                           ? theme.lightPiece
                           : theme.darkPiece,
-                      borderColor:
+                      border: `2px solid ${
                         pieceColor === 'light'
                           ? theme.lightPieceBorder
-                          : theme.darkPieceBorder,
+                          : theme.darkPieceBorder
+                      }`,
+                      boxShadow:
+                        '0 4px 8px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.3)',
                     }}
                   >
+                    <div
+                      className="absolute inset-[3px] rounded-full pointer-events-none"
+                      style={{
+                        border: `1px solid ${
+                          pieceColor === 'light'
+                            ? 'rgba(0, 0, 0, 0.15)'
+                            : 'rgba(255, 255, 255, 0.2)'
+                        }`,
+                      }}
+                    />
+                    <div
+                      className="absolute inset-[6px] rounded-full pointer-events-none"
+                      style={{
+                        border: `1px solid ${
+                          pieceColor === 'light'
+                            ? 'rgba(0, 0, 0, 0.1)'
+                            : 'rgba(255, 255, 255, 0.12)'
+                        }`,
+                      }}
+                    />
                     {piece.type === 'king' ? (
                       <span
+                        className="relative z-10 select-none text-base sm:text-lg leading-none"
                         style={{
-                          fontSize: '1.2em',
                           color: theme.kingCrown,
-                          fontWeight: 800,
-                          lineHeight: 1,
+                          filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6))',
                         }}
                       >
-                        ♚
+                        👑
                       </span>
                     ) : null}
                   </div>
                 ) : null}
+                {navCol === cols.length - 1 && (
+                  <span
+                    className="absolute right-1 top-0.5 text-[9px] font-bold opacity-60 pointer-events-none"
+                    style={{
+                      color: isDarkSquare ? '#e2e8f0' : '#475569',
+                    }}
+                  >
+                    {8 - row}
+                  </span>
+                )}
+                {navRow === rows.length - 1 && (
+                  <span
+                    className="absolute left-1 bottom-0.5 text-[9px] font-bold opacity-60 pointer-events-none"
+                    style={{
+                      color: isDarkSquare ? '#e2e8f0' : '#475569',
+                    }}
+                  >
+                    {String.fromCharCode(97 + col)}
+                  </span>
+                )}
               </div>
             );
           })}

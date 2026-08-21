@@ -10,26 +10,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.25.60] - 2026-08-20
 
 ### Fixed
+
 - forward HTML attributes in Container, restoring settings locale marker (ARC-919) (ARC-919)
 - add mobile side padding to Container and fix mode i18n fallback (ARC-919) (ARC-919)
 
 ### Refactored
-- replace Container prop spread with explicit attribute forwarding (ARC-919) (ARC-919)
 
+- replace Container prop spread with explicit attribute forwarding (ARC-919) (ARC-919)
 
 ## [1.25.59] - 2026-08-20
 
 ### Added
-- AI vs AI spectator rooms (ARC-890) (ARC-890)
 
+- AI vs AI spectator rooms (ARC-890) (ARC-890)
 
 ## [1.25.58] - 2026-08-20
 
 ### Added
+
 - show game name and theme in two rows and fix full-screen celebration (ARC-918) (ARC-918)
 - enhance win lose screen with game themes and match stats (ARC-918) (ARC-918)
 
 ### Fixed
+
 - fix fen serialization, i18n deep merge and resign result modal (ARC-918) (ARC-918)
 - support forfeit action and add translations for game results (ARC-918) (ARC-918)
 - remove nested flex container around full-screen celebration layer (ARC-918) (ARC-918)
@@ -37,18 +40,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - portal GameResultModal to body for unconstrained full-width celebration (ARC-918) (ARC-918)
 - ensure full-width 80-slot uniform confetti spread (ARC-918) (ARC-918)
 
-
 ## [1.25.57] - 2026-08-20
 
 ### Fixed
+
 - base main version bump on develop head so push is fast-forward
 - push version bump to the triggering branch, not develop
 - decrypt encrypted cookies forwarded as bearer tokens (ARC-914) (ARC-914)
 
-
 ## [1.25.56] - 2026-08-20
 
 ### Added
+
 - unified interactive theme previews on game landings (ARC-917) (ARC-917)
 - unify GameThemePicker across all 8 game lobbies (ARC-917) (ARC-917)
 - make adventure/classic default theme and render ThemePicker (ARC-917) (ARC-917)
@@ -57,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - unify visual themes across all games (ARC-917) (ARC-917)
 
 ### Fixed
+
 - update GameThemePicker to responsive grid layout (ARC-917) (ARC-917)
 - fix lobby container layout and prevent center overflow (ARC-917) (ARC-917)
 - translate theme names and descriptions on game landings (ARC-917) (ARC-917)
@@ -64,16 +68,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix theme selection navigation and atmospheric backgrounds (ARC-917) (ARC-917)
 - add safety check to game-visibility integration spec cleanup (ARC-917) (ARC-917)
 
-
 ## [1.25.55] - 2026-08-20
 
 ### Fixed
-- include @swc/helpers esm in Next standalone output
 
+- include @swc/helpers esm in Next standalone output
 
 ## [1.25.54] - 2026-08-20
 
 ### Fixed
+
 - place codeql suppression comment on the URL sink line
 - suppress codeql SSRF false positive on validated IP lookups
 - break taint flow for geo/vpn lookup URLs via validated helper
@@ -81,24 +85,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - resilient session restore after refresh with backoff and cross-tab dedupe
 - resolve real client IP for rate limiting and raise refresh throttle
 
-
 ## [1.25.53] - 2026-08-20
 
 ### Added
+
 - add TikTok app review demo video generator (ARC-916) (ARC-916)
 - extract shared GameIdleTimer and GameForfeitModal (ARC-916) (ARC-916)
 - add shared theme system and theme picker (ARC-916) (ARC-916)
 
 ### Fixed
+
 - fix games categories e2e test route and chip role (ARC-916) (ARC-916)
 - use backgroundImage instead of shorthand background to prevent style collision (ARC-916) (ARC-916)
 - drop unused error state from GameWidgetErrorBoundary (ARC-916) (ARC-916)
 
 ### Improved
+
 - memo chat popup overlay, use shared room actions in SeaBattle (ARC-916) (ARC-916)
 - fix widget re-renders and socket listener churn (ARC-916) (ARC-916)
 
 ### Refactored
+
 - remove ...props from room card components (ARC-916) (ARC-916)
 - remove ...props from lobby components and convert inline styles to tailwind (ARC-916) (ARC-916)
 - optimize chess and checkers widgets, fix telegram test (ARC-916) (ARC-916)
@@ -109,53 +116,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - use shared GameThemePicker in Critical and Sea Battle configs (ARC-916) (ARC-916)
 - extract shared game service and gateway base classes (ARC-916) (ARC-916)
 
-
 ## [1.25.52] - 2026-08-18
 
 ### Fixed
-- allow page scroll on mobile board touches
 
+- allow page scroll on mobile board touches
 
 ## [1.25.51] - 2026-08-18
 
 ### Added
+
 - wire theme CSS variables and tokens into music player (ARC-905) (ARC-905)
 
 ### Improved
+
 - remove backdrop-filter blur in music player in favor of opaque background (ARC-905) (ARC-905)
 
 ### Refactored
-- extract game music player into standalone widget (ARC-905) (ARC-905)
 
+- extract game music player into standalone widget (ARC-905) (ARC-905)
 
 ## [1.25.50] - 2026-08-18
 
 ### Added
+
 - wire dynamic markdown data into RoadmapClient and content (ARC-904) (ARC-904)
 - parse docs/ROADMAP.md dynamically on the server (ARC-904) (ARC-904)
 - use Arcadeum Games name across app config and pages (ARC-904) (ARC-904)
 - center icon badges and add feature status tracking (ARC-904) (ARC-904)
 
 ### Fixed
+
 - ensure h1 level heading rendered for roadmap and changelog (ARC-904) (ARC-904)
 
 ### Refactored
-- extract TierCard and StatusBadge into TierCard.tsx (ARC-904) (ARC-904)
 
+- extract TierCard and StatusBadge into TierCard.tsx (ARC-904) (ARC-904)
 
 ## [1.25.49] - 2026-08-18
 
 ### Documentation
-- mark tier 2 fully complete in roadmap (ARC-883)
 
+- mark tier 2 fully complete in roadmap (ARC-883)
 
 ## [1.25.48] - 2026-08-18
 
 ### Added
+
 - connect help page category cards to dynamic FAQ filtering (ARC-883)
 - modernize content pages, SEO structured data, and mobile footer (ARC-883)
 
 ### Fixed
+
 - enhance text contrast and colors on help page (ARC-883)
 - reset button styling to transparent background and inherit text color (ARC-883)
 - prevent nested h2 inside h1 by supporting as prop and level on Typography (ARC-883)
@@ -163,22 +175,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - render semantic headings in Typography and fix footer e2e (ARC-883)
 
 ### Refactored
+
 - render DevelopersPageContent directly as Server Component (ARC-883)
 - remove Endpoints & Specs section from developers page (ARC-883)
 - remove SDK code snippet section from developers page (ARC-883)
 
-
 ## [1.25.47] - 2026-08-18
 
 ### Added
+
 - add coach-mode move hints for chess (ARC-883)
 
 ### Refactored
+
 - derive coach flags in hook to fit line limit (ARC-883)
 
 ### Documentation
-- add changelog entry for coach mode (ARC-883)
 
+- add changelog entry for coach mode (ARC-883)
 
 ## [1.25.46] - 2026-08-17
 

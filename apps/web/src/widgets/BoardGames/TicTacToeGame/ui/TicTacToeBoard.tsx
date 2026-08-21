@@ -3,6 +3,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTicTacToeTheme } from '../lib/TicTacToeThemeContext';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
+import { MarkGlyph } from './TicTacToeMarkGlyph';
 import type {
   CellValue,
   TicTacToePlayer,
@@ -142,9 +143,13 @@ function CellRenderer({
       onMouseLeave={onLeave}
     >
       {ownerInfo ? (
-        <span className="ttt-mark">{ownerInfo.mark}</span>
+        <span className="ttt-mark flex items-center justify-center w-full h-full">
+          <MarkGlyph mark={ownerInfo.mark} color={ownerInfo.color} />
+        </span>
       ) : previewInfo ? (
-        <span style={{ opacity: 0.25 }}>{previewInfo.mark}</span>
+        <span className="flex items-center justify-center w-full h-full opacity-30">
+          <MarkGlyph mark={previewInfo.mark} color={previewInfo.color} />
+        </span>
       ) : null}
     </button>
   );

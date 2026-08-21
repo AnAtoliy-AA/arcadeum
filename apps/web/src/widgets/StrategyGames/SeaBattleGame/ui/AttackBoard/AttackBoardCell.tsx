@@ -111,13 +111,20 @@ export const AttackBoardCell = memo(function AttackBoardCell({
           }
         : {};
 
+  const isShipCell = displayState === CELL_STATE.SHIP;
+
   return (
     <BoardCell
       className={`sb-cell ${isAttackable || isWeaponClickable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${isWeaponPreview ? 'sb-weapon-preview' : ''} ${animClass || ''}`}
       style={{
-        backgroundColor: getCellBg(displayState, theme),
-        borderColor: theme.cellBorder,
+        background: isShipCell
+          ? 'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)'
+          : getCellBg(displayState, theme),
+        borderColor: isShipCell ? '#64748b' : theme.cellBorder,
         borderRadius: parseInt(theme.borderRadius) || 4,
+        boxShadow: isShipCell
+          ? 'inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.5)'
+          : undefined,
         ...highlightStyle,
         ...previewStyle,
         ...(isWeaponPreview ? { cursor: 'crosshair' } : {}),
@@ -127,6 +134,9 @@ export const AttackBoardCell = memo(function AttackBoardCell({
       data-row={!isMe ? rIndex : undefined}
       data-col={!isMe ? cIndex : undefined}
     >
+      {isShipCell && !icon && !isPending && (
+        <div className="w-[6px] h-[6px] rounded-full bg-[#cbd5e1] opacity-75 shadow-sm pointer-events-none mx-auto" />
+      )}
       {icon && (
         <span
           className={`absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center text-[13px] pointer-events-none select-none ${icon === '💀' ? 'sb-icon-sunk' : 'sb-icon-hit'}`}
@@ -145,25 +155,8 @@ export const AttackBoardCell = memo(function AttackBoardCell({
         </>
       )}
       {!isPending && displayState === CELL_STATE.MISS && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: 100,
-              backgroundColor: 'currentColor',
-              opacity: 0.7,
-            }}
-          />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[5px] h-[5px] rounded-full bg-[#38bdf8] shadow-[0_0_6px_#38bdf8] opacity-90" />
         </div>
       )}
       {highlight && !isPending && (

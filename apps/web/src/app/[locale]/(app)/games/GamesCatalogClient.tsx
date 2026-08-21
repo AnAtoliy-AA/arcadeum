@@ -3,9 +3,8 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { FilterChip, Input } from '@arcadeum/ui';
-import { GameArt } from '@/features/games/ui/create/redesign/art/GameArt';
-import type { GameId } from '@/features/games/ui/create/redesign/data/themes';
 import type { Locale } from '@/shared/i18n';
+import { GamesCatalogCard } from './components/GamesCatalogCard';
 
 export interface CatalogGameItem {
   id: string;
@@ -13,6 +12,7 @@ export interface CatalogGameItem {
   name: string;
   description: string;
   genre: string;
+  pace?: string;
   category: 'all' | 'board' | 'card' | 'casual';
   categoryLabel: string;
   players: string;
@@ -34,6 +34,8 @@ interface Props {
   searchPlaceholder?: string;
   unavailableLabel?: string;
   demoBadgeLabel?: string;
+  playLabel?: string;
+  detailsLabel?: string;
 }
 
 const CATEGORIES: Array<{
@@ -54,9 +56,11 @@ export function GamesCatalogClient({
   boardLabel = 'Board Games',
   cardLabel = 'Card Games',
   casualLabel = 'Action & Casual',
-  searchPlaceholder = 'Search games by name or genre...',
+  searchPlaceholder = 'Search games by name, genre or rules...',
   unavailableLabel = 'Disabled',
   demoBadgeLabel = 'Demo',
+  playLabel = 'Play Now',
+  detailsLabel = 'Rules',
 }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<
     'all' | 'board' | 'card' | 'casual'
@@ -70,6 +74,21 @@ export function GamesCatalogClient({
     casual: casualLabel,
   };
 
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      all: games.length,
+      board: 0,
+      card: 0,
+      casual: 0,
+    };
+    for (const g of games) {
+      if (counts[g.category] !== undefined) {
+        counts[g.category]++;
+      }
+    }
+    return counts;
+  }, [games]);
+
   const filteredGames = useMemo(() => {
     return games.filter((game) => {
       const matchesCategory =
@@ -79,6 +98,7 @@ export function GamesCatalogClient({
         query === '' ||
         game.name.toLowerCase().includes(query) ||
         game.genre.toLowerCase().includes(query) ||
+        (game.pace && game.pace.toLowerCase().includes(query)) ||
         game.description.toLowerCase().includes(query);
 
       return matchesCategory && matchesSearch;
@@ -87,11 +107,11 @@ export function GamesCatalogClient({
 
   return (
     <div className="box-border flex flex-col gap-8">
-      {/* Category filter pills & Search bar */}
-      <div className="box-border flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-md">
+      <div className="box-border flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-md shadow-lg">
         <div className="box-border flex flex-wrap items-center gap-2">
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat.key;
+            const count = categoryCounts[cat.key] ?? 0;
             return (
               <FilterChip
                 key={cat.key}
@@ -101,6 +121,9 @@ export function GamesCatalogClient({
               >
                 <span className="mr-1.5">{cat.icon}</span>
                 <span>{categoryLabels[cat.key] ?? cat.label}</span>
+                <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-white/10 opacity-80">
+                  {count}
+                </span>
               </FilterChip>
             );
           })}
@@ -120,71 +143,18 @@ export function GamesCatalogClient({
         </div>
       </div>
 
-      {/* Games Catalog Grid */}
       {filteredGames.length > 0 ? (
-        <div className="box-border grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {filteredGames.map((game) => {
-            const isDisabled = !game.isPlayable;
-
-            return (
-              <Link
-                key={game.id}
-                href={game.landingHref}
-                aria-label={game.name}
-                className={`box-border flex flex-col justify-between rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group no-underline ${
-                  isDisabled ? 'opacity-70' : ''
-                }`}
-              >
-                {/* Visual Cover Poster */}
-                <div className="box-border relative h-48 w-full bg-black/40 border-b border-[var(--borderColor)] flex items-center justify-center overflow-hidden p-2 group-hover:bg-black/60 transition-colors">
-                  <div className="box-border w-full h-full flex items-center justify-center scale-95 group-hover:scale-100 transition-transform">
-                    <GameArt
-                      gameId={game.slug as GameId}
-                      themeId="classic"
-                      size="sm"
-                    />
-                  </div>
-
-                  {/* Status badges */}
-                  <div className="box-border absolute top-3 right-3 flex items-center gap-1.5">
-                    {isDisabled ? (
-                      <span className="box-border text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-rose-500/25 text-rose-200 border border-rose-500/50 backdrop-blur-md">
-                        {unavailableLabel}
-                      </span>
-                    ) : game.isDemo ? (
-                      <span className="box-border text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/25 text-amber-200 border border-amber-500/50 backdrop-blur-md">
-                        {demoBadgeLabel}
-                      </span>
-                    ) : null}
-                  </div>
-
-                  <span className="box-border absolute bottom-3 left-3 text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-black/75 text-white border border-white/15 backdrop-blur-md shadow-sm">
-                    {game.genre}
-                  </span>
-                </div>
-
-                {/* Metadata & Description */}
-                <div className="box-border p-4 sm:p-5 flex flex-col gap-2.5">
-                  <div className="box-border text-lg font-bold text-white group-hover:text-[var(--primary)] transition-colors truncate">
-                    {game.name}
-                  </div>
-
-                  <p className="box-border m-0 text-xs sm:text-sm text-white/80 line-clamp-2 leading-relaxed">
-                    {game.description}
-                  </p>
-
-                  <div className="box-border flex flex-wrap items-center gap-1.5 pt-1">
-                    <span className="box-border text-[11px] px-2.5 py-0.5 rounded-md bg-white/5 text-white/90 border border-white/10">
-                      👥 {game.players}
-                    </span>
-                    <span className="box-border text-[11px] px-2.5 py-0.5 rounded-md bg-white/5 text-white/90 border border-white/10">
-                      ⏱ {game.duration}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+        <div className="box-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredGames.map((game) => (
+            <GamesCatalogCard
+              key={game.id}
+              game={game}
+              playLabel={playLabel}
+              demoBadgeLabel={demoBadgeLabel}
+              unavailableLabel={unavailableLabel}
+              detailsLabel={detailsLabel}
+            />
+          ))}
         </div>
       ) : (
         <div className="box-border flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)]">
@@ -199,8 +169,7 @@ export function GamesCatalogClient({
         </div>
       )}
 
-      {/* Floating CTA Banner pointing to /rooms */}
-      <div className="box-border p-6 rounded-2xl bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-md">
+      <div className="box-border p-6 rounded-2xl bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-md shadow-xl">
         <div className="box-border flex flex-col gap-1 text-center sm:text-left">
           <h3 className="box-border m-0 text-base sm:text-lg font-bold text-[var(--foreground)]">
             Looking for live multiplayer action?
@@ -212,7 +181,7 @@ export function GamesCatalogClient({
         </div>
         <Link
           href={roomsHref}
-          className="box-border px-5 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primaryForeground,white)] text-sm font-semibold hover:opacity-90 transition-all shadow-lg whitespace-nowrap no-underline"
+          className="box-border px-5 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primaryForeground,white)] text-sm font-semibold hover:opacity-90 transition-all shadow-lg whitespace-nowrap no-underline active:scale-[0.98]"
         >
           Browse Open Rooms →
         </Link>

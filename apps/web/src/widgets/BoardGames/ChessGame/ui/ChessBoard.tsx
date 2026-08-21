@@ -55,6 +55,7 @@ interface ChessCellProps {
   isMyPiece: boolean;
   canInteract: boolean;
   isLastFile: boolean;
+  isBottomRank: boolean;
   disabled: boolean;
   cellFocusProps: Record<string, unknown>;
   onSquareClick: (file: File, rank: Rank) => void;
@@ -83,6 +84,7 @@ function ChessCell({
   isMyPiece,
   canInteract,
   isLastFile,
+  isBottomRank,
   disabled,
   cellFocusProps,
   onSquareClick,
@@ -187,9 +189,9 @@ function ChessCell({
             right: 3,
             top: 2,
             fontSize: 10,
-            fontWeight: 600,
-            opacity: 0.4,
-            color: '#fff',
+            fontWeight: 700,
+            opacity: 0.6,
+            color: isLight ? '#475569' : '#e2e8f0',
             lineHeight: 1,
             pointerEvents: 'none',
           }}
@@ -197,12 +199,33 @@ function ChessCell({
           {rank}
         </span>
       )}
-      {symbol && (
+      {isBottomRank && (
         <span
           style={{
-            fontSize: 'clamp(1.2rem, 10cqw, 3.2rem)',
+            position: 'absolute',
+            left: 3,
+            bottom: 2,
+            fontSize: 10,
+            fontWeight: 700,
+            opacity: 0.6,
+            color: isLight ? '#475569' : '#e2e8f0',
             lineHeight: 1,
-            textShadow: '0 2px 3px rgba(0, 0, 0, 0.4)',
+            pointerEvents: 'none',
+          }}
+        >
+          {file}
+        </span>
+      )}
+      {symbol && (
+        <span
+          className="select-none transition-transform hover:scale-105"
+          style={{
+            fontSize: 'clamp(1.3rem, 11cqw, 3.4rem)',
+            lineHeight: 1,
+            filter:
+              piece?.color === 'white'
+                ? 'drop-shadow(0 3px 5px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 1px rgba(255, 255, 255, 0.8))'
+                : 'drop-shadow(0 3px 5px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))',
             userSelect: 'none',
             position: 'relative',
             zIndex: 2,
@@ -359,12 +382,12 @@ function ChessBoardImpl({
           zIndex: 1,
           width: '100%',
           aspectRatio: '1 / 1',
-          borderRadius: 10,
+          borderRadius: 14,
           overflow: 'hidden',
-          backgroundColor: 'rgba(15, 20, 30, 0.95)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: '#1c1917',
+          border: '3px solid #44403c',
           boxShadow:
-            '0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.05) inset',
+            '0 12px 36px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -406,6 +429,7 @@ function ChessBoardImpl({
                   isMyPiece={isMyPiece}
                   canInteract={canInteract}
                   isLastFile={isLastFile}
+                  isBottomRank={rows.ranks[rows.ranks.length - 1] === rank}
                   disabled={disabled}
                   cellFocusProps={getCellProps(navRow, navCol)}
                   onSquareClick={onSquareClick}

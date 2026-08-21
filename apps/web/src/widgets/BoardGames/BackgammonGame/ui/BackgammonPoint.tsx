@@ -3,12 +3,17 @@
 import { useBackgammonTheme } from '../lib/BackgammonThemeContext';
 import type { BackgammonPoint as PointType } from '../types';
 
+interface TargetInfo {
+  die: number;
+  isHit: boolean;
+}
+
 interface BackgammonPointProps {
   pointIndex: number;
   point: PointType;
   isTop: boolean;
   isSelected: boolean;
-  isValidTarget: boolean;
+  targetInfo?: TargetInfo | null;
   currentUserId: string | null;
   playerOrder: string[];
   onClick: () => void;
@@ -19,7 +24,7 @@ export function BackgammonPoint({
   point,
   isTop,
   isSelected,
-  isValidTarget,
+  targetInfo,
   currentUserId: _currentUserId,
   playerOrder,
   onClick,
@@ -34,22 +39,27 @@ export function BackgammonPoint({
     ? theme.whitePieceBorder
     : theme.blackPieceBorder;
 
+  const isValidTarget = !!targetInfo;
+  const isHitTarget = targetInfo?.isHit ?? false;
+
   const maxVisible = 5;
   const displayCount = Math.min(point.count, maxVisible);
   const checkers = Array.from({ length: displayCount });
 
   return (
     <div
-      className={`relative flex flex-col items-center flex-1 h-full cursor-pointer select-none transition-all duration-150 rounded-sm ${
-        isValidTarget
-          ? 'bg-emerald-500/20 ring-1 ring-emerald-400/80 shadow-[0_0_12px_rgba(52,211,153,0.3)]'
-          : 'hover:brightness-110'
+      className={`relative flex flex-col items-center flex-1 h-full cursor-pointer select-none transition-all duration-200 rounded-sm ${
+        isHitTarget
+          ? 'bg-rose-500/25 ring-2 ring-rose-400 shadow-[0_0_16px_rgba(244,63,94,0.5)]'
+          : isValidTarget
+            ? 'bg-emerald-500/20 ring-1 ring-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.35)]'
+            : 'hover:brightness-110'
       }`}
       data-testid={`point-${pointIndex}`}
       onClick={onClick}
     >
       <svg
-        className="absolute inset-0 w-full h-full pointer-events-none opacity-80"
+        className="absolute inset-0 w-full h-full pointer-events-none opacity-85"
         preserveAspectRatio="none"
         viewBox="0 0 100 200"
       >
@@ -80,14 +90,14 @@ export function BackgammonPoint({
                 backgroundColor: checkerColor,
                 borderColor: checkerBorder,
                 boxShadow: isP0Checker
-                  ? 'inset 0 1px 2px rgba(255,255,255,0.4), inset 0 -1px 2px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.5)'
-                  : 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.5)',
+                  ? 'inset 0 1px 2px rgba(255,255,255,0.45), inset 0 -1px 2px rgba(0,0,0,0.4), 0 3px 5px rgba(0,0,0,0.6)'
+                  : 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.7), 0 3px 5px rgba(0,0,0,0.6)',
               }}
             >
-              <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border border-white/20 opacity-60 pointer-events-none" />
+              <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border border-white/25 opacity-60 pointer-events-none" />
 
               {isTopMost && point.count > maxVisible && (
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] sm:text-[10px] font-black text-white bg-black/70 rounded-full">
+                <span className="absolute inset-0 flex items-center justify-center text-[9px] sm:text-[10px] font-black text-white bg-black/75 rounded-full">
                   +{point.count - maxVisible + 1}
                 </span>
               )}
@@ -95,8 +105,18 @@ export function BackgammonPoint({
           );
         })}
 
-        {isValidTarget && point.count === 0 && (
-          <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-emerald-400 ring-2 ring-emerald-300 animate-pulse my-2 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+        {isValidTarget && (
+          <div className="my-1.5 flex flex-col items-center gap-0.5 animate-bounce z-20">
+            {isHitTarget ? (
+              <span className="px-1.5 py-0.5 rounded-full bg-rose-600 text-white font-black text-[8px] sm:text-[9px] shadow-lg ring-1 ring-rose-300 uppercase tracking-tight">
+                ⚔️ HIT
+              </span>
+            ) : (
+              <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500 text-white font-black text-[9px] sm:text-[10px] flex items-center justify-center shadow-lg ring-2 ring-emerald-300">
+                +{targetInfo.die}
+              </div>
+            )}
+          </div>
         )}
       </div>
 

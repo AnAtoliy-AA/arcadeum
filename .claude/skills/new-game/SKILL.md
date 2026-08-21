@@ -193,7 +193,9 @@ Add translation keys across all 5 locale files:
    pnpm check-file-length
    pnpm check-translations
    ```
-3. Update `apps/web/e2e/home-games-slider.spec.ts` (increment featured-games count assertion).
+3. E2E tests:
+   - Add `<game>` entry to `GAME_PAGES` in `apps/web/e2e/games-description-pages.spec.ts`.
+   - Never hardcode the count of games in E2E tests; use dynamic counts (`await catalogCards.count()`) or `.filter({ hasText: ... })` so adding new games never breaks existing tests.
 
 ### Step 11: Git Commit & PR
 

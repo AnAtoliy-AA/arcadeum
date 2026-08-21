@@ -1,6 +1,5 @@
 import React from 'react';
 import { describe, expect, it, beforeEach, jest } from '@jest/globals';
-import type { Router } from 'expo-router';
 import { render, fireEvent } from '@testing-library/react-native';
 import WelcomeScreen from '../WelcomeScreen';
 import { useRouter } from 'expo-router';
@@ -25,7 +24,7 @@ const routerSpy = {
   prefetch: jest.fn(),
   canDismiss: jest.fn(() => false),
   isReady: jest.fn(() => true),
-} as unknown as jest.Mocked<Router>;
+} as unknown as jest.Mocked<ReturnType<typeof useRouter>>;
 
 const defaultTokens = {
   provider: null,
@@ -88,7 +87,7 @@ type TranslationState = {
   locale: string;
 };
 
-type RouterHook = () => Router;
+type RouterHook = () => ReturnType<typeof useRouter>;
 type SessionGateHook = () => SessionGateState;
 type TranslationHook = () => TranslationState;
 type AppNameHook = (defaultName?: string) => string;

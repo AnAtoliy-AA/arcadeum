@@ -98,9 +98,17 @@ jobs:
           git commit -m "$COMMIT_MSG"
           
           git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
-          # The bump base for main pushes is origin/develop (see the step
-          # above), so this push is a fast-forward by construction. For
-          # develop pushes HEAD is already develop.
-          git push origin HEAD:develop
+
+          # Push with retry — develop may have moved while we were bumping.
+          MAX_RETRIES=5
+          for i in $(seq 1 $MAX_RETRIES); do
+            git push origin HEAD:develop && break
+            echo "Push failed (attempt $i/$MAX_RETRIES), pulling and retrying..."
+            git pull --rebase origin develop
+            if [ "$i" -eq "$MAX_RETRIES" ]; then
+              echo "Failed to push after $MAX_RETRIES attempts"
+              exit 1
+            fi
+          done
           git push origin "v$NEW_VERSION"
 

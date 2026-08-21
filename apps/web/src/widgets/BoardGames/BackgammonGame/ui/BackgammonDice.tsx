@@ -54,10 +54,10 @@ export function BackgammonDice({
   const theme = useBackgammonTheme();
 
   return (
-    <div className="flex flex-row items-center justify-center gap-4 py-2">
+    <div className="flex flex-row items-center justify-center gap-3">
       {canRoll && (
         <button
-          className="px-6 py-2.5 rounded-xl font-bold text-sm tracking-wide shadow-lg transition-transform active:scale-95 text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500"
+          className="px-5 py-2 rounded-xl font-bold text-xs sm:text-sm tracking-wide shadow-xl transition-all duration-200 active:scale-95 text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 ring-2 ring-white/20 hover:ring-white/40 animate-pulse"
           data-testid="roll-dice-btn"
           onClick={onRoll}
           type="button"
@@ -70,21 +70,21 @@ export function BackgammonDice({
         <div className="flex flex-row items-center gap-2">
           {remainingDice.map((val, idx) => (
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md relative border transition-transform hover:scale-105"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shadow-lg relative border transition-transform hover:scale-105 bg-gradient-to-br from-white/20 via-white/10 to-transparent backdrop-blur-md"
               key={`die-${idx}-${val}`}
               style={{
                 backgroundColor: theme.diceBackground,
                 borderColor: theme.diceBorder,
               }}
             >
-              <svg className="w-full h-full" viewBox="0 0 100 100">
+              <svg className="w-full h-full p-1" viewBox="0 0 100 100">
                 {(DOT_PATTERNS[val] ?? []).map(([cx, cy], dotIdx) => (
                   <circle
                     cx={cx}
                     cy={cy}
                     fill={theme.diceDot}
                     key={dotIdx}
-                    r="8"
+                    r="9"
                   />
                 ))}
               </svg>

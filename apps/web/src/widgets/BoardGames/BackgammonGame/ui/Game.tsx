@@ -22,7 +22,6 @@ import { useBackgammonActions } from '../hooks/useBackgammonActions';
 import { BackgammonThemeProvider } from '../lib/BackgammonThemeContext';
 import { BackgammonLobby } from './BackgammonLobby';
 import { BackgammonBoard } from './BackgammonBoard';
-import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
 import { BACKGAMMON_VARIANTS } from '../lib/constants';
 
@@ -173,23 +172,15 @@ function BackgammonGameImpl({
   }
 
   const board = (
-    <div className="box-border flex w-full flex-col items-stretch gap-3 p-3">
+    <div className="box-border flex w-full flex-col items-stretch p-1 sm:p-2">
       {snapshot ? (
-        <>
-          <TurnBadge
-            currentTurnUserId={currentTurnUserId}
-            myTurn={myTurn}
-            players={snapshot.players}
-            resolveName={resolveDisplayNameBound}
-          />
-          <BackgammonBoard
-            currentUserId={currentUserId}
-            myTurn={myTurn}
-            onMove={moveChecker}
-            onRoll={rollDice}
-            snapshot={snapshot}
-          />
-        </>
+        <BackgammonBoard
+          currentUserId={currentUserId}
+          myTurn={myTurn}
+          onMove={moveChecker}
+          onRoll={rollDice}
+          snapshot={snapshot}
+        />
       ) : null}
     </div>
   );

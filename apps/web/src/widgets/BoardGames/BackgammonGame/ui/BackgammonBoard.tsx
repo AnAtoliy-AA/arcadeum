@@ -166,25 +166,42 @@ export function BackgammonBoard({
   const bottomRight = [5, 4, 3, 2, 1, 0];
 
   return (
-    <div className="box-border flex w-full flex-col items-stretch gap-3 p-2 select-none">
-      <div className="flex flex-row items-center justify-between px-2 text-xs font-semibold text-[var(--colorTextMuted)]">
+    <div className="box-border flex w-full flex-col items-stretch gap-2.5 select-none">
+      <div className="flex flex-row items-center justify-between px-3 py-1.5 rounded-xl bg-black/40 border border-white/10 text-xs font-semibold backdrop-blur-md">
         <div className="flex items-center gap-2">
-          <span>{t('games.backgammon_v1.game.pipCount')}:</span>
-          <span className="text-[var(--colorText)] font-bold">
-            {snapshot.players[0]?.pipCount ?? 0} vs{' '}
+          <div
+            className="w-2.5 h-2.5 rounded-full shadow-sm"
+            style={{ backgroundColor: theme.whitePiece }}
+          />
+          <span className="text-white/60">
+            {t('games.backgammon_v1.game.pipCount')}:
+          </span>
+          <span className="text-white font-bold">
+            {snapshot.players[0]?.pipCount ?? 0}
+          </span>
+          <span className="text-white/30">vs</span>
+          <span className="text-white font-bold">
             {snapshot.players[1]?.pipCount ?? 0}
           </span>
+          <div
+            className="w-2.5 h-2.5 rounded-full shadow-sm"
+            style={{ backgroundColor: theme.blackPiece }}
+          />
         </div>
+
         <div className="flex items-center gap-2">
-          <span>{t('games.backgammon_v1.game.offCount')}:</span>
-          <span className="text-[var(--colorText)] font-bold">
+          <span className="text-white/60">
+            {t('games.backgammon_v1.game.offCount')}:
+          </span>
+          <span className="text-white font-bold">
             {p0BorneOff} - {p1BorneOff}
           </span>
+          <span className="text-[10px] text-white/40">/ 15</span>
         </div>
       </div>
 
       <div
-        className="box-border w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl border p-2 sm:p-3 relative flex flex-row shadow-2xl overflow-hidden"
+        className="box-border w-full aspect-[4/3] sm:aspect-[16/10] rounded-2xl border p-1.5 sm:p-2.5 relative flex flex-row shadow-2xl overflow-hidden backdrop-blur-xl"
         data-testid="backgammon-board"
         style={{
           background: theme.boardBackground,
@@ -210,17 +227,19 @@ export function BackgammonBoard({
             </div>
 
             <div
-              className={`w-6 sm:w-8 h-full mx-1 rounded-md flex flex-col items-center justify-center cursor-pointer transition-colors ${
-                myBar > 0 && selectedFrom === 'bar'
-                  ? 'ring-2 ring-purple-400 bg-purple-900/30'
-                  : 'bg-black/20'
+              className={`w-7 sm:w-9 h-full mx-1 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ${
+                myBar > 0
+                  ? selectedFrom === 'bar'
+                    ? 'ring-2 ring-purple-400 bg-purple-900/40 shadow-[0_0_12px_rgba(168,85,247,0.5)]'
+                    : 'ring-2 ring-amber-400/80 bg-amber-500/15 animate-pulse'
+                  : 'bg-black/30 border border-white/5'
               }`}
               data-testid="bar-zone"
               onClick={handleBarClick}
             >
               {p0Bar > 0 && (
                 <div
-                  className="w-5 h-5 rounded-full border mb-1 flex items-center justify-center text-[9px] font-bold text-white shadow"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border mb-1 flex items-center justify-center text-[10px] font-black text-white shadow-lg"
                   style={{
                     backgroundColor: theme.whitePiece,
                     borderColor: theme.whitePieceBorder,
@@ -231,7 +250,7 @@ export function BackgammonBoard({
               )}
               {p1Bar > 0 && (
                 <div
-                  className="w-5 h-5 rounded-full border mt-1 flex items-center justify-center text-[9px] font-bold text-white shadow"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border mt-1 flex items-center justify-center text-[10px] font-black text-white shadow-lg"
                   style={{
                     backgroundColor: theme.blackPiece,
                     borderColor: theme.blackPieceBorder,
@@ -259,7 +278,7 @@ export function BackgammonBoard({
             </div>
           </div>
 
-          <div className="flex flex-row items-center justify-center h-[16%]">
+          <div className="flex flex-row items-center justify-center h-[16%] my-0.5 relative z-20">
             <BackgammonDice
               canRoll={canRoll}
               onRoll={onRoll}
@@ -286,7 +305,7 @@ export function BackgammonBoard({
               ))}
             </div>
 
-            <div className="w-6 sm:w-8 h-full mx-1" />
+            <div className="w-7 sm:w-9 h-full mx-1" />
 
             <div className="flex-1 flex flex-row">
               {bottomRight.map((idx) => (
@@ -307,18 +326,20 @@ export function BackgammonBoard({
         </div>
 
         <div
-          className={`w-10 sm:w-12 h-full ml-2 border-l border-white/10 flex flex-col justify-between p-1 rounded-r-xl transition-colors cursor-pointer ${
+          className={`w-11 sm:w-14 h-full ml-1.5 border-l border-white/10 flex flex-col justify-between p-1 rounded-r-xl transition-all duration-200 cursor-pointer ${
             validTargets.has('off')
-              ? 'ring-2 ring-emerald-400 bg-emerald-950/40'
-              : 'bg-black/30'
+              ? 'ring-2 ring-emerald-400 bg-emerald-950/50 shadow-[0_0_15px_rgba(52,211,153,0.4)] animate-pulse'
+              : 'bg-black/35'
           }`}
           data-testid="bear-off-zone"
           onClick={handleBearOffClick}
         >
           <div className="flex flex-col items-center">
-            <span className="text-[9px] font-bold text-white/50 mb-1">OFF</span>
+            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-white/50 mb-1">
+              OFF
+            </span>
             <div
-              className="w-7 h-7 rounded-md border flex items-center justify-center text-[10px] font-bold text-white shadow"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg border flex items-center justify-center text-[10px] sm:text-xs font-black text-white shadow-md"
               style={{
                 backgroundColor: theme.whitePiece,
                 borderColor: theme.whitePieceBorder,
@@ -330,7 +351,7 @@ export function BackgammonBoard({
 
           <div className="flex flex-col items-center">
             <div
-              className="w-7 h-7 rounded-md border flex items-center justify-center text-[10px] font-bold text-white shadow"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg border flex items-center justify-center text-[10px] sm:text-xs font-black text-white shadow-md"
               style={{
                 backgroundColor: theme.blackPiece,
                 borderColor: theme.blackPieceBorder,

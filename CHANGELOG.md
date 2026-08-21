@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.61] - 2026-08-21
+
+### Added
+- make catalog cards full landing links, remove buttons, and fix preview clipping (ARC-920) (ARC-920)
+- align in-game board cells and ship hulls with real board artwork (ARC-920) (ARC-920)
+- elevate in-game board coordinates, vector marks, and card emblems (ARC-920) (ARC-920)
+- elevate radar grid and hit/sunk marker glows (ARC-920) (ARC-920)
+- modernize games catalog previews and in-game board visuals (ARC-920) (ARC-920)
+
+### Fixed
+- add responsive container side padding to game landing layout (ARC-920) (ARC-920)
+
+
 ## [1.25.60] - 2026-08-20
 
 ### Fixed

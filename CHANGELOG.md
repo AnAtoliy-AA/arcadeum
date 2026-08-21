@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.62] - 2026-08-21
+
+### Added
+- rework play vs ai modal with catalog previews and lazy loading (ARC-921) (ARC-921)
+
+
 ## [1.25.61] - 2026-08-21
 
 ### Added

@@ -3,7 +3,16 @@ import type { AiDifficulty } from '../../ai-difficulty';
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 2;
 export const TOTAL_POINTS = 24;
-export const CHECKERS_PER_PLAYER = 15;
+
+export const RULE_VARIANTS = ['standard', 'long', 'hyper', 'tavla'] as const;
+export type RuleVariant = (typeof RULE_VARIANTS)[number];
+
+export const CHECKERS_PER_VARIANT: Record<RuleVariant, number> = {
+  standard: 15,
+  long: 15,
+  hyper: 3,
+  tavla: 15,
+};
 
 export const GAME_PHASE = {
   ROLL: 'roll',
@@ -28,10 +37,12 @@ export type Variant = (typeof VARIANTS)[number];
 
 export interface BackgammonOptions {
   variant: Variant;
+  ruleVariant: RuleVariant;
   aiDifficulty?: AiDifficulty;
 }
 
 export const DEFAULT_OPTIONS: BackgammonOptions = {
   variant: 'standard',
+  ruleVariant: 'standard',
   aiDifficulty: 'medium',
 };

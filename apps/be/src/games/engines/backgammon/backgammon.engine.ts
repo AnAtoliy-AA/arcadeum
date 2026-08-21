@@ -1,13 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseGameEngine } from '../base/base-game-engine.abstract';
-import type {
-  GameActionContext,
-  GameActionResult,
-  GameMetadata,
-} from '../base/game-engine.interface';
 import {
   ACTION,
-  CHECKERS_PER_PLAYER,
+  CHECKERS_PER_VARIANT,
   DEFAULT_OPTIONS,
   GAME_PHASE,
 } from './backgammon.constants';
@@ -21,7 +16,6 @@ import {
   calculatePipCount,
   createInitialPoints,
   getAllLegalMoves,
-  randomInt,
 } from './backgammon.utils';
 import {
   validateForfeit,
@@ -29,6 +23,15 @@ import {
   validateRollDice,
 } from './backgammon.validators';
 import { validateBackgammonConfig } from './backgammon.config';
+import type {
+  GameActionContext,
+  GameActionResult,
+  GameMetadata,
+} from '../base/game-engine.interface';
+
+function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
 @Injectable()
 export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
@@ -42,7 +45,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       maxPlayers: 2,
       version: '1.0.0',
       description:
-        'Backgammon with 24 points, dice rolls, bearing off, and AI bot opponents',
+        'Classic board game with dice rolls, bearing off, and bar hits',
       category: 'Board Game',
     };
   }
@@ -55,7 +58,11 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
     const player0Id = playerIds[0];
     const player1Id = playerIds[1];
 
-    const points = createInitialPoints(player0Id, player1Id);
+    const points = createInitialPoints(
+      player0Id,
+      player1Id,
+      options.ruleVariant,
+    );
 
     const players: BackgammonPlayer[] = [
       {
@@ -157,6 +164,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         newState.bar,
         newState.borneOff,
         dice,
+        newState.options.ruleVariant,
       );
 
       newState.logs.push(
@@ -194,6 +202,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         newState.bar,
         newState.borneOff,
         newState.dice,
+        newState.options.ruleVariant,
       ).filter((m) => m.from === p.from && m.to === p.to);
 
       matchedMoves.sort((a, b) => a.die - b.die);
@@ -247,7 +256,9 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         ),
       );
 
-      if ((newState.borneOff[playerId] ?? 0) >= CHECKERS_PER_PLAYER) {
+      const targetCheckers =
+        CHECKERS_PER_VARIANT[newState.options.ruleVariant] ?? 15;
+      if ((newState.borneOff[playerId] ?? 0) >= targetCheckers) {
         newState.phase = GAME_PHASE.GAME_OVER;
         newState.winnerId = playerId;
         newState.logs.push(
@@ -263,6 +274,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         newState.bar,
         newState.borneOff,
         newState.dice,
+        newState.options.ruleVariant,
       );
 
       if (newState.dice.length === 0 || remainingLegalMoves.length === 0) {
@@ -282,16 +294,14 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       newState.phase = GAME_PHASE.GAME_OVER;
       newState.winnerId = winnerId;
       newState.logs.push(
-        this.createLogEntry(
-          'system',
-          `Player forfeited. Winner: ${winnerId ?? 'none'}.`,
-        ),
+        this.createLogEntry('action', 'Player forfeited the match.', {
+          senderId: forfeitingPlayerId,
+        }),
       );
-
       return this.successResult(newState);
     }
 
-    return this.successResult(newState);
+    return this.errorResult('Unknown action');
   }
 
   isGameOver(state: BackgammonState): boolean {
@@ -302,38 +312,24 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
     return state.winnerId ? [state.winnerId] : [];
   }
 
-  getResult(
-    state: BackgammonState,
-  ): import('../base/game-engine.interface').GameResult {
-    if (!this.isGameOver(state)) {
-      return { winnerIds: [], isDraw: false };
-    }
-    return {
-      winnerIds: this.getWinners(state),
-      isDraw: state.isDraw,
-    };
-  }
-
-  sanitizeStateForPlayer(state: BackgammonState): Partial<BackgammonState> {
-    return state;
-  }
-
   getAvailableActions(state: BackgammonState, playerId: string): string[] {
-    if (state.phase === GAME_PHASE.GAME_OVER) return [];
-    const player = state.players.find((p) => p.playerId === playerId);
-    if (!player?.alive) return [];
-
-    const isCurrent = state.playerOrder[state.currentTurnIndex] === playerId;
-    if (!isCurrent) return [ACTION.FORFEIT];
+    if (this.isGameOver(state)) return [];
+    const currentTurnPlayerId = state.playerOrder[state.currentTurnIndex];
+    if (currentTurnPlayerId !== playerId) return [ACTION.FORFEIT];
 
     if (state.phase === GAME_PHASE.ROLL) {
       return [ACTION.ROLL_DICE, ACTION.FORFEIT];
     }
-
     if (state.phase === GAME_PHASE.MOVE) {
       return [ACTION.MOVE_CHECKER, ACTION.FORFEIT];
     }
-
     return [ACTION.FORFEIT];
+  }
+
+  sanitizeStateForPlayer(
+    state: BackgammonState,
+    _playerId?: string,
+  ): BackgammonState {
+    return state;
   }
 }

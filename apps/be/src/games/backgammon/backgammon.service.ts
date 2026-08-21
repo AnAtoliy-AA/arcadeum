@@ -9,6 +9,7 @@ import {
   MAX_PLAYERS,
   MIN_PLAYERS,
   type BackgammonOptions,
+  type RuleVariant,
   type Variant,
 } from '../engines/backgammon/backgammon.constants';
 import type { MoveCheckerPayload } from '../engines/backgammon/backgammon.types';
@@ -56,10 +57,13 @@ export class BackgammonService extends BaseGameService<BackgammonOptions> {
   protected resolveOptions(raw: unknown): BackgammonOptions {
     const r = (raw ?? {}) as Partial<{
       variant: string;
+      ruleVariant: string;
       aiDifficulty: string;
     }>;
     return {
       variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,
+      ruleVariant:
+        (r.ruleVariant as RuleVariant) ?? DEFAULT_OPTIONS.ruleVariant,
       aiDifficulty: isAiDifficulty(r.aiDifficulty)
         ? r.aiDifficulty
         : DEFAULT_OPTIONS.aiDifficulty,

@@ -188,4 +188,28 @@ describe('BackgammonEngine', () => {
     expect(res.state?.phase).toBe(GAME_PHASE.GAME_OVER);
     expect(res.state?.winnerId).toBe(player2);
   });
+
+  it('initializes hyper variant with 3 checkers per player', () => {
+    const state = engine.initializeState([player1, player2], {
+      options: { ruleVariant: 'hyper' },
+    });
+    const p1Count = state.points.reduce(
+      (sum, pt) => (pt.playerId === player1 ? sum + pt.count : sum),
+      0,
+    );
+    const p2Count = state.points.reduce(
+      (sum, pt) => (pt.playerId === player2 ? sum + pt.count : sum),
+      0,
+    );
+    expect(p1Count).toBe(3);
+    expect(p2Count).toBe(3);
+  });
+
+  it('initializes long nardy with 15 checkers on heads', () => {
+    const state = engine.initializeState([player1, player2], {
+      options: { ruleVariant: 'long' },
+    });
+    expect(state.points[23]).toEqual({ playerId: player1, count: 15 });
+    expect(state.points[11]).toEqual({ playerId: player2, count: 15 });
+  });
 });

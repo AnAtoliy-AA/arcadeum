@@ -8,7 +8,20 @@ export const esMessages = {
     variants: {
       standard: {
         name: 'Estándar',
-        description: 'Reglas tradicionales de backgammon',
+        description:
+          'Reglas tradicionales de backgammon con capturas y descarte',
+      },
+      long: {
+        name: 'Nardis Largos',
+        description: 'Reglas tradicionales de nardis largos sin capturas',
+      },
+      hyper: {
+        name: 'Hipergammon',
+        description: 'Partida rápida y táctica con 3 fichas por jugador',
+      },
+      tavla: {
+        name: 'Tavla',
+        description: 'Reglas rápidas de Tavla tradicional',
       },
     },
     landing: {

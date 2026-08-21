@@ -57,6 +57,7 @@ export function validateMoveChecker(
     state.bar,
     state.borneOff,
     state.dice,
+    state.options.ruleVariant,
   );
 
   const matched = legalMoves.some((m) => m.from === p.from && m.to === p.to);

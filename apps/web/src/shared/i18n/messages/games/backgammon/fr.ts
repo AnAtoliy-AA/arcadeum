@@ -8,7 +8,19 @@ export const frMessages = {
     variants: {
       standard: {
         name: 'Standard',
-        description: 'Règles classiques du backgammon',
+        description: 'Règles classiques du backgammon avec captures et sorties',
+      },
+      long: {
+        name: 'Nardes Longs',
+        description: 'Règles traditionnelles des nardes longs sans capture',
+      },
+      hyper: {
+        name: 'Hypergammon',
+        description: 'Partie tactique et ultra-rapide avec 3 pions chacun',
+      },
+      tavla: {
+        name: 'Tavla',
+        description: 'Règles rapides de Tavla traditionnelle',
       },
     },
     landing: {

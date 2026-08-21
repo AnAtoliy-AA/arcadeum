@@ -51,8 +51,17 @@ export interface MoveCheckerPayload {
   to: number | 'off';
 }
 
+export const BACKGAMMON_RULE_VARIANTS = [
+  'standard',
+  'long',
+  'hyper',
+  'tavla',
+] as const;
+export type BackgammonRuleVariant = (typeof BACKGAMMON_RULE_VARIANTS)[number];
+
 export interface BackgammonOptions {
   variant: BackgammonVariant;
+  ruleVariant?: BackgammonRuleVariant;
   aiDifficulty?: 'easy' | 'medium' | 'hard' | 'expert';
 }
 

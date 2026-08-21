@@ -1,9 +1,14 @@
-import { CHECKERS_PER_PLAYER, TOTAL_POINTS } from './backgammon.constants';
+import {
+  CHECKERS_PER_VARIANT,
+  TOTAL_POINTS,
+  type RuleVariant,
+} from './backgammon.constants';
 import type { BackgammonPoint, LegalMove } from './backgammon.types';
 
 export function createInitialPoints(
   player0Id: string,
   player1Id: string,
+  ruleVariant: RuleVariant = 'standard',
 ): BackgammonPoint[] {
   const points: BackgammonPoint[] = Array.from(
     { length: TOTAL_POINTS },
@@ -12,6 +17,23 @@ export function createInitialPoints(
       count: 0,
     }),
   );
+
+  if (ruleVariant === 'hyper') {
+    points[23] = { playerId: player0Id, count: 1 };
+    points[22] = { playerId: player0Id, count: 1 };
+    points[21] = { playerId: player0Id, count: 1 };
+
+    points[0] = { playerId: player1Id, count: 1 };
+    points[1] = { playerId: player1Id, count: 1 };
+    points[2] = { playerId: player1Id, count: 1 };
+    return points;
+  }
+
+  if (ruleVariant === 'long') {
+    points[23] = { playerId: player0Id, count: 15 };
+    points[11] = { playerId: player1Id, count: 15 };
+    return points;
+  }
 
   points[23] = { playerId: player0Id, count: 2 };
   points[12] = { playerId: player0Id, count: 5 };
@@ -36,9 +58,11 @@ export function canPlayerBearOff(
   points: BackgammonPoint[],
   barCount: number,
   borneOffCount: number,
+  ruleVariant: RuleVariant = 'standard',
 ): boolean {
+  const targetCheckers = CHECKERS_PER_VARIANT[ruleVariant] ?? 15;
   if (barCount > 0) return false;
-  if (borneOffCount >= CHECKERS_PER_PLAYER) return false;
+  if (borneOffCount >= targetCheckers) return false;
 
   const isP0 = isPlayer0(playerId, playerOrder);
   let homeCount = 0;
@@ -57,7 +81,7 @@ export function canPlayerBearOff(
     }
   }
 
-  return homeCount + borneOffCount === CHECKERS_PER_PLAYER;
+  return homeCount + borneOffCount === targetCheckers;
 }
 
 export function calculatePipCount(
@@ -79,39 +103,18 @@ export function calculatePipCount(
   return pips;
 }
 
-export function getTargetPoint(
-  playerId: string,
-  playerOrder: string[],
-  from: number | 'bar',
-  die: number,
-): number | 'off' | null {
-  const isP0 = isPlayer0(playerId, playerOrder);
-
-  if (from === 'bar') {
-    return isP0 ? 24 - die : die - 1;
-  }
-
-  if (isP0) {
-    const to = from - die;
-    if (to >= 0) return to;
-    if (to === -1) return 'off';
-    return 'off';
-  } else {
-    const to = from + die;
-    if (to < TOTAL_POINTS) return to;
-    if (to === TOTAL_POINTS) return 'off';
-    return 'off';
-  }
-}
-
 export function isPointOpen(
   targetIndex: number,
   playerId: string,
   points: BackgammonPoint[],
+  ruleVariant: RuleVariant = 'standard',
 ): boolean {
   const point = points[targetIndex];
   if (!point || point.count === 0 || point.playerId === playerId) {
     return true;
+  }
+  if (ruleVariant === 'long') {
+    return false;
   }
   return point.count === 1;
 }
@@ -123,6 +126,7 @@ export function getLegalMovesForDie(
   bar: Record<string, number>,
   borneOff: Record<string, number>,
   die: number,
+  ruleVariant: RuleVariant = 'standard',
 ): LegalMove[] {
   const moves: LegalMove[] = [];
   const barCount = bar[playerId] ?? 0;
@@ -134,44 +138,58 @@ export function getLegalMovesForDie(
     points,
     barCount,
     borneOffCount,
+    ruleVariant,
   );
 
   if (barCount > 0) {
+    if (ruleVariant === 'long') return [];
     const target = isP0 ? 24 - die : die - 1;
-    if (target >= 0 && target < TOTAL_POINTS) {
-      if (isPointOpen(target, playerId, points)) {
-        const isHit =
-          points[target].playerId !== null &&
-          points[target].playerId !== playerId &&
-          points[target].count === 1;
-        moves.push({ from: 'bar', to: target, die, isHit });
-      }
+    if (
+      target >= 0 &&
+      target < TOTAL_POINTS &&
+      isPointOpen(target, playerId, points, ruleVariant)
+    ) {
+      const targetPoint = points[target];
+      const isHit = !!(
+        targetPoint &&
+        targetPoint.playerId &&
+        targetPoint.playerId !== playerId &&
+        targetPoint.count === 1
+      );
+      moves.push({ from: 'bar', to: target, die, isHit });
     }
     return moves;
   }
 
   for (let from = 0; from < TOTAL_POINTS; from++) {
-    if (points[from].playerId !== playerId || points[from].count <= 0) {
-      continue;
-    }
+    const point = points[from];
+    if (point.playerId !== playerId || point.count === 0) continue;
 
     if (isP0) {
-      const toIndex = from - die;
-      if (toIndex >= 0) {
-        if (isPointOpen(toIndex, playerId, points)) {
+      const to = from - die;
+      if (to >= 0) {
+        if (isPointOpen(to, playerId, points, ruleVariant)) {
+          const targetPoint = points[to];
           const isHit =
-            points[toIndex].playerId !== null &&
-            points[toIndex].playerId !== playerId &&
-            points[toIndex].count === 1;
-          moves.push({ from, to: toIndex, die, isHit });
+            ruleVariant !== 'long' &&
+            !!(
+              targetPoint &&
+              targetPoint.playerId &&
+              targetPoint.playerId !== playerId &&
+              targetPoint.count === 1
+            );
+          moves.push({ from, to, die, isHit });
         }
       } else if (canBearOff) {
-        if (toIndex === -1) {
+        if (to === -1) {
           moves.push({ from, to: 'off', die, isHit: false });
         } else {
           let hasHigher = false;
-          for (let p = from + 1; p <= 5; p++) {
-            if (points[p].playerId === playerId && points[p].count > 0) {
+          for (let higher = from + 1; higher <= 5; higher++) {
+            if (
+              points[higher].playerId === playerId &&
+              points[higher].count > 0
+            ) {
               hasHigher = true;
               break;
             }
@@ -182,27 +200,35 @@ export function getLegalMovesForDie(
         }
       }
     } else {
-      const toIndex = from + die;
-      if (toIndex < TOTAL_POINTS) {
-        if (isPointOpen(toIndex, playerId, points)) {
+      const to = from + die;
+      if (to < TOTAL_POINTS) {
+        if (isPointOpen(to, playerId, points, ruleVariant)) {
+          const targetPoint = points[to];
           const isHit =
-            points[toIndex].playerId !== null &&
-            points[toIndex].playerId !== playerId &&
-            points[toIndex].count === 1;
-          moves.push({ from, to: toIndex, die, isHit });
+            ruleVariant !== 'long' &&
+            !!(
+              targetPoint &&
+              targetPoint.playerId &&
+              targetPoint.playerId !== playerId &&
+              targetPoint.count === 1
+            );
+          moves.push({ from, to, die, isHit });
         }
       } else if (canBearOff) {
-        if (toIndex === TOTAL_POINTS) {
+        if (to === TOTAL_POINTS) {
           moves.push({ from, to: 'off', die, isHit: false });
         } else {
-          let hasFurther = false;
-          for (let p = 18; p < from; p++) {
-            if (points[p].playerId === playerId && points[p].count > 0) {
-              hasFurther = true;
+          let hasHigher = false;
+          for (let higher = from - 1; higher >= 18; higher--) {
+            if (
+              points[higher].playerId === playerId &&
+              points[higher].count > 0
+            ) {
+              hasHigher = true;
               break;
             }
           }
-          if (!hasFurther) {
+          if (!hasHigher) {
             moves.push({ from, to: 'off', die, isHit: false });
           }
         }
@@ -220,25 +246,23 @@ export function getAllLegalMoves(
   bar: Record<string, number>,
   borneOff: Record<string, number>,
   dice: number[],
+  ruleVariant: RuleVariant = 'standard',
 ): LegalMove[] {
   const uniqueDice = Array.from(new Set(dice));
-  const moves: LegalMove[] = [];
+  const allMoves: LegalMove[] = [];
 
   for (const die of uniqueDice) {
-    const dieMoves = getLegalMovesForDie(
+    const movesForDie = getLegalMovesForDie(
       playerId,
       playerOrder,
       points,
       bar,
       borneOff,
       die,
+      ruleVariant,
     );
-    moves.push(...dieMoves);
+    allMoves.push(...movesForDie);
   }
 
-  return moves;
-}
-
-export function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min)) + min;
+  return allMoves;
 }

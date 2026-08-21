@@ -8,7 +8,20 @@ export const enMessages = {
     variants: {
       standard: {
         name: 'Standard',
-        description: 'Traditional backgammon rules',
+        description: 'Traditional backgammon rules with hitting and bar entry',
+      },
+      long: {
+        name: 'Long Nardy',
+        description:
+          'Traditional Russian Long Nard with head limits and no hitting',
+      },
+      hyper: {
+        name: 'Hypergammon',
+        description: 'Fast-paced tactical match with 3 checkers each',
+      },
+      tavla: {
+        name: 'Tavla',
+        description: 'Turkish Tavla speed rules with rapid race dynamics',
       },
     },
     landing: {

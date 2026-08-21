@@ -1,0 +1,74 @@
+name: Version Guard
+
+# Enforces the invariant that version bumps may ONLY be made on `develop`.
+# `staging` and `main` are pure consumers: they must carry develop's version,
+# never invent their own. An independent version bump on staging/main (e.g. a
+# `demo:` squash that writes a bespoke version into package.json) is exactly what
+# causes recurring merge conflicts on the next develop -> staging merge.
+#
+# Fails any PR targeting staging/main whose head version diverges from develop's.
+
+on:
+  pull_request:
+    branches: [main, staging]
+
+permissions:
+  contents: read
+
+jobs:
+  check-version-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Resolve develop's authoritative version
+        id: versions
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Get develop's version from the single source used by version-bump.yml.
+          git fetch origin develop --quiet 2>/dev/null || true
+
+          DEVELOP_VER=$(git show origin/develop:apps/web/package.json \
+            | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+          HEAD_VER=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' apps/web/package.json | head -1)
+
+          echo "develop_version=$DEVELOP_VER" >> "$GITHUB_OUTPUT"
+          echo "head_version=$HEAD_VER" >> "$GITHUB_OUTPUT"
+
+          if [ -z "$DEVELOP_VER" ]; then
+            echo "::warning::Could not resolve develop version; skipping guard."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fail if head version diverges from develop
+        if: steps.versions.outputs.skip != 'true'
+        env:
+          DEVELOP_VER: ${{ steps.versions.outputs.develop_version }}
+          HEAD_VER: ${{ steps.versions.outputs.head_version }}
+          BASE: ${{ github.event.pull_request.base.ref }}
+        run: |
+          echo "Base: $BASE"
+          echo "develop version: $DEVELOP_VER"
+          echo "head   version: $HEAD_VER"
+
+          # Allow the head to match develop exactly (a fast-forward/merge of
+          # develop carries develop's version). This is the desired outcome.
+          if [ "$HEAD_VER" = "$DEVELOP_VER" ]; then
+            echo "✅ Head version matches develop — version came from develop. OK."
+            exit 0
+          fi
+
+          # A PR to staging/main that introduces a version different from
+          # develop's means an independent bump was made on this branch.
+          echo "❌ Version bump must be made on develop, not on '$BASE'."
+          echo "   develop version: $DEVELOP_VER"
+          echo "   this PR version: $HEAD_VER"
+          echo ""
+          echo "   Fix: do not bump version on staging/main. Rebase/merge so this"
+          echo "   branch carries develop's version exactly (e.g. create the PR"
+          echo "   as a merge of develop into staging, or branch off develop)."
+          exit 1

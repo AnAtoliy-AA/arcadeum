@@ -125,12 +125,34 @@ test.describe('Home Page', () => {
     await expect(page).toHaveURL(/\/games/);
   });
 
-  test('should open game picker modal via Play vs AI button', async ({
+  test('should open game picker modal via Play vs AI button and interact with filters and cards', async ({
     page,
   }) => {
     const playVsAiButton = page.getByTestId('hero-play-vs-ai-button');
     await expect(playVsAiButton).toBeVisible();
     await playVsAiButton.click();
+
+    const modal = page.getByTestId('game-picker-modal');
+    await expect(modal).toBeVisible();
     await expect(page.getByTestId('game-picker-title')).toBeVisible();
+    await expect(page.getByTestId('game-picker-search')).toBeVisible();
+
+    const chessCard = page.getByTestId('game-picker-card-chess_v1');
+    const criticalCard = page.getByTestId('game-picker-card-critical_v1');
+    await expect(chessCard).toBeVisible();
+    await expect(criticalCard).toBeVisible();
+
+    const boardChip = page.getByTestId('game-picker-category-board');
+    await boardChip.click();
+    await expect(chessCard).toBeVisible();
+    await expect(criticalCard).not.toBeVisible();
+
+    const searchInput = page.getByTestId('game-picker-search');
+    await searchInput.fill('Chess');
+    await expect(chessCard).toBeVisible();
+
+    const closeButton = page.getByTestId('modal-close-button');
+    await closeButton.click();
+    await expect(modal).not.toBeVisible();
   });
 });

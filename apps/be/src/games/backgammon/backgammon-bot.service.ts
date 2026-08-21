@@ -47,23 +47,40 @@ export class BackgammonBotService {
     this.processing.add(lockKey);
 
     try {
-      const aiDelay = getAiMoveDelayMs(session);
-      const delayMs = aiDelay !== null ? aiDelay : MOVE_DELAY_MS.min;
-      await this.delay(delayMs);
+      let currentSession = session;
+      let currentState = currentSession.state as unknown as
+        BackgammonState | undefined;
 
-      if (state.phase === GAME_PHASE.ROLL) {
-        await this.backgammonService.rollDice(
-          currentTurnPlayerId,
-          session.roomId,
-        );
-      } else if (state.phase === GAME_PHASE.MOVE) {
-        const move = this.pickMove(state, currentTurnPlayerId);
-        if (move) {
-          await this.backgammonService.moveChecker(
+      while (
+        currentSession.status === 'active' &&
+        currentState &&
+        currentState.phase !== GAME_PHASE.GAME_OVER &&
+        currentState.playerOrder[currentState.currentTurnIndex] ===
+          currentTurnPlayerId
+      ) {
+        const aiDelay = getAiMoveDelayMs(currentSession);
+        const delayMs = aiDelay !== null ? aiDelay : MOVE_DELAY_MS.min;
+        await this.delay(delayMs);
+
+        if (currentState.phase === GAME_PHASE.ROLL) {
+          const updated = await this.backgammonService.rollDice(
             currentTurnPlayerId,
-            session.roomId,
+            currentSession.roomId,
+          );
+          currentSession = updated;
+          currentState = updated.state as unknown as BackgammonState;
+        } else if (currentState.phase === GAME_PHASE.MOVE) {
+          const move = this.pickMove(currentState, currentTurnPlayerId);
+          if (!move) break;
+          const updated = await this.backgammonService.moveChecker(
+            currentTurnPlayerId,
+            currentSession.roomId,
             move,
           );
+          currentSession = updated;
+          currentState = updated.state as unknown as BackgammonState;
+        } else {
+          break;
         }
       }
     } catch (error) {

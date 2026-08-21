@@ -25,6 +25,7 @@ import { CascadeService } from '../cascade/cascade.service';
 import { CatDashService } from '../cat-dash/cat-dash.service';
 import { SeaBattleService } from '../sea-battle/sea-battle.service';
 import { CriticalService } from '../critical/critical.service';
+import { BackgammonService } from '../backgammon/backgammon.service';
 
 const AI_VS_AI_ROOM_NAME = 'AI vs AI';
 
@@ -51,6 +52,8 @@ export class AiVsAiService {
     private readonly seaBattleService: SeaBattleService,
     @Inject(forwardRef(() => CriticalService))
     private readonly criticalService: CriticalService,
+    @Inject(forwardRef(() => BackgammonService))
+    private readonly backgammonService: BackgammonService,
   ) {}
 
   async createAIvsAIRoom(
@@ -195,6 +198,15 @@ export class AiVsAiService {
             false,
             0,
             undefined,
+            extras,
+          );
+          break;
+        case 'backgammon_v1':
+          await this.backgammonService.startSession(
+            botHostId,
+            roomId,
+            false,
+            0,
             extras,
           );
           break;

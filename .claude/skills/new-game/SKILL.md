@@ -211,3 +211,4 @@ Add translation keys across all 5 locale files:
 6. **Card Art Fallback**: Add real SVG board to `GamesCatalogRealPreview.tsx`, `GameArt.tsx`, and `ThemePicker.tsx` to prevent falling back to Glimworm glowing snake preview.
 7. **`pages/{locale}.ts` Catalog Keys**: Add `pages.games.items.<game>_v1` in all 5 locales to avoid missing translation warnings on `/games`.
 8. **File Limit (500 Lines)**: Keep all engine, widget, and service files strictly under 500 lines.
+9. **AI vs AI Mode**: Add `<game>_v1` to `AI_VS_AI_GAME_IDS` in `apps/be/src/games/common/ai-vs-ai.ts`, wire into `AiVsAiService` in `apps/be/src/games/ai-vs-ai/ai-vs-ai.service.ts`, and add to `AI_VS_AI_SUPPORTED_GAME_IDS` in `apps/web/src/features/games/lib/aiVsAi.ts`.

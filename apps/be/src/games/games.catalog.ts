@@ -244,8 +244,8 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
     gameId: 'backgammon_v1',
     startMode: 'immediate',
     themes: [...SHARED_VISUAL_THEMES],
-    modes: ['standard'],
-    variants: ['standard'],
+    modes: ['standard', 'long', 'hyper', 'tavla', 'nackgammon', 'gulbara'],
+    variants: ['standard', 'long', 'hyper', 'tavla', 'nackgammon', 'gulbara'],
     rules: [
       {
         ruleId: 'idle',

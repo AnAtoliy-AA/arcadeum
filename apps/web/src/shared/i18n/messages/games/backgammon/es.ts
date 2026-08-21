@@ -23,6 +23,15 @@ export const esMessages = {
         name: 'Tavla',
         description: 'Reglas rápidas de Tavla tradicional',
       },
+      nackgammon: {
+        name: 'Nackgammon',
+        description: 'Variante estratégica con 2 fichas en el punto 23',
+      },
+      gulbara: {
+        name: 'Gulbara',
+        description:
+          'Juego sin capturas donde los dobles juegan todos los números superiores',
+      },
     },
     landing: {
       meta: {
@@ -98,9 +107,42 @@ export const esMessages = {
     },
     lobby: {
       variant: 'Tema',
+      ruleVariant: 'Modo de Juego',
       rules: 'Reglas del Juego',
       startWithBots: 'Empezar con Bot',
       aiDifficulty: 'Dificultad IA',
+      ruleVariants: {
+        standard: {
+          name: 'Estándar',
+          description:
+            'Backgammon clásico con 15 fichas, capturas al bar y descarte.',
+        },
+        long: {
+          name: 'Nardis Largos',
+          description:
+            'Nardis largos tradicionales: 15 fichas en cabeza y sin capturas.',
+        },
+        hyper: {
+          name: 'Hipergammon',
+          description:
+            'Partida ultrarrápida donde cada jugador tiene solo 3 fichas.',
+        },
+        tavla: {
+          name: 'Tavla',
+          description:
+            'Tavla turca tradicional con ritmo veloz y capturas directas.',
+        },
+        nackgammon: {
+          name: 'Nackgammon',
+          description:
+            'Variante táctica profunda con 2 fichas situadas en el punto 23.',
+        },
+        gulbara: {
+          name: 'Gulbara',
+          description:
+            'Variante oriental sin capturas donde los dobles juegan pares sucesivos.',
+        },
+      },
     },
     game: {
       rollDice: 'Tirar Dados',

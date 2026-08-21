@@ -115,7 +115,8 @@ Add entry to `GAMES_CATALOG`:
    - Ergonomic action controls positioned so they never overlap board pieces.
    - Mobile touch-friendly tap targets (`min-h-[36px]`).
 10. `ui/<Name>Lobby.tsx`:
-    - Wraps `ReusableGameLobby`, supplies `optionsSlot` for rule variants and visual themes.
+    - Wraps `ReusableGameLobby`.
+    - In `optionsSlot`, renders `GameThemePicker` (visual themes) AND `LobbyChipGroup` (all popular gameplay rule variants, e.g. standard/blitz/960/long/hyper/etc., with emojis and localized descriptions wired via `setOption({ ruleVariant })`).
 11. `ui/RulesModal.tsx`:
     - Explains objectives, movement, hitting/scoring, bearing off, and all rule variants.
 12. `index.ts`: Barrel exporting `memo(<Name>Game)` as default export.

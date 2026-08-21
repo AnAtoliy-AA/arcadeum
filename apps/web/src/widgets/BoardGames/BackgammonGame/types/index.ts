@@ -56,6 +56,8 @@ export const BACKGAMMON_RULE_VARIANTS = [
   'long',
   'hyper',
   'tavla',
+  'nackgammon',
+  'gulbara',
 ] as const;
 export type BackgammonRuleVariant = (typeof BACKGAMMON_RULE_VARIANTS)[number];
 

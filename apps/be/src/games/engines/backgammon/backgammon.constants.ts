@@ -4,7 +4,14 @@ export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 2;
 export const TOTAL_POINTS = 24;
 
-export const RULE_VARIANTS = ['standard', 'long', 'hyper', 'tavla'] as const;
+export const RULE_VARIANTS = [
+  'standard',
+  'long',
+  'hyper',
+  'tavla',
+  'nackgammon',
+  'gulbara',
+] as const;
 export type RuleVariant = (typeof RULE_VARIANTS)[number];
 
 export const CHECKERS_PER_VARIANT: Record<RuleVariant, number> = {
@@ -12,6 +19,8 @@ export const CHECKERS_PER_VARIANT: Record<RuleVariant, number> = {
   long: 15,
   hyper: 3,
   tavla: 15,
+  nackgammon: 15,
+  gulbara: 15,
 };
 
 export const GAME_PHASE = {

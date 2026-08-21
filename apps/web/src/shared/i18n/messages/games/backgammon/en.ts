@@ -23,6 +23,16 @@ export const enMessages = {
         name: 'Tavla',
         description: 'Turkish Tavla speed rules with rapid race dynamics',
       },
+      nackgammon: {
+        name: 'Nackgammon',
+        description:
+          'Strategic variant with 2 checkers on point 23 reducing runaway rolls',
+      },
+      gulbara: {
+        name: 'Gulbara',
+        description:
+          'Classic no-hitting variant where doubles play all subsequent pairs',
+      },
     },
     landing: {
       meta: {
@@ -95,9 +105,42 @@ export const enMessages = {
     },
     lobby: {
       variant: 'Theme',
+      ruleVariant: 'Game Mode',
       rules: 'Game Rules',
       startWithBots: 'Start with Bot',
       aiDifficulty: 'AI Difficulty',
+      ruleVariants: {
+        standard: {
+          name: 'Standard',
+          description:
+            'Classic 15-checker backgammon with hitting blots to the bar and bearing off.',
+        },
+        long: {
+          name: 'Long Nardy',
+          description:
+            'Traditional Russian Long Nard: all 15 checkers start on the head with no hitting.',
+        },
+        hyper: {
+          name: 'Hypergammon',
+          description:
+            'High-speed tactical blitz where each player commands just 3 checkers.',
+        },
+        tavla: {
+          name: 'Tavla',
+          description:
+            'Turkish speed backgammon with fast race pace and hit-and-run tactics.',
+        },
+        nackgammon: {
+          name: 'Nackgammon',
+          description:
+            'Tactical opening with 2 checkers on point 23 creating deeper strategic gameplay.',
+        },
+        gulbara: {
+          name: 'Gulbara',
+          description:
+            'Greek/Middle Eastern variant with no hitting where doubles play all subsequent pairs.',
+        },
+      },
     },
     game: {
       rollDice: 'Roll Dice',

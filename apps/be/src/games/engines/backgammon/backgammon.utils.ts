@@ -29,9 +29,24 @@ export function createInitialPoints(
     return points;
   }
 
-  if (ruleVariant === 'long') {
+  if (ruleVariant === 'long' || ruleVariant === 'gulbara') {
     points[23] = { playerId: player0Id, count: 15 };
     points[11] = { playerId: player1Id, count: 15 };
+    return points;
+  }
+
+  if (ruleVariant === 'nackgammon') {
+    points[23] = { playerId: player0Id, count: 2 };
+    points[22] = { playerId: player0Id, count: 2 };
+    points[12] = { playerId: player0Id, count: 4 };
+    points[7] = { playerId: player0Id, count: 3 };
+    points[5] = { playerId: player0Id, count: 4 };
+
+    points[0] = { playerId: player1Id, count: 2 };
+    points[1] = { playerId: player1Id, count: 2 };
+    points[11] = { playerId: player1Id, count: 4 };
+    points[16] = { playerId: player1Id, count: 3 };
+    points[18] = { playerId: player1Id, count: 4 };
     return points;
   }
 
@@ -113,7 +128,7 @@ export function isPointOpen(
   if (!point || point.count === 0 || point.playerId === playerId) {
     return true;
   }
-  if (ruleVariant === 'long') {
+  if (ruleVariant === 'long' || ruleVariant === 'gulbara') {
     return false;
   }
   return point.count === 1;
@@ -132,6 +147,7 @@ export function getLegalMovesForDie(
   const barCount = bar[playerId] ?? 0;
   const borneOffCount = borneOff[playerId] ?? 0;
   const isP0 = isPlayer0(playerId, playerOrder);
+  const isNoHitting = ruleVariant === 'long' || ruleVariant === 'gulbara';
   const canBearOff = canPlayerBearOff(
     playerId,
     playerOrder,
@@ -142,7 +158,7 @@ export function getLegalMovesForDie(
   );
 
   if (barCount > 0) {
-    if (ruleVariant === 'long') return [];
+    if (isNoHitting) return [];
     const target = isP0 ? 24 - die : die - 1;
     if (
       target >= 0 &&
@@ -150,12 +166,14 @@ export function getLegalMovesForDie(
       isPointOpen(target, playerId, points, ruleVariant)
     ) {
       const targetPoint = points[target];
-      const isHit = !!(
-        targetPoint &&
-        targetPoint.playerId &&
-        targetPoint.playerId !== playerId &&
-        targetPoint.count === 1
-      );
+      const isHit =
+        !isNoHitting &&
+        !!(
+          targetPoint &&
+          targetPoint.playerId &&
+          targetPoint.playerId !== playerId &&
+          targetPoint.count === 1
+        );
       moves.push({ from: 'bar', to: target, die, isHit });
     }
     return moves;
@@ -171,7 +189,7 @@ export function getLegalMovesForDie(
         if (isPointOpen(to, playerId, points, ruleVariant)) {
           const targetPoint = points[to];
           const isHit =
-            ruleVariant !== 'long' &&
+            !isNoHitting &&
             !!(
               targetPoint &&
               targetPoint.playerId &&
@@ -184,17 +202,14 @@ export function getLegalMovesForDie(
         if (to === -1) {
           moves.push({ from, to: 'off', die, isHit: false });
         } else {
-          let hasHigher = false;
-          for (let higher = from + 1; higher <= 5; higher++) {
-            if (
-              points[higher].playerId === playerId &&
-              points[higher].count > 0
-            ) {
-              hasHigher = true;
+          let hasCheckersFurther = false;
+          for (let f = 5; f > from; f--) {
+            if (points[f].playerId === playerId && points[f].count > 0) {
+              hasCheckersFurther = true;
               break;
             }
           }
-          if (!hasHigher) {
+          if (!hasCheckersFurther) {
             moves.push({ from, to: 'off', die, isHit: false });
           }
         }
@@ -205,7 +220,7 @@ export function getLegalMovesForDie(
         if (isPointOpen(to, playerId, points, ruleVariant)) {
           const targetPoint = points[to];
           const isHit =
-            ruleVariant !== 'long' &&
+            !isNoHitting &&
             !!(
               targetPoint &&
               targetPoint.playerId &&
@@ -215,20 +230,17 @@ export function getLegalMovesForDie(
           moves.push({ from, to, die, isHit });
         }
       } else if (canBearOff) {
-        if (to === TOTAL_POINTS) {
+        if (to === 24) {
           moves.push({ from, to: 'off', die, isHit: false });
         } else {
-          let hasHigher = false;
-          for (let higher = from - 1; higher >= 18; higher--) {
-            if (
-              points[higher].playerId === playerId &&
-              points[higher].count > 0
-            ) {
-              hasHigher = true;
+          let hasCheckersFurther = false;
+          for (let f = 18; f < from; f++) {
+            if (points[f].playerId === playerId && points[f].count > 0) {
+              hasCheckersFurther = true;
               break;
             }
           }
-          if (!hasHigher) {
+          if (!hasCheckersFurther) {
             moves.push({ from, to: 'off', die, isHit: false });
           }
         }

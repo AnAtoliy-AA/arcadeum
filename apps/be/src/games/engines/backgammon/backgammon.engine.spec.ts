@@ -212,4 +212,26 @@ describe('BackgammonEngine', () => {
     expect(state.points[23]).toEqual({ playerId: player1, count: 15 });
     expect(state.points[11]).toEqual({ playerId: player2, count: 15 });
   });
+
+  it('initializes nackgammon with 2 checkers on point 23', () => {
+    const state = engine.initializeState([player1, player2], {
+      options: { ruleVariant: 'nackgammon' },
+    });
+    expect(state.points[23]).toEqual({ playerId: player1, count: 2 });
+    expect(state.points[22]).toEqual({ playerId: player1, count: 2 });
+    expect(state.points[12]).toEqual({ playerId: player1, count: 4 });
+    const p1Total = state.points.reduce(
+      (sum, pt) => (pt.playerId === player1 ? sum + pt.count : sum),
+      0,
+    );
+    expect(p1Total).toBe(15);
+  });
+
+  it('initializes gulbara with 15 checkers on head and no hitting', () => {
+    const state = engine.initializeState([player1, player2], {
+      options: { ruleVariant: 'gulbara' },
+    });
+    expect(state.points[23]).toEqual({ playerId: player1, count: 15 });
+    expect(state.points[11]).toEqual({ playerId: player2, count: 15 });
+  });
 });

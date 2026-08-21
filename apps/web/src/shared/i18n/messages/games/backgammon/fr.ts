@@ -22,6 +22,15 @@ export const frMessages = {
         name: 'Tavla',
         description: 'Règles rapides de Tavla traditionnelle',
       },
+      nackgammon: {
+        name: 'Nackgammon',
+        description: 'Variante stratégique avec 2 pions sur la flèche 23',
+      },
+      gulbara: {
+        name: 'Gulbara',
+        description:
+          'Variante sans capture où les doubles jouent tous les numéros supérieurs',
+      },
     },
     landing: {
       meta: {
@@ -97,9 +106,42 @@ export const frMessages = {
     },
     lobby: {
       variant: 'Thème',
+      ruleVariant: 'Mode de Jeu',
       rules: 'Règles du Jeu',
       startWithBots: 'Jouer avec un Bot',
       aiDifficulty: 'Difficulté de l’IA',
+      ruleVariants: {
+        standard: {
+          name: 'Standard',
+          description:
+            'Backgammon classique à 15 pions, captures à la barre et sortie du plateau.',
+        },
+        long: {
+          name: 'Nardes Longs',
+          description:
+            'Nardes longs traditionnels : 15 pions en tête, sans aucune capture.',
+        },
+        hyper: {
+          name: 'Hypergammon',
+          description:
+            'Blitz ultra-rapide et stratégique avec seulement 3 pions par joueur.',
+        },
+        tavla: {
+          name: 'Tavla',
+          description:
+            'Tavla turque avec rythme accéléré et règles directes de capture.',
+        },
+        nackgammon: {
+          name: 'Nackgammon',
+          description:
+            'Variante tactique approfondie avec 2 pions positionnés sur la flèche 23.',
+        },
+        gulbara: {
+          name: 'Gulbara',
+          description:
+            'Variante orientale sans capture où les doubles jouent les paires suivantes.',
+        },
+      },
     },
     game: {
       rollDice: 'Lancer les Dés',

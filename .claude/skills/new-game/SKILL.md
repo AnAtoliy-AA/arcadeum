@@ -62,6 +62,7 @@ apps/be/src/games/
 Gateway handlers use `@SubscribeMessage('<camelCase>.session.start' | '.<action>' | '.forfeit')` — see Socket events parity below.
 
 Wire into [apps/be/src/games/games.module.ts](apps/be/src/games/games.module.ts) — add all three as providers; gateway is a provider, not an export.
+**Register in [apps/be/src/games/games.gateway.ts](apps/be/src/games/games.gateway.ts):** inject `<name>Handler: <Name>Gateway` in constructor and add it to the `gameHandlers` array in `afterInit()`. Without this, incoming socket events for the game (`<game>.session.start`, etc.) are ignored.
 
 **Socket events parity (BE ↔ FE):** the strings in `@SubscribeMessage(...)` on the BE gateway MUST match the strings in `gameSocket.emit(...)` from the FE's `useActions.ts` hook, character for character. Drift here results in silent no-ops with no error.
 
@@ -295,7 +296,7 @@ Cover: landing (hero/highlights/steps/themes/rules/faq), lobby (variants/options
 
 Walk this list manually — these are the surfaces where missing wiring causes silent regressions (text-only thumbnails, "Unsupported game type" toasts, button-clicks that toggle state into the void, etc.):
 
-- [ ] BE engine registered in `engines.module.ts`; service+bot+gateway in `games.module.ts`; entry in `games.catalog.ts`.
+- [ ] BE engine registered in `engines.module.ts`; service+bot+gateway in `games.module.ts`; gateway injected and added to `gameHandlers` in `games.gateway.ts`; entry in `games.catalog.ts`.
 - [ ] Web widget folder has an `index.ts` barrel that default-exports the memoized `Game`.
 - [ ] Widget registered in `features/games/registry.ts` (loader + metadata).
 - [ ] `<game>_v1` added to **both** `GameType` unions: `lib/gameIdMapping.ts` AND `hooks/useGameActions.ts`.

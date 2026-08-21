@@ -15,6 +15,7 @@ export const gameLoaders: Record<
   chess_v1: () => import('@/widgets/BoardGames/ChessGame'),
   checkers_v1: () => import('@/widgets/BoardGames/CheckersGame'),
   cat_dash_v1: () => import('@/widgets/ActionGames/CatDashGame'),
+  backgammon_v1: () => import('@/widgets/BoardGames/BackgammonGame'),
   // Add more games as they are implemented
 } as const;
 
@@ -220,6 +221,25 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     implementationPath: '@/widgets/ActionGames/CatDashGame',
     lastUpdated: '2026-07-23',
     status: 'coming_soon',
+  },
+  backgammon_v1: {
+    slug: 'backgammon_v1',
+    name: 'Backgammon',
+    description:
+      'Classic 24-point board game with dice rolls, bearing off, and AI bot opponents',
+    category: 'Board Game',
+    minPlayers: 2,
+    maxPlayers: 2,
+    estimatedDuration: 20,
+    complexity: 3,
+    ageRating: 'PG',
+    thumbnail: '/games/backgammon.jpg',
+    version: '1.0.0',
+    supportsAI: true,
+    tags: ['backgammon', 'dice', 'board', 'classic', 'strategy'],
+    implementationPath: '@/widgets/BoardGames/BackgammonGame',
+    lastUpdated: '2026-08-21',
+    status: 'active',
   },
 };
 

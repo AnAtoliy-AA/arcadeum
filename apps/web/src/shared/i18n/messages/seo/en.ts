@@ -56,6 +56,10 @@ export const en = {
     title: `Cat Dash · Multiplayer Cat Racing Dice Game · ${APP}`,
     description: `Play Cat Dash online on ${APP} — race cats with dice, unique abilities, and themed tracks. 2–6 players, free, instant rooms.`,
   },
+  backgammonLanding: {
+    title: `Backgammon · Free Online Multiplayer Board Game · ${APP}`,
+    description: `Play Backgammon online on ${APP} — classic 24-point board, dice rolls, bearing off, hitting blots to the bar, and AI opponents. Free, instant rooms, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

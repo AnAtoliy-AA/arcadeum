@@ -64,6 +64,14 @@ const CatDashRulesModal = dynamic(
   { ssr: false },
 );
 
+const BackgammonRulesModal = dynamic(
+  () =>
+    import('@/widgets/BoardGames/BackgammonGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -134,6 +142,9 @@ export function RulesAccess({ gameId, themeId }: Props) {
       ) : null}
       {gameId === 'cat_dash_v1' ? (
         <CatDashRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'backgammon_v1' ? (
+        <BackgammonRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

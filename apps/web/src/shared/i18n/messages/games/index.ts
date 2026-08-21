@@ -8,6 +8,7 @@ import type { CascadeMessages } from './cascade/index';
 import type { ChessMessages } from './chess/index';
 import type { CheckersMessages } from './checkers/index';
 import type { CatDashMessages } from './cat-dash/index';
+import type { BackgammonMessages } from './backgammon/index';
 
 export type GamesMessagesBundle = SharedGamesMessages &
   CriticalGamesMessages &
@@ -18,4 +19,5 @@ export type GamesMessagesBundle = SharedGamesMessages &
   CascadeMessages &
   ChessMessages &
   CheckersMessages &
-  CatDashMessages;
+  CatDashMessages &
+  BackgammonMessages;

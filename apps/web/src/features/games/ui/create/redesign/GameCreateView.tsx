@@ -44,6 +44,7 @@ const URL_TO_GAME_ID: Record<string, GameId> = {
   chess_v1: 'chess_v1',
   checkers_v1: 'checkers_v1',
   cat_dash_v1: 'cat_dash_v1',
+  backgammon_v1: 'backgammon_v1',
 };
 
 function parseInitialGameId(raw: string | null | undefined): GameId {
@@ -113,6 +114,10 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
       variant: 'american',
     };
   } else if (form.gameId === 'cat_dash_v1') {
+    options = {
+      variant: 'standard',
+    };
+  } else if (form.gameId === 'backgammon_v1') {
     options = {
       variant: 'standard',
     };

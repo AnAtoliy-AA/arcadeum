@@ -6,3 +6,4 @@ export * from './CascadeSymbol';
 export * from './ChessSymbol';
 export * from './CheckersSymbol';
 export * from './CatDashSymbol';
+export * from './BackgammonSymbol';

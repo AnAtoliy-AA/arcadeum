@@ -48,6 +48,7 @@ import { CASCADE_VARIANTS } from '@/widgets/CardGames/CascadeGame/lib/constants'
 import { CHESS_VARIANTS } from '@/widgets/BoardGames/ChessGame/lib/constants';
 import { CHECKERS_VARIANTS } from '@/widgets/BoardGames/CheckersGame/lib/constants';
 import { CAT_DASH_VARIANTS } from '@/widgets/ActionGames/CatDashGame/lib/constants';
+import { BACKGAMMON_VARIANTS } from '@/widgets/BoardGames/BackgammonGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -223,6 +224,27 @@ export const featuredGames: FeaturedGame[] = [
     variants: CAT_DASH_VARIANTS.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
+    })),
+  },
+  {
+    id: 'backgammon_v1',
+    nameKey: 'games.backgammon_v1.name' as TranslationKey,
+    descriptionKey: 'games.backgammon_v1.description' as TranslationKey,
+    accentColor: '#a855f7',
+    genre: 'Board',
+    pace: 'Strategy',
+    category: 'Board Game',
+    players: '2',
+    duration: '20 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/backgammon',
+    type: 'board',
+    rulesPrefix: 'games.backgammon_v1.rules',
+    rulesKeys: ['objective', 'movement', 'hitting', 'bearingOff'],
+    variants: BACKGAMMON_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.nameKey as TranslationKey,
     })),
   },
 ];

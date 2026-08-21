@@ -1,0 +1,124 @@
+export const esMessages = {
+  backgammon_v1: {
+    name: 'Backgammon',
+    description:
+      'Clásico juego de mesa de 24 puntos con tiradas de dados, descarte y capturas al bar',
+    summary:
+      '¡Tira los dados, mueve las fichas, come las fichas rivales y sé el primero en sacarlas todas!',
+    variants: {
+      standard: {
+        name: 'Estándar',
+        description: 'Reglas tradicionales de backgammon',
+      },
+    },
+    landing: {
+      meta: {
+        title: 'Backgammon — Juego de Mesa Multijugador Gratis | Arcadeum',
+        description:
+          'Juega al Backgammon gratis en línea en Arcadeum. Tablero clásico de 24 casillas con dados, descarte, capturas y oponentes IA.',
+        keywords:
+          'backgammon, tablas reales, juego de mesa, multijugador, online, gratis, estrategia, dados',
+      },
+      hero: {
+        title: 'Backgammon',
+        subtitle:
+          'Carrera clásica y estrategia en un tablero de 24 puntos. ¡Tira, come fichas y gana!',
+        ctaQuickplay: 'Jugar contra IA',
+        ctaQuickplayError: 'Error al crear la partida',
+        createRoom: 'Crear Sala',
+        browseRooms: 'Explorar Salas',
+      },
+      highlights: {
+        players: {
+          title: '2 Jugadores',
+          body: 'Duelo estratégico cara a cara',
+        },
+        dice: {
+          title: 'Dados y Dobles',
+          body: 'Tira parejas, obtén 4 movimientos con dobles y planea tu ruta',
+        },
+        bearOff: {
+          title: 'Sacar Fichas',
+          body: 'Lleva todas las fichas a casa y vacía el tablero para ganar',
+        },
+      },
+      steps: {
+        create: {
+          title: 'Crea una Sala',
+          body: 'Elige tu tema visual y comienza una partida.',
+        },
+        join: {
+          title: 'Invita a un Amigo o Bot',
+          body: 'Juega con amigos o ponte a prueba contra la IA.',
+        },
+        play: {
+          title: 'Tira y Corre',
+          body: 'Tira los dados, avanza fichas, come las del oponente y sácalas.',
+        },
+      },
+      themes: {
+        title: 'Temas Visuales',
+        subtitle: 'Juega en hermosos tableros con estilos únicos.',
+      },
+      faq: {
+        rules: {
+          question: '¿Cómo se gana en el Backgammon?',
+          answer:
+            'Lleva tus 15 fichas a tu tablero interno y sácalas del tablero antes que tu oponente.',
+        },
+        hitting: {
+          question: '¿Qué pasa al comer una ficha?',
+          answer:
+            'Al caer en un punto con una sola ficha rival, va a la barra. El rival debe reintroducirla antes de mover otras fichas.',
+        },
+        doubles: {
+          question: '¿Qué ocurre al sacar dobles?',
+          answer:
+            'Cuando sacas números iguales (ej. 4-4), puedes mover ese valor cuatro veces en lugar de dos.',
+        },
+        botAI: {
+          question: '¿Cómo funciona la IA?',
+          answer:
+            'La IA evalúa posiciones tácticas, puntos seguros y carreras de pips.',
+        },
+      },
+    },
+    lobby: {
+      variant: 'Tema',
+      rules: 'Reglas del Juego',
+      startWithBots: 'Empezar con Bot',
+      aiDifficulty: 'Dificultad IA',
+    },
+    game: {
+      rollDice: 'Tirar Dados',
+      rolling: 'Tirando...',
+      diceRolled: 'Tirada',
+      yourTurnToRoll: 'Tu turno de tirar los dados',
+      yourTurnToMove: 'Tu turno de mover fichas',
+      waitingForOpponentRoll: 'Esperando que el rival tire los dados...',
+      waitingForOpponentMove: 'Esperando que el rival mueva...',
+      barCount: 'Barra',
+      offCount: 'Fuera',
+      pipCount: 'Pips',
+      movesRemaining: 'movimientos restantes',
+      noLegalMoves: 'Sin movimientos legales posibles',
+      checkerMoved: 'Ficha movida',
+      checkerHit: '¡Ficha enviada a la barra!',
+    },
+    rules: {
+      title: 'Reglas del Backgammon',
+      objectiveTitle: 'Objetivo',
+      objective:
+        'El objetivo es mover las quince fichas a tu tablero interno y luego sacarlas del juego.',
+      movementTitle: 'Movimiento y Dados',
+      movement:
+        'Los jugadores alternan tiradas de dos dados. Las fichas avanzan según los valores obtenidos.',
+      hittingTitle: 'Comer y Entrar',
+      hitting:
+        'Una ficha sola en una casilla es vulnerable. Al caer en ella va a la barra central.',
+      bearingOffTitle: 'Sacar Fichas',
+      bearingOff:
+        'Cuando todas las fichas están en casa, puedes sacarlas del tablero con los dados adecuados.',
+    },
+  },
+};

@@ -15,7 +15,7 @@ test.describe('Home Page Games Grid Refinement', () => {
     // We are filtering to only show available (playable) games
     const gamesSection = page.locator('#games');
     const gameCards = gamesSection.locator('h3');
-    await expect(gameCards).toHaveCount(8);
+    await expect(gameCards).toHaveCount(9);
 
     await expect(gameCards.nth(0)).toHaveText(/Critical/i);
     await expect(gameCards.nth(1)).toHaveText(/Sea Battle/i);
@@ -25,6 +25,7 @@ test.describe('Home Page Games Grid Refinement', () => {
     await expect(gameCards.nth(5)).toHaveText(/Chess/i);
     await expect(gameCards.nth(6)).toHaveText(/Checkers/i);
     await expect(gameCards.nth(7)).toHaveText(/Cat Dash/i);
+    await expect(gameCards.nth(8)).toHaveText(/Backgammon/i);
   });
 
   test('should navigate slider via arrows', async ({ page }) => {

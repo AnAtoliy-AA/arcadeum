@@ -1,3 +1,5 @@
+import { themesEs } from './themes';
+
 export const esMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -29,7 +31,14 @@ export const esMessages = {
         joined: 'Unido',
         not_joined: 'No unido',
       },
+      aiVsAiLabel: 'Modalidad',
+      aiVsAi: 'IA contra IA',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Ver IA contra IA',
+    error: 'No se pudo iniciar — inténtalo de nuevo',
+    delayLabel: 'Retraso entre jugadas',
   },
   rooms: {
     status: {
@@ -271,6 +280,11 @@ export const esMessages = {
       joinButton: 'Unirse',
     },
   },
+  widgetError: {
+    title: 'Algo salió mal',
+    message: 'Este juego encontró un error inesperado. Inténtalo de nuevo.',
+    retry: 'Reintentar',
+  },
   inviteCode: {
     title: 'Unirse a un Juego Privado',
     label: 'Ingresa Código',
@@ -338,6 +352,16 @@ export const esMessages = {
     title: '💤 Estás inactivo',
     message: 'Mueve el ratón o pulsa una tecla para continuar',
   },
+  names: {
+    chess: 'Ajedrez',
+    checkers: 'Damas',
+    ticTacToe: 'Tres en Raya',
+    critical: 'Gatos Explosivos',
+    cascade: 'Cascade',
+    catDash: 'Cat Dash',
+    seaBattle: 'Batalla Naval',
+    glimworm: 'Glimworm',
+  },
   table: {
     controlPanel: {
       spectating: 'Espectador',
@@ -364,6 +388,16 @@ export const esMessages = {
       title: 'Derrota',
       message: 'Mala suerte esta vez. ¿Listo para otra ronda?',
     },
+    draw: {
+      title: 'Empate',
+      message: 'La partida terminó en empate.',
+    },
+    stats: {
+      duration: 'Duración',
+      turns: 'Turnos / Movimientos',
+      score: 'Puntuación',
+      accuracy: 'Precisión',
+    },
     rematch: {
       title: '¿Jugar de nuevo?',
       description:
@@ -378,6 +412,17 @@ export const esMessages = {
         decline: 'Rechazar',
         accept: 'Aceptar',
       },
+    },
+    forfeit: {
+      title: '00bfAbandonar la partida?',
+      message: '00bfSeguro que quieres abandonar? Tu oponente gana.',
+      confirm: 'Abandonar',
+      cancel: 'Cancelar',
+    },
+    idleTimer: {
+      countdown: 'Autoplay en {{seconds}}s',
+      active: 'Autoplay activo',
+      stop: 'Detener',
     },
   },
   undo: {
@@ -429,4 +474,10 @@ export const esMessages = {
       master: 'Maestro',
     },
   },
+  landing: {
+    previewLabel: 'Vista previa',
+    cycleHint: 'Haz clic para cambiar el tema',
+    cycleAriaLabel: 'Cambiar tema de la vista previa, actualmente {{variant}}',
+  },
+  themes: themesEs,
 };

@@ -1,8 +1,8 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { HandCard } from '@/widgets/CriticalGame/ui/hand/HandCard';
-import { handWithUids } from '@/widgets/CriticalGame/lib/combo';
+import { HandCard } from '@/widgets/CardGames/CriticalGame/ui/hand/HandCard';
+import { handWithUids } from '@/widgets/CardGames/CriticalGame/lib/combo';
 import s from './GameCreateView.module.scss';
 
 // Five-card fan, left→right. Outer two are dimmed/blurred ghosts, inner two

@@ -3,6 +3,7 @@ import {
   CRITICAL_THEMES,
   SEA_BATTLE_THEMES,
   TIC_TAC_TOE_THEMES,
+  GLIMWORM_THEMES,
   GAMES,
   themesFor,
   findCriticalTheme,
@@ -17,7 +18,7 @@ describe('themes registry', () => {
     expect(GAMES.sea_battle_v1.hasExpansion).toBe(false);
     expect(GAMES.sea_battle_v1.hasThemes).toBe(true);
     expect(GAMES.glimworm_v1.hasExpansion).toBe(false);
-    expect(GAMES.glimworm_v1.hasThemes).toBe(false);
+    expect(GAMES.glimworm_v1.hasThemes).toBe(true);
     expect(GAMES.tic_tac_toe_v1.hasExpansion).toBe(false);
     expect(GAMES.tic_tac_toe_v1.hasThemes).toBe(true);
   });
@@ -32,47 +33,32 @@ describe('themes registry', () => {
     expect(ids).toContain('high-altitude-hike');
   });
 
-  it('Sea Battle theme IDs match the canonical SeaBattleVariant slugs', () => {
+  it('Sea Battle theme IDs match the canonical SHARED_THEMES slugs', () => {
     const ids = SEA_BATTLE_THEMES.map((t) => t.id);
-    expect(ids).toEqual(
-      expect.arrayContaining([
-        'classic',
-        'modern',
-        'pixel',
-        'cartoon',
-        'cyber',
-        'vintage',
-        'nebula',
-        'forest',
-        'sunset',
-        'monochrome',
-      ]),
-    );
+    expect(ids).toContain('cyberpunk');
+    expect(ids).toContain('underwater');
+    expect(ids).toContain('zen');
+    expect(ids).toContain('steampunk');
   });
 
   it('themesFor returns the correct list per game', () => {
     expect(themesFor('critical_v1')).toBe(CRITICAL_THEMES);
     expect(themesFor('sea_battle_v1')).toBe(SEA_BATTLE_THEMES);
-    expect(themesFor('glimworm_v1')).toEqual([]);
+    expect(themesFor('glimworm_v1')).toBe(GLIMWORM_THEMES);
     expect(themesFor('tic_tac_toe_v1')).toBe(TIC_TAC_TOE_THEMES);
   });
 
-  it('Tic-Tac-Toe theme IDs match the widget variant slugs', () => {
+  it('Tic-Tac-Toe theme IDs match the unified SHARED_THEMES slugs', () => {
     const ids = TIC_TAC_TOE_THEMES.map((t) => t.id);
-    expect(ids).toEqual([
-      'classic',
-      'neon',
-      'paper',
-      'pixel',
-      'chalkboard',
-      'retro',
-    ]);
+    expect(ids).toContain('cyberpunk');
+    expect(ids).toContain('underwater');
+    expect(ids).toContain('zen');
   });
 
   it('findTicTacToeTheme falls back to the first entry when the id is unknown', () => {
     expect(findTicTacToeTheme('nope').id).toBe(TIC_TAC_TOE_THEMES[0].id);
     expect(findTicTacToeTheme(undefined).id).toBe(TIC_TAC_TOE_THEMES[0].id);
-    expect(findTicTacToeTheme('pixel').id).toBe('pixel');
+    expect(findTicTacToeTheme('cyberpunk').id).toBe('cyberpunk');
   });
 
   it('findCriticalTheme falls back to the first entry when the id is unknown', () => {
@@ -84,6 +70,6 @@ describe('themes registry', () => {
   it('findSeaBattleTheme falls back to the first entry when the id is unknown', () => {
     expect(findSeaBattleTheme('nope').id).toBe(SEA_BATTLE_THEMES[0].id);
     expect(findSeaBattleTheme(undefined).id).toBe(SEA_BATTLE_THEMES[0].id);
-    expect(findSeaBattleTheme('nebula').id).toBe('nebula');
+    expect(findSeaBattleTheme('cyberpunk').id).toBe('cyberpunk');
   });
 });

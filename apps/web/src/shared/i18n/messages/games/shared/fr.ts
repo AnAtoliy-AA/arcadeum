@@ -1,3 +1,5 @@
+import { themesFr } from './themes';
+
 export const frMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -29,7 +31,14 @@ export const frMessages = {
         joined: 'Rejoint',
         not_joined: 'Non rejoint',
       },
+      aiVsAiLabel: 'Mode',
+      aiVsAi: 'IA contre IA',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Regarder IA contre IA',
+    error: 'Impossible de démarrer — réessayez',
+    delayLabel: 'Délai entre coups',
   },
   rooms: {
     status: {
@@ -272,6 +281,12 @@ export const frMessages = {
       joinButton: 'Rejoindre',
     },
   },
+  widgetError: {
+    title: 'Quelque chose s’est mal passé',
+    message:
+      'Ce jeu a rencontré une erreur inattendue. Réessayez pour continuer.',
+    retry: 'Réessayer',
+  },
   inviteCode: {
     title: 'Rejoindre une Partie Privée',
     label: "Code d'invitation",
@@ -340,6 +355,16 @@ export const frMessages = {
     title: '💤 Vous êtes inactif',
     message: 'Bougez votre souris ou appuyez sur une touche pour reprendre',
   },
+  names: {
+    chess: 'Échecs',
+    checkers: 'Dames',
+    ticTacToe: 'Morpion',
+    critical: 'Chatons Explosifs',
+    cascade: 'Cascade',
+    catDash: 'Cat Dash',
+    seaBattle: 'Bataille Navale',
+    glimworm: 'Glimworm',
+  },
   table: {
     controlPanel: {
       spectating: 'Spectateur',
@@ -366,6 +391,16 @@ export const frMessages = {
       title: 'Défaite',
       message: 'Pas de chance cette fois. Prêt pour une autre manche ?',
     },
+    draw: {
+      title: 'Égalité',
+      message: 'La partie s’est terminée par une égalité.',
+    },
+    stats: {
+      duration: 'Durée',
+      turns: 'Tours / Coups',
+      score: 'Score',
+      accuracy: 'Précision',
+    },
     rematch: {
       title: 'Rejouer ?',
       description:
@@ -380,6 +415,17 @@ export const frMessages = {
         decline: 'Refuser',
         accept: 'Accepter',
       },
+    },
+    forfeit: {
+      title: 'Abandonner la partie?',
+      message: 'Voulez-vous vraiment abandonner? Votre adversaire gagne.',
+      confirm: 'Abandonner',
+      cancel: 'Annuler',
+    },
+    idleTimer: {
+      countdown: 'Autoplay dans {{seconds}}s',
+      active: 'Autoplay actif',
+      stop: 'Arr00eater',
     },
   },
   undo: {
@@ -431,4 +477,10 @@ export const frMessages = {
       master: 'Maître',
     },
   },
+  landing: {
+    previewLabel: 'Aperçu en direct',
+    cycleHint: 'Cliquez pour changer le thème',
+    cycleAriaLabel: 'Changer le thème de l’aperçu, actuellement {{variant}}',
+  },
+  themes: themesFr,
 };

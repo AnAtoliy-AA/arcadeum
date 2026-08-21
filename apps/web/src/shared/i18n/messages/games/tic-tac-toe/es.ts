@@ -66,8 +66,7 @@ export const esMessages = {
       },
       themes: {
         title: 'Elige el ambiente',
-        subtitle:
-          'Cada variante reestiliza el tablero, las marcas y la rejilla.',
+        subtitle: 'Cada tema rediseña el tablero, las marcas y la rejilla.',
       },
       faq: {
         sizes: {

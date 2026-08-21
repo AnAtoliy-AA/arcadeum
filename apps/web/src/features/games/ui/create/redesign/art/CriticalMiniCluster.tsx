@@ -3,8 +3,8 @@
 import {
   CardImage,
   hasArtFor,
-} from '@/widgets/CriticalGame/ui/styles/card-image';
-import type { CriticalCard } from '@/widgets/CriticalGame/types';
+} from '@/widgets/CardGames/CriticalGame/ui/styles/card-image';
+import type { CriticalCard } from '@/widgets/CardGames/CriticalGame/types';
 import { useSpriteLoaded } from '../useSpriteLoaded';
 import { CriticalCardPoster } from './CriticalCardPoster';
 import { findCriticalTheme } from '../data/themes';

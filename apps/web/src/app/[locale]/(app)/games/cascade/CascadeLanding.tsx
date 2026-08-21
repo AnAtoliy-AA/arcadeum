@@ -3,8 +3,9 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { CascadeCardsVisual } from './CascadeCardsVisual';
+import { CascadeLandingPreview } from './CascadeLandingPreview';
 
 type CscMessages = CascadeMessages['cascade_v1'];
 type Landing = CscMessages['landing'];
@@ -33,7 +34,7 @@ interface Props {
 
 export default function CascadeLanding({
   landing,
-  variants,
+  variants: _variants,
   rules,
   gameId,
   createRoomHref,
@@ -117,23 +118,10 @@ export default function CascadeLanding({
     };
   });
 
-  const themeKeys = [
-    'classic',
-    'neon',
-    'cosmic',
-    'arcane',
-    'cyberpunk',
-    'elemental',
-    'tropical',
-    'steampunk',
-  ] as const;
-  const themesList = variants
-    ? themeKeys.map((k) => ({
-        id: k,
-        name: variants[k]?.name ?? k,
-        description: variants[k]?.description,
-      }))
-    : [];
+  const themeMessages = translatedGames?.themes as
+    | Record<string, { name?: string; description?: string } | undefined>
+    | undefined;
+  const themesList = getTranslatedSharedThemes(themeMessages);
 
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
@@ -169,7 +157,7 @@ export default function CascadeLanding({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <CascadeCardsVisual />,
+        heroVisual: <CascadeLandingPreview />,
       }}
       highlights={{
         title: 'Action-Packed Card Shedding',

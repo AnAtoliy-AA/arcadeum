@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@arcadeum/ui';
 import type { ButtonProps } from '@arcadeum/ui';
@@ -16,18 +16,18 @@ interface Props {
   label: string;
   mode: Mode;
   variant?: string;
+  theme?: string;
   errorLabel?: string;
   buttonVariant?: ButtonProps['variant'];
   disabled?: boolean;
 }
-
-const ERROR_RESET_MS = 3500;
 
 export function QuickplayButton({
   gameId,
   label,
   mode,
   variant,
+  theme,
   errorLabel,
   buttonVariant = 'primary',
   disabled = false,
@@ -38,12 +38,6 @@ export function QuickplayButton({
   const [loading, setLoading] = useState(false);
   const [errored, setErrored] = useState(false);
   const { joinQueue } = useMatchmaking();
-
-  useEffect(() => {
-    if (!errored) return undefined;
-    const t = setTimeout(() => setErrored(false), ERROR_RESET_MS);
-    return () => clearTimeout(t);
-  }, [errored]);
 
   const handleClick = async () => {
     if (disabled) return;
@@ -57,6 +51,7 @@ export function QuickplayButton({
       const options = {
         token: snapshot.accessToken || undefined,
         variant,
+        theme,
       };
       const { room } = await gamesApi.quickplay(gameId, options);
       router.push(routes.gameRoom(room.id));

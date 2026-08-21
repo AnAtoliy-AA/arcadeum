@@ -1,4 +1,5 @@
 import { GetRoomsResponse } from '@/features/games/api';
+import { getVisibleGameCategories } from '@/features/games/registry';
 
 export interface GamesClientProps {
   initialData: GetRoomsResponse | null;
@@ -42,13 +43,27 @@ export function serializeStatusFilterToUrl(
 export type GamesParticipationFilter =
   'all' | 'hosting' | 'joined' | 'not_joined';
 
+export type GamesAiVsAiFilter = 'all' | 'ai_vs_ai';
+
+export function parseAiVsAiFilterFromUrl(
+  raw: string | null,
+): GamesAiVsAiFilter {
+  return raw === 'ai_vs_ai' ? 'ai_vs_ai' : 'all';
+}
+
+export function serializeAiVsAiFilterToUrl(
+  filter: GamesAiVsAiFilter,
+): string | undefined {
+  return filter === 'ai_vs_ai' ? 'ai_vs_ai' : undefined;
+}
+
 export type GamesCategoryFilter = string;
 
-export const GAME_CATEGORIES = [
-  'Card Game',
-  'Board Game',
-  'Strategy',
-  'Action',
-] as const;
+/**
+ * Category tabs for the games lounge, derived from the game registry so a
+ * new game's category shows up automatically once it is added to
+ * `gameMetadata`.
+ */
+export const GAME_CATEGORIES = getVisibleGameCategories() as readonly string[];
 
 export type GamesViewMode = 'grid' | 'list';

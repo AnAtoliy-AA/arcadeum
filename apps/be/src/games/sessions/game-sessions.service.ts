@@ -25,6 +25,7 @@ export interface GameSessionSummary {
   engine: string;
   status: GameSessionStatus;
   state: Record<string, unknown>;
+  options?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,6 +35,7 @@ export interface CreateSessionOptions {
   gameId: string;
   playerIds: string[];
   config?: Record<string, unknown>;
+  options?: Record<string, unknown>;
 }
 
 export interface UpdateSessionStateOptions {
@@ -85,7 +87,13 @@ export class GameSessionsService {
   async createSession(
     options: CreateSessionOptions,
   ): Promise<GameSessionSummary> {
-    const { roomId, gameId, playerIds, config } = options;
+    const {
+      roomId,
+      gameId,
+      playerIds,
+      config,
+      options: sessionOptions,
+    } = options;
     const engine = this.engineRegistry.getEngine(gameId);
     const initialState = engine.initializeState(playerIds, config);
     const session = await this.ociSessionModel.create({
@@ -93,6 +101,7 @@ export class GameSessionsService {
       gameId,
       engine: gameId, // Engine identifier
       state: initialState as unknown as Record<string, unknown>,
+      options: sessionOptions,
       status: 'active',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -475,6 +484,7 @@ export class GameSessionsService {
       engine: session.engine,
       status: session.status,
       state: session.state,
+      options: session.options,
       createdAt: session.createdAt.toISOString(),
       updatedAt: session.updatedAt.toISOString(),
     };

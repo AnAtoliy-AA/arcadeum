@@ -1,3 +1,5 @@
+import { themesEn } from './themes';
+
 export const enMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -28,7 +30,14 @@ export const enMessages = {
         joined: 'Joined',
         not_joined: 'Not Joined',
       },
+      aiVsAiLabel: 'Mode',
+      aiVsAi: 'AI vs AI',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Watch AI vs AI',
+    error: "Couldn't start — try again",
+    delayLabel: 'Move delay',
   },
   rooms: {
     status: {
@@ -264,6 +273,11 @@ export const enMessages = {
       joinButton: 'Join Room',
     },
   },
+  widgetError: {
+    title: 'Something went wrong',
+    message: 'This game hit an unexpected error. Try again to keep playing.',
+    retry: 'Try again',
+  },
   inviteCode: {
     title: 'Join a Private Game',
     label: 'Enter Invite Code',
@@ -329,6 +343,16 @@ export const enMessages = {
     title: '💤 You are idle',
     message: 'Move your mouse or press a key to resume',
   },
+  names: {
+    chess: 'Chess',
+    checkers: 'Checkers',
+    ticTacToe: 'Tic-Tac-Toe',
+    critical: 'Exploding Cats',
+    cascade: 'Cascade',
+    catDash: 'Cat Dash',
+    seaBattle: 'Sea Battle',
+    glimworm: 'Glimworm',
+  },
   table: {
     controlPanel: {
       spectating: 'Spectating',
@@ -355,6 +379,16 @@ export const enMessages = {
       title: 'Defeat',
       message: 'Tough luck this time. Ready for another round?',
     },
+    draw: {
+      title: 'Draw',
+      message: 'The match ended in a tie.',
+    },
+    stats: {
+      duration: 'Duration',
+      turns: 'Turns / Moves',
+      score: 'Score',
+      accuracy: 'Accuracy',
+    },
     rematch: {
       title: 'Play Again?',
       description: 'Select the players you want to invite for a rematch.',
@@ -368,6 +402,17 @@ export const enMessages = {
         decline: 'Decline',
         accept: 'Accept',
       },
+    },
+    forfeit: {
+      title: 'Forfeit game?',
+      message: 'Are you sure you want to forfeit? Your opponent wins.',
+      confirm: 'Forfeit',
+      cancel: 'Cancel',
+    },
+    idleTimer: {
+      countdown: 'Autoplay in {{seconds}}s',
+      active: 'Autoplay Active',
+      stop: 'Stop',
     },
   },
   undo: {
@@ -419,4 +464,10 @@ export const enMessages = {
       master: 'Master',
     },
   },
+  landing: {
+    previewLabel: 'Live preview',
+    cycleHint: 'Click to change theme',
+    cycleAriaLabel: 'Cycle theme preview, currently {{variant}}',
+  },
+  themes: themesEn,
 };

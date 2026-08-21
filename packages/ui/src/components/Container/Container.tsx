@@ -1,6 +1,5 @@
 'use client';
 
-import type { ComponentProps } from 'react';
 import { cx } from '../../utils/cx';
 
 export type ContainerSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -12,7 +11,9 @@ export type ContainerProps = {
   style?: React.CSSProperties;
   id?: string;
   'data-testid'?: string;
-} & React.HTMLAttributes<HTMLDivElement>;
+  'data-current-locale'?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+};
 
 const sizeClasses: Record<ContainerSize, string> = {
   sm: 'max-w-[600px]',
@@ -26,13 +27,26 @@ export function Container({
   size = 'lg',
   className,
   style,
-  ...rest
+  children,
+  id,
+  'data-testid': dataTestId,
+  'data-current-locale': dataCurrentLocale,
+  onClick,
 }: ContainerProps) {
   return (
     <div
-      className={cx('mx-auto w-full gap-4', sizeClasses[size], className)}
+      id={id}
+      data-testid={dataTestId}
+      data-current-locale={dataCurrentLocale}
+      onClick={onClick}
+      className={cx(
+        'mx-auto w-full px-4 sm:px-6 lg:px-8',
+        sizeClasses[size],
+        className,
+      )}
       style={style}
-      {...rest}
-    />
+    >
+      {children}
+    </div>
   );
 }

@@ -9,19 +9,12 @@ import {
   mockGameSocket,
 } from './fixtures/test-utils';
 import { routes } from '../src/shared/config/routes';
+import { SHARED_THEMES } from '../src/features/games/lib/shared-themes';
+import { getTheme } from '../src/widgets/StrategyGames/SeaBattleGame/lib/theme';
 
-const VARIANTS = [
-  'classic',
-  'modern',
-  'pixel',
-  'cartoon',
-  'cyber',
-  'vintage',
-  'nebula',
-  'forest',
-  'sunset',
-  'monochrome',
-];
+const VARIANTS = SHARED_THEMES.filter((t) => t.id !== 'random').map(
+  (t) => t.id,
+);
 
 test.describe('Sea Battle Color Visibility', () => {
   test.beforeEach(async ({ page }) => {
@@ -32,12 +25,12 @@ test.describe('Sea Battle Color Visibility', () => {
     test(`should have clearly visible hover colors in ${variant} theme`, async ({
       page,
     }) => {
-      // Hover is a desktop/mouse concept — skip on mobile/tablet viewports
       const viewport = page.viewportSize();
       if (viewport && viewport.width < 1024) {
         return;
       }
 
+      const expectedTheme = getTheme(variant);
       const roomId = MOCK_OBJECT_ID;
       const userId = '507f191e810c19729de860ea';
 
@@ -92,49 +85,28 @@ test.describe('Sea Battle Color Visibility', () => {
       await navigateTo(page, routes.gameRoom(roomId));
       await waitForRoomReady(page);
 
-      // Verify we are in placement phase
       await expect(page.locator('body').first()).toContainText(
         /place your ships/i,
         {},
       );
 
-      // Find a board cell and read its initial (non-highlighted) background
       const cell = page.locator('[data-row="1"][data-col="1"]').first();
       await expect(cell).toBeVisible({});
+      await expect(cell).toHaveCSS('background-color', expectedTheme.cellEmpty);
 
-      const initialBg = await cell.evaluate(
-        (el) => window.getComputedStyle(el).backgroundColor,
-      );
-
-      // Select a ship to enable placement highlights (from the palette)
       const shipItem = page.getByTestId('ship-palette-item').first();
       await expect(shipItem).toBeVisible({});
       await shipItem.scrollIntoViewIfNeeded();
       await shipItem.dispatchEvent('click');
 
-      // Hover the cell — cell.hover() reliably dispatches pointer/mouse events
       await cell.scrollIntoViewIfNeeded();
       await cell.dispatchEvent('pointermove', {
         bubbles: true,
         cancelable: true,
       });
 
-      // Wait for the data-highlighted attribute to reflect React state update
       await expect(cell).toHaveAttribute('data-highlighted', 'true');
-
-      // Read the highlighted background for the final assertion
-      const highlightedBg = await cell.evaluate(
-        (el) => window.getComputedStyle(el).backgroundColor,
-      );
-
-      // They should be different (allow for small differences due to color mixing)
-      expect(
-        initialBg,
-        `Initial color should be different from highlighted color in ${variant} theme`,
-      ).not.toBe(highlightedBg);
-
-      // Should not be fully transparent
-      expect(highlightedBg).not.toContain('rgba(0, 0, 0, 0)');
+      await expect(cell).toHaveCSS('background-color', expectedTheme.cellHover);
     });
   }
 });

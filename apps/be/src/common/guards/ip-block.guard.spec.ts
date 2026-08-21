@@ -42,14 +42,14 @@ describe('IpBlockService', () => {
   });
 
   it('should block after reaching FAILURE_THRESHOLD via record429', async () => {
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 100; i++) {
       await service.record429('1.2.3.4');
     }
     expect(await service.isBlocked('1.2.3.4')).toBe(true);
   });
 
   it('should not block before reaching FAILURE_THRESHOLD', async () => {
-    for (let i = 0; i < 49; i++) {
+    for (let i = 0; i < 99; i++) {
       await service.record429('1.2.3.4');
     }
     expect(await service.isBlocked('1.2.3.4')).toBe(false);
@@ -73,7 +73,7 @@ describe('IpBlockService', () => {
   });
 
   it('should handle concurrent record429 calls atomically', async () => {
-    const promises = Array.from({ length: 50 }, () =>
+    const promises = Array.from({ length: 100 }, () =>
       service.record429('1.2.3.4'),
     );
     await Promise.all(promises);

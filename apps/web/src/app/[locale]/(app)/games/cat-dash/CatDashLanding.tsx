@@ -3,8 +3,9 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { CatDashVisual } from './CatDashVisual';
+import { CatDashLandingPreview } from './CatDashLandingPreview';
 
 type CdMessages = CatDashMessages['cat_dash_v1'];
 type Landing = CdMessages['landing'];
@@ -34,7 +35,7 @@ interface CatDashLandingProps {
 
 export default function CatDashLanding({
   landing,
-  variants,
+  variants: _variants,
   rules,
   gameId,
   createRoomHref,
@@ -117,14 +118,10 @@ export default function CatDashLanding({
     };
   });
 
-  const themeKeys = ['neon', 'village', 'space', 'nature'] as const;
-  const themesList = variants
-    ? themeKeys.map((k) => ({
-        id: k,
-        name: variants[k]?.name ?? k,
-        description: variants[k]?.description,
-      }))
-    : [];
+  const themeMessages = translatedGames?.themes as
+    | Record<string, { name?: string; description?: string } | undefined>
+    | undefined;
+  const themesList = getTranslatedSharedThemes(themeMessages);
 
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
@@ -155,7 +152,7 @@ export default function CatDashLanding({
         createRoomLabel: landing.hero.createRoom,
         roomsHref,
         createRoomHref,
-        heroVisual: <CatDashVisual />,
+        heroVisual: <CatDashLandingPreview />,
       }}
       highlights={{
         title: 'Why You’ll Love Cat Dash',

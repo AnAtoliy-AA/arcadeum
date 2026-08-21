@@ -8,6 +8,8 @@ import {
   ModalHeader,
   ModalTitle,
   ModalBody,
+  FilterChip,
+  Input,
 } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
@@ -16,62 +18,39 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import dynamic from 'next/dynamic';
-import { gameMetadata, gameLoaders } from '@/features/games/registry';
-import { GameArt } from '@/features/games/ui/create/redesign/art/GameArt';
-import { CriticalMiniCluster } from '@/features/games/ui/create/redesign/art/CriticalMiniCluster';
-import { SeaBattleBoardPoster } from '@/features/games/ui/create/redesign/art/SeaBattleBoardPoster';
-import {
-  CRITICAL_THEMES,
-  SEA_BATTLE_THEMES,
-  findSeaBattleTheme,
-  type GameId,
-} from '@/features/games/ui/create/redesign/data/themes';
-
-const SeaBattleRealPreview = dynamic(
-  () => import('@/features/games/ui/create/redesign/SeaBattleRealPreview'),
-  { ssr: false },
-);
+import { featuredGames } from '@/app/[locale]/home/data/games';
+import { GamePickerCard, type GamePickerItem } from './GamePickerCard';
 
 interface GamePickerModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const ALL_AI_GAMES = Object.values(gameMetadata).filter(
-  (g) => g.supportsAI && g.slug in gameLoaders,
-);
+type GameCategoryKey = 'all' | 'board' | 'card' | 'casual';
 
-const CATEGORY_KEY: Record<string, string> = {
-  'Card Game': 'games.shared.category.cardGame',
-  'Board Game': 'games.shared.category.boardGame',
-  Action: 'games.shared.category.action',
-  Strategy: 'games.shared.category.strategy',
-  Race: 'games.shared.category.race',
-};
+const CATEGORIES: Array<{
+  key: GameCategoryKey;
+  label: string;
+  icon: string;
+}> = [
+  { key: 'all', label: 'All', icon: '🎮' },
+  { key: 'board', label: 'Board', icon: '♟️' },
+  { key: 'card', label: 'Cards', icon: '🃏' },
+  { key: 'casual', label: 'Action', icon: '⚡' },
+];
 
-function GameTilePreview({ gameId }: { gameId: GameId }) {
-  if (gameId === 'critical_v1') {
-    return (
-      <CriticalMiniCluster themeId={CRITICAL_THEMES[0].id} cardWidth={48} />
-    );
+function resolveCategory(
+  type: string,
+  genre: string,
+): 'board' | 'card' | 'casual' {
+  if (type === 'card') return 'card';
+  if (
+    genre.toLowerCase().includes('race') ||
+    genre.toLowerCase().includes('arcade')
+  ) {
+    return 'casual';
   }
-  if (gameId === 'sea_battle_v1') {
-    const theme = findSeaBattleTheme(SEA_BATTLE_THEMES[0].id);
-    return (
-      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-        <SeaBattleBoardPoster theme={theme} size="sm" />
-        <div style={{ position: 'absolute', inset: 0 }}>
-          <SeaBattleRealPreview
-            themeId={theme.id}
-            cellSize={12}
-            background={theme.palette.bg}
-          />
-        </div>
-      </div>
-    );
-  }
-  return <GameArt gameId={gameId} size="sm" />;
+  return 'board';
 }
 
 export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
@@ -80,7 +59,9 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const [loadingGame, setLoadingGame] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] =
+    useState<GameCategoryKey>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [comingSoonIds, setComingSoonIds] = useState<Set<string> | null>(null);
 
   useEffect(() => {
@@ -97,23 +78,55 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
     };
   }, [open]);
 
-  const games = useMemo(
-    () => (comingSoonIds === null ? [] : ALL_AI_GAMES),
-    [comingSoonIds],
-  );
+  const games: GamePickerItem[] = useMemo(() => {
+    return featuredGames.map((g) => {
+      const isComingSoon = comingSoonIds?.has(g.id) ?? false;
+      return {
+        id: g.id,
+        slug: g.id,
+        name: t(g.nameKey as TranslationKey),
+        description: t(g.descriptionKey as TranslationKey),
+        genre: g.genre,
+        pace: g.pace,
+        category: resolveCategory(g.type, g.genre),
+        players: g.players,
+        duration: g.duration,
+        isPlayable: g.isPlayable && !isComingSoon,
+        isDemo: g.isDemo,
+      };
+    });
+  }, [t, comingSoonIds]);
 
-  const categories = useMemo(
-    () => ['All', ...Array.from(new Set(games.map((g) => g.category)))],
-    [games],
-  );
+  const categoryCounts = useMemo(() => {
+    const counts: Record<GameCategoryKey, number> = {
+      all: games.length,
+      board: 0,
+      card: 0,
+      casual: 0,
+    };
+    for (const g of games) {
+      if (counts[g.category] !== undefined) {
+        counts[g.category]++;
+      }
+    }
+    return counts;
+  }, [games]);
 
-  const filteredGames = useMemo(
-    () =>
-      activeCategory === 'All'
-        ? games
-        : games.filter((g) => g.category === activeCategory),
-    [activeCategory, games],
-  );
+  const filteredGames = useMemo(() => {
+    return games.filter((game) => {
+      const matchesCategory =
+        selectedCategory === 'all' || game.category === selectedCategory;
+      const query = searchQuery.trim().toLowerCase();
+      const matchesSearch =
+        query === '' ||
+        game.name.toLowerCase().includes(query) ||
+        game.genre.toLowerCase().includes(query) ||
+        (game.pace && game.pace.toLowerCase().includes(query)) ||
+        game.description.toLowerCase().includes(query);
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [games, selectedCategory, searchQuery]);
 
   const handleSelectGame = useCallback(
     async (gameId: string) => {
@@ -134,143 +147,78 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalContent maxWidth={720}>
+      <ModalContent maxWidth={960} data-testid="game-picker-modal">
         <ModalHeader onClose={onClose}>
           <ModalTitle data-testid="game-picker-title">
             {t('games.gamePicker.title')}
           </ModalTitle>
         </ModalHeader>
-        <ModalBody>
-          <div
-            style={{
-              display: 'flex',
-              gap: '8px',
-              marginBottom: '20px',
-              flexWrap: 'wrap',
-            }}
-          >
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                type="button"
-                style={{
-                  padding: '6px 16px',
-                  borderRadius: '999px',
-                  border: '1px solid',
-                  borderColor:
-                    activeCategory === cat
-                      ? 'rgba(56, 189, 248, 0.5)'
-                      : 'rgba(255,255,255,0.1)',
-                  background:
-                    activeCategory === cat
-                      ? 'rgba(56, 189, 248, 0.15)'
-                      : 'transparent',
-                  color: 'inherit',
-                  cursor: 'pointer',
-                  fontSize: 13,
-                  fontWeight: activeCategory === cat ? 600 : 400,
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                {cat === 'All'
-                  ? t('games.gamePicker.allCategory')
-                  : t((CATEGORY_KEY[cat] ?? cat) as TranslationKey)}
-              </button>
-            ))}
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-              gap: '12px',
-              maxHeight: '60vh',
-              overflowY: 'auto',
-              paddingRight: '4px',
-            }}
-          >
-            {filteredGames.map((game) => {
-              const isLoading = loadingGame === game.slug;
-              const isComingSoon = comingSoonIds?.has(game.slug) ?? false;
-              return (
-                <button
-                  key={game.slug}
-                  onClick={() => !isComingSoon && handleSelectGame(game.slug)}
-                  disabled={loadingGame !== null || isComingSoon}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0',
-                    borderRadius: '14px',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    background: isLoading
-                      ? 'rgba(255,255,255,0.06)'
-                      : 'rgba(255,255,255,0.03)',
-                    cursor: isComingSoon
-                      ? 'not-allowed'
-                      : loadingGame
-                        ? 'not-allowed'
-                        : 'pointer',
-                    opacity: isComingSoon
-                      ? 0.5
-                      : loadingGame && !isLoading
-                        ? 0.5
-                        : 1,
-                    transition: 'all 0.2s ease',
-                    color: 'inherit',
-                    textAlign: 'left',
-                    overflow: 'hidden',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!loadingGame) {
-                      e.currentTarget.style.background =
-                        'rgba(255,255,255,0.08)';
-                      e.currentTarget.style.borderColor =
-                        'rgba(255,255,255,0.15)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                    e.currentTarget.style.borderColor =
-                      'rgba(255,255,255,0.08)';
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '100%',
-                      aspectRatio: '16 / 11',
-                      borderRadius: 10,
-                      overflow: 'hidden',
-                      background: 'rgba(255,255,255,0.05)',
-                    }}
-                  >
-                    <GameTilePreview gameId={game.slug as GameId} />
-                  </div>
-                  <div style={{ padding: '10px 12px 12px' }}>
-                    <div style={{ fontWeight: 600, fontSize: 14 }}>
-                      {isComingSoon
-                        ? t('games.create.comingSoon')
-                        : isLoading
-                          ? t('games.gamePicker.starting')
-                          : game.name}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 11,
-                        opacity: 0.5,
-                        marginTop: 2,
-                      }}
+        <ModalBody data-testid="game-picker-body">
+          <div className="box-border flex flex-col gap-5">
+            <div className="box-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[var(--borderColor)]">
+              <div className="box-border flex flex-wrap items-center gap-2">
+                {CATEGORIES.map((cat) => {
+                  const isSelected = selectedCategory === cat.key;
+                  const count = categoryCounts[cat.key] ?? 0;
+                  return (
+                    <FilterChip
+                      key={cat.key}
+                      active={isSelected}
+                      onClick={() => setSelectedCategory(cat.key)}
+                      data-testid={`game-picker-category-${cat.key}`}
                     >
-                      {t(
-                        (CATEGORY_KEY[game.category] ??
-                          game.category) as TranslationKey,
-                      )}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+                      <span className="mr-1.5">{cat.icon}</span>
+                      <span>
+                        {cat.key === 'all'
+                          ? t('games.gamePicker.allCategory')
+                          : cat.label}
+                      </span>
+                      <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-white/10 opacity-80">
+                        {count}
+                      </span>
+                    </FilterChip>
+                  );
+                })}
+              </div>
+
+              <div className="box-border relative w-full sm:w-64">
+                <Input
+                  size="sm"
+                  type="search"
+                  placeholder="Search games..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  fullWidth
+                  aria-label="Search games"
+                  data-testid="game-picker-search"
+                />
+              </div>
+            </div>
+
+            {filteredGames.length > 0 ? (
+              <div className="box-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredGames.map((game) => (
+                  <GamePickerCard
+                    key={game.id}
+                    game={game}
+                    isLoading={loadingGame === game.slug}
+                    disabled={loadingGame !== null && loadingGame !== game.slug}
+                    onSelect={() => handleSelectGame(game.slug)}
+                    startingLabel={t('games.gamePicker.starting')}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="box-border flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)]">
+                <span className="text-4xl mb-3">🔍</span>
+                <h3 className="box-border m-0 text-base font-bold text-white">
+                  No games found
+                </h3>
+                <p className="box-border m-0 text-xs text-white/70 mt-1 max-w-xs">
+                  Try adjusting your search query or choosing another category.
+                </p>
+              </div>
+            )}
           </div>
         </ModalBody>
       </ModalContent>

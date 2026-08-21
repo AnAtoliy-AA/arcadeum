@@ -3,8 +3,9 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { TicTacToeBoardVisual } from './TicTacToeBoardVisual';
+import { TicTacToeLandingPreview } from './TicTacToeLandingPreview';
 
 type TttMessages = TicTacToeMessages['tic_tac_toe_v1'];
 type Landing = TttMessages['landing'];
@@ -34,7 +35,7 @@ interface Props {
 
 export default function TicTacToeLanding({
   landing,
-  variants,
+  variants: _variants,
   rules,
   gameId,
   createRoomHref,
@@ -115,14 +116,10 @@ export default function TicTacToeLanding({
     };
   });
 
-  const themeKeys = ['classic', 'neon', 'chalkboard', 'retro'] as const;
-  const themesList = variants
-    ? themeKeys.map((k) => ({
-        id: k,
-        name: variants[k]?.name ?? k,
-        description: variants[k]?.description,
-      }))
-    : [];
+  const themeMessages = translatedGames?.themes as
+    | Record<string, { name?: string; description?: string } | undefined>
+    | undefined;
+  const themesList = getTranslatedSharedThemes(themeMessages);
 
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
@@ -158,7 +155,7 @@ export default function TicTacToeLanding({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <TicTacToeBoardVisual />,
+        heroVisual: <TicTacToeLandingPreview />,
       }}
       highlights={{
         title: 'Simple Yet Infinitely Fun',

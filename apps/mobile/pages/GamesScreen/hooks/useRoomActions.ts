@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
-import type { Router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useTranslation } from '@/lib/i18n';
 import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
 import {
@@ -28,7 +28,7 @@ type UseRoomActionsParams = {
   setJoiningRoomId: (id: string | null) => void;
   setInvitePrompt: (state: InvitePromptState) => void;
   updateRoomList: (room: GameRoomSummary) => void;
-  router: Router;
+  router: ReturnType<typeof useRouter>;
 };
 
 export function useRoomActions({

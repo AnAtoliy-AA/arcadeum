@@ -41,6 +41,8 @@ export interface GameLandingHeroProps {
   roomsHref: string;
   createRoomHref?: string;
   heroVisual?: ReactNode;
+  /** Initial shared theme id preselected on the hero preview + play CTAs. */
+  initialTheme?: string;
   /** Game disabled by admin — quickplay buttons are rendered disabled. */
   comingSoon?: boolean;
 }

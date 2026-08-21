@@ -41,12 +41,13 @@ export interface FeaturedGame {
 }
 
 import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
-import { SEA_BATTLE_VARIANTS } from '@/widgets/SeaBattleGame/lib/constants';
+import { SEA_BATTLE_VARIANTS } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
-import { TIC_TAC_TOE_VARIANTS } from '@/widgets/TicTacToeGame/lib/constants';
-import { CASCADE_VARIANTS } from '@/widgets/CascadeGame/lib/constants';
-import { CHESS_VARIANTS } from '@/widgets/ChessGame/lib/constants';
-import { CHECKERS_VARIANTS } from '@/widgets/CheckersGame/lib/constants';
+import { TIC_TAC_TOE_VARIANTS } from '@/widgets/BoardGames/TicTacToeGame/lib/constants';
+import { CASCADE_VARIANTS } from '@/widgets/CardGames/CascadeGame/lib/constants';
+import { CHESS_VARIANTS } from '@/widgets/BoardGames/ChessGame/lib/constants';
+import { CHECKERS_VARIANTS } from '@/widgets/BoardGames/CheckersGame/lib/constants';
+import { CAT_DASH_VARIANTS } from '@/widgets/ActionGames/CatDashGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -219,23 +220,9 @@ export const featuredGames: FeaturedGame[] = [
     type: 'board',
     rulesPrefix: 'games.cat_dash_v1.rules',
     rulesKeys: ['objective', 'howToPlay', 'abilities'],
-    variants: [
-      {
-        id: 'neon',
-        nameKey: 'games.cat_dash_v1.variants.neon.name' as TranslationKey,
-      },
-      {
-        id: 'village',
-        nameKey: 'games.cat_dash_v1.variants.village.name' as TranslationKey,
-      },
-      {
-        id: 'space',
-        nameKey: 'games.cat_dash_v1.variants.space.name' as TranslationKey,
-      },
-      {
-        id: 'nature',
-        nameKey: 'games.cat_dash_v1.variants.nature.name' as TranslationKey,
-      },
-    ],
+    variants: CAT_DASH_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.name as TranslationKey,
+    })),
   },
 ];

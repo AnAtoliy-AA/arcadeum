@@ -1,3 +1,5 @@
+import { themesBy } from './themes';
+
 export const byMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -28,7 +30,14 @@ export const byMessages = {
         joined: 'Я ўдзельнік',
         not_joined: 'Не ўдзельнічаю',
       },
+      aiVsAiLabel: 'Рэжым',
+      aiVsAi: 'ШІ супраць ШІ',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Глядзець ШІ супраць ШІ',
+    error: 'Не атрымалася запусціць — паспрабуйце яшчэ раз',
+    delayLabel: 'Затрымка ходу',
   },
   rooms: {
     status: {
@@ -265,6 +274,11 @@ export const byMessages = {
       joinButton: 'Увайсці ў зал',
     },
   },
+  widgetError: {
+    title: 'Нешта пайшло не так',
+    message: 'У гульні адбылася нечаканая памылка. Паспрабуйце яшчэ раз.',
+    retry: 'Паўтарыць',
+  },
   inviteCode: {
     title: 'Увайсці ў прыватную гульню',
     label: 'Увядзіце код запрашэння',
@@ -330,6 +344,16 @@ export const byMessages = {
     title: '💤 Вы бяздзейнічаеце',
     message: 'Рухайце мышшу альбо націсніце любую клавішу для вяртання',
   },
+  names: {
+    chess: 'Шахматы',
+    checkers: 'Шашкі',
+    ticTacToe: 'Крыжыкі-Нулікі',
+    critical: 'Выбуховыя кацяняты',
+    cascade: 'Каскад',
+    catDash: 'Кот Рывок',
+    seaBattle: 'Марскі бой',
+    glimworm: 'Глімворм',
+  },
   table: {
     controlPanel: {
       spectating: 'Назіранне',
@@ -356,6 +380,16 @@ export const byMessages = {
       title: 'Параза',
       message: 'Гэтым разам не пашанцавала. Гатовыя да наступнага раўнда?',
     },
+    draw: {
+      title: 'Нічыя',
+      message: 'Матч скончыўся ўнічыю.',
+    },
+    stats: {
+      duration: 'Трываласць',
+      turns: 'Хады',
+      score: 'Лік',
+      accuracy: 'Дакладнасць',
+    },
     rematch: {
       title: 'Згуляць яшчэ?',
       description: 'Выберыце гульцоў, якіх вы хочаце запрасіць на рэванш.',
@@ -369,6 +403,19 @@ export const byMessages = {
         decline: 'Адхіліць',
         accept: 'Прыняць',
       },
+    },
+    forfeit: {
+      title: '041704340430044604460430?',
+      message:
+        '0426044b 045e043f0435045e043d0435043d044b, 04480442043e 0445043e044704300448 043704340430044604460430? 0410043f0430043d0435043d0442 043f043504400430043c043e04360430.',
+      confirm: '041704340430044604460430',
+      cancel: '04100434043c0435043d0430',
+    },
+    idleTimer: {
+      countdown:
+        '0410045e04420430043f043b044d0439 043f044004300437 {{seconds}}0441',
+      active: '0410045e04420430043f043b044d0439 0430043a0442044b045e043d044b',
+      stop: '04210442043e043f',
     },
   },
   undo: {
@@ -420,4 +467,10 @@ export const byMessages = {
       master: 'Майстар',
     },
   },
+  landing: {
+    previewLabel: 'Жывое прадпрагляд',
+    cycleHint: 'Націсніце, каб змяніць тэму',
+    cycleAriaLabel: 'Змяніць тэму прадпрагляду, зараз {{variant}}',
+  },
+  themes: themesBy,
 };

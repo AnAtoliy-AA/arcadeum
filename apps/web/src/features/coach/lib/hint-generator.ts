@@ -6,7 +6,7 @@ import {
   type ChessPiece,
   type PieceColor,
   type PieceType,
-} from '@/widgets/ChessGame/types';
+} from '@/widgets/BoardGames/ChessGame/types';
 import { evaluateBoard } from '@/features/analysis/lib/position-evaluator';
 
 /**

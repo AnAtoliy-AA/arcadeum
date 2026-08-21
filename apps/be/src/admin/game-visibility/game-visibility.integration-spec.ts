@@ -67,8 +67,12 @@ describe('GameVisibility integration', () => {
   }, 60_000);
 
   afterAll(async () => {
-    await app.close();
-    await closeTestDatabase(moduleRef);
+    if (app) {
+      await app.close();
+    }
+    if (moduleRef) {
+      await closeTestDatabase(moduleRef);
+    }
   }, 30_000);
 
   it('PUT then GET returns the new tier', async () => {

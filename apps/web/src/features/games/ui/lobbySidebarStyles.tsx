@@ -1,23 +1,20 @@
 import { forwardRef } from 'react';
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { ButtonProps, IconButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 
-// Sidebar
 export const Sidebar = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
-      'flex flex-col items-stretch gap-4 w-[300px] max-[1023px]:w-full max-[800px]:w-full',
+      'flex flex-col items-stretch gap-4 w-[300px] shrink-0 max-[1023px]:w-full max-[800px]:w-full',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -26,46 +23,38 @@ export const Sidebar = ({
 export const LobbyCard = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-col items-stretch bg-[rgba(99,102,241,0.08)] rounded-[16px] p-5 relative overflow-hidden border border-[rgba(99,102,241,0.15)]',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
 );
 
-export const LobbyCardGlow = ({
-  className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) => (
+export const LobbyCardGlow = ({ className }: { className?: string }) => (
   <div
     className={cx(
       'absolute top-0 left-0 right-0 h-[2px] bg-[linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899)]',
       className,
     )}
-    {...props}
   />
 );
 
 export const CardHeader = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx('flex flex-row items-center justify-between mb-4', className)}
-    {...props}
   >
     {children}
   </div>
@@ -74,35 +63,28 @@ export const CardHeader = ({
 export const CardTitle = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLHeadingElement>) => (
+}) => (
   <h3
     className={cx(
       'text-[12px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]',
       className,
     )}
-    {...props}
   >
     {children}
   </h3>
 );
 
-// Player List
 export const PlayerList = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx('flex flex-col items-stretch gap-3', className)}
-    {...props}
-  >
+}) => (
+  <div className={cx('flex flex-col items-stretch gap-3', className)}>
     {children}
   </div>
 );
@@ -110,14 +92,16 @@ export const PlayerList = ({
 export type PlayerItemProps = {
   isHost?: boolean;
   className?: string;
+  style?: CSSProperties;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>;
+};
 
 export const PlayerItem = forwardRef<HTMLDivElement, PlayerItemProps>(
-  function PlayerItem({ isHost = false, className, children, ...props }, ref) {
+  function PlayerItem({ isHost = false, className, style, children }, ref) {
     return (
       <div
         ref={ref}
+        style={style}
         className={cx(
           'flex flex-row items-center gap-3 p-2 rounded-[10px]',
           isHost
@@ -125,7 +109,6 @@ export const PlayerItem = forwardRef<HTMLDivElement, PlayerItemProps>(
             : 'bg-[rgba(255,255,255,0.03)] border border-transparent',
           className,
         )}
-        {...props}
       >
         {children}
       </div>
@@ -138,20 +121,18 @@ export const LobbyPlayerAvatar = ({
   style,
   className,
   children,
-  ...props
 }: {
   backgroundColor?: string;
   style?: CSSProperties;
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[var(--background)] shrink-0',
       className,
     )}
     style={backgroundColor ? { backgroundColor, ...style } : style}
-    {...props}
   >
     {children}
   </div>
@@ -160,15 +141,11 @@ export const LobbyPlayerAvatar = ({
 export const LobbyPlayerAvatarText = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <span
-    className={cx('font-semibold text-[14px] text-[#f5f7ff]', className)}
-    {...props}
-  >
+}) => (
+  <span className={cx('font-semibold text-[14px] text-[#f5f7ff]', className)}>
     {children}
   </span>
 );
@@ -176,30 +153,27 @@ export const LobbyPlayerAvatarText = ({
 export const PlayerInfo = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx('flex flex-col items-stretch flex-1 min-w-0', className)}
-    {...props}
-  >
+}) => (
+  <div className={cx('flex flex-col items-stretch flex-1 min-w-0', className)}>
     {children}
   </div>
 );
 
 export const LobbyPlayerName = ({
   className,
+  title,
   children,
-  ...props
 }: {
   className?: string;
+  title?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
+}) => (
   <span
+    title={title}
     className={cx('text-[16px] font-medium text-[var(--color)]', className)}
-    {...props}
   >
     {children}
   </span>
@@ -208,40 +182,43 @@ export const LobbyPlayerName = ({
 export const PlayerBadge = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
+}) => (
   <span
     className={cx(
       'text-[10px] px-2 py-[2px] bg-[linear-gradient(135deg,#6366f1,#8b5cf6)] text-[#f5f7ff] rounded-[8px] font-semibold',
       className,
     )}
-    {...props}
   >
     {children}
   </span>
 );
 
 export const ReorderButton = (props: ButtonProps) => (
-  <IconButton size="sm" {...props} />
+  <IconButton
+    size="sm"
+    icon={props.icon}
+    title={props.title}
+    onClick={props.onClick}
+    disabled={props.disabled}
+    className={props.className}
+  />
 );
 
 export const EmptySlot = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-row items-center gap-3 p-2 rounded-[10px] border border-dashed border-[rgba(99,102,241,0.2)] opacity-[0.5]',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -250,17 +227,15 @@ export const EmptySlot = ({
 export const EmptyAvatar = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[rgba(99,102,241,0.1)]',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -269,31 +244,23 @@ export const EmptyAvatar = ({
 export const EmptyAvatarText = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <span className={cx('text-[18px]', className)} {...props}>
-    {children}
-  </span>
-);
+}) => <span className={cx('text-[18px]', className)}>{children}</span>;
 
-// Info Row
 export const InfoRow = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-row items-center justify-between py-2 border-b border-[rgba(99,102,241,0.1)]',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -302,15 +269,11 @@ export const InfoRow = ({
 export const InfoLabel = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <span
-    className={cx('text-[14px] text-[var(--textSecondary)]', className)}
-    {...props}
-  >
+}) => (
+  <span className={cx('text-[14px] text-[var(--textSecondary)]', className)}>
     {children}
   </span>
 );
@@ -318,14 +281,12 @@ export const InfoLabel = ({
 export const InfoValue = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
+}) => (
   <span
     className={cx('text-[16px] font-medium text-[var(--color)]', className)}
-    {...props}
   >
     {children}
   </span>
@@ -344,19 +305,17 @@ export const StatusBadge = ({
   status = 'lobby',
   className,
   children,
-  ...props
 }: {
   status?: RoomStatus;
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
+}) => (
   <span
     className={cx(
       'text-[14px] px-3 py-1 rounded-[8px] font-medium',
       STATUS_BADGE_CLASSES[status],
       className,
     )}
-    {...props}
   >
     {children}
   </span>
@@ -365,17 +324,15 @@ export const StatusBadge = ({
 export const FastBadge = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-row items-center gap-2 px-3 py-1 rounded-[8px] bg-[rgba(234,179,8,0.15)]',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -384,15 +341,11 @@ export const FastBadge = ({
 export const FastBadgeText = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <span
-    className={cx('text-[14px] font-medium text-[#eab308]', className)}
-    {...props}
-  >
+}) => (
+  <span className={cx('text-[14px] font-medium text-[#eab308]', className)}>
     {children}
   </span>
 );

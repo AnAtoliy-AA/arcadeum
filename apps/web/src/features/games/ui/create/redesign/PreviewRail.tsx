@@ -3,6 +3,7 @@ import s from './GameCreateView.module.scss';
 import { RailPreviewArt } from './RailPreviewArt';
 import { RulesAccess } from './RulesAccess';
 import { GAMES, findCriticalTheme, findSeaBattleTheme } from './data/themes';
+import { getThemeById } from '@/features/games/lib/shared-themes';
 import type { CreateRoomForm } from './data/form';
 
 interface SummaryLabels {
@@ -42,6 +43,12 @@ interface Props {
 }
 
 function themeName(form: CreateRoomForm): string | null {
+  const theme = getThemeById(form.themeId);
+  if (theme) {
+    return (
+      theme.id.charAt(0).toUpperCase() + theme.id.slice(1).replace(/-/g, ' ')
+    );
+  }
   if (form.gameId === 'critical_v1')
     return findCriticalTheme(form.themeId).name;
   if (form.gameId === 'sea_battle_v1')
@@ -50,6 +57,8 @@ function themeName(form: CreateRoomForm): string | null {
 }
 
 function themeColor(form: CreateRoomForm): string | null {
+  const theme = getThemeById(form.themeId);
+  if (theme) return theme.colors.primary;
   if (form.gameId === 'critical_v1')
     return findCriticalTheme(form.themeId).color;
   if (form.gameId === 'sea_battle_v1')

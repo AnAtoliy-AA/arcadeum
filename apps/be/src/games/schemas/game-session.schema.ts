@@ -32,6 +32,9 @@ export class GameSession extends Document {
   @Prop({ type: SchemaTypes.Mixed, required: true })
   state: Record<string, unknown>;
 
+  @Prop({ type: SchemaTypes.Mixed })
+  options?: Record<string, unknown>;
+
   createdAt: Date;
   updatedAt: Date;
 }

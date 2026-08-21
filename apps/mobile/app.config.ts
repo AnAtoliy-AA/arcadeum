@@ -2,8 +2,7 @@ import 'dotenv/config';
 import type { ExpoConfig } from 'expo/config';
 
 const iosRedirectScheme = process.env.AUTH_IOS_REDIRECT_SCHEME as
-  | string
-  | undefined;
+  string | undefined;
 const rawAppName = (
   process.env.EXPO_PUBLIC_APP_NAME as string | undefined
 )?.trim();
@@ -19,12 +18,10 @@ const appSlug =
   rawAppSlug && rawAppSlug.length > 0 ? rawAppSlug : derivedSlug || 'arcadeum';
 const appScheme = (process.env.APP_SCHEME as string | undefined) ?? 'mobile';
 const androidRedirectScheme = process.env.AUTH_ANDROID_REDIRECT_SCHEME as
-  | string
-  | undefined;
+  string | undefined;
 const supportUrl = (
   (process.env.EXPO_PUBLIC_SUPPORT_URL ?? process.env.SUPPORT_URL) as
-    | string
-    | undefined
+    string | undefined
 )?.trim();
 const supportCoffeeUrl = (
   (process.env.EXPO_PUBLIC_SUPPORT_COFFEE_URL ??
@@ -32,13 +29,11 @@ const supportCoffeeUrl = (
 )?.trim();
 const supportIban = (
   (process.env.EXPO_PUBLIC_SUPPORT_IBAN ?? process.env.SUPPORT_IBAN) as
-    | string
-    | undefined
+    string | undefined
 )?.trim();
 const rawAppOrigin = (
   (process.env.EXPO_PUBLIC_APP_ORIGIN ?? process.env.APP_ORIGIN) as
-    | string
-    | undefined
+    string | undefined
 )?.trim();
 const appOrigin =
   rawAppOrigin && rawAppOrigin.length > 0
@@ -60,7 +55,6 @@ const config: ExpoConfig = {
   icon: './assets/images/icon.png',
   scheme: appScheme,
   userInterfaceStyle: 'automatic',
-  newArchEnabled: true,
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.anonymous.mobile',
@@ -81,7 +75,6 @@ const config: ExpoConfig = {
       foregroundImage: './assets/images/adaptive-icon.png',
       backgroundColor: '#ffffff',
     },
-    edgeToEdgeEnabled: true,
     package: 'com.anonymous.mobile',
     intentFilters: [
       {
@@ -106,12 +99,14 @@ const config: ExpoConfig = {
         },
       },
     ],
+    'expo-font',
     [
       'expo-router',
       {
         origin: appOrigin,
       },
     ],
+    'expo-secure-store',
     [
       'expo-splash-screen',
       {
@@ -121,6 +116,7 @@ const config: ExpoConfig = {
         backgroundColor: '#ffffff',
       },
     ],
+    'expo-web-browser',
   ],
   experiments: {
     typedRoutes: true,

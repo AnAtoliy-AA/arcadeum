@@ -1,7 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import { Button } from '@arcadeum/ui';
 import type { GameFinalCtaProps } from './types';
+import { useGameLandingTheme } from './GameLandingThemeContext';
+import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
+import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 
 export function GameFinalCta({
   gameId,
@@ -17,6 +22,8 @@ export function GameFinalCta({
   backToGamesLabel = 'All Games',
   comingSoon = false,
 }: GameFinalCtaProps) {
+  const { theme } = useGameLandingTheme();
+
   return (
     <section className="box-border relative my-10 p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[var(--glassBg)] to-[var(--primary)]/10 border border-[var(--borderColor)] backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col items-center text-center gap-6">
       <div className="box-border flex flex-col gap-2 max-w-xl">
@@ -31,12 +38,17 @@ export function GameFinalCta({
       <div className="box-border flex flex-wrap items-center justify-center gap-3">
         <QuickplayCta
           gameId={gameId}
+          theme={theme}
           ctaQuickplay={ctaQuickplayLabel}
           ctaQuickplayError={ctaQuickplayErrorLabel}
           ctaPlayHuman={ctaPlayHumanLabel}
           ctaPlayHumanError={ctaPlayHumanErrorLabel}
           disabled={comingSoon}
         />
+
+        {!comingSoon && isAiVsAiSupported(gameId) ? (
+          <AIvsAIViewer gameId={gameId} theme={theme} />
+        ) : null}
 
         <Link href={roomsHref} className="box-border inline-flex">
           <Button variant="secondary" size="lg">

@@ -71,6 +71,7 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
       name,
       description,
       genre: g.genre,
+      pace: g.pace,
       category: resolveCategory(g.type, g.genre),
       categoryLabel: g.category,
       players: g.players,

@@ -3,8 +3,9 @@ import {
   UnifiedGameLanding,
   getRelatedGames,
 } from '@/features/games/ui/landing';
+import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
-import { ChessBoardVisual } from './ChessBoardVisual';
+import { ChessLandingPreview } from './ChessLandingPreview';
 
 type ChessMsg = ChessMessages['chess_v1'];
 type Landing = ChessMsg['landing'];
@@ -113,6 +114,11 @@ export default function ChessLanding({
     };
   });
 
+  const themeMessages = translatedGames?.themes as
+    | Record<string, { name?: string; description?: string } | undefined>
+    | undefined;
+  const themesList = getTranslatedSharedThemes(themeMessages);
+
   const relatedGames = getRelatedGames(locale, gameId, translatedGames);
 
   return (
@@ -142,7 +148,7 @@ export default function ChessLanding({
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
-        heroVisual: <ChessBoardVisual />,
+        heroVisual: <ChessLandingPreview />,
       }}
       highlights={{
         title: 'Built for Serious Chess Players',
@@ -155,6 +161,14 @@ export default function ChessLanding({
         intro:
           'Start playing in seconds without installing apps or signing up.',
         steps,
+      }}
+      themes={{
+        title: 'Custom Chess Visuals',
+        kicker: 'Customization',
+        subtitle: 'Choose your board aesthetics and atmosphere.',
+        themes: themesList,
+        baseHref: createRoomHref,
+        createRoomLabel: 'Play Theme',
       }}
       rules={
         rulesList.length > 0

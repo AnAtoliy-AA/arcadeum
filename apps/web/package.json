@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.25.52",
+  "version": "1.25.65",
   "private": true,
   "browserslist": [
     "chrome >= 93",
@@ -12,6 +12,7 @@
     "dev": "rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "dev:next": "rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "build": "next build",
+    "postbuild": "node scripts/fix-standalone-swc.mjs",
     "start": "node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",

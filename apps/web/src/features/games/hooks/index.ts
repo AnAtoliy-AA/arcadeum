@@ -10,6 +10,7 @@ export { useFullscreen } from './useFullscreen';
 export { useAutoExitFullscreen } from './useAutoExitFullscreen';
 export { useGameRoomActions } from './useGameRoomActions';
 export { useGameResultModal } from './useGameResultModal';
+export { useGameResult } from './useGameResult';
 export type {
   GameResult,
   SharedResult,
@@ -18,3 +19,9 @@ export type {
 export { usePendingStart } from './usePendingStart';
 export { useGameEndState } from './useGameEndState';
 export type { UseGameEndStateOptions, PlayerInfo } from './useGameEndState';
+export { useGameTheme } from './useGameTheme';
+export { useGameIdleTimer } from './useGameIdleTimer';
+export type {
+  UseGameIdleTimerOptions,
+  UseGameIdleTimerReturn,
+} from './useGameIdleTimer';

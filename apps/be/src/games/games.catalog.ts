@@ -1,3 +1,5 @@
+import { SHARED_VISUAL_THEMES } from './common/shared-themes';
+
 export interface GameCatalogRule {
   ruleId: string;
   label: string;
@@ -8,6 +10,8 @@ export type GameStartMode = 'immediate' | 'placement';
 
 export interface GameCatalogEntry {
   gameId: string;
+  themes: ReadonlyArray<string>;
+  modes: ReadonlyArray<string>;
   variants: ReadonlyArray<string>;
   rules: ReadonlyArray<GameCatalogRule>;
   startMode: GameStartMode;
@@ -17,21 +21,9 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'critical_v1',
     startMode: 'immediate',
-    variants: [
-      'cyberpunk',
-      'underwater',
-      'crime',
-      'horror',
-      'adventure',
-      'high-altitude-hike',
-      'galaxy',
-      'fantasy',
-      'western',
-      'egypt',
-      'steampunk',
-      'zen',
-      'random',
-    ],
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: [],
+    variants: ['standard'],
     rules: [
       {
         ruleId: 'combos',
@@ -56,21 +48,9 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'sea_battle_v1',
     startMode: 'placement',
-    variants: [
-      'classic',
-      'modern',
-      'pixel',
-      'cartoon',
-      'cyber',
-      'vintage',
-      'nebula',
-      'forest',
-      'sunset',
-      'monochrome',
-      'speed',
-      'battle_royale',
-      'team_2v2',
-    ],
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['classic', 'speed', 'battle_royale', 'team_2v2'],
+    variants: ['classic', 'speed', 'battle_royale', 'team_2v2'],
     rules: [
       {
         ruleId: 'idle',
@@ -118,12 +98,16 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'texas_holdem_v1',
     startMode: 'immediate',
-    variants: [],
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['standard'],
+    variants: ['standard'],
     rules: [],
   },
   {
     gameId: 'glimworm_v1',
     startMode: 'immediate',
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['battle_royale', 'time_attack', 'lives_heats'],
     variants: ['battle_royale', 'time_attack', 'lives_heats'],
     rules: [
       {
@@ -143,7 +127,9 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'tic_tac_toe_v1',
     startMode: 'immediate',
-    variants: ['classic', 'neon', 'paper', 'pixel', 'chalkboard', 'retro'],
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['classic', '3x3', '5x5', '7x7', '9x9', 'infinity'],
+    variants: ['classic', '3x3', '5x5', '7x7', '9x9', 'infinity'],
     rules: [
       {
         ruleId: 'teams',
@@ -162,18 +148,9 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'cascade_v1',
     startMode: 'immediate',
-    variants: [
-      'cosmic',
-      'arcane',
-      'cyberpunk',
-      'elemental',
-      'classic',
-      'neon',
-      'tropical',
-      'steampunk',
-      'pure',
-      'speed',
-    ],
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['classic', 'pure', 'speed'],
+    variants: ['classic', 'pure', 'speed'],
     rules: [
       {
         ruleId: 'idle',
@@ -192,6 +169,8 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'chess_v1',
     startMode: 'immediate',
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['standard', 'chess960'],
     variants: ['standard', 'chess960'],
     rules: [
       {
@@ -211,7 +190,9 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'checkers_v1',
     startMode: 'immediate',
-    variants: ['classic', 'neon', 'wood', 'marble', 'neon_glow'],
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['american', 'international', 'russian'],
+    variants: ['american', 'international', 'russian'],
     rules: [
       {
         ruleId: 'idle',
@@ -235,7 +216,9 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
   {
     gameId: 'cat_dash_v1',
     startMode: 'immediate',
-    variants: ['neon', 'village', 'space', 'nature'],
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['linear', 'circular', 'multiple'],
+    variants: ['linear', 'circular', 'multiple'],
     rules: [
       {
         ruleId: 'idle',
@@ -267,6 +250,14 @@ export function getCatalogEntry(gameId: string): GameCatalogEntry | undefined {
   return CATALOG_INDEX.get(gameId);
 }
 
+export function hasTheme(gameId: string, themeId: string): boolean {
+  return getCatalogEntry(gameId)?.themes.includes(themeId) ?? false;
+}
+
 export function hasVariant(gameId: string, variantId: string): boolean {
   return getCatalogEntry(gameId)?.variants.includes(variantId) ?? false;
+}
+
+export function hasMode(gameId: string, modeId: string): boolean {
+  return getCatalogEntry(gameId)?.modes.includes(modeId) ?? false;
 }

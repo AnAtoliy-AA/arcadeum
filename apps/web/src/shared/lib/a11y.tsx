@@ -86,6 +86,7 @@ export function useBoardKeyboardNavigation({
 }: BoardKeyboardNavigationOptions) {
   const gridRef = useRef<HTMLDivElement | null>(null);
   const [focused, setFocused] = useState<BoardCellCoords | null>(null);
+  const propsCacheRef = useRef(new Map<string, Record<string, unknown>>());
 
   const focusCell = useCallback(
     (row: number, col: number) => {
@@ -152,11 +153,22 @@ export function useBoardKeyboardNavigation({
   };
 
   const getCellProps = useCallback(
-    (row: number, col: number) => ({
-      tabIndex: focused?.row === row && focused?.col === col ? 0 : -1,
-      [CELL_DATA_ATTR]: makeCellKey(row, col),
-      onFocus: () => setFocused({ row, col }),
-    }),
+    (row: number, col: number) => {
+      const key = makeCellKey(row, col);
+      // Cache per (focused, cell) so memoized cell components keep a stable
+      // props object across renders and only re-render when focus actually
+      // moves. Bounded: at most 2× the grid size entries.
+      const cacheKey = `${focused ? makeCellKey(focused.row, focused.col) : 'none'}|${key}`;
+      const cached = propsCacheRef.current.get(cacheKey);
+      if (cached) return cached;
+      const props = {
+        tabIndex: focused?.row === row && focused?.col === col ? 0 : -1,
+        [CELL_DATA_ATTR]: key,
+        onFocus: () => setFocused({ row, col }),
+      };
+      propsCacheRef.current.set(cacheKey, props);
+      return props;
+    },
     [focused],
   );
 

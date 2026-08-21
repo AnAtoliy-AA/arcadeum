@@ -1,3 +1,5 @@
+import { themesRu } from './themes';
+
 export const ruMessages = {
   coup: { name: 'Coup' },
   'pandemic-lite': { name: 'Pandemic: Rapid Response' },
@@ -28,7 +30,14 @@ export const ruMessages = {
         joined: 'Я участник',
         not_joined: 'Не участвую',
       },
+      aiVsAiLabel: 'Режим',
+      aiVsAi: 'ИИ против ИИ',
     },
+  },
+  aiVsAi: {
+    watchCta: 'Смотреть ИИ против ИИ',
+    error: 'Не удалось запустить — попробуйте ещё раз',
+    delayLabel: 'Задержка хода',
   },
   rooms: {
     status: {
@@ -265,6 +274,11 @@ export const ruMessages = {
       joinButton: 'Войти в зал',
     },
   },
+  widgetError: {
+    title: 'Что-то пошло не так',
+    message: 'В игре произошла непредвиденная ошибка. Попробуйте ещё раз.',
+    retry: 'Повторить',
+  },
   inviteCode: {
     title: 'Войти в приватную игру',
     label: 'Введите код приглашения',
@@ -330,6 +344,16 @@ export const ruMessages = {
     title: '💤 Вы неактивны',
     message: 'Пошевелите мышкой или нажмите клавишу, чтобы продолжить',
   },
+  names: {
+    chess: 'Шахматы',
+    checkers: 'Шашки',
+    ticTacToe: 'Крестики-Нолики',
+    critical: 'Взрывные котята',
+    cascade: 'Каскад',
+    catDash: 'Кот Рывок',
+    seaBattle: 'Морской бой',
+    glimworm: 'Глимворм',
+  },
   table: {
     controlPanel: {
       spectating: 'Наблюдение',
@@ -356,6 +380,16 @@ export const ruMessages = {
       title: 'Поражение',
       message: 'В этот раз не повезло. Готовы к следующему раунду?',
     },
+    draw: {
+      title: 'Ничья',
+      message: 'Матч завершился вничью.',
+    },
+    stats: {
+      duration: 'Длительность',
+      turns: 'Ходы',
+      score: 'Счёт',
+      accuracy: 'Точность',
+    },
     rematch: {
       title: 'Сыграть еще?',
       description: 'Выберите игроков, которых вы хотите пригласить на реванш.',
@@ -369,6 +403,19 @@ export const ruMessages = {
         decline: 'Отклонить',
         accept: 'Принять',
       },
+    },
+    forfeit: {
+      title: '0421043404300442044c0441044f?',
+      message:
+        '0422044b 04430432043504400435043d, 04470442043e 0445043e044704350448044c 0441043404300442044c0441044f? 0421043e043f04350440043d0438043a 043f043e04310435043404380442.',
+      confirm: '0421043404300442044c0441044f',
+      cancel: '041e0442043c0435043d0430',
+    },
+    idleTimer: {
+      countdown:
+        '041004320442043e043f043b04350439 04470435044004350437 {{seconds}}0441',
+      active: '041004320442043e043f043b04350439 0430043a0442043804320435043d',
+      stop: '04210442043e043f',
     },
   },
   undo: {
@@ -420,4 +467,10 @@ export const ruMessages = {
       master: 'Мастер',
     },
   },
+  landing: {
+    previewLabel: 'Живой превью',
+    cycleHint: 'Нажмите, чтобы сменить тему',
+    cycleAriaLabel: 'Сменить тему превью, сейчас {{variant}}',
+  },
+  themes: themesRu,
 };

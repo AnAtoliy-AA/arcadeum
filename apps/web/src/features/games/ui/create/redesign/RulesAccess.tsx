@@ -10,41 +10,55 @@ import type { GameId } from './data/themes';
 // actually opens them. Defer loading until the button is clicked.
 const SeaBattleRulesModal = dynamic(
   () =>
-    import('@/widgets/SeaBattleGame/ui/RulesModal').then((m) => m.RulesModal),
+    import('@/widgets/StrategyGames/SeaBattleGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
   { ssr: false },
 );
 
 const CriticalRulesModal = dynamic(
   () =>
-    import('@/widgets/CriticalGame/ui/RulesModal').then((m) => m.RulesModal),
+    import('@/widgets/CardGames/CriticalGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
   { ssr: false },
 );
 
 const TicTacToeRulesModal = dynamic(
   () =>
-    import('@/widgets/TicTacToeGame/ui/RulesModal').then((m) => m.RulesModal),
+    import('@/widgets/BoardGames/TicTacToeGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
   { ssr: false },
 );
 
 const CascadeRulesModal = dynamic(
-  () => import('@/widgets/CascadeGame/ui/RulesModal').then((m) => m.RulesModal),
+  () =>
+    import('@/widgets/CardGames/CascadeGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
   { ssr: false },
 );
 
 const ChessRulesModal = dynamic(
-  () => import('@/widgets/ChessGame/ui/RulesModal').then((m) => m.RulesModal),
+  () =>
+    import('@/widgets/BoardGames/ChessGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
   { ssr: false },
 );
 
 const CheckersRulesModal = dynamic(
   () =>
-    import('@/widgets/CheckersGame/ui/RulesModal').then((m) => m.RulesModal),
+    import('@/widgets/BoardGames/CheckersGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
   { ssr: false },
 );
 
 const CatDashRulesModal = dynamic(
   () =>
-    import('@/widgets/CatDashGame/ui/RulesModal').then(
+    import('@/widgets/ActionGames/CatDashGame/ui/RulesModal').then(
       (m) => m.CatDashRulesModal,
     ),
   { ssr: false },

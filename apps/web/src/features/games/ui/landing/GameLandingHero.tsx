@@ -1,7 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import { Badge, Button } from '@arcadeum/ui';
 import type { GameLandingHeroProps } from './types';
+import { useGameLandingTheme } from './GameLandingThemeContext';
+import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
+import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 
 export function GameLandingHero({
   gameId,
@@ -25,6 +30,14 @@ export function GameLandingHero({
   heroVisual,
   comingSoon = false,
 }: GameLandingHeroProps) {
+  const { theme } = useGameLandingTheme();
+
+  const createHref = createRoomHref
+    ? createRoomHref.includes('?')
+      ? `${createRoomHref}&theme=${encodeURIComponent(theme)}`
+      : `${createRoomHref}?theme=${encodeURIComponent(theme)}`
+    : undefined;
+
   return (
     <header className="box-border relative w-full pt-6 pb-12 overflow-hidden">
       <div className="box-border grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -76,6 +89,7 @@ export function GameLandingHero({
           <div className="box-border flex flex-wrap items-center gap-3 pt-2">
             <QuickplayCta
               gameId={gameId}
+              theme={theme}
               ctaQuickplay={ctaQuickplayLabel}
               ctaQuickplayError={ctaQuickplayErrorLabel}
               ctaPlayHuman={ctaPlayHumanLabel}
@@ -83,13 +97,21 @@ export function GameLandingHero({
               disabled={comingSoon}
             />
 
+            {!comingSoon && isAiVsAiSupported(gameId) ? (
+              <AIvsAIViewer
+                gameId={gameId}
+                theme={theme}
+                buttonVariant="outline"
+              />
+            ) : null}
+
             <Link href={roomsHref} className="box-border inline-flex">
               <Button variant="secondary" size="lg">
                 {browseRoomsLabel}
               </Button>
             </Link>
 
-            {createRoomHref ? (
+            {createHref ? (
               comingSoon ? (
                 <span className="box-border inline-flex">
                   <Button variant="victory" size="lg" disabled>
@@ -97,7 +119,7 @@ export function GameLandingHero({
                   </Button>
                 </span>
               ) : (
-                <Link href={createRoomHref} className="box-border inline-flex">
+                <Link href={createHref} className="box-border inline-flex">
                   <Button variant="victory" size="lg">
                     {createRoomLabel}
                   </Button>

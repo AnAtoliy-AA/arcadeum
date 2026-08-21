@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/react';
 
 const INITIAL_SYNC_DEFER_MS = 2000;
+const RESTORE_401_RETRY_DELAY_MS = 800;
 
 // ---- Mock apiClient ----
 // Inline ApiError rather than vi.importActual to avoid an extra module-
@@ -26,9 +27,16 @@ vi.mock('@/shared/lib/api-client', () => {
 
 // ---- Mock the store ----
 type Listener = (state: StoreState, prev: StoreState) => void;
+interface Snapshot {
+  accessToken: string | null;
+  refreshToken?: string | null;
+  userId?: string | null;
+  accessTokenExpiresAt?: string | null;
+  refreshTokenExpiresAt?: string | null;
+}
 interface StoreState {
   hydrated: boolean;
-  snapshot: { accessToken: string | null };
+  snapshot: Snapshot;
   setTokens: ReturnType<typeof vi.fn>;
   refreshTokens: ReturnType<typeof vi.fn>;
 }
@@ -67,6 +75,17 @@ vi.mock('../store/sessionStore', () => ({
   ),
 }));
 
+const mockRefreshFromCookie = vi.fn();
+vi.mock('../api/authApi', () => ({
+  refreshSessionFromCookie: (...args: unknown[]) =>
+    mockRefreshFromCookie(...args),
+}));
+
+const mockAcquireLock = vi.fn();
+vi.mock('../lib/refreshLock', () => ({
+  acquireRefreshLock: (...args: unknown[]) => mockAcquireLock(...args),
+}));
+
 import { apiClient, ApiError } from '@/shared/lib/api-client';
 import { SessionRoleSync } from './SessionRoleSync';
 
@@ -83,14 +102,33 @@ const PROFILE = {
   role: 'admin' as const,
 };
 
+const REFRESH_RESPONSE = {
+  accessToken: 'new-access',
+  accessTokenExpiresAt: '2026-05-09T00:15:00Z',
+  refreshToken: 'new-refresh',
+  refreshTokenExpiresAt: '2026-05-16T00:00:00Z',
+  user: PROFILE,
+};
+
+const makeSetTokens = () =>
+  vi.fn().mockImplementation(async (input: Record<string, unknown>) => {
+    storeRef.state = {
+      ...storeRef.state,
+      snapshot: { ...storeRef.state.snapshot, ...input },
+    };
+    return storeRef.state.snapshot;
+  });
+
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['setTimeout', 'setInterval', 'Date'] });
   vi.setSystemTime(new Date('2026-05-09T00:00:00Z'));
   apiGetMock.mockReset();
+  mockRefreshFromCookie.mockReset();
+  mockAcquireLock.mockReset().mockReturnValue(true);
   storeRef.state = {
     hydrated: true,
     snapshot: { accessToken: 'tok' },
-    setTokens: vi.fn().mockResolvedValue(undefined),
+    setTokens: makeSetTokens(),
     refreshTokens: vi.fn().mockResolvedValue(undefined),
   };
   storeRef.listeners = [];
@@ -135,7 +173,7 @@ describe('SessionRoleSync', () => {
     expect(apiGetMock).not.toHaveBeenCalled();
   });
 
-  it('does not fetch when accessToken is null', async () => {
+  it('does nothing when accessToken is null and no prior session', async () => {
     storeRef.state.snapshot = { accessToken: null };
     render(<SessionRoleSync />);
     act(() => {
@@ -143,6 +181,7 @@ describe('SessionRoleSync', () => {
     });
     await flushPromises();
     expect(apiGetMock).not.toHaveBeenCalled();
+    expect(mockRefreshFromCookie).not.toHaveBeenCalled();
   });
 
   it('fires sync after hydration flips from false to true', async () => {
@@ -223,7 +262,7 @@ describe('SessionRoleSync', () => {
     resolveFetch(PROFILE);
     await flushPromises();
 
-    expect(storeRef.state.setTokens).not.toHaveBeenCalled();
+    expect(storeRef.state.setTokens).toHaveBeenCalledTimes(0);
   });
 
   it('throttle: focus event right after mount does not refetch', async () => {
@@ -318,6 +357,115 @@ describe('SessionRoleSync', () => {
     expect(apiGetMock).toHaveBeenCalledTimes(2);
 
     warnSpy.mockRestore();
+  });
+
+  describe('cookie restore path (no in-memory access token after refresh)', () => {
+    beforeEach(() => {
+      storeRef.state.snapshot = {
+        accessToken: null,
+        userId: 'u1',
+        refreshToken: null,
+      };
+    });
+
+    it('restores from the refresh cookie and then syncs /auth/me', async () => {
+      mockRefreshFromCookie.mockResolvedValueOnce(REFRESH_RESPONSE);
+      apiGetMock.mockResolvedValueOnce(PROFILE);
+
+      render(<SessionRoleSync />);
+      act(() => {
+        vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+      });
+      await flushPromises();
+
+      expect(mockRefreshFromCookie).toHaveBeenCalledTimes(1);
+      const restoreCall = storeRef.state.setTokens.mock.calls.find(
+        (call) =>
+          (call[0] as { accessToken?: string } | undefined)?.accessToken ===
+          'new-access',
+      );
+      expect(restoreCall).toBeDefined();
+      expect(apiGetMock).toHaveBeenCalledWith('/auth/me', {
+        token: 'new-access',
+      });
+    });
+
+    it('backs off after a transient failure and does not spam on every focus', async () => {
+      mockRefreshFromCookie.mockRejectedValueOnce(
+        new ApiError('Too Many Requests', 429, null),
+      );
+
+      render(<SessionRoleSync />);
+      act(() => {
+        vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+      });
+      await flushPromises();
+      expect(mockRefreshFromCookie).toHaveBeenCalledTimes(1);
+
+      // Focus immediately after — must NOT fire (backoff active).
+      act(() => {
+        window.dispatchEvent(new Event('focus'));
+      });
+      await flushPromises();
+      expect(mockRefreshFromCookie).toHaveBeenCalledTimes(1);
+
+      // After the first backoff window (15s on second failure) the next
+      // focus may retry.
+      vi.setSystemTime(Date.now() + 16_000);
+      mockRefreshFromCookie.mockResolvedValueOnce(REFRESH_RESPONSE);
+      apiGetMock.mockResolvedValueOnce(PROFILE);
+      act(() => {
+        window.dispatchEvent(new Event('focus'));
+      });
+      await flushPromises();
+
+      expect(mockRefreshFromCookie).toHaveBeenCalledTimes(2);
+    });
+
+    it('retries once on 401 (cross-tab rotation race) and gives up after the second 401', async () => {
+      mockRefreshFromCookie.mockRejectedValueOnce(
+        new ApiError('Unauthorized', 401, null),
+      );
+      mockRefreshFromCookie.mockRejectedValueOnce(
+        new ApiError('Unauthorized', 401, null),
+      );
+
+      render(<SessionRoleSync />);
+      act(() => {
+        vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+      });
+      await flushPromises();
+
+      // First 401 → retry after 800ms.
+      expect(mockRefreshFromCookie).toHaveBeenCalledTimes(1);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(RESTORE_401_RETRY_DELAY_MS);
+      });
+      await flushPromises();
+
+      // Second 401 → give up for 5 minutes.
+      expect(mockRefreshFromCookie).toHaveBeenCalledTimes(2);
+      expect(storeRef.state.setTokens).not.toHaveBeenCalled();
+
+      // Focus events during the give-up window must not fire refresh.
+      act(() => {
+        window.dispatchEvent(new Event('focus'));
+      });
+      await flushPromises();
+      expect(mockRefreshFromCookie).toHaveBeenCalledTimes(2);
+    });
+
+    it('skips restore when another tab holds the refresh lock', async () => {
+      mockAcquireLock.mockReturnValueOnce(false);
+
+      render(<SessionRoleSync />);
+      act(() => {
+        vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
+      });
+      await flushPromises();
+
+      expect(mockRefreshFromCookie).not.toHaveBeenCalled();
+    });
   });
 
   it('cleans up focus listener and store subscription on unmount', async () => {

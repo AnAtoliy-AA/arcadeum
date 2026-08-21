@@ -1,9 +1,7 @@
-import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { Tabs, useRouter } from 'expo-router';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import { HapticTab } from '@/components/HapticTab';
 import { AppHeader } from '@/components/ui/AppHeader';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { AdaptiveBottomTabBar } from '@/components/ui/AdaptiveBottomTabBar';
@@ -88,7 +86,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={({ route, navigation }) => {
         const canGoBack = navigation.canGoBack();
-        const options: BottomTabNavigationOptions = {
+        const options = {
           tabBarActiveTintColor: palette.tint,
           tabBarBackground: TabBarBackground,
           tabBarStyle,
@@ -104,13 +102,10 @@ export default function TabLayout() {
           ),
         };
 
-        if (!platform.isWeb) {
-          options.tabBarButton = HapticTab;
-        }
-
         return options;
       }}
-      tabBar={(props) => <AdaptiveBottomTabBar {...props} />}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      tabBar={(props: any) => <AdaptiveBottomTabBar {...props} />}
     >
       <Tabs.Screen
         name="index"

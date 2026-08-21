@@ -3,13 +3,7 @@
 import { useState, useCallback } from 'react';
 import { PageLayout, Container, Typography, Section } from '@arcadeum/ui';
 import type { RoadmapData, Phase } from './roadmap-parser';
-import {
-  TIERS,
-  PHASES,
-  STATS,
-  type Tier,
-  type TierFeature,
-} from './roadmap-data';
+import { TIERS, PHASES, STATS } from './roadmap-data';
 
 import { TierCard } from './TierCard';
 
@@ -113,7 +107,8 @@ function PhaseTimeline({
                         variant="caption"
                         uiSize="xs"
                         alpha={
-                          p.status.includes('100%') || p.status.includes('In Progress')
+                          p.status.includes('100%') ||
+                          p.status.includes('In Progress')
                             ? 'high'
                             : 'medium'
                         }

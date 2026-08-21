@@ -92,6 +92,15 @@ describe('ChessEngine - Chess960', () => {
     expect(castleMoves.length).toBe(2);
   });
 
+  it('should generate valid standard FEN from boardToFen', () => {
+    const state = engine.initializeState(['p1', 'p2']);
+    const standardFen = boardToFen(state.board);
+    expect(standardFen).toBe('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
+    expect(state.positionHistory[0]).toBe(
+      'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
+    );
+  });
+
   it('should initialize positionHistory with actual chess960 board FEN', () => {
     const state = engine.initializeState(['p1', 'p2'], {
       variant: 'chess960',

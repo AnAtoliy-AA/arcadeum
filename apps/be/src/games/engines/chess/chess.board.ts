@@ -34,10 +34,18 @@ export function parseFen(fen: string): Board {
 
 export function boardToFen(board: Board): string {
   return board
-    .map((row) =>
-      row
-        .map((cell) => {
-          if (!cell) return '';
+    .map((row) => {
+      let fenRow = '';
+      let emptyCount = 0;
+      for (let c = 0; c < 8; c++) {
+        const cell = row[c];
+        if (!cell) {
+          emptyCount++;
+        } else {
+          if (emptyCount > 0) {
+            fenRow += emptyCount;
+            emptyCount = 0;
+          }
           const ch =
             cell.type === 'pawn'
               ? 'p'
@@ -50,11 +58,14 @@ export function boardToFen(board: Board): string {
                     : cell.type === 'queen'
                       ? 'q'
                       : 'k';
-          return cell.color === 'white' ? ch.toUpperCase() : ch;
-        })
-        .join('')
-        .replace(/((.)\2*)/g, (_m: string, g: string) => g[0] + g.length),
-    )
+          fenRow += cell.color === 'white' ? ch.toUpperCase() : ch;
+        }
+      }
+      if (emptyCount > 0) {
+        fenRow += emptyCount;
+      }
+      return fenRow;
+    })
     .join('/');
 }
 

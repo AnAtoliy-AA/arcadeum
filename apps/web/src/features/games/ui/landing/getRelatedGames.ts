@@ -84,6 +84,15 @@ const ALL_GAMES: GameInfo[] = [
       'Tense card party survival: defuse bombs, attack opponents, and avoid exploding.',
     path: (r) => r.criticalLanding,
   },
+  {
+    slug: 'backgammon_v1',
+    name: 'Backgammon',
+    category: 'Board Game',
+    players: '2 Players',
+    description:
+      'Classic 24-point board game with dice rolls, bearing off, and AI bot opponents.',
+    path: (r) => r.backgammonLanding,
+  },
 ];
 
 export function getRelatedGames(

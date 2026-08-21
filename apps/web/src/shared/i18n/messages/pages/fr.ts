@@ -244,6 +244,11 @@ export const fr = {
         subtitle: 'Course de chats',
         icon: '🐱',
       },
+      backgammon_v1: {
+        name: 'Backgammon',
+        subtitle: 'Stratégie de plateau',
+        icon: '🎲',
+      },
     },
     cup: {
       eyebrow: 'Tournoi',

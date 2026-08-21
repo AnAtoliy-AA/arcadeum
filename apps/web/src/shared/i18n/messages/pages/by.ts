@@ -245,6 +245,11 @@ export const by = {
       chess_v1: { name: 'Шахматы', subtitle: 'Класічныя шахматы', icon: '♞' },
       checkers_v1: { name: 'Шашкі', subtitle: 'Настольная класіка', icon: '●' },
       cat_dash_v1: { name: 'Cat Dash', subtitle: 'Каціныя гонкі', icon: '🐱' },
+      backgammon_v1: {
+        name: 'Нарды',
+        subtitle: 'Настольная стратэгія',
+        icon: '🎲',
+      },
     },
     cup: {
       eyebrow: 'Турнір',

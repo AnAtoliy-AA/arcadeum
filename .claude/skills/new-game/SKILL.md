@@ -240,11 +240,15 @@ Add to:
 
 **`createRoomHref` MUST use `?gameId=<game>_v1`** (the param name `GameCreateView` reads via `searchParams.get('gameId')`). Don't invent `?slug=` or `?game=` — those silently fall through to `VISIBLE_GAMES[0]` (Critical) and the user lands on the wrong preselected game. Don't append `&variant=...`; the view defaults to `themesFor(gameId)[0]` and appending a default would duplicate the param when the themes-grid links add their own.
 
-### 8. Home + Create page
+### 8. Home + Create page + Catalog Previews
 
 a. [apps/web/src/app/[locale]/home/data/games.ts](apps/web/src/app/[locale]/home/data/games.ts) — add to `featuredGames` (players range, duration, `landingHref`, variant count).
 
 a2. **Home featured-card symbol** — create `apps/web/src/app/[locale]/home/components/featured-games/symbols/<Name>Symbol.tsx` (64×64 SVG using `stroke="currentColor"`, mirroring [SeaBattleSymbol.tsx](apps/web/src/app/[locale]/home/components/featured-games/symbols/SeaBattleSymbol.tsx)). Export it from `symbols/index.ts` and add a `case '<game>_v1':` branch to [`GameSymbol`](apps/web/src/app/[locale]/home/components/featured-games/gameMeta.tsx). Without this, the home card cover renders `null` instead of a glyph.
+
+a3. **Games Catalog Real Preview (Card Art)** — create `apps/web/src/app/[locale]/(app)/games/components/art/<Name>RealBoard.tsx` (or `RealCards` / `RealTrack`) and add a `case '<game>_v1':` branch in [`GamesCatalogRealPreview.tsx`](apps/web/src/app/[locale]/(app)/games/components/art/GamesCatalogRealPreview.tsx). Without this, the game picker card and `/games` catalog preview default to Glimworm glowing snake arena.
+
+a4. **Landing Related Games** — add the game to `ALL_GAMES` in [`apps/web/src/features/games/ui/landing/getRelatedGames.ts`](apps/web/src/features/games/ui/landing/getRelatedGames.ts) with `slug`, `name`, `category`, `players`, `description`, and `path: (r) => r.<game>Landing`.
 
 b. [apps/web/src/features/games/ui/create/redesign/data/themes.ts](apps/web/src/features/games/ui/create/redesign/data/themes.ts):
 - Extend `GameId` union
@@ -272,7 +276,8 @@ g. [apps/web/src/features/games/ui/create/redesign/GameCreateView.tsx](apps/web/
 
 ```
 apps/web/src/shared/i18n/messages/games/<game>/{en,es,fr,ru,by}.ts
-apps/web/src/shared/i18n/messages/seo/{en,es,fr,ru,by}.ts  ← add <game>Landing
+apps/web/src/shared/i18n/messages/seo/{en,es,fr,ru,by}.ts   ← add <game>Landing
+apps/web/src/shared/i18n/messages/pages/{en,es,fr,ru,by}.ts ← add games.items.<game>_v1 { name, subtitle, icon }
 ```
 
 Cover: landing (hero/highlights/steps/themes/rules/faq), lobby (variants/options/players/start/leave), in-game (turn/status/result), chat scopes, errors, each variant name+description.
@@ -296,10 +301,12 @@ Walk this list manually — these are the surfaces where missing wiring causes s
 - [ ] `<game>_v1` added to **both** `GameType` unions: `lib/gameIdMapping.ts` AND `hooks/useGameActions.ts`.
 - [ ] Landing route in `shared/config/routes.ts` + `seo/buildPageMetadata.ts`; CTA uses `?gameId=`.
 - [ ] Home featured-card: data entry in `home/data/games.ts` + symbol branch in `gameMeta.tsx`.
+- [ ] Catalog real preview: `art/<Name>RealBoard.tsx` (SVG) + `case '<game>_v1':` branch in `GamesCatalogRealPreview.tsx`.
+- [ ] Related games: entry in `features/games/ui/landing/getRelatedGames.ts` (`ALL_GAMES`).
 - [ ] Create page: `themes.ts` + `ThemePicker.tsx` block + `art/<Name>BoardPoster.tsx` + `GameArt.tsx` branch + `GameCreateView.tsx` branch.
 - [ ] Rules modal mounted in lobby AND in-game branches of `Game.tsx`; also wired in `RulesAccess.tsx`.
 - [ ] End-game uses `useGameEndState` + `GameEndModals`, not per-game modal or manual wiring.
-- [ ] i18n keys present in all 5 locales (en, es, fr, ru, by) — including SEO entries.
+- [ ] i18n keys present in all 5 locales (en, es, fr, ru, by) — including `seo` entries AND `pages.games.items.<game>_v1` entries.
 - [ ] BE engine spec + bot spec passing; web hook/widget vitest passing.
 - [ ] [`apps/web/e2e/home-games-slider.spec.ts`](apps/web/e2e/home-games-slider.spec.ts) — bump the expected `toHaveCount(N)` and add the new game's `<h3>` assertion; the test hardcodes the featured-games count and order.
 
@@ -376,6 +383,10 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 22. **Per-option player caps go through the service, not the room.** If players-per-game depends on a game-option (board size, mode, etc.), don't try to mutate the room's `maxPlayers` when the option changes — leave room.maxPlayers at the overall ceiling. Enforce the per-option cap at `startSession` (BE) and surface it in the lobby selector ("3×3 · up to 2"). The BE error message tells the host to reduce players or pick a different option.
 
 23. **`home-games-slider.spec.ts` hardcodes the featured-games count and order.** Adding a new game to `home/data/games.ts` breaks `await expect(gameCards).toHaveCount(N)` and the per-index `toHaveText` assertions. Update both the count and add the new `<h3>` assertion in the same commit as the data change.
+
+24. **`GamesCatalogRealPreview.tsx` fallback is Glimworm.** On `/games` catalog and `GamePickerCard`, `GamesCatalogRealPreview` defaults to `GlimwormRealArena`. If you don't add `case '<game>_v1': return <<Name>RealBoard />`, the game card preview renders as glowing neon snake arena instead of the real game board. Always create `art/<Name>RealBoard.tsx` (SVG preview) and add the case branch.
+
+25. **`pages/{locale}.ts` `games.items` entries required.** The games catalog (`/games`) reads `t('pages.games.items.<game>_v1.name')` / `subtitle` / `icon`. Missing this causes translation fallback warnings. Add the entry to all 5 locale files in `apps/web/src/shared/i18n/messages/pages/`.
 
 ## When the user says "implement game X"
 

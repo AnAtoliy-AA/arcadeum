@@ -245,6 +245,11 @@ export const es = {
         subtitle: 'Carrera de gatos',
         icon: '🐱',
       },
+      backgammon_v1: {
+        name: 'Backgammon',
+        subtitle: 'Estrategia de tablero',
+        icon: '🎲',
+      },
     },
     cup: {
       eyebrow: 'Torneo',

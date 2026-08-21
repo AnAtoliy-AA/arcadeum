@@ -253,6 +253,11 @@ export const ru = {
         icon: '●',
       },
       cat_dash_v1: { name: 'Cat Dash', subtitle: 'Кошачьи гонки', icon: '🐱' },
+      backgammon_v1: {
+        name: 'Нарды',
+        subtitle: 'Настольная стратегия',
+        icon: '🎲',
+      },
     },
     cup: {
       eyebrow: 'Турнир',

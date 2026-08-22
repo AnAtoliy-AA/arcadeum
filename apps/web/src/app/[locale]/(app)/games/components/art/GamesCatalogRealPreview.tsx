@@ -6,6 +6,7 @@ import { CheckersRealBoard } from './CheckersRealBoard';
 import { SeaBattleRealBoard } from './SeaBattleRealBoard';
 import { TicTacToeRealBoard } from './TicTacToeRealBoard';
 import { CatDashRealTrack } from './CatDashRealTrack';
+import { BackgammonRealBoard } from './BackgammonRealBoard';
 import { GlimwormRealArena } from './GlimwormRealArena';
 
 interface Props {
@@ -28,6 +29,8 @@ export function GamesCatalogRealPreview({ gameId }: Props) {
       return <TicTacToeRealBoard />;
     case 'cat_dash_v1':
       return <CatDashRealTrack />;
+    case 'backgammon_v1':
+      return <BackgammonRealBoard />;
     case 'glimworm_v1':
     default:
       return <GlimwormRealArena />;

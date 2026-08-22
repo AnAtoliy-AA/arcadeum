@@ -11,6 +11,7 @@ import type { CascadeService } from '../cascade/cascade.service';
 import type { CatDashService } from '../cat-dash/cat-dash.service';
 import type { SeaBattleService } from '../sea-battle/sea-battle.service';
 import type { CriticalService } from '../critical/critical.service';
+import type { BackgammonService } from '../backgammon/backgammon.service';
 
 interface RoomArg {
   hostId: string;
@@ -48,6 +49,7 @@ function buildService() {
     catDash: { startSession: jest.fn() } as unknown as CatDashService,
     seaBattle: { startSession: jest.fn() } as unknown as SeaBattleService,
     critical: { startSession: jest.fn() } as unknown as CriticalService,
+    backgammon: { startSession: jest.fn() } as unknown as BackgammonService,
   };
   const service = new AiVsAiService(
     gameRoomModel,
@@ -60,6 +62,7 @@ function buildService() {
     services.catDash,
     services.seaBattle,
     services.critical,
+    services.backgammon,
   );
   return { service, gameRoomModel, gameRoomsMapper, realtimeService, services };
 }
@@ -154,6 +157,18 @@ describe('AiVsAiService', () => {
       false,
       0,
       undefined,
+      expect.objectContaining({ aiVsAi: true }),
+    );
+  });
+
+  it('starts backgammon with extras in startSession', async () => {
+    const { service, services } = buildService();
+    await service.createAIvsAIRoom('user-1', { gameId: 'backgammon_v1' });
+    expect(services.backgammon.startSession).toHaveBeenCalledWith(
+      expect.stringMatching(/^bot-ai-/),
+      'room-1',
+      false,
+      0,
       expect.objectContaining({ aiVsAi: true }),
     );
   });

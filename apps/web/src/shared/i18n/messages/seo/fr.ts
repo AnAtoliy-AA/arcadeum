@@ -54,6 +54,10 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Cat Dash · Course de chats multijoueur · ${APP}`,
     description: `Jouez à Cat Dash sur ${APP} — courses de chats avec dés, capacités uniques et pistes thématiques. 2–6 joueurs, gratuit.`,
   },
+  backgammonLanding: {
+    title: `Backgammon · Jeu de plateau multijoueur gratuit · ${APP}`,
+    description: `Jouez au Backgammon en ligne sur ${APP} — plateau classique à 24 flèches, dés, sorties de pions et bots IA. Gratuit, sans téléchargement.`,
+  },
   seaBattleLanding: {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,

@@ -8,6 +8,7 @@ export const AI_VS_AI_GAME_IDS = [
   'critical_v1',
   'sea_battle_v1',
   'cat_dash_v1',
+  'backgammon_v1',
 ] as const;
 
 export const AI_VS_AI_DELAYS_MS = [1000, 2000, 5000] as const;

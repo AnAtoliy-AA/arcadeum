@@ -227,16 +227,37 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
           'Automatically roll the dice if the player does not act within the timer.',
       },
       {
+        ruleId: 'abilities',
+        label: 'Cat abilities',
+        description:
+          'Each cat has unique abilities that can be used during the race.',
+      },
+      {
         ruleId: 'spectators',
         label: 'Allow spectators',
         description:
           'Other users can watch the match in real time without joining.',
       },
+    ],
+  },
+  {
+    gameId: 'backgammon_v1',
+    startMode: 'immediate',
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['standard', 'long', 'hyper', 'tavla', 'nackgammon', 'gulbara'],
+    variants: ['standard', 'long', 'hyper', 'tavla', 'nackgammon', 'gulbara'],
+    rules: [
       {
-        ruleId: 'abilities',
-        label: 'Cat abilities',
+        ruleId: 'idle',
+        label: 'Idle timer autoplay',
         description:
-          'Each cat has unique abilities that can be used during the race.',
+          'Automatically roll or move a checker if the player does not act within the timer.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
       },
     ],
   },

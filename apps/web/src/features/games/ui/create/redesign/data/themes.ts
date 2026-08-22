@@ -6,7 +6,8 @@ export type GameId =
   | 'cascade_v1'
   | 'chess_v1'
   | 'checkers_v1'
-  | 'cat_dash_v1';
+  | 'cat_dash_v1'
+  | 'backgammon_v1';
 
 export interface GameMeta {
   id: GameId;
@@ -118,6 +119,18 @@ export const GAMES: Record<GameId, GameMeta> = {
     hasThemes: true,
     rules: ['idle', 'spectators', 'teams'],
   },
+  backgammon_v1: {
+    id: 'backgammon_v1',
+    title: 'Backgammon',
+    desc: 'Classic 24-point board game with dice rolls, bearing off, and AI opponents.',
+    players: { min: 2, max: 2, label: '2' },
+    duration: '20 min',
+    kind: 'Board · race',
+    category: 'Board Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
 };
 
 export const VISIBLE_GAMES: GameId[] = [
@@ -129,6 +142,7 @@ export const VISIBLE_GAMES: GameId[] = [
   'chess_v1',
   'checkers_v1',
   'cat_dash_v1',
+  'backgammon_v1',
 ];
 
 export function getGamesByCategory(): Array<{
@@ -290,10 +304,16 @@ import {
   findCatDashTheme,
   type CatDashThemeMeta,
 } from './cat-dash-themes';
+import {
+  BACKGAMMON_THEMES,
+  findBackgammonTheme,
+  type BackgammonThemeMeta,
+} from './backgammon-themes';
 export { TIC_TAC_TOE_THEMES, findTicTacToeTheme, type TicTacToeThemeMeta };
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
 export { CAT_DASH_THEMES, findCatDashTheme, type CatDashThemeMeta };
+export { BACKGAMMON_THEMES, findBackgammonTheme, type BackgammonThemeMeta };
 
 export interface GlimwormThemeMeta {
   id: string;
@@ -319,6 +339,7 @@ export function themesFor(gameId: GameId) {
   if (gameId === 'chess_v1') return CHESS_THEMES;
   if (gameId === 'checkers_v1') return CHECKERS_THEMES;
   if (gameId === 'cat_dash_v1') return CAT_DASH_THEMES;
+  if (gameId === 'backgammon_v1') return BACKGAMMON_THEMES;
   if (gameId === 'glimworm_v1') return GLIMWORM_THEMES;
   return [];
 }

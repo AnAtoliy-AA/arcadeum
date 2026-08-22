@@ -245,6 +245,11 @@ export const en = {
       chess_v1: { name: 'Chess', subtitle: 'Classic strategy', icon: '♞' },
       checkers_v1: { name: 'Checkers', subtitle: 'Board classic', icon: '●' },
       cat_dash_v1: { name: 'Cat Dash', subtitle: 'Cat racing', icon: '🐱' },
+      backgammon_v1: {
+        name: 'Backgammon',
+        subtitle: 'Board strategy',
+        icon: '🎲',
+      },
     },
     cup: {
       eyebrow: 'Tournament',

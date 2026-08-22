@@ -7,7 +7,7 @@ This skill turns a single instruction ("implement chess", "add Connect Four") in
 
 ## Reference implementations
 
-When in doubt, **mirror sea-battle** ([apps/be/src/games/engines/sea-battle/](apps/be/src/games/engines/sea-battle/), [apps/web/src/widgets/SeaBattleGame/](apps/web/src/widgets/SeaBattleGame/)) — it is the canonical full-stack game. The most recent reference is tic-tac-toe ([apps/be/src/games/engines/tic-tac-toe/](apps/be/src/games/engines/tic-tac-toe/), [apps/web/src/widgets/TicTacToeGame/](apps/web/src/widgets/TicTacToeGame/)).
+When in doubt, **mirror sea-battle** ([apps/be/src/games/engines/sea-battle/](apps/be/src/games/engines/sea-battle/), [apps/web/src/widgets/SeaBattleGame/](apps/web/src/widgets/SeaBattleGame/)) — it is the canonical full-stack game. The most recent reference is tic-tac-toe ([apps/be/src/games/engines/tic-tac-toe/](apps/be/src/games/engines/tic-tac-toe/), [apps/web/src/widgets/TicTacToeGame/](apps/web/src/widgets/TicTacToeGame/)). For dice/board games with randomness, rule variants, and heuristic AI bots, mirror backgammon ([apps/be/src/games/engines/backgammon/](apps/be/src/games/engines/backgammon/), [apps/web/src/widgets/BoardGames/BackgammonGame/](apps/web/src/widgets/BoardGames/BackgammonGame/)).
 
 ## Naming convention
 
@@ -422,6 +422,11 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 22. **Per-option player caps go through the service, not the room.** If players-per-game depends on a game-option (board size, mode, etc.), don't try to mutate the room's `maxPlayers` when the option changes — leave room.maxPlayers at the overall ceiling. Enforce the per-option cap at `startSession` (BE) and surface it in the lobby selector ("3×3 · up to 2"). The BE error message tells the host to reduce players or pick a different option.
 
 23. **`home-games-slider.spec.ts` hardcodes the featured-games count and order.** Adding a new game to `home/data/games.ts` breaks `await expect(gameCards).toHaveCount(N)` and the per-index `toHaveText` assertions. Update both the count and add the new `<h3>` assertion in the same commit as the data change.
+24. **Never Trust Client RNG**: Randomness (dice rolls, shuffles, coin flips) must come exclusively from server-side code. NEVER read random values from the action payload. Make randomness injectable via an `@Optional()` constructor parameter (e.g. `constructor(@Optional() diceRoller?: DiceRoller)`) so unit tests can force deterministic outcomes — but mark it optional or Nest DI fails to bootstrap (see gotcha 25).
+25. **Optional constructor params on engines must be `@Optional()`**: any non-injectable parameter type in an engine's constructor makes Nest throw `UnknownDependenciesException` at bootstrap — which crashes every Web E2E shard at web-server startup, not just one test. Add a DI regression spec that compiles the engines module via `Test.createTestingModule` and resolves the engine.
+26. **Randomize Opening Turn**: Do not hardcode `currentTurnIndex: 0` — always pick the first mover randomly (fairness). Tests must set the turn index explicitly after `initializeState()`.
+27. **Bot Deadlock Fallback**: When a bot cannot act (no legal moves mid-turn), it MUST call a defensive pass/skip action instead of breaking out of its loop — otherwise the session can get stuck until the watchdog fires. Add a validated `<game>` pass-turn action to the engine and a matching service method.
+28. **Win Quality Classification**: For games with graded wins (backgammon gammon/backgammon, chess resignations, etc.), record a `winType` on the game-over state at the moment of victory — stake multipliers and stats depend on it later and retrofitting is expensive.
 
 ## When the user says "implement game X"
 

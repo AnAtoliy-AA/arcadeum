@@ -5,6 +5,7 @@ import { CascadeBoardPoster } from './CascadeBoardPoster';
 import { ChessBoardPoster } from './ChessBoardPoster';
 import { CheckersBoardPoster } from './CheckersBoardPoster';
 import { CatDashBoardPoster } from './CatDashBoardPoster';
+import { BackgammonBoardPoster } from './BackgammonBoardPoster';
 import {
   findCascadeTheme,
   findChessTheme,
@@ -12,6 +13,7 @@ import {
   findSeaBattleTheme,
   findTicTacToeTheme,
   findCatDashTheme,
+  findBackgammonTheme,
   type GameId,
 } from '../data/themes';
 import { findCheckersTheme } from '../data/checkers-themes';
@@ -52,6 +54,10 @@ export function GameArt({ gameId, themeId, size = 'sm' }: Props) {
   if (gameId === 'cat_dash_v1') {
     const theme = findCatDashTheme(themeId);
     return <CatDashBoardPoster theme={theme} size={size} />;
+  }
+  if (gameId === 'backgammon_v1') {
+    const theme = findBackgammonTheme(themeId);
+    return <BackgammonBoardPoster theme={theme} size={size} />;
   }
   return <GlimwormPoster size={size} />;
 }

@@ -68,12 +68,10 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   const theme = useSeaBattleTheme();
   const media = useMediaQuery();
   const isMobile = !media.gtMd;
-
   const serverShips = useMemo(
     () => currentPlayer?.ships ?? [],
     [currentPlayer?.ships],
   );
-
   const [localShips, setLocalShips] = useState<Ship[]>([]);
   const localShipsRef = useRef<Ship[]>([]);
   const localShipsModifiedRef = useRef(false);
@@ -84,7 +82,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   });
 
   useEffect(() => {
-    if (localShipsModifiedRef.current) return;
+    if (serverShips.length > 0) localShipsModifiedRef.current = false;
     if (prevServerShipsRef.current === serverShips) return;
     prevServerShipsRef.current = serverShips;
     setLocalShips(serverShips);
@@ -368,6 +366,11 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     onResetPlacement();
   }, [onResetPlacement]);
 
+  const handleAutoPlaceInternal = useCallback(() => {
+    localShipsModifiedRef.current = false;
+    onAutoPlace?.();
+  }, [onAutoPlace]);
+
   const isAllShipsPlaced = unplacedShips.length === 0;
   const pendingCells: ShipCell[] = [];
 
@@ -438,7 +441,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
           onRotate={handleRotate}
           onConfirm={handleConfirm}
           onReset={handleReset}
-          onAutoPlace={onAutoPlace}
+          onAutoPlace={handleAutoPlaceInternal}
           onCancelMove={clearMovingState}
           isMovingShip={!!movingShipId}
           t={t}
@@ -484,7 +487,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
         onRotate={handleRotate}
         onConfirm={handleConfirm}
         onReset={handleReset}
-        onAutoPlace={onAutoPlace}
+        onAutoPlace={handleAutoPlaceInternal}
         onCancelMove={clearMovingState}
         isMovingShip={!!movingShipId}
         t={t}

@@ -13,6 +13,7 @@ export type GameType =
   | 'checkers_v1'
   | 'cat_dash_v1'
   | 'backgammon_v1'
+  | 'hearts_v1'
   | null;
 
 interface UseGameActionsOptions {

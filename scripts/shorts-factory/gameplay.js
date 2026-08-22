@@ -538,6 +538,40 @@ const GAMES = [
     },
   },
   {
+    name: 'hearts',
+    slug: 'hearts_v1',
+    url: '/en/games/hearts',
+    hookText: '♥ SHOOT THE MOON!',
+    actionPhases: ['🃏 CARD PASSING!', '♠ QUEEN OF SPADES!', '🌙 MOON SHOT!'],
+    captions: [
+      'Dodge Hearts and the Queen of Spades! ♥♠ Play Hearts free on arcadeum.games #hearts #cardgame #tricktaking',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        '[data-testid="hearts-board"], [data-testid="game-board-section"]',
+        { timeout: 20000 },
+      );
+      await sleep(500);
+    },
+    async makeMove(page) {
+      const playable = page.locator(
+        '[data-testid^="hearts-card-"]:not([disabled])',
+      );
+      if ((await playable.count()) > 0) {
+        await playable.first().click({ force: true });
+        return true;
+      }
+      return false;
+    },
+    async isMyTurn(page) {
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
+    },
+  },
+  {
     name: 'glimworm',
     slug: 'glimworm_v1',
     url: '/en/games/glimworm',

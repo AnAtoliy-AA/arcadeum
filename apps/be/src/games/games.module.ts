@@ -84,6 +84,9 @@ import { CatDashGateway } from './cat-dash.gateway';
 import { BackgammonService } from './backgammon/backgammon.service';
 import { BackgammonBotService } from './backgammon/backgammon-bot.service';
 import { BackgammonGateway } from './backgammon.gateway';
+import { HeartsService } from './hearts/hearts.service';
+import { HeartsBotService } from './hearts/hearts-bot.service';
+import { HeartsGateway } from './hearts.gateway';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { RankingModule } from '../ranking/ranking.module';
@@ -198,6 +201,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Backgammon
     BackgammonService,
     BackgammonBotService,
+    // Hearts
+    HeartsService,
+    HeartsBotService,
     // AI vs AI
     AiVsAiService,
     // Utilities
@@ -223,6 +229,8 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     CheckersGateway,
     CatDashGateway,
     BackgammonGateway,
+    // Hearts (gateway registered as provider, not exported)
+    HeartsGateway,
   ],
   exports: [GameHistoryStatsService, GameRoomsMatchmakingService],
 })

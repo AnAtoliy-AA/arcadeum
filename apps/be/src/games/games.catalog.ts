@@ -261,6 +261,33 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       },
     ],
   },
+  {
+    gameId: 'hearts_v1',
+    startMode: 'immediate',
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: [],
+    variants: [...SHARED_VISUAL_THEMES],
+    rules: [
+      {
+        ruleId: 'passing',
+        label: 'Card passing',
+        description:
+          'Pass 3 cards left, right, across, or hold hands each round before play.',
+      },
+      {
+        ruleId: 'shoot_the_moon',
+        label: 'Shoot the moon',
+        description:
+          'Take all 26 penalty points in a hand to zero your score and add 26 to every opponent.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+    ],
+  },
 ];
 
 const CATALOG_INDEX = new Map<string, GameCatalogEntry>(

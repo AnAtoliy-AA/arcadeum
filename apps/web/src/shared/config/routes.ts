@@ -37,6 +37,8 @@ export const buildRoutes = (locale: Locale) => {
     catDashLanding: `/${locale}/${s('games')}/cat-dash`,
     backgammon: `/${locale}/${s('games')}/backgammon`,
     backgammonLanding: `/${locale}/${s('games')}/backgammon`,
+    hearts: `/${locale}/${s('games')}/hearts`,
+    heartsLanding: `/${locale}/${s('games')}/hearts`,
 
     // Chat
     chats: `/${locale}/${s('chats')}`,

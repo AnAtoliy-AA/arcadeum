@@ -322,9 +322,13 @@ Add the new game to `GAMES` in `scripts/shorts-factory/gameplay.js` so automated
 }
 ```
 
-Test the short generation locally:
+Test the short generation locally (automatically reads `WEB_PORT` from `.env.local` / `.env`, defaulting to 3000):
 ```bash
-node scripts/shorts-factory/gameplay.js --preview --short-only --url http://localhost:3300 --game <game-name>
+# Preview short locally (automatically connects to http://localhost:${WEB_PORT || 3000}):
+node scripts/shorts-factory/gameplay.js --preview --short-only --game <game-name>
+
+# Or test against a specific URL:
+node scripts/shorts-factory/gameplay.js --preview --short-only --url http://localhost:3000 --game <game-name>
 ```
 
 ### 12. Before-PR punch list

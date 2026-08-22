@@ -26,7 +26,12 @@ const {
 const path = require('path');
 const axios = require('axios');
 const FormData = require('form-data');
-require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
+const rootDir = path.join(__dirname, '..', '..');
+require('dotenv').config({ path: path.join(rootDir, '.env') });
+require('dotenv').config({ path: path.join(rootDir, '.env.local') });
+require('dotenv').config({
+  path: path.join(rootDir, 'apps', 'web', '.env.local'),
+});
 
 // Parse CLI arguments
 const parsedArgs = {
@@ -63,9 +68,15 @@ for (let i = 2; i < process.argv.length; i++) {
 // CONFIGURATION
 // ============================================================================
 
+const defaultLocalPort = process.env.WEB_PORT || process.env.PORT || '3000';
+const defaultBaseUrl =
+  process.env.BASE_URL ||
+  (parsedArgs.preview
+    ? `http://localhost:${defaultLocalPort}`
+    : 'https://arcadeum.games');
+
 const CONFIG = {
-  baseUrl:
-    parsedArgs.baseUrl || process.env.BASE_URL || 'https://arcadeum.games',
+  baseUrl: parsedArgs.baseUrl || defaultBaseUrl,
   rawCapturesDir: path.join(__dirname, '..', '..', 'raw_captures'),
   outputDir: path.join(__dirname, '..', '..', 'output'),
   fullDuration: { min: 45000, max: 55000 },

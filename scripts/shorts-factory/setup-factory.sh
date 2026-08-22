@@ -72,7 +72,7 @@ DELAY=$(( RANDOM % 7200 ))
 echo "[$(date)] Waiting ${DELAY} seconds before running shorts factory..."
 sleep $DELAY
 cd /opt/arcadeum
-exec node scripts/shorts-factory/factory.js
+exec node scripts/shorts-factory/daily-runner.js
 EOF
 sudo chmod +x /opt/arcadeum/scripts/shorts-factory-random.sh
 

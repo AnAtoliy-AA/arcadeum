@@ -286,7 +286,52 @@ Cover: landing (hero/highlights/steps/themes/rules/faq), lobby (variants/options
 - **Web widget**: render test with the widget's own `<Name>ThemeProvider variant="classic">` wrapper (no global provider needed; classes resolve via CSS vars)
 - **Playwright e2e**: lobby → start → place move → win (can be deferred and listed as follow-up in PR)
 
-### 11. Before-PR punch list
+### 11. Gameplay Shorts Integration (`scripts/shorts-factory/gameplay.js`)
+
+Add the new game to `GAMES` in `scripts/shorts-factory/gameplay.js` so automated 10–15s gameplay shorts are created and posted automatically to YouTube Shorts, Instagram Reels, TikTok, and X:
+
+```javascript
+{
+  name: '<game-name>',
+  slug: '<game>_v1',
+  url: '/en/games/<game-name>',
+  caption: '<Title> - <tagline>! 🎮✨ #<game-name> #gaming #arcadeum',
+  moves: [], // Optional scripted moves or dynamically generated
+  async waitForGame(page) {
+    // Wait for the game board to be interactive (e.g. data-testid)
+    await page.waitForSelector('[data-testid="<game>-board"], [data-testid="game-board-section"]', {
+      timeout: 20000,
+    });
+    await sleep(500);
+  },
+  async makeMove(page, move) {
+    // Click playable pieces, cells, or buttons
+    const playable = page.locator('[data-testid^="<game>-cell-"]:not([disabled])');
+    if ((await playable.count()) > 0) {
+      await playable.first().click({ force: true });
+      return true;
+    }
+    return false;
+  },
+  async isMyTurn(page) {
+    const label = page.locator('[data-testid="turn-indicator-label"]');
+    if ((await label.count()) === 0) return false;
+    const text = await label.textContent();
+    return text && text.trim().length > 0;
+  },
+}
+```
+
+Test the short generation locally (automatically reads `WEB_PORT` from `.env.local` / `.env`, defaulting to 3000):
+```bash
+# Preview short locally (automatically connects to http://localhost:${WEB_PORT || 3000}):
+node scripts/shorts-factory/gameplay.js --preview --short-only --game <game-name>
+
+# Or test against a specific URL:
+node scripts/shorts-factory/gameplay.js --preview --short-only --url http://localhost:3000 --game <game-name>
+```
+
+### 12. Before-PR punch list
 
 Walk this list manually — these are the surfaces where missing wiring causes silent regressions (text-only thumbnails, "Unsupported game type" toasts, button-clicks that toggle state into the void, etc.):
 
@@ -299,13 +344,14 @@ Walk this list manually — these are the surfaces where missing wiring causes s
 - [ ] Create page: `themes.ts` + `ThemePicker.tsx` block + `art/<Name>BoardPoster.tsx` + `GameArt.tsx` branch + `GameCreateView.tsx` branch.
 - [ ] Rules modal mounted in lobby AND in-game branches of `Game.tsx`; also wired in `RulesAccess.tsx`.
 - [ ] End-game uses `useGameEndState` + `GameEndModals`, not per-game modal or manual wiring.
+- [ ] Gameplay shorts entry added to `GAMES` in `scripts/shorts-factory/gameplay.js`.
 - [ ] i18n keys present in all 5 locales (en, es, fr, ru, by) — including SEO entries.
 - [ ] BE engine spec + bot spec passing; web hook/widget vitest passing.
 - [ ] [`apps/web/e2e/home-games-slider.spec.ts`](apps/web/e2e/home-games-slider.spec.ts) — bump the expected `toHaveCount(N)` and add the new game's `<h3>` assertion; the test hardcodes the featured-games count and order.
 
 **Mobile scope:** the new-game flow targets web + BE only. Add a mobile screen only if the user explicitly asks; otherwise note "mobile follow-up" in the PR.
 
-### 12. Verify locally, then PR
+### 13. Verify locally, then PR
 
 ```bash
 pnpm --filter @arcadeum/be test

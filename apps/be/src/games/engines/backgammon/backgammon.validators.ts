@@ -69,6 +69,34 @@ export function validateMoveChecker(
   return { ok: true };
 }
 
+export function validatePassTurn(
+  state: BackgammonState,
+  context: GameActionContext,
+): { ok: true } | { ok: false; error: string } {
+  if (state.phase !== GAME_PHASE.MOVE) {
+    return { ok: false, error: 'Cannot pass turn in current phase' };
+  }
+  const currentTurnPlayerId = state.playerOrder[state.currentTurnIndex];
+  if (context.userId !== currentTurnPlayerId) {
+    return { ok: false, error: 'Not your turn to pass' };
+  }
+
+  const legalMoves = getAllLegalMoves(
+    context.userId,
+    state.playerOrder,
+    state.points,
+    state.bar,
+    state.borneOff,
+    state.dice,
+    state.options.ruleVariant,
+  );
+  if (legalMoves.length > 0) {
+    return { ok: false, error: 'Cannot pass while legal moves are available' };
+  }
+
+  return { ok: true };
+}
+
 export function validateForfeit(
   state: BackgammonState,
   context: GameActionContext,

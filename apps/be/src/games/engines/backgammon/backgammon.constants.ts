@@ -34,6 +34,7 @@ export type GamePhase = (typeof GAME_PHASE)[keyof typeof GAME_PHASE];
 export const ACTION = {
   ROLL_DICE: 'roll_dice',
   MOVE_CHECKER: 'move_checker',
+  PASS_TURN: 'pass_turn',
   FORFEIT: 'forfeit',
 } as const;
 

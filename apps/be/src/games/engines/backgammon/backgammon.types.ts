@@ -27,6 +27,8 @@ export interface MoveCheckerPayload {
   to: number | 'off';
 }
 
+export type WinType = 'single' | 'gammon' | 'backgammon';
+
 export interface BackgammonState extends BaseGameState {
   phase: GamePhase;
   options: BackgammonOptions;
@@ -39,6 +41,8 @@ export interface BackgammonState extends BaseGameState {
   playerOrder: string[];
   players: BackgammonPlayer[];
   winnerId: string | null;
+  /** Quality of the win: gammon (loser bore off nothing) or backgammon (loser bore off nothing and has checkers in winner's home board / on bar). `null` until the game ends. */
+  winType: WinType | null;
   isDraw: boolean;
 }
 

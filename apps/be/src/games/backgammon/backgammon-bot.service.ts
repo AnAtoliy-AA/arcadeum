@@ -71,7 +71,17 @@ export class BackgammonBotService {
           currentState = updated.state as unknown as BackgammonState;
         } else if (currentState.phase === GAME_PHASE.MOVE) {
           const move = this.pickMove(currentState, currentTurnPlayerId);
-          if (!move) break;
+          if (!move) {
+            // Defensive fallback: if the bot is stuck in MOVE with no legal
+            // moves (state drift), pass the turn instead of deadlocking.
+            const updated = await this.backgammonService.passTurn(
+              currentTurnPlayerId,
+              currentSession.roomId,
+            );
+            currentSession = updated;
+            currentState = updated.state as unknown as BackgammonState;
+            continue;
+          }
           const updated = await this.backgammonService.moveChecker(
             currentTurnPlayerId,
             currentSession.roomId,

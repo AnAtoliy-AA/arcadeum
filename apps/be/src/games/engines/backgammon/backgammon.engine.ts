@@ -12,30 +12,43 @@ import type {
   InitializeConfig,
   MoveCheckerPayload,
 } from './backgammon.types';
-import {
-  calculatePipCount,
-  createInitialPoints,
-  getAllLegalMoves,
-} from './backgammon.utils';
-import {
-  validateForfeit,
-  validateMoveChecker,
-  validateRollDice,
-} from './backgammon.validators';
-import { validateBackgammonConfig } from './backgammon.config';
 import type {
   GameActionContext,
   GameActionResult,
   GameMetadata,
 } from '../base/game-engine.interface';
+import {
+  calculatePipCount,
+  createInitialPoints,
+  determineWinType,
+  getAllLegalMoves,
+} from './backgammon.utils';
+import {
+  validateForfeit,
+  validateMoveChecker,
+  validatePassTurn,
+  validateRollDice,
+} from './backgammon.validators';
+import { validateBackgammonConfig } from './backgammon.config';
 
 function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+/** Source of dice rolls. Injected so tests can force deterministic rolls — the payload is NEVER trusted for randomness (anti-cheat). */
+export type DiceRoller = () => [number, number];
+
+const randomDiceRoller: DiceRoller = () => [randomInt(1, 7), randomInt(1, 7)];
+
 @Injectable()
 export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
   private readonly logger = new Logger(BackgammonEngine.name);
+  private readonly rollDicePair: DiceRoller;
+
+  constructor(diceRoller: DiceRoller = randomDiceRoller) {
+    super();
+    this.rollDicePair = diceRoller;
+  }
 
   getMetadata(): GameMetadata {
     return {
@@ -43,7 +56,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       name: 'Backgammon',
       minPlayers: 2,
       maxPlayers: 2,
-      version: '1.0.0',
+      version: '1.1.0',
       description:
         'Classic board game with dice rolls, bearing off, and bar hits',
       category: 'Board Game',
@@ -97,10 +110,12 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       },
       dice: [],
       rolledDice: null,
-      currentTurnIndex: 0,
+      // Fairness: randomize who moves first instead of always player 0.
+      currentTurnIndex: randomInt(0, 2),
       playerOrder: [...playerIds],
       players,
       winnerId: null,
+      winType: null,
       isDraw: false,
       logs: [this.createLogEntry('system', 'Backgammon game started.')],
     };
@@ -121,6 +136,9 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
     }
     if (action === ACTION.MOVE_CHECKER) {
       return validateMoveChecker(state, context, payload).ok;
+    }
+    if (action === ACTION.PASS_TURN) {
+      return validatePassTurn(state, context).ok;
     }
     if (action === ACTION.FORFEIT) {
       return validateForfeit(state, context).ok;
@@ -146,10 +164,9 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
     };
 
     if (action === ACTION.ROLL_DICE) {
-      const customDice = (payload as { dice?: [number, number] } | undefined)
-        ?.dice;
-      const d1 = customDice ? customDice[0] : randomInt(1, 7);
-      const d2 = customDice ? customDice[1] : randomInt(1, 7);
+      // Dice come exclusively from the injected roller — never from the
+      // client payload (anti-cheat: clients must not influence randomness).
+      const [d1, d2] = this.rollDicePair();
 
       const rolledDice: [number, number] = [d1, d2];
       const dice = d1 === d2 ? [d1, d1, d1, d1] : [d1, d2];
@@ -261,8 +278,18 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       if ((newState.borneOff[playerId] ?? 0) >= targetCheckers) {
         newState.phase = GAME_PHASE.GAME_OVER;
         newState.winnerId = playerId;
+        newState.winType = determineWinType(
+          playerId,
+          newState.playerOrder,
+          newState.points,
+          newState.bar,
+          newState.borneOff,
+        );
         newState.logs.push(
-          this.createLogEntry('system', 'Game over! Winner determined.'),
+          this.createLogEntry(
+            'system',
+            `Game over! Win type: ${newState.winType}.`,
+          ),
         );
         return this.successResult(newState);
       }
@@ -286,6 +313,21 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       return this.successResult(newState);
     }
 
+    if (action === ACTION.PASS_TURN) {
+      const passCheck = validatePassTurn(newState, context);
+      if (!passCheck.ok) return this.errorResult(passCheck.error);
+
+      newState.currentTurnIndex = (newState.currentTurnIndex + 1) % 2;
+      newState.dice = [];
+      newState.phase = GAME_PHASE.ROLL;
+      newState.logs.push(
+        this.createLogEntry('action', 'No legal moves — turn passed.', {
+          senderId: context.userId,
+        }),
+      );
+      return this.successResult(newState);
+    }
+
     if (action === ACTION.FORFEIT) {
       const forfeitingPlayerId = context.userId;
       const winnerId =
@@ -293,6 +335,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
 
       newState.phase = GAME_PHASE.GAME_OVER;
       newState.winnerId = winnerId;
+      newState.winType = 'single';
       newState.logs.push(
         this.createLogEntry('action', 'Player forfeited the match.', {
           senderId: forfeitingPlayerId,
@@ -321,6 +364,18 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       return [ACTION.ROLL_DICE, ACTION.FORFEIT];
     }
     if (state.phase === GAME_PHASE.MOVE) {
+      const remainingLegalMoves = getAllLegalMoves(
+        playerId,
+        state.playerOrder,
+        state.points,
+        state.bar,
+        state.borneOff,
+        state.dice,
+        state.options.ruleVariant,
+      );
+      if (remainingLegalMoves.length === 0) {
+        return [ACTION.PASS_TURN, ACTION.FORFEIT];
+      }
       return [ACTION.MOVE_CHECKER, ACTION.FORFEIT];
     }
     return [ACTION.FORFEIT];

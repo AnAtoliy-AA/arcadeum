@@ -5,7 +5,6 @@ import type { GameActionContext } from '../engines/base/game-engine.interface';
 
 describe('BackgammonBotService', () => {
   let botService: BackgammonBotService;
-  let engine: BackgammonEngine;
   const humanId = 'user-1';
   const botId = 'bot-1';
 
@@ -16,9 +15,13 @@ describe('BackgammonBotService', () => {
     timestamp: new Date(),
   });
 
+  const makeEngine = (...rolls: Array<[number, number]>): BackgammonEngine => {
+    const queue = [...rolls];
+    return new BackgammonEngine(() => queue.shift() ?? [1, 1]);
+  };
+
   beforeEach(() => {
     botService = new BackgammonBotService({} as never);
-    engine = new BackgammonEngine();
   });
 
   it('identifies bot userIds properly', () => {
@@ -27,12 +30,13 @@ describe('BackgammonBotService', () => {
   });
 
   it('picks a valid move from rolled dice', () => {
+    const engine = makeEngine([3, 5]);
     const state = engine.initializeState([botId, humanId]);
+    state.currentTurnIndex = 0;
     const rolled = engine.executeAction(
       state,
       ACTION.ROLL_DICE,
       makeContext(botId),
-      { dice: [3, 5] },
     );
 
     const move = botService.pickMove(rolled.state!, botId);
@@ -41,7 +45,9 @@ describe('BackgammonBotService', () => {
   });
 
   it('prioritizes hitting opponent blot when available', () => {
+    const engine = makeEngine([3, 1]);
     const state = engine.initializeState([botId, humanId]);
+    state.currentTurnIndex = 0;
     state.points[20] = { playerId: humanId, count: 1 };
     state.points[23] = { playerId: botId, count: 2 };
 
@@ -49,7 +55,6 @@ describe('BackgammonBotService', () => {
       state,
       ACTION.ROLL_DICE,
       makeContext(botId),
-      { dice: [3, 1] },
     );
 
     const move = botService.pickMove(rolled.state!, botId);
@@ -57,7 +62,9 @@ describe('BackgammonBotService', () => {
   });
 
   it('prioritizes bearing off when home board is clear', () => {
+    const engine = makeEngine([3, 4]);
     const state = engine.initializeState([botId, humanId]);
+    state.currentTurnIndex = 0;
     for (let i = 0; i < 24; i++) {
       state.points[i] = { playerId: null, count: 0 };
     }
@@ -68,7 +75,6 @@ describe('BackgammonBotService', () => {
       state,
       ACTION.ROLL_DICE,
       makeContext(botId),
-      { dice: [3, 4] },
     );
 
     const move = botService.pickMove(rolled.state!, botId);

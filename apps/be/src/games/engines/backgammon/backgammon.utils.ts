@@ -3,7 +3,7 @@ import {
   TOTAL_POINTS,
   type RuleVariant,
 } from './backgammon.constants';
-import type { BackgammonPoint, LegalMove } from './backgammon.types';
+import type { BackgammonPoint, LegalMove, WinType } from './backgammon.types';
 
 export function createInitialPoints(
   player0Id: string,
@@ -132,6 +132,40 @@ export function isPointOpen(
     return false;
   }
   return point.count === 1;
+}
+
+/**
+ * Classifies win quality per standard backgammon scoring:
+ * - `backgammon`: loser bore off nothing AND has checkers on the bar or in
+ *   the winner's home board.
+ * - `gammon`: loser bore off nothing.
+ * - `single`: otherwise (or forfeits).
+ */
+export function determineWinType(
+  winnerId: string,
+  playerOrder: string[],
+  points: BackgammonPoint[],
+  bar: Record<string, number>,
+  borneOff: Record<string, number>,
+): WinType {
+  const loserId = playerOrder.find((id) => id !== winnerId);
+  if (!loserId) return 'single';
+  if ((borneOff[loserId] ?? 0) > 0) return 'single';
+
+  const winnerIsP0 = isPlayer0(winnerId, playerOrder);
+  if ((bar[loserId] ?? 0) > 0) return 'backgammon';
+
+  // Winner's home board: P0 bears in from high points into 0-5,
+  // P1 from low points into 18-23.
+  const [start, end] = winnerIsP0 ? [0, 5] : [18, 23];
+  let losersInWinnerHome = 0;
+  for (let i = start; i <= end; i++) {
+    if (points[i].playerId === loserId) {
+      losersInWinnerHome += points[i].count;
+    }
+  }
+
+  return losersInWinnerHome > 0 ? 'backgammon' : 'gammon';
 }
 
 export function getLegalMovesForDie(

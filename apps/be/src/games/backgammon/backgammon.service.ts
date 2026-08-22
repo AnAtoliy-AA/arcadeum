@@ -54,6 +54,10 @@ export class BackgammonService extends BaseGameService<BackgammonOptions> {
     return this.runAction(userId, roomId, 'move_checker', payload);
   }
 
+  async passTurn(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'pass_turn', {});
+  }
+
   protected resolveOptions(raw: unknown): BackgammonOptions {
     const r = (raw ?? {}) as Partial<{
       variant: string;

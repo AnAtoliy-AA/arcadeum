@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.2] - 2026-08-22
+
+### Added
+- add all popular rule variants to lobby and update skill (ARC-885) (ARC-885)
+- add AI vs AI spectating support (ARC-885) (ARC-885)
+- add Long Nardy, Hypergammon, and Tavla rule variants (ARC-885) (ARC-885)
+- add AnimatedDice to shared UI and fix backgammon bot turn loop (ARC-885) (ARC-885)
+- add doubles celebration, blot hit indicators, and race lead meter (ARC-885) (ARC-885)
+- add catalog real board preview and skill documentation (ARC-885) (ARC-885)
+- add backgammon (ARC-885) (ARC-885)
+
+### Fixed
+- make BackgammonEngine dice roller optional for Nest DI (ARC-885) (ARC-885)
+- harden backgammon engine and bot (ARC-885) (ARC-885)
+- register BackgammonGateway in GamesGateway (ARC-885) (ARC-885)
+
+### Documentation
+- update new-game skill for single-prompt autonomous execution (ARC-885) (ARC-885)
+
+
 ## [1.26.1] - 2026-08-22
 
 ### Added

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.1] - 2026-08-22
+
+### Added
+- enhance gameplay shorts with kinetic badges, sfx audio, telegram approvals, and expanded games (ARC-892) (ARC-892)
+- read WEB_PORT from env with fallback to 3000 (ARC-892) (ARC-892)
+- add gameplay shorts pipeline, daily runner and branded outro (ARC-892) (ARC-892)
+
+### Documentation
+- document shorts factory integration in new-game skill (ARC-892) (ARC-892)
+
+
 ## [1.26.0] - 2026-08-21
 
 ### Changed

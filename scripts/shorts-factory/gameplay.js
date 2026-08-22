@@ -79,10 +79,15 @@ const CONFIG = {
   baseUrl: parsedArgs.baseUrl || defaultBaseUrl,
   rawCapturesDir: path.join(__dirname, '..', '..', 'raw_captures'),
   outputDir: path.join(__dirname, '..', '..', 'output'),
+  pendingDir: path.join(__dirname, '..', '..', 'pending'),
   fullDuration: { min: 45000, max: 55000 },
   shortDuration: { min: 10, max: 15 },
   fadeOutDuration: 1.5,
   endCardDuration: 2.5,
+  enableApproval: process.env.SHORTS_FACTORY_APPROVAL === 'true',
+  tgBotUrl: process.env.TG_BOT_URL || 'http://localhost:4001',
+  approvalTimeoutMs: 30 * 60 * 1000,
+  pollIntervalMs: 5000,
   postizBaseUrl:
     process.env.POSTIZ_BASE_URL ||
     'https://postiz.arcadeum.games/api/public/v1',
@@ -102,11 +107,18 @@ const GAMES = [
     name: 'sea-battle',
     slug: 'sea_battle_v1',
     url: '/en/games/sea-battle',
-    caption:
-      'Sea Battle - sink enemy fleets with tactics and team battles! ⚓💥 #seabattle #battleship #gaming #arcadeum',
+    hookText: '⚓ SINK ENEMY FLEET!',
+    actionPhrases: [
+      '💥 MISSILE LAUNCH!',
+      '🎯 DIRECT HIT!',
+      '🔥 FLEET ON FIRE!',
+    ],
+    captions: [
+      'Can you sink their entire fleet before yours goes down? ⚓💥 Play free on arcadeum.games #seabattle #battleship #gaming #shorts',
+      'Master naval strategy and outplay bots & friends! 🚢🌊 No download required on arcadeum.games #seabattlegame #strategy #multiplayer',
+    ],
     moves: [],
     async waitForGame(page) {
-      // Step A: Dismiss any modal overlays if present
       for (let i = 0; i < 3; i++) {
         try {
           const closeBtn = page
@@ -121,7 +133,6 @@ const GAMES = [
         } catch {}
       }
 
-      // Step B: Wait for placement board, show fleet auto-place animation
       const autoPlaceBtn = page
         .locator(
           '[data-testid="sea-battle-auto-place"], button:has-text("Auto Place"), button:has-text("Randomize"), button:has-text("🎲")',
@@ -131,17 +142,14 @@ const GAMES = [
       try {
         await autoPlaceBtn.waitFor({ state: 'visible', timeout: 15000 });
         await sleep(600);
-        // Click Auto Place (1/2) with visual delay
         await autoPlaceBtn.dispatchEvent('click');
         log('info', 'sea-battle: auto-placed fleet (1/2)');
         await sleep(1000);
 
-        // Click Auto Place (2/2) second time so viewer sees ships reshuffle
         await autoPlaceBtn.dispatchEvent('click');
         log('info', 'sea-battle: auto-placed fleet (2/2)');
         await sleep(1000);
 
-        // Click Confirm Placement
         const confirmBtn = page
           .locator(
             '[data-testid="sea-battle-confirm-placement"], button:has-text("Confirm Placement"), button:has-text("⚓"), button.sb-valid-pulse',
@@ -158,7 +166,6 @@ const GAMES = [
         });
       }
 
-      // Step C: Wait for battle grid
       const battleGrid = page.locator(
         '.sb-board-grid.sb-my-turn, .sb-cell.sb-attackable, .sb-cell[data-row]',
       );
@@ -196,8 +203,16 @@ const GAMES = [
     name: 'chess',
     slug: 'chess_v1',
     url: '/en/games/chess',
-    caption:
-      'Chess - calculate every move and outplay your opponent! ♟️👑 #chess #strategy #arcadeum #boardgames',
+    hookText: '♟️ TACTICAL CHECKMATE?',
+    actionPhrases: [
+      '👑 SMART OPENING!',
+      '⚔️ PIECE CAPTURE!',
+      '⚡ TACTICAL STRIKE!',
+    ],
+    captions: [
+      'Spot the winning move in 3 seconds! ♟️👑 Play online at arcadeum.games #chess #chessgame #checkmate #boardgames',
+      'Fast-paced multiplayer chess in your browser! 🏆 No install needed on arcadeum.games #chessreels #strategy #arcadeum',
+    ],
     moves: [
       { from: 'e2', to: 'e4' },
       { from: 'g1', to: 'f3' },
@@ -228,7 +243,6 @@ const GAMES = [
         }
       }
 
-      // Fallback: pick any playable piece with legal moves
       const myPieces = page.locator(
         '[aria-label*="white"][role="gridcell"], [data-testid^="chess-"]',
       );
@@ -255,8 +269,12 @@ const GAMES = [
     name: 'checkers',
     slug: 'checkers_v1',
     url: '/en/games/checkers',
-    caption:
-      'Checkers - master the diagonals and claim the board! 🔴⚫ #checkers #tactics #boardgames #arcadeum',
+    hookText: '🔴 MASTER THE DIAGONALS!',
+    actionPhrases: ['👑 KING ME!', '🎯 JUMP & CAPTURE!', '⚡ PERFECT MOVE!'],
+    captions: [
+      'Diagonal jumps and double captures! 🔴⚫ Can you win? Play on arcadeum.games #checkers #draughts #boardgames',
+      'Outsmart your opponent in classic Checkers! 🏆 Free at arcadeum.games #boardgamereels #tactics #arcadeum',
+    ],
     moves: [],
     async waitForGame(page) {
       await page.waitForSelector(
@@ -311,7 +329,11 @@ const GAMES = [
     name: 'tic-tac-toe',
     slug: 'tic_tac_toe_v1',
     url: '/en/games/tic-tac-toe',
-    caption: 'Tic Tac Toe - classic showdown! ❌⭕ #tictactoe #arcadeum',
+    hookText: '❌ SPEED SHOWDOWN! ⭕',
+    actionPhrases: ['🔥 FAST MOVE!', '🎯 3 IN A ROW!', '⚡ PERFECT TRAP!'],
+    captions: [
+      'Classic Tic-Tac-Toe speed challenge! ❌⭕ Play free on arcadeum.games #tictactoe #speedgame #arcadeum',
+    ],
     moves: [
       { row: 1, col: 1 },
       { row: 0, col: 0 },
@@ -350,7 +372,11 @@ const GAMES = [
     name: 'cascade',
     slug: 'cascade_v1',
     url: '/en/games/cascade',
-    caption: 'Cascade - match the colors! 🃏 #cascade #cardgame #arcadeum',
+    hookText: '🃏 COLOR MATCH COMBOS!',
+    actionPhrases: ['🌈 COLOR SWITCH!', '⚡ CARD COMBO!', '💥 POWER PLAY!'],
+    captions: [
+      'Fast multiplayer card matching mayhem! 🃏🌈 Free at arcadeum.games #cardgames #cascade #partygames',
+    ],
     moves: [],
     _lastLabel: null,
     _stuckCount: 0,
@@ -361,7 +387,6 @@ const GAMES = [
       await page.waitForTimeout(2000);
     },
     async makeMove(page) {
-      // If color picker overlay is open, dismiss it by clicking a color
       const picker = page.locator(
         '.CascadeGame-module__WaeW-q__pickerBackdrop',
       );
@@ -376,7 +401,6 @@ const GAMES = [
         }
       }
 
-      // Click enabled (playable) hand buttons — try a different card if stuck
       const playable = page.locator(
         '[data-testid="game-board-section"] button:not([disabled]):not([aria-label*="Draw"]):not([aria-label*="Discard"])',
       );
@@ -433,7 +457,11 @@ const GAMES = [
     name: 'critical',
     slug: 'critical_v1',
     url: '/en/games/critical',
-    caption: 'Critical - card combos for the win! ⚡ #critical #arcadeum',
+    hookText: '⚡ ULTIMATE CARD BATTLE!',
+    actionPhrases: ['💥 COMBO HIT!', '🛡️ SHIELD UP!', '⚡ CRITICAL STRIKE!'],
+    captions: [
+      'Stack your deck and unleash critical combos! ⚡🃏 Play on arcadeum.games #cardbattler #criticalgame #gaming',
+    ],
     moves: [],
     async waitForGame(page) {
       try {
@@ -468,6 +496,99 @@ const GAMES = [
       if ((await label.count()) === 0) return false;
       const text = await label.textContent();
       return text && text.trim().length > 0;
+    },
+  },
+  {
+    name: 'backgammon',
+    slug: 'backgammon_v1',
+    url: '/en/games/backgammon',
+    hookText: '🎲 ROLL FOR VICTORY!',
+    actionPhrases: ['🎲 DOUBLE SIX!', '🏃 BEAR OFF!', '👑 BOARD DOMINATION!'],
+    captions: [
+      'Master the ancient art of Backgammon! 🎲🏆 Play online for free on arcadeum.games #backgammon #boardgame #tactics',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        '[data-testid="backgammon-board"], [data-testid="dice-roll-button"], [data-testid="game-board-section"]',
+        { timeout: 20000 },
+      );
+      await sleep(500);
+    },
+    async makeMove(page) {
+      const rollBtn = page.locator('[data-testid="dice-roll-button"]');
+      if ((await rollBtn.count()) > 0 && (await rollBtn.isEnabled())) {
+        await rollBtn.click({ force: true });
+        return true;
+      }
+      const movable = page.locator(
+        '[data-testid^="checker-point-"]:not([disabled])',
+      );
+      if ((await movable.count()) > 0) {
+        await movable.first().click({ force: true });
+        return true;
+      }
+      return false;
+    },
+    async isMyTurn(page) {
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
+    },
+  },
+  {
+    name: 'glimworm',
+    slug: 'glimworm_v1',
+    url: '/en/games/glimworm',
+    hookText: '🐍 NEON GLIMWORM!',
+    actionPhrases: ['✨ GLOW BOOST!', '🌀 DRIFT TURN!', '💥 HIGH SCORE!'],
+    captions: [
+      'Glide, glow, and survive the neon grid! 🐍✨ Free at arcadeum.games #glimworm #arcade #indiegames',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector('canvas, [data-testid="game-board-section"]', {
+        timeout: 20000,
+      });
+      await sleep(500);
+    },
+    async makeMove(page) {
+      await page.keyboard.press(
+        randomElement(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']),
+      );
+      return true;
+    },
+    async isMyTurn() {
+      return true;
+    },
+  },
+  {
+    name: 'cat-dash',
+    slug: 'cat_dash_v1',
+    url: '/en/games/cat-dash',
+    hookText: '🐱 RUN FAST, DODGE ALL!',
+    actionPhrases: [
+      '🐾 PURRFECT JUMP!',
+      '⚡ SPEED BOOST!',
+      '🐟 FISH COLLECTED!',
+    ],
+    captions: [
+      'Dash, leap, and collect treats in Cat Dash! 🐱🏃 Free on arcadeum.games #catdash #runner #casualgames',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector('canvas, [data-testid="game-board-section"]', {
+        timeout: 20000,
+      });
+      await sleep(500);
+    },
+    async makeMove(page) {
+      await page.keyboard.press('Space');
+      return true;
+    },
+    async isMyTurn() {
+      return true;
     },
   },
 ];
@@ -547,6 +668,194 @@ async function cleanOldOutput(maxAgeDays) {
     }
     if (deleted > 0) log('info', `Cleaned ${deleted} old output files`);
   } catch {}
+}
+
+async function injectKineticHookOverlay(page, game) {
+  try {
+    await page.evaluate((hookText) => {
+      const existing = document.getElementById('arcadeum-shorts-hook-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'arcadeum-shorts-hook-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999999;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      `;
+
+      const badge = document.createElement('div');
+      badge.id = 'arcadeum-hook-badge';
+      badge.innerHTML = `
+        <div style="
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(59, 130, 246, 0.95));
+          color: #ffffff;
+          font-size: 19px;
+          font-weight: 900;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          padding: 10px 22px;
+          border-radius: 9999px;
+          border: 2px solid rgba(255, 255, 255, 0.45);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(139, 92, 246, 0.6);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          animation: popInBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        ">
+          ${hookText}
+        </div>
+      `;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes popInBounce {
+          0% { transform: scale(0.4) translateY(-30px); opacity: 0; }
+          70% { transform: scale(1.08) translateY(0); opacity: 1; }
+          100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        @keyframes actionFlash {
+          0% { transform: scale(0.6) rotate(-4deg); opacity: 0; }
+          50% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+      `;
+
+      overlay.appendChild(style);
+      overlay.appendChild(badge);
+      document.body.appendChild(overlay);
+
+      setTimeout(() => {
+        if (badge) {
+          badge.style.transition = 'all 0.5s ease';
+          badge.style.opacity = '0';
+          badge.style.transform = 'translateY(-20px) scale(0.8)';
+          setTimeout(() => badge.remove(), 500);
+        }
+      }, 3500);
+    }, game.hookText || '🎮 PLAY FREE ON ARCADEUM');
+  } catch {}
+}
+
+async function showActionBadge(page, phrase) {
+  try {
+    await page.evaluate((text) => {
+      const overlay = document.getElementById('arcadeum-shorts-hook-overlay');
+      if (!overlay) return;
+      const actionBadge = document.createElement('div');
+      actionBadge.style.cssText = `
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(245, 158, 11, 0.95));
+        color: #ffffff;
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 8px 18px;
+        border-radius: 9999px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
+        animation: actionFlash 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        margin-top: 4px;
+      `;
+      actionBadge.textContent = text;
+      overlay.appendChild(actionBadge);
+      setTimeout(() => {
+        actionBadge.style.transition = 'all 0.4s ease';
+        actionBadge.style.opacity = '0';
+        actionBadge.style.transform = 'scale(0.8)';
+        setTimeout(() => actionBadge.remove(), 400);
+      }, 1500);
+    }, phrase);
+  } catch {}
+}
+
+async function requestApproval(videoPath, caption, gameName) {
+  if (!CONFIG.enableApproval) {
+    log('info', 'Approval flow disabled, posting directly');
+    return { approved: true, autoApproved: false, pendingId: null };
+  }
+
+  await ensureDir(CONFIG.pendingDir);
+  const id = `gameplay_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+  const pending = {
+    id,
+    videoPath,
+    caption,
+    game: gameName,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  };
+
+  const metadataPath = path.join(CONFIG.pendingDir, `${id}.json`);
+  await writeFile(metadataPath, JSON.stringify(pending, null, 2), {
+    mode: 0o666,
+  });
+
+  try {
+    const response = await axios.post(
+      `${CONFIG.tgBotUrl}/shorts-factory/pending`,
+      pending,
+      { timeout: 15000 },
+    );
+    if (response.data?.messageId) {
+      pending.messageId = response.data.messageId;
+      await writeFile(metadataPath, JSON.stringify(pending, null, 2));
+    }
+  } catch (err) {
+    log('warn', 'Failed to notify Telegram bot, proceeding with auto-approve', {
+      error: err.message,
+    });
+    return { approved: true, autoApproved: true, pendingId: id };
+  }
+
+  const startTime = Date.now();
+  log(
+    'info',
+    `Polling for approval (timeout: ${CONFIG.approvalTimeoutMs / 60000}min)...`,
+  );
+
+  while (Date.now() - startTime < CONFIG.approvalTimeoutMs) {
+    await sleep(CONFIG.pollIntervalMs);
+    try {
+      const raw = await readFile(metadataPath, 'utf-8');
+      const data = JSON.parse(raw);
+      if (data.status === 'approved')
+        return { approved: true, autoApproved: false, pendingId: id };
+      if (data.status === 'regenerated')
+        return { approved: false, regenerated: true, pendingId: id };
+    } catch {}
+  }
+
+  return { approved: true, autoApproved: true, pendingId: id };
+}
+
+async function reportResult(id, success, message, platforms) {
+  if (!CONFIG.enableApproval || !id) return;
+  try {
+    await axios.post(
+      `${CONFIG.tgBotUrl}/shorts-factory/result`,
+      {
+        id,
+        status: success ? 'posted' : 'failed',
+        result: { success, message, platforms },
+      },
+      { timeout: 30000 },
+    );
+    log('info', 'Reported result to Telegram bot');
+  } catch (err) {
+    log('warn', 'Failed to report result to Telegram bot', {
+      error: err.message,
+    });
+  }
 }
 
 // ============================================================================
@@ -710,6 +1019,10 @@ async function recordSession(
     await game.waitForGame(page);
     log('info', `${label}: game board loaded`);
 
+    if (isMobile) {
+      await injectKineticHookOverlay(page, game);
+    }
+
     const startTime = Date.now();
     let moveCount = 0;
     let moveIndex = 0;
@@ -735,6 +1048,17 @@ async function recordSession(
         if (success) {
           moveCount++;
           log('info', `${label}: move ${moveCount}`);
+
+          if (
+            isMobile &&
+            game.actionPhrases &&
+            game.actionPhrases.length > 0 &&
+            (moveCount === 2 || moveCount === 4 || moveCount === 7)
+          ) {
+            const phrase = randomElement(game.actionPhrases);
+            await showActionBadge(page, phrase);
+          }
+
           await sleep(randomInt(500, 800));
         } else {
           await sleep(300);
@@ -1183,73 +1507,133 @@ async function processShortClip(
     `gameplay-short-${timestamp}.mp4`,
   );
 
-  const ffmpegArgs = audioTrack
-    ? [
-        '-ss',
-        String(clipStart),
-        '-i',
-        rawVideoPath,
-        '-i',
-        audioTrack,
-        '-t',
-        String(shortLen),
-        '-vf',
-        `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p`,
-        '-af',
-        `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
-        '-map',
-        '0:v:0',
-        '-map',
-        '1:a:0',
-        '-c:v',
-        'libx264',
-        '-preset',
-        'fast',
-        '-crf',
-        '23',
-        '-pix_fmt',
-        'yuv420p',
-        '-c:a',
-        'aac',
-        '-b:a',
-        '128k',
-        '-shortest',
-        '-y',
-        mainPath,
-      ]
-    : [
-        '-ss',
-        String(clipStart),
-        '-i',
-        rawVideoPath,
-        '-f',
-        'lavfi',
-        '-i',
-        'anullsrc=r=44100:cl=stereo',
-        '-t',
-        String(shortLen),
-        '-vf',
-        `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p`,
-        '-map',
-        '0:v:0',
-        '-map',
-        '1:a:0',
-        '-c:v',
-        'libx264',
-        '-preset',
-        'fast',
-        '-crf',
-        '23',
-        '-pix_fmt',
-        'yuv420p',
-        '-c:a',
-        'aac',
-        '-b:a',
-        '128k',
-        '-shortest',
-        '-y',
-        mainPath,
-      ];
+  const soundsDir = path.join(
+    __dirname,
+    '..',
+    '..',
+    'apps',
+    'web',
+    'public',
+    'sounds',
+  );
+  const hitSfx = path.join(soundsDir, 'hit.wav');
+  const moveSfx = path.join(soundsDir, 'move.wav');
+  const hasSfx =
+    audioTrack &&
+    (await stat(hitSfx)
+      .then(() => true)
+      .catch(() => false));
+
+  let ffmpegArgs;
+  if (audioTrack && hasSfx) {
+    const fadeOutStart = Math.max(0, shortLen - CONFIG.fadeOutDuration);
+    ffmpegArgs = [
+      '-ss',
+      String(clipStart),
+      '-i',
+      rawVideoPath,
+      '-i',
+      audioTrack,
+      '-i',
+      hitSfx,
+      '-i',
+      moveSfx,
+      '-filter_complex',
+      `[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p[v];` +
+        `[1:a]volume=0.35[bg];` +
+        `[2:a]adelay=3500|3500,volume=0.85[sfx1];` +
+        `[3:a]adelay=1800|1800,volume=0.85[sfx2];` +
+        `[bg][sfx1][sfx2]amix=inputs=3:duration=first:dropout_transition=2,afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}[a]`,
+      '-map',
+      '[v]',
+      '-map',
+      '[a]',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-pix_fmt',
+      'yuv420p',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-t',
+      String(shortLen),
+      '-y',
+      mainPath,
+    ];
+  } else if (audioTrack) {
+    ffmpegArgs = [
+      '-ss',
+      String(clipStart),
+      '-i',
+      rawVideoPath,
+      '-i',
+      audioTrack,
+      '-t',
+      String(shortLen),
+      '-vf',
+      `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p`,
+      '-af',
+      `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
+      '-map',
+      '0:v:0',
+      '-map',
+      '1:a:0',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-pix_fmt',
+      'yuv420p',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-shortest',
+      '-y',
+      mainPath,
+    ];
+  } else {
+    ffmpegArgs = [
+      '-ss',
+      String(clipStart),
+      '-i',
+      rawVideoPath,
+      '-f',
+      'lavfi',
+      '-i',
+      'anullsrc=r=44100:cl=stereo',
+      '-t',
+      String(shortLen),
+      '-vf',
+      `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p`,
+      '-map',
+      '0:v:0',
+      '-map',
+      '1:a:0',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-pix_fmt',
+      'yuv420p',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-shortest',
+      '-y',
+      mainPath,
+    ];
+  }
 
   await runFFmpeg(ffmpegArgs, 'short highlight clip');
 
@@ -1275,7 +1659,7 @@ async function uploadVideo(videoPath) {
   });
 
   const uploadRes = await axios.post(`${CONFIG.postizBaseUrl}/upload`, form, {
-    headers: { ...headers, ...form.headers },
+    headers: { ...headers, ...form.getHeaders() },
     timeout: 120000,
   });
   return uploadRes.data;
@@ -1439,70 +1823,93 @@ async function postToX(uploadedFile, caption) {
   return res.data;
 }
 
-async function publishBoth(fullPath, shortPath, caption) {
+async function publishBoth(fullPath, shortPath, caption, gameName = 'game') {
   log('info', 'Publishing to social platforms...');
 
   if (!CONFIG.postizApiKey) throw new Error('POSTIZ_API_KEY must be set');
 
+  const approvalTarget = shortPath || fullPath;
+  const approval = await requestApproval(approvalTarget, caption, gameName);
+  if (!approval.approved) {
+    log('info', 'Video was not approved by admin, skipping publish');
+    return { skipped: true, reason: 'unapproved' };
+  }
+
   const results = { full: null, short: null };
+  const postedPlatforms = [];
 
   // --- Full video → YouTube Video (horizontal) ---
-  if (CONFIG.postizYouTubeId) {
+  if (CONFIG.postizYouTubeId && fullPath) {
     try {
       log('info', 'Uploading full video (desktop 1920x1080)...');
       const fullFile = await uploadVideo(fullPath);
       log('info', 'Full video uploaded', { id: fullFile.id });
       results.full = await postToYouTube(fullFile, caption);
       log('info', 'YouTube video posted', results.full);
+      postedPlatforms.push('YouTube (Desktop)');
     } catch (err) {
       log('error', 'Full video YouTube post failed', { error: err.message });
     }
   }
 
   // --- Short clip → YouTube Short + Instagram Reel + TikTok (vertical) ---
-  try {
-    log('info', 'Uploading short clip (mobile 1080x1920)...');
-    const shortFile = await uploadVideo(shortPath);
-    log('info', 'Short clip uploaded', { id: shortFile.id });
+  if (shortPath) {
+    try {
+      log('info', 'Uploading short clip (mobile 1080x1920)...');
+      const shortFile = await uploadVideo(shortPath);
+      log('info', 'Short clip uploaded', { id: shortFile.id });
 
-    if (CONFIG.postizYouTubeId) {
-      try {
-        results.short = await postToYouTube(shortFile, caption);
-        log('info', 'YouTube Short posted', results.short);
-      } catch (err) {
-        log('error', 'YouTube Short post failed', { error: err.message });
+      if (CONFIG.postizYouTubeId) {
+        try {
+          results.short = await postToYouTube(shortFile, caption);
+          log('info', 'YouTube Short posted', results.short);
+          postedPlatforms.push('YouTube Shorts');
+        } catch (err) {
+          log('error', 'YouTube Short post failed', { error: err.message });
+        }
       }
-    }
 
-    if (CONFIG.postizInstagramId) {
-      try {
-        const igResult = await postToInstagram(shortFile, caption);
-        log('info', 'Instagram Reel posted', igResult);
-      } catch (err) {
-        log('error', 'Instagram Reel post failed', { error: err.message });
+      if (CONFIG.postizInstagramId) {
+        try {
+          const igResult = await postToInstagram(shortFile, caption);
+          log('info', 'Instagram Reel posted', igResult);
+          postedPlatforms.push('Instagram Reels');
+        } catch (err) {
+          log('error', 'Instagram Reel post failed', { error: err.message });
+        }
       }
-    }
 
-    if (CONFIG.postizTiktokId) {
-      try {
-        const ttResult = await postToTikTok(shortFile, caption);
-        log('info', 'TikTok posted', ttResult);
-      } catch (err) {
-        log('error', 'TikTok post failed', { error: err.message });
+      if (CONFIG.postizTiktokId) {
+        try {
+          const ttResult = await postToTikTok(shortFile, caption);
+          log('info', 'TikTok posted', ttResult);
+          postedPlatforms.push('TikTok');
+        } catch (err) {
+          log('error', 'TikTok post failed', { error: err.message });
+        }
       }
-    }
 
-    if (CONFIG.postizXId) {
-      try {
-        const xResult = await postToX(shortFile, caption);
-        log('info', 'X/Twitter posted', xResult);
-      } catch (err) {
-        log('error', 'X/Twitter post failed', { error: err.message });
+      if (CONFIG.postizXId) {
+        try {
+          const xResult = await postToX(shortFile, caption);
+          log('info', 'X/Twitter posted', xResult);
+          postedPlatforms.push('X/Twitter');
+        } catch (err) {
+          log('error', 'X/Twitter post failed', { error: err.message });
+        }
       }
+    } catch (err) {
+      log('error', 'Short clip upload failed', { error: err.message });
     }
-  } catch (err) {
-    log('error', 'Short clip upload failed', { error: err.message });
   }
+
+  const success = postedPlatforms.length > 0;
+  await reportResult(
+    approval.pendingId,
+    success,
+    success ? `Posted to ${postedPlatforms.join(', ')}` : 'Publish failed',
+    postedPlatforms,
+  );
 
   return results;
 }
@@ -1545,6 +1952,11 @@ async function main() {
     }
 
     log('info', `Selected game: ${game.name} (${game.url})`);
+
+    const caption =
+      game.captions && game.captions.length > 0
+        ? randomElement(game.captions)
+        : game.caption;
 
     let fullOutputPath = null;
     let shortOutputPath = null;
@@ -1591,7 +2003,7 @@ async function main() {
       if (shortOutputPath)
         log('info', 'Short clip saved to: ' + shortOutputPath);
     } else {
-      await publishBoth(fullOutputPath, shortOutputPath, game.caption);
+      await publishBoth(fullOutputPath, shortOutputPath, caption, game.name);
     }
 
     await cleanDirectory(CONFIG.rawCapturesDir);

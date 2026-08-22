@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { BaseGameEngine } from '../base/base-game-engine.abstract';
 import {
   ACTION,
@@ -45,9 +45,10 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
   private readonly logger = new Logger(BackgammonEngine.name);
   private readonly rollDicePair: DiceRoller;
 
-  constructor(diceRoller: DiceRoller = randomDiceRoller) {
+  /** @param diceRoller optional test-only randomness source; Nest DI leaves it undefined (see @Optional). */
+  constructor(@Optional() diceRoller?: DiceRoller) {
     super();
-    this.rollDicePair = diceRoller;
+    this.rollDicePair = diceRoller ?? randomDiceRoller;
   }
 
   getMetadata(): GameMetadata {

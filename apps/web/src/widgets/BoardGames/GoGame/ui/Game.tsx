@@ -1,0 +1,251 @@
+'use client';
+
+import { memo, useCallback, useMemo } from 'react';
+import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
+import {
+  useGameChatIntegration,
+  useGameChatSend,
+  useGameEndState,
+  useGameResult,
+  useGameRoomActions,
+} from '@/features/games/hooks';
+import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
+import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
+import type { GoGameProps, GoOptions } from '../types';
+import { useGoState } from '../hooks/useGoState';
+import { useGoActions } from '../hooks/useGoActions';
+import { GoThemeProvider } from '../lib/GoThemeContext';
+import { GoLobby } from './GoLobby';
+import { GoBoard } from './GoBoard';
+import { TurnBadge } from './TurnBadge';
+import { RulesModal } from './RulesModal';
+import { GO_VARIANTS } from '../lib/constants';
+
+function resolveOptions(raw: unknown): GoOptions {
+  const r = (raw ?? {}) as Partial<{
+    theme: string;
+    variant: string;
+    boardSize: number;
+  }>;
+  const isSize = (n: number | undefined): n is 9 | 13 | 19 =>
+    n === 9 || n === 13 || n === 19;
+  const theme = r.theme ?? r.variant ?? 'adventure';
+  return {
+    variant: theme,
+    theme,
+    boardSize: isSize(r.boardSize) ? r.boardSize : 9,
+  };
+}
+
+function GoGameImpl({
+  roomId,
+  room: initialRoom,
+  session: initialSession,
+  currentUserId,
+  isHost,
+  showRulesOpen,
+  onShowRulesClose,
+}: GoGameProps) {
+  const { t } = useTranslation();
+  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
+    useGameRoomActions(roomId, initialRoom);
+
+  const isLobby = room?.status === 'lobby';
+
+  const { snapshot, currentPlayerId, myTurn, isGameOver, startBusy, session } =
+    useGoState({
+      roomId,
+      currentUserId,
+      initialSession,
+    });
+
+  const { startSession, placeStone, passTurn } = useGoActions({
+    roomId,
+    userId: currentUserId,
+  });
+
+  const myColor = useMemo(() => {
+    if (!snapshot || !currentUserId) return null;
+    return (
+      snapshot.players.find((p) => p.playerId === currentUserId)?.color ?? null
+    );
+  }, [snapshot, currentUserId]);
+
+  const resolveDisplayNameBound = useCallback(
+    (id?: string | null) =>
+      resolveDisplayName(id, {
+        currentUserId,
+        members: room?.members,
+        playerOrder: snapshot?.playerOrder,
+      }),
+    [currentUserId, room, snapshot],
+  );
+
+  const sendChat = useGameChatSend(roomId, currentUserId, 'go_v1');
+  useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const { result, resultMessages } = useGameResult({
+    session,
+    isGameOver,
+    currentUserId,
+    gameId: 'go_v1',
+    gameOverKey: 'games.go_v1.gameOver',
+    winnerId: snapshot?.winnerId,
+    isDraw: snapshot?.isDraw,
+    t,
+  });
+
+  const gameEnd = useGameEndState({
+    roomId,
+    currentUserId,
+    session,
+    isGameOver,
+    result,
+    resultMessages,
+  });
+
+  const options = useMemo(
+    () => resolveOptions(room?.gameOptions),
+    [room?.gameOptions],
+  );
+
+  const variantTokens = useMemo(
+    () => GO_VARIANTS.find((v) => v.id === options.variant) ?? GO_VARIANTS[0],
+    [options.variant],
+  );
+
+  const a11yAnnouncement = useMemo(() => {
+    if (!snapshot) return undefined;
+    if (isGameOver) {
+      return t(
+        `games.go_v1.gameOver.${result === 'won' ? 'won' : result === 'lost' ? 'lost' : 'draw'}`,
+      );
+    }
+    if (myTurn) return t('games.go_v1.status.yourTurn');
+    return t('games.go_v1.status.waiting');
+  }, [snapshot, isGameOver, result, myTurn, t]);
+
+  const handlePass = useCallback(() => {
+    passTurn();
+  }, [passTurn]);
+
+  if (!room) return null;
+
+  const visualTheme = options.theme ?? options.variant ?? 'cyberpunk';
+
+  // Lobby renders OUTSIDE GameWidgetContainer so it gets full page height.
+  if (isLobby) {
+    return (
+      <GoThemeProvider variant={visualTheme}>
+        <GoLobby
+          room={room}
+          userId={currentUserId ?? ''}
+          isHost={isHost}
+          startBusy={startBusy}
+          onStartGame={(opts) =>
+            startSession({
+              withBots: !!opts?.withBots,
+              botCount: opts?.botCount,
+            })
+          }
+          onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
+          onDeleteRoom={onDeleteRoom}
+          onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
+          onRefresh={onRefresh}
+          showRulesOpen={showRulesOpen}
+          onShowRulesClose={onShowRulesClose}
+        />
+      </GoThemeProvider>
+    );
+  }
+
+  const board = (
+    <div className="box-border flex w-full flex-col items-stretch gap-3 p-3">
+      {snapshot ? (
+        <>
+          <TurnBadge
+            currentPlayerId={currentPlayerId}
+            myTurn={myTurn}
+            isGameOver={isGameOver}
+            resolveName={resolveDisplayNameBound}
+            captures={snapshot.captures}
+          />
+          <div className="flex flex-col items-center gap-3">
+            <GoBoard
+              board={snapshot.board}
+              size={snapshot.boardSize ?? snapshot.options.boardSize ?? 9}
+              disabled={!myTurn || isGameOver}
+              lastMove={snapshot.lastMove}
+              koPoint={snapshot.koPoint}
+              myColor={myColor}
+              ariaLabel={`Go ${snapshot.boardSize}×${snapshot.boardSize} board`}
+              onCellClick={placeStone}
+            />
+            {!isGameOver && myTurn ? (
+              <button
+                type="button"
+                data-testid="go-pass-button"
+                onClick={handlePass}
+                className="rounded-lg border border-[var(--borderColor)] bg-[var(--backgroundHover)] px-5 py-2 text-sm font-semibold transition-colors hover:bg-[var(--backgroundActive)]"
+              >
+                {t('games.go_v1.game.pass')}
+              </button>
+            ) : null}
+            {snapshot.scores ? (
+              <div
+                data-testid="go-final-scores"
+                className="text-center text-sm opacity-80"
+              >
+                ⚫ {snapshot.scores.black} · ⚪ {snapshot.scores.white}
+                {' + '}7.5
+              </div>
+            ) : null}
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+
+  const modals = (
+    <>
+      <GameEndModals
+        gameEnd={gameEnd}
+        players={[]}
+        currentUserId={currentUserId}
+        gameName={(() => {
+          const raw = t('games.names.go' as TranslationKey);
+          return raw && raw !== 'games.names.go' ? raw : 'Go';
+        })()}
+        theme={visualTheme}
+        t={t}
+      />
+      <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
+    </>
+  );
+
+  return (
+    <GoThemeProvider variant={visualTheme}>
+      <GameWidgetContainer
+        theme={visualTheme}
+        board={board}
+        modals={modals}
+        variant={options.variant}
+        isMyTurn={myTurn}
+        isGameOver={isGameOver}
+        a11yAnnouncement={a11yAnnouncement}
+        headerProps={{
+          variantEmoji: variantTokens.emoji,
+          title: 'Go',
+          subtitle: room?.name,
+          turn: {
+            onClockUserId: currentPlayerId,
+            isMyTurn: myTurn,
+            isGameOver,
+          },
+        }}
+      />
+    </GoThemeProvider>
+  );
+}
+
+export default memo(GoGameImpl);

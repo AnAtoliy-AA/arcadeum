@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.6] - 2026-08-23
+
+### Added
+- add accessibility section with vision mode selector (ARC-896)
+- add color-vision transforms and vision-mode setting (ARC-896)
+
+### Documentation
+- mark colorblind modes as PR open (ARC-896) (ARC-896)
+
+
 ## [1.26.5] - 2026-08-23
 
 ### Fixed

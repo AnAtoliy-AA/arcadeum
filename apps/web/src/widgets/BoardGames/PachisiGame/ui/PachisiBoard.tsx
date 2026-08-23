@@ -1,0 +1,435 @@
+'use client';
+
+import { useMemo } from 'react';
+import { useTranslation } from '@/shared/lib/useTranslation';
+import { usePachisiTheme } from '../lib/PachisiThemeContext';
+import {
+  LANE_COORDS,
+  SEAT_START_OFFSETS,
+  STAR_CELLS,
+  TRACK_COORDS,
+  YARD_AREAS,
+  absoluteCell,
+  movableTokenIds,
+} from '../lib/boardLayout';
+import type { PachisiClientState, PachisiToken } from '../types';
+
+const GRID_SIZE = 15;
+
+interface PachisiBoardProps {
+  snapshot: PachisiClientState;
+  currentUserId: string | null;
+  myTurn: boolean;
+  onRoll: () => void;
+  onMove: (tokenId: number) => void;
+}
+
+interface PlacedToken {
+  ownerId: string;
+  seat: number;
+  token: PachisiToken;
+}
+
+function Die({ value }: { value: number | null }) {
+  const theme = usePachisiTheme();
+  const pips: Record<number, Array<[number, number]>> = {
+    1: [[2, 2]],
+    2: [
+      [1, 1],
+      [3, 3],
+    ],
+    3: [
+      [1, 1],
+      [2, 2],
+      [3, 3],
+    ],
+    4: [
+      [1, 1],
+      [1, 3],
+      [3, 1],
+      [3, 3],
+    ],
+    5: [
+      [1, 1],
+      [1, 3],
+      [2, 2],
+      [3, 1],
+      [3, 3],
+    ],
+    6: [
+      [1, 1],
+      [1, 3],
+      [2, 1],
+      [2, 3],
+      [3, 1],
+      [3, 3],
+    ],
+  };
+  return (
+    <div
+      aria-label={`die-${value ?? 'none'}`}
+      className="relative h-9 w-9 shrink-0 rounded-lg border shadow-md"
+      data-testid="pachisi-die"
+      style={{ background: theme.diceFace, borderColor: theme.diceBorder }}
+    >
+      {(value ? pips[value] : []).map(([r, c]) => (
+        <span
+          key={`${r}-${c}`}
+          className="absolute h-1.5 w-1.5 rounded-full"
+          style={{
+            background: theme.diceDot,
+            left: `${(c - 0.5) * 25}%`,
+            top: `${(r - 0.5) * 25}%`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+export function PachisiBoard({
+  snapshot,
+  currentUserId,
+  myTurn,
+  onRoll,
+  onMove,
+}: PachisiBoardProps) {
+  const { t } = useTranslation();
+  const theme = usePachisiTheme();
+
+  const canRoll = myTurn && snapshot.phase === 'roll';
+  const canMove = myTurn && snapshot.phase === 'move';
+
+  const movable = useMemo(
+    () =>
+      canMove && currentUserId
+        ? movableTokenIds(snapshot.tokens[currentUserId], snapshot.die)
+        : new Set<number>(),
+    [canMove, currentUserId, snapshot.die, snapshot.tokens],
+  );
+
+  /** Main-track occupancy: absCell -> tokens there. */
+  const trackTokens = useMemo(() => {
+    const map = new Map<number, PlacedToken[]>();
+    for (const playerId of snapshot.playerOrder) {
+      const seat = snapshot.seats[playerId];
+      if (seat === undefined) continue;
+      for (const token of snapshot.tokens[playerId] ?? []) {
+        if (token.progress < 0 || token.progress > 50) continue;
+        const cell = absoluteCell(seat, token.progress);
+        const list = map.get(cell) ?? [];
+        list.push({ ownerId: playerId, seat, token });
+        map.set(cell, list);
+      }
+    }
+    return map;
+  }, [snapshot.playerOrder, snapshot.seats, snapshot.tokens]);
+
+  /** Tokens waiting in each seat's yard. */
+  const yardTokens = useMemo(() => {
+    const bySeat = new Map<number, PachisiToken[]>();
+    for (const playerId of snapshot.playerOrder) {
+      const seat = snapshot.seats[playerId];
+      if (seat === undefined) continue;
+      const yard = (snapshot.tokens[playerId] ?? []).filter(
+        (tok) => tok.progress === -1,
+      );
+      if (yard.length > 0) bySeat.set(seat, yard);
+    }
+    return bySeat;
+  }, [snapshot.playerOrder, snapshot.seats, snapshot.tokens]);
+
+  const finishedCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const playerId of snapshot.playerOrder) {
+      counts.set(
+        playerId,
+        (snapshot.tokens[playerId] ?? []).filter((tok) => tok.progress === 56)
+          .length,
+      );
+    }
+    return counts;
+  }, [snapshot.playerOrder, snapshot.tokens]);
+
+  const seatOf = (playerId: string): number => snapshot.seats[playerId] ?? 0;
+  const playerAtSeat = (seat: number): string | null =>
+    snapshot.playerOrder.find((pid) => snapshot.seats[pid] === seat) ?? null;
+
+  const renderTokenStack = (tokens: PlacedToken[]) => (
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+      <div className="relative flex items-center justify-center">
+        {tokens.map((placed, i) => (
+          <span
+            key={`${placed.ownerId}-${placed.token.id}`}
+            className="absolute rounded-full border shadow-md"
+            data-testid={`token-cell-${placed.seat}`}
+            style={{
+              width: '72%',
+              height: '72%',
+              background: theme.seatColors[placed.seat],
+              borderColor: theme.tokenBorder,
+              transform: `translate(${(i - (tokens.length - 1) / 2) * 18}%, ${
+                i % 2 === 0 ? -8 : 8
+              }%) scale(${1 - i * 0.08})`,
+              zIndex: i,
+            }}
+          />
+        ))}
+        {tokens.length > 1 && (
+          <span className="z-10 rounded-full bg-black/70 px-1 text-[8px] font-black text-white">
+            {tokens.length}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="box-border flex w-full flex-col items-stretch gap-2 select-none">
+      {/* Status strip */}
+      <div className="flex flex-row flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/50 px-3 py-1.5 text-xs font-semibold shadow-lg backdrop-blur-md">
+        <div className="flex flex-wrap items-center gap-2">
+          {snapshot.playerOrder.map((pid) => {
+            const seat = seatOf(pid);
+            const finished = finishedCounts.get(pid) ?? 0;
+            const total = snapshot.tokens[pid]?.length ?? 4;
+            const isMe = pid === currentUserId;
+            return (
+              <span
+                key={`score-${pid}`}
+                className={`flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-bold ${
+                  isMe ? 'ring-1 ring-white/60' : ''
+                }`}
+                style={{ background: `${theme.seatColors[seat]}33` }}
+              >
+                <span
+                  className="h-2.5 w-2.5 rounded-full border"
+                  style={{
+                    background: theme.seatColors[seat],
+                    borderColor: theme.tokenBorder,
+                  }}
+                />
+                🏠 {finished}/{total}
+              </span>
+            );
+          })}
+        </div>
+
+        <div className="flex items-center gap-2">
+          {canRoll ? (
+            <button
+              aria-label={t('games.pachisi_v1.game.rollDice')}
+              className="rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 px-3 py-1 text-[12px] font-black uppercase tracking-wide text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+              data-testid="pachisi-roll-button"
+              onClick={onRoll}
+              type="button"
+            >
+              🎲 {t('games.pachisi_v1.game.rollDice')}
+            </button>
+          ) : (
+            <Die value={snapshot.die} />
+          )}
+        </div>
+      </div>
+
+      {/* Hint */}
+      {canMove && movable.size > 0 && (
+        <div className="text-center text-[11px] font-bold text-emerald-300">
+          {t('games.pachisi_v1.game.tapToken')}
+        </div>
+      )}
+      {canMove && movable.size === 0 && (
+        <div
+          className="text-center text-[11px] font-bold text-amber-300"
+          data-testid="pachisi-no-moves"
+        >
+          {t('games.pachisi_v1.game.noLegalMoves')}
+        </div>
+      )}
+
+      {/* Board */}
+      <div
+        className="box-border relative w-full overflow-hidden rounded-2xl border-2 shadow-2xl backdrop-blur-xl"
+        data-testid="pachisi-board"
+        style={{
+          aspectRatio: '1 / 1',
+          width: '100%',
+          display: 'grid',
+          gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))`,
+          gridTemplateRows: `repeat(${GRID_SIZE}, minmax(0, 1fr))`,
+          background: theme.boardBackground,
+          borderColor: theme.yardBorder,
+        }}
+      >
+        {/* Yards */}
+        {[0, 1, 2, 3].map((seat) => {
+          const area = YARD_AREAS[seat];
+          const owner = playerAtSeat(seat);
+          const yard = yardTokens.get(seat) ?? [];
+          const slotCount =
+            owner != null ? (snapshot.tokens[owner]?.length ?? 4) : 4;
+          const isMine = owner != null && owner === currentUserId;
+          return (
+            <div
+              key={`yard-${seat}`}
+              className="flex items-center justify-center rounded-xl border p-[8%]"
+              style={{
+                gridRow: `${area.row} / span 6`,
+                gridColumn: `${area.col} / span 6`,
+                margin: '5%',
+                background: theme.yardBackground,
+                borderColor:
+                  owner != null ? theme.seatColors[seat] : theme.yardBorder,
+                borderWidth: owner != null ? 2 : 1,
+              }}
+            >
+              <div className="grid aspect-square h-auto w-full grid-cols-2 grid-rows-2 place-items-center">
+                {Array.from({ length: Math.max(slotCount, 4) }).map(
+                  (_, slot) => {
+                    const tok = yard[slot];
+                    const clickable = !!tok && isMine && movable.has(tok.id);
+                    return (
+                      <button
+                        key={`yard-slot-${seat}-${slot}`}
+                        aria-label={
+                          tok
+                            ? `yard-token-${seat}-${tok.id}`
+                            : `yard-slot-${seat}`
+                        }
+                        className={`aspect-square w-[62%] rounded-full border shadow-md transition-transform ${
+                          clickable
+                            ? 'animate-bounce cursor-pointer ring-2 ring-white/90 hover:scale-110'
+                            : ''
+                        }`}
+                        data-testid={`yard-token-${seat}-${slot}`}
+                        onClick={() => {
+                          if (clickable && tok) onMove(tok.id);
+                        }}
+                        style={{
+                          background: tok
+                            ? theme.seatColors[seat]
+                            : 'transparent',
+                          borderColor: tok
+                            ? theme.tokenBorder
+                            : theme.cellBorder,
+                          opacity: tok ? 1 : 0.35,
+                        }}
+                        type="button"
+                      />
+                    );
+                  },
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Main-track cells */}
+        {TRACK_COORDS.map(([row, col], idx) => {
+          const isStar = STAR_CELLS.has(idx);
+          const startSeat = SEAT_START_OFFSETS.findIndex((off) => off === idx);
+          const occupants = trackTokens.get(idx) ?? [];
+          const bg =
+            startSeat >= 0
+              ? `${theme.seatColors[startSeat]}66`
+              : theme.cellBackground;
+          return (
+            <div
+              key={`track-${idx}`}
+              aria-label={`cell-${idx}${isStar ? ' safe-star' : ''}${
+                startSeat >= 0 ? ` start-${startSeat}` : ''
+              }${occupants.length > 0 ? ` occupied-${occupants.length}` : ''}`}
+              className="relative flex items-center justify-center rounded-md border"
+              style={{
+                gridRow: row + 1,
+                gridColumn: col + 1,
+                margin: '4%',
+                background: bg,
+                borderColor: theme.cellBorder,
+              }}
+            >
+              {isStar && (
+                <span
+                  className="pointer-events-none absolute inset-0 flex items-center justify-center text-[9px]"
+                  style={{ color: theme.safeStar }}
+                >
+                  ★
+                </span>
+              )}
+              {occupants.length > 0 && renderTokenStack(occupants)}
+            </div>
+          );
+        })}
+
+        {/* Home lanes */}
+        {[0, 1, 2, 3].flatMap((seat) =>
+          LANE_COORDS[seat].map(([row, col], laneIdx) => {
+            const owner = playerAtSeat(seat);
+            const occupant = owner
+              ? (snapshot.tokens[owner] ?? []).find(
+                  (tok) => tok.progress === 51 + laneIdx,
+                )
+              : undefined;
+            return (
+              <div
+                key={`lane-${seat}-${laneIdx}`}
+                aria-label={`lane-${seat}-${laneIdx}${
+                  occupant ? ' occupied' : ''
+                }`}
+                className="relative rounded-md border"
+                style={{
+                  gridRow: row + 1,
+                  gridColumn: col + 1,
+                  margin: '10%',
+                  background: `${theme.seatColors[seat]}55`,
+                  borderColor: theme.cellBorder,
+                }}
+              >
+                {occupant && (
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <span
+                      className="block h-[72%] w-[72%] rounded-full border shadow-md"
+                      style={{
+                        background: theme.seatColors[seat],
+                        borderColor: theme.tokenBorder,
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          }),
+        )}
+
+        {/* Center home */}
+        <div
+          className="relative z-10 flex items-center justify-center rounded-lg border shadow-inner"
+          style={{
+            gridRow: '7 / span 3',
+            gridColumn: '7 / span 3',
+            margin: '6%',
+            background: theme.centerHome,
+            borderColor: theme.cellBorder,
+          }}
+        >
+          <div className="grid grid-cols-2 place-items-center gap-x-2 gap-y-0.5 px-1">
+            {snapshot.playerOrder.map((pid) => {
+              const seat = seatOf(pid);
+              const finished = finishedCounts.get(pid) ?? 0;
+              return (
+                <span
+                  key={`home-count-${pid}`}
+                  className="flex items-center gap-0.5 rounded-full px-1 text-[10px] font-black text-white"
+                  style={{ background: `${theme.seatColors[seat]}cc` }}
+                >
+                  ● {finished}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

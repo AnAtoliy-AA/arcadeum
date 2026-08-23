@@ -1,5 +1,18 @@
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 
+/**
+ * Turn-based games that support bot-vs-bot ("AI vs AI") spectating.
+ *
+ * Must stay in sync with:
+ * - `AiVsAiService.startFns` (the per-game session starters — validated by
+ *   `ai-vs-ai.service.spec.ts` so the two cannot drift)
+ * - `AI_VS_AI_SUPPORTED_GAME_IDS` on the web (`features/games/lib/aiVsAi.ts`)
+ *
+ * Excluded on purpose:
+ * - `texas_holdem_v1` — no bot service exists yet
+ * - `glimworm_v1` — real-time tick engine; bots steer themselves every tick,
+ *   so a fixed per-move delay does not apply
+ */
 export const AI_VS_AI_GAME_IDS = [
   'chess_v1',
   'checkers_v1',

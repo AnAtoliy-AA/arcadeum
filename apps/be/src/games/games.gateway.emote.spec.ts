@@ -41,7 +41,29 @@ describe('GamesGateway – emote handler', () => {
       data: {},
     } as unknown as jest.Mocked<Socket>;
 
-    gateway = new GamesGateway(gamesService, realtime, mockJwt, mockConfig);
+    // Inert stand-ins for the per-game gateways; only the emote handler
+    // (declared on GamesGateway itself) is exercised here.
+    const inert = { handlers: {} };
+    gateway = new GamesGateway(
+      gamesService,
+      realtime,
+      mockJwt,
+      mockConfig,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+      inert as never,
+    );
     (gateway as unknown as { server: Server }).server = server;
   });
 

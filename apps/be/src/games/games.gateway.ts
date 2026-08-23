@@ -30,11 +30,8 @@ import {
   handleWatchRoom,
   handleSetOption,
 } from './games.gateway.room';
-import {
-  maybeEncrypt,
-  isSocketEncryptionEnabled,
-  getEncryptionKeyHex,
-} from '../common/utils/socket-encryption.util';
+// prettier-ignore
+import { maybeEncrypt, isSocketEncryptionEnabled, getEncryptionKeyHex } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import type { GameMessageHandler } from './game-message-handler.interface';
@@ -49,6 +46,8 @@ import { CriticalActionsGateway } from './critical-actions.gateway';
 import { SeaBattleGateway } from './sea-battle.gateway';
 import { GlimwormGateway } from './glimworm.gateway';
 import { BackgammonGateway } from './backgammon.gateway';
+import { HeartsGateway } from './hearts.gateway';
+import { SpadesGateway } from './spades.gateway';
 
 @WebSocketGateway({
   namespace: 'games',
@@ -77,6 +76,8 @@ export class GamesGateway {
     private readonly seaBattleHandler: SeaBattleGateway,
     private readonly glimwormHandler: GlimwormGateway,
     private readonly backgammonHandler: BackgammonGateway,
+    private readonly heartsHandler: HeartsGateway,
+    private readonly spadesHandler: SpadesGateway,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
@@ -93,6 +94,8 @@ export class GamesGateway {
       this.seaBattleHandler,
       this.glimwormHandler,
       this.backgammonHandler,
+      this.heartsHandler,
+      this.spadesHandler,
     ];
 
     const registry = new Map<string, GameMessageHandler['handlers'][string]>();

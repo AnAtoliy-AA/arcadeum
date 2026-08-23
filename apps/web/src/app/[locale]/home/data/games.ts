@@ -49,6 +49,8 @@ import { CHESS_VARIANTS } from '@/widgets/BoardGames/ChessGame/lib/constants';
 import { CHECKERS_VARIANTS } from '@/widgets/BoardGames/CheckersGame/lib/constants';
 import { CAT_DASH_VARIANTS } from '@/widgets/ActionGames/CatDashGame/lib/constants';
 import { BACKGAMMON_VARIANTS } from '@/widgets/BoardGames/BackgammonGame/lib/constants';
+import { HEARTS_VARIANTS } from '@/widgets/CardGames/HeartsGame/lib/constants';
+import { SPADES_VARIANTS } from '@/widgets/CardGames/SpadesGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -245,6 +247,48 @@ export const featuredGames: FeaturedGame[] = [
     variants: BACKGAMMON_VARIANTS.map((v) => ({
       id: v.id,
       nameKey: v.nameKey as TranslationKey,
+    })),
+  },
+  {
+    id: 'hearts_v1',
+    nameKey: 'games.hearts_v1.name' as TranslationKey,
+    descriptionKey: 'games.hearts_v1.description' as TranslationKey,
+    accentColor: '#dc2626',
+    genre: 'Card',
+    pace: 'Strategy',
+    category: 'Card Game',
+    players: '4',
+    duration: '30 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/hearts',
+    type: 'card',
+    rulesPrefix: 'games.hearts_v1.rules',
+    rulesKeys: ['objective', 'setup', 'passing', 'gameplay', 'scoring'],
+    variants: HEARTS_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.name as TranslationKey,
+    })),
+  },
+  {
+    id: 'spades_v1',
+    nameKey: 'games.spades_v1.name' as TranslationKey,
+    descriptionKey: 'games.spades_v1.description' as TranslationKey,
+    accentColor: '#1d4ed8',
+    genre: 'Card',
+    pace: 'Strategy',
+    category: 'Card Game',
+    players: '4',
+    duration: '35 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/spades',
+    type: 'card',
+    rulesPrefix: 'games.spades_v1.rules',
+    rulesKeys: ['objective', 'setup', 'bidding', 'gameplay', 'scoring'],
+    variants: SPADES_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.name as TranslationKey,
     })),
   },
 ];

@@ -33,6 +33,8 @@ describe('isAiVsAiSupported', () => {
     'sea_battle_v1',
     'cat_dash_v1',
     'backgammon_v1',
+    'hearts_v1',
+    'spades_v1',
   ])('supports %s', (gameId) => {
     expect(isAiVsAiSupported(gameId)).toBe(true);
   });

@@ -72,6 +72,22 @@ const BackgammonRulesModal = dynamic(
   { ssr: false },
 );
 
+const HeartsRulesModal = dynamic(
+  () =>
+    import('@/widgets/CardGames/HeartsGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
+const SpadesRulesModal = dynamic(
+  () =>
+    import('@/widgets/CardGames/SpadesGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -145,6 +161,12 @@ export function RulesAccess({ gameId, themeId }: Props) {
       ) : null}
       {gameId === 'backgammon_v1' ? (
         <BackgammonRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'hearts_v1' ? (
+        <HeartsRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'spades_v1' ? (
+        <SpadesRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

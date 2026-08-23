@@ -58,6 +58,14 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Backgammon · Jeu de plateau multijoueur gratuit · ${APP}`,
     description: `Jouez au Backgammon en ligne sur ${APP} — plateau classique à 24 flèches, dés, sorties de pions et bots IA. Gratuit, sans téléchargement.`,
   },
+  heartsLanding: {
+    title: `Coeurs · Jeu de cartes multijoueur gratuit · ${APP}`,
+    description: `Jouez aux Coeurs en ligne sur ${APP} — classique jeu de cartes à 4 joueurs avec passage, Coeurs, Reine de Pique et adversaires IA. Gratuit.`,
+  },
+  spadesLanding: {
+    title: `Pique · Jeu de cartes multijoueur gratuit · ${APP}`,
+    description: `Jouez au Pique en ligne sur ${APP} — classique jeu de cartes en partenariat à 4 joueurs avec annonces, Nil, sacs et adversaires IA. Gratuit.`,
+  },
   seaBattleLanding: {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,

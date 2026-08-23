@@ -17,11 +17,10 @@ interface UseGameResultOptions {
   /** i18n prefix of the gameOver messages, e.g. 'games.checkers_v1.gameOver'. */
   gameOverKey: string;
   winnerId?: string | null;
+  /** All players who share the win (co-winners). Takes precedence over `winnerId`. */
+  winnerIds?: string[] | null;
   isDraw?: boolean;
-  t: (
-    key: TranslationKey,
-    params?: Record<string, string | number>,
-  ) => string;
+  t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
 /**
@@ -32,9 +31,10 @@ interface UseGameResultOptions {
  * Previously every game duplicated this exact block (computeGameResult +
  * backendResult cast + useRecordGameResult + the won/lost/draw key template).
  */
-export function useGameResult(
-  options: UseGameResultOptions,
-): { result: GameResult; resultMessages: ResultMessages | undefined } {
+export function useGameResult(options: UseGameResultOptions): {
+  result: GameResult;
+  resultMessages: ResultMessages | undefined;
+} {
   const {
     session,
     isGameOver,
@@ -42,6 +42,7 @@ export function useGameResult(
     gameId,
     gameOverKey,
     winnerId,
+    winnerIds,
     isDraw,
     t,
   } = options;
@@ -50,11 +51,12 @@ export function useGameResult(
     () =>
       computeGameResult(isGameOver, currentUserId, {
         winnerId,
+        winnerIds,
         isDraw,
         backendResult: (session?.state as Record<string, unknown>)
           ?.gameResult as BackendGameResult | undefined,
       }),
-    [isGameOver, currentUserId, winnerId, isDraw, session],
+    [isGameOver, currentUserId, winnerId, winnerIds, isDraw, session],
   );
 
   useRecordGameResult(result, gameId, session?.id);

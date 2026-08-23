@@ -25,6 +25,9 @@ import { CatDashService } from '../cat-dash/cat-dash.service';
 import { SeaBattleService } from '../sea-battle/sea-battle.service';
 import { CriticalService } from '../critical/critical.service';
 import { BackgammonService } from '../backgammon/backgammon.service';
+import { HeartsService } from '../hearts/hearts.service';
+import { SpadesService } from '../spades/spades.service';
+import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 
 const AI_VS_AI_ROOM_NAME = 'AI vs AI';
 
@@ -35,7 +38,7 @@ type AiVsAiStartFn = (
 ) => Promise<unknown>;
 
 /**
- * Creates and auto-starts "AI vs AI" rooms: two expert bots play each other
+ * Creates and auto-starts "AI vs AI" rooms: expert bots play each other
  * in a public room that anyone can spectate. The requesting user is the
  * room creator (a spectator) — no human is a participant.
  *
@@ -43,6 +46,9 @@ type AiVsAiStartFn = (
  * To add a game, add its entry here AND mirror the gameId into
  * `AI_VS_AI_SUPPORTED_GAME_IDS` on the web (`features/games/lib/aiVsAi.ts`) so
  * the landing-page CTA renders — see the `/new-game` skill checklist.
+ *
+ * Seat count comes from the game engine's metadata: 1v1 games keep the classic
+ * two-bot layout while full-table games like Hearts field all four seats.
  */
 @Injectable()
 export class AiVsAiService {
@@ -65,6 +71,11 @@ export class AiVsAiService {
     private readonly criticalService: CriticalService,
     @Inject(forwardRef(() => BackgammonService))
     private readonly backgammonService: BackgammonService,
+    @Inject(forwardRef(() => HeartsService))
+    private readonly heartsService: HeartsService,
+    @Inject(forwardRef(() => SpadesService))
+    private readonly spadesService: SpadesService,
+    private readonly engineRegistry: GameEngineRegistry,
   ) {
     this.startFns = {
       chess_v1: (hostId, roomId, extras) =>
@@ -96,6 +107,10 @@ export class AiVsAiService {
         ),
       backgammon_v1: (hostId, roomId, extras) =>
         this.backgammonService.startSession(hostId, roomId, false, 0, extras),
+      hearts_v1: (hostId, roomId, extras) =>
+        this.heartsService.startSession(hostId, roomId, false, 0, extras),
+      spades_v1: (hostId, roomId, extras) =>
+        this.spadesService.startSession(hostId, roomId, false, 0, extras),
     };
   }
 
@@ -116,8 +131,15 @@ export class AiVsAiService {
     }
 
     const aiMoveDelayMs = this.resolveDelay(dto.aiMoveDelayMs);
-    const botA = `bot-ai-${randomBytes(5).toString('hex')}`;
-    const botB = `bot-ai-${randomBytes(5).toString('hex')}`;
+    // Seat every bot position the game needs: 2 for 1v1 games (unchanged
+    // layout), 4 for full-table games like Hearts. The room is born "full"
+    // so no human can join mid-spectate.
+    const { minPlayers } = this.engineRegistry.getMetadata(dto.gameId);
+    const seatCount = Math.max(2, minPlayers);
+    const botIds = Array.from(
+      { length: seatCount },
+      () => `bot-ai-${randomBytes(5).toString('hex')}`,
+    );
     const now = new Date();
 
     const gameOptions: Record<string, unknown> = {
@@ -132,13 +154,10 @@ export class AiVsAiService {
     const room = await this.gameRoomModel.create({
       gameId: dto.gameId,
       name: AI_VS_AI_ROOM_NAME,
-      hostId: botA,
+      hostId: botIds[0],
       visibility: 'public',
-      maxPlayers: 2,
-      participants: [
-        { userId: botA, joinedAt: now },
-        { userId: botB, joinedAt: now },
-      ],
+      maxPlayers: seatCount,
+      participants: botIds.map((userId) => ({ userId, joinedAt: now })),
       status: 'lobby',
       gameOptions,
       createdAt: now,
@@ -151,7 +170,7 @@ export class AiVsAiService {
     await this.startAiSession(
       room._id.toString(),
       startGame,
-      botA,
+      botIds[0],
       aiMoveDelayMs,
     );
 

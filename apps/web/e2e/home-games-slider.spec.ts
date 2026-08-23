@@ -28,6 +28,8 @@ test.describe('Home Page Games Grid Refinement', () => {
     await expect(gameCards.filter({ hasText: /Checkers/i })).toBeVisible();
     await expect(gameCards.filter({ hasText: /Cat Dash/i })).toBeVisible();
     await expect(gameCards.filter({ hasText: /Backgammon/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Hearts/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Spades/i })).toBeVisible();
   });
 
   test('should navigate slider via arrows', async ({ page }) => {

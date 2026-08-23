@@ -6,6 +6,7 @@ import { GameRoom } from '../schemas/game-room.schema';
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomsService } from './game-rooms.service';
 import { GamesRealtimeService } from '../games.realtime.service';
+import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 import type { GameRoomSummary } from './game-rooms.types';
 import { GAME_CATALOG } from '../../games/games.catalog';
 import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
@@ -26,7 +27,9 @@ const PRESENCE_GRACE_MS = 30_000;
 
 /**
  * One-tap entry into a game from SEO landing pages.
- * - createQuickplayRoom(): 1v1 lobby vs an AI bot (Play vs AI)
+ * - createQuickplayRoom(): lobby vs AI bots (Play vs AI). Seats are
+ *   filled with bots from the game engine's metadata, so a 4-player
+ *   game like Hearts gets a full table of 3 opponents.
  * - findHumanMatch(): find an open public lobby for this game; if
  *   none exists, create one (Play vs Human).
  * Each path emits the appropriate realtime event so the rooms list
@@ -42,6 +45,7 @@ export class GameRoomsQuickplayService {
     private readonly gameRoomsMapper: GameRoomsMapper,
     private readonly gameRoomsService: GameRoomsService,
     private readonly realtimeService: GamesRealtimeService,
+    private readonly engineRegistry: GameEngineRegistry,
   ) {}
 
   async createQuickplayRoom(
@@ -51,7 +55,14 @@ export class GameRoomsQuickplayService {
     theme?: string,
   ): Promise<GameRoomSummary> {
     validateGameId(gameId);
-    const botId = `bot-${randomBytes(5).toString('hex')}`;
+    const { minPlayers, maxPlayers } = this.engineRegistry.getMetadata(gameId);
+    // Fill every seat short of the host with a bot so "Play vs AI" is
+    // instantly playable regardless of the game's player count.
+    const botsToSeed = Math.max(1, minPlayers - 1);
+    const botIds = Array.from(
+      { length: botsToSeed },
+      () => `bot-${randomBytes(5).toString('hex')}`,
+    );
     const now = new Date();
     const effectiveTheme = theme || 'adventure';
     const gameOptions: Record<string, unknown> = {
@@ -63,10 +74,10 @@ export class GameRoomsQuickplayService {
       name: 'Quick Match',
       hostId: userId,
       visibility: 'public',
-      maxPlayers: 2,
+      maxPlayers,
       participants: [
         { userId, joinedAt: now },
-        { userId: botId, joinedAt: now },
+        ...botIds.map((botId) => ({ userId: botId, joinedAt: now })),
       ],
       status: 'lobby',
       gameOptions,
@@ -168,11 +179,12 @@ export class GameRoomsQuickplayService {
       ...(variant ? { variant } : {}),
       theme: effectiveTheme,
     };
+    const { maxPlayers } = this.engineRegistry.getMetadata(gameId);
     const room = await this.gameRoomsService.createRoom(userId, {
       gameId,
       name: 'Open Match',
       visibility: 'public',
-      maxPlayers: 2,
+      maxPlayers,
       gameOptions,
     });
     this.realtimeService.emitRoomCreated(room);

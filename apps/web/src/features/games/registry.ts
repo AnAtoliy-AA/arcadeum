@@ -293,7 +293,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 15,
     complexity: 1,
     ageRating: 'G',
-    thumbnail: '/games/pachisi.jpg',
+    thumbnail: '/games/pachisi.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['pachisi', 'ludo', 'dice', 'board', 'race', 'family'],

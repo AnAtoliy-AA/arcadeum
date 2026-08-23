@@ -33,7 +33,10 @@ export interface PachisiState extends BaseGameState {
   currentTurnIndex: number;
   playerOrder: string[];
   players: PachisiPlayer[];
+  /** Primary winner (first of winnerIds); kept for client compatibility. */
   winnerId: string | null;
+  /** All winners — forfeit awards every remaining player (hearts semantics). */
+  winnerIds: string[];
   isDraw: boolean;
 }
 

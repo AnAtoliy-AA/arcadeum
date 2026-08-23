@@ -327,7 +327,7 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
     startMode: 'immediate',
     themes: [...SHARED_VISUAL_THEMES],
     modes: ['standard', 'quick'],
-    variants: [...SHARED_VISUAL_THEMES],
+    variants: ['standard', 'quick'],
     rules: [
       {
         ruleId: 'idle',

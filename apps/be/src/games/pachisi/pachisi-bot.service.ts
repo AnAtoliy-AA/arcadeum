@@ -6,6 +6,7 @@ import {
   GAME_PHASE,
   MAIN_PATH_STEPS,
   SEAT_START_OFFSETS,
+  STAR_CELLS,
 } from '../engines/pachisi/pachisi.constants';
 import type {
   LegalMove,
@@ -19,6 +20,7 @@ import {
   tokensByPlayer,
 } from '../engines/pachisi/pachisi.utils';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
+import { BotTurnLock } from '../common/bot-turn-lock';
 
 const MOVE_DELAY_MS = { min: 400, max: 900 };
 
@@ -36,7 +38,8 @@ const SCORE = {
 @Injectable()
 export class PachisiBotService {
   private readonly logger = new Logger(PachisiBotService.name);
-  private readonly processing = new Set<string>();
+  /** TTL-based single-flight lock so a hung chain cannot deadlock a room. */
+  private readonly turnLock = new BotTurnLock();
 
   constructor(
     @Inject(forwardRef(() => PachisiService))
@@ -64,8 +67,7 @@ export class PachisiBotService {
     if (!currentTurnPlayerId || !this.isBot(currentTurnPlayerId)) return;
 
     const lockKey = `${session.roomId}:${currentTurnPlayerId}`;
-    if (this.processing.has(lockKey)) return;
-    this.processing.add(lockKey);
+    if (!this.turnLock.tryAcquire(lockKey)) return;
 
     try {
       let currentSession = session;
@@ -80,7 +82,10 @@ export class PachisiBotService {
           currentTurnPlayerId
       ) {
         const aiDelay = getAiMoveDelayMs(currentSession);
-        const delayMs = aiDelay !== null ? aiDelay : MOVE_DELAY_MS.min;
+        const delayMs =
+          aiDelay ??
+          MOVE_DELAY_MS.min +
+            Math.floor(Math.random() * (MOVE_DELAY_MS.max - MOVE_DELAY_MS.min));
         await this.delay(delayMs);
 
         if (currentState.phase === GAME_PHASE.ROLL) {
@@ -118,7 +123,7 @@ export class PachisiBotService {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error(`Bot ${currentTurnPlayerId} error: ${message}`);
     } finally {
-      this.processing.delete(lockKey);
+      this.turnLock.release(lockKey);
     }
   }
 
@@ -215,7 +220,7 @@ export class PachisiBotService {
     botId: string,
     cell: number,
   ): boolean {
-    if ([8, 21, 34, 47].includes(cell)) return true;
+    if (STAR_CELLS.has(cell)) return true;
     const seat = state.seats[botId];
     if (seat === undefined) return false;
     return SEAT_START_OFFSETS[seat] === cell;

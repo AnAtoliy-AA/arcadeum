@@ -101,6 +101,7 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       playerOrder: [...playerIds],
       players,
       winnerId: null,
+      winnerIds: [],
       isDraw: false,
       logs: [this.createLogEntry('system', 'Pachisi game started.')],
     };
@@ -221,6 +222,7 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       if (finishedCount >= tokensPerVariant(newState.options.ruleVariant)) {
         newState.phase = GAME_PHASE.GAME_OVER;
         newState.winnerId = context.userId;
+        newState.winnerIds = [context.userId];
         newState.die = null;
         newState.consecutiveSixes = 0;
         newState.logs.push(
@@ -253,11 +255,14 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
 
     if (action === ACTION.FORFEIT) {
       const forfeitingPlayerId = context.userId;
-      const winnerId =
-        newState.playerOrder.find((id) => id !== forfeitingPlayerId) ?? null;
+      // Multi-player forfeit: end the match and award ALL remaining players
+      // (mirrors hearts.engine.ts) instead of crowning one arbitrary player.
+      const winnerIds =
+        newState.playerOrder.filter((id) => id !== forfeitingPlayerId) ?? [];
 
       newState.phase = GAME_PHASE.GAME_OVER;
-      newState.winnerId = winnerId;
+      newState.winnerIds = winnerIds;
+      newState.winnerId = winnerIds[0] ?? null;
       newState.die = null;
       newState.consecutiveSixes = 0;
       newState.logs.push(
@@ -276,7 +281,7 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
   }
 
   getWinners(state: PachisiState): string[] {
-    return state.winnerId ? [state.winnerId] : [];
+    return state.winnerIds ?? (state.winnerId ? [state.winnerId] : []);
   }
 
   getAvailableActions(state: PachisiState, playerId: string): string[] {
@@ -326,6 +331,7 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       ),
       playerOrder: [...state.playerOrder],
       players: state.players.map((p) => ({ ...p })),
+      winnerIds: [...state.winnerIds],
       logs: [...state.logs],
     };
   }

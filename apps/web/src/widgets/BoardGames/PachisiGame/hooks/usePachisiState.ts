@@ -41,15 +41,12 @@ export function usePachisiState({
 
   const isGameOver = snapshot?.phase === 'game_over';
 
-  const mySeat = currentUserId ? snapshot?.seats[currentUserId] : undefined;
-
   return {
     session,
     snapshot,
     currentTurnUserId,
     myTurn,
     isGameOver,
-    mySeat,
     actionBusy,
     setActionBusy,
     startBusy,

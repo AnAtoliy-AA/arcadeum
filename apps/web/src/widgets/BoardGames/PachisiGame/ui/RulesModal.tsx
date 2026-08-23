@@ -63,11 +63,11 @@ export function RulesModal({ open, onClose }: RulesModalProps) {
                   >
                     <span className="text-[20px]">{section.icon}</span>
                   </div>
-                  <span className="font-bold text-[18px] text-[var(--colorText)]">
+                  <span className="font-bold text-[18px] text-[var(--foreground)]">
                     {section.header}
                   </span>
                 </div>
-                <span className="text-[16px] leading-[26px] text-[var(--colorTextMuted)] whitespace-pre-line">
+                <span className="text-[16px] leading-[26px] text-[var(--muted-foreground)] whitespace-pre-line">
                   {section.body}
                 </span>
               </div>

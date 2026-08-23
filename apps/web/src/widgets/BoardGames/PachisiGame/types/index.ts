@@ -5,9 +5,15 @@ export type PachisiGameProps = BaseGameWidgetProps;
 export const TRACK_LENGTH = 52;
 export const MAIN_PATH_STEPS = 51;
 export const HOME_LANE_STEPS = 5;
-export const FINISH_PROGRESS = 56;
+export const FINISH_PROGRESS = MAIN_PATH_STEPS + HOME_LANE_STEPS;
+export const YARD_PROGRESS = -1;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 4;
+
+export const SEAT_START_OFFSETS = [0, 13, 26, 39] as const;
+
+/** Star cells are safe for every player (no captures allowed there). */
+export const STAR_CELLS: ReadonlySet<number> = new Set([8, 21, 34, 47]);
 
 export const PACHISI_VARIANT_IDS = [
   'cyberpunk',

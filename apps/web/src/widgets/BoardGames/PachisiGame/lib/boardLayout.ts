@@ -1,7 +1,13 @@
 import type { PachisiToken } from '../types';
+import {
+  FINISH_PROGRESS,
+  SEAT_START_OFFSETS,
+  STAR_CELLS,
+  TRACK_LENGTH,
+  YARD_PROGRESS,
+} from '../types';
 
-export const SEAT_START_OFFSETS = [0, 13, 26, 39] as const;
-export const STAR_CELLS = new Set([8, 21, 34, 47]);
+export { SEAT_START_OFFSETS, STAR_CELLS };
 
 /** Main-track index → [row, col] on a 15×15 grid (0-indexed). */
 export const TRACK_COORDS: ReadonlyArray<readonly [number, number]> = [
@@ -103,7 +109,7 @@ export const YARD_AREAS: Record<number, { row: number; col: number }> = {
 };
 
 export function absoluteCell(seat: number, progress: number): number {
-  return (SEAT_START_OFFSETS[seat] + progress) % TRACK_COORDS.length;
+  return (SEAT_START_OFFSETS[seat] + progress) % TRACK_LENGTH;
 }
 
 /**
@@ -117,11 +123,14 @@ export function movableTokenIds(
   const movable = new Set<number>();
   if (!tokens || die === null) return movable;
   for (const token of tokens) {
-    if (token.progress === -1) {
+    if (token.progress === YARD_PROGRESS) {
       if (die === 6) movable.add(token.id);
       continue;
     }
-    if (token.progress < 56 && token.progress + die <= 56) {
+    if (
+      token.progress < FINISH_PROGRESS &&
+      token.progress + die <= FINISH_PROGRESS
+    ) {
       movable.add(token.id);
     }
   }

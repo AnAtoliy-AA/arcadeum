@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="400" height="225">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#2b1a3a"/>
+      <stop offset="100%" stop-color="#0d0714"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffd166"/>
+      <stop offset="50%" stop-color="#ff5e5e"/>
+      <stop offset="100%" stop-color="#b15eff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="225" fill="url(#bg)"/>
+
+  <!-- Cross-and-circle board motif -->
+  <g transform="translate(200,112)">
+    <g stroke-width="7" fill="none" opacity="0.9">
+      <path d="M -78 0 H -18 M 18 0 H 78 M 0 -78 V -18 M 0 18 V 78" stroke="#ffd166"/>
+      <path d="M -18 -18 H 18 V 18 H -18 Z" stroke="#ff5e5e"/>
+    </g>
+    <!-- home lane arrows -->
+    <g stroke-width="5" opacity="0.75">
+      <path d="M -66 0 H -24" stroke="#ef4444"/>
+      <path d="M 0 -66 V -24" stroke="#22c55e"/>
+      <path d="M 66 0 H 24" stroke="#eab308"/>
+      <path d="M 0 66 V 24" stroke="#3b82f6"/>
+    </g>
+    <!-- tokens -->
+    <circle cx="-45" cy="0" r="11" fill="#ef4444" stroke="#0d0714" stroke-width="3"/>
+    <circle cx="0" cy="-45" r="11" fill="#22c55e" stroke="#0d0714" stroke-width="3"/>
+    <circle cx="45" cy="0" r="11" fill="#eab308" stroke="#0d0714" stroke-width="3"/>
+    <circle cx="0" cy="45" r="11" fill="#3b82f6" stroke="#0d0714" stroke-width="3"/>
+    <circle cx="30" cy="-8" r="9" fill="#ef4444" stroke="#0d0714" stroke-width="3" opacity="0.85"/>
+  </g>
+
+  <!-- die -->
+  <g transform="translate(338,168)">
+    <rect x="-16" y="-16" width="32" height="32" rx="7" fill="#f8fafc" stroke="#0d0714" stroke-width="2.5"/>
+    <circle cx="-8" cy="-8" r="3" fill="#0d0714"/>
+    <circle cx="8" cy="-8" r="3" fill="#0d0714"/>
+    <circle cx="0" cy="0" r="3" fill="#0d0714"/>
+    <circle cx="-8" cy="8" r="3" fill="#0d0714"/>
+    <circle cx="8" cy="8" r="3" fill="#0d0714"/>
+  </g>
+
+  <text x="200" y="205" text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
+        font-size="26" font-weight="800" letter-spacing="6" fill="url(#title)">PACHISI</text>
+</svg>

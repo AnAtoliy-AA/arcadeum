@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import type { CSSProperties } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { usePachisiTheme } from '../lib/PachisiThemeContext';
 import {
@@ -13,6 +14,8 @@ import {
   movableTokenIds,
 } from '../lib/boardLayout';
 import type { PachisiClientState, PachisiToken } from '../types';
+import { FINISH_PROGRESS, MAIN_PATH_STEPS, YARD_PROGRESS } from '../types';
+import { Die } from './Die';
 
 const GRID_SIZE = 15;
 
@@ -28,64 +31,6 @@ interface PlacedToken {
   ownerId: string;
   seat: number;
   token: PachisiToken;
-}
-
-function Die({ value }: { value: number | null }) {
-  const theme = usePachisiTheme();
-  const pips: Record<number, Array<[number, number]>> = {
-    1: [[2, 2]],
-    2: [
-      [1, 1],
-      [3, 3],
-    ],
-    3: [
-      [1, 1],
-      [2, 2],
-      [3, 3],
-    ],
-    4: [
-      [1, 1],
-      [1, 3],
-      [3, 1],
-      [3, 3],
-    ],
-    5: [
-      [1, 1],
-      [1, 3],
-      [2, 2],
-      [3, 1],
-      [3, 3],
-    ],
-    6: [
-      [1, 1],
-      [1, 3],
-      [2, 1],
-      [2, 3],
-      [3, 1],
-      [3, 3],
-    ],
-  };
-  return (
-    <div
-      aria-label={`die-${value ?? 'none'}`}
-      className="relative h-9 w-9 shrink-0 rounded-lg border shadow-md"
-      data-testid="pachisi-die"
-      style={{ background: theme.diceFace, borderColor: theme.diceBorder }}
-    >
-      {(value ? pips[value] : []).map(([r, c]) => (
-        <span
-          key={`${r}-${c}`}
-          className="absolute h-1.5 w-1.5 rounded-full"
-          style={{
-            background: theme.diceDot,
-            left: `${(c - 0.5) * 25}%`,
-            top: `${(r - 0.5) * 25}%`,
-            transform: 'translate(-50%, -50%)',
-          }}
-        />
-      ))}
-    </div>
-  );
 }
 
 export function PachisiBoard({
@@ -116,7 +61,8 @@ export function PachisiBoard({
       const seat = snapshot.seats[playerId];
       if (seat === undefined) continue;
       for (const token of snapshot.tokens[playerId] ?? []) {
-        if (token.progress < 0 || token.progress > 50) continue;
+        if (token.progress < YARD_PROGRESS || token.progress >= MAIN_PATH_STEPS)
+          continue;
         const cell = absoluteCell(seat, token.progress);
         const list = map.get(cell) ?? [];
         list.push({ ownerId: playerId, seat, token });
@@ -133,7 +79,7 @@ export function PachisiBoard({
       const seat = snapshot.seats[playerId];
       if (seat === undefined) continue;
       const yard = (snapshot.tokens[playerId] ?? []).filter(
-        (tok) => tok.progress === -1,
+        (tok) => tok.progress === YARD_PROGRESS,
       );
       if (yard.length > 0) bySeat.set(seat, yard);
     }
@@ -145,8 +91,9 @@ export function PachisiBoard({
     for (const playerId of snapshot.playerOrder) {
       counts.set(
         playerId,
-        (snapshot.tokens[playerId] ?? []).filter((tok) => tok.progress === 56)
-          .length,
+        (snapshot.tokens[playerId] ?? []).filter(
+          (tok) => tok.progress === FINISH_PROGRESS,
+        ).length,
       );
     }
     return counts;
@@ -156,27 +103,61 @@ export function PachisiBoard({
   const playerAtSeat = (seat: number): string | null =>
     snapshot.playerOrder.find((pid) => snapshot.seats[pid] === seat) ?? null;
 
-  const renderTokenStack = (tokens: PlacedToken[]) => (
+  const isMovableToken = (placed: PlacedToken): boolean =>
+    canMove && placed.ownerId === currentUserId && movable.has(placed.token.id);
+
+  /** One token on a board cell; interactive when it is mine and movable. */
+  const renderPlacedToken = (
+    placed: PlacedToken,
+    i: number,
+    stackSize: number,
+    cellKey: string,
+  ) => {
+    const movableToken = isMovableToken(placed);
+    const style: CSSProperties = {
+      width: '72%',
+      height: '72%',
+      background: theme.seatColors[placed.seat],
+      borderColor: theme.tokenBorder,
+      transform: `translate(${(i - (stackSize - 1) / 2) * 18}%, ${
+        i % 2 === 0 ? -8 : 8
+      }%) scale(${1 - i * 0.08})`,
+      zIndex: i,
+      pointerEvents: movableToken ? 'auto' : 'none',
+    };
+    const shared = {
+      'data-testid': `token-cell-${cellKey}-${placed.token.id}`,
+    };
+    if (movableToken) {
+      return (
+        <button
+          key={`${placed.ownerId}-${placed.token.id}`}
+          aria-label={`movable token ${placed.token.id} on cell ${cellKey}`}
+          className="absolute animate-bounce rounded-full border-2 shadow-md ring-2 ring-white/90 transition-transform hover:scale-110"
+          onClick={() => onMove(placed.token.id)}
+          style={style}
+          type="button"
+          {...shared}
+        />
+      );
+    }
+    return (
+      <span
+        key={`${placed.ownerId}-${placed.token.id}`}
+        className="absolute rounded-full border shadow-md"
+        style={style}
+        {...shared}
+      />
+    );
+  };
+
+  const renderTokenStack = (tokens: PlacedToken[], cellKey: string) => (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
       <div className="relative flex items-center justify-center">
-        {tokens.map((placed, i) => (
-          <span
-            key={`${placed.ownerId}-${placed.token.id}`}
-            className="absolute rounded-full border shadow-md"
-            data-testid={`token-cell-${placed.seat}`}
-            style={{
-              width: '72%',
-              height: '72%',
-              background: theme.seatColors[placed.seat],
-              borderColor: theme.tokenBorder,
-              transform: `translate(${(i - (tokens.length - 1) / 2) * 18}%, ${
-                i % 2 === 0 ? -8 : 8
-              }%) scale(${1 - i * 0.08})`,
-              zIndex: i,
-            }}
-          />
-        ))}
-        {tokens.length > 1 && (
+        {tokens.map((placed, i) =>
+          renderPlacedToken(placed, i, tokens.length, cellKey),
+        )}
+        {tokens.length > 1 && !tokens.some(isMovableToken) && (
           <span className="z-10 rounded-full bg-black/70 px-1 text-[8px] font-black text-white">
             {tokens.length}
           </span>
@@ -357,7 +338,7 @@ export function PachisiBoard({
                   ★
                 </span>
               )}
-              {occupants.length > 0 && renderTokenStack(occupants)}
+              {occupants.length > 0 && renderTokenStack(occupants, `${idx}`)}
             </div>
           );
         })}
@@ -368,9 +349,13 @@ export function PachisiBoard({
             const owner = playerAtSeat(seat);
             const occupant = owner
               ? (snapshot.tokens[owner] ?? []).find(
-                  (tok) => tok.progress === 51 + laneIdx,
+                  (tok) => tok.progress === MAIN_PATH_STEPS + laneIdx,
                 )
               : undefined;
+            const movableOccupant =
+              canMove && owner === currentUserId && occupant !== undefined
+                ? movable.has(occupant.id)
+                : false;
             return (
               <div
                 key={`lane-${seat}-${laneIdx}`}
@@ -386,17 +371,34 @@ export function PachisiBoard({
                   borderColor: theme.cellBorder,
                 }}
               >
-                {occupant && (
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                    <span
-                      className="block h-[72%] w-[72%] rounded-full border shadow-md"
-                      style={{
-                        background: theme.seatColors[seat],
-                        borderColor: theme.tokenBorder,
-                      }}
-                    />
-                  </div>
-                )}
+                {occupant &&
+                  (movableOccupant ? (
+                    <button
+                      aria-label={`movable token ${occupant.id} on lane-${seat}-${laneIdx}`}
+                      className="absolute inset-0 flex animate-bounce items-center justify-center"
+                      data-testid={`lane-token-${seat}-${laneIdx}`}
+                      onClick={() => onMove(occupant.id)}
+                      type="button"
+                    >
+                      <span
+                        className="block h-[72%] w-[72%] rounded-full border-2 shadow-md ring-2 ring-white/90 transition-transform hover:scale-110"
+                        style={{
+                          background: theme.seatColors[seat],
+                          borderColor: theme.tokenBorder,
+                        }}
+                      />
+                    </button>
+                  ) : (
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                      <span
+                        className="block h-[72%] w-[72%] rounded-full border shadow-md"
+                        style={{
+                          background: theme.seatColors[seat],
+                          borderColor: theme.tokenBorder,
+                        }}
+                      />
+                    </div>
+                  ))}
               </div>
             );
           }),

@@ -300,6 +300,21 @@ describe('PachisiEngine', () => {
     expect(res.state?.winnerId).toBe(player2);
   });
 
+  it('forfeit in a 3-player match awards all remaining players', () => {
+    const player3 = 'player-3';
+    const state = engine.initializeState([player1, player2, player3]);
+    state.currentTurnIndex = 1;
+    const res = engine.executeAction(
+      state,
+      ACTION.FORFEIT,
+      makeContext(player1),
+    );
+    expect(res.state?.phase).toBe(GAME_PHASE.GAME_OVER);
+    expect(res.state?.winnerIds).toEqual([player2, player3]);
+    expect(res.state?.winnerId).toBe(player2);
+    expect(engine.getWinners(res.state!)).toEqual([player2, player3]);
+  });
+
   it('blocks actions from non-current players', () => {
     const state = engine.initializeState([player1, player2]);
     state.currentTurnIndex = 0;

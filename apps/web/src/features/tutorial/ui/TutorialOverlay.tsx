@@ -85,9 +85,7 @@ export function TutorialOverlay({
         const selector = step?.target
           ? TUTORIAL_TARGET_SELECTORS[step.target as TutorialStepTargetId]
           : null;
-        const el = selector
-          ? (document.querySelector(selector) as HTMLElement | null)
-          : null;
+        const el = selector ? document.querySelector(selector) : null;
         if (!el) {
           setTargetRect(null);
           return;
@@ -122,13 +120,26 @@ export function TutorialOverlay({
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') handleClose(false);
+      // Escape on the completion card still counts as finishing the tutorial.
+      if (event.key === 'Escape') handleClose(isCompleteStep);
       else if (event.key === 'ArrowRight' && !isCompleteStep) goNext();
       else if (event.key === 'ArrowLeft' && index > 0) goBack();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [open, isCompleteStep, index, goNext, goBack, handleClose]);
+
+  // Modal focus management: move focus into the dialog on open and
+  // restore it to the previously focused element on close.
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+    cardRef.current?.focus();
+    return () => {
+      previouslyFocusedRef.current?.focus();
+    };
+  }, [open]);
 
   if (!open || !def || steps.length === 0 || typeof document === 'undefined') {
     return null;
@@ -205,10 +216,12 @@ export function TutorialOverlay({
 
       <div
         ref={cardRef}
+        tabIndex={-1}
         className={cx(
           'absolute w-[calc(100vw_-_32px)] max-w-[400px] rounded-[20px]',
           'border border-[var(--glassBorderStrong)] bg-[var(--glassBg)]',
           'p-6 shadow-[0_24px_64px_rgba(0,_0,_0,_0.45)] backdrop-blur-[24px]',
+          'outline-none',
         )}
         style={cardStyle}
         data-testid="tutorial-card"

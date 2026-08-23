@@ -12,12 +12,7 @@ function renderOverlay(
 ) {
   const onClose = vi.fn();
   render(
-    <TutorialOverlay
-      gameId="chess_v1"
-      open
-      onClose={onClose}
-      {...props}
-    />,
+    <TutorialOverlay gameId="chess_v1" open onClose={onClose} {...props} />,
   );
   return onClose;
 }
@@ -68,9 +63,9 @@ describe('TutorialOverlay', () => {
     for (let i = 0; i < 4; i++) {
       fireEvent.click(screen.getByTestId('tutorial-next-button'));
     }
-    expect(
-      screen.getByTestId('tutorial-complete-title'),
-    ).toHaveTextContent('games.tutorial.ui.completeTitle');
+    expect(screen.getByTestId('tutorial-complete-title')).toHaveTextContent(
+      'games.tutorial.ui.completeTitle',
+    );
 
     fireEvent.click(screen.getByTestId('tutorial-finish-button'));
     await waitFor(() => {
@@ -110,5 +105,38 @@ describe('TutorialOverlay', () => {
     expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent(
       'games.chess_v1.tutorial.s1.title',
     );
+  });
+
+  it('Escape on the completion card counts as completed', async () => {
+    useTutorialStore.setState({ completedAt: {}, dismissedAt: {} });
+    const onClose = renderOverlay();
+
+    for (let i = 0; i < 4; i++) {
+      fireEvent.click(screen.getByTestId('tutorial-next-button'));
+    }
+    expect(screen.getByTestId('tutorial-complete-title')).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    await waitFor(() => {
+      expect(useTutorialStore.getState().isCompleted('chess_v1')).toBe(true);
+    });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('moves focus into the dialog on open and restores it on close', () => {
+    const trigger = document.createElement('button');
+    document.body.appendChild(trigger);
+    trigger.focus();
+    expect(document.activeElement).toBe(trigger);
+
+    const { unmount } = render(
+      <TutorialOverlay gameId="chess_v1" open onClose={() => {}} />,
+    );
+    expect(document.activeElement).toBe(screen.getByTestId('tutorial-card'));
+
+    unmount();
+    expect(document.activeElement).toBe(trigger);
+
+    trigger.remove();
   });
 });

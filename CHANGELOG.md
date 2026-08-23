@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.5] - 2026-08-23
+
+### Fixed
+- harden bots against duplicate triggers in AI-vs-AI (ARC-890) (ARC-890)
+- stop spawning bot chains from session reads (ARC-890) (ARC-890)
+
+### Refactored
+- make AiVsAiService starters the single source of truth (ARC-890) (ARC-890)
+
+### Documentation
+- require AI-vs-AI support in new-game skill, update roadmap (ARC-890) (ARC-890)
+
+
 ## [1.26.4] - 2026-08-23
 
 ### Refactored

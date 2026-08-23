@@ -229,14 +229,16 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
     state.currentTrick = { plays: [], leadSuit: null };
     state.heartsBroken = false;
     state.passDirection = passDirectionForHand(state.handNumber);
-    state.phase = state.options.passingEnabled
-      ? GAME_PHASE.PASSING
-      : GAME_PHASE.PLAYING;
-    if (!state.options.passingEnabled) {
+    // Passing happens on left/right/across hands only — a hold hand deals
+    // and plays immediately (standard Hearts rules).
+    const passing =
+      state.options.passingEnabled && state.passDirection !== 'hold';
+    state.phase = passing ? GAME_PHASE.PASSING : GAME_PHASE.PLAYING;
+    if (passing) {
+      state.currentTurnIndex = 0;
+    } else {
       const leaderIdx = holderOfTwoClubs(state.hands, state.playerOrder);
       state.currentTurnIndex = leaderIdx >= 0 ? leaderIdx : 0;
-    } else {
-      state.currentTurnIndex = 0;
     }
   }
 

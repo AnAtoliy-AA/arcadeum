@@ -52,34 +52,36 @@ export default function HeartsLanding({
     { key: 'shooting', icon: '🌙', ...landing.highlights.shooting },
   ];
 
+  const s = landing.sections;
+
   const steps = [
     {
       key: 'create',
       stepNumber: 1,
       ...landing.steps.create,
-      tip: 'Choose your visual theme and configure options.',
+      tip: s.tipCreate,
     },
     {
       key: 'join',
       stepNumber: 2,
       ...landing.steps.join,
-      tip: 'Play with friends or fill seats with AI bots.',
+      tip: s.tipJoin,
     },
     {
       key: 'play',
       stepNumber: 3,
       ...landing.steps.play,
-      tip: 'Pass cards, follow suit, avoid Hearts and the Queen of Spades!',
+      tip: s.tipPlay,
     },
   ];
 
   const rulesList = rules
     ? [
-        { key: 'objective', head: 'Objective', body: rules.objective },
-        { key: 'setup', head: 'Setup', body: rules.setup },
-        { key: 'passing', head: 'Card Passing', body: rules.passing },
-        { key: 'gameplay', head: 'Gameplay', body: rules.gameplay },
-        { key: 'scoring', head: 'Scoring', body: rules.scoring },
+        { key: 'objective', head: rules.objectiveTitle, body: rules.objective },
+        { key: 'setup', head: rules.setupTitle, body: rules.setup },
+        { key: 'passing', head: rules.passingTitle, body: rules.passing },
+        { key: 'gameplay', head: rules.gameplayTitle, body: rules.gameplay },
+        { key: 'scoring', head: rules.scoringTitle, body: rules.scoring },
       ]
     : [];
 
@@ -109,34 +111,37 @@ export default function HeartsLanding({
       ]}
       comingSoon={comingSoon}
       faq={{
-        title: 'Frequently Asked Questions',
-        kicker: 'FAQ',
+        title: s.faqTitle,
+        kicker: s.faqKicker,
         items: faqItems,
       }}
       finalCta={{
         gameId,
-        title: 'Pass, Play & Shoot the Moon',
-        subtitle:
-          'Challenge intelligent bots or play against friends in real-time matches.',
+        title: s.finalCtaTitle,
+        subtitle: s.finalCtaSubtitle,
         roomsHref,
         gamesHref,
         ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
-        backToGamesLabel: 'All Games',
+        backToGamesLabel: s.backToGames,
       }}
       hero={{
         gameId,
         title: landing.hero.title,
-        eyebrow: 'Classic 4-Player Trick-Taking',
+        eyebrow: s.heroEyebrow,
         subtitle: landing.hero.subtitle,
-        intro:
-          'A strategic card game of passing, following suit, and avoiding penalty points.',
-        category: 'Card Game',
-        playersBadge: '4 Players',
-        durationBadge: '20–30 min',
-        difficultyBadge: 'Strategy',
-        chips: ['Trick-Taking', 'Card Passing', 'Shoot the Moon', 'AI Bots'],
+        intro: s.heroIntro,
+        category: s.heroCategory,
+        playersBadge: s.playersBadge,
+        durationBadge: s.durationBadge,
+        difficultyBadge: s.difficultyBadge,
+        chips: [
+          s.chipTrickTaking,
+          s.chipCardPassing,
+          s.chipShootTheMoon,
+          s.chipAiBots,
+        ],
         ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
@@ -146,8 +151,8 @@ export default function HeartsLanding({
         heroVisual: <HeartsLandingPreview />,
       }}
       highlights={{
-        title: 'Why Play Hearts?',
-        kicker: 'Highlights',
+        title: s.highlightsTitle,
+        kicker: s.highlightsKicker,
         items: highlights,
       }}
       relatedGames={{
@@ -155,25 +160,25 @@ export default function HeartsLanding({
         games: relatedGames,
       }}
       rules={{
-        title: 'How to Play',
-        kicker: 'Rules',
+        title: s.rulesTitle,
+        kicker: s.rulesKicker,
         rules: rulesList,
       }}
       howToPlay={{
-        title: 'Getting Started',
-        kicker: 'Quick Start',
-        steps: steps.map((s) => ({
-          key: s.key,
-          stepNumber: s.stepNumber,
-          title: s.title,
-          body: s.body,
-          tip: s.tip,
+        title: s.howToPlayTitle,
+        kicker: s.howToPlayKicker,
+        steps: steps.map((step) => ({
+          key: step.key,
+          stepNumber: step.stepNumber,
+          title: step.title,
+          body: step.body,
+          tip: step.tip,
         })),
       }}
       themes={{
-        title: 'Visual Themes',
-        kicker: 'Themes',
-        subtitle: 'Play on beautiful cyber, retro, and fantasy tables.',
+        title: landing.themes.title,
+        kicker: s.themesKicker,
+        subtitle: landing.themes.subtitle,
         themes: themesList,
       }}
     />

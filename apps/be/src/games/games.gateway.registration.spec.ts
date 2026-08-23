@@ -79,9 +79,10 @@ describe('GamesGateway game handler registration', () => {
     } as unknown as Socket;
     connectionCb(fakeSocket);
     if (!registered) throw new Error('socket.onAny not wired');
+    const registeredHandler = registered;
 
     return {
-      dispatch: (event, payload) => registered(event, payload),
+      dispatch: (event, payload) => registeredHandler(event, payload),
     };
   }
 

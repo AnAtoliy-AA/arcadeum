@@ -155,11 +155,7 @@ export function RulesAccess({ gameId, themeId }: Props) {
         <BackgammonRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
       {gameId === 'hearts_v1' ? (
-        <HeartsRulesModal
-          open={open}
-          onClose={() => setOpen(false)}
-          variant={themeId as never}
-        />
+        <HeartsRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

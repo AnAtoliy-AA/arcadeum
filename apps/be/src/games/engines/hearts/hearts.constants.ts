@@ -66,7 +66,12 @@ export const MOON_SHOOT_POINTS = 26;
 
 export interface HeartsOptions {
   passingEnabled: boolean;
-  targetScore: TargetScore;
+  /**
+   * Hand-end threshold checked by the engine. User input is normalized to
+   * `TargetScore` (50|100) by `resolveOptions`/`validateHeartsOptions`; the
+   * wider type lets tests run hands without hitting an early game over.
+   */
+  targetScore: number;
   aiDifficulty?: AiDifficulty;
 }
 

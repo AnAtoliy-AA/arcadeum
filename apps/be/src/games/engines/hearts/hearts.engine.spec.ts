@@ -12,10 +12,10 @@ const PLAYERS = ['p0', 'p1', 'p2', 'p3'];
  * This shuffler picks one card per suit per round, giving
  * [C2,D2,S2,H2, C3,D3,S3,H3, ...].
  */
-function interleavedShuffler(cards: string[]): string[] {
+function interleavedShuffler<T>(cards: T[]): T[] {
   const suits = 4;
   const ranksPerSuit = cards.length / suits;
-  const result: string[] = [];
+  const result: T[] = [];
   for (let r = 0; r < ranksPerSuit; r++) {
     for (let s = 0; s < suits; s++) {
       result.push(cards[s * ranksPerSuit + r]);
@@ -172,6 +172,35 @@ describe('HeartsEngine', () => {
       });
       expect(state.phase).toBe(GAME_PHASE.PLAYING);
       // The 2♣ holder leads immediately.
+      const leaderId = state.playerOrder[state.currentTurnIndex];
+      expect(state.hands[leaderId]).toContain('2C');
+    });
+
+    it('deals straight into play on hold hands (no passing round)', () => {
+      const engine = makeEngine();
+      let state = engine.initializeState(PLAYERS, {
+        options: { passingEnabled: false, targetScore: 1000 },
+      });
+      state.hands = { p0: ['2C'], p1: ['3C'], p2: ['4C'], p3: ['5C'] };
+      state.taken = { p0: [], p1: [], p2: [], p3: [] };
+      state.handNumber = 2; // the re-deal becomes hand 3 → 'hold'
+
+      const plays = ['2C', '3C', '4C', '5C'];
+      for (let i = 0; i < 4; i++) {
+        const playerId = state.playerOrder[state.currentTurnIndex];
+        const result = engine.executeAction(
+          state,
+          'play_card',
+          ctxFor(playerId),
+          { card: plays[i] },
+        );
+        expect(result.success).toBe(true);
+        state = result.state!;
+      }
+
+      expect(state.handNumber).toBe(3);
+      expect(state.passDirection).toBe('hold');
+      expect(state.phase).toBe(GAME_PHASE.PLAYING);
       const leaderId = state.playerOrder[state.currentTurnIndex];
       expect(state.hands[leaderId]).toContain('2C');
     });

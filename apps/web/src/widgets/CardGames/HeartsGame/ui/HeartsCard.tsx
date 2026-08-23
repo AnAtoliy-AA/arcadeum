@@ -2,12 +2,41 @@
 
 import { memo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 
 const SUIT_SYMBOLS: Record<string, string> = {
   S: '♠',
   H: '♥',
   D: '♦',
   C: '♣',
+};
+
+/** Rank symbol → i18n key under `games.hearts_v1.card.ranks`. */
+const RANK_KEYS: Record<string, string> = {
+  '2': 'two',
+  '3': 'three',
+  '4': 'four',
+  '5': 'five',
+  '6': 'six',
+  '7': 'seven',
+  '8': 'eight',
+  '9': 'nine',
+  '10': 'ten',
+  J: 'jack',
+  Q: 'queen',
+  K: 'king',
+  A: 'ace',
+};
+
+/** Suit symbol → i18n key under `games.hearts_v1.card.suits`. */
+const SUIT_KEYS: Record<string, string> = {
+  S: 'spades',
+  H: 'hearts',
+  D: 'diamonds',
+  C: 'clubs',
 };
 
 type CardSize = 'sm' | 'md';
@@ -18,7 +47,6 @@ interface HeartsCardProps {
   playable?: boolean;
   selected?: boolean;
   onClick?: () => void;
-  ariaLabel?: string;
 }
 
 function parseCard(cardId: string): { rank: string; suit: string } {
@@ -31,18 +59,37 @@ export const HeartsCard = memo(function HeartsCard({
   playable = false,
   selected = false,
   onClick,
-  ariaLabel,
 }: HeartsCardProps) {
+  const { t } = useTranslation();
   const { rank, suit } = parseCard(cardId);
   const symbol = SUIT_SYMBOLS[suit] ?? '?';
   const isRed = suit === 'H' || suit === 'D';
   const interactive = Boolean(onClick);
 
+  const rankName = RANK_KEYS[rank]
+    ? t(
+        `games.hearts_v1.card.ranks.${RANK_KEYS[rank]}` as Parameters<
+          typeof t
+        >[0],
+      )
+    : rank;
+  const suitName = SUIT_KEYS[suit]
+    ? t(
+        `games.hearts_v1.card.suits.${SUIT_KEYS[suit]}` as Parameters<
+          typeof t
+        >[0],
+      )
+    : suit;
+  const label = t('games.hearts_v1.card.name' as TranslationKey, {
+    rank: rankName,
+    suit: suitName,
+  });
+
   return (
     <button
       type="button"
       data-testid={`hearts-card-${cardId}`}
-      aria-label={ariaLabel}
+      aria-label={label}
       onClick={onClick}
       disabled={!interactive}
       tabIndex={interactive ? 0 : -1}

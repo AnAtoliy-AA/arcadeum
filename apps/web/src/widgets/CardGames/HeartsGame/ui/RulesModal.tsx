@@ -3,12 +3,10 @@
 import { memo } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import type { HeartsVariant } from '../types';
 
 interface RulesModalProps {
   open: boolean;
   onClose: () => void;
-  variant: HeartsVariant;
 }
 
 const SECTIONS = [

@@ -180,7 +180,7 @@ export const HeartsBoard = memo(function HeartsBoard({
               >
                 {card ? (
                   <>
-                    <HeartsCard cardId={card} ariaLabel={card} />
+                    <HeartsCard cardId={card} />
                     <span className="max-w-[80px] truncate rounded-full bg-black/45 px-2 py-0.5 text-[10px] text-white/90">
                       {playerName(playerId)}
                     </span>
@@ -255,7 +255,6 @@ export const HeartsBoard = memo(function HeartsBoard({
                       isPassing ? onToggleCard(cardId) : onPlayCard(cardId)
                   : undefined
               }
-              ariaLabel={cardId}
             />
           );
         })}

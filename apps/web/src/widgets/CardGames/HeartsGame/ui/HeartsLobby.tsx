@@ -29,7 +29,6 @@ interface HeartsLobbyProps {
   onRefresh: () => void;
   showRulesOpen?: boolean;
   onShowRulesClose?: () => void;
-  variant: HeartsVariantOptionId;
   accessToken?: string | null;
 }
 
@@ -158,7 +157,6 @@ export function HeartsLobby({
         <RulesModal
           open={!!showRulesOpen}
           onClose={onShowRulesClose ?? (() => {})}
-          variant={options.variant}
         />
       }
       onStartGame={onStartGame}

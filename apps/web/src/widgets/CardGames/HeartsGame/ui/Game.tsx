@@ -73,12 +73,14 @@ function HeartsGameImpl({
     if (!isLobby) clearPendingStart();
   }, [isLobby, clearPendingStart]);
 
-  if (snapshot?.phase !== prevPhaseRef.current) {
-    prevPhaseRef.current = snapshot?.phase;
-    if (selectedPassCards.length > 0) {
+  // Clear in-flight pass selections whenever the phase changes (e.g. all
+  // passes resolved and the hand moved to the playing phase).
+  useEffect(() => {
+    if (snapshot?.phase !== prevPhaseRef.current) {
+      prevPhaseRef.current = snapshot?.phase;
       setSelectedPassCards([]);
     }
-  }
+  }, [snapshot?.phase]);
 
   const handleStartGame = useCallback(
     (opts?: { withBots?: boolean; botCount?: number }) => {
@@ -110,7 +112,7 @@ function HeartsGameImpl({
     currentUserId,
     gameId: 'hearts_v1',
     gameOverKey: 'games.hearts_v1.gameOver',
-    winnerId: snapshot?.winnerIds?.[0] ?? null,
+    winnerIds: snapshot?.winnerIds ?? null,
     isDraw: snapshot?.isDraw,
     t,
   });
@@ -195,7 +197,6 @@ function HeartsGameImpl({
           onRefresh={onRefresh}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
-          variant={options.variant}
           accessToken={accessToken}
         />
       </HeartsThemeProvider>
@@ -243,11 +244,7 @@ function HeartsGameImpl({
         theme={visualTheme}
         t={t}
       />
-      <RulesModal
-        open={showRulesOpen}
-        onClose={onShowRulesClose}
-        variant={options.variant}
-      />
+      <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
     </>
   );
 

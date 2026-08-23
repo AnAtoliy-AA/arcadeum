@@ -55,6 +55,37 @@ export const frMessages = {
         title: 'Thèmes Visuels',
         subtitle: 'Jouez sur de beaux plateaux cyber, rétro et fantastique.',
       },
+      sections: {
+        faqTitle: 'Questions Fréquentes',
+        faqKicker: 'FAQ',
+        rulesTitle: 'Comment Jouer',
+        rulesKicker: 'Règles',
+        themesKicker: 'Thèmes',
+        highlightsTitle: 'Pourquoi Jouer aux Coeurs ?',
+        highlightsKicker: 'Points Forts',
+        howToPlayTitle: 'Premiers Pas',
+        howToPlayKicker: 'Démarrage Rapide',
+        finalCtaTitle: 'Passez, Jouez et Visez la Lune',
+        finalCtaSubtitle:
+          'Affrontez des bots intelligents ou jouez contre vos amis en parties en temps réel.',
+        backToGames: 'Tous les Jeux',
+        heroEyebrow: 'Classique de Levées pour 4 Joueurs',
+        heroIntro:
+          'Un jeu de cartes stratégique : passes, suivi de couleur et évitement des points de pénalité.',
+        heroCategory: 'Jeu de Cartes',
+        playersBadge: '4 Joueurs',
+        durationBadge: '20–30 min',
+        difficultyBadge: 'Stratégie',
+        chipTrickTaking: 'Levées',
+        chipCardPassing: 'Passe de Cartes',
+        chipShootTheMoon: 'Viser la Lune',
+        chipAiBots: 'Bots IA',
+        tipCreate: 'Choisissez votre thème visuel et configurez les options.',
+        tipJoin:
+          'Jouez avec des amis ou remplissez les sièges avec des bots IA.',
+        tipPlay:
+          'Passez des cartes, suivez la couleur, évitez les Coeurs et la Reine de Pique !',
+      },
       faq: {
         rules: {
           question: 'Comment gagner aux Coeurs ?',
@@ -114,6 +145,30 @@ export const frMessages = {
       handLabel: 'Main {{n}}',
       trickLabel: 'Pli {{n}}',
       heartsBroken: 'Coeurs brisés',
+    },
+    card: {
+      name: '{{rank}} de {{suit}}',
+      ranks: {
+        two: 'Deux',
+        three: 'Trois',
+        four: 'Quatre',
+        five: 'Cinq',
+        six: 'Six',
+        seven: 'Sept',
+        eight: 'Huit',
+        nine: 'Neuf',
+        ten: 'Dix',
+        jack: 'Valet',
+        queen: 'Dame',
+        king: 'Roi',
+        ace: 'As',
+      },
+      suits: {
+        spades: 'Pique',
+        hearts: 'Coeur',
+        diamonds: 'Carreau',
+        clubs: 'Trèfle',
+      },
     },
     rules: {
       title: 'Règles des Coeurs',

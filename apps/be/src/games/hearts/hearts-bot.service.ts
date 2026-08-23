@@ -53,8 +53,11 @@ export class HeartsBotService {
 
     try {
       const aiDelay = getAiMoveDelayMs(session);
-      const delayMs = aiDelay !== null ? aiDelay : MOVE_DELAY_MS.min;
-      await this.randomDelay({ min: delayMs, max: delayMs });
+      // AI-vs-AI pacing is a fixed configured gap; otherwise vary the bot's
+      // "thinking" time within its natural range.
+      await this.randomDelay(
+        aiDelay !== null ? { min: aiDelay, max: aiDelay } : MOVE_DELAY_MS,
+      );
       if (state.phase === GAME_PHASE.PASSING && state.options.passingEnabled) {
         if (state.pendingPasses[botId]?.length) return;
         const cards = this.pickPassCards(state, botId);

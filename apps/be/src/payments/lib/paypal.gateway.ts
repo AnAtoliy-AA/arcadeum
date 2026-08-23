@@ -11,11 +11,25 @@ import { paypalHttp } from '../../common/utils/paypal-http.util';
 import { randomUUID } from 'crypto';
 
 const PAYPAL_ORDER_ID_REGEX = /^[A-Z0-9]{17,}$/i;
+const PAYPAL_ORDER_PATH_REGEX =
+  /^\/v2\/checkout\/orders\/[A-Za-z0-9]{5,40}(\/capture)?$/;
 
 function validatePayPalOrderId(orderId: string): void {
   if (!orderId || !PAYPAL_ORDER_ID_REGEX.test(orderId)) {
     throw new BadRequestException('Invalid PayPal order ID format');
   }
+}
+
+function buildPayPalOrderUrl(baseUrl: string, orderId: string): string {
+  const normalizedOrderId = encodeURIComponent(orderId.trim().toUpperCase());
+  const url = new URL(`/v2/checkout/orders/${normalizedOrderId}`, baseUrl);
+  if (
+    url.protocol !== 'https:' ||
+    !PAYPAL_ORDER_PATH_REGEX.test(url.pathname)
+  ) {
+    throw new InternalServerErrorException('paypal.invalidRequest');
+  }
+  return url.toString();
 }
 
 interface PayPalAuthResponse {
@@ -157,8 +171,7 @@ export class PaypalGateway {
     validatePayPalOrderId(orderId);
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
-    const normalizedOrderId = encodeURIComponent(orderId.trim().toUpperCase());
-    const orderUrl = `${baseUrl}/v2/checkout/orders/${normalizedOrderId}`;
+    const orderUrl = buildPayPalOrderUrl(baseUrl, orderId);
     try {
       const res = await paypalHttp.get<PayPalGetOrderResponse>(orderUrl, {
         headers: { Authorization: `Bearer ${token}` },
@@ -184,10 +197,10 @@ export class PaypalGateway {
     validatePayPalOrderId(orderId);
     const token = await this.authToken();
     const baseUrl = this.requiredEnv('PAYPAL_API_BASE_URL').replace(/\/$/, '');
-    const normalizedOrderId = encodeURIComponent(orderId.trim().toUpperCase());
+    const orderUrl = `${buildPayPalOrderUrl(baseUrl, orderId)}/capture`;
     try {
       const res = await paypalHttp.post<PayPalGetOrderResponse>(
-        `${baseUrl}/v2/checkout/orders/${normalizedOrderId}/capture`,
+        orderUrl,
         {},
         {
           headers: {

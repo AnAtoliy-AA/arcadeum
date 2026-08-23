@@ -116,7 +116,8 @@ def fetch_page(url: str) -> str:
 def detect_environment(html_text: str, url: str) -> dict:
     """Infer site environment/CMS/framework from source signals."""
     lower = (html_text or "").lower()
-    domain = urlparse(url).netloc.lower()
+    host = urlparse(url).hostname or ""
+    host = host.lower()
     scores = {}
     reasons = {}
 
@@ -127,7 +128,7 @@ def detect_environment(html_text: str, url: str) -> dict:
     # Managed CMS signals
     if any(s in lower for s in ("bloggerusercontent.com", "www.blogger.com", "data:blog.", "b:skin")):
         hit("Blogger", 6, "Blogger template/assets detected")
-    if domain.endswith("blogspot.com"):
+    if host == "blogspot.com" or host.endswith(".blogspot.com"):
         hit("Blogger", 4, "Blogspot domain detected")
 
     if any(s in lower for s in ("wp-content/", "wp-includes/", "wp-json")):

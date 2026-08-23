@@ -64,6 +64,10 @@ export const en = {
     title: `Hearts · Free Online Multiplayer Card Game · ${APP}`,
     description: `Play Hearts online on ${APP} — classic 4-player trick-taking card game with passing, Hearts, Queen of Spades, and AI opponents. Free, instant rooms.`,
   },
+  spadesLanding: {
+    title: `Spades · Free Online Multiplayer Card Game · ${APP}`,
+    description: `Play Spades online on ${APP} — classic 4-player partnership trick-taking card game with bidding, nil bids, bags, and AI opponents. Free, instant rooms.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

@@ -14,6 +14,7 @@ import type { SeaBattleService } from '../sea-battle/sea-battle.service';
 import type { CriticalService } from '../critical/critical.service';
 import type { BackgammonService } from '../backgammon/backgammon.service';
 import type { HeartsService } from '../hearts/hearts.service';
+import type { SpadesService } from '../spades/spades.service';
 import type { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 
 interface RoomArg {
@@ -55,6 +56,7 @@ function buildService() {
     critical: { startSession: jest.fn() } as unknown as CriticalService,
     backgammon: { startSession: jest.fn() } as unknown as BackgammonService,
     hearts: { startSession: jest.fn() } as unknown as HeartsService,
+    spades: { startSession: jest.fn() } as unknown as SpadesService,
   };
   const engineMetadata: Record<
     string,
@@ -64,6 +66,7 @@ function buildService() {
     checkers_v1: { minPlayers: 2, maxPlayers: 2 },
     sea_battle_v1: { minPlayers: 2, maxPlayers: 2 },
     hearts_v1: { minPlayers: 4, maxPlayers: 4 },
+    spades_v1: { minPlayers: 4, maxPlayers: 4 },
   };
   const engineRegistry = {
     // Legacy AI-vs-AI games are all 1v1; only hearts_v1 overrides the table.
@@ -85,6 +88,7 @@ function buildService() {
     services.critical,
     services.backgammon,
     services.hearts,
+    services.spades,
     engineRegistry,
   );
   return { service, gameRoomModel, gameRoomsMapper, realtimeService, services };
@@ -217,6 +221,25 @@ describe('AiVsAiService', () => {
     expect(roomArg.hostId).toBe(roomArg.participants[0].userId);
 
     expect(services.hearts.startSession).toHaveBeenCalledWith(
+      roomArg.hostId,
+      'room-1',
+      false,
+      0,
+      expect.objectContaining({ aiVsAi: true }),
+    );
+  });
+
+  it('fields a full four-bot table for spades', async () => {
+    const { service, gameRoomModel, services } = buildService();
+    await service.createAIvsAIRoom('user-1', { gameId: 'spades_v1' });
+
+    const roomArg = createdRoomArg(gameRoomModel);
+    expect(roomArg.maxPlayers).toBe(4);
+    expect(roomArg.participants).toHaveLength(4);
+    const seatIds = new Set(roomArg.participants.map((p) => p.userId));
+    expect(seatIds.size).toBe(4);
+
+    expect(services.spades.startSession).toHaveBeenCalledWith(
       roomArg.hostId,
       'room-1',
       false,

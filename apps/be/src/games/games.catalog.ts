@@ -288,6 +288,40 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       },
     ],
   },
+  {
+    gameId: 'spades_v1',
+    startMode: 'immediate',
+    themes: [...SHARED_VISUAL_THEMES],
+    // Partnerships (2v2) are inherent to Spades rules, not a selectable mode.
+    modes: [],
+    variants: [...SHARED_VISUAL_THEMES],
+    rules: [
+      {
+        ruleId: 'bidding',
+        label: 'Bidding',
+        description:
+          'Bid the number of tricks your partnership will take before each hand begins.',
+      },
+      {
+        ruleId: 'nil_bids',
+        label: 'Nil bids',
+        description:
+          'Bid Nil to risk ±100 points on taking zero tricks — partners cover you.',
+      },
+      {
+        ruleId: 'sandbagging',
+        label: 'Sandbagging',
+        description:
+          'Overtricks become bags; every 10 accumulated bags costs 100 points.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+    ],
+  },
 ];
 
 const CATALOG_INDEX = new Map<string, GameCatalogEntry>(

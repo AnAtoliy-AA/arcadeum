@@ -15,6 +15,7 @@ export type GameType =
   | 'cat_dash_v1'
   | 'backgammon_v1'
   | 'hearts_v1'
+  | 'spades_v1'
   | null;
 
 // Valid game IDs for type checking
@@ -29,6 +30,7 @@ const VALID_GAME_IDS = [
   'cat_dash_v1',
   'backgammon_v1',
   'hearts_v1',
+  'spades_v1',
 ] as const;
 
 /**

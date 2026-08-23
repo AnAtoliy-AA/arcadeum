@@ -87,6 +87,9 @@ import { BackgammonGateway } from './backgammon.gateway';
 import { HeartsService } from './hearts/hearts.service';
 import { HeartsBotService } from './hearts/hearts-bot.service';
 import { HeartsGateway } from './hearts.gateway';
+import { SpadesService } from './spades/spades.service';
+import { SpadesBotService } from './spades/spades-bot.service';
+import { SpadesGateway } from './spades.gateway';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { RankingModule } from '../ranking/ranking.module';
@@ -204,6 +207,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Hearts
     HeartsService,
     HeartsBotService,
+    // Spades
+    SpadesService,
+    SpadesBotService,
     // AI vs AI
     AiVsAiService,
     // Utilities
@@ -231,6 +237,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     BackgammonGateway,
     // Hearts (gateway registered as provider, not exported)
     HeartsGateway,
+    SpadesGateway,
   ],
   exports: [GameHistoryStatsService, GameRoomsMatchmakingService],
 })

@@ -23,6 +23,7 @@ const GAME_LOADERS: Record<string, GameLoader> = {
   catDash: () => import('./cat-dash/index'),
   backgammon: () => import('./backgammon/index'),
   hearts: () => import('./hearts/index'),
+  spades: () => import('./spades/index'),
 };
 
 function deepMerge(

@@ -8,6 +8,8 @@ import { ChessSymbol } from './symbols/ChessSymbol';
 import { CheckersSymbol } from './symbols/CheckersSymbol';
 import { CatDashSymbol } from './symbols/CatDashSymbol';
 import { BackgammonSymbol } from './symbols/BackgammonSymbol';
+import { HeartsSymbol } from './symbols/HeartsSymbol';
+import { SpadesSymbol } from './symbols/SpadesSymbol';
 
 export const FALLBACK_ACCENT = '#38bdf8';
 
@@ -35,6 +37,10 @@ export function GameSymbol({ gameId, ...rest }: GameSymbolProps) {
       return <CatDashSymbol {...rest} />;
     case 'backgammon_v1':
       return <BackgammonSymbol {...rest} />;
+    case 'hearts_v1':
+      return <HeartsSymbol {...rest} />;
+    case 'spades_v1':
+      return <SpadesSymbol {...rest} />;
     default:
       return null;
   }

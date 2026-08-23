@@ -26,6 +26,7 @@ import { SeaBattleService } from '../sea-battle/sea-battle.service';
 import { CriticalService } from '../critical/critical.service';
 import { BackgammonService } from '../backgammon/backgammon.service';
 import { HeartsService } from '../hearts/hearts.service';
+import { SpadesService } from '../spades/spades.service';
 import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 
 const AI_VS_AI_ROOM_NAME = 'AI vs AI';
@@ -72,6 +73,8 @@ export class AiVsAiService {
     private readonly backgammonService: BackgammonService,
     @Inject(forwardRef(() => HeartsService))
     private readonly heartsService: HeartsService,
+    @Inject(forwardRef(() => SpadesService))
+    private readonly spadesService: SpadesService,
     private readonly engineRegistry: GameEngineRegistry,
   ) {
     this.startFns = {
@@ -106,6 +109,8 @@ export class AiVsAiService {
         this.backgammonService.startSession(hostId, roomId, false, 0, extras),
       hearts_v1: (hostId, roomId, extras) =>
         this.heartsService.startSession(hostId, roomId, false, 0, extras),
+      spades_v1: (hostId, roomId, extras) =>
+        this.spadesService.startSession(hostId, roomId, false, 0, extras),
     };
   }
 

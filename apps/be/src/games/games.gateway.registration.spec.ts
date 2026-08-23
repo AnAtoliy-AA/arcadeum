@@ -1,6 +1,8 @@
 import { GamesGateway } from './games.gateway';
 import { HeartsGateway } from './hearts.gateway';
 import { HeartsService } from './hearts/hearts.service';
+import { SpadesGateway } from './spades.gateway';
+import { SpadesService } from './spades/spades.service';
 import type { Server, Socket } from 'socket.io';
 
 /**
@@ -19,6 +21,13 @@ describe('GamesGateway game handler registration', () => {
     forfeit: jest.fn().mockResolvedValue({}),
   };
 
+  const spadesServiceStub = {
+    startSession: jest.fn().mockResolvedValue({ sessionId: 's1' }),
+    bid: jest.fn().mockResolvedValue({}),
+    playCard: jest.fn().mockResolvedValue({}),
+    forfeit: jest.fn().mockResolvedValue({}),
+  };
+
   const flush = async (): Promise<void> => {
     await Promise.resolve();
     await Promise.resolve();
@@ -29,6 +38,9 @@ describe('GamesGateway game handler registration', () => {
   } {
     const heartsHandler = new HeartsGateway(
       heartsServiceStub as unknown as HeartsService,
+    );
+    const spadesHandler = new SpadesGateway(
+      spadesServiceStub as unknown as SpadesService,
     );
 
     // Inert stand-ins for the other games' gateways (checkers,
@@ -55,6 +67,7 @@ describe('GamesGateway game handler registration', () => {
       inert as never,
       inert as never,
       heartsHandler,
+      spadesHandler,
     );
 
     type ConnectionHandler = (socket: Socket) => void;
@@ -123,12 +136,27 @@ describe('GamesGateway game handler registration', () => {
     expect(heartsServiceStub.playCard).toHaveBeenCalled();
   });
 
-  it('does not route unknown events', async () => {
+  it('routes spades.session.start to the Spades service', async () => {
     const { dispatch } = buildGateway();
 
     dispatch('spades.session.start', { roomId: 'room-1', userId: 'user-1' });
     await flush();
 
+    expect(spadesServiceStub.startSession).toHaveBeenCalledWith(
+      'user-1',
+      'room-1',
+      false,
+      undefined,
+    );
+  });
+
+  it('does not route unknown events', async () => {
+    const { dispatch } = buildGateway();
+
+    dispatch('unknown.session.start', { roomId: 'room-1', userId: 'user-1' });
+    await flush();
+
     expect(heartsServiceStub.startSession).not.toHaveBeenCalled();
+    expect(spadesServiceStub.startSession).not.toHaveBeenCalled();
   });
 });

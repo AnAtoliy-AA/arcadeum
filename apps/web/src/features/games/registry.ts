@@ -17,6 +17,7 @@ export const gameLoaders: Record<
   cat_dash_v1: () => import('@/widgets/ActionGames/CatDashGame'),
   backgammon_v1: () => import('@/widgets/BoardGames/BackgammonGame'),
   hearts_v1: () => import('@/widgets/CardGames/HeartsGame'),
+  spades_v1: () => import('@/widgets/CardGames/SpadesGame'),
   // Add more games as they are implemented
 } as const;
 
@@ -259,6 +260,25 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     tags: ['cards', 'trick-taking', 'classic', 'strategy'],
     implementationPath: '@/widgets/CardGames/HeartsGame',
     lastUpdated: '2026-08-22',
+    status: 'beta',
+  },
+  spades_v1: {
+    slug: 'spades_v1',
+    name: 'Spades',
+    description:
+      'Classic 4-player partnership card game — bid your tricks and let spades trump',
+    category: 'Card Game',
+    minPlayers: 4,
+    maxPlayers: 4,
+    estimatedDuration: 35,
+    complexity: 3,
+    ageRating: 'G',
+    thumbnail: '/games/spades.jpg',
+    version: '1.0.0',
+    supportsAI: true,
+    tags: ['cards', 'trick-taking', 'partnership', 'bidding', 'classic'],
+    implementationPath: '@/widgets/CardGames/SpadesGame',
+    lastUpdated: '2026-08-23',
     status: 'beta',
   },
 };

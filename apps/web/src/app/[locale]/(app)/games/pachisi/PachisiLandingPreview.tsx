@@ -4,6 +4,7 @@ import { getPachisiTheme } from '@/widgets/BoardGames/PachisiGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 import {
   LANE_COORDS,
+  SEAT_START_OFFSETS,
   TRACK_COORDS,
   absoluteCell,
 } from '@/widgets/BoardGames/PachisiGame/lib/boardLayout';
@@ -21,8 +22,6 @@ const SNAPSHOT_TOKENS: ReadonlyArray<{ seat: number; p: number }> = [
   { seat: 3, p: 11 },
   { seat: 3, p: 38 },
 ];
-
-const START_CELLS = new Set([0, 13, 26, 39]);
 
 export function PachisiLandingPreview() {
   return (
@@ -86,31 +85,37 @@ export function PachisiLandingPreview() {
             />
 
             {/* Track */}
-            {TRACK_COORDS.map(([row, col], idx) => (
-              <div
-                key={`track-${idx}`}
-                className="relative rounded-[3px]"
-                style={{
-                  gridRow: row + 1,
-                  gridColumn: col + 1,
-                  margin: '8%',
-                  background: START_CELLS.has(idx)
-                    ? `${theme.seatColors[0]}55`
-                    : theme.cellBackground,
-                  border: `0.5px solid ${theme.cellBorder}`,
-                }}
-              >
-                {tokenByCell.has(idx) && (
-                  <span
-                    className="absolute inset-[14%] rounded-full shadow"
-                    style={{
-                      background: theme.seatColors[tokenByCell.get(idx) ?? 0],
-                      border: `1px solid ${theme.tokenBorder}`,
-                    }}
-                  />
-                )}
-              </div>
-            ))}
+            {TRACK_COORDS.map(([row, col], idx) => {
+              const startSeat = SEAT_START_OFFSETS.findIndex(
+                (off) => off === idx,
+              );
+              return (
+                <div
+                  key={`track-${idx}`}
+                  className="relative rounded-[3px]"
+                  style={{
+                    gridRow: row + 1,
+                    gridColumn: col + 1,
+                    margin: '8%',
+                    background:
+                      startSeat >= 0
+                        ? `${theme.seatColors[startSeat]}55`
+                        : theme.cellBackground,
+                    border: `0.5px solid ${theme.cellBorder}`,
+                  }}
+                >
+                  {tokenByCell.has(idx) && (
+                    <span
+                      className="absolute inset-[14%] rounded-full shadow"
+                      style={{
+                        background: theme.seatColors[tokenByCell.get(idx) ?? 0],
+                        border: `1px solid ${theme.tokenBorder}`,
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
 
             {/* Home lanes */}
             {[0, 1, 2, 3].flatMap((seat) =>

@@ -8,6 +8,8 @@ import {
   DEFAULT_OPTIONS,
   MAX_PLAYERS,
   MIN_PLAYERS,
+  RULE_VARIANTS,
+  VARIANTS,
   type PachisiOptions,
   type RuleVariant,
   type Variant,
@@ -60,9 +62,12 @@ export class PachisiService extends BaseGameService<PachisiOptions> {
       aiDifficulty: string;
     }>;
     return {
-      variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,
-      ruleVariant:
-        (r.ruleVariant as RuleVariant) ?? DEFAULT_OPTIONS.ruleVariant,
+      variant: VARIANTS.includes(r.variant as Variant)
+        ? (r.variant as Variant)
+        : DEFAULT_OPTIONS.variant,
+      ruleVariant: RULE_VARIANTS.includes(r.ruleVariant as RuleVariant)
+        ? (r.ruleVariant as RuleVariant)
+        : DEFAULT_OPTIONS.ruleVariant,
       aiDifficulty: isAiDifficulty(r.aiDifficulty)
         ? r.aiDifficulty
         : DEFAULT_OPTIONS.aiDifficulty,

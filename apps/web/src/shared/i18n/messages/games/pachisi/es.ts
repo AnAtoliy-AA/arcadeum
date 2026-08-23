@@ -46,6 +46,10 @@ export const esMessages = {
           title: 'Captura Rivales',
           body: 'Cae sobre un rival para devolverlo al inicio',
         },
+        safe: {
+          title: 'Estrellas Seguras',
+          body: 'Las casillas de estrella te protegen: planifica rutas por terreno protegido.',
+        },
       },
       steps: {
         create: {
@@ -64,6 +68,38 @@ export const esMessages = {
       themes: {
         title: 'Temas Visuales',
         subtitle: 'Juega en tableros cyber, retro y de fantasía.',
+      },
+      sections: {
+        faqTitle: 'Preguntas Frecuentes',
+        faqKicker: 'FAQ',
+        rulesKicker: 'Reglamento',
+        themesKicker: 'Personalización Visual',
+        themesCta: 'Jugar con Tema',
+        highlightsTitle: 'Juego Ancestral, Tableros Modernos',
+        highlightsKicker: 'Características',
+        howToPlayTitle: 'Cómo Jugar al Pachisi',
+        howToPlayKicker: 'Inicio Rápido',
+        howToPlayIntro:
+          'Domina los fundamentos de lanzar, correr, capturar y llegar a casa.',
+        finalCtaTitle: 'Saca un Seis y Corre a Casa',
+        finalCtaSubtitle:
+          'Desafía a bots inteligentes o juega contra amigos en partidas en tiempo real.',
+        backToGames: 'Todos los Juegos',
+        heroEyebrow: 'La Clásica Carrera de Cruz y Círculo',
+        heroIntro:
+          'El juego de persecución eterno: dados, capturas y rectas finales; fácil de aprender, infinitamente rejugable.',
+        heroCategory: 'Juego de Mesa',
+        playersBadge: '2–4 Jugadores',
+        durationBadge: '10–20 min',
+        difficultyBadge: 'Casual',
+        chipDiceRolls: 'Dados',
+        chipCaptures: 'Capturas',
+        chipSafeStars: 'Estrellas Seguras',
+        chipAiBots: 'Bots IA',
+        tipCreate: 'Configura temas, modos de juego y opciones de invitación.',
+        tipJoin: 'Juega contra amigos o entrena con bots IA.',
+        tipPlay:
+          'Saca un seis para lanzar, captura rivales en plena carrera y llega primero a casa.',
       },
       faq: {
         gameOver: {
@@ -129,6 +165,8 @@ export const esMessages = {
       captured: '¡Capturada!',
       noLegalMoves: 'Sin movimientos legales con esta tirada',
       tapToken: 'Toca una ficha resaltada para moverla',
+      moveTokenAria: 'Mover ficha {{id}}',
+      dieValue: 'Dado: {{value}}',
     },
     rules: {
       title: 'Reglas de Pachisi',

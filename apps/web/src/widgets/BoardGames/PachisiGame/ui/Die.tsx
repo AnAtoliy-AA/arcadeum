@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/shared/lib/useTranslation';
 import { usePachisiTheme } from '../lib/PachisiThemeContext';
 
 const PIPS: Record<number, Array<[number, number]>> = {
@@ -37,10 +38,15 @@ const PIPS: Record<number, Array<[number, number]>> = {
 };
 
 export function Die({ value }: { value: number | null }) {
+  const { t } = useTranslation();
   const theme = usePachisiTheme();
   return (
     <div
-      aria-label={`die-${value ?? 'none'}`}
+      aria-label={
+        value != null
+          ? t('games.pachisi_v1.game.dieValue', { value })
+          : undefined
+      }
       className="relative h-9 w-9 shrink-0 rounded-lg border shadow-md"
       data-testid="pachisi-die"
       style={{ background: theme.diceFace, borderColor: theme.diceBorder }}

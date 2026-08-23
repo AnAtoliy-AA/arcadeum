@@ -132,7 +132,9 @@ export function PachisiBoard({
       return (
         <button
           key={`${placed.ownerId}-${placed.token.id}`}
-          aria-label={`movable token ${placed.token.id} on cell ${cellKey}`}
+          aria-label={t('games.pachisi_v1.game.moveTokenAria', {
+            id: placed.token.id,
+          })}
           className="absolute animate-bounce rounded-full border-2 shadow-md ring-2 ring-white/90 transition-transform hover:scale-110"
           onClick={() => onMove(placed.token.id)}
           style={style}
@@ -270,23 +272,29 @@ export function PachisiBoard({
                   (_, slot) => {
                     const tok = yard[slot];
                     const clickable = !!tok && isMine && movable.has(tok.id);
+                    if (clickable && tok) {
+                      return (
+                        <button
+                          key={`yard-slot-${seat}-${slot}`}
+                          aria-label={t('games.pachisi_v1.game.moveTokenAria', {
+                            id: tok.id,
+                          })}
+                          className="aspect-square w-[62%] animate-bounce cursor-pointer rounded-full border shadow-md ring-2 ring-white/90 transition-transform hover:scale-110"
+                          data-testid={`yard-token-${seat}-${slot}`}
+                          onClick={() => onMove(tok.id)}
+                          style={{
+                            background: theme.seatColors[seat],
+                            borderColor: theme.tokenBorder,
+                          }}
+                          type="button"
+                        />
+                      );
+                    }
                     return (
-                      <button
+                      <span
                         key={`yard-slot-${seat}-${slot}`}
-                        aria-label={
-                          tok
-                            ? `yard-token-${seat}-${tok.id}`
-                            : `yard-slot-${seat}`
-                        }
-                        className={`aspect-square w-[62%] rounded-full border shadow-md transition-transform ${
-                          clickable
-                            ? 'animate-bounce cursor-pointer ring-2 ring-white/90 hover:scale-110'
-                            : ''
-                        }`}
+                        className="aspect-square w-[62%] rounded-full border shadow-md"
                         data-testid={`yard-token-${seat}-${slot}`}
-                        onClick={() => {
-                          if (clickable && tok) onMove(tok.id);
-                        }}
                         style={{
                           background: tok
                             ? theme.seatColors[seat]
@@ -296,7 +304,6 @@ export function PachisiBoard({
                             : theme.cellBorder,
                           opacity: tok ? 1 : 0.35,
                         }}
-                        type="button"
                       />
                     );
                   },
@@ -318,10 +325,8 @@ export function PachisiBoard({
           return (
             <div
               key={`track-${idx}`}
-              aria-label={`cell-${idx}${isStar ? ' safe-star' : ''}${
-                startSeat >= 0 ? ` start-${startSeat}` : ''
-              }${occupants.length > 0 ? ` occupied-${occupants.length}` : ''}`}
               className="relative flex items-center justify-center rounded-md border"
+              data-testid={`cell-${idx}`}
               style={{
                 gridRow: row + 1,
                 gridColumn: col + 1,
@@ -359,10 +364,8 @@ export function PachisiBoard({
             return (
               <div
                 key={`lane-${seat}-${laneIdx}`}
-                aria-label={`lane-${seat}-${laneIdx}${
-                  occupant ? ' occupied' : ''
-                }`}
                 className="relative rounded-md border"
+                data-testid={`lane-cell-${seat}-${laneIdx}`}
                 style={{
                   gridRow: row + 1,
                   gridColumn: col + 1,
@@ -374,7 +377,9 @@ export function PachisiBoard({
                 {occupant &&
                   (movableOccupant ? (
                     <button
-                      aria-label={`movable token ${occupant.id} on lane-${seat}-${laneIdx}`}
+                      aria-label={t('games.pachisi_v1.game.moveTokenAria', {
+                        id: occupant.id,
+                      })}
                       className="absolute inset-0 flex animate-bounce items-center justify-center"
                       data-testid={`lane-token-${seat}-${laneIdx}`}
                       onClick={() => onMove(occupant.id)}

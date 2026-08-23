@@ -46,16 +46,13 @@ export default function PachisiLanding({
 }: Props) {
   if (!landing) return null;
 
+  const s = landing.sections;
+
   const highlights = [
     { key: 'players', icon: '👥', ...landing.highlights.players },
     { key: 'dice', icon: '🎲', ...landing.highlights.dice },
     { key: 'capture', icon: '⚔️', ...landing.highlights.capture },
-    {
-      key: 'safe',
-      icon: '⭐',
-      title: 'Safe Star Cells',
-      body: 'Star cells shield you — plan routes through protected ground.',
-    },
+    { key: 'safe', icon: '⭐', ...landing.highlights.safe },
   ];
 
   const steps = [
@@ -63,28 +60,28 @@ export default function PachisiLanding({
       key: 'create',
       stepNumber: 1,
       ...landing.steps.create,
-      tip: 'Configure themes, game modes, and invite options.',
+      tip: s.tipCreate,
     },
     {
       key: 'join',
       stepNumber: 2,
       ...landing.steps.join,
-      tip: 'Play directly against friends or train with AI bots.',
+      tip: s.tipJoin,
     },
     {
       key: 'play',
       stepNumber: 3,
       ...landing.steps.play,
-      tip: 'Roll a six to launch, capture rivals mid-race, and reach home first.',
+      tip: s.tipPlay,
     },
   ];
 
   const rulesList = rules
     ? [
-        { key: 'objective', head: 'Objective', body: rules.objective },
-        { key: 'movement', head: 'Rolling & Moving', body: rules.movement },
-        { key: 'capture', head: 'Captures & Safe Cells', body: rules.capture },
-        { key: 'sixes', head: 'Sixes', body: rules.sixes },
+        { key: 'objective', head: rules.objectiveTitle, body: rules.objective },
+        { key: 'movement', head: rules.movementTitle, body: rules.movement },
+        { key: 'capture', head: rules.captureTitle, body: rules.capture },
+        { key: 'sixes', head: rules.sixesTitle, body: rules.sixes },
       ]
     : [];
 
@@ -114,65 +111,60 @@ export default function PachisiLanding({
       ]}
       comingSoon={comingSoon}
       faq={{
-        title: 'Frequently Asked Questions',
-        kicker: 'FAQ',
+        title: s.faqTitle,
+        kicker: s.faqKicker,
         items: faqItems,
       }}
       finalCta={{
         gameId,
-        title: 'Roll a Six and Race Home',
-        subtitle:
-          'Challenge intelligent bots or play against friends in real-time matches.',
+        title: s.finalCtaTitle,
+        subtitle: s.finalCtaSubtitle,
         roomsHref,
         gamesHref,
         ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
-        backToGamesLabel: 'All Games',
+        backToGamesLabel: s.backToGames,
       }}
       hero={{
         gameId,
         title: landing.hero.title,
-        eyebrow: 'Classic Cross-and-Circle Race',
+        eyebrow: s.heroEyebrow,
         subtitle: landing.hero.subtitle,
-        intro:
-          'The timeless chase game of dice rolls, captures, and home stretches — easy to learn, endlessly replayable.',
-        category: 'Board Game',
-        playersBadge: '2–4 Players',
-        durationBadge: '10–20 min',
-        difficultyBadge: 'Casual',
-        chips: ['Dice Rolls', 'Captures', 'Safe Stars', 'AI Bots'],
+        intro: s.heroIntro,
+        category: s.heroCategory,
+        playersBadge: s.playersBadge,
+        durationBadge: s.durationBadge,
+        difficultyBadge: s.difficultyBadge,
+        chips: [s.chipDiceRolls, s.chipCaptures, s.chipSafeStars, s.chipAiBots],
         ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
-        createRoomLabel: 'Create Room',
+        createRoomLabel: landing.hero.createRoom,
         roomsHref,
         createRoomHref,
         heroVisual: <PachisiLandingPreview />,
       }}
       highlights={{
-        title: 'Ancient Game, Modern Boards',
-        kicker: 'Key Features',
+        title: s.highlightsTitle,
+        kicker: s.highlightsKicker,
         items: highlights,
       }}
       howToPlay={{
-        title: 'How to Play Pachisi',
-        kicker: 'Quick Start',
-        intro:
-          'Master the fundamentals of launching, racing, capturing, and finishing.',
+        title: s.howToPlayTitle,
+        kicker: s.howToPlayKicker,
+        intro: s.howToPlayIntro,
         steps,
       }}
       relatedGames={{
-        title: 'More Board Games',
-        kicker: 'Discover',
         currentGameSlug: gameId,
         games: relatedGames,
       }}
       rules={
-        rulesList.length > 0
+        rules && rulesList.length > 0
           ? {
-              title: rules?.title ?? 'Official Pachisi Rules',
-              kicker: 'Rulebook',
+              title: rules.title,
+              kicker: s.rulesKicker,
               rules: rulesList,
             }
           : undefined
@@ -181,11 +173,11 @@ export default function PachisiLanding({
         themesList.length > 0
           ? {
               title: landing.themes.title,
-              kicker: 'Visual Customization',
+              kicker: s.themesKicker,
               subtitle: landing.themes.subtitle,
               themes: themesList,
               baseHref: createRoomHref,
-              createRoomLabel: 'Play Theme',
+              createRoomLabel: s.themesCta,
             }
           : undefined
       }

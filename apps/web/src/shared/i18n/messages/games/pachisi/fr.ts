@@ -46,6 +46,10 @@ export const frMessages = {
           title: 'Capturez vos Rivaux',
           body: 'Atterrissez sur un adversaire pour le renvoyer au départ',
         },
+        safe: {
+          title: 'Étoiles Sûres',
+          body: 'Les cases étoile vous protègent : tracez votre route par le terrain sécurisé.',
+        },
       },
       steps: {
         create: {
@@ -64,6 +68,38 @@ export const frMessages = {
       themes: {
         title: 'Thèmes Visuels',
         subtitle: 'Jouez sur des plateaux cyber, rétro et fantastiques.',
+      },
+      sections: {
+        faqTitle: 'Questions Fréquentes',
+        faqKicker: 'FAQ',
+        rulesKicker: 'Règlement',
+        themesKicker: 'Personnalisation Visuelle',
+        themesCta: 'Jouer avec ce Thème',
+        highlightsTitle: 'Jeu Ancestral, Plateaux Modernes',
+        highlightsKicker: 'Points Forts',
+        howToPlayTitle: 'Comment Jouer au Pachisi',
+        howToPlayKicker: 'Démarrage Rapide',
+        howToPlayIntro:
+          'Maîtrisez les fondamentaux : lancer, courir, capturer et rentrer.',
+        finalCtaTitle: 'Faites un Six et Rentrez',
+        finalCtaSubtitle:
+          'Affrontez des bots intelligents ou vos amis dans des parties en temps réel.',
+        backToGames: 'Tous les Jeux',
+        heroEyebrow: 'La Classique Course Croix-et-Cercle',
+        heroIntro:
+          'Le jeu de poursuite intemporel : dés, captures et dernières lignes droites — facile à apprendre, infiniment rejouable.',
+        heroCategory: 'Jeu de Plateau',
+        playersBadge: '2–4 Joueurs',
+        durationBadge: '10–20 min',
+        difficultyBadge: 'Décontracté',
+        chipDiceRolls: 'Dés',
+        chipCaptures: 'Captures',
+        chipSafeStars: 'Étoiles Sûres',
+        chipAiBots: 'Bots IA',
+        tipCreate: 'Configurez thèmes, modes de jeu et options d’invitation.',
+        tipJoin: 'Jouez contre vos amis ou entraînez-vous avec des bots IA.',
+        tipPlay:
+          'Faites un six pour lancer, capturez en pleine course et rentrez premier !',
       },
       faq: {
         gameOver: {
@@ -129,6 +165,8 @@ export const frMessages = {
       captured: 'Capturé !',
       noLegalMoves: 'Aucun coup possible avec ce lancer',
       tapToken: 'Touchez un pion surligné pour le déplacer',
+      moveTokenAria: 'Déplacer le pion {{id}}',
+      dieValue: 'Dé : {{value}}',
     },
     rules: {
       title: 'Règles du Pachisi',

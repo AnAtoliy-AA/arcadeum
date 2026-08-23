@@ -42,6 +42,10 @@ export const enMessages = {
           title: 'Capture Rivals',
           body: 'Land on an opponent to send them back to the start',
         },
+        safe: {
+          title: 'Safe Star Cells',
+          body: 'Star cells shield you — plan routes through protected ground.',
+        },
       },
       steps: {
         create: {
@@ -60,6 +64,38 @@ export const enMessages = {
       themes: {
         title: 'Visual Themes',
         subtitle: 'Play on beautiful cyber, retro, and fantasy boards.',
+      },
+      sections: {
+        faqTitle: 'Frequently Asked Questions',
+        faqKicker: 'FAQ',
+        rulesKicker: 'Rulebook',
+        themesKicker: 'Visual Customization',
+        themesCta: 'Play Theme',
+        highlightsTitle: 'Ancient Game, Modern Boards',
+        highlightsKicker: 'Key Features',
+        howToPlayTitle: 'How to Play Pachisi',
+        howToPlayKicker: 'Quick Start',
+        howToPlayIntro:
+          'Master the fundamentals of launching, racing, capturing, and finishing.',
+        finalCtaTitle: 'Roll a Six and Race Home',
+        finalCtaSubtitle:
+          'Challenge intelligent bots or play against friends in real-time matches.',
+        backToGames: 'All Games',
+        heroEyebrow: 'Classic Cross-and-Circle Race',
+        heroIntro:
+          'The timeless chase game of dice rolls, captures, and home stretches — easy to learn, endlessly replayable.',
+        heroCategory: 'Board Game',
+        playersBadge: '2–4 Players',
+        durationBadge: '10–20 min',
+        difficultyBadge: 'Casual',
+        chipDiceRolls: 'Dice Rolls',
+        chipCaptures: 'Captures',
+        chipSafeStars: 'Safe Stars',
+        chipAiBots: 'AI Bots',
+        tipCreate: 'Configure themes, game modes, and invite options.',
+        tipJoin: 'Play directly against friends or train with AI bots.',
+        tipPlay:
+          'Roll a six to launch, capture rivals mid-race, and reach home first.',
       },
       faq: {
         gameOver: {
@@ -125,6 +161,8 @@ export const enMessages = {
       captured: 'Captured!',
       noLegalMoves: 'No legal moves with this roll',
       tapToken: 'Tap a highlighted token to move it',
+      moveTokenAria: 'Move token {{id}}',
+      dieValue: 'Die showing {{value}}',
     },
     rules: {
       title: 'Pachisi Rules',

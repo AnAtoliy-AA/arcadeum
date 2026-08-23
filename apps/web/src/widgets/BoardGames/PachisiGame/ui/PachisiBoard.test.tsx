@@ -57,9 +57,9 @@ describe('PachisiBoard', () => {
   it('renders the board grid with all 52 track cells', () => {
     renderBoard(mockState);
     expect(screen.getByTestId('pachisi-board')).toBeInTheDocument();
-    expect(screen.getByLabelText('cell-0 start-0')).toBeInTheDocument();
-    expect(screen.getByLabelText('cell-8 safe-star')).toBeInTheDocument();
-    expect(screen.getByLabelText('cell-51')).toBeInTheDocument();
+    expect(screen.getByTestId('cell-0')).toBeInTheDocument();
+    expect(screen.getByTestId('cell-8')).toBeInTheDocument();
+    expect(screen.getByTestId('cell-51')).toBeInTheDocument();
   });
 
   it('shows the roll button on my roll turn and emits a roll', () => {

@@ -132,6 +132,8 @@ export const byMessages = {
   },
   create: {
     title: 'Стварыць гульнявы зал',
+    changeGame: 'Змяніць гульню',
+    sectionSetup: 'Налада гульні',
     sectionGame: 'Выберыце гульню',
     sectionExpansions: 'Дапаўненні',
     sectionVariant: 'Тэма гульні',

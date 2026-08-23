@@ -6,9 +6,9 @@ import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPrevi
 
 interface Props {
   themeNames?: Partial<Record<string, string>>;
-  label: string;
-  cycleHint: string;
-  cycleAriaLabel: string;
+  label?: string;
+  cycleHint?: string;
+  cycleAriaLabel?: string;
 }
 
 export function SeaBattleLandingBoard({
@@ -16,7 +16,7 @@ export function SeaBattleLandingBoard({
   label,
   cycleHint,
   cycleAriaLabel,
-}: Props) {
+}: Props = {}) {
   return (
     <GameLandingPreview
       themeNames={themeNames}

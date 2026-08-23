@@ -59,6 +59,35 @@ export const byMessages = {
         subtitle:
           'Даступныя ўсе агульныя тэмы Arcadeum — дошка падладзіцца пад ваш настрой.',
       },
+      sections: {
+        faqTitle: 'Часта задаваныя пытанні',
+        faqKicker: 'FAQ',
+        rulesTitle: 'Афіцыйныя правілы Го',
+        rulesKicker: 'Правілы',
+        themesKicker: 'Візуальная настройка',
+        highlightsTitle: 'Простыя правілы, бясконцая глыбіня',
+        highlightsKicker: 'Ключавыя асаблівасці',
+        howToPlayTitle: 'Як гуляць у Го',
+        howToPlayKicker: 'Хуткі старт',
+        howToPlayIntro: 'Пазнайце асновы тэрыторыі, захопаў і падліку ачкоў.',
+        relatedTitle: 'Іншыя настольныя гульні',
+        relatedKicker: 'Адкрыць',
+        finalCtaTitle: 'Атачай больш — перамагай больш',
+        finalCtaSubtitle:
+          'Спрабуйце сілы супраць разумных ботаў ці гуляйце з сябрамі ў рэальным часе.',
+        backToGames: 'Усе гульні',
+        heroEyebrow: 'Старажытная гульня пра тэрыторыю',
+        heroIntro:
+          'Стаўце камяні, аточвайце тэрыторыю і захоплівайце групы на самай элегантнай стратэгічнай дошцы ў свеце.',
+        heroCategory: 'Настольная гульня',
+        playersBadge: '2 гульцы',
+        durationBadge: '10–40 хв',
+        difficultyBadge: 'Глыбокая стратэгія',
+        chipTerritory: 'Захопы',
+        chipKoRule: 'Правіла ко',
+        chipAreaScoring: 'Падлік плошчы',
+        chipAiBots: 'ІІ-боты',
+      },
       faq: {
         whatIsGo: {
           question: 'Што такое Го?',

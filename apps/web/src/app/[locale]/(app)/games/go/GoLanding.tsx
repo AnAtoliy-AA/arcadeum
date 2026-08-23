@@ -46,6 +46,8 @@ export default function GoLanding({
 }: Props) {
   if (!landing) return null;
 
+  const s = landing.sections;
+
   const highlights = [
     { key: 'players', icon: '👥', ...landing.highlights.players },
     { key: 'boards', icon: '🔲', ...landing.highlights.boards },
@@ -107,34 +109,32 @@ export default function GoLanding({
       ]}
       comingSoon={comingSoon}
       faq={{
-        title: 'Frequently Asked Questions',
-        kicker: 'FAQ',
+        title: s.faqTitle,
+        kicker: s.faqKicker,
         items: faqItems,
       }}
       finalCta={{
         gameId,
-        title: 'Surround More, Win More',
-        subtitle:
-          'Challenge intelligent bots or play against friends in real-time matches.',
+        title: s.finalCtaTitle,
+        subtitle: s.finalCtaSubtitle,
         roomsHref,
         gamesHref,
         ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
-        backToGamesLabel: 'All Games',
+        backToGamesLabel: s.backToGames,
       }}
       hero={{
         gameId,
         title: landing.hero.title,
-        eyebrow: 'The Ancient Game of Territory',
+        eyebrow: s.heroEyebrow,
         subtitle: landing.hero.subtitle,
-        intro:
-          'Place stones, surround territory and capture groups on the most elegant strategy board ever made.',
-        category: 'Board Game',
-        playersBadge: '2 Players',
-        durationBadge: '10–40 min',
-        difficultyBadge: 'Deep Strategy',
-        chips: ['Captures', 'Ko Rule', 'Area Scoring', 'AI Bots'],
+        intro: s.heroIntro,
+        category: s.heroCategory,
+        playersBadge: s.playersBadge,
+        durationBadge: s.durationBadge,
+        difficultyBadge: s.difficultyBadge,
+        chips: [s.chipTerritory, s.chipKoRule, s.chipAreaScoring, s.chipAiBots],
         ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
@@ -144,27 +144,27 @@ export default function GoLanding({
         heroVisual: <GoLandingPreview />,
       }}
       highlights={{
-        title: 'Simple Rules, Infinite Depth',
-        kicker: 'Key Features',
+        title: s.highlightsTitle,
+        kicker: s.highlightsKicker,
         items: highlights,
       }}
       howToPlay={{
-        title: 'How to Play Go',
-        kicker: 'Quick Start',
-        intro: 'Learn the fundamentals of territory, captures and scoring.',
+        title: s.howToPlayTitle,
+        kicker: s.howToPlayKicker,
+        intro: s.howToPlayIntro,
         steps,
       }}
       relatedGames={{
-        title: 'More Board Games',
-        kicker: 'Discover',
+        title: s.relatedTitle,
+        kicker: s.relatedKicker,
         currentGameSlug: gameId,
         games: relatedGames,
       }}
       rules={
         rulesList.length > 0
           ? {
-              title: rules?.title ?? 'Official Go Rules',
-              kicker: 'Rulebook',
+              title: s.rulesTitle,
+              kicker: s.rulesKicker,
               rules: rulesList,
             }
           : undefined
@@ -173,11 +173,9 @@ export default function GoLanding({
         themesList.length > 0
           ? {
               title: landing.themes.title,
-              kicker: 'Visual Customization',
+              kicker: s.themesKicker,
               subtitle: landing.themes.subtitle,
               themes: themesList,
-              baseHref: createRoomHref,
-              createRoomLabel: 'Play Theme',
             }
           : undefined
       }

@@ -55,5 +55,37 @@ describe('loadGames - Go', () => {
     const rules = go.rules as Record<string, unknown>;
     expect(rules).toHaveProperty('ko');
     expect(rules).toHaveProperty('scoring');
+
+    const landing = go.landing as Record<string, unknown>;
+    const sections = landing.sections as Record<string, string>;
+    for (const key of [
+      'faqTitle',
+      'faqKicker',
+      'rulesTitle',
+      'rulesKicker',
+      'themesKicker',
+      'highlightsTitle',
+      'highlightsKicker',
+      'howToPlayTitle',
+      'howToPlayKicker',
+      'howToPlayIntro',
+      'relatedTitle',
+      'relatedKicker',
+      'finalCtaTitle',
+      'finalCtaSubtitle',
+      'backToGames',
+      'heroEyebrow',
+      'heroIntro',
+      'heroCategory',
+      'playersBadge',
+      'durationBadge',
+      'difficultyBadge',
+      'chipTerritory',
+      'chipKoRule',
+      'chipAreaScoring',
+      'chipAiBots',
+    ]) {
+      expect(sections[key]).toBeTruthy();
+    }
   });
 });

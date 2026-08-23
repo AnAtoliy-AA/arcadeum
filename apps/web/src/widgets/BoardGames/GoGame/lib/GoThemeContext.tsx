@@ -5,4 +5,4 @@ import { getGoTheme } from './theme';
 import type { GoTheme } from './theme-adapter';
 
 export const { Provider: GoThemeProvider, useTheme: useGoTheme } =
-  createGameThemeContext<GoTheme>(getGoTheme, 'cyberpunk');
+  createGameThemeContext<GoTheme>(getGoTheme, 'adventure');

@@ -23,7 +23,10 @@ export const esMessages = {
         browseRooms: 'Ver salas',
       },
       highlights: {
-        players: { title: '2 Jugadores', body: 'Estrategia pura frente a frente' },
+        players: {
+          title: '2 Jugadores',
+          body: 'Estrategia pura frente a frente',
+        },
         boards: {
           title: 'Tres Tableros',
           body: 'Aprende en 9×9, mejora en 13×13, domina 19×19',
@@ -58,6 +61,36 @@ export const esMessages = {
         title: 'Juega a Tu Estilo',
         subtitle:
           'Todos los temas compartidos de Arcadeum están disponibles — el tablero se adapta a tu estilo.',
+      },
+      sections: {
+        faqTitle: 'Preguntas Frecuentes',
+        faqKicker: 'FAQ',
+        rulesTitle: 'Reglas Oficiales del Go',
+        rulesKicker: 'Manual de Reglas',
+        themesKicker: 'Personalización Visual',
+        highlightsTitle: 'Reglas Simples, Profundidad Infinita',
+        highlightsKicker: 'Características Clave',
+        howToPlayTitle: 'Cómo Jugar al Go',
+        howToPlayKicker: 'Inicio Rápido',
+        howToPlayIntro:
+          'Aprende los fundamentos del territorio, las capturas y la puntuación.',
+        relatedTitle: 'Más Juegos de Tablero',
+        relatedKicker: 'Descubre',
+        finalCtaTitle: 'Rodea Más, Gana Más',
+        finalCtaSubtitle:
+          'Desafía a bots inteligentes o juega contra amigos en partidas en tiempo real.',
+        backToGames: 'Todos los Juegos',
+        heroEyebrow: 'El Antiguo Juego del Territorio',
+        heroIntro:
+          'Coloca piedras, rodea territorio y captura grupos en el tablero de estrategia más elegante jamás creado.',
+        heroCategory: 'Juego de Tablero',
+        playersBadge: '2 Jugadores',
+        durationBadge: '10–40 min',
+        difficultyBadge: 'Estrategia Profunda',
+        chipTerritory: 'Capturas',
+        chipKoRule: 'Regla de Ko',
+        chipAreaScoring: 'Puntuación por Área',
+        chipAiBots: 'Bots IA',
       },
       faq: {
         whatIsGo: {

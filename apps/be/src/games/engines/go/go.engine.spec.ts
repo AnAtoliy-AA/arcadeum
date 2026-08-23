@@ -280,6 +280,19 @@ describe('GoEngine', () => {
       expect(h.engine.isGameOver(result.state!)).toBe(true);
     });
 
+    it('marks the resigner dead in the new state and leaves the input state untouched', () => {
+      const h = new Harness();
+      const inputState = h.state;
+      const result = h.engine.executeAction(h.state, 'forfeit', ctx(h.black));
+      expect(result.success).toBe(true);
+      expect(
+        result.state?.players.find((p) => p.playerId === h.black)?.alive,
+      ).toBe(false);
+      expect(
+        inputState.players.find((p) => p.playerId === h.black)?.alive,
+      ).toBe(true);
+    });
+
     it('rejects forfeit after game over', () => {
       const h = new Harness();
       h.pass(h.black);

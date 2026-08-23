@@ -59,6 +59,36 @@ export const enMessages = {
         subtitle:
           'Every shared Arcadeum theme is available — the board adapts to your vibe.',
       },
+      sections: {
+        faqTitle: 'Frequently Asked Questions',
+        faqKicker: 'FAQ',
+        rulesTitle: 'Official Go Rules',
+        rulesKicker: 'Rulebook',
+        themesKicker: 'Visual Customization',
+        highlightsTitle: 'Simple Rules, Infinite Depth',
+        highlightsKicker: 'Key Features',
+        howToPlayTitle: 'How to Play Go',
+        howToPlayKicker: 'Quick Start',
+        howToPlayIntro:
+          'Learn the fundamentals of territory, captures and scoring.',
+        relatedTitle: 'More Board Games',
+        relatedKicker: 'Discover',
+        finalCtaTitle: 'Surround More, Win More',
+        finalCtaSubtitle:
+          'Challenge intelligent bots or play against friends in real-time matches.',
+        backToGames: 'All Games',
+        heroEyebrow: 'The Ancient Game of Territory',
+        heroIntro:
+          'Place stones, surround territory and capture groups on the most elegant strategy board ever made.',
+        heroCategory: 'Board Game',
+        playersBadge: '2 Players',
+        durationBadge: '10–40 min',
+        difficultyBadge: 'Deep Strategy',
+        chipTerritory: 'Captures',
+        chipKoRule: 'Ko Rule',
+        chipAreaScoring: 'Area Scoring',
+        chipAiBots: 'AI Bots',
+      },
       faq: {
         whatIsGo: {
           question: 'What is Go?',

@@ -12,8 +12,11 @@ import {
 import type { GameRoomSummary } from '@/shared/types/games';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { RulesModal } from './RulesModal';
-import { GO_VARIANTS, GO_BOARD_SIZES } from '../lib/constants';
-import type { GoOptions } from '../types';
+import {
+  GO_VARIANTS,
+  GO_BOARD_SIZES,
+  resolveGoOptions,
+} from '../lib/constants';
 
 const GO_LOBBY_THEME = {
   fallbackLightGradient:
@@ -36,22 +39,6 @@ interface GoLobbyProps {
   onShowRulesClose: () => void;
 }
 
-function resolveOptions(raw: unknown): GoOptions {
-  const r = (raw ?? {}) as Partial<{
-    theme: string;
-    variant: string;
-    boardSize: number;
-  }>;
-  const isAllowedSize = (n: number | undefined): n is 9 | 13 | 19 =>
-    n === 9 || n === 13 || n === 19;
-  const theme = r.theme ?? r.variant ?? 'adventure';
-  return {
-    variant: theme,
-    theme,
-    boardSize: isAllowedSize(r.boardSize) ? r.boardSize : 9,
-  };
-}
-
 export function GoLobby({
   room,
   userId,
@@ -70,7 +57,7 @@ export function GoLobby({
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
 
   const options = useMemo(
-    () => resolveOptions(room.gameOptions),
+    () => resolveGoOptions(room.gameOptions),
     [room.gameOptions],
   );
   const variant = options.variant;
@@ -94,7 +81,9 @@ export function GoLobby({
       <LobbyOptionSection title={t('games.create.sectionVariant')}>
         <GameThemePicker
           selectedTheme={variant}
-          onSelect={(themeId) => setOption({ theme: themeId, variant: themeId })}
+          onSelect={(themeId) =>
+            setOption({ theme: themeId, variant: themeId })
+          }
           disabled={!isHost}
         />
       </LobbyOptionSection>

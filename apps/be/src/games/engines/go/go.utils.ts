@@ -142,6 +142,71 @@ export function applyMove(
   };
 }
 
+export interface PlacementProbe {
+  /** False when the placement would be suicide. */
+  ok: boolean;
+  capturedCount: number;
+  koPoint: Point | null;
+  selfLiberties: number;
+}
+
+/**
+ * Evaluate a placement by mutating the board in place and reverting — avoids
+ * the O(N²) board copy that applyMove performs for every candidate point.
+ * Semantically equivalent to reading applyMove's outcome. When `commit` is
+ * set, the board keeps the resulting position unless the move is suicide
+ * (illegal), in which case every touched cell is reverted as well.
+ */
+export function probePlacement(
+  board: Board,
+  color: StoneColor,
+  row: number,
+  col: number,
+  commit: boolean,
+): PlacementProbe {
+  const enemy = opponentOf(color);
+  board[row][col] = color;
+
+  const captured: Point[] = [];
+  const processedGroups = new Set<string>();
+  for (const [dr, dc] of ORTHOGONAL) {
+    const r = row + dr;
+    const c = col + dc;
+    if (!isOnBoard(board, r, c)) continue;
+    if (board[r][c] !== enemy) continue;
+    const key = `${r}:${c}`;
+    if (processedGroups.has(key)) continue;
+    const group = groupAt(board, r, c);
+    for (const s of group.stones) processedGroups.add(`${s.row}:${s.col}`);
+    if (group.liberties.length === 0) {
+      for (const s of group.stones) {
+        board[s.row][s.col] = null;
+        captured.push(s);
+      }
+    }
+  }
+
+  const own = groupAt(board, row, col);
+  const selfLiberties = own.liberties.length;
+
+  if (!commit || selfLiberties === 0) {
+    board[row][col] = null;
+    for (const s of captured) board[s.row][s.col] = enemy;
+  }
+
+  let koPoint: Point | null = null;
+  if (captured.length === 1 && own.stones.length === 1 && selfLiberties === 1) {
+    koPoint = captured[0];
+  }
+
+  return {
+    ok: selfLiberties > 0,
+    capturedCount: captured.length,
+    koPoint,
+    selfLiberties,
+  };
+}
+
 export interface LegalMoveCheck {
   ok: boolean;
   reason?: 'occupied' | 'ko' | 'suicide';

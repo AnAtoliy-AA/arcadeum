@@ -1,4 +1,3 @@
-import type { GameActionContext } from '../base/game-engine.interface';
 import { ACTION, GAME_PHASE } from './go.constants';
 import type { GoState, PlaceStonePayload } from './go.types';
 import { checkMoveLegality, isOnBoard } from './go.utils';
@@ -86,14 +85,4 @@ export function isKnownAction(action: string): boolean {
     action === ACTION.PASS_TURN ||
     action === ACTION.FORFEIT
   );
-}
-
-export function validateContext(
-  state: GoState,
-  context: GameActionContext,
-): ValidationResult {
-  if (!state.players.some((p) => p.playerId === context.userId)) {
-    return { ok: false, error: 'You are not a player in this game.' };
-  }
-  return { ok: true };
 }

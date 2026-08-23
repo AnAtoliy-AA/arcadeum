@@ -10,8 +10,11 @@ import {
   useGameRoomActions,
 } from '@/features/games/hooks';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
-import type { GoGameProps, GoOptions } from '../types';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
+import type { GoGameProps } from '../types';
 import { useGoState } from '../hooks/useGoState';
 import { useGoActions } from '../hooks/useGoActions';
 import { GoThemeProvider } from '../lib/GoThemeContext';
@@ -19,23 +22,7 @@ import { GoLobby } from './GoLobby';
 import { GoBoard } from './GoBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
-import { GO_VARIANTS } from '../lib/constants';
-
-function resolveOptions(raw: unknown): GoOptions {
-  const r = (raw ?? {}) as Partial<{
-    theme: string;
-    variant: string;
-    boardSize: number;
-  }>;
-  const isSize = (n: number | undefined): n is 9 | 13 | 19 =>
-    n === 9 || n === 13 || n === 19;
-  const theme = r.theme ?? r.variant ?? 'adventure';
-  return {
-    variant: theme,
-    theme,
-    boardSize: isSize(r.boardSize) ? r.boardSize : 9,
-  };
-}
+import { GO_KOMI, GO_VARIANTS, resolveGoOptions } from '../lib/constants';
 
 function GoGameImpl({
   roomId,
@@ -105,7 +92,7 @@ function GoGameImpl({
   });
 
   const options = useMemo(
-    () => resolveOptions(room?.gameOptions),
+    () => resolveGoOptions(room?.gameOptions),
     [room?.gameOptions],
   );
 
@@ -131,7 +118,7 @@ function GoGameImpl({
 
   if (!room) return null;
 
-  const visualTheme = options.theme ?? options.variant ?? 'cyberpunk';
+  const visualTheme = options.theme ?? options.variant ?? 'adventure';
 
   // Lobby renders OUTSIDE GameWidgetContainer so it gets full page height.
   if (isLobby) {
@@ -196,8 +183,8 @@ function GoGameImpl({
                 data-testid="go-final-scores"
                 className="text-center text-sm opacity-80"
               >
-                ⚫ {snapshot.scores.black} · ⚪ {snapshot.scores.white}
-                {' + '}7.5
+                ⚫ {snapshot.scores.black} · ⚪ {snapshot.scores.white}{' '}
+                {`(komi +${GO_KOMI})`}
               </div>
             ) : null}
           </div>

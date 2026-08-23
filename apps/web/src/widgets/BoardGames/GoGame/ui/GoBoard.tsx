@@ -3,12 +3,7 @@
 import { memo, useCallback, useMemo } from 'react';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import { useGoTheme } from '../lib/GoThemeContext';
-import {
-  STAR_POINTS,
-  type Cell,
-  type Point,
-  type StoneColor,
-} from '../types';
+import { STAR_POINTS, type Cell, type Point, type StoneColor } from '../types';
 
 const CELL_PX = 30;
 const GAP_PX = 2;
@@ -109,7 +104,7 @@ const CellRenderer = memo(function CellRenderer({
             width: '18%',
             height: '18%',
             background: theme.gridLine,
-            opacity: 1.6,
+            opacity: 1,
             zIndex: 0,
           }}
         />
@@ -184,24 +179,23 @@ function GoBoardImpl({
 
   const isScrollable = size > 13;
 
-  const gridStyle: React.CSSProperties = useMemo(
+  // The grid is a column of `role="row"` rows so the ARIA structure is valid
+  // (grid → row → gridcell), mirroring ChessBoard.
+  const boardStyle: React.CSSProperties = useMemo(
     () =>
       isScrollable
         ? {
-            display: 'grid',
-            gridTemplateColumns: `repeat(${size}, ${CELL_PX}px)`,
-            gridTemplateRows: `repeat(${size}, ${CELL_PX}px)`,
+            display: 'flex',
+            flexDirection: 'column',
             gap: `${GAP_PX}px`,
             padding: `${BOARD_PADDING_PX}px`,
             backgroundColor: theme.boardBackground,
             borderRadius: theme.borderRadius,
             width: 'max-content',
-            height: 'max-content',
           }
         : {
-            display: 'grid',
-            gridTemplateColumns: `repeat(${size}, 1fr)`,
-            gridTemplateRows: `repeat(${size}, 1fr)`,
+            display: 'flex',
+            flexDirection: 'column',
             gap: `${GAP_PX}px`,
             padding: `${BOARD_PADDING_PX}px`,
             backgroundColor: theme.boardBackground,
@@ -213,7 +207,26 @@ function GoBoardImpl({
             boxSizing: 'border-box',
             margin: '0 auto',
           },
-    [isScrollable, size, theme.boardBackground, theme.borderRadius],
+    [isScrollable, theme.boardBackground, theme.borderRadius],
+  );
+
+  const rowStyle: React.CSSProperties = useMemo(
+    () =>
+      isScrollable
+        ? {
+            display: 'grid',
+            gridTemplateColumns: `repeat(${size}, ${CELL_PX}px)`,
+            gridTemplateRows: `${CELL_PX}px`,
+            gap: `${GAP_PX}px`,
+          }
+        : {
+            display: 'grid',
+            gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`,
+            gridTemplateRows: 'minmax(0, 1fr)',
+            gap: `${GAP_PX}px`,
+            flex: 1,
+          },
+    [isScrollable, size],
   );
 
   const handleActivate = useCallback(
@@ -249,29 +262,35 @@ function GoBoardImpl({
         role="grid"
         aria-label={ariaLabel}
         data-testid="go-board"
-        style={gridStyle}
+        style={boardStyle}
         {...gridProps}
       >
-        {board.map((row, rowIdx) =>
-          row.map((cell, colIdx) => (
-            <CellRenderer
-              key={`${rowIdx}-${colIdx}`}
-              row={rowIdx}
-              col={colIdx}
-              cell={cell}
-              isStar={stars.has(`${rowIdx}:${colIdx}`)}
-              isLastMove={
-                !!lastMove && lastMove.row === rowIdx && lastMove.col === colIdx
-              }
-              isKo={!!koPoint && koPoint.row === rowIdx && koPoint.col === colIdx}
-              disabled={disabled}
-              myColor={myColor}
-              theme={theme}
-              focusProps={getCellProps(rowIdx, colIdx)}
-              onCellClick={onCellClick}
-            />
-          )),
-        )}
+        {board.map((row, rowIdx) => (
+          <div key={`row-${rowIdx}`} role="row" style={rowStyle}>
+            {row.map((cell, colIdx) => (
+              <CellRenderer
+                key={`${rowIdx}-${colIdx}`}
+                row={rowIdx}
+                col={colIdx}
+                cell={cell}
+                isStar={stars.has(`${rowIdx}:${colIdx}`)}
+                isLastMove={
+                  !!lastMove &&
+                  lastMove.row === rowIdx &&
+                  lastMove.col === colIdx
+                }
+                isKo={
+                  !!koPoint && koPoint.row === rowIdx && koPoint.col === colIdx
+                }
+                disabled={disabled}
+                myColor={myColor}
+                theme={theme}
+                focusProps={getCellProps(rowIdx, colIdx)}
+                onCellClick={onCellClick}
+              />
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );

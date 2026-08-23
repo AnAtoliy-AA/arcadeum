@@ -1,3 +1,4 @@
+import { performance } from 'node:perf_hooks';
 import type { AiDifficulty } from '../ai-difficulty';
 import { KOMI, type StoneColor } from '../engines/go/go.constants';
 import type { GoState, Point } from '../engines/go/go.types';
@@ -7,14 +8,26 @@ import {
   isOnBoard,
   isTrueEye,
   opponentOf,
+  probePlacement,
   scoreBoard,
   secureRandomInt,
   shuffleInPlace,
+  type Board,
 } from '../engines/go/go.utils';
 
+/** Upper bound on tree simulations per move. */
 export const MCTS_SIMULATIONS: Record<'hard' | 'expert', number> = {
   hard: 220,
   expert: 550,
+};
+
+/**
+ * Wall-clock budget per MCTS decision. Simulations stop early when exceeded so
+ * the synchronous bot never blocks the Node.js event loop longer than this.
+ */
+export const MCTS_TIME_BUDGET_MS: Record<'hard' | 'expert', number> = {
+  hard: 500,
+  expert: 900,
 };
 
 const NEIGHBOURS: ReadonlyArray<readonly [number, number]> = [
@@ -38,15 +51,14 @@ export function playableMoves(state: GoState, color: StoneColor): Point[] {
       ) {
         continue;
       }
-      const outcome = applyMove(state.board, color, row, col);
-      if (outcome.isSuicide) continue;
+      if (!probePlacement(state.board, color, row, col, false).ok) continue;
       moves.push({ row, col });
     }
   }
   return moves;
 }
 
-function countStones(board: GoState['board']): number {
+function countStones(board: Board): number {
   let count = 0;
   for (const row of board) {
     for (const cell of row) {
@@ -173,7 +185,7 @@ function shouldAcceptPass(state: GoState, color: StoneColor): boolean {
 // ---------------------------------------------------------------------------
 
 interface PlayoutPosition {
-  board: GoState['board'];
+  board: Board;
   koPoint: GoState['koPoint'];
   consecutivePasses: number;
   toMove: StoneColor;
@@ -181,6 +193,7 @@ interface PlayoutPosition {
 
 interface McNode {
   position: PlayoutPosition;
+  depth: number;
   move: Point | null;
   parent: McNode | null;
   children: McNode[];
@@ -204,94 +217,110 @@ function uctSelect(node: McNode, exploration: number): McNode {
   return best;
 }
 
-function playout(position: PlayoutPosition, rootColor: StoneColor): number {
-  let current: PlayoutPosition = {
-    ...position,
-    board: position.board.map((r) => [...r]),
-  };
-  const maxSteps = current.board.length * current.board.length * 2;
-  let steps = 0;
+/**
+ * Light playout policy: locality-biased candidates (points adjacent to any
+ * stone), capture preference over a small random sample, everything evaluated
+ * with in-place probes instead of full-board copies.
+ */
+function pickLightMove(
+  board: Board,
+  color: StoneColor,
+  koPoint: GoState['koPoint'],
+): Point | null {
+  const size = board.length;
+  const candidates: Point[] = [];
+  const seen = new Set<number>();
+  let hasStones = false;
 
-  while (current.consecutivePasses < 2 && steps < maxSteps) {
-    steps++;
-    const moves = quickCandidates(current, current.toMove);
-    if (moves.length === 0) {
-      current = {
-        ...current,
-        consecutivePasses: current.consecutivePasses + 1,
-        koPoint: null,
-        toMove: opponentOf(current.toMove),
-      };
-      continue;
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      if (board[row][col] === null) continue;
+      hasStones = true;
+      for (let dr = -1; dr <= 1; dr++) {
+        const r = row + dr;
+        if (r < 0 || r >= size) continue;
+        for (let dc = -1; dc <= 1; dc++) {
+          const c = col + dc;
+          if (c < 0 || c >= size) continue;
+          if (board[r][c] !== null) continue;
+          const key = r * size + c;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          if (isTrueEye(board, color, r, c)) continue;
+          if (koPoint && koPoint.row === r && koPoint.col === c) continue;
+          candidates.push({ row: r, col: c });
+        }
+      }
     }
-    // Light playout policy: prefer captures, otherwise uniform random.
-    const move =
-      moves.find((m) => hasCaptureAt(current, current.toMove, m)) ??
-      moves[secureRandomInt(moves.length)];
-    const outcome = applyMove(
-      current.board,
-      current.toMove,
-      move.row,
-      move.col,
-    );
-    current = {
-      board: outcome.board,
-      koPoint: outcome.koPoint,
-      consecutivePasses: 0,
-      toMove: opponentOf(current.toMove),
-    };
   }
 
-  const scores = scoreBoard(current.board, KOMI);
+  if (!hasStones) {
+    // Empty board — play near the center.
+    const mid = size >> 1;
+    return { row: mid, col: mid };
+  }
+  if (candidates.length === 0) return null;
+
+  // Probe up to a few random candidates looking for an immediate capture,
+  // remembering the first legal fallback.
+  let fallback: Point | null = null;
+  const samples = Math.min(candidates.length, 4);
+  for (let i = 0; i < samples; i++) {
+    const m = candidates[secureRandomInt(candidates.length)];
+    const probe = probePlacement(board, color, m.row, m.col, false);
+    if (!probe.ok) continue;
+    if (probe.capturedCount > 0) return m;
+    if (!fallback) fallback = m;
+  }
+  return fallback ?? candidates[secureRandomInt(candidates.length)];
+}
+
+function playout(position: PlayoutPosition, rootColor: StoneColor): number {
+  const board: Board = position.board.map((r) => [...r]);
+  let koPoint = position.koPoint;
+  let consecutivePasses = position.consecutivePasses;
+  let toMove = position.toMove;
+  const maxSteps = board.length * board.length * 2;
+  let steps = 0;
+
+  while (consecutivePasses < 2 && steps < maxSteps) {
+    steps++;
+    const move = pickLightMove(board, toMove, koPoint);
+    if (!move) {
+      consecutivePasses++;
+      koPoint = null;
+      toMove = opponentOf(toMove);
+      continue;
+    }
+    // Commit mode reverts automatically when the move is illegal (suicide).
+    const probe = probePlacement(board, toMove, move.row, move.col, true);
+    if (!probe.ok) {
+      consecutivePasses++;
+      koPoint = null;
+      toMove = opponentOf(toMove);
+      continue;
+    }
+    koPoint = probe.koPoint;
+    consecutivePasses = 0;
+    toMove = opponentOf(toMove);
+  }
+
+  const scores = scoreBoard(board, KOMI);
   const mine = scores[rootColor];
   const theirs = scores[opponentOf(rootColor)];
   if (mine === theirs) return 0.5;
   return mine > theirs ? 1 : 0;
 }
 
-function hasCaptureAt(
-  position: PlayoutPosition,
-  color: StoneColor,
-  move: Point,
-): boolean {
-  const outcome = applyMove(position.board, color, move.row, move.col);
-  return outcome.capturedStones.length > 0;
-}
-
-function quickCandidates(
-  position: PlayoutPosition,
-  color: StoneColor,
-): Point[] {
-  const moves: Point[] = [];
-  const board = position.board;
-  const size = board.length;
-  for (let row = 0; row < size; row++) {
-    for (let col = 0; col < size; col++) {
-      if (board[row][col] !== null) continue;
-      if (isTrueEye(board, color, row, col)) continue;
-      if (
-        position.koPoint &&
-        position.koPoint.row === row &&
-        position.koPoint.col === col
-      ) {
-        continue;
-      }
-      const outcome = applyMove(board, color, row, col);
-      if (outcome.isSuicide) continue;
-      moves.push({ row, col });
-    }
-  }
-  return moves;
-}
-
 /**
- * Compact UCT Monte-Carlo Tree Search. Simulation counts are modest so the
- * worst-case latency stays acceptable for casual online play.
+ * Compact UCT Monte-Carlo Tree Search. Bounded by both a simulation cap and a
+ * wall-clock time budget so worst-case event-loop blocking stays predictable.
  */
 export function pickMctsMove(
   state: GoState,
   color: StoneColor,
   simulations: number,
+  budgetMs: number,
 ): Point | null {
   const rootMoves = playableMoves(state, color);
   if (rootMoves.length === 0) return null;
@@ -308,6 +337,7 @@ export function pickMctsMove(
       consecutivePasses: state.consecutivePasses,
       toMove: color,
     },
+    depth: 0,
     move: null,
     parent: null,
     children: [],
@@ -316,7 +346,13 @@ export function pickMctsMove(
     visits: 0,
   };
 
-  for (let i = 0; i < simulations; i++) {
+  const deadline = performance.now() + budgetMs;
+  let iterations = 0;
+  while (iterations < simulations) {
+    // Check the clock periodically rather than every iteration.
+    if ((iterations & 7) === 7 && performance.now() >= deadline) break;
+    iterations++;
+
     let node = root;
 
     // 1. Selection — walk fully-expanded nodes via UCB1.
@@ -340,6 +376,7 @@ export function pickMctsMove(
           consecutivePasses: 0,
           toMove: opponentOf(node.position.toMove),
         },
+        depth: node.depth + 1,
         move,
         parent: node,
         children: [],
@@ -350,12 +387,15 @@ export function pickMctsMove(
       node = node.children[node.children.length - 1];
     }
 
-    // 3. Simulation + 4. Backpropagation.
+    // 3. Simulation + 4. Backpropagation. Rewards are stored from the
+    // perspective of the player who made each node's move (zero-sum flip per
+    // ply), so UCT selection models a hostile opponent at every level.
     const reward = playout(node.position, color);
     let backprop: McNode | null = node;
     while (backprop) {
       backprop.visits++;
-      backprop.wins += reward;
+      backprop.wins +=
+        backprop.depth % 2 === 1 ? reward : /* zero-sum ply flip */ 1 - reward;
       backprop = backprop.parent;
     }
   }
@@ -378,27 +418,27 @@ export function pickStrategyMove(
 
   if (difficulty === 'easy') {
     // Random, but never throw away a free capture.
-    const capture = playable.find((m) =>
-      hasCaptureAt(
-        {
-          board: state.board,
-          koPoint: state.koPoint,
-          consecutivePasses: state.consecutivePasses,
-          toMove: color,
-        },
-        color,
-        m,
-      ),
-    );
-    if (capture) return capture;
-    return playable[secureRandomInt(playable.length)];
+    let fallback: Point | null = null;
+    for (const m of shuffleInPlace([...playable])) {
+      const probe = probePlacement(state.board, color, m.row, m.col, false);
+      if (!probe.ok) continue;
+      if (probe.capturedCount > 0) return m;
+      if (!fallback) fallback = m;
+    }
+    return fallback ?? playable[secureRandomInt(playable.length)];
   }
 
   if (difficulty === 'medium') {
     return pickGreedyMove(state, color) ?? 'pass';
   }
 
-  const sims =
-    difficulty === 'expert' ? MCTS_SIMULATIONS.expert : MCTS_SIMULATIONS.hard;
-  return pickMctsMove(state, color, sims) ?? 'pass';
+  const tier = difficulty === 'expert' ? 'expert' : 'hard';
+  return (
+    pickMctsMove(
+      state,
+      color,
+      MCTS_SIMULATIONS[tier],
+      MCTS_TIME_BUDGET_MS[tier],
+    ) ?? 'pass'
+  );
 }

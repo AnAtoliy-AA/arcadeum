@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
-import type { GoBoardSize } from '../types';
+import type { GoBoardSize, GoOptions } from '../types';
 
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 
@@ -32,3 +32,28 @@ export const GO_BOARD_SIZES: ReadonlyArray<{
   { size: 13, label: '13×13' },
   { size: 19, label: '19×19' },
 ];
+
+/** Komi paid to white — must match BE `go.constants.KOMI`. */
+export const GO_KOMI = 7.5;
+
+const ALLOWED_BOARD_SIZES: ReadonlyArray<number> = GO_BOARD_SIZES.map(
+  ({ size }) => size,
+);
+
+/** Sanitize raw room game options into a safe GoOptions shape. */
+export function resolveGoOptions(raw: unknown): GoOptions {
+  const r = (raw ?? {}) as Partial<{
+    theme: string;
+    variant: string;
+    boardSize: number;
+  }>;
+  const boardSize = ALLOWED_BOARD_SIZES.includes(Number(r.boardSize))
+    ? (Number(r.boardSize) as GoBoardSize)
+    : 9;
+  const theme = r.theme ?? r.variant ?? 'adventure';
+  return {
+    variant: theme,
+    theme,
+    boardSize,
+  };
+}

@@ -9,14 +9,14 @@ export const frMessages = {
       meta: {
         title: 'Go — Jeu de Plateau Multijoueur en Ligne Gratuit | Arcadeum',
         description:
-          "Jouez au Go en ligne gratuitement sur Arcadeum. Règles classiques de Baduk/Weiqi sur plateaux de 9×9, 13×13 et 19×19 avec captures, règle du ko, comptage par aire et adversaires IA.",
+          'Jouez au Go en ligne gratuitement sur Arcadeum. Règles classiques de Baduk/Weiqi sur plateaux de 9×9, 13×13 et 19×19 avec captures, règle du ko, comptage par aire et adversaires IA.',
         keywords:
           'go, baduk, weiqi, igo, jeu de plateau, multijoueur, en ligne, gratuit, stratégie',
       },
       hero: {
         title: 'Go',
         subtitle:
-          "Le jeu ancestral consistant à encercler du territoire. Des règles simples, une profondeur infinie.",
+          'Le jeu ancestral consistant à encercler du territoire. Des règles simples, une profondeur infinie.',
         ctaQuickplay: 'Jouer contre l’IA',
         ctaQuickplayError: 'Échec de la création de partie',
         createRoom: 'Créer un salon',
@@ -58,6 +58,36 @@ export const frMessages = {
         title: 'Jouez à Votre Façon',
         subtitle:
           'Tous les thèmes partagés d’Arcadeum sont disponibles — le plateau s’adapte à votre style.',
+      },
+      sections: {
+        faqTitle: 'Questions Fréquentes',
+        faqKicker: 'FAQ',
+        rulesTitle: 'Règles Officielles du Go',
+        rulesKicker: 'Livret de Règles',
+        themesKicker: 'Personnalisation Visuelle',
+        highlightsTitle: 'Règles Simples, Profondeur Infinie',
+        highlightsKicker: 'Points Clés',
+        howToPlayTitle: 'Comment Jouer au Go',
+        howToPlayKicker: 'Démarrage Rapide',
+        howToPlayIntro:
+          'Apprenez les fondamentaux du territoire, des captures et du comptage.',
+        relatedTitle: 'Plus de Jeux de Plateau',
+        relatedKicker: 'Découvrir',
+        finalCtaTitle: 'Encerclez Plus, Gagnez Plus',
+        finalCtaSubtitle:
+          'Affrontez des bots intelligents ou jouez contre vos amis en parties en temps réel.',
+        backToGames: 'Tous les Jeux',
+        heroEyebrow: 'L’Ancien Jeu du Territoire',
+        heroIntro:
+          'Posez des pierres, entourez du territoire et capturez des groupes sur le plateau stratégique le plus élégant qui soit.',
+        heroCategory: 'Jeu de Plateau',
+        playersBadge: '2 Joueurs',
+        durationBadge: '10–40 min',
+        difficultyBadge: 'Stratégie Profonde',
+        chipTerritory: 'Captures',
+        chipKoRule: 'Règle du Ko',
+        chipAreaScoring: 'Comptage par Aire',
+        chipAiBots: 'Bots IA',
       },
       faq: {
         whatIsGo: {

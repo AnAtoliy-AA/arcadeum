@@ -23,6 +23,7 @@ import type {
 import { applyMove, scoreBoard, shuffleInPlace } from './go.utils';
 import {
   isKnownAction,
+  validateForfeit,
   validatePassTurn,
   validatePlaceStone,
 } from './go.validators';
@@ -124,8 +125,7 @@ export class GoEngine extends BaseGameEngine<GoState> {
       return validatePassTurn(state, context.userId).ok;
     }
     if (action === ACTION.FORFEIT) {
-      const player = state.players.find((p) => p.playerId === context.userId);
-      return !!player?.alive;
+      return validateForfeit(state, context.userId).ok;
     }
     return false;
   }
@@ -252,13 +252,12 @@ export class GoEngine extends BaseGameEngine<GoState> {
     state: GoState,
     context: GameActionContext,
   ): GameActionResult<GoState> {
-    const player = state.players.find((p) => p.playerId === context.userId);
-    if (!player?.alive || state.phase !== GAME_PHASE.PLAYING) {
-      return this.errorResult('You cannot forfeit right now.');
-    }
+    const validation = validateForfeit(state, context.userId);
+    if (!validation.ok) return this.errorResult(validation.error);
 
     const newState = this.cloneState(state);
-    player.alive = false;
+    const player = newState.players.find((p) => p.playerId === context.userId);
+    if (player) player.alive = false;
     const opponent = newState.players.find(
       (p) => p.playerId !== context.userId,
     );
@@ -266,7 +265,10 @@ export class GoEngine extends BaseGameEngine<GoState> {
     newState.isDraw = false;
     newState.phase = GAME_PHASE.GAME_OVER;
     newState.logs.push(
-      this.createLogEntry('system', `${COLOR_LABEL[player.color]} resigned.`),
+      this.createLogEntry(
+        'system',
+        `${COLOR_LABEL[player?.color ?? 'black']} resigned.`,
+      ),
     );
     return this.successResult(newState);
   }

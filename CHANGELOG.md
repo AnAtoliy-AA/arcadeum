@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.8] - 2026-08-23
+
+### Added
+- wire pachisi into registries, home, create page, and landing (ARC-886)
+- add PachisiGame web widget (ARC-886)
+- add pachisi i18n messages for en, es, fr, ru, by (ARC-886)
+- support pachisi in AI-vs-AI spectator rooms (ARC-886)
+- add pachisi engine, service, bot, and gateway (ARC-886)
+
+### Fixed
+- route pachisi landing and board labels through i18n, validate options (ARC-886)
+- make track tokens clickable and award all players on forfeit (ARC-886)
+
+
 ## [1.26.7] - 2026-08-23
 
 ### Added

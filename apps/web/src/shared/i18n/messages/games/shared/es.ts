@@ -133,6 +133,8 @@ export const esMessages = {
   },
   create: {
     title: 'Crear Sala de Juego',
+    changeGame: 'Cambiar juego',
+    sectionSetup: 'Configuración del juego',
     sectionGame: 'Seleccionar Juego',
     sectionExpansions: 'Paquetes de Expansión',
     sectionVariant: 'Tema del Juego',

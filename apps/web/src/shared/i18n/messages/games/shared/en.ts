@@ -132,6 +132,8 @@ export const enMessages = {
   },
   create: {
     title: 'Create Game Room',
+    changeGame: 'Change game',
+    sectionSetup: 'Game setup',
     sectionGame: 'Select Game',
     sectionExpansions: 'Expansion Packs',
     sectionVariant: 'Game Theme',

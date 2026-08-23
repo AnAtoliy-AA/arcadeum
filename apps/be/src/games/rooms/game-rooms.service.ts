@@ -28,6 +28,7 @@ import {
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomsRematchService } from './game-rooms.rematch.service';
 import { GameRoomsChatService } from './game-rooms.chat.service';
+import { sanitizeNotes } from '../utils/sanitize-notes';
 import { generateUniqueInviteCode } from './game-rooms.invite-code';
 import { GameRoomsQueryBuilder } from './game-rooms.query';
 import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
@@ -91,6 +92,7 @@ export class GameRoomsService {
       hostId: userId,
       visibility: dto.visibility,
       maxPlayers: dto.maxPlayers || null,
+      notes: dto.notes ? sanitizeNotes(dto.notes) : undefined,
       inviteCode,
       password: hashedPassword,
       participants: [

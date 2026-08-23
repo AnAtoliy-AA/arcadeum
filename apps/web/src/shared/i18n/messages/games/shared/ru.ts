@@ -132,6 +132,8 @@ export const ruMessages = {
   },
   create: {
     title: 'Создать игровой зал',
+    changeGame: 'Сменить игру',
+    sectionSetup: 'Настройка игры',
     sectionGame: 'Выберите игру',
     sectionExpansions: 'Дополнения',
     sectionVariant: 'Тема игры',

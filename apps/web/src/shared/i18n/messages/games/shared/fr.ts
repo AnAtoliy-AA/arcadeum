@@ -133,6 +133,8 @@ export const frMessages = {
   },
   create: {
     title: 'Créer une Salle de Jeu',
+    changeGame: 'Changer de jeu',
+    sectionSetup: 'Configuration du jeu',
     sectionGame: 'Sélectionner un Jeu',
     sectionExpansions: "Packs d'Extension",
     sectionVariant: 'Thème du Jeu',

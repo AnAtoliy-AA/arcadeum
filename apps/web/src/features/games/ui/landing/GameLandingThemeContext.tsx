@@ -39,30 +39,41 @@ const GameLandingThemeContext = createContext<GameLandingThemeValue>({
 export function GameLandingThemeProvider({
   children,
   initialTheme = DEFAULT_LANDING_THEME,
+  theme: controlledTheme,
+  onThemeChange,
 }: {
   children: ReactNode;
   initialTheme?: string;
+  theme?: string;
+  onThemeChange?: (theme: string) => void;
 }) {
-  const [theme, setTheme] = useState<string>(
+  const [internalTheme, setInternalTheme] = useState<string>(
     LANDING_THEME_IDS.includes(initialTheme)
       ? initialTheme
       : DEFAULT_LANDING_THEME,
   );
 
+  const activeTheme =
+    controlledTheme !== undefined ? controlledTheme : internalTheme;
+
   const value = useMemo<GameLandingThemeValue>(
     () => ({
-      theme,
-      setTheme,
+      theme: activeTheme,
+      setTheme: (next) => {
+        setInternalTheme(next);
+        onThemeChange?.(next);
+      },
       cycleTheme: () => {
-        const idx = LANDING_THEME_IDS.indexOf(theme);
+        const idx = LANDING_THEME_IDS.indexOf(activeTheme);
         const next =
           LANDING_THEME_IDS[(idx + 1) % LANDING_THEME_IDS.length] ??
           LANDING_THEME_IDS[0] ??
-          theme;
-        setTheme(next);
+          activeTheme;
+        setInternalTheme(next);
+        onThemeChange?.(next);
       },
     }),
-    [theme],
+    [activeTheme, onThemeChange],
   );
 
   return (

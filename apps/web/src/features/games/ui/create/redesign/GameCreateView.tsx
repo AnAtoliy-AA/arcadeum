@@ -18,19 +18,13 @@ import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 
 import s from './GameCreateView.module.scss';
 import { SectionGroup } from './SectionGroup';
-import { QuickPresets } from './QuickPresets';
-import { GamePicker } from './GamePicker';
-import { ThemePicker } from './ThemePicker';
-import { ExpansionPacks } from './ExpansionPacks';
+import { SelectedGameCard } from './SelectedGameCard';
 import { RoomDetails } from './RoomDetails';
-import { HouseRules } from './HouseRules';
 import { PreviewRail } from './PreviewRail';
-import { GAMES, VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
-import { applyPreset } from './data/presets';
+import { VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
 import {
   ROOM_NAME_MAX,
   type CreateRoomForm,
-  type PresetId,
   type Visibility,
 } from './data/form';
 import { buildLabels } from './data/labels';
@@ -63,7 +57,6 @@ function defaultThemeFor(gameId: GameId): string {
 function initialForm(
   gameId: GameId,
   themeId: string | undefined,
-  defaultRoomName: string,
 ): CreateRoomForm {
   const themes = themesFor(gameId);
   const defaultTheme = defaultThemeFor(gameId);
@@ -75,7 +68,7 @@ function initialForm(
     expansionPackIds: ['core'],
     maxPlayers: 'auto',
     visibility: 'public',
-    roomName: defaultRoomName,
+    roomName: '',
     notes: '',
     password: '',
     rules: {
@@ -153,18 +146,17 @@ export function GameCreateView() {
   }, [snapshot.displayName, snapshot.username, messages.home?.defaultRoomName]);
 
   const [form, setForm] = useState<CreateRoomForm>(() =>
-    initialForm(urlGameId, urlVariant, defaultRoomName),
+    initialForm(urlGameId, urlVariant),
   );
-  const [isNameEdited, setIsNameEdited] = useState(false);
-  const [prevDefaultName, setPrevDefaultName] = useState(defaultRoomName);
+  const [customRoomName, setCustomRoomName] = useState<string | null>(null);
 
-  // Render-phase sync — replaces the cascading useEffect pattern.
-  if (!isNameEdited && defaultRoomName && defaultRoomName !== prevDefaultName) {
-    setPrevDefaultName(defaultRoomName);
-    if (form.roomName !== defaultRoomName) {
-      setForm({ ...form, roomName: defaultRoomName });
-    }
-  }
+  const activeRoomName =
+    customRoomName !== null ? customRoomName : defaultRoomName;
+
+  const currentForm = useMemo(
+    () => ({ ...form, roomName: activeRoomName }),
+    [form, activeRoomName],
+  );
 
   const updateUrl = useCallback(
     (next: { gameId: GameId; themeId: string }) => {
@@ -184,14 +176,34 @@ export function GameCreateView() {
   );
 
   useEffect(() => {
+    const currentTheme = searchParams?.get('theme');
+    const currentVariant = searchParams?.get('variant');
     if (
       form.themeId &&
-      (!searchParams?.get('theme') || searchParams?.get('variant'))
+      (!currentTheme || currentVariant) &&
+      currentTheme !== form.themeId
     ) {
       updateUrl({ gameId: form.gameId, themeId: form.themeId });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [form.gameId, form.themeId, searchParams, updateUrl]);
+
+  const handleThemeChange = useCallback(
+    (nextThemeId: string) => {
+      setForm((prev) => ({ ...prev, themeId: nextThemeId }));
+      updateUrl({ gameId: form.gameId, themeId: nextThemeId });
+    },
+    [form.gameId, updateUrl],
+  );
+
+  const handleCycleTheme = useCallback(() => {
+    const themes = themesFor(form.gameId);
+    if (themes.length <= 1) return;
+    const idx = themes.findIndex((t) => t.id === form.themeId);
+    const next = themes[(idx + 1) % themes.length];
+    if (next?.id) {
+      handleThemeChange(next.id);
+    }
+  }, [form.gameId, form.themeId, handleThemeChange]);
 
   function patchForm(
     patch: Partial<
@@ -207,47 +219,10 @@ export function GameCreateView() {
       >
     >,
   ) {
-    setForm((prev) => ({ ...prev, ...patch }));
-    if (patch.roomName !== undefined) setIsNameEdited(true);
-  }
-
-  function setGameId(newGameId: GameId) {
-    const themeId = defaultThemeFor(newGameId);
-    const game = GAMES[newGameId];
-    let maxPlayers = form.maxPlayers;
-    if (
-      typeof maxPlayers === 'number' &&
-      (maxPlayers < game.players.min || maxPlayers > game.players.max)
-    ) {
-      maxPlayers = 'auto';
+    if (patch.roomName !== undefined) {
+      setCustomRoomName(patch.roomName);
     }
-    setForm({
-      ...form,
-      gameId: newGameId,
-      themeId,
-      maxPlayers,
-      expansionPackIds:
-        newGameId === 'critical_v1' ? form.expansionPackIds : ['core'],
-    });
-    updateUrl({ gameId: newGameId, themeId });
-  }
-
-  function setThemeId(themeId: string) {
-    setForm((prev) => ({ ...prev, themeId, preset: 'custom' }));
-    updateUrl({ gameId: form.gameId, themeId });
-  }
-
-  function setExpansionPackIds(ids: string[]) {
-    const withCore = ids.includes('core') ? ids : ['core', ...ids];
-    setForm((prev) => ({
-      ...prev,
-      expansionPackIds: withCore,
-      preset: 'custom',
-    }));
-  }
-
-  function pickPreset(preset: Exclude<PresetId, 'custom'>) {
-    setForm((prev) => applyPreset(prev, preset));
+    setForm((prev) => ({ ...prev, ...patch }));
   }
 
   const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
@@ -263,7 +238,7 @@ export function GameCreateView() {
       cancelled = true;
     };
   }, []);
-  const { gameComingSoon, variantComingSoon, ruleComingSoon } = useMemo(
+  const { gameComingSoon, variantComingSoon } = useMemo(
     () => buildComingSoonMaps(catalog),
     [catalog],
   );
@@ -276,8 +251,8 @@ export function GameCreateView() {
   );
 
   const isValid =
-    form.roomName.trim().length > 0 &&
-    form.roomName.trim().length <= ROOM_NAME_MAX;
+    activeRoomName.trim().length > 0 &&
+    activeRoomName.trim().length <= ROOM_NAME_MAX;
 
   const {
     mutate: submit,
@@ -288,12 +263,12 @@ export function GameCreateView() {
       return gamesApi.createRoom(
         {
           gameId: form.gameId,
-          name: form.roomName.trim(),
+          name: activeRoomName.trim(),
           visibility: toApiVisibility(form.visibility),
           maxPlayers: form.maxPlayers === 'auto' ? undefined : form.maxPlayers,
           notes: form.notes.trim() || undefined,
           password: form.password.trim() || undefined,
-          gameOptions: buildGameOptions(form),
+          gameOptions: buildGameOptions(currentForm),
         },
         { token: snapshot.accessToken || undefined },
       );
@@ -329,16 +304,6 @@ export function GameCreateView() {
 
   const L = useMemo(() => buildLabels(t), [t]);
 
-  const game = GAMES[form.gameId];
-  const themes = themesFor(form.gameId);
-  const hasThemes = themes.length > 0;
-  let n = 1;
-  const numGame = String(n++).padStart(2, '0');
-  const numTheme = hasThemes ? String(n++).padStart(2, '0') : null;
-  const numExpansion = game.hasExpansion ? String(n++).padStart(2, '0') : null;
-  const numRules = String(n++).padStart(2, '0');
-  const numDetails = String(n++).padStart(2, '0');
-
   return (
     <PageLayout>
       <div className={s.page}>
@@ -348,10 +313,6 @@ export function GameCreateView() {
               <div>
                 <span className={s.eyebrow}>{L.eyebrow}</span>
                 <h1>
-                  {/* Accessible name + heading text for assistive tech and
-                      e2e tests that target the page by its functional
-                      title. The editorial copy below is the visible
-                      headline. */}
                   <span className={s.srOnly}>{L.heading}</span>
                   <span aria-hidden="true">
                     {L.titleMain} <em>{L.titleAccent}</em>
@@ -359,67 +320,21 @@ export function GameCreateView() {
                 </h1>
                 <p className={s.intro}>{L.intro}</p>
               </div>
-              <QuickPresets
-                value={form.preset}
-                options={L.presets}
-                onChange={pickPreset}
-              />
             </header>
 
             <div className={s.grid}>
               <div className={s.colLeft}>
-                <SectionGroup num={numGame} title={L.sectionGame}>
-                  <GamePicker
-                    value={form.gameId}
-                    themeId={form.themeId}
-                    comingSoon={gameComingSoon}
-                    labels={L.gamePicker}
-                    onChange={setGameId}
-                  />
-                </SectionGroup>
+                <SelectedGameCard
+                  gameId={form.gameId}
+                  themeId={form.themeId}
+                  labels={{ changeGame: L.changeGame }}
+                  onCycleTheme={handleCycleTheme}
+                />
 
-                {numTheme ? (
-                  <SectionGroup num={numTheme} title={L.sectionTheme}>
-                    <ThemePicker
-                      gameId={form.gameId}
-                      value={form.themeId}
-                      onChange={setThemeId}
-                    />
-                  </SectionGroup>
-                ) : null}
-
-                {numExpansion ? (
-                  <SectionGroup
-                    num={numExpansion}
-                    title={L.sectionExpansions}
-                    hint={
-                      form.expansionPackIds.length <= 1 ? L.coreOnly : undefined
-                    }
-                  >
-                    <ExpansionPacks
-                      value={form.expansionPackIds}
-                      labels={L.expansion}
-                      onChange={setExpansionPackIds}
-                    />
-                  </SectionGroup>
-                ) : null}
-
-                <SectionGroup num={numRules} title={L.sectionRules}>
-                  <HouseRules
-                    gameId={form.gameId}
-                    value={form.rules}
-                    labels={L.rules}
-                    ruleComingSoon={ruleComingSoon}
-                    onChange={(rules) =>
-                      setForm((prev) => ({ ...prev, rules }))
-                    }
-                  />
-                </SectionGroup>
-
-                <SectionGroup num={numDetails} title={L.sectionDetails}>
+                <SectionGroup num="01" title={L.sectionDetails}>
                   <RoomDetails
                     gameId={form.gameId}
-                    form={form}
+                    form={currentForm}
                     labels={L.details}
                     onChange={patchForm}
                   />
@@ -427,7 +342,7 @@ export function GameCreateView() {
               </div>
 
               <PreviewRail
-                form={form}
+                form={currentForm}
                 isValid={isValid}
                 loading={loading}
                 blocked={blocked}
@@ -435,6 +350,7 @@ export function GameCreateView() {
                 labels={L.rail(defaultRoomName)}
                 cta={L.cta}
                 onSubmit={handleSubmit}
+                onThemeChange={handleThemeChange}
               />
             </div>
           </div>

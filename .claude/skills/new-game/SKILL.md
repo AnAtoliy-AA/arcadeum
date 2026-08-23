@@ -209,7 +209,7 @@ useGameChatIntegration(snapshot?.logs as never, (_msg, _scope) => {
 });
 ```
 
-**Lobby pattern:** `<Name>Lobby.tsx` wraps the shared `ReusableGameLobby` and only contributes an `optionsSlot` (variant picker, board-size selector, team toggle, etc.). Don't reimplement the player list, kick controls, host badge, or start button — they live in `ReusableGameLobby`. Always accept and pass through `onReorderPlayers` to enable drag-and-drop player reordering (the `showReorderControls` prop defaults to `true`).
+**Lobby pattern:** `<Name>Lobby.tsx` wraps the shared `ReusableGameLobby` and only contributes an `optionsSlot` (variant picker, board-size selector, team toggle, etc.). Don't reimplement the player list, kick controls, host badge, or start button — they live in `ReusableGameLobby`. Always accept and pass through `onReorderPlayers` to enable drag-and-drop player reordering (the `showReorderControls` prop defaults to `true`). Always pass `minPlayers={MIN_PLAYERS}` from your game types — the bot-count selector uses it to preselect every seat needed to reach the minimum (see gotcha 29), and the start-button hint depends on it.
 
 ### 6. Web registry — three files
 
@@ -427,6 +427,7 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 26. **Randomize Opening Turn**: Do not hardcode `currentTurnIndex: 0` — always pick the first mover randomly (fairness). Tests must set the turn index explicitly after `initializeState()`.
 27. **Bot Deadlock Fallback**: When a bot cannot act (no legal moves mid-turn), it MUST call a defensive pass/skip action instead of breaking out of its loop — otherwise the session can get stuck until the watchdog fires. Add a validated `<game>` pass-turn action to the engine and a matching service method.
 28. **Win Quality Classification**: For games with graded wins (backgammon gammon/backgammon, chess resignations, etc.), record a `winType` on the game-over state at the moment of victory — stake multipliers and stats depend on it later and retrofitting is expensive.
+29. **Bot Preselection Must Match minPlayers**: `ReusableGameLobby` preselects `minPlayers - 1` bots in its count selector (e.g. 3 for a 4-player game like Hearts) because the server pads up to `minPlayers` anyway — `BaseGameService.startSession` uses `Math.max(botCount, needed)` when filling seats. A lower UI default misleads the host into thinking fewer bots will join than actually do. This works only if the lobby passes `minPlayers={MIN_PLAYERS}`; never hardcode or override the bot-count default per game.
 
 ## When the user says "implement game X"
 

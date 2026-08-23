@@ -1,3 +1,5 @@
+import { isVisionMode, type VisionMode } from './colorblind';
+
 export const SETTINGS_STORAGE_KEY = 'aicoapp_web_settings_v1' as const;
 
 export type StoredSettings = {
@@ -16,6 +18,7 @@ export type StoredSettings = {
   aiDifficulty?: 'easy' | 'medium' | 'hard' | 'expert';
   showRulesOnRoomEntry?: boolean;
   coachHintsEnabled?: boolean;
+  visionMode?: VisionMode;
 };
 
 const listeners = new Set<() => void>();
@@ -112,6 +115,10 @@ export function loadStoredSettings(): StoredSettings {
 
     if (typeof parsed.coachHintsEnabled === 'boolean') {
       settings.coachHintsEnabled = parsed.coachHintsEnabled;
+    }
+
+    if (isVisionMode(parsed.visionMode)) {
+      settings.visionMode = parsed.visionMode;
     }
 
     return settings;

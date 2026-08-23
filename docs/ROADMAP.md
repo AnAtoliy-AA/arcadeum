@@ -46,7 +46,7 @@
 | 4A. Chess Clock        | ARC-893 | `ARC-893-chess-clock`        | **Implemented** |
 | 4B. Stats Dashboard    | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented** |
 | 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | Not started     |
-| 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | Not started     |
+| 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | **PR Open**     |
 | 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | **Implemented** |
 | 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | Not started     |
 | 4G. Daily Challenges   | —       | —                            | **Implemented** |

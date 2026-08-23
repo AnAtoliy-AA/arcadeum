@@ -2,6 +2,9 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
 
+import { useVisionModeSetting } from '@/shared/hooks/useVisionModeSetting';
+import { applyVisionModeToGameTheme } from '@/shared/lib/colorblind';
+
 /**
  * Factory that creates a typed theme context, provider, and hook.
  *
@@ -9,6 +12,10 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
  * ```ts
  * const { Provider, useTheme } = createGameThemeContext(getTheme, 'cosmic');
  * ```
+ *
+ * The resolved theme is automatically recolored when a color-vision
+ * accessibility mode (ARC-896) is active, so every game board picks up the
+ * setting without per-widget changes.
  */
 export function createGameThemeContext<T>(
   getTheme: (variant: string) => T,
@@ -23,7 +30,15 @@ export function createGameThemeContext<T>(
     variant?: string;
     children: ReactNode;
   }) {
-    const value = useMemo(() => getTheme(variant ?? defaultVariant), [variant]);
+    const { visionMode } = useVisionModeSetting();
+    const value = useMemo(
+      () =>
+        applyVisionModeToGameTheme(
+          getTheme(variant ?? defaultVariant),
+          visionMode,
+        ),
+      [variant, visionMode],
+    );
     return <Context.Provider value={value}>{children}</Context.Provider>;
   }
 

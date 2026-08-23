@@ -19,6 +19,10 @@ import {
   themeTokens,
 } from '@/shared/config/theme';
 import { themeDefinitions } from '@arcadeum/ui/themeDefinitions';
+import {
+  useVisionModeSetting,
+  useVisionModeDocumentAttribute,
+} from '@/shared/hooks/useVisionModeSetting';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -89,6 +93,7 @@ export function AppThemeProvider({
   initialTheme?: ThemeName;
 }) {
   const { themePreference, setThemePreference } = useThemeStore();
+  const { visionMode } = useVisionModeSetting();
   const systemTheme = useSystemTheme();
   const isHydrated = useSyncExternalStore(
     emptySubscribe,
@@ -177,6 +182,10 @@ export function AppThemeProvider({
       }
     }
   }, [isHydrated, setThemePreference]);
+
+  // Color-vision accessibility mode — mirrors the persisted setting onto
+  // `<html data-vision-mode>` for CSS-side effects (ARC-896).
+  useVisionModeDocumentAttribute(visionMode);
 
   const contextValue = useMemo<ThemeContextValue>(
     () => ({ themePreference, resolvedTheme, setThemePreference }),

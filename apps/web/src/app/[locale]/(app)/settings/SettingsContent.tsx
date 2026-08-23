@@ -10,6 +10,9 @@ import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useAudioCuesSetting } from '@/shared/hooks/useAudioCuesSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { useShowRulesOnRoomEntry } from '@/shared/hooks/useShowRulesOnRoomEntry';
+import { useVisionModeSetting } from '@/shared/hooks/useVisionModeSetting';
+import { VISION_OPTION_CODES, VISION_MODE_FALLBACKS } from './visionOptions';
+import type { VisionMode } from '@/shared/lib/colorblind';
 import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import type { ThemePreference } from '@/shared/config/theme';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
@@ -141,6 +144,7 @@ export default function SettingsContent({
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const { showRulesOnRoomEntry, setShowRulesOnRoomEntry } =
     useShowRulesOnRoomEntry();
+  const { visionMode, setVisionMode } = useVisionModeSetting();
   const { locale, setLocale, messages } = useLanguage();
 
   const settingsCopy = messages.settings ?? {};
@@ -214,6 +218,24 @@ export default function SettingsContent({
   const showRulesLabel =
     settingsCopy.showRulesLabel ?? 'Show rules on room entry';
 
+  const accessibilityTitle = settingsCopy.accessibilityTitle ?? 'Accessibility';
+  const accessibilityDescription =
+    settingsCopy.accessibilityDescription ??
+    'Adjust game colors for your color vision.';
+  const visionOptions = useMemo(
+    () =>
+      VISION_OPTION_CODES.map((code) => ({
+        code,
+        label:
+          settingsCopy.visionOptions?.[code]?.label ??
+          VISION_MODE_FALLBACKS[code].label,
+        description:
+          settingsCopy.visionOptions?.[code]?.description ??
+          VISION_MODE_FALLBACKS[code].description,
+      })),
+    [settingsCopy.visionOptions],
+  );
+
   const aboutTitle = settingsCopy.aboutTitle ?? 'About';
   const aboutDescription =
     settingsCopy.aboutDescription ??
@@ -225,6 +247,13 @@ export default function SettingsContent({
       setThemePreference(code);
     },
     [setThemePreference],
+  );
+
+  const handleVisionSelect = useCallback(
+    (code: VisionMode) => {
+      setVisionMode(code);
+    },
+    [setVisionMode],
   );
 
   const handleToggleSound = useCallback(() => {
@@ -301,6 +330,32 @@ export default function SettingsContent({
                   size="md"
                   className="min-w-[90px]"
                   onClick={() => setLocale(option.code)}
+                >
+                  {option.label}
+                </Button>
+              ))}
+            </PillGroup>
+          </Section>
+
+          <Section
+            title={accessibilityTitle}
+            description={accessibilityDescription}
+          >
+            <PillGroup
+              key={visionMode}
+              role="group"
+              aria-label={accessibilityTitle}
+            >
+              {visionOptions.map((option) => (
+                <Button
+                  key={option.code}
+                  data-testid={`vision-${option.code}`}
+                  active={visionMode === option.code}
+                  aria-pressed={visionMode === option.code ? 'true' : 'false'}
+                  variant={visionMode === option.code ? 'primary' : 'secondary'}
+                  size="md"
+                  title={option.description}
+                  onClick={() => handleVisionSelect(option.code)}
                 >
                   {option.label}
                 </Button>

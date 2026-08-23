@@ -25,7 +25,7 @@ function makeState(overrides?: Partial<HeartsState>): HeartsState {
     scores: { a: 0, b: 0, c: 0, d: 0 },
     handScores: { a: 0, b: 0, c: 0, d: 0 },
     currentTrick: { plays: [], leadSuit: null },
-    turnIndexIntoOrder: 0,
+    currentTurnIndex: 0,
     playerOrder: PLAYERS,
     players: PLAYERS.map((playerId) => ({ playerId })),
     heartsBroken: false,
@@ -94,7 +94,7 @@ describe('validatePlayCard', () => {
     s1.hands.a = s1.hands.a.filter((c) => c !== '2C');
     s1.currentTrick.plays.push({ playerId: 'a', card: '2C' });
     s1.currentTrick.leadSuit = 'C';
-    s1.turnIndexIntoOrder = 1;
+    s1.currentTurnIndex = 1;
     expect(validatePlayCard(s1, 'b', { card: '6C' }).ok).toBe(true);
     // b holds a club — discarding a heart must fail
     expect(validatePlayCard(s1, 'b', { card: '9H' }).ok).toBe(false);
@@ -106,7 +106,7 @@ describe('validatePlayCard', () => {
     state.hands.a = [];
     state.currentTrick.plays.push({ playerId: 'a', card: '2C' });
     state.currentTrick.leadSuit = 'C';
-    state.turnIndexIntoOrder = 1;
+    state.currentTurnIndex = 1;
     const result = validatePlayCard(state, 'b', { card: '9H' });
     expect(result.ok).toBe(false);
     expect(result.error).toContain('first trick');
@@ -118,7 +118,7 @@ describe('validatePlayCard', () => {
     state.hands.a = [];
     state.currentTrick.plays.push({ playerId: 'a', card: '2C' });
     state.currentTrick.leadSuit = 'C';
-    state.turnIndexIntoOrder = 1;
+    state.currentTurnIndex = 1;
     expect(validatePlayCard(state, 'b', { card: '9H' }).ok).toBe(true);
   });
 
@@ -144,7 +144,7 @@ describe('validatePlayCard', () => {
       d: ['10C'],
     };
     s2.currentTrick = { plays: [], leadSuit: null };
-    s2.turnIndexIntoOrder = 0;
+    s2.currentTurnIndex = 0;
     // First trick already completed and taken by 'a'.
     s2.taken = { a: ['2C', '4C', '7C', '9C'], b: [], c: [], d: [] };
     const result = validatePlayCard(s2, 'a', { card: '5H' });

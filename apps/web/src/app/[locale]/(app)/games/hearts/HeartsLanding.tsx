@@ -5,6 +5,7 @@ import {
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
+import { HeartsLandingPreview } from './HeartsLandingPreview';
 
 type HMessages = HeartsMessages['hearts_v1'];
 type Landing = HMessages['landing'];
@@ -142,6 +143,7 @@ export default function HeartsLanding({
         createRoomLabel: landing.hero.createRoom,
         roomsHref,
         createRoomHref,
+        heroVisual: <HeartsLandingPreview />,
       }}
       highlights={{
         title: 'Why Play Hearts?',

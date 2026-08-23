@@ -68,10 +68,9 @@ export interface CurrentTrick {
   leadSuit: Suit | null;
 }
 
+/** Server sends players as bare ids (`{ playerId }`). */
 export interface HeartsPlayer {
   playerId: string;
-  hand: string[];
-  alive: boolean;
 }
 
 export interface HeartsLogEntry {
@@ -95,6 +94,8 @@ export interface HeartsClientState {
   currentTurnIndex: number;
   hands: Record<string, string[]>;
   taken: Record<string, string[]>;
+  /** Cards selected for passing but not yet resolved (sanitized for others). */
+  pendingPasses: Record<string, string[]>;
   scores: Record<string, number>;
   handScores: Record<string, number>;
   currentTrick: CurrentTrick;

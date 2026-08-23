@@ -89,6 +89,16 @@ export const ruMessages = {
       across: 'Передать Напротив',
       hold: 'Без Передачи',
     },
+    gameOver: {
+      won: 'Ты победил!',
+      lost: 'Ты проиграл.',
+      draw: 'Ничья.',
+      messages: {
+        won: 'Самый низкий счёт за столом — отлично сыграно!',
+        lost: 'Кто-то сыграл чище. Хочешь реванш?',
+        draw: 'Поровну по очкам. Ещё партию?',
+      },
+    },
     game: {
       yourTurn: 'Твой ход',
       waitingForOpponent: 'Ожидание противника...',
@@ -96,6 +106,11 @@ export const ruMessages = {
       passCards: 'Передать Карты',
       followSuit: 'Ты должен соблюсти масть',
       gameOver: 'Игра Окончена',
+      passingPhase: 'Фаза передачи',
+      playerTurn: 'Ход {{player}}',
+      handLabel: 'Раздача {{n}}',
+      trickLabel: 'Взятка {{n}}',
+      heartsBroken: 'Червы открыты',
     },
     rules: {
       title: 'Правила Червей',

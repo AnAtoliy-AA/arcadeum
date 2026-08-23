@@ -41,7 +41,7 @@ function makeState(
     scores: { 'bot-1': 0, 'bot-2': 0, human: 0, 'bot-3': 0 },
     handScores: { 'bot-1': 0, 'bot-2': 0, human: 0, 'bot-3': 0 },
     currentTrick: { plays: [], leadSuit: null },
-    turnIndexIntoOrder: 0,
+    currentTurnIndex: 0,
     playerOrder: PLAYERS,
     players: PLAYERS.map((playerId) => ({ playerId })),
     heartsBroken: false,

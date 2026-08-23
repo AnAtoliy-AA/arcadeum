@@ -92,6 +92,16 @@ export const esMessages = {
       across: 'Pasar Cruzada',
       hold: 'Sin Paso',
     },
+    gameOver: {
+      won: '¡Ganaste!',
+      lost: 'Perdiste.',
+      draw: 'Es un empate.',
+      messages: {
+        won: 'La puntuación más baja de la mesa — ¡bien jugado!',
+        lost: 'Alguien más tuvo una mano más limpia. ¿Revancha?',
+        draw: 'Empate en puntos. ¿Otra partida?',
+      },
+    },
     game: {
       yourTurn: 'Tu turno para jugar',
       waitingForOpponent: 'Esperando oponente...',
@@ -99,6 +109,11 @@ export const esMessages = {
       passCards: 'Pasar Cartas',
       followSuit: 'Debes seguir palo',
       gameOver: 'Fin del Juego',
+      passingPhase: 'Fase de pase',
+      playerTurn: 'Turno de {{player}}',
+      handLabel: 'Mano {{n}}',
+      trickLabel: 'Truco {{n}}',
+      heartsBroken: 'Corazones rotos',
     },
     rules: {
       title: 'Reglas de Corazones',

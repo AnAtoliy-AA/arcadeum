@@ -1,14 +1,21 @@
 'use client';
 
-import { memo, useCallback, useState } from 'react';
-import { ReusableGameLobby } from '@/features/games/ui';
-import type { GameRoomSummary } from '@/shared/types/games';
-import type { HeartsVariant } from '../types';
-import { HEARTS_VARIANTS } from '../lib/constants';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
+  ReusableGameLobby,
+  LobbyOptionSection,
+  LobbyChipGroup,
+  LobbyToggle,
+  GameThemePicker,
+  getLobbyTheme,
+} from '@/features/games/ui';
+import type { GameRoomSummary } from '@/shared/types/games';
+import { reorderRoomParticipants } from '@/shared/api/gamesApi';
+import { MIN_PLAYERS } from '../types';
+import { HEARTS_VARIANTS } from '../lib/constants';
+import { RulesModal } from './RulesModal';
+import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 interface HeartsLobbyProps {
   room: GameRoomSummary;
@@ -22,10 +29,38 @@ interface HeartsLobbyProps {
   onRefresh: () => void;
   showRulesOpen?: boolean;
   onShowRulesClose?: () => void;
-  variant: HeartsVariant;
+  variant: HeartsVariantOptionId;
+  accessToken?: string | null;
 }
 
-export const HeartsLobby = memo(function HeartsLobby({
+type HeartsVariantOptionId = (typeof HEARTS_VARIANTS)[number]['id'];
+
+const HEARTS_LOBBY_THEME = {
+  fallbackLightGradient:
+    'linear-gradient(90deg, #fff1f2 0%, #fda4af 50%, #fff1f2 100%)',
+  buttonGradient: 'linear-gradient(135deg, #dc2626 0%, #9f1239 100%)',
+};
+
+function resolveOptions(raw: unknown): {
+  variant: HeartsVariantOptionId;
+  passingEnabled: boolean;
+  targetScore: 50 | 100;
+} {
+  const r = (raw ?? {}) as Partial<{
+    theme: string;
+    variant: string;
+    passingEnabled: boolean;
+    targetScore: number;
+  }>;
+  return {
+    variant: (r.theme ?? r.variant ?? 'cyberpunk') as HeartsVariantOptionId,
+    passingEnabled:
+      typeof r.passingEnabled === 'boolean' ? r.passingEnabled : true,
+    targetScore: r.targetScore === 50 ? 50 : 100,
+  };
+}
+
+export function HeartsLobby({
   room,
   userId,
   isHost,
@@ -35,13 +70,72 @@ export const HeartsLobby = memo(function HeartsLobby({
   onDeleteRoom,
   onKickPlayer,
   onRefresh,
-  variant,
+  showRulesOpen,
+  onShowRulesClose,
+  accessToken,
 }: HeartsLobbyProps) {
   const { t } = useTranslation();
-  const [selectedVariant, setSelectedVariant] =
-    useState<HeartsVariant>(variant);
+  const { setOption } = useRoomOptions({ roomId: room.id, userId });
 
-  const handleReorderPlayers = useCallback(() => {}, []);
+  const options = useMemo(
+    () => resolveOptions(room.gameOptions),
+    [room.gameOptions],
+  );
+
+  const variantTokens = useMemo(
+    () =>
+      HEARTS_VARIANTS.find((v) => v.id === options.variant) ??
+      HEARTS_VARIANTS[0],
+    [options.variant],
+  );
+
+  const handleReorderPlayers = useCallback(
+    async (newOrder: string[]) => {
+      if (!accessToken || !room.id) return;
+      try {
+        await reorderRoomParticipants(room.id, newOrder, accessToken);
+      } catch {}
+    },
+    [accessToken, room.id],
+  );
+
+  const optionsSlot = (
+    <div className="flex flex-col items-stretch gap-4">
+      <LobbyOptionSection title={t('games.hearts_v1.lobby.variant')}>
+        <GameThemePicker
+          selectedTheme={options.variant}
+          onSelect={(themeId) =>
+            setOption({ theme: themeId, variant: themeId })
+          }
+          disabled={!isHost}
+        />
+      </LobbyOptionSection>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <LobbyOptionSection title={t('games.hearts_v1.lobby.targetScore')}>
+          <LobbyChipGroup
+            options={[
+              { id: '50', label: '50' },
+              { id: '100', label: '100' },
+            ]}
+            value={String(options.targetScore)}
+            onChange={(v) => setOption({ targetScore: v === '50' ? 50 : 100 })}
+            accentColor="#dc2626"
+            testIdPrefix="hearts-target-score"
+          />
+        </LobbyOptionSection>
+
+        <div className="flex items-center">
+          <LobbyToggle
+            label={t('games.hearts_v1.lobby.passingEnabled')}
+            checked={options.passingEnabled}
+            onCheckedChange={(val) => setOption({ passingEnabled: val })}
+            disabled={!isHost}
+          />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <ReusableGameLobby
@@ -49,39 +143,31 @@ export const HeartsLobby = memo(function HeartsLobby({
       userId={userId}
       isHost={isHost}
       startBusy={startBusy}
+      minPlayers={MIN_PLAYERS}
       gameName="Hearts"
       gameIcon="♥"
+      variantName={t(variantTokens.name)}
+      theme={getLobbyTheme(
+        HEARTS_VARIANTS,
+        options.variant,
+        HEARTS_LOBBY_THEME.fallbackLightGradient,
+        HEARTS_LOBBY_THEME.buttonGradient,
+      )}
+      optionsSlot={optionsSlot}
+      rulesModalSlot={
+        <RulesModal
+          open={!!showRulesOpen}
+          onClose={onShowRulesClose ?? (() => {})}
+          variant={options.variant}
+        />
+      }
       onStartGame={onStartGame}
+      onReorderPlayers={handleReorderPlayers}
       onLeaveRoom={onLeaveRoom}
       onDeleteRoom={onDeleteRoom}
       onKickPlayer={onKickPlayer}
       onRefresh={onRefresh}
-      onReorderPlayers={handleReorderPlayers}
-      optionsSlot={
-        <div className="flex flex-col gap-3">
-          <div>
-            <label className="text-sm font-medium text-[var(--text-secondary)] mb-2 block">
-              {t('games.hearts_v1.lobby.variant' as TranslationKey)}
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {HEARTS_VARIANTS.slice(0, 6).map((v) => (
-                <button
-                  key={v.id}
-                  onClick={() => setSelectedVariant(v.id)}
-                  className={`rounded-lg p-2 text-sm transition-all ${
-                    selectedVariant === v.id
-                      ? 'bg-[var(--primary)] text-white'
-                      : 'bg-[var(--surface)] text-[var(--text)] hover:bg-[var(--surface-hover)]'
-                  }`}
-                >
-                  <span className="mr-1">{v.emoji}</span>
-                  {t(v.name)}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      }
+      enableBots
     />
   );
-});
+}

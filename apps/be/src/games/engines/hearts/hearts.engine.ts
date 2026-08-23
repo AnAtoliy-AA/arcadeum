@@ -153,7 +153,7 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
     }
     if (
       state.phase === GAME_PHASE.PLAYING &&
-      state.playerOrder[state.turnIndexIntoOrder] === playerId
+      state.playerOrder[state.currentTurnIndex] === playerId
     ) {
       actions.unshift(ACTION.PLAY_CARD);
     }
@@ -205,7 +205,7 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
       scores,
       handScores,
       currentTrick: { plays: [], leadSuit: null },
-      turnIndexIntoOrder: 0,
+      currentTurnIndex: 0,
       playerOrder: [...playerIds],
       players: playerIds.map((playerId) => ({ playerId })),
       heartsBroken: false,
@@ -234,9 +234,9 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
       : GAME_PHASE.PLAYING;
     if (!state.options.passingEnabled) {
       const leaderIdx = holderOfTwoClubs(state.hands, state.playerOrder);
-      state.turnIndexIntoOrder = leaderIdx >= 0 ? leaderIdx : 0;
+      state.currentTurnIndex = leaderIdx >= 0 ? leaderIdx : 0;
     } else {
-      state.turnIndexIntoOrder = 0;
+      state.currentTurnIndex = 0;
     }
   }
 
@@ -281,12 +281,12 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
 
     state.phase = GAME_PHASE.PLAYING;
     const leaderIdx = holderOfTwoClubs(state.hands, state.playerOrder);
-    state.turnIndexIntoOrder = leaderIdx >= 0 ? leaderIdx : 0;
+    state.currentTurnIndex = leaderIdx >= 0 ? leaderIdx : 0;
     this.addLog(
       state,
       this.createLogEntry(
         'system',
-        `Hand ${state.handNumber + 1} begins — ${state.playerOrder[state.turnIndexIntoOrder]} leads with the 2♣.`,
+        `Hand ${state.handNumber + 1} begins — ${state.playerOrder[state.currentTurnIndex]} leads with the 2♣.`,
         { kind: 'hearts.hand_start' },
       ),
     );
@@ -328,8 +328,8 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
     if (state.currentTrick.plays.length === 4) {
       return this.completeTrick(state);
     }
-    state.turnIndexIntoOrder =
-      (state.turnIndexIntoOrder + 1) % state.playerOrder.length;
+    state.currentTurnIndex =
+      (state.currentTurnIndex + 1) % state.playerOrder.length;
     return this.successResult(state);
   }
 
@@ -356,7 +356,7 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
     }
     const winnerIdx = winnerId ? state.playerOrder.indexOf(winnerId) : -1;
     if (winnerIdx >= 0) {
-      state.turnIndexIntoOrder = winnerIdx;
+      state.currentTurnIndex = winnerIdx;
     }
     return this.successResult(state);
   }

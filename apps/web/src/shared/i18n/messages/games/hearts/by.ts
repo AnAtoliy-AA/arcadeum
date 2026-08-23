@@ -89,6 +89,16 @@ export const byMessages = {
       across: 'Перадаць Напралевак',
       hold: 'Без Перадачы',
     },
+    gameOver: {
+      won: 'Ты перамог!',
+      lost: 'Ты прайграў.',
+      draw: 'Нічыя.',
+      messages: {
+        won: 'Найменшы лік за сталом — цудоўна згуляна!',
+        lost: 'Хтосьці згуляў чысцей. Хочаш рэванш?',
+        draw: 'Роўня па ачках. Яшчэ партыю?',
+      },
+    },
     game: {
       yourTurn: 'Твой ход',
       waitingForOpponent: 'Чаканне суперніка...',
@@ -96,6 +106,11 @@ export const byMessages = {
       passCards: 'Перадаць Карты',
       followSuit: 'Ты павінен выканаць масть',
       gameOver: 'Гульня Скончана',
+      passingPhase: 'Фаза перадачы',
+      playerTurn: 'Ход {{player}}',
+      handLabel: 'Раздача {{n}}',
+      trickLabel: 'Узятка {{n}}',
+      heartsBroken: 'Чарвякі адкрыты',
     },
     rules: {
       title: 'Правілы Чэрвяў',

@@ -81,7 +81,7 @@ function playFullHand(engine: HeartsEngine): HeartsState {
     state.phase !== GAME_PHASE.GAME_OVER &&
     guard++ < 200
   ) {
-    const playerId = state.playerOrder[state.turnIndexIntoOrder];
+    const playerId = state.playerOrder[state.currentTurnIndex];
     const played = [...(state.hands[playerId] ?? [])].sort().find((card) =>
       engine.validateAction(state, 'play_card', ctxFor(playerId), {
         card,
@@ -145,7 +145,7 @@ describe('HeartsEngine', () => {
         true,
       );
       // Left rotation: the 2♣ holder leads the first trick.
-      const leaderId = state.playerOrder[state.turnIndexIntoOrder];
+      const leaderId = state.playerOrder[state.currentTurnIndex];
       expect(state.hands[leaderId]).toContain('2C');
       for (const id of PLAYERS) {
         expect(state.hands[id]).toHaveLength(13);
@@ -172,7 +172,7 @@ describe('HeartsEngine', () => {
       });
       expect(state.phase).toBe(GAME_PHASE.PLAYING);
       // The 2♣ holder leads immediately.
-      const leaderId = state.playerOrder[state.turnIndexIntoOrder];
+      const leaderId = state.playerOrder[state.currentTurnIndex];
       expect(state.hands[leaderId]).toContain('2C');
     });
   });
@@ -229,7 +229,7 @@ describe('HeartsEngine', () => {
 
       const plays = ['2C', '3C', '4C', '5C'];
       for (let i = 0; i < 4; i++) {
-        const playerId = state.playerOrder[state.turnIndexIntoOrder];
+        const playerId = state.playerOrder[state.currentTurnIndex];
         const result = engine.executeAction(
           state,
           'play_card',
@@ -280,10 +280,10 @@ describe('HeartsEngine', () => {
       };
       state.scores = { p0: 38, p1: 37, p2: 37, p3: 37 };
       // p0 holds the 2♣ and leads the final trick (all clubs, no points).
-      state.turnIndexIntoOrder = 0;
+      state.currentTurnIndex = 0;
       const plays = ['2C', '3C', '4C', '5C'];
       for (let i = 0; i < 4; i++) {
-        const playerId = state.playerOrder[state.turnIndexIntoOrder];
+        const playerId = state.playerOrder[state.currentTurnIndex];
         const result = engine.executeAction(
           state,
           'play_card',
@@ -332,7 +332,7 @@ describe('HeartsEngine', () => {
       );
 
       passingState.phase = GAME_PHASE.PLAYING;
-      passingState.turnIndexIntoOrder = 2;
+      passingState.currentTurnIndex = 2;
       expect(engine.getAvailableActions(passingState, 'p2')).toEqual([
         'play_card',
         'forfeit',

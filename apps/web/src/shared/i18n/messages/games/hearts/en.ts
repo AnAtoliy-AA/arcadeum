@@ -92,6 +92,16 @@ export const enMessages = {
       across: 'Pass Across',
       hold: 'No Pass',
     },
+    gameOver: {
+      won: 'You won!',
+      lost: 'You lost.',
+      draw: 'It is a draw.',
+      messages: {
+        won: 'Lowest score at the table — well played!',
+        lost: 'Someone else kept a cleaner sheet. Want a rematch?',
+        draw: 'Tied on points. Try another?',
+      },
+    },
     game: {
       yourTurn: 'Your turn to play',
       waitingForOpponent: 'Waiting for opponent...',
@@ -99,6 +109,11 @@ export const enMessages = {
       passCards: 'Pass Cards',
       followSuit: 'You must follow suit',
       gameOver: 'Game Over',
+      passingPhase: 'Passing phase',
+      playerTurn: "{{player}}'s turn",
+      handLabel: 'Hand {{n}}',
+      trickLabel: 'Trick {{n}}',
+      heartsBroken: 'Hearts broken',
     },
     rules: {
       title: 'Hearts Rules',

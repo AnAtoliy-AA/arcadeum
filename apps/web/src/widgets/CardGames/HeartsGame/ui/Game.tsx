@@ -10,13 +10,12 @@ import {
   useGameRoomActions,
   usePendingStart,
 } from '@/features/games/hooks';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
+import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type { HeartsGameProps } from '../types';
 import { useHeartsState } from '../hooks/useHeartsState';
 import { useHeartsActions } from '../hooks/useHeartsActions';
+import { legalCardIds } from '../lib/legal-cards';
 import { HeartsThemeProvider } from '../lib/HeartsThemeContext';
 import { HeartsLobby } from './HeartsLobby';
 import { HeartsBoard } from './HeartsBoard';
@@ -26,9 +25,9 @@ import { HEARTS_VARIANTS } from '../lib/constants';
 import type { HeartsVariant } from '../types';
 
 function resolveOptions(raw: unknown): { variant: HeartsVariant } {
-  const r = (raw ?? {}) as Partial<{ variant: string }>;
+  const r = (raw ?? {}) as Partial<{ variant: string; theme: string }>;
   return {
-    variant: (r.variant ?? 'cyberpunk') as HeartsVariant,
+    variant: (r.theme ?? r.variant ?? 'cyberpunk') as HeartsVariant,
   };
 }
 
@@ -38,6 +37,7 @@ function HeartsGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
+  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: HeartsGameProps) {
@@ -51,6 +51,7 @@ function HeartsGameImpl({
     currentEntryId,
     myTurn,
     isGameOver,
+    hasPassed,
     myHand,
     startBusy,
     session,
@@ -90,8 +91,18 @@ function HeartsGameImpl({
     [startSession, markPendingStart],
   );
 
+  const resolveDisplayNameBound = useCallback(
+    (id?: string | null) =>
+      resolveDisplayName(id, {
+        currentUserId,
+        members: room?.members,
+        playerOrder: snapshot?.playerOrder,
+      }),
+    [currentUserId, room, snapshot],
+  );
+
   const sendChat = useGameChatSend(roomId, currentUserId, 'hearts_v1');
-  useGameChatIntegration(snapshot?.logs, sendChat);
+  useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
   const { result, resultMessages } = useGameResult({
     session,
@@ -100,6 +111,7 @@ function HeartsGameImpl({
     gameId: 'hearts_v1',
     gameOverKey: 'games.hearts_v1.gameOver',
     winnerId: snapshot?.winnerIds?.[0] ?? null,
+    isDraw: snapshot?.isDraw,
     t,
   });
 
@@ -122,6 +134,14 @@ function HeartsGameImpl({
       HEARTS_VARIANTS.find((v) => v.id === options.variant) ??
       HEARTS_VARIANTS[0],
     [options.variant],
+  );
+
+  const legalIds = useMemo(
+    () =>
+      snapshot && snapshot.phase === 'playing'
+        ? legalCardIds(snapshot, myHand)
+        : [],
+    [snapshot, myHand],
   );
 
   const handleTogglePassCard = useCallback((card: string) => {
@@ -148,6 +168,16 @@ function HeartsGameImpl({
     [playCard],
   );
 
+  const players = useMemo(
+    () =>
+      snapshot?.players.map((p) => ({
+        playerId: p.playerId,
+        displayName: resolveDisplayNameBound(p.playerId),
+        alive: true,
+      })) ?? [],
+    [snapshot?.players, resolveDisplayNameBound],
+  );
+
   if (!room) return null;
 
   if (isLobby) {
@@ -166,6 +196,7 @@ function HeartsGameImpl({
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
           variant={options.variant}
+          accessToken={accessToken}
         />
       </HeartsThemeProvider>
     );
@@ -186,8 +217,9 @@ function HeartsGameImpl({
             snapshot={snapshot}
             currentUserId={currentUserId}
             myHand={myHand}
-            myTurn={myTurn}
-            disabled={isGameOver}
+            legalIds={legalIds}
+            canAct={myTurn}
+            hasPassed={hasPassed}
             members={room?.members}
             onPlayCard={handlePlayCard}
             selectedCards={selectedPassCards}
@@ -199,18 +231,15 @@ function HeartsGameImpl({
     </div>
   );
 
-  const visualTheme = options.variant ?? 'cyberpunk';
+  const visualTheme = options.variant;
 
   const modals = (
     <>
       <GameEndModals
         gameEnd={gameEnd}
-        players={[]}
+        players={players}
         currentUserId={currentUserId}
-        gameName={(() => {
-          const raw = t('games.names.hearts' as TranslationKey);
-          return raw && raw !== 'games.names.hearts' ? raw : 'Hearts';
-        })()}
+        gameName={t('games.hearts_v1.name')}
         theme={visualTheme}
         t={t}
       />
@@ -233,7 +262,7 @@ function HeartsGameImpl({
         isGameOver={isGameOver}
         headerProps={{
           variantEmoji: variantTokens.emoji,
-          title: 'Hearts',
+          title: t('games.hearts_v1.name'),
           subtitle: room?.name,
           turn: {
             onClockUserId: currentEntryId ?? null,

@@ -31,7 +31,7 @@ Hearts is a 4-player trick-taking card game. Players avoid taking penalty cards:
   - `hearts.session.pass_cards` — payload `{ cards: string[] }` (card ids like `"QS"`, `"10H"`); ack event `hearts.session.cards_passed`
   - `hearts.session.play_card` — payload `{ card: string }`; ack event `hearts.session.card_played`
   - `.forfeit` handled by base gateway pattern.
-- State shape (`HeartsState extends BaseGameState`): `phase` (`passing | playing | hand_over | game_over`), `handNumber`, `passDirection` (`left|right|across|hold`), `hands: Record<playerId, string[]>`, `taken: Record<playerId, string[]>`, `scores`, `handScores`, `currentTrick: { plays: Array<{ playerId, card }> , leadSuit }`, `turnIndexIntoOrder`, `playerOrder: playerId[]`, `heartsBroken`, `logs: GameLogEntry[]`, `winnerIds: string[] | null`, `isDraw`.
+- State shape (`HeartsState extends BaseGameState`): `phase` (`passing | playing | hand_over | game_over`), `handNumber`, `passDirection` (`left|right|across|hold`), `hands: Record<playerId, string[]>`, `taken: Record<playerId, string[]>`, `scores`, `handScores`, `currentTrick: { plays: Array<{ playerId, card }> , leadSuit }`, `currentTurnIndex`, `playerOrder: playerId[]`, `heartsBroken`, `logs: GameLogEntry[]`, `winnerIds: string[] | null`, `isDraw`.
 - Actions: `pass_cards` (validated: exactly 3 own cards, phase passing), `play_card` (validated against follow-suit / first-trick / broken-hearts rules), plus defensive `skip`-style no action needed — passing phase auto-resolves when all 4 passed.
 - Randomness: shuffle injected via `@Optional()` constructor param (gotchas 24/25); opening leader derived from 2♣ holder (not index 0).
 

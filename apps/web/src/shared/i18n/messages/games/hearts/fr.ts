@@ -92,6 +92,16 @@ export const frMessages = {
       across: 'Passer en Face',
       hold: 'Pas de Passage',
     },
+    gameOver: {
+      won: 'Vous avez gagné !',
+      lost: 'Vous avez perdu.',
+      draw: 'Match nul.',
+      messages: {
+        won: 'Le score le plus bas de la table — bien joué !',
+        lost: "Quelqu'un d'autre a fait mieux. Revanche ?",
+        draw: 'À égalité de points. Une autre partie ?',
+      },
+    },
     game: {
       yourTurn: 'Votre tour de jouer',
       waitingForOpponent: "En attente de l'adversaire...",
@@ -99,6 +109,11 @@ export const frMessages = {
       passCards: 'Passer les Cartes',
       followSuit: 'Vous devez suivre la couleur',
       gameOver: 'Fin de la Partie',
+      passingPhase: 'Phase de passe',
+      playerTurn: 'Tour de {{player}}',
+      handLabel: 'Main {{n}}',
+      trickLabel: 'Pli {{n}}',
+      heartsBroken: 'Coeurs brisés',
     },
     rules: {
       title: 'Règles des Coeurs',

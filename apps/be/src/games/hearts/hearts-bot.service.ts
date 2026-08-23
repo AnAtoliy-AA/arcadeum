@@ -12,7 +12,6 @@ import {
   rankValue,
   sortHand,
   suitOf,
-  trickWinnerId,
 } from '../engines/hearts/hearts.utils';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
 
@@ -66,7 +65,7 @@ export class HeartsBotService {
       }
       if (
         state.phase !== GAME_PHASE.PLAYING ||
-        state.playerOrder[state.turnIndexIntoOrder] !== botId
+        state.playerOrder[state.currentTurnIndex] !== botId
       ) {
         return;
       }
@@ -89,7 +88,7 @@ export class HeartsBotService {
       return pending ?? null;
     }
     if (state.phase === GAME_PHASE.PLAYING) {
-      return state.playerOrder[state.turnIndexIntoOrder] ?? null;
+      return state.playerOrder[state.currentTurnIndex] ?? null;
     }
     return null;
   }
@@ -143,19 +142,23 @@ export class HeartsBotService {
         : this.pickLeadSimple(legal);
     }
 
-    const winning = trickWinnerId(plays);
     const leadSuit = state.currentTrick.leadSuit;
-    const inSuit = legal.filter((c) => c.endsWith(leadSuit ?? ''));
+    const inSuit =
+      leadSuit !== null ? legal.filter((c) => suitOf(c) === leadSuit) : [];
     const trickHasPoints = plays.some((p) => isPenaltyCard(p.card));
     const byRankAsc = (cards: string[]) =>
       [...cards].sort((a, b) => rankValue(a) - rankValue(b));
 
-    if (inSuit.length > 0) {
+    if (inSuit.length > 0 && leadSuit !== null) {
       // Follow suit: duck under the current winner; avoid taking points.
+      // The trick-winner so far is the highest card of the lead suit.
       const sorted = byRankAsc(inSuit);
-      if (!winning || !winning.endsWith(leadSuit ?? '')) return sorted[0];
-      const winningCard =
-        plays.find((p) => p.playerId === winning)?.card ?? sorted[0];
+      const winningCard = plays
+        .filter((p) => suitOf(p.card) === leadSuit)
+        .reduce(
+          (best, p) => (rankValue(p.card) > rankValue(best) ? p.card : best),
+          plays[0]?.card ?? sorted[0],
+        );
       const winningRank = rankValue(winningCard);
       const under = sorted.filter((c) => rankValue(c) < winningRank);
       if (trickHasPoints && under.length > 0) {
@@ -215,9 +218,8 @@ export class HeartsBotService {
     return [...pool].sort((a, b) => rankValue(a) - rankValue(b))[0];
   }
 
-  /** Hard: light card counting — avoid leading high spades / unbroken hearts. */
+  /** Hard: avoid leading high spades / penalty cards while suits are live. */
   private pickLeadHard(state: HeartsState, legal: string[]): string {
-    void countPlayedCards(state); // warms the counting pass; kept for clarity
     const dangerousHighSpades = new Set(['AS', 'KS', 'QS']);
     const safe = legal.filter(
       (c) => !isPenaltyCard(c) && !dangerousHighSpades.has(c),
@@ -246,20 +248,4 @@ export class HeartsBotService {
     const ms = range.min + randomInt(range.max - range.min + 1);
     await new Promise((resolve) => setTimeout(resolve, ms));
   }
-}
-
-/** Light card-counting helper: how many of each suit have been played. */
-function countPlayedCards(state: HeartsState): Record<string, number> {
-  const counts: Record<string, number> = { C: 0, D: 0, S: 0, H: 0 };
-  for (const cards of Object.values(state.taken)) {
-    for (const card of cards) {
-      const suit = card.slice(-1);
-      if (suit in counts) counts[suit] += 1;
-    }
-  }
-  for (const play of state.currentTrick.plays) {
-    const suit = play.card.slice(-1);
-    if (suit in counts) counts[suit] += 1;
-  }
-  return counts;
 }

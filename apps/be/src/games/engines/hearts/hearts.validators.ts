@@ -73,7 +73,7 @@ export function validatePlayCard(
   if (state.phase !== GAME_PHASE.PLAYING) {
     return fail('Not in the playing phase');
   }
-  if (state.playerOrder[state.turnIndexIntoOrder] !== userId) {
+  if (state.playerOrder[state.currentTurnIndex] !== userId) {
     return fail('Not your turn');
   }
   if (!payloadHasCard(payload) || typeof payload.card !== 'string') {

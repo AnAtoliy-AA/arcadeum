@@ -36,7 +36,7 @@ export interface HeartsState extends BaseGameState {
   scores: Record<string, number>;
   handScores: Record<string, number>;
   currentTrick: CurrentTrick;
-  turnIndexIntoOrder: number;
+  currentTurnIndex: number;
   playerOrder: string[];
   players: HeartsPlayer[];
   heartsBroken: boolean;

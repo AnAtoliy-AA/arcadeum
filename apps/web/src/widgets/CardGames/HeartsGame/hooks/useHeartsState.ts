@@ -3,15 +3,13 @@
 import { useMemo } from 'react';
 import { useGameSession } from '@/features/games/hooks';
 import { getSessionState } from '@/features/games/lib';
-import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
+import type { GameSessionSummary } from '@/shared/types/games';
 import type { HeartsClientState } from '../types';
 
 interface UseHeartsStateOptions {
   roomId: string;
   currentUserId: string | null;
   initialSession: GameSessionSummary | null;
-  accessToken?: string | null;
-  room?: GameRoomSummary;
 }
 
 export function useHeartsState({
@@ -30,18 +28,24 @@ export function useHeartsState({
     [session],
   );
 
+  const isPassing = snapshot?.phase === 'passing';
+  const isGameOver = snapshot?.phase === 'game_over';
+
   const currentEntryId = snapshot
     ? (snapshot.playerOrder[snapshot.currentTurnIndex] ?? null)
     : null;
 
-  const myTurn = !!(
-    currentEntryId &&
-    currentUserId &&
-    currentEntryId === currentUserId
-  );
+  const myTurn =
+    !!currentEntryId &&
+    !!currentUserId &&
+    currentEntryId === currentUserId &&
+    !isPassing &&
+    !isGameOver;
 
-  const isGameOver = snapshot?.phase === 'game_over';
-  const isPassing = snapshot?.phase === 'passing';
+  /** During passing everyone may act until they have submitted their cards. */
+  const hasPassed = isPassing
+    ? (snapshot?.pendingPasses[currentUserId ?? '']?.length ?? 0) > 0
+    : false;
 
   const myHand = useMemo(() => {
     if (!snapshot || !currentUserId) return [];
@@ -55,6 +59,7 @@ export function useHeartsState({
     myTurn,
     isGameOver,
     isPassing,
+    hasPassed,
     myHand,
     actionBusy,
     setActionBusy,

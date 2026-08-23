@@ -25,6 +25,7 @@ const GAME_LOADERS: Record<string, GameLoader> = {
   hearts: () => import('./hearts/index'),
   spades: () => import('./spades/index'),
   go: () => import('./go/index'),
+  pachisi: () => import('./pachisi/index'),
 };
 
 function deepMerge(

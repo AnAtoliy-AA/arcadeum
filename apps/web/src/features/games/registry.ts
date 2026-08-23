@@ -19,6 +19,7 @@ export const gameLoaders: Record<
   hearts_v1: () => import('@/widgets/CardGames/HeartsGame'),
   spades_v1: () => import('@/widgets/CardGames/SpadesGame'),
   go_v1: () => import('@/widgets/BoardGames/GoGame'),
+  pachisi_v1: () => import('@/widgets/BoardGames/PachisiGame'),
   // Add more games as they are implemented
 } as const;
 
@@ -298,6 +299,25 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     supportsAI: true,
     tags: ['go', 'baduk', 'weiqi', 'board', 'classic', 'strategy'],
     implementationPath: '@/widgets/BoardGames/GoGame',
+    lastUpdated: '2026-08-23',
+    status: 'beta',
+  },
+  pachisi_v1: {
+    slug: 'pachisi_v1',
+    name: 'Pachisi',
+    description:
+      'Classic cross-and-circle race game for 2–4 players — roll a six, capture rivals, and bring all tokens home',
+    category: 'Board Game',
+    minPlayers: 2,
+    maxPlayers: 4,
+    estimatedDuration: 15,
+    complexity: 1,
+    ageRating: 'G',
+    thumbnail: '/games/pachisi.svg',
+    version: '1.0.0',
+    supportsAI: true,
+    tags: ['pachisi', 'ludo', 'dice', 'board', 'race', 'family'],
+    implementationPath: '@/widgets/BoardGames/PachisiGame',
     lastUpdated: '2026-08-23',
     status: 'beta',
   },

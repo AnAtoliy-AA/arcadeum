@@ -36,6 +36,7 @@ describe('ai-vs-ai helpers', () => {
       'hearts_v1',
       'spades_v1',
       'go_v1',
+      'pachisi_v1',
     ]);
   });
 

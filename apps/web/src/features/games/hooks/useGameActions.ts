@@ -16,6 +16,7 @@ export type GameType =
   | 'hearts_v1'
   | 'spades_v1'
   | 'go_v1'
+  | 'pachisi_v1'
   | null;
 
 interface UseGameActionsOptions {

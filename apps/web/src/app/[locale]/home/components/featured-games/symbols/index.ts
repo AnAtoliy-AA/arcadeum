@@ -10,3 +10,4 @@ export * from './BackgammonSymbol';
 export * from './HeartsSymbol';
 export * from './SpadesSymbol';
 export * from './GoSymbol';
+export * from './PachisiSymbol';

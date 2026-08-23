@@ -16,6 +16,7 @@ export const AI_VS_AI_SUPPORTED_GAME_IDS = new Set([
   'hearts_v1',
   'spades_v1',
   'go_v1',
+  'pachisi_v1',
 ]);
 
 export const AI_VS_AI_DELAYS = [1000, 2000, 5000] as const;

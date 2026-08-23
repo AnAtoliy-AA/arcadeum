@@ -31,6 +31,7 @@ test.describe('Home Page Games Grid Refinement', () => {
     await expect(gameCards.filter({ hasText: /Hearts/i })).toBeVisible();
     await expect(gameCards.filter({ hasText: /Spades/i })).toBeVisible();
     await expect(gameCards.filter({ hasText: /^Go$/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Pachisi/i })).toBeVisible();
   });
 
   test('should navigate slider via arrows', async ({ page }) => {

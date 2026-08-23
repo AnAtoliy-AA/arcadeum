@@ -355,6 +355,27 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
       },
     ],
   },
+  {
+    gameId: 'pachisi_v1',
+    startMode: 'immediate',
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['standard', 'quick'],
+    variants: ['standard', 'quick'],
+    rules: [
+      {
+        ruleId: 'idle',
+        label: 'Idle timer autoplay',
+        description:
+          'Automatically roll the die or move a token if the player does not act within the timer.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+    ],
+  },
 ];
 
 const CATALOG_INDEX = new Map<string, GameCatalogEntry>(

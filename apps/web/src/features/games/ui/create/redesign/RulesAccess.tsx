@@ -96,6 +96,14 @@ const GoRulesModal = dynamic(
   { ssr: false },
 );
 
+const PachisiRulesModal = dynamic(
+  () =>
+    import('@/widgets/BoardGames/PachisiGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -178,6 +186,9 @@ export function RulesAccess({ gameId, themeId }: Props) {
       ) : null}
       {gameId === 'go_v1' ? (
         <GoRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'pachisi_v1' ? (
+        <PachisiRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

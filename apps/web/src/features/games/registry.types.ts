@@ -32,6 +32,7 @@ export type GameSlug =
   | 'solitaire_v1'
   | 'spades_v1'
   | 'hearts_v1'
+  | 'pachisi_v1'
   | 'bridge_v1'
   | 'dominion_v1'
   | 'terraforming_mars_v1'

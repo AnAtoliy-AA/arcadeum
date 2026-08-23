@@ -94,7 +94,8 @@ def detect_cms(soup: BeautifulSoup, url: str) -> str:
         if "ghost" in gen_val:
             return "ghost"
 
-    if "blogspot.com" in url or soup.find(attrs={"data-blog-id": True}):
+    host = (urllib.parse.urlparse(url).hostname or "").lower()
+    if host == "blogspot.com" or host.endswith(".blogspot.com") or soup.find(attrs={"data-blog-id": True}):
         return "blogger"
 
     if soup.find("body", class_=re.compile(r"wp-")):

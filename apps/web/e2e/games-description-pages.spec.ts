@@ -24,6 +24,7 @@ const GAME_PAGES = [
     slug: 'backgammon_v1',
     title: 'Backgammon',
   },
+  { path: routes.pachisiLanding, slug: 'pachisi_v1', title: 'Pachisi' },
 ];
 
 test.describe('Games Description Landing Pages', () => {

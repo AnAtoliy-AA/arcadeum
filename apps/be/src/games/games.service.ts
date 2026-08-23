@@ -2,7 +2,6 @@ import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
-import type { GameSessionSummary } from './sessions/game-sessions.service';
 import { GameSessionsArchiveService } from './sessions/game-sessions.archive.service';
 import { GamesHistoryFacade } from './games-history.facade';
 import { GamesRealtimeService } from './games.realtime.service';
@@ -25,6 +24,11 @@ import { RankingService } from '../ranking/ranking.service';
 import { recordRankedResultForSession } from './games.ranked-result';
 import { finalizeCompletedSession } from './games.completion';
 import { stripDisabledRules } from './games.service-rules';
+import {
+  sanitizeSessionForPlayer,
+  touchEngineSession,
+  type RematchHistoryOptions,
+} from './games.service-helpers';
 
 @Injectable()
 export class GamesService {
@@ -48,17 +52,6 @@ export class GamesService {
     private readonly rankingService: RankingService,
     private readonly ruleVisibility: GameRuleVisibilityService,
   ) {}
-
-  private sanitizeForPlayer(
-    s: GameSessionSummary,
-    pId: string,
-  ): GameSessionSummary {
-    const sanitized = this.sessionsService.sanitizeSummaryForPlayer(s, pId);
-    if (sanitized && typeof sanitized === 'object') {
-      return { ...s, state: sanitized as Record<string, unknown> };
-    }
-    return s;
-  }
 
   // ========== Room Operations ==========
 
@@ -118,7 +111,11 @@ export class GamesService {
 
     if (session && userId) {
       try {
-        session = this.sanitizeForPlayer(session, userId);
+        session = sanitizeSessionForPlayer(
+          this.sessionsService,
+          session,
+          userId,
+        );
       } catch (err) {
         this.logger.warn(
           `Sanitization failed for user ${userId} in room ${roomId}: ${err}`,
@@ -156,7 +153,13 @@ export class GamesService {
     }
 
     // Trigger bot if exists
-    if (session) await this.touchEngineSession(session);
+    if (session) {
+      await touchEngineSession(
+        session,
+        this.seaBattleService,
+        this.criticalService,
+      );
+    }
 
     return { room, session };
   }
@@ -249,7 +252,7 @@ export class GamesService {
 
     // Emit real-time event
     await this.realtimeService.emitGameStarted(updatedRoom, session, (s, pId) =>
-      this.sanitizeForPlayer(s, pId),
+      sanitizeSessionForPlayer(this.sessionsService, s, pId),
     );
 
     return { room: updatedRoom, session };
@@ -287,7 +290,7 @@ export class GamesService {
       session,
       action,
       userId,
-      (s, pId) => this.sanitizeForPlayer(s, pId),
+      (s, pId) => sanitizeSessionForPlayer(this.sessionsService, s, pId),
     );
 
     if (isCompleted) {
@@ -364,13 +367,7 @@ export class GamesService {
     userId: string,
     roomId: string,
     participantIds: string[],
-    options?: {
-      gameId?: string;
-      name?: string;
-      visibility?: 'public' | 'private';
-      gameOptions?: Record<string, unknown>;
-      message?: string;
-    },
+    options?: RematchHistoryOptions,
   ) {
     return this.historyFacade.createRematchFromHistory(
       userId,
@@ -408,7 +405,7 @@ export class GamesService {
       userId,
       message,
       scope,
-      (s, pId) => this.sanitizeForPlayer(s, pId),
+      (s, pId) => sanitizeSessionForPlayer(this.sessionsService, s, pId),
       isAuthenticated,
     );
   }
@@ -439,15 +436,14 @@ export class GamesService {
 
   async findSessionByRoom(roomId: string) {
     const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (session) await this.touchEngineSession(session);
+    if (session) {
+      await touchEngineSession(
+        session,
+        this.seaBattleService,
+        this.criticalService,
+      );
+    }
     return session;
-  }
-
-  private async touchEngineSession(session: GameSessionSummary) {
-    if (session.gameId === 'sea_battle_v1')
-      await this.seaBattleService.findSessionByRoom(session.roomId);
-    else if (session.gameId === 'critical_v1')
-      await this.criticalService.findSessionByRoom(session.roomId);
   }
 
   async ensureParticipant(roomId: string, userId: string) {

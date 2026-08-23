@@ -10,6 +10,14 @@ describe('sanitizeNotes', () => {
     expect(result).not.toContain('<b>');
   });
 
+  it('handles nested and malformed tags cleanly', () => {
+    const input = '<scrip<script>t>alert(1)</scrip</script>t>';
+    const result = sanitizeNotes(input);
+    expect(result).toBe('alert(1)');
+    expect(result).not.toContain('<');
+    expect(result).not.toContain('>');
+  });
+
   it('strips dangerous protocols', () => {
     const input = 'Check this: javascript:alert(1) and data:text/html,abc';
     const result = sanitizeNotes(input);

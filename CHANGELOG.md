@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.3] - 2026-08-23
+
+### Added
+- add incremental room counter to default name and UI (ARC-922) (ARC-922)
+- rework room create page with interactive theme preview and secure room notes (ARC-922) (ARC-922)
+
+### Fixed
+- sanitize notes using single-character angle bracket removal (ARC-922) (ARC-922)
+- resolve incomplete multi-character sanitization (ARC-922) (ARC-922)
+
+
 ## [1.26.2] - 2026-08-22
 
 ### Added

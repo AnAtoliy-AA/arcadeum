@@ -11,6 +11,7 @@ import { CatDashEngine } from './cat-dash/cat-dash.engine';
 import { BackgammonEngine } from './backgammon/backgammon.engine';
 import { HeartsEngine } from './hearts/hearts.engine';
 import { SpadesEngine } from './spades/spades.engine';
+import { GoEngine } from './go/go.engine';
 
 /**
  * Game Engines Module
@@ -30,6 +31,7 @@ import { SpadesEngine } from './spades/spades.engine';
     BackgammonEngine,
     HeartsEngine,
     SpadesEngine,
+    GoEngine,
   ],
   exports: [GameEngineRegistry],
 })
@@ -49,6 +51,7 @@ export class GameEnginesModule implements OnModuleInit {
     private readonly backgammonEngine: BackgammonEngine,
     private readonly heartsEngine: HeartsEngine,
     private readonly spadesEngine: SpadesEngine,
+    private readonly goEngine: GoEngine,
   ) {}
 
   /**
@@ -69,6 +72,7 @@ export class GameEnginesModule implements OnModuleInit {
     this.registry.register(this.backgammonEngine);
     this.registry.register(this.heartsEngine);
     this.registry.register(this.spadesEngine);
+    this.registry.register(this.goEngine);
 
     // Log registration summary
     const stats = this.registry.getStats();

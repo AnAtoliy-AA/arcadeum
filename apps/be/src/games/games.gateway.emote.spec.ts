@@ -63,6 +63,9 @@ describe('GamesGateway – emote handler', () => {
       inert as never,
       inert as never,
       inert as never,
+      inert as never,
+      // go handler
+      inert as never,
     );
     (gateway as unknown as { server: Server }).server = server;
   });

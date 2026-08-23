@@ -90,6 +90,9 @@ import { HeartsGateway } from './hearts.gateway';
 import { SpadesService } from './spades/spades.service';
 import { SpadesBotService } from './spades/spades-bot.service';
 import { SpadesGateway } from './spades.gateway';
+import { GoService } from './go/go.service';
+import { GoBotService } from './go/go-bot.service';
+import { GoGateway } from './go.gateway';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { RankingModule } from '../ranking/ranking.module';
@@ -210,6 +213,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Spades
     SpadesService,
     SpadesBotService,
+    // Go
+    GoService,
+    GoBotService,
     // AI vs AI
     AiVsAiService,
     // Utilities
@@ -238,6 +244,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Hearts (gateway registered as provider, not exported)
     HeartsGateway,
     SpadesGateway,
+    GoGateway,
   ],
   exports: [GameHistoryStatsService, GameRoomsMatchmakingService],
 })

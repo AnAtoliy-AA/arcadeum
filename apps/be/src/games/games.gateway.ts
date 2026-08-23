@@ -16,13 +16,7 @@ import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
 import { extractString } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
-import {
-  handleRoomChat,
-  handleDeleteRoomChat,
-} from './games.gateway.room-chat';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
-import { handleHistoryNote } from './games.gateway.history-note';
-import { handleSessionDeleteChat } from './games.gateway.session-delete-chat';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -30,6 +24,7 @@ import {
   handleWatchRoom,
   handleSetOption,
 } from './games.gateway.room';
+import { registerChatHandlers } from './games.gateway.chat-handlers';
 // prettier-ignore
 import { maybeEncrypt, isSocketEncryptionEnabled, getEncryptionKeyHex } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
@@ -48,6 +43,7 @@ import { GlimwormGateway } from './glimworm.gateway';
 import { BackgammonGateway } from './backgammon.gateway';
 import { HeartsGateway } from './hearts.gateway';
 import { SpadesGateway } from './spades.gateway';
+import { GoGateway } from './go.gateway';
 
 @WebSocketGateway({
   namespace: 'games',
@@ -78,6 +74,7 @@ export class GamesGateway {
     private readonly backgammonHandler: BackgammonGateway,
     private readonly heartsHandler: HeartsGateway,
     private readonly spadesHandler: SpadesGateway,
+    private readonly goHandler: GoGateway,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
@@ -96,6 +93,7 @@ export class GamesGateway {
       this.backgammonHandler,
       this.heartsHandler,
       this.spadesHandler,
+      this.goHandler,
     ];
 
     const registry = new Map<string, GameMessageHandler['handlers'][string]>();
@@ -105,45 +103,14 @@ export class GamesGateway {
       }
     }
 
-    registry.set('games.room.chat', (socket, payload) =>
-      handleRoomChat(
-        this.logger,
-        this.server,
-        socket,
-        this.realtime,
-        this.gamesService,
-        payload,
-      ),
-    );
-    registry.set('games.room.delete_chat', (socket, payload) =>
-      handleDeleteRoomChat(
-        this.logger,
-        this.server,
-        socket,
-        this.realtime,
-        this.gamesService,
-        payload,
-      ),
-    );
-    registry.set('games.session.history_note', (socket, payload) =>
-      handleHistoryNote(
-        this.logger,
-        socket,
-        this.gamesService,
-        (c, u) => this.validateUserId(c, u),
-        payload,
-      ),
-    );
-    registry.set('games.session.delete_chat', (socket, payload) =>
-      handleSessionDeleteChat(
-        this.logger,
-        socket,
-        this.sessionsService,
-        this.realtime,
-        (c, u) => this.validateUserId(c, u),
-        payload,
-      ),
-    );
+    registerChatHandlers(registry, {
+      logger: this.logger,
+      server: this.server,
+      realtime: this.realtime,
+      gamesService: this.gamesService,
+      sessionsService: this.sessionsService,
+      validateUserId: (c, u) => this.validateUserId(c, u),
+    });
 
     this.server.on('connection', (socket: Socket) => {
       socket.onAny((event: string, ...args: unknown[]) => {

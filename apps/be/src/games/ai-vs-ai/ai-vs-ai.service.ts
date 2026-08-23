@@ -27,6 +27,7 @@ import { CriticalService } from '../critical/critical.service';
 import { BackgammonService } from '../backgammon/backgammon.service';
 import { HeartsService } from '../hearts/hearts.service';
 import { SpadesService } from '../spades/spades.service';
+import { GoService } from '../go/go.service';
 import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 
 const AI_VS_AI_ROOM_NAME = 'AI vs AI';
@@ -75,6 +76,8 @@ export class AiVsAiService {
     private readonly heartsService: HeartsService,
     @Inject(forwardRef(() => SpadesService))
     private readonly spadesService: SpadesService,
+    @Inject(forwardRef(() => GoService))
+    private readonly goService: GoService,
     private readonly engineRegistry: GameEngineRegistry,
   ) {
     this.startFns = {
@@ -111,6 +114,8 @@ export class AiVsAiService {
         this.heartsService.startSession(hostId, roomId, false, 0, extras),
       spades_v1: (hostId, roomId, extras) =>
         this.spadesService.startSession(hostId, roomId, false, 0, extras),
+      go_v1: (hostId, roomId, extras) =>
+        this.goService.startSession(hostId, roomId, false, 0, extras),
     };
   }
 

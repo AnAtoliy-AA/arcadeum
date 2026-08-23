@@ -60,6 +60,10 @@ export const en = {
     title: `Backgammon · Free Online Multiplayer Board Game · ${APP}`,
     description: `Play Backgammon online on ${APP} — classic 24-point board, dice rolls, bearing off, hitting blots to the bar, and AI opponents. Free, instant rooms, no download.`,
   },
+  pachisiLanding: {
+    title: `Pachisi (Ludo) · Free Online Race Board Game · ${APP}`,
+    description: `Play Pachisi online on ${APP} — roll a six to launch your tokens, capture rivals, dodge danger zones, and race all four home. 2–4 players, AI bots, free instant rooms.`,
+  },
   heartsLanding: {
     title: `Hearts · Free Online Multiplayer Card Game · ${APP}`,
     description: `Play Hearts online on ${APP} — classic 4-player trick-taking card game with passing, Hearts, Queen of Spades, and AI opponents. Free, instant rooms.`,

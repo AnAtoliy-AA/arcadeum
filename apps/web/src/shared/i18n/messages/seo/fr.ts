@@ -54,6 +54,10 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Cat Dash · Course de chats multijoueur · ${APP}`,
     description: `Jouez à Cat Dash sur ${APP} — courses de chats avec dés, capacités uniques et pistes thématiques. 2–6 joueurs, gratuit.`,
   },
+  pachisiLanding: {
+    title: `Pachisi (Ludo) · Jeu de plateau de course gratuit · ${APP}`,
+    description: `Jouez au Pachisi en ligne sur ${APP} — faites un six pour lancer vos pions, capturez vos rivaux et rentrez les quatre à la maison. 2–4 joueurs, bots IA, salons gratuits.`,
+  },
   backgammonLanding: {
     title: `Backgammon · Jeu de plateau multijoueur gratuit · ${APP}`,
     description: `Jouez au Backgammon en ligne sur ${APP} — plateau classique à 24 flèches, dés, sorties de pions et bots IA. Gratuit, sans téléchargement.`,

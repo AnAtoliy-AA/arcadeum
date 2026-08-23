@@ -48,9 +48,7 @@ jobs:
           gh issue create \
             --title "Production health check failed" \
             --body "Automated health check failed at $(date -u).
-
-  Web status: ${{ steps.web.outputs.status }}
-  Backend status: ${{ steps.api.outputs.status }}
-
-  [View workflow run]($RUN_URL)" \
+          Web status: ${{ steps.web.outputs.status }}
+          Backend status: ${{ steps.api.outputs.status }}
+          [View workflow run]($RUN_URL)" \
             --label "bug,production"

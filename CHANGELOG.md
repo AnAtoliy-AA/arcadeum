@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.7] - 2026-08-23
+
+### Added
+- add spades card game (ARC-884)
+- support AI vs AI for hearts (ARC-884) (ARC-884)
+- add Hearts card game (ARC-884) (ARC-884)
+
+### Fixed
+- harden hearts after PR review (ARC-884) (ARC-884)
+- address hearts code-review findings (ARC-884) (ARC-884)
+- wire HeartsGateway into central event dispatcher (ARC-884) (ARC-884)
+- size quickplay rooms from engine metadata (ARC-884) (ARC-884)
+- preselect all required bots in lobby (ARC-884) (ARC-884)
+- address hearts PR review findings (ARC-884) (ARC-884)
+
+### Improved
+- halve bot-stall recovery via watchdog threshold (ARC-884) (ARC-884)
+
+
 ## [1.26.6] - 2026-08-23
 
 ### Added

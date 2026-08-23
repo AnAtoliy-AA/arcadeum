@@ -1,10 +1,11 @@
 import {
   CARDS_PER_PASS,
   GAME_PHASE,
-  QUEEN_OF_SPADES,
+  HEART_SUIT,
   TWO_CLUBS,
 } from './hearts.constants';
 import type { HeartsState } from './hearts.types';
+import { isPenaltyCard } from './hearts.utils';
 
 export interface ValidationResult {
   ok: boolean;
@@ -96,8 +97,8 @@ export function validatePlayCard(
 
   if (leading) {
     // Hearts cannot lead until broken — unless the hand holds only hearts.
-    if (!state.heartsBroken && card.endsWith('H')) {
-      const onlyHearts = hand.every((c) => c.endsWith('H'));
+    if (!state.heartsBroken && card.endsWith(HEART_SUIT)) {
+      const onlyHearts = hand.every((c) => c.endsWith(HEART_SUIT));
       if (!onlyHearts) {
         return fail('Hearts have not been broken yet');
       }
@@ -137,8 +138,4 @@ export function validateForfeit(
     return fail('Player not in game');
   }
   return ok;
-}
-
-export function isPenaltyCard(card: string): boolean {
-  return card.endsWith('H') || card === QUEEN_OF_SPADES;
 }

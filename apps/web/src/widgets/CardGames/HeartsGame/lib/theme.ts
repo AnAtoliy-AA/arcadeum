@@ -1,4 +1,5 @@
 import type { HeartsVariant } from '../types';
+import { isHeartsVariant } from '../types';
 import {
   getThemeById,
   SHARED_THEMES,
@@ -40,4 +41,15 @@ export function getTheme(variant?: string): HeartsThemeTokens {
     }
   }
   return THEMES.cyberpunk;
+}
+
+/**
+ * Resolve a room's `gameOptions` to a known visual variant. Rooms persist
+ * the shared theme id under `theme`; unknown or missing values (legacy
+ * rooms, hand-edited options) fall back to cyberpunk.
+ */
+export function resolveHeartsVariant(raw: unknown): HeartsVariant {
+  const r = (raw ?? {}) as Partial<{ theme: string; variant: string }>;
+  const candidate = r.theme ?? r.variant;
+  return isHeartsVariant(candidate) ? candidate : 'cyberpunk';
 }

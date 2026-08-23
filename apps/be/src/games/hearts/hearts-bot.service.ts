@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import { HeartsService } from './hearts.service';
+import { GameSessionsService } from '../sessions/game-sessions.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import { GAME_PHASE } from '../engines/hearts/hearts.constants';
 import type {
@@ -27,6 +28,7 @@ export class HeartsBotService {
   constructor(
     @Inject(forwardRef(() => HeartsService))
     private readonly heartsService: HeartsService,
+    private readonly sessionsService: GameSessionsService,
   ) {}
 
   isBot(userId: string): boolean {
@@ -58,21 +60,37 @@ export class HeartsBotService {
       await this.randomDelay(
         aiDelay !== null ? { min: aiDelay, max: aiDelay } : MOVE_DELAY_MS,
       );
-      if (state.phase === GAME_PHASE.PASSING && state.options.passingEnabled) {
-        if (state.pendingPasses[botId]?.length) return;
-        const cards = this.pickPassCards(state, botId);
+
+      // Re-read state after the delay: the pre-delay snapshot can be stale
+      // (a seat moved while we were "thinking"). The service re-validates
+      // everything anyway — this just avoids firing doomed moves.
+      const fresh = await this.sessionsService.findSessionByRoom(
+        session.roomId,
+      );
+      const freshState = fresh?.state as unknown as HeartsState | undefined;
+      if (
+        !freshState ||
+        fresh?.status !== 'active' ||
+        this.currentActorId(freshState) !== botId
+      ) {
+        return;
+      }
+
+      if (
+        freshState.phase === GAME_PHASE.PASSING &&
+        freshState.options.passingEnabled
+      ) {
+        if (freshState.pendingPasses[botId]?.length) return;
+        const cards = this.pickPassCards(freshState, botId);
         await this.heartsService.passCards(botId, session.roomId, {
           cards,
         } satisfies PassCardsPayload);
         return;
       }
-      if (
-        state.phase !== GAME_PHASE.PLAYING ||
-        state.playerOrder[state.currentTurnIndex] !== botId
-      ) {
+      if (freshState.phase !== GAME_PHASE.PLAYING) {
         return;
       }
-      const card = this.pickCardToPlay(state, botId);
+      const card = this.pickCardToPlay(freshState, botId);
       if (!card) return;
       await this.heartsService.playCard(botId, session.roomId, { card });
     } catch (error) {

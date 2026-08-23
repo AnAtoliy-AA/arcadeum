@@ -1,5 +1,6 @@
 import { HeartsBotService } from './hearts-bot.service';
 import { HeartsService } from './hearts.service';
+import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GAME_PHASE } from '../engines/hearts/hearts.constants';
 import type { HeartsState } from '../engines/hearts/hearts.types';
 
@@ -11,8 +12,14 @@ function makeBot() {
     playCard: jest.fn(),
     completeSession: jest.fn(),
   };
+  const fakeSessions = {
+    findSessionByRoom: jest.fn().mockResolvedValue(null),
+  };
   return {
-    bot: new HeartsBotService(fakeService as unknown as HeartsService),
+    bot: new HeartsBotService(
+      fakeService as unknown as HeartsService,
+      fakeSessions as unknown as GameSessionsService,
+    ),
     fakeService,
   };
 }

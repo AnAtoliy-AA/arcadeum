@@ -21,6 +21,14 @@ export const HEARTS_VARIANT_IDS = [
 ] as const;
 export type HeartsVariant = (typeof HEARTS_VARIANT_IDS)[number];
 
+/** Type guard for untrusted variant strings (room gameOptions). */
+export function isHeartsVariant(value: unknown): value is HeartsVariant {
+  return (
+    typeof value === 'string' &&
+    (HEARTS_VARIANT_IDS as readonly string[]).includes(value)
+  );
+}
+
 export const SUITS = ['C', 'D', 'S', 'H'] as const;
 export type Suit = (typeof SUITS)[number];
 

@@ -22,9 +22,14 @@ export class HeartsGateway extends BaseGameGateway<HeartsOptions> {
           if (!Array.isArray(payload?.cards)) {
             throw new WsException('cards array is required');
           }
-          const cards = payload.cards.filter(
-            (c: unknown): c is string => typeof c === 'string',
-          );
+          // Reject malformed entries instead of silently filtering them:
+          // filtering would fail later with a confusing "exactly 3 cards"
+          // error far from the actual problem.
+          if (payload.cards.some((c: unknown) => typeof c !== 'string')) {
+            throw new WsException('cards must be card id strings');
+          }
+          // Safe: every entry was verified to be a string above.
+          const cards = payload.cards as string[];
           await this.gameService.passCards(userId, roomId, { cards });
           client.emit(
             'hearts.session.cards_passed',

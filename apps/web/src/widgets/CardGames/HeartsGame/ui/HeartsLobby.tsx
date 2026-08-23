@@ -14,6 +14,7 @@ import type { GameRoomSummary } from '@/shared/types/games';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { MIN_PLAYERS } from '../types';
 import { HEARTS_VARIANTS } from '../lib/constants';
+import { resolveHeartsVariant } from '../lib/theme';
 import { RulesModal } from './RulesModal';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
@@ -32,8 +33,6 @@ interface HeartsLobbyProps {
   accessToken?: string | null;
 }
 
-type HeartsVariantOptionId = (typeof HEARTS_VARIANTS)[number]['id'];
-
 const HEARTS_LOBBY_THEME = {
   fallbackLightGradient:
     'linear-gradient(90deg, #fff1f2 0%, #fda4af 50%, #fff1f2 100%)',
@@ -41,18 +40,16 @@ const HEARTS_LOBBY_THEME = {
 };
 
 function resolveOptions(raw: unknown): {
-  variant: HeartsVariantOptionId;
+  variant: ReturnType<typeof resolveHeartsVariant>;
   passingEnabled: boolean;
   targetScore: 50 | 100;
 } {
   const r = (raw ?? {}) as Partial<{
-    theme: string;
-    variant: string;
     passingEnabled: boolean;
     targetScore: number;
   }>;
   return {
-    variant: (r.theme ?? r.variant ?? 'cyberpunk') as HeartsVariantOptionId,
+    variant: resolveHeartsVariant(raw),
     passingEnabled:
       typeof r.passingEnabled === 'boolean' ? r.passingEnabled : true,
     targetScore: r.targetScore === 50 ? 50 : 100,

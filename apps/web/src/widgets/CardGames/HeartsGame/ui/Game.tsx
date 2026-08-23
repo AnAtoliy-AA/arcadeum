@@ -22,14 +22,7 @@ import { HeartsBoard } from './HeartsBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
 import { HEARTS_VARIANTS } from '../lib/constants';
-import type { HeartsVariant } from '../types';
-
-function resolveOptions(raw: unknown): { variant: HeartsVariant } {
-  const r = (raw ?? {}) as Partial<{ variant: string; theme: string }>;
-  return {
-    variant: (r.theme ?? r.variant ?? 'cyberpunk') as HeartsVariant,
-  };
-}
+import { resolveHeartsVariant } from '../lib/theme';
 
 function HeartsGameImpl({
   roomId,
@@ -127,7 +120,7 @@ function HeartsGameImpl({
   });
 
   const options = useMemo(
-    () => resolveOptions(room?.gameOptions),
+    () => ({ variant: resolveHeartsVariant(room?.gameOptions) }),
     [room?.gameOptions],
   );
 

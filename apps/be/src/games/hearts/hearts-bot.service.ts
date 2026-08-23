@@ -250,7 +250,10 @@ export class HeartsBotService {
 
   private difficultyOf(state: HeartsState): Difficulty {
     const d = state.options.aiDifficulty;
-    return d === 'easy' || d === 'medium' || d === 'hard' ? d : 'medium';
+    if (d === 'easy') return 'easy';
+    // AI-vs-AI rooms request 'expert' (no per-game expert strategy exists
+    // for hearts) — play the strongest available strategy instead.
+    return d === 'hard' || d === 'expert' ? 'hard' : 'medium';
   }
 
   private sample(arr: string[], n: number): string[] {

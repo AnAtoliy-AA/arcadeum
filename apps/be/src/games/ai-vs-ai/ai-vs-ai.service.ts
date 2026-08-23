@@ -16,7 +16,6 @@ import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provide
 import {
   AI_VS_AI_DEFAULT_DELAY_MS,
   AI_VS_AI_DELAYS_MS,
-  AI_VS_AI_GAME_IDS,
 } from '../common/ai-vs-ai';
 import { ChessService } from '../chess/chess.service';
 import { CheckersService } from '../checkers/checkers.service';
@@ -31,16 +30,29 @@ import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 
 const AI_VS_AI_ROOM_NAME = 'AI vs AI';
 
+type AiVsAiStartFn = (
+  botHostId: string,
+  roomId: string,
+  extras: Record<string, unknown>,
+) => Promise<unknown>;
+
 /**
  * Creates and auto-starts "AI vs AI" rooms: expert bots play each other
  * in a public room that anyone can spectate. The requesting user is the
- * room creator (a spectator) — no human is a participant. Seat count comes
- * from the game engine's metadata, so 1v1 games keep the classic two-bot
- * layout while full-table games like Hearts field all four seats.
+ * room creator (a spectator) — no human is a participant.
+ *
+ * Supported games are defined by exactly one thing: the {@link startFns} map.
+ * To add a game, add its entry here AND mirror the gameId into
+ * `AI_VS_AI_SUPPORTED_GAME_IDS` on the web (`features/games/lib/aiVsAi.ts`) so
+ * the landing-page CTA renders — see the `/new-game` skill checklist.
+ *
+ * Seat count comes from the game engine's metadata: 1v1 games keep the classic
+ * two-bot layout while full-table games like Hearts field all four seats.
  */
 @Injectable()
 export class AiVsAiService {
   private readonly logger = new Logger(AiVsAiService.name);
+  private readonly startFns: Record<string, AiVsAiStartFn>;
 
   constructor(
     @InjectModel(GameRoom.name, OCI_CONNECTION)
@@ -61,7 +73,41 @@ export class AiVsAiService {
     @Inject(forwardRef(() => HeartsService))
     private readonly heartsService: HeartsService,
     private readonly engineRegistry: GameEngineRegistry,
-  ) {}
+  ) {
+    this.startFns = {
+      chess_v1: (hostId, roomId, extras) =>
+        this.chessService.startSession(hostId, roomId, false, 0, {
+          ...extras,
+          botDifficulty: 'expert',
+        }),
+      checkers_v1: (hostId, roomId, extras) =>
+        this.checkersService.startSession(hostId, roomId, false, 0, extras),
+      tic_tac_toe_v1: (hostId, roomId, extras) =>
+        this.ticTacToeService.startSession(hostId, roomId, false, 0, extras),
+      cascade_v1: (hostId, roomId, extras) =>
+        this.cascadeService.startSession(hostId, roomId, false, 0, extras),
+      cat_dash_v1: (hostId, roomId, extras) =>
+        this.catDashService.startSession(hostId, roomId, false, 0, extras),
+      sea_battle_v1: (hostId, roomId, extras) =>
+        this.seaBattleService.startSession(hostId, roomId, false, 0, {
+          ...extras,
+          difficulty: 'expert',
+        }),
+      critical_v1: (hostId, roomId, extras) =>
+        this.criticalService.startSession(
+          hostId,
+          roomId,
+          false,
+          0,
+          undefined,
+          extras,
+        ),
+      backgammon_v1: (hostId, roomId, extras) =>
+        this.backgammonService.startSession(hostId, roomId, false, 0, extras),
+      hearts_v1: (hostId, roomId, extras) =>
+        this.heartsService.startSession(hostId, roomId, false, 0, extras),
+    };
+  }
 
   async createAIvsAIRoom(
     userId: string,
@@ -72,11 +118,8 @@ export class AiVsAiService {
       aiMoveDelayMs?: number;
     },
   ): Promise<GameRoomSummary> {
-    if (
-      !AI_VS_AI_GAME_IDS.includes(
-        dto.gameId as (typeof AI_VS_AI_GAME_IDS)[number],
-      )
-    ) {
+    const startGame = this.startFns[dto.gameId];
+    if (!startGame) {
       throw new BadRequestException(
         `AI vs AI is not supported for game: ${dto.gameId}`,
       );
@@ -121,7 +164,7 @@ export class AiVsAiService {
 
     await this.startAiSession(
       room._id.toString(),
-      dto.gameId,
+      startGame,
       botIds[0],
       aiMoveDelayMs,
     );
@@ -141,100 +184,13 @@ export class AiVsAiService {
 
   private async startAiSession(
     roomId: string,
-    gameId: string,
+    startGame: AiVsAiStartFn,
     botHostId: string,
     aiMoveDelayMs: number,
   ): Promise<void> {
     const extras = { aiVsAi: true, aiMoveDelayMs };
     try {
-      switch (gameId) {
-        case 'chess_v1':
-          await this.chessService.startSession(botHostId, roomId, false, 0, {
-            ...extras,
-            botDifficulty: 'expert',
-          });
-          break;
-        case 'checkers_v1':
-          await this.checkersService.startSession(
-            botHostId,
-            roomId,
-            false,
-            0,
-            extras,
-          );
-          break;
-        case 'tic_tac_toe_v1':
-          await this.ticTacToeService.startSession(
-            botHostId,
-            roomId,
-            false,
-            0,
-            extras,
-          );
-          break;
-        case 'cascade_v1':
-          await this.cascadeService.startSession(
-            botHostId,
-            roomId,
-            false,
-            0,
-            extras,
-          );
-          break;
-        case 'cat_dash_v1':
-          await this.catDashService.startSession(
-            botHostId,
-            roomId,
-            false,
-            0,
-            extras,
-          );
-          break;
-        case 'sea_battle_v1':
-          await this.seaBattleService.startSession(
-            botHostId,
-            roomId,
-            false,
-            0,
-            {
-              ...extras,
-              difficulty: 'expert',
-            },
-          );
-          break;
-        case 'critical_v1':
-          await this.criticalService.startSession(
-            botHostId,
-            roomId,
-            false,
-            0,
-            undefined,
-            extras,
-          );
-          break;
-        case 'backgammon_v1':
-          await this.backgammonService.startSession(
-            botHostId,
-            roomId,
-            false,
-            0,
-            extras,
-          );
-          break;
-        case 'hearts_v1':
-          await this.heartsService.startSession(
-            botHostId,
-            roomId,
-            false,
-            0,
-            extras,
-          );
-          break;
-        default:
-          throw new BadRequestException(
-            `AI vs AI is not supported for game: ${gameId}`,
-          );
-      }
+      await startGame(botHostId, roomId, extras);
     } catch (error) {
       this.logger.error(
         `AI vs AI session start failed for room ${roomId}: ${

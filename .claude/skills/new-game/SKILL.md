@@ -65,6 +65,16 @@ Wire into [apps/be/src/games/games.module.ts](apps/be/src/games/games.module.ts)
 
 **Socket events parity (BE ↔ FE):** the strings in `@SubscribeMessage(...)` on the BE gateway MUST match the strings in `gameSocket.emit(...)` from the FE's `useActions.ts` hook, character for character. Drift here results in silent no-ops with no error.
 
+**AI vs AI support (required for every turn-based game):** every turn-based game must be spectatable as bot-vs-bot (ARC-890). The bot service MUST:
+1. Import `getAiMoveDelayMs` / `isAiVsAiSession` from [`apps/be/src/games/common/ai-vs-ai.ts`](apps/be/src/games/common/ai-vs-ai.ts).
+2. Guard auto-completion: complete a session with no alive humans **only when `!isAiVsAiSession(session)`** — otherwise AI-vs-AI rooms die on their first tick.
+3. Use the fixed delay in AI-vs-AI matches: `const aiDelay = getAiMoveDelayMs(session)` → sleep exactly that long instead of the random human-ish range.
+4. Single-flight guard every turn: acquire a per-`roomId:botId` lock before sleeping+acting ([BotTurnLock](apps/be/src/games/common/bot-turn-lock.ts), TTL-based like cat-dash/critical) so duplicate triggers can't stack chains and distort pacing.
+5. Register the game in **two lists**: `AI_VS_AI_GAME_IDS` in [common/ai-vs-ai.ts](apps/be/src/games/common/ai-vs-ai.ts) AND `AI_VS_AI_SUPPORTED_GAME_IDS` in [web `features/games/lib/aiVsAi.ts`](apps/web/src/features/games/lib/aiVsAi.ts) (gates the landing-page CTA), plus add a starter entry to `AiVsAiService.startFns`. The BE spec `ai-vs-ai.service.spec.ts` cross-checks list ↔ starters so they cannot drift.
+6. Add tests: AI-vs-AI session keeps playing without humans; non-AI-vs-AI bot-only session completes; concurrent triggers produce exactly one action.
+
+Real-time games (glimworm-style tick engines) are excluded: bots steer themselves every tick, so a fixed per-move delay does not apply — document the exclusion in both lists if it applies to your game.
+
 ### 4. Backend catalog
 
 Add the game to [apps/be/src/games/games.catalog.ts](apps/be/src/games/games.catalog.ts) using `SHARED_VISUAL_THEMES`:
@@ -347,6 +357,7 @@ Walk this list manually — these are the surfaces where missing wiring causes s
 - [ ] Gameplay shorts entry added to `GAMES` in `scripts/shorts-factory/gameplay.js`.
 - [ ] i18n keys present in all 5 locales (en, es, fr, ru, by) — including SEO entries.
 - [ ] BE engine spec + bot spec passing; web hook/widget vitest passing.
+- [ ] AI vs AI wired: bot service honors `getAiMoveDelayMs`/`isAiVsAiSession`, game added to `AI_VS_AI_GAME_IDS` (BE), `AI_VS_AI_SUPPORTED_GAME_IDS` (web) and `AiVsAiService.startFns`; landing renders the `AIvsAIViewer` CTA when supported.
 - [ ] [`apps/web/e2e/home-games-slider.spec.ts`](apps/web/e2e/home-games-slider.spec.ts) — bump the expected `toHaveCount(N)` and add the new game's `<h3>` assertion; the test hardcodes the featured-games count and order.
 
 **Mobile scope:** the new-game flow targets web + BE only. Add a mobile screen only if the user explicitly asks; otherwise note "mobile follow-up" in the PR.
@@ -428,6 +439,8 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 27. **Bot Deadlock Fallback**: When a bot cannot act (no legal moves mid-turn), it MUST call a defensive pass/skip action instead of breaking out of its loop — otherwise the session can get stuck until the watchdog fires. Add a validated `<game>` pass-turn action to the engine and a matching service method.
 28. **Win Quality Classification**: For games with graded wins (backgammon gammon/backgammon, chess resignations, etc.), record a `winType` on the game-over state at the moment of victory — stake multipliers and stats depend on it later and retrofitting is expensive.
 29. **Bot Preselection Must Match minPlayers**: `ReusableGameLobby` preselects `minPlayers - 1` bots in its count selector (e.g. 3 for a 4-player game like Hearts) because the server pads up to `minPlayers` anyway — `BaseGameService.startSession` uses `Math.max(botCount, needed)` when filling seats. A lower UI default misleads the host into thinking fewer bots will join than actually do. This works only if the lobby passes `minPlayers={MIN_PLAYERS}`; never hardcode or override the bot-count default per game.
+
+29. **Bot triggers come from exactly three paths**: session start, every completed action (`afterSessionStep`), and the watchdog's stale-session revival. NEVER add bot triggering to read paths — `findSessionByRoom` used to call `afterSessionStep`, so every spectator join / `games.session.request` spawned another sleeping bot chain; in AI-vs-AI rooms the duplicate chains piled up behind locks and turn pacing drifted (turns took longer and longer). If your bot must revive without an action, let the watchdog do it.
 
 ## When the user says "implement game X"
 

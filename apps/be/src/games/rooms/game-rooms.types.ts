@@ -26,6 +26,7 @@ export interface GameRoomSummary {
   createdAt: string;
   status: GameRoomStatus;
   inviteCode?: string;
+  notes?: string | null;
   gameOptions?: Record<string, unknown>;
   hasPassword?: boolean;
   rematchInvitedUsers?: GameRoomMemberSummary[];

@@ -8,10 +8,12 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import {
   GAME_ROOM_VISIBILITY_VALUES,
   type GameRoomVisibility,
 } from '../schemas/game-room.schema';
+import { sanitizeNotes } from '../utils/sanitize-notes';
 
 export class CreateGameRoomDto {
   @IsString()
@@ -35,6 +37,9 @@ export class CreateGameRoomDto {
   @IsOptional()
   @IsString()
   @MaxLength(500)
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? sanitizeNotes(value) : value,
+  )
   notes?: string;
 
   @IsOptional()

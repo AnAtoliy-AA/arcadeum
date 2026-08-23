@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { AiVsAiService } from './ai-vs-ai.service';
+import { AI_VS_AI_GAME_IDS } from '../common/ai-vs-ai';
 import type { GameRoomsMapper } from '../rooms/game-rooms.mapper';
 import type { GamesRealtimeService } from '../games.realtime.service';
 import type { Model } from 'mongoose';
@@ -90,6 +91,15 @@ function buildService() {
 }
 
 describe('AiVsAiService', () => {
+  it('can start every game listed in AI_VS_AI_GAME_IDS (no drift)', async () => {
+    const { service } = buildService();
+    for (const gameId of AI_VS_AI_GAME_IDS) {
+      await expect(
+        service.createAIvsAIRoom('user-1', { gameId }),
+      ).resolves.toBeDefined();
+    }
+  });
+
   it('rejects games outside the supported list', async () => {
     const { service } = buildService();
     await expect(

@@ -1,0 +1,148 @@
+@use '../../../../../app/styles/breakpoints' as bp;
+
+.card {
+  border: 1px solid var(--gc-line);
+  background: var(--gc-bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+@media (max-width: 720px) {
+  .card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px;
+    gap: 16px;
+  }
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gc-text);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.roomNumberBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255, 209, 102, 0.12);
+  border: 1px solid rgba(255, 209, 102, 0.35);
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gc-accent);
+}
+
+.themeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--gc-line);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gc-text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.themeBadge:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--gc-accent);
+}
+
+.themeDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  font-size: 13px;
+  color: var(--gc-text-dim);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.metaDot {
+  color: var(--gc-text-faint);
+}
+
+.desc {
+  font-size: 14px;
+  color: var(--gc-text-dim);
+  margin: 0;
+  line-height: 1.4;
+  max-width: 55ch;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 720px) {
+  .right {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.changeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gc-accent);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 209, 102, 0.25);
+  background: rgba(255, 209, 102, 0.06);
+  transition: all 0.15s ease;
+}
+
+.changeLink:hover {
+  background: rgba(255, 209, 102, 0.15);
+  border-color: rgba(255, 209, 102, 0.45);
+}

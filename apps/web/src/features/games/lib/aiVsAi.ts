@@ -1,3 +1,9 @@
+/**
+ * Turn-based games that support "Watch AI vs AI". Must stay in sync with
+ * `AI_VS_AI_GAME_IDS` / `AiVsAiService.startFns` on the BE
+ * (`apps/be/src/games/common/ai-vs-ai.ts`) — see the `/new-game` skill.
+ * Excluded: texas_holdem_v1 (no bot service), glimworm_v1 (real-time).
+ */
 export const AI_VS_AI_SUPPORTED_GAME_IDS = new Set([
   'chess_v1',
   'checkers_v1',

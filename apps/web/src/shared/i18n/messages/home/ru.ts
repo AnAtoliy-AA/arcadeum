@@ -6,7 +6,7 @@ export const ru = {
     'Большой выбор бесплатных настольных игр онлайн. Бросайте вызов умным ботам, создавайте игровые комнаты в реальном времени, приглашайте друзей, а {{appName}} возьмет на себя правила, подсчет очков и очередность ходов, чтобы вы могли сосредоточиться на веселье.',
   primaryCtaLabel: 'Начать',
   playWithBotsLabel: 'Игра против ИИ',
-  defaultRoomName: 'Игра {{name}}',
+  defaultRoomName: 'Игра {{name}} #{{number}}',
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Играть',
   supportCtaLabel: 'Поддержать разработчиков',

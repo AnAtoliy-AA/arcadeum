@@ -73,10 +73,19 @@ export abstract class BaseGameService<
     return this.watchdogInstance;
   }
 
+  /**
+   * Pure read: returns the active session for a room without side effects.
+   *
+   * This used to funnel through `afterSessionStep`, which meant EVERY session
+   * read (spectator joins via `games.room.watch`, client `games.session.request`
+   * refreshes, REST GETs) spawned another bot "sleep then act" chain. In AI-vs-AI
+   * rooms those duplicate chains piled up behind per-bot locks / room mutexes and
+   * turn pacing drifted as spectator traffic arrived. Bot turns are triggered by
+   * exactly three paths now: session start, every completed action
+   * (`afterSessionStep`), and the watchdog's stale-session revival.
+   */
   async findSessionByRoom(roomId: string): Promise<GameSessionSummary | null> {
-    const session = await this.sessionsService.findSessionByRoom(roomId);
-    if (!session) return null;
-    return this.afterSessionStep(session);
+    return this.sessionsService.findSessionByRoom(roomId);
   }
 
   async startSession(

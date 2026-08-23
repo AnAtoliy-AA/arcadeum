@@ -70,7 +70,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     const players: ChessPlayer[] = orderedIds.map((id, idx) => ({
       playerId: id,
       color: idx === 0 ? 'white' : ('black' as const),
-      isBot: false,
+      isBot: id.startsWith('bot-'),
     }));
     const opts =
       config && typeof config === 'object' && 'options' in config

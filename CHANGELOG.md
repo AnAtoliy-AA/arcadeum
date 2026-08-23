@@ -7,9 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.5] - 2026-08-23
+
+### Fixed
+
+- harden bots against duplicate triggers in AI-vs-AI (ARC-890) (ARC-890)
+- stop spawning bot chains from session reads (ARC-890) (ARC-890)
+
+### Refactored
+
+- make AiVsAiService starters the single source of truth (ARC-890) (ARC-890)
+
+### Documentation
+
+- require AI-vs-AI support in new-game skill, update roadmap (ARC-890) (ARC-890)
+
+## [1.26.4] - 2026-08-23
+
+### Refactored
+
+- use expo-router instead of direct react-navigation
+
+## [1.26.3] - 2026-08-23
+
+### Added
+
+- add incremental room counter to default name and UI (ARC-922) (ARC-922)
+- rework room create page with interactive theme preview and secure room notes (ARC-922) (ARC-922)
+
+### Fixed
+
+- sanitize notes using single-character angle bracket removal (ARC-922) (ARC-922)
+- resolve incomplete multi-character sanitization (ARC-922) (ARC-922)
+
 ## [1.26.2] - 2026-08-22
 
 ### Added
+
 - add all popular rule variants to lobby and update skill (ARC-885) (ARC-885)
 - add AI vs AI spectating support (ARC-885) (ARC-885)
 - add Long Nardy, Hypergammon, and Tavla rule variants (ARC-885) (ARC-885)
@@ -19,59 +53,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add backgammon (ARC-885) (ARC-885)
 
 ### Fixed
+
 - make BackgammonEngine dice roller optional for Nest DI (ARC-885) (ARC-885)
 - harden backgammon engine and bot (ARC-885) (ARC-885)
 - register BackgammonGateway in GamesGateway (ARC-885) (ARC-885)
 
 ### Documentation
-- update new-game skill for single-prompt autonomous execution (ARC-885) (ARC-885)
 
+- update new-game skill for single-prompt autonomous execution (ARC-885) (ARC-885)
 
 ## [1.26.1] - 2026-08-22
 
 ### Added
+
 - enhance gameplay shorts with kinetic badges, sfx audio, telegram approvals, and expanded games (ARC-892) (ARC-892)
 - read WEB_PORT from env with fallback to 3000 (ARC-892) (ARC-892)
 - add gameplay shorts pipeline, daily runner and branded outro (ARC-892) (ARC-892)
 
 ### Documentation
-- document shorts factory integration in new-game skill (ARC-892) (ARC-892)
 
+- document shorts factory integration in new-game skill (ARC-892) (ARC-892)
 
 ## [1.26.0] - 2026-08-21
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.25.65] - 2026-08-21
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.25.64] - 2026-08-21
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.25.63] - 2026-08-21
 
 ### Fixed
+
 - fix failing post-merge CI jobs
 - use correct Buffer modes for release posts to Facebook and Threads
-
 
 ## [1.25.62] - 2026-08-21
 
 ### Added
-- rework play vs ai modal with catalog previews and lazy loading (ARC-921) (ARC-921)
 
+- rework play vs ai modal with catalog previews and lazy loading (ARC-921) (ARC-921)
 
 ## [1.25.61] - 2026-08-21
 
 ### Added
+
 - make catalog cards full landing links, remove buttons, and fix preview clipping (ARC-920) (ARC-920)
 - align in-game board cells and ship hulls with real board artwork (ARC-920) (ARC-920)
 - elevate in-game board coordinates, vector marks, and card emblems (ARC-920) (ARC-920)
@@ -79,8 +116,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - modernize games catalog previews and in-game board visuals (ARC-920) (ARC-920)
 
 ### Fixed
-- add responsive container side padding to game landing layout (ARC-920) (ARC-920)
 
+- add responsive container side padding to game landing layout (ARC-920) (ARC-920)
 
 ## [1.25.60] - 2026-08-20
 

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.10] - 2026-08-23
+
+### Fixed
+- run anonymous verification unconditionally in optional guard
+- make anonymous-identity gates reject-only for CodeQL bypass rule
+- harden anonymous auth guard, SSRF barriers and URL checks
+
+
 ## [1.26.9] - 2026-08-23
 
 ### Fixed

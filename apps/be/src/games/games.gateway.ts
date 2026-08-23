@@ -49,6 +49,7 @@ import { CriticalActionsGateway } from './critical-actions.gateway';
 import { SeaBattleGateway } from './sea-battle.gateway';
 import { GlimwormGateway } from './glimworm.gateway';
 import { BackgammonGateway } from './backgammon.gateway';
+import { HeartsGateway } from './hearts.gateway';
 
 @WebSocketGateway({
   namespace: 'games',
@@ -77,6 +78,7 @@ export class GamesGateway {
     private readonly seaBattleHandler: SeaBattleGateway,
     private readonly glimwormHandler: GlimwormGateway,
     private readonly backgammonHandler: BackgammonGateway,
+    private readonly heartsHandler: HeartsGateway,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
@@ -93,6 +95,7 @@ export class GamesGateway {
       this.seaBattleHandler,
       this.glimwormHandler,
       this.backgammonHandler,
+      this.heartsHandler,
     ];
 
     const registry = new Map<string, GameMessageHandler['handlers'][string]>();

@@ -15,6 +15,7 @@ import type { CriticalService } from '../critical/critical.service';
 import type { BackgammonService } from '../backgammon/backgammon.service';
 import type { HeartsService } from '../hearts/hearts.service';
 import type { SpadesService } from '../spades/spades.service';
+import type { PachisiService } from '../pachisi/pachisi.service';
 import type { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 
 interface RoomArg {
@@ -57,6 +58,7 @@ function buildService() {
     backgammon: { startSession: jest.fn() } as unknown as BackgammonService,
     hearts: { startSession: jest.fn() } as unknown as HeartsService,
     spades: { startSession: jest.fn() } as unknown as SpadesService,
+    pachisi: { startSession: jest.fn() } as unknown as PachisiService,
   };
   const engineMetadata: Record<
     string,
@@ -89,6 +91,7 @@ function buildService() {
     services.backgammon,
     services.hearts,
     services.spades,
+    services.pachisi,
     engineRegistry,
   );
   return { service, gameRoomModel, gameRoomsMapper, realtimeService, services };

@@ -1,5 +1,19 @@
 import { appConfig } from '../../config/app-config';
 import type { DeepPartial } from '../base-types';
+import {
+  visionSettingsEn,
+  visionSettingsEs,
+  visionSettingsFr,
+  visionSettingsRu,
+  visionSettingsBy,
+} from './settings-vision';
+import {
+  languageSettingsEn,
+  languageSettingsEs,
+  languageSettingsFr,
+  languageSettingsRu,
+  languageSettingsBy,
+} from './settings-language';
 
 function withAppNamePlaceholder(value: string): string {
   const name = appConfig.appName;
@@ -26,6 +40,7 @@ export const en = {
   showRulesLabel: 'Show rules on room entry',
   showRulesDescription:
     'Automatically open the rules popup when you enter a game room or lobby.',
+  ...visionSettingsEn,
   appearanceTitle: 'Appearance',
   appearanceDescription:
     'Choose a theme to use across the {{appName}} web experience.',
@@ -70,13 +85,7 @@ export const en = {
   languageTitle: 'Language',
   languageDescription:
     'Interface translations are a work in progress. Save your preference for upcoming updates.',
-  languageOptionLabels: {
-    en: 'English',
-    es: 'Español',
-    fr: 'Français',
-    ru: 'Русский',
-    by: 'Беларуская',
-  },
+  ...languageSettingsEn,
   downloadsTitle: appConfig.downloads.title,
   downloadsDescription: withAppNamePlaceholder(appConfig.downloads.description),
   downloadsIosLabel: appConfig.downloads.iosLabel,
@@ -118,6 +127,7 @@ export const es = {
   showRulesLabel: 'Mostrar reglas al entrar a una sala',
   showRulesDescription:
     'Abrir automáticamente la ventana de reglas al entrar a una sala o lobby.',
+  ...visionSettingsEs,
   appearanceTitle: 'Apariencia',
   appearanceDescription:
     'Elige un tema para usar en toda la experiencia web de {{appName}}.',
@@ -166,13 +176,7 @@ export const es = {
   languageTitle: 'Idioma',
   languageDescription:
     'Las traducciones de la interfaz siguen en desarrollo. Guarda tu preferencia para las próximas actualizaciones.',
-  languageOptionLabels: {
-    en: 'Inglés',
-    es: 'Español',
-    fr: 'Francés',
-    ru: 'Русский',
-    by: 'Беларуская',
-  },
+  ...languageSettingsEs,
   downloadsTitle: 'Compilaciones móviles',
   downloadsDescription:
     'Descarga las últimas compilaciones de Expo para mantener los clientes móviles sincronizados con la versión web.',
@@ -216,6 +220,7 @@ export const fr = {
   showRulesLabel: 'Afficher les règles à l\u2019entrée',
   showRulesDescription:
     'Ouvrir automatiquement la fenêtre de règles lorsque vous entrez dans une salle ou un lobby.',
+  ...visionSettingsFr,
   appearanceTitle: 'Apparence',
   appearanceDescription:
     "Choisissez un thème à utiliser sur l'ensemble de l'expérience web de {{appName}}.",
@@ -264,13 +269,7 @@ export const fr = {
   languageTitle: 'Langue',
   languageDescription:
     "Les traductions de l'interface sont en cours. Enregistrez votre préférence pour les prochaines mises à jour.",
-  languageOptionLabels: {
-    en: 'Anglais',
-    es: 'Espagnol',
-    fr: 'Français',
-    ru: 'Русский',
-    by: 'Беларуская',
-  },
+  ...languageSettingsFr,
   downloadsTitle: 'Versions mobiles',
   downloadsDescription:
     'Récupérez les dernières versions Expo pour garder les applications mobiles synchronisées avec la version web.',
@@ -314,6 +313,7 @@ export const ru = {
   showRulesLabel: 'Показывать правила при входе в комнату',
   showRulesDescription:
     'Автоматически открывать окно с правилами при входе в комнату или лобби.',
+  ...visionSettingsRu,
   appearanceTitle: 'Внешний вид',
   appearanceDescription: 'Выберите тему оформления для веб-версии {{appName}}.',
   themeOptions: {
@@ -360,13 +360,7 @@ export const ru = {
   languageTitle: 'Язык',
   languageDescription:
     'Переводы интерфейса находятся в процессе разработки. Сохраните ваш выбор для будущих обновлений.',
-  languageOptionLabels: {
-    en: 'English',
-    es: 'Español',
-    fr: 'Français',
-    ru: 'Русский',
-    by: 'Беларуская',
-  },
+  ...languageSettingsRu,
   downloadsTitle: appConfig.downloads.title,
   downloadsDescription: withAppNamePlaceholder(appConfig.downloads.description),
   downloadsIosLabel: appConfig.downloads.iosLabel,
@@ -409,6 +403,7 @@ export const by = {
   showRulesLabel: 'Паказваць правілы пры ўваходзе ў пакой',
   showRulesDescription:
     'Аўтаматычна адкрываць акно з правіламі пры ўваходзе ў пакой або лобі.',
+  ...visionSettingsBy,
   appearanceTitle: 'Знешні выгляд',
   appearanceDescription: 'Выберыце тэму афармлення для вэб-версіі {{appName}}.',
   themeOptions: {
@@ -455,13 +450,7 @@ export const by = {
   languageTitle: 'Мова',
   languageDescription:
     'Пераклады інтэрфейсу знаходзяцца ў працэсе распрацоўкі. Захавайце ваш выбар для будучых абнаўленняў.',
-  languageOptionLabels: {
-    en: 'English',
-    es: 'Español',
-    fr: 'Français',
-    ru: 'Русский',
-    by: 'Беларуская',
-  },
+  ...languageSettingsBy,
   downloadsTitle: appConfig.downloads.title,
   downloadsDescription: withAppNamePlaceholder(appConfig.downloads.description),
   downloadsIosLabel: appConfig.downloads.iosLabel,

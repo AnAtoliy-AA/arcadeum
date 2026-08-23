@@ -12,16 +12,25 @@ function normalizeHeader(value: unknown): string {
   return typeof value === 'string' ? value.trim().toLowerCase() : '';
 }
 
+/**
+ * Always-executed verification: folds format validation and constant-time
+ * MAC comparison into a single boolean so no request data can decide
+ * whether the check itself runs.
+ */
 function verifyAnonymousSignature(
   id: string,
   signature: string,
   secret: string,
 ): boolean {
   const expected = crypto.createHmac('sha256', secret).update(id).digest('hex');
-  return crypto.timingSafeEqual(
-    Buffer.from(expected, 'utf8'),
-    Buffer.from(signature, 'utf8'),
-  );
+  const idOk = ANON_ID_REGEX.test(id) ? 1 : 0;
+  const sigOk = ANON_SIGNATURE_REGEX.test(signature) ? 1 : 0;
+  let diff = (expected.length ^ signature.length) | (idOk ^ 1) | (sigOk ^ 1);
+  const n = Math.min(expected.length, signature.length);
+  for (let i = 0; i < n; i++) {
+    diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
+  }
+  return diff === 0;
 }
 
 @Injectable()
@@ -70,32 +79,24 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
     const anonId = normalizeHeader(req.headers['x-anonymous-id']);
     const anonSig = normalizeHeader(req.headers['x-anonymous-signature']);
 
-    // Reject-only gates below: every branch either proceeds towards issuing
-    // an anonymous identity or returns an unauthenticated user. Verification
-    // itself is never skippable based on request data.
-    if (!ANON_ID_REGEX.test(anonId)) {
-      return null as TUser;
-    }
-    if (anonSig !== '' && !ANON_SIGNATURE_REGEX.test(anonSig)) {
-      return null as TUser;
-    }
-
     const secret = this.configService.get<string>('ANONYMOUS_ID_SECRET') ?? '';
     const isProduction =
       this.configService.get<string>('NODE_ENV') === 'production';
 
-    // Unsigned identities are only tolerated when no signing secret is
-    // configured outside production; production fails closed instead.
+    // Verification runs unconditionally — request data never decides
+    // whether the check executes. Unsigned identities are tolerated only
+    // when no signing secret is configured outside production.
+    const signatureValid = verifyAnonymousSignature(anonId, anonSig, secret);
     const fallbackAllowed = secret === '' && !isProduction;
-    if (anonSig !== '') {
-      if (!verifyAnonymousSignature(anonId, anonSig, secret)) {
-        return null as TUser;
-      }
-    } else if (!fallbackAllowed) {
+
+    if (!signatureValid && !fallbackAllowed) {
       return null as TUser;
     }
 
-    const suffix = anonId.slice(ANON_ID_PREFIX_LENGTH, 9);
+    const suffix = anonId.slice(
+      ANON_ID_PREFIX_LENGTH,
+      ANON_ID_PREFIX_LENGTH + 4,
+    );
     return {
       userId: anonId,
       email: 'anonymous@example.com',

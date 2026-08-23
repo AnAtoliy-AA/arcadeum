@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.4] - 2026-08-23
+
+### Refactored
+- use expo-router instead of direct react-navigation
+
+
 ## [1.26.3] - 2026-08-23
 
 ### Added

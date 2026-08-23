@@ -59,7 +59,7 @@ describe('GameRoomsService notes & security', () => {
     expect(ociRoomModel.create).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'Secure Room',
-        notes: 'alert("hack")Friendly matches only!',
+        notes: 'scriptalert("hack")/scriptFriendly matches only!',
       }),
     );
   });

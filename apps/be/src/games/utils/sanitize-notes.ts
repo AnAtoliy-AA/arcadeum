@@ -16,17 +16,15 @@ export function sanitizeNotes(input: unknown): string {
     }
   }
 
-  let sanitized = cleanChars.join('');
+  let sanitized = cleanChars.join('').replace(/[<>]/g, '');
 
   let previous: string;
   do {
     previous = sanitized;
-    sanitized = sanitized
-      .replace(/<[^<>]*>/g, '')
-      .replace(/(javascript|vbscript|data):/gi, '');
+    sanitized = sanitized.replace(/(javascript|vbscript|data):/gi, '');
   } while (sanitized !== previous);
 
-  sanitized = sanitized.replace(/[<>]/g, '').trim();
+  sanitized = sanitized.trim();
 
   if (sanitized.length > 500) {
     sanitized = sanitized.slice(0, 500);

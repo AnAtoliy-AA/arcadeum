@@ -4,20 +4,23 @@ import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import type { AuthenticatedUser } from './jwt.strategy';
 
-const SIGNATURE_HEX_LENGTH = 64;
+const ANON_ID_PREFIX_LENGTH = 5;
+const ANON_ID_REGEX = /^anon_[0-9a-f-]{4,64}$/;
+const ANON_SIGNATURE_REGEX = /^[0-9a-f]{64}$/;
+
+function normalizeHeader(value: unknown): string {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
 
 function verifyAnonymousSignature(
   id: string,
   signature: string,
   secret: string,
 ): boolean {
-  if (!secret || !signature) return false;
-  if (signature.length !== SIGNATURE_HEX_LENGTH) return false;
-  if (!/^[0-9a-fA-F]{64}$/.test(signature)) return false;
   const expected = crypto.createHmac('sha256', secret).update(id).digest('hex');
   return crypto.timingSafeEqual(
     Buffer.from(expected, 'utf8'),
-    Buffer.from(signature.toLowerCase(), 'utf8'),
+    Buffer.from(signature, 'utf8'),
   );
 }
 
@@ -45,7 +48,6 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
     status?: unknown,
   ): TUser {
     void info;
-    void context;
     void status;
 
     if (err) {
@@ -65,37 +67,41 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
     const req = context.switchToHttp().getRequest<{
       headers: Record<string, string | undefined>;
     }>();
-    const anonId = req.headers['x-anonymous-id'];
-    const anonSig = req.headers['x-anonymous-signature'];
+    const anonId = normalizeHeader(req.headers['x-anonymous-id']);
+    const anonSig = normalizeHeader(req.headers['x-anonymous-signature']);
 
-    if (
-      anonId &&
-      typeof anonId === 'string' &&
-      typeof anonSig === 'string' &&
-      anonId.startsWith('anon_')
-    ) {
-      const secret =
-        this.configService.get<string>('ANONYMOUS_ID_SECRET') ?? '';
-      const isProduction =
-        this.configService.get<string>('NODE_ENV') === 'production';
-
-      const signatureValid = verifyAnonymousSignature(anonId, anonSig, secret);
-      // Fail closed in production: an unsigned anonymous identity is only
-      // tolerated when no signing secret is configured outside production.
-      if (!signatureValid && (secret !== '' || isProduction)) {
-        return null as TUser;
-      }
-
-      const suffix = anonId.replace('anon_', '').slice(0, 4);
-      return {
-        userId: anonId,
-        email: 'anonymous@example.com',
-        username: `Anonymous #${suffix}`,
-        displayName: `Anonymous #${suffix}`,
-        role: 'user',
-      } as unknown as TUser;
+    // Reject-only gates below: every branch either proceeds towards issuing
+    // an anonymous identity or returns an unauthenticated user. Verification
+    // itself is never skippable based on request data.
+    if (!ANON_ID_REGEX.test(anonId)) {
+      return null as TUser;
+    }
+    if (anonSig !== '' && !ANON_SIGNATURE_REGEX.test(anonSig)) {
+      return null as TUser;
     }
 
-    return null as TUser;
+    const secret = this.configService.get<string>('ANONYMOUS_ID_SECRET') ?? '';
+    const isProduction =
+      this.configService.get<string>('NODE_ENV') === 'production';
+
+    // Unsigned identities are only tolerated when no signing secret is
+    // configured outside production; production fails closed instead.
+    const fallbackAllowed = secret === '' && !isProduction;
+    if (anonSig !== '') {
+      if (!verifyAnonymousSignature(anonId, anonSig, secret)) {
+        return null as TUser;
+      }
+    } else if (!fallbackAllowed) {
+      return null as TUser;
+    }
+
+    const suffix = anonId.slice(ANON_ID_PREFIX_LENGTH, 9);
+    return {
+      userId: anonId,
+      email: 'anonymous@example.com',
+      username: `Anonymous #${suffix}`,
+      displayName: `Anonymous #${suffix}`,
+      role: 'user',
+    } as unknown as TUser;
   }
 }

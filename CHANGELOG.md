@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.11] - 2026-08-23
+
+### Added
+- add go landing page, home card and create-page wiring (ARC-887)
+- add go web widget with shared theme support (ARC-887)
+- wire go service, MCTS bot and socket gateway (ARC-887)
+- add go engine with captures, ko rule and area scoring (ARC-887)
+
+### Fixed
+- offer forfeit via available actions and fix Go i18n interpolation (ARC-887)
+- bound Go bot compute and harden engine/landing review findings (ARC-887)
+- use crypto randomInt for go randomness (ARC-887)
+
+
 ## [1.26.10] - 2026-08-23
 
 ### Fixed

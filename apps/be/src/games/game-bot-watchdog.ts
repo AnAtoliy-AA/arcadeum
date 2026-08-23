@@ -4,7 +4,10 @@ import { GameSessionsService } from './sessions/game-sessions.service';
 import type { GameSessionSummary } from './sessions/game-sessions.service';
 
 const INTERVAL_MS = 10_000;
-const STALE_THRESHOLD_MS = 20_000;
+// Must stay above the longest legitimate quiet gap (5 s AI-vs-AI pause +
+// ~1 s processing) so the watchdog never double-fires a scheduled bot move,
+// while capping stuck-turn recovery at ~10–20 s.
+const STALE_THRESHOLD_MS = 10_000;
 const MAX_BACKOFF_MS = 300_000;
 const SESSION_LIMIT = 100;
 const READY_STATE = 1;

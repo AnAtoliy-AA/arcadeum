@@ -11,6 +11,7 @@ import type { CatDashMessages } from './cat-dash/index';
 import type { BackgammonMessages } from './backgammon/index';
 import type { HeartsMessages } from './hearts/index';
 import type { SpadesMessages } from './spades/index';
+import type { GoMessages } from './go/index';
 
 export type GamesMessagesBundle = SharedGamesMessages &
   CriticalGamesMessages &
@@ -24,4 +25,5 @@ export type GamesMessagesBundle = SharedGamesMessages &
   CatDashMessages &
   BackgammonMessages &
   HeartsMessages &
-  SpadesMessages;
+  SpadesMessages &
+  GoMessages;

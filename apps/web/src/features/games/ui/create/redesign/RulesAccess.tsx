@@ -88,6 +88,14 @@ const SpadesRulesModal = dynamic(
   { ssr: false },
 );
 
+const GoRulesModal = dynamic(
+  () =>
+    import('@/widgets/BoardGames/GoGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -167,6 +175,9 @@ export function RulesAccess({ gameId, themeId }: Props) {
       ) : null}
       {gameId === 'spades_v1' ? (
         <SpadesRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'go_v1' ? (
+        <GoRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

@@ -572,6 +572,43 @@ const GAMES = [
     },
   },
   {
+    name: 'go',
+    slug: 'go_v1',
+    url: '/en/games/go',
+    hookText: '⚫⚪ SURROUND & CONQUER!',
+    actionPhrases: ['⚫ STONE PLACED!', '⚪ GROUP CAPTURED!', '🏆 TERRITORY CONTROLLED!'],
+    captions: [
+      "The ancient game of Go — simple rules, infinite depth! ⚫⚪ Play free on arcadeum.games #go #baduk #boardgame #strategy",
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        '[data-testid="go-board"], [data-testid="game-board-section"]',
+        { timeout: 20000 },
+      );
+      await sleep(500);
+    },
+    async makeMove(page) {
+      const playable = page.locator(
+        '[data-testid^="go-cell-"]:not([disabled])',
+      );
+      if ((await playable.count()) > 0) {
+        // Pick a random empty intersection for varied shorts.
+        const count = await playable.count();
+        const index = Math.floor(Math.random() * Math.min(count, 40));
+        await playable.nth(index).click({ force: true });
+        return true;
+      }
+      return false;
+    },
+    async isMyTurn(page) {
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
+    },
+  },
+  {
     name: 'glimworm',
     slug: 'glimworm_v1',
     url: '/en/games/glimworm',

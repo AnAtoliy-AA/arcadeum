@@ -119,12 +119,15 @@ export const frMessages = {
     },
     status: {
       yourTurn: 'À vous de jouer',
-      playerTurn: 'Tour de {name}',
+      playerTurn: 'Tour de {{name}}',
       waiting: 'En attente…',
       gameOver: 'Partie terminée',
     },
     game: {
       pass: 'Passer',
+    },
+    board: {
+      ariaLabel: 'Plateau de Go ({{size}}×{{size}})',
     },
     gameOver: {
       won: 'Victoire ! Vous avez encerclé plus de territoire.',

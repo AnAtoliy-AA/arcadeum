@@ -176,7 +176,10 @@ export class GoEngine extends BaseGameEngine<GoState> {
     const player = state.players.find((p) => p.playerId === playerId);
     if (!player?.alive) return [];
     const currentId = state.playerOrder[state.currentTurnIndex];
-    return currentId === playerId ? [ACTION.PLACE_STONE, ACTION.PASS_TURN] : [];
+    // Resignation is legal at any time, not only on the mover's turn.
+    return currentId === playerId
+      ? [ACTION.PLACE_STONE, ACTION.PASS_TURN, ACTION.FORFEIT]
+      : [ACTION.FORFEIT];
   }
 
   private colorOf(state: GoState, userId: string): StoneColor | null {

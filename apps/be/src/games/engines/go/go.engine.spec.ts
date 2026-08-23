@@ -303,13 +303,16 @@ describe('GoEngine', () => {
   });
 
   describe('getAvailableActions / validateConfig', () => {
-    it('offers place+pass to the mover and nothing to the waiting player', () => {
+    it('offers place+pass+forfeit to the mover and forfeit to the waiting player', () => {
       const h = new Harness();
       expect(h.engine.getAvailableActions(h.state, h.black)).toEqual([
         'place_stone',
         'pass_turn',
+        'forfeit',
       ]);
-      expect(h.engine.getAvailableActions(h.state, h.white)).toEqual([]);
+      expect(h.engine.getAvailableActions(h.state, h.white)).toEqual([
+        'forfeit',
+      ]);
     });
 
     it('returns no actions once the game is over', () => {

@@ -119,12 +119,15 @@ export const enMessages = {
     },
     status: {
       yourTurn: 'Your turn',
-      playerTurn: "{name}'s turn",
+      playerTurn: "{{name}}'s turn",
       waiting: 'Waiting…',
       gameOver: 'Game over',
     },
     game: {
       pass: 'Pass',
+    },
+    board: {
+      ariaLabel: 'Go board ({{size}}×{{size}})',
     },
     gameOver: {
       won: 'Victory! You surrounded more territory.',

@@ -10,10 +10,7 @@ import {
   useGameRoomActions,
 } from '@/features/games/hooks';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type { GoGameProps } from '../types';
 import { useGoState } from '../hooks/useGoState';
 import { useGoActions } from '../hooks/useGoActions';
@@ -165,7 +162,9 @@ function GoGameImpl({
               lastMove={snapshot.lastMove}
               koPoint={snapshot.koPoint}
               myColor={myColor}
-              ariaLabel={`Go ${snapshot.boardSize}×${snapshot.boardSize} board`}
+              ariaLabel={t('games.go_v1.board.ariaLabel', {
+                size: snapshot.boardSize ?? snapshot.options.boardSize ?? 9,
+              })}
               onCellClick={placeStone}
             />
             {!isGameOver && myTurn ? (
@@ -199,10 +198,7 @@ function GoGameImpl({
         gameEnd={gameEnd}
         players={[]}
         currentUserId={currentUserId}
-        gameName={(() => {
-          const raw = t('games.names.go' as TranslationKey);
-          return raw && raw !== 'games.names.go' ? raw : 'Go';
-        })()}
+        gameName={t('games.go_v1.name')}
         theme={visualTheme}
         t={t}
       />

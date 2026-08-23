@@ -118,12 +118,15 @@ export const ruMessages = {
     },
     status: {
       yourTurn: 'Ваш ход',
-      playerTurn: 'Ход {name}',
+      playerTurn: 'Ход {{name}}',
       waiting: 'Ожидание…',
       gameOver: 'Игра окончена',
     },
     game: {
       pass: 'Пас',
+    },
+    board: {
+      ariaLabel: 'Доска для го ({{size}}×{{size}})',
     },
     gameOver: {
       won: 'Победа! Вы окружили больше территории.',

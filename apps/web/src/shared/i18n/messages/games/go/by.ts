@@ -118,12 +118,15 @@ export const byMessages = {
     },
     status: {
       yourTurn: 'Ваш ход',
-      playerTurn: 'Ход {name}',
+      playerTurn: 'Ход {{name}}',
       waiting: 'Чаканне…',
       gameOver: 'Гульня скончана',
     },
     game: {
       pass: 'Пас',
+    },
+    board: {
+      ariaLabel: 'Дошка для го ({{size}}×{{size}})',
     },
     gameOver: {
       won: 'Перамога! Вы акружылі большую тэрыторыю.',

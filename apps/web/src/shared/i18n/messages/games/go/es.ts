@@ -122,12 +122,15 @@ export const esMessages = {
     },
     status: {
       yourTurn: 'Tu turno',
-      playerTurn: 'Turno de {name}',
+      playerTurn: 'Turno de {{name}}',
       waiting: 'Esperando…',
       gameOver: 'Partida terminada',
     },
     game: {
       pass: 'Pasar',
+    },
+    board: {
+      ariaLabel: 'Tablero de Go ({{size}}×{{size}})',
     },
     gameOver: {
       won: '¡Victoria! Has rodeado más territorio.',

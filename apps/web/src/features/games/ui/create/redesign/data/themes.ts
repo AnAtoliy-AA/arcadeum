@@ -9,7 +9,8 @@ export type GameId =
   | 'cat_dash_v1'
   | 'backgammon_v1'
   | 'hearts_v1'
-  | 'spades_v1';
+  | 'spades_v1'
+  | 'pachisi_v1';
 
 export interface GameMeta {
   id: GameId;
@@ -157,6 +158,18 @@ export const GAMES: Record<GameId, GameMeta> = {
     hasThemes: true,
     rules: ['idle', 'spectators'],
   },
+  pachisi_v1: {
+    id: 'pachisi_v1',
+    title: 'Pachisi',
+    desc: 'Classic cross-and-circle race for 2–4 players — roll a six, capture rivals, race home.',
+    players: { min: 2, max: 4, label: '2–4' },
+    duration: '15 min',
+    kind: 'Board · race',
+    category: 'Board Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
 };
 
 export const VISIBLE_GAMES: GameId[] = [
@@ -171,6 +184,7 @@ export const VISIBLE_GAMES: GameId[] = [
   'backgammon_v1',
   'hearts_v1',
   'spades_v1',
+  'pachisi_v1',
 ];
 
 export function getGamesByCategory(): Array<{
@@ -347,6 +361,11 @@ import {
   findSpadesTheme,
   type SpadesThemeMeta,
 } from './spades-themes';
+import {
+  PACHISI_THEMES,
+  findPachisiTheme,
+  type PachisiThemeMeta,
+} from './pachisi-themes';
 export { TIC_TAC_TOE_THEMES, findTicTacToeTheme, type TicTacToeThemeMeta };
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
@@ -354,6 +373,7 @@ export { CAT_DASH_THEMES, findCatDashTheme, type CatDashThemeMeta };
 export { BACKGAMMON_THEMES, findBackgammonTheme, type BackgammonThemeMeta };
 export { HEARTS_THEMES, findHeartsTheme, type HeartsThemeMeta };
 export { SPADES_THEMES, findSpadesTheme, type SpadesThemeMeta };
+export { PACHISI_THEMES, findPachisiTheme, type PachisiThemeMeta };
 
 export interface GlimwormThemeMeta {
   id: string;
@@ -383,6 +403,7 @@ export function themesFor(gameId: GameId) {
   if (gameId === 'glimworm_v1') return GLIMWORM_THEMES;
   if (gameId === 'hearts_v1') return HEARTS_THEMES;
   if (gameId === 'spades_v1') return SPADES_THEMES;
+  if (gameId === 'pachisi_v1') return PACHISI_THEMES;
   return [];
 }
 export function findCriticalTheme(id: string | undefined): CriticalTheme {

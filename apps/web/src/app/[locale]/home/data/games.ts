@@ -51,6 +51,7 @@ import { CAT_DASH_VARIANTS } from '@/widgets/ActionGames/CatDashGame/lib/constan
 import { BACKGAMMON_VARIANTS } from '@/widgets/BoardGames/BackgammonGame/lib/constants';
 import { HEARTS_VARIANTS } from '@/widgets/CardGames/HeartsGame/lib/constants';
 import { SPADES_VARIANTS } from '@/widgets/CardGames/SpadesGame/lib/constants';
+import { PACHISI_VARIANTS } from '@/widgets/BoardGames/PachisiGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -289,6 +290,27 @@ export const featuredGames: FeaturedGame[] = [
     variants: SPADES_VARIANTS.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
+    })),
+  },
+  {
+    id: 'pachisi_v1',
+    nameKey: 'games.pachisi_v1.name' as TranslationKey,
+    descriptionKey: 'games.pachisi_v1.description' as TranslationKey,
+    accentColor: '#f59e0b',
+    genre: 'Board',
+    pace: 'Casual',
+    category: 'Board Game',
+    players: '2–4',
+    duration: '15 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/pachisi',
+    type: 'board',
+    rulesPrefix: 'games.pachisi_v1.rules',
+    rulesKeys: ['objective', 'movement', 'capture', 'sixes'],
+    variants: PACHISI_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.nameKey as TranslationKey,
     })),
   },
 ];

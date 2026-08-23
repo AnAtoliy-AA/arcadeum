@@ -41,6 +41,7 @@ const URL_TO_GAME_ID: Record<string, GameId> = {
   backgammon_v1: 'backgammon_v1',
   hearts_v1: 'hearts_v1',
   spades_v1: 'spades_v1',
+  pachisi_v1: 'pachisi_v1',
 };
 
 function parseInitialGameId(raw: string | null | undefined): GameId {
@@ -125,6 +126,10 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
     options = {
       nilEnabled: true,
       targetScore: 500,
+    };
+  } else if (form.gameId === 'pachisi_v1') {
+    options = {
+      ruleVariant: 'standard',
     };
   } else {
     options = {};

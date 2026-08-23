@@ -88,6 +88,14 @@ const SpadesRulesModal = dynamic(
   { ssr: false },
 );
 
+const PachisiRulesModal = dynamic(
+  () =>
+    import('@/widgets/BoardGames/PachisiGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -167,6 +175,9 @@ export function RulesAccess({ gameId, themeId }: Props) {
       ) : null}
       {gameId === 'spades_v1' ? (
         <SpadesRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'pachisi_v1' ? (
+        <PachisiRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

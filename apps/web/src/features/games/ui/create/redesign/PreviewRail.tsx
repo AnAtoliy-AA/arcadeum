@@ -9,6 +9,7 @@ import type { CreateRoomForm } from './data/form';
 interface SummaryLabels {
   livePreview: string;
   defaultRoomName: string;
+  roomName?: string;
   game: string;
   theme: string;
   maxPlayers: string;
@@ -76,6 +77,7 @@ export function PreviewRail({
 }: Props) {
   const game = GAMES[form.gameId];
   const tName = themeName(form);
+  const displayTitle = form.roomName.trim() || labels.defaultRoomName;
 
   return (
     <aside
@@ -83,6 +85,16 @@ export function PreviewRail({
       aria-label={labels.livePreview}
       data-testid="preview-rail"
     >
+      <div className={s.railHeader}>
+        <span className={s.railHeaderTag}>
+          <span className={s.railArtDot} aria-hidden="true" />
+          {labels.livePreview}
+        </span>
+        <h3 className={s.railHeaderTitle} data-testid="preview-room-title">
+          {displayTitle}
+        </h3>
+      </div>
+
       <div className={s.railArtContainer}>
         <RailPreviewArt
           gameId={form.gameId}
@@ -92,6 +104,10 @@ export function PreviewRail({
       </div>
 
       <div className={s.railSummary}>
+        <div className={s.railRow}>
+          <span className={s.railRowLabel}>{labels.roomName ?? 'Room'}</span>
+          <span className={s.railRowValue}>{displayTitle}</span>
+        </div>
         <div className={s.railRow}>
           <span className={s.railRowLabel}>{labels.game}</span>
           <span className={s.railRowValue}>{game.title}</span>

@@ -137,13 +137,41 @@ export function GameCreateView() {
   const urlVariant =
     searchParams?.get('theme') ?? searchParams?.get('variant') ?? undefined;
 
+  const [hostRoomNumber, setHostRoomNumber] = useState<number>(1);
+
+  useEffect(() => {
+    let cancelled = false;
+    gamesApi
+      .getMyRoomCount({ token: snapshot.accessToken || undefined })
+      .then((res) => {
+        if (!cancelled && res?.nextRoomNumber) {
+          setHostRoomNumber(res.nextRoomNumber);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [snapshot.accessToken]);
+
   const defaultRoomName = useMemo(() => {
     const playerName = snapshot.displayName || snapshot.username || 'Anonymous';
-    const template = messages.home?.defaultRoomName ?? "{{name}}'s game";
-    return (
-      formatMessage(template, { name: playerName }) ?? `${playerName}'s game`
-    );
-  }, [snapshot.displayName, snapshot.username, messages.home?.defaultRoomName]);
+    const template =
+      messages.home?.defaultRoomName ?? "{{name}}'s game #{{number}}";
+    const formatted = formatMessage(template, {
+      name: playerName,
+      number: hostRoomNumber,
+    });
+    if (formatted && formatted.includes('#')) {
+      return formatted;
+    }
+    return `${formatted || `${playerName}'s game`} #${hostRoomNumber}`;
+  }, [
+    snapshot.displayName,
+    snapshot.username,
+    hostRoomNumber,
+    messages.home?.defaultRoomName,
+  ]);
 
   const [form, setForm] = useState<CreateRoomForm>(() =>
     initialForm(urlGameId, urlVariant),
@@ -327,6 +355,7 @@ export function GameCreateView() {
                 <SelectedGameCard
                   gameId={form.gameId}
                   themeId={form.themeId}
+                  roomNumber={hostRoomNumber}
                   labels={{ changeGame: L.changeGame }}
                   onCycleTheme={handleCycleTheme}
                 />

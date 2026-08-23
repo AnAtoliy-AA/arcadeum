@@ -68,6 +68,10 @@ export class GamesService {
     return room;
   }
 
+  async countHostRooms(userId: string) {
+    return this.roomsService.countHostRooms(userId);
+  }
+
   async quickplay(
     userId: string,
     gameId: string,

@@ -14,6 +14,7 @@ import s from './SelectedGameCard.module.scss';
 interface Props {
   gameId: GameId;
   themeId: string;
+  roomNumber?: number;
   labels: {
     changeGame: string;
   };
@@ -35,6 +36,7 @@ function resolveThemeName(gameId: GameId, themeId: string): string | null {
 export function SelectedGameCard({
   gameId,
   themeId,
+  roomNumber,
   labels,
   onCycleTheme,
 }: Props) {
@@ -47,6 +49,11 @@ export function SelectedGameCard({
       <div className={s.left}>
         <div className={s.titleRow}>
           <h2 className={s.title}>{game.title}</h2>
+          {roomNumber ? (
+            <span className={s.roomNumberBadge} data-testid="room-number-badge">
+              #{roomNumber}
+            </span>
+          ) : null}
           {themeName ? (
             onCycleTheme ? (
               <button

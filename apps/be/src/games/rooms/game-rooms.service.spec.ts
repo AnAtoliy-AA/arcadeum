@@ -80,4 +80,16 @@ describe('GameRoomsService notes & security', () => {
       }),
     );
   });
+
+  it('counts host rooms correctly', async () => {
+    ociRoomModel.countDocuments = jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(4),
+    });
+
+    const count = await service.countHostRooms('user-1');
+    expect(count).toBe(4);
+    expect(ociRoomModel.countDocuments).toHaveBeenCalledWith({
+      hostId: 'user-1',
+    });
+  });
 });

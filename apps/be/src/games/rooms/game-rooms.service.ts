@@ -119,6 +119,10 @@ export class GameRoomsService {
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
 
+  async countHostRooms(userId: string): Promise<number> {
+    return this.ociRoomModel.countDocuments({ hostId: userId }).exec();
+  }
+
   async listRooms(
     filters: ListRoomsFilters = {},
     viewerId?: string,

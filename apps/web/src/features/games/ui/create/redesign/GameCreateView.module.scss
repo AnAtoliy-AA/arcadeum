@@ -1207,8 +1207,39 @@
   }
 }
 
+.railHeader {
+  padding: 16px 20px 14px;
+  background: var(--gc-bg-card-2);
+  border-bottom: 1px solid var(--gc-line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.railHeaderTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gc-text-dim);
+}
+
+.railHeaderTitle {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gc-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
 .railArtContainer {
-  padding: 24px 16px 20px;
+  padding: 20px 16px 16px;
   background: var(--gc-bg-card-2);
   display: flex;
   align-items: center;

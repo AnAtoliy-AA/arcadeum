@@ -10,6 +10,10 @@ test.describe('Game Room Creation', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
 
+    await page.route('**/games/my-room-count', async (route) => {
+      await handleRoute(route, { count: 0, nextRoomNumber: 1 });
+    });
+
     await page.route('**/games/*', async (route) => {
       if (route.request().resourceType() === 'document') {
         return route.continue();
@@ -74,7 +78,10 @@ test.describe('Game Room Creation', () => {
     );
     await expect(page.getByTestId('room-name-input').first()).toBeVisible();
     await expect(page.getByTestId('room-name-input').first()).toHaveValue(
-      /game/i,
+      /game #\d+/i,
+    );
+    await expect(page.getByTestId('preview-room-title').first()).toContainText(
+      /game #\d+/i,
     );
     await expect(page).toHaveURL(/theme=/);
   });

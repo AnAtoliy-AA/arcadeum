@@ -61,6 +61,19 @@ export class GamesController {
   }
 
   @UseGuards(JwtOptionalAuthGuard)
+  @Get('my-room-count')
+  async getMyRoomCount(
+    @Req() req: Request,
+  ): Promise<{ count: number; nextRoomNumber: number }> {
+    const user = req.user as AuthenticatedUser | undefined | null;
+    if (!user?.userId) {
+      return { count: 0, nextRoomNumber: 1 };
+    }
+    const count = await this.gamesService.countHostRooms(user.userId);
+    return { count, nextRoomNumber: count + 1 };
+  }
+
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms')
   async createRoom(
     @Req() req: Request,

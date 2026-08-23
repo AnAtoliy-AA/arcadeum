@@ -46,6 +46,20 @@
   letter-spacing: -0.02em;
 }
 
+.roomNumberBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255, 209, 102, 0.12);
+  border: 1px solid rgba(255, 209, 102, 0.35);
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gc-accent);
+}
+
 .themeBadge {
   display: inline-flex;
   align-items: center;

@@ -1,13 +1,25 @@
+import { randomInt as secureRandomInt } from 'node:crypto';
 import type { Cell, StoneColor } from './go.constants';
 import type { BoardScores, Point } from './go.types';
 
-export type Board = Cell[][];
+export { secureRandomInt };
 
 export function createEmptyBoard(size: number): Board {
   return Array.from({ length: size }, () =>
     Array.from({ length: size }, () => null as Cell),
   );
 }
+
+/** In-place Fisher–Yates shuffle backed by a CSPRNG. */
+export function shuffleInPlace<T>(items: T[]): T[] {
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = secureRandomInt(i + 1);
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+  return items;
+}
+
+export type Board = Cell[][];
 
 export function opponentOf(color: StoneColor): StoneColor {
   return color === 'black' ? 'white' : 'black';

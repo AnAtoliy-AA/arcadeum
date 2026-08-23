@@ -20,7 +20,7 @@ import type {
   InitializeConfig,
   PlaceStonePayload,
 } from './go.types';
-import { applyMove, scoreBoard } from './go.utils';
+import { applyMove, scoreBoard, shuffleInPlace } from './go.utils';
 import {
   isKnownAction,
   validatePassTurn,
@@ -68,7 +68,7 @@ export class GoEngine extends BaseGameEngine<GoState> {
     };
 
     // Black moves first in Go — fairness comes from randomly assigning colors.
-    const orderedPlayerIds = [...playerIds].sort(() => Math.random() - 0.5);
+    const orderedPlayerIds = shuffleInPlace([...playerIds]);
     const players: GoPlayer[] = orderedPlayerIds.map((id, idx) => ({
       playerId: id,
       color: idx === 0 ? 'black' : 'white',

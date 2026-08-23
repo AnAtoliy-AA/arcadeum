@@ -8,6 +8,8 @@ import {
   isTrueEye,
   opponentOf,
   scoreBoard,
+  secureRandomInt,
+  shuffleInPlace,
 } from '../engines/go/go.utils';
 
 export const MCTS_SIMULATIONS: Record<'hard' | 'expert', number> = {
@@ -131,7 +133,7 @@ export function scoreHeuristic(
     score -= 12;
   }
 
-  return score + Math.random() * 2;
+  return score + secureRandomInt(200) / 100;
 }
 
 /** Greedy one-ply heuristic — used for `medium`. */
@@ -225,7 +227,7 @@ function playout(position: PlayoutPosition, rootColor: StoneColor): number {
     // Light playout policy: prefer captures, otherwise uniform random.
     const move =
       moves.find((m) => hasCaptureAt(current, current.toMove, m)) ??
-      moves[Math.floor(Math.random() * moves.length)];
+      moves[secureRandomInt(moves.length)];
     const outcome = applyMove(
       current.board,
       current.toMove,
@@ -309,7 +311,7 @@ export function pickMctsMove(
     move: null,
     parent: null,
     children: [],
-    untriedMoves: [...rootMoves].sort(() => Math.random() - 0.5),
+    untriedMoves: shuffleInPlace([...rootMoves]),
     wins: 0,
     visits: 0,
   };
@@ -389,7 +391,7 @@ export function pickStrategyMove(
       ),
     );
     if (capture) return capture;
-    return playable[Math.floor(Math.random() * playable.length)];
+    return playable[secureRandomInt(playable.length)];
   }
 
   if (difficulty === 'medium') {

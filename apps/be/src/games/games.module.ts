@@ -90,6 +90,9 @@ import { HeartsGateway } from './hearts.gateway';
 import { SpadesService } from './spades/spades.service';
 import { SpadesBotService } from './spades/spades-bot.service';
 import { SpadesGateway } from './spades.gateway';
+import { PachisiService } from './pachisi/pachisi.service';
+import { PachisiBotService } from './pachisi/pachisi-bot.service';
+import { PachisiGateway } from './pachisi.gateway';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { RankingModule } from '../ranking/ranking.module';
@@ -210,6 +213,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Spades
     SpadesService,
     SpadesBotService,
+    // Pachisi
+    PachisiService,
+    PachisiBotService,
     // AI vs AI
     AiVsAiService,
     // Utilities
@@ -238,6 +244,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Hearts (gateway registered as provider, not exported)
     HeartsGateway,
     SpadesGateway,
+    PachisiGateway,
   ],
   exports: [GameHistoryStatsService, GameRoomsMatchmakingService],
 })

@@ -35,12 +35,12 @@
 | 2H. Post-Game Analysis | ARC-882 | `ARC-882-post-game-analysis` | **Implemented** |
 | 2I. Coach Mode         | ARC-883 | `ARC-883-coach-mode`         | **Implemented** |
 | 3A. Hearts/Spades      | ARC-884 | `ARC-884-hearts-spades`      | Not started     |
-| 3B. Backgammon         | ARC-885 | `ARC-885-backgammon`         | Not started     |
+| 3B. Backgammon         | ARC-885 | `ARC-885-backgammon`         | **Implemented** |
 | 3C. Pachisi            | ARC-886 | `ARC-886-pachisi`            | Not started     |
 | 3D. Go                 | ARC-887 | `ARC-887-go`                 | Not started     |
 | 3F. Game Replays       | ARC-888 | `ARC-888-game-replays`       | Not started     |
 | 3G. Spectator Mode     | ARC-889 | `ARC-889-spectator-mode`     | **Implemented** |
-| 3H. AI-vs-AI           | ARC-890 | `ARC-890-ai-vs-ai`           | Not started     |
+| 3H. AI-vs-AI           | ARC-890 | `ARC-890-ai-vs-ai`           | **Implemented** |
 | 3I. Clans              | ARC-891 | `ARC-891-clans`              | Not started     |
 | 3J. Game Nights        | ARC-892 | `ARC-892-game-nights`        | Not started     |
 | 4A. Chess Clock        | ARC-893 | `ARC-893-chess-clock`        | **Implemented** |
@@ -978,6 +978,6 @@ The platform's core infrastructure is highly mature. Phase 1 is fully complete, 
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I).
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Backgammon (3B), AI-vs-AI Spectator Rooms (3H), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I).
 - **Next Priorities (Growth & Marketing)**: Run the Week 0 audit, instrument PostHog/Plausible tracking (funnel split by Solo vs. Social), update homepage CTAs to prominently feature AI/Solo play, build out dedicated SEO landing pages for Chess and remaining games, and deploy the dynamic QR code/share sheet invite upgrades.
-- **Next Engineering Priorities**: Hearts/Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), AI-vs-AI (3H), Clans (3I), Game Nights (3J).
+- **Next Engineering Priorities**: Hearts/Spades (3A — Hearts PR open, Spades pending), Pachisi (3C), Go (3D), Game Replays (3F), Clans (3I), Game Nights (3J).

@@ -14,7 +14,7 @@ import {
 import type { GameSessionSummary } from '../../sessions/game-sessions.service';
 import { ChessService } from '../../chess/chess.service';
 import type { AiDifficulty } from '../../ai-difficulty';
-import { getAiMoveDelayMs } from '../../common/ai-vs-ai';
+import { getAiMoveDelayMs, isAiVsAiSession } from '../../common/ai-vs-ai';
 
 const INFINITY = 999999;
 const TT_SIZE = 1 << 20;
@@ -106,7 +106,7 @@ export class ChessBotService {
     if (!state) return;
 
     const hasHuman = state.players.some((p) => !p.isBot);
-    if (!hasHuman) {
+    if (!hasHuman && !isAiVsAiSession(session)) {
       this.logger.log(
         `No humans in room ${session.roomId} — completing session`,
       );

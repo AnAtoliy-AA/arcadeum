@@ -5,6 +5,7 @@ import { CriticalCard } from './critical.constants';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
 import type { AiDifficulty } from '../ai-difficulty';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
+import { BotTurnLock } from '../common/bot-turn-lock';
 
 const DIFFICULTY_CONFIG: Record<
   AiDifficulty,
@@ -19,6 +20,7 @@ const DIFFICULTY_CONFIG: Record<
 @Injectable()
 export class CriticalBotService {
   private readonly logger = new Logger(CriticalBotService.name);
+  private readonly turnLock = new BotTurnLock();
 
   constructor(
     @Inject(forwardRef(() => CriticalService))
@@ -51,7 +53,9 @@ export class CriticalBotService {
       if (state.pendingFavor) {
         const { targetId } = state.pendingFavor;
         if (this.isBot(targetId)) {
-          await this.handlePendingFavor(session, targetId);
+          await this.withTurnLock(session.roomId, targetId, () =>
+            this.handlePendingFavor(session, targetId),
+          );
         }
         return;
       }
@@ -61,7 +65,9 @@ export class CriticalBotService {
         // Usually pendingDefuse is boolean or specific object, but the player who drew is currentTurnPlayer
         const currentPlayerId = state.playerOrder[state.currentTurnIndex];
         if (this.isBot(currentPlayerId)) {
-          await this.handlePendingDefuse(session, currentPlayerId);
+          await this.withTurnLock(session.roomId, currentPlayerId, () =>
+            this.handlePendingDefuse(session, currentPlayerId),
+          );
         }
         return;
       }
@@ -70,7 +76,9 @@ export class CriticalBotService {
       if (state.pendingAlter) {
         const { playerId } = state.pendingAlter;
         if (this.isBot(playerId)) {
-          await this.handlePendingAlter(session, playerId);
+          await this.withTurnLock(session.roomId, playerId, () =>
+            this.handlePendingAlter(session, playerId),
+          );
         }
         return;
       }
@@ -82,9 +90,31 @@ export class CriticalBotService {
       }
 
       // It is bot's turn to play
-      await this.playTurn(session, currentPlayerId);
+      await this.withTurnLock(session.roomId, currentPlayerId, () =>
+        this.playTurn(session, currentPlayerId),
+      );
     } catch (error) {
       this.logger.error(`Bot failed to play: ${error}`);
+    }
+  }
+
+  /**
+   * Single-flight guard around one bot turn. Triggers arrive from every
+   * completed action AND (before the read path was fixed) session reads —
+   * without the lock each trigger slept for its full delay and then raced
+   * duplicates into the engine.
+   */
+  private async withTurnLock(
+    roomId: string,
+    botId: string,
+    turn: () => Promise<void>,
+  ): Promise<void> {
+    const lockKey = `${roomId}:${botId}`;
+    if (!this.turnLock.tryAcquire(lockKey)) return;
+    try {
+      await turn();
+    } finally {
+      this.turnLock.release(lockKey);
     }
   }
 

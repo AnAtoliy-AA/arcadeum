@@ -103,5 +103,28 @@ describe('ChessBotService', () => {
       });
       expect(fn).not.toHaveBeenCalled();
     });
+
+    it('should keep playing bot-only sessions in AI-vs-AI mode', async () => {
+      const fn = jest.fn().mockResolvedValue({});
+      bot.setMoveFn(fn);
+      const state = engine.initializeState(['bot-1', 'bot-2']);
+      // Sparse board keeps the expert search instant.
+      state.board = Array.from({ length: 8 }, () => Array<null>(8).fill(null));
+      state.board[7][4] = { type: 'king', color: 'white' }; // e1
+      state.board[0][4] = { type: 'king', color: 'black' }; // e8
+      state.botDifficulty = 'easy';
+      await bot.checkAndPlay({
+        id: 'session-1',
+        roomId: 'room-1',
+        gameId: 'chess_v1',
+        engine: 'chess_v1',
+        status: 'active',
+        state: state,
+        options: { aiVsAi: true, aiMoveDelayMs: 5 },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      expect(fn).toHaveBeenCalledTimes(1);
+    });
   });
 });

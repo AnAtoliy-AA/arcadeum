@@ -74,6 +74,10 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,
   },
+  goLanding: {
+    title: `Go · Jeu de Plateau Multijoueur en Ligne Gratuit · ${APP}`,
+    description: `Jouez au Go en ligne sur ${APP} — Baduk/Weiqi classique sur plateaux 9×9, 13×13 et 19×19 avec captures, règle du ko, comptage par aire et IA. Salons instantanés gratuits.`,
+  },
   settings: {
     title: `Paramètres · ${APP}`,
     description: `Personnalisez votre expérience ${APP} — apparence, thème, langue et préférences de téléchargement.`,

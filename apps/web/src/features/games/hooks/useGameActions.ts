@@ -15,6 +15,7 @@ export type GameType =
   | 'backgammon_v1'
   | 'hearts_v1'
   | 'spades_v1'
+  | 'go_v1'
   | 'pachisi_v1'
   | null;
 

@@ -90,6 +90,9 @@ import { HeartsGateway } from './hearts.gateway';
 import { SpadesService } from './spades/spades.service';
 import { SpadesBotService } from './spades/spades-bot.service';
 import { SpadesGateway } from './spades.gateway';
+import { GoService } from './go/go.service';
+import { GoBotService } from './go/go-bot.service';
+import { GoGateway } from './go.gateway';
 import { PachisiService } from './pachisi/pachisi.service';
 import { PachisiBotService } from './pachisi/pachisi-bot.service';
 import { PachisiGateway } from './pachisi.gateway';
@@ -213,6 +216,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Spades
     SpadesService,
     SpadesBotService,
+    // Go
+    GoService,
+    GoBotService,
     // Pachisi
     PachisiService,
     PachisiBotService,
@@ -244,6 +250,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Hearts (gateway registered as provider, not exported)
     HeartsGateway,
     SpadesGateway,
+    GoGateway,
     PachisiGateway,
   ],
   exports: [GameHistoryStatsService, GameRoomsMatchmakingService],

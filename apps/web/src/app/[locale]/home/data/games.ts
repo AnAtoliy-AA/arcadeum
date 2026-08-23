@@ -51,6 +51,7 @@ import { CAT_DASH_VARIANTS } from '@/widgets/ActionGames/CatDashGame/lib/constan
 import { BACKGAMMON_VARIANTS } from '@/widgets/BoardGames/BackgammonGame/lib/constants';
 import { HEARTS_VARIANTS } from '@/widgets/CardGames/HeartsGame/lib/constants';
 import { SPADES_VARIANTS } from '@/widgets/CardGames/SpadesGame/lib/constants';
+import { GO_VARIANTS } from '@/widgets/BoardGames/GoGame/lib/constants';
 import { PACHISI_VARIANTS } from '@/widgets/BoardGames/PachisiGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
@@ -288,6 +289,33 @@ export const featuredGames: FeaturedGame[] = [
     rulesPrefix: 'games.spades_v1.rules',
     rulesKeys: ['objective', 'setup', 'bidding', 'gameplay', 'scoring'],
     variants: SPADES_VARIANTS.map((v) => ({
+      id: v.id,
+      nameKey: v.name as TranslationKey,
+    })),
+  },
+  {
+    id: 'go_v1',
+    nameKey: 'games.go_v1.name' as TranslationKey,
+    descriptionKey: 'games.go_v1.description' as TranslationKey,
+    accentColor: '#7c3aed',
+    genre: 'Board',
+    pace: 'Strategy',
+    category: 'Board Game',
+    players: '2',
+    duration: '10–40 min',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/go',
+    type: 'board',
+    rulesPrefix: 'games.go_v1.rules',
+    rulesKeys: [
+      'objectiveTitle',
+      'captureTitle',
+      'koTitle',
+      'passTitle',
+      'scoringTitle',
+    ],
+    variants: GO_VARIANTS.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),

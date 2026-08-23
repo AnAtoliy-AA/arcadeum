@@ -68,6 +68,7 @@ describe('GamesGateway game handler registration', () => {
       inert as never,
       heartsHandler,
       spadesHandler,
+      inert as never,
     );
 
     type ConnectionHandler = (socket: Socket) => void;

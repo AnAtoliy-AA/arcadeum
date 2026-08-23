@@ -24,6 +24,7 @@ const GAME_LOADERS: Record<string, GameLoader> = {
   backgammon: () => import('./backgammon/index'),
   hearts: () => import('./hearts/index'),
   spades: () => import('./spades/index'),
+  go: () => import('./go/index'),
   pachisi: () => import('./pachisi/index'),
 };
 

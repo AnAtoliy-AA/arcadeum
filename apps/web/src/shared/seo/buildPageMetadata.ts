@@ -48,6 +48,7 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   pachisiLanding: (r) => r.pachisiLanding,
   heartsLanding: (r) => r.heartsLanding,
   spadesLanding: (r) => r.spadesLanding,
+  goLanding: (r) => r.goLanding,
   settings: (r) => r.settings,
   history: (r) => r.history,
   stats: (r) => r.stats,

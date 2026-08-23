@@ -10,20 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.26.10] - 2026-08-23
 
 ### Fixed
+
 - run anonymous verification unconditionally in optional guard
 - make anonymous-identity gates reject-only for CodeQL bypass rule
 - harden anonymous auth guard, SSRF barriers and URL checks
 
-
 ## [1.26.9] - 2026-08-23
 
 ### Fixed
-- patch vulnerable transitive dependencies
 
+- patch vulnerable transitive dependencies
 
 ## [1.26.8] - 2026-08-23
 
 ### Added
+
 - wire pachisi into registries, home, create page, and landing (ARC-886)
 - add PachisiGame web widget (ARC-886)
 - add pachisi i18n messages for en, es, fr, ru, by (ARC-886)
@@ -31,18 +32,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add pachisi engine, service, bot, and gateway (ARC-886)
 
 ### Fixed
+
 - route pachisi landing and board labels through i18n, validate options (ARC-886)
 - make track tokens clickable and award all players on forfeit (ARC-886)
-
 
 ## [1.26.7] - 2026-08-23
 
 ### Added
+
 - add spades card game (ARC-884)
 - support AI vs AI for hearts (ARC-884) (ARC-884)
 - add Hearts card game (ARC-884) (ARC-884)
 
 ### Fixed
+
 - harden hearts after PR review (ARC-884) (ARC-884)
 - address hearts code-review findings (ARC-884) (ARC-884)
 - wire HeartsGateway into central event dispatcher (ARC-884) (ARC-884)
@@ -51,18 +54,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - address hearts PR review findings (ARC-884) (ARC-884)
 
 ### Improved
-- halve bot-stall recovery via watchdog threshold (ARC-884) (ARC-884)
 
+- halve bot-stall recovery via watchdog threshold (ARC-884) (ARC-884)
 
 ## [1.26.6] - 2026-08-23
 
 ### Added
+
 - add accessibility section with vision mode selector (ARC-896)
 - add color-vision transforms and vision-mode setting (ARC-896)
 
 ### Documentation
-- mark colorblind modes as PR open (ARC-896) (ARC-896)
 
+- mark colorblind modes as PR open (ARC-896) (ARC-896)
 
 ## [1.26.5] - 2026-08-23
 

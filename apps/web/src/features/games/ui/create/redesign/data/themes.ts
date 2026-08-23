@@ -10,6 +10,7 @@ export type GameId =
   | 'backgammon_v1'
   | 'hearts_v1'
   | 'spades_v1'
+  | 'go_v1'
   | 'pachisi_v1';
 
 export interface GameMeta {
@@ -158,6 +159,18 @@ export const GAMES: Record<GameId, GameMeta> = {
     hasThemes: true,
     rules: ['idle', 'spectators'],
   },
+  go_v1: {
+    id: 'go_v1',
+    title: 'Go',
+    desc: 'Classic Go on 9×9–19×19 boards — surround territory, capture groups, and beat the MCTS bot.',
+    players: { min: 2, max: 2, label: '2' },
+    duration: '10–40 min',
+    kind: 'Board · territory',
+    category: 'Board Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
   pachisi_v1: {
     id: 'pachisi_v1',
     title: 'Pachisi',
@@ -184,6 +197,7 @@ export const VISIBLE_GAMES: GameId[] = [
   'backgammon_v1',
   'hearts_v1',
   'spades_v1',
+  'go_v1',
   'pachisi_v1',
 ];
 
@@ -361,6 +375,7 @@ import {
   findSpadesTheme,
   type SpadesThemeMeta,
 } from './spades-themes';
+import { GO_THEMES, findGoTheme, type GoThemeMeta } from './go-themes';
 import {
   PACHISI_THEMES,
   findPachisiTheme,
@@ -373,6 +388,7 @@ export { CAT_DASH_THEMES, findCatDashTheme, type CatDashThemeMeta };
 export { BACKGAMMON_THEMES, findBackgammonTheme, type BackgammonThemeMeta };
 export { HEARTS_THEMES, findHeartsTheme, type HeartsThemeMeta };
 export { SPADES_THEMES, findSpadesTheme, type SpadesThemeMeta };
+export { GO_THEMES, findGoTheme, type GoThemeMeta };
 export { PACHISI_THEMES, findPachisiTheme, type PachisiThemeMeta };
 
 export interface GlimwormThemeMeta {
@@ -403,6 +419,7 @@ export function themesFor(gameId: GameId) {
   if (gameId === 'glimworm_v1') return GLIMWORM_THEMES;
   if (gameId === 'hearts_v1') return HEARTS_THEMES;
   if (gameId === 'spades_v1') return SPADES_THEMES;
+  if (gameId === 'go_v1') return GO_THEMES;
   if (gameId === 'pachisi_v1') return PACHISI_THEMES;
   return [];
 }

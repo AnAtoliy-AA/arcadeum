@@ -11,6 +11,7 @@ import { ChessBoardPoster } from './art/ChessBoardPoster';
 import { CheckersBoardPoster } from './art/CheckersBoardPoster';
 import { CatDashBoardPoster } from './art/CatDashBoardPoster';
 import { BackgammonBoardPoster } from './art/BackgammonBoardPoster';
+import { GoBoardPoster } from './art/GoBoardPoster';
 import { PachisiBoardPoster } from './art/PachisiBoardPoster';
 import {
   CRITICAL_THEMES,
@@ -22,6 +23,7 @@ import {
   BACKGAMMON_THEMES,
   PACHISI_THEMES,
   GLIMWORM_THEMES,
+  GO_THEMES,
   type CriticalTheme,
   type SeaBattleThemeMeta,
   type TicTacToeThemeMeta,
@@ -31,6 +33,7 @@ import {
   type BackgammonThemeMeta,
   type PachisiThemeMeta,
   type GlimwormThemeMeta,
+  type GoThemeMeta,
   type GameId,
 } from './data/themes';
 import {
@@ -230,6 +233,19 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
     );
   }
 
+  if (gameId === 'go_v1') {
+    return (
+      <ThemeCardGroup
+        ariaLabel="Go theme"
+        onChange={onChange}
+        renderThumbnail={(t) => <GoThumbnail theme={t} />}
+        testId="theme-picker-go"
+        themes={GO_THEMES}
+        value={value}
+      />
+    );
+  }
+
   if (gameId === 'pachisi_v1') {
     return (
       <ThemeCardGroup
@@ -248,6 +264,10 @@ export function ThemePicker({ gameId, value, onChange }: Props) {
 
 function BackgammonThumbnail({ theme }: { theme: BackgammonThemeMeta }) {
   return <BackgammonBoardPoster size="sm" theme={theme} />;
+}
+
+function GoThumbnail({ theme }: { theme: GoThemeMeta }) {
+  return <GoBoardPoster size="sm" theme={theme} />;
 }
 
 function PachisiThumbnail({ theme }: { theme: PachisiThemeMeta }) {

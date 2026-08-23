@@ -29,3 +29,63 @@ describe('loadGames - Backgammon', () => {
     expect(ruleVariants.standard.description).toBeTruthy();
   });
 });
+
+describe('loadGames - Go', () => {
+  const locales: Locale[] = ['en', 'es', 'fr', 'ru', 'by'];
+
+  it.each(locales)('loads all go_v1 keys for %s', async (locale) => {
+    const bundle = await loadGames(locale);
+    expect(bundle).toHaveProperty('go_v1');
+    const go = bundle.go_v1 as Record<string, unknown>;
+    for (const key of [
+      'name',
+      'description',
+      'landing',
+      'lobby',
+      'status',
+      'game',
+      'gameOver',
+      'rules',
+    ]) {
+      expect(go).toHaveProperty(key);
+    }
+    const lobby = go.lobby as Record<string, unknown>;
+    expect(lobby).toHaveProperty('boardSize');
+    expect(lobby).toHaveProperty('startWithBots');
+    const rules = go.rules as Record<string, unknown>;
+    expect(rules).toHaveProperty('ko');
+    expect(rules).toHaveProperty('scoring');
+
+    const landing = go.landing as Record<string, unknown>;
+    const sections = landing.sections as Record<string, string>;
+    for (const key of [
+      'faqTitle',
+      'faqKicker',
+      'rulesTitle',
+      'rulesKicker',
+      'themesKicker',
+      'highlightsTitle',
+      'highlightsKicker',
+      'howToPlayTitle',
+      'howToPlayKicker',
+      'howToPlayIntro',
+      'relatedTitle',
+      'relatedKicker',
+      'finalCtaTitle',
+      'finalCtaSubtitle',
+      'backToGames',
+      'heroEyebrow',
+      'heroIntro',
+      'heroCategory',
+      'playersBadge',
+      'durationBadge',
+      'difficultyBadge',
+      'chipTerritory',
+      'chipKoRule',
+      'chipAreaScoring',
+      'chipAiBots',
+    ]) {
+      expect(sections[key]).toBeTruthy();
+    }
+  });
+});

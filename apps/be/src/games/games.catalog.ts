@@ -323,6 +323,39 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
     ],
   },
   {
+    gameId: 'go_v1',
+    startMode: 'immediate',
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: [],
+    variants: [...SHARED_VISUAL_THEMES],
+    rules: [
+      {
+        ruleId: 'captures',
+        label: 'Captures',
+        description:
+          'Groups with no remaining liberties are removed from the board.',
+      },
+      {
+        ruleId: 'ko',
+        label: 'Ko rule',
+        description:
+          'Immediate single-stone recapture that recreates the previous position is forbidden.',
+      },
+      {
+        ruleId: 'area_scoring',
+        label: 'Area scoring',
+        description:
+          'Chinese scoring: stones plus surrounded territory, with komi for white.',
+      },
+      {
+        ruleId: 'spectators',
+        label: 'Allow spectators',
+        description:
+          'Other users can watch the match in real time without joining.',
+      },
+    ],
+  },
+  {
     gameId: 'pachisi_v1',
     startMode: 'immediate',
     themes: [...SHARED_VISUAL_THEMES],

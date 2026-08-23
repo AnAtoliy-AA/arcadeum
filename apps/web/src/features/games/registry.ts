@@ -18,6 +18,7 @@ export const gameLoaders: Record<
   backgammon_v1: () => import('@/widgets/BoardGames/BackgammonGame'),
   hearts_v1: () => import('@/widgets/CardGames/HeartsGame'),
   spades_v1: () => import('@/widgets/CardGames/SpadesGame'),
+  go_v1: () => import('@/widgets/BoardGames/GoGame'),
   pachisi_v1: () => import('@/widgets/BoardGames/PachisiGame'),
   // Add more games as they are implemented
 } as const;
@@ -279,6 +280,25 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     supportsAI: true,
     tags: ['cards', 'trick-taking', 'partnership', 'bidding', 'classic'],
     implementationPath: '@/widgets/CardGames/SpadesGame',
+    lastUpdated: '2026-08-23',
+    status: 'beta',
+  },
+  go_v1: {
+    slug: 'go_v1',
+    name: 'Go',
+    description:
+      'Classic Go on 9×9, 13×13 and 19×19 boards — captures, ko rule, area scoring, and AI opponents',
+    category: 'Board Game',
+    minPlayers: 2,
+    maxPlayers: 2,
+    estimatedDuration: 25,
+    complexity: 5,
+    ageRating: 'G',
+    thumbnail: '/games/go.jpg',
+    version: '1.0.0',
+    supportsAI: true,
+    tags: ['go', 'baduk', 'weiqi', 'board', 'classic', 'strategy'],
+    implementationPath: '@/widgets/BoardGames/GoGame',
     lastUpdated: '2026-08-23',
     status: 'beta',
   },

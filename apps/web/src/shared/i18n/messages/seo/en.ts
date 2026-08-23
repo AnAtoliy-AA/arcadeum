@@ -72,6 +72,10 @@ export const en = {
     title: `Spades · Free Online Multiplayer Card Game · ${APP}`,
     description: `Play Spades online on ${APP} — classic 4-player partnership trick-taking card game with bidding, nil bids, bags, and AI opponents. Free, instant rooms.`,
   },
+  goLanding: {
+    title: `Go · Free Online Multiplayer Board Game · ${APP}`,
+    description: `Play Go online on ${APP} — classic Baduk/Weiqi on 9×9, 13×13 and 19×19 boards with captures, ko rule, area scoring, and AI opponents. Free, instant rooms.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

@@ -91,6 +91,7 @@ export const buildRoutes = (locale: Locale) => {
     shopInventory: `/${locale}/${s('shop')}/inventory`,
     leaderboards: `/${locale}/${s('leaderboards')}`,
     friends: `/${locale}/${s('friends')}`,
+    clans: `/${locale}/${s('clans')}`,
     developers: `/${locale}/${s('developers')}`,
 
     // System (locale-free)

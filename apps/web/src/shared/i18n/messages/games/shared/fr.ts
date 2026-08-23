@@ -40,6 +40,19 @@ export const frMessages = {
     error: 'Impossible de démarrer — réessayez',
     delayLabel: 'Délai entre coups',
   },
+  tutorial: {
+    ui: {
+      button: 'Tutoriel',
+      next: 'Suivant',
+      back: 'Retour',
+      skip: 'Passer',
+      finish: 'Commencer à jouer',
+      stepOf: 'Étape {{current}} sur {{total}}',
+      completeTitle: 'Tutoriel terminé !',
+      completeBody:
+        'Bravo — vous connaissez maintenant les bases de {{game}}. Bonne chance à la table !',
+    },
+  },
   rooms: {
     status: {
       lobby: "Salon d'attente",

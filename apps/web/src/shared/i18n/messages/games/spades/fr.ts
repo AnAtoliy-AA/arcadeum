@@ -169,6 +169,24 @@ export const frMessages = {
         clubs: 'Trèfles',
       },
     },
+    tutorial: {
+      s1: {
+        title: 'D’abord l’annonce',
+        body: 'Avant de jouer, annoncez le nombre de plis que vous pensez gagner. Votre équipe marque 10 × son annonce combinée si elle la tient.',
+      },
+      s2: {
+        title: 'Les piques sont atouts',
+        body: 'Suivez la couleur si possible ; sinon, toute carte passe. Les piques ne peuvent sortir avant d’être « cassées » — mais ensuite elles battent tout.',
+      },
+      s3: {
+        title: 'Nil est un pari',
+        body: 'Annoncez Nil pour viser zéro pli à ±100 points — défaussez vos piques tôt et esquivez tous les plis.',
+      },
+      s4: {
+        title: 'Les sacs mordent',
+        body: 'Chaque pli en trop est un sac : dix sacs coûtent 100 points. La première équipe au score cible gagne.',
+      },
+    },
     rules: {
       title: 'Règles du Pique',
       objectiveTitle: 'Objectif',

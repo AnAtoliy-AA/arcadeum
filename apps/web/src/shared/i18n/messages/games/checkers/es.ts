@@ -108,6 +108,24 @@ export const esMessages = {
         },
       },
     },
+    tutorial: {
+      s1: {
+        title: 'Carrera a dama',
+        body: 'Mueve tus fichas en diagonal hacia adelante una casilla cada vez. Llega al lado contrario para coronar una dama que se mueve en ambas direcciones.',
+      },
+      s2: {
+        title: 'Salta para capturar',
+        body: 'Salta sobre una pieza enemiga adyacente para capturarla. Las capturas son obligatorias y las cadenas de saltos deben completarse hasta el final.',
+      },
+      s3: {
+        title: 'Gana por eliminación',
+        body: 'Captura todas las piezas enemigas o deja a tu rival sin movimientos legales para llevarte la victoria.',
+      },
+      s4: {
+        title: 'Herramientas de mesa',
+        body: 'Activa el sonido y la música, entra en pantalla completa, consulta el libro de Reglas o invita amigos desde este panel.',
+      },
+    },
     rules: {
       title: 'Reglas de Damas',
       headers: {

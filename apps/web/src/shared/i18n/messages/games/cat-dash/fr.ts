@@ -106,6 +106,24 @@ export const frMessages = {
       waitingForPlayers: 'En attente de joueurs…',
       minPlayers: 'Minimum 2 joueurs',
     },
+    tutorial: {
+      s1: {
+        title: 'Lancez et foncez',
+        body: 'À votre tour, appuyez sur Lancer le Dé pour bondir en avant. Le premier chat à atteindre la case 20 gagne la course.',
+      },
+      s2: {
+        title: 'Attention à la piste',
+        body: 'Les obstacles rouges sautent votre prochain tour, les bonus jaunes offrent un lancer supplémentaire et les fourches bleues proposent des raccourcis risqués.',
+      },
+      s3: {
+        title: 'Dépensez vos jetons à bon escient',
+        body: 'Chaque chat possède deux capacités uniques — dépensez vos trois jetons de pouvoir au moment parfait.',
+      },
+      s4: {
+        title: 'Photo finish',
+        body: 'Franchissez la ligne d’arrivée en premier, puis revanchez-vous ou célébrez dans le chat.',
+      },
+    },
     rules: {
       title: 'Règles de Cat Dash',
       objective:

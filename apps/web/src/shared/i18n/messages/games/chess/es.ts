@@ -89,6 +89,24 @@ export const esMessages = {
       medium: 'Medio',
       hard: 'Difícil',
     },
+    tutorial: {
+      s1: {
+        title: 'Da mate al rey',
+        body: 'Mueve tus piezas por el tablero de 8×8 para atacar al rey enemigo. Atrápalo para que no pueda escapar y gana por jaque mate.',
+      },
+      s2: {
+        title: 'Mover piezas',
+        body: 'Haz clic en una de tus piezas para resaltar sus casillas legales y luego en un destino. Se admiten enroque, captura al paso y coronación.',
+      },
+      s3: {
+        title: 'Vigila el reloj',
+        body: 'Tu reloj cuenta atrás en tu turno — quedarte sin tiempo pierde la partida. El sonido, la música y compartir están en este panel.',
+      },
+      s4: {
+        title: 'Ayuda cuando la necesites',
+        body: 'Abre el libro de Reglas cuando quieras repasar, usa las pistas donde estén disponibles y chatea con tu rival mientras juegas.',
+      },
+    },
     rules: {
       title: 'Reglas del Ajedrez',
       objective: 'Objetivo',

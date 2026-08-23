@@ -103,6 +103,24 @@ export const esMessages = {
       waitingForPlayers: 'Esperando jugadores…',
       minPlayers: 'Mínimo 2 jugadores',
     },
+    tutorial: {
+      s1: {
+        title: 'Tira y corre',
+        body: 'En tu turno pulsa Tirar Dado para avanzar. El primer gato que llegue a la casilla 20 gana la carrera.',
+      },
+      s2: {
+        title: 'Cuidado con la pista',
+        body: 'Los obstáculos rojos te quitan el próximo turno, las bonificaciones amarillas dan otra tirada y las horquillas azules ofrecen atajos arriesgados.',
+      },
+      s3: {
+        title: 'Gasta fichas con cabeza',
+        body: 'Cada gato tiene dos habilidades únicas — gasta tus tres fichas de poder en el momento justo.',
+      },
+      s4: {
+        title: 'Final de foto',
+        body: 'Cruza primero la línea de meta y luego pide revancha o celebra en el chat.',
+      },
+    },
     rules: {
       title: 'Reglas de Cat Dash',
       objective: 'Sé el primer gato en llegar a la meta (espacio 20).',

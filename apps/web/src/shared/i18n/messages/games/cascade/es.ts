@@ -211,6 +211,24 @@ export const esMessages = {
       callCascadeSelf: '¡Cascade! — sálvate',
       backToGames: '← Juegos',
     },
+    tutorial: {
+      s1: {
+        title: 'Vacía tu mano',
+        body: 'Iguala la carta superior del descarte por color o número, o suelta un Comodín para cambiar las cosas. Gana quien primero se queda sin cartas.',
+      },
+      s2: {
+        title: 'Cartas de acción',
+        body: 'Skip congela al siguiente jugador, Reverse cambia la dirección, Draw-Two reparte penalizaciones y los Comodines te dejan elegir color.',
+      },
+      s3: {
+        title: 'Acumula penalizaciones',
+        body: 'Pasa un Draw-Two con otro Draw-Two o apila un Wild +4 — si rechazas, pagas el precio completo.',
+      },
+      s4: {
+        title: '¿Sin jugada? Roba',
+        body: '¿No puedes jugar nada? Roba una carta del mazo. Este panel tiene sonido, música, pantalla completa y las Reglas.',
+      },
+    },
     rules: {
       title: 'Reglas',
       objective:

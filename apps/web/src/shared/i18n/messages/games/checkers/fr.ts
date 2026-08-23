@@ -111,6 +111,24 @@ export const frMessages = {
         },
       },
     },
+    tutorial: {
+      s1: {
+        title: 'Course à la promotion',
+        body: 'Avancez vos pions en diagonale, une case à la fois. Atteignez le camp opposé pour couronner un roi qui joue dans les deux sens.',
+      },
+      s2: {
+        title: 'Sautez pour capturer',
+        body: 'Sautez par-dessus une pièce adverse adjacente pour la capturer. Les captures sont obligatoires et les rafales doivent aller jusqu’au bout.',
+      },
+      s3: {
+        title: 'Gagnez par élimination',
+        body: 'Capturez toutes les pièces adverses ou laissez votre rival sans coup légal pour remporter la victoire.',
+      },
+      s4: {
+        title: 'Outils de table',
+        body: 'Activez son et musique, passez en plein écran, consultez le livre des Règles ou invitez des amis depuis ce panneau.',
+      },
+    },
     rules: {
       title: 'Règles des Dames',
       headers: {

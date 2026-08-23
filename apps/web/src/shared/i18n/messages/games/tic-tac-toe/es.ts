@@ -99,6 +99,24 @@ export const esMessages = {
       winCondition: 'Condición de victoria',
       inARow: '{{n}} en línea',
     },
+    tutorial: {
+      s1: {
+        title: 'Reclama tus casillas',
+        body: 'Por turnos, marca casillas vacías. En tableros pequeños ganan tres en raya; los más grandes piden líneas más largas.',
+      },
+      s2: {
+        title: 'Ojo con la longitud de victoria',
+        body: '3×3 necesita 3 en raya, 5×5 necesita 4, y 7×7 o 9×9 necesitan 5 — horizontal, vertical o diagonal.',
+      },
+      s3: {
+        title: 'Modo infinito',
+        body: 'En los tableros Infinito la cuadrícula se expande cuando alguien juega cerca del borde — nunca hay empates.',
+      },
+      s4: {
+        title: 'Habla de estrategia',
+        body: 'Usa el chat de mesa para bromear, lanza emotes rápidos para reaccionar y abre el libro de Reglas para repasar.',
+      },
+    },
     rules: {
       title: 'Reglas',
       objective:

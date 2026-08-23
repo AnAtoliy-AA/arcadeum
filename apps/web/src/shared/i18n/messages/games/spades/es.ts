@@ -169,6 +169,24 @@ export const esMessages = {
         clubs: 'Tréboles',
       },
     },
+    tutorial: {
+      s1: {
+        title: 'Primero la puja',
+        body: 'Antes de jugar, puja cuántas bazas crees ganar. Tu pareja suma 10 × su puja combinada si la cumple.',
+      },
+      s2: {
+        title: 'Picas son triunfo',
+        body: 'Sirve palo si puedes; si estás vacío, vale cualquier carta. Las picas no pueden salir hasta romperse — pero cuando lo hacen, ganan a todo.',
+      },
+      s3: {
+        title: 'Nil es una apuesta',
+        body: 'Puja Nil para perseguir cero bazas por ±100 puntos — suelta tus picas pronto y escapa de todas las bazas.',
+      },
+      s4: {
+        title: 'Las bolsas cobran',
+        body: 'Cada baza extra es una bolsa: junta diez y pierdes 100 puntos. El primer equipo en alcanzar la puntuación objetivo gana.',
+      },
+    },
     rules: {
       title: 'Reglas de Espadas',
       objectiveTitle: 'Objetivo',

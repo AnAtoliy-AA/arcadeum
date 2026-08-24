@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.24] - 2026-08-24
+
+### Added
+- add real preview art for hearts, spades, go, and pachisi (ARC-923) (ARC-923)
+
+### Documentation
+- update new-game skill checklist and gotchas for catalog preview art (ARC-923) (ARC-923)
+
+
 ## [1.26.23] - 2026-08-24
 
 ### Fixed

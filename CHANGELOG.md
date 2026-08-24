@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.15] - 2026-08-24
+
+### Added
+- implement game replays (ARC-888) (ARC-888)
+
+### Fixed
+- use i18n error message in replay client catch block (ARC-888)
+- sanitize replay query inputs against NoSQL injection (ARC-888) (ARC-888)
+
+
 ## [1.26.14] - 2026-08-24
 
 ### Added

@@ -151,6 +151,8 @@ export const enMessages = {
       waitingForOpponentRoll: 'Waiting for opponent to roll...',
       waitingForOpponentMove: 'Waiting for opponent to move...',
       barCount: 'Bar',
+      barZone: 'Bar zone',
+      bearOffZone: 'Bear off zone',
       offCount: 'Borne Off',
       pipCount: 'Pips',
       movesRemaining: 'moves left',

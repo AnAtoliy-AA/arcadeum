@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import { usePachisiTheme } from '../lib/PachisiThemeContext';
 import {
   LANE_COORDS,
@@ -135,7 +136,7 @@ export function PachisiBoard({
           aria-label={t('games.pachisi_v1.game.moveTokenAria', {
             id: placed.token.id,
           })}
-          className="absolute animate-bounce rounded-full border-2 shadow-md ring-2 ring-white/90 transition-transform hover:scale-110"
+          className={`absolute animate-bounce rounded-full border-2 shadow-md ring-2 ring-white/90 transition-transform hover:scale-110 ${BOARD_CELL_FOCUS_CLASS}`}
           onClick={() => onMove(placed.token.id)}
           style={style}
           type="button"
@@ -279,7 +280,7 @@ export function PachisiBoard({
                           aria-label={t('games.pachisi_v1.game.moveTokenAria', {
                             id: tok.id,
                           })}
-                          className="aspect-square w-[62%] animate-bounce cursor-pointer rounded-full border shadow-md ring-2 ring-white/90 transition-transform hover:scale-110"
+                          className={`aspect-square w-[62%] animate-bounce cursor-pointer rounded-full border shadow-md ring-2 ring-white/90 transition-transform hover:scale-110 ${BOARD_CELL_FOCUS_CLASS}`}
                           data-testid={`yard-token-${seat}-${slot}`}
                           onClick={() => onMove(tok.id)}
                           style={{
@@ -380,7 +381,7 @@ export function PachisiBoard({
                       aria-label={t('games.pachisi_v1.game.moveTokenAria', {
                         id: occupant.id,
                       })}
-                      className="absolute inset-0 flex animate-bounce items-center justify-center"
+                      className={`absolute inset-0 flex animate-bounce items-center justify-center rounded-md ${BOARD_CELL_FOCUS_CLASS}`}
                       data-testid={`lane-token-${seat}-${laneIdx}`}
                       onClick={() => onMove(occupant.id)}
                       type="button"

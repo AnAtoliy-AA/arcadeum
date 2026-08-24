@@ -35,6 +35,7 @@ interface ChessBoardPanelProps {
   resolveName: (id: string) => string;
   t: TranslateFn;
   onSquareClick: (file: File, rank: Rank) => void;
+  onDeselectSquare: () => void;
   onPieceDrop: (
     fromFile: File,
     fromRank: Rank,
@@ -62,6 +63,7 @@ function ChessBoardPanelImpl({
   resolveName,
   t,
   onSquareClick,
+  onDeselectSquare,
   onPieceDrop,
   onOfferDraw,
   onResign,
@@ -207,6 +209,7 @@ function ChessBoardPanelImpl({
                 : t('games.chess_v1.status.black'),
           })}
           onSquareClick={onSquareClick}
+          onDeselectSquare={onDeselectSquare}
           onPieceDrop={onPieceDrop}
         />
       </div>

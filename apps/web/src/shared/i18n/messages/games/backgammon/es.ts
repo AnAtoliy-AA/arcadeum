@@ -153,6 +153,8 @@ export const esMessages = {
       waitingForOpponentRoll: 'Esperando que el rival tire los dados...',
       waitingForOpponentMove: 'Esperando que el rival mueva...',
       barCount: 'Barra',
+      barZone: 'Zona de barra',
+      bearOffZone: 'Zona de retirada',
       offCount: 'Fuera',
       pipCount: 'Pips',
       movesRemaining: 'movimientos restantes',

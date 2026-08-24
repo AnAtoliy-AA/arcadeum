@@ -60,6 +60,8 @@ export interface BoardKeyboardNavigationOptions {
   cols: number;
   disabled?: boolean;
   onActivate?: (coords: BoardCellCoords) => void;
+  /** Called when the user presses Escape while a cell is focused (deselect). */
+  onDeselect?: () => void;
 }
 
 const CELL_DATA_ATTR = 'data-board-cell';
@@ -71,9 +73,9 @@ function makeCellKey(row: number, col: number): string {
 /**
  * Adds keyboard navigation to a board grid: arrow keys move between cells,
  * Home/End jump to the first/last column, Enter/Space activate the focused
- * cell. A single cell carries `tabIndex={0}` (roving tabindex); the rest are
- * `-1`. Cells must expose `data-board-cell="row:col"` so focus can be moved
- * programmatically.
+ * cell, Escape invokes `onDeselect` (e.g. to unselect a piece). A single cell
+ * carries `tabIndex={0}` (roving tabindex); the rest are `-1`. Cells must
+ * expose `data-board-cell="row:col"` so focus can be moved programmatically.
  *
  * Spread `gridProps` onto the grid container and `getCellProps(row, col)`
  * onto each cell.
@@ -83,6 +85,7 @@ export function useBoardKeyboardNavigation({
   cols,
   disabled = false,
   onActivate,
+  onDeselect,
 }: BoardKeyboardNavigationOptions) {
   const gridRef = useRef<HTMLDivElement | null>(null);
   const [focused, setFocused] = useState<BoardCellCoords | null>(null);
@@ -139,11 +142,17 @@ export function useBoardKeyboardNavigation({
             onActivate?.(focused);
           }
           break;
+        case 'Escape':
+          if (focused && onDeselect) {
+            event.preventDefault();
+            onDeselect();
+          }
+          break;
         default:
           break;
       }
     },
-    [disabled, focused, focusCell, cols, onActivate],
+    [disabled, focused, focusCell, cols, onActivate, onDeselect],
   );
 
   const gridProps = {

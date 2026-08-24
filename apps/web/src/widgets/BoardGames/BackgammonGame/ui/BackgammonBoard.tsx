@@ -1,11 +1,24 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useBoardKeyboardNavigation,
+} from '@/shared/lib/a11y';
+import {
+  BOARD_CELL_FOCUS_CLASS,
+  isActivationKey,
+} from '@/shared/lib/keyboard-navigation';
 import { useBackgammonTheme } from '../lib/BackgammonThemeContext';
 import { BackgammonPoint } from './BackgammonPoint';
 import { BackgammonDice } from './BackgammonDice';
 import type { BackgammonClientState, MoveCheckerPayload } from '../types';
+
+/** Point index for a keyboard-nav grid position (top row: 12–23, bottom: 11–0). */
+function pointAtNavCoords(row: number, col: number): number {
+  return row === 0 ? 12 + col : 11 - col;
+}
 
 interface BackgammonBoardProps {
   snapshot: BackgammonClientState;
@@ -184,6 +197,22 @@ export function BackgammonBoard({
     }
   };
 
+  const { gridProps, getCellProps } = useBoardKeyboardNavigation({
+    rows: 2,
+    cols: 12,
+    disabled: !canMove,
+    onActivate: ({ row, col }) => handlePointClick(pointAtNavCoords(row, col)),
+    onDeselect: () => setSelectedFrom(null),
+  });
+
+  const handleZoneKeyDown =
+    (action: () => void) => (event: ReactKeyboardEvent<HTMLElement>) => {
+      if (!isActivationKey(event.key)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      action();
+    };
+
   const topLeft = [12, 13, 14, 15, 16, 17];
   const topRight = [18, 19, 20, 21, 22, 23];
   const bottomLeft = [11, 10, 9, 8, 7, 6];
@@ -246,7 +275,10 @@ export function BackgammonBoard({
           borderColor: theme.barBorder,
         }}
       >
-        <div className="flex-1 flex flex-col justify-between h-full relative">
+        <div
+          className="flex-1 flex flex-col justify-between h-full relative"
+          {...gridProps}
+        >
           <div className="flex flex-row h-[42%] w-full">
             <div className="flex-1 flex flex-row">
               {topLeft.map((idx) => (
@@ -260,12 +292,13 @@ export function BackgammonBoard({
                   point={snapshot.points[idx]}
                   pointIndex={idx}
                   targetInfo={targetMap.get(idx)}
+                  cellFocusProps={getCellProps(0, idx - 12)}
                 />
               ))}
             </div>
 
             <div
-              className={`w-7 sm:w-10 h-full mx-1 rounded-lg flex flex-col items-center justify-between py-1 cursor-pointer transition-all duration-200 ${
+              className={`w-7 sm:w-10 h-full mx-1 rounded-lg flex flex-col items-center justify-between py-1 cursor-pointer transition-all duration-200 ${BOARD_CELL_FOCUS_CLASS} rounded-lg ${
                 myBar > 0
                   ? selectedFrom === 'bar'
                     ? 'ring-2 ring-purple-400 bg-purple-900/40 shadow-[0_0_15px_rgba(168,85,247,0.6)]'
@@ -273,7 +306,11 @@ export function BackgammonBoard({
                   : 'bg-black/35 border border-white/5'
               }`}
               data-testid="bar-zone"
+              role="button"
+              tabIndex={0}
+              aria-label={t('games.backgammon_v1.game.barZone')}
               onClick={handleBarClick}
+              onKeyDown={handleZoneKeyDown(handleBarClick)}
             >
               <div className="flex flex-col items-center">
                 <span className="text-[7px] font-extrabold uppercase text-white/40 mb-0.5">
@@ -353,6 +390,7 @@ export function BackgammonBoard({
                   point={snapshot.points[idx]}
                   pointIndex={idx}
                   targetInfo={targetMap.get(idx)}
+                  cellFocusProps={getCellProps(1, 11 - idx)}
                 />
               ))}
             </div>
@@ -371,6 +409,7 @@ export function BackgammonBoard({
                   point={snapshot.points[idx]}
                   pointIndex={idx}
                   targetInfo={targetMap.get(idx)}
+                  cellFocusProps={getCellProps(1, 11 - idx)}
                 />
               ))}
             </div>
@@ -384,7 +423,11 @@ export function BackgammonBoard({
               : 'bg-black/40'
           }`}
           data-testid="bear-off-zone"
+          role="button"
+          tabIndex={0}
+          aria-label={t('games.backgammon_v1.game.bearOffZone')}
           onClick={handleBearOffClick}
+          onKeyDown={handleZoneKeyDown(handleBearOffClick)}
         >
           <div className="flex flex-col items-center">
             <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-white/50 mb-0.5">

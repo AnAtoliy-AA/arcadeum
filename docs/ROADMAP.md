@@ -48,7 +48,7 @@
 | 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | **Implemented** |
 | 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | **Implemented** |
 | 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | **Implemented** |
-| 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | Not started     |
+| 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | **Implemented** |
 | 4G. Daily Challenges   | —       | —                            | **Implemented** |
 | 4H. Season System      | ARC-899 | `ARC-899-season-system`      | Not started     |
 | 4I. PWA Support        | ARC-903 | `ARC-903-pwa-support`        | **Implemented** |

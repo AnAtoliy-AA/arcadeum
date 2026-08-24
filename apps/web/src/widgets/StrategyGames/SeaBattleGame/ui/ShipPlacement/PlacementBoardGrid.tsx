@@ -16,6 +16,8 @@ import {
 } from '../styles';
 import type { SeaBattleTheme } from '../../lib/theme';
 import { TranslationKey } from '@/shared/lib/useTranslation';
+import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
+import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 
 function getCellBg(
   state: number,
@@ -66,6 +68,7 @@ interface PlacementBoardCellProps {
   onDragOver: (row: number, col: number, e: DragEvent<HTMLElement>) => void;
   onDrop: (row: number, col: number, e: DragEvent<HTMLElement>) => void;
   onDragLeave: () => void;
+  cellFocusProps?: Record<string, unknown>;
 }
 
 const PlacementBoardCell = memo(
@@ -93,6 +96,7 @@ const PlacementBoardCell = memo(
     onDragOver,
     onDrop,
     onDragLeave,
+    cellFocusProps,
   }: PlacementBoardCellProps) => {
     const handleMouseEnter = useCallback(
       () => onMouseEnter(rIndex, cIndex),
@@ -140,6 +144,7 @@ const PlacementBoardCell = memo(
 
     const classNames = [
       'sb-cell',
+      BOARD_CELL_FOCUS_CLASS,
       isHovered && !isInvalidCell ? 'sb-valid-pulse' : '',
       isShipDraggable ? 'sb-cell--ship-draggable' : '',
       isDraggingThisCell ? 'sb-cell--dragging' : '',
@@ -189,6 +194,7 @@ const PlacementBoardCell = memo(
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onDragLeave={onDragLeave}
+        {...cellFocusProps}
       >
         {isShip && (
           <div className="w-[6px] h-[6px] rounded-full bg-[#cbd5e1] opacity-75 shadow-sm pointer-events-none mx-auto" />
@@ -283,6 +289,13 @@ export const PlacementBoardGrid = memo(
     const boardSize = gridSize ?? (board.length || 10);
     const rowLbls = useMemo(() => rowLabels(boardSize), [boardSize]);
     const colLbls = useMemo(() => colLabels(boardSize), [boardSize]);
+
+    const boardKeyboard = useBoardKeyboardNavigation({
+      rows: boardSize,
+      cols: boardSize,
+      disabled: !selectedShip && isPlacementComplete,
+      onActivate: ({ row, col }) => onCellClick(row, col),
+    });
     return (
       <PlayerSection
         backgroundColor={theme.boardBackground}
@@ -314,6 +327,7 @@ export const PlacementBoardGrid = memo(
               borderColor: theme.cellBorder,
             }}
             data-testid="sea-battle-board-grid"
+            {...boardKeyboard.gridProps}
           >
             {board.map((row, rIndex) =>
               row.map((cellState, cIndex) => {
@@ -372,6 +386,10 @@ export const PlacementBoardGrid = memo(
                     onDragOver={onDragOver}
                     onDrop={onDrop}
                     onDragLeave={onDragLeave}
+                    cellFocusProps={boardKeyboard.getCellProps(
+                      rIndex,
+                      cIndex,
+                    )}
                   />
                 );
               }),

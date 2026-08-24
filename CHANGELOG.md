@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.31] - 2026-08-24
+
+### Added
+- add web offline runtime sources missed by initial staging (ARC-900)
+- offline play-vs-bot mode via shared games-core package (ARC-900)
+
+### Fixed
+- forward event name through lazy socket proxy emit (ARC-900)
+- declare games-core dependency for be and web (ARC-900)
+- correct e2e mapper depth and sea-battle payload cast for nest build (ARC-900)
+- resolve games-core types from src so CI needs no prebuilt dist (ARC-900)
+
+### Documentation
+- mark offline mode implemented and add offline step to new-game skill (ARC-900)
+
+
 ## [1.26.30] - 2026-08-24
 
 ### Added

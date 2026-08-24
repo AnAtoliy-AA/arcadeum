@@ -47,10 +47,23 @@ test.describe('Game Replays', () => {
   test('replay viewer page shows error for nonexistent replay', async ({
     page,
   }) => {
+    await page.route('**/games/replays/nonexistent-id', (route) => {
+      route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Replay not found' }),
+      });
+    });
+
     await navigateTo(page, '/replay/nonexistent-id');
 
+    await expect(page.getByTestId('replay-error')).toBeVisible();
     await expect(
-      page.getByText(/not found|не найден|no encontrada|introuvable/i).first(),
+      page
+        .getByText(
+          /not found|не найден|не знойдзены|no encontrada|introuvable/i,
+        )
+        .first(),
     ).toBeVisible();
   });
 

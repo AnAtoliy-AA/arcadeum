@@ -56,7 +56,10 @@ export default function ReplayClient({
 
   if (loading) {
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-4 p-4 py-16">
+      <div
+        data-testid="replay-loading"
+        className="mx-auto flex w-full max-w-3xl flex-col items-center gap-4 p-4 py-16"
+      >
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--primary)] border-t-transparent" />
         <p className="text-[14px] text-[rgba(255,255,255,0.5)]">
           {t('games.replay.loading')}
@@ -67,7 +70,10 @@ export default function ReplayClient({
 
   if (error || !replay) {
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-4 p-4 py-16">
+      <div
+        data-testid="replay-error"
+        className="mx-auto flex w-full max-w-3xl flex-col items-center gap-4 p-4 py-16"
+      >
         <span className="text-[48px]">🎬</span>
         <p className="text-center text-[14px] text-[rgba(255,255,255,0.5)]">
           {error || t('games.replay.error')}

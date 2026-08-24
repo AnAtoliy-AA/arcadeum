@@ -98,4 +98,57 @@ describe('BackgammonBoard', () => {
     fireEvent.click(screen.getByTestId('point-20'));
     expect(handleMove).toHaveBeenCalledWith({ from: 23, to: 20 });
   });
+
+  it('selects and deselects a checker with keyboard only', () => {
+    const moveState: BackgammonClientState = {
+      ...mockState,
+      phase: 'move',
+      dice: [3],
+      rolledDice: [3, 0],
+    };
+
+    render(
+      <BackgammonBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={moveState}
+      />,
+    );
+
+    // Navigate to point 23 (top-right corner of the nav grid) and select it.
+    const grid = screen
+      .getByTestId('point-12')
+      .closest('[tabindex="0"]') as HTMLElement;
+    for (let i = 0; i < 11; i++) {
+      fireEvent.keyDown(grid, { key: 'ArrowRight' });
+    }
+    fireEvent.keyDown(grid, { key: 'Enter' });
+
+    // Selected point 23 offers a legal target at point 20 (23 - 3).
+    expect(screen.getByTestId('point-20').textContent).toContain('+3');
+
+    // Escape clears the selection.
+    fireEvent.keyDown(grid, { key: 'Escape' });
+    expect(screen.getByTestId('point-20').textContent).not.toContain('+3');
+  });
+
+  it('exposes bar and bear-off zones as keyboard operable buttons', () => {
+    render(
+      <BackgammonBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={mockState}
+      />,
+    );
+
+    for (const zone of ['bar-zone', 'bear-off-zone']) {
+      const el = screen.getByTestId(zone);
+      expect(el).toHaveAttribute('tabindex', '0');
+      expect(el).toHaveAttribute('role', 'button');
+    }
+  });
 });

@@ -149,6 +149,8 @@ export const byMessages = {
       waitingForOpponentRoll: 'Чаканне кідка суперніка...',
       waitingForOpponentMove: 'Чаканне ходу суперніка...',
       barCount: 'Бар',
+      barZone: 'Зона бара',
+      bearOffZone: 'Зона зняцця шашак',
       offCount: 'Знята',
       pipCount: 'Ачкі (Pips)',
       movesRemaining: 'засталося хадоў',

@@ -372,6 +372,7 @@ function ChessGameImpl({
       resolveName={resolveDisplayNameBound}
       t={t}
       onSquareClick={handleSquareClick}
+      onDeselectSquare={() => setSelectedSquare(null)}
       onPieceDrop={handlePieceDrop}
       onOfferDraw={offerDraw}
       onResign={resign}

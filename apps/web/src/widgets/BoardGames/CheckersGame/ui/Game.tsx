@@ -335,6 +335,7 @@ function CheckersGameImpl({
             disabled={!myTurn || isGameOver}
             ariaLabel={`Checkers ${displayBoard.length}×${displayBoard.length} board`}
             onCellClick={handleCellClick}
+            onDeselect={() => setSelectedPiece(null)}
             isFlipped={isFlipped}
           />
         </>

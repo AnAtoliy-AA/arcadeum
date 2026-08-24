@@ -152,6 +152,8 @@ export const frMessages = {
       waitingForOpponentRoll: "En attente du lancer de l'adversaire...",
       waitingForOpponentMove: "En attente du coup de l'adversaire...",
       barCount: 'Barre',
+      barZone: 'Zone du bar',
+      bearOffZone: 'Zone de sortie',
       offCount: 'Sortis',
       pipCount: 'Pips',
       movesRemaining: 'coups restants',

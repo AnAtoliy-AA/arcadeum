@@ -65,7 +65,7 @@ const CellRenderer = memo(function CellRenderer({
       data-board-cell={`${row}:${col}`}
       disabled={disabled || cell !== null}
       onClick={handleClick}
-      className="group relative m-0 flex items-center justify-center border-0 bg-transparent p-0"
+      className="group relative m-0 flex items-center justify-center border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)]"
       style={{ cursor: disabled ? 'default' : 'pointer' }}
       {...focusProps}
     >

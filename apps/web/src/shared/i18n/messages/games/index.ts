@@ -13,6 +13,7 @@ import type { HeartsMessages } from './hearts/index';
 import type { SpadesMessages } from './spades/index';
 import type { GoMessages } from './go/index';
 import type { PachisiMessages } from './pachisi/index';
+import type { SolitaireMessages } from './solitaire/index';
 
 export type GamesMessagesBundle = SharedGamesMessages &
   CriticalGamesMessages &
@@ -28,4 +29,5 @@ export type GamesMessagesBundle = SharedGamesMessages &
   HeartsMessages &
   SpadesMessages &
   GoMessages &
-  PachisiMessages;
+  PachisiMessages &
+  SolitaireMessages;

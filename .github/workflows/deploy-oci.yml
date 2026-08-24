@@ -31,7 +31,7 @@ jobs:
       task-bot: ${{ steps.filter.outputs.task-bot }}
       shorts-factory: ${{ steps.filter.outputs.shorts-factory }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v3
         id: filter
         with:

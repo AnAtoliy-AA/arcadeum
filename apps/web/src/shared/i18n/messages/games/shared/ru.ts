@@ -523,5 +523,12 @@ export const ruMessages = {
       },
     },
   },
+  guestDisclaimer: {
+    playingAsGuest: 'Игра в режиме гостя',
+    agreementPrefix: 'Играя, вы принимаете ',
+    termsLink: 'Условия обслуживания',
+    agreementSuffix:
+      ' {{appName}} и подтверждаете, что вам исполнилось 18 лет.',
+  },
   themes: themesRu,
 };

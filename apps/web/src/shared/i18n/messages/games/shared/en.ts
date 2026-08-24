@@ -520,5 +520,11 @@ export const enMessages = {
       },
     },
   },
+  guestDisclaimer: {
+    playingAsGuest: 'Playing as Guest',
+    agreementPrefix: 'By playing you agree to {{appName}}’s ',
+    termsLink: 'Terms of Service',
+    agreementSuffix: ' and certify you are 18+.',
+  },
   themes: themesEn,
 };

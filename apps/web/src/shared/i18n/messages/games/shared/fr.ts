@@ -533,5 +533,11 @@ export const frMessages = {
       },
     },
   },
+  guestDisclaimer: {
+    playingAsGuest: 'En tant qu’invité',
+    agreementPrefix: 'En jouant, vous acceptez les ',
+    termsLink: 'Conditions d’utilisation',
+    agreementSuffix: ' de {{appName}} et confirmez avoir au moins 18 ans.',
+  },
   themes: themesFr,
 };

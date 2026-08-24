@@ -31,8 +31,7 @@ export function AdminPaymentsFilters({
     if (debouncedQ !== q) {
       onChange({ q: debouncedQ, visibility });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedQ]);
+  }, [debouncedQ, q, visibility, onChange]);
 
   return (
     <div className="flex flex-row gap-3 items-center flex-wrap">
@@ -40,14 +39,7 @@ export function AdminPaymentsFilters({
         placeholder={labels.searchPlaceholder}
         value={localQ}
         onChange={(e) => setLocalQ(e.target.value)}
-        style={{
-          padding: '6px 10px',
-          borderRadius: 6,
-          border: '1px solid #555',
-          background: 'transparent',
-          color: 'inherit',
-          minWidth: 260,
-        }}
+        className="px-3 py-1.5 rounded-lg border border-[var(--borderColor)] bg-[var(--backgroundFocus)] text-[var(--colorText)] min-w-[260px] text-sm focus:outline-none focus:border-[var(--primary)]"
       />
       <select
         data-testid="visibility-filter"
@@ -58,13 +50,7 @@ export function AdminPaymentsFilters({
             visibility: e.target.value as AdminNotesVisibility,
           })
         }
-        style={{
-          padding: '6px 10px',
-          borderRadius: 6,
-          border: '1px solid #555',
-          background: 'transparent',
-          color: 'inherit',
-        }}
+        className="px-3 py-1.5 rounded-lg border border-[var(--borderColor)] bg-[var(--backgroundFocus)] text-[var(--colorText)] text-sm cursor-pointer focus:outline-none focus:border-[var(--primary)]"
       >
         <option value="all">{labels.visibilityAll}</option>
         <option value="public">{labels.visibilityPublic}</option>

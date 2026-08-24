@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useAdminPaymentNotes } from '@/features/admin-payments/hooks';
@@ -69,21 +69,21 @@ export default function AdminPaymentsClient() {
     });
   }, [data?.items, page]);
 
-  const onFilterChange = (next: {
-    q: string;
-    visibility: AdminNotesVisibility;
-  }) => {
-    setQ(next.q);
-    setVisibility(next.visibility);
-    setPage(1);
-    setAccumulatedNotes([]);
-  };
+  const onFilterChange = useCallback(
+    (next: { q: string; visibility: AdminNotesVisibility }) => {
+      setQ(next.q);
+      setVisibility(next.visibility);
+      setPage(1);
+      setAccumulatedNotes([]);
+    },
+    [],
+  );
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (!isLoading && data && accumulatedNotes.length < data.total) {
       setPage((p) => p + 1);
     }
-  };
+  }, [isLoading, data, accumulatedNotes.length]);
 
   const filtersLabels = t
     ? {

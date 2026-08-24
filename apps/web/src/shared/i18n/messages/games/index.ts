@@ -13,6 +13,10 @@ import type { HeartsMessages } from './hearts/index';
 import type { SpadesMessages } from './spades/index';
 import type { GoMessages } from './go/index';
 import type { PachisiMessages } from './pachisi/index';
+import type { SolitaireMessages } from './solitaire/index';
+import type { MinesweeperMessages } from './minesweeper/index';
+import type { SudokuMessages } from './sudoku/index';
+import type { Game2048Messages } from './game-2048/index';
 
 export type GamesMessagesBundle = SharedGamesMessages &
   CriticalGamesMessages &
@@ -28,4 +32,8 @@ export type GamesMessagesBundle = SharedGamesMessages &
   HeartsMessages &
   SpadesMessages &
   GoMessages &
-  PachisiMessages;
+  PachisiMessages &
+  SolitaireMessages &
+  MinesweeperMessages &
+  SudokuMessages &
+  Game2048Messages;

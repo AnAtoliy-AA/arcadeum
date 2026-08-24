@@ -76,6 +76,23 @@ export const en = {
     title: `Go · Free Online Multiplayer Board Game · ${APP}`,
     description: `Play Go online on ${APP} — classic Baduk/Weiqi on 9×9, 13×13 and 19×19 boards with captures, ko rule, area scoring, and AI opponents. Free, instant rooms.`,
   },
+
+  solitaireLanding: {
+    title: `Solitaire · Free Online Klondike Card Game · ${APP}`,
+    description: `Play Solitaire (Klondike) online on ${APP} — the classic single-player card puzzle with scoring, timer, and saved progress. Free, instant, no download.`,
+  },
+  minesweeperLanding: {
+    title: `Minesweeper · Free Online Classic Puzzle Game · ${APP}`,
+    description: `Play Minesweeper online on ${APP} — beginner to expert grids with flags, chording, timer, and saved progress. Free, instant, no download.`,
+  },
+  sudokuLanding: {
+    title: `Sudoku · Free Online Number Puzzle Game · ${APP}`,
+    description: `Play Sudoku online on ${APP} — easy, medium and hard puzzles with unique solutions, pencil marks, and saved progress. Free, instant, no download.`,
+  },
+  game2048Landing: {
+    title: `2048 · Free Online Tile-Merging Puzzle Game · ${APP}`,
+    description: `Play 2048 online on ${APP} — slide and merge numbered tiles on a 4×4 grid, chase your best score, and keep going past 2048. Free, instant, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

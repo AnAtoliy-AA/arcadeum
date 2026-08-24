@@ -11,6 +11,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  type ViewStyle,
 } from 'react-native';
 import { NestableScrollContainer } from 'react-native-draggable-flatlist';
 import { ThemedText } from '@/components/ThemedText';
@@ -36,6 +37,12 @@ export type {
   CriticalRoomProps,
 } from './CriticalRoom.types';
 export type { CriticalRoomStyles };
+
+/** Reads a registered style's backgroundColor as a plain string color. */
+function swatchBackgroundColor(style: ViewStyle): string {
+  const backgroundColor = StyleSheet.flatten(style)?.backgroundColor;
+  return typeof backgroundColor === 'string' ? backgroundColor : 'transparent';
+}
 
 export const CriticalRoom = forwardRef<CriticalRoomHandle, CriticalRoomProps>(
   ({ ...props }, ref) => {
@@ -96,26 +103,21 @@ export const CriticalRoom = forwardRef<CriticalRoomHandle, CriticalRoomProps>(
     });
 
     const backgroundGradientColors = useMemo(
-      () => [
-        StyleSheet.flatten(styles.backgroundGradientSwatchA)
-          .backgroundColor as string,
-        StyleSheet.flatten(styles.backgroundGradientSwatchB)
-          .backgroundColor as string,
-        StyleSheet.flatten(styles.backgroundGradientSwatchC)
-          .backgroundColor as string,
-      ],
+      () =>
+        [
+          styles.backgroundGradientSwatchA,
+          styles.backgroundGradientSwatchB,
+          styles.backgroundGradientSwatchC,
+        ].map(swatchBackgroundColor),
       [styles],
     );
 
     const heroGradientColors = useMemo(
       () =>
         [
-          StyleSheet.flatten(styles.heroGradientSwatchA)
-            .backgroundColor as string,
-          StyleSheet.flatten(styles.heroGradientSwatchB)
-            .backgroundColor as string,
-          StyleSheet.flatten(styles.heroGradientSwatchC)
-            .backgroundColor as string,
+          swatchBackgroundColor(styles.heroGradientSwatchA),
+          swatchBackgroundColor(styles.heroGradientSwatchB),
+          swatchBackgroundColor(styles.heroGradientSwatchC),
         ] as const,
       [styles],
     );

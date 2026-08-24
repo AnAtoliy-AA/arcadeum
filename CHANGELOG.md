@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.29] - 2026-08-24
+
+### Added
+- register solo puzzle games in catalog, seo, and sitemap (ARC-924)
+- add 2048 widget, routes, and i18n (ARC-924)
+- add sudoku widget, routes, and i18n (ARC-924)
+- add minesweeper widget, routes, and i18n (ARC-924)
+
+### Fixed
+- align component types with generated RN 0.81 definitions
+
+### Refactored
+- extract shared solo game landing component (ARC-924)
+
+
+## [1.26.28] - 2026-08-24
+
+### Added
+- make starter cosmetic items implicit and purge legacy starter inventory rows (ARC-924) (ARC-924)
+- add reusable InfiniteScroll component with storybook and tests (ARC-924) (ARC-924)
+- rework command center and add infinite scroll to all admin pages (ARC-924) (ARC-924)
+
+### Fixed
+- resolve setState in effect lint errors and add test data pruning script (ARC-925) (ARC-925)
+- wrap payment and user handlers in useCallback and clean filters styling (ARC-924) (ARC-924)
+- prevent infinite render loop by syncing accumulated items in useEffect (ARC-924) (ARC-924)
+
+
+## [1.26.27] - 2026-08-24
+
+### Added
+- add solitaire landing page with i18n in five locales (ARC-924)
+- register solitaire in catalog, routes, and seo metadata (ARC-924)
+- add solitaire widget UI and play route (ARC-924)
+- add solitaire client-side engine, store, and theme (ARC-924)
+
+### Documentation
+- add single-player games tier to roadmap (ARC-924)
+
+
 ## [1.26.26] - 2026-08-24
 
 ### Added

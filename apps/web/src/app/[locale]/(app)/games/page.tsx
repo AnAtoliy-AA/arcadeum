@@ -31,8 +31,9 @@ function resolveLocale(raw: string): Locale {
 function resolveCategory(
   type: string,
   genre: string,
-): 'board' | 'card' | 'casual' {
+): 'board' | 'card' | 'casual' | 'puzzle' {
   if (type === 'card') return 'card';
+  if (type === 'puzzle') return 'puzzle';
   if (
     genre.toLowerCase().includes('race') ||
     genre.toLowerCase().includes('arcade')

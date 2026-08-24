@@ -45,6 +45,18 @@ export const buildRoutes = (locale: Locale) => {
     goLanding: `/${locale}/${s('games')}/go`,
     pachisi: `/${locale}/${s('games')}/pachisi`,
     pachisiLanding: `/${locale}/${s('games')}/pachisi`,
+    solitaire: `/${locale}/${s('games')}/solitaire`,
+    solitaireLanding: `/${locale}/${s('games')}/solitaire`,
+    solitairePlay: `/${locale}/${s('games')}/solitaire/play`,
+    minesweeper: `/${locale}/${s('games')}/minesweeper`,
+    minesweeperLanding: `/${locale}/${s('games')}/minesweeper`,
+    minesweeperPlay: `/${locale}/${s('games')}/minesweeper/play`,
+    sudoku: `/${locale}/${s('games')}/sudoku`,
+    sudokuLanding: `/${locale}/${s('games')}/sudoku`,
+    sudokuPlay: `/${locale}/${s('games')}/sudoku/play`,
+    game2048: `/${locale}/${s('games')}/2048`,
+    game2048Landing: `/${locale}/${s('games')}/2048`,
+    game2048Play: `/${locale}/${s('games')}/2048/play`,
 
     // Chat
     chats: `/${locale}/${s('chats')}`,

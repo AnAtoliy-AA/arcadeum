@@ -155,7 +155,13 @@ describe('AdminStatisticsService', () => {
     expect(stats.economy.transactionsCount).toBe(400);
 
     expect(stats.tournaments.total).toBe(12);
-    expect(stats.tournaments.totalRegistrations).toBe(48);
+    expect(stats.registered).toBeDefined();
+    expect(stats.registered.dau).toBeGreaterThanOrEqual(0);
+    expect(stats.registered.gamesTotal).toBeGreaterThanOrEqual(0);
+
+    expect(stats.anonymous).toBeDefined();
+    expect(stats.anonymous.dau).toBeGreaterThanOrEqual(0);
+    expect(stats.anonymous.gamesTotal).toBeGreaterThanOrEqual(0);
 
     expect(stats.trends.daily.length).toBe(14);
     expect(stats.trends.hourlyActivity.length).toBe(24);

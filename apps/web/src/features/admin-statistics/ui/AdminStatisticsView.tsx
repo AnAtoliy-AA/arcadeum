@@ -179,17 +179,22 @@ export function AdminStatisticsView({
         </div>
       </GlassCard>
 
-      <StatsKpiGrid data={filteredData} t={t?.kpi} />
+      <StatsKpiGrid data={filteredData} mode={audienceFilter} t={t?.kpi} />
 
       <StatsAnonymousOverview
         anonymous={data.users.anonymous}
         users={data.users}
+        registered={data.registered}
+        anonymousAudience={data.anonymous}
         t={t?.anonymous}
       />
 
       <StatsEngagementRetention
         users={filteredData.users}
         games={data.games}
+        registered={data.registered}
+        anonymous={data.anonymous}
+        mode={audienceFilter}
         t={t?.engagement}
       />
 
@@ -199,7 +204,7 @@ export function AdminStatisticsView({
         t={t?.charts}
       />
 
-      <StatsGamesBreakdown games={data.games} t={t?.games} />
+      <StatsGamesBreakdown games={data.games} mode={audienceFilter} t={t?.games} />
 
       <StatsEconomyOverview economy={data.economy} t={t?.economy} />
 

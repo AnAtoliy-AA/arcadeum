@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import type {
   AdminStatsHourlyBucket,
   AdminStatsGameItem,
@@ -66,17 +67,43 @@ export function mapGamesBreakdown(
     todayMap.set(item._id, item.count);
   }
 
-  return rawAgg.map((g) => ({
-    gameId: g._id,
-    totalMatches: g.totalMatches,
-    matchesToday: todayMap.get(g._id) ?? 0,
-    uniquePlayers: g.uniquePlayers.length,
-    wins: g.wins,
-    losses: g.losses,
-    draws: g.draws,
-    sharePercentage:
-      totalGamesPlayed > 0
-        ? Number(((g.totalMatches / totalGamesPlayed) * 100).toFixed(1))
-        : 0,
-  }));
+  return rawAgg.map((g) => {
+    const regPlayers = g.uniquePlayers.filter(
+      (id) =>
+        Types.ObjectId.isValid(id) &&
+        !id.startsWith('bot_') &&
+        !id.startsWith('guest_') &&
+        !id.startsWith('anon_'),
+    ).length;
+    const anonPlayers = g.uniquePlayers.filter(
+      (id) =>
+        !id.startsWith('bot_') &&
+        (id.startsWith('guest_') ||
+          id.startsWith('anon_') ||
+          !Types.ObjectId.isValid(id)),
+    ).length;
+
+    const registeredMatches = Math.round(
+      g.totalMatches * (regPlayers / Math.max(g.uniquePlayers.length, 1)),
+    );
+    const anonymousMatches = g.totalMatches - registeredMatches;
+
+    return {
+      gameId: g._id,
+      totalMatches: g.totalMatches,
+      matchesToday: todayMap.get(g._id) ?? 0,
+      uniquePlayers: g.uniquePlayers.length,
+      registeredMatches,
+      anonymousMatches,
+      registeredPlayers: regPlayers,
+      anonymousPlayers: anonPlayers,
+      wins: g.wins,
+      losses: g.losses,
+      draws: g.draws,
+      sharePercentage:
+        totalGamesPlayed > 0
+          ? Number(((g.totalMatches / totalGamesPlayed) * 100).toFixed(1))
+          : 0,
+    };
+  });
 }

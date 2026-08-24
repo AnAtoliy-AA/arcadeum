@@ -1,3 +1,23 @@
+export interface AdminStatsAudienceMetrics {
+  totalCount: number;
+  dau: number;
+  wau: number;
+  mau: number;
+  stickyFactorDauMau: number;
+  stickyFactorDauWau: number;
+  stickyFactorWauMau: number;
+  avgPlaytimePerActiveUserMinutes: number;
+  avgMatchesPerActiveUser: number;
+  gamesTotal: number;
+  gamesToday: number;
+  games7d: number;
+  games30d: number;
+  estimatedPlaytimeHours: number;
+  completionRate: number;
+  inactiveCount: number;
+  inactivityRate: number;
+}
+
 export interface AdminStatsAnonymous {
   totalAnonymousPlayers: number;
   anonymousDau: number;
@@ -49,6 +69,10 @@ export interface AdminStatsGameItem {
   totalMatches: number;
   matchesToday: number;
   uniquePlayers: number;
+  registeredMatches: number;
+  anonymousMatches: number;
+  registeredPlayers: number;
+  anonymousPlayers: number;
   wins: number;
   losses: number;
   draws: number;
@@ -93,6 +117,8 @@ export interface AdminStatsDailyTrend {
   registeredDau: number;
   anonymousDau: number;
   games: number;
+  registeredGames: number;
+  anonymousGames: number;
   newUsers: number;
   transactions: number;
 }
@@ -108,6 +134,8 @@ export interface AdminStatisticsData {
   games: AdminStatsGames;
   economy: AdminStatsEconomy;
   tournaments: AdminStatsTournaments;
+  registered: AdminStatsAudienceMetrics;
+  anonymous: AdminStatsAudienceMetrics;
   trends: {
     daily: AdminStatsDailyTrend[];
     hourlyActivity: AdminStatsHourlyBucket[];

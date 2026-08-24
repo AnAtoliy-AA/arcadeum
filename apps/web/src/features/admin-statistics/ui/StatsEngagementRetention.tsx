@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { GlassCard, Typography, Badge, BarChartIcon } from '@arcadeum/ui';
-import type { AdminStatsUsers, AdminStatsGames } from '../types';
+import type { AdminStatsUsers, AdminStatsGames, AdminStatsAudienceMetrics } from '../types';
 
 export interface StatsEngagementTranslations {
   title?: string;
@@ -24,14 +24,42 @@ export interface StatsEngagementTranslations {
 interface StatsEngagementRetentionProps {
   users: AdminStatsUsers;
   games: AdminStatsGames;
+  registered?: AdminStatsAudienceMetrics;
+  anonymous?: AdminStatsAudienceMetrics;
+  mode?: 'all' | 'registered' | 'anonymous';
   t?: StatsEngagementTranslations;
 }
 
 export function StatsEngagementRetention({
   users,
   games,
+  registered,
+  anonymous,
+  mode = 'all',
   t,
 }: StatsEngagementRetentionProps): ReactElement {
+  const currentAudience =
+    mode === 'registered' ? registered : mode === 'anonymous' ? anonymous : null;
+
+  const dauMau = currentAudience ? currentAudience.stickyFactorDauMau : users.stickyFactorDauMau;
+  const dauWau = currentAudience ? currentAudience.stickyFactorDauWau : users.stickyFactorDauWau;
+  const wauMau = currentAudience ? currentAudience.stickyFactorWauMau : users.stickyFactorWauMau;
+  const playtimePerUser = currentAudience
+    ? currentAudience.avgPlaytimePerActiveUserMinutes
+    : users.avgPlaytimePerActiveUserMinutes;
+  const matchesPerUser = currentAudience
+    ? currentAudience.avgMatchesPerActiveUser
+    : users.avgMatchesPerActiveUser;
+  const completionRate = currentAudience
+    ? currentAudience.completionRate
+    : games.completionRate;
+  const inactiveCount = currentAudience
+    ? currentAudience.inactiveCount
+    : users.inactiveUsersCount;
+  const inactivityRate = currentAudience
+    ? currentAudience.inactivityRate
+    : users.inactivityRate;
+
   return (
     <div
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full"
@@ -47,7 +75,7 @@ export function StatsEngagementRetention({
               </Typography>
             </div>
             <Badge variant="info" size="sm">
-              Engagement
+              {mode === 'all' ? 'All Traffic' : mode === 'registered' ? 'Registered' : 'Guests'}
             </Badge>
           </div>
 
@@ -57,16 +85,14 @@ export function StatsEngagementRetention({
                 <span className="text-[var(--colorTextSecondary,#a1a1aa)]">
                   {t?.dauMauLabel ?? 'DAU / MAU'}
                 </span>
-                <span className="font-bold text-[var(--primary)]">
-                  {users.stickyFactorDauMau}%
-                </span>
+                <span className="font-bold text-[var(--primary)]">{dauMau}%</span>
               </div>
               <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <svg viewBox="0 0 100 6" className="w-full h-full block">
                   <rect
                     x={0}
                     y={0}
-                    width={Math.min(users.stickyFactorDauMau, 100)}
+                    width={Math.min(dauMau, 100)}
                     height={6}
                     rx={3}
                     className="fill-[var(--primary)]"
@@ -80,16 +106,14 @@ export function StatsEngagementRetention({
                 <span className="text-[var(--colorTextSecondary,#a1a1aa)]">
                   {t?.dauWauLabel ?? 'DAU / WAU'}
                 </span>
-                <span className="font-bold text-cyan-400">
-                  {users.stickyFactorDauWau}%
-                </span>
+                <span className="font-bold text-cyan-400">{dauWau}%</span>
               </div>
               <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <svg viewBox="0 0 100 6" className="w-full h-full block">
                   <rect
                     x={0}
                     y={0}
-                    width={Math.min(users.stickyFactorDauWau, 100)}
+                    width={Math.min(dauWau, 100)}
                     height={6}
                     rx={3}
                     className="fill-cyan-400"
@@ -103,16 +127,14 @@ export function StatsEngagementRetention({
                 <span className="text-[var(--colorTextSecondary,#a1a1aa)]">
                   {t?.wauMauLabel ?? 'WAU / MAU'}
                 </span>
-                <span className="font-bold text-purple-400">
-                  {users.stickyFactorWauMau}%
-                </span>
+                <span className="font-bold text-purple-400">{wauMau}%</span>
               </div>
               <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <svg viewBox="0 0 100 6" className="w-full h-full block">
                   <rect
                     x={0}
                     y={0}
-                    width={Math.min(users.stickyFactorWauMau, 100)}
+                    width={Math.min(wauMau, 100)}
                     height={6}
                     rx={3}
                     className="fill-purple-400"
@@ -124,7 +146,9 @@ export function StatsEngagementRetention({
         </div>
 
         <div className="pt-2 border-t border-[var(--borderColor)] text-[11px] text-[var(--colorTextSecondary,#a1a1aa)]">
-          Higher ratio indicates habitual daily return rate
+          {registered && anonymous && mode === 'all'
+            ? `Reg DAU/MAU: ${registered.stickyFactorDauMau}% | Anon: ${anonymous.stickyFactorDauMau}%`
+            : 'Higher ratio indicates habitual return rate'}
         </div>
       </GlassCard>
 
@@ -145,7 +169,7 @@ export function StatsEngagementRetention({
                 {t?.avgTimePerUser ?? 'Avg Playtime / Active User'}
               </span>
               <span className="text-lg font-bold text-amber-400">
-                {users.avgPlaytimePerActiveUserMinutes} min / day
+                {playtimePerUser} min / day
               </span>
             </div>
 
@@ -154,7 +178,7 @@ export function StatsEngagementRetention({
                 {t?.avgMatchesPerUser ?? 'Avg Matches / Active User'}
               </span>
               <span className="text-lg font-bold text-emerald-400">
-                {users.avgMatchesPerActiveUser} matches
+                {matchesPerUser} matches
               </span>
             </div>
           </div>
@@ -164,9 +188,7 @@ export function StatsEngagementRetention({
           <span className="text-[var(--colorTextSecondary,#a1a1aa)]">
             {t?.completionRate ?? 'Match Completion'}:
           </span>
-          <span className="font-semibold text-emerald-400">
-            {games.completionRate}%
-          </span>
+          <span className="font-semibold text-emerald-400">{completionRate}%</span>
         </div>
       </GlassCard>
 
@@ -186,18 +208,14 @@ export function StatsEngagementRetention({
               <span className="text-[10px] text-[var(--colorTextSecondary,#a1a1aa)] uppercase">
                 {t?.arpuLabel ?? 'ARPU (Avg Revenue / User)'}
               </span>
-              <span className="text-lg font-bold text-[var(--colorText)]">
-                ${users.arpu}
-              </span>
+              <span className="text-lg font-bold text-[var(--colorText)]">${users.arpu}</span>
             </div>
 
             <div className="p-2.5 rounded-lg bg-[rgba(255,255,255,0.03)] border border-[var(--borderColor)] flex flex-col">
               <span className="text-[10px] text-[var(--colorTextSecondary,#a1a1aa)] uppercase">
                 {t?.arppuLabel ?? 'ARPPU (Paying Users)'}
               </span>
-              <span className="text-lg font-bold text-emerald-400">
-                ${users.arppu}
-              </span>
+              <span className="text-lg font-bold text-emerald-400">${users.arppu}</span>
             </div>
           </div>
         </div>
@@ -216,7 +234,7 @@ export function StatsEngagementRetention({
         <div className="flex flex-col gap-3">
           <div className="flex flex-row items-center justify-between">
             <Typography variant="subheading" uiSize="sm" weight="700">
-              {t?.churnTitle ?? 'Retention & Cohorts'}
+              {t?.churnTitle ?? 'Retention & Inactivity'}
             </Typography>
             <Badge variant="neutral" size="sm">
               Cohorts
@@ -238,14 +256,18 @@ export function StatsEngagementRetention({
                 {t?.inactiveUsersLabel ?? 'Inactive (> 30 Days)'}
               </span>
               <span className="text-lg font-bold text-[var(--colorTextSecondary,#a1a1aa)]">
-                {users.inactiveUsersCount} ({users.inactivityRate}%)
+                {inactiveCount} ({inactivityRate}%)
               </span>
             </div>
           </div>
         </div>
 
         <div className="pt-2 border-t border-[var(--borderColor)] text-[11px] text-[var(--colorTextSecondary,#a1a1aa)]">
-          {users.totalUsers - users.inactiveUsersCount} active within 30 days
+          {mode === 'all'
+            ? `${users.totalUsers - users.inactiveUsersCount} active within 30 days`
+            : mode === 'registered'
+            ? `${users.totalUsers - users.inactiveUsersCount} active registered accounts`
+            : `${users.anonymous.anonymousMau} active guests this month`}
         </div>
       </GlassCard>
     </div>

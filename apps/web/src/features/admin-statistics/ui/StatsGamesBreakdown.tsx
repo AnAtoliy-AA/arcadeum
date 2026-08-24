@@ -18,11 +18,13 @@ export interface StatsGamesBreakdownTranslations {
 
 interface StatsGamesBreakdownProps {
   games: AdminStatsGames;
+  mode?: 'all' | 'registered' | 'anonymous';
   t?: StatsGamesBreakdownTranslations;
 }
 
 export function StatsGamesBreakdown({
   games,
+  mode = 'all',
   t,
 }: StatsGamesBreakdownProps): ReactElement {
   const { byGame, activeRooms, waitingRooms } = games;
@@ -42,7 +44,7 @@ export function StatsGamesBreakdown({
           </div>
           <Typography variant="body" uiSize="xs" alpha="medium">
             {t?.subtitle ??
-              'Match distribution, unique players, and game share'}
+              'Match distribution, unique players, and game share (Registered vs Anonymous)'}
           </Typography>
         </div>
 
@@ -85,9 +87,24 @@ export function StatsGamesBreakdown({
             </thead>
             <tbody className="divide-y divide-[var(--borderColor)]">
               {byGame.map((game) => {
-                const totalM = game.totalMatches;
+                const displayMatches =
+                  mode === 'registered'
+                    ? game.registeredMatches
+                    : mode === 'anonymous'
+                    ? game.anonymousMatches
+                    : game.totalMatches;
+
+                const displayPlayers =
+                  mode === 'registered'
+                    ? game.registeredPlayers
+                    : mode === 'anonymous'
+                    ? game.anonymousPlayers
+                    : game.uniquePlayers;
+
                 const winRate =
-                  totalM > 0 ? Math.round((game.wins / totalM) * 100) : 0;
+                  game.totalMatches > 0
+                    ? Math.round((game.wins / game.totalMatches) * 100)
+                    : 0;
 
                 return (
                   <tr
@@ -105,7 +122,15 @@ export function StatsGamesBreakdown({
                       </div>
                     </td>
                     <td className="py-3 px-3 text-right text-[var(--colorText)] font-medium">
-                      {game.totalMatches.toLocaleString()}
+                      <div className="flex flex-col items-end">
+                        <span>{displayMatches.toLocaleString()}</span>
+                        {mode === 'all' && (
+                          <span className="text-[10px] text-[var(--colorTextSecondary,#a1a1aa)]">
+                            Reg: {(game.registeredMatches ?? 0).toLocaleString()} | Anon:{' '}
+                            {(game.anonymousMatches ?? 0).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-3 px-3 text-right text-[var(--colorTextSecondary,#d4d4d8)]">
                       {game.matchesToday > 0 ? (
@@ -117,7 +142,15 @@ export function StatsGamesBreakdown({
                       )}
                     </td>
                     <td className="py-3 px-3 text-right text-[var(--colorTextSecondary,#d4d4d8)]">
-                      {game.uniquePlayers.toLocaleString()}
+                      <div className="flex flex-col items-end">
+                        <span>{displayPlayers.toLocaleString()}</span>
+                        {mode === 'all' && (
+                          <span className="text-[10px] text-[var(--colorTextSecondary,#a1a1aa)]">
+                            Reg: {(game.registeredPlayers ?? 0).toLocaleString()} | Anon:{' '}
+                            {(game.anonymousPlayers ?? 0).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-3 px-3 text-right text-xs">
                       <span className="text-emerald-400 font-medium">

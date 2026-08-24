@@ -16,11 +16,46 @@ export interface StatsKpiTranslations {
 
 interface StatsKpiGridProps {
   data: AdminStatisticsData;
+  mode?: 'all' | 'registered' | 'anonymous';
   t?: StatsKpiTranslations;
 }
 
-export function StatsKpiGrid({ data, t }: StatsKpiGridProps): ReactElement {
-  const { users, games, economy } = data;
+export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): ReactElement {
+  const { users, games, economy, registered, anonymous } = data;
+
+  const currentAudience =
+    mode === 'registered' ? registered : mode === 'anonymous' ? anonymous : null;
+
+  const displayDau = currentAudience ? currentAudience.dau : users.dau;
+  const displayMau = currentAudience ? currentAudience.mau : users.mau;
+  const displayWau = currentAudience ? currentAudience.wau : users.wau;
+  const displayStickiness = currentAudience
+    ? currentAudience.stickyFactorDauMau
+    : users.stickinessRate;
+  const displayTotalUsers =
+    mode === 'registered'
+      ? users.totalUsers
+      : mode === 'anonymous'
+      ? anonymous.totalCount
+      : users.totalUsers + anonymous.totalCount;
+  const displayTotalGames = currentAudience
+    ? currentAudience.gamesTotal
+    : games.totalGamesPlayed;
+  const displayPlaytime = currentAudience
+    ? currentAudience.estimatedPlaytimeHours
+    : games.estimatedPlaytimeHours;
+
+  const dauSubtext =
+    mode === 'all'
+      ? `Reg: ${users.registeredDau.toLocaleString()} | Anon: ${users.anonymousDau.toLocaleString()}`
+      : mode === 'registered'
+      ? `Registered Accounts`
+      : `Anonymous & Guests`;
+
+  const gamesSubtext =
+    mode === 'all'
+      ? `Reg: ${registered.gamesToday.toLocaleString()} | Anon: ${anonymous.gamesToday.toLocaleString()}`
+      : `Today: ${currentAudience?.gamesToday.toLocaleString() ?? 0}`;
 
   return (
     <div
@@ -30,13 +65,9 @@ export function StatsKpiGrid({ data, t }: StatsKpiGridProps): ReactElement {
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
           label={t?.dau ?? 'DAU (Daily Active)'}
-          value={users.dau.toLocaleString()}
-          delta={
-            users.newUsersToday > 0
-              ? `+${users.newUsersToday} ${t?.todaySuffix ?? 'new today'}`
-              : undefined
-          }
-          deltaType={users.newUsersToday > 0 ? 'increase' : 'neutral'}
+          value={displayDau.toLocaleString()}
+          delta={dauSubtext}
+          deltaType={mode === 'all' ? 'increase' : 'neutral'}
           data-testid="stat-dau"
         />
       </GlassCard>
@@ -44,8 +75,12 @@ export function StatsKpiGrid({ data, t }: StatsKpiGridProps): ReactElement {
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
           label={t?.mau ?? 'MAU (Monthly Active)'}
-          value={users.mau.toLocaleString()}
-          delta={`WAU: ${users.wau.toLocaleString()}`}
+          value={displayMau.toLocaleString()}
+          delta={
+            mode === 'all'
+              ? `Reg: ${users.registeredMau.toLocaleString()} | Anon: ${users.anonymousMau.toLocaleString()}`
+              : `WAU: ${displayWau.toLocaleString()}`
+          }
           deltaType="neutral"
           data-testid="stat-mau"
         />
@@ -54,23 +89,31 @@ export function StatsKpiGrid({ data, t }: StatsKpiGridProps): ReactElement {
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
           label={t?.stickiness ?? 'DAU / MAU Stickiness'}
-          value={`${users.stickinessRate}%`}
-          delta={users.stickinessRate >= 20 ? 'High Retention' : 'Normal'}
-          deltaType={users.stickinessRate >= 20 ? 'increase' : 'neutral'}
+          value={`${displayStickiness}%`}
+          delta={displayStickiness >= 20 ? 'High Retention' : 'Normal'}
+          deltaType={displayStickiness >= 20 ? 'increase' : 'neutral'}
           data-testid="stat-stickiness"
         />
       </GlassCard>
 
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
-          label={t?.totalUsers ?? 'Total Registered'}
-          value={users.totalUsers.toLocaleString()}
+          label={
+            mode === 'registered'
+              ? 'Registered Accounts'
+              : mode === 'anonymous'
+              ? 'Unique Guest Profiles'
+              : t?.totalUsers ?? 'Total Profiles'
+          }
+          value={displayTotalUsers.toLocaleString()}
           delta={
-            users.blockedUsers > 0
+            mode === 'all'
+              ? `Reg: ${users.totalUsers.toLocaleString()} | Anon: ${anonymous.totalCount.toLocaleString()}`
+              : users.blockedUsers > 0 && mode === 'registered'
               ? `${users.blockedUsers} restricted`
               : undefined
           }
-          deltaType={users.blockedUsers > 0 ? 'decrease' : 'neutral'}
+          deltaType={users.blockedUsers > 0 && mode === 'registered' ? 'decrease' : 'neutral'}
           data-testid="stat-total-users"
         />
       </GlassCard>
@@ -78,11 +121,9 @@ export function StatsKpiGrid({ data, t }: StatsKpiGridProps): ReactElement {
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
           label={t?.totalGames ?? 'Total Games Played'}
-          value={games.totalGamesPlayed.toLocaleString()}
-          delta={
-            games.gamesToday > 0 ? `+${games.gamesToday} today` : undefined
-          }
-          deltaType={games.gamesToday > 0 ? 'increase' : 'neutral'}
+          value={displayTotalGames.toLocaleString()}
+          delta={gamesSubtext}
+          deltaType="increase"
           data-testid="stat-total-games"
         />
       </GlassCard>
@@ -90,13 +131,13 @@ export function StatsKpiGrid({ data, t }: StatsKpiGridProps): ReactElement {
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
           label={t?.playtime ?? 'Estimated Playtime'}
-          value={`${games.estimatedPlaytimeHours.toLocaleString()} hrs`}
+          value={`${displayPlaytime.toLocaleString()} hrs`}
           delta={
-            games.activeRooms > 0
-              ? `${games.activeRooms} live matches`
-              : '0 active'
+            mode === 'all'
+              ? `Reg: ${registered.estimatedPlaytimeHours}h | Anon: ${anonymous.estimatedPlaytimeHours}h`
+              : `${games.activeRooms} active matches`
           }
-          deltaType={games.activeRooms > 0 ? 'increase' : 'neutral'}
+          deltaType="increase"
           data-testid="stat-playtime"
         />
       </GlassCard>

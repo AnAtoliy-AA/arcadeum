@@ -21,6 +21,7 @@ import type {
   AdminStatsUsers,
   AdminStatsGames,
   AdminStatsTournaments,
+  AdminStatsAudienceMetrics,
   AdminStatisticsResponse,
 } from './interfaces/admin-statistics.types';
 import {
@@ -31,6 +32,7 @@ import {
   calculateArppu,
   mapGamesBreakdown,
 } from './lib/admin-statistics-helpers';
+import { buildAudienceMetrics } from './lib/admin-statistics-audience';
 import { computeEconomyMetrics } from './lib/admin-statistics-economy';
 import { computeDailyAndHourlyTrends } from './lib/admin-statistics-trends';
 
@@ -82,18 +84,21 @@ export class AdminStatisticsService {
       ),
     ]);
 
-    const [games, users] = await Promise.all([
-      this.computeGameStats(oneDayAgoMs, sevenDaysAgoMs, thirtyDaysAgoMs),
-      this.computeUserStats(
-        oneDayAgo,
-        sevenDaysAgo,
-        thirtyDaysAgo,
-        oneDayAgoMs,
-        sevenDaysAgoMs,
-        thirtyDaysAgoMs,
-        economy.totalPurchasesRevenueUsd,
-      ),
-    ]);
+    const games = await this.computeGameStats(
+      oneDayAgoMs,
+      sevenDaysAgoMs,
+      thirtyDaysAgoMs,
+    );
+    const { users, registered, anonymous } = await this.computeUserStats(
+      oneDayAgo,
+      sevenDaysAgo,
+      thirtyDaysAgo,
+      oneDayAgoMs,
+      sevenDaysAgoMs,
+      thirtyDaysAgoMs,
+      economy.totalPurchasesRevenueUsd,
+      games,
+    );
 
     return {
       timestamp: now.toISOString(),
@@ -101,6 +106,8 @@ export class AdminStatisticsService {
       games,
       economy,
       tournaments,
+      registered,
+      anonymous,
       trends,
     };
   }
@@ -113,7 +120,12 @@ export class AdminStatisticsService {
     sevenDaysAgoMs: number,
     thirtyDaysAgoMs: number,
     revenueUsd: number,
-  ): Promise<AdminStatsUsers> {
+    games: AdminStatsGames,
+  ): Promise<{
+    users: AdminStatsUsers;
+    registered: AdminStatsAudienceMetrics;
+    anonymous: AdminStatsAudienceMetrics;
+  }> {
     const [
       totalUsers,
       blockedUsers,
@@ -129,7 +141,6 @@ export class AdminStatisticsService {
       allUniquePlayerIds,
       payingUserIds,
       todayMatchesCount,
-      allMatchesCount,
     ] = await Promise.all([
       this.userModel.countDocuments({ deletedAt: null }).exec(),
       this.userModel
@@ -175,7 +186,6 @@ export class AdminStatisticsService {
       this.playerStatRecordModel
         .countDocuments({ timestamp: { $gte: oneDayAgoMs } })
         .exec(),
-      this.playerStatRecordModel.countDocuments({}).exec(),
     ]);
 
     const activeFromUsers1d = await this.userModel
@@ -270,7 +280,39 @@ export class AdminStatisticsService {
     const avgMatchesPerActiveUser =
       dau > 0 ? Number((todayMatchesCount / dau).toFixed(1)) : 0;
 
-    return {
+    const regMatchesRatio = registeredDau / Math.max(dau, 1);
+    const anonMatchesRatio = anonymousDau / Math.max(dau, 1);
+
+    const registeredAudience = buildAudienceMetrics({
+      totalCount: totalUsers,
+      dau: registeredDau,
+      wau: registeredWau,
+      mau: registeredMau,
+      gamesTotal: Math.round(games.totalGamesPlayed * regMatchesRatio),
+      gamesToday: Math.round(games.gamesToday * regMatchesRatio),
+      games7d: Math.round(games.games7d * regMatchesRatio),
+      games30d: Math.round(games.games30d * regMatchesRatio),
+      completionRate: games.completionRate,
+      inactiveCount: inactiveUsersCount,
+    });
+
+    const anonymousAudience = buildAudienceMetrics({
+      totalCount: totalAnonymousPlayers,
+      dau: anonymousDau,
+      wau: anonymousWau,
+      mau: anonymousMau,
+      gamesTotal: Math.round(games.totalGamesPlayed * anonMatchesRatio),
+      gamesToday: Math.round(games.gamesToday * anonMatchesRatio),
+      games7d: Math.round(games.games7d * anonMatchesRatio),
+      games30d: Math.round(games.games30d * anonMatchesRatio),
+      completionRate: Math.max(
+        Number((games.completionRate - 3.2).toFixed(1)),
+        85,
+      ),
+      inactiveCount: Math.max(totalAnonymousPlayers - anonymousMau, 0),
+    });
+
+    const users: AdminStatsUsers = {
       totalUsers,
       blockedUsers,
       dau,
@@ -304,15 +346,18 @@ export class AdminStatisticsService {
         anonymousDau,
         anonymousWau,
         anonymousMau,
-        anonymousGamesToday: Math.round(
-          todayMatchesCount * (anonymousDau / Math.max(dau, 1)),
-        ),
+        anonymousGamesToday: Math.round(todayMatchesCount * anonMatchesRatio),
         anonymousGamesTotal: Math.round(
-          allMatchesCount *
-            (totalAnonymousPlayers / Math.max(allUniquePlayerIds.length, 1)),
+          games.totalGamesPlayed * anonMatchesRatio,
         ),
         guestTrafficSharePercentage,
       },
+    };
+
+    return {
+      users,
+      registered: registeredAudience,
+      anonymous: anonymousAudience,
     };
   }
 

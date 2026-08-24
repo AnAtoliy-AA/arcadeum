@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.26] - 2026-08-24
+
+### Added
+- add season banner with rewards and progress on player profile (ARC-899)
+- add seasons module with rollover cron and soft elo reset (ARC-899)
+
+
 ## [1.26.25] - 2026-08-24
 
 ### Added

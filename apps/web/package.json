@@ -9,7 +9,7 @@
     "edge >= 93"
   ],
   "scripts": {
-    "dev": "rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
+    "dev": "pnpm --filter @arcadeum/games-core build && rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "dev:next": "rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "build": "next build",
     "postbuild": "node scripts/fix-standalone-swc.mjs",

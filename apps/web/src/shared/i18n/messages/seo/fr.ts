@@ -78,6 +78,11 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Go · Jeu de Plateau Multijoueur en Ligne Gratuit · ${APP}`,
     description: `Jouez au Go en ligne sur ${APP} — Baduk/Weiqi classique sur plateaux 9×9, 13×13 et 19×19 avec captures, règle du ko, comptage par aire et IA. Salons instantanés gratuits.`,
   },
+
+  solitaireLanding: {
+    title: `Solitaire · Jeu de Cartes Klondike Gratuit en Ligne · ${APP}`,
+    description: `Jouez au Solitaire (Klondike) en ligne sur ${APP} — le casse-tête de cartes classique solo avec score, chronomètre et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
+  },
   settings: {
     title: `Paramètres · ${APP}`,
     description: `Personnalisez votre expérience ${APP} — apparence, thème, langue et préférences de téléchargement.`,

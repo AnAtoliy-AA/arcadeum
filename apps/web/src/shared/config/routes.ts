@@ -45,6 +45,9 @@ export const buildRoutes = (locale: Locale) => {
     goLanding: `/${locale}/${s('games')}/go`,
     pachisi: `/${locale}/${s('games')}/pachisi`,
     pachisiLanding: `/${locale}/${s('games')}/pachisi`,
+    solitaire: `/${locale}/${s('games')}/solitaire`,
+    solitaireLanding: `/${locale}/${s('games')}/solitaire`,
+    solitairePlay: `/${locale}/${s('games')}/solitaire/play`,
 
     // Chat
     chats: `/${locale}/${s('chats')}`,

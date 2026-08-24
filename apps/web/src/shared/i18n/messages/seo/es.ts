@@ -78,6 +78,11 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Go · Juego de Tablero Multijugador Online Gratis · ${APP}`,
     description: `Juega al Go online en ${APP} — Baduk/Weiqi clásico en tableros de 9×9, 13×13 y 19×19 con capturas, regla de ko, puntuación por área e IA. Salas instantáneas gratis.`,
   },
+
+  solitaireLanding: {
+    title: `Solitario · Juego de Cartas Klondike Gratis Online · ${APP}`,
+    description: `Juega al Solitario (Klondike) online en ${APP} — el rompecabezas de cartas clásico para un jugador con puntuación, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
+  },
   settings: {
     title: `Ajustes · ${APP}`,
     description: `Personaliza tu experiencia en ${APP}: apariencia, tema, idioma y preferencias de descarga.`,

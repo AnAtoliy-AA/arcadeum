@@ -321,6 +321,25 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     lastUpdated: '2026-08-23',
     status: 'beta',
   },
+  solitaire_v1: {
+    slug: 'solitaire_v1',
+    name: 'Solitaire',
+    description:
+      'Classic Klondike Solitaire — single-player card puzzle that runs entirely in your browser',
+    category: 'Card Game',
+    minPlayers: 1,
+    maxPlayers: 1,
+    estimatedDuration: 10,
+    complexity: 1,
+    ageRating: 'G',
+    thumbnail: '/games/solitaire.svg',
+    version: '1.0.0',
+    supportsAI: false,
+    tags: ['solitaire', 'klondike', 'cards', 'single-player', 'classic'],
+    implementationPath: '@/widgets/PuzzleGames/SolitaireGame',
+    lastUpdated: '2026-08-24',
+    status: 'beta',
+  },
 };
 
 /**

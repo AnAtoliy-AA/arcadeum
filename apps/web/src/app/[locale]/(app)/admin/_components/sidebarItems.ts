@@ -1,6 +1,7 @@
 export interface AdminSidebarItem {
   id:
     | 'dashboard'
+    | 'statistics'
     | 'users'
     | 'payments'
     | 'announcements'
@@ -19,6 +20,7 @@ export interface AdminSidebarItem {
 
 export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'dashboard', href: '/admin', enabled: true },
+  { id: 'statistics', href: '/admin/statistics', enabled: true },
   { id: 'users', href: '/admin/users', enabled: true },
   { id: 'payments', href: '/admin/payments', enabled: true },
   { id: 'tournaments', href: '/admin/tournaments', enabled: true },

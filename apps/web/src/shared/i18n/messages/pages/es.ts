@@ -6,6 +6,7 @@ import { adminWalletEs } from './admin-wallet/es';
 import { gemsEs } from './gems/es';
 import { adminGemPackagesEs } from './admin-gem-packages/es';
 import { adminEconomyEs } from './admin-economy/es';
+import { adminStatisticsEs } from './admin-statistics/es';
 import { dailyRewardsEs } from './daily-rewards/es';
 import { dailyChallengesEs } from './daily-challenges/es';
 import { achievementsEs } from './achievements/es';
@@ -33,6 +34,7 @@ export const es = {
     signedInAs: 'Sesión iniciada como {username}',
     nav: {
       dashboard: 'Panel',
+      statistics: 'Estadísticas',
       users: 'Usuarios',
       payments: 'Pagos',
       announcements: 'Anuncios',
@@ -47,6 +49,7 @@ export const es = {
       geoBlock: 'Bloqueo Geográfico',
       comingSoon: 'Próximamente',
     },
+    statistics: adminStatisticsEs,
     dashboard: {
       title: 'Centro de Comando',
       subtitle:
@@ -61,10 +64,15 @@ export const es = {
       storageSize: 'Tamaño de almacenamiento (MB)',
       indexSize: 'Tamaño de índices (MB)',
       activeModules: 'Módulos Activos',
-      modulesTitle: 'Módulos Administrativos',
+      modulesTitle: 'Módulos de Administración',
       modulesSubtitle:
         'Acceso directo para administrar juegos, jugadores, transacciones y seguridad',
       modules: {
+        statistics: {
+          title: 'Analítica de Plataforma',
+          description:
+            'Inspecciona MAU, DAU, retención, tiempo de juego e ingresos',
+        },
         users: {
           title: 'Gestión de Usuarios',
           description:

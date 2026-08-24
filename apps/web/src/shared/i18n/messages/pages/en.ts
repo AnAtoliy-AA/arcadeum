@@ -6,6 +6,7 @@ import { adminWalletEn } from './admin-wallet/en';
 import { gemsEn } from './gems/en';
 import { adminGemPackagesEn } from './admin-gem-packages/en';
 import { adminEconomyEn } from './admin-economy/en';
+import { adminStatisticsEn } from './admin-statistics/en';
 import { dailyRewardsEn } from './daily-rewards/en';
 import { dailyChallengesEn } from './daily-challenges/en';
 import { achievementsEn } from './achievements/en';
@@ -33,6 +34,7 @@ export const en = {
     signedInAs: 'Signed in as {username}',
     nav: {
       dashboard: 'Dashboard',
+      statistics: 'Statistics',
       users: 'Users',
       payments: 'Payments',
       announcements: 'Announcements',
@@ -47,6 +49,7 @@ export const en = {
       geoBlock: 'Geo-Blocking',
       comingSoon: 'Coming soon',
     },
+    statistics: adminStatisticsEn,
     dashboard: {
       title: 'Command Center',
       subtitle:
@@ -65,6 +68,11 @@ export const en = {
       modulesSubtitle:
         'Direct access to manage games, players, transactions, and security',
       modules: {
+        statistics: {
+          title: 'Platform Analytics',
+          description:
+            'Inspect MAU, DAU, engagement retention, playtime, and revenue telemetry',
+        },
         users: {
           title: 'User Management',
           description: 'Manage player accounts, roles, statuses, and bans',

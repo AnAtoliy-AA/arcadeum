@@ -35,6 +35,7 @@ export interface AdminDashboardTranslations {
   modulesTitle?: string;
   modulesSubtitle?: string;
   modules?: {
+    statistics?: { title?: string; description?: string };
     users?: { title?: string; description?: string };
     payments?: { title?: string; description?: string };
     tournaments?: { title?: string; description?: string };
@@ -78,6 +79,16 @@ export function AdminDashboardView({ data, t }: AdminDashboardViewProps) {
   const db = data.dbHealth;
 
   const modulesList: ModuleCardConfig[] = [
+    {
+      id: 'statistics',
+      href: '/admin/statistics',
+      icon: <BarChartIcon size={20} />,
+      category: 'core',
+      title: t?.modules?.statistics?.title ?? 'Platform Analytics',
+      description:
+        t?.modules?.statistics?.description ??
+        'Inspect MAU, DAU, engagement retention, playtime, and revenue telemetry',
+    },
     {
       id: 'users',
       href: '/admin/users',

@@ -4,6 +4,10 @@ import type { Connection } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/guards/roles.decorator';
+import {
+  AdminStatisticsService,
+  type AdminStatisticsResponse,
+} from './admin-statistics.service';
 
 interface DbStats {
   db: string;
@@ -31,11 +35,19 @@ interface CollDetail {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('admin')
 export class AdminController {
-  constructor(@InjectConnection() private readonly connection: Connection) {}
+  constructor(
+    @InjectConnection() private readonly connection: Connection,
+    private readonly statisticsService: AdminStatisticsService,
+  ) {}
 
   @Get('ping')
   ping(): { ok: true } {
     return { ok: true };
+  }
+
+  @Get('statistics')
+  async getStatistics(): Promise<AdminStatisticsResponse> {
+    return this.statisticsService.getStatistics();
   }
 
   @Get('db-health')

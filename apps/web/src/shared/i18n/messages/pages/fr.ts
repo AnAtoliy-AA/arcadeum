@@ -6,6 +6,7 @@ import { adminWalletFr } from './admin-wallet/fr';
 import { gemsFr } from './gems/fr';
 import { adminGemPackagesFr } from './admin-gem-packages/fr';
 import { adminEconomyFr } from './admin-economy/fr';
+import { adminStatisticsFr } from './admin-statistics/fr';
 import { dailyRewardsFr } from './daily-rewards/fr';
 import { dailyChallengesFr } from './daily-challenges/fr';
 import { achievementsFr } from './achievements/fr';
@@ -33,6 +34,7 @@ export const fr = {
     signedInAs: 'Connecté en tant que {username}',
     nav: {
       dashboard: 'Tableau de bord',
+      statistics: 'Statistiques',
       users: 'Utilisateurs',
       payments: 'Paiements',
       announcements: 'Annonces',
@@ -47,6 +49,7 @@ export const fr = {
       geoBlock: 'Géo-Blocage',
       comingSoon: 'Bientôt',
     },
+    statistics: adminStatisticsFr,
     dashboard: {
       title: 'Centre de Commandement',
       subtitle:
@@ -63,12 +66,17 @@ export const fr = {
       activeModules: 'Modules Actifs',
       modulesTitle: "Modules d'Administration",
       modulesSubtitle:
-        'Accès direct pour gérer les jeux, joueurs, transactions et sécurité',
+        'Accès direct pour gérer jeux, joueurs, transactions et sécurité',
       modules: {
+        statistics: {
+          title: 'Analytique de la Plateforme',
+          description:
+            'Consultez MAU, DAU, rétention, temps de jeu et revenus des gemmes',
+        },
         users: {
           title: 'Gestion des Utilisateurs',
           description:
-            'Gérer les comptes de joueurs, rôles, statuts et exclusions',
+            'Gérer les comptes joueurs, rôles, statuts et exclusions',
         },
         payments: {
           title: 'Paiements et Notes',

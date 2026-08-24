@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, PageLayout, PageTitle, Button } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import {
@@ -135,6 +135,19 @@ export default function AdminTournamentsClient() {
   const deleteMut = useDeleteTournament();
   const transitionMut = useTransitionTournament();
 
+  useEffect(() => {
+    if (!data?.items) return;
+    setAccumulatedTournaments((prev) => {
+      if (page === 1) {
+        return data.items;
+      }
+      const existingIds = new Set(prev.map((it) => it.id));
+      const newItems = data.items.filter((it) => !existingIds.has(it.id));
+      if (newItems.length === 0) return prev;
+      return [...prev, ...newItems];
+    });
+  }, [data?.items, page]);
+
   if (!t) {
     return (
       <PageLayout>
@@ -206,16 +219,6 @@ export default function AdminTournamentsClient() {
       setPage((p) => p + 1);
     }
   };
-
-  if (data?.items && accumulatedTournaments.length === 0 && page === 1) {
-    setAccumulatedTournaments(data.items);
-  } else if (data?.items && page > 1) {
-    const existingIds = new Set(accumulatedTournaments.map((it) => it.id));
-    const newItems = data.items.filter((it) => !existingIds.has(it.id));
-    if (newItems.length > 0) {
-      setAccumulatedTournaments([...accumulatedTournaments, ...newItems]);
-    }
-  }
 
   const handleSubmit = async (body: CreateTournamentBody) => {
     if (!modal) return;

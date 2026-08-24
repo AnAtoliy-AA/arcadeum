@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useAdminPaymentNotes } from '@/features/admin-payments/hooks';
@@ -56,6 +56,19 @@ export default function AdminPaymentsClient() {
     visibility,
   });
 
+  useEffect(() => {
+    if (!data?.items) return;
+    setAccumulatedNotes((prev) => {
+      if (page === 1) {
+        return data.items;
+      }
+      const existingIds = new Set(prev.map((it) => it.id));
+      const newItems = data.items.filter((it) => !existingIds.has(it.id));
+      if (newItems.length === 0) return prev;
+      return [...prev, ...newItems];
+    });
+  }, [data?.items, page]);
+
   const onFilterChange = (next: {
     q: string;
     visibility: AdminNotesVisibility;
@@ -71,16 +84,6 @@ export default function AdminPaymentsClient() {
       setPage((p) => p + 1);
     }
   };
-
-  if (data?.items && accumulatedNotes.length === 0 && page === 1) {
-    setAccumulatedNotes(data.items);
-  } else if (data?.items && page > 1) {
-    const existingIds = new Set(accumulatedNotes.map((it) => it.id));
-    const newItems = data.items.filter((it) => !existingIds.has(it.id));
-    if (newItems.length > 0) {
-      setAccumulatedNotes([...accumulatedNotes, ...newItems]);
-    }
-  }
 
   const filtersLabels = t
     ? {

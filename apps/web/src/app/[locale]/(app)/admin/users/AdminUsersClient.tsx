@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import {
@@ -100,6 +100,19 @@ export default function AdminUsersClient({
 
   const [accumulatedUsers, setAccumulatedUsers] = useState<AdminUserItem[]>([]);
 
+  useEffect(() => {
+    if (!data?.items) return;
+    setAccumulatedUsers((prev) => {
+      if (page === 1) {
+        return data.items;
+      }
+      const existingIds = new Set(prev.map((it) => it.id));
+      const newItems = data.items.filter((it) => !existingIds.has(it.id));
+      if (newItems.length === 0) return prev;
+      return [...prev, ...newItems];
+    });
+  }, [data?.items, page]);
+
   const onFilterChange = (next: {
     q: string;
     role: UserRole | null;
@@ -117,16 +130,6 @@ export default function AdminUsersClient({
       setPage((p) => p + 1);
     }
   };
-
-  if (data?.items && accumulatedUsers.length === 0 && page === 1) {
-    setAccumulatedUsers(data.items);
-  } else if (data?.items && page > 1) {
-    const existingIds = new Set(accumulatedUsers.map((it) => it.id));
-    const newItems = data.items.filter((it) => !existingIds.has(it.id));
-    if (newItems.length > 0) {
-      setAccumulatedUsers([...accumulatedUsers, ...newItems]);
-    }
-  }
 
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     if (!t) return;

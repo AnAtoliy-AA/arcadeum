@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, View, StyleSheet, TouchableOpacity } from 'react-native';
-import Slider from '@react-native-community/slider';
+import SliderBase from '@react-native-community/slider';
+import type { SliderProps } from '@react-native-community/slider';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from '@/lib/i18n';
+
+// Upstream typings (mixin-based class declaration) don't satisfy React 19's
+// JSX component checks — adapt them locally instead of patching node_modules.
+const Slider = SliderBase as unknown as React.FC<SliderProps>;
 
 interface DefuseModalProps {
   visible: boolean;

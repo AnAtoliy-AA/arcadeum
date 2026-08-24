@@ -35,6 +35,7 @@ export const frMessages = {
         'Chaque mouvement vers une fondation vaut 10 points, vers une colonne 5, et chaque carte retournée ajoute encore 5 points.',
     },
     landing: {
+      tagline: 'Solo · Sans inscription',
       meta: {
         title: 'Solitaire — Jeu de cartes Klondike gratuit en ligne | Arcadeum',
         description:

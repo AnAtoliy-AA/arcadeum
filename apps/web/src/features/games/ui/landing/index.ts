@@ -12,4 +12,5 @@ export * from './GameRelatedGames';
 export * from './GameFinalCta';
 export * from './GameLandingLayout';
 export * from './UnifiedGameLanding';
+export * from './SoloGameLanding';
 export * from './getRelatedGames';

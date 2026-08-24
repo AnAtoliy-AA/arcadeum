@@ -13,7 +13,7 @@ export interface CatalogGameItem {
   description: string;
   genre: string;
   pace?: string;
-  category: 'all' | 'board' | 'card' | 'casual';
+  category: 'all' | 'board' | 'card' | 'casual' | 'puzzle';
   categoryLabel: string;
   players: string;
   duration: string;
@@ -41,13 +41,14 @@ interface Props {
 }
 
 const CATEGORIES: Array<{
-  key: 'all' | 'board' | 'card' | 'casual';
+  key: 'all' | 'board' | 'card' | 'casual' | 'puzzle';
   label: string;
   icon: string;
 }> = [
   { key: 'all', label: 'All Games', icon: '🎮' },
   { key: 'board', label: 'Board Games', icon: '♟️' },
   { key: 'card', label: 'Card Games', icon: '🃏' },
+  { key: 'puzzle', label: 'Puzzles', icon: '🧩' },
   { key: 'casual', label: 'Action & Casual', icon: '⚡' },
 ];
 
@@ -66,7 +67,7 @@ export function GamesCatalogClient({
   offlineBadgeLabel,
 }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<
-    'all' | 'board' | 'card' | 'casual'
+    'all' | 'board' | 'card' | 'casual' | 'puzzle'
   >('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -82,6 +83,7 @@ export function GamesCatalogClient({
       all: games.length,
       board: 0,
       card: 0,
+      puzzle: 0,
       casual: 0,
     };
     for (const g of games) {

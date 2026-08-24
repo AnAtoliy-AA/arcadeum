@@ -342,6 +342,7 @@ export const byMessages = {
       action: 'Экшн',
       strategy: 'Стратэгія',
       race: 'Гонка',
+      puzzle: 'Галаваломка',
     },
     tags: {
       strategy: 'Стратэгія',

@@ -105,6 +105,8 @@ export type GameSlug =
   | 'wordle_v1'
   | 'crossword_v1'
   | 'sudoku_v1'
+  | 'minesweeper_v1'
+  | 'game_2048_v1'
   | 'jigsaw_puzzle_v1'
   | 'memory_match_v1'
   | 'spot_the_difference_v1'

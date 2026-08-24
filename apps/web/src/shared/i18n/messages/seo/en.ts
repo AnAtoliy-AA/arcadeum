@@ -81,6 +81,18 @@ export const en = {
     title: `Solitaire · Free Online Klondike Card Game · ${APP}`,
     description: `Play Solitaire (Klondike) online on ${APP} — the classic single-player card puzzle with scoring, timer, and saved progress. Free, instant, no download.`,
   },
+  minesweeperLanding: {
+    title: `Minesweeper · Free Online Classic Puzzle Game · ${APP}`,
+    description: `Play Minesweeper online on ${APP} — beginner to expert grids with flags, chording, timer, and saved progress. Free, instant, no download.`,
+  },
+  sudokuLanding: {
+    title: `Sudoku · Free Online Number Puzzle Game · ${APP}`,
+    description: `Play Sudoku online on ${APP} — easy, medium and hard puzzles with unique solutions, pencil marks, and saved progress. Free, instant, no download.`,
+  },
+  game2048Landing: {
+    title: `2048 · Free Online Tile-Merging Puzzle Game · ${APP}`,
+    description: `Play 2048 online on ${APP} — slide and merge numbered tiles on a 4×4 grid, chase your best score, and keep going past 2048. Free, instant, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

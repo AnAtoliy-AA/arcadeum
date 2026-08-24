@@ -83,6 +83,18 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Solitario · Juego de Cartas Klondike Gratis Online · ${APP}`,
     description: `Juega al Solitario (Klondike) online en ${APP} — el rompecabezas de cartas clásico para un jugador con puntuación, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
   },
+  minesweeperLanding: {
+    title: `Buscaminas · Juego de Rompecabezas Clásico Gratis Online · ${APP}`,
+    description: `Juega al Buscaminas online en ${APP} — tableros de principiante a experto con banderas, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
+  },
+  sudokuLanding: {
+    title: `Sudoku · Juego de Rompecabezas Numérico Gratis Online · ${APP}`,
+    description: `Juega al Sudoku online en ${APP} — niveles fácil, medio y difícil con solución única, notas a lápiz y progreso guardado. Gratis, instantáneo, sin descarga.`,
+  },
+  game2048Landing: {
+    title: `2048 · Juego de Rompecabezas de Fichas Gratis Online · ${APP}`,
+    description: `Juega al 2048 online en ${APP} — desliza y fusiona fichas numeradas en una cuadrícula 4×4, bate tu récord y sigue más allá del 2048. Gratis, instantáneo, sin descarga.`,
+  },
   settings: {
     title: `Ajustes · ${APP}`,
     description: `Personaliza tu experiencia en ${APP}: apariencia, tema, idioma y preferencias de descarga.`,

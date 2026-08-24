@@ -55,6 +55,7 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   referrals: (r) => r.referrals,
   leaderboards: (r) => r.leaderboards,
   friends: (r) => r.friends,
+  clans: (r) => r.clans,
   tournaments: (r) => r.tournaments,
   rewards: (r) => r.rewards,
   wallet: (r) => r.wallet,

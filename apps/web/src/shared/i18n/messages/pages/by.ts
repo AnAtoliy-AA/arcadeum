@@ -16,6 +16,7 @@ import { adminBlockedIpsBy } from './admin-blocked-ips/by';
 import { adminUsersBy } from './admin-users/by';
 import { adminBulkRewardsBy } from './admin-bulk-rewards/by';
 import { friendsBy } from './friends/by';
+import { clansBy } from './clans/by';
 import { communityBy } from './community/by';
 import { rewardsBy } from './rewards/by';
 import { developersBy } from './developers/by';
@@ -380,4 +381,5 @@ export const by = {
   adminShop: adminShopBy,
   adminGames: adminGamesBy,
   friends: friendsBy,
+  clans: clansBy,
 };

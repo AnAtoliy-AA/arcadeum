@@ -158,7 +158,7 @@ describe('socket', () => {
 
     disconnectSockets();
 
-    expect(mockSocket.disconnect).toHaveBeenCalledTimes(5);
+    expect(mockSocket.disconnect).toHaveBeenCalledTimes(6);
 
     // Restore default behavior
     (mockSocket.disconnect as unknown as Mock).mockImplementation(

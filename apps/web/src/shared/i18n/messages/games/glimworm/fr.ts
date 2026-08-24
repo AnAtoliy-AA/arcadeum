@@ -56,6 +56,24 @@ export const frMessages = {
       inPlay: 'En jeu',
       roundOver: 'Manche terminée',
     },
+    tutorial: {
+      s1: {
+        title: 'Serptez et grandissez',
+        body: 'Guidez votre ver lumineux dans l’arène et mangez de la nourriture pour grandir et marquer des points.',
+      },
+      s2: {
+        title: 'Évitez toutes les traces',
+        body: 'Ne touchez jamais la trace d’un autre ver — ni la vôtre, sauf si un bouclier vous sauve.',
+      },
+      s3: {
+        title: 'Boostez-vous',
+        body: 'Attrapez des bonus comme Turbo et Bouclier pour dominer vos rivaux, et surveillez le HUD : temps, vies et score.',
+      },
+      s4: {
+        title: 'Connaissez votre mode',
+        body: 'En Battle Royale l’arène rétrécit jusqu’au dernier ver ; en Time Attack le meilleur score après 90 secondes gagne.',
+      },
+    },
     rules: {
       objective:
         'Survivez à tous les autres vers de l’arène. Mangez la nourriture lumineuse pour grandir et marquer des points.',

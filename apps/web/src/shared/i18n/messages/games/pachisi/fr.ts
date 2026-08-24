@@ -168,6 +168,24 @@ export const frMessages = {
       moveTokenAria: 'Déplacer le pion {{id}}',
       dieValue: 'Dé : {{value}}',
     },
+    tutorial: {
+      s1: {
+        title: 'Un six et vous sortez',
+        body: 'Lancez le dé à votre tour et déplacez un pion. Il faut un 6 pour quitter la cour — et ce 6 offre un lancer supplémentaire.',
+      },
+      s2: {
+        title: 'Renvoyez-les chez eux',
+        body: 'Atterrissez sur le pion d’un adversaire pour le renvoyer dans sa cour. Les cases étoiles et de départ sont des refuges sûrs.',
+      },
+      s3: {
+        title: 'Marchez vers la maison',
+        body: 'Faites le tour du plateau dans le sens horaire, gravissez votre couloir coloré et rentrez chaque pion au centre pour gagner.',
+      },
+      s4: {
+        title: 'La gourmandise se paie',
+        body: 'Trois 6 d’affilée annulent tout votre tour — parfois le coup sûr est le meilleur.',
+      },
+    },
     rules: {
       title: 'Règles du Pachisi',
       objectiveTitle: 'Objectif',

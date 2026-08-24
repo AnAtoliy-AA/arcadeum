@@ -39,6 +39,19 @@ export const ruMessages = {
     error: 'Не удалось запустить — попробуйте ещё раз',
     delayLabel: 'Задержка хода',
   },
+  tutorial: {
+    ui: {
+      button: 'Обучение',
+      next: 'Далее',
+      back: 'Назад',
+      skip: 'Пропустить',
+      finish: 'Начать игру',
+      stepOf: 'Шаг {{current}} из {{total}}',
+      completeTitle: 'Обучение завершено!',
+      completeBody:
+        'Отлично — теперь вы знаете основы игры {{game}}. Удачи за столом!',
+    },
+  },
   rooms: {
     status: {
       lobby: 'Лобби',

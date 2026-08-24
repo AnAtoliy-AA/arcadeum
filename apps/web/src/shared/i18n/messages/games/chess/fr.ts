@@ -89,6 +89,24 @@ export const frMessages = {
       medium: 'Moyen',
       hard: 'Difficile',
     },
+    tutorial: {
+      s1: {
+        title: 'Matez le roi',
+        body: 'Déplacez vos pièces sur l’échiquier 8×8 pour attaquer le roi adverse. Coincez-le sans échappatoire et gagnez par mat.',
+      },
+      s2: {
+        title: 'Déplacer les pièces',
+        body: 'Cliquez sur une de vos pièces pour surligner ses cases légales, puis cliquez sur une destination. Roque, prise en passant et promotion sont pris en charge.',
+      },
+      s3: {
+        title: 'Surveillez l’horloge',
+        body: 'Votre horloge décompte pendant votre tour — tomber à zéro perd la partie. Son, musique et partage se trouvent dans ce panneau.',
+      },
+      s4: {
+        title: 'De l’aide au besoin',
+        body: 'Ouvrez le livre des Règles à tout moment, utilisez les indices quand disponibles et discutez avec votre adversaire pendant la partie.',
+      },
+    },
     rules: {
       title: 'Règles des Échecs',
       objective: 'Objectif',

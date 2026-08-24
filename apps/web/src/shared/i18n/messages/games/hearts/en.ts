@@ -169,6 +169,24 @@ export const enMessages = {
         clubs: 'Clubs',
       },
     },
+    tutorial: {
+      s1: {
+        title: 'Dodge the points',
+        body: 'Follow suit when you can; the highest card of the lead suit takes the trick — and every penalty card in it.',
+      },
+      s2: {
+        title: 'Fear the Queen',
+        body: 'Hearts cost 1 point each; the Queen of Spades a brutal 13. Before each hand, pass dangerous cards left, right, across, then hold.',
+      },
+      s3: {
+        title: 'Shoot the moon',
+        body: 'Feeling brave? Capture all 26 points to zero your own score and slap 26 onto everyone else.',
+      },
+      s4: {
+        title: 'Count what is gone',
+        body: 'Track which suits have been played, manage sound and music, and open the Rules book whenever in doubt.',
+      },
+    },
     rules: {
       title: 'Hearts Rules',
       objectiveTitle: 'Objective',

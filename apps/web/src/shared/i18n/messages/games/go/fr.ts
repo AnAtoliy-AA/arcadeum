@@ -134,6 +134,24 @@ export const frMessages = {
       lost: 'Défaite — votre adversaire a contrôlé plus d’aire.',
       draw: 'Match nul — plateau parfaitement équilibré.',
     },
+    tutorial: {
+      s1: {
+        title: 'Entourez du territoire',
+        body: 'Placez des pierres pour clôturer des intersections vides. Quand les deux joueurs passent, la plus grande aire gagne — Blanc démarre avec le komi.',
+      },
+      s2: {
+        title: 'Coupez les libertés',
+        body: 'Un groupe sans intersection vide adjacente (liberté) est capturé et retiré. Encerclez les pierres ennemies pour leur retirer leur dernière liberté.',
+      },
+      s3: {
+        title: 'Attention au ko',
+        body: 'Il est interdit de reprendre immédiatement en recréant la position précédente — jouez ailleurs d’abord. Deux passes consécutives terminent la partie.',
+      },
+      s4: {
+        title: 'Les outils du métier',
+        body: 'Son, musique, plein écran et le livre des Règles vous attendent ici pendant que vous ourdissez votre prochain coup.',
+      },
+    },
     rules: {
       title: 'Règles du Go',
       objectiveTitle: 'Objectif',

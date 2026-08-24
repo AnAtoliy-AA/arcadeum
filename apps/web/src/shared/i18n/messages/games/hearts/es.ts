@@ -169,6 +169,24 @@ export const esMessages = {
         clubs: 'Tréboles',
       },
     },
+    tutorial: {
+      s1: {
+        title: 'Escapa de los puntos',
+        body: 'Sirve palo si puedes; la carta más alta del palo de salida se lleva la baza — y todas sus cartas de castigo.',
+      },
+      s2: {
+        title: 'Teme a la Reina',
+        body: 'Cada corazón vale 1 punto y la Reina de Picas 13. Antes de cada mano pasa cartas peligrosas: izquierda, derecha, enfrente y sin pasar.',
+      },
+      s3: {
+        title: 'Dispara a la luna',
+        body: '¿Te sientes valiente? Captura los 26 puntos para dejar tu marcador en cero y endosarle 26 a todos los demás.',
+      },
+      s4: {
+        title: 'Cuenta lo que falta',
+        body: 'Sigue qué palos se han jugado, gestiona sonido y música y abre el libro de Reglas ante cualquier duda.',
+      },
+    },
     rules: {
       title: 'Reglas de Corazones',
       objectiveTitle: 'Objetivo',

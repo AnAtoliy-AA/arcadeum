@@ -160,6 +160,24 @@ export const esMessages = {
       checkerMoved: 'Ficha movida',
       checkerHit: '¡Ficha enviada a la barra!',
     },
+    tutorial: {
+      s1: {
+        title: 'Tira y avanza',
+        body: 'Tira dos dados y mueve tus fichas según los pips. Con dobles juegas el número cuatro veces.',
+      },
+      s2: {
+        title: 'Golpea los blots',
+        body: 'Una ficha sola es un blot — cae en ella y la mandas a la barra. Las fichas en la barra deben reingresar antes de mover cualquier otra cosa.',
+      },
+      s3: {
+        title: 'Saca fichas para ganar',
+        body: 'Lleva las quince fichas a tu hogar y luego retíralas con tiradas exactas. Gana quien retire las quince primero.',
+      },
+      s4: {
+        title: 'Entre tiradas',
+        body: 'El sonido, la música, la pantalla completa y el libro de Reglas completo viven en este panel.',
+      },
+    },
     rules: {
       title: 'Reglas del Backgammon',
       objectiveTitle: 'Objetivo',

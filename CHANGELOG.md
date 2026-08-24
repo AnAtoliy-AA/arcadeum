@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.29] - 2026-08-24
+
+### Added
+- register solo puzzle games in catalog, seo, and sitemap (ARC-924)
+- add 2048 widget, routes, and i18n (ARC-924)
+- add sudoku widget, routes, and i18n (ARC-924)
+- add minesweeper widget, routes, and i18n (ARC-924)
+
+### Fixed
+- align component types with generated RN 0.81 definitions
+
+### Refactored
+- extract shared solo game landing component (ARC-924)
+
+
 ## [1.26.28] - 2026-08-24
 
 ### Added

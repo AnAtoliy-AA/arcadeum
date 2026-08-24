@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.25] - 2026-08-24
+
+### Added
+- add keyboard play to backgammon, sea battle, chess and checkers boards (ARC-898)
+- add keyboard navigation utilities and Escape-to-deselect (ARC-898)
+
+### Documentation
+- mark keyboard navigation implemented in roadmap (ARC-898)
+
+
 ## [1.26.24] - 2026-08-24
 
 ### Added

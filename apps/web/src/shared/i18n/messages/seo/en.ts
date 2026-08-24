@@ -76,6 +76,11 @@ export const en = {
     title: `Go · Free Online Multiplayer Board Game · ${APP}`,
     description: `Play Go online on ${APP} — classic Baduk/Weiqi on 9×9, 13×13 and 19×19 boards with captures, ko rule, area scoring, and AI opponents. Free, instant rooms.`,
   },
+
+  solitaireLanding: {
+    title: `Solitaire · Free Online Klondike Card Game · ${APP}`,
+    description: `Play Solitaire (Klondike) online on ${APP} — the classic single-player card puzzle with scoring, timer, and saved progress. Free, instant, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,

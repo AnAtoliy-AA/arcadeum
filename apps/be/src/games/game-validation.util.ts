@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import {
   GAME_ROOM_STATUS_VALUES,
   type GameRoomStatus,
@@ -9,7 +10,9 @@ const VALID_STATUSES = new Set<string>(GAME_ROOM_STATUS_VALUES);
 
 export function validateGameId(gameId: string): void {
   if (!VALID_GAME_IDS.has(gameId)) {
-    throw new Error(`Invalid gameId: ${gameId}`);
+    // Client-supplied input (query params, DTOs, replay paths) — respond with
+    // a clean 400 instead of an unhandled 500 that spams the error log.
+    throw new BadRequestException(`Invalid gameId: ${gameId}`);
   }
 }
 

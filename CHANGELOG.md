@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.18] - 2026-08-24
+
+### Fixed
+- add @react-native/assets-registry as devDependency to fix jest-expo module resolution
+
+
 ## [1.26.17] - 2026-08-24
 
 ### Changed

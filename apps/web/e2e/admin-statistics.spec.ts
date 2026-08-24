@@ -17,10 +17,10 @@ test.describe('/admin/statistics SEO and routing', () => {
     expect(body).not.toMatch(/\/admin\/statistics/);
   });
 
-  test('unauthenticated request redirects away from admin statistics', async ({
-    page,
+  test('unauthenticated request returns 404 for admin statistics', async ({
+    request,
   }) => {
-    await page.goto('/en/admin/statistics');
-    await expect(page).not.toHaveURL(/\/admin\/statistics/);
+    const res = await request.get('/en/admin/statistics');
+    expect(res.status()).toBe(404);
   });
 });

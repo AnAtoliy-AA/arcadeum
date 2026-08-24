@@ -28,6 +28,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { BulkRewardsModule } from './bulk-rewards/bulk-rewards.module';
 import { FriendsModule } from './friends/friends.module';
 import { ClansModule } from './clans/clans.module';
+import { EventsModule } from './events/events.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import {
@@ -79,6 +80,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     BulkRewardsModule,
     FriendsModule,
     ClansModule,
+    EventsModule,
     MongooseModule.forRoot(resolveMongoUri(), {
       ...resolveMongoOptions(),
       connectionName: OCI_CONNECTION,

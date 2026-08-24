@@ -15,8 +15,8 @@ export interface StatsAnonymousTranslations {
 }
 
 interface StatsAnonymousOverviewProps {
-  anonymous: AdminStatsAnonymous;
-  users: AdminStatsUsers;
+  anonymous?: AdminStatsAnonymous;
+  users?: AdminStatsUsers;
   registered?: AdminStatsAudienceMetrics;
   anonymousAudience?: AdminStatsAudienceMetrics;
   t?: StatsAnonymousTranslations;
@@ -29,6 +29,37 @@ export function StatsAnonymousOverview({
   anonymousAudience,
   t,
 }: StatsAnonymousOverviewProps): ReactElement {
+  const guestShare = anonymous?.guestTrafficSharePercentage ?? 0;
+  const anonDau = anonymous?.anonymousDau ?? users?.anonymousDau ?? 0;
+  const regDau = registered?.dau ?? users?.registeredDau ?? 0;
+  const anonMau = anonymous?.anonymousMau ?? users?.anonymousMau ?? 0;
+  const regMau = registered?.mau ?? users?.registeredMau ?? 0;
+  const anonWau = anonymousAudience?.wau ?? users?.anonymousWau ?? 0;
+  const regWau = registered?.wau ?? users?.registeredWau ?? 0;
+  const totalDau = users?.dau ?? regDau + anonDau;
+  const totalWau = users?.wau ?? regWau + anonWau;
+  const totalMau = users?.mau ?? regMau + anonMau;
+
+  const anonGamesToday = anonymous?.anonymousGamesToday ?? anonymousAudience?.gamesToday ?? 0;
+  const regGamesToday = registered?.gamesToday ?? 0;
+  const totalAnonPlayers = anonymous?.totalAnonymousPlayers ?? anonymousAudience?.totalCount ?? 0;
+  const totalRegUsers = users?.totalUsers ?? registered?.totalCount ?? 0;
+
+  const regStickiness = registered?.stickyFactorDauMau ?? users?.stickyFactorDauMau ?? 0;
+  const anonStickiness = anonymousAudience?.stickyFactorDauMau ?? 0;
+  const totalStickiness = users?.stickinessRate ?? 0;
+
+  const regPlaytime = registered?.avgPlaytimePerActiveUserMinutes ?? users?.avgPlaytimePerActiveUserMinutes ?? 0;
+  const anonPlaytime = anonymousAudience?.avgPlaytimePerActiveUserMinutes ?? 0;
+  const totalPlaytime = users?.avgPlaytimePerActiveUserMinutes ?? 0;
+
+  const regGamesTotal = registered?.gamesTotal ?? 0;
+  const anonGamesTotal = anonymousAudience?.gamesTotal ?? anonymous?.anonymousGamesTotal ?? 0;
+  const totalGames = regGamesTotal + anonGamesTotal > 0 ? regGamesTotal + anonGamesTotal : totalRegUsers;
+
+  const regCompletion = registered?.completionRate ?? 95;
+  const anonCompletion = anonymousAudience?.completionRate ?? 90;
+
   return (
     <GlassCard
       className="p-6 border border-[var(--borderColor)] flex flex-col gap-5 w-full"
@@ -50,7 +81,7 @@ export function StatsAnonymousOverview({
 
         <div className="flex flex-row items-center gap-3">
           <Badge variant="info" size="md">
-            {anonymous.guestTrafficSharePercentage}% {t?.guestShareLabel ?? 'Guest Traffic Share'}
+            {guestShare}% {t?.guestShareLabel ?? 'Guest Traffic Share'}
           </Badge>
         </div>
       </div>
@@ -61,10 +92,10 @@ export function StatsAnonymousOverview({
             {t?.guestDauLabel ?? 'Anonymous DAU (Daily)'}
           </span>
           <span className="text-2xl font-bold text-cyan-400">
-            {anonymous.anonymousDau.toLocaleString()}
+            {anonDau.toLocaleString()}
           </span>
           <span className="text-[11px] text-[var(--colorTextSecondary,#a1a1aa)]">
-            Registered: {users.registeredDau.toLocaleString()}
+            Registered: {regDau.toLocaleString()}
           </span>
         </div>
 
@@ -73,10 +104,10 @@ export function StatsAnonymousOverview({
             {t?.guestMauLabel ?? 'Anonymous MAU (Monthly)'}
           </span>
           <span className="text-2xl font-bold text-purple-400">
-            {anonymous.anonymousMau.toLocaleString()}
+            {anonMau.toLocaleString()}
           </span>
           <span className="text-[11px] text-[var(--colorTextSecondary,#a1a1aa)]">
-            Registered: {users.registeredMau.toLocaleString()}
+            Registered: {regMau.toLocaleString()}
           </span>
         </div>
 
@@ -85,10 +116,10 @@ export function StatsAnonymousOverview({
             {t?.guestGamesTodayLabel ?? 'Guest Matches Today'}
           </span>
           <span className="text-2xl font-bold text-amber-400">
-            {anonymous.anonymousGamesToday.toLocaleString()}
+            {anonGamesToday.toLocaleString()}
           </span>
           <span className="text-[11px] text-[var(--colorTextSecondary,#a1a1aa)]">
-            Registered: {(registered?.gamesToday ?? 0).toLocaleString()}
+            Registered: {regGamesToday.toLocaleString()}
           </span>
         </div>
 
@@ -97,10 +128,10 @@ export function StatsAnonymousOverview({
             {t?.totalGuestsLabel ?? 'Unique Guest Profiles'}
           </span>
           <span className="text-2xl font-bold text-emerald-400">
-            {anonymous.totalAnonymousPlayers.toLocaleString()}
+            {totalAnonPlayers.toLocaleString()}
           </span>
           <span className="text-[11px] text-[var(--colorTextSecondary,#a1a1aa)]">
-            Registered: {users.totalUsers.toLocaleString()} accounts
+            Registered: {totalRegUsers.toLocaleString()} accounts
           </span>
         </div>
       </div>
@@ -118,45 +149,45 @@ export function StatsAnonymousOverview({
           <tbody className="divide-y divide-[var(--borderColor)]">
             <tr className="hover:bg-white/5 transition-colors">
               <td className="py-2.5 px-3 font-semibold text-[var(--colorText)]">Daily Active (DAU)</td>
-              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{users.registeredDau.toLocaleString()}</td>
-              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{users.anonymousDau.toLocaleString()}</td>
-              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{users.dau.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{regDau.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonDau.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{totalDau.toLocaleString()}</td>
             </tr>
             <tr className="hover:bg-white/5 transition-colors">
               <td className="py-2.5 px-3 font-semibold text-[var(--colorText)]">Weekly Active (WAU)</td>
-              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{users.registeredWau.toLocaleString()}</td>
-              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{users.anonymousWau.toLocaleString()}</td>
-              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{users.wau.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{regWau.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonWau.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{totalWau.toLocaleString()}</td>
             </tr>
             <tr className="hover:bg-white/5 transition-colors">
               <td className="py-2.5 px-3 font-semibold text-[var(--colorText)]">Monthly Active (MAU)</td>
-              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{users.registeredMau.toLocaleString()}</td>
-              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{users.anonymousMau.toLocaleString()}</td>
-              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{users.mau.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{regMau.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonMau.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{totalMau.toLocaleString()}</td>
             </tr>
             <tr className="hover:bg-white/5 transition-colors">
               <td className="py-2.5 px-3 font-semibold text-[var(--colorText)]">Stickiness (DAU/MAU)</td>
-              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{registered?.stickyFactorDauMau ?? users.stickyFactorDauMau}%</td>
-              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonymousAudience?.stickyFactorDauMau ?? 0}%</td>
-              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{users.stickinessRate}%</td>
+              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{regStickiness}%</td>
+              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonStickiness}%</td>
+              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{totalStickiness}%</td>
             </tr>
             <tr className="hover:bg-white/5 transition-colors">
               <td className="py-2.5 px-3 font-semibold text-[var(--colorText)]">Avg Playtime / Active User</td>
-              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{registered?.avgPlaytimePerActiveUserMinutes ?? users.avgPlaytimePerActiveUserMinutes} min</td>
-              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonymousAudience?.avgPlaytimePerActiveUserMinutes ?? 0} min</td>
-              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{users.avgPlaytimePerActiveUserMinutes} min</td>
+              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{regPlaytime} min</td>
+              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonPlaytime} min</td>
+              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{totalPlaytime} min</td>
             </tr>
             <tr className="hover:bg-white/5 transition-colors">
               <td className="py-2.5 px-3 font-semibold text-[var(--colorText)]">Total Matches Played</td>
-              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{(registered?.gamesTotal ?? 0).toLocaleString()}</td>
-              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{(anonymousAudience?.gamesTotal ?? 0).toLocaleString()}</td>
-              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{(registered?.gamesTotal ?? 0) + (anonymousAudience?.gamesTotal ?? 0) > 0 ? ((registered?.gamesTotal ?? 0) + (anonymousAudience?.gamesTotal ?? 0)).toLocaleString() : users.totalUsers.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{regGamesTotal.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonGamesTotal.toLocaleString()}</td>
+              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{totalGames.toLocaleString()}</td>
             </tr>
             <tr className="hover:bg-white/5 transition-colors">
               <td className="py-2.5 px-3 font-semibold text-[var(--colorText)]">Match Completion Rate</td>
-              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{registered?.completionRate ?? 95}%</td>
-              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonymousAudience?.completionRate ?? 90}%</td>
-              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{registered?.completionRate ?? 95}%</td>
+              <td className="py-2.5 px-3 text-right font-medium text-emerald-400">{regCompletion}%</td>
+              <td className="py-2.5 px-3 text-right font-medium text-cyan-400">{anonCompletion}%</td>
+              <td className="py-2.5 px-3 text-right font-bold text-[var(--colorText)]">{regCompletion}%</td>
             </tr>
           </tbody>
         </table>

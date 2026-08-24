@@ -66,38 +66,44 @@ export function AdminStatisticsView({
 }: AdminStatisticsViewProps): ReactElement {
   const [audienceFilter, setAudienceFilter] = useState<'all' | 'registered' | 'anonymous'>('all');
 
-  const formattedTime = new Date(data.timestamp).toLocaleTimeString([], {
+  const formattedTime = new Date(data?.timestamp ?? new Date().toISOString()).toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
   });
 
+  const users = data?.users;
+  const registered = data?.registered;
+  const anonymous = data?.anonymous;
+
   const activeUsers = {
-    ...data.users,
+    ...(users ?? {}),
     dau:
       audienceFilter === 'registered'
-        ? data.users.registeredDau
+        ? registered?.dau ?? users?.registeredDau ?? 0
         : audienceFilter === 'anonymous'
-        ? data.users.anonymousDau
-        : data.users.dau,
+        ? anonymous?.dau ?? users?.anonymousDau ?? 0
+        : users?.dau ?? 0,
     wau:
       audienceFilter === 'registered'
-        ? data.users.registeredWau
+        ? registered?.wau ?? users?.registeredWau ?? 0
         : audienceFilter === 'anonymous'
-        ? data.users.anonymousWau
-        : data.users.wau,
+        ? anonymous?.wau ?? users?.anonymousWau ?? 0
+        : users?.wau ?? 0,
     mau:
       audienceFilter === 'registered'
-        ? data.users.registeredMau
+        ? registered?.mau ?? users?.registeredMau ?? 0
         : audienceFilter === 'anonymous'
-        ? data.users.anonymousMau
-        : data.users.mau,
+        ? anonymous?.mau ?? users?.anonymousMau ?? 0
+        : users?.mau ?? 0,
   };
 
   const filteredData: AdminStatisticsData = {
     ...data,
-    users: activeUsers,
+    users: activeUsers as AdminStatisticsData['users'],
   };
+
+  const guestTrafficShare = users?.anonymous?.guestTrafficSharePercentage ?? 0;
 
   return (
     <div
@@ -174,7 +180,7 @@ export function AdminStatisticsView({
           </div>
 
           <Badge variant="info" size="sm">
-            {data.users.anonymous.guestTrafficSharePercentage}% Guest Traffic
+            {guestTrafficShare}% Guest Traffic
           </Badge>
         </div>
       </GlassCard>
@@ -182,25 +188,33 @@ export function AdminStatisticsView({
       <StatsKpiGrid data={filteredData} mode={audienceFilter} t={t?.kpi} />
 
       <StatsAnonymousOverview
-        anonymous={data.users.anonymous}
-        users={data.users}
-        registered={data.registered}
-        anonymousAudience={data.anonymous}
+        anonymous={users?.anonymous ?? {
+          totalAnonymousPlayers: 0,
+          anonymousDau: 0,
+          anonymousWau: 0,
+          anonymousMau: 0,
+          anonymousGamesToday: 0,
+          anonymousGamesTotal: 0,
+          guestTrafficSharePercentage: 0,
+        }}
+        users={users}
+        registered={registered}
+        anonymousAudience={anonymous}
         t={t?.anonymous}
       />
 
       <StatsEngagementRetention
         users={filteredData.users}
         games={data.games}
-        registered={data.registered}
-        anonymous={data.anonymous}
+        registered={registered}
+        anonymous={anonymous}
         mode={audienceFilter}
         t={t?.engagement}
       />
 
       <StatsActivityCharts
-        daily={data.trends.daily}
-        hourlyActivity={data.trends.hourlyActivity}
+        daily={data?.trends?.daily ?? []}
+        hourlyActivity={data?.trends?.hourlyActivity ?? []}
         t={t?.charts}
       />
 

@@ -26,36 +26,46 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
   const currentAudience =
     mode === 'registered' ? registered : mode === 'anonymous' ? anonymous : null;
 
-  const displayDau = currentAudience ? currentAudience.dau : users.dau;
-  const displayMau = currentAudience ? currentAudience.mau : users.mau;
-  const displayWau = currentAudience ? currentAudience.wau : users.wau;
-  const displayStickiness = currentAudience
-    ? currentAudience.stickyFactorDauMau
-    : users.stickinessRate;
+  const regTotal = registered?.totalCount ?? users?.totalUsers ?? 0;
+  const anonTotal = anonymous?.totalCount ?? users?.anonymous?.totalAnonymousPlayers ?? 0;
+  const regDau = registered?.dau ?? users?.registeredDau ?? 0;
+  const anonDau = anonymous?.dau ?? users?.anonymousDau ?? 0;
+  const regMau = registered?.mau ?? users?.registeredMau ?? 0;
+  const anonMau = anonymous?.mau ?? users?.anonymousMau ?? 0;
+  const regGamesToday = registered?.gamesToday ?? 0;
+  const anonGamesToday = anonymous?.gamesToday ?? 0;
+  const regPlaytime = registered?.estimatedPlaytimeHours ?? 0;
+  const anonPlaytime = anonymous?.estimatedPlaytimeHours ?? 0;
+
+  const displayDau = currentAudience?.dau ?? users?.dau ?? 0;
+  const displayMau = currentAudience?.mau ?? users?.mau ?? 0;
+  const displayWau = currentAudience?.wau ?? users?.wau ?? 0;
+  const displayStickiness =
+    currentAudience?.stickyFactorDauMau ?? users?.stickinessRate ?? 0;
+
   const displayTotalUsers =
     mode === 'registered'
-      ? users.totalUsers
+      ? regTotal
       : mode === 'anonymous'
-      ? anonymous.totalCount
-      : users.totalUsers + anonymous.totalCount;
-  const displayTotalGames = currentAudience
-    ? currentAudience.gamesTotal
-    : games.totalGamesPlayed;
-  const displayPlaytime = currentAudience
-    ? currentAudience.estimatedPlaytimeHours
-    : games.estimatedPlaytimeHours;
+      ? anonTotal
+      : regTotal + anonTotal;
+
+  const displayTotalGames =
+    currentAudience?.gamesTotal ?? games?.totalGamesPlayed ?? 0;
+  const displayPlaytime =
+    currentAudience?.estimatedPlaytimeHours ?? games?.estimatedPlaytimeHours ?? 0;
 
   const dauSubtext =
     mode === 'all'
-      ? `Reg: ${users.registeredDau.toLocaleString()} | Anon: ${users.anonymousDau.toLocaleString()}`
+      ? `Reg: ${regDau.toLocaleString()} | Anon: ${anonDau.toLocaleString()}`
       : mode === 'registered'
       ? `Registered Accounts`
       : `Anonymous & Guests`;
 
   const gamesSubtext =
     mode === 'all'
-      ? `Reg: ${registered.gamesToday.toLocaleString()} | Anon: ${anonymous.gamesToday.toLocaleString()}`
-      : `Today: ${currentAudience?.gamesToday.toLocaleString() ?? 0}`;
+      ? `Reg: ${regGamesToday.toLocaleString()} | Anon: ${anonGamesToday.toLocaleString()}`
+      : `Today: ${currentAudience?.gamesToday?.toLocaleString() ?? 0}`;
 
   return (
     <div
@@ -78,7 +88,7 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
           value={displayMau.toLocaleString()}
           delta={
             mode === 'all'
-              ? `Reg: ${users.registeredMau.toLocaleString()} | Anon: ${users.anonymousMau.toLocaleString()}`
+              ? `Reg: ${regMau.toLocaleString()} | Anon: ${anonMau.toLocaleString()}`
               : `WAU: ${displayWau.toLocaleString()}`
           }
           deltaType="neutral"
@@ -108,12 +118,12 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
           value={displayTotalUsers.toLocaleString()}
           delta={
             mode === 'all'
-              ? `Reg: ${users.totalUsers.toLocaleString()} | Anon: ${anonymous.totalCount.toLocaleString()}`
-              : users.blockedUsers > 0 && mode === 'registered'
+              ? `Reg: ${regTotal.toLocaleString()} | Anon: ${anonTotal.toLocaleString()}`
+              : users?.blockedUsers > 0 && mode === 'registered'
               ? `${users.blockedUsers} restricted`
               : undefined
           }
-          deltaType={users.blockedUsers > 0 && mode === 'registered' ? 'decrease' : 'neutral'}
+          deltaType={users?.blockedUsers > 0 && mode === 'registered' ? 'decrease' : 'neutral'}
           data-testid="stat-total-users"
         />
       </GlassCard>
@@ -134,8 +144,8 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
           value={`${displayPlaytime.toLocaleString()} hrs`}
           delta={
             mode === 'all'
-              ? `Reg: ${registered.estimatedPlaytimeHours}h | Anon: ${anonymous.estimatedPlaytimeHours}h`
-              : `${games.activeRooms} active matches`
+              ? `Reg: ${regPlaytime}h | Anon: ${anonPlaytime}h`
+              : `${games?.activeRooms ?? 0} active matches`
           }
           deltaType="increase"
           data-testid="stat-playtime"
@@ -145,8 +155,8 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
           label={t?.revenue ?? 'Gem Purchases Revenue'}
-          value={`$${economy.totalPurchasesRevenueUsd.toLocaleString()}`}
-          delta={`${economy.totalPurchasesCount} orders`}
+          value={`$${(economy?.totalPurchasesRevenueUsd ?? 0).toLocaleString()}`}
+          delta={`${economy?.totalPurchasesCount ?? 0} orders`}
           deltaType="increase"
           data-testid="stat-revenue"
         />
@@ -155,10 +165,10 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
           label="Wallet Transactions"
-          value={economy.transactionsCount.toLocaleString()}
+          value={(economy?.transactionsCount ?? 0).toLocaleString()}
           delta={
-            economy.transactionsToday > 0
-              ? `+${economy.transactionsToday} today`
+            (economy?.transactionsToday ?? 0) > 0
+              ? `+${economy?.transactionsToday} today`
               : undefined
           }
           deltaType="neutral"

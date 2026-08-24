@@ -139,9 +139,44 @@ export async function getAdminStatisticsData(): Promise<AdminStatisticsData> {
     if (!res.ok) {
       return DEFAULT_ADMIN_STATISTICS;
     }
-    const data = (await res.json()) as unknown;
+    const data = (await res.json()) as Partial<AdminStatisticsData>;
     if (data && typeof data === 'object' && 'users' in data) {
-      return data as AdminStatisticsData;
+      return {
+        ...DEFAULT_ADMIN_STATISTICS,
+        ...data,
+        users: {
+          ...DEFAULT_ADMIN_STATISTICS.users,
+          ...(data.users ?? {}),
+          anonymous: {
+            ...DEFAULT_ADMIN_STATISTICS.users.anonymous,
+            ...(data.users?.anonymous ?? {}),
+          },
+        },
+        games: {
+          ...DEFAULT_ADMIN_STATISTICS.games,
+          ...(data.games ?? {}),
+        },
+        economy: {
+          ...DEFAULT_ADMIN_STATISTICS.economy,
+          ...(data.economy ?? {}),
+        },
+        tournaments: {
+          ...DEFAULT_ADMIN_STATISTICS.tournaments,
+          ...(data.tournaments ?? {}),
+        },
+        registered: {
+          ...DEFAULT_ADMIN_STATISTICS.registered,
+          ...(data.registered ?? {}),
+        },
+        anonymous: {
+          ...DEFAULT_ADMIN_STATISTICS.anonymous,
+          ...(data.anonymous ?? {}),
+        },
+        trends: {
+          ...DEFAULT_ADMIN_STATISTICS.trends,
+          ...(data.trends ?? {}),
+        },
+      };
     }
     return DEFAULT_ADMIN_STATISTICS;
   } catch {

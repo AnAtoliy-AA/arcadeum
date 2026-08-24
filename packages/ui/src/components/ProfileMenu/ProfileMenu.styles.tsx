@@ -10,7 +10,7 @@ export const ProfileMenuContainer = ({
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cx('relative z-[100] hidden sm:block', className)}
+    className={cx('relative z-[100] hidden sm:block print:block', className)}
     {...rest}
   />
 );

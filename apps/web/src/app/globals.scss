@@ -49,3 +49,12 @@
 .typography-weight-800 { font-weight: 800; }
 .typography-text-center { text-align: center; }
 .typography-text-right { text-align: right; }
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

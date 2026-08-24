@@ -50,6 +50,7 @@ export const EN_SLUGS = {
   developers: 'developers',
   players: 'players',
   clans: 'clans',
+  events: 'events',
 } as const;
 
 export type SlugKey = keyof typeof EN_SLUGS;
@@ -97,6 +98,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     developers: 'desarrolladores',
     players: 'jugadores',
     clans: 'clanes',
+    events: 'eventos',
   },
   fr: {
     auth: 'connexion',
@@ -131,6 +133,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     developers: 'developpeurs',
     players: 'joueurs',
     clans: 'clans',
+    events: 'evenements',
   },
   ru: {
     auth: 'vhod',
@@ -165,6 +168,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     developers: 'razrabotchiki',
     players: 'igroki',
     clans: 'klany',
+    events: 'sobytiya',
   },
   by: {
     auth: 'uvakhod',
@@ -199,6 +203,7 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     developers: 'raspracoushchyki',
     players: 'hultsy',
     clans: 'klany',
+    events: 'padzei',
   },
 };
 

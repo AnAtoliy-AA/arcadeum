@@ -104,6 +104,10 @@ export const en = {
     title: `Clans · ${APP}`,
     description: `Join or create ${APP} clans, team up with other players, climb the clan leaderboards, and dominate together.`,
   },
+  events: {
+    title: `Community Game Nights & Events · ${APP}`,
+    description: `Join scheduled community game nights on ${APP}. Compete in featured multiplayer games, climb live event leaderboards, and earn exclusive rewards.`,
+  },
   tournaments: {
     title: `Tournaments · ${APP}`,
     description: `Compete in scheduled ${APP} tournaments, follow live brackets, and track upcoming events across our supported games.`,

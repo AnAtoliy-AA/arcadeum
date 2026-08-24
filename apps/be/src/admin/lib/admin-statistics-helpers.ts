@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import type {
   AdminStatsHourlyBucket,
   AdminStatsGameItem,
@@ -68,31 +67,34 @@ export function mapGamesBreakdown(
   }
 
   return rawAgg.map((g) => {
-    const regPlayers = g.uniquePlayers.filter(
+    const rawUnique = g.uniquePlayers ?? [];
+    let regPlayers = rawUnique.filter(
       (id) =>
-        Types.ObjectId.isValid(id) &&
-        !id.startsWith('bot_') &&
-        !id.startsWith('guest_') &&
-        !id.startsWith('anon_'),
+        !String(id).startsWith('bot_') &&
+        !String(id).startsWith('guest_') &&
+        !String(id).startsWith('anon_'),
     ).length;
-    const anonPlayers = g.uniquePlayers.filter(
+    const anonPlayers = rawUnique.filter(
       (id) =>
-        !id.startsWith('bot_') &&
-        (id.startsWith('guest_') ||
-          id.startsWith('anon_') ||
-          !Types.ObjectId.isValid(id)),
+        !String(id).startsWith('bot_') &&
+        (String(id).startsWith('guest_') || String(id).startsWith('anon_')),
     ).length;
 
-    const registeredMatches = Math.round(
-      g.totalMatches * (regPlayers / Math.max(g.uniquePlayers.length, 1)),
-    );
-    const anonymousMatches = g.totalMatches - registeredMatches;
+    if (regPlayers === 0 && anonPlayers === 0 && rawUnique.length > 0) {
+      regPlayers = rawUnique.length;
+    }
+
+    const totalCalculatedPlayers = Math.max(regPlayers + anonPlayers, 1);
+    const regRatio = regPlayers / totalCalculatedPlayers;
+
+    const registeredMatches = Math.round(g.totalMatches * regRatio);
+    const anonymousMatches = Math.max(g.totalMatches - registeredMatches, 0);
 
     return {
       gameId: g._id,
       totalMatches: g.totalMatches,
       matchesToday: todayMap.get(g._id) ?? 0,
-      uniquePlayers: g.uniquePlayers.length,
+      uniquePlayers: rawUnique.length,
       registeredMatches,
       anonymousMatches,
       registeredPlayers: regPlayers,

@@ -20,7 +20,6 @@ import {
 import type {
   AdminStatsUsers,
   AdminStatsGames,
-  AdminStatsTournaments,
   AdminStatsAudienceMetrics,
   AdminStatisticsResponse,
 } from './interfaces/admin-statistics.types';
@@ -35,6 +34,7 @@ import {
 import { buildAudienceMetrics } from './lib/admin-statistics-audience';
 import { computeEconomyMetrics } from './lib/admin-statistics-economy';
 import { computeDailyAndHourlyTrends } from './lib/admin-statistics-trends';
+import { computeTournamentStats } from './lib/admin-statistics-tournaments';
 
 export * from './interfaces/admin-statistics.types';
 
@@ -75,7 +75,7 @@ export class AdminStatisticsService {
         this.gemPurchaseModel,
         this.walletTxModel,
       ),
-      this.computeTournamentStats(),
+      computeTournamentStats(this.tournamentModel),
       computeDailyAndHourlyTrends(
         nowMs,
         this.playerStatRecordModel,
@@ -280,18 +280,41 @@ export class AdminStatisticsService {
     const avgMatchesPerActiveUser =
       dau > 0 ? Number((todayMatchesCount / dau).toFixed(1)) : 0;
 
-    const regMatchesRatio = registeredDau / Math.max(dau, 1);
-    const anonMatchesRatio = anonymousDau / Math.max(dau, 1);
+    const totalUniqueReg = allUniquePlayerIds.filter(isRegisteredId).length;
+    const totalUniqueAnon = allUniquePlayerIds.filter(isAnonymousId).length;
+    const totalUniquePlayers = totalUniqueReg + totalUniqueAnon;
+    const historicalRegRatio =
+      totalUniquePlayers > 0
+        ? totalUniqueReg / totalUniquePlayers
+        : totalUsers > 0
+          ? 1
+          : 0.7;
+
+    const activeRegRatio = dau > 0 ? registeredDau / dau : historicalRegRatio;
+
+    const regGamesTotal = Math.round(
+      games.totalGamesPlayed * historicalRegRatio,
+    );
+    const anonGamesTotal = Math.max(games.totalGamesPlayed - regGamesTotal, 0);
+
+    const regGamesToday = Math.round(games.gamesToday * activeRegRatio);
+    const anonGamesToday = Math.max(games.gamesToday - regGamesToday, 0);
+
+    const regGames7d = Math.round(games.games7d * historicalRegRatio);
+    const anonGames7d = Math.max(games.games7d - regGames7d, 0);
+
+    const regGames30d = Math.round(games.games30d * historicalRegRatio);
+    const anonGames30d = Math.max(games.games30d - regGames30d, 0);
 
     const registeredAudience = buildAudienceMetrics({
       totalCount: totalUsers,
       dau: registeredDau,
       wau: registeredWau,
       mau: registeredMau,
-      gamesTotal: Math.round(games.totalGamesPlayed * regMatchesRatio),
-      gamesToday: Math.round(games.gamesToday * regMatchesRatio),
-      games7d: Math.round(games.games7d * regMatchesRatio),
-      games30d: Math.round(games.games30d * regMatchesRatio),
+      gamesTotal: regGamesTotal,
+      gamesToday: regGamesToday,
+      games7d: regGames7d,
+      games30d: regGames30d,
       completionRate: games.completionRate,
       inactiveCount: inactiveUsersCount,
     });
@@ -301,10 +324,10 @@ export class AdminStatisticsService {
       dau: anonymousDau,
       wau: anonymousWau,
       mau: anonymousMau,
-      gamesTotal: Math.round(games.totalGamesPlayed * anonMatchesRatio),
-      gamesToday: Math.round(games.gamesToday * anonMatchesRatio),
-      games7d: Math.round(games.games7d * anonMatchesRatio),
-      games30d: Math.round(games.games30d * anonMatchesRatio),
+      gamesTotal: anonGamesTotal,
+      gamesToday: anonGamesToday,
+      games7d: anonGames7d,
+      games30d: anonGames30d,
       completionRate: Math.max(
         Number((games.completionRate - 3.2).toFixed(1)),
         85,
@@ -346,10 +369,8 @@ export class AdminStatisticsService {
         anonymousDau,
         anonymousWau,
         anonymousMau,
-        anonymousGamesToday: Math.round(todayMatchesCount * anonMatchesRatio),
-        anonymousGamesTotal: Math.round(
-          games.totalGamesPlayed * anonMatchesRatio,
-        ),
+        anonymousGamesToday: anonGamesToday,
+        anonymousGamesTotal: anonGamesTotal,
         guestTrafficSharePercentage,
       },
     };
@@ -443,38 +464,6 @@ export class AdminStatisticsService {
       activeRooms,
       waitingRooms,
       byGame,
-    };
-  }
-
-  private async computeTournamentStats(): Promise<AdminStatsTournaments> {
-    const [total, liveOrOpen, completed, registrationsAgg] = await Promise.all([
-      this.tournamentModel.countDocuments({}).exec(),
-      this.tournamentModel
-        .countDocuments({ status: { $in: ['live', 'registration_open'] } })
-        .exec(),
-      this.tournamentModel.countDocuments({ status: 'completed' }).exec(),
-      this.tournamentModel
-        .aggregate<{ totalRegs: number }>([
-          {
-            $project: {
-              regCount: { $size: { $ifNull: ['$registrations', []] } },
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              totalRegs: { $sum: '$regCount' },
-            },
-          },
-        ])
-        .exec(),
-    ]);
-
-    return {
-      total,
-      liveOrOpen,
-      completed,
-      totalRegistrations: registrationsAgg[0]?.totalRegs ?? 0,
     };
   }
 }

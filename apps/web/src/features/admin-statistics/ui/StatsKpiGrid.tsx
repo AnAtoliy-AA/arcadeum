@@ -23,25 +23,48 @@ interface StatsKpiGridProps {
 export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): ReactElement {
   const { users, games, economy, registered, anonymous } = data;
 
-  const currentAudience =
-    mode === 'registered' ? registered : mode === 'anonymous' ? anonymous : null;
+  const totalUsersCount = users?.totalUsers ?? 0;
+  const anonUsersCount = anonymous?.totalCount ?? users?.anonymous?.totalAnonymousPlayers ?? 0;
+  const regTotal = registered?.totalCount ?? totalUsersCount;
+  const anonTotal = anonUsersCount;
 
-  const regTotal = registered?.totalCount ?? users?.totalUsers ?? 0;
-  const anonTotal = anonymous?.totalCount ?? users?.anonymous?.totalAnonymousPlayers ?? 0;
-  const regDau = registered?.dau ?? users?.registeredDau ?? 0;
-  const anonDau = anonymous?.dau ?? users?.anonymousDau ?? 0;
-  const regMau = registered?.mau ?? users?.registeredMau ?? 0;
-  const anonMau = anonymous?.mau ?? users?.anonymousMau ?? 0;
-  const regGamesToday = registered?.gamesToday ?? 0;
-  const anonGamesToday = anonymous?.gamesToday ?? 0;
-  const regPlaytime = registered?.estimatedPlaytimeHours ?? 0;
-  const anonPlaytime = anonymous?.estimatedPlaytimeHours ?? 0;
+  const totalDau = users?.dau ?? 0;
+  const regDau = registered?.dau ?? users?.registeredDau ?? (totalDau > 0 && anonUsersCount === 0 ? totalDau : 0);
+  const anonDau = anonymous?.dau ?? users?.anonymousDau ?? (totalDau - regDau >= 0 ? totalDau - regDau : 0);
 
-  const displayDau = currentAudience?.dau ?? users?.dau ?? 0;
-  const displayMau = currentAudience?.mau ?? users?.mau ?? 0;
-  const displayWau = currentAudience?.wau ?? users?.wau ?? 0;
+  const totalMau = users?.mau ?? 0;
+  const regMau = registered?.mau ?? users?.registeredMau ?? (totalMau > 0 && anonUsersCount === 0 ? totalMau : 0);
+  const anonMau = anonymous?.mau ?? users?.anonymousMau ?? (totalMau - regMau >= 0 ? totalMau - regMau : 0);
+
+  const totalGamesCount = games?.totalGamesPlayed ?? 0;
+  const regGamesTotal = registered?.gamesTotal ?? (totalGamesCount > 0 && anonUsersCount === 0 ? totalGamesCount : 0);
+  const anonGamesTotal = anonymous?.gamesTotal ?? Math.max(totalGamesCount - regGamesTotal, 0);
+
+  const totalGamesToday = games?.gamesToday ?? 0;
+  const regGamesToday = registered?.gamesToday ?? (totalGamesToday > 0 && anonUsersCount === 0 ? totalGamesToday : 0);
+  const anonGamesToday = anonymous?.gamesToday ?? Math.max(totalGamesToday - regGamesToday, 0);
+
+  const totalPlaytimeHours = games?.estimatedPlaytimeHours ?? 0;
+  const regPlaytime = registered?.estimatedPlaytimeHours ?? (totalPlaytimeHours > 0 && anonUsersCount === 0 ? totalPlaytimeHours : 0);
+  const anonPlaytime = anonymous?.estimatedPlaytimeHours ?? Math.max(Number((totalPlaytimeHours - regPlaytime).toFixed(1)), 0);
+
+  const displayDau =
+    mode === 'registered' ? regDau : mode === 'anonymous' ? anonDau : totalDau;
+  const displayMau =
+    mode === 'registered' ? regMau : mode === 'anonymous' ? anonMau : totalMau;
+  const displayWau =
+    mode === 'registered'
+      ? registered?.wau ?? users?.registeredWau ?? 0
+      : mode === 'anonymous'
+      ? anonymous?.wau ?? users?.anonymousWau ?? 0
+      : users?.wau ?? 0;
+
   const displayStickiness =
-    currentAudience?.stickyFactorDauMau ?? users?.stickinessRate ?? 0;
+    mode === 'registered'
+      ? registered?.stickyFactorDauMau ?? users?.stickyFactorDauMau ?? 0
+      : mode === 'anonymous'
+      ? anonymous?.stickyFactorDauMau ?? 0
+      : users?.stickinessRate ?? 0;
 
   const displayTotalUsers =
     mode === 'registered'
@@ -51,9 +74,18 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
       : regTotal + anonTotal;
 
   const displayTotalGames =
-    currentAudience?.gamesTotal ?? games?.totalGamesPlayed ?? 0;
+    mode === 'registered'
+      ? regGamesTotal
+      : mode === 'anonymous'
+      ? anonGamesTotal
+      : totalGamesCount;
+
   const displayPlaytime =
-    currentAudience?.estimatedPlaytimeHours ?? games?.estimatedPlaytimeHours ?? 0;
+    mode === 'registered'
+      ? regPlaytime
+      : mode === 'anonymous'
+      ? anonPlaytime
+      : totalPlaytimeHours;
 
   const dauSubtext =
     mode === 'all'
@@ -65,7 +97,7 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
   const gamesSubtext =
     mode === 'all'
       ? `Reg: ${regGamesToday.toLocaleString()} | Anon: ${anonGamesToday.toLocaleString()}`
-      : `Today: ${currentAudience?.gamesToday?.toLocaleString() ?? 0}`;
+      : `Today: ${(mode === 'registered' ? regGamesToday : anonGamesToday).toLocaleString()}`;
 
   return (
     <div

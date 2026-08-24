@@ -1,6 +1,6 @@
 {
   "name": "be",
-  "version": "1.26.23",
+  "version": "1.26.28",
   "description": "",
   "author": "",
   "private": true,
@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage --forceExit --maxWorkers=2",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prune:test-data": "npx ts-node scripts/prune-test-data.ts"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.1.3",

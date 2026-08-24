@@ -10,7 +10,10 @@ import {
 
 export const ADMIN_PAYMENTS_REFRESH_KEY = 'admin-payments';
 
-export function useAdminPaymentNotes(args: ListAdminPaymentNotesArgs) {
+export function useAdminPaymentNotes(
+  args: ListAdminPaymentNotesArgs,
+  options?: { onSuccess?: (data: AdminPaymentNotesResponse) => void },
+) {
   const accessToken = useSessionStore((s) => s.snapshot.accessToken);
   return useQuery<AdminPaymentNotesResponse>({
     queryKey: [
@@ -23,5 +26,6 @@ export function useAdminPaymentNotes(args: ListAdminPaymentNotesArgs) {
     queryFn: () => fetchAdminPaymentNotes(args, accessToken!),
     refreshKey: ADMIN_PAYMENTS_REFRESH_KEY,
     enabled: !!accessToken,
+    onSuccess: options?.onSuccess,
   });
 }

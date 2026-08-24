@@ -47,8 +47,6 @@ const labels: UsersTableLabels = {
 const baseProps = {
   items: [],
   total: 0,
-  page: 1,
-  pageSize: 50,
   isLoading: false,
   isError: false,
   currentUserId: 'me',
@@ -60,7 +58,7 @@ const baseProps = {
   onDelete: () => {},
   onRestore: () => {},
   onBulkDelete: () => {},
-  onPageChange: () => {},
+  onLoadMore: () => {},
   labels,
 };
 
@@ -126,10 +124,27 @@ describe('UsersTable', () => {
     expect(onRoleChange).toHaveBeenCalledWith('u1', 'admin');
   });
 
-  it('renders pagination footer with page text', () => {
+  it('renders infinite scroll trigger when items < total', () => {
+    const onLoadMore = vi.fn();
     renderWithProvider(
-      <UsersTable {...baseProps} items={[sampleItem]} total={120} />,
+      <UsersTable
+        {...baseProps}
+        items={[sampleItem]}
+        total={120}
+        onLoadMore={onLoadMore}
+      />,
     );
-    expect(screen.getByText('Page 1 of 3')).toBeInTheDocument();
+    expect(screen.getByTestId('infinite-scroll-trigger')).toBeInTheDocument();
+    const loadMoreBtn = screen.getByTestId('infinite-scroll-load-more');
+    fireEvent.click(loadMoreBtn);
+    expect(onLoadMore).toHaveBeenCalled();
+  });
+
+  it('renders all loaded status when items >= total', () => {
+    renderWithProvider(
+      <UsersTable {...baseProps} items={[sampleItem]} total={1} />,
+    );
+    expect(screen.getByTestId('infinite-scroll-all-loaded')).toBeInTheDocument();
+    expect(screen.getByText('All 1 users loaded')).toBeInTheDocument();
   });
 });

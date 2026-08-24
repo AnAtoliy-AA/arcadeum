@@ -31,7 +31,7 @@ export async function AdminEconomyTable() {
     return (
       <div
         data-testid="economy-table-empty"
-        style={{ textAlign: 'center', padding: '48px 16px', color: '#71717a' }}
+        className="text-center py-12 px-4 text-[var(--colorTextSecondary,#71717a)]"
       >
         {emptyLabel}
       </div>
@@ -50,60 +50,34 @@ export async function AdminEconomyTable() {
     auditDrawer,
   };
 
+  const columns = [
+    tableLabels.key,
+    tableLabels.current,
+    tableLabels.default,
+    tableLabels.source,
+    tableLabels.lastChanged,
+    tableLabels.actions,
+  ] as const;
+
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '100%',
-        borderRadius: '12px',
-        border: '1px solid rgba(255,255,255,0.08)',
-        overflowX: 'auto',
-        WebkitOverflowScrolling: 'touch',
-      }}
-    >
+    <div className="w-full max-w-full rounded-xl border border-[var(--borderColor)] overflow-x-auto">
       <table
         data-testid="economy-table"
-        style={{
-          width: '100%',
-          minWidth: '720px',
-          borderCollapse: 'collapse',
-        }}
+        className="w-full min-w-[720px] border-collapse"
       >
         <thead>
-          <tr
-            style={{
-              background: 'rgba(255,255,255,0.04)',
-              borderBottom: '1px solid rgba(255,255,255,0.08)',
-            }}
-          >
-            {(
-              [
-                tableLabels.key,
-                tableLabels.current,
-                tableLabels.default,
-                tableLabels.source,
-                tableLabels.lastChanged,
-                tableLabels.actions,
-              ] as const
-            ).map((col) => (
+          <tr className="bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]">
+            {columns.map((col) => (
               <th
                 key={col}
-                style={{
-                  padding: '10px 16px',
-                  textAlign: 'left',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  color: '#71717a',
-                }}
+                className="py-2.5 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--colorTextSecondary,#71717a)]"
               >
                 {col}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-[var(--borderColor)]">
           {settings.map((setting) => {
             const meta = keys[setting.key as EconomyKey];
             return (

@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { PageTitle, Typography, Spinner } from '@arcadeum/ui';
 import { requireAdmin } from '@/entities/session/api/requireAdmin';
 import { AdminGameRulesTable } from '@/features/admin-games/ui/AdminGameRulesTable';
 
@@ -6,42 +7,24 @@ export default async function AdminGameRulesPage() {
   await requireAdmin();
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '1200px',
-        minWidth: 0,
-        margin: '0 auto',
-        padding: '32px 16px',
-      }}
-    >
-      <div style={{ marginBottom: '24px' }}>
-        <h1
-          style={{
-            fontSize: '24px',
-            fontWeight: 700,
-            color: 'var(--color-text, #e4e4e7)',
-            marginBottom: '4px',
-          }}
-        >
+    <div className="w-full max-w-6xl mx-auto flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <PageTitle size="lg" gradient>
           Game Rules Visibility
-        </h1>
-        <p style={{ fontSize: '14px', color: '#71717a' }}>
+        </PageTitle>
+        <Typography variant="body" uiSize="md" alpha="medium">
           Include or exclude house rules per game. Excluded rules show
           &quot;Coming Soon&quot; in the lobby.
-        </p>
+        </Typography>
       </div>
 
       <Suspense
         fallback={
-          <div
-            style={{
-              textAlign: 'center',
-              padding: '48px 16px',
-              color: '#71717a',
-            }}
-          >
-            Loading...
+          <div className="flex flex-col items-center justify-center py-12 px-4 gap-3 text-[var(--colorTextSecondary,#a1a1aa)]">
+            <Spinner size="md" />
+            <Typography variant="body" uiSize="sm">
+              Loading...
+            </Typography>
           </div>
         }
       >

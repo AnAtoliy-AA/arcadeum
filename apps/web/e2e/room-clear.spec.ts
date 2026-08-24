@@ -6,6 +6,7 @@ import {
   mockRoomInfo,
   MOCK_OBJECT_ID,
   waitForRoomReady,
+  dismissTutorialOverlay,
   mockGameSocket,
   handleRoute,
 } from './fixtures/test-utils';
@@ -57,9 +58,7 @@ test.describe('Room Clear Functionality', () => {
 
     // Dismiss the first-visit tutorial overlay if present — its click
     // blocker intercepts pointer events over the whole page.
-    const tutorial = page.getByTestId('tutorial-overlay');
-    await page.keyboard.press('Escape');
-    await expect(tutorial).toBeHidden({});
+    await dismissTutorialOverlay(page);
 
     // Verify "Delete Room" button is visible for host
     const deleteButton = page.getByRole('button', { name: /delete room/i });

@@ -6,6 +6,7 @@ import {
   mockGameSocket,
   mockRoomInfo,
   waitForRoomReady,
+  dismissTutorialOverlay,
   checkNoBackendErrors,
   MOCK_OBJECT_ID,
 } from './fixtures/test-utils';
@@ -16,6 +17,9 @@ const OPPONENT_ID = '647f1a2b3c4d5e6f7a8b9c0e';
 const OPPONENT_NAME = 'Opponent';
 
 async function openChatPanel(page: import('@playwright/test').Page) {
+  // On mobile viewports the panel starts hidden, so the toggle click below
+  // would be intercepted by the first-visit tutorial overlay.
+  await dismissTutorialOverlay(page);
   const panel = page.getByTestId('game-chat-panel');
   if (!(await panel.isVisible())) {
     await page.getByTestId('toggle-chat-button').click();

@@ -38,14 +38,14 @@
 | 3B. Backgammon         | ARC-885 | `ARC-885-backgammon`         | **Implemented** |
 | 3C. Pachisi            | ARC-886 | `ARC-886-pachisi`            | **Implemented** |
 | 3D. Go                 | ARC-887 | `ARC-887-go`                 | **Implemented** |
-| 3F. Game Replays       | ARC-888 | `ARC-888-game-replays`       | Not started     |
+| 3F. Game Replays       | ARC-888 | `ARC-888-game-replays`       | **Implemented** |
 | 3G. Spectator Mode     | ARC-889 | `ARC-889-spectator-mode`     | **Implemented** |
 | 3H. AI-vs-AI           | ARC-890 | `ARC-890-ai-vs-ai`           | **Implemented** |
 | 3I. Clans              | ARC-891 | `ARC-891-clans`              | **Implemented** |
-| 3J. Game Nights        | ARC-892 | `ARC-892-game-nights`        | Not started     |
+| 3J. Game Nights        | ARC-892 | `ARC-892-game-nights`        | **Implemented** |
 | 4A. Chess Clock        | ARC-893 | `ARC-893-chess-clock`        | **Implemented** |
 | 4B. Stats Dashboard    | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented** |
-| 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | **PR Open**     |
+| 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | **Implemented** |
 | 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | **Implemented** |
 | 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | **Implemented** |
 | 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | Not started     |

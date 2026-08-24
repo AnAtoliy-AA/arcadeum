@@ -242,12 +242,12 @@ describe('InventoryService', () => {
   });
 
   describe('grantStarter', () => {
-    it('inserts starter rows and sets equip slots when null', async () => {
+    it('sets equip slots when null without inserting db rows', async () => {
       const userObjId = new Types.ObjectId();
       const userId = userObjId.toString();
       userModel.users.set(userId, { _id: userObjId });
       await service.grantStarter(userId);
-      expect(inventoryModel.rows.length).toBeGreaterThanOrEqual(2);
+      expect(inventoryModel.rows.length).toBe(0);
       const user = userModel.users.get(userId)!;
       expect(user.equippedAvatarId).toBe('avatar-default-01');
       expect(user.equippedBadgeId).toBe('badge-newcomer');
@@ -258,9 +258,8 @@ describe('InventoryService', () => {
       const userId = userObjId.toString();
       userModel.users.set(userId, { _id: userObjId });
       await service.grantStarter(userId);
-      const countAfterFirst = inventoryModel.rows.length;
       await service.grantStarter(userId);
-      expect(inventoryModel.rows.length).toBe(countAfterFirst);
+      expect(inventoryModel.rows.length).toBe(0);
     });
 
     it('does not overwrite an existing equip slot', async () => {
@@ -279,6 +278,12 @@ describe('InventoryService', () => {
   });
 
   describe('owns', () => {
+    it('returns true for starter items implicitly', async () => {
+      const userObjId = new Types.ObjectId();
+      const userId = userObjId.toString();
+      expect(await service.owns(userId, 'avatar-default-01')).toBe(true);
+    });
+
     it('returns true for a non-sold row, false otherwise', async () => {
       const userObjId = new Types.ObjectId();
       const userId = userObjId.toString();
@@ -372,7 +377,7 @@ describe('InventoryService', () => {
   });
 
   describe('listForUser', () => {
-    it('returns owned rows + equipped slots; excludes sold rows', async () => {
+    it('returns implicit starter items + owned rows; excludes sold rows', async () => {
       const userObjId = new Types.ObjectId();
       const userId = userObjId.toString();
       userModel.users.set(userId, {
@@ -397,8 +402,10 @@ describe('InventoryService', () => {
       ]);
       inventoryModel.rows[1].soldAt = new Date();
       const view = await service.listForUser(userId);
-      expect(view.items.length).toBe(1);
-      expect(view.items[0].itemId).toBe('avatar-fox-01');
+      const itemIds = view.items.map((i) => i.itemId);
+      expect(itemIds).toContain('avatar-default-01');
+      expect(itemIds).toContain('avatar-fox-01');
+      expect(itemIds).not.toContain('avatar-cat-01');
       expect(view.equipped.avatar).toBe('avatar-fox-01');
       expect(view.equipped.badge).toBeNull();
       expect(view.equipped.name_color).toBeNull();

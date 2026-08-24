@@ -17,7 +17,7 @@ export interface StatsGamesBreakdownTranslations {
 }
 
 interface StatsGamesBreakdownProps {
-  games: AdminStatsGames;
+  games?: AdminStatsGames;
   mode?: 'all' | 'registered' | 'anonymous';
   t?: StatsGamesBreakdownTranslations;
 }
@@ -27,7 +27,9 @@ export function StatsGamesBreakdown({
   mode = 'all',
   t,
 }: StatsGamesBreakdownProps): ReactElement {
-  const { byGame, activeRooms, waitingRooms } = games;
+  const byGame = games?.byGame ?? [];
+  const activeRooms = games?.activeRooms ?? 0;
+  const waitingRooms = games?.waitingRooms ?? 0;
 
   return (
     <GlassCard
@@ -87,23 +89,35 @@ export function StatsGamesBreakdown({
             </thead>
             <tbody className="divide-y divide-[var(--borderColor)]">
               {byGame.map((game) => {
+                const totalMatches = game.totalMatches ?? 0;
+                const regMatches = game.registeredMatches ?? 0;
+                const anonMatches = game.anonymousMatches ?? 0;
+                const uniquePlayers = game.uniquePlayers ?? 0;
+                const regPlayers = game.registeredPlayers ?? 0;
+                const anonPlayers = game.anonymousPlayers ?? 0;
+                const matchesToday = game.matchesToday ?? 0;
+                const wins = game.wins ?? 0;
+                const losses = game.losses ?? 0;
+                const draws = game.draws ?? 0;
+                const sharePercentage = game.sharePercentage ?? 0;
+
                 const displayMatches =
                   mode === 'registered'
-                    ? game.registeredMatches
+                    ? regMatches
                     : mode === 'anonymous'
-                    ? game.anonymousMatches
-                    : game.totalMatches;
+                    ? anonMatches
+                    : totalMatches;
 
                 const displayPlayers =
                   mode === 'registered'
-                    ? game.registeredPlayers
+                    ? regPlayers
                     : mode === 'anonymous'
-                    ? game.anonymousPlayers
-                    : game.uniquePlayers;
+                    ? anonPlayers
+                    : uniquePlayers;
 
                 const winRate =
-                  game.totalMatches > 0
-                    ? Math.round((game.wins / game.totalMatches) * 100)
+                  totalMatches > 0
+                    ? Math.round((wins / totalMatches) * 100)
                     : 0;
 
                 return (
@@ -114,7 +128,7 @@ export function StatsGamesBreakdown({
                     <td className="py-3 px-3 font-semibold text-[var(--colorText)]">
                       <div className="flex flex-col">
                         <span className="capitalize">
-                          {game.gameId.replace('_v1', '').replace('_', ' ')}
+                          {game.gameId?.replace('_v1', '').replace('_', ' ') ?? 'Unknown'}
                         </span>
                         <span className="text-[10px] text-[var(--colorTextSecondary,#a1a1aa)] font-mono">
                           {game.gameId}
@@ -126,16 +140,16 @@ export function StatsGamesBreakdown({
                         <span>{displayMatches.toLocaleString()}</span>
                         {mode === 'all' && (
                           <span className="text-[10px] text-[var(--colorTextSecondary,#a1a1aa)]">
-                            Reg: {(game.registeredMatches ?? 0).toLocaleString()} | Anon:{' '}
-                            {(game.anonymousMatches ?? 0).toLocaleString()}
+                            Reg: {regMatches.toLocaleString()} | Anon:{' '}
+                            {anonMatches.toLocaleString()}
                           </span>
                         )}
                       </div>
                     </td>
                     <td className="py-3 px-3 text-right text-[var(--colorTextSecondary,#d4d4d8)]">
-                      {game.matchesToday > 0 ? (
+                      {matchesToday > 0 ? (
                         <span className="text-emerald-400 font-semibold">
-                          +{game.matchesToday}
+                          +{matchesToday}
                         </span>
                       ) : (
                         '-'
@@ -146,23 +160,23 @@ export function StatsGamesBreakdown({
                         <span>{displayPlayers.toLocaleString()}</span>
                         {mode === 'all' && (
                           <span className="text-[10px] text-[var(--colorTextSecondary,#a1a1aa)]">
-                            Reg: {(game.registeredPlayers ?? 0).toLocaleString()} | Anon:{' '}
-                            {(game.anonymousPlayers ?? 0).toLocaleString()}
+                            Reg: {regPlayers.toLocaleString()} | Anon:{' '}
+                            {anonPlayers.toLocaleString()}
                           </span>
                         )}
                       </div>
                     </td>
                     <td className="py-3 px-3 text-right text-xs">
                       <span className="text-emerald-400 font-medium">
-                        {game.wins}
+                        {wins}
                       </span>{' '}
                       /{' '}
                       <span className="text-rose-400 font-medium">
-                        {game.losses}
+                        {losses}
                       </span>{' '}
                       /{' '}
                       <span className="text-[var(--colorTextSecondary,#a1a1aa)]">
-                        {game.draws}
+                        {draws}
                       </span>{' '}
                       <span className="text-[10px] text-[var(--colorTextSecondary,#a1a1aa)]">
                         ({winRate}%)
@@ -178,7 +192,7 @@ export function StatsGamesBreakdown({
                             <rect
                               x={0}
                               y={0}
-                              width={game.sharePercentage}
+                              width={sharePercentage}
                               height={8}
                               rx={4}
                               className="fill-[var(--primary)]"
@@ -186,7 +200,7 @@ export function StatsGamesBreakdown({
                           </svg>
                         </div>
                         <span className="text-xs font-mono text-[var(--colorTextSecondary,#d4d4d8)] w-10 text-right">
-                          {game.sharePercentage}%
+                          {sharePercentage}%
                         </span>
                       </div>
                     </td>

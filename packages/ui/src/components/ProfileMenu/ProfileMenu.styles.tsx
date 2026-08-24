@@ -71,7 +71,7 @@ export const ProfileDropdownWrapper = ({
     className={cx(
       'rounded-[20px] border border-[var(--glassBorder)] bg-[rgba(12,14,15,0.98)]',
       'z-[1000] overflow-hidden backdrop-blur-[32px]',
-      'shadow-[0_20px_50px_rgba(0,0,0,0.5)]',
+      'shadow-[0_20px_50px_rgba(0,0,0,0.5)] print:hidden',
       className,
     )}
   >

@@ -67,7 +67,7 @@ interface RaysHaloProps {
 export function RaysHalo({ style, testId, haloSize }: RaysHaloProps) {
   return (
     <div
-      className={RAYS_SPIN_CLASS}
+      className={`${RAYS_SPIN_CLASS} print:hidden`}
       data-testid={testId}
       style={{
         position: 'absolute',

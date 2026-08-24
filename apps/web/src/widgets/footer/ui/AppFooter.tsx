@@ -89,7 +89,7 @@ export default function AppFooter() {
 
   return (
     <Footer
-      className="sm:px-2"
+      className="sm:px-2 print:hidden"
       data-testid="app-footer"
       appName={appName}
       socialLinks={socialLinks}

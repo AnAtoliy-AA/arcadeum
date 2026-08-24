@@ -64,21 +64,31 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
 
   private async check(): Promise<void> {
     let beUp = false;
+    let beFailureReason = '';
     let dbHealth: DbHealth | null = null;
 
     try {
       const resp = await fetch(`${this.beUrl}/health`, {
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
-      const data: unknown = await resp.json();
-      beUp =
-        resp.ok &&
-        typeof data === 'object' &&
-        data !== null &&
-        'ok' in data &&
-        (data as { ok: boolean }).ok === true;
+      if (!resp.ok) {
+        // Distinguish "server answered with an error" (rate limits, gateway
+        // errors) from "no answer at all" — they have very different causes.
+        beFailureReason = `HTTP ${resp.status} from /health`;
+      } else {
+        const data: unknown = await resp.json();
+        beUp =
+          typeof data === 'object' &&
+          data !== null &&
+          'ok' in data &&
+          (data as { ok: boolean }).ok === true;
+        if (!beUp) {
+          beFailureReason = '/health responded without ok:true';
+        }
+      }
     } catch (err) {
       this.logger.warn(`Backend health check failed: ${err}`);
+      beFailureReason = `no response (${err instanceof Error ? err.message : String(err)})`;
     }
 
     if (beUp) {
@@ -109,7 +119,9 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
       if (beUp) {
         messages.push('✅ Backend is online and responding');
       } else {
-        messages.push('🔴 Backend is DOWN — not responding to health checks');
+        messages.push(
+          `🔴 Backend is DOWN — ${beFailureReason || 'not responding to health checks'}`,
+        );
       }
       if (beUp) {
         messages.push(
@@ -130,7 +142,9 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
     if (beUp && !this.isBeUp) {
       alerts.push('✅ Backend is back online and responding');
     } else if (!beUp && this.isBeUp) {
-      alerts.push('🔴 Backend is DOWN — not responding to health checks');
+      alerts.push(
+        `🔴 Backend is DOWN — ${beFailureReason || 'not responding to health checks'}`,
+      );
     }
     this.isBeUp = beUp;
 
@@ -139,7 +153,7 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
         alerts.push('✅ OCI MongoDB is back online');
       } else if (!ociUp && this.isOciUp) {
         alerts.push(
-          '🔴 OCI MongoDB is DOWN — backend running but database disconnected',
+          `🔴 OCI MongoDB is DOWN — backend running but database disconnected${dbHealth ? '' : ' (/health/db unreachable)'}`,
         );
       }
       this.isOciUp = ociUp;
@@ -148,7 +162,7 @@ export class HealthMonitorService implements OnModuleInit, OnModuleDestroy {
         alerts.push('✅ Atlas MongoDB is back online');
       } else if (!atlasUp && this.isAtlasUp) {
         alerts.push(
-          '🟠 Atlas MongoDB is DOWN — backend running but archive database disconnected',
+          `🟠 Atlas MongoDB is DOWN — backend running but archive database disconnected${dbHealth ? '' : ' (/health/db unreachable)'}`,
         );
       }
       this.isAtlasUp = atlasUp;

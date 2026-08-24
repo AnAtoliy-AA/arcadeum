@@ -69,7 +69,11 @@ describe('ShopService.sellBack', () => {
     h.inventory.findByUserAndPurchaseId.mockResolvedValue(
       h.inventoryModel.rows[0],
     );
-    h.wallet.getBalance.mockResolvedValue({ coins: 900, gems: 50 });
+    h.wallet.getBalance.mockResolvedValue({
+      coins: 900,
+      gems: 50,
+      arcadeum: 0,
+    });
 
     const result = await h.service.sellBack(h.userId, 'p1');
 
@@ -103,7 +107,11 @@ describe('ShopService.sellBack', () => {
     h.inventory.findByUserAndPurchaseId.mockResolvedValue(
       h.inventoryModel.rows[0],
     );
-    h.wallet.getBalance.mockResolvedValue({ coins: 150, gems: 47 });
+    h.wallet.getBalance.mockResolvedValue({
+      coins: 150,
+      gems: 47,
+      arcadeum: 0,
+    });
 
     const result = await h.service.sellBack(h.userId, 'p2');
 

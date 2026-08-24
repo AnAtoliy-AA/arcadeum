@@ -139,17 +139,39 @@ test.describe('Home Page', () => {
 
     const chessCard = page.getByTestId('game-picker-card-chess_v1');
     const criticalCard = page.getByTestId('game-picker-card-critical_v1');
+    const heartsCard = page.getByTestId('game-picker-card-hearts_v1');
+    const spadesCard = page.getByTestId('game-picker-card-spades_v1');
+    const goCard = page.getByTestId('game-picker-card-go_v1');
+    const pachisiCard = page.getByTestId('game-picker-card-pachisi_v1');
+
     await expect(chessCard).toBeVisible();
     await expect(criticalCard).toBeVisible();
+    await expect(heartsCard).toBeVisible();
+    await expect(spadesCard).toBeVisible();
+    await expect(goCard).toBeVisible();
+    await expect(pachisiCard).toBeVisible();
+
+    const cardChip = page.getByTestId('game-picker-category-card');
+    await cardChip.click();
+    await expect(heartsCard).toBeVisible();
+    await expect(spadesCard).toBeVisible();
+    await expect(chessCard).not.toBeVisible();
+    await expect(goCard).not.toBeVisible();
 
     const boardChip = page.getByTestId('game-picker-category-board');
     await boardChip.click();
     await expect(chessCard).toBeVisible();
+    await expect(goCard).toBeVisible();
+    await expect(pachisiCard).toBeVisible();
     await expect(criticalCard).not.toBeVisible();
+    await expect(heartsCard).not.toBeVisible();
 
     const searchInput = page.getByTestId('game-picker-search');
-    await searchInput.fill('Chess');
-    await expect(chessCard).toBeVisible();
+    await searchInput.fill('Hearts');
+    const allChip = page.getByTestId('game-picker-category-all');
+    await allChip.click();
+    await expect(heartsCard).toBeVisible();
+    await expect(chessCard).not.toBeVisible();
 
     const closeButton = page.getByTestId('modal-close-button');
     await closeButton.click();

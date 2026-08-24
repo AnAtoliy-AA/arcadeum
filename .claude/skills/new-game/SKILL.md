@@ -256,6 +256,8 @@ a. [apps/web/src/app/[locale]/home/data/games.ts](apps/web/src/app/[locale]/home
 
 a2. **Home featured-card symbol** — create `apps/web/src/app/[locale]/home/components/featured-games/symbols/<Name>Symbol.tsx` (64×64 SVG using `stroke="currentColor"`, mirroring [SeaBattleSymbol.tsx](apps/web/src/app/[locale]/home/components/featured-games/symbols/SeaBattleSymbol.tsx)). Export it from `symbols/index.ts` and add a `case '<game>_v1':` branch to [`GameSymbol`](apps/web/src/app/[locale]/home/components/featured-games/gameMeta.tsx). Without this, the home card cover renders `null` instead of a glyph.
 
+a3. **Catalog & AI Game Picker card preview** — create `apps/web/src/app/[locale]/(app)/games/components/art/<Name>RealCards.tsx` (for card games) or `<Name>RealBoard.tsx` (for board games) (SVG vector board/cards representation with `viewBox="0 0 360 220"`). Register and import it in [`GamesCatalogRealPreview.tsx`](apps/web/src/app/[locale]/(app)/games/components/art/GamesCatalogRealPreview.tsx) with a `case '<game>_v1':` branch. Without this, cards on `/games` and in the "Pick a game to play vs AI" modal will fall through to the default Glimworm snake art.
+
 b. [apps/web/src/features/games/ui/create/redesign/data/themes.ts](apps/web/src/features/games/ui/create/redesign/data/themes.ts):
 - Extend `GameId` union
 - Add `GAMES` entry
@@ -351,6 +353,7 @@ Walk this list manually — these are the surfaces where missing wiring causes s
 - [ ] `<game>_v1` added to **both** `GameType` unions: `lib/gameIdMapping.ts` AND `hooks/useGameActions.ts`.
 - [ ] Landing route in `shared/config/routes.ts` + `seo/buildPageMetadata.ts`; CTA uses `?gameId=`.
 - [ ] Home featured-card: data entry in `home/data/games.ts` + symbol branch in `gameMeta.tsx`.
+- [ ] Catalog & AI Game Picker preview: create `art/<Name>RealCards.tsx` (or `art/<Name>RealBoard.tsx`) and register it in `GamesCatalogRealPreview.tsx`.
 - [ ] Create page: `themes.ts` + `ThemePicker.tsx` block + `art/<Name>BoardPoster.tsx` + `GameArt.tsx` branch + `GameCreateView.tsx` branch.
 - [ ] Rules modal mounted in lobby AND in-game branches of `Game.tsx`; also wired in `RulesAccess.tsx`.
 - [ ] End-game uses `useGameEndState` + `GameEndModals`, not per-game modal or manual wiring.
@@ -441,6 +444,8 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 29. **Bot Preselection Must Match minPlayers**: `ReusableGameLobby` preselects `minPlayers - 1` bots in its count selector (e.g. 3 for a 4-player game like Hearts) because the server pads up to `minPlayers` anyway — `BaseGameService.startSession` uses `Math.max(botCount, needed)` when filling seats. A lower UI default misleads the host into thinking fewer bots will join than actually do. This works only if the lobby passes `minPlayers={MIN_PLAYERS}`; never hardcode or override the bot-count default per game.
 
 29. **Bot triggers come from exactly three paths**: session start, every completed action (`afterSessionStep`), and the watchdog's stale-session revival. NEVER add bot triggering to read paths — `findSessionByRoom` used to call `afterSessionStep`, so every spectator join / `games.session.request` spawned another sleeping bot chain; in AI-vs-AI rooms the duplicate chains piled up behind locks and turn pacing drifted (turns took longer and longer). If your bot must revive without an action, let the watchdog do it.
+
+30. **`GamesCatalogRealPreview.tsx` default falls through to Glimworm snake art.** `GamesCatalogCard` (on `/games`) and `GamePickerCard` (in the "Pick a game to play vs AI" modal) both render `<GamesCatalogRealPreview gameId={slug} />`. If a game is missing a case branch in `GamesCatalogRealPreview.tsx`, it renders the default Glimworm snake art. Always create `apps/web/src/app/[locale]/(app)/games/components/art/<Name>RealCards.tsx` (or `<Name>RealBoard.tsx`) and add a `case '<game>_v1': return <NameReal... />;`.
 
 ## When the user says "implement game X"
 

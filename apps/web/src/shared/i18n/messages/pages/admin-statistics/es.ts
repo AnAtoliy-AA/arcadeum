@@ -5,6 +5,9 @@ export const adminStatisticsEs = {
   liveStatus: 'Telemetría en vivo',
   lastUpdated: 'Actualizado',
   exportPdf: 'Guardar como PDF / Imprimir',
+  audienceAll: 'Todos los jugadores',
+  audienceRegistered: 'Solo registrados',
+  audienceAnonymous: 'Anónimos y visitas',
   kpi: {
     dau: 'DAU (Diario)',
     mau: 'MAU (Mensual)',
@@ -15,6 +18,18 @@ export const adminStatisticsEs = {
     totalGames: 'Partidas Jugadas',
     revenue: 'Ingresos por Gemas',
     todaySuffix: 'nuevos hoy',
+  },
+  anonymous: {
+    title: 'Analítica de Jugadores Anónimos y Visitas',
+    subtitle:
+      'Telemetría de sesiones no registradas, volumen de partidas y embudo de conversión',
+    guestShareLabel: 'Cuota de tráfico invitado',
+    totalGuestsLabel: 'Perfiles invitados únicos',
+    guestDauLabel: 'DAU Anónimo (Diario)',
+    guestMauLabel: 'MAU Anónimo (Mensual)',
+    guestGamesTodayLabel: 'Partidas de invitados hoy',
+    guestGamesTotalLabel: 'Total partidas de invitados',
+    conversionPotentialLabel: 'Oportunidad de conversión',
   },
   engagement: {
     title: 'Retención y Sticky Factors',

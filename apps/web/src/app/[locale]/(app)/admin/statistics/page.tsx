@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/entities/session/api/requireAdmin';
 import { getTranslations } from '@/shared/i18n/server';
 import { getAdminStatisticsData } from '@/features/admin-statistics/server/admin-statistics.server';
 import {
@@ -10,6 +11,8 @@ interface AdminPageTranslations {
 }
 
 export default async function AdminStatisticsPage() {
+  await requireAdmin();
+
   const [messages, data] = await Promise.all([
     getTranslations(),
     getAdminStatisticsData(),

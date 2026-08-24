@@ -5,6 +5,9 @@ export const adminStatisticsEn = {
   liveStatus: 'Live Telemetry',
   lastUpdated: 'Updated',
   exportPdf: 'Save as PDF / Print',
+  audienceAll: 'All Players',
+  audienceRegistered: 'Registered Only',
+  audienceAnonymous: 'Anonymous & Guests',
   kpi: {
     dau: 'DAU (Daily Active)',
     mau: 'MAU (Monthly Active)',
@@ -15,6 +18,18 @@ export const adminStatisticsEn = {
     totalGames: 'Total Games Played',
     revenue: 'Gem Purchases Revenue',
     todaySuffix: 'new today',
+  },
+  anonymous: {
+    title: 'Anonymous & Guest Player Analytics',
+    subtitle:
+      'Telemetry on unregistered guest sessions, gameplay volume, and account conversion funnel',
+    guestShareLabel: 'Guest Traffic Share',
+    totalGuestsLabel: 'Unique Guest Profiles',
+    guestDauLabel: 'Anonymous DAU (Daily)',
+    guestMauLabel: 'Anonymous MAU (Monthly)',
+    guestGamesTodayLabel: 'Guest Matches Today',
+    guestGamesTotalLabel: 'All Guest Matches',
+    conversionPotentialLabel: 'Growth conversion opportunity',
   },
   engagement: {
     title: 'Engagement & Sticky Factors',

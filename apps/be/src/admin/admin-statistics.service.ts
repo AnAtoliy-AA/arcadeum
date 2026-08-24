@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User, type UserDocument } from '../auth/schemas/user.schema';
 import { GameSession } from '../games/schemas/game-session.schema';
 import {
@@ -126,8 +126,10 @@ export class AdminStatisticsService {
       activeUserIds1d,
       activeUserIds7d,
       activeUserIds30d,
+      allUniquePlayerIds,
       payingUserIds,
       todayMatchesCount,
+      allMatchesCount,
     ] = await Promise.all([
       this.userModel.countDocuments({ deletedAt: null }).exec(),
       this.userModel
@@ -168,10 +170,12 @@ export class AdminStatisticsService {
       this.playerStatRecordModel
         .distinct('userId', { timestamp: { $gte: thirtyDaysAgoMs } })
         .exec(),
+      this.playerStatRecordModel.distinct('userId', {}).exec(),
       this.gemPurchaseModel.distinct('userId', { status: 'completed' }).exec(),
       this.playerStatRecordModel
         .countDocuments({ timestamp: { $gte: oneDayAgoMs } })
         .exec(),
+      this.playerStatRecordModel.countDocuments({}).exec(),
     ]);
 
     const activeFromUsers1d = await this.userModel
@@ -184,18 +188,55 @@ export class AdminStatisticsService {
       .distinct('_id', { updatedAt: { $gte: thirtyDaysAgo }, deletedAt: null })
       .exec();
 
-    const dau = new Set<string>([
+    const isRegisteredId = (id: unknown): boolean => {
+      const str = String(id);
+      return (
+        Types.ObjectId.isValid(str) &&
+        !str.startsWith('bot_') &&
+        !str.startsWith('guest_') &&
+        !str.startsWith('anon_')
+      );
+    };
+
+    const isAnonymousId = (id: unknown): boolean => {
+      const str = String(id);
+      return (
+        !str.startsWith('bot_') &&
+        (str.startsWith('guest_') ||
+          str.startsWith('anon_') ||
+          !Types.ObjectId.isValid(str))
+      );
+    };
+
+    const allDauSet = new Set<string>([
       ...activeUserIds1d.map(String),
       ...activeFromUsers1d.map(String),
-    ]).size;
-    const wau = new Set<string>([
+    ]);
+    const allWauSet = new Set<string>([
       ...activeUserIds7d.map(String),
       ...activeFromUsers7d.map(String),
-    ]).size;
-    const mau = new Set<string>([
+    ]);
+    const allMauSet = new Set<string>([
       ...activeUserIds30d.map(String),
       ...activeFromUsers30d.map(String),
-    ]).size;
+    ]);
+
+    const dau = allDauSet.size;
+    const wau = allWauSet.size;
+    const mau = allMauSet.size;
+
+    const registeredDau = Array.from(allDauSet).filter(isRegisteredId).length;
+    const registeredWau = Array.from(allWauSet).filter(isRegisteredId).length;
+    const registeredMau = Array.from(allMauSet).filter(isRegisteredId).length;
+
+    const anonymousDau = Array.from(allDauSet).filter(isAnonymousId).length;
+    const anonymousWau = Array.from(allWauSet).filter(isAnonymousId).length;
+    const anonymousMau = Array.from(allMauSet).filter(isAnonymousId).length;
+
+    const totalAnonymousPlayers =
+      allUniquePlayerIds.filter(isAnonymousId).length;
+    const guestTrafficSharePercentage =
+      dau > 0 ? Number(((anonymousDau / dau) * 100).toFixed(1)) : 0;
 
     const stickyFactorDauMau = calculateStickiness(dau, mau);
     const stickyFactorDauWau = calculateStickiness(dau, wau);
@@ -235,6 +276,12 @@ export class AdminStatisticsService {
       dau,
       wau,
       mau,
+      registeredDau,
+      registeredWau,
+      registeredMau,
+      anonymousDau,
+      anonymousWau,
+      anonymousMau,
       stickinessRate: stickyFactorDauMau,
       stickyFactorDauMau,
       stickyFactorDauWau,
@@ -252,6 +299,20 @@ export class AdminStatisticsService {
       newUsers30d,
       roleBreakdown,
       countryBreakdown,
+      anonymous: {
+        totalAnonymousPlayers,
+        anonymousDau,
+        anonymousWau,
+        anonymousMau,
+        anonymousGamesToday: Math.round(
+          todayMatchesCount * (anonymousDau / Math.max(dau, 1)),
+        ),
+        anonymousGamesTotal: Math.round(
+          allMatchesCount *
+            (totalAnonymousPlayers / Math.max(allUniquePlayerIds.length, 1)),
+        ),
+        guestTrafficSharePercentage,
+      },
     };
   }
 

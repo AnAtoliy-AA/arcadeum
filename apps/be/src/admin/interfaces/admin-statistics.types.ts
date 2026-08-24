@@ -1,9 +1,25 @@
+export interface AdminStatsAnonymous {
+  totalAnonymousPlayers: number;
+  anonymousDau: number;
+  anonymousWau: number;
+  anonymousMau: number;
+  anonymousGamesToday: number;
+  anonymousGamesTotal: number;
+  guestTrafficSharePercentage: number;
+}
+
 export interface AdminStatsUsers {
   totalUsers: number;
   blockedUsers: number;
   dau: number;
   wau: number;
   mau: number;
+  registeredDau: number;
+  registeredWau: number;
+  registeredMau: number;
+  anonymousDau: number;
+  anonymousWau: number;
+  anonymousMau: number;
   stickinessRate: number;
   stickyFactorDauMau: number;
   stickyFactorDauWau: number;
@@ -25,6 +41,7 @@ export interface AdminStatsUsers {
     count: number;
     percentage: number;
   }>;
+  anonymous: AdminStatsAnonymous;
 }
 
 export interface AdminStatsGameItem {
@@ -73,6 +90,8 @@ export interface AdminStatsTournaments {
 export interface AdminStatsDailyTrend {
   date: string;
   dau: number;
+  registeredDau: number;
+  anonymousDau: number;
   games: number;
   newUsers: number;
   transactions: number;

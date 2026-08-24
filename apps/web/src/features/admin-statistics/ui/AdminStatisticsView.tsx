@@ -1,10 +1,13 @@
-import type { ReactElement } from 'react';
+'use client';
+
+import { useState, type ReactElement } from 'react';
 import {
   GlassCard,
   PageTitle,
   Typography,
   Badge,
   BarChartIcon,
+  Button,
 } from '@arcadeum/ui';
 import type { AdminStatisticsData } from '../types';
 import { StatsKpiGrid, type StatsKpiTranslations } from './StatsKpiGrid';
@@ -28,6 +31,10 @@ import {
   StatsDemographicsOverview,
   type StatsDemographicsOverviewTranslations,
 } from './StatsDemographicsOverview';
+import {
+  StatsAnonymousOverview,
+  type StatsAnonymousTranslations,
+} from './StatsAnonymousOverview';
 import { ExportPdfButton } from './ExportPdfButton';
 
 export interface AdminStatisticsTranslations {
@@ -36,12 +43,16 @@ export interface AdminStatisticsTranslations {
   liveStatus?: string;
   lastUpdated?: string;
   exportPdf?: string;
+  audienceAll?: string;
+  audienceRegistered?: string;
+  audienceAnonymous?: string;
   kpi?: StatsKpiTranslations;
   engagement?: StatsEngagementTranslations;
   charts?: StatsActivityChartsTranslations;
   games?: StatsGamesBreakdownTranslations;
   economy?: StatsEconomyOverviewTranslations;
   demographics?: StatsDemographicsOverviewTranslations;
+  anonymous?: StatsAnonymousTranslations;
 }
 
 interface AdminStatisticsViewProps {
@@ -53,11 +64,40 @@ export function AdminStatisticsView({
   data,
   t,
 }: AdminStatisticsViewProps): ReactElement {
+  const [audienceFilter, setAudienceFilter] = useState<'all' | 'registered' | 'anonymous'>('all');
+
   const formattedTime = new Date(data.timestamp).toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
   });
+
+  const activeUsers = {
+    ...data.users,
+    dau:
+      audienceFilter === 'registered'
+        ? data.users.registeredDau
+        : audienceFilter === 'anonymous'
+        ? data.users.anonymousDau
+        : data.users.dau,
+    wau:
+      audienceFilter === 'registered'
+        ? data.users.registeredWau
+        : audienceFilter === 'anonymous'
+        ? data.users.anonymousWau
+        : data.users.wau,
+    mau:
+      audienceFilter === 'registered'
+        ? data.users.registeredMau
+        : audienceFilter === 'anonymous'
+        ? data.users.anonymousMau
+        : data.users.mau,
+  };
+
+  const filteredData: AdminStatisticsData = {
+    ...data,
+    users: activeUsers,
+  };
 
   return (
     <div
@@ -96,12 +136,59 @@ export function AdminStatisticsView({
             </Badge>
           </div>
         </div>
+
+        <div className="mt-4 pt-4 border-t border-[var(--borderColor)] flex flex-row items-center justify-between flex-wrap gap-3 print:hidden">
+          <div className="flex flex-row items-center gap-2">
+            <span className="text-xs text-[var(--colorTextSecondary,#a1a1aa)] font-semibold uppercase tracking-wider">
+              Audience Filter:
+            </span>
+            <div className="flex flex-row items-center gap-1 bg-white/5 p-1 rounded-lg border border-[var(--borderColor)]">
+              <Button
+                variant={audienceFilter === 'all' ? 'primary' : 'ghost'}
+                size="sm"
+                onClick={() => setAudienceFilter('all')}
+                className="text-xs px-3 py-1"
+                data-testid="filter-all-players"
+              >
+                {t?.audienceAll ?? 'All Players'}
+              </Button>
+              <Button
+                variant={audienceFilter === 'registered' ? 'primary' : 'ghost'}
+                size="sm"
+                onClick={() => setAudienceFilter('registered')}
+                className="text-xs px-3 py-1"
+                data-testid="filter-registered-only"
+              >
+                {t?.audienceRegistered ?? 'Registered Only'}
+              </Button>
+              <Button
+                variant={audienceFilter === 'anonymous' ? 'primary' : 'ghost'}
+                size="sm"
+                onClick={() => setAudienceFilter('anonymous')}
+                className="text-xs px-3 py-1"
+                data-testid="filter-anonymous-only"
+              >
+                {t?.audienceAnonymous ?? 'Anonymous & Guests'}
+              </Button>
+            </div>
+          </div>
+
+          <Badge variant="info" size="sm">
+            {data.users.anonymous.guestTrafficSharePercentage}% Guest Traffic
+          </Badge>
+        </div>
       </GlassCard>
 
-      <StatsKpiGrid data={data} t={t?.kpi} />
+      <StatsKpiGrid data={filteredData} t={t?.kpi} />
+
+      <StatsAnonymousOverview
+        anonymous={data.users.anonymous}
+        users={data.users}
+        t={t?.anonymous}
+      />
 
       <StatsEngagementRetention
-        users={data.users}
+        users={filteredData.users}
         games={data.games}
         t={t?.engagement}
       />

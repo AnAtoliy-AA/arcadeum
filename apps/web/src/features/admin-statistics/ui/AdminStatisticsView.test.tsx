@@ -86,6 +86,10 @@ describe('AdminStatisticsView', () => {
     expect(
       screen.getByTestId('stats-engagement-retention'),
     ).toBeInTheDocument();
+    expect(screen.getByTestId('stats-anonymous-overview')).toBeInTheDocument();
+    expect(screen.getByTestId('filter-all-players')).toBeInTheDocument();
+    expect(screen.getByTestId('filter-registered-only')).toBeInTheDocument();
+    expect(screen.getByTestId('filter-anonymous-only')).toBeInTheDocument();
     expect(screen.getByTestId('export-pdf-button')).toBeInTheDocument();
     expect(screen.getByTestId('stats-games-breakdown')).toBeInTheDocument();
     expect(screen.getByTestId('stats-economy-overview')).toBeInTheDocument();

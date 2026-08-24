@@ -5,6 +5,9 @@ export const adminStatisticsBy = {
   liveStatus: 'Тэлеметрыя анлайн',
   lastUpdated: 'Абноўлена',
   exportPdf: 'Захаваць у PDF / Друк',
+  audienceAll: 'Усе гульцы',
+  audienceRegistered: 'Толькі зарэгістраваныя',
+  audienceAnonymous: 'Ананімныя і госці',
   kpi: {
     dau: 'DAU (у дзень)',
     mau: 'MAU (у месяц)',
@@ -15,6 +18,18 @@ export const adminStatisticsBy = {
     totalGames: 'Усяго гульняў згуляна',
     revenue: 'Выручка ад продажу гемаў',
     todaySuffix: 'новых сёння',
+  },
+  anonymous: {
+    title: 'Аналітыка ананімных гульцоў і гасцей',
+    subtitle:
+      'Тэлеметрыя незарэгістраваных сесій, аб’ём гульняў і варонка канверсіі',
+    guestShareLabel: 'Доля гасцей у трафіку',
+    totalGuestsLabel: 'Унікальныя профілі гасцей',
+    guestDauLabel: 'Ананімны DAU (у дзень)',
+    guestMauLabel: 'Ананімны MAU (у месяц)',
+    guestGamesTodayLabel: 'Матчаў гасцей сёння',
+    guestGamesTotalLabel: 'Усяго матчаў гасцей',
+    conversionPotentialLabel: 'Патэнцыял канверсіі ў акаўнты',
   },
   engagement: {
     title: 'Утрыманне і Sticky Factors',

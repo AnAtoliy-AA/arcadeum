@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import type { PlayerStatRecordDocument } from '../../games/schemas/player-stat-record.schema';
 import type { UserDocument } from '../../auth/schemas/user.schema';
 import type { WalletTransactionDocument } from '../../wallet/schemas/wallet-transaction.schema';
@@ -48,9 +48,26 @@ export async function computeDailyAndHourlyTrends(
             .exec(),
         ]);
 
+        const registeredDau = activeUsers.filter(
+          (u) =>
+            typeof u === 'string' &&
+            Types.ObjectId.isValid(u) &&
+            !u.startsWith('bot_') &&
+            !u.startsWith('guest_'),
+        ).length;
+        const anonymousDau = activeUsers.filter(
+          (u) =>
+            typeof u === 'string' &&
+            (u.startsWith('guest_') ||
+              u.startsWith('anon_') ||
+              (!Types.ObjectId.isValid(u) && !u.startsWith('bot_'))),
+        ).length;
+
         return {
           date: dateStr,
           dau: activeUsers.length,
+          registeredDau,
+          anonymousDau,
           games,
           newUsers,
           transactions,

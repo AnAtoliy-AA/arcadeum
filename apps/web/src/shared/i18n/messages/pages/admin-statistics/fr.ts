@@ -5,6 +5,9 @@ export const adminStatisticsFr = {
   liveStatus: 'Télémétrie en direct',
   lastUpdated: 'Mis à jour',
   exportPdf: 'Enregistrer en PDF / Imprimer',
+  audienceAll: 'Tous les joueurs',
+  audienceRegistered: 'Inscrits uniquement',
+  audienceAnonymous: 'Anonymes et invités',
   kpi: {
     dau: 'DAU (Actifs par jour)',
     mau: 'MAU (Actifs par mois)',
@@ -15,6 +18,18 @@ export const adminStatisticsFr = {
     totalGames: 'Parties Jouées',
     revenue: 'Revenus Ventes de Gemmes',
     todaySuffix: 'nouveaux aujourd’hui',
+  },
+  anonymous: {
+    title: 'Analytique des Joueurs Anonymes et Invités',
+    subtitle:
+      'Télémétrie des sessions non inscrites, volume de jeu et entonnoir de conversion',
+    guestShareLabel: 'Part du trafic invité',
+    totalGuestsLabel: 'Profils invités uniques',
+    guestDauLabel: 'DAU Anonyme (par jour)',
+    guestMauLabel: 'MAU Anonyme (par mois)',
+    guestGamesTodayLabel: 'Parties invités aujourd’hui',
+    guestGamesTotalLabel: 'Total parties invités',
+    conversionPotentialLabel: 'Opportunité de conversion',
   },
   engagement: {
     title: 'Engagement & Sticky Factors',

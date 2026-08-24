@@ -138,7 +138,9 @@ describe('AdminStatisticsService', () => {
     );
     expect(stats.users.arpu).toBeGreaterThanOrEqual(0);
     expect(stats.users.arppu).toBeGreaterThanOrEqual(0);
-    expect(stats.users.payerConversionRate).toBeGreaterThanOrEqual(0);
+    expect(stats.users.anonymous).toBeDefined();
+    expect(stats.users.anonymous.anonymousDau).toBeGreaterThanOrEqual(0);
+    expect(stats.users.registeredDau).toBeGreaterThanOrEqual(0);
     expect(stats.users.roleBreakdown).toEqual({ free: 80, admin: 20 });
 
     expect(stats.games.totalGamesPlayed).toBe(250);

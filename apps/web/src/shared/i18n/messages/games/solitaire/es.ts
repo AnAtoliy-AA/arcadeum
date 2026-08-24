@@ -35,6 +35,7 @@ export const esMessages = {
         'Cada movimiento a una base vale 10 puntos, a una columna 5, y cada carta revelada añade 5 más.',
     },
     landing: {
+      tagline: 'Un jugador · Sin registro',
       meta: {
         title: 'Solitario — Juego de cartas Klondike gratis online | Arcadeum',
         description:

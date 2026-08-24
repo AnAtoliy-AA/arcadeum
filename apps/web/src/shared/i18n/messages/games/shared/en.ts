@@ -341,6 +341,7 @@ export const enMessages = {
       action: 'Action',
       strategy: 'Strategy',
       race: 'Race',
+      puzzle: 'Puzzle',
     },
     tags: {
       strategy: 'Strategy',

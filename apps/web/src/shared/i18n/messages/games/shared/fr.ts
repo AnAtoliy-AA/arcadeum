@@ -352,6 +352,7 @@ export const frMessages = {
       action: 'Action',
       strategy: 'Stratégie',
       race: 'Course',
+      puzzle: 'Casse-tête',
     },
     tags: {
       strategy: 'Stratégie',

@@ -265,7 +265,7 @@ export function WalletScreenView() {
                   </Text>
                 )}
               </TouchableOpacity>
-            ) : null
+            ) : undefined
           }
         />
       )}

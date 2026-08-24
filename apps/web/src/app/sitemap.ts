@@ -39,6 +39,10 @@ type RouteKey =
   | 'chessLanding'
   | 'checkersLanding'
   | 'catDashLanding'
+  | 'solitaireLanding'
+  | 'minesweeperLanding'
+  | 'sudokuLanding'
+  | 'game2048Landing'
   | 'shop';
 
 // Last-meaningful-content-change per page. Update by hand when the
@@ -79,6 +83,10 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   chessLanding: '2026-05-21',
   checkersLanding: '2026-05-21',
   catDashLanding: '2026-05-21',
+  solitaireLanding: '2026-08-24',
+  minesweeperLanding: '2026-08-24',
+  sudokuLanding: '2026-08-24',
+  game2048Landing: '2026-08-24',
   shop: '2026-05-21',
 };
 
@@ -114,6 +122,10 @@ const GAME_LANDING_KEYS: RouteKey[] = [
   'chessLanding',
   'checkersLanding',
   'catDashLanding',
+  'solitaireLanding',
+  'minesweeperLanding',
+  'sudokuLanding',
+  'game2048Landing',
 ];
 
 const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
@@ -138,6 +150,10 @@ const PAGE_CHANGE_FREQ: Partial<
   glimwormLanding: 'weekly',
   ticTacToeLanding: 'weekly',
   cascadeLanding: 'weekly',
+  solitaireLanding: 'weekly',
+  minesweeperLanding: 'weekly',
+  sudokuLanding: 'weekly',
+  game2048Landing: 'weekly',
   terms: 'yearly',
   privacy: 'yearly',
   cookies: 'yearly',
@@ -176,6 +192,10 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   chessLanding: 0.9,
   checkersLanding: 0.9,
   catDashLanding: 0.9,
+  solitaireLanding: 0.9,
+  minesweeperLanding: 0.9,
+  sudokuLanding: 0.9,
+  game2048Landing: 0.9,
   leaderboards: 0.7,
   tournaments: 0.7,
   rewards: 0.7,

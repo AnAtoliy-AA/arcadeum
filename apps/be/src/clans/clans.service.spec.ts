@@ -155,7 +155,7 @@ describe('ClansService', () => {
       });
 
       await expect(
-        service.leaveClan(userId.toString(), 'clanId'),
+        service.leaveClan(userId.toString(), new Types.ObjectId().toString()),
       ).rejects.toThrow(BadRequestException);
     });
   });
@@ -166,7 +166,7 @@ describe('ClansService', () => {
         lean: jest.fn().mockResolvedValue(null),
       });
 
-      const result = await service.getClanById('nonexistent');
+      const result = await service.getClanById(new Types.ObjectId().toString());
       expect(result).toBeNull();
     });
 

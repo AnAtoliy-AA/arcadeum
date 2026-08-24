@@ -129,7 +129,7 @@ export class ClansService {
   }
 
   async joinClan(userId: string, clanId: string): Promise<void> {
-    const clan = await this.clanModel.findById(clanId);
+    const clan = await this.clanModel.findById(this.toObjectId(clanId));
     if (!clan) throw new NotFoundException('clans.clanNotFound');
 
     if (clan.memberCount >= MAX_CLAN_MEMBERS) {
@@ -174,7 +174,7 @@ export class ClansService {
   }
 
   async leaveClan(userId: string, clanId: string): Promise<void> {
-    const clan = await this.clanModel.findById(clanId);
+    const clan = await this.clanModel.findById(this.toObjectId(clanId));
     if (!clan) throw new NotFoundException('clans.clanNotFound');
 
     if (String(clan.leaderId) === userId) {
@@ -201,7 +201,7 @@ export class ClansService {
     clanId: string,
     targetUserId: string,
   ): Promise<void> {
-    const clan = await this.clanModel.findById(clanId);
+    const clan = await this.clanModel.findById(this.toObjectId(clanId));
     if (!clan) throw new NotFoundException('clans.clanNotFound');
 
     const requesterMember = await this.clanMemberModel.findOne({
@@ -245,7 +245,7 @@ export class ClansService {
       visibility?: string;
     },
   ): Promise<ClanView> {
-    const clan = await this.clanModel.findById(clanId);
+    const clan = await this.clanModel.findById(this.toObjectId(clanId));
     if (!clan) throw new NotFoundException('clans.clanNotFound');
 
     if (String(clan.leaderId) !== userId) {
@@ -281,7 +281,7 @@ export class ClansService {
     targetUserId: string,
     role: ClanRole,
   ): Promise<void> {
-    const clan = await this.clanModel.findById(clanId);
+    const clan = await this.clanModel.findById(this.toObjectId(clanId));
     if (!clan) throw new NotFoundException('clans.clanNotFound');
 
     if (String(clan.leaderId) !== requesterId) {
@@ -303,7 +303,9 @@ export class ClansService {
   }
 
   async getClanById(clanId: string): Promise<ClanView | null> {
-    const clan = await this.clanModel.findById(clanId).lean<LeanClan>();
+    const clan = await this.clanModel
+      .findById(this.toObjectId(clanId))
+      .lean<LeanClan>();
     if (!clan) return null;
     return this.toClanView(clan);
   }
@@ -391,7 +393,7 @@ export class ClansService {
   }
 
   async regenerateInviteCode(userId: string, clanId: string): Promise<string> {
-    const clan = await this.clanModel.findById(clanId);
+    const clan = await this.clanModel.findById(this.toObjectId(clanId));
     if (!clan) throw new NotFoundException('clans.clanNotFound');
 
     if (String(clan.leaderId) !== userId) {
@@ -408,7 +410,7 @@ export class ClansService {
     winnerIds: string[],
     loserIds: string[],
   ): Promise<void> {
-    const clan = await this.clanModel.findById(clanId);
+    const clan = await this.clanModel.findById(this.toObjectId(clanId));
     if (!clan) return;
 
     clan.totalGames += 1;
@@ -430,6 +432,10 @@ export class ClansService {
         },
       );
     }
+  }
+
+  private toObjectId(id: string): Types.ObjectId {
+    return new Types.ObjectId(id);
   }
 
   private toClanView(clan: LeanClan | ClanDocument): ClanView {

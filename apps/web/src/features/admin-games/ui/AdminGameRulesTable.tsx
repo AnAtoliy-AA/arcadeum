@@ -43,7 +43,7 @@ export function AdminGameRulesTable() {
           return updated;
         });
       } catch {
-        // revert on error
+        // revert
       } finally {
         setSaving(null);
       }
@@ -53,7 +53,7 @@ export function AdminGameRulesTable() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '48px', color: '#71717a' }}>
+      <div className="text-center py-12 text-[var(--colorTextSecondary,#71717a)]">
         Loading...
       </div>
     );
@@ -61,95 +61,48 @@ export function AdminGameRulesTable() {
 
   if (!rules || Object.keys(rules).length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '48px', color: '#71717a' }}>
+      <div className="text-center py-12 text-[var(--colorTextSecondary,#71717a)]">
         No games with configurable rules found.
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '24px',
-        marginTop: '16px',
-      }}
-    >
+    <div className="flex flex-col gap-6 mt-4">
       {Object.entries(rules).map(([gameId, gameRules]) => (
         <div
           key={gameId}
-          style={{
-            background: 'var(--color-card, #1c1c1e)',
-            borderRadius: '12px',
-            border: '1px solid rgba(255,255,255,0.08)',
-            overflow: 'hidden',
-          }}
+          className="bg-[var(--colorCard,#1c1c1e)] rounded-xl border border-[var(--borderColor)] overflow-hidden"
         >
-          <div
-            style={{
-              padding: '16px 20px',
-              borderBottom: '1px solid rgba(255,255,255,0.08)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <h3
-              style={{
-                fontSize: '16px',
-                fontWeight: 600,
-                color: 'var(--color-text, #e4e4e7)',
-                margin: 0,
-              }}
-            >
+          <div className="py-4 px-5 border-b border-[var(--borderColor)] flex flex-row justify-between items-center bg-[var(--backgroundFocus)]">
+            <h3 className="text-base font-semibold text-[var(--colorText,#e4e4e7)] capitalize m-0">
               {gameId.replace('_v1', '').replace(/_/g, ' ')}
             </h3>
-            <span
-              style={{
-                fontSize: '12px',
-                color: '#71717a',
-              }}
-            >
+            <span className="text-xs text-[var(--colorTextSecondary,#71717a)] font-mono">
               {gameRules.filter((r) => r.enabled).length}/{gameRules.length}{' '}
               enabled
             </span>
           </div>
-          <div style={{ padding: '8px 0' }}>
+          <div className="py-2 divide-y divide-[rgba(255,255,255,0.04)]">
             {gameRules.map((rule) => {
               const isSaving = saving === `${gameId}::${rule.ruleId}`;
               return (
                 <div
                   key={rule.ruleId}
-                  style={{
-                    padding: '12px 20px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    borderBottom: '1px solid rgba(255,255,255,0.04)',
-                  }}
+                  className="py-3 px-5 flex flex-row justify-between items-center hover:bg-[rgba(255,255,255,0.02)] transition-colors"
                 >
                   <div>
                     <div
-                      style={{
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        color: rule.enabled
-                          ? 'var(--color-text, #e4e4e7)'
-                          : '#71717a',
-                        cursor: rule.description ? 'help' : 'default',
-                      }}
+                      className={`text-sm font-medium ${
+                        rule.enabled
+                          ? 'text-[var(--colorText,#e4e4e7)]'
+                          : 'text-[var(--colorTextSecondary,#71717a)]'
+                      } ${rule.description ? 'cursor-help' : 'cursor-default'}`}
                       title={rule.description}
                     >
                       {rule.label}
                     </div>
-                    <div
-                      style={{
-                        fontSize: '12px',
-                        color: '#52525b',
-                        marginTop: '2px',
-                      }}
-                    >
+                    <div className="text-xs font-mono text-[var(--colorTextSecondary,#71717a)] mt-0.5">
                       {rule.ruleId}
                     </div>
                   </div>
@@ -159,23 +112,15 @@ export function AdminGameRulesTable() {
                     onClick={() =>
                       toggleRule(gameId, rule.ruleId, !rule.enabled)
                     }
-                    style={{
-                      padding: '6px 16px',
-                      borderRadius: '8px',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      cursor: isSaving ? 'not-allowed' : 'pointer',
-                      opacity: isSaving ? 0.6 : 1,
-                      border: '1px solid',
-                      borderColor: rule.enabled
-                        ? 'rgba(239,68,68,0.4)'
-                        : 'rgba(34,197,94,0.4)',
-                      background: rule.enabled
-                        ? 'rgba(239,68,68,0.1)'
-                        : 'rgba(34,197,94,0.1)',
-                      color: rule.enabled ? '#f87171' : '#4ade80',
-                      transition: 'all 0.15s ease',
-                    }}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                      isSaving
+                        ? 'opacity-60 cursor-not-allowed'
+                        : 'cursor-pointer'
+                    } ${
+                      rule.enabled
+                        ? 'border-rose-500/40 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
+                        : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                    }`}
                   >
                     {rule.enabled ? 'Exclude' : 'Include'}
                   </button>

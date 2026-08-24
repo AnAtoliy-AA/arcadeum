@@ -78,7 +78,7 @@ interface AnnouncementsI18n {
   };
   confirm: { delete: string };
   empty: { noResults: string; noAnnouncements: string };
-  pagination: { prev: string; next: string; of: string };
+  pagination?: { prev: string; next: string; of: string };
   totalLabel: string;
 }
 
@@ -103,14 +103,32 @@ export default function AdminAnnouncementsClient() {
   const [modal, setModal] = useState<ModalState | null>(null);
   const [pendingDelete, setPendingDelete] =
     useState<AdminAnnouncementItem | null>(null);
+  const [accumulatedAnnouncements, setAccumulatedAnnouncements] = useState<
+    AdminAnnouncementItem[]
+  >([]);
 
-  const { data, isLoading } = useAdminAnnouncements({
-    page,
-    pageSize: PAGE_SIZE,
-    q,
-    status,
-    severity,
-  });
+  const { data, isLoading } = useAdminAnnouncements(
+    {
+      page,
+      pageSize: PAGE_SIZE,
+      q,
+      status,
+      severity,
+    },
+    {
+      onSuccess: (res) => {
+        setAccumulatedAnnouncements((prev) => {
+          if (page === 1) {
+            return res.items;
+          }
+          const existingIds = new Set(prev.map((it) => it.id));
+          const newItems = res.items.filter((it) => !existingIds.has(it.id));
+          if (newItems.length === 0) return prev;
+          return [...prev, ...newItems];
+        });
+      },
+    },
+  );
 
   const createMut = useCreateAnnouncement();
   const updateMut = useUpdateAnnouncement();
@@ -181,6 +199,13 @@ export default function AdminAnnouncementsClient() {
     setStatus(next.status);
     setSeverity(next.severity);
     setPage(1);
+    setAccumulatedAnnouncements([]);
+  };
+
+  const handleLoadMore = () => {
+    if (!isLoading && data && accumulatedAnnouncements.length < data.total) {
+      setPage((p) => p + 1);
+    }
   };
 
   const handleSubmit = async (body: CreateAnnouncementBody) => {
@@ -215,13 +240,15 @@ export default function AdminAnnouncementsClient() {
           />
 
           <AdminAnnouncementsTable
-            items={data?.items ?? []}
+            items={
+              accumulatedAnnouncements.length > 0
+                ? accumulatedAnnouncements
+                : (data?.items ?? [])
+            }
             total={data?.total ?? 0}
-            page={page}
-            pageSize={PAGE_SIZE}
             isLoading={isLoading}
             hasFilter={!!q || status !== 'all' || severity !== null}
-            onPageChange={setPage}
+            onLoadMore={handleLoadMore}
             onEdit={(item) => setModal({ mode: 'edit', initial: item })}
             onDelete={(item) => setPendingDelete(item)}
             labels={tableLabels}

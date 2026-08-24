@@ -67,4 +67,5 @@ export * from './components/TrendPill';
 export * from './components/ProfileMenu';
 export * from './components/TableOfContents';
 export * from './components/AnimatedDice';
+export * from './components/InfiniteScroll';
 

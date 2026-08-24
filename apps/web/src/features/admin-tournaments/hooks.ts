@@ -26,7 +26,10 @@ function refreshKeys(triggerRefresh: (k: string) => void): void {
   triggerRefresh(PUBLIC_TOURNAMENTS_REFRESH_KEY);
 }
 
-export function useAdminTournaments(args: ListAdminTournamentsArgs) {
+export function useAdminTournaments(
+  args: ListAdminTournamentsArgs,
+  options?: { onSuccess?: (data: AdminTournamentsResponse) => void },
+) {
   const accessToken = useSessionStore((s) => s.snapshot.accessToken);
   return useQuery<AdminTournamentsResponse>({
     queryKey: [
@@ -40,6 +43,7 @@ export function useAdminTournaments(args: ListAdminTournamentsArgs) {
     queryFn: () => fetchAdminTournaments(args, accessToken!),
     refreshKey: ADMIN_TOURNAMENTS_REFRESH_KEY,
     enabled: !!accessToken,
+    onSuccess: options?.onSuccess,
   });
 }
 

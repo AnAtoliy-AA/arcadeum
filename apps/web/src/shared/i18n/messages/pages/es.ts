@@ -39,11 +39,97 @@ export const es = {
       tournaments: 'Torneos',
       economy: 'Economía',
       shop: 'Tienda',
+      gemPackages: 'Paquetes de Gemas',
       games: 'Juegos',
       gameRules: 'Reglas del Juego',
       bulkRewards: 'Recompensas Masivas',
       blockedIps: 'IPs Bloqueados',
+      geoBlock: 'Bloqueo Geográfico',
       comingSoon: 'Próximamente',
+    },
+    dashboard: {
+      title: 'Centro de Comando',
+      subtitle:
+        'Salud del sistema, métricas clave y resumen de módulos de administración',
+      systemHealth: 'Salud del Sistema',
+      statusOnline: 'Operativo',
+      statusDegraded: 'Degradado',
+      database: 'Base de datos',
+      collections: 'Colecciones',
+      totalDocuments: 'Total de documentos',
+      dataSize: 'Tamaño de datos (MB)',
+      storageSize: 'Tamaño de almacenamiento (MB)',
+      indexSize: 'Tamaño de índices (MB)',
+      activeModules: 'Módulos Activos',
+      modulesTitle: 'Módulos Administrativos',
+      modulesSubtitle:
+        'Acceso directo para administrar juegos, jugadores, transacciones y seguridad',
+      modules: {
+        users: {
+          title: 'Gestión de Usuarios',
+          description:
+            'Administrar cuentas de jugadores, roles, estados y sanciones',
+        },
+        payments: {
+          title: 'Pagos y Notas',
+          description:
+            'Auditar registros de pagos, transacciones y notas internas',
+        },
+        tournaments: {
+          title: 'Torneos',
+          description: 'Programar y gestionar torneos competitivos y premios',
+        },
+        gemPackages: {
+          title: 'Paquetes de Gemas',
+          description: 'Configurar niveles de gemas, precios y bonificaciones',
+        },
+        shop: {
+          title: 'Tienda y Cosméticos',
+          description:
+            'Gestionar inventario, rarezas de cosméticos y otorgamiento',
+        },
+        economy: {
+          title: 'Economía y Tesorería',
+          description:
+            'Monitorear circulación de tokens, faucet y quema de recompensas',
+        },
+        bulkRewards: {
+          title: 'Recompensas Masivas',
+          description: 'Distribuir recompensas masivas a cohortes de jugadores',
+        },
+        games: {
+          title: 'Visibilidad de Juegos',
+          description: 'Controlar disponibilidad y estado de modos de juego',
+        },
+        gameRules: {
+          title: 'Reglas del Juego',
+          description:
+            'Configurar variantes de reglas, temporizadores y mecánicas',
+        },
+        announcements: {
+          title: 'Anuncios',
+          description:
+            'Emitir avisos globales, actualizaciones y alertas de mantenimiento',
+        },
+        blockedIps: {
+          title: 'IPs Bloqueados',
+          description: 'Inspeccionar y bloquear direcciones IP maliciosas',
+        },
+        geoBlock: {
+          title: 'Bloqueo Geográfico',
+          description:
+            'Configurar restricciones jurisdiccionales y territoriales',
+        },
+      },
+      openPanel: 'Abrir Panel',
+      collectionsOverview: 'Desglose de Colecciones de Base de Datos',
+      collectionName: 'Colección',
+      docsCount: 'Documentos',
+      sizeMb: 'Tamaño (MB)',
+      avgDocSize: 'Tamaño Medio',
+      indexesCount: 'Índices',
+      liveStatus: 'Estado Actual',
+      environment: 'Entorno',
     },
     error: {
       title: 'Algo salió mal',

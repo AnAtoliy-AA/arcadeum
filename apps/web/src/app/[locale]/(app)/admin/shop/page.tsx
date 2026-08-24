@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { PageTitle, Typography, Spinner } from '@arcadeum/ui';
 import { requireAdmin } from '@/entities/session/api/requireAdmin';
 import { AdminShopTable } from '@/features/admin-shop/ui/AdminShopTable';
 import { getAdminCatalog } from '@/features/admin-shop/server/admin-shop.server';
@@ -12,8 +13,6 @@ interface AdminShopPageMessages {
   };
 }
 
-// No metadata export — inherits noindex/nofollow from /admin/layout.tsx.
-
 export default async function AdminShopPage() {
   await requireAdmin();
 
@@ -25,44 +24,27 @@ export default async function AdminShopPage() {
   try {
     catalog = await getAdminCatalog();
   } catch {
-    // Render with empty catalog; the table component shows the empty state.
+    catalog = [];
   }
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: 1200,
-        minWidth: 0,
-        margin: '0 auto',
-        padding: '32px 16px',
-      }}
-    >
-      <div style={{ marginBottom: 24 }}>
-        <h1
-          style={{
-            fontSize: 24,
-            fontWeight: 700,
-            color: 'var(--color, #e4e4e7)',
-            marginBottom: 4,
-          }}
-        >
+    <div className="w-full max-w-6xl mx-auto flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <PageTitle size="lg" gradient>
           {labels.title}
-        </h1>
-        <p style={{ fontSize: 14, color: 'var(--colorPress, #71717a)' }}>
+        </PageTitle>
+        <Typography variant="body" uiSize="md" alpha="medium">
           {labels.subtitle}
-        </p>
+        </Typography>
       </div>
 
       <Suspense
         fallback={
-          <div
-            style={{
-              padding: '48px 16px',
-              color: 'var(--colorPress, #71717a)',
-            }}
-          >
-            {labels.loading}
+          <div className="flex flex-col items-center justify-center py-12 px-4 gap-3 text-[var(--colorTextSecondary,#a1a1aa)]">
+            <Spinner size="md" />
+            <Typography variant="body" uiSize="sm">
+              {labels.loading}
+            </Typography>
           </div>
         }
       >

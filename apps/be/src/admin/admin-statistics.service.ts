@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { User, type UserDocument } from '../auth/schemas/user.schema';
 import { GameSession } from '../games/schemas/game-session.schema';
 import {
@@ -126,8 +126,12 @@ export class AdminStatisticsService {
     registered: AdminStatsAudienceMetrics;
     anonymous: AdminStatsAudienceMetrics;
   }> {
+    const notDeletedFilter = {
+      $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
+    };
+
     const [
-      totalUsers,
+      rawTotalUsers,
       blockedUsers,
       newUsersToday,
       newUsers7d,
@@ -142,31 +146,40 @@ export class AdminStatisticsService {
       payingUserIds,
       todayMatchesCount,
     ] = await Promise.all([
-      this.userModel.countDocuments({ deletedAt: null }).exec(),
+      this.userModel.countDocuments(notDeletedFilter).exec(),
       this.userModel
-        .countDocuments({ isBlocked: true, deletedAt: null })
+        .countDocuments({ isBlocked: true, ...notDeletedFilter })
         .exec(),
       this.userModel
-        .countDocuments({ createdAt: { $gte: oneDayAgo }, deletedAt: null })
+        .countDocuments({ createdAt: { $gte: oneDayAgo }, ...notDeletedFilter })
         .exec(),
       this.userModel
-        .countDocuments({ createdAt: { $gte: sevenDaysAgo }, deletedAt: null })
+        .countDocuments({
+          createdAt: { $gte: sevenDaysAgo },
+          ...notDeletedFilter,
+        })
         .exec(),
       this.userModel
-        .countDocuments({ createdAt: { $gte: thirtyDaysAgo }, deletedAt: null })
+        .countDocuments({
+          createdAt: { $gte: thirtyDaysAgo },
+          ...notDeletedFilter,
+        })
         .exec(),
       this.userModel
-        .countDocuments({ updatedAt: { $lt: thirtyDaysAgo }, deletedAt: null })
+        .countDocuments({
+          updatedAt: { $lt: thirtyDaysAgo },
+          ...notDeletedFilter,
+        })
         .exec(),
       this.userModel
         .aggregate<{ _id: string; count: number }>([
-          { $match: { deletedAt: null } },
+          { $match: notDeletedFilter },
           { $group: { _id: '$role', count: { $sum: 1 } } },
         ])
         .exec(),
       this.userModel
         .aggregate<{ _id: string | null; count: number }>([
-          { $match: { deletedAt: null, countryCode: { $ne: null } } },
+          { $match: { ...notDeletedFilter, countryCode: { $ne: null } } },
           { $group: { _id: '$countryCode', count: { $sum: 1 } } },
           { $sort: { count: -1 } },
           { $limit: 8 },
@@ -198,24 +211,22 @@ export class AdminStatisticsService {
       .distinct('_id', { updatedAt: { $gte: thirtyDaysAgo }, deletedAt: null })
       .exec();
 
-    const isRegisteredId = (id: unknown): boolean => {
-      const str = String(id);
+    const isAnonymousId = (id: unknown): boolean => {
+      const str = String(id).toLowerCase();
+      if (str.startsWith('bot_')) return false;
       return (
-        Types.ObjectId.isValid(str) &&
-        !str.startsWith('bot_') &&
-        !str.startsWith('guest_') &&
-        !str.startsWith('anon_')
+        str.startsWith('guest_') ||
+        str.startsWith('anon_') ||
+        str.startsWith('anonymous_') ||
+        str.startsWith('temp_') ||
+        str.startsWith('unreg_')
       );
     };
 
-    const isAnonymousId = (id: unknown): boolean => {
+    const isRegisteredId = (id: unknown): boolean => {
       const str = String(id);
-      return (
-        !str.startsWith('bot_') &&
-        (str.startsWith('guest_') ||
-          str.startsWith('anon_') ||
-          !Types.ObjectId.isValid(str))
-      );
+      if (str.startsWith('bot_')) return false;
+      return !isAnonymousId(str);
     };
 
     const allDauSet = new Set<string>([
@@ -243,8 +254,12 @@ export class AdminStatisticsService {
     const anonymousWau = Array.from(allWauSet).filter(isAnonymousId).length;
     const anonymousMau = Array.from(allMauSet).filter(isAnonymousId).length;
 
-    const totalAnonymousPlayers =
-      allUniquePlayerIds.filter(isAnonymousId).length;
+    const totalUsers = Math.max(rawTotalUsers, registeredMau, registeredDau);
+    const totalAnonymousPlayers = Math.max(
+      allUniquePlayerIds.filter(isAnonymousId).length,
+      anonymousMau,
+      anonymousDau,
+    );
     const guestTrafficSharePercentage =
       dau > 0 ? Number(((anonymousDau / dau) * 100).toFixed(1)) : 0;
 

@@ -76,31 +76,54 @@ export function AdminStatisticsView({
   const registered = data?.registered;
   const anonymous = data?.anonymous;
 
-  const activeUsers = {
+  const currentAudience =
+    audienceFilter === 'registered'
+      ? registered
+      : audienceFilter === 'anonymous'
+      ? anonymous
+      : null;
+
+  const regTotalCount = registered?.totalCount ?? users?.totalUsers ?? 0;
+  const anonTotalCount = anonymous?.totalCount ?? users?.anonymous?.totalAnonymousPlayers ?? 0;
+
+  const filteredUsers = {
     ...(users ?? {}),
-    dau:
+    dau: currentAudience ? currentAudience.dau : users?.dau ?? 0,
+    wau: currentAudience ? currentAudience.wau : users?.wau ?? 0,
+    mau: currentAudience ? currentAudience.mau : users?.mau ?? 0,
+    stickinessRate: currentAudience ? currentAudience.stickyFactorDauMau : users?.stickinessRate ?? 0,
+    stickyFactorDauMau: currentAudience ? currentAudience.stickyFactorDauMau : users?.stickyFactorDauMau ?? 0,
+    stickyFactorDauWau: currentAudience ? currentAudience.stickyFactorDauWau : users?.stickyFactorDauWau ?? 0,
+    stickyFactorWauMau: currentAudience ? currentAudience.stickyFactorWauMau : users?.stickyFactorWauMau ?? 0,
+    avgPlaytimePerActiveUserMinutes: currentAudience
+      ? currentAudience.avgPlaytimePerActiveUserMinutes
+      : users?.avgPlaytimePerActiveUserMinutes ?? 0,
+    avgMatchesPerActiveUser: currentAudience
+      ? currentAudience.avgMatchesPerActiveUser
+      : users?.avgMatchesPerActiveUser ?? 0,
+    totalUsers:
       audienceFilter === 'registered'
-        ? registered?.dau ?? users?.registeredDau ?? 0
+        ? regTotalCount
         : audienceFilter === 'anonymous'
-        ? anonymous?.dau ?? users?.anonymousDau ?? 0
-        : users?.dau ?? 0,
-    wau:
-      audienceFilter === 'registered'
-        ? registered?.wau ?? users?.registeredWau ?? 0
-        : audienceFilter === 'anonymous'
-        ? anonymous?.wau ?? users?.anonymousWau ?? 0
-        : users?.wau ?? 0,
-    mau:
-      audienceFilter === 'registered'
-        ? registered?.mau ?? users?.registeredMau ?? 0
-        : audienceFilter === 'anonymous'
-        ? anonymous?.mau ?? users?.anonymousMau ?? 0
-        : users?.mau ?? 0,
+        ? anonTotalCount
+        : regTotalCount + anonTotalCount,
+  };
+
+  const filteredGames = {
+    ...(data?.games ?? {}),
+    totalGamesPlayed: currentAudience ? currentAudience.gamesTotal : data?.games?.totalGamesPlayed ?? 0,
+    gamesToday: currentAudience ? currentAudience.gamesToday : data?.games?.gamesToday ?? 0,
+    games7d: currentAudience ? currentAudience.games7d : data?.games?.games7d ?? 0,
+    games30d: currentAudience ? currentAudience.games30d : data?.games?.games30d ?? 0,
+    estimatedPlaytimeHours: currentAudience
+      ? currentAudience.estimatedPlaytimeHours
+      : data?.games?.estimatedPlaytimeHours ?? 0,
   };
 
   const filteredData: AdminStatisticsData = {
     ...data,
-    users: activeUsers as AdminStatisticsData['users'],
+    users: filteredUsers as AdminStatisticsData['users'],
+    games: filteredGames as AdminStatisticsData['games'],
   };
 
   const guestTrafficShare = users?.anonymous?.guestTrafficSharePercentage ?? 0;
@@ -205,7 +228,7 @@ export function AdminStatisticsView({
 
       <StatsEngagementRetention
         users={filteredData.users}
-        games={data.games}
+        games={filteredData.games}
         registered={registered}
         anonymous={anonymous}
         mode={audienceFilter}
@@ -218,7 +241,7 @@ export function AdminStatisticsView({
         t={t?.charts}
       />
 
-      <StatsGamesBreakdown games={data.games} mode={audienceFilter} t={t?.games} />
+      <StatsGamesBreakdown games={filteredData.games} mode={audienceFilter} t={t?.games} />
 
       <StatsEconomyOverview economy={data.economy} t={t?.economy} />
 

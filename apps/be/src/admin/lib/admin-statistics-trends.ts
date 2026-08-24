@@ -1,4 +1,4 @@
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import type { PlayerStatRecordDocument } from '../../games/schemas/player-stat-record.schema';
 import type { UserDocument } from '../../auth/schemas/user.schema';
 import type { WalletTransactionDocument } from '../../wallet/schemas/wallet-transaction.schema';
@@ -40,7 +40,7 @@ export async function computeDailyAndHourlyTrends(
           userModel
             .countDocuments({
               createdAt: { $gte: startDate, $lt: endDate },
-              deletedAt: null,
+              $or: [{ deletedAt: null }, { deletedAt: { $exists: false } }],
             })
             .exec(),
           walletTxModel
@@ -48,20 +48,30 @@ export async function computeDailyAndHourlyTrends(
             .exec(),
         ]);
 
-        const registeredDau = activeUsers.filter(
-          (u) =>
-            typeof u === 'string' &&
-            Types.ObjectId.isValid(u) &&
-            !u.startsWith('bot_') &&
-            !u.startsWith('guest_'),
-        ).length;
-        const anonymousDau = activeUsers.filter(
-          (u) =>
-            typeof u === 'string' &&
-            (u.startsWith('guest_') ||
-              u.startsWith('anon_') ||
-              (!Types.ObjectId.isValid(u) && !u.startsWith('bot_'))),
-        ).length;
+        const isAnon = (u: unknown): boolean => {
+          const str = String(u).toLowerCase();
+          if (str.startsWith('bot_')) return false;
+          return (
+            str.startsWith('guest_') ||
+            str.startsWith('anon_') ||
+            str.startsWith('anonymous_') ||
+            str.startsWith('temp_')
+          );
+        };
+
+        const isReg = (u: unknown): boolean => {
+          const str = String(u);
+          if (str.startsWith('bot_')) return false;
+          return !isAnon(str);
+        };
+
+        const registeredDau = activeUsers.filter(isReg).length;
+        const anonymousDau = activeUsers.filter(isAnon).length;
+
+        const regRatio =
+          activeUsers.length > 0 ? registeredDau / activeUsers.length : 1;
+        const registeredGames = Math.round(games * regRatio);
+        const anonymousGames = Math.max(games - registeredGames, 0);
 
         return {
           date: dateStr,
@@ -69,6 +79,8 @@ export async function computeDailyAndHourlyTrends(
           registeredDau,
           anonymousDau,
           games,
+          registeredGames,
+          anonymousGames,
           newUsers,
           transactions,
         };
@@ -97,11 +109,14 @@ export async function computeDailyAndHourlyTrends(
           count: { $sum: 1 },
         },
       },
+      { $sort: { _id: 1 } },
     ])
     .exec();
 
+  const hourlyActivity = formatHourlyBuckets(hourlyAgg);
+
   return {
     daily,
-    hourlyActivity: formatHourlyBuckets(hourlyAgg),
+    hourlyActivity,
   };
 }

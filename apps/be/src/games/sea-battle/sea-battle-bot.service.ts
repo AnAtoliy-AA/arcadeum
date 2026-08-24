@@ -246,7 +246,7 @@ export class SeaBattleBotService extends SeaBattleBot {
             botId,
             currentSession.roomId,
             specialAction.action,
-            specialAction.payload,
+            specialAction.payload as unknown as Record<string, unknown>,
           );
           const refreshed = await this.seaBattleService.findSessionByRoom(
             currentSession.roomId,

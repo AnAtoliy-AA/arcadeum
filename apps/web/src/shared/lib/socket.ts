@@ -38,6 +38,7 @@ let _chatsSocket: AuthenticatedSocket | null = null;
 let _leaderboardsSocket: AuthenticatedSocket | null = null;
 let _friendsSock: AuthenticatedSocket | null = null;
 let _walletSock: AuthenticatedSocket | null = null;
+let _clansSock: AuthenticatedSocket | null = null;
 
 function getGamesSocket(): AuthenticatedSocket {
   if (!_gamesSocket) {
@@ -90,6 +91,17 @@ function getWalletSock(): AuthenticatedSocket {
     guardEmit(_walletSock);
   }
   return _walletSock;
+}
+
+function getClansSock(): AuthenticatedSocket {
+  if (!_clansSock) {
+    _clansSock = io(
+      `${SOCKET_BASE_URL}/clans`,
+      SOCKET_OPTIONS,
+    ) as AuthenticatedSocket;
+    guardEmit(_clansSock);
+  }
+  return _clansSock;
 }
 
 // Guard against emit() calls on a socket whose transport was never
@@ -181,6 +193,7 @@ export function connectSockets(token: string | null | undefined): void {
   applyAuth(getGamesSocket(), token);
   applyAuth(getChatsSocket(), token);
   applyAuth(getFriendsSock(), token);
+  applyAuth(getClansSock(), token);
 
   if (!getGamesSocket().connected) {
     getGamesSocket().connect();
@@ -190,6 +203,9 @@ export function connectSockets(token: string | null | undefined): void {
   }
   if (!getFriendsSock().connected) {
     getFriendsSock().connect();
+  }
+  if (!getClansSock().connected) {
+    getClansSock().connect();
   }
 }
 
@@ -274,12 +290,16 @@ export function disconnectSockets(): void {
   if (_walletSock) {
     _walletSock.disconnect();
   }
+  if (_clansSock) {
+    _clansSock.disconnect();
+  }
 
   if (_gamesSocket) _gamesSocket.auth = {};
   if (_chatsSocket) _chatsSocket.auth = {};
   if (_leaderboardsSocket) _leaderboardsSocket.auth = {};
   if (_friendsSock) _friendsSock.auth = {};
   if (_walletSock) _walletSock.auth = {};
+  if (_clansSock) _clansSock.auth = {};
   resetEncryptionKey();
 }
 
@@ -302,6 +322,10 @@ export function getFriendsSocketRef(): Socket {
 
 export function getWalletSocketRef(): Socket {
   return getWalletSock();
+}
+
+export function getClansSocketRef(): Socket {
+  return getClansSock();
 }
 
 // Backward-compatible exports — lazily delegate to actual socket instances
@@ -331,6 +355,7 @@ export const leaderboardSocket: Socket = createLazySocket(
 );
 export const friendsSocket: Socket = createLazySocket(getFriendsSock);
 export const walletSocket: Socket = createLazySocket(getWalletSock);
+export const clansSocket: Socket = createLazySocket(getClansSock);
 
 // Expose sockets to window for E2E testing
 if (typeof window !== 'undefined') {

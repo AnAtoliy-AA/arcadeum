@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.13] - 2026-08-24
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.26.12] - 2026-08-24
+
+### Added
+- add clans/groups feature (ARC-891)
+
+### Fixed
+- wrap clanId with ObjectId in all Mongoose queries (ARC-891)
+- sanitize user input in clan DB queries (ARC-891)
+- add missing clans i18n translation files (ARC-891)
+
+### Documentation
+- mark clans/groups feature as implemented in roadmap
+
+
 ## [1.26.11] - 2026-08-23
 
 ### Added

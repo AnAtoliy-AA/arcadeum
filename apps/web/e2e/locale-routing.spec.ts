@@ -12,7 +12,7 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
 
-test.describe('Locale routing — middleware redirects', () => {
+test.describe('Locale routing — proxy redirects', () => {
   test('unprefixed `/` serves `/en` content directly without redirect for a fresh cookie-less visitor', async ({
     page,
   }) => {

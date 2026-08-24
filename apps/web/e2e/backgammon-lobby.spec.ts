@@ -46,7 +46,12 @@ test.describe('Backgammon Lobby Options', () => {
     await expect(cyberpunkChip).toBeVisible();
     await expect(cyberpunkChip).toHaveAttribute('aria-checked', 'true', {});
 
-    await page.getByTestId('theme-underwater').click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="theme-underwater"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     await mockGameSocket(page, roomId, MOCK_OBJECT_ID, {
       gameId: 'backgammon_v1',

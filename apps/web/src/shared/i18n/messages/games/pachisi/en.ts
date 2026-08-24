@@ -164,6 +164,24 @@ export const enMessages = {
       moveTokenAria: 'Move token {{id}}',
       dieValue: 'Die showing {{value}}',
     },
+    tutorial: {
+      s1: {
+        title: 'Six gets you out',
+        body: 'Roll a die on your turn and move one token. You need a 6 to leave the yard — and rolling it grants another roll.',
+      },
+      s2: {
+        title: 'Send them home',
+        body: "Land on an opponent's token to send it back to its yard. Star cells and start cells are safe havens.",
+      },
+      s3: {
+        title: 'March them home',
+        body: 'Lap the board clockwise, climb your colored home lane and tuck every token into the center to win.',
+      },
+      s4: {
+        title: 'Greed has a price',
+        body: 'Rolling three 6s in a row forfeits your whole turn — sometimes the safe play is best.',
+      },
+    },
     rules: {
       title: 'Pachisi Rules',
       objectiveTitle: 'Objective',

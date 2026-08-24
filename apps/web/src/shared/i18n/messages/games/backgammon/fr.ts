@@ -159,6 +159,24 @@ export const frMessages = {
       checkerMoved: 'Pion déplacé',
       checkerHit: 'Pion envoyé sur la barre !',
     },
+    tutorial: {
+      s1: {
+        title: 'Lancez et avancez',
+        body: 'Lancez deux dés et déplacez vos pions selon les points. Un double permet de jouer le chiffre quatre fois.',
+      },
+      s2: {
+        title: 'Frappez les blots',
+        body: 'Un pion isolé est un blot — atterrissez dessus pour l’envoyer à la barre. Les pions sur la barre doivent rentrer avant tout autre mouvement.',
+      },
+      s3: {
+        title: 'Sortez pour gagner',
+        body: 'Ramenez vos quinze pions dans votre jan intérieur, puis retirez-les. Le premier à sortir ses quinze pions gagne.',
+      },
+      s4: {
+        title: 'Entre deux lancers',
+        body: 'Son, musique, plein écran et le livre complet des Règles se trouvent dans ce panneau.',
+      },
+    },
     rules: {
       title: 'Règles du Backgammon',
       objectiveTitle: 'Objectif',

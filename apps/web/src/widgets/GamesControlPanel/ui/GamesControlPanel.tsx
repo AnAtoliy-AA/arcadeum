@@ -37,6 +37,7 @@ interface GamesControlPanelProps {
   showChat?: boolean;
   onToggleChat?: () => void;
   onShowRules?: () => void;
+  onShowTutorial?: () => void;
   isFullscreen?: boolean;
   toggleFullscreen?: () => void;
   isSpectating?: boolean;
@@ -58,6 +59,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
     showChat,
     onToggleChat,
     onShowRules,
+    onShowTutorial,
     isFullscreen,
     toggleFullscreen,
     isSpectating,
@@ -210,6 +212,23 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           📖
           <span className="max-[800px]:hidden">
             {' ' + (t('games.table.controlPanel.rules') || 'Rules')}
+          </span>
+        </Button>
+      )}
+
+      {onShowTutorial && (
+        <Button
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+          variant="glass"
+          size="sm"
+          onClick={onShowTutorial}
+          aria-label={t('games.tutorial.ui.button')}
+          title={t('games.tutorial.ui.button')}
+          data-testid="show-tutorial-button"
+        >
+          🎓
+          <span className="max-[800px]:hidden">
+            {' ' + t('games.tutorial.ui.button')}
           </span>
         </Button>
       )}

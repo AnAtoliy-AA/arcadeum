@@ -98,6 +98,24 @@ export const enMessages = {
       winCondition: 'Win condition',
       inARow: '{{n}} in a row',
     },
+    tutorial: {
+      s1: {
+        title: 'Claim your cells',
+        body: 'Take turns marking empty cells. On small boards three in a row wins; bigger boards ask for longer lines.',
+      },
+      s2: {
+        title: 'Mind the win length',
+        body: '3×3 needs 3 in a row, 5×5 needs 4, and 7×7 or 9×9 need 5 — horizontally, vertically or diagonally.',
+      },
+      s3: {
+        title: 'Infinity mode',
+        body: 'On Infinity boards the grid expands whenever someone plays near the edge — no draws, ever.',
+      },
+      s4: {
+        title: 'Talk strategy',
+        body: 'Use table chat to banter, fire quick emotes to react, and open the Rules book for a refresher.',
+      },
+    },
     rules: {
       title: 'Rules',
       objective:

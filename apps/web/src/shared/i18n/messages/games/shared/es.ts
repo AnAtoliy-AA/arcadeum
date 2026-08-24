@@ -40,6 +40,19 @@ export const esMessages = {
     error: 'No se pudo iniciar — inténtalo de nuevo',
     delayLabel: 'Retraso entre jugadas',
   },
+  tutorial: {
+    ui: {
+      button: 'Tutorial',
+      next: 'Siguiente',
+      back: 'Atrás',
+      skip: 'Saltar',
+      finish: 'Empezar a jugar',
+      stepOf: 'Paso {{current}} de {{total}}',
+      completeTitle: '¡Tutorial completado!',
+      completeBody:
+        'Genial: ya conoces los fundamentos de {{game}}. ¡Buena suerte en la mesa!',
+    },
+  },
   rooms: {
     status: {
       lobby: 'Sala de espera',

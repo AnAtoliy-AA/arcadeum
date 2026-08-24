@@ -39,6 +39,19 @@ export const byMessages = {
     error: 'Не атрымалася запусціць — паспрабуйце яшчэ раз',
     delayLabel: 'Затрымка ходу',
   },
+  tutorial: {
+    ui: {
+      button: 'Навучанне',
+      next: 'Далей',
+      back: 'Назад',
+      skip: 'Прапусціць',
+      finish: 'Пачаць гульню',
+      stepOf: 'Крок {{current}} з {{total}}',
+      completeTitle: 'Навучанне завершана!',
+      completeBody:
+        'Выдатна — цяпер вы ведаеце асновы гульні {{game}}. Поспеху за сталом!',
+    },
+  },
   rooms: {
     status: {
       lobby: 'Лобі',

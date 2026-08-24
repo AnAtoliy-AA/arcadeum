@@ -38,7 +38,7 @@ export default function ReplayClient({
       } catch {
         if (!cancelled) {
           useReplayStore.setState({
-            error: 'Failed to load replay',
+            error: t('games.replay.error'),
             loading: false,
           });
         }
@@ -52,7 +52,7 @@ export default function ReplayClient({
       cancelled = true;
       reset();
     };
-  }, [initialReplay, replayId, loadReplay, reset]);
+  }, [initialReplay, replayId, loadReplay, reset, t]);
 
   if (loading) {
     return (

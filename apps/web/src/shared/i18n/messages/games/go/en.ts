@@ -134,6 +134,24 @@ export const enMessages = {
       lost: 'Defeat — your opponent controlled more area.',
       draw: 'Draw — perfectly balanced board.',
     },
+    tutorial: {
+      s1: {
+        title: 'Surround territory',
+        body: 'Place stones to fence off empty points. When both players pass, the bigger area wins — White starts with komi compensation.',
+      },
+      s2: {
+        title: 'Cut off liberties',
+        body: 'A group with no adjacent empty points (liberties) is captured and removed. Surround enemy stones to strip their last liberty.',
+      },
+      s3: {
+        title: 'Mind the ko rule',
+        body: 'You cannot instantly recapture in a way that recreates the previous position — play elsewhere first. Two consecutive passes end the game.',
+      },
+      s4: {
+        title: 'Tools of the trade',
+        body: 'Sound, music, fullscreen and the Rules book live here while you plot your next move.',
+      },
+    },
     rules: {
       title: 'Go Rules',
       objectiveTitle: 'Objective',

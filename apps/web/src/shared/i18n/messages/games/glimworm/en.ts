@@ -55,6 +55,24 @@ export const enMessages = {
       inPlay: 'In play',
       roundOver: 'Round over',
     },
+    tutorial: {
+      s1: {
+        title: 'Slither and grow',
+        body: 'Steer your glowing worm around the arena and eat food to grow longer and score points.',
+      },
+      s2: {
+        title: 'Avoid every trail',
+        body: "Never hit another worm's trail — or your own, unless a shield saves you.",
+      },
+      s3: {
+        title: 'Power up',
+        body: 'Grab power-ups like Speed Burst and Shield to outplay rivals, and watch the HUD for time, lives and score.',
+      },
+      s4: {
+        title: 'Know your mode',
+        body: 'In Battle Royale the arena shrinks until one worm remains; in Time Attack the highest score after 90 seconds wins.',
+      },
+    },
     rules: {
       objective:
         'Outlast every other worm in the arena. Eat glowing food to grow longer and score points.',

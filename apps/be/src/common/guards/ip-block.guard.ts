@@ -42,6 +42,7 @@ export class IpBlockService {
   private readonly failureWindowMs: number;
   private readonly blockDurationMs: number;
   private readonly severeBlockDurationMs: number;
+  private readonly trustCloudflare: boolean;
 
   constructor(
     @Inject(RATE_STATE_STORE) private readonly store: RateStateStore,
@@ -60,6 +61,11 @@ export class IpBlockService {
       config?.get('IP_BLOCK_SEVERE_DURATION_MS'),
       60 * 60 * 1000,
     );
+    this.trustCloudflare = config?.get('TRUST_CF_CONNECTING_IP') === 'true';
+  }
+
+  extractIp(req: Request): string {
+    return extractClientIp(req, { trustCloudflare: this.trustCloudflare });
   }
 
   async record429(ip: string): Promise<void> {
@@ -181,6 +187,8 @@ export class IpBlockGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<Request>();
 
-    return !(await this.ipBlockService.isBlocked(extractClientIp(request)));
+    return !(await this.ipBlockService.isBlocked(
+      this.ipBlockService.extractIp(request),
+    ));
   }
 }

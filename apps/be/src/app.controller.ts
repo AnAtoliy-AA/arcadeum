@@ -35,13 +35,13 @@ export class AppController {
     return this.appService.getLiveStatus();
   }
 
-  @SkipThrottle()
+  @SkipThrottle({ default: true, auth: true, strict: true })
   @Get('health')
   health() {
     return { ok: true };
   }
 
-  @SkipThrottle()
+  @SkipThrottle({ default: true, auth: true, strict: true })
   @Get('health/db')
   async checkDbHealth(): Promise<DbHealthResponse> {
     const oci = await this.pingConnection(this.ociConnection);

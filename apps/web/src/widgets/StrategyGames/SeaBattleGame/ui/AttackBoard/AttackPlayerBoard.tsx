@@ -17,6 +17,7 @@ import {
 } from '../styles';
 import { IdleBadge } from '@arcadeum/ui';
 import { type TranslationKey } from '@/shared/lib/useTranslation';
+import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import type { SeaBattleTheme } from '../../lib/theme';
 import { AttackBoardCell } from './AttackBoardCell';
 import { BadgePill, TeamPill } from './Pills';
@@ -152,6 +153,29 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     onCellHoverEnd();
   }, [isMe, onCellHoverEnd]);
 
+  // Keyboard navigation (arrow keys + Enter to fire) for the opponent board.
+  const boardKeyboard = useBoardKeyboardNavigation({
+    rows: boardSize,
+    cols: boardSize,
+    disabled: !showTargeting,
+    onActivate: ({ row, col }) => {
+      if (!showTargeting || !onAttack) return;
+      if (!weaponMode) {
+        const cellState = player.board[row]?.[col];
+        const isSunk = sunkCellSet.has(`${row}-${col}`);
+        if (
+          cellState === undefined ||
+          cellState === CELL_STATE.HIT ||
+          cellState === CELL_STATE.MISS ||
+          isSunk
+        ) {
+          return;
+        }
+      }
+      onAttack(player.playerId, row, col);
+    },
+  });
+
   const boardGrid = (
     <BoardGrid
       className={`sb-board-grid ${!isMe && showTargeting ? 'sb-my-turn' : ''}`}
@@ -170,6 +194,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
       onClick={handleGridClick}
       onMouseMove={!isMe && onCellHover ? handleGridMouseMove : undefined}
       onMouseLeave={!isMe && onCellHoverEnd ? handleGridMouseLeave : undefined}
+      {...(!isMe ? boardKeyboard.gridProps : {})}
     >
       {player.board.map((row, rIndex) =>
         row.map((cellState, cIndex) => {
@@ -232,6 +257,9 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               rIndex={rIndex}
               cIndex={cIndex}
               isMe={isMe}
+              cellFocusProps={
+                !isMe ? boardKeyboard.getCellProps(rIndex, cIndex) : undefined
+              }
             />
           );
         }),

@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.26] - 2026-08-24
+
+### Added
+- add season banner with rewards and progress on player profile (ARC-899)
+- add seasons module with rollover cron and soft elo reset (ARC-899)
+
+
+## [1.26.25] - 2026-08-24
+
+### Added
+- add keyboard play to backgammon, sea battle, chess and checkers boards (ARC-898)
+- add keyboard navigation utilities and Escape-to-deselect (ARC-898)
+
+### Documentation
+- mark keyboard navigation implemented in roadmap (ARC-898)
+
+
+## [1.26.24] - 2026-08-24
+
+### Added
+- add real preview art for hearts, spades, go, and pachisi (ARC-923) (ARC-923)
+
+### Documentation
+- update new-game skill checklist and gotchas for catalog preview art (ARC-923) (ARC-923)
+
+
 ## [1.26.23] - 2026-08-24
 
 ### Fixed

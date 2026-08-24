@@ -1,5 +1,6 @@
 'use client';
 
+import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import { useBackgammonTheme } from '../lib/BackgammonThemeContext';
 import type { BackgammonPoint as PointType } from '../types';
 
@@ -17,6 +18,8 @@ interface BackgammonPointProps {
   currentUserId: string | null;
   playerOrder: string[];
   onClick: () => void;
+  /** Roving-tabindex/focus attributes from the board's keyboard navigation. */
+  cellFocusProps?: Record<string, unknown>;
 }
 
 export function BackgammonPoint({
@@ -28,6 +31,7 @@ export function BackgammonPoint({
   currentUserId: _currentUserId,
   playerOrder,
   onClick,
+  cellFocusProps,
 }: BackgammonPointProps) {
   const theme = useBackgammonTheme();
   const isEven = pointIndex % 2 === 0;
@@ -48,7 +52,7 @@ export function BackgammonPoint({
 
   return (
     <div
-      className={`relative flex flex-col items-center flex-1 h-full cursor-pointer select-none transition-all duration-200 rounded-sm ${
+      className={`relative flex flex-col items-center flex-1 h-full cursor-pointer select-none transition-all duration-200 rounded-sm ${BOARD_CELL_FOCUS_CLASS} ${
         isHitTarget
           ? 'bg-rose-500/25 ring-2 ring-rose-400 shadow-[0_0_16px_rgba(244,63,94,0.5)]'
           : isValidTarget
@@ -57,6 +61,7 @@ export function BackgammonPoint({
       }`}
       data-testid={`point-${pointIndex}`}
       onClick={onClick}
+      {...cellFocusProps}
     >
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none opacity-85"

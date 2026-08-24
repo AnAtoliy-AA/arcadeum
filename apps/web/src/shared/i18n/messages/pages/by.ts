@@ -18,6 +18,7 @@ import { adminBulkRewardsBy } from './admin-bulk-rewards/by';
 import { friendsBy } from './friends/by';
 import { clansBy } from './clans/by';
 import { eventsBy } from './events/by';
+import { seasonsBy } from './seasons/by';
 import { communityBy } from './community/by';
 import { rewardsBy } from './rewards/by';
 import { developersBy } from './developers/by';
@@ -465,4 +466,5 @@ export const by = {
   friends: friendsBy,
   clans: clansBy,
   events: eventsBy,
+  seasons: seasonsBy,
 };

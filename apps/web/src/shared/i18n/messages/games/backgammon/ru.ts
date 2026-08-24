@@ -149,6 +149,8 @@ export const ruMessages = {
       waitingForOpponentRoll: 'Ожидание броска соперника...',
       waitingForOpponentMove: 'Ожидание хода соперника...',
       barCount: 'Бар',
+      barZone: 'Зона бара',
+      bearOffZone: 'Зона снятия шашек',
       offCount: 'Снято',
       pipCount: 'Очки (Pips)',
       movesRemaining: 'осталось ходов',

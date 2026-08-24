@@ -96,6 +96,9 @@ import { GoGateway } from './go.gateway';
 import { PachisiService } from './pachisi/pachisi.service';
 import { PachisiBotService } from './pachisi/pachisi-bot.service';
 import { PachisiGateway } from './pachisi.gateway';
+import { GameReplayService } from './replays/game-replay.service';
+import { GameReplayController } from './replays/game-replay.controller';
+import { GameReplay, GameReplaySchema } from './schemas/game-replay.schema';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { RankingModule } from '../ranking/ranking.module';
@@ -123,6 +126,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
       [
         { name: GameSession.name, schema: GameSessionSchema },
         { name: GameRoom.name, schema: GameRoomSchema },
+        { name: GameReplay.name, schema: GameReplaySchema },
         { name: User.name, schema: UserSchema },
         { name: PlayerStats.name, schema: PlayerStatsSchema },
         { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
@@ -161,7 +165,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     DailyChallengesModule,
     AchievementsModule,
   ],
-  controllers: [GamesController, GamesHistoryController],
+  controllers: [GamesController, GamesHistoryController, GameReplayController],
   providers: [
     // Core services
     GameRoomsService,
@@ -233,6 +237,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GamesRematchService,
     GamesLeaderboardSyncService,
     GamePostMatchService,
+    GameReplayService,
     PlayerStatsService,
     // Gateways
     GamesGateway,

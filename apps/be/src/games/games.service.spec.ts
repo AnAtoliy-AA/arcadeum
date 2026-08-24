@@ -17,6 +17,7 @@ import { GamePostMatchService } from './game-post-match.service';
 import { GameRuleVisibilityService } from '../admin/game-visibility/game-rule-visibility.service';
 import { PlayerStatsService } from './player-stats.service';
 import { RankingService } from '../ranking/ranking.service';
+import { GameReplayService } from './replays/game-replay.service';
 import { CreateGameRoomDto } from './dtos/create-game-room.dto';
 import { GameRoomSummary } from './rooms/game-rooms.types';
 import { GameSessionSummary } from './sessions/game-sessions.service';
@@ -122,6 +123,18 @@ describe('GamesService', () => {
       getHistoryRecord: jest.fn(),
     };
 
+    const mockReplayService = {
+      createReplay: jest.fn().mockResolvedValue(null),
+      getReplay: jest.fn().mockResolvedValue(null),
+      listReplays: jest
+        .fn()
+        .mockResolvedValue({ entries: [], total: 0, hasMore: false }),
+      listReplaysForUser: jest
+        .fn()
+        .mockResolvedValue({ entries: [], total: 0, hasMore: false }),
+      getReplayByRoom: jest.fn().mockResolvedValue(null),
+    };
+
     module = await Test.createTestingModule({
       providers: [
         GamesService,
@@ -148,6 +161,7 @@ describe('GamesService', () => {
         { provide: GameRuleVisibilityService, useValue: mockRuleVisibility },
         { provide: PlayerStatsService, useValue: mockPlayerStats },
         { provide: RankingService, useValue: mockRankingService },
+        { provide: GameReplayService, useValue: mockReplayService },
       ],
     }).compile();
 

@@ -8,6 +8,7 @@ import { getActiveAnnouncement } from '@/widgets/AnnouncementBanner/server/getAc
 import { LayoutFooter } from '@/widgets/footer';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa/PWAContext';
+import { StatsReplay } from '@/shared/ui/StatsReplay';
 import { RootModals } from './RootModals';
 import { SoundProvider } from '@/shared/lib/sound';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
@@ -173,6 +174,7 @@ export default async function LocaleLayout({
               <LayoutFooter />
             </LayoutShell>
             <RootModals authToken={authToken} />
+            <StatsReplay />
           </SoundProvider>
         </PWAProvider>
       </LanguageProvider>

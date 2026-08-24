@@ -57,7 +57,7 @@ export const HeaderMobileHidden = ({
   className,
   ...rest
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cx('hidden items-center sm:flex', className)} {...rest} />
+  <div className={cx('hidden items-center sm:flex print:flex', className)} {...rest} />
 );
 
 export const NavHeaderLink = ({

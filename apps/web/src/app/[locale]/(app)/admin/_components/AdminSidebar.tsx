@@ -38,6 +38,8 @@ function getItemIcon(id: AdminSidebarItem['id']): ReactElement {
   switch (id) {
     case 'dashboard':
       return <BarChartIcon size={18} />;
+    case 'statistics':
+      return <BarChartIcon size={18} />;
     case 'users':
       return <UserIcon size={18} />;
     case 'payments':
@@ -72,7 +74,7 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
 
   return (
     <nav
-      className="flex flex-col items-stretch gap-1.5 w-full"
+      className="flex flex-col items-stretch gap-1.5 w-full print:hidden"
       aria-label="Admin Navigation"
       data-testid="admin-sidebar"
     >

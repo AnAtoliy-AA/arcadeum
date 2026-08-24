@@ -6,6 +6,7 @@ import { adminWalletBy } from './admin-wallet/by';
 import { gemsBy } from './gems/by';
 import { adminGemPackagesBy } from './admin-gem-packages/by';
 import { adminEconomyBy } from './admin-economy/by';
+import { adminStatisticsBy } from './admin-statistics/by';
 import { dailyRewardsBy } from './daily-rewards/by';
 import { dailyChallengesBy } from './daily-challenges/by';
 import { achievementsBy } from './achievements/by';
@@ -33,6 +34,7 @@ export const by = {
     signedInAs: 'Вы ўвайшлі як {username}',
     nav: {
       dashboard: 'Панэль',
+      statistics: 'Статыстыка',
       users: 'Карыстальнікі',
       payments: 'Плацяжы',
       announcements: "Аб'явы",
@@ -47,6 +49,7 @@ export const by = {
       geoBlock: 'Геаблакіроўка',
       comingSoon: 'Хутка',
     },
+    statistics: adminStatisticsBy,
     dashboard: {
       title: 'Камандны Цэнтр',
       subtitle: 'Стан сістэмы, ключавыя метрыкі і модулі адміністравання',
@@ -64,6 +67,11 @@ export const by = {
       modulesSubtitle:
         'Прамы доступ да кіравання гульнямі, гульцамі, транзакцыямі і бяспекай',
       modules: {
+        statistics: {
+          title: 'Аналітыка Платформы',
+          description:
+            'Дадзеныя па MAU, DAU, утрыманні гульцоў, гульнявым часе і выручцы',
+        },
         users: {
           title: 'Кіраванне карыстальнікамі',
           description: 'Уліковыя запісы гульцоў, ролі, статусы і баны',

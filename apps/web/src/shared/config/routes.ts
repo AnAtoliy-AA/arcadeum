@@ -72,6 +72,7 @@ export const buildRoutes = (locale: Locale) => {
     // Admin
     admin: `/${locale}/${s('admin')}`,
     adminUsers: `/${locale}/${s('admin')}/users`,
+    adminStatistics: `/${locale}/${s('admin')}/statistics`,
 
     // Support & Payments
     support: `/${locale}/${s('support')}`,

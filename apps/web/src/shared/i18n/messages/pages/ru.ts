@@ -6,6 +6,7 @@ import { adminWalletRu } from './admin-wallet/ru';
 import { gemsRu } from './gems/ru';
 import { adminGemPackagesRu } from './admin-gem-packages/ru';
 import { adminEconomyRu } from './admin-economy/ru';
+import { adminStatisticsRu } from './admin-statistics/ru';
 import { dailyRewardsRu } from './daily-rewards/ru';
 import { dailyChallengesRu } from './daily-challenges/ru';
 import { achievementsRu } from './achievements/ru';
@@ -33,6 +34,7 @@ export const ru = {
     signedInAs: 'Вы вошли как {username}',
     nav: {
       dashboard: 'Панель',
+      statistics: 'Статистика',
       users: 'Пользователи',
       payments: 'Платежи',
       announcements: 'Объявления',
@@ -47,6 +49,7 @@ export const ru = {
       geoBlock: 'Геоблокировка',
       comingSoon: 'Скоро',
     },
+    statistics: adminStatisticsRu,
     dashboard: {
       title: 'Командный Центр',
       subtitle:
@@ -58,13 +61,18 @@ export const ru = {
       collections: 'Коллекции',
       totalDocuments: 'Всего документов',
       dataSize: 'Объем данных (МБ)',
-      storageSize: 'Объем диска (МБ)',
+      storageSize: 'Объем хранилища (МБ)',
       indexSize: 'Объем индексов (МБ)',
-      activeModules: 'Активные Модули',
-      modulesTitle: 'Административные Модули',
+      activeModules: 'Активные модули',
+      modulesTitle: 'Модули Администрирования',
       modulesSubtitle:
         'Прямой доступ к управлению играми, игроками, транзакциями и безопасностью',
       modules: {
+        statistics: {
+          title: 'Аналитика Платформы',
+          description:
+            'Данные по MAU, DAU, удержанию игроков, игровому времени и выручке',
+        },
         users: {
           title: 'Управление пользователями',
           description: 'Учетные записи игроков, роли, статусы и баны',

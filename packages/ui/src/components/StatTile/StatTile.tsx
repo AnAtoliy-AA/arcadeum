@@ -6,6 +6,8 @@ import { cx } from '../../utils/cx';
 export type StatTileProps = {
   value: ReactNode;
   label: string;
+  delta?: ReactNode;
+  deltaType?: 'increase' | 'decrease' | 'neutral';
   sparkline?: boolean;
   'data-testid'?: string;
   className?: string;
@@ -29,10 +31,19 @@ const sparkStyle: CSSProperties = {
 export function StatTile({
   value,
   label,
+  delta,
+  deltaType = 'neutral',
   sparkline = true,
   'data-testid': testId,
   className,
 }: StatTileProps) {
+  const deltaColorClass =
+    deltaType === 'increase'
+      ? 'text-[var(--success,#10b981)]'
+      : deltaType === 'decrease'
+      ? 'text-[var(--danger,#ef4444)]'
+      : 'text-[var(--textSecondary,#a1a1aa)]';
+
   return (
     <div data-testid={testId} className={cx(statTileCellClasses, className)}>
       <span className="text-[28px] font-semibold tracking-[-0.5px] text-[var(--color)]">
@@ -41,6 +52,11 @@ export function StatTile({
       <span className="text-[11px] uppercase tracking-[1.4px] text-[var(--textSecondary)]">
         {label}
       </span>
+      {delta ? (
+        <span className={cx('text-[12px] font-medium leading-tight', deltaColorClass)}>
+          {delta}
+        </span>
+      ) : null}
       {sparkline ? <span aria-hidden="true" style={sparkStyle} /> : null}
     </div>
   );

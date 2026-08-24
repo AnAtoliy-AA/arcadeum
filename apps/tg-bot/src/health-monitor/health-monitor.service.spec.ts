@@ -5,9 +5,9 @@ import { HealthMonitorService } from './health-monitor.service';
 jest.mock('grammy', () => ({
   Bot: jest.fn().mockImplementation(() => ({
     api: {
-      sendMessage: jest.fn(async (_chat: string, text: string) => {
+      sendMessage: jest.fn((_chat: string, text: string) => {
         mockSent.push(text.split('\n'));
-        return undefined;
+        return Promise.resolve(undefined);
       }),
     },
   })),
@@ -77,11 +77,14 @@ describe('HealthMonitorService alerts', () => {
     jest.restoreAllMocks();
   });
 
-  const respondWith = (
-    impl: (url: string) => Promise<FetchResponse>,
-  ): void => {
+  const respondWith = (impl: (url: string) => Promise<FetchResponse>): void => {
     fetchMock.mockImplementation((input: RequestInfo | URL) => {
-      const url = typeof input === 'string' ? input : input.toString();
+      const url =
+        typeof input === 'string'
+          ? input
+          : input instanceof URL
+            ? input.href
+            : input.url;
       return Promise.resolve(impl(url) as unknown as Response);
     });
   };
@@ -94,13 +97,14 @@ describe('HealthMonitorService alerts', () => {
   });
 
   it('reports timeouts distinctly from error responses', async () => {
-    respondWith(() =>
-      new Promise((_resolve, reject) =>
-        setTimeout(
-          () => reject(new DOMException('timed out', 'TimeoutError')),
-          0,
+    respondWith(
+      () =>
+        new Promise((_resolve, reject) =>
+          setTimeout(
+            () => reject(new DOMException('timed out', 'TimeoutError')),
+            0,
+          ),
         ),
-      ),
     );
     await inner.check();
     expect(mockSent[0][0]).toContain('no response');
@@ -109,7 +113,9 @@ describe('HealthMonitorService alerts', () => {
   it('flags DB checks whose /health/db endpoint is unreachable', async () => {
     respondWith((url) =>
       Promise.resolve(
-        url.endsWith('/health/db') ? healthyDb() : jsonResponse(200, { ok: true }),
+        url.endsWith('/health/db')
+          ? healthyDb()
+          : jsonResponse(200, { ok: true }),
       ),
     );
     await inner.check();
@@ -123,7 +129,9 @@ describe('HealthMonitorService alerts', () => {
       ),
     );
     await inner.check();
-    expect(mockSent[mockSent.length - 1].join('\n')).toContain('/health/db unreachable');
+    expect(mockSent[mockSent.length - 1].join('\n')).toContain(
+      '/health/db unreachable',
+    );
   });
 
   it('recovers with a back-online alert after a failed period', async () => {

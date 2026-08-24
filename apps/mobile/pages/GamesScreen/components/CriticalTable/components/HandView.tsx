@@ -4,6 +4,7 @@ import {
   ScrollView,
   TouchableOpacity,
   View,
+  type ScrollViewInstance,
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -40,7 +41,7 @@ interface HandViewProps {
     count: number,
     mode?: 'row' | 'grid',
   ) => React.ReactNode;
-  handScrollRef: React.RefObject<ScrollView | null>;
+  handScrollRef: React.RefObject<ScrollViewInstance | null>;
   gridContainerWidth: number;
   onGridContainerLayout: (width: number) => void;
   styles: CriticalTableStyles;

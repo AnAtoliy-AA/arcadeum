@@ -1,5 +1,10 @@
 import { useMemo, useState, useEffect } from 'react';
-import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  useWindowDimensions,
+  type ViewStyle,
+} from 'react-native';
 import {
   CARD_ASPECT_RATIO,
   CARD_GRADIENT_COORDS,
@@ -8,6 +13,12 @@ import {
   MAX_GRID_COLUMNS,
   MIN_GRID_COLUMNS,
 } from '../constants';
+
+/** Reads a registered style's backgroundColor as a plain string color. */
+function swatchBackgroundColor(style: ViewStyle): string {
+  const backgroundColor = StyleSheet.flatten(style)?.backgroundColor;
+  return typeof backgroundColor === 'string' ? backgroundColor : 'transparent';
+}
 
 export function useTableLayout(styles: ReturnType<typeof StyleSheet.create>) {
   const { height: windowHeight } = useWindowDimensions();
@@ -21,11 +32,12 @@ export function useTableLayout(styles: ReturnType<typeof StyleSheet.create>) {
   }, [cardScrollMaxHeight, styles.cardScroll]);
 
   const cardGradientColors = useMemo(
-    () => [
-      StyleSheet.flatten(styles.cardGradientSwatchA).backgroundColor as string,
-      StyleSheet.flatten(styles.cardGradientSwatchB).backgroundColor as string,
-      StyleSheet.flatten(styles.cardGradientSwatchC).backgroundColor as string,
-    ],
+    () =>
+      [
+        styles.cardGradientSwatchA,
+        styles.cardGradientSwatchB,
+        styles.cardGradientSwatchC,
+      ].map(swatchBackgroundColor),
     [styles],
   );
 

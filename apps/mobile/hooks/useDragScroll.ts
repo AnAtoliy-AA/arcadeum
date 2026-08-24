@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { Platform, type ScrollView } from 'react-native';
+import { Platform, type ScrollViewInstance } from 'react-native';
 
-type EnsureScrollableNode<T> = T & {
+/** DOM surface exposed by ScrollView on the web target only. */
+type ScrollableWebNode = {
   getScrollableNode?: () => HTMLElement | null;
   getInnerViewNode?: () => HTMLElement | null;
 };
@@ -39,7 +40,7 @@ function ensureHiddenScrollbarStyle() {
   document.head.appendChild(style);
 }
 
-export function useDragScroll<T extends ScrollView>(
+export function useDragScroll<T extends ScrollViewInstance>(
   options: UseDragScrollOptions = {},
 ) {
   const {
@@ -55,7 +56,7 @@ export function useDragScroll<T extends ScrollView>(
       return;
     }
 
-    const scrollView = scrollRef.current as EnsureScrollableNode<T> | null;
+    const scrollView = scrollRef.current as ScrollableWebNode | null;
     const node =
       scrollView?.getScrollableNode?.() ??
       scrollView?.getInnerViewNode?.() ??
@@ -200,13 +201,13 @@ export function useDragScroll<T extends ScrollView>(
   return scrollRef;
 }
 
-export function useHorizontalDragScroll<T extends ScrollView>(
+export function useHorizontalDragScroll<T extends ScrollViewInstance>(
   options: Omit<UseDragScrollOptions, 'direction'> = {},
 ) {
   return useDragScroll<T>({ ...options, direction: 'horizontal' });
 }
 
-export function useVerticalDragScroll<T extends ScrollView>(
+export function useVerticalDragScroll<T extends ScrollViewInstance>(
   options: Omit<UseDragScrollOptions, 'direction'> = {},
 ) {
   return useDragScroll<T>({ ...options, direction: 'vertical' });

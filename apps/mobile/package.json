@@ -82,6 +82,7 @@
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
     "@types/react": "^19.2.0",
+    "@react-native/assets-registry": "^0.87.0",
     "babel-preset-expo": "~57.0.0",
     "dotenv": "^17.4.2",
     "eas-cli": "^16.32.0",

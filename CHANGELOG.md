@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.30] - 2026-08-24
+
+### Added
+- segment all statistics metrics across registered and anonymous users (ARC-935) (ARC-935)
+- add anonymous and guest player telemetry with audience filters (ARC-935) (ARC-935)
+- add platform statistics dashboard with engagement metrics and pdf export (ARC-935) (ARC-935)
+
+### Fixed
+- add delta and deltaType props to StatTile and fix test mock types (ARC-935) (ARC-935)
+- ensure profile menu and avatar render with exact colors in print/PDF (ARC-935) (ARC-935)
+- hide halo conic mask and profile dropdown in print to fix avatar white box in PDF (ARC-935) (ARC-935)
+- segment revenue and wallet transactions across audience modes (ARC-935) (ARC-935)
+- add registeredGames and anonymousGames to daily trend objects (ARC-935) (ARC-935)
+- resolve audience mode filtering so Registered correctly shows active users and games (ARC-935) (ARC-935)
+- reconcile audience metrics to ensure All strictly equals Reg plus Anon (ARC-935) (ARC-935)
+- prevent undefined toLocaleString in StatsGamesBreakdown (ARC-935) (ARC-935)
+- prevent runtime TypeError on undefined totalCount with deep merge and safe fallbacks (ARC-935) (ARC-935)
+
+
 ## [1.26.29] - 2026-08-24
 
 ### Added

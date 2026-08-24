@@ -134,10 +134,8 @@ describe('UsersTable', () => {
         onLoadMore={onLoadMore}
       />,
     );
-    expect(
-      screen.getByTestId('users-infinite-scroll-trigger'),
-    ).toBeInTheDocument();
-    const loadMoreBtn = screen.getByTestId('users-load-more');
+    expect(screen.getByTestId('infinite-scroll-trigger')).toBeInTheDocument();
+    const loadMoreBtn = screen.getByTestId('infinite-scroll-load-more');
     fireEvent.click(loadMoreBtn);
     expect(onLoadMore).toHaveBeenCalled();
   });
@@ -146,7 +144,7 @@ describe('UsersTable', () => {
     renderWithProvider(
       <UsersTable {...baseProps} items={[sampleItem]} total={1} />,
     );
-    expect(screen.getByTestId('users-all-loaded')).toBeInTheDocument();
+    expect(screen.getByTestId('infinite-scroll-all-loaded')).toBeInTheDocument();
     expect(screen.getByText('All 1 users loaded')).toBeInTheDocument();
   });
 });

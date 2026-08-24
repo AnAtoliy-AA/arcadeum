@@ -1,7 +1,12 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
-import { Button, GlassCard, Spinner, Typography } from '@arcadeum/ui';
+import {
+  Button,
+  GlassCard,
+  Spinner,
+  Typography,
+  InfiniteScroll,
+} from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   type AdminTournamentItem,
@@ -76,36 +81,7 @@ export function AdminTournamentsTable({
   labels,
 }: AdminTournamentsTableProps) {
   const { locale } = useLanguage();
-  const observerTarget = useRef<HTMLDivElement>(null);
   const hasMore = items.length < total;
-
-  useEffect(() => {
-    const target = observerTarget.current;
-    if (
-      !target ||
-      !hasMore ||
-      isLoading ||
-      !onLoadMore ||
-      typeof IntersectionObserver === 'undefined'
-    ) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          onLoadMore();
-        }
-      },
-      { threshold: 0.1, rootMargin: '100px' },
-    );
-
-    observer.observe(target);
-
-    return () => {
-      observer.unobserve(target);
-    };
-  }, [hasMore, isLoading, onLoadMore]);
 
   if (isLoading && items.length === 0) {
     return (
@@ -129,8 +105,12 @@ export function AdminTournamentsTable({
   }
 
   return (
-    <div
-      className="flex flex-col items-stretch gap-4"
+    <InfiniteScroll
+      hasMore={hasMore}
+      isLoading={isLoading}
+      onLoadMore={onLoadMore ?? (() => {})}
+      allLoadedText={`All ${total} tournaments loaded`}
+      className="gap-4"
       data-testid="tournaments-table"
     >
       <div className="flex flex-row items-center justify-between px-1">
@@ -256,35 +236,6 @@ export function AdminTournamentsTable({
           })}
         </div>
       </GlassCard>
-
-      {hasMore ? (
-        <div
-          ref={observerTarget}
-          className="flex flex-col items-center justify-center p-4 gap-3"
-          data-testid="tournaments-infinite-scroll-trigger"
-        >
-          {isLoading && <Spinner size="sm" />}
-          {onLoadMore && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onLoadMore}
-              data-testid="tournaments-load-more"
-            >
-              Load more
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div
-          className="flex flex-row items-center justify-center py-4 text-center"
-          data-testid="tournaments-all-loaded"
-        >
-          <Typography variant="caption" alpha="low">
-            All {total} tournaments loaded
-          </Typography>
-        </div>
-      )}
-    </div>
+    </InfiniteScroll>
   );
 }

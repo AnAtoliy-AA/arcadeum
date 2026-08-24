@@ -135,16 +135,16 @@ describe('AdminAnnouncementsTable', () => {
     const onLoadMore = vi.fn();
     renderTable({ items: [item()], total: 100, onLoadMore });
     expect(
-      screen.getByTestId('announcements-infinite-scroll-trigger'),
+      screen.getByTestId('infinite-scroll-trigger'),
     ).toBeInTheDocument();
-    const loadMoreBtn = screen.getByTestId('announcements-load-more');
+    const loadMoreBtn = screen.getByTestId('infinite-scroll-load-more');
     fireEvent.click(loadMoreBtn);
     expect(onLoadMore).toHaveBeenCalled();
   });
 
   it('renders all loaded status when items >= total', () => {
     renderTable({ items: [item()], total: 1 });
-    expect(screen.getByTestId('announcements-all-loaded')).toBeInTheDocument();
+    expect(screen.getByTestId('infinite-scroll-all-loaded')).toBeInTheDocument();
     expect(screen.getByText('All 1 announcements loaded')).toBeInTheDocument();
   });
 });

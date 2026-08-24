@@ -108,9 +108,9 @@ describe('AdminTournamentsTable', () => {
       />,
     );
     expect(
-      screen.getByTestId('tournaments-infinite-scroll-trigger'),
+      screen.getByTestId('infinite-scroll-trigger'),
     ).toBeInTheDocument();
-    const loadMoreBtn = screen.getByTestId('tournaments-load-more');
+    const loadMoreBtn = screen.getByTestId('infinite-scroll-load-more');
     fireEvent.click(loadMoreBtn);
     expect(onLoadMore).toHaveBeenCalled();
   });
@@ -123,7 +123,7 @@ describe('AdminTournamentsTable', () => {
         total={1}
       />,
     );
-    expect(screen.getByTestId('tournaments-all-loaded')).toBeInTheDocument();
+    expect(screen.getByTestId('infinite-scroll-all-loaded')).toBeInTheDocument();
     expect(screen.getByText('All 1 tournaments loaded')).toBeInTheDocument();
   });
 });

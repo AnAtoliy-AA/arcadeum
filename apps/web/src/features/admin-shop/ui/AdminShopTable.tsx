@@ -1,7 +1,13 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Button, GlassCard, Badge, Typography, Spinner } from '@arcadeum/ui';
+import { useState, useCallback } from 'react';
+import {
+  Button,
+  GlassCard,
+  Badge,
+  Typography,
+  InfiniteScroll,
+} from '@arcadeum/ui';
 import type { EffectiveShopItem } from '@/features/shop/server/shop.types';
 import type { adminShopEn } from '@/shared/i18n/messages/pages/admin-shop/en';
 import { AdminShopEditDialog } from './AdminShopEditDialog';
@@ -31,35 +37,12 @@ export function AdminShopTable({
   const [grantDefaultItemId, setGrantDefaultItemId] = useState<
     string | undefined
   >(undefined);
-  const observerTarget = useRef<HTMLDivElement>(null);
 
   const hasMore = visibleCount < catalog.length;
 
   const loadMore = useCallback(() => {
     setVisibleCount((prev) => Math.min(catalog.length, prev + batchSize));
   }, [catalog.length, batchSize]);
-
-  useEffect(() => {
-    const target = observerTarget.current;
-    if (!target || !hasMore || typeof IntersectionObserver === 'undefined') {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1, rootMargin: '100px' },
-    );
-
-    observer.observe(target);
-
-    return () => {
-      observer.unobserve(target);
-    };
-  }, [hasMore, loadMore]);
 
   if (catalog.length === 0) {
     return (
@@ -92,8 +75,12 @@ export function AdminShopTable({
   ).replace('{total}', String(catalog.length));
 
   return (
-    <div
-      className="flex flex-col gap-4 w-full"
+    <InfiniteScroll
+      hasMore={hasMore}
+      onLoadMore={loadMore}
+      loadMoreText={labels.loadMore ?? 'Load more'}
+      allLoadedText={allLoadedText}
+      className="gap-4"
       data-testid="admin-shop-container"
     >
       <div className="flex flex-row justify-between items-center">
@@ -226,33 +213,6 @@ export function AdminShopTable({
         </div>
       </GlassCard>
 
-      {hasMore ? (
-        <div
-          ref={observerTarget}
-          className="flex flex-col items-center justify-center p-4 gap-3"
-          data-testid="admin-shop-infinite-scroll-trigger"
-        >
-          <Spinner size="sm" />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={loadMore}
-            data-testid="admin-shop-load-more"
-          >
-            {labels.loadMore ?? 'Load more'}
-          </Button>
-        </div>
-      ) : (
-        <div
-          className="flex flex-row items-center justify-center py-4 text-center"
-          data-testid="admin-shop-all-loaded"
-        >
-          <Typography variant="caption" alpha="low">
-            {allLoadedText}
-          </Typography>
-        </div>
-      )}
-
       <AdminShopEditDialog
         item={editing}
         open={editing !== null}
@@ -266,6 +226,6 @@ export function AdminShopTable({
         defaultItemId={grantDefaultItemId}
         catalog={catalog}
       />
-    </div>
+    </InfiniteScroll>
   );
 }

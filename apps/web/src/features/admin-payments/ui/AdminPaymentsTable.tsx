@@ -1,7 +1,11 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
-import { Button, GlassCard, Spinner, Typography } from '@arcadeum/ui';
+import {
+  GlassCard,
+  Spinner,
+  Typography,
+  InfiniteScroll,
+} from '@arcadeum/ui';
 import type { AdminPaymentNoteItem } from '../api';
 
 export interface AdminPaymentsTableLabels {
@@ -55,36 +59,7 @@ export function AdminPaymentsTable({
   onLoadMore,
   labels,
 }: AdminPaymentsTableProps) {
-  const observerTarget = useRef<HTMLDivElement>(null);
   const hasMore = items.length < total;
-
-  useEffect(() => {
-    const target = observerTarget.current;
-    if (
-      !target ||
-      !hasMore ||
-      isLoading ||
-      !onLoadMore ||
-      typeof IntersectionObserver === 'undefined'
-    ) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          onLoadMore();
-        }
-      },
-      { threshold: 0.1, rootMargin: '100px' },
-    );
-
-    observer.observe(target);
-
-    return () => {
-      observer.unobserve(target);
-    };
-  }, [hasMore, isLoading, onLoadMore]);
 
   if (isLoading && items.length === 0) {
     return (
@@ -108,8 +83,12 @@ export function AdminPaymentsTable({
   }
 
   return (
-    <div
-      className="flex flex-col items-stretch gap-4"
+    <InfiniteScroll
+      hasMore={hasMore}
+      isLoading={isLoading}
+      onLoadMore={onLoadMore ?? (() => {})}
+      allLoadedText={`All ${total} notes loaded`}
+      className="gap-4"
       data-testid="admin-payments-table"
     >
       <div className="flex flex-row items-center justify-between px-1">
@@ -187,35 +166,6 @@ export function AdminPaymentsTable({
           ))}
         </div>
       </GlassCard>
-
-      {hasMore ? (
-        <div
-          ref={observerTarget}
-          className="flex flex-col items-center justify-center p-4 gap-3"
-          data-testid="admin-payments-infinite-scroll-trigger"
-        >
-          {isLoading && <Spinner size="sm" />}
-          {onLoadMore && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onLoadMore}
-              data-testid="admin-payments-load-more"
-            >
-              Load more
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div
-          className="flex flex-row items-center justify-center py-4 text-center"
-          data-testid="admin-payments-all-loaded"
-        >
-          <Typography variant="caption" alpha="low">
-            All {total} notes loaded
-          </Typography>
-        </div>
-      )}
-    </div>
+    </InfiniteScroll>
   );
 }

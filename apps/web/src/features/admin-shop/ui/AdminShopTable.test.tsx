@@ -85,7 +85,7 @@ describe('AdminShopTable with Infinite Scroll', () => {
       screen.queryByTestId('admin-shop-row-item-11'),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByTestId('admin-shop-infinite-scroll-trigger'),
+      screen.getByTestId('infinite-scroll-trigger'),
     ).toBeInTheDocument();
     expect(mockObserve).toHaveBeenCalled();
   });
@@ -126,7 +126,7 @@ describe('AdminShopTable with Infinite Scroll', () => {
       'Showing 25 of 25 items',
     );
     expect(screen.getByTestId('admin-shop-row-item-25')).toBeInTheDocument();
-    expect(screen.getByTestId('admin-shop-all-loaded')).toHaveTextContent(
+    expect(screen.getByTestId('infinite-scroll-all-loaded')).toHaveTextContent(
       'All 25 items loaded',
     );
   });
@@ -146,7 +146,7 @@ describe('AdminShopTable with Infinite Scroll', () => {
       />,
     );
 
-    const loadMoreBtn = screen.getByTestId('admin-shop-load-more');
+    const loadMoreBtn = screen.getByTestId('infinite-scroll-load-more');
     fireEvent.click(loadMoreBtn);
 
     expect(screen.getByTestId('admin-shop-count-header')).toHaveTextContent(

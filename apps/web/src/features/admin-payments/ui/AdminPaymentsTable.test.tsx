@@ -115,9 +115,9 @@ describe('AdminPaymentsTable', () => {
       />,
     );
     expect(
-      screen.getByTestId('admin-payments-infinite-scroll-trigger'),
+      screen.getByTestId('infinite-scroll-trigger'),
     ).toBeInTheDocument();
-    const loadMoreBtn = screen.getByTestId('admin-payments-load-more');
+    const loadMoreBtn = screen.getByTestId('infinite-scroll-load-more');
     fireEvent.click(loadMoreBtn);
     expect(onLoadMore).toHaveBeenCalled();
   });
@@ -126,7 +126,7 @@ describe('AdminPaymentsTable', () => {
     renderWith(
       <AdminPaymentsTable {...baseProps} items={[sampleItem]} total={1} />,
     );
-    expect(screen.getByTestId('admin-payments-all-loaded')).toBeInTheDocument();
+    expect(screen.getByTestId('infinite-scroll-all-loaded')).toBeInTheDocument();
     expect(screen.getByText('All 1 notes loaded')).toBeInTheDocument();
   });
 });

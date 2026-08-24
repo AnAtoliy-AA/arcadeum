@@ -116,7 +116,7 @@ jobs:
 
             pnpm install --frozen-lockfile
 
-            pnpm --filter be build
+            pnpm --filter @arcadeum/games-core build && pnpm --filter be build
             pnpm --filter tg-bot build
 
             if [ ! -f "$DEPLOY_DIR/apps/be/dist/src/main.js" ]; then
@@ -158,7 +158,7 @@ jobs:
             git reset --hard "origin/$BRANCH"
 
             pnpm install --frozen-lockfile
-            pnpm --filter be build
+            pnpm --filter @arcadeum/games-core build && pnpm --filter be build
 
             if [ ! -f "$DEPLOY_DIR/apps/be/dist/src/main.js" ]; then
               echo "ERROR: BE build did not produce dist/src/main.js"

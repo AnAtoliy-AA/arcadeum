@@ -11,7 +11,7 @@ RUN corepack enable && pnpm install --frozen-lockfile
 COPY apps/be/ apps/be/
 COPY packages/ packages/
 
-RUN pnpm --filter be build
+RUN pnpm --filter @arcadeum/games-core build && pnpm --filter be build
 
 FROM node:24-alpine AS runner
 

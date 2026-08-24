@@ -11,12 +11,14 @@ interface GamesCatalogCardProps {
   demoBadgeLabel?: string;
   unavailableLabel?: string;
   detailsLabel?: string;
+  offlineBadgeLabel?: string;
 }
 
 export function GamesCatalogCard({
   game,
   demoBadgeLabel = 'Demo',
   unavailableLabel = 'Disabled',
+  offlineBadgeLabel,
 }: GamesCatalogCardProps) {
   const isDisabled = !game.isPlayable;
 
@@ -94,6 +96,15 @@ export function GamesCatalogCard({
           <span className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-white/5 text-white/90 border border-white/10">
             🤖 AI Bots
           </span>
+          {game.offlineSlug && offlineBadgeLabel ? (
+            <Link
+              href={`../offline/${game.offlineSlug}`}
+              data-testid={`games-catalog-offline-${game.id}`}
+              className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/40 hover:bg-[var(--primary)]/25 transition-colors"
+            >
+              📶 {offlineBadgeLabel}
+            </Link>
+          ) : null}
           <span className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-white/5 text-white/90 border border-white/10">
             ⚡ Instant
           </span>

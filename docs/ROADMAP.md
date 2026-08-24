@@ -52,7 +52,7 @@
 | 4G. Daily Challenges   | —       | —                            | **Implemented** |
 | 4H. Season System      | ARC-899 | `ARC-899-season-system`      | **Implemented** |
 | 4I. PWA Support        | ARC-903 | `ARC-903-pwa-support`        | **Implemented** |
-| 4J. Offline Mode       | ARC-900 | `ARC-900-offline-mode`       | Partial         |
+| 4J. Offline Mode       | ARC-900 | `ARC-900-offline-mode`       | **Implemented** |
 | 4K. Web Share          | —       | —                            | **Implemented** |
 | 4L. Push Notifications | —       | —                            | **Implemented** |
 | 4M. Tournaments        | —       | —                            | **Implemented** |
@@ -997,7 +997,7 @@ The platform's core infrastructure is highly mature. Phase 1 is fully complete, 
 | **Phase 5: Retention**       | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                | 15        | **100% Completed**                                               |
 | **Phase 6: Card & Board**    | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                         | 25        | **Post-Game Analysis + Coach Mode Completed** (Rest Not started) |
 | **Phase 7: Advanced Social** | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                 | 25        | **Spectator Mode + Clans Completed** (Rest Not started)          |
-| **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share Completed** (Offline/Mobile Partial)          |
+| **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial)          |
 | **Phase 9: Creator Tools**   | Visual Board Game Creator                                                                                         | 20        | Not started                                                      |
 | **Phase 10: Single-Player**  | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                    | 12        | Not started                                                      |
 

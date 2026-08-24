@@ -75,6 +75,16 @@ Wire into [apps/be/src/games/games.module.ts](apps/be/src/games/games.module.ts)
 
 Real-time games (glimworm-style tick engines) are excluded: bots steer themselves every tick, so a fixed per-move delay does not apply — document the exclusion in both lists if it applies to your game.
 
+**Offline mode support (ARC-900, required for every game with a client-runnable bot):**
+Offline play runs the SAME engine + bot logic in the browser via `@arcadeum/games-core`. A new game must:
+
+1. Move its pure engine files into `packages/games-core/src/games/<game>/` (see existing games) and leave re-export shims at the old BE paths — never duplicate logic.
+2. Extract the bot's decision core into `packages/games-core/src/games/<game>/<game>-bot.ts` as a framework-agnostic class (`export class <Game>Bot`) — NO `@nestjs/*`, NO `node:crypto` (use `../../lib/random`), no injected services, no locks/delays. The BE `<game>-bot.service.ts` becomes an `@Injectable()` subclass that extends it and keeps only orchestration (`checkAndPlay`, locks, delays, logger). All existing bot specs must stay green.
+3. Register an entry in web [`features/offline/lib/offline-registry.ts`](apps/web/src/features/offline/lib/offline-registry.ts): `{ slug, createEngine, actions: {<eventSuffix>: {action, mapPayload?}}, botDecide }`. Event suffixes must match the FE `useActions.ts` emit names (lowercased).
+4. Add the engine to `OFFLINE_GAME_SLUGS` in [`features/offline/lib/offline-capable.ts`](apps/web/src/features/offline/lib/offline-capable.ts) — a unit test cross-checks it against the registry.
+5. Games without a portable bot (e.g. real-time or server-only AI) are NOT offline-capable — omit them from both lists and note why here.
+6. Verify with `pnpm --filter be exec jest --forceExit src/games/<game> src/games/engines/<game> --silent` and `pnpm --filter web exec vitest run src/features/offline`.
+
 ### 4. Backend catalog
 
 Add the game to [apps/be/src/games/games.catalog.ts](apps/be/src/games/games.catalog.ts) using `SHARED_VISUAL_THEMES`:
@@ -358,6 +368,7 @@ Walk this list manually — these are the surfaces where missing wiring causes s
 - [ ] Rules modal mounted in lobby AND in-game branches of `Game.tsx`; also wired in `RulesAccess.tsx`.
 - [ ] End-game uses `useGameEndState` + `GameEndModals`, not per-game modal or manual wiring.
 - [ ] Gameplay shorts entry added to `GAMES` in `scripts/shorts-factory/gameplay.js`.
+- [ ] Offline mode (ARC-900): engine + bot core extracted to `@arcadeum/games-core`, BE service is a thin `@Injectable()` subclass, entry in web `features/offline/lib/offline-registry.ts` + `offline-capable.ts`, offline playthrough verified (see §3b).
 - [ ] i18n keys present in all 5 locales (en, es, fr, ru, by) — including SEO entries.
 - [ ] BE engine spec + bot spec passing; web hook/widget vitest passing.
 - [ ] AI vs AI wired: bot service honors `getAiMoveDelayMs`/`isAiVsAiSession`, game added to `AI_VS_AI_GAME_IDS` (BE), `AI_VS_AI_SUPPORTED_GAME_IDS` (web) and `AiVsAiService.startFns`; landing renders the `AIvsAIViewer` CTA when supported.

@@ -329,9 +329,55 @@ export function getClansSocketRef(): Socket {
 }
 
 // Backward-compatible exports — lazily delegate to actual socket instances
+
+/**
+ * Offline game event router (ARC-900). Registered by the offline feature;
+ * when it returns true the emit never reaches the network.
+ */
+let offlineGameRouter:
+  ((event: string, payload: Record<string, unknown>) => void) | null = null;
+
+export function setOfflineGameRouter(
+  fn: ((event: string, payload: Record<string, unknown>) => void) | null,
+): void {
+  offlineGameRouter = fn;
+}
+
+export function isOfflineRoomId(roomId: string): boolean {
+  return roomId.startsWith('offline_');
+}
+
 function createLazySocket(getter: () => AuthenticatedSocket): Socket {
   return new Proxy({} as Socket, {
     get(_target, prop, receiver) {
+      if (prop === 'emit') {
+        return (event: string, ...args: unknown[]) => {
+          const payload = args[0] as Record<string, unknown> | undefined;
+          if (
+            offlineGameRouter &&
+            payload &&
+            typeof payload === 'object' &&
+            typeof payload.roomId === 'string' &&
+            isOfflineRoomId(payload.roomId)
+          ) {
+            offlineGameRouter(event, payload);
+            return true;
+          }
+          const socket = getter();
+          if (!socket) return undefined;
+          const bound = Reflect.get(socket, 'emit', receiver) as (
+            this: AuthenticatedSocket,
+            event: string,
+            ...a: unknown[]
+          ) => unknown;
+          // Forward the event name AND the args — dropping `event` here
+          // turns every emit into emit(payload), which servers and the
+          // E2E socket mocks silently swallow (see ARC-900 CI run).
+          return typeof bound === 'function'
+            ? bound.call(socket, event, ...args)
+            : undefined;
+        };
+      }
       const socket = getter();
       if (!socket) return undefined;
       const value = Reflect.get(socket, prop, receiver);

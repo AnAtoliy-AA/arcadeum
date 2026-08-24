@@ -18,6 +18,7 @@ export interface CatalogGameItem {
   players: string;
   duration: string;
   landingHref: string;
+  offlineSlug?: string | null;
   accentColor: string;
   isPlayable: boolean;
   isDemo?: boolean;
@@ -36,6 +37,7 @@ interface Props {
   demoBadgeLabel?: string;
   playLabel?: string;
   detailsLabel?: string;
+  offlineBadgeLabel?: string;
 }
 
 const CATEGORIES: Array<{
@@ -62,6 +64,7 @@ export function GamesCatalogClient({
   demoBadgeLabel = 'Demo',
   playLabel = 'Play Now',
   detailsLabel = 'Rules',
+  offlineBadgeLabel,
 }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<
     'all' | 'board' | 'card' | 'casual' | 'puzzle'
@@ -152,6 +155,7 @@ export function GamesCatalogClient({
               key={game.id}
               game={game}
               playLabel={playLabel}
+              offlineBadgeLabel={offlineBadgeLabel}
               demoBadgeLabel={demoBadgeLabel}
               unavailableLabel={unavailableLabel}
               detailsLabel={detailsLabel}

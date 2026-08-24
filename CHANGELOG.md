@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.27] - 2026-08-24
+
+### Added
+- add solitaire landing page with i18n in five locales (ARC-924)
+- register solitaire in catalog, routes, and seo metadata (ARC-924)
+- add solitaire widget UI and play route (ARC-924)
+- add solitaire client-side engine, store, and theme (ARC-924)
+
+### Documentation
+- add single-player games tier to roadmap (ARC-924)
+
+
 ## [1.26.26] - 2026-08-24
 
 ### Added

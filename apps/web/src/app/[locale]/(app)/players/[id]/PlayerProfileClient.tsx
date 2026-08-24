@@ -18,6 +18,7 @@ import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
+import { SeasonBanner } from '@/features/seasons/ui';
 
 export default function PlayerProfileClient({
   id,
@@ -163,6 +164,7 @@ function Profile({
           value={player.region ? player.region.toUpperCase() : '—'}
         />
       </div>
+      <SeasonBanner className="w-full max-w-[520px]" />
       <div className="flex flex-col items-stretch gap-2 w-full max-w-[520px]">
         <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
           Recent form

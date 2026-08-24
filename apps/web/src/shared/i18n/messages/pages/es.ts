@@ -18,6 +18,7 @@ import { adminBulkRewardsEs } from './admin-bulk-rewards/es';
 import { friendsEs } from './friends/es';
 import { clansEs } from './clans/es';
 import { eventsEs } from './events/es';
+import { seasonsEs } from './seasons/es';
 import { communityEs } from './community/es';
 import { rewardsEs } from './rewards/es';
 import { developersEs } from './developers/es';
@@ -385,4 +386,5 @@ export const es = {
   friends: friendsEs,
   clans: clansEs,
   events: eventsEs,
+  seasons: seasonsEs,
 };

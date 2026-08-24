@@ -18,6 +18,7 @@ import { adminBulkRewardsFr } from './admin-bulk-rewards/fr';
 import { friendsFr } from './friends/fr';
 import { clansFr } from './clans/fr';
 import { eventsFr } from './events/fr';
+import { seasonsFr } from './seasons/fr';
 import { communityFr } from './community/fr';
 import { rewardsFr } from './rewards/fr';
 import { developersFr } from './developers/fr';
@@ -383,4 +384,5 @@ export const fr = {
   friends: friendsFr,
   clans: clansFr,
   events: eventsFr,
+  seasons: seasonsFr,
 };

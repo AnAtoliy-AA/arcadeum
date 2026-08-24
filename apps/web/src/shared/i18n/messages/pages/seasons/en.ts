@@ -1,0 +1,20 @@
+export const seasonsEn = {
+  label: 'Season',
+  ariaLabel: 'Current competitive season',
+  daysLeft: '{{days}}d left',
+  progressAria: 'Season progress',
+  rewardsTitle: 'Season rewards',
+  rewardBadge: 'Exclusive profile badge',
+  rewardBoardSkin: 'Board skin',
+  rewardPieceDesign: 'Piece design',
+  theme: {
+    ember: 'Ember',
+    tides: 'Tides',
+    frost: 'Frost',
+    bloom: 'Bloom',
+    eclipse: 'Eclipse',
+    aurora: 'Aurora',
+    dawn: 'Dawn',
+    dusk: 'Dusk',
+  },
+};

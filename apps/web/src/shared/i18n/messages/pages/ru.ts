@@ -18,6 +18,7 @@ import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
 import { friendsRu } from './friends/ru';
 import { clansRu } from './clans/ru';
 import { eventsRu } from './events/ru';
+import { seasonsRu } from './seasons/ru';
 import { communityRu } from './community/ru';
 import { rewardsRu } from './rewards/ru';
 import { developersRu } from './developers/ru';
@@ -391,4 +392,5 @@ export const ru = {
   friends: friendsRu,
   clans: clansRu,
   events: eventsRu,
+  seasons: seasonsRu,
 };

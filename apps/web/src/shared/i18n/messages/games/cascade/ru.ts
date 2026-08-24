@@ -41,6 +41,10 @@ export const ruMessages = {
         description:
           'Латунь, Котёл, Патина — викторианский механический эстетизм.',
       },
+      adventure: {
+        name: 'Приключения',
+        description: 'Эпические квесты и исследование древних миров.',
+      },
     },
     landing: {
       meta: {
@@ -192,6 +196,13 @@ export const ruMessages = {
         DRAW_TWO: 'Паровой выброс',
         WILD: 'Эфир',
         WILD_DRAW_FOUR: 'Взрыв котла',
+      },
+      adventure: {
+        SKIP: 'Пропуск',
+        REVERSE: 'Реверс',
+        DRAW_TWO: 'Возьми две',
+        WILD: 'Дикая',
+        WILD_DRAW_FOUR: 'Дикая +4',
       },
     },
     board: {

@@ -43,6 +43,10 @@ export const frMessages = {
         description:
           'Laiton, Chaudière, Vert-de-gris — esthétique mécanique victorienne.',
       },
+      adventure: {
+        name: 'Aventure',
+        description: 'Quêtes épiques et exploration de mondes anciens.',
+      },
     },
     landing: {
       meta: {
@@ -194,6 +198,13 @@ export const frMessages = {
         DRAW_TWO: 'Échappement',
         WILD: 'Éther',
         WILD_DRAW_FOUR: 'Explosion de Chaudière',
+      },
+      adventure: {
+        SKIP: 'Passer',
+        REVERSE: 'Inverser',
+        DRAW_TWO: 'Pioche Deux',
+        WILD: 'Joker',
+        WILD_DRAW_FOUR: 'Pioche Quatre',
       },
     },
     board: {

@@ -41,6 +41,10 @@ export const byMessages = {
         description:
           'Латунь, Кацёл, Патына — віктарыянская механічная эстэтыка.',
       },
+      adventure: {
+        name: 'Прыгоды',
+        description: 'Эпічныя квэсты і даследаванне старажытных сусветаў.',
+      },
     },
     landing: {
       meta: {
@@ -192,6 +196,13 @@ export const byMessages = {
         DRAW_TWO: 'Паровы выбух',
         WILD: 'Эфір',
         WILD_DRAW_FOUR: 'Выбух катла',
+      },
+      adventure: {
+        SKIP: 'Прапуск',
+        REVERSE: 'Рэвэрс',
+        DRAW_TWO: 'Возьмі дзве',
+        WILD: 'Дзікая',
+        WILD_DRAW_FOUR: 'Дзікая +4',
       },
     },
     board: {

@@ -55,6 +55,12 @@ test.describe('Room Clear Functionality', () => {
     await navigateTo(page, routes.gameRoom(MOCK_OBJECT_ID));
     await waitForRoomReady(page);
 
+    // Dismiss the first-visit tutorial overlay if present — its click
+    // blocker intercepts pointer events over the whole page.
+    const tutorial = page.getByTestId('tutorial-overlay');
+    await page.keyboard.press('Escape');
+    await expect(tutorial).toBeHidden({});
+
     // Verify "Delete Room" button is visible for host
     const deleteButton = page.getByRole('button', { name: /delete room/i });
     await expect(deleteButton).toBeVisible({});

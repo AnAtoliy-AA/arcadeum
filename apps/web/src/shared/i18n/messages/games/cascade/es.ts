@@ -42,6 +42,10 @@ export const esMessages = {
         name: 'Steampunk',
         description: 'Latón, Caldera, Verdín — estética mecánica victoriana.',
       },
+      adventure: {
+        name: 'Aventura',
+        description: 'Misiones épicas y exploración de mundos antiguos.',
+      },
     },
     landing: {
       meta: {
@@ -193,6 +197,13 @@ export const esMessages = {
         DRAW_TWO: 'Ruptura de Vapor',
         WILD: 'Éter',
         WILD_DRAW_FOUR: 'Explosión de Caldera',
+      },
+      adventure: {
+        SKIP: 'Saltar',
+        REVERSE: 'Invertir',
+        DRAW_TWO: 'Roba Dos',
+        WILD: 'Comodín',
+        WILD_DRAW_FOUR: 'Roba Cuatro',
       },
     },
     board: {

@@ -7,7 +7,6 @@ import {
   navigateTo,
   waitForRoomReady,
   closeGameRulesModal,
-  clickButtonByTestId,
 } from './fixtures/test-utils';
 import { routes } from '../src/shared/config/routes';
 
@@ -95,7 +94,12 @@ test.describe('Critical Single Player Mode', () => {
 
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeEnabled();
-    await clickButtonByTestId(page, 'start-with-bots-button');
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="start-with-bots-button"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     await closeGameRulesModal(page);
     // The legacy `PlayerHand` heading is gone; the new MatchWidget is

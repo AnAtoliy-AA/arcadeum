@@ -17,6 +17,7 @@ const VARIANT_EMOJI: Record<keyof Variants, string> = {
   neon: '💜',
   tropical: '🏖️',
   steampunk: '⚙️',
+  adventure: '🏔️',
 };
 
 const VARIANT_GRADIENT: Record<keyof Variants, string> = {
@@ -28,6 +29,7 @@ const VARIANT_GRADIENT: Record<keyof Variants, string> = {
   neon: 'linear-gradient(135deg, #2e1065 0%, #7c3aed 50%, #0f0a1e 100%)',
   tropical: 'linear-gradient(135deg, #065f46 0%, #0ea5e9 50%, #164e63 100%)',
   steampunk: 'linear-gradient(135deg, #78350f 0%, #d97706 50%, #1c1917 100%)',
+  adventure: 'linear-gradient(135deg, #4F566B 0%, #FF4D4D 100%)',
 };
 
 export function CascadeThemesGrid({ variants, baseHref }: Props) {

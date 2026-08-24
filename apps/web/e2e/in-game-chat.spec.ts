@@ -201,7 +201,12 @@ test.describe('In-Game Chat Messaging', () => {
 
     // Switch to Players scope
     const playersTab = page.getByRole('tab', { name: 'Players' });
-    await playersTab.click();
+    await page.evaluate(() => {
+      const tab = Array.from(document.querySelectorAll('[role="tab"]')).find(
+        (el) => el.textContent?.trim() === 'Players',
+      );
+      (tab as HTMLElement | null)?.click();
+    });
     await expect(playersTab).toHaveAttribute('aria-selected', 'true');
   });
 

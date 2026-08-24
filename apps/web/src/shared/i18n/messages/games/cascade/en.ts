@@ -39,6 +39,11 @@ export const enMessages = {
         description:
           'Brass, Boiler, Verdigris — Victorian mechanical aesthetic.',
       },
+      adventure: {
+        name: 'Adventure',
+        description:
+          'Epic quests and exploration with classic card game aesthetics.',
+      },
     },
     landing: {
       meta: {
@@ -188,6 +193,13 @@ export const enMessages = {
         DRAW_TWO: 'Steam Burst',
         WILD: 'Aether',
         WILD_DRAW_FOUR: 'Boiler Explosion',
+      },
+      adventure: {
+        SKIP: 'Skip',
+        REVERSE: 'Reverse',
+        DRAW_TWO: 'Draw Two',
+        WILD: 'Wild',
+        WILD_DRAW_FOUR: 'Draw Four',
       },
     },
     board: {

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.32] - 2026-08-24
+
+### Fixed
+- memoize server GETs and retry 429 during prerender
+- remove leftover src/middleware.ts after proxy rename
+- migrate middleware to proxy convention and declare CSP_CONNECT_SRC in turbo env
+
+
 ## [1.26.31] - 2026-08-24
 
 ### Added

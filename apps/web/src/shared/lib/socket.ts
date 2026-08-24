@@ -366,9 +366,16 @@ function createLazySocket(getter: () => AuthenticatedSocket): Socket {
           const socket = getter();
           if (!socket) return undefined;
           const bound = Reflect.get(socket, 'emit', receiver) as (
+            this: AuthenticatedSocket,
+            event: string,
             ...a: unknown[]
           ) => unknown;
-          return typeof bound === 'function' ? bound(...args) : undefined;
+          // Forward the event name AND the args — dropping `event` here
+          // turns every emit into emit(payload), which servers and the
+          // E2E socket mocks silently swallow (see ARC-900 CI run).
+          return typeof bound === 'function'
+            ? bound.call(socket, event, ...args)
+            : undefined;
         };
       }
       const socket = getter();

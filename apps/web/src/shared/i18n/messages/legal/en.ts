@@ -73,14 +73,16 @@ export const en: LegalMessages = {
         contact: 'To request a refund, please contact us at our support page.',
       },
       acceptableUse: {
-        title: '8. Acceptable Use',
+        title: '8. Acceptable Use & Fair Play',
         intro: 'You agree not to:',
         items: [
           'Use the service for any illegal purpose',
           'Harass, abuse, or harm other users',
           'Attempt to exploit, hack, or disrupt the service',
-          'Create multiple accounts to abuse promotions',
-          'Use automated tools or bots',
+          'Create multiple accounts to abuse promotions or farm currency',
+          'Use automated tools, scripts, or bots',
+          'Engage in chip dumping, match-fixing, or intentional loss to transfer coins or ratings',
+          'Collude with other players to manipulate games, pots, leaderboards, or tournaments',
         ],
       },
       intellectualProperty: {

@@ -10,6 +10,7 @@ export interface QueueEntry {
   gameId: string;
   variant?: string;
   ranked?: boolean;
+  ip?: string;
   timestamp: number;
   timeoutId: NodeJS.Timeout;
 }
@@ -24,26 +25,11 @@ export interface MatchmakingStatus {
 }
 
 const DEFAULT_TIMEOUT_MS = 30_000;
-// When more than one player is waiting, a match is likely within this window.
 const ESTIMATED_WAIT_WITH_PLAYERS_MS = 12_000;
 
-/**
- * Real-time matchmaking queue.
- *
- * Players queue per game (and optional variant). When a second player for the
- * same game joins, they are paired immediately into an "Open Match" room. If
- * nobody else is queued, the player waits up to a configurable timeout
- * (`MATCHMAKING_TIMEOUT_MS`, default 30s); on timeout we first try to pair
- * with anyone still queued, and only fall back to a bot room as a last resort.
- *
- * Each queued player receives `games.matchmaking.status` updates carrying the
- * current queue size, their position, and an estimated wait so the client can
- * render a "Searching for opponent..." experience with a live wait estimate.
- */
 @Injectable()
 export class GameRoomsMatchmakingService {
   private readonly logger = new Logger(GameRoomsMatchmakingService.name);
-  // Queue bucketed per game+variant: key = `${gameId}::${variant ?? ''}`
   private readonly queue = new Map<string, Map<string, QueueEntry>>();
 
   constructor(
@@ -71,6 +57,7 @@ export class GameRoomsMatchmakingService {
     variant?: string,
     ranked?: boolean,
     onSuccess?: (roomId: string) => void,
+    ip?: string,
   ): void {
     this.logger.log(
       `User ${userId} (socket ${socketId}) joining ${ranked ? 'ranked' : 'casual'} matchmaking queue for game ${gameId}${variant ? ` (${variant})` : ''}`,
@@ -78,7 +65,7 @@ export class GameRoomsMatchmakingService {
 
     this.leaveQueue(userId);
 
-    const match = this.findMatch(gameId, variant, ranked, userId);
+    const match = this.findMatch(gameId, variant, ranked, userId, ip);
     if (match) {
       this.logger.log(
         `Match found between ${userId} and ${match.userId} for game ${gameId}`,
@@ -117,6 +104,7 @@ export class GameRoomsMatchmakingService {
       gameId,
       variant,
       ranked,
+      ip,
       timestamp: Date.now(),
       timeoutId,
     });
@@ -130,7 +118,7 @@ export class GameRoomsMatchmakingService {
       return;
     }
     clearTimeout(entry.timeoutId);
-    const key = this.queueKey(entry.gameId, entry.variant);
+    const key = this.queueKey(entry.gameId, entry.variant, entry.ranked);
     const bucket = this.queue.get(key);
     if (bucket) {
       bucket.delete(userId);
@@ -138,7 +126,7 @@ export class GameRoomsMatchmakingService {
         this.queue.delete(key);
       }
     }
-    this.emitStatusesFor(entry.gameId, entry.variant);
+    this.emitStatusesFor(entry.gameId, entry.variant, entry.ranked);
     this.logger.log(`User ${userId} left matchmaking queue`);
   }
 
@@ -147,13 +135,15 @@ export class GameRoomsMatchmakingService {
     variant: string | undefined,
     ranked: boolean | undefined,
     excludeUserId: string,
+    ip?: string,
   ): QueueEntry | null {
     const bucket = this.queue.get(this.queueKey(gameId, variant, ranked));
     if (!bucket) return null;
+    const isProd = this.config.get<string>('NODE_ENV') === 'production';
     for (const entry of bucket.values()) {
-      if (entry.userId !== excludeUserId) {
-        return entry;
-      }
+      if (entry.userId === excludeUserId) continue;
+      if (isProd && ip && entry.ip && ip === entry.ip) continue;
+      return entry;
     }
     return null;
   }
@@ -218,7 +208,13 @@ export class GameRoomsMatchmakingService {
 
     // Prefer pairing with anyone still queued for the same game over
     // dropping the player into a bot match.
-    const queuedOpponent = this.findMatch(gameId, variant, ranked, userId);
+    const queuedOpponent = this.findMatch(
+      gameId,
+      variant,
+      ranked,
+      userId,
+      entry.ip,
+    );
     if (queuedOpponent) {
       this.logger.log(
         `Matchmaking timeout for user ${userId}; pairing with queued ${queuedOpponent.userId}`,
@@ -274,8 +270,12 @@ export class GameRoomsMatchmakingService {
     } satisfies MatchmakingStatus);
   }
 
-  private emitStatusesFor(gameId: string, variant?: string): void {
-    const key = this.queueKey(gameId, variant);
+  private emitStatusesFor(
+    gameId: string,
+    variant?: string,
+    ranked?: boolean,
+  ): void {
+    const key = this.queueKey(gameId, variant, ranked);
     const bucket = this.queue.get(key);
     if (!bucket) return;
     for (const entry of bucket.values()) {

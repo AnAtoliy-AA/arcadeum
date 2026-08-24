@@ -74,14 +74,16 @@ export const es: LegalMessages = {
           'Para solicitar un reembolso, contáctenos a través de nuestra página de soporte.',
       },
       acceptableUse: {
-        title: '8. Uso Aceptable',
+        title: '8. Uso Aceptable y Juego Limpio',
         intro: 'Usted acepta no:',
         items: [
           'Usar el servicio para cualquier propósito ilegal',
           'Acosar, abusar o dañar a otros usuarios',
           'Intentar explotar, hackear o interrumpir el servicio',
-          'Crear múltiples cuentas para abusar de promociones',
-          'Usar herramientas automatizadas o bots',
+          'Crear múltiples cuentas para abusar de promociones o farmear monedas',
+          'Usar herramientas automatizadas, scripts o bots',
+          'Realizar traspaso intencional de fichas (chip dumping), amaño de partidas o derrotas deliberadas para transferir monedas o rango',
+          'Confabularse con otros jugadores para manipular partidas, botes, torneos o clasificaciones',
         ],
       },
       intellectualProperty: {

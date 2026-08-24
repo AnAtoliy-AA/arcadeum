@@ -51,31 +51,10 @@
 .typography-text-right { text-align: right; }
 
 @media print {
-  @page {
-    margin: 16mm 14mm;
-    size: auto;
-  }
-
   *,
   *::before,
   *::after {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
-  }
-
-  body {
-    background: transparent;
-  }
-
-  .header-outer {
-    position: static;
-    box-shadow: none;
-    backdrop-filter: none;
-    margin-bottom: 16px;
-  }
-
-  .header-inner {
-    padding-left: 0;
-    padding-right: 0;
   }
 }

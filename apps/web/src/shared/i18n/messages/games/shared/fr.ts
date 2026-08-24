@@ -40,6 +40,19 @@ export const frMessages = {
     error: 'Impossible de démarrer — réessayez',
     delayLabel: 'Délai entre coups',
   },
+  tutorial: {
+    ui: {
+      button: 'Tutoriel',
+      next: 'Suivant',
+      back: 'Retour',
+      skip: 'Passer',
+      finish: 'Commencer à jouer',
+      stepOf: 'Étape {{current}} sur {{total}}',
+      completeTitle: 'Tutoriel terminé !',
+      completeBody:
+        'Bravo — vous connaissez maintenant les bases de {{game}}. Bonne chance à la table !',
+    },
+  },
   rooms: {
     status: {
       lobby: "Salon d'attente",
@@ -483,6 +496,55 @@ export const frMessages = {
     previewLabel: 'Aperçu en direct',
     cycleHint: 'Cliquez pour changer le thème',
     cycleAriaLabel: 'Changer le thème de l’aperçu, actuellement {{variant}}',
+  },
+  replay: {
+    loading: 'Chargement du replay…',
+    error: 'Replay introuvable',
+    controls: {
+      progress: 'Progression du replay',
+      first: 'Aller au début',
+      prev: 'Coup précédent',
+      play: 'Lire',
+      pause: 'Pause',
+      next: 'Coup suivant',
+      last: 'Aller à la fin',
+      stepCounter: 'Coup {{current}} / {{total}}',
+    },
+    header: {
+      title: 'Replay : {{game}}',
+      draw: 'Match nul',
+      winner: '{{name}} a gagné',
+      moves: '{{count}} coups',
+      duration: '{{min}}m {{sec}}s',
+    },
+    share: {
+      title: 'Replay de jeu',
+      button: 'Partager',
+      copied: 'Copié !',
+    },
+    card: {
+      draw: 'Match nul',
+      won: '{{name}} a gagné',
+      moves: '{{count}} coups',
+      duration: '{{min}}m',
+      watch: 'Voir le replay',
+    },
+    list: {
+      title: 'Replays de jeux',
+      total: '{{count}} replays',
+      empty: 'Aucun replay pour le moment',
+      prev: 'Précédent',
+      next: 'Suivant',
+      page: 'Page {{current}} / {{total}}',
+      filter: {
+        all: 'Tous les jeux',
+        chess: 'Échecs',
+        checkers: 'Dames',
+        ticTacToe: 'Morpion',
+        backgammon: 'Backgammon',
+        go: 'Go',
+      },
+    },
   },
   themes: themesFr,
 };

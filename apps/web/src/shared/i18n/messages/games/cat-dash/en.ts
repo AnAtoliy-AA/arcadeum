@@ -102,6 +102,24 @@ export const enMessages = {
       waitingForPlayers: 'Waiting for players…',
       minPlayers: 'Minimum 2 players',
     },
+    tutorial: {
+      s1: {
+        title: 'Roll and dash',
+        body: 'On your turn hit Roll Dice to scamper forward. First cat to reach space 20 wins the race.',
+      },
+      s2: {
+        title: 'Mind the track',
+        body: 'Red obstacles skip your next turn, yellow bonuses grant an extra roll, and blue forks offer risky shortcuts.',
+      },
+      s3: {
+        title: 'Spend tokens wisely',
+        body: 'Each cat has two unique abilities — spend your three power tokens at the perfect moment.',
+      },
+      s4: {
+        title: 'Photo finish',
+        body: 'Cross the finish line first, then rematch or celebrate in chat.',
+      },
+    },
     rules: {
       title: 'Cat Dash Rules',
       objective: 'Be the first cat to reach the finish line (space 20).',

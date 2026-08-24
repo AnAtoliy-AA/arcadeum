@@ -36,6 +36,9 @@ interface GamePageLayoutProps {
   // Rules
   onShowRules: () => void;
 
+  // Interactive tutorial (only when the game has one)
+  onShowTutorial?: () => void;
+
   isSpectating?: boolean;
 
   // The game widget — receives isFullscreen/toggleFullscreen via render prop
@@ -58,6 +61,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     isIdle,
     onReconnect,
     onShowRules,
+    onShowTutorial,
     isSpectating,
     children,
   } = props;
@@ -252,6 +256,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           showChat={showChat}
           onToggleChat={handleToggleChat}
           onShowRules={onShowRules}
+          onShowTutorial={onShowTutorial}
           isSpectating={isSpectating}
           isGameOver={isGameOver}
           onRematch={onRematch ?? undefined}

@@ -9,6 +9,24 @@ export const esMessages = {
       empty: 'Vacío',
     },
     challengePlayer: '¿Desafiar a {{name}} a Batalla Naval?',
+    tutorial: {
+      s1: {
+        title: 'Esconde tu flota',
+        body: 'Coloca los cinco barcos en tu cuadrícula antes de la batalla. No pueden solaparse ni tocarse — haz clic para colocar y gira con el botón.',
+      },
+      s2: {
+        title: 'Fuego a discreción',
+        body: 'En tu turno haz clic en una casilla de las aguas del rival. Los impactos se marcan en rojo, los fallos en blanco — triangula y cázalos.',
+      },
+      s3: {
+        title: 'Hunde para ganar',
+        body: 'Todas las casillas de un barco deben recibir impacto para hundirlo. Hunde toda la flota enemiga para llevarte la victoria.',
+      },
+      s4: {
+        title: 'Puesto de batalla',
+        body: 'Ajusta el sonido y la música, ve a pantalla completa para ver mejor o abre el libro de Reglas en plena batalla desde este panel.',
+      },
+    },
     rules: {
       title: 'Reglas del Juego',
       headers: {

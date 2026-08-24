@@ -7,19 +7,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.16] - 2026-08-24
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.26.15] - 2026-08-24
+
+### Added
+- implement game replays (ARC-888) (ARC-888)
+
+### Fixed
+- use i18n error message in replay client catch block (ARC-888)
+- sanitize replay query inputs against NoSQL injection (ARC-888) (ARC-888)
+
+
+## [1.26.14] - 2026-08-24
+
+### Added
+- add tutorial content in en, es, fr, ru, by for all games (ARC-895)
+- add interactive tutorial framework with spotlight overlay (ARC-895)
+
+### Fixed
+- dismiss tutorial overlay before opening chat panel on mobile
+- bypass tutorial overlay blocker and fix theme translation keys
+- manage dialog focus and treat Escape on completion as finished (ARC-895)
+
+### Documentation
+- refresh roadmap statuses for shipped features (ARC-895)
+
+
+## [1.26.13] - 2026-08-24
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.26.12] - 2026-08-24
+
+### Added
+
+- add clans/groups feature (ARC-891)
+
+### Fixed
+
+- wrap clanId with ObjectId in all Mongoose queries (ARC-891)
+- sanitize user input in clan DB queries (ARC-891)
+- add missing clans i18n translation files (ARC-891)
+
+### Documentation
+
+- mark clans/groups feature as implemented in roadmap
+
 ## [1.26.11] - 2026-08-23
 
 ### Added
+
 - add go landing page, home card and create-page wiring (ARC-887)
 - add go web widget with shared theme support (ARC-887)
 - wire go service, MCTS bot and socket gateway (ARC-887)
 - add go engine with captures, ko rule and area scoring (ARC-887)
 
 ### Fixed
+
 - offer forfeit via available actions and fix Go i18n interpolation (ARC-887)
 - bound Go bot compute and harden engine/landing review findings (ARC-887)
 - use crypto randomInt for go randomness (ARC-887)
-
 
 ## [1.26.10] - 2026-08-23
 

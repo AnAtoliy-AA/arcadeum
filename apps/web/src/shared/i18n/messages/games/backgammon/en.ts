@@ -158,6 +158,24 @@ export const enMessages = {
       checkerMoved: 'Moved checker',
       checkerHit: 'Blot hit to bar!',
     },
+    tutorial: {
+      s1: {
+        title: 'Roll and march',
+        body: 'Roll two dice and move your checkers the shown pips. Doubles let you play the number four times.',
+      },
+      s2: {
+        title: 'Hit blots',
+        body: 'A lone checker is a blot — land on it to send it to the bar. Checkers on the bar must re-enter before anything else may move.',
+      },
+      s3: {
+        title: 'Bear off to win',
+        body: 'Bring all fifteen checkers into your home board, then roll them off. First to bear off all fifteen wins.',
+      },
+      s4: {
+        title: 'Between rolls',
+        body: 'Sound, music, fullscreen and the full Rules book live in this panel.',
+      },
+    },
     rules: {
       title: 'Backgammon Rules',
       objectiveTitle: 'Objective',

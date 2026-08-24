@@ -23,6 +23,7 @@ import { GamePostMatchService } from './game-post-match.service';
 import { RankingService } from '../ranking/ranking.service';
 import { recordRankedResultForSession } from './games.ranked-result';
 import { finalizeCompletedSession } from './games.completion';
+import { GameReplayService } from './replays/game-replay.service';
 import { stripDisabledRules } from './games.service-rules';
 import {
   sanitizeSessionForPlayer,
@@ -51,6 +52,7 @@ export class GamesService {
     private readonly postMatch: GamePostMatchService,
     private readonly rankingService: RankingService,
     private readonly ruleVisibility: GameRuleVisibilityService,
+    private readonly replayService: GameReplayService,
   ) {}
 
   // ========== Room Operations ==========
@@ -303,6 +305,7 @@ export class GamesService {
         leaderboardSync: this.leaderboardSync,
         postMatch: this.postMatch,
         archiveService: this.archiveService,
+        replayService: this.replayService,
         logger: this.logger,
       });
     }

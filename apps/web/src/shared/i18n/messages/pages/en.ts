@@ -16,6 +16,7 @@ import { adminBlockedIpsEn } from './admin-blocked-ips/en';
 import { adminUsersEn } from './admin-users/en';
 import { adminBulkRewardsEn } from './admin-bulk-rewards/en';
 import { friendsEn } from './friends/en';
+import { clansEn } from './clans/en';
 import { communityEn } from './community/en';
 import { rewardsEn } from './rewards/en';
 import { developersEn } from './developers/en';
@@ -379,4 +380,5 @@ export const en = {
   adminShop: adminShopEn,
   adminGames: adminGamesEn,
   friends: friendsEn,
+  clans: clansEn,
 };

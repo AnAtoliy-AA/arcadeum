@@ -106,6 +106,24 @@ export const frMessages = {
       winCondition: 'Condition de victoire',
       inARow: "{{n}} d'affilée",
     },
+    tutorial: {
+      s1: {
+        title: 'Réclamez vos cases',
+        body: 'Marquez à tour de rôle des cases vides. Sur les petits plateaux, trois alignés gagnent ; les grands exigent des lignes plus longues.',
+      },
+      s2: {
+        title: 'Gardez la longueur gagnante',
+        body: '3×3 exige 3 alignés, 5×5 en demande 4, et 7×7 ou 9×9 en exigent 5 — horizontalement, verticalement ou en diagonale.',
+      },
+      s3: {
+        title: 'Mode infini',
+        body: 'Sur les plateaux Infinis, la grille s’étend dès que quelqu’un joue près du bord — jamais de match nul.',
+      },
+      s4: {
+        title: 'Parlez stratégie',
+        body: 'Utilisez le chat pour taquiner, lancez des émotes rapides pour réagir et ouvrez le livre des Règles pour un rappel.',
+      },
+    },
     rules: {
       title: 'Règles',
       objective:

@@ -9,6 +9,24 @@ export const frMessages = {
       empty: 'Vide',
     },
     challengePlayer: 'Défier {{name}} à la Bataille Navale ?',
+    tutorial: {
+      s1: {
+        title: 'Cachez votre flotte',
+        body: 'Placez vos cinq navires sur votre grille avant la bataille. Ils ne peuvent ni se chevaucher ni se toucher — cliquez pour placer, pivotez avec le bouton.',
+      },
+      s2: {
+        title: 'Feu à volonté',
+        body: 'À votre tour, cliquez sur une case des eaux adverses. Les touches sont marquées en rouge, les ratés en blanc — triangulez et traquez-les.',
+      },
+      s3: {
+        title: 'Coulez pour gagner',
+        body: 'Chaque case d’un navire doit être touchée avant qu’il coule. Coulez toute la flotte ennemie pour remporter la victoire.',
+      },
+      s4: {
+        title: 'Poste de combat',
+        body: 'Ajustez son et musique, passez en plein écran pour y voir plus clair ou ouvrez le livre des Règles en pleine bataille depuis ce panneau.',
+      },
+    },
     rules: {
       title: 'Règles du Jeu',
       headers: {

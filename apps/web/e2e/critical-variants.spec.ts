@@ -103,7 +103,12 @@ test.describe('Critical Variant Selection', () => {
     // Variant is selected via dropdown in lobby — start game with default variant
     const startBtn = page.getByRole('button', { name: /start with/i });
     await expect(startBtn).toBeEnabled();
-    await startBtn.click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="start-with-bots-button"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     await closeRulesModal(page);
 

@@ -7,6 +7,24 @@ export const enMessages = {
     name: 'Critical',
     description: 'A strategic card game where you avoid critical hazards',
     landing,
+    tutorial: {
+      s1: {
+        title: "Don't explode",
+        body: 'Play action cards on your turn, then draw from the pile. Draw a Critical without a Defuse in hand and you are out!',
+      },
+      s2: {
+        title: 'Combo to steal',
+        body: 'Two of a kind steals a random card, three of a kind names a card, and five different titles fetch one from the discard pile.',
+      },
+      s3: {
+        title: 'Fast rooms tick',
+        body: 'In fast rooms a turn timer plays for you when time runs out — keep the pace and plan ahead.',
+      },
+      s4: {
+        title: 'Table talk',
+        body: 'Chat with everyone or only with living players, and keep private notes visible only to you.',
+      },
+    },
     rules: {
       title: 'Game Rules',
       headers: {

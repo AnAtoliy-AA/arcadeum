@@ -170,6 +170,24 @@ export const frMessages = {
         clubs: 'Trèfle',
       },
     },
+    tutorial: {
+      s1: {
+        title: 'Esquivez les points',
+        body: 'Suivez la couleur demandée quand vous le pouvez ; la carte la plus haute de la couleur prend le pli — et chaque carte pénalité dedans.',
+      },
+      s2: {
+        title: 'Craignez la Reine',
+        body: 'Les cœurs valent 1 point chacun ; la Reine de Piques en vaut 13. Avant chaque main, passez les cartes dangereuses : gauche, droite, face-à-face, puis rien.',
+      },
+      s3: {
+        title: 'Tirez sur la lune',
+        body: 'Vous vous sentez audacieux ? Capturez les 26 points pour annuler votre score et enfler celui des autres de 26.',
+      },
+      s4: {
+        title: 'Comptez ce qui est sorti',
+        body: 'Suivez les couleurs jouées, gérez son et musique, et ouvrez le livre des Règles en cas de doute.',
+      },
+    },
     rules: {
       title: 'Règles des Coeurs',
       objectiveTitle: 'Objectif',

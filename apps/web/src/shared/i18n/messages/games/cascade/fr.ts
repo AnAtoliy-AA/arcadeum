@@ -43,6 +43,10 @@ export const frMessages = {
         description:
           'Laiton, Chaudière, Vert-de-gris — esthétique mécanique victorienne.',
       },
+      adventure: {
+        name: 'Aventure',
+        description: 'Quêtes épiques et exploration de mondes anciens.',
+      },
     },
     landing: {
       meta: {
@@ -195,6 +199,13 @@ export const frMessages = {
         WILD: 'Éther',
         WILD_DRAW_FOUR: 'Explosion de Chaudière',
       },
+      adventure: {
+        SKIP: 'Passer',
+        REVERSE: 'Inverser',
+        DRAW_TWO: 'Pioche Deux',
+        WILD: 'Joker',
+        WILD_DRAW_FOUR: 'Pioche Quatre',
+      },
     },
     board: {
       last: 'DERNIÈRE',
@@ -211,6 +222,24 @@ export const frMessages = {
       callCascade: 'Cascade !',
       callCascadeSelf: 'Cascade ! — sauvez-vous',
       backToGames: '← Jeux',
+    },
+    tutorial: {
+      s1: {
+        title: 'Videz votre main',
+        body: 'Alignez-vous sur la carte du dessus par couleur ou chiffre, ou posez un Joker pour changer la donne. Le premier sans cartes gagne.',
+      },
+      s2: {
+        title: 'Cartes d’action',
+        body: 'Skip fige le joueur suivant, Reverse inverse le sens, Draw-Two distribue des pénalités et les Jokers permettent de choisir la couleur.',
+      },
+      s3: {
+        title: 'Empilez les pénalités',
+        body: 'Passez un Draw-Two avec un autre Draw-Two ou empilez un Wild +4 — refusez et payez le prix fort.',
+      },
+      s4: {
+        title: 'Pas de coup ? Piochez',
+        body: 'Rien à jouer ? Piochez une carte. Ce panneau regroupe son, musique, plein écran et les Règles.',
+      },
     },
     rules: {
       title: 'Règles',

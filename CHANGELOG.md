@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.28] - 2026-08-24
+
+### Added
+- make starter cosmetic items implicit and purge legacy starter inventory rows (ARC-924) (ARC-924)
+- add reusable InfiniteScroll component with storybook and tests (ARC-924) (ARC-924)
+- rework command center and add infinite scroll to all admin pages (ARC-924) (ARC-924)
+
+### Fixed
+- resolve setState in effect lint errors and add test data pruning script (ARC-925) (ARC-925)
+- wrap payment and user handlers in useCallback and clean filters styling (ARC-924) (ARC-924)
+- prevent infinite render loop by syncing accumulated items in useEffect (ARC-924) (ARC-924)
+
+
 ## [1.26.27] - 2026-08-24
 
 ### Added

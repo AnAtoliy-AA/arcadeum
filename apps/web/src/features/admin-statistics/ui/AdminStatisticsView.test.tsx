@@ -65,7 +65,11 @@ describe('AdminStatisticsView', () => {
         {
           date: '08-24',
           dau: 350,
+          registeredDau: 300,
+          anonymousDau: 50,
           games: 320,
+          registeredGames: 280,
+          anonymousGames: 40,
           newUsers: 42,
           transactions: 210,
         },

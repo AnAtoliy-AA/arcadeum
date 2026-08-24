@@ -39,6 +39,10 @@ test.describe('Auth Referral Code Registration', () => {
     await usernameInput.fill(`user_${uniqueId}`);
     await usernameInput.blur();
 
+    const ageTermsCheckbox = page.getByTestId('auth-age-terms-checkbox');
+    await expect(ageTermsCheckbox).toBeVisible();
+    await ageTermsCheckbox.click();
+
     // 4. Intercept the register POST and assert the referral was forwarded
     //    from the URL, even though no UI input exposes it.
     const requestPromise = page.waitForRequest(

@@ -437,12 +437,20 @@ export class GamesGateway {
 
     this.validateUserId(client, userId);
 
+    const ipHeader = client.handshake.headers['x-forwarded-for'];
+    const ip =
+      typeof ipHeader === 'string'
+        ? ipHeader.split(',')[0].trim()
+        : client.handshake.address;
+
     this.matchmakingService.joinQueue(
       userId,
       client.id,
       gameId,
       variant,
       ranked,
+      undefined,
+      ip,
     );
     client.emit(
       'games.matchmaking.joined',

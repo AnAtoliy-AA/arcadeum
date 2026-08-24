@@ -536,5 +536,12 @@ export const byMessages = {
       },
     },
   },
+  guestDisclaimer: {
+    playingAsGuest: 'Гульня ў рэжыме госця',
+    agreementPrefix: 'Гуляючы, вы прымаеце ',
+    termsLink: 'Умовы абслугоўвання',
+    agreementSuffix:
+      ' {{appName}} і пацвярджаеце, што вам споўнілася 18 гадоў.',
+  },
   themes: themesBy,
 };

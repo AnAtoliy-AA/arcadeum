@@ -95,6 +95,8 @@ export const ru = {
     passwordMismatch: 'Пароли не совпадают.',
     legal:
       'Продолжая, вы принимаете {{termsLink}} и {{privacyLink}} {{appName}}.',
+    legalAgeAgreement:
+      'Я подтверждаю, что мне исполнилось 18 лет, и принимаю {{termsLink}} и {{privacyLink}} {{appName}}.',
     termsLink: 'Условия',
     privacyLink: 'Политику конфиденциальности',
   },

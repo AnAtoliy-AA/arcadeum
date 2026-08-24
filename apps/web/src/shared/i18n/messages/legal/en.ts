@@ -35,10 +35,11 @@ export const en: LegalMessages = {
         ],
       },
       accounts: {
-        title: '4. User Accounts',
+        title: '4. User Accounts & Eligibility',
         intro:
-          'To use certain features of {{appName}}, you must register for an account. You agree to:',
+          'To use certain features of {{appName}}, you must register for an account. By registering, you confirm that you are at least 18 years of age (or the legal age of majority in your jurisdiction) and agree to:',
         items: [
+          'Confirm that you are at least 18 years of age or older',
           'Provide accurate and complete registration information',
           'Maintain the security of your account credentials',
           'Be responsible for all activities under your account',
@@ -72,14 +73,16 @@ export const en: LegalMessages = {
         contact: 'To request a refund, please contact us at our support page.',
       },
       acceptableUse: {
-        title: '8. Acceptable Use',
+        title: '8. Acceptable Use & Fair Play',
         intro: 'You agree not to:',
         items: [
           'Use the service for any illegal purpose',
           'Harass, abuse, or harm other users',
           'Attempt to exploit, hack, or disrupt the service',
-          'Create multiple accounts to abuse promotions',
-          'Use automated tools or bots',
+          'Create multiple accounts to abuse promotions or farm currency',
+          'Use automated tools, scripts, or bots',
+          'Engage in chip dumping, match-fixing, or intentional loss to transfer coins or ratings',
+          'Collude with other players to manipulate games, pots, leaderboards, or tournaments',
         ],
       },
       intellectualProperty: {

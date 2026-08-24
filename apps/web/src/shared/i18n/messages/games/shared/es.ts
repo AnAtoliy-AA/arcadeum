@@ -543,5 +543,11 @@ export const esMessages = {
       },
     },
   },
+  guestDisclaimer: {
+    playingAsGuest: 'Jugando como invitado',
+    agreementPrefix: 'Al jugar aceptas los ',
+    termsLink: 'Términos del Servicio',
+    agreementSuffix: ' de {{appName}} y certificas que tienes más de 18 años.',
+  },
   themes: themesEs,
 };

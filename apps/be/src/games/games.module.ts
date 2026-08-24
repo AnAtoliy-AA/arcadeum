@@ -56,6 +56,7 @@ import {
   ATLAS_CONNECTION,
 } from '../common/providers/mongo-connections.provider';
 import { resolveAtlasUri } from '../common/utils/mongo-uri.util';
+import { AntiCollusionService } from './common/anti-collusion.service';
 
 import { CriticalService } from './critical/critical.service';
 import { CriticalBotService } from './critical/critical-bot.service';
@@ -257,7 +258,12 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     SpadesGateway,
     GoGateway,
     PachisiGateway,
+    AntiCollusionService,
   ],
-  exports: [GameHistoryStatsService, GameRoomsMatchmakingService],
+  exports: [
+    GameHistoryStatsService,
+    GameRoomsMatchmakingService,
+    AntiCollusionService,
+  ],
 })
 export class GamesModule {}

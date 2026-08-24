@@ -92,8 +92,10 @@ export class ClansService {
       visibility?: string;
     },
   ): Promise<ClanView> {
+    const sanitizedName = String(data.name);
+    const sanitizedTag = String(data.tag);
     const existingClan = await this.clanModel.findOne({
-      $or: [{ name: data.name }, { tag: data.tag }],
+      $or: [{ name: sanitizedName }, { tag: sanitizedTag }],
     });
     if (existingClan) {
       throw new ConflictException('clans.nameOrTagTaken');
@@ -251,15 +253,17 @@ export class ClansService {
     }
 
     if (data.name && data.name !== clan.name) {
-      const existing = await this.clanModel.findOne({ name: data.name });
+      const sanitizedName = String(data.name);
+      const existing = await this.clanModel.findOne({ name: sanitizedName });
       if (existing) throw new ConflictException('clans.nameTaken');
-      clan.name = data.name;
+      clan.name = sanitizedName;
     }
 
     if (data.tag && data.tag !== clan.tag) {
-      const existing = await this.clanModel.findOne({ tag: data.tag });
+      const sanitizedTag = String(data.tag);
+      const existing = await this.clanModel.findOne({ tag: sanitizedTag });
       if (existing) throw new ConflictException('clans.tagTaken');
-      clan.tag = data.tag;
+      clan.tag = sanitizedTag;
     }
 
     if (data.description !== undefined) clan.description = data.description;
@@ -305,7 +309,10 @@ export class ClansService {
   }
 
   async getClanByInviteCode(inviteCode: string): Promise<ClanView | null> {
-    const clan = await this.clanModel.findOne({ inviteCode }).lean<LeanClan>();
+    const sanitized = String(inviteCode);
+    const clan = await this.clanModel
+      .findOne({ inviteCode: sanitized })
+      .lean<LeanClan>();
     if (!clan) return null;
     return this.toClanView(clan);
   }

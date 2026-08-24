@@ -1,7 +1,6 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsMongoId } from 'class-validator';
 
 export class JoinClanDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsMongoId()
   clanId!: string;
 }

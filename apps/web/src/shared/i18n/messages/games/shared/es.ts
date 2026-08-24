@@ -350,6 +350,7 @@ export const esMessages = {
       action: 'Acción',
       strategy: 'Estrategia',
       race: 'Carrera',
+      puzzle: 'Rompecabezas',
     },
     tags: {
       strategy: 'Estrategia',

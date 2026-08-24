@@ -83,6 +83,18 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Solitaire · Jeu de Cartes Klondike Gratuit en Ligne · ${APP}`,
     description: `Jouez au Solitaire (Klondike) en ligne sur ${APP} — le casse-tête de cartes classique solo avec score, chronomètre et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
   },
+  minesweeperLanding: {
+    title: `Démineur · Jeu de Réflexion Classique Gratuit en Ligne · ${APP}`,
+    description: `Jouez au Démineur en ligne sur ${APP} — grilles de débutant à expert avec drapeaux, chrono et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
+  },
+  sudokuLanding: {
+    title: `Sudoku · Jeu de Puzzle de Chiffres Gratuit en Ligne · ${APP}`,
+    description: `Jouez au Sudoku en ligne sur ${APP} — niveaux facile, moyen et difficile à solution unique, crayon et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
+  },
+  game2048Landing: {
+    title: `2048 · Jeu de Puzzle à Fusion de Tuiles Gratuit en Ligne · ${APP}`,
+    description: `Jouez à 2048 en ligne sur ${APP} — glissez et fusionnez des tuiles sur une grille 4×4, battez votre record et continuez après 2048. Gratuit, instantané, sans téléchargement.`,
+  },
   settings: {
     title: `Paramètres · ${APP}`,
     description: `Personnalisez votre expérience ${APP} — apparence, thème, langue et préférences de téléchargement.`,

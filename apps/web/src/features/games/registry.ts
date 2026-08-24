@@ -340,6 +340,63 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     lastUpdated: '2026-08-24',
     status: 'beta',
   },
+  minesweeper_v1: {
+    slug: 'minesweeper_v1',
+    name: 'Minesweeper',
+    description:
+      'Classic Minesweeper — clear beginner to expert grids without detonating a single mine, entirely in your browser',
+    category: 'Puzzle',
+    minPlayers: 1,
+    maxPlayers: 1,
+    estimatedDuration: 5,
+    complexity: 2,
+    ageRating: 'G',
+    thumbnail: '/games/minesweeper.svg',
+    version: '1.0.0',
+    supportsAI: false,
+    tags: ['minesweeper', 'puzzle', 'logic', 'single-player', 'classic'],
+    implementationPath: '@/widgets/PuzzleGames/MinesweeperGame',
+    lastUpdated: '2026-08-24',
+    status: 'beta',
+  },
+  sudoku_v1: {
+    slug: 'sudoku_v1',
+    name: 'Sudoku',
+    description:
+      'Classic Sudoku with unique-solution puzzles on easy, medium, and hard grids — pencil marks included',
+    category: 'Puzzle',
+    minPlayers: 1,
+    maxPlayers: 1,
+    estimatedDuration: 15,
+    complexity: 2,
+    ageRating: 'G',
+    thumbnail: '/games/sudoku.svg',
+    version: '1.0.0',
+    supportsAI: false,
+    tags: ['sudoku', 'numbers', 'puzzle', 'logic', 'single-player', 'classic'],
+    implementationPath: '@/widgets/PuzzleGames/SudokuGame',
+    lastUpdated: '2026-08-24',
+    status: 'beta',
+  },
+  game_2048_v1: {
+    slug: 'game_2048_v1',
+    name: '2048',
+    description:
+      'The addictive tile-merging puzzle — slide and merge equal tiles across a 4×4 grid to reach 2048',
+    category: 'Puzzle',
+    minPlayers: 1,
+    maxPlayers: 1,
+    estimatedDuration: 10,
+    complexity: 1,
+    ageRating: 'G',
+    thumbnail: '/games/2048.svg',
+    version: '1.0.0',
+    supportsAI: false,
+    tags: ['2048', 'tiles', 'merge', 'puzzle', 'single-player', 'casual'],
+    implementationPath: '@/widgets/PuzzleGames/Game2048',
+    lastUpdated: '2026-08-24',
+    status: 'beta',
+  },
 };
 
 /**
@@ -352,6 +409,7 @@ export const CATEGORY_LABEL_KEYS: Record<string, string> = {
   Action: 'games.shared.category.action',
   Strategy: 'games.shared.category.strategy',
   Race: 'games.shared.category.race',
+  Puzzle: 'games.shared.category.puzzle',
 };
 
 export function getCategoryLabelKey(category: string): string | undefined {
@@ -368,6 +426,7 @@ const CATEGORY_ORDER = [
   'Board Game',
   'Strategy',
   'Action',
+  'Puzzle',
 ] as const;
 
 /**

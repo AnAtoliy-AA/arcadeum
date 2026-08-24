@@ -342,6 +342,7 @@ export const ruMessages = {
       action: 'Экшн',
       strategy: 'Стратегия',
       race: 'Гонка',
+      puzzle: 'Головоломка',
     },
     tags: {
       strategy: 'Стратегия',

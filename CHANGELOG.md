@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.14] - 2026-08-24
+
+### Added
+- add tutorial content in en, es, fr, ru, by for all games (ARC-895)
+- add interactive tutorial framework with spotlight overlay (ARC-895)
+
+### Fixed
+- dismiss tutorial overlay before opening chat panel on mobile
+- bypass tutorial overlay blocker and fix theme translation keys
+- manage dialog focus and treat Escape on completion as finished (ARC-895)
+
+### Documentation
+- refresh roadmap statuses for shipped features (ARC-895)
+
+
 ## [1.26.13] - 2026-08-24
 
 ### Changed

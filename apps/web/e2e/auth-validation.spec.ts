@@ -32,6 +32,7 @@ test.describe('Auth Validation', () => {
     await passwordInput.fill('Password123!');
     await expect(usernameInput).toBeVisible();
     await usernameInput.fill(`user${uniqueId}`);
+    await usernameInput.blur();
     await expect(ageTermsCheckbox).toBeVisible();
     await ageTermsCheckbox.click();
 
@@ -42,6 +43,7 @@ test.describe('Auth Validation', () => {
     await expect(errorMsg).toBeVisible();
 
     await emailInput.fill(`test${uniqueId}@example.com`);
+    await emailInput.blur();
     await expect(errorMsg).not.toBeVisible();
     await expect(submitBtn).not.toHaveAttribute('aria-disabled', 'true');
   });
@@ -53,6 +55,11 @@ test.describe('Auth Validation', () => {
 
     const registerTab = page.getByTestId('auth-tab-register');
     await registerTab.click({ force: true });
+    await expect(page.locator('form')).toHaveAttribute(
+      'data-mode',
+      'register',
+      {},
+    );
 
     const emailInput = page.getByTestId('auth-email-input');
     const passwordInput = page.getByTestId('auth-password-input');
@@ -63,6 +70,7 @@ test.describe('Auth Validation', () => {
     await emailInput.fill(`user_${uniqueId}@example.com`);
     await passwordInput.fill('Password123!');
     await usernameInput.fill(`user${uniqueId}`);
+    await usernameInput.blur();
 
     await expect(ageTermsCheckbox).toBeVisible();
     await expect(ageTermsCheckbox).toHaveAttribute('aria-checked', 'false');

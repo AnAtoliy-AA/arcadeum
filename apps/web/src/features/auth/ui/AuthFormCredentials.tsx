@@ -198,7 +198,7 @@ export function AuthFormCredentials({
             <button
               type="button"
               role="checkbox"
-              aria-checked={agreeAgeTerms}
+              aria-checked={agreeAgeTerms ? 'true' : 'false'}
               onClick={() => setAgreeAgeTerms(!agreeAgeTerms)}
               data-testid="auth-age-terms-checkbox"
               className={cx(
@@ -224,29 +224,33 @@ export function AuthFormCredentials({
                 </svg>
               )}
             </button>
-            <label
+            <div
               onClick={() => setAgreeAgeTerms(!agreeAgeTerms)}
               className="cursor-pointer select-none text-xs text-[var(--textSecondary)] leading-relaxed"
               data-testid="auth-age-terms-label"
             >
-              {form.legalAgePrefix.replace('{{appName}}', appConfig.appName)}
+              <span>{form.legalAgePrefix}</span>{' '}
               <Link
                 href="/terms"
                 className="underline text-[var(--textSecondary)] font-semibold hover:text-white"
+                target="_blank"
+                rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
               >
                 {form.termsLink}
-              </Link>
-              {form.legalAgeConjunction}
+              </Link>{' '}
+              <span>{form.legalAgeConjunction}</span>{' '}
               <Link
                 href="/privacy"
                 className="underline text-[var(--textSecondary)] font-semibold hover:text-white"
+                target="_blank"
+                rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
               >
                 {form.privacyLink}
               </Link>
-              {form.legalAgeSuffix}
-            </label>
+              <span>{form.legalAgeSuffix}</span>
+            </div>
           </div>
         )}
 

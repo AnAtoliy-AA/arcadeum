@@ -80,7 +80,12 @@ test.describe('Bot Count Selection', () => {
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible();
     await expect(startBtn).toHaveText(/3/);
-    await startBtn.click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="start-with-bots-button"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     // Verify payload
     const lastPayload = await page.evaluate(

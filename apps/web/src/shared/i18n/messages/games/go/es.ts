@@ -137,6 +137,24 @@ export const esMessages = {
       lost: 'Derrota — tu rival controló más área.',
       draw: 'Empate — tablero perfectamente equilibrado.',
     },
+    tutorial: {
+      s1: {
+        title: 'Rodea territorio',
+        body: 'Coloca piedras para cercar puntos vacíos. Cuando ambos pasen, gana el área mayor — Blanco empieza con la compensación del komi.',
+      },
+      s2: {
+        title: 'Corta las libertades',
+        body: 'Un grupo sin puntos vacíos adyacentes (libertades) se captura y se retira. Rodea piedras enemigas para quitarles su última libertad.',
+      },
+      s3: {
+        title: 'Ojo con el ko',
+        body: 'No puedes recapturar al instante recreando la posición anterior — juega en otro sitio primero. Dos pases consecutivos terminan la partida.',
+      },
+      s4: {
+        title: 'Herramientas del oficio',
+        body: 'Sonido, música, pantalla completa y el libro de Reglas esperan aquí mientras tramas tu próxima jugada.',
+      },
+    },
     rules: {
       title: 'Reglas del Go',
       objectiveTitle: 'Objetivo',

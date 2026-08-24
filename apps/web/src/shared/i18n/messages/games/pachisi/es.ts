@@ -168,6 +168,24 @@ export const esMessages = {
       moveTokenAria: 'Mover ficha {{id}}',
       dieValue: 'Dado: {{value}}',
     },
+    tutorial: {
+      s1: {
+        title: 'Con un 6 sales',
+        body: 'Tira un dado en tu turno y mueve una ficha. Necesitas un 6 para salir del corral — y sacarlo te da otra tirada.',
+      },
+      s2: {
+        title: 'Mándalos a casa',
+        body: 'Cae en la casilla de una ficha rival para devolverla a su corral. Las casillas de estrella y de salida son refugios seguros.',
+      },
+      s3: {
+        title: 'Marcha a casa',
+        body: 'Da la vuelta al tablero en sentido horario, sube tu callejón de color y mete todas tus fichas en el centro para ganar.',
+      },
+      s4: {
+        title: 'La codicia cuesta',
+        body: 'Sacar tres 6 seguidos anula todo tu turno — a veces la jugada segura es la mejor.',
+      },
+    },
     rules: {
       title: 'Reglas de Pachisi',
       objectiveTitle: 'Objetivo',

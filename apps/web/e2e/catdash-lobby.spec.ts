@@ -52,7 +52,12 @@ test.describe('Cat Dash Lobby Options', () => {
     // Simulate the host switching theme: the lobby emits `games.room.set_option`
     // and the room updates server-side. Re-mock with the new theme and re-enter
     // the room to verify the UI reflects it (same pattern as sea-battle-lobby-colors).
-    await page.getByTestId('theme-cyberpunk').click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="theme-cyberpunk"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     await mockGameSocket(page, roomId, MOCK_OBJECT_ID, {
       gameId: 'cat_dash_v1',

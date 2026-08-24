@@ -39,6 +39,19 @@ export const enMessages = {
     error: "Couldn't start — try again",
     delayLabel: 'Move delay',
   },
+  tutorial: {
+    ui: {
+      button: 'Tutorial',
+      next: 'Next',
+      back: 'Back',
+      skip: 'Skip',
+      finish: 'Start playing',
+      stepOf: 'Step {{current}} of {{total}}',
+      completeTitle: 'Tutorial complete!',
+      completeBody:
+        'Nice — you know the basics of {{game}} now. Good luck at the table!',
+    },
+  },
   rooms: {
     status: {
       lobby: 'Lobby',

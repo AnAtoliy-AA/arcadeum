@@ -168,6 +168,24 @@ export const enMessages = {
         clubs: 'Clubs',
       },
     },
+    tutorial: {
+      s1: {
+        title: 'Bid first',
+        body: 'Before play, bid how many tricks you expect to win. Your partnership scores 10 × its combined bid when it delivers.',
+      },
+      s2: {
+        title: 'Spades are trump',
+        body: "Follow suit if you can; if void, any card goes. Spades can't lead until broken — but once they do, they beat everything.",
+      },
+      s3: {
+        title: 'Nil is a gamble',
+        body: 'Bid Nil to chase zero tricks for ±100 points — dump your spades early and duck everything.',
+      },
+      s4: {
+        title: 'Bags bite back',
+        body: 'Every overtrick is a bag: collect ten and it costs 100 points. First team to the target score wins.',
+      },
+    },
     rules: {
       title: 'Spades Rules',
       objectiveTitle: 'Objective',

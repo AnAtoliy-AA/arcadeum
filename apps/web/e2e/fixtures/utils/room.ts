@@ -6,6 +6,20 @@ export interface WaitForRoomReadyOptions {
   autoCloseRules?: boolean;
 }
 
+/**
+ * Dismisses the first-visit TutorialOverlay if present. Its click blocker
+ * (fixed inset-0, z-200) intercepts all pointer events on the room page,
+ * so any subsequent Playwright click would time out. Escape is handled by
+ * a window keydown listener inside the overlay and persists the dismissal
+ * in the tutorial store.
+ */
+export async function dismissTutorialOverlay(page: Page): Promise<void> {
+  const tutorial = page.getByTestId('tutorial-overlay');
+  if (!(await tutorial.isVisible().catch(() => false))) return;
+  await page.keyboard.press('Escape');
+  await expect(tutorial).toBeHidden();
+}
+
 export async function closeGameRulesModal(page: Page): Promise<void> {
   const modalSelector = '[data-testid="rules-modal"]';
   const closeBtnSelector = `${modalSelector} [data-testid="modal-close-button"]`;

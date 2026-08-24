@@ -59,6 +59,24 @@ export const esMessages = {
       inPlay: 'En juego',
       roundOver: 'Ronda terminada',
     },
+    tutorial: {
+      s1: {
+        title: 'Deslízate y crece',
+        body: 'Guía a tu gusano brillante por la arena y come comida para crecer y sumar puntos.',
+      },
+      s2: {
+        title: 'Evita todo rastro',
+        body: 'No toques el rastro de otro gusano — ni el tuyo propio, salvo que un escudo te salve.',
+      },
+      s3: {
+        title: 'Mejora tus poderes',
+        body: 'Consigue potenciadores como Turbo y Escudo para superar a tus rivales, y vigila el HUD: tiempo, vidas y puntos.',
+      },
+      s4: {
+        title: 'Conoce tu modo',
+        body: 'En Battle Royale la arena se encoge hasta que queda un gusano; en Time Attack gana la puntuación más alta a los 90 segundos.',
+      },
+    },
     rules: {
       objective:
         'Sobrevive más que el resto de gusanos. Come la comida brillante para crecer y sumar puntos.',

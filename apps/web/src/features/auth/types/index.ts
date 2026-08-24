@@ -106,6 +106,9 @@ export interface AuthFormLabels {
   legalPrefix: string;
   legalConjunction: string;
   legalSuffix: string;
+  legalAgePrefix: string;
+  legalAgeConjunction: string;
+  legalAgeSuffix: string;
   termsLink: string;
   privacyLink: string;
 }

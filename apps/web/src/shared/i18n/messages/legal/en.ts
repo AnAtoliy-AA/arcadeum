@@ -35,10 +35,11 @@ export const en: LegalMessages = {
         ],
       },
       accounts: {
-        title: '4. User Accounts',
+        title: '4. User Accounts & Eligibility',
         intro:
-          'To use certain features of {{appName}}, you must register for an account. You agree to:',
+          'To use certain features of {{appName}}, you must register for an account. By registering, you confirm that you are at least 18 years of age (or the legal age of majority in your jurisdiction) and agree to:',
         items: [
+          'Confirm that you are at least 18 years of age or older',
           'Provide accurate and complete registration information',
           'Maintain the security of your account credentials',
           'Be responsible for all activities under your account',

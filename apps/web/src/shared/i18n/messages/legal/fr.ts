@@ -35,10 +35,11 @@ export const fr: LegalMessages = {
         ],
       },
       accounts: {
-        title: '4. Comptes Utilisateurs',
+        title: '4. Comptes Utilisateurs et Éligibilité',
         intro:
-          'Pour utiliser certaines fonctionnalités de {{appName}}, vous devez créer un compte. Vous acceptez de :',
+          'Pour utiliser certaines fonctionnalités de {{appName}}, vous devez créer un compte. En vous inscrivant, vous confirmez avoir au moins 18 ans (ou l’âge légal de la majorité dans votre juridiction) et acceptez de :',
         items: [
+          'Confirmer que vous avez au moins 18 ans ou plus',
           "Fournir des informations d'inscription exactes et complètes",
           'Maintenir la sécurité de vos identifiants de compte',
           'Être responsable de toutes les activités sous votre compte',

@@ -102,6 +102,8 @@ export const en = {
     passwordMismatch: "Passwords don't match.",
     legal:
       "By continuing you agree to {{appName}}'s {{termsLink}} and {{privacyLink}}.",
+    legalAgeAgreement:
+      "I confirm that I am at least 18 years old and agree to {{appName}}'s {{termsLink}} and {{privacyLink}}.",
     termsLink: 'Terms',
     privacyLink: 'Privacy Policy',
   },

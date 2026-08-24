@@ -35,10 +35,11 @@ export const es: LegalMessages = {
         ],
       },
       accounts: {
-        title: '4. Cuentas de Usuario',
+        title: '4. Cuentas de Usuario y Elegibilidad',
         intro:
-          'Para usar ciertas funciones de {{appName}}, debe registrarse para obtener una cuenta. Usted acepta:',
+          'Para usar ciertas funciones de {{appName}}, debe registrarse para obtener una cuenta. Al registrarse, confirma que tiene al menos 18 años de edad (o la mayoría de edad legal en su jurisdicción) y acepta:',
         items: [
+          'Confirmar que tiene al menos 18 años de edad o más',
           'Proporcionar información de registro precisa y completa',
           'Mantener la seguridad de las credenciales de su cuenta',
           'Ser responsable de todas las actividades bajo su cuenta',

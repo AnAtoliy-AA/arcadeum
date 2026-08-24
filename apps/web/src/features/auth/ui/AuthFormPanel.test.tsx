@@ -30,6 +30,10 @@ const baseFormLabels: AuthLabels['form'] = {
   legalPrefix: 'By continuing you agree to {{appName}}’s ',
   legalConjunction: ' and ',
   legalSuffix: '.',
+  legalAgePrefix:
+    'I confirm that I am at least 18 years old and agree to {{appName}}’s ',
+  legalAgeConjunction: ' and ',
+  legalAgeSuffix: '.',
   termsLink: 'Terms',
   privacyLink: 'Privacy Policy',
 };
@@ -77,6 +81,8 @@ function makeAuth(
     referralCode: '',
     rememberMe: true,
     setRememberMe: vi.fn(),
+    agreeAgeTerms: false,
+    setAgreeAgeTerms: vi.fn(),
     magicLinkSent: false,
     magicLinkEmail: '',
     emailFieldId: 'email',
@@ -227,5 +233,27 @@ describe('AuthFormPanel', () => {
   it('does not render the magic-link CTA in register mode', () => {
     renderPanel(makeAuth({ isRegisterMode: true }));
     expect(screen.queryByTestId('auth-magic-link-cta')).toBeNull();
+  });
+
+  it('renders the 18+ and terms agreement checkbox in register mode and handles toggle', () => {
+    const setAgree = vi.fn();
+    renderPanel(
+      makeAuth({
+        isRegisterMode: true,
+        agreeAgeTerms: false,
+        setAgreeAgeTerms: setAgree,
+      }),
+    );
+    const checkbox = screen.getByTestId('auth-age-terms-checkbox');
+    expect(checkbox).toBeInTheDocument();
+    expect(checkbox).toHaveAttribute('aria-checked', 'false');
+    fireEvent.click(checkbox);
+    expect(setAgree).toHaveBeenCalledWith(true);
+  });
+
+  it('renders standard legal footer notice in sign-in mode without checkbox', () => {
+    renderPanel(makeAuth({ isRegisterMode: false }));
+    expect(screen.queryByTestId('auth-age-terms-checkbox')).toBeNull();
+    expect(screen.getByText('Terms')).toBeInTheDocument();
   });
 });

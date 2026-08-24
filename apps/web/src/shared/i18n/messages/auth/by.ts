@@ -95,6 +95,8 @@ export const by = {
     passwordMismatch: 'Паролі не супадаюць.',
     legal:
       'Працягваючы, вы пагаджаецеся з {{termsLink}} і {{privacyLink}} {{appName}}.',
+    legalAgeAgreement:
+      'Я пацвярджаю, што мне споўнілася 18 гадоў, і прымаю {{termsLink}} і {{privacyLink}} {{appName}}.',
     termsLink: 'Умовамі',
     privacyLink: 'Палітыкай прыватнасці',
   },

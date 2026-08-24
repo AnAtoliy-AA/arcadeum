@@ -41,7 +41,7 @@
 | 3F. Game Replays       | ARC-888 | `ARC-888-game-replays`       | Not started     |
 | 3G. Spectator Mode     | ARC-889 | `ARC-889-spectator-mode`     | **Implemented** |
 | 3H. AI-vs-AI           | ARC-890 | `ARC-890-ai-vs-ai`           | **Implemented** |
-| 3I. Clans              | ARC-891 | `ARC-891-clans`              | Not started     |
+| 3I. Clans              | ARC-891 | `ARC-891-clans`              | **Implemented** |
 | 3J. Game Nights        | ARC-892 | `ARC-892-game-nights`        | Not started     |
 | 4A. Chess Clock        | ARC-893 | `ARC-893-chess-clock`        | **Implemented** |
 | 4B. Stats Dashboard    | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented** |
@@ -972,12 +972,12 @@ The platform's core infrastructure is highly mature. Phase 1 is fully complete, 
 | **Phase 4: Competitive**     | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                       | 20        | **100% Completed**                                               |
 | **Phase 5: Retention**       | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                | 15        | **100% Completed**                                               |
 | **Phase 6: Card & Board**    | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                         | 25        | **Post-Game Analysis + Coach Mode Completed** (Rest Not started) |
-| **Phase 7: Advanced Social** | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                 | 25        | **Spectator Mode Completed** (Rest Not started)                  |
+| **Phase 7: Advanced Social** | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                 | 25        | **Spectator Mode + Clans Completed** (Rest Not started)          |
 | **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share Completed** (Offline/Mobile Partial)          |
 | **Phase 9: Creator Tools**   | Visual Board Game Creator                                                                                         | 20        | Not started                                                      |
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Backgammon (3B), AI-vs-AI Spectator Rooms (3H), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I).
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Backgammon (3B), AI-vs-AI Spectator Rooms (3H), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I), Clans/Groups (3I).
 - **Next Priorities (Growth & Marketing)**: Run the Week 0 audit, instrument PostHog/Plausible tracking (funnel split by Solo vs. Social), update homepage CTAs to prominently feature AI/Solo play, build out dedicated SEO landing pages for Chess and remaining games, and deploy the dynamic QR code/share sheet invite upgrades.
-- **Next Engineering Priorities**: Hearts/Spades (3A — Hearts PR open, Spades pending), Pachisi (3C), Go (3D), Game Replays (3F), Clans (3I), Game Nights (3J).
+- **Next Engineering Priorities**: Hearts/Spades (3A — Hearts PR open, Spades pending), Pachisi (3C), Go (3D), Game Replays (3F), Game Nights (3J).

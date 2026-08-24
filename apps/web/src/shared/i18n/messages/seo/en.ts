@@ -100,6 +100,10 @@ export const en = {
     title: `Friends · ${APP}`,
     description: `Manage your ${APP} friends list, send friend requests, and see who's online.`,
   },
+  clans: {
+    title: `Clans · ${APP}`,
+    description: `Join or create ${APP} clans, team up with other players, climb the clan leaderboards, and dominate together.`,
+  },
   tournaments: {
     title: `Tournaments · ${APP}`,
     description: `Compete in scheduled ${APP} tournaments, follow live brackets, and track upcoming events across our supported games.`,

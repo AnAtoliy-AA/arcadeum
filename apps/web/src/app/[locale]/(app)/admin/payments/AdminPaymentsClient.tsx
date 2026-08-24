@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useAdminPaymentNotes } from '@/features/admin-payments/hooks';
@@ -49,25 +49,27 @@ export default function AdminPaymentsClient() {
     AdminPaymentNoteItem[]
   >([]);
 
-  const { data, isLoading } = useAdminPaymentNotes({
-    page,
-    pageSize: PAGE_SIZE,
-    q,
-    visibility,
-  });
-
-  useEffect(() => {
-    if (!data?.items) return;
-    setAccumulatedNotes((prev) => {
-      if (page === 1) {
-        return data.items;
-      }
-      const existingIds = new Set(prev.map((it) => it.id));
-      const newItems = data.items.filter((it) => !existingIds.has(it.id));
-      if (newItems.length === 0) return prev;
-      return [...prev, ...newItems];
-    });
-  }, [data?.items, page]);
+  const { data, isLoading } = useAdminPaymentNotes(
+    {
+      page,
+      pageSize: PAGE_SIZE,
+      q,
+      visibility,
+    },
+    {
+      onSuccess: (res) => {
+        setAccumulatedNotes((prev) => {
+          if (page === 1) {
+            return res.items;
+          }
+          const existingIds = new Set(prev.map((it) => it.id));
+          const newItems = res.items.filter((it) => !existingIds.has(it.id));
+          if (newItems.length === 0) return prev;
+          return [...prev, ...newItems];
+        });
+      },
+    },
+  );
 
   const onFilterChange = useCallback(
     (next: { q: string; visibility: AdminNotesVisibility }) => {

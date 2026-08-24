@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Container, PageLayout, PageTitle, Button } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import {
@@ -107,30 +107,32 @@ export default function AdminAnnouncementsClient() {
     AdminAnnouncementItem[]
   >([]);
 
-  const { data, isLoading } = useAdminAnnouncements({
-    page,
-    pageSize: PAGE_SIZE,
-    q,
-    status,
-    severity,
-  });
+  const { data, isLoading } = useAdminAnnouncements(
+    {
+      page,
+      pageSize: PAGE_SIZE,
+      q,
+      status,
+      severity,
+    },
+    {
+      onSuccess: (res) => {
+        setAccumulatedAnnouncements((prev) => {
+          if (page === 1) {
+            return res.items;
+          }
+          const existingIds = new Set(prev.map((it) => it.id));
+          const newItems = res.items.filter((it) => !existingIds.has(it.id));
+          if (newItems.length === 0) return prev;
+          return [...prev, ...newItems];
+        });
+      },
+    },
+  );
 
   const createMut = useCreateAnnouncement();
   const updateMut = useUpdateAnnouncement();
   const deleteMut = useDeleteAnnouncement();
-
-  useEffect(() => {
-    if (!data?.items) return;
-    setAccumulatedAnnouncements((prev) => {
-      if (page === 1) {
-        return data.items;
-      }
-      const existingIds = new Set(prev.map((it) => it.id));
-      const newItems = data.items.filter((it) => !existingIds.has(it.id));
-      if (newItems.length === 0) return prev;
-      return [...prev, ...newItems];
-    });
-  }, [data?.items, page]);
 
   if (!t) {
     return (

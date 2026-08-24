@@ -20,7 +20,10 @@ import {
 
 export const ADMIN_USERS_REFRESH_KEY = 'admin-users';
 
-export function useAdminUsers(args: ListAdminUsersArgs) {
+export function useAdminUsers(
+  args: ListAdminUsersArgs,
+  options?: { onSuccess?: (data: AdminUsersResponse) => void },
+) {
   const accessToken = useSessionStore((s) => s.snapshot.accessToken);
   return useQuery<AdminUsersResponse>({
     queryKey: [
@@ -34,6 +37,7 @@ export function useAdminUsers(args: ListAdminUsersArgs) {
     queryFn: () => fetchAdminUsers(args, accessToken!),
     refreshKey: ADMIN_USERS_REFRESH_KEY,
     enabled: !!accessToken,
+    onSuccess: options?.onSuccess,
   });
 }
 

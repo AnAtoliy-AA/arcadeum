@@ -68,9 +68,21 @@ describe('AntiCollusionService', () => {
   describe('detectRapidForfeits', () => {
     it('flags suspicious repeated rapid forfeits against the same opponent', () => {
       const matches = [
-        { opponentId: 'user-b', outcome: 'forfeit' as const, durationSeconds: 10 },
-        { opponentId: 'user-b', outcome: 'forfeit' as const, durationSeconds: 15 },
-        { opponentId: 'user-b', outcome: 'forfeit' as const, durationSeconds: 20 },
+        {
+          opponentId: 'user-b',
+          outcome: 'forfeit' as const,
+          durationSeconds: 10,
+        },
+        {
+          opponentId: 'user-b',
+          outcome: 'forfeit' as const,
+          durationSeconds: 15,
+        },
+        {
+          opponentId: 'user-b',
+          outcome: 'forfeit' as const,
+          durationSeconds: 20,
+        },
       ];
       const result = service.detectRapidForfeits(matches, 3, 30);
       expect(result.suspicious).toBe(true);
@@ -80,9 +92,17 @@ describe('AntiCollusionService', () => {
 
     it('does not flag normal length games or mixed opponents', () => {
       const matches = [
-        { opponentId: 'user-b', outcome: 'forfeit' as const, durationSeconds: 120 },
+        {
+          opponentId: 'user-b',
+          outcome: 'forfeit' as const,
+          durationSeconds: 120,
+        },
         { opponentId: 'user-c', outcome: 'win' as const, durationSeconds: 300 },
-        { opponentId: 'user-b', outcome: 'loss' as const, durationSeconds: 200 },
+        {
+          opponentId: 'user-b',
+          outcome: 'loss' as const,
+          durationSeconds: 200,
+        },
       ];
       const result = service.detectRapidForfeits(matches, 3, 30);
       expect(result.suspicious).toBe(false);

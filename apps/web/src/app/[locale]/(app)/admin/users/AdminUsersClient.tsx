@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import {
@@ -79,17 +79,34 @@ export default function AdminUsersClient({
     null,
   );
 
+  const [accumulatedUsers, setAccumulatedUsers] = useState<AdminUserItem[]>([]);
+
   const {
     data,
     isLoading,
     error: queryError,
-  } = useAdminUsers({
-    page,
-    pageSize: PAGE_SIZE,
-    q,
-    role,
-    status,
-  });
+  } = useAdminUsers(
+    {
+      page,
+      pageSize: PAGE_SIZE,
+      q,
+      role,
+      status,
+    },
+    {
+      onSuccess: (res) => {
+        setAccumulatedUsers((prev) => {
+          if (page === 1) {
+            return res.items;
+          }
+          const existingIds = new Set(prev.map((it) => it.id));
+          const newItems = res.items.filter((it) => !existingIds.has(it.id));
+          if (newItems.length === 0) return prev;
+          return [...prev, ...newItems];
+        });
+      },
+    },
+  );
 
   const roleMutation = useUpdateUserRole();
   const blockMutation = useBlockUser();
@@ -97,21 +114,6 @@ export default function AdminUsersClient({
   const deleteMutation = useDeleteUser();
   const restoreMutation = useRestoreUser();
   const bulkDeleteMutation = useBulkDeleteUsers();
-
-  const [accumulatedUsers, setAccumulatedUsers] = useState<AdminUserItem[]>([]);
-
-  useEffect(() => {
-    if (!data?.items) return;
-    setAccumulatedUsers((prev) => {
-      if (page === 1) {
-        return data.items;
-      }
-      const existingIds = new Set(prev.map((it) => it.id));
-      const newItems = data.items.filter((it) => !existingIds.has(it.id));
-      if (newItems.length === 0) return prev;
-      return [...prev, ...newItems];
-    });
-  }, [data?.items, page]);
 
   const onFilterChange = (next: {
     q: string;

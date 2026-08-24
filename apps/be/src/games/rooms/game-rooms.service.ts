@@ -369,6 +369,13 @@ export class GameRoomsService {
     return getRoomParticipantIds(room);
   }
 
+  async getRoomRaw(roomId: string): Promise<GameRoom | null> {
+    return this.ociRoomModel
+      .findById(roomId)
+      .lean()
+      .exec() as Promise<GameRoom | null>;
+  }
+
   async updateRoomOptions(
     roomId: string,
     userId: string,

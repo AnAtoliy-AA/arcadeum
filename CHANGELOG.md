@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.19] - 2026-08-24
+
+### Added
+- implement anti-chip dumping terms, IP matchmaking guard, and anti-collusion service (ARC-894) (ARC-894)
+- add guest disclaimer notice in game rooms (ARC-894) (ARC-894)
+- require 18+ age verification and terms agreement on registration (ARC-894) (ARC-894)
+
+
 ## [1.26.18] - 2026-08-24
 
 ### Fixed

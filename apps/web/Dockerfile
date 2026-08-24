@@ -14,7 +14,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=deps /app/packages/ui/node_modules ./packages/ui/node_modules
 COPY . .
-RUN corepack enable && pnpm --filter web build
+RUN corepack enable && pnpm --filter @arcadeum/games-core build && pnpm --filter web build
 
 FROM base AS runner
 WORKDIR /app

@@ -97,6 +97,8 @@ export const es = {
     passwordMismatch: 'Las contraseñas no coinciden.',
     legal:
       'Al continuar aceptas los {{termsLink}} y la {{privacyLink}} de {{appName}}.',
+    legalAgeAgreement:
+      'Confirmo que tengo al menos 18 años y acepto los {{termsLink}} y la {{privacyLink}} de {{appName}}.',
     termsLink: 'Términos',
     privacyLink: 'Política de privacidad',
   },

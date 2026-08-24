@@ -3,7 +3,8 @@
   "globalEnv": [
     "ENABLE_EXPERIMENTAL_COREPACK",
     "ARCADEUM_MINT_ADDRESS",
-    "SUPPORT_INTERNAL_TOKEN"
+    "SUPPORT_INTERNAL_TOKEN",
+    "CSP_CONNECT_SRC"
   ],
   "tasks": {
     "dev": {
@@ -12,7 +13,7 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "build/**", ".next/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
     },
     "lint": {
       "outputs": []

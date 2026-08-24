@@ -99,7 +99,7 @@ function CellRenderer({
 
   return (
     <button
-      className={`ttt-cell${isWinning ? ' ttt-winning' : ''}${isHighlighted ? ' ttt-highlighted' : ''}${isAtLimit ? ' ttt-at-limit' : ''}`}
+      className={`ttt-cell focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)]${isWinning ? ' ttt-winning' : ''}${isHighlighted ? ' ttt-highlighted' : ''}${isAtLimit ? ' ttt-at-limit' : ''}`}
       style={{
         ...cellStyle,
         display: 'flex',

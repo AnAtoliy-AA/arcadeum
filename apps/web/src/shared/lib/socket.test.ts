@@ -48,6 +48,8 @@ import {
   emitEncrypted,
   useSocket,
   useChatSocket,
+  gameSocket,
+  setOfflineGameRouter,
 } from './socket';
 
 // Trigger lazy socket initialization so encryption handlers are registered
@@ -158,7 +160,7 @@ describe('socket', () => {
 
     disconnectSockets();
 
-    expect(mockSocket.disconnect).toHaveBeenCalledTimes(5);
+    expect(mockSocket.disconnect).toHaveBeenCalledTimes(6);
 
     // Restore default behavior
     (mockSocket.disconnect as unknown as Mock).mockImplementation(
@@ -198,6 +200,73 @@ describe('socket', () => {
     disconnectHandler();
 
     expect(resetSpy).toHaveBeenCalled();
+  });
+});
+
+describe('lazy socket proxy (ARC-900)', () => {
+  it('forwards the event name and payload through the proxy emit', () => {
+    rawEmit.mockClear();
+    const payload = { roomId: 'room-1', userId: 'u1', botCount: 3 };
+
+    gameSocket.emit('games.session.start', payload);
+
+    // Regression: the lazy proxy previously dropped the event name and
+    // called emit(payload) — servers and E2E mocks silently swallowed it.
+    expect(rawEmit).toHaveBeenCalledWith('games.session.start', payload);
+  });
+
+  it('keeps extra emit arguments intact', () => {
+    rawEmit.mockClear();
+
+    gameSocket.emit('games.room.join', { roomId: 'r2' }, 'extra');
+
+    expect(rawEmit).toHaveBeenCalledWith(
+      'games.room.join',
+      { roomId: 'r2' },
+      'extra',
+    );
+  });
+
+  it('routes offline room emits to the offline router without network', () => {
+    rawEmit.mockClear();
+    const router = vi.fn();
+    setOfflineGameRouter(
+      router as unknown as (
+        event: string,
+        payload: Record<string, unknown>,
+      ) => void,
+    );
+
+    try {
+      const payload = { roomId: 'offline_chess_abc', userId: 'u1' };
+      gameSocket.emit('games.session.move', payload);
+
+      expect(router).toHaveBeenCalledWith('games.session.move', payload);
+      expect(rawEmit).not.toHaveBeenCalledWith('games.session.move', payload);
+    } finally {
+      setOfflineGameRouter(null);
+    }
+  });
+
+  it('still emits online-room payloads to the real socket', () => {
+    rawEmit.mockClear();
+    const router = vi.fn();
+    setOfflineGameRouter(
+      router as unknown as (
+        event: string,
+        payload: Record<string, unknown>,
+      ) => void,
+    );
+
+    try {
+      const payload = { roomId: '507f191e810c19729de860ea', userId: 'u1' };
+      gameSocket.emit('games.session.draw', payload);
+
+      expect(router).not.toHaveBeenCalled();
+      expect(rawEmit).toHaveBeenCalledWith('games.session.draw', payload);
+    } finally {
+      setOfflineGameRouter(null);
+    }
   });
 });
 

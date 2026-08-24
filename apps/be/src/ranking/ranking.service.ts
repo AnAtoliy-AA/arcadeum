@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
 import { RankingEntry } from './ranking.schema';
 import { PlayerStats } from '../games/schemas/player-stats.schema';
@@ -12,6 +13,11 @@ import {
   tierForRating,
 } from './ranking.constants';
 import type { RankingTier } from './ranking.constants';
+import {
+  seasonResetAnchor,
+  seasonResetFactor,
+  softResetRating,
+} from '../seasons/seasons.constants';
 import type {
   MyRankingDto,
   RankingDelta,
@@ -40,6 +46,7 @@ export class RankingService {
     private readonly statsModel: Model<PlayerStats>,
     @InjectModel(User.name, OCI_CONNECTION)
     private readonly userModel: Model<User>,
+    private readonly config: ConfigService,
   ) {}
 
   /**
@@ -180,6 +187,14 @@ export class RankingService {
     return rows;
   }
 
+  /**
+   * Rating used as the baseline for the current season. Resolution order:
+   * 1. Existing entry for the current season.
+   * 2. Most recent prior-season entry, soft-reset toward the season anchor
+   *    (roadmap: pull toward 1500 with a configurable factor).
+   * 3. All-time mirror from PlayerStats, also soft-reset for consistency.
+   * 4. Starting Elo for brand-new ranked players.
+   */
   private async currentRating(
     userId: string,
     gameId: string,
@@ -192,12 +207,26 @@ export class RankingService {
       .exec();
     if (entry) return entry.elo;
 
+    const anchor = seasonResetAnchor(this.config);
+    const factor = seasonResetFactor(this.config);
+
+    const prior = await this.rankingModel
+      .findOne({ gameId, season: { $lt: season }, userId })
+      .sort({ season: -1 })
+      .select('elo')
+      .lean<{ elo: number } | null>()
+      .exec();
+    if (prior) return softResetRating(prior.elo, anchor, factor);
+
     const stats = await this.statsModel
       .findOne({ userId, gameId })
       .select('elo')
       .lean<{ elo?: number } | null>()
       .exec();
-    return stats?.elo ?? STARTING_ELO;
+    if (typeof stats?.elo === 'number') {
+      return softResetRating(stats.elo, anchor, factor);
+    }
+    return STARTING_ELO;
   }
 
   private async applyRating(

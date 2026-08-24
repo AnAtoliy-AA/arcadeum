@@ -1,6 +1,9 @@
 import { CascadeBotService } from './cascade-bot.service';
 import type { CascadeService } from './cascade.service';
-import type { CascadeState } from '../engines/cascade/cascade.types';
+import type {
+  CascadeCard,
+  CascadeState,
+} from '../engines/cascade/cascade.types';
 
 const bot = new CascadeBotService({} as unknown as CascadeService);
 
@@ -39,7 +42,7 @@ function stateWithDifficulty(
 
 describe('CascadeBotService difficulty tiers', () => {
   it('expert always plays the dominant color match (deterministic)', () => {
-    const hand = [
+    const hand: CascadeCard[] = [
       { id: 'r3', color: 'R', kind: 'NUMBER' as const, value: 3 },
       { id: 'r-skip', color: 'R', kind: 'SKIP' as const },
       { id: 'b9', color: 'B', kind: 'NUMBER' as const, value: 9 },
@@ -52,7 +55,7 @@ describe('CascadeBotService difficulty tiers', () => {
   });
 
   it('expert prefers a plain Wild over Wild Draw Four', () => {
-    const hand = [
+    const hand: CascadeCard[] = [
       { id: 'wild', color: 'W' as const, kind: 'WILD' as const },
       { id: 'wd4', color: 'W' as const, kind: 'WILD_DRAW_FOUR' as const },
       { id: 'b1', color: 'B' as const, kind: 'NUMBER' as const, value: 1 },
@@ -69,7 +72,7 @@ describe('CascadeBotService difficulty tiers', () => {
   });
 
   it('easy sometimes draws even with a legal play in hand', () => {
-    const hand = [
+    const hand: CascadeCard[] = [
       { id: 'r3', color: 'R', kind: 'NUMBER' as const, value: 3 },
       { id: 'b9', color: 'B' as const, kind: 'NUMBER' as const, value: 9 },
     ];
@@ -86,7 +89,7 @@ describe('CascadeBotService difficulty tiers', () => {
   });
 
   it('easy always returns a valid play or draw (never null)', () => {
-    const hand = [
+    const hand: CascadeCard[] = [
       { id: 'r3', color: 'R', kind: 'NUMBER' as const, value: 3 },
       { id: 'g5', color: 'G' as const, kind: 'NUMBER' as const, value: 5 },
     ];

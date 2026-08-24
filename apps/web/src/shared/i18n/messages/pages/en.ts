@@ -6,6 +6,7 @@ import { adminWalletEn } from './admin-wallet/en';
 import { gemsEn } from './gems/en';
 import { adminGemPackagesEn } from './admin-gem-packages/en';
 import { adminEconomyEn } from './admin-economy/en';
+import { adminStatisticsEn } from './admin-statistics/en';
 import { dailyRewardsEn } from './daily-rewards/en';
 import { dailyChallengesEn } from './daily-challenges/en';
 import { achievementsEn } from './achievements/en';
@@ -16,6 +17,9 @@ import { adminBlockedIpsEn } from './admin-blocked-ips/en';
 import { adminUsersEn } from './admin-users/en';
 import { adminBulkRewardsEn } from './admin-bulk-rewards/en';
 import { friendsEn } from './friends/en';
+import { clansEn } from './clans/en';
+import { eventsEn } from './events/en';
+import { seasonsEn } from './seasons/en';
 import { communityEn } from './community/en';
 import { rewardsEn } from './rewards/en';
 import { developersEn } from './developers/en';
@@ -30,17 +34,112 @@ export const en = {
     signedInAs: 'Signed in as {username}',
     nav: {
       dashboard: 'Dashboard',
+      statistics: 'Statistics',
       users: 'Users',
       payments: 'Payments',
       announcements: 'Announcements',
       tournaments: 'Tournaments',
       economy: 'Economy',
       shop: 'Shop',
+      gemPackages: 'Gem Packages',
       games: 'Games',
       gameRules: 'Game Rules',
       bulkRewards: 'Bulk Rewards',
       blockedIps: 'Blocked IPs',
+      geoBlock: 'Geo-Blocking',
       comingSoon: 'Coming soon',
+    },
+    statistics: adminStatisticsEn,
+    dashboard: {
+      title: 'Command Center',
+      subtitle:
+        'System health, key metrics, and administrative modules overview',
+      systemHealth: 'System Health',
+      statusOnline: 'Operational',
+      statusDegraded: 'Degraded',
+      database: 'Database',
+      collections: 'Collections',
+      totalDocuments: 'Total Documents',
+      dataSize: 'Data Size (MB)',
+      storageSize: 'Storage Size (MB)',
+      indexSize: 'Index Size (MB)',
+      activeModules: 'Active Modules',
+      modulesTitle: 'Administrative Modules',
+      modulesSubtitle:
+        'Direct access to manage games, players, transactions, and security',
+      modules: {
+        statistics: {
+          title: 'Platform Analytics',
+          description:
+            'Inspect MAU, DAU, engagement retention, playtime, and revenue telemetry',
+        },
+        users: {
+          title: 'User Management',
+          description: 'Manage player accounts, roles, statuses, and bans',
+        },
+        payments: {
+          title: 'Payments & Notes',
+          description:
+            'Audit payment records, transactions, and internal notes',
+        },
+        tournaments: {
+          title: 'Tournaments',
+          description:
+            'Schedule and manage competitive tournaments and prize pools',
+        },
+        gemPackages: {
+          title: 'Gem Packages',
+          description: 'Configure purchasable gem tiers, pricing, and bonuses',
+        },
+        shop: {
+          title: 'Shop & Cosmetics',
+          description:
+            'Manage inventory items, cosmetic rarities, and item grants',
+        },
+        economy: {
+          title: 'Economy & Treasury',
+          description:
+            'Monitor token circulation, faucet grants, and reward sinks',
+        },
+        bulkRewards: {
+          title: 'Bulk Rewards',
+          description:
+            'Distribute mass currency rewards to selected player cohorts',
+        },
+        games: {
+          title: 'Game Visibility',
+          description:
+            'Control multiplayer game mode availability and live status',
+        },
+        gameRules: {
+          title: 'Game Rules',
+          description:
+            'Configure gameplay rule variants, turn timers, and mechanics',
+        },
+        announcements: {
+          title: 'Announcements',
+          description:
+            'Broadcast global banners, updates, and maintenance alerts',
+        },
+        blockedIps: {
+          title: 'Blocked IPs',
+          description: 'Inspect, ban, and manage malicious IP address blocks',
+        },
+        geoBlock: {
+          title: 'Geo-Blocking',
+          description:
+            'Configure jurisdictional access rules and territory blocks',
+        },
+      },
+      openPanel: 'Open Panel',
+      collectionsOverview: 'Database Collections Breakdown',
+      collectionName: 'Collection',
+      docsCount: 'Documents',
+      sizeMb: 'Size (MB)',
+      avgDocSize: 'Avg Obj Size',
+      indexesCount: 'Indexes',
+      liveStatus: 'Live Status',
+      environment: 'Environment',
     },
     error: {
       title: 'Something went wrong',
@@ -245,6 +344,11 @@ export const en = {
       chess_v1: { name: 'Chess', subtitle: 'Classic strategy', icon: '♞' },
       checkers_v1: { name: 'Checkers', subtitle: 'Board classic', icon: '●' },
       cat_dash_v1: { name: 'Cat Dash', subtitle: 'Cat racing', icon: '🐱' },
+      backgammon_v1: {
+        name: 'Backgammon',
+        subtitle: 'Board strategy',
+        icon: '🎲',
+      },
     },
     cup: {
       eyebrow: 'Tournament',
@@ -374,4 +478,7 @@ export const en = {
   adminShop: adminShopEn,
   adminGames: adminGamesEn,
   friends: friendsEn,
+  clans: clansEn,
+  events: eventsEn,
+  seasons: seasonsEn,
 };

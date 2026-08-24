@@ -51,14 +51,14 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
     await esButton.click();
     await page.waitForURL(/\/es\/ajustes\b/, { timeout: 5000 });
 
-    // The switcher writes an app-language cookie that the middleware reads.
+    // The switcher writes an app-language cookie that the proxy reads.
     // Wait for it to land so the subsequent navigation can't race it.
     await page.waitForFunction(() =>
       document.cookie.includes('app-language=es'),
     );
 
     // Navigate to /games (no prefix) — the cookie set by the switcher
-    // should steer middleware to /es/juegos.
+    // should steer proxy to /es/juegos.
     await page.goto('/games', { waitUntil: 'commit' });
     await expect(page).toHaveURL(/\/es\/juegos\b/);
   });

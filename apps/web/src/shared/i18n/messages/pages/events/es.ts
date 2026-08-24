@@ -1,0 +1,42 @@
+export const eventsEs = {
+  title: 'Noches de Juego Comunitarias',
+  subtitle:
+    'Únete a torneos comunitarios programados, compite en juegos destacados y reclama insignias cosméticas exclusivas.',
+  activeNow: 'Activo Ahora',
+  upcoming: 'Próximos Eventos',
+  pastEvents: 'Eventos Pasados',
+  featuredEvent: 'Noche de Juego Destacada',
+  joinEvent: 'Unirse al Evento',
+  joined: 'Inscrito',
+  joining: 'Inscribiéndose...',
+  playNow: 'Jugar Ahora',
+  loginPrompt:
+    'Inicia sesión para unirte a las noches de juego comunitarias y ganar puntos.',
+  liveBadge: 'EN VIVO',
+  upcomingBadge: 'PRÓXIMAMENTE',
+  completedBadge: 'COMPLETADO',
+  cancelledBadge: 'CANCELADO',
+  participants: 'participantes',
+  activeGames: 'partidas activas',
+  points: 'pts',
+  wins: 'victorias',
+  gamesPlayed: 'partidas',
+  mvp: 'MVP del Evento',
+  prizeBadge: 'Insignia de Premio',
+  leaderboard: 'Clasificación del Evento',
+  noParticipants:
+    'Ningún jugador se ha registrado aún. ¡Sé el primero en unirte!',
+  startsIn: 'Comienza en',
+  endsIn: 'Termina en',
+  eventEnded: 'El evento ha finalizado',
+  backToEvents: 'Volver a Eventos',
+  rulesTitle: 'Reglas del Evento',
+  rulesDescription:
+    'Haz cola para el juego destacado durante la ventana del evento. Cada victoria otorga 3 puntos, la participación otorga 1 punto.',
+  badgeEarned: 'Recompensa: Insignia exclusiva de perfil',
+  eventNotFound: 'Evento no encontrado',
+  noUpcomingEvents:
+    'No hay noches de juego programadas en este momento. ¡Vuelve pronto!',
+  bannerTitle: '¡La Noche de Juego Comunitaria está EN VIVO!',
+  bannerSubtitle: 'Entra y compite en el enfrentamiento destacado ahora mismo.',
+};

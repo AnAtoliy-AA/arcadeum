@@ -6,6 +6,7 @@ import { adminWalletFr } from './admin-wallet/fr';
 import { gemsFr } from './gems/fr';
 import { adminGemPackagesFr } from './admin-gem-packages/fr';
 import { adminEconomyFr } from './admin-economy/fr';
+import { adminStatisticsFr } from './admin-statistics/fr';
 import { dailyRewardsFr } from './daily-rewards/fr';
 import { dailyChallengesFr } from './daily-challenges/fr';
 import { achievementsFr } from './achievements/fr';
@@ -16,6 +17,9 @@ import { adminBlockedIpsFr } from './admin-blocked-ips/fr';
 import { adminUsersFr } from './admin-users/fr';
 import { adminBulkRewardsFr } from './admin-bulk-rewards/fr';
 import { friendsFr } from './friends/fr';
+import { clansFr } from './clans/fr';
+import { eventsFr } from './events/fr';
+import { seasonsFr } from './seasons/fr';
 import { communityFr } from './community/fr';
 import { rewardsFr } from './rewards/fr';
 import { developersFr } from './developers/fr';
@@ -30,17 +34,110 @@ export const fr = {
     signedInAs: 'Connecté en tant que {username}',
     nav: {
       dashboard: 'Tableau de bord',
+      statistics: 'Statistiques',
       users: 'Utilisateurs',
       payments: 'Paiements',
       announcements: 'Annonces',
       tournaments: 'Tournois',
       economy: 'Économie',
       shop: 'Boutique',
+      gemPackages: 'Packs de Gemmes',
       games: 'Jeux',
       gameRules: 'Règles du Jeu',
       bulkRewards: 'Récompenses en Masse',
       blockedIps: 'IPs Bloqués',
+      geoBlock: 'Géo-Blocage',
       comingSoon: 'Bientôt',
+    },
+    statistics: adminStatisticsFr,
+    dashboard: {
+      title: 'Centre de Commandement',
+      subtitle:
+        "Santé du système, indicateurs clés et vue d'ensemble des modules d'administration",
+      systemHealth: 'Santé du Système',
+      statusOnline: 'Opérationnel',
+      statusDegraded: 'Dégradé',
+      database: 'Base de données',
+      collections: 'Collections',
+      totalDocuments: 'Documents Totaux',
+      dataSize: 'Taille des données (Mo)',
+      storageSize: 'Taille du stockage (Mo)',
+      indexSize: 'Taille des index (Mo)',
+      activeModules: 'Modules Actifs',
+      modulesTitle: "Modules d'Administration",
+      modulesSubtitle:
+        'Accès direct pour gérer jeux, joueurs, transactions et sécurité',
+      modules: {
+        statistics: {
+          title: 'Analytique de la Plateforme',
+          description:
+            'Consultez MAU, DAU, rétention, temps de jeu et revenus des gemmes',
+        },
+        users: {
+          title: 'Gestion des Utilisateurs',
+          description:
+            'Gérer les comptes joueurs, rôles, statuts et exclusions',
+        },
+        payments: {
+          title: 'Paiements et Notes',
+          description:
+            'Consulter les relevés de paiement, transactions et notes',
+        },
+        tournaments: {
+          title: 'Tournois',
+          description:
+            'Programmer et gérer les tournois compétitifs et cagnottes',
+        },
+        gemPackages: {
+          title: 'Packs de Gemmes',
+          description: 'Configurer les paliers de gemmes, tarifs et bonus',
+        },
+        shop: {
+          title: 'Boutique et Cosmétiques',
+          description:
+            "Gérer l'inventaire, raretés cosmétiques et attributions",
+        },
+        economy: {
+          title: 'Économie et Trésorerie',
+          description: 'Surveiller la circulation des jetons, robinet et flux',
+        },
+        bulkRewards: {
+          title: 'Récompenses en Masse',
+          description: 'Distribuer des devises à des cohortes de joueurs',
+        },
+        games: {
+          title: 'Visibilité des Jeux',
+          description:
+            'Contrôler la disponibilité et le statut des modes de jeu',
+        },
+        gameRules: {
+          title: 'Règles du Jeu',
+          description:
+            'Configurer les variantes, chronomètres de tours et mécaniques',
+        },
+        announcements: {
+          title: 'Annonces',
+          description: 'Diffuser des alertes globales et avis de maintenance',
+        },
+        blockedIps: {
+          title: 'IPs Bloqués',
+          description: 'Inspecter et bannir les adresses IP malveillantes',
+        },
+        geoBlock: {
+          title: 'Géo-Blocage',
+          description:
+            'Configurer les restrictions juridictionnelles et territoriales',
+        },
+      },
+      openPanel: 'Ouvrir le Panneau',
+      collectionsOverview: 'Détail des Collections de la Base de Données',
+      collectionName: 'Collection',
+      docsCount: 'Documents',
+      sizeMb: 'Taille (Mo)',
+      avgDocSize: 'Taille Moyenne',
+      indexesCount: 'Index',
+      liveStatus: 'Statut en Direct',
+      environment: 'Environnement',
     },
     error: {
       title: "Une erreur s'est produite",
@@ -244,6 +341,11 @@ export const fr = {
         subtitle: 'Course de chats',
         icon: '🐱',
       },
+      backgammon_v1: {
+        name: 'Backgammon',
+        subtitle: 'Stratégie de plateau',
+        icon: '🎲',
+      },
     },
     cup: {
       eyebrow: 'Tournoi',
@@ -374,4 +476,7 @@ export const fr = {
   adminShop: adminShopFr,
   adminGames: adminGamesFr,
   friends: friendsFr,
+  clans: clansFr,
+  events: eventsFr,
+  seasons: seasonsFr,
 };

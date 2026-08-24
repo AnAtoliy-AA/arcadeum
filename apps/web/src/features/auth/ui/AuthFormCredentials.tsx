@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { appConfig } from '@/shared/config/app-config';
 import type { UseAuthFormResult } from '../hooks/useAuthForm';
 import { isValidEmail } from '../lib/utils';
@@ -39,6 +40,8 @@ export function AuthFormCredentials({
     username,
     rememberMe,
     setRememberMe,
+    agreeAgeTerms,
+    setAgreeAgeTerms,
     localLoading,
     localError,
     localSubmitDisabled,
@@ -120,7 +123,7 @@ export function AuthFormCredentials({
           />
         </FieldWithMessage>
 
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <FloatingLabelInput
             id={passwordFieldId}
             type={showPassword ? 'text' : 'password'}
@@ -137,8 +140,7 @@ export function AuthFormCredentials({
             data-testid="auth-password-input"
           />
           <button
-            className="auth-pw-toggle"
-            style={passwordToggleStyle}
+            className="auth-pw-toggle absolute top-1/2 right-2.5 -translate-y-1/2 bg-transparent border-0 text-[var(--color-muted,#94a3b8)] text-xs font-semibold cursor-pointer px-2.5 py-2 rounded-[10px] transition-colors hover:text-white"
             type="button"
             onClick={() => setShowPassword((s) => !s)}
             aria-label={showPassword ? form.hidePassword : form.showPassword}
@@ -178,7 +180,7 @@ export function AuthFormCredentials({
               onChange={setRememberMe}
               label={form.rememberMe}
             />
-            <Link href="/auth/forgot" style={{ textDecoration: 'none' }}>
+            <Link href="/auth/forgot" className="no-underline">
               <Typography
                 variant="body"
                 uiSize="sm"
@@ -188,6 +190,67 @@ export function AuthFormCredentials({
                 {form.forgotPassword}
               </Typography>
             </Link>
+          </div>
+        )}
+
+        {isRegisterMode && (
+          <div className="flex flex-row items-start gap-2.5 pt-1">
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={agreeAgeTerms ? 'true' : 'false'}
+              onClick={() => setAgreeAgeTerms(!agreeAgeTerms)}
+              data-testid="auth-age-terms-checkbox"
+              className={cx(
+                'inline-flex items-center justify-center w-[18px] h-[18px] rounded-[5px] border-[1.5px] shrink-0 mt-0.5 transition-colors cursor-pointer',
+                agreeAgeTerms
+                  ? 'bg-[var(--accent,#38bdf8)] border-[var(--accent,#38bdf8)] text-slate-950'
+                  : 'bg-transparent border-white/25 hover:border-white/40',
+              )}
+            >
+              {agreeAgeTerms && (
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+            </button>
+            <div
+              onClick={() => setAgreeAgeTerms(!agreeAgeTerms)}
+              className="cursor-pointer select-none text-xs text-[var(--textSecondary)] leading-relaxed"
+              data-testid="auth-age-terms-label"
+            >
+              <span>{form.legalAgePrefix}</span>{' '}
+              <Link
+                href="/terms"
+                className="underline text-[var(--textSecondary)] font-semibold hover:text-white"
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {form.termsLink}
+              </Link>{' '}
+              <span>{form.legalAgeConjunction}</span>{' '}
+              <Link
+                href="/privacy"
+                className="underline text-[var(--textSecondary)] font-semibold hover:text-white"
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {form.privacyLink}
+              </Link>
+              <span>{form.legalAgeSuffix}</span>
+            </div>
           </div>
         )}
 
@@ -225,8 +288,7 @@ export function AuthFormCredentials({
               {form.magicLinkPrompt}
             </Typography>
             <button
-              className="auth-magic-cta"
-              style={magicLinkCtaStyle}
+              className="auth-magic-cta inline-flex items-center gap-1.5 bg-transparent border-0 px-2 py-1 rounded-lg text-[var(--color,#ecefee)] font-semibold text-[13px] cursor-pointer no-underline hover:text-white"
               type="button"
               onClick={() => onRequestMagicLink(email)}
               disabled={!canSendMagicLink}
@@ -238,38 +300,40 @@ export function AuthFormCredentials({
           </div>
         )}
 
-        <div className="flex flex-col items-stretch pt-4 -mt-2 border-t border-[var(--glassBorder)]">
-          <Typography
-            variant="caption"
-            uiSize="xs"
-            color="var(--textSecondary)"
-            textCenter
-          >
-            {form.legalPrefix.replace('{{appName}}', appConfig.appName)}
-            <Link href="/terms" style={{ textDecoration: 'underline' }}>
-              <Typography
-                variant="caption"
-                uiSize="xs"
-                color="var(--textSecondary)"
-                weight="600"
-              >
-                {form.termsLink}
-              </Typography>
-            </Link>
-            {form.legalConjunction}
-            <Link href="/privacy" style={{ textDecoration: 'underline' }}>
-              <Typography
-                variant="caption"
-                uiSize="xs"
-                color="var(--textSecondary)"
-                weight="600"
-              >
-                {form.privacyLink}
-              </Typography>
-            </Link>
-            {form.legalSuffix}
-          </Typography>
-        </div>
+        {!isRegisterMode && (
+          <div className="flex flex-col items-stretch pt-4 -mt-2 border-t border-[var(--glassBorder)]">
+            <Typography
+              variant="caption"
+              uiSize="xs"
+              color="var(--textSecondary)"
+              textCenter
+            >
+              {form.legalPrefix.replace('{{appName}}', appConfig.appName)}
+              <Link href="/terms" className="underline">
+                <Typography
+                  variant="caption"
+                  uiSize="xs"
+                  color="var(--textSecondary)"
+                  weight="600"
+                >
+                  {form.termsLink}
+                </Typography>
+              </Link>
+              {form.legalConjunction}
+              <Link href="/privacy" className="underline">
+                <Typography
+                  variant="caption"
+                  uiSize="xs"
+                  color="var(--textSecondary)"
+                  weight="600"
+                >
+                  {form.privacyLink}
+                </Typography>
+              </Link>
+              {form.legalSuffix}
+            </Typography>
+          </div>
+        )}
       </div>
     </form>
   );
@@ -316,33 +380,15 @@ function RememberMeCheckbox({
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       data-testid="auth-remember-me"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 8,
-        background: 'transparent',
-        border: 'none',
-        padding: 0,
-        cursor: 'pointer',
-        color: 'inherit',
-      }}
+      className="inline-flex items-center gap-2 bg-transparent border-0 p-0 cursor-pointer text-inherit"
     >
       <span
-        style={{
-          width: 18,
-          height: 18,
-          borderRadius: 5,
-          borderWidth: 1.5,
-          borderStyle: 'solid',
-          borderColor: checked
-            ? 'var(--accent, #38bdf8)'
-            : 'rgba(255,255,255,0.25)',
-          background: checked ? 'var(--accent, #38bdf8)' : 'transparent',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: 'background-color 160ms ease, border-color 160ms ease',
-        }}
+        className={cx(
+          'w-[18px] h-[18px] rounded-[5px] border-[1.5px] inline-flex items-center justify-center transition-colors',
+          checked
+            ? 'bg-[var(--accent,#38bdf8)] border-[var(--accent,#38bdf8)] text-slate-950'
+            : 'bg-transparent border-white/25',
+        )}
       >
         {checked && (
           <svg
@@ -387,34 +433,3 @@ function getUsernameError(
   if (usernameAvailability === 'taken') return takenMessage;
   return undefined;
 }
-
-const passwordToggleStyle: React.CSSProperties = {
-  position: 'absolute',
-  top: '50%',
-  right: 10,
-  transform: 'translateY(-50%)',
-  background: 'transparent',
-  border: 'none',
-  color: 'var(--color-muted, #94a3b8)',
-  fontSize: 12,
-  fontWeight: 600,
-  cursor: 'pointer',
-  padding: '8px 10px',
-  borderRadius: 10,
-  transition: 'color 160ms ease, background-color 160ms ease',
-};
-
-const magicLinkCtaStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 6,
-  background: 'transparent',
-  border: 'none',
-  padding: '4px 8px',
-  borderRadius: 8,
-  color: 'var(--color, #ecefee)',
-  fontWeight: 600,
-  fontSize: 13,
-  cursor: 'pointer',
-  textDecoration: 'none',
-};

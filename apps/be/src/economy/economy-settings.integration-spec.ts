@@ -174,6 +174,12 @@ describe('EconomySettingsService (integration)', () => {
 
   // ─── Test 7: setNumber rolls back when audit insert fails ──────────────────
   it('setNumber rolls back EconomySetting row when audit insert throws', async () => {
+    // This test asserts ABSENCE after rollback. Guard against rows leaked by
+    // an earlier interrupted run (afterEach may not have executed) so the
+    // assertion stays about this transaction, not prior suite state.
+    await settingModel.deleteMany({ key: 'game_win_coin_reward' });
+    await auditModel.deleteMany({ key: 'game_win_coin_reward' });
+
     // Spy on auditModel.create to throw on the NEXT call only
     const createSpy = jest
       .spyOn(auditModel, 'create')

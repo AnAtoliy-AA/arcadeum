@@ -56,4 +56,5 @@ export {
 export { getLobbyTheme } from './lobbyTheme';
 export { MatchmakingQueueModal, useMatchmaking } from './MatchmakingQueue';
 export { QuickplayButton } from './QuickplayButton';
+export { GuestTermsNotice } from './GuestTermsNotice';
 export * from './landing';

@@ -282,4 +282,13 @@ export const gamesApi = {
   getCatalog: async (options?: ApiClientOptions): Promise<CatalogResponse> => {
     return apiClient.get<CatalogResponse>('/games/catalog', options);
   },
+
+  getMyRoomCount: async (
+    options?: ApiClientOptions,
+  ): Promise<{ count: number; nextRoomNumber: number }> => {
+    return apiClient.get<{ count: number; nextRoomNumber: number }>(
+      '/games/my-room-count',
+      options,
+    );
+  },
 };

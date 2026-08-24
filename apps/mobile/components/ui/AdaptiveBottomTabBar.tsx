@@ -1,6 +1,6 @@
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { BottomTabBar } from '@react-navigation/bottom-tabs';
-import { CommonActions } from '@react-navigation/native';
+import type { BottomTabBarProps } from 'expo-router/js-tabs';
+import { BottomTabBar } from 'expo-router/js-tabs';
+import { CommonActions } from 'expo-router/react-navigation';
 import React from 'react';
 import {
   Platform,

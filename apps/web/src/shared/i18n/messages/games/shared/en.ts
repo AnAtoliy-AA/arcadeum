@@ -39,6 +39,19 @@ export const enMessages = {
     error: "Couldn't start — try again",
     delayLabel: 'Move delay',
   },
+  tutorial: {
+    ui: {
+      button: 'Tutorial',
+      next: 'Next',
+      back: 'Back',
+      skip: 'Skip',
+      finish: 'Start playing',
+      stepOf: 'Step {{current}} of {{total}}',
+      completeTitle: 'Tutorial complete!',
+      completeBody:
+        'Nice — you know the basics of {{game}} now. Good luck at the table!',
+    },
+  },
   rooms: {
     status: {
       lobby: 'Lobby',
@@ -132,6 +145,8 @@ export const enMessages = {
   },
   create: {
     title: 'Create Game Room',
+    changeGame: 'Change game',
+    sectionSetup: 'Game setup',
     sectionGame: 'Select Game',
     sectionExpansions: 'Expansion Packs',
     sectionVariant: 'Game Theme',
@@ -326,6 +341,7 @@ export const enMessages = {
       action: 'Action',
       strategy: 'Strategy',
       race: 'Race',
+      puzzle: 'Puzzle',
     },
     tags: {
       strategy: 'Strategy',
@@ -468,6 +484,61 @@ export const enMessages = {
     previewLabel: 'Live preview',
     cycleHint: 'Click to change theme',
     cycleAriaLabel: 'Cycle theme preview, currently {{variant}}',
+  },
+  replay: {
+    loading: 'Loading replay…',
+    error: 'Replay not found',
+    controls: {
+      progress: 'Replay progress',
+      first: 'Go to start',
+      prev: 'Previous move',
+      play: 'Play',
+      pause: 'Pause',
+      next: 'Next move',
+      last: 'Go to end',
+      stepCounter: 'Move {{current}} / {{total}}',
+    },
+    header: {
+      title: '{{game}} Replay',
+      draw: 'Draw',
+      winner: '{{name}} won',
+      moves: '{{count}} moves',
+      duration: '{{min}}m {{sec}}s',
+    },
+    share: {
+      title: 'Game Replay',
+      button: 'Share',
+      copied: 'Copied!',
+    },
+    card: {
+      draw: 'Draw',
+      won: '{{name}} won',
+      moves: '{{count}} moves',
+      duration: '{{min}}m',
+      watch: 'Watch Replay',
+    },
+    list: {
+      title: 'Game Replays',
+      total: '{{count}} replays',
+      empty: 'No replays yet',
+      prev: 'Previous',
+      next: 'Next',
+      page: 'Page {{current}} / {{total}}',
+      filter: {
+        all: 'All Games',
+        chess: 'Chess',
+        checkers: 'Checkers',
+        ticTacToe: 'Tic-Tac-Toe',
+        backgammon: 'Backgammon',
+        go: 'Go',
+      },
+    },
+  },
+  guestDisclaimer: {
+    playingAsGuest: 'Playing as Guest',
+    agreementPrefix: 'By playing you agree to {{appName}}’s ',
+    termsLink: 'Terms of Service',
+    agreementSuffix: ' and certify you are 18+.',
   },
   themes: themesEn,
 };

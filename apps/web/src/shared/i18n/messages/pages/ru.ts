@@ -6,6 +6,7 @@ import { adminWalletRu } from './admin-wallet/ru';
 import { gemsRu } from './gems/ru';
 import { adminGemPackagesRu } from './admin-gem-packages/ru';
 import { adminEconomyRu } from './admin-economy/ru';
+import { adminStatisticsRu } from './admin-statistics/ru';
 import { dailyRewardsRu } from './daily-rewards/ru';
 import { dailyChallengesRu } from './daily-challenges/ru';
 import { achievementsRu } from './achievements/ru';
@@ -16,6 +17,9 @@ import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
 import { adminUsersRu } from './admin-users/ru';
 import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
 import { friendsRu } from './friends/ru';
+import { clansRu } from './clans/ru';
+import { eventsRu } from './events/ru';
+import { seasonsRu } from './seasons/ru';
 import { communityRu } from './community/ru';
 import { rewardsRu } from './rewards/ru';
 import { developersRu } from './developers/ru';
@@ -30,17 +34,106 @@ export const ru = {
     signedInAs: 'Вы вошли как {username}',
     nav: {
       dashboard: 'Панель',
+      statistics: 'Статистика',
       users: 'Пользователи',
       payments: 'Платежи',
       announcements: 'Объявления',
       tournaments: 'Турниры',
       economy: 'Экономика',
       shop: 'Магазин',
+      gemPackages: 'Пакеты Гемов',
       games: 'Игры',
       gameRules: 'Правила игр',
       bulkRewards: 'Массовые Награды',
       blockedIps: 'Заблокированные IP',
+      geoBlock: 'Геоблокировка',
       comingSoon: 'Скоро',
+    },
+    statistics: adminStatisticsRu,
+    dashboard: {
+      title: 'Командный Центр',
+      subtitle:
+        'Состояние системы, ключевые метрики и модули администрирования',
+      systemHealth: 'Состояние Системы',
+      statusOnline: 'Работает',
+      statusDegraded: 'Сбои',
+      database: 'База данных',
+      collections: 'Коллекции',
+      totalDocuments: 'Всего документов',
+      dataSize: 'Объем данных (МБ)',
+      storageSize: 'Объем хранилища (МБ)',
+      indexSize: 'Объем индексов (МБ)',
+      activeModules: 'Активные модули',
+      modulesTitle: 'Модули Администрирования',
+      modulesSubtitle:
+        'Прямой доступ к управлению играми, игроками, транзакциями и безопасностью',
+      modules: {
+        statistics: {
+          title: 'Аналитика Платформы',
+          description:
+            'Данные по MAU, DAU, удержанию игроков, игровому времени и выручке',
+        },
+        users: {
+          title: 'Управление пользователями',
+          description: 'Учетные записи игроков, роли, статусы и баны',
+        },
+        payments: {
+          title: 'Платежи и Заметки',
+          description:
+            'История платежей игроков, транзакции и служебные заметки',
+        },
+        tournaments: {
+          title: 'Турниры',
+          description: 'Создание и проведение турниров с призовыми фондами',
+        },
+        gemPackages: {
+          title: 'Пакеты Гемов',
+          description: 'Настройка пакетов гемов, цен и бонусных начислений',
+        },
+        shop: {
+          title: 'Магазин и Косметика',
+          description: 'Управление предметами инвентаря, редкостями и выдачей',
+        },
+        economy: {
+          title: 'Экономика и Казна',
+          description:
+            'Мониторинг циркуляции токенов, кранов и сжигания наград',
+        },
+        bulkRewards: {
+          title: 'Массовые Награды',
+          description: 'Массовая рассылка валюты и наград выбранным когортам',
+        },
+        games: {
+          title: 'Видимость Игр',
+          description: 'Управление доступностью и активностью игровых режимов',
+        },
+        gameRules: {
+          title: 'Правила Игр',
+          description: 'Настройка вариантов правил, таймеров ходов и механик',
+        },
+        announcements: {
+          title: 'Объявления',
+          description:
+            'Публикация системных уведомлений и оповещений о техработах',
+        },
+        blockedIps: {
+          title: 'Заблокированные IP',
+          description: 'Просмотр и блокировка вредоносных IP-адресов',
+        },
+        geoBlock: {
+          title: 'Геоблокировка',
+          description: 'Настройка территориальных ограничений и юрисдикций',
+        },
+      },
+      openPanel: 'Открыть панель',
+      collectionsOverview: 'Статистика коллекций базы данных',
+      collectionName: 'Коллекция',
+      docsCount: 'Документов',
+      sizeMb: 'Размер (МБ)',
+      avgDocSize: 'Ср. размер объекта',
+      indexesCount: 'Индексы',
+      liveStatus: 'Текущий статус',
+      environment: 'Окружение',
     },
     error: {
       title: 'Что-то пошло не так',
@@ -253,6 +346,11 @@ export const ru = {
         icon: '●',
       },
       cat_dash_v1: { name: 'Cat Dash', subtitle: 'Кошачьи гонки', icon: '🐱' },
+      backgammon_v1: {
+        name: 'Нарды',
+        subtitle: 'Настольная стратегия',
+        icon: '🎲',
+      },
     },
     cup: {
       eyebrow: 'Турнир',
@@ -382,4 +480,7 @@ export const ru = {
   adminShop: adminShopRu,
   adminGames: adminGamesRu,
   friends: friendsRu,
+  clans: clansRu,
+  events: eventsRu,
+  seasons: seasonsRu,
 };

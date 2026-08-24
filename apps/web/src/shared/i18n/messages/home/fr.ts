@@ -6,7 +6,7 @@ export const fr = {
     "Profitez d'une large sélection de jeux de société gratuits en ligne. Défiez des bots intelligents, créez des salons en temps réel, rassemblez vos amis et laissez {{appName}} automatiser règles, scores et tours pour que vous puissiez vous concentrer sur le plaisir.",
   primaryCtaLabel: 'Commencer',
   playWithBotsLabel: "Jouer contre l'IA",
-  defaultRoomName: 'Partie de {{name}}',
+  defaultRoomName: 'Partie de {{name}} #{{number}}',
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Jouer',
   supportCtaLabel: 'Soutenir les développeurs',

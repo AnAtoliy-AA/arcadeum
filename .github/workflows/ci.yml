@@ -54,7 +54,7 @@ jobs:
         run: pnpm exec turbo run build --filter web --filter be
 
       - name: Bundle Build Artifacts
-        run: tar -cvf build-artifacts.tar apps/web/.next apps/be/dist
+        run: tar -cvf build-artifacts.tar apps/web/.next apps/be/dist packages/games-core/dist
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v7

@@ -13,6 +13,11 @@ export type GameType =
   | 'chess_v1'
   | 'checkers_v1'
   | 'cat_dash_v1'
+  | 'backgammon_v1'
+  | 'hearts_v1'
+  | 'spades_v1'
+  | 'go_v1'
+  | 'pachisi_v1'
   | null;
 
 // Valid game IDs for type checking
@@ -25,6 +30,11 @@ const VALID_GAME_IDS = [
   'chess_v1',
   'checkers_v1',
   'cat_dash_v1',
+  'backgammon_v1',
+  'hearts_v1',
+  'spades_v1',
+  'go_v1',
+  'pachisi_v1',
 ] as const;
 
 /**

@@ -67,6 +67,7 @@ interface LobbySidebarProps {
     deleteRoomLabel?: string;
     kickPlayerLabel?: string;
     leaveRoomLabel?: string;
+    notesLabel?: string;
   };
   showReorderControls: boolean;
   showInvitedPlayers: boolean;
@@ -396,6 +397,14 @@ export function LobbySidebar({
             </InfoValue>
           </InfoRow>
         )}
+        {room.notes ? (
+          <InfoRow>
+            <InfoLabel>{labels.notesLabel || 'Notes'}</InfoLabel>
+            <InfoValue className="text-xs break-words max-w-[180px] text-right">
+              {room.notes}
+            </InfoValue>
+          </InfoRow>
+        ) : null}
       </LobbyCard>
 
       {isHost && onDeleteRoom && (

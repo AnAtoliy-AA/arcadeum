@@ -7,7 +7,7 @@ This skill turns a single instruction ("implement chess", "add Connect Four") in
 
 ## Reference implementations
 
-When in doubt, **mirror sea-battle** ([apps/be/src/games/engines/sea-battle/](apps/be/src/games/engines/sea-battle/), [apps/web/src/widgets/SeaBattleGame/](apps/web/src/widgets/SeaBattleGame/)) — it is the canonical full-stack game. The most recent reference is tic-tac-toe ([apps/be/src/games/engines/tic-tac-toe/](apps/be/src/games/engines/tic-tac-toe/), [apps/web/src/widgets/TicTacToeGame/](apps/web/src/widgets/TicTacToeGame/)).
+When in doubt, **mirror sea-battle** ([apps/be/src/games/engines/sea-battle/](apps/be/src/games/engines/sea-battle/), [apps/web/src/widgets/SeaBattleGame/](apps/web/src/widgets/SeaBattleGame/)) — it is the canonical full-stack game. The most recent reference is tic-tac-toe ([apps/be/src/games/engines/tic-tac-toe/](apps/be/src/games/engines/tic-tac-toe/), [apps/web/src/widgets/TicTacToeGame/](apps/web/src/widgets/TicTacToeGame/)). For dice/board games with randomness, rule variants, and heuristic AI bots, mirror backgammon ([apps/be/src/games/engines/backgammon/](apps/be/src/games/engines/backgammon/), [apps/web/src/widgets/BoardGames/BackgammonGame/](apps/web/src/widgets/BoardGames/BackgammonGame/)).
 
 ## Naming convention
 
@@ -64,6 +64,26 @@ Gateway handlers use `@SubscribeMessage('<camelCase>.session.start' | '.<action>
 Wire into [apps/be/src/games/games.module.ts](apps/be/src/games/games.module.ts) — add all three as providers; gateway is a provider, not an export.
 
 **Socket events parity (BE ↔ FE):** the strings in `@SubscribeMessage(...)` on the BE gateway MUST match the strings in `gameSocket.emit(...)` from the FE's `useActions.ts` hook, character for character. Drift here results in silent no-ops with no error.
+
+**AI vs AI support (required for every turn-based game):** every turn-based game must be spectatable as bot-vs-bot (ARC-890). The bot service MUST:
+1. Import `getAiMoveDelayMs` / `isAiVsAiSession` from [`apps/be/src/games/common/ai-vs-ai.ts`](apps/be/src/games/common/ai-vs-ai.ts).
+2. Guard auto-completion: complete a session with no alive humans **only when `!isAiVsAiSession(session)`** — otherwise AI-vs-AI rooms die on their first tick.
+3. Use the fixed delay in AI-vs-AI matches: `const aiDelay = getAiMoveDelayMs(session)` → sleep exactly that long instead of the random human-ish range.
+4. Single-flight guard every turn: acquire a per-`roomId:botId` lock before sleeping+acting ([BotTurnLock](apps/be/src/games/common/bot-turn-lock.ts), TTL-based like cat-dash/critical) so duplicate triggers can't stack chains and distort pacing.
+5. Register the game in **two lists**: `AI_VS_AI_GAME_IDS` in [common/ai-vs-ai.ts](apps/be/src/games/common/ai-vs-ai.ts) AND `AI_VS_AI_SUPPORTED_GAME_IDS` in [web `features/games/lib/aiVsAi.ts`](apps/web/src/features/games/lib/aiVsAi.ts) (gates the landing-page CTA), plus add a starter entry to `AiVsAiService.startFns`. The BE spec `ai-vs-ai.service.spec.ts` cross-checks list ↔ starters so they cannot drift.
+6. Add tests: AI-vs-AI session keeps playing without humans; non-AI-vs-AI bot-only session completes; concurrent triggers produce exactly one action.
+
+Real-time games (glimworm-style tick engines) are excluded: bots steer themselves every tick, so a fixed per-move delay does not apply — document the exclusion in both lists if it applies to your game.
+
+**Offline mode support (ARC-900, required for every game with a client-runnable bot):**
+Offline play runs the SAME engine + bot logic in the browser via `@arcadeum/games-core`. A new game must:
+
+1. Move its pure engine files into `packages/games-core/src/games/<game>/` (see existing games) and leave re-export shims at the old BE paths — never duplicate logic.
+2. Extract the bot's decision core into `packages/games-core/src/games/<game>/<game>-bot.ts` as a framework-agnostic class (`export class <Game>Bot`) — NO `@nestjs/*`, NO `node:crypto` (use `../../lib/random`), no injected services, no locks/delays. The BE `<game>-bot.service.ts` becomes an `@Injectable()` subclass that extends it and keeps only orchestration (`checkAndPlay`, locks, delays, logger). All existing bot specs must stay green.
+3. Register an entry in web [`features/offline/lib/offline-registry.ts`](apps/web/src/features/offline/lib/offline-registry.ts): `{ slug, createEngine, actions: {<eventSuffix>: {action, mapPayload?}}, botDecide }`. Event suffixes must match the FE `useActions.ts` emit names (lowercased).
+4. Add the engine to `OFFLINE_GAME_SLUGS` in [`features/offline/lib/offline-capable.ts`](apps/web/src/features/offline/lib/offline-capable.ts) — a unit test cross-checks it against the registry.
+5. Games without a portable bot (e.g. real-time or server-only AI) are NOT offline-capable — omit them from both lists and note why here.
+6. Verify with `pnpm --filter be exec jest --forceExit src/games/<game> src/games/engines/<game> --silent` and `pnpm --filter web exec vitest run src/features/offline`.
 
 ### 4. Backend catalog
 
@@ -209,7 +229,7 @@ useGameChatIntegration(snapshot?.logs as never, (_msg, _scope) => {
 });
 ```
 
-**Lobby pattern:** `<Name>Lobby.tsx` wraps the shared `ReusableGameLobby` and only contributes an `optionsSlot` (variant picker, board-size selector, team toggle, etc.). Don't reimplement the player list, kick controls, host badge, or start button — they live in `ReusableGameLobby`. Always accept and pass through `onReorderPlayers` to enable drag-and-drop player reordering (the `showReorderControls` prop defaults to `true`).
+**Lobby pattern:** `<Name>Lobby.tsx` wraps the shared `ReusableGameLobby` and only contributes an `optionsSlot` (variant picker, board-size selector, team toggle, etc.). Don't reimplement the player list, kick controls, host badge, or start button — they live in `ReusableGameLobby`. Always accept and pass through `onReorderPlayers` to enable drag-and-drop player reordering (the `showReorderControls` prop defaults to `true`). Always pass `minPlayers={MIN_PLAYERS}` from your game types — the bot-count selector uses it to preselect every seat needed to reach the minimum (see gotcha 29), and the start-button hint depends on it.
 
 ### 6. Web registry — three files
 
@@ -245,6 +265,8 @@ Add to:
 a. [apps/web/src/app/[locale]/home/data/games.ts](apps/web/src/app/[locale]/home/data/games.ts) — add to `featuredGames` (players range, duration, `landingHref`, variant count).
 
 a2. **Home featured-card symbol** — create `apps/web/src/app/[locale]/home/components/featured-games/symbols/<Name>Symbol.tsx` (64×64 SVG using `stroke="currentColor"`, mirroring [SeaBattleSymbol.tsx](apps/web/src/app/[locale]/home/components/featured-games/symbols/SeaBattleSymbol.tsx)). Export it from `symbols/index.ts` and add a `case '<game>_v1':` branch to [`GameSymbol`](apps/web/src/app/[locale]/home/components/featured-games/gameMeta.tsx). Without this, the home card cover renders `null` instead of a glyph.
+
+a3. **Catalog & AI Game Picker card preview** — create `apps/web/src/app/[locale]/(app)/games/components/art/<Name>RealCards.tsx` (for card games) or `<Name>RealBoard.tsx` (for board games) (SVG vector board/cards representation with `viewBox="0 0 360 220"`). Register and import it in [`GamesCatalogRealPreview.tsx`](apps/web/src/app/[locale]/(app)/games/components/art/GamesCatalogRealPreview.tsx) with a `case '<game>_v1':` branch. Without this, cards on `/games` and in the "Pick a game to play vs AI" modal will fall through to the default Glimworm snake art.
 
 b. [apps/web/src/features/games/ui/create/redesign/data/themes.ts](apps/web/src/features/games/ui/create/redesign/data/themes.ts):
 - Extend `GameId` union
@@ -286,7 +308,52 @@ Cover: landing (hero/highlights/steps/themes/rules/faq), lobby (variants/options
 - **Web widget**: render test with the widget's own `<Name>ThemeProvider variant="classic">` wrapper (no global provider needed; classes resolve via CSS vars)
 - **Playwright e2e**: lobby → start → place move → win (can be deferred and listed as follow-up in PR)
 
-### 11. Before-PR punch list
+### 11. Gameplay Shorts Integration (`scripts/shorts-factory/gameplay.js`)
+
+Add the new game to `GAMES` in `scripts/shorts-factory/gameplay.js` so automated 10–15s gameplay shorts are created and posted automatically to YouTube Shorts, Instagram Reels, TikTok, and X:
+
+```javascript
+{
+  name: '<game-name>',
+  slug: '<game>_v1',
+  url: '/en/games/<game-name>',
+  caption: '<Title> - <tagline>! 🎮✨ #<game-name> #gaming #arcadeum',
+  moves: [], // Optional scripted moves or dynamically generated
+  async waitForGame(page) {
+    // Wait for the game board to be interactive (e.g. data-testid)
+    await page.waitForSelector('[data-testid="<game>-board"], [data-testid="game-board-section"]', {
+      timeout: 20000,
+    });
+    await sleep(500);
+  },
+  async makeMove(page, move) {
+    // Click playable pieces, cells, or buttons
+    const playable = page.locator('[data-testid^="<game>-cell-"]:not([disabled])');
+    if ((await playable.count()) > 0) {
+      await playable.first().click({ force: true });
+      return true;
+    }
+    return false;
+  },
+  async isMyTurn(page) {
+    const label = page.locator('[data-testid="turn-indicator-label"]');
+    if ((await label.count()) === 0) return false;
+    const text = await label.textContent();
+    return text && text.trim().length > 0;
+  },
+}
+```
+
+Test the short generation locally (automatically reads `WEB_PORT` from `.env.local` / `.env`, defaulting to 3000):
+```bash
+# Preview short locally (automatically connects to http://localhost:${WEB_PORT || 3000}):
+node scripts/shorts-factory/gameplay.js --preview --short-only --game <game-name>
+
+# Or test against a specific URL:
+node scripts/shorts-factory/gameplay.js --preview --short-only --url http://localhost:3000 --game <game-name>
+```
+
+### 12. Before-PR punch list
 
 Walk this list manually — these are the surfaces where missing wiring causes silent regressions (text-only thumbnails, "Unsupported game type" toasts, button-clicks that toggle state into the void, etc.):
 
@@ -296,16 +363,20 @@ Walk this list manually — these are the surfaces where missing wiring causes s
 - [ ] `<game>_v1` added to **both** `GameType` unions: `lib/gameIdMapping.ts` AND `hooks/useGameActions.ts`.
 - [ ] Landing route in `shared/config/routes.ts` + `seo/buildPageMetadata.ts`; CTA uses `?gameId=`.
 - [ ] Home featured-card: data entry in `home/data/games.ts` + symbol branch in `gameMeta.tsx`.
+- [ ] Catalog & AI Game Picker preview: create `art/<Name>RealCards.tsx` (or `art/<Name>RealBoard.tsx`) and register it in `GamesCatalogRealPreview.tsx`.
 - [ ] Create page: `themes.ts` + `ThemePicker.tsx` block + `art/<Name>BoardPoster.tsx` + `GameArt.tsx` branch + `GameCreateView.tsx` branch.
 - [ ] Rules modal mounted in lobby AND in-game branches of `Game.tsx`; also wired in `RulesAccess.tsx`.
 - [ ] End-game uses `useGameEndState` + `GameEndModals`, not per-game modal or manual wiring.
+- [ ] Gameplay shorts entry added to `GAMES` in `scripts/shorts-factory/gameplay.js`.
+- [ ] Offline mode (ARC-900): engine + bot core extracted to `@arcadeum/games-core`, BE service is a thin `@Injectable()` subclass, entry in web `features/offline/lib/offline-registry.ts` + `offline-capable.ts`, offline playthrough verified (see §3b).
 - [ ] i18n keys present in all 5 locales (en, es, fr, ru, by) — including SEO entries.
 - [ ] BE engine spec + bot spec passing; web hook/widget vitest passing.
+- [ ] AI vs AI wired: bot service honors `getAiMoveDelayMs`/`isAiVsAiSession`, game added to `AI_VS_AI_GAME_IDS` (BE), `AI_VS_AI_SUPPORTED_GAME_IDS` (web) and `AiVsAiService.startFns`; landing renders the `AIvsAIViewer` CTA when supported.
 - [ ] [`apps/web/e2e/home-games-slider.spec.ts`](apps/web/e2e/home-games-slider.spec.ts) — bump the expected `toHaveCount(N)` and add the new game's `<h3>` assertion; the test hardcodes the featured-games count and order.
 
 **Mobile scope:** the new-game flow targets web + BE only. Add a mobile screen only if the user explicitly asks; otherwise note "mobile follow-up" in the PR.
 
-### 12. Verify locally, then PR
+### 13. Verify locally, then PR
 
 ```bash
 pnpm --filter @arcadeum/be test
@@ -376,6 +447,16 @@ gh pr create --base develop --title "feat(games): add <name> (ARC-XXX)" --body "
 22. **Per-option player caps go through the service, not the room.** If players-per-game depends on a game-option (board size, mode, etc.), don't try to mutate the room's `maxPlayers` when the option changes — leave room.maxPlayers at the overall ceiling. Enforce the per-option cap at `startSession` (BE) and surface it in the lobby selector ("3×3 · up to 2"). The BE error message tells the host to reduce players or pick a different option.
 
 23. **`home-games-slider.spec.ts` hardcodes the featured-games count and order.** Adding a new game to `home/data/games.ts` breaks `await expect(gameCards).toHaveCount(N)` and the per-index `toHaveText` assertions. Update both the count and add the new `<h3>` assertion in the same commit as the data change.
+24. **Never Trust Client RNG**: Randomness (dice rolls, shuffles, coin flips) must come exclusively from server-side code. NEVER read random values from the action payload. Make randomness injectable via an `@Optional()` constructor parameter (e.g. `constructor(@Optional() diceRoller?: DiceRoller)`) so unit tests can force deterministic outcomes — but mark it optional or Nest DI fails to bootstrap (see gotcha 25).
+25. **Optional constructor params on engines must be `@Optional()`**: any non-injectable parameter type in an engine's constructor makes Nest throw `UnknownDependenciesException` at bootstrap — which crashes every Web E2E shard at web-server startup, not just one test. Add a DI regression spec that compiles the engines module via `Test.createTestingModule` and resolves the engine.
+26. **Randomize Opening Turn**: Do not hardcode `currentTurnIndex: 0` — always pick the first mover randomly (fairness). Tests must set the turn index explicitly after `initializeState()`.
+27. **Bot Deadlock Fallback**: When a bot cannot act (no legal moves mid-turn), it MUST call a defensive pass/skip action instead of breaking out of its loop — otherwise the session can get stuck until the watchdog fires. Add a validated `<game>` pass-turn action to the engine and a matching service method.
+28. **Win Quality Classification**: For games with graded wins (backgammon gammon/backgammon, chess resignations, etc.), record a `winType` on the game-over state at the moment of victory — stake multipliers and stats depend on it later and retrofitting is expensive.
+29. **Bot Preselection Must Match minPlayers**: `ReusableGameLobby` preselects `minPlayers - 1` bots in its count selector (e.g. 3 for a 4-player game like Hearts) because the server pads up to `minPlayers` anyway — `BaseGameService.startSession` uses `Math.max(botCount, needed)` when filling seats. A lower UI default misleads the host into thinking fewer bots will join than actually do. This works only if the lobby passes `minPlayers={MIN_PLAYERS}`; never hardcode or override the bot-count default per game.
+
+29. **Bot triggers come from exactly three paths**: session start, every completed action (`afterSessionStep`), and the watchdog's stale-session revival. NEVER add bot triggering to read paths — `findSessionByRoom` used to call `afterSessionStep`, so every spectator join / `games.session.request` spawned another sleeping bot chain; in AI-vs-AI rooms the duplicate chains piled up behind locks and turn pacing drifted (turns took longer and longer). If your bot must revive without an action, let the watchdog do it.
+
+30. **`GamesCatalogRealPreview.tsx` default falls through to Glimworm snake art.** `GamesCatalogCard` (on `/games`) and `GamePickerCard` (in the "Pick a game to play vs AI" modal) both render `<GamesCatalogRealPreview gameId={slug} />`. If a game is missing a case branch in `GamesCatalogRealPreview.tsx`, it renders the default Glimworm snake art. Always create `apps/web/src/app/[locale]/(app)/games/components/art/<Name>RealCards.tsx` (or `<Name>RealBoard.tsx`) and add a `case '<game>_v1': return <NameReal... />;`.
 
 ## When the user says "implement game X"
 

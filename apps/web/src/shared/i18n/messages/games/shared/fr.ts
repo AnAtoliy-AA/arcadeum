@@ -40,6 +40,19 @@ export const frMessages = {
     error: 'Impossible de démarrer — réessayez',
     delayLabel: 'Délai entre coups',
   },
+  tutorial: {
+    ui: {
+      button: 'Tutoriel',
+      next: 'Suivant',
+      back: 'Retour',
+      skip: 'Passer',
+      finish: 'Commencer à jouer',
+      stepOf: 'Étape {{current}} sur {{total}}',
+      completeTitle: 'Tutoriel terminé !',
+      completeBody:
+        'Bravo — vous connaissez maintenant les bases de {{game}}. Bonne chance à la table !',
+    },
+  },
   rooms: {
     status: {
       lobby: "Salon d'attente",
@@ -133,6 +146,8 @@ export const frMessages = {
   },
   create: {
     title: 'Créer une Salle de Jeu',
+    changeGame: 'Changer de jeu',
+    sectionSetup: 'Configuration du jeu',
     sectionGame: 'Sélectionner un Jeu',
     sectionExpansions: "Packs d'Extension",
     sectionVariant: 'Thème du Jeu',
@@ -337,6 +352,7 @@ export const frMessages = {
       action: 'Action',
       strategy: 'Stratégie',
       race: 'Course',
+      puzzle: 'Casse-tête',
     },
     tags: {
       strategy: 'Stratégie',
@@ -481,6 +497,61 @@ export const frMessages = {
     previewLabel: 'Aperçu en direct',
     cycleHint: 'Cliquez pour changer le thème',
     cycleAriaLabel: 'Changer le thème de l’aperçu, actuellement {{variant}}',
+  },
+  replay: {
+    loading: 'Chargement du replay…',
+    error: 'Replay introuvable',
+    controls: {
+      progress: 'Progression du replay',
+      first: 'Aller au début',
+      prev: 'Coup précédent',
+      play: 'Lire',
+      pause: 'Pause',
+      next: 'Coup suivant',
+      last: 'Aller à la fin',
+      stepCounter: 'Coup {{current}} / {{total}}',
+    },
+    header: {
+      title: 'Replay : {{game}}',
+      draw: 'Match nul',
+      winner: '{{name}} a gagné',
+      moves: '{{count}} coups',
+      duration: '{{min}}m {{sec}}s',
+    },
+    share: {
+      title: 'Replay de jeu',
+      button: 'Partager',
+      copied: 'Copié !',
+    },
+    card: {
+      draw: 'Match nul',
+      won: '{{name}} a gagné',
+      moves: '{{count}} coups',
+      duration: '{{min}}m',
+      watch: 'Voir le replay',
+    },
+    list: {
+      title: 'Replays de jeux',
+      total: '{{count}} replays',
+      empty: 'Aucun replay pour le moment',
+      prev: 'Précédent',
+      next: 'Suivant',
+      page: 'Page {{current}} / {{total}}',
+      filter: {
+        all: 'Tous les jeux',
+        chess: 'Échecs',
+        checkers: 'Dames',
+        ticTacToe: 'Morpion',
+        backgammon: 'Backgammon',
+        go: 'Go',
+      },
+    },
+  },
+  guestDisclaimer: {
+    playingAsGuest: 'En tant qu’invité',
+    agreementPrefix: 'En jouant, vous acceptez les ',
+    termsLink: 'Conditions d’utilisation',
+    agreementSuffix: ' de {{appName}} et confirmez avoir au moins 18 ans.',
   },
   themes: themesFr,
 };

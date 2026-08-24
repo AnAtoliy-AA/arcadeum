@@ -6,6 +6,7 @@ import { adminWalletBy } from './admin-wallet/by';
 import { gemsBy } from './gems/by';
 import { adminGemPackagesBy } from './admin-gem-packages/by';
 import { adminEconomyBy } from './admin-economy/by';
+import { adminStatisticsBy } from './admin-statistics/by';
 import { dailyRewardsBy } from './daily-rewards/by';
 import { dailyChallengesBy } from './daily-challenges/by';
 import { achievementsBy } from './achievements/by';
@@ -16,6 +17,9 @@ import { adminBlockedIpsBy } from './admin-blocked-ips/by';
 import { adminUsersBy } from './admin-users/by';
 import { adminBulkRewardsBy } from './admin-bulk-rewards/by';
 import { friendsBy } from './friends/by';
+import { clansBy } from './clans/by';
+import { eventsBy } from './events/by';
+import { seasonsBy } from './seasons/by';
 import { communityBy } from './community/by';
 import { rewardsBy } from './rewards/by';
 import { developersBy } from './developers/by';
@@ -30,17 +34,105 @@ export const by = {
     signedInAs: 'Вы ўвайшлі як {username}',
     nav: {
       dashboard: 'Панэль',
+      statistics: 'Статыстыка',
       users: 'Карыстальнікі',
       payments: 'Плацяжы',
       announcements: "Аб'явы",
       tournaments: 'Турніры',
       economy: 'Эканоміка',
       shop: 'Крама',
+      gemPackages: 'Пакеты Гемаў',
       games: 'Гульні',
-      gameRules: 'Правы гульняў',
+      gameRules: 'Правілы гульняў',
       bulkRewards: 'Масавыя Ўзнагароды',
       blockedIps: 'Заблакіраваныя IP',
+      geoBlock: 'Геаблакіроўка',
       comingSoon: 'Хутка',
+    },
+    statistics: adminStatisticsBy,
+    dashboard: {
+      title: 'Камандны Цэнтр',
+      subtitle: 'Стан сістэмы, ключавыя метрыкі і модулі адміністравання',
+      systemHealth: 'Стан Сістэмы',
+      statusOnline: 'Працуе',
+      statusDegraded: 'Збоі',
+      database: 'База дадзеных',
+      collections: 'Калекцыі',
+      totalDocuments: 'Усяго дакументаў',
+      dataSize: 'Аб’ём дадзеных (МБ)',
+      storageSize: 'Аб’ём дыска (МБ)',
+      indexSize: 'Аб’ём індэксаў (МБ)',
+      activeModules: 'Актыўныя Модулі',
+      modulesTitle: 'Адміністрацыйныя Модулі',
+      modulesSubtitle:
+        'Прамы доступ да кіравання гульнямі, гульцамі, транзакцыямі і бяспекай',
+      modules: {
+        statistics: {
+          title: 'Аналітыка Платформы',
+          description:
+            'Дадзеныя па MAU, DAU, утрыманні гульцоў, гульнявым часе і выручцы',
+        },
+        users: {
+          title: 'Кіраванне карыстальнікамі',
+          description: 'Уліковыя запісы гульцоў, ролі, статусы і баны',
+        },
+        payments: {
+          title: 'Плацяжы і Нататкі',
+          description:
+            'Гісторыя плацяжоў гульцоў, транзакцыі і службовыя нататкі',
+        },
+        tournaments: {
+          title: 'Турніры',
+          description: 'Стварэнне і правядзенне турніраў з прызавымі фондамі',
+        },
+        gemPackages: {
+          title: 'Пакеты Гемаў',
+          description: 'Налада пакетаў гемаў, коштаў і бонусаў',
+        },
+        shop: {
+          title: 'Крама і Касметыка',
+          description: 'Кіраванне прадметамі інвентара, рэдкасцямі і выдачай',
+        },
+        economy: {
+          title: 'Эканоміка і Казна',
+          description:
+            'Маніторынг цыркуляцыі токенаў, кранаў і спальвання ўзнагарод',
+        },
+        bulkRewards: {
+          title: 'Масавыя Ўзнагароды',
+          description: 'Масавая рассылка валюты і ўзнагарод гульцам',
+        },
+        games: {
+          title: 'Бачнасць Гульняў',
+          description: 'Кіраванне даступнасцю і актыўнасцю гульнявых рэжымаў',
+        },
+        gameRules: {
+          title: 'Правілы Гульняў',
+          description: 'Налада варыянтаў правіл, таймаўтаў хадоў і механік',
+        },
+        announcements: {
+          title: "Аб'явы",
+          description:
+            'Публікацыя сістэмных апавяшчэнняў і паведамленняў аб тэхработах',
+        },
+        blockedIps: {
+          title: 'Заблакіраваныя IP',
+          description: 'Прагляд і блакіроўка шкодных IP-адрасоў',
+        },
+        geoBlock: {
+          title: 'Геаблакіроўка',
+          description: 'Налада тэрытарыяльных абмежаванняў і юрысдыкцый',
+        },
+      },
+      openPanel: 'Адкрыць панэль',
+      collectionsOverview: 'Статыстыка калекцый базы дадзеных',
+      collectionName: 'Калекцыя',
+      docsCount: 'Дакументаў',
+      sizeMb: 'Памер (МБ)',
+      avgDocSize: 'Сяр. памер аб’екта',
+      indexesCount: 'Індэксы',
+      liveStatus: 'Бягучы статус',
+      environment: 'Асяроддзе',
     },
     error: {
       title: 'Нешта пайшло не так',
@@ -245,6 +337,11 @@ export const by = {
       chess_v1: { name: 'Шахматы', subtitle: 'Класічныя шахматы', icon: '♞' },
       checkers_v1: { name: 'Шашкі', subtitle: 'Настольная класіка', icon: '●' },
       cat_dash_v1: { name: 'Cat Dash', subtitle: 'Каціныя гонкі', icon: '🐱' },
+      backgammon_v1: {
+        name: 'Нарды',
+        subtitle: 'Настольная стратэгія',
+        icon: '🎲',
+      },
     },
     cup: {
       eyebrow: 'Турнір',
@@ -375,4 +472,7 @@ export const by = {
   adminShop: adminShopBy,
   adminGames: adminGamesBy,
   friends: friendsBy,
+  clans: clansBy,
+  events: eventsBy,
+  seasons: seasonsBy,
 };

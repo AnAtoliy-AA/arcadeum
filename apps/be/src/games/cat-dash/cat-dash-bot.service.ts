@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { CatDashService } from './cat-dash.service';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
 import type { CatDashState } from '../engines/cat-dash/cat-dash.types';
+import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
 
 const LOCK_TIMEOUT_MS = 60000;
 const PROCESSING_ENTRY_TTL_MS = 120_000;
@@ -24,6 +25,17 @@ export class CatDashBotService {
     const state = session.state as CatDashState | undefined;
     if (!state || state.gameOver) return;
 
+    const hasAliveHuman =
+      Array.isArray(state.players) &&
+      state.players.some((p) => p.playerId && !p.playerId.startsWith('bot-'));
+    if (!hasAliveHuman && !isAiVsAiSession(session)) {
+      this.logger.log(
+        `No alive humans in room ${session.roomId} — completing session`,
+      );
+      await this.catDashService.completeSession(session.id, session.roomId);
+      return;
+    }
+
     const currentPlayer = state.players[state.currentPlayerIndex];
     if (!currentPlayer) return;
 
@@ -43,7 +55,14 @@ export class CatDashBotService {
     this.processing.set(lockKey, now);
 
     try {
-      await this.delay(ROLL_DELAY_MS.min, ROLL_DELAY_MS.max);
+      // AI-vs-AI matches pace turns with the configured fixed delay so
+      // spectators get a steady rhythm instead of the random human-ish roll.
+      const aiDelay = getAiMoveDelayMs(session);
+      if (aiDelay !== null) {
+        await this.delay(aiDelay, aiDelay);
+      } else {
+        await this.delay(ROLL_DELAY_MS.min, ROLL_DELAY_MS.max);
+      }
 
       if (Date.now() - now > PROCESSING_ENTRY_TTL_MS) {
         this.logger.warn(

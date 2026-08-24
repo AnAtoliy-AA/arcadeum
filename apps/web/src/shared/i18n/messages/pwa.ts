@@ -28,6 +28,16 @@ export const en = {
       "It looks like you've lost your internet connection. Check your network and try again.",
     retry: 'Try Again',
   },
+
+  offlineGame: {
+    chip: 'Offline play',
+    title: 'Offline Practice',
+    description: 'Play vs bot right on your device — no internet needed.',
+    difficulty: 'Bot difficulty',
+    backToGames: 'Back to games',
+    unsupported: "This game can't be played offline yet.",
+    start: 'Start offline match',
+  },
 };
 
 export const es = {
@@ -57,6 +67,16 @@ export const es = {
     description:
       'Parece que has perdido tu conexión a internet. Revisa tu red e inténtalo de nuevo.',
     retry: 'Reintentar',
+  },
+
+  offlineGame: {
+    chip: 'Jugar sin conexión',
+    title: 'Práctica sin conexión',
+    description: 'Juega contra el bot en tu dispositivo, sin internet.',
+    difficulty: 'Dificultad del bot',
+    backToGames: 'Volver a los juegos',
+    unsupported: 'Este juego aún no se puede jugar sin conexión.',
+    start: 'Empezar partida offline',
   },
 };
 
@@ -88,6 +108,17 @@ export const fr = {
       'Il semble que vous ayez perdu votre connexion internet. Vérifiez votre réseau et réessayez.',
     retry: 'Réessayer',
   },
+
+  offlineGame: {
+    chip: 'Jouer hors ligne',
+    title: 'Entraînement hors ligne',
+    description:
+      'Jouez contre le bot directement sur votre appareil, sans internet.',
+    difficulty: 'Difficulté du bot',
+    backToGames: 'Retour aux jeux',
+    unsupported: "Ce jeu n'est pas encore disponible hors ligne.",
+    start: 'Lancer la partie hors ligne',
+  },
 };
 
 export const ru = {
@@ -118,6 +149,16 @@ export const ru = {
       'Похоже, вы потеряли подключение к интернету. Проверьте сеть и попробуйте снова.',
     retry: 'Повторить',
   },
+
+  offlineGame: {
+    chip: 'Офлайн-игра',
+    title: 'Офлайн-тренировка',
+    description: 'Играйте против бота прямо на устройстве — без интернета.',
+    difficulty: 'Сложность бота',
+    backToGames: 'К списку игр',
+    unsupported: 'Эта игра пока недоступна офлайн.',
+    start: 'Начать офлайн-матч',
+  },
 };
 
 export const by = {
@@ -147,6 +188,16 @@ export const by = {
     description:
       'Падобна, вы страцілі злучэнне з інтэрнэтам. Праверце сетку і паспрабуйце зноў.',
     retry: 'Паўтарыць',
+  },
+
+  offlineGame: {
+    chip: 'Афлайн-гульня',
+    title: 'Афлайн-трэніроўка',
+    description: 'Гуляйце супраць бота проста на прыладзе — без інтэрнэту.',
+    difficulty: 'Складанасць бота',
+    backToGames: 'Да спісу гульняў',
+    unsupported: 'Гэтая гульня пакуль недаступная афлайн.',
+    start: 'Пачаць афлайн-матч',
   },
 };
 

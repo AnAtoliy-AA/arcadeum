@@ -23,7 +23,7 @@ function session(options?: Record<string, unknown>): GameSessionSummary {
 }
 
 describe('ai-vs-ai helpers', () => {
-  it('lists the seven supported turn-based games', () => {
+  it('lists the supported turn-based games', () => {
     expect(AI_VS_AI_GAME_IDS).toEqual([
       'chess_v1',
       'checkers_v1',
@@ -32,6 +32,11 @@ describe('ai-vs-ai helpers', () => {
       'critical_v1',
       'sea_battle_v1',
       'cat_dash_v1',
+      'backgammon_v1',
+      'hearts_v1',
+      'spades_v1',
+      'go_v1',
+      'pachisi_v1',
     ]);
   });
 

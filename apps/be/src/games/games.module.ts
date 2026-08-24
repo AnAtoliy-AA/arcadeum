@@ -56,6 +56,7 @@ import {
   ATLAS_CONNECTION,
 } from '../common/providers/mongo-connections.provider';
 import { resolveAtlasUri } from '../common/utils/mongo-uri.util';
+import { AntiCollusionService } from './common/anti-collusion.service';
 
 import { CriticalService } from './critical/critical.service';
 import { CriticalBotService } from './critical/critical-bot.service';
@@ -81,6 +82,24 @@ import { CheckersBotService } from './checkers/checkers-bot.service';
 import { CatDashService } from './cat-dash/cat-dash.service';
 import { CatDashBotService } from './cat-dash/cat-dash-bot.service';
 import { CatDashGateway } from './cat-dash.gateway';
+import { BackgammonService } from './backgammon/backgammon.service';
+import { BackgammonBotService } from './backgammon/backgammon-bot.service';
+import { BackgammonGateway } from './backgammon.gateway';
+import { HeartsService } from './hearts/hearts.service';
+import { HeartsBotService } from './hearts/hearts-bot.service';
+import { HeartsGateway } from './hearts.gateway';
+import { SpadesService } from './spades/spades.service';
+import { SpadesBotService } from './spades/spades-bot.service';
+import { SpadesGateway } from './spades.gateway';
+import { GoService } from './go/go.service';
+import { GoBotService } from './go/go-bot.service';
+import { GoGateway } from './go.gateway';
+import { PachisiService } from './pachisi/pachisi.service';
+import { PachisiBotService } from './pachisi/pachisi-bot.service';
+import { PachisiGateway } from './pachisi.gateway';
+import { GameReplayService } from './replays/game-replay.service';
+import { GameReplayController } from './replays/game-replay.controller';
+import { GameReplay, GameReplaySchema } from './schemas/game-replay.schema';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { RankingModule } from '../ranking/ranking.module';
@@ -108,6 +127,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
       [
         { name: GameSession.name, schema: GameSessionSchema },
         { name: GameRoom.name, schema: GameRoomSchema },
+        { name: GameReplay.name, schema: GameReplaySchema },
         { name: User.name, schema: UserSchema },
         { name: PlayerStats.name, schema: PlayerStatsSchema },
         { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
@@ -146,7 +166,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     DailyChallengesModule,
     AchievementsModule,
   ],
-  controllers: [GamesController, GamesHistoryController],
+  controllers: [GamesController, GamesHistoryController, GameReplayController],
   providers: [
     // Core services
     GameRoomsService,
@@ -192,6 +212,21 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Cat Dash
     CatDashService,
     CatDashBotService,
+    // Backgammon
+    BackgammonService,
+    BackgammonBotService,
+    // Hearts
+    HeartsService,
+    HeartsBotService,
+    // Spades
+    SpadesService,
+    SpadesBotService,
+    // Go
+    GoService,
+    GoBotService,
+    // Pachisi
+    PachisiService,
+    PachisiBotService,
     // AI vs AI
     AiVsAiService,
     // Utilities
@@ -203,6 +238,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GamesRematchService,
     GamesLeaderboardSyncService,
     GamePostMatchService,
+    GameReplayService,
     PlayerStatsService,
     // Gateways
     GamesGateway,
@@ -216,7 +252,18 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     ChessGateway,
     CheckersGateway,
     CatDashGateway,
+    BackgammonGateway,
+    // Hearts (gateway registered as provider, not exported)
+    HeartsGateway,
+    SpadesGateway,
+    GoGateway,
+    PachisiGateway,
+    AntiCollusionService,
   ],
-  exports: [GameHistoryStatsService, GameRoomsMatchmakingService],
+  exports: [
+    GameHistoryStatsService,
+    GameRoomsMatchmakingService,
+    AntiCollusionService,
+  ],
 })
 export class GamesModule {}

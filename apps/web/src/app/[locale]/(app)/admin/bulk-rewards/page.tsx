@@ -1,3 +1,4 @@
+import { PageTitle, Typography } from '@arcadeum/ui';
 import { requireAdmin } from '@/entities/session/api/requireAdmin';
 import { getTranslations } from '@/shared/i18n/server';
 import { adminBulkRewardsEn } from '@/shared/i18n/messages/pages/admin-bulk-rewards/en';
@@ -17,29 +18,14 @@ export default async function AdminBulkRewardsPage() {
   const labels = { ...adminBulkRewardsEn, ...t } as typeof adminBulkRewardsEn;
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: 800,
-        minWidth: 0,
-        margin: '0 auto',
-        padding: '32px 16px',
-      }}
-    >
-      <div style={{ marginBottom: 24 }}>
-        <h1
-          style={{
-            fontSize: 24,
-            fontWeight: 700,
-            color: 'var(--color, #e4e4e7)',
-            marginBottom: 4,
-          }}
-        >
+    <div className="w-full max-w-3xl mx-auto flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <PageTitle size="lg" gradient>
           {labels.title}
-        </h1>
-        <p style={{ fontSize: 14, color: 'var(--colorPress, #71717a)' }}>
+        </PageTitle>
+        <Typography variant="body" uiSize="md" alpha="medium">
           {labels.subtitle}
-        </p>
+        </Typography>
       </div>
 
       <AdminBulkRewardsClient labels={labels} />

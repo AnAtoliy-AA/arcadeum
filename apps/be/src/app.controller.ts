@@ -1,4 +1,5 @@
 import { Controller, Get, Logger, Optional } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection, ConnectionStates } from 'mongoose';
 import { AppService } from './app.service';
@@ -34,11 +35,13 @@ export class AppController {
     return this.appService.getLiveStatus();
   }
 
+  @SkipThrottle({ default: true, auth: true, strict: true })
   @Get('health')
   health() {
     return { ok: true };
   }
 
+  @SkipThrottle({ default: true, auth: true, strict: true })
   @Get('health/db')
   async checkDbHealth(): Promise<DbHealthResponse> {
     const oci = await this.pingConnection(this.ociConnection);

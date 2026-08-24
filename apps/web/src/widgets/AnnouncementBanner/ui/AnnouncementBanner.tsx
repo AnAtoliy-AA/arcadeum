@@ -80,7 +80,7 @@ export function AnnouncementBanner({
     <div
       role={role}
       data-testid="announcement-banner"
-      className="border-b border-[var(--borderColor)] px-3 py-2"
+      className="border-b border-[var(--borderColor)] px-3 py-2 print:hidden"
       style={{ backgroundColor: SEVERITY_BG[severity] }}
     >
       <div className="flex flex-wrap items-center gap-3">

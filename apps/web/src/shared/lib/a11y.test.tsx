@@ -145,6 +145,47 @@ describe('useBoardKeyboardNavigation', () => {
     expect(result.current.focused).toBeNull();
     expect(result.current.gridProps.tabIndex).toBe(-1);
   });
+
+  it('calls onDeselect on Escape when a cell is focused', () => {
+    const onDeselect = vi.fn();
+    const { result } = renderHook(() =>
+      useBoardKeyboardNavigation({ rows: 8, cols: 8, onDeselect }),
+    );
+    act(() => {
+      result.current.gridProps.onKeyDown({
+        key: 'ArrowDown',
+        preventDefault: vi.fn(),
+      } as never);
+    });
+    const preventDefault = vi.fn();
+    result.current.gridProps.onKeyDown({
+      key: 'Escape',
+      preventDefault,
+    } as never);
+    expect(onDeselect).toHaveBeenCalledTimes(1);
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it('ignores Escape when no cell is focused or no handler given', () => {
+    const onDeselect = vi.fn();
+    const { result } = renderHook(() =>
+      useBoardKeyboardNavigation({ rows: 8, cols: 8, onDeselect }),
+    );
+    result.current.gridProps.onKeyDown({
+      key: 'Escape',
+      preventDefault: vi.fn(),
+    } as never);
+    expect(onDeselect).not.toHaveBeenCalled();
+
+    const withoutHandler = renderHook(() =>
+      useBoardKeyboardNavigation({ rows: 8, cols: 8 }),
+    );
+    withoutHandler.result.current.gridProps.onKeyDown({
+      key: 'Escape',
+      preventDefault: vi.fn(),
+    } as never);
+    expect(onDeselect).not.toHaveBeenCalled();
+  });
 });
 
 describe('boardCellLabel', () => {

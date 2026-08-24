@@ -40,6 +40,19 @@ export const esMessages = {
     error: 'No se pudo iniciar — inténtalo de nuevo',
     delayLabel: 'Retraso entre jugadas',
   },
+  tutorial: {
+    ui: {
+      button: 'Tutorial',
+      next: 'Siguiente',
+      back: 'Atrás',
+      skip: 'Saltar',
+      finish: 'Empezar a jugar',
+      stepOf: 'Paso {{current}} de {{total}}',
+      completeTitle: '¡Tutorial completado!',
+      completeBody:
+        'Genial: ya conoces los fundamentos de {{game}}. ¡Buena suerte en la mesa!',
+    },
+  },
   rooms: {
     status: {
       lobby: 'Sala de espera',
@@ -133,6 +146,8 @@ export const esMessages = {
   },
   create: {
     title: 'Crear Sala de Juego',
+    changeGame: 'Cambiar juego',
+    sectionSetup: 'Configuración del juego',
     sectionGame: 'Seleccionar Juego',
     sectionExpansions: 'Paquetes de Expansión',
     sectionVariant: 'Tema del Juego',
@@ -335,6 +350,7 @@ export const esMessages = {
       action: 'Acción',
       strategy: 'Estrategia',
       race: 'Carrera',
+      puzzle: 'Rompecabezas',
     },
     tags: {
       strategy: 'Estrategia',
@@ -478,6 +494,61 @@ export const esMessages = {
     previewLabel: 'Vista previa',
     cycleHint: 'Haz clic para cambiar el tema',
     cycleAriaLabel: 'Cambiar tema de la vista previa, actualmente {{variant}}',
+  },
+  replay: {
+    loading: 'Cargando repetición…',
+    error: 'Repetición no encontrada',
+    controls: {
+      progress: 'Progreso de la repetición',
+      first: 'Ir al inicio',
+      prev: 'Movimiento anterior',
+      play: 'Reproducir',
+      pause: 'Pausar',
+      next: 'Siguiente movimiento',
+      last: 'Ir al final',
+      stepCounter: 'Movimiento {{current}} / {{total}}',
+    },
+    header: {
+      title: 'Repetición: {{game}}',
+      draw: 'Empate',
+      winner: '{{name}} ganó',
+      moves: '{{count}} movimientos',
+      duration: '{{min}}m {{sec}}s',
+    },
+    share: {
+      title: 'Repetición de juego',
+      button: 'Compartir',
+      copied: '¡Copiado!',
+    },
+    card: {
+      draw: 'Empate',
+      won: '{{name}} ganó',
+      moves: '{{count}} mov.',
+      duration: '{{min}}m',
+      watch: 'Ver repetición',
+    },
+    list: {
+      title: 'Repeticiones de juegos',
+      total: '{{count}} repeticiones',
+      empty: 'No hay repeticiones aún',
+      prev: 'Anterior',
+      next: 'Siguiente',
+      page: 'Página {{current}} / {{total}}',
+      filter: {
+        all: 'Todos los juegos',
+        chess: 'Ajedrez',
+        checkers: 'Damas',
+        ticTacToe: 'Tres en raya',
+        backgammon: 'Backgammon',
+        go: 'Go',
+      },
+    },
+  },
+  guestDisclaimer: {
+    playingAsGuest: 'Jugando como invitado',
+    agreementPrefix: 'Al jugar aceptas los ',
+    termsLink: 'Términos del Servicio',
+    agreementSuffix: ' de {{appName}} y certificas que tienes más de 18 años.',
   },
   themes: themesEs,
 };

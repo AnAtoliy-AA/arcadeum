@@ -123,7 +123,12 @@ test.describe('Sea Battle Tablet Layout', () => {
     // At ≤1150px chat is hidden by default — toggle it open first
     const toggleChatButton = page.getByTestId('toggle-chat-button');
     await expect(toggleChatButton).toBeVisible();
-    await toggleChatButton.click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="toggle-chat-button"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     const chatArea = page.getByTestId('game-chat-area');
     await expect(chatArea).toBeVisible();

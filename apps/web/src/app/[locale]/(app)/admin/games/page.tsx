@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { PageTitle, Typography, Spinner } from '@arcadeum/ui';
 import { requireAdmin } from '@/entities/session/api/requireAdmin';
 import { AdminGamesTable } from '@/features/admin-games/ui/AdminGamesTable';
 import { getTranslations } from '@/shared/i18n/server';
@@ -10,8 +11,6 @@ interface AdminGamesPageMessages {
   };
 }
 
-// No metadata export — inherit noindex/nofollow from /admin/layout.tsx.
-
 export default async function AdminGamesPage() {
   await requireAdmin();
 
@@ -22,40 +21,26 @@ export default async function AdminGamesPage() {
   const loading = t.loading ?? adminGamesEn.loading;
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '1200px',
-        minWidth: 0,
-        margin: '0 auto',
-        padding: '32px 16px',
-      }}
-    >
-      <div style={{ marginBottom: '24px' }}>
-        <h1
-          style={{
-            fontSize: '24px',
-            fontWeight: 700,
-            color: 'var(--color-text, #e4e4e7)',
-            marginBottom: '4px',
-          }}
-        >
+    <div className="w-full max-w-6xl mx-auto flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <PageTitle size="lg" gradient>
           {title}
-        </h1>
-        <p style={{ fontSize: '14px', color: '#71717a' }}>{subtitle}</p>
+        </PageTitle>
+        <Typography variant="body" uiSize="md" alpha="medium">
+          {subtitle}
+        </Typography>
       </div>
 
       <Suspense
         fallback={
           <div
             data-testid="admin-games-table-loading"
-            style={{
-              textAlign: 'center',
-              padding: '48px 16px',
-              color: '#71717a',
-            }}
+            className="flex flex-col items-center justify-center py-12 px-4 gap-3 text-[var(--colorTextSecondary,#a1a1aa)]"
           >
-            {loading}
+            <Spinner size="md" />
+            <Typography variant="body" uiSize="sm">
+              {loading}
+            </Typography>
           </div>
         }
       >

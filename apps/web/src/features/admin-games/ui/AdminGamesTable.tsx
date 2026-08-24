@@ -30,11 +30,7 @@ export async function AdminGamesTable() {
     return (
       <div
         data-testid="admin-games-table-empty"
-        style={{
-          textAlign: 'center',
-          padding: '48px 16px',
-          color: '#71717a',
-        }}
+        className="text-center py-12 px-4 text-[var(--colorTextSecondary,#71717a)]"
       >
         {emptyLabel}
       </div>
@@ -44,30 +40,11 @@ export async function AdminGamesTable() {
   return (
     <div
       data-testid="admin-games-table"
-      style={{
-        width: '100%',
-        borderRadius: 12,
-        border: '1px solid rgba(255,255,255,0.08)',
-        background: 'rgba(255,255,255,0.02)',
-        overflow: 'hidden',
-      }}
+      className="w-full rounded-xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] overflow-hidden"
     >
-      <div
-        style={{
-          display: 'flex',
-          gap: 16,
-          padding: '10px 16px',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
-          background: 'rgba(255,255,255,0.04)',
-          fontSize: 11,
-          color: '#a1a1aa',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-          fontWeight: 600,
-        }}
-      >
-        <span style={{ width: 24 }} aria-hidden />
-        <span style={{ flex: 1 }}>{labels.game}</span>
+      <div className="flex flex-row gap-4 py-2.5 px-4 border-b border-[var(--borderColor)] bg-[var(--backgroundFocus)] text-[11px] text-[var(--colorTextSecondary,#a1a1aa)] tracking-wider uppercase font-semibold">
+        <span className="w-6" aria-hidden />
+        <span className="flex-1">{labels.game}</span>
         <span>{labels.tier}</span>
       </div>
       {rows.map((row) => (

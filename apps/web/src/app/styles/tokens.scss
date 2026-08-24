@@ -31,3 +31,11 @@
   --backgroundRadialStart: rgba(56, 189, 248, 0.12);
   --backgroundRadialEnd: #151718;
 }
+
+/* High-contrast vision mode (ARC-896): strengthen board geometry without
+ * touching the JS palette. Applies to any game board using role="gridcell". */
+[data-vision-mode='highContrast'] [role='gridcell'] {
+  outline: 1px solid
+    color-mix(in srgb, var(--foreground, #ecefee) 45%, transparent);
+  outline-offset: -1px;
+}

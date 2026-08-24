@@ -56,6 +56,43 @@ export const en = {
     title: `Cat Dash · Multiplayer Cat Racing Dice Game · ${APP}`,
     description: `Play Cat Dash online on ${APP} — race cats with dice, unique abilities, and themed tracks. 2–6 players, free, instant rooms.`,
   },
+  backgammonLanding: {
+    title: `Backgammon · Free Online Multiplayer Board Game · ${APP}`,
+    description: `Play Backgammon online on ${APP} — classic 24-point board, dice rolls, bearing off, hitting blots to the bar, and AI opponents. Free, instant rooms, no download.`,
+  },
+  pachisiLanding: {
+    title: `Pachisi (Ludo) · Free Online Race Board Game · ${APP}`,
+    description: `Play Pachisi online on ${APP} — roll a six to launch your tokens, capture rivals, dodge danger zones, and race all four home. 2–4 players, AI bots, free instant rooms.`,
+  },
+  heartsLanding: {
+    title: `Hearts · Free Online Multiplayer Card Game · ${APP}`,
+    description: `Play Hearts online on ${APP} — classic 4-player trick-taking card game with passing, Hearts, Queen of Spades, and AI opponents. Free, instant rooms.`,
+  },
+  spadesLanding: {
+    title: `Spades · Free Online Multiplayer Card Game · ${APP}`,
+    description: `Play Spades online on ${APP} — classic 4-player partnership trick-taking card game with bidding, nil bids, bags, and AI opponents. Free, instant rooms.`,
+  },
+  goLanding: {
+    title: `Go · Free Online Multiplayer Board Game · ${APP}`,
+    description: `Play Go online on ${APP} — classic Baduk/Weiqi on 9×9, 13×13 and 19×19 boards with captures, ko rule, area scoring, and AI opponents. Free, instant rooms.`,
+  },
+
+  solitaireLanding: {
+    title: `Solitaire · Free Online Klondike Card Game · ${APP}`,
+    description: `Play Solitaire (Klondike) online on ${APP} — the classic single-player card puzzle with scoring, timer, and saved progress. Free, instant, no download.`,
+  },
+  minesweeperLanding: {
+    title: `Minesweeper · Free Online Classic Puzzle Game · ${APP}`,
+    description: `Play Minesweeper online on ${APP} — beginner to expert grids with flags, chording, timer, and saved progress. Free, instant, no download.`,
+  },
+  sudokuLanding: {
+    title: `Sudoku · Free Online Number Puzzle Game · ${APP}`,
+    description: `Play Sudoku online on ${APP} — easy, medium and hard puzzles with unique solutions, pencil marks, and saved progress. Free, instant, no download.`,
+  },
+  game2048Landing: {
+    title: `2048 · Free Online Tile-Merging Puzzle Game · ${APP}`,
+    description: `Play 2048 online on ${APP} — slide and merge numbered tiles on a 4×4 grid, chase your best score, and keep going past 2048. Free, instant, no download.`,
+  },
   settings: {
     title: `Settings · ${APP}`,
     description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,
@@ -79,6 +116,14 @@ export const en = {
   friends: {
     title: `Friends · ${APP}`,
     description: `Manage your ${APP} friends list, send friend requests, and see who's online.`,
+  },
+  clans: {
+    title: `Clans · ${APP}`,
+    description: `Join or create ${APP} clans, team up with other players, climb the clan leaderboards, and dominate together.`,
+  },
+  events: {
+    title: `Community Game Nights & Events · ${APP}`,
+    description: `Join scheduled community game nights on ${APP}. Compete in featured multiplayer games, climb live event leaderboards, and earn exclusive rewards.`,
   },
   tournaments: {
     title: `Tournaments · ${APP}`,

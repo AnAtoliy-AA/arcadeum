@@ -28,6 +28,8 @@ interface ChessBoardProps {
   kingPosition: BoardPosition | null;
   ariaLabel?: string;
   onSquareClick: (file: File, rank: Rank) => void;
+  /** Clears the current selection (Escape key). */
+  onDeselectSquare?: () => void;
   onPieceDrop?: (
     fromFile: File,
     fromRank: Rank,
@@ -106,6 +108,7 @@ function ChessCell({
     <div
       role="gridcell"
       data-testid={`chess-${file}${rank}`}
+      className="focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)]"
       aria-label={`${file}${rank}${piece ? ` ${piece.color} ${piece.type}` : ''}${selected ? ' selected' : ''}${legalTarget ? ' legal move' : ''}${hintMoved ? ' suggested' : ''}`}
       {...cellFocusProps}
       draggable={isMyPiece && !disabled}
@@ -253,6 +256,7 @@ function ChessBoardImpl({
   kingPosition,
   ariaLabel,
   onSquareClick,
+  onDeselectSquare,
   onPieceDrop,
 }: ChessBoardProps) {
   const [hoveredSquare, setHoveredSquare] = useState<string | null>(null);
@@ -330,6 +334,7 @@ function ChessBoardImpl({
         onSquareClick(file, rank);
       }
     },
+    onDeselect: onDeselectSquare,
   });
 
   function canInteractAny(): boolean {

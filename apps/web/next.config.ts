@@ -49,6 +49,29 @@ const withPWA = withPWAInit({
   },
   workboxOptions: {
     skipWaiting: true,
+    // ARC-900 offline mode: cache only immutable build assets + static
+    // media. Documents/HTML stay network-first via the /offline fallback so
+    // stale-bundle issues (see public/sw.js history) cannot resurface.
+    runtimeCaching: [
+      {
+        urlPattern: /\/_next\/static\/.+\.(?:js|css|woff2?)$/,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'arcadeum-static-v1',
+          expiration: { maxEntries: 300, maxAgeSeconds: 60 * 24 * 60 * 60 },
+          cacheableResponse: { statuses: [200] },
+        },
+      },
+      {
+        urlPattern: /\.(?:png|jpe?g|svg|webp|avif|mp3|wav|ogg|json)$/,
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'arcadeum-media-v1',
+          expiration: { maxEntries: 200, maxAgeSeconds: 30 * 24 * 60 * 60 },
+          cacheableResponse: { statuses: [200] },
+        },
+      },
+    ],
   },
 });
 

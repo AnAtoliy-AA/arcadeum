@@ -86,8 +86,24 @@ export class InventoryService {
         })
         .lean<LeanUser>(),
     ]);
+
+    const ownedItemIds = new Set(rows.map((r) => r.itemId));
+    const starters = listStarterItems();
+    const implicitStarters: InventoryItemView[] = starters
+      .filter((starter) => !ownedItemIds.has(starter.id))
+      .map((starter) => ({
+        rowId: `starter-${starter.id}`,
+        itemId: starter.id,
+        purchaseId: starterPurchaseId(userId, starter.id),
+        acquiredVia: 'starter',
+        paidAmount: null,
+        paidCurrency: null,
+        soldAt: null,
+        createdAt: new Date(0).toISOString(),
+      }));
+
     return {
-      items: rows.map(this.toView),
+      items: [...implicitStarters, ...rows.map(this.toView)],
       equipped: this.equippedFromUser(user),
     };
   }
@@ -106,6 +122,10 @@ export class InventoryService {
     }
     if (!itemId) {
       throw new BadRequestException('Invalid itemId');
+    }
+    const def = getCatalogItem(itemId);
+    if (def?.starter === true) {
+      return true;
     }
     const userObjId = new Types.ObjectId(userId);
     const row = await this.inventoryModel
@@ -173,24 +193,6 @@ export class InventoryService {
     if (starters.length === 0) return;
 
     const userObjId = new Types.ObjectId(userId);
-    const docs = starters.map((item) => ({
-      userId: userObjId,
-      itemId: item.id,
-      purchaseId: starterPurchaseId(userId, item.id),
-      acquiredVia: 'starter' as const,
-      paidAmount: null,
-      paidCurrency: null,
-    }));
-
-    try {
-      await this.inventoryModel.insertMany(docs, {
-        session,
-        ordered: false,
-      });
-    } catch (err) {
-      if (!this.isDuplicateKey(err)) throw err;
-    }
-
     const equipOps = starters
       .map((starter) => {
         const equipKey = equipKeyFor(starter.category);

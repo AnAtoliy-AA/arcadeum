@@ -19,9 +19,7 @@ const DEFAULT_COMMON_COPY: Partial<CommonMessages> =
   DEFAULT_TRANSLATIONS.common ?? {};
 
 export interface AuthLabels
-  extends HeroSectionLabels,
-    LocalAuthPanelLabels,
-    DownloadSectionLabels {
+  extends HeroSectionLabels, LocalAuthPanelLabels, DownloadSectionLabels {
   // Panel badges (already in LocalAuthPanelLabels but statusBadge is independent)
   statusBadge: string;
   oauthBadge: string;
@@ -359,6 +357,11 @@ function buildFormLabels(
 ): AuthFormLabels {
   const legalTemplate = copy.legal ?? fallback.legal ?? '';
   const legal = splitLegalCopy(legalTemplate);
+  const legalAgeTemplate =
+    copy.legalAgeAgreement ??
+    fallback.legalAgeAgreement ??
+    "I confirm that I am at least 18 years old and agree to {{appName}}'s {{termsLink}} and {{privacyLink}}.";
+  const legalAge = splitLegalCopy(legalAgeTemplate);
   return {
     tabSignIn: copy.tabSignIn ?? fallback.tabSignIn ?? 'Sign in',
     tabRegister: copy.tabRegister ?? fallback.tabRegister ?? 'Create account',
@@ -398,6 +401,9 @@ function buildFormLabels(
     legalPrefix: legal.prefix,
     legalConjunction: legal.conjunction,
     legalSuffix: legal.suffix,
+    legalAgePrefix: legalAge.prefix,
+    legalAgeConjunction: legalAge.conjunction,
+    legalAgeSuffix: legalAge.suffix,
     termsLink: copy.termsLink ?? fallback.termsLink ?? 'Terms',
     privacyLink: copy.privacyLink ?? fallback.privacyLink ?? 'Privacy Policy',
   };

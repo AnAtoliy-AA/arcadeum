@@ -1,22 +1,15 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { SeaBattleService } from './sea-battle.service';
-import { GameSessionSummary } from '../sessions/game-sessions.service';
-import {
-  SeaBattleState,
+import type { GameSessionSummary } from '../sessions/game-sessions.service';
+import type {
   SeaBattlePlayer,
-  Ship,
-  type AiDifficulty,
-} from '../engines/sea-battle/sea-battle.types';
+  SeaBattleState,
+} from '@arcadeum/games-core/games/sea-battle/sea-battle.types';
 import {
-  CELL_STATE,
   GAME_PHASE,
   BOARD_SIZE,
-} from '../engines/sea-battle/sea-battle.constants';
-import {
-  getActiveShooterId,
-  getTeamForPlayer,
-} from '../engines/sea-battle/team-rotation.utils';
-import { getSmartTarget, getProbabilisticTarget } from './bot-targeting';
+} from '@arcadeum/games-core/games/sea-battle/sea-battle.constants';
+import { SeaBattleBot } from '@arcadeum/games-core/games/sea-battle/sea-battle-bot';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
 
 const LOCK_TIMEOUT_MS = 60000;
@@ -28,7 +21,7 @@ const PLACEMENT_CONFIRM_DELAY_MS = { min: 250, max: 750 };
 const ATTACK_DELAY_MS = { min: 500, max: 1250 };
 
 @Injectable()
-export class SeaBattleBotService {
+export class SeaBattleBotService extends SeaBattleBot {
   private readonly logger = new Logger(SeaBattleBotService.name);
   private readonly processing = new Map<string, number>(); // lockKey -> timestamp
   // Per-room placement chain. When several bots auto-place at the same time
@@ -57,7 +50,9 @@ export class SeaBattleBotService {
   constructor(
     @Inject(forwardRef(() => SeaBattleService))
     private readonly seaBattleService: SeaBattleService,
-  ) {}
+  ) {
+    super();
+  }
 
   /**
    * Check if the bot needs to make a move
@@ -92,9 +87,7 @@ export class SeaBattleBotService {
         this.isBot(p.playerId),
       );
 
-      const currentPlayerId = state.teams
-        ? getActiveShooterId(state)
-        : state.playerOrder[state.currentTurnIndex];
+      const currentPlayerId = this.getCurrentPlayerId(state);
 
       for (const bot of bots) {
         const lockKey = `${session.roomId}:${bot.playerId}`;
@@ -132,10 +125,6 @@ export class SeaBattleBotService {
     } catch (error) {
       this.logger.error(`Bot failed to play in Sea Battle: ${error}`);
     }
-  }
-
-  private isBot(userId: string): boolean {
-    return userId.startsWith('bot-');
   }
 
   private async sleep(ms: number) {
@@ -233,64 +222,31 @@ export class SeaBattleBotService {
         }
 
         // Verify it is still our turn (in case of double triggers or phase changes)
-        const currentPlayerId = state.teams
-          ? getActiveShooterId(state)
-          : state.playerOrder[state.currentTurnIndex];
+        const currentPlayerId = this.getCurrentPlayerId(state);
         if (currentPlayerId !== botId || state.phase !== GAME_PHASE.BATTLE) {
           break;
         }
 
         // Pick a target: prioritize opponents with damaged ships (Locked-on strategy)
-        const activeOpponents = state.players.filter(
-          (p: SeaBattlePlayer) => p.playerId !== botId && p.alive,
-        );
-        const botTeam = getTeamForPlayer(state, botId);
-        const eligibleOpponents = botTeam
-          ? activeOpponents.filter(
-              (p) => !botTeam.playerIds.includes(p.playerId),
-            )
-          : activeOpponents;
-
-        if (eligibleOpponents.length === 0) {
+        const target = this.pickTargetOpponent(state, botId);
+        if (!target) {
           this.logger.warn(`Bot ${botId} playTurn: NO ACTIVE OPPONENTS FOUND!`);
           break;
         }
 
-        const damagedOpponent = eligibleOpponents.find((p) =>
-          p.ships.some((s: Ship) => s.hits > 0 && !s.sunk),
-        );
-        const target =
-          damagedOpponent ||
-          eligibleOpponents[
-            Math.floor(Math.random() * eligibleOpponents.length)
-          ];
-
         // --- Special weapons: sonar / radar (free action, no turn advancement) ---
-        const myUsage = state.specialWeaponUsage?.[botId];
-        const hasSonar = !!state.specialWeapons?.sonar && !myUsage?.sonarUsed;
-        const hasRadar = !!state.specialWeapons?.radar && !myUsage?.radarUsed;
-
-        if (hasSonar) {
-          const centerRow = Math.floor(gridSize / 2);
-          const centerCol = Math.floor(gridSize / 2);
+        const specialAction = this.pickSpecialWeaponAction(
+          state,
+          botId,
+          target,
+          gridSize,
+        );
+        if (specialAction) {
           await this.seaBattleService.executeActionByRoom(
             botId,
             currentSession.roomId,
-            'useSonar',
-            { targetPlayerId: target.playerId, row: centerRow, col: centerCol },
-          );
-          const refreshed = await this.seaBattleService.findSessionByRoom(
-            currentSession.roomId,
-          );
-          if (!refreshed) break;
-          currentSession = refreshed;
-        } else if (hasRadar) {
-          const row = Math.floor(Math.random() * gridSize);
-          await this.seaBattleService.executeActionByRoom(
-            botId,
-            currentSession.roomId,
-            'useRadar',
-            { targetPlayerId: target.playerId, row },
+            specialAction.action,
+            specialAction.payload as unknown as Record<string, unknown>,
           );
           const refreshed = await this.seaBattleService.findSessionByRoom(
             currentSession.roomId,
@@ -300,40 +256,8 @@ export class SeaBattleBotService {
         }
 
         // Difficulty-based targeting
-        const difficulty: AiDifficulty = state.aiDifficulty ?? 'medium';
-        const hasDamagedShip = target.ships.some(
-          (s: Ship) => s.hits > 0 && !s.sunk,
-        );
-        let choice: { r: number; c: number } | null = null;
-        if (difficulty === 'easy') {
-          if (Math.random() < 0.3)
-            choice = this.getSmartTarget(target, gridSize);
-        } else if (difficulty === 'expert') {
-          // Finish damaged ships first, then statistically hunt for new ones.
-          choice = hasDamagedShip
-            ? this.getSmartTarget(target, gridSize)
-            : this.getProbabilisticTarget(target, gridSize) ||
-              this.getSmartTarget(target, gridSize);
-        } else if (difficulty === 'hard') {
-          choice =
-            this.getProbabilisticTarget(target, gridSize) ||
-            this.getSmartTarget(target, gridSize);
-        } else {
-          choice = this.getSmartTarget(target, gridSize);
-        }
-
-        if (!choice) {
-          const validCells: { r: number; c: number }[] = [];
-          for (let r = 0; r < gridSize; r++)
-            for (let c = 0; c < gridSize; c++)
-              if (
-                target.board[r][c] !== CELL_STATE.HIT &&
-                target.board[r][c] !== CELL_STATE.MISS
-              )
-                validCells.push({ r, c });
-          if (validCells.length === 0) break;
-          choice = validCells[Math.floor(Math.random() * validCells.length)];
-        }
+        const choice = this.pickAttackCell(state, target, gridSize);
+        if (!choice) break;
 
         // Execute attack and update currentSession
         currentSession = await this.seaBattleService.attackByRoom(
@@ -348,18 +272,12 @@ export class SeaBattleBotService {
 
         // Check if it's still our turn after the attack (hit = true, miss = false)
         const newState = currentSession.state as unknown as SeaBattleState;
-        const nextPlayerId = newState.teams
-          ? getActiveShooterId(newState)
-          : newState.playerOrder[newState.currentTurnIndex];
         isStillMyTurn =
-          nextPlayerId === botId && newState.phase === GAME_PHASE.BATTLE;
+          this.getCurrentPlayerId(newState) === botId &&
+          newState.phase === GAME_PHASE.BATTLE;
       }
     } finally {
       this.processing.delete(lockKey);
     }
   }
-
-  private getSmartTarget = getSmartTarget;
-
-  private getProbabilisticTarget = getProbabilisticTarget;
 }

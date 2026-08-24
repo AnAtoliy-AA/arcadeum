@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
 import type { GameSessionSummary } from '@/shared/types/games';
+import { offlineBusOn } from '@/features/offline/lib/offline-bus';
+import { isOfflineRoomId as routeOfflineRoomId } from '@/features/offline/lib/offline-room';
 
 interface UseGameSessionOptions {
   roomId: string;
@@ -49,6 +51,33 @@ export function useGameSession(
 
   useEffect(() => {
     if (!enabled) return;
+
+    // Offline rooms never touch sockets — snapshots arrive via the local bus.
+    if (routeOfflineRoomId(roomId)) {
+      const handleSnapshot = (payload: unknown) => {
+        const p = payload as {
+          roomId?: string;
+          session?: GameSessionSummary | null;
+        };
+        if (p?.roomId && p.roomId !== roomId) return;
+        setSession(p?.session ?? null);
+        setActionBusy(null);
+      };
+      const offSnapshot = offlineBusOn(
+        'games.session.snapshot',
+        handleSnapshot,
+      );
+      const offStarted = offlineBusOn('games.session.started', (payload) => {
+        const p = payload as { session?: GameSessionSummary | null };
+        setStartBusy(false);
+        if (p?.session) setSession(p.session);
+        setActionBusy(null);
+      });
+      return () => {
+        offSnapshot();
+        offStarted();
+      };
+    }
 
     const handleSnapshot = (payload: {
       roomId?: string;

@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.OCI_SSH_HOST }}
           username: ${{ secrets.OCI_SSH_USER }}
@@ -34,7 +34,7 @@ jobs:
 
             pnpm install --frozen-lockfile
 
-            pnpm --filter be build
+            pnpm --filter @arcadeum/games-core build && pnpm --filter be build
             pnpm --filter tg-bot build
 
             pm2 delete arcadeum-be 2>/dev/null || true

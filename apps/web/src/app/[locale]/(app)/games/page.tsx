@@ -10,6 +10,7 @@ import { featuredGames } from '../../home/data/games';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { Container, PageLayout } from '@arcadeum/ui';
 import { GamesCatalogClient, type CatalogGameItem } from './GamesCatalogClient';
+import { OFFLINE_GAME_SLUGS } from '@/features/offline/lib/offline-capable';
 
 export async function generateMetadata({
   params,
@@ -31,8 +32,9 @@ function resolveLocale(raw: string): Locale {
 function resolveCategory(
   type: string,
   genre: string,
-): 'board' | 'card' | 'casual' {
+): 'board' | 'card' | 'casual' | 'puzzle' {
   if (type === 'card') return 'card';
+  if (type === 'puzzle') return 'puzzle';
   if (
     genre.toLowerCase().includes('race') ||
     genre.toLowerCase().includes('arcade')
@@ -77,6 +79,8 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
       players: g.players,
       duration: g.duration,
       landingHref,
+      offlineSlug:
+        OFFLINE_GAME_SLUGS.find((o) => o.engineId === g.id)?.slug ?? null,
       accentColor: g.accentColor ?? '#60a5fa',
       isPlayable: g.isPlayable,
       isDemo: g.isDemo,
@@ -160,6 +164,9 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
               locale={locale}
               games={catalogGames}
               roomsHref={routes.rooms}
+              offlineBadgeLabel={
+                messages.pwa?.offlineGame?.chip ?? 'Offline play'
+              }
             />
           </div>
         </Container>

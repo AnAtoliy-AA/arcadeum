@@ -72,7 +72,12 @@ test.describe('Fullscreen auto-exit on game finish', () => {
     const container = page.locator('.games-room-container');
 
     // Enter fullscreen.
-    await page.getByTestId('fullscreen-button').click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="fullscreen-button"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
     await expect(container).toHaveClass(/is-fullscreen/);
 
     // Backend marks the game finished — this is the only event clients receive

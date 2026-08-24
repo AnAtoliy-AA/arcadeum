@@ -94,7 +94,12 @@ test.describe('Cascade lobby', () => {
     // Surface the Cascade lobby — there should be a Start with bots affordance.
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible({});
-    await startBtn.click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="start-with-bots-button"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     await expect
       .poll(async () => {

@@ -229,5 +229,49 @@ describe('GameRoomsMatchmakingService', () => {
         }),
       );
     });
+
+    it('prevents pairing users sharing the same IP in production', async () => {
+      const prodConfig = {
+        get: jest.fn((key: string) => {
+          if (key === 'NODE_ENV') return 'production';
+          return undefined;
+        }),
+      } as unknown as ConfigService;
+
+      const prodModule = await Test.createTestingModule({
+        providers: [
+          GameRoomsMatchmakingService,
+          { provide: GameRoomsService, useValue: roomsService },
+          { provide: GameRoomsQuickplayService, useValue: quickplayService },
+          { provide: GamesRealtimeService, useValue: realtimeService },
+          { provide: ConfigService, useValue: prodConfig },
+        ],
+      }).compile();
+
+      const prodService = prodModule.get(GameRoomsMatchmakingService);
+      prodService.joinQueue(
+        'user1',
+        'socket1',
+        'sea_battle_v1',
+        undefined,
+        false,
+        undefined,
+        '192.168.1.100',
+      );
+      prodService.joinQueue(
+        'user2',
+        'socket2',
+        'sea_battle_v1',
+        undefined,
+        false,
+        undefined,
+        '192.168.1.100',
+      );
+
+      await flushMicrotasks();
+
+      expect(roomsService.createRoom).not.toHaveBeenCalled();
+      expect(roomsService.joinRoom).not.toHaveBeenCalled();
+    });
   });
 });

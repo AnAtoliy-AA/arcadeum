@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('/wallet SEO regression', () => {
   // ARC-727: /wallet is per-user, transactional, and noindexed by the
-  // middleware (`PRIVATE_SLUG_KEYS`). It MUST NOT appear in the sitemap —
+  // proxy (`PRIVATE_SLUG_KEYS`). It MUST NOT appear in the sitemap —
   // listing noindex URLs wastes Googlebot's crawl budget and triggers
   // "submitted URL marked noindex" warnings in Search Console.
   test('sitemap.xml does not include /wallet', async ({ request }) => {

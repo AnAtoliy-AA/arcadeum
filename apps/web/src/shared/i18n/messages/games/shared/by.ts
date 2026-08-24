@@ -39,6 +39,19 @@ export const byMessages = {
     error: 'Не атрымалася запусціць — паспрабуйце яшчэ раз',
     delayLabel: 'Затрымка ходу',
   },
+  tutorial: {
+    ui: {
+      button: 'Навучанне',
+      next: 'Далей',
+      back: 'Назад',
+      skip: 'Прапусціць',
+      finish: 'Пачаць гульню',
+      stepOf: 'Крок {{current}} з {{total}}',
+      completeTitle: 'Навучанне завершана!',
+      completeBody:
+        'Выдатна — цяпер вы ведаеце асновы гульні {{game}}. Поспеху за сталом!',
+    },
+  },
   rooms: {
     status: {
       lobby: 'Лобі',
@@ -132,6 +145,8 @@ export const byMessages = {
   },
   create: {
     title: 'Стварыць гульнявы зал',
+    changeGame: 'Змяніць гульню',
+    sectionSetup: 'Налада гульні',
     sectionGame: 'Выберыце гульню',
     sectionExpansions: 'Дапаўненні',
     sectionVariant: 'Тэма гульні',
@@ -327,6 +342,7 @@ export const byMessages = {
       action: 'Экшн',
       strategy: 'Стратэгія',
       race: 'Гонка',
+      puzzle: 'Галаваломка',
     },
     tags: {
       strategy: 'Стратэгія',
@@ -471,6 +487,62 @@ export const byMessages = {
     previewLabel: 'Жывое прадпрагляд',
     cycleHint: 'Націсніце, каб змяніць тэму',
     cycleAriaLabel: 'Змяніць тэму прадпрагляду, зараз {{variant}}',
+  },
+  replay: {
+    loading: 'Загрузка паўтору…',
+    error: 'Паўтор не знойдзены',
+    controls: {
+      progress: 'Прагрэс паўтору',
+      first: 'У пачатак',
+      prev: 'Папярэдні ход',
+      play: 'Прайграць',
+      pause: 'Паўза',
+      next: 'Наступны ход',
+      last: 'У канец',
+      stepCounter: 'Ход {{current}} / {{total}}',
+    },
+    header: {
+      title: 'Паўтор: {{game}}',
+      draw: 'Нічыя',
+      winner: '{{name}} перамог(ла)',
+      moves: '{{count}} хадоў',
+      duration: '{{min}}хв {{sec}}с',
+    },
+    share: {
+      title: 'Паўтор гульні',
+      button: 'Падзяліцца',
+      copied: 'Скапіявана!',
+    },
+    card: {
+      draw: 'Нічыя',
+      won: '{{name}} перамог(ла)',
+      moves: '{{count}} хадоў',
+      duration: '{{min}}хв',
+      watch: 'Глядзець паўтор',
+    },
+    list: {
+      title: 'Паўторы гульняў',
+      total: '{{count}} паўтораў',
+      empty: 'Паўтораў пакуль няма',
+      prev: 'Назад',
+      next: 'Далей',
+      page: 'Старонка {{current}} / {{total}}',
+      filter: {
+        all: 'Усе гульні',
+        chess: 'Шахматы',
+        checkers: 'Шашкі',
+        ticTacToe: 'Хрэсцікі-нулікі',
+        backgammon: 'Нарды',
+        go: 'Го',
+      },
+    },
+  },
+  guestDisclaimer: {
+    playingAsGuest: 'Гульня ў рэжыме госця',
+    agreementPrefix: 'Гуляючы, вы прымаеце ',
+    termsLink: 'Умовы абслугоўвання',
+    agreementSuffix:
+      ' {{appName}} і пацвярджаеце, што вам споўнілася 18 гадоў.',
   },
   themes: themesBy,
 };

@@ -4,7 +4,7 @@
 // `rewrites()` in next.config (URL → filesystem) and `redirects()`
 // (English-slug-in-locale → localized canonical).
 //
-// Imported by routes.ts, middleware.ts, and next.config.ts. Keep this
+// Imported by routes.ts, proxy.ts, and next.config.ts. Keep this
 // file dependency-free — routes.ts is imported transitively by
 // app-config.ts, which would create a cycle if we pulled in the i18n
 // message bundles here.
@@ -49,6 +49,8 @@ export const EN_SLUGS = {
   friends: 'friends',
   developers: 'developers',
   players: 'players',
+  clans: 'clans',
+  events: 'events',
 } as const;
 
 export type SlugKey = keyof typeof EN_SLUGS;
@@ -95,6 +97,8 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     friends: 'amigos',
     developers: 'desarrolladores',
     players: 'jugadores',
+    clans: 'clanes',
+    events: 'eventos',
   },
   fr: {
     auth: 'connexion',
@@ -128,6 +132,8 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     friends: 'amis',
     developers: 'developpeurs',
     players: 'joueurs',
+    clans: 'clans',
+    events: 'evenements',
   },
   ru: {
     auth: 'vhod',
@@ -161,6 +167,8 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     friends: 'druzia',
     developers: 'razrabotchiki',
     players: 'igroki',
+    clans: 'klany',
+    events: 'sobytiya',
   },
   by: {
     auth: 'uvakhod',
@@ -194,6 +202,8 @@ export const LOCALE_SLUGS: Record<Locale, Record<SlugKey, string>> = {
     friends: 'siaqry',
     developers: 'raspracoushchyki',
     players: 'hultsy',
+    clans: 'klany',
+    events: 'padzei',
   },
 };
 

@@ -96,6 +96,8 @@ export const fr = {
     passwordMismatch: 'Les mots de passe ne correspondent pas.',
     legal:
       'En continuant, vous acceptez les {{termsLink}} et la {{privacyLink}} de {{appName}}.',
+    legalAgeAgreement:
+      'Je confirme avoir au moins 18 ans et accepter les {{termsLink}} et la {{privacyLink}} de {{appName}}.',
     termsLink: 'Conditions',
     privacyLink: 'Politique de confidentialité',
   },
@@ -152,7 +154,7 @@ export const fr = {
     submitting: 'Envoi en cours...',
     successTitle: 'Vérifiez votre boîte de réception',
     successBody:
-      "Si un compte existe pour {{email}}, nous avons envoyé un lien de réinitialisation. Le lien expire dans 15 minutes.",
+      'Si un compte existe pour {{email}}, nous avons envoyé un lien de réinitialisation. Le lien expire dans 15 minutes.',
     backToSignIn: 'Retour à la connexion',
     error: "Impossible d'envoyer le lien. Réessayez.",
     invalidEmail: 'Saisissez une adresse e-mail valide.',
@@ -169,7 +171,7 @@ export const fr = {
       'Vous pouvez désormais vous connecter avec votre nouveau mot de passe.',
     signInCta: 'Continuer vers la connexion',
     missingToken:
-      "Le code de réinitialisation est absent de ce lien. Demandez-en un nouveau depuis la page de connexion.",
+      'Le code de réinitialisation est absent de ce lien. Demandez-en un nouveau depuis la page de connexion.',
     invalidToken:
       'Ce lien de réinitialisation est invalide ou a expiré. Demandez-en un nouveau.',
     passwordTooShort: 'Le mot de passe doit faire au moins 8 caractères.',

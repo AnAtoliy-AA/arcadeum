@@ -105,6 +105,24 @@ export const enMessages = {
         },
       },
     },
+    tutorial: {
+      s1: {
+        title: 'Race to promote',
+        body: 'Move your pieces diagonally forward one square at a time. Reach the far side to crown a king that moves both ways.',
+      },
+      s2: {
+        title: 'Jump to capture',
+        body: 'Jump over an adjacent enemy piece to capture it. Captures are mandatory, and multi-jumps must be completed in full.',
+      },
+      s3: {
+        title: 'Win by elimination',
+        body: 'Capture every enemy piece or leave your opponent without a legal move to take the win.',
+      },
+      s4: {
+        title: 'Table tools',
+        body: 'Toggle sound and music, enter fullscreen, review the Rules book or invite friends from this panel.',
+      },
+    },
     rules: {
       title: 'Checkers Rules',
       headers: {

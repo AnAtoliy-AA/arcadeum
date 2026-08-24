@@ -6,7 +6,7 @@ export const by = {
     'Шырокі выбар бясплатных настольных гульняў анлайн. Кідайце выклік разумным ботам, стварайце гульнявыя пакоі ў рэальным часе, запрашайце сяброў, а {{appName}} возьме на сябе правілы, падлік ачкоў і чарговасць хадоў, каб вы маглі засяродзіцца на весялосці.',
   primaryCtaLabel: 'Пачаць',
   playWithBotsLabel: 'Гульня супраць ІІ',
-  defaultRoomName: 'Гульня {{name}}',
+  defaultRoomName: 'Гульня {{name}} #{{number}}',
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Гуляць',
   supportCtaLabel: 'Падрымаць распрацоўшчыкаў',

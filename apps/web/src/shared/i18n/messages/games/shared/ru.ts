@@ -39,6 +39,19 @@ export const ruMessages = {
     error: 'Не удалось запустить — попробуйте ещё раз',
     delayLabel: 'Задержка хода',
   },
+  tutorial: {
+    ui: {
+      button: 'Обучение',
+      next: 'Далее',
+      back: 'Назад',
+      skip: 'Пропустить',
+      finish: 'Начать игру',
+      stepOf: 'Шаг {{current}} из {{total}}',
+      completeTitle: 'Обучение завершено!',
+      completeBody:
+        'Отлично — теперь вы знаете основы игры {{game}}. Удачи за столом!',
+    },
+  },
   rooms: {
     status: {
       lobby: 'Лобби',
@@ -132,6 +145,8 @@ export const ruMessages = {
   },
   create: {
     title: 'Создать игровой зал',
+    changeGame: 'Сменить игру',
+    sectionSetup: 'Настройка игры',
     sectionGame: 'Выберите игру',
     sectionExpansions: 'Дополнения',
     sectionVariant: 'Тема игры',
@@ -327,6 +342,7 @@ export const ruMessages = {
       action: 'Экшн',
       strategy: 'Стратегия',
       race: 'Гонка',
+      puzzle: 'Головоломка',
     },
     tags: {
       strategy: 'Стратегия',
@@ -471,6 +487,62 @@ export const ruMessages = {
     previewLabel: 'Живой превью',
     cycleHint: 'Нажмите, чтобы сменить тему',
     cycleAriaLabel: 'Сменить тему превью, сейчас {{variant}}',
+  },
+  replay: {
+    loading: 'Загрузка повтора…',
+    error: 'Повтор не найден',
+    controls: {
+      progress: 'Прогресс повтора',
+      first: 'В начало',
+      prev: 'Предыдущий ход',
+      play: 'Воспроизвести',
+      pause: 'Пауза',
+      next: 'Следующий ход',
+      last: 'В конец',
+      stepCounter: 'Ход {{current}} / {{total}}',
+    },
+    header: {
+      title: 'Повтор: {{game}}',
+      draw: 'Ничья',
+      winner: '{{name}} победил(а)',
+      moves: '{{count}} ходов',
+      duration: '{{min}}м {{sec}}с',
+    },
+    share: {
+      title: 'Повтор игры',
+      button: 'Поделиться',
+      copied: 'Скопировано!',
+    },
+    card: {
+      draw: 'Ничья',
+      won: '{{name}} победил(а)',
+      moves: '{{count}} ходов',
+      duration: '{{min}}м',
+      watch: 'Смотреть повтор',
+    },
+    list: {
+      title: 'Повторы игр',
+      total: '{{count}} повторов',
+      empty: 'Повторов пока нет',
+      prev: 'Назад',
+      next: 'Далее',
+      page: 'Страница {{current}} / {{total}}',
+      filter: {
+        all: 'Все игры',
+        chess: 'Шахматы',
+        checkers: 'Шашки',
+        ticTacToe: 'Крестики-нолики',
+        backgammon: 'Нарды',
+        go: 'Го',
+      },
+    },
+  },
+  guestDisclaimer: {
+    playingAsGuest: 'Игра в режиме гостя',
+    agreementPrefix: 'Играя, вы принимаете ',
+    termsLink: 'Условия обслуживания',
+    agreementSuffix:
+      ' {{appName}} и подтверждаете, что вам исполнилось 18 лет.',
   },
   themes: themesRu,
 };

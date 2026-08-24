@@ -104,6 +104,42 @@ export class ApiError extends Error {
 
 const inFlightRequests = new Map<string, Promise<unknown>>();
 
+interface SsrCacheEntry {
+  value: unknown;
+  expiresAt: number;
+}
+
+const SSR_CACHE_TTL_MS = 60_000;
+const SSR_CACHE_MAX_ENTRIES = 200;
+
+function ssrResponseCache(): Map<string, SsrCacheEntry> {
+  const store = globalThis as typeof globalThis & {
+    __arcadeumSsrResponseCache?: Map<string, SsrCacheEntry>;
+  };
+  store.__arcadeumSsrResponseCache ??= new Map();
+  return store.__arcadeumSsrResponseCache;
+}
+
+function readSsrCache(key: string): unknown | undefined {
+  const cache = ssrResponseCache();
+  const entry = cache.get(key);
+  if (!entry) return undefined;
+  if (entry.expiresAt <= Date.now()) {
+    cache.delete(key);
+    return undefined;
+  }
+  return entry.value;
+}
+
+function writeSsrCache(key: string, value: unknown): void {
+  const cache = ssrResponseCache();
+  if (cache.size >= SSR_CACHE_MAX_ENTRIES) {
+    const oldest = cache.keys().next();
+    if (!oldest.done) cache.delete(oldest.value);
+  }
+  cache.set(key, { value, expiresAt: Date.now() + SSR_CACHE_TTL_MS });
+}
+
 export const apiClient = {
   async fetch<T>(path: string, options: ApiClientOptions = {}): Promise<T> {
     const {
@@ -120,6 +156,19 @@ export const apiClient = {
     // Only deduplicate GET requests
     const isGet = method.toUpperCase() === 'GET';
     const cacheKey = isGet ? `${method}:${url}:${token || ''}` : null;
+
+    // Server-side responses are memoized briefly so static prerendering
+    // (every page × locale during `next build`) doesn't hammer the API
+    // and trip its rate limiter (429 ThrottlerException).
+    const ssrKey =
+      typeof window === 'undefined' && cacheKey && options.cache !== 'no-store'
+        ? `ssr:${cacheKey}`
+        : null;
+
+    if (ssrKey) {
+      const cached = readSsrCache(ssrKey);
+      if (cached !== undefined) return cached as T;
+    }
 
     if (cacheKey && inFlightRequests.has(cacheKey)) {
       return inFlightRequests.get(cacheKey) as Promise<T>;
@@ -140,6 +189,7 @@ export const apiClient = {
           },
           path,
         );
+        if (ssrKey) writeSsrCache(ssrKey, result);
         return result;
       } finally {
         if (cacheKey) inFlightRequests.delete(cacheKey);
@@ -167,9 +217,6 @@ export const apiClient = {
       ...fetchOptions
     } = options;
 
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
-
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
@@ -189,24 +236,32 @@ export const apiClient = {
       }
     }
 
-    const config: RequestInit = {
-      ...fetchOptions,
-      headers,
-      credentials: 'include',
-      cache: options.cache ?? 'no-cache',
-      signal: customSignal || controller.signal,
-      ...(typeof window === 'undefined' ? { next: { revalidate: 60 } } : {}),
-    };
-
-    if (data) {
-      config.body = JSON.stringify(data);
-    }
-
     const isDev = process.env.NODE_ENV === 'development';
+    const isServer = typeof window === 'undefined';
     let attempts = 0;
-    const maxAttempts = isDev ? 2 : 1;
+    // The server retries once so build-time prerendering survives transient
+    // API hiccups (rate limits, cold starts); browsers fail fast instead.
+    const maxAttempts = isDev || isServer ? 2 : 1;
 
     while (attempts < maxAttempts) {
+      attempts++;
+
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
+
+      const config: RequestInit = {
+        ...fetchOptions,
+        headers,
+        credentials: 'include',
+        cache: options.cache ?? 'no-cache',
+        signal: customSignal || controller.signal,
+        ...(typeof window === 'undefined' ? { next: { revalidate: 60 } } : {}),
+      };
+
+      if (data) {
+        config.body = JSON.stringify(data);
+      }
+
       try {
         const response = await fetch(url, config);
 
@@ -219,6 +274,20 @@ export const apiClient = {
             errorMessage = errorData.message || errorMessage;
           } catch {
             // Ignore JSON parse error
+          }
+
+          if (
+            response.status === HttpStatus.TOO_MANY_REQUESTS &&
+            attempts < maxAttempts
+          ) {
+            clearTimeout(id);
+            const retryAfterSec = Number(response.headers.get('retry-after'));
+            const delayMs =
+              Number.isFinite(retryAfterSec) && retryAfterSec > 0
+                ? Math.min(retryAfterSec * 1000, 5000)
+                : 1000;
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
+            continue;
           }
 
           throw new ApiError(errorMessage, response.status, errorData);
@@ -239,7 +308,6 @@ export const apiClient = {
           return {} as T;
         }
       } catch (error) {
-        attempts++;
         const networkError = error as NetworkError;
         const isConnectionError =
           error instanceof Error &&
@@ -261,6 +329,7 @@ export const apiClient = {
             );
           }
           // Wait a bit before retrying to give the backend time to wake up
+          clearTimeout(id);
           await new Promise((resolve) => setTimeout(resolve, 2000));
           continue;
         }
@@ -272,6 +341,7 @@ export const apiClient = {
         }
 
         // Production fallback: try backup instance on network/timeout errors
+        clearTimeout(id);
         const isClient = typeof window !== 'undefined';
         if (isClient && isConnectionError) {
           const fallbackUrl = resolveApiFallbackUrl(path ?? '');
@@ -280,7 +350,6 @@ export const apiClient = {
               console.warn(
                 `[apiClient] Primary ${url} unreachable, trying fallback ${fallbackUrl}`,
               );
-              clearTimeout(id);
               const fallbackResult = await this.performFetch<T>(
                 fallbackUrl,
                 options,
@@ -292,7 +361,6 @@ export const apiClient = {
           }
         }
 
-        clearTimeout(id);
         if (error instanceof Error && error.name === 'AbortError') {
           // If the external (caller-provided) signal was aborted, propagate
           // the AbortError so callers can distinguish cancellation from timeout.

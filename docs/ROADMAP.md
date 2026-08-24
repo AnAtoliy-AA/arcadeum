@@ -34,31 +34,32 @@
 | 2G. Achievements       | —       | —                            | **Implemented** |
 | 2H. Post-Game Analysis | ARC-882 | `ARC-882-post-game-analysis` | **Implemented** |
 | 2I. Coach Mode         | ARC-883 | `ARC-883-coach-mode`         | **Implemented** |
-| 3A. Hearts/Spades      | ARC-884 | `ARC-884-hearts-spades`      | Not started     |
-| 3B. Backgammon         | ARC-885 | `ARC-885-backgammon`         | Not started     |
-| 3C. Pachisi            | ARC-886 | `ARC-886-pachisi`            | Not started     |
-| 3D. Go                 | ARC-887 | `ARC-887-go`                 | Not started     |
-| 3F. Game Replays       | ARC-888 | `ARC-888-game-replays`       | Not started     |
+| 3A. Hearts/Spades      | ARC-884 | `ARC-884-hearts-spades`      | **Implemented** |
+| 3B. Backgammon         | ARC-885 | `ARC-885-backgammon`         | **Implemented** |
+| 3C. Pachisi            | ARC-886 | `ARC-886-pachisi`            | **Implemented** |
+| 3D. Go                 | ARC-887 | `ARC-887-go`                 | **Implemented** |
+| 3F. Game Replays       | ARC-888 | `ARC-888-game-replays`       | **Implemented** |
 | 3G. Spectator Mode     | ARC-889 | `ARC-889-spectator-mode`     | **Implemented** |
-| 3H. AI-vs-AI           | ARC-890 | `ARC-890-ai-vs-ai`           | Not started     |
-| 3I. Clans              | ARC-891 | `ARC-891-clans`              | Not started     |
-| 3J. Game Nights        | ARC-892 | `ARC-892-game-nights`        | Not started     |
+| 3H. AI-vs-AI           | ARC-890 | `ARC-890-ai-vs-ai`           | **Implemented** |
+| 3I. Clans              | ARC-891 | `ARC-891-clans`              | **Implemented** |
+| 3J. Game Nights        | ARC-892 | `ARC-892-game-nights`        | **Implemented** |
 | 4A. Chess Clock        | ARC-893 | `ARC-893-chess-clock`        | **Implemented** |
 | 4B. Stats Dashboard    | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented** |
-| 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | Not started     |
-| 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | Not started     |
+| 4C. Tutorials          | ARC-895 | `ARC-895-tutorials`          | **Implemented** |
+| 4D. Colorblind         | ARC-896 | `ARC-896-colorblind`         | **Implemented** |
 | 4E. Screen Reader      | ARC-897 | `ARC-897-screen-reader`      | **Implemented** |
-| 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | Not started     |
+| 4F. Keyboard Nav       | ARC-898 | `ARC-898-keyboard-nav`       | **Implemented** |
 | 4G. Daily Challenges   | —       | —                            | **Implemented** |
-| 4H. Season System      | ARC-899 | `ARC-899-season-system`      | Not started     |
+| 4H. Season System      | ARC-899 | `ARC-899-season-system`      | **Implemented** |
 | 4I. PWA Support        | ARC-903 | `ARC-903-pwa-support`        | **Implemented** |
-| 4J. Offline Mode       | ARC-900 | `ARC-900-offline-mode`       | Partial         |
+| 4J. Offline Mode       | ARC-900 | `ARC-900-offline-mode`       | **Implemented** |
 | 4K. Web Share          | —       | —                            | **Implemented** |
 | 4L. Push Notifications | —       | —                            | **Implemented** |
 | 4M. Tournaments        | —       | —                            | **Implemented** |
 | 4N. Leaderboards       | —       | —                            | **Implemented** |
 | 4O. Board Game Creator | ARC-901 | `ARC-901-board-game-creator` | Not started     |
 | 4P. Mobile Games       | ARC-902 | `ARC-902-mobile-games`       | Partial         |
+| 4Q. Single-Player      | ARC-924 | `ARC-924-single-player`      | Not started     |
 | 5B. Monetization       | —       | —                            | **Implemented** |
 
 ---
@@ -886,6 +887,29 @@ Port web game widgets to the Expo mobile app.
 
 ---
 
+#### 4Q. Single-Player Games (Client-Side) `ARC-924`
+
+**Effort: Medium per game (2-4 days each)**
+
+Solo games that run entirely in the browser — no backend session, no sockets, no bots. Serves the Phase 2 solo funnel (cold traffic capture) and is the natural carrier for future offline play.
+
+**Architecture rules (deviation from `/new-game` flow):**
+
+- **No BE involvement** — no `IGameEngine`, no gateway, no service. Game logic is pure TypeScript in the widget (`apps/web/src/widgets/PuzzleGames/<Game>Game/lib/engine.ts`), unit-tested with Vitest.
+- **No socket state** — game state lives in a Zustand store with `persist` middleware (`arcadeum_<game>_v1` localStorage keys).
+- **Stats without a session** — call `useLocalStatsStore.recordGameResult()` directly (`features/stats/store/statsStore.ts`); skip the `useRecordGameResult` hook (it early-returns without a `sessionId`).
+- **Reuse platform patterns** — web registry entry in `features/games/registry.ts` (lazy import), theme adapter + unified `SHARED_THEMES`, landing page under `app/[locale]/(app)/games/<slug>/`, i18n in all 5 locales.
+- Games: Solitaire (Klondike) first — highest search volume; then Minesweeper, Sudoku, 2048.
+
+**Files to create per game:**
+
+- `apps/web/src/widgets/PuzzleGames/<Game>Game/` — engine (`lib/engine.ts`), store, UI, tests
+- `apps/web/src/app/[locale]/(app)/games/<slug>/` — landing page
+- `apps/web/src/shared/i18n/messages/games/<game>/{en,ru,es,fr,by}.ts`
+- Registry + catalog entries (`registry.ts`, home data)
+
+---
+
 ### TIER 5 — Platform Polish
 
 #### 5A. Post-Game Analysis
@@ -972,12 +996,13 @@ The platform's core infrastructure is highly mature. Phase 1 is fully complete, 
 | **Phase 4: Competitive**     | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                       | 20        | **100% Completed**                                               |
 | **Phase 5: Retention**       | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                | 15        | **100% Completed**                                               |
 | **Phase 6: Card & Board**    | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                         | 25        | **Post-Game Analysis + Coach Mode Completed** (Rest Not started) |
-| **Phase 7: Advanced Social** | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                 | 25        | **Spectator Mode Completed** (Rest Not started)                  |
-| **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share Completed** (Offline/Mobile Partial)          |
+| **Phase 7: Advanced Social** | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                 | 25        | **Spectator Mode + Clans Completed** (Rest Not started)          |
+| **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial)          |
 | **Phase 9: Creator Tools**   | Visual Board Game Creator                                                                                         | 20        | Not started                                                      |
+| **Phase 10: Single-Player**  | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                    | 12        | Not started                                                      |
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I).
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Backgammon (3B), AI-vs-AI Spectator Rooms (3H), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I), Clans/Groups (3I), Season System (4H).
 - **Next Priorities (Growth & Marketing)**: Run the Week 0 audit, instrument PostHog/Plausible tracking (funnel split by Solo vs. Social), update homepage CTAs to prominently feature AI/Solo play, build out dedicated SEO landing pages for Chess and remaining games, and deploy the dynamic QR code/share sheet invite upgrades.
-- **Next Engineering Priorities**: Hearts/Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), AI-vs-AI (3H), Clans (3I), Game Nights (3J).
+- **Next Engineering Priorities**: Single-Player Games (4Q — Solitaire first, ARC-924), Keyboard-Only Navigation (4F), Offline Mode completion (4J), Board Game Creator (4O), Mobile App Games port (4P).

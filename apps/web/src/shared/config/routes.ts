@@ -35,6 +35,28 @@ export const buildRoutes = (locale: Locale) => {
     checkersLanding: `/${locale}/${s('games')}/checkers`,
     catDash: `/${locale}/${s('games')}/cat-dash`,
     catDashLanding: `/${locale}/${s('games')}/cat-dash`,
+    backgammon: `/${locale}/${s('games')}/backgammon`,
+    backgammonLanding: `/${locale}/${s('games')}/backgammon`,
+    hearts: `/${locale}/${s('games')}/hearts`,
+    heartsLanding: `/${locale}/${s('games')}/hearts`,
+    spades: `/${locale}/${s('games')}/spades`,
+    spadesLanding: `/${locale}/${s('games')}/spades`,
+    go: `/${locale}/${s('games')}/go`,
+    goLanding: `/${locale}/${s('games')}/go`,
+    pachisi: `/${locale}/${s('games')}/pachisi`,
+    pachisiLanding: `/${locale}/${s('games')}/pachisi`,
+    solitaire: `/${locale}/${s('games')}/solitaire`,
+    solitaireLanding: `/${locale}/${s('games')}/solitaire`,
+    solitairePlay: `/${locale}/${s('games')}/solitaire/play`,
+    minesweeper: `/${locale}/${s('games')}/minesweeper`,
+    minesweeperLanding: `/${locale}/${s('games')}/minesweeper`,
+    minesweeperPlay: `/${locale}/${s('games')}/minesweeper/play`,
+    sudoku: `/${locale}/${s('games')}/sudoku`,
+    sudokuLanding: `/${locale}/${s('games')}/sudoku`,
+    sudokuPlay: `/${locale}/${s('games')}/sudoku/play`,
+    game2048: `/${locale}/${s('games')}/2048`,
+    game2048Landing: `/${locale}/${s('games')}/2048`,
+    game2048Play: `/${locale}/${s('games')}/2048/play`,
 
     // Chat
     chats: `/${locale}/${s('chats')}`,
@@ -50,6 +72,7 @@ export const buildRoutes = (locale: Locale) => {
     // Admin
     admin: `/${locale}/${s('admin')}`,
     adminUsers: `/${locale}/${s('admin')}/users`,
+    adminStatistics: `/${locale}/${s('admin')}/statistics`,
 
     // Support & Payments
     support: `/${locale}/${s('support')}`,
@@ -81,6 +104,9 @@ export const buildRoutes = (locale: Locale) => {
     shopInventory: `/${locale}/${s('shop')}/inventory`,
     leaderboards: `/${locale}/${s('leaderboards')}`,
     friends: `/${locale}/${s('friends')}`,
+    clans: `/${locale}/${s('clans')}`,
+    events: `/${locale}/${s('events')}`,
+    eventDetail: (id: string) => `/${locale}/${s('events')}/${id}`,
     developers: `/${locale}/${s('developers')}`,
 
     // System (locale-free)

@@ -1,10 +1,17 @@
 import { Logger } from '@nestjs/common';
 import type { Connection } from 'mongoose';
+import { AI_VS_AI_DELAYS_MS } from './common/ai-vs-ai';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import type { GameSessionSummary } from './sessions/game-sessions.service';
 
 const INTERVAL_MS = 10_000;
-const STALE_THRESHOLD_MS = 20_000;
+/**
+ * Must stay above the longest legitimate quiet gap so a scheduled bot move
+ * is never double-fired: max configured AI-vs-AI pause plus ~1 s processing
+ * headroom. Derived from the shared delay table so the two cannot drift
+ * apart; caps stuck-turn recovery at ~2× the longest pause (~11 s).
+ */
+export const STALE_THRESHOLD_MS = Math.max(...AI_VS_AI_DELAYS_MS) * 2;
 const MAX_BACKOFF_MS = 300_000;
 const SESSION_LIMIT = 100;
 const READY_STATE = 1;

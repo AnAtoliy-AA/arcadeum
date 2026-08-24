@@ -6,7 +6,7 @@ export const es = {
     'Disfruta de una amplia variedad de juegos de mesa gratis en línea. Desafía a bots inteligentes, crea salas en tiempo real, reúne a tus amigos y deja que {{appName}} automatice reglas, puntuaciones y turnos para que te concentres en la diversión.',
   primaryCtaLabel: 'Comenzar',
   playWithBotsLabel: 'Jugar contra la IA',
-  defaultRoomName: 'Partida de {{name}}',
+  defaultRoomName: 'Partida de {{name}} #{{number}}',
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Jugar',
   supportCtaLabel: 'Apoyar a los desarrolladores',

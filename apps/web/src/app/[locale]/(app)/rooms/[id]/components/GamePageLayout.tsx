@@ -15,6 +15,7 @@ import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
+import { GuestTermsNotice } from '@/features/games/ui';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
 import { roomStyles } from './styles';
 import { GameRow, ChatPanel } from './layout-styles';
@@ -35,6 +36,9 @@ interface GamePageLayoutProps {
 
   // Rules
   onShowRules: () => void;
+
+  // Interactive tutorial (only when the game has one)
+  onShowTutorial?: () => void;
 
   isSpectating?: boolean;
 
@@ -58,6 +62,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     isIdle,
     onReconnect,
     onShowRules,
+    onShowTutorial,
     isSpectating,
     children,
   } = props;
@@ -252,11 +257,14 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           showChat={showChat}
           onToggleChat={handleToggleChat}
           onShowRules={onShowRules}
+          onShowTutorial={onShowTutorial}
           isSpectating={isSpectating}
           isGameOver={isGameOver}
           onRematch={onRematch ?? undefined}
           rematchLoading={rematchLoading}
         />
+
+        {!isAuthenticated && <GuestTermsNotice />}
 
         <GameRow>
           <ActiveEmotesProvider

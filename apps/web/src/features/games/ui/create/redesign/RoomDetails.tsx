@@ -80,9 +80,7 @@ export function RoomDetails({ gameId, form, labels, onChange }: Props) {
         <label className={s.fieldLabel} htmlFor="gc-room-name">
           <span>
             {labels.roomName}{' '}
-            <span style={{ color: 'var(--gc-accent)', fontWeight: 600 }}>
-              {labels.required}
-            </span>
+            <span className={s.requiredStar}>{labels.required}</span>
           </span>
           <span className={s.counter}>
             {form.roomName.length} / {ROOM_NAME_MAX}
@@ -99,6 +97,9 @@ export function RoomDetails({ gameId, form, labels, onChange }: Props) {
           onChange={(e) =>
             onChange({ roomName: e.target.value, preset: 'custom' })
           }
+          onFocus={() => {
+            onChange({ roomName: form.roomName });
+          }}
         />
       </div>
 
@@ -137,8 +138,7 @@ export function RoomDetails({ gameId, form, labels, onChange }: Props) {
             </button>
             {form.maxPlayers !== 'auto' && (
               <button
-                className={s.stepperBtn}
-                style={{ marginLeft: 4, fontSize: 11, padding: '4px 8px' }}
+                className={`${s.stepperBtn} ${s.stepperAutoBtn}`}
                 type="button"
                 aria-label="Reset to Auto"
                 data-testid="stepper-auto"

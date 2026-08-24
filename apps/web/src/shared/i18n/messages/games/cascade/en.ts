@@ -39,6 +39,11 @@ export const enMessages = {
         description:
           'Brass, Boiler, Verdigris — Victorian mechanical aesthetic.',
       },
+      adventure: {
+        name: 'Adventure',
+        description:
+          'Epic quests and exploration with classic card game aesthetics.',
+      },
     },
     landing: {
       meta: {
@@ -189,6 +194,13 @@ export const enMessages = {
         WILD: 'Aether',
         WILD_DRAW_FOUR: 'Boiler Explosion',
       },
+      adventure: {
+        SKIP: 'Skip',
+        REVERSE: 'Reverse',
+        DRAW_TWO: 'Draw Two',
+        WILD: 'Wild',
+        WILD_DRAW_FOUR: 'Draw Four',
+      },
     },
     board: {
       last: 'LAST',
@@ -205,6 +217,24 @@ export const enMessages = {
       callCascade: 'Call Cascade',
       callCascadeSelf: 'Call Cascade — save yourself',
       backToGames: '← Games',
+    },
+    tutorial: {
+      s1: {
+        title: 'Empty your hand',
+        body: 'Match the top discard card by color or number, or drop a Wild to change things up. First player with no cards wins.',
+      },
+      s2: {
+        title: 'Action cards',
+        body: 'Skip freezes the next player, Reverse flips direction, Draw-Two deals penalty cards, and Wilds let you name the color.',
+      },
+      s3: {
+        title: 'Stack penalties',
+        body: 'Pass a Draw-Two along with another Draw-Two, or stack a Wild +4 — decline and pay the full price.',
+      },
+      s4: {
+        title: 'No move? Draw',
+        body: "Can't play anything? Draw a card from the pile. This panel holds sound, music, fullscreen and the Rules book.",
+      },
     },
     rules: {
       title: 'Rules',

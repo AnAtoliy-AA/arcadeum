@@ -6,7 +6,12 @@ export type GameId =
   | 'cascade_v1'
   | 'chess_v1'
   | 'checkers_v1'
-  | 'cat_dash_v1';
+  | 'cat_dash_v1'
+  | 'backgammon_v1'
+  | 'hearts_v1'
+  | 'spades_v1'
+  | 'go_v1'
+  | 'pachisi_v1';
 
 export interface GameMeta {
   id: GameId;
@@ -118,6 +123,66 @@ export const GAMES: Record<GameId, GameMeta> = {
     hasThemes: true,
     rules: ['idle', 'spectators', 'teams'],
   },
+  backgammon_v1: {
+    id: 'backgammon_v1',
+    title: 'Backgammon',
+    desc: 'Classic 24-point board game with dice rolls, bearing off, and AI opponents.',
+    players: { min: 2, max: 2, label: '2' },
+    duration: '20 min',
+    kind: 'Board · race',
+    category: 'Board Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
+  hearts_v1: {
+    id: 'hearts_v1',
+    title: 'Hearts',
+    desc: 'Classic 4-player trick-taking card game — avoid penalty cards and shoot the moon.',
+    players: { min: 4, max: 4, label: '4' },
+    duration: '30 min',
+    kind: 'Card · trick-taking',
+    category: 'Card Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
+  spades_v1: {
+    id: 'spades_v1',
+    title: 'Spades',
+    desc: 'Classic 4-player partnership card game — bid your tricks and let spades trump.',
+    players: { min: 4, max: 4, label: '4' },
+    duration: '35 min',
+    kind: 'Card · partnership',
+    category: 'Card Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
+  go_v1: {
+    id: 'go_v1',
+    title: 'Go',
+    desc: 'Classic Go on 9×9–19×19 boards — surround territory, capture groups, and beat the MCTS bot.',
+    players: { min: 2, max: 2, label: '2' },
+    duration: '10–40 min',
+    kind: 'Board · territory',
+    category: 'Board Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
+  pachisi_v1: {
+    id: 'pachisi_v1',
+    title: 'Pachisi',
+    desc: 'Classic cross-and-circle race for 2–4 players — roll a six, capture rivals, race home.',
+    players: { min: 2, max: 4, label: '2–4' },
+    duration: '15 min',
+    kind: 'Board · race',
+    category: 'Board Game',
+    hasExpansion: false,
+    hasThemes: true,
+    rules: ['idle', 'spectators'],
+  },
 };
 
 export const VISIBLE_GAMES: GameId[] = [
@@ -129,6 +194,11 @@ export const VISIBLE_GAMES: GameId[] = [
   'chess_v1',
   'checkers_v1',
   'cat_dash_v1',
+  'backgammon_v1',
+  'hearts_v1',
+  'spades_v1',
+  'go_v1',
+  'pachisi_v1',
 ];
 
 export function getGamesByCategory(): Array<{
@@ -290,10 +360,36 @@ import {
   findCatDashTheme,
   type CatDashThemeMeta,
 } from './cat-dash-themes';
+import {
+  BACKGAMMON_THEMES,
+  findBackgammonTheme,
+  type BackgammonThemeMeta,
+} from './backgammon-themes';
+import {
+  HEARTS_THEMES,
+  findHeartsTheme,
+  type HeartsThemeMeta,
+} from './hearts-themes';
+import {
+  SPADES_THEMES,
+  findSpadesTheme,
+  type SpadesThemeMeta,
+} from './spades-themes';
+import { GO_THEMES, findGoTheme, type GoThemeMeta } from './go-themes';
+import {
+  PACHISI_THEMES,
+  findPachisiTheme,
+  type PachisiThemeMeta,
+} from './pachisi-themes';
 export { TIC_TAC_TOE_THEMES, findTicTacToeTheme, type TicTacToeThemeMeta };
 export { CASCADE_THEMES, findCascadeTheme, type CascadeThemeMeta };
 export { CHESS_THEMES, findChessTheme, type ChessThemeMeta };
 export { CAT_DASH_THEMES, findCatDashTheme, type CatDashThemeMeta };
+export { BACKGAMMON_THEMES, findBackgammonTheme, type BackgammonThemeMeta };
+export { HEARTS_THEMES, findHeartsTheme, type HeartsThemeMeta };
+export { SPADES_THEMES, findSpadesTheme, type SpadesThemeMeta };
+export { GO_THEMES, findGoTheme, type GoThemeMeta };
+export { PACHISI_THEMES, findPachisiTheme, type PachisiThemeMeta };
 
 export interface GlimwormThemeMeta {
   id: string;
@@ -319,7 +415,12 @@ export function themesFor(gameId: GameId) {
   if (gameId === 'chess_v1') return CHESS_THEMES;
   if (gameId === 'checkers_v1') return CHECKERS_THEMES;
   if (gameId === 'cat_dash_v1') return CAT_DASH_THEMES;
+  if (gameId === 'backgammon_v1') return BACKGAMMON_THEMES;
   if (gameId === 'glimworm_v1') return GLIMWORM_THEMES;
+  if (gameId === 'hearts_v1') return HEARTS_THEMES;
+  if (gameId === 'spades_v1') return SPADES_THEMES;
+  if (gameId === 'go_v1') return GO_THEMES;
+  if (gameId === 'pachisi_v1') return PACHISI_THEMES;
   return [];
 }
 export function findCriticalTheme(id: string | undefined): CriticalTheme {

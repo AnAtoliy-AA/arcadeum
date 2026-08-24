@@ -13,11 +13,12 @@ export interface CatalogGameItem {
   description: string;
   genre: string;
   pace?: string;
-  category: 'all' | 'board' | 'card' | 'casual';
+  category: 'all' | 'board' | 'card' | 'casual' | 'puzzle';
   categoryLabel: string;
   players: string;
   duration: string;
   landingHref: string;
+  offlineSlug?: string | null;
   accentColor: string;
   isPlayable: boolean;
   isDemo?: boolean;
@@ -36,16 +37,18 @@ interface Props {
   demoBadgeLabel?: string;
   playLabel?: string;
   detailsLabel?: string;
+  offlineBadgeLabel?: string;
 }
 
 const CATEGORIES: Array<{
-  key: 'all' | 'board' | 'card' | 'casual';
+  key: 'all' | 'board' | 'card' | 'casual' | 'puzzle';
   label: string;
   icon: string;
 }> = [
   { key: 'all', label: 'All Games', icon: '🎮' },
   { key: 'board', label: 'Board Games', icon: '♟️' },
   { key: 'card', label: 'Card Games', icon: '🃏' },
+  { key: 'puzzle', label: 'Puzzles', icon: '🧩' },
   { key: 'casual', label: 'Action & Casual', icon: '⚡' },
 ];
 
@@ -61,9 +64,10 @@ export function GamesCatalogClient({
   demoBadgeLabel = 'Demo',
   playLabel = 'Play Now',
   detailsLabel = 'Rules',
+  offlineBadgeLabel,
 }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<
-    'all' | 'board' | 'card' | 'casual'
+    'all' | 'board' | 'card' | 'casual' | 'puzzle'
   >('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -79,6 +83,7 @@ export function GamesCatalogClient({
       all: games.length,
       board: 0,
       card: 0,
+      puzzle: 0,
       casual: 0,
     };
     for (const g of games) {
@@ -150,6 +155,7 @@ export function GamesCatalogClient({
               key={game.id}
               game={game}
               playLabel={playLabel}
+              offlineBadgeLabel={offlineBadgeLabel}
               demoBadgeLabel={demoBadgeLabel}
               unavailableLabel={unavailableLabel}
               detailsLabel={detailsLabel}

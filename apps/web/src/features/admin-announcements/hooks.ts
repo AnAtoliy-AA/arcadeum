@@ -24,7 +24,10 @@ function refreshKeys(triggerRefresh: (k: string) => void): void {
   triggerRefresh(ACTIVE_ANNOUNCEMENT_REFRESH_KEY);
 }
 
-export function useAdminAnnouncements(args: ListAdminAnnouncementsArgs) {
+export function useAdminAnnouncements(
+  args: ListAdminAnnouncementsArgs,
+  options?: { onSuccess?: (data: AdminAnnouncementsResponse) => void },
+) {
   const accessToken = useSessionStore((s) => s.snapshot.accessToken);
   return useQuery<AdminAnnouncementsResponse>({
     queryKey: [
@@ -38,6 +41,7 @@ export function useAdminAnnouncements(args: ListAdminAnnouncementsArgs) {
     queryFn: () => fetchAdminAnnouncements(args, accessToken!),
     refreshKey: ADMIN_ANNOUNCEMENTS_REFRESH_KEY,
     enabled: !!accessToken,
+    onSuccess: options?.onSuccess,
   });
 }
 

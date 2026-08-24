@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemedStyles } from '@/hooks/useThemedStyles';
 import {
@@ -143,7 +143,7 @@ export function CriticalTable({
   const gridCardHeight = gridColumns.gridCardDimensions.height;
 
   const selfPlayerHandSize = selfPlayer?.hand?.length ?? 0;
-  const handScrollRef = useHorizontalDragScroll<ScrollView>({
+  const handScrollRef = useHorizontalDragScroll<ScrollViewInstance>({
     dependencyKey: `${handViewMode}-${selfPlayerHandSize}`,
   });
 
@@ -195,7 +195,7 @@ export function CriticalTable({
     translateCardName: labels.translateCardName,
   });
 
-  const logsScrollRef = useVerticalDragScroll<ScrollView>({
+  const logsScrollRef = useVerticalDragScroll<ScrollViewInstance>({
     dependencyKey: logs.length,
   });
 
@@ -203,8 +203,7 @@ export function CriticalTable({
     session?.id,
     isCurrentUserPlayer,
     onPostHistoryNote as
-      | ((message: string, visibility: ChatScope) => Promise<void>)
-      | undefined,
+      ((message: string, visibility: ChatScope) => Promise<void>) | undefined,
   );
   const catComboHandling = useCatComboHandling(
     catCombo,

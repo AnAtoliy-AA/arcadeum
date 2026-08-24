@@ -15,6 +15,7 @@ import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import type { BaseGameState } from '../engines/base/game-engine.interface';
 import type { GameRoom } from '../schemas/game-room.schema';
 import { User } from '../../auth/schemas/user.schema';
+import { validateGameId } from '../game-validation.util';
 
 export interface ReplaySummary {
   replayId: string;
@@ -113,7 +114,14 @@ export class GameReplayService {
   }
 
   async getReplay(replayId: string): Promise<ReplayDetail | null> {
-    const replay = await this.replayModel.findOne({ replayId }).lean().exec();
+    if (!replayId || typeof replayId !== 'string') return null;
+    const safeReplayId = String(replayId).trim();
+    if (!/^[a-zA-Z0-9_-]{1,128}$/.test(safeReplayId)) return null;
+
+    const replay = await this.replayModel
+      .findOne({ replayId: safeReplayId })
+      .lean()
+      .exec();
 
     if (!replay) return null;
 
@@ -125,12 +133,21 @@ export class GameReplayService {
     page = 0,
     limit = 20,
   ): Promise<{ entries: ReplaySummary[]; total: number; hasMore: boolean }> {
+    if (!userId || typeof userId !== 'string') {
+      return { entries: [], total: 0, hasMore: false };
+    }
+    const safeUserId = String(userId).trim();
+    if (!/^[a-zA-Z0-9_-]{1,128}$/.test(safeUserId)) {
+      return { entries: [], total: 0, hasMore: false };
+    }
+
     const skip = page * limit;
+    const filter = { playerIds: safeUserId };
 
     const [total, replays] = await Promise.all([
-      this.replayModel.countDocuments({ playerIds: userId }).exec(),
+      this.replayModel.countDocuments(filter).exec(),
       this.replayModel
-        .find({ playerIds: userId })
+        .find(filter)
         .select(
           'replayId roomId gameId players result totalMoves durationMs createdAt',
         )
@@ -156,7 +173,16 @@ export class GameReplayService {
     limit = 20,
   ): Promise<{ entries: ReplaySummary[]; total: number; hasMore: boolean }> {
     const skip = page * limit;
-    const filter = gameId ? { gameId } : {};
+    const filter: { gameId?: string } = {};
+
+    if (gameId && typeof gameId === 'string') {
+      try {
+        validateGameId(gameId);
+        filter.gameId = gameId;
+      } catch {
+        return { entries: [], total: 0, hasMore: false };
+      }
+    }
 
     const [total, replays] = await Promise.all([
       this.replayModel.countDocuments(filter).exec(),
@@ -182,8 +208,12 @@ export class GameReplayService {
   }
 
   async getReplayByRoom(roomId: string): Promise<ReplaySummary | null> {
+    if (!roomId || typeof roomId !== 'string') return null;
+    const safeRoomId = String(roomId).trim();
+    if (!/^[a-zA-Z0-9_-]{1,128}$/.test(safeRoomId)) return null;
+
     const replay = await this.replayModel
-      .findOne({ roomId })
+      .findOne({ roomId: safeRoomId })
       .select(
         'replayId roomId gameId players result totalMoves durationMs createdAt',
       )

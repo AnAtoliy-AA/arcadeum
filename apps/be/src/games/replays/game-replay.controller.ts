@@ -11,6 +11,7 @@ import type { Request } from 'express';
 import { JwtOptionalAuthGuard } from '../../auth/jwt/jwt-optional.guard';
 import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
 import { type AuthenticatedUser } from '../../auth/jwt/jwt.strategy';
+import { ListReplaysQueryDto } from './dtos/list-replays.dto';
 import {
   GameReplayService,
   type ReplayDetail,
@@ -23,27 +24,22 @@ export class GameReplayController {
 
   @UseGuards(JwtOptionalAuthGuard)
   @Get()
-  async listReplays(
-    @Query('gameId') gameId?: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ): Promise<{
+  async listReplays(@Query() query: ListReplaysQueryDto): Promise<{
     entries: ReplaySummary[];
     total: number;
     hasMore: boolean;
   }> {
-    const pageNum = page ? parseInt(page, 10) : 0;
-    const limitNum = limit ? Math.min(parseInt(limit, 10), 50) : 20;
+    const pageNum = query.page ?? 0;
+    const limitNum = query.limit ?? 20;
 
-    return this.replayService.listReplays(gameId, pageNum, limitNum);
+    return this.replayService.listReplays(query.gameId, pageNum, limitNum);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('mine')
   async listMyReplays(
     @Req() req: Request,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
+    @Query() query: ListReplaysQueryDto,
   ): Promise<{
     entries: ReplaySummary[];
     total: number;
@@ -54,8 +50,8 @@ export class GameReplayController {
       return { entries: [], total: 0, hasMore: false };
     }
 
-    const pageNum = page ? parseInt(page, 10) : 0;
-    const limitNum = limit ? Math.min(parseInt(limit, 10), 50) : 20;
+    const pageNum = query.page ?? 0;
+    const limitNum = query.limit ?? 20;
 
     return this.replayService.listReplaysForUser(
       user.userId,

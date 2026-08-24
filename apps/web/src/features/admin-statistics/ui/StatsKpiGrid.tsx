@@ -87,6 +87,18 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
       ? anonPlaytime
       : totalPlaytimeHours;
 
+  const totalRevenueUsd = economy?.totalPurchasesRevenueUsd ?? 0;
+  const regRevenue = totalRevenueUsd;
+  const anonRevenue = 0;
+  const displayRevenue =
+    mode === 'registered' ? regRevenue : mode === 'anonymous' ? anonRevenue : totalRevenueUsd;
+
+  const totalTxCount = economy?.transactionsCount ?? 0;
+  const regTxCount = totalTxCount;
+  const anonTxCount = 0;
+  const displayTxCount =
+    mode === 'registered' ? regTxCount : mode === 'anonymous' ? anonTxCount : totalTxCount;
+
   const dauSubtext =
     mode === 'all'
       ? `Reg: ${regDau.toLocaleString()} | Anon: ${anonDau.toLocaleString()}`
@@ -98,6 +110,22 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
     mode === 'all'
       ? `Reg: ${regGamesToday.toLocaleString()} | Anon: ${anonGamesToday.toLocaleString()}`
       : `Today: ${(mode === 'registered' ? regGamesToday : anonGamesToday).toLocaleString()}`;
+
+  const revenueSubtext =
+    mode === 'all'
+      ? `Reg: $${regRevenue.toLocaleString()} | Anon: $0`
+      : mode === 'registered'
+      ? `${economy?.totalPurchasesCount ?? 0} orders (100% registered)`
+      : `Guests cannot purchase gems`;
+
+  const txSubtext =
+    mode === 'all'
+      ? `Reg: ${regTxCount.toLocaleString()} | Anon: 0`
+      : mode === 'registered'
+      ? economy?.transactionsToday && economy.transactionsToday > 0
+        ? `+${economy.transactionsToday} today`
+        : 'Registered wallets'
+      : `Guests have no wallet`;
 
   return (
     <div
@@ -187,9 +215,9 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
           label={t?.revenue ?? 'Gem Purchases Revenue'}
-          value={`$${(economy?.totalPurchasesRevenueUsd ?? 0).toLocaleString()}`}
-          delta={`${economy?.totalPurchasesCount ?? 0} orders`}
-          deltaType="increase"
+          value={`$${displayRevenue.toLocaleString()}`}
+          delta={revenueSubtext}
+          deltaType={displayRevenue > 0 ? 'increase' : 'neutral'}
           data-testid="stat-revenue"
         />
       </GlassCard>
@@ -197,12 +225,8 @@ export function StatsKpiGrid({ data, mode = 'all', t }: StatsKpiGridProps): Reac
       <GlassCard className="p-1 border border-[var(--borderColor)]">
         <StatTile
           label="Wallet Transactions"
-          value={(economy?.transactionsCount ?? 0).toLocaleString()}
-          delta={
-            (economy?.transactionsToday ?? 0) > 0
-              ? `+${economy?.transactionsToday} today`
-              : undefined
-          }
+          value={displayTxCount.toLocaleString()}
+          delta={txSubtext}
           deltaType="neutral"
           data-testid="stat-transactions"
         />

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.22] - 2026-08-24
+
+### Added
+- add UI components, store, events pages, and home banner (ARC-892) (ARC-892)
+- add i18n messages, routes, and SEO metadata across all locales (ARC-892) (ARC-892)
+- implement backend module, service, schemas, and endpoints (ARC-892) (ARC-892)
+
+### Fixed
+- update pnpm-lock.yaml with mobile dependencies (ARC-892) (ARC-892)
+
+
 ## [1.26.21] - 2026-08-24
 
 ### Fixed

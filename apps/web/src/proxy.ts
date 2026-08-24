@@ -190,7 +190,7 @@ function getLocaleFromCountry(countryCode?: string | null): Locale | null {
   return null;
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
   const feedbackPreflight = handleVercelFeedbackPreflight(req);

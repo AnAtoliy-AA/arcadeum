@@ -4,7 +4,7 @@
 // `rewrites()` in next.config (URL → filesystem) and `redirects()`
 // (English-slug-in-locale → localized canonical).
 //
-// Imported by routes.ts, middleware.ts, and next.config.ts. Keep this
+// Imported by routes.ts, proxy.ts, and next.config.ts. Keep this
 // file dependency-free — routes.ts is imported transitively by
 // app-config.ts, which would create a cycle if we pulled in the i18n
 // message bundles here.

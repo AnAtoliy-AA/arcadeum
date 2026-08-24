@@ -106,6 +106,10 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Clans · ${APP}`,
     description: `Rejoignez ou créez des clans sur ${APP}, formez une équipe avec d'autres joueurs, montez dans les classements de clans et dominez ensemble.`,
   },
+  events: {
+    title: `Soirées de jeux communautaires et événements · ${APP}`,
+    description: `Rejoignez des soirées de jeux communautaires programmées sur ${APP}. Participez aux jeux mis en avant, grimpez dans le classement en direct et gagnez des récompenses exclusives.`,
+  },
   tournaments: {
     title: `Tournois · ${APP}`,
     description: `Participez aux tournois programmés sur ${APP}, suivez les brackets en direct et consultez les prochains événements.`,

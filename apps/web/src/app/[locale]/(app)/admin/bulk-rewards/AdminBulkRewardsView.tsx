@@ -67,11 +67,7 @@ export function AdminBulkRewardsView({ labels }: Props) {
   return (
     <div className="flex flex-col items-stretch gap-4">
       {confirmOpen && (
-        <GlassCard
-          className={
-            'p-4 border border-[var(--warning)] bg-[rgba(146,64,14,0.1)]'
-          }
-        >
+        <GlassCard className="p-4 border border-[var(--warning)] bg-[rgba(146,64,14,0.1)]">
           <span className="font-semibold -mb-2">{labels.confirm.title}</span>
           <span className="-mb-4">
             {labels.confirm.message
@@ -93,14 +89,7 @@ export function AdminBulkRewardsView({ labels }: Props) {
           <select
             value={rewardType}
             onChange={(e) => setRewardType(e.target.value as RewardType)}
-            style={{
-              padding: '8px 10px',
-              background: 'var(--backgroundFocus)',
-              border: '1px solid var(--borderColor)',
-              borderRadius: 6,
-              color: 'inherit',
-              fontSize: 14,
-            }}
+            className="py-2 px-2.5 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
           >
             <option value="coins">{labels.form.type.coinsLabel}</option>
             <option value="gems">{labels.form.type.gemsLabel}</option>
@@ -152,15 +141,11 @@ export function AdminBulkRewardsView({ labels }: Props) {
 
       {result && (
         <GlassCard
-          className={'p-4 border'}
-          style={{
-            borderColor:
-              result.failedRewards > 0 ? 'var(--warning)' : 'var(--success)',
-            backgroundColor:
-              result.failedRewards > 0
-                ? 'rgba(146,64,14,0.1)'
-                : 'rgba(16,185,129,0.15)',
-          }}
+          className={`p-4 border ${
+            result.failedRewards > 0
+              ? 'border-[var(--warning)] bg-[rgba(146,64,14,0.1)]'
+              : 'border-[var(--success)] bg-[rgba(16,185,129,0.15)]'
+          }`}
         >
           <span className="font-semibold -mb-2">
             {result.failedRewards > 0
@@ -168,7 +153,7 @@ export function AdminBulkRewardsView({ labels }: Props) {
               : labels.result.success}
           </span>
           <div className="flex flex-col items-stretch gap-1">
-            <span className="">
+            <span>
               {labels.result.total}: {result.totalUsers}
             </span>
             <span className="text-[var(--success)]">

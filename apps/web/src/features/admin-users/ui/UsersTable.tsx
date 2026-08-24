@@ -1,7 +1,7 @@
 'use client';
-import { useState } from 'react';
-import { Button, GlassCard } from '@arcadeum/ui';
-import { Spinner } from '@/shared/ui/CSSSpinner';
+
+import { useState, useRef, useEffect } from 'react';
+import { Button, GlassCard, Spinner, Typography } from '@arcadeum/ui';
 import type { AdminUserItem } from '../api';
 import type { UserRole } from '@/entities/session/model/types';
 import { UsersTableRow } from './UsersTableRow';
@@ -18,7 +18,7 @@ export interface UsersTableLabels {
     deleteSelected: string;
     deselectAll: string;
   };
-  pagination: { prev: string; next: string; of: string };
+  pagination?: { prev: string; next: string; of: string };
   totalLabel: string;
   roleLabels: Record<UserRole, string>;
   selfTooltip: string;
@@ -32,8 +32,6 @@ export interface UsersTableLabels {
 export interface UsersTableProps {
   items: AdminUserItem[];
   total: number;
-  page: number;
-  pageSize: number;
   isLoading: boolean;
   isError: boolean;
   currentUserId: string;
@@ -45,7 +43,8 @@ export interface UsersTableProps {
   onDelete: (userId: string) => void;
   onRestore: (userId: string) => void;
   onBulkDelete: (userIds: string[]) => void;
-  onPageChange: (next: number) => void;
+  onLoadMore?: () => void;
+  onPageChange?: (next: number) => void;
   pendingUserId?: string;
   labels: UsersTableLabels;
 }
@@ -53,8 +52,6 @@ export interface UsersTableProps {
 export function UsersTable({
   items,
   total,
-  page,
-  pageSize,
   isLoading,
   currentUserId,
   hasFilter,
@@ -65,11 +62,41 @@ export function UsersTable({
   onDelete,
   onRestore,
   onBulkDelete,
-  onPageChange,
+  onLoadMore,
   pendingUserId,
   labels,
 }: UsersTableProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const hasMore = items.length < total;
+
+  useEffect(() => {
+    const target = observerTarget.current;
+    if (
+      !target ||
+      !hasMore ||
+      isLoading ||
+      !onLoadMore ||
+      typeof IntersectionObserver === 'undefined'
+    ) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' },
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.unobserve(target);
+    };
+  }, [hasMore, isLoading, onLoadMore]);
 
   const handleToggleSelect = (userId: string) => {
     setSelectedIds((prev) => {
@@ -107,23 +134,25 @@ export function UsersTable({
 
   if (isLoading && items.length === 0) {
     return (
-      <div className="flex flex-col items-center p-5">
-        <Spinner />
+      <div className="flex flex-col items-center justify-center p-8">
+        <Spinner size="md" />
       </div>
     );
   }
 
   if (!isLoading && items.length === 0) {
     return (
-      <GlassCard className={'p-5 items-center'} data-testid="users-table-empty">
-        <span className="opacity-[0.7]">
+      <GlassCard
+        className="p-8 items-center justify-center border border-[var(--borderColor)]"
+        data-testid="users-table-empty"
+      >
+        <Typography variant="body" uiSize="md" alpha="medium">
           {hasFilter ? labels.empty.noResults : labels.empty.noUsers}
-        </span>
+        </Typography>
       </GlassCard>
     );
   }
 
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const selectableCount = items.filter(
     (it) => !it.deletedAt && it.id !== currentUserId,
   ).length;
@@ -135,18 +164,18 @@ export function UsersTable({
 
   return (
     <div
-      className="flex flex-col items-stretch gap-3"
+      className="flex flex-col items-stretch gap-4"
       data-testid="users-table"
     >
       <div className="flex flex-row items-center justify-between px-1">
-        <span className="opacity-[0.7] text-[12px]">
-          {labels.totalLabel.replace('{total}', String(total))}
-        </span>
+        <Typography variant="heading" uiSize="sm" weight="700">
+          Showing {items.length} of {total} users
+        </Typography>
       </div>
 
-      <GlassCard className={'p-0 overflow-hidden'}>
+      <GlassCard className="p-0 overflow-hidden border border-[var(--borderColor)]">
         <div
-          className="flex flex-row gap-3 items-center py-2 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
+          className="flex flex-row gap-3 items-center py-2.5 px-3 bg-[var(--backgroundFocus)] border-b border-[var(--borderColor)]"
           data-testid="users-table-header"
         >
           <div className="flex flex-col w-[32px] items-center">
@@ -157,13 +186,13 @@ export function UsersTable({
               data-testid="select-all-checkbox"
             />
           </div>
-          <span className="flex-1 font-bold text-[12px] opacity-[0.85]">
+          <span className="flex-1 font-bold text-xs uppercase tracking-wider text-[var(--colorTextSecondary,#a1a1aa)]">
             {labels.table.username}
           </span>
-          <span className="w-[120px] font-bold text-[12px] opacity-[0.85]">
+          <span className="w-[120px] font-bold text-xs uppercase tracking-wider text-[var(--colorTextSecondary,#a1a1aa)]">
             {labels.table.role}
           </span>
-          <span className="w-[150px] font-bold text-[12px] opacity-[0.85]">
+          <span className="w-[150px] font-bold text-xs uppercase tracking-wider text-[var(--colorTextSecondary,#a1a1aa)] text-right">
             {labels.table.actions}
           </span>
         </div>
@@ -196,15 +225,15 @@ export function UsersTable({
 
       {selectedIds.size > 0 && (
         <div
-          className="flex flex-row gap-3 items-center justify-between p-3 rounded-xl bg-[var(--backgroundFocus)]"
+          className="flex flex-row gap-3 items-center justify-between p-3 rounded-xl bg-[var(--backgroundFocus)] border border-[var(--borderColor)]"
           data-testid="bulk-actions-bar"
         >
-          <span className="text-[14px] opacity-[0.8]">
+          <Typography variant="body" uiSize="sm" weight="700">
             {labels.table.selectedCount.replace(
               '{count}',
               String(selectedIds.size),
             )}
-          </span>
+          </Typography>
           <div className="flex flex-row items-stretch gap-2">
             <Button
               variant="outline"
@@ -226,29 +255,34 @@ export function UsersTable({
         </div>
       )}
 
-      <div className="flex flex-row gap-3 items-center justify-center pt-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(page - 1)}
-          disabled={page <= 1}
+      {hasMore ? (
+        <div
+          ref={observerTarget}
+          className="flex flex-col items-center justify-center p-4 gap-3"
+          data-testid="users-infinite-scroll-trigger"
         >
-          {labels.pagination.prev}
-        </Button>
-        <span className="opacity-[0.8] text-[14px]">
-          {labels.pagination.of
-            .replace('{current}', String(page))
-            .replace('{total}', String(totalPages))}
-        </span>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(page + 1)}
-          disabled={page >= totalPages}
+          {isLoading && <Spinner size="sm" />}
+          {onLoadMore && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onLoadMore}
+              data-testid="users-load-more"
+            >
+              Load more
+            </Button>
+          )}
+        </div>
+      ) : (
+        <div
+          className="flex flex-row items-center justify-center py-4 text-center"
+          data-testid="users-all-loaded"
         >
-          {labels.pagination.next}
-        </Button>
-      </div>
+          <Typography variant="caption" alpha="low">
+            All {total} users loaded
+          </Typography>
+        </div>
+      )}
     </div>
   );
 }

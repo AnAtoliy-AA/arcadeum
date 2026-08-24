@@ -38,11 +38,99 @@ export const en = {
       tournaments: 'Tournaments',
       economy: 'Economy',
       shop: 'Shop',
+      gemPackages: 'Gem Packages',
       games: 'Games',
       gameRules: 'Game Rules',
       bulkRewards: 'Bulk Rewards',
       blockedIps: 'Blocked IPs',
+      geoBlock: 'Geo-Blocking',
       comingSoon: 'Coming soon',
+    },
+    dashboard: {
+      title: 'Command Center',
+      subtitle:
+        'System health, key metrics, and administrative modules overview',
+      systemHealth: 'System Health',
+      statusOnline: 'Operational',
+      statusDegraded: 'Degraded',
+      database: 'Database',
+      collections: 'Collections',
+      totalDocuments: 'Total Documents',
+      dataSize: 'Data Size (MB)',
+      storageSize: 'Storage Size (MB)',
+      indexSize: 'Index Size (MB)',
+      activeModules: 'Active Modules',
+      modulesTitle: 'Administrative Modules',
+      modulesSubtitle:
+        'Direct access to manage games, players, transactions, and security',
+      modules: {
+        users: {
+          title: 'User Management',
+          description: 'Manage player accounts, roles, statuses, and bans',
+        },
+        payments: {
+          title: 'Payments & Notes',
+          description:
+            'Audit payment records, transactions, and internal notes',
+        },
+        tournaments: {
+          title: 'Tournaments',
+          description:
+            'Schedule and manage competitive tournaments and prize pools',
+        },
+        gemPackages: {
+          title: 'Gem Packages',
+          description: 'Configure purchasable gem tiers, pricing, and bonuses',
+        },
+        shop: {
+          title: 'Shop & Cosmetics',
+          description:
+            'Manage inventory items, cosmetic rarities, and item grants',
+        },
+        economy: {
+          title: 'Economy & Treasury',
+          description:
+            'Monitor token circulation, faucet grants, and reward sinks',
+        },
+        bulkRewards: {
+          title: 'Bulk Rewards',
+          description:
+            'Distribute mass currency rewards to selected player cohorts',
+        },
+        games: {
+          title: 'Game Visibility',
+          description:
+            'Control multiplayer game mode availability and live status',
+        },
+        gameRules: {
+          title: 'Game Rules',
+          description:
+            'Configure gameplay rule variants, turn timers, and mechanics',
+        },
+        announcements: {
+          title: 'Announcements',
+          description:
+            'Broadcast global banners, updates, and maintenance alerts',
+        },
+        blockedIps: {
+          title: 'Blocked IPs',
+          description: 'Inspect, ban, and manage malicious IP address blocks',
+        },
+        geoBlock: {
+          title: 'Geo-Blocking',
+          description:
+            'Configure jurisdictional access rules and territory blocks',
+        },
+      },
+      openPanel: 'Open Panel',
+      collectionsOverview: 'Database Collections Breakdown',
+      collectionName: 'Collection',
+      docsCount: 'Documents',
+      sizeMb: 'Size (MB)',
+      avgDocSize: 'Avg Obj Size',
+      indexesCount: 'Indexes',
+      liveStatus: 'Live Status',
+      environment: 'Environment',
     },
     error: {
       title: 'Something went wrong',

@@ -4,6 +4,15 @@ export const adminShopEn = {
     'Toggle availability, override prices, and grant items to specific users.',
   loading: 'Loading shop catalog...',
   empty: 'No catalog items found.',
+  totalLabel: '{total} items',
+  showingCount: 'Showing {current} of {total} items',
+  allLoaded: 'All {total} items loaded',
+  loadMore: 'Load more',
+  pagination: {
+    prev: 'Previous',
+    next: 'Next',
+    of: 'Page {current} of {total}',
+  },
   columns: {
     id: 'ID',
     category: 'Category',

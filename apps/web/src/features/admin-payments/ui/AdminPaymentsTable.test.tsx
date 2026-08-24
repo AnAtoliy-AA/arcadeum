@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import {
   AdminPaymentsTable,
   type AdminPaymentsTableLabels,
@@ -26,11 +26,9 @@ const labels: AdminPaymentsTableLabels = {
 const baseProps = {
   items: [],
   total: 0,
-  page: 1,
-  pageSize: 50,
   isLoading: false,
   hasFilter: false,
-  onPageChange: () => {},
+  onLoadMore: () => {},
   labels,
 };
 
@@ -106,48 +104,29 @@ describe('AdminPaymentsTable', () => {
     expect(screen.getByText('5 NOTACURRENCY')).toBeInTheDocument();
   });
 
-  it('renders pagination text', () => {
-    renderWith(
-      <AdminPaymentsTable {...baseProps} items={[sampleItem]} total={120} />,
-    );
-    expect(screen.getByText('Page 1 of 3')).toBeInTheDocument();
-  });
-
-  it('disables Prev on first page', () => {
+  it('renders infinite scroll trigger when items < total', () => {
+    const onLoadMore = vi.fn();
     renderWith(
       <AdminPaymentsTable
         {...baseProps}
         items={[sampleItem]}
         total={120}
-        page={1}
+        onLoadMore={onLoadMore}
       />,
     );
-    expect(screen.getByText('Prev').closest('button')).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
-    expect(screen.getByText('Next').closest('button')).not.toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    expect(
+      screen.getByTestId('admin-payments-infinite-scroll-trigger'),
+    ).toBeInTheDocument();
+    const loadMoreBtn = screen.getByTestId('admin-payments-load-more');
+    fireEvent.click(loadMoreBtn);
+    expect(onLoadMore).toHaveBeenCalled();
   });
 
-  it('disables Next on last page', () => {
+  it('renders all loaded status when items >= total', () => {
     renderWith(
-      <AdminPaymentsTable
-        {...baseProps}
-        items={[sampleItem]}
-        total={120}
-        page={3}
-      />,
+      <AdminPaymentsTable {...baseProps} items={[sampleItem]} total={1} />,
     );
-    expect(screen.getByText('Next').closest('button')).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
-    expect(screen.getByText('Prev').closest('button')).not.toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    expect(screen.getByTestId('admin-payments-all-loaded')).toBeInTheDocument();
+    expect(screen.getByText('All 1 notes loaded')).toBeInTheDocument();
   });
 });

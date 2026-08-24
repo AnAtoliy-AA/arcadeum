@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@arcadeum/ui';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Button, GlassCard, Badge, Typography, Spinner } from '@arcadeum/ui';
 import type { EffectiveShopItem } from '@/features/shop/server/shop.types';
 import type { adminShopEn } from '@/shared/i18n/messages/pages/admin-shop/en';
 import { AdminShopEditDialog } from './AdminShopEditDialog';
@@ -13,37 +13,98 @@ type Labels = typeof adminShopEn;
 interface Props {
   catalog: EffectiveShopItem[];
   labels: Labels;
+  initialBatchSize?: number;
+  batchSize?: number;
 }
 
-export function AdminShopTable({ catalog, labels }: Props) {
+export function AdminShopTable({
+  catalog,
+  labels,
+  initialBatchSize = 10,
+  batchSize = 10,
+}: Props) {
+  const [visibleCount, setVisibleCount] = useState(
+    Math.min(catalog.length, initialBatchSize),
+  );
   const [editing, setEditing] = useState<EffectiveShopItem | null>(null);
   const [grantOpen, setGrantOpen] = useState(false);
   const [grantDefaultItemId, setGrantDefaultItemId] = useState<
     string | undefined
   >(undefined);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  const hasMore = visibleCount < catalog.length;
+
+  const loadMore = useCallback(() => {
+    setVisibleCount((prev) => Math.min(catalog.length, prev + batchSize));
+  }, [catalog.length, batchSize]);
+
+  useEffect(() => {
+    const target = observerTarget.current;
+    if (!target || !hasMore || typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' },
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.unobserve(target);
+    };
+  }, [hasMore, loadMore]);
 
   if (catalog.length === 0) {
     return (
-      <div
-        className="flex flex-col items-stretch p-4"
+      <GlassCard
+        className="flex flex-col items-center justify-center p-8 border border-[var(--borderColor)]"
         data-testid="admin-shop-empty"
       >
-        <span className="text-[16px] text-[#94a3b8]">{labels.empty}</span>
-      </div>
+        <Typography variant="body" uiSize="md" alpha="medium">
+          {labels.empty}
+        </Typography>
+      </GlassCard>
     );
   }
+
+  const visibleItems = catalog.slice(0, visibleCount);
 
   const openGrantForItem = (itemId?: string) => {
     setGrantDefaultItemId(itemId);
     setGrantOpen(true);
   };
 
+  const countText = (
+    labels.showingCount ?? 'Showing {current} of {total} items'
+  )
+    .replace('{current}', String(visibleItems.length))
+    .replace('{total}', String(catalog.length));
+
+  const allLoadedText = (
+    labels.allLoaded ?? 'All {total} items loaded'
+  ).replace('{total}', String(catalog.length));
+
   return (
-    <>
-      <div className="flex flex-row justify-between items-center -mb-3">
-        <span className="text-[18px] font-semibold">
-          {catalog.length} items
-        </span>
+    <div
+      className="flex flex-col gap-4 w-full"
+      data-testid="admin-shop-container"
+    >
+      <div className="flex flex-row justify-between items-center">
+        <Typography
+          variant="heading"
+          uiSize="sm"
+          weight="700"
+          data-testid="admin-shop-count-header"
+        >
+          {countText}
+        </Typography>
         <Button
           onClick={() => openGrantForItem(undefined)}
           data-testid="admin-shop-grant-open"
@@ -52,109 +113,145 @@ export function AdminShopTable({ catalog, labels }: Props) {
         </Button>
       </div>
 
-      <div
-        style={{
-          width: '100%',
-          overflowX: 'auto',
-          border: '1px solid var(--borderColor)',
-          borderRadius: 8,
-        }}
-      >
-        <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            fontSize: 14,
-          }}
-          data-testid="admin-shop-table"
+      <GlassCard className="p-0 overflow-hidden border border-[var(--borderColor)]">
+        <div className="overflow-x-auto">
+          <table
+            className="w-full text-left border-collapse text-sm"
+            data-testid="admin-shop-table"
+          >
+            <thead>
+              <tr className="border-b border-[var(--borderColor)] bg-[var(--backgroundFocus)] text-[var(--colorTextSecondary,#a1a1aa)] text-xs uppercase tracking-wider">
+                <th className="py-3 px-4 font-bold">{labels.columns.id}</th>
+                <th className="py-3 px-4 font-bold">
+                  {labels.columns.category}
+                </th>
+                <th className="py-3 px-4 font-bold">{labels.columns.rarity}</th>
+                <th className="py-3 px-4 font-bold">
+                  {labels.columns.defaultPrice}
+                </th>
+                <th className="py-3 px-4 font-bold">
+                  {labels.columns.effectivePrice}
+                </th>
+                <th className="py-3 px-4 font-bold text-center">
+                  {labels.columns.available}
+                </th>
+                <th className="py-3 px-4 font-bold text-right">
+                  {labels.columns.actions}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--borderColor)]">
+              {visibleItems.map((item) => {
+                const overridden = item.overridden;
+                return (
+                  <tr
+                    key={item.id}
+                    data-testid={`admin-shop-row-${item.id}`}
+                    className="hover:bg-[rgba(255,255,255,0.03)] transition-colors"
+                  >
+                    <td className="py-3 px-4">
+                      <div className="flex flex-row items-center gap-3">
+                        <AdminShopItemPreview
+                          size={32}
+                          colorValue={item.colorValue}
+                          assetUrl={item.assetUrl}
+                          itemId={item.id}
+                        />
+                        <code className="text-xs bg-[rgba(255,255,255,0.08)] px-1.5 py-0.5 rounded font-mono text-[var(--colorText)]">
+                          {item.id}
+                        </code>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-[var(--colorText)]">
+                      {labels.category[item.category] ?? item.category}
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge
+                        variant="neutral"
+                        size="sm"
+                        className="capitalize text-[10px]"
+                      >
+                        {labels.rarity[item.rarity] ?? item.rarity}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4 text-[var(--colorTextSecondary,#a1a1aa)] font-mono text-xs">
+                      {item.defaultPriceAmount} {item.defaultPriceCurrency}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex flex-row items-center gap-2">
+                        <span className="font-mono text-xs font-semibold text-[var(--colorText)]">
+                          {item.priceAmount} {item.priceCurrency}
+                        </span>
+                        {overridden ? (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[rgba(167,139,250,0.18)] text-[#a78bfa] border border-[rgba(167,139,250,0.3)]">
+                            {labels.columns.overridden}
+                          </span>
+                        ) : null}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      {item.available ? (
+                        <span className="text-emerald-400 font-bold">✓</span>
+                      ) : (
+                        <span className="text-[var(--colorTextSecondary,#71717a)]">
+                          —
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <div className="flex flex-row items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setEditing(item)}
+                          data-testid={`admin-shop-edit-${item.id}`}
+                        >
+                          {labels.buttons.edit}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openGrantForItem(item.id)}
+                          data-testid={`admin-shop-grant-row-${item.id}`}
+                        >
+                          {labels.buttons.grant}
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </GlassCard>
+
+      {hasMore ? (
+        <div
+          ref={observerTarget}
+          className="flex flex-col items-center justify-center p-4 gap-3"
+          data-testid="admin-shop-infinite-scroll-trigger"
         >
-          <thead>
-            <tr style={{ background: 'var(--backgroundHover)' }}>
-              <Th>{labels.columns.id}</Th>
-              <Th>{labels.columns.category}</Th>
-              <Th>{labels.columns.rarity}</Th>
-              <Th>{labels.columns.defaultPrice}</Th>
-              <Th>{labels.columns.effectivePrice}</Th>
-              <Th>{labels.columns.available}</Th>
-              <Th>{labels.columns.actions}</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {catalog.map((item) => {
-              const overridden = item.overridden;
-              return (
-                <tr
-                  key={item.id}
-                  data-testid={`admin-shop-row-${item.id}`}
-                  style={{
-                    borderTop: '1px solid var(--borderColor)',
-                  }}
-                >
-                  <Td>
-                    <div className="flex flex-row items-center gap-2">
-                      <AdminShopItemPreview
-                        size={32}
-                        colorValue={item.colorValue}
-                        assetUrl={item.assetUrl}
-                        itemId={item.id}
-                      />
-                      <code>{item.id}</code>
-                    </div>
-                  </Td>
-                  <Td>{labels.category[item.category]}</Td>
-                  <Td>{labels.rarity[item.rarity]}</Td>
-                  <Td>
-                    {item.defaultPriceAmount} {item.defaultPriceCurrency}
-                  </Td>
-                  <Td>
-                    <span>
-                      {item.priceAmount} {item.priceCurrency}
-                    </span>
-                    {overridden ? (
-                      <span
-                        style={{
-                          marginLeft: 6,
-                          padding: '1px 6px',
-                          background: 'rgba(167,139,250,0.18)',
-                          color: '#a78bfa',
-                          borderRadius: 4,
-                          fontSize: 11,
-                          fontWeight: 700,
-                        }}
-                      >
-                        {labels.columns.overridden}
-                      </span>
-                    ) : null}
-                  </Td>
-                  <Td>
-                    {item.available ? (
-                      '✓'
-                    ) : (
-                      <span style={{ color: 'var(--colorPress)' }}>—</span>
-                    )}
-                  </Td>
-                  <Td>
-                    <div className="flex flex-row items-stretch gap-2">
-                      <RowActionButton
-                        onClick={() => setEditing(item)}
-                        data-testid={`admin-shop-edit-${item.id}`}
-                      >
-                        {labels.buttons.edit}
-                      </RowActionButton>
-                      <RowActionButton
-                        onClick={() => openGrantForItem(item.id)}
-                        data-testid={`admin-shop-grant-row-${item.id}`}
-                      >
-                        {labels.buttons.grant}
-                      </RowActionButton>
-                    </div>
-                  </Td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+          <Spinner size="sm" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadMore}
+            data-testid="admin-shop-load-more"
+          >
+            {labels.loadMore ?? 'Load more'}
+          </Button>
+        </div>
+      ) : (
+        <div
+          className="flex flex-row items-center justify-center py-4 text-center"
+          data-testid="admin-shop-all-loaded"
+        >
+          <Typography variant="caption" alpha="low">
+            {allLoadedText}
+          </Typography>
+        </div>
+      )}
 
       <AdminShopEditDialog
         item={editing}
@@ -169,67 +266,6 @@ export function AdminShopTable({ catalog, labels }: Props) {
         defaultItemId={grantDefaultItemId}
         catalog={catalog}
       />
-    </>
-  );
-}
-
-function Th({ children }: { children: React.ReactNode }) {
-  return (
-    <th
-      style={{
-        textAlign: 'left',
-        padding: '10px 12px',
-        fontWeight: 700,
-        color: 'var(--colorPress)',
-        fontSize: 12,
-        textTransform: 'uppercase',
-        letterSpacing: '0.6px',
-      }}
-    >
-      {children}
-    </th>
-  );
-}
-
-function Td({ children }: { children: React.ReactNode }) {
-  return (
-    <td style={{ padding: '10px 12px', verticalAlign: 'middle' }}>
-      {children}
-    </td>
-  );
-}
-
-interface RowActionButtonProps {
-  children: React.ReactNode;
-  onClick: () => void;
-  'data-testid'?: string;
-}
-
-function RowActionButton({
-  children,
-  onClick,
-  'data-testid': testId,
-}: RowActionButtonProps) {
-  // CSS custom properties from the active theme so this button reads
-  // correctly under both dark and light themes.
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      data-testid={testId}
-      style={{
-        padding: '4px 12px',
-        borderRadius: 6,
-        border: '1px solid var(--borderColor)',
-        background: 'var(--backgroundFocus)',
-        color: 'var(--color)',
-        fontSize: 13,
-        fontWeight: 500,
-        cursor: 'pointer',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {children}
-    </button>
+    </div>
   );
 }

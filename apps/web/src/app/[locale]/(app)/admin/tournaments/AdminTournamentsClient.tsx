@@ -117,6 +117,9 @@ export default function AdminTournamentsClient() {
   const [resultText, setResultText] = useState('');
   const [markCompleteItem, setMarkCompleteItem] =
     useState<AdminTournamentItem | null>(null);
+  const [accumulatedTournaments, setAccumulatedTournaments] = useState<
+    AdminTournamentItem[]
+  >([]);
   const triggerRefresh = useRefreshStore((s) => s.triggerRefresh);
 
   const { data, isLoading } = useAdminTournaments({
@@ -195,7 +198,24 @@ export default function AdminTournamentsClient() {
     setStatus(next.status);
     setGameType(next.gameType);
     setPage(1);
+    setAccumulatedTournaments([]);
   };
+
+  const handleLoadMore = () => {
+    if (!isLoading && data && accumulatedTournaments.length < data.total) {
+      setPage((p) => p + 1);
+    }
+  };
+
+  if (data?.items && accumulatedTournaments.length === 0 && page === 1) {
+    setAccumulatedTournaments(data.items);
+  } else if (data?.items && page > 1) {
+    const existingIds = new Set(accumulatedTournaments.map((it) => it.id));
+    const newItems = data.items.filter((it) => !existingIds.has(it.id));
+    if (newItems.length > 0) {
+      setAccumulatedTournaments([...accumulatedTournaments, ...newItems]);
+    }
+  }
 
   const handleSubmit = async (body: CreateTournamentBody) => {
     if (!modal) return;
@@ -213,6 +233,16 @@ export default function AdminTournamentsClient() {
     setPendingDelete(null);
   };
 
+  const onTransition = (item: AdminTournamentItem) => {
+    const next = nextStatuses(item.status);
+    if (next.length === 0) return;
+    if (next[0] === 'completed') {
+      setMarkCompleteItem(item);
+    } else {
+      setPendingTransition({ item, to: next[0] });
+    }
+  };
+
   const confirmTransition = async () => {
     if (!pendingTransition) return;
     await transitionMut.mutateAsync({
@@ -225,13 +255,6 @@ export default function AdminTournamentsClient() {
     });
     setPendingTransition(null);
     setResultText('');
-  };
-
-  const onTransition = (item: AdminTournamentItem) => {
-    const next = nextStatuses(item.status);
-    if (next.length === 0) return;
-    // Default to the first next state — the dialog renders all options.
-    setPendingTransition({ item, to: next[0]! });
   };
 
   return (
@@ -250,13 +273,15 @@ export default function AdminTournamentsClient() {
           />
 
           <AdminTournamentsTable
-            items={data?.items ?? []}
+            items={
+              accumulatedTournaments.length > 0
+                ? accumulatedTournaments
+                : (data?.items ?? [])
+            }
             total={data?.total ?? 0}
-            page={page}
-            pageSize={PAGE_SIZE}
             isLoading={isLoading}
             hasFilter={!!q || status !== 'all' || gameType !== null}
-            onPageChange={setPage}
+            onLoadMore={handleLoadMore}
             onEdit={(item) => setModal({ mode: 'edit', initial: item })}
             onDelete={(item) => setPendingDelete(item)}
             onTransition={onTransition}
@@ -349,15 +374,7 @@ export default function AdminTournamentsClient() {
                     onChange={(e) => setResultText(e.target.value)}
                     rows={3}
                     maxLength={1000}
-                    style={{
-                      padding: '6px 10px',
-                      borderRadius: 6,
-                      border: '1px solid #555',
-                      background: 'transparent',
-                      color: 'inherit',
-                      width: '100%',
-                      fontFamily: 'inherit',
-                    }}
+                    className="py-1.5 px-2.5 rounded-md border border-[var(--borderColor,#555)] bg-transparent text-inherit w-full font-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
                   />
                 </div>
               )}

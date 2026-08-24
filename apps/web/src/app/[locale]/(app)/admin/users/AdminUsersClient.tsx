@@ -12,7 +12,10 @@ import {
   useBulkDeleteUsers,
 } from '@/features/admin-users/hooks';
 import type { UserRole } from '@/entities/session/model/types';
-import type { AdminUserStatus } from '@/features/admin-users/api';
+import type {
+  AdminUserItem,
+  AdminUserStatus,
+} from '@/features/admin-users/api';
 import { ApiError } from '@/shared/lib/api-client';
 import { UsersFilters } from '@/features/admin-users/ui/UsersFilters';
 import { UsersTable } from '@/features/admin-users/ui/UsersTable';
@@ -95,6 +98,8 @@ export default function AdminUsersClient({
   const restoreMutation = useRestoreUser();
   const bulkDeleteMutation = useBulkDeleteUsers();
 
+  const [accumulatedUsers, setAccumulatedUsers] = useState<AdminUserItem[]>([]);
+
   const onFilterChange = (next: {
     q: string;
     role: UserRole | null;
@@ -104,7 +109,24 @@ export default function AdminUsersClient({
     setRole(next.role);
     setStatus(next.status);
     setPage(1);
+    setAccumulatedUsers([]);
   };
+
+  const handleLoadMore = () => {
+    if (!isLoading && data && accumulatedUsers.length < data.total) {
+      setPage((p) => p + 1);
+    }
+  };
+
+  if (data?.items && accumulatedUsers.length === 0 && page === 1) {
+    setAccumulatedUsers(data.items);
+  } else if (data?.items && page > 1) {
+    const existingIds = new Set(accumulatedUsers.map((it) => it.id));
+    const newItems = data.items.filter((it) => !existingIds.has(it.id));
+    if (newItems.length > 0) {
+      setAccumulatedUsers([...accumulatedUsers, ...newItems]);
+    }
+  }
 
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     if (!t) return;
@@ -295,10 +317,12 @@ export default function AdminUsersClient({
           )}
           {labels && (
             <UsersTable
-              items={data?.items ?? []}
+              items={
+                accumulatedUsers.length > 0
+                  ? accumulatedUsers
+                  : (data?.items ?? [])
+              }
               total={data?.total ?? 0}
-              page={page}
-              pageSize={PAGE_SIZE}
               isLoading={isLoading}
               isError={!!queryError}
               currentUserId={currentUserId}
@@ -310,7 +334,7 @@ export default function AdminUsersClient({
               onDelete={handleDelete}
               onRestore={handleRestore}
               onBulkDelete={handleBulkDelete}
-              onPageChange={setPage}
+              onLoadMore={handleLoadMore}
               pendingUserId={pendingUserId}
               labels={labels}
             />

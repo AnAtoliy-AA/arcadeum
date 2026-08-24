@@ -14,7 +14,6 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => children;
 
 const labels: AdminAnnouncementsTableLabels = {
   empty: { noResults: 'no results', noAnnouncements: 'none yet' },
-  pagination: { prev: 'Prev', next: 'Next', of: '{current} / {total}' },
   totalLabel: 'Showing {start}–{end} of {total}',
   table: {
     title: 'Title',
@@ -56,25 +55,22 @@ const item = (
 const renderTable = (props: {
   items?: AdminAnnouncementItem[];
   total?: number;
-  page?: number;
   isLoading?: boolean;
   hasFilter?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
-  onPageChange?: () => void;
+  onLoadMore?: () => void;
 }) =>
   render(
     <Wrapper>
       <AdminAnnouncementsTable
         items={props.items ?? [item()]}
         total={props.total ?? 1}
-        page={props.page ?? 1}
-        pageSize={25}
         isLoading={props.isLoading ?? false}
         hasFilter={props.hasFilter ?? false}
         onEdit={props.onEdit ?? vi.fn()}
         onDelete={props.onDelete ?? vi.fn()}
-        onPageChange={props.onPageChange ?? vi.fn()}
+        onLoadMore={props.onLoadMore ?? vi.fn()}
         labels={labels}
       />
     </Wrapper>,
@@ -135,19 +131,20 @@ describe('AdminAnnouncementsTable', () => {
     expect(onDelete).toHaveBeenCalled();
   });
 
-  it('disables prev on page 1, fires next on click', () => {
-    const onPageChange = vi.fn();
-    renderTable({ total: 100, page: 1, onPageChange });
-    const prev = screen.getByText('Prev').closest('button');
-    expect(prev).toHaveAttribute('aria-disabled', 'true');
-    fireEvent.click(screen.getByText('Next'));
-    expect(onPageChange).toHaveBeenCalledWith(2);
+  it('renders infinite scroll trigger when items < total', () => {
+    const onLoadMore = vi.fn();
+    renderTable({ items: [item()], total: 100, onLoadMore });
+    expect(
+      screen.getByTestId('announcements-infinite-scroll-trigger'),
+    ).toBeInTheDocument();
+    const loadMoreBtn = screen.getByTestId('announcements-load-more');
+    fireEvent.click(loadMoreBtn);
+    expect(onLoadMore).toHaveBeenCalled();
   });
 
-  it('renders total label with placeholders filled', () => {
-    renderTable({ items: [item()], total: 47 });
-    // Multiple-row scenario uses end = min(total, page*pageSize) = 1 here.
-    // Just verify the totalLabel substitution happened (no '{}' braces left).
-    expect(screen.getByText(/Showing \d+.*\d+ of 47/)).toBeInTheDocument();
+  it('renders all loaded status when items >= total', () => {
+    renderTable({ items: [item()], total: 1 });
+    expect(screen.getByTestId('announcements-all-loaded')).toBeInTheDocument();
+    expect(screen.getByText('All 1 announcements loaded')).toBeInTheDocument();
   });
 });

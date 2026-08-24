@@ -103,6 +103,9 @@ export default function AdminAnnouncementsClient() {
   const [modal, setModal] = useState<ModalState | null>(null);
   const [pendingDelete, setPendingDelete] =
     useState<AdminAnnouncementItem | null>(null);
+  const [accumulatedAnnouncements, setAccumulatedAnnouncements] = useState<
+    AdminAnnouncementItem[]
+  >([]);
 
   const { data, isLoading } = useAdminAnnouncements({
     page,
@@ -181,7 +184,24 @@ export default function AdminAnnouncementsClient() {
     setStatus(next.status);
     setSeverity(next.severity);
     setPage(1);
+    setAccumulatedAnnouncements([]);
   };
+
+  const handleLoadMore = () => {
+    if (!isLoading && data && accumulatedAnnouncements.length < data.total) {
+      setPage((p) => p + 1);
+    }
+  };
+
+  if (data?.items && accumulatedAnnouncements.length === 0 && page === 1) {
+    setAccumulatedAnnouncements(data.items);
+  } else if (data?.items && page > 1) {
+    const existingIds = new Set(accumulatedAnnouncements.map((it) => it.id));
+    const newItems = data.items.filter((it) => !existingIds.has(it.id));
+    if (newItems.length > 0) {
+      setAccumulatedAnnouncements([...accumulatedAnnouncements, ...newItems]);
+    }
+  }
 
   const handleSubmit = async (body: CreateAnnouncementBody) => {
     if (!modal) return;
@@ -215,13 +235,15 @@ export default function AdminAnnouncementsClient() {
           />
 
           <AdminAnnouncementsTable
-            items={data?.items ?? []}
+            items={
+              accumulatedAnnouncements.length > 0
+                ? accumulatedAnnouncements
+                : (data?.items ?? [])
+            }
             total={data?.total ?? 0}
-            page={page}
-            pageSize={PAGE_SIZE}
             isLoading={isLoading}
             hasFilter={!!q || status !== 'all' || severity !== null}
-            onPageChange={setPage}
+            onLoadMore={handleLoadMore}
             onEdit={(item) => setModal({ mode: 'edit', initial: item })}
             onDelete={(item) => setPendingDelete(item)}
             labels={tableLabels}

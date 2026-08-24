@@ -35,6 +35,7 @@ export const enMessages = {
         'Foundation moves earn 10 points, tableau moves 5, and each newly revealed card adds another 5. Recycling the waste keeps your streak alive.',
     },
     landing: {
+      tagline: 'Single-player · No signup',
       meta: {
         title: 'Solitaire — Free Online Klondike Card Game | Arcadeum',
         description:

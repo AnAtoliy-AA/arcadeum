@@ -124,9 +124,7 @@ export class CriticalEngine extends BaseGameEngine<CriticalState> {
         state: CriticalState,
         log: ReturnType<typeof this.createLogEntry>,
       ) => this.addLog(state, log),
-      createLogEntry: this.createLogEntry.bind(
-        this,
-      ) as typeof this.createLogEntry,
+      createLogEntry: this.createLogEntry.bind(this) as unknown as (typeof helpers)['createLogEntry'],
       advanceTurn: (state: CriticalState) => this.advanceTurn(state),
       shuffleArray: <T>(arr: T[]) => this.shuffleArray(arr),
       findPlayer: (state: CriticalState, pid: string) =>

@@ -117,6 +117,11 @@ export const frMessages = {
       copyLink: 'Copier le lien',
       copied: 'Copié !',
     },
+    roomQr: {
+      menu: 'Afficher le code QR',
+      title: 'Code QR de la salle',
+      hint: 'Scanne pour rejoindre la partie',
+    },
     actions: {
       backToHome: "Retour à l'Accueil",
     },

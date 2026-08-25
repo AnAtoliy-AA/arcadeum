@@ -116,6 +116,11 @@ export const enMessages = {
       copyLink: 'Copy link',
       copied: 'Copied!',
     },
+    roomQr: {
+      menu: 'Show QR code',
+      title: 'Room QR code',
+      hint: 'Scan to join the game',
+    },
     actions: {
       backToHome: 'Back to Home',
     },

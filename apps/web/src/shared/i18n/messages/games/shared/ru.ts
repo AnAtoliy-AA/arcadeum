@@ -116,6 +116,11 @@ export const ruMessages = {
       copyLink: 'Копировать ссылку',
       copied: 'Скопировано!',
     },
+    roomQr: {
+      menu: 'Показать QR-код',
+      title: 'QR-код комнаты',
+      hint: 'Отсканируй, чтобы присоединиться к игре',
+    },
     actions: {
       backToHome: 'На главную',
     },

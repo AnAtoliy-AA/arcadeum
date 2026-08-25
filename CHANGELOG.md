@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [1.26.39] - 2026-08-25
 
-- build @arcadeum/games-core dist during be build so standalone deploys (Render) resolve game engine modules at runtime
+### Fixed
+- restore android build compatibility (ARC-892) (ARC-892)
+- build games-core dist as part of be build (ARC-925)
+
 
 ## [1.26.38] - 2026-08-25
 

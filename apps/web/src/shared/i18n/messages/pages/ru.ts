@@ -24,6 +24,8 @@ import { communityRu } from './community/ru';
 import { rewardsRu } from './rewards/ru';
 import { developersRu } from './developers/ru';
 import { blogRu } from './blog/ru';
+import { changelogRu } from './changelog/ru';
+import { roadmapRu } from './roadmap/ru';
 
 export const ru = {
   admin: {
@@ -483,4 +485,6 @@ export const ru = {
   clans: clansRu,
   events: eventsRu,
   seasons: seasonsRu,
+  changelog: changelogRu,
+  roadmap: roadmapRu,
 };

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.47] - 2026-08-25
+
+### Fixed
+- literal-compare wallet signature lookup (CodeQL js/sql-injection)
+- provide User model to EventsModule for RolesGuard
+- fail-closed OAuth, safe JsonLd, real SecureStore
+- tighten session, RBAC, payments and economy abuse limits
+- harden ARC deposit verification and shop replay protection
+- require verified identity on chat and games gateways
+
+
 ## [1.26.46] - 2026-08-25
 
 ### Improved

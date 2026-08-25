@@ -1,6 +1,6 @@
 {
   "name": "aicoapp-monorepo",
-  "version": "1.26.46",
+  "version": "1.26.47",
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {

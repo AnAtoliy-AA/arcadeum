@@ -1,5 +1,17 @@
 export const ARCADEUM_DECIMALS = 6;
 
+/** Classic SPL Token program. */
+export const TOKEN_PROGRAM_ID = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
+
+/** Token-2022 program (pump.fun tokens may use either program). */
+export const TOKEN_2022_PROGRAM_ID =
+  'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
+
+export const SOLANA_TOKEN_PROGRAM_IDS: readonly string[] = [
+  TOKEN_PROGRAM_ID,
+  TOKEN_2022_PROGRAM_ID,
+];
+
 /**
  * Create the ARCADEUM mint PublicKey from a base58 address string.
  * Throws if the address is invalid.

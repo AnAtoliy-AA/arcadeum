@@ -16,38 +16,15 @@ interface NetworkError extends Error {
 
 const ANONYMOUS_ID_KEY = 'arcadeum_anon_id';
 
-async function deriveSigningKey(secret: string): Promise<CryptoKey> {
-  const enc = new TextEncoder();
-  return crypto.subtle.importKey(
-    'raw',
-    enc.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign', 'verify'],
-  );
-}
-
-async function signAnonymousId(id: string): Promise<string> {
-  const secret =
-    typeof process !== 'undefined'
-      ? (process.env.NEXT_PUBLIC_ANON_SECRET ?? '')
-      : '';
-  if (!secret) return '';
-  const key = await deriveSigningKey(secret);
-  const signature = await crypto.subtle.sign(
-    'HMAC',
-    key,
-    new TextEncoder().encode(id),
-  );
-  return Array.from(new Uint8Array(signature))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
-export async function getAnonymousIdWithSignature(): Promise<{
-  id: string;
-  signature: string;
-} | null> {
+/**
+ * Returns the persisted anonymous id, generating one if needed.
+ *
+ * Anonymous identities are NOT signed client-side: a signing secret in the
+ * browser bundle is public by definition. The backend treats unsigned
+ * (format-validated) anon ids as unprivileged guests — this only ever
+ * personalizes public read endpoints.
+ */
+export async function getOrCreateAnonymousId(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
 
   let id = localStorage.getItem(ANONYMOUS_ID_KEY);
@@ -74,8 +51,7 @@ export async function getAnonymousIdWithSignature(): Promise<{
     localStorage.setItem(ANONYMOUS_ID_KEY, id);
   }
 
-  const signature = await signAnonymousId(id);
-  return { id, signature };
+  return id;
 }
 
 export function getAnonymousId() {
@@ -227,13 +203,9 @@ export const apiClient = {
       (headers as Record<string, string>).Authorization = `Bearer ${token}`;
     }
 
-    const anon = await getAnonymousIdWithSignature();
-    if (anon) {
-      (headers as Record<string, string>)['x-anonymous-id'] = anon.id;
-      if (anon.signature) {
-        (headers as Record<string, string>)['x-anonymous-signature'] =
-          anon.signature;
-      }
+    const anonId = await getOrCreateAnonymousId();
+    if (anonId) {
+      (headers as Record<string, string>)['x-anonymous-id'] = anonId;
     }
 
     const isDev = process.env.NODE_ENV === 'development';

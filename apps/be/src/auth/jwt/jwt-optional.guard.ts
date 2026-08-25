@@ -80,16 +80,19 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
     const anonSig = normalizeHeader(req.headers['x-anonymous-signature']);
 
     const secret = this.configService.get<string>('ANONYMOUS_ID_SECRET') ?? '';
-    const isProduction =
-      this.configService.get<string>('NODE_ENV') === 'production';
 
     // Verification runs unconditionally — request data never decides
-    // whether the check executes. Unsigned identities are tolerated only
-    // when no signing secret is configured outside production.
+    // whether the check executes.
+    //
+    // Anonymous identities are treated as UNPRIVILEGED guests. Clients do
+    // not sign anon ids anymore (a secret shipped to browsers is public),
+    // so a format-valid unsigned id still gets a stable guest identity for
+    // personalizing public read endpoints — but never a real user role.
+    // A validly signed id (legacy) keeps the legacy 'user' role.
     const signatureValid = verifyAnonymousSignature(anonId, anonSig, secret);
-    const fallbackAllowed = secret === '' && !isProduction;
+    const idFormatValid = ANON_ID_REGEX.test(anonId);
 
-    if (!signatureValid && !fallbackAllowed) {
+    if (!idFormatValid) {
       return null as TUser;
     }
 
@@ -102,7 +105,8 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
       email: 'anonymous@example.com',
       username: `Anonymous #${suffix}`,
       displayName: `Anonymous #${suffix}`,
-      role: 'user',
+      role: signatureValid ? 'user' : 'guest',
+      anonymous: true,
     } as unknown as TUser;
   }
 }

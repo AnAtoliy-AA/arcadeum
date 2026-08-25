@@ -29,7 +29,7 @@ export async function finalizeCompletedSession(
 ): Promise<void> {
   await deps.roomsService.updateRoomStatus(session.roomId, 'completed');
   await deps.leaderboardSync.syncInMatch(players, false);
-  await deps.postMatch.payoutGameWin(session);
+  await deps.postMatch.payoutGameWin(session, players);
   await deps.archiveService.archiveSessionToAtlas(session);
 
   try {

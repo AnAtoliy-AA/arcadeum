@@ -19,6 +19,12 @@ interface RewardTierDefinition {
   }>;
 }
 
+/**
+ * Maximum referrals paid out per referrer per UTC day. Bounds the coin
+ * minting rate from multi-account farming.
+ */
+const REFERRAL_DAILY_PAYOUT_CAP = 20;
+
 const REWARD_TIERS: RewardTierDefinition[] = [
   {
     tier: 1,
@@ -178,6 +184,24 @@ export class ReferralService {
     await this.userModel.findByIdAndUpdate(referredUserId, {
       referredBy: referrerId,
     });
+
+    // Sybil bound: multi-accounting is impossible to fully prevent, so cap
+    // the number of PAID referrals per referrer per day. The referral itself
+    // is still recorded (stats/tiers stay accurate); only the coin payout is
+    // withheld beyond the cap.
+    const startOfDay = new Date();
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const paidToday = await this.referralModel.countDocuments({
+      referrerId,
+      status: 'completed',
+      completedAt: { $gte: startOfDay },
+    });
+    if (paidToday >= REFERRAL_DAILY_PAYOUT_CAP) {
+      this.logger.warn(
+        `Referrer ${referrerId} hit daily referral payout cap (${REFERRAL_DAILY_PAYOUT_CAP}) — skipping payout`,
+      );
+      return;
+    }
 
     await this.payoutPerReferral(
       referrerId,

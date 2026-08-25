@@ -9,6 +9,9 @@ jest.mock('./lib/arcadeum-token', () => ({
   toRawAmount: jest.fn((n: number) => BigInt(Math.round(n * 1e9))),
   fromRawAmount: jest.fn((n: bigint) => Number(n) / 1e9),
   ARCADEUM_DECIMALS: 9,
+  TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+  TOKEN_2022_PROGRAM_ID: 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
+  SOLANA_TOKEN_PROGRAM_IDS: ['token-program', 'token-2022-program'],
 }));
 
 import { getPlatformKeypair } from './lib/solana-keypair';
@@ -87,14 +90,15 @@ describe('SolanaService', () => {
   });
 
   describe('getPlatformBalance', () => {
-    it('returns SOL + ARCADEUM balances', async () => {
+    it('returns SOL + ARCADEUM balances (sums both token programs)', async () => {
       mockConnection.getBalance.mockResolvedValue(2 * 1_000_000_000);
       mockSplToken.getAssociatedTokenAddress.mockResolvedValue(
         mockPublicKey('ata-address'),
       );
-      mockSplToken.getAccount.mockResolvedValue({
-        amount: BigInt(100_000_000_000),
-      });
+      // First token program has an account; the second does not.
+      mockSplToken.getAccount
+        .mockResolvedValueOnce({ amount: BigInt(100_000_000_000) })
+        .mockRejectedValueOnce(new Error('Account not found'));
 
       const result = await service.getPlatformBalance();
 

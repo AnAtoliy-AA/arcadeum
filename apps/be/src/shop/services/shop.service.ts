@@ -101,10 +101,7 @@ export class ShopService {
 
     // Ownership short-circuit: the per-purchaseId dedup above only catches
     // exact retries of the same client nonce. Without this second check a
-    // fresh nonce — new click, new tab, racing requests — would debit again
-    // and create a duplicate live row. Idempotent no-op: skip debit, ensure
-    // the item is equipped (matches the card-side "Buy & equip" semantic),
-    // return the existing row.
+    // fresh nonce would debit again and create a duplicate live row.
     const existing = await this.inventory.findLiveByItem(userId, effective.id);
     if (existing) {
       const equipped = await this.ensureEquipped(userId, effective);
@@ -117,18 +114,22 @@ export class ShopService {
     }
 
     let inventoryRow!: InventoryRowSnapshot;
-    let equipped: EquippedView = {
-      avatar: null,
-      badge: null,
-      name_color: null,
-      game_skin: null,
-      banner: null,
-      aura: null,
-      frame: null,
-      background: null,
-    };
+    let equipped: EquippedView = this.equippedFromUser(null);
 
     await runInTransaction(this.connection, async (session) => {
+      // Re-check INSIDE the transaction — without this two concurrent
+      // purchases could both debit (TOCTOU double-debit).
+      const existingInTxn = await this.inventory.findLiveByItem(
+        userId,
+        effective.id,
+        session,
+      );
+      if (existingInTxn) {
+        inventoryRow = existingInTxn;
+        equipped = await this.ensureEquipped(userId, effective, session);
+        return;
+      }
+
       // 1. Wallet debit (parentSession).
       const reason =
         effective.priceCurrency === 'arcadeum'

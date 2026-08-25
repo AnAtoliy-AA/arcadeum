@@ -65,3 +65,10 @@ export const UserInventoryItemSchema =
 
 UserInventoryItemSchema.index({ userId: 1, purchaseId: 1 }, { unique: true });
 UserInventoryItemSchema.index({ userId: 1, itemId: 1, soldAt: 1 });
+// One on-chain payment may ever be redeemed once, regardless of which user
+// or item it is claimed against. Sparse: only ARC-funded rows carry a
+// signature.
+UserInventoryItemSchema.index(
+  { walletSignature: 1 },
+  { unique: true, sparse: true },
+);

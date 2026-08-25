@@ -21,6 +21,9 @@ import type {
   IssuedRefreshToken,
 } from '../lib/types';
 
+/** Cap for the legacy-format fallback scan: ~50 bcrypt compares worst case. */
+const LEGACY_TOKEN_SCAN_LIMIT = 50;
+
 @Injectable()
 export class RefreshTokenService {
   private readonly logger = new Logger(RefreshTokenService.name);
@@ -74,6 +77,13 @@ export class RefreshTokenService {
 
   /**
    * Find a refresh token document by raw token value.
+   *
+   * Modern tokens embed their indexed tokenId in the first segment, so the
+   * lookup above resolves them in O(1). A miss on a dotted (modern-format)
+   * token means it was never issued — no scan can match. Only legacy
+   * format-less tokens fall through to a bcrypt comparison, which is bounded
+   * to the newest live tokens so worst-case latency stays flat as sessions
+   * grow.
    */
   async findRefreshTokenDocument(
     raw: string,
@@ -84,15 +94,19 @@ export class RefreshTokenService {
       if (byId) {
         return byId;
       }
+      if (raw.includes('.')) {
+        return null;
+      }
     }
 
-    // Bounded fallback for legacy tokens without an extractable tokenId —
-    // an unbounded scan of every live token is a bcrypt DoS vector. Legacy
-    // tokens age out via the TTL index.
     const candidates = await this.refreshModel
-      .find({ revoked: false })
+      .find({
+        revoked: false,
+        expiresAt: { $gt: new Date() },
+      })
       .sort({ createdAt: -1 })
-      .limit(250);
+      .limit(LEGACY_TOKEN_SCAN_LIMIT)
+      .exec();
     for (const candidate of candidates) {
       if (await bcrypt.compare(raw, candidate.tokenHash)) {
         return candidate;

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.34] - 2026-08-25
+
+### Added
+- add real board preview art and symbols for puzzle games (ARC-936) (ARC-936)
+
+### Fixed
+- export typescript source types for pre-build linting and type resolution (ARC-936) (ARC-936)
+- restore tsconfig rootDir to maintain dist/src/main structure (ARC-936) (ARC-936)
+
+
 ## [1.26.33] - 2026-08-25
 
 ### Added

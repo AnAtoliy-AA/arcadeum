@@ -1,3 +1,4 @@
+import { tournamentsFr } from './tournaments/fr';
 import { helpFr } from './help/fr';
 import { adminAnnouncementsFr } from './admin-announcements/fr';
 import { adminTournamentsFr } from './admin-tournaments/fr';
@@ -24,6 +25,8 @@ import { communityFr } from './community/fr';
 import { rewardsFr } from './rewards/fr';
 import { developersFr } from './developers/fr';
 import { blogFr } from './blog/fr';
+import { changelogFr } from './changelog/fr';
+import { roadmapFr } from './roadmap/fr';
 
 export const fr = {
   admin: {
@@ -182,74 +185,7 @@ export const fr = {
     blockedIps: adminBlockedIpsFr,
     bulkRewards: adminBulkRewardsFr,
   },
-  tournaments: {
-    title: 'Tournois',
-    subtitle: 'Affrontez les meilleurs joueurs du monde',
-    description:
-      'Participez à des tournois passionnants, progressez dans les brackets et disputez des prix exclusifs. De nouveaux tournois sont ajoutés régulièrement.',
-    features: [
-      {
-        title: 'Brackets dynamiques',
-        description:
-          'Suivez vos progrès grâce à des tableaux mis à jour en temps réel.',
-      },
-      {
-        title: 'Récompenses exclusives',
-        description:
-          'Gagnez des cosmétiques premium, des boosters et des récompenses saisonnières.',
-      },
-      {
-        title: 'Matchmaking par niveau',
-        description:
-          'Affrontez des joueurs de niveau similaire pour une expérience équilibrée.',
-      },
-    ],
-    comingSoon: "Le mode tournoi arrive bientôt. Restez à l'écoute !",
-    list: {
-      loading: 'Chargement des tournois…',
-      empty: 'Aucun tournoi pour le moment. Revenez bientôt !',
-      card: {
-        registered: 'Inscrits {count} / {max}',
-        prize: 'Prix',
-        entryFee: "Frais d'entrée",
-        prizePool: 'Cagnotte',
-        registerCta: "S'inscrire",
-        unregisterCta: 'Se désinscrire',
-        signInToRegister: 'Connectez-vous pour vous inscrire',
-        full: "Liste d'attente",
-        registrationClosed: 'Inscription fermée',
-        confirmRegister: {
-          title: 'Confirmer la participation',
-          body: 'Ce tournoi coûte {fee} pièces. Votre solde : {balance} pièces.',
-          confirm: "Payer et s'inscrire",
-          cancel: 'Annuler',
-        },
-        confirmUnregister: {
-          refund: 'Vous serez remboursé de {amount} pièces.',
-          title: "Annuler l'inscription",
-          body: 'Êtes-vous sûr ?',
-          confirm: 'Oui, annuler',
-          cancelButton: 'Non, rester',
-        },
-        errors: {
-          insufficientFunds: 'Pas assez de pièces pour participer.',
-        },
-        effectiveStatus: {
-          scheduled: 'Programmé',
-          registration_open: 'Inscription ouverte',
-          registration_closed: 'Inscription fermée',
-          live: 'En cours',
-          awaiting_results: 'Résultats à venir',
-          completed: 'Terminé',
-          cancelled: 'Annulé',
-        },
-        gameType: {
-          critical_v1: 'Critical',
-          sea_battle_v1: 'Bataille navale',
-        },
-      },
-    },
-  },
+  tournaments: tournamentsFr,
   blog: blogFr,
   community: communityFr,
   cookies: {
@@ -479,4 +415,6 @@ export const fr = {
   clans: clansFr,
   events: eventsFr,
   seasons: seasonsFr,
+  changelog: changelogFr,
+  roadmap: roadmapFr,
 };

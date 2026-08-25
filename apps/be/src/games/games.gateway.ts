@@ -17,6 +17,8 @@ import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.serv
 import { extractString } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
+import { handleRequestHint } from './games.gateway.hint';
+import { ChessBotService } from './engines/chess/chess-bot.service';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -75,6 +77,7 @@ export class GamesGateway {
     private readonly heartsHandler: HeartsGateway,
     private readonly spadesHandler: SpadesGateway,
     private readonly goHandler: GoGateway,
+    private readonly chessBotService?: ChessBotService,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
@@ -417,6 +420,23 @@ export class GamesGateway {
     payload: unknown,
   ): void {
     handleEmote(this.logger, this.server, client, this.realtime, payload);
+  }
+
+  @SubscribeMessage('games.session.hint')
+  async onRequestHint(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: unknown,
+  ): Promise<void> {
+    await handleRequestHint(
+      this.logger,
+      this.server,
+      client,
+      this.realtime,
+      payload,
+      this.sessionsService,
+      this.gamesService,
+      this.chessBotService!,
+    );
   }
 
   @SubscribeMessage('games.matchmaking.join')

@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { Button, GlassCard } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatDateTime, formatNumber } from '@/shared/i18n/formatters';
@@ -18,6 +19,7 @@ export interface TournamentCardLabels {
   signInToRegister: string;
   full: string;
   registrationClosed: string;
+  viewBracket: string;
   confirmRegister: {
     title: string;
     body: string;
@@ -54,6 +56,8 @@ const STATUS_BG: Record<EffectiveTournamentStatus, string> = {
   completed: '#26272b',
   cancelled: 'rgba(239,68,68,0.25)',
 };
+
+export { STATUS_BG };
 
 export function TournamentCard({
   item,
@@ -169,7 +173,7 @@ export function TournamentCard({
         </div>
       )}
 
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row items-center justify-between gap-2">
         <span className="text-[12px] opacity-[0.7]">
           {labels.registered
             .replace('{count}', String(item.registeredCount))
@@ -178,6 +182,14 @@ export function TournamentCard({
         </span>
         {cta}
       </div>
+
+      <Link
+        href={`/tournaments/${encodeURIComponent(item.id)}`}
+        className="self-start text-[12px] font-bold text-[var(--primary)] underline-offset-2 hover:underline"
+        data-testid={`view-bracket-${item.id}`}
+      >
+        {labels.viewBracket} →
+      </Link>
     </GlassCard>
   );
 }

@@ -71,10 +71,11 @@ export function handleEmote(
   emoteRateLimits.set(rateKey, now);
 
   const channel = realtime.roomChannel(roomId);
-  if (!client.rooms.has(channel)) return;
+  const specChannel = realtime.spectatorChannel(roomId);
+  // ARC-926: spectators (joined via games.room.watch) may react too.
+  if (!client.rooms.has(channel) && !client.rooms.has(specChannel)) return;
 
   const data = { userId, emoteId: emoteId as EmoteId, ts: Date.now() };
   server.to(channel).emit('games.session.emote', maybeEncrypt(data));
-  const specChannel = realtime.spectatorChannel(roomId);
   server.to(specChannel).emit('games.session.emote', maybeEncrypt(data));
 }

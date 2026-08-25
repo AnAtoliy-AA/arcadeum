@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { TournamentsService } from './tournaments.service';
+import { TournamentsBracketsService } from './tournaments.brackets.service';
 import { ListPublicTournamentsDto } from './dto/list-public-tournaments.dto';
 import {
   TOURNAMENT_LOCALES,
@@ -58,7 +59,10 @@ function isAuthenticatedUser(
 
 @Controller('tournaments')
 export class PublicTournamentsController {
-  constructor(private readonly service: TournamentsService) {}
+  constructor(
+    private readonly service: TournamentsService,
+    private readonly bracketsService: TournamentsBracketsService,
+  ) {}
 
   @Get()
   @UseGuards(JwtOptionalAuthGuard)
@@ -79,6 +83,19 @@ export class PublicTournamentsController {
       isAuthenticated,
       isAuthenticated ? req.user?.userId : undefined,
     );
+  }
+
+  @Get(':id/bracket')
+  @UseGuards(JwtOptionalAuthGuard)
+  async getBracket(
+    @Param('id') id: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    res.setHeader(
+      'Cache-Control',
+      'public, max-age=60, stale-while-revalidate=300',
+    );
+    return this.bracketsService.getPublicBracket(id);
   }
 
   @Post(':id/register')

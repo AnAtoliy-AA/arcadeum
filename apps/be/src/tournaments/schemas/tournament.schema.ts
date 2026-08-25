@@ -25,6 +25,13 @@ export const TOURNAMENT_LOCALES: readonly TournamentLocale[] = [
   'by',
 ] as const;
 
+export type TournamentBracketFormat = 'single_elimination' | 'round_robin';
+
+export const TOURNAMENT_BRACKET_FORMATS: readonly TournamentBracketFormat[] = [
+  'single_elimination',
+  'round_robin',
+] as const;
+
 @Schema({ _id: false })
 class TournamentLocaleContent {
   @Prop({ required: true, maxlength: 120 })
@@ -73,6 +80,43 @@ class TournamentRegistration {
 const TournamentRegistrationSchema = SchemaFactory.createForClass(
   TournamentRegistration,
 );
+
+@Schema({ _id: false })
+class TournamentBracketMatch {
+  @Prop({ required: true, type: Number, min: 1 })
+  round!: number;
+
+  @Prop({ required: true, type: Number, min: 0 })
+  matchIndex!: number;
+
+  @Prop({ type: Types.ObjectId, ref: 'User', default: null })
+  playerA!: Types.ObjectId | null;
+
+  @Prop({ type: Types.ObjectId, ref: 'User', default: null })
+  playerB!: Types.ObjectId | null;
+
+  @Prop({ type: Types.ObjectId, ref: 'User', default: null })
+  winnerUserId!: Types.ObjectId | null;
+}
+const TournamentBracketMatchSchema = SchemaFactory.createForClass(
+  TournamentBracketMatch,
+);
+
+@Schema({ _id: false })
+class TournamentBracket {
+  @Prop({ required: true, enum: TOURNAMENT_BRACKET_FORMATS })
+  format!: TournamentBracketFormat;
+
+  @Prop({ type: [[TournamentBracketMatchSchema]], default: [] })
+  rounds!: TournamentBracketMatch[][];
+
+  @Prop({ type: Date, default: Date.now })
+  createdAt!: Date;
+}
+const TournamentBracketSchema = SchemaFactory.createForClass(TournamentBracket);
+
+export type TournamentBracketMatchDocument = TournamentBracketMatch & Document;
+export type TournamentBracketDocument = TournamentBracket & Document;
 
 @Schema({ timestamps: true, collection: 'tournaments' })
 export class Tournament {
@@ -124,6 +168,11 @@ export class Tournament {
 
   @Prop({ type: [TournamentRegistrationSchema], default: [] })
   registrations!: TournamentRegistration[];
+
+  // ARC-926: embedded bracket. Optional — generated on demand while the
+  // tournament is in `registration_open` or `live`.
+  @Prop({ type: TournamentBracketSchema, default: null })
+  bracket?: TournamentBracket | null;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   createdBy!: Types.ObjectId;

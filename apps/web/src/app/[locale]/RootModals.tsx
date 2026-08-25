@@ -18,6 +18,14 @@ const MatchmakingQueueModal = dynamic(
   { ssr: false },
 );
 
+const AchievementPopupHost = dynamic(
+  () =>
+    import('@/features/achievements/ui/AchievementPopupHost').then(
+      (m) => m.AchievementPopupHost,
+    ),
+  { ssr: false },
+);
+
 /**
  * Client-mounted modals that render nothing in the initial HTML:
  * the matchmaking queue is only shown while queuing and the wallet
@@ -30,6 +38,7 @@ export function RootModals({ authToken }: { authToken?: string | null }) {
     <>
       {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
       <MatchmakingQueueModal />
+      <AchievementPopupHost />
     </>
   );
 }

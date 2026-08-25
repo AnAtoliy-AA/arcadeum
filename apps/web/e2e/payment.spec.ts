@@ -7,10 +7,11 @@ test.describe('Payment Flow', () => {
     await mockSession(page);
 
     // Mock payment API (broad match to catch /payments/session)
+    // Stripe is excluded from ALLOWED_PAYMENT_DOMAINS — use PayPal sandbox.
     await page.route('**/payments/session', async (route) => {
       if (route.request().method() === 'POST') {
         await handleRoute(route, {
-          paymentUrl: 'https://checkout.stripe.com/mock-session',
+          paymentUrl: 'https://sandbox.paypal.com/mock-session',
         });
       } else {
         // Prevent 500s
@@ -55,13 +56,13 @@ test.describe('Payment Flow', () => {
   });
 
   test('should initiate checkout session', async ({ page }) => {
-    // Mock Stripe checkout page to avoid external network issues
-    // Using Regex to ensure reliable interception of any Stripe checkout URL
-    await page.route(/.*checkout\.stripe\.com.*/, async (route) => {
+    // Mock PayPal checkout page to avoid external network issues.
+    // Using Regex to ensure reliable interception of any PayPal checkout URL.
+    await page.route(/.*sandbox\.paypal\.com.*/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'text/html',
-        body: '<!DOCTYPE html><html><body><h1>Stripe Checkout</h1></body></html>',
+        body: '<!DOCTYPE html><html><body><h1>PayPal Checkout</h1></body></html>',
       });
     });
 
@@ -86,9 +87,9 @@ test.describe('Payment Flow', () => {
 
     await checkoutBtn.click();
 
-    await expect(page).toHaveURL(/checkout\.stripe\.com/);
+    await expect(page).toHaveURL(/sandbox\.paypal\.com/);
     // We mocked the body, so we can check for our mock content
-    await expect(page.getByText('Stripe Checkout')).toBeVisible();
+    await expect(page.getByText('PayPal Checkout')).toBeVisible();
   });
 
   test('should allow selecting recurring subscription', async ({ page }) => {

@@ -1,0 +1,51 @@
+export const changelogEn = {
+  title: 'Changelog',
+  subtitle:
+    'All notable changes, new game releases, and architectural improvements to Arcadeum.',
+  stats: {
+    latestVersion: 'Latest Version',
+    totalReleases: 'Releases (Minor)',
+    totalVersions: 'Total Versions',
+    totalChanges: 'Total Changes',
+    lastUpdated: 'Last Updated',
+    versionsCount: '{{count}} versions',
+    releasesCount: '{{count}} releases',
+    changesCount: '{{count}} changes',
+  },
+  filters: {
+    searchPlaceholder: 'Search updates, games, fixes, or ARC tickets…',
+    allCategories: 'All Changes',
+    added: 'Added',
+    fixed: 'Fixed',
+    changed: 'Changed',
+    security: 'Security',
+    refactored: 'Refactored',
+    improved: 'Improved',
+    documentation: 'Documentation',
+    deprecated: 'Deprecated',
+    removed: 'Removed',
+    expandAll: 'Expand all',
+    collapseAll: 'Collapse all',
+    showingResults: 'Showing {{shown}} of {{total}} releases',
+    clearFilters: 'Clear filters',
+  },
+  card: {
+    released: 'Released',
+    latest: 'Latest',
+    copyLink: 'Copy link to version',
+    linkCopied: 'Copied!',
+    changes: 'changes',
+    viewAllChanges: 'View all changes',
+  },
+  empty: {
+    title: 'No matching changes found',
+    description:
+      'Try adjusting your search query or removing category filters to view releases.',
+    resetButton: 'Reset Filters',
+  },
+  loadMore: {
+    button: 'Show all {{count}} releases',
+    loadMoreText: 'Load more releases',
+    allLoadedText: 'All releases loaded',
+  },
+};

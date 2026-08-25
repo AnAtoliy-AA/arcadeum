@@ -35,35 +35,57 @@ export interface UsePostGameAnalyticsResult {
 }
 
 function extractMoveTimeline(state: Record<string, unknown>): MoveEntry[] {
-  const logs = state.logs;
+  const logs =
+    state.logs ??
+    state.history ??
+    (state.state as Record<string, unknown> | undefined)?.logs;
   if (!Array.isArray(logs)) return [];
 
   const entries: MoveEntry[] = [];
   let turn = 0;
 
   for (const log of logs) {
+    if (typeof log === 'string' && log.trim()) {
+      turn++;
+      entries.push({ turn, playerId: 'unknown', description: log.trim() });
+      continue;
+    }
     if (typeof log !== 'object' || log === null) continue;
     const entry = log as Record<string, unknown>;
-    if (entry.type !== 'action') continue;
 
-    turn++;
+    const msg = typeof entry.message === 'string' ? entry.message.trim() : '';
+    const action = entry.action as Record<string, unknown> | undefined;
+    const actionDesc =
+      typeof action?.description === 'string'
+        ? action.description
+        : typeof action?.type === 'string'
+          ? action.type
+          : typeof entry.description === 'string'
+            ? entry.description
+            : typeof entry.kind === 'string'
+              ? entry.kind
+              : typeof entry.name === 'string'
+                ? entry.name
+                : '';
+
+    const rawDesc = msg || actionDesc || 'Move';
+    const description = rawDesc
+      .replace(/_/g, ' ')
+      .replace(/^(.)/, (c) => c.toUpperCase());
+
     const playerId =
       typeof entry.playerId === 'string'
         ? entry.playerId
-        : typeof entry.player === 'string'
-          ? entry.player
-          : 'unknown';
-    const action = entry.action as Record<string, unknown> | undefined;
-    const actionType =
-      typeof action?.type === 'string'
-        ? action.type
-        : typeof entry.name === 'string'
-          ? entry.name
-          : 'move';
-    const description = actionType
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, (c: string) => c.toUpperCase());
+        : typeof entry.senderId === 'string'
+          ? entry.senderId
+          : typeof entry.player === 'string'
+            ? entry.player
+            : typeof (entry.sender as Record<string, unknown> | undefined)
+                  ?.id === 'string'
+              ? ((entry.sender as Record<string, unknown>).id as string)
+              : 'unknown';
 
+    turn++;
     entries.push({ turn, playerId, description });
   }
 

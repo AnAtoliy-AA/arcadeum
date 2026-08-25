@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.43] - 2026-08-25
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.26.42] - 2026-08-25
+
+### Added
+- custom worker preserves push handlers; cache play documents
+- spectator reactions bar
+- unlock popup host and profile achievement grid
+- server-side chess coach hints via games gateway
+- bracket generation, reporting and public bracket page
+
+### Fixed
+- address e2e regressions from ARC-926 features (ARC-926)
+
+### Refactored
+- extract tournaments page messages into dedicated module
+
+
+## [1.26.41] - 2026-08-25
+
+### Added
+- rework post game analytics with match highlights, filterable timeline, rivalry duel, and form trends (ARC-937) (ARC-937)
+- rework changelog and roadmap pages with rich metrics, filters, and tabbed views (ARC-937) (ARC-937)
+
+### Fixed
+- extract rich move messages and descriptions in post-game analytics timeline (ARC-937) (ARC-937)
+- keep full stats on end screen and remove redundant stats tab from analytics (ARC-937) (ARC-937)
+- auto-expand matching changelog cards on search or category filter (ARC-937) (ARC-937)
+- hide summary stats grid when detailed analysis is open to avoid duplicate display (ARC-937) (ARC-937)
+- prevent nested anchor hydration error in GamesCatalogCard (ARC-937) (ARC-937)
+
+
 ## [1.26.40] - 2026-08-25
 
 ### Added

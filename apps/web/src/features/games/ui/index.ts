@@ -28,6 +28,11 @@ export {
 export { InGameAvatar, type InGameAvatarProps } from './InGameAvatar';
 export { EmoteBubble } from './EmoteBubble';
 export {
+  SpectatorReactionsBar,
+  buildSpectatorReactionsLabels,
+  type SpectatorReactionsLabels,
+} from './SpectatorReactionsBar';
+export {
   TurnIndicator,
   resolveTurnStatus,
   type TurnContract,

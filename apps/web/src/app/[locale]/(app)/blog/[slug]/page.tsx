@@ -13,8 +13,6 @@ import {
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildBlogPostJsonLd } from '@/shared/seo/blogPostJsonLd';
 import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
-import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
-import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { getPost, POST_SLUGS } from '@/features/blog/registry';
 import { BlogPostView } from './BlogPostView';
 
@@ -135,30 +133,7 @@ export default async function BlogPostRoute({ params }: PageProps) {
     ],
   });
 
-  // HowTo schema is opt-in per post. Emit only when the author has
-  // authored explicit, visible steps (the article must contain a
-  // matching numbered list — Google's manual-action team flags HowTo
-  // schema that does not mirror on-page content).
-  const howToJsonLd = post.howTo
-    ? buildHowToJsonLd({
-        locale,
-        pageUrl,
-        name: post.howTo.name ?? post.title,
-        description: post.excerpt,
-        totalTime: post.howTo.totalTime,
-        steps: post.howTo.steps,
-      })
-    : null;
-
-  // FAQ rich results for Google + structured data for AI assistants.
-  // Questions must mirror visible content (rendered in BlogPostView).
-  const faqJsonLd = post.faq?.length
-    ? buildFaqJsonLd({ locale, questions: post.faq, pageUrl })
-    : null;
-
   const jsonLdNodes: Record<string, unknown>[] = [postJsonLd, breadcrumbJsonLd];
-  if (howToJsonLd) jsonLdNodes.push(howToJsonLd);
-  if (faqJsonLd) jsonLdNodes.push(faqJsonLd);
 
   return (
     <>

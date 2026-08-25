@@ -480,6 +480,10 @@ export const ruMessages = {
     accepted: 'Отмена принята!',
     denied: 'Отмена отклонена',
   },
+  spectator: {
+    modeLabel: 'Наблюдение',
+    reactionsLabel: 'Реакция',
+  },
   emotes: {
     good_move: 'Круто!',
     lol: 'ХАХА',

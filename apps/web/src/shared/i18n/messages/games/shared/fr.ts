@@ -490,6 +490,10 @@ export const frMessages = {
     accepted: 'Annulation acceptée !',
     denied: 'Annulation refusée',
   },
+  spectator: {
+    modeLabel: 'Spectateur',
+    reactionsLabel: 'Réagir',
+  },
   emotes: {
     good_move: 'Bien joué !',
     lol: 'MDR',

@@ -480,6 +480,10 @@ export const byMessages = {
     accepted: 'Адмена прынята!',
     denied: 'Адмена адхілена',
   },
+  spectator: {
+    modeLabel: 'Назіранне',
+    reactionsLabel: 'Рэакцыя',
+  },
   emotes: {
     good_move: 'Крута!',
     lol: 'ХАХА',

@@ -2,17 +2,11 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "customConditions": ["react-native", "react-native-legacy-deep-imports"]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
   "extends": "expo/tsconfig.base"
 }

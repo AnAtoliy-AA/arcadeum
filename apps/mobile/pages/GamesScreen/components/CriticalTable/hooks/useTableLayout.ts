@@ -3,6 +3,8 @@ import {
   Platform,
   StyleSheet,
   useWindowDimensions,
+  type ImageStyle,
+  type TextStyle,
   type ViewStyle,
 } from 'react-native';
 import {
@@ -15,7 +17,9 @@ import {
 } from '../constants';
 
 /** Reads a registered style's backgroundColor as a plain string color. */
-function swatchBackgroundColor(style: ViewStyle): string {
+function swatchBackgroundColor(
+  style: ViewStyle | TextStyle | ImageStyle,
+): string {
   const backgroundColor = StyleSheet.flatten(style)?.backgroundColor;
   return typeof backgroundColor === 'string' ? backgroundColor : 'transparent';
 }

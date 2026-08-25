@@ -116,6 +116,11 @@ export const byMessages = {
       copyLink: 'Скапіраваць спасылку',
       copied: 'Скапіявана!',
     },
+    roomQr: {
+      menu: 'Паказаць QR-код',
+      title: 'QR-код пакоя',
+      hint: 'Адскануй, каб далучыцца да гульні',
+    },
     actions: {
       backToHome: 'На галоўную',
     },

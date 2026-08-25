@@ -47,12 +47,31 @@ const withPWA = withPWAInit({
   fallbacks: {
     document: '/offline',
   },
+  // ARC-926: compile worker/index.ts (push + notificationclick handlers)
+  // into worker-<hash>.js and prepend it to the generated service worker
+  // via importScripts. Without this, next-pwa overwrites public/sw.js on
+  // prod builds and the push handlers are lost.
+  customWorkerSrc: 'worker',
   workboxOptions: {
     skipWaiting: true,
     // ARC-900 offline mode: cache only immutable build assets + static
     // media. Documents/HTML stay network-first via the /offline fallback so
     // stale-bundle issues (see public/sw.js history) cannot resurface.
     runtimeCaching: [
+      {
+        // ARC-926: document navigations for game play + offline pages.
+        // NetworkFirst with a short timeout — never serve stale HTML for
+        // these routes, but keep them usable when offline.
+        urlPattern:
+          /\/(?:games\/[a-z0-9-]+\/play|offline\/[a-z0-9-]+)(?:\?.*)?$/,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'arcadeum-pages-v1',
+          networkTimeoutSeconds: 3,
+          expiration: { maxEntries: 60, maxAgeSeconds: 7 * 24 * 60 * 60 },
+          cacheableResponse: { statuses: [200] },
+        },
+      },
       {
         urlPattern: /\/_next\/static\/.+\.(?:js|css|woff2?)$/,
         handler: 'CacheFirst',

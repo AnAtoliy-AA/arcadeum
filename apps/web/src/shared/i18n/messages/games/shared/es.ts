@@ -419,6 +419,39 @@ export const esMessages = {
       score: 'Puntuación',
       accuracy: 'Precisión',
     },
+    analytics: {
+      view: 'Analíticas',
+      back: 'Al resultado',
+      noStats: 'No hay estadísticas disponibles para este juego.',
+      tabs: {
+        stats: 'Estadísticas',
+        moves: 'Movimientos',
+        headToHead: 'Cara a cara',
+        trends: 'Tendencias',
+      },
+      moves: {
+        title: 'Cronología de movimientos',
+        empty: 'No hay datos de movimientos disponibles.',
+      },
+      headToHead: {
+        title: 'Cara a cara',
+        wins: 'Victorias',
+        losses: 'Derrotas',
+        draws: 'Empates',
+        totalGames: 'Total de partidas',
+        winRate: 'Porcentaje de victorias',
+        noOpponent: 'No hay datos del oponente.',
+        empty: 'Aún no hay datos de cara a cara.',
+      },
+      trends: {
+        title: 'Rendimiento reciente',
+        winRate: 'Porcentaje de victorias',
+        currentStreak: 'Racha',
+        oldest: 'Más antiguos',
+        newest: 'Más recientes',
+        empty: 'Juega más partidas para ver tendencias.',
+      },
+    },
     rematch: {
       title: '¿Jugar de nuevo?',
       description:

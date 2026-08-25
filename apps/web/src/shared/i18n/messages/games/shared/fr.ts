@@ -422,6 +422,39 @@ export const frMessages = {
       score: 'Score',
       accuracy: 'Précision',
     },
+    analytics: {
+      view: 'Analyses',
+      back: 'Au résultat',
+      noStats: 'Aucune statistique disponible pour ce jeu.',
+      tabs: {
+        stats: 'Statistiques',
+        moves: 'Coups',
+        headToHead: 'Confrontation',
+        trends: 'Tendances',
+      },
+      moves: {
+        title: 'Chronologie des coups',
+        empty: 'Aucune donnée de coups disponible.',
+      },
+      headToHead: {
+        title: 'Confrontation',
+        wins: 'Victoires',
+        losses: 'Défaites',
+        draws: 'Nuls',
+        totalGames: 'Total des parties',
+        winRate: 'Taux de victoire',
+        noOpponent: "Aucune donnée sur l'adversaire.",
+        empty: 'Pas encore de données de confrontation.',
+      },
+      trends: {
+        title: 'Performance récente',
+        winRate: 'Taux de victoire',
+        currentStreak: 'Série',
+        oldest: 'Plus anciens',
+        newest: 'Plus récents',
+        empty: 'Jouez plus de parties pour voir les tendances.',
+      },
+    },
     rematch: {
       title: 'Rejouer ?',
       description:

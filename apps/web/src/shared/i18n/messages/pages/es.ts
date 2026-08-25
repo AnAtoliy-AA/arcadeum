@@ -218,6 +218,7 @@ export const es = {
         signInToRegister: 'Inicia sesión para inscribirte',
         full: 'Lista de espera',
         registrationClosed: 'Inscripción cerrada',
+        viewBracket: 'Ver cuadro',
         confirmRegister: {
           title: 'Confirmar entrada',
           body: 'Este torneo cuesta {fee} monedas. Tu saldo: {balance} monedas.',
@@ -247,6 +248,19 @@ export const es = {
           critical_v1: 'Critical',
           sea_battle_v1: 'Batalla naval',
         },
+      },
+    },
+    bracket: {
+      title: 'Cuadro',
+      loading: 'Cargando cuadro…',
+      empty: 'El cuadro aún no se ha generado.',
+      tbd: 'TBD',
+      winner: 'Ganador',
+      backToList: 'Volver a torneos',
+      errors: {
+        locked: 'El cuadro está bloqueado: ya hay resultados registrados.',
+        notEnoughPlayers:
+          'No hay suficientes jugadores para generar el cuadro.',
       },
     },
   },

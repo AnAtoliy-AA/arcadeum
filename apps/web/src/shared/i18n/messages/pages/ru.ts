@@ -218,6 +218,7 @@ export const ru = {
         signInToRegister: 'Войдите, чтобы зарегистрироваться',
         full: 'В лист ожидания',
         registrationClosed: 'Регистрация закрыта',
+        viewBracket: 'Открыть сетку',
         confirmRegister: {
           title: 'Подтвердить участие',
           body: 'Этот турнир стоит {fee} монет. Ваш баланс: {balance} монет.',
@@ -247,6 +248,18 @@ export const ru = {
           critical_v1: 'Critical',
           sea_battle_v1: 'Морской бой',
         },
+      },
+    },
+    bracket: {
+      title: 'Сетка',
+      loading: 'Загрузка сетки…',
+      empty: 'Сетка ещё не сформирована.',
+      tbd: 'TBD',
+      winner: 'Победитель',
+      backToList: 'Назад к турнирам',
+      errors: {
+        locked: 'Сетка зафиксирована: уже есть сыгранные матчи.',
+        notEnoughPlayers: 'Недостаточно участников для формирования сетки.',
       },
     },
   },

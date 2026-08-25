@@ -218,6 +218,7 @@ export const fr = {
         signInToRegister: 'Connectez-vous pour vous inscrire',
         full: "Liste d'attente",
         registrationClosed: 'Inscription fermée',
+        viewBracket: 'Voir le tableau',
         confirmRegister: {
           title: 'Confirmer la participation',
           body: 'Ce tournoi coûte {fee} pièces. Votre solde : {balance} pièces.',
@@ -247,6 +248,19 @@ export const fr = {
           critical_v1: 'Critical',
           sea_battle_v1: 'Bataille navale',
         },
+      },
+    },
+    bracket: {
+      title: 'Tableau',
+      loading: 'Chargement du tableau…',
+      empty: "Le tableau n'a pas encore été généré.",
+      tbd: 'TBD',
+      winner: 'Vainqueur',
+      backToList: 'Retour aux tournois',
+      errors: {
+        locked:
+          'Le tableau est verrouillé : des résultats ont déjà été saisis.',
+        notEnoughPlayers: 'Pas assez de joueurs pour générer le tableau.',
       },
     },
   },

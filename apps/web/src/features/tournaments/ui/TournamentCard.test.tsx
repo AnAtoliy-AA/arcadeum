@@ -20,6 +20,7 @@ const labels: TournamentCardLabels = {
   signInToRegister: 'Sign in to register',
   full: 'Join waitlist',
   registrationClosed: 'Registration closed',
+  viewBracket: 'View bracket',
   confirmRegister: {
     title: 'Confirm entry',
     body: 'Costs {fee} coins. Balance: {balance} coins.',

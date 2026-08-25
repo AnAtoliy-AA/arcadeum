@@ -217,6 +217,7 @@ export const by = {
         signInToRegister: 'Увайдзіце, каб запісацца',
         full: 'У спіс чакання',
         registrationClosed: 'Рэгістрацыя закрыта',
+        viewBracket: 'Паглядзець сетку',
         confirmRegister: {
           title: 'Пацвердзіць удзел',
           body: 'Гэты турнір каштуе {fee} манет. Ваш баланс: {balance} манет.',
@@ -246,6 +247,18 @@ export const by = {
           critical_v1: 'Critical',
           sea_battle_v1: 'Марскі бой',
         },
+      },
+    },
+    bracket: {
+      title: 'Сетка',
+      loading: 'Загрузка сеткі…',
+      empty: 'Сетка яшчэ не сфарміравана.',
+      tbd: 'TBD',
+      winner: 'Пераможца',
+      backToList: 'Назад да турніраў',
+      errors: {
+        locked: 'Сетка замацавана: ужо ёсць згуляныя матчы.',
+        notEnoughPlayers: 'Недастаткова ўдзельнікаў для фарміравання сеткі.',
       },
     },
   },

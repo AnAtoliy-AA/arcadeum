@@ -17,11 +17,14 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/guards/roles.decorator';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { TournamentsService } from './tournaments.service';
+import { TournamentsBracketsService } from './tournaments.brackets.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { ListAdminTournamentsDto } from './dto/list-admin-tournaments.dto';
 import { TransitionStatusDto } from './dto/transition-status.dto';
 import { MarkTournamentCompleteDto } from './dto/mark-complete.dto';
+import { GenerateBracketDto } from './dto/generate-bracket.dto';
+import { ReportBracketResultDto } from './dto/report-bracket-result.dto';
 import type {
   AdminTournamentItem,
   AdminTournamentsListResponse,
@@ -36,7 +39,10 @@ interface RequestWithUser {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('admin')
 export class AdminTournamentsController {
-  constructor(private readonly service: TournamentsService) {}
+  constructor(
+    private readonly service: TournamentsService,
+    private readonly bracketsService: TournamentsBracketsService,
+  ) {}
 
   @Get()
   list(
@@ -94,5 +100,26 @@ export class AdminTournamentsController {
     @Body() dto: MarkTournamentCompleteDto,
   ): Promise<AdminTournamentItem> {
     return this.service.markComplete(id, dto.winnerUserId);
+  }
+
+  @Post(':id/bracket')
+  generateBracket(
+    @Param('id') id: string,
+    @Body() dto: GenerateBracketDto,
+  ): Promise<AdminTournamentItem> {
+    return this.bracketsService.generateBracket(id, dto);
+  }
+
+  @Post(':id/bracket/result')
+  reportBracketResult(
+    @Param('id') id: string,
+    @Body() dto: ReportBracketResultDto,
+  ): Promise<AdminTournamentItem> {
+    return this.bracketsService.reportResult(
+      id,
+      dto.round,
+      dto.matchIndex,
+      dto.winnerUserId,
+    );
   }
 }

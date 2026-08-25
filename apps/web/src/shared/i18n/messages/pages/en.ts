@@ -224,6 +224,7 @@ export const en = {
         signInToRegister: 'Sign in to register',
         full: 'Join waitlist',
         registrationClosed: 'Registration closed',
+        viewBracket: 'View bracket',
         confirmRegister: {
           title: 'Confirm entry',
           body: 'This tournament costs {fee} coins. Your balance: {balance} coins.',
@@ -253,6 +254,19 @@ export const en = {
           critical_v1: 'Critical',
           sea_battle_v1: 'Sea Battle',
         },
+      },
+    },
+    bracket: {
+      title: 'Bracket',
+      loading: 'Loading bracket…',
+      empty: 'Bracket has not been generated yet.',
+      tbd: 'TBD',
+      winner: 'Winner',
+      backToList: 'Back to tournaments',
+      errors: {
+        locked:
+          'The bracket is locked because some results were already reported.',
+        notEnoughPlayers: 'Not enough players to generate a bracket.',
       },
     },
   },

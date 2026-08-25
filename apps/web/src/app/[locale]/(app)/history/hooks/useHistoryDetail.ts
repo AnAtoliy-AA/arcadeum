@@ -35,7 +35,8 @@ export function useHistoryDetail({
 }: UseHistoryDetailOptions): UseHistoryDetailResult {
   const { t } = useTranslation();
   const { locale } = useLanguage();
-  const { selectedEntry, selectEntry } = useHistoryStore();
+  const selectedEntry = useHistoryStore((s) => s.selectedEntry);
+  const selectEntry = useHistoryStore((s) => s.selectEntry);
 
   // UI-specific error state if we want to manually set errors (e.g. auth check)
   const [manualError, setManualError] = useState<string | null>(null);

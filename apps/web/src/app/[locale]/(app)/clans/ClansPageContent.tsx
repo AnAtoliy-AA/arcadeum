@@ -39,14 +39,12 @@ export default function ClansPageContent({
   const tt = useMemo(() => (tProp ?? {}) as ClansTranslations, [tProp]);
   const { snapshot } = useSessionTokens();
   const token = snapshot.accessToken ?? accessToken;
-  const {
-    myClan,
-    myClanMembers,
-    popularClans,
-    fetchMyClan,
-    fetchPopularClans,
-    leaveClan,
-  } = useClansStore();
+  const myClan = useClansStore((s) => s.myClan);
+  const myClanMembers = useClansStore((s) => s.myClanMembers);
+  const popularClans = useClansStore((s) => s.popularClans);
+  const fetchMyClan = useClansStore((s) => s.fetchMyClan);
+  const fetchPopularClans = useClansStore((s) => s.fetchPopularClans);
+  const leaveClan = useClansStore((s) => s.leaveClan);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);

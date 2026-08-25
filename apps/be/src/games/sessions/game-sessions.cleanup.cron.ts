@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
@@ -9,6 +9,9 @@ import { GameSessionsArchiveService } from './game-sessions.archive.service';
 
 /** Mark sessions stale after 30 days of inactivity. */
 const STALE_THRESHOLD_MS = 30 * 24 * 60 * 60 * 1000;
+
+/** Archive batch size — bounded so we never materialize the whole collection. */
+const ARCHIVE_BATCH_SIZE = 50;
 
 @Injectable()
 export class GameSessionsCleanupCron {
@@ -27,29 +30,10 @@ export class GameSessionsCleanupCron {
     try {
       const threshold = new Date(Date.now() - STALE_THRESHOLD_MS);
 
-      const staleSessions = await this.sessionModel
-        .find({
-          status: 'active',
-          updatedAt: { $lt: threshold },
-        })
-        .lean()
-        .exec();
-
-      for (const session of staleSessions) {
-        await this.archiveService.archiveSessionToAtlas({
-          id: session._id.toString(),
-          roomId: session.roomId,
-          gameId: session.gameId,
-          engine: session.engine,
-          status: 'completed',
-          state: session.state,
-          createdAt:
-            session.createdAt instanceof Date
-              ? session.createdAt.toISOString()
-              : new Date(session.createdAt).toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
-      }
+      const archivedCount = await this.archiveInBatches({
+        status: 'active',
+        updatedAt: { $lt: threshold },
+      });
 
       const result = await this.sessionModel.updateMany(
         {
@@ -62,14 +46,57 @@ export class GameSessionsCleanupCron {
         },
       );
 
-      if (result.modifiedCount > 0) {
+      if (result.modifiedCount > 0 || archivedCount > 0) {
         this.logger.log(
-          `Archived and marked ${result.modifiedCount} stale active session(s) as completed.`,
+          `Archived ${archivedCount} and marked ${result.modifiedCount} stale active session(s) as completed.`,
         );
       }
     } catch (err) {
       this.logger.warn(`Stale session cleanup cron failed: ${String(err)}`);
     }
+  }
+
+  /**
+   * Archive sessions matching `filter` in bounded batches, walking by `_id`
+   * keyset so each pass reads only one batch instead of the full result set.
+   * Archiving within a batch runs concurrently.
+   */
+  private async archiveInBatches(
+    filter: Record<string, unknown>,
+  ): Promise<number> {
+    let archived = 0;
+    let lastId: Types.ObjectId | undefined;
+    for (;;) {
+      const batchFilter: Record<string, unknown> = { ...filter };
+      if (lastId) batchFilter._id = { $gt: lastId };
+      const batch = await this.sessionModel
+        .find(batchFilter)
+        .sort({ _id: 1 })
+        .limit(ARCHIVE_BATCH_SIZE)
+        .lean()
+        .exec();
+      if (batch.length === 0) break;
+      await Promise.all(
+        batch.map((session) =>
+          this.archiveService.archiveSessionToAtlas({
+            id: session._id.toString(),
+            roomId: session.roomId,
+            gameId: session.gameId,
+            engine: session.engine,
+            status: session.status === 'active' ? 'completed' : session.status,
+            state: session.state,
+            createdAt:
+              session.createdAt instanceof Date
+                ? session.createdAt.toISOString()
+                : new Date(session.createdAt).toISOString(),
+            updatedAt: new Date().toISOString(),
+          }),
+        ),
+      );
+      lastId = batch[batch.length - 1]._id;
+      archived += batch.length;
+    }
+    return archived;
   }
 
   @Cron(CronExpression.EVERY_HOUR)
@@ -120,29 +147,10 @@ export class GameSessionsCleanupCron {
     try {
       const sessionThreshold = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
 
-      const oldSessions = await this.sessionModel
-        .find({
-          status: 'completed',
-          updatedAt: { $lt: sessionThreshold },
-        })
-        .lean()
-        .exec();
-
-      for (const session of oldSessions) {
-        await this.archiveService.archiveSessionToAtlas({
-          id: session._id.toString(),
-          roomId: session.roomId,
-          gameId: session.gameId,
-          engine: session.engine,
-          status: session.status,
-          state: session.state,
-          createdAt:
-            session.createdAt instanceof Date
-              ? session.createdAt.toISOString()
-              : new Date(session.createdAt).toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
-      }
+      const archivedCount = await this.archiveInBatches({
+        status: 'completed',
+        updatedAt: { $lt: sessionThreshold },
+      });
 
       const sessionResult = await this.sessionModel.deleteMany({
         status: 'completed',
@@ -155,9 +163,13 @@ export class GameSessionsCleanupCron {
         updatedAt: { $lt: roomThreshold },
       });
 
-      if (sessionResult.deletedCount > 0 || roomResult.deletedCount > 0) {
+      if (
+        sessionResult.deletedCount > 0 ||
+        roomResult.deletedCount > 0 ||
+        archivedCount > 0
+      ) {
         this.logger.log(
-          `Daily cleanup: deleted ${sessionResult.deletedCount} old sessions, ${roomResult.deletedCount} old rooms.`,
+          `Daily cleanup: archived ${archivedCount}, deleted ${sessionResult.deletedCount} old sessions, ${roomResult.deletedCount} old rooms.`,
         );
       }
     } catch (err) {

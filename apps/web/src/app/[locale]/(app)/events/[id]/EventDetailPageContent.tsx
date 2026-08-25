@@ -49,7 +49,10 @@ export default function EventDetailPageContent({
   const { snapshot } = useSessionTokens();
   const token = snapshot.accessToken ?? accessToken;
   const routes = buildRoutes(locale as Locale);
-  const { currentEvent, fetchEventById, joinEvent, loading } = useEventsStore();
+  const currentEvent = useEventsStore((s) => s.currentEvent);
+  const fetchEventById = useEventsStore((s) => s.fetchEventById);
+  const joinEvent = useEventsStore((s) => s.joinEvent);
+  const loading = useEventsStore((s) => s.loading);
   const [isJoining, setIsJoining] = useState(false);
 
   useEffect(() => {

@@ -15,6 +15,7 @@ import {
 } from './schemas/leaderboard-entry.schema';
 import { LeaderboardsGateway } from './leaderboards.gateway';
 import { LeaderboardsCacheService } from './leaderboards.cache';
+import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
 
 const DEFAULT_INTERVAL_MS = 60_000;
 
@@ -37,6 +38,7 @@ export class LeaderboardsCaptureService
     @Inject(forwardRef(() => LeaderboardsGateway))
     private readonly gateway: LeaderboardsGateway,
     private readonly cache: LeaderboardsCacheService,
+    private readonly historyStats: GameHistoryStatsService,
   ) {}
 
   onModuleInit(): void {
@@ -78,6 +80,7 @@ export class LeaderboardsCaptureService
       GAME_MODE_VALUES.map((mode) => this.capture(mode, season)),
     );
     this.cache.invalidateAll();
+    this.historyStats.invalidateLeaderboardCache();
     this.gateway.emitCaptured(results);
     return results;
   }

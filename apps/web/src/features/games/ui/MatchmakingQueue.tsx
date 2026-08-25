@@ -103,7 +103,21 @@ export const useMatchmakingStore = create<MatchmakingState>((set, get) => ({
 
 export function useMatchmaking() {
   const { snapshot } = useSessionTokens();
-  const store = useMatchmakingStore();
+  // Field-level selectors: queue-status ticks (size/position/wait) arrive
+  // continuously while queued, so a whole-store subscription here would
+  // re-render every consumer on each tick. Actions are stable references.
+  const isQueued = useMatchmakingStore((s) => s.isQueued);
+  const gameId = useMatchmakingStore((s) => s.gameId);
+  const variant = useMatchmakingStore((s) => s.variant);
+  const ranked = useMatchmakingStore((s) => s.ranked);
+  const startTime = useMatchmakingStore((s) => s.startTime);
+  const queueSize = useMatchmakingStore((s) => s.queueSize);
+  const position = useMatchmakingStore((s) => s.position);
+  const estimatedWaitSeconds = useMatchmakingStore(
+    (s) => s.estimatedWaitSeconds,
+  );
+  const startQueue = useMatchmakingStore((s) => s.startQueue);
+  const stopQueue = useMatchmakingStore((s) => s.stopQueue);
 
   const joinQueue = useCallback(
     async (gameId: string, variant?: string, ranked?: boolean) => {
@@ -114,7 +128,7 @@ export function useMatchmaking() {
       }
       if (!userId) return;
 
-      store.startQueue(gameId, variant, ranked);
+      startQueue(gameId, variant, ranked);
       trackSocialMatchmakingJoined(gameId);
       void emitEncrypted(gameSocket, 'games.matchmaking.join', {
         userId,
@@ -123,7 +137,7 @@ export function useMatchmaking() {
         ranked,
       });
     },
-    [snapshot.userId, store],
+    [snapshot.userId, startQueue],
   );
 
   const leaveQueue = useCallback(async () => {
@@ -132,19 +146,19 @@ export function useMatchmaking() {
       userId = localStorage.getItem('arcadeum_anon_id');
     }
     if (!userId) return;
-    store.stopQueue();
+    stopQueue();
     void emitEncrypted(gameSocket, 'games.matchmaking.leave', { userId });
-  }, [snapshot.userId, store]);
+  }, [snapshot.userId, stopQueue]);
 
   return {
-    isQueued: store.isQueued,
-    gameId: store.gameId,
-    variant: store.variant,
-    ranked: store.ranked,
-    startTime: store.startTime,
-    queueSize: store.queueSize,
-    position: store.position,
-    estimatedWaitSeconds: store.estimatedWaitSeconds,
+    isQueued,
+    gameId,
+    variant,
+    ranked,
+    startTime,
+    queueSize,
+    position,
+    estimatedWaitSeconds,
     joinQueue,
     leaveQueue,
   };

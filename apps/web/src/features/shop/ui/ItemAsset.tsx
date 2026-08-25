@@ -217,7 +217,6 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
         height={size}
         style={{ objectFit: 'contain' }}
         priority={priority}
-        unoptimized
       />
     </div>
   );

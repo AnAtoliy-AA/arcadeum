@@ -261,6 +261,112 @@ export class PlayerStatsService {
     };
   }
 
+  async getHeadToHead(
+    userId1: string,
+    userId2: string,
+    gameId?: string,
+  ): Promise<{
+    player1: { wins: number; losses: number; draws: number };
+    player2: { wins: number; losses: number; draws: number };
+    totalGames: number;
+  }> {
+    const match: Record<string, unknown> = {
+      userId: { $in: [userId1, userId2] },
+    };
+    if (gameId) match.gameId = gameId;
+
+    const records = await this.recordModel
+      .find(match)
+      .sort({ timestamp: -1 })
+      .lean<{ userId: string; result: string }[]>()
+      .exec();
+
+    const player1 = { wins: 0, losses: 0, draws: 0 };
+    const player2 = { wins: 0, losses: 0, draws: 0 };
+
+    for (const record of records) {
+      const r = record.result as 'won' | 'lost' | 'draw';
+      if (record.userId === userId1) {
+        if (r === 'won') player1.wins++;
+        else if (r === 'lost') player1.losses++;
+        else player1.draws++;
+      } else if (record.userId === userId2) {
+        if (r === 'won') player2.wins++;
+        else if (r === 'lost') player2.losses++;
+        else player2.draws++;
+      }
+    }
+
+    return {
+      player1,
+      player2,
+      totalGames: Math.min(
+        player1.wins + player1.losses + player1.draws,
+        player2.wins + player2.losses + player2.draws,
+      ),
+    };
+  }
+
+  async getTrends(
+    userId: string,
+    gameId?: string,
+    limit = 10,
+  ): Promise<{
+    records: Array<{
+      result: 'won' | 'lost' | 'draw';
+      timestamp: number;
+      sessionId: string;
+    }>;
+    winRate: number;
+    currentStreak: number;
+    currentStreakType: 'won' | 'lost' | null;
+  }> {
+    if (userId.startsWith('anon_')) {
+      return {
+        records: [],
+        winRate: 0,
+        currentStreak: 0,
+        currentStreakType: null,
+      };
+    }
+
+    const match: Record<string, unknown> = { userId: { $eq: userId } };
+    if (gameId) match.gameId = gameId;
+
+    const records = await this.recordModel
+      .find(match)
+      .sort({ timestamp: -1 })
+      .limit(limit)
+      .lean<{ result: string; timestamp: number; sessionId: string }[]>()
+      .exec();
+
+    const mapped = records.map((r) => ({
+      result: r.result as 'won' | 'lost' | 'draw',
+      timestamp: r.timestamp,
+      sessionId: r.sessionId,
+    }));
+
+    const wins = mapped.filter((r) => r.result === 'won').length;
+    const winRate =
+      mapped.length > 0 ? Math.round((wins / mapped.length) * 100) : 0;
+
+    let currentStreak = 0;
+    let currentStreakType: 'won' | 'lost' | null = null;
+    for (const record of mapped) {
+      if (record.result === 'draw') break;
+      if (currentStreakType === null) {
+        currentStreakType = record.result;
+        currentStreak = 1;
+      } else if (record.result === currentStreakType) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    return { records: mapped, winRate, currentStreak, currentStreakType };
+  }
+
   async syncRecords(
     userId: string,
     records: SyncRecord[],

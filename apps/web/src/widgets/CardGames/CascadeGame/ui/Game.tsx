@@ -10,7 +10,12 @@ import {
   useGameRoomActions,
   usePendingStart,
 } from '@/features/games/hooks';
-import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
+import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
+import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
 import { useCascadeActions } from '../hooks/useCascadeActions';
@@ -121,6 +126,19 @@ function CascadeGameImpl({
     resultMessages,
   });
 
+  const opponentId =
+    snapshot?.players && currentUserId
+      ? (snapshot.players.find((p) => p.playerId !== currentUserId)?.playerId ??
+        null)
+      : null;
+
+  const analytics = usePostGameAnalytics({
+    gameId: 'cascade_v1',
+    session: snapshot as unknown as Record<string, unknown> | undefined,
+    currentUserId,
+    opponentId,
+  });
+
   const options = useMemo(
     () => resolveOptions(room?.gameOptions),
     [room?.gameOptions],
@@ -205,6 +223,26 @@ function CascadeGameImpl({
         })()}
         theme={visualTheme}
         t={t}
+        stats={analytics.stats}
+        analysis={{
+          content: (
+            <PostGameAnalytics
+              stats={analytics.stats}
+              moveTimeline={analytics.moveTimeline}
+              headToHead={analytics.headToHead}
+              headToHeadLoading={analytics.headToHeadLoading}
+              trends={analytics.trends}
+              trendsLoading={analytics.trendsLoading}
+              onLoadHeadToHead={analytics.loadHeadToHead}
+              onLoadTrends={analytics.loadTrends}
+              currentUserId={currentUserId}
+              opponentId={opponentId}
+              t={t}
+            />
+          ),
+          viewLabel: t('games.table.analytics.view' as TranslationKey),
+          backLabel: t('games.table.analytics.back' as TranslationKey),
+        }}
       />
       <RulesModal
         open={showRulesOpen}

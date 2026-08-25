@@ -261,6 +261,40 @@ export class GamesController {
       gameId || undefined,
     );
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('stats/head-to-head')
+  async getHeadToHead(
+    @Req() req: Request,
+    @Query('userId2') userId2: string,
+    @Query('gameId') gameId?: string,
+  ) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+    if (!userId2) throw new BadRequestException('userId2 is required');
+    return this.gamesService.getHeadToHead(
+      user.userId,
+      userId2,
+      gameId || undefined,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('stats/trends')
+  async getTrends(
+    @Req() req: Request,
+    @Query('gameId') gameId?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+    const limitNum = limit ? parseInt(limit, 10) : 10;
+    return this.gamesService.getTrends(
+      user.userId,
+      gameId || undefined,
+      limitNum,
+    );
+  }
   @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms/:roomId/invitation/decline')
   @HttpCode(204)

@@ -128,9 +128,6 @@ export class GamesService {
     return { room, session };
   }
 
-  /**
-   * Join a game room
-   */
   async joinRoom(dto: JoinGameRoomDto, userId: string) {
     const result = await this.roomsService.joinRoom(dto, userId);
     const room = result.room;
@@ -166,9 +163,6 @@ export class GamesService {
     return { room, session };
   }
 
-  /**
-   * Leave a game room
-   */
   async leaveRoom(dto: LeaveGameRoomDto, userId: string) {
     const result = await this.roomsService.leaveRoom(dto, userId);
 
@@ -210,9 +204,6 @@ export class GamesService {
     return result;
   }
 
-  /**
-   * Delete a game room
-   */
   async deleteRoom(dto: DeleteGameRoomDto, userId: string) {
     const result = await this.roomsService.deleteRoom(dto, userId);
 
@@ -222,9 +213,6 @@ export class GamesService {
     return result;
   }
 
-  /**
-   * Start a game session
-   */
   async startGameSession(
     dto: StartGameDto,
     userId: string,
@@ -260,9 +248,6 @@ export class GamesService {
     return { room: updatedRoom, session };
   }
 
-  /**
-   * Execute a player action
-   */
   async executeAction(
     sessionId: string,
     action: string,
@@ -364,6 +349,14 @@ export class GamesService {
 
   async getLeaderboard(limit?: number, offset?: number, gameId?: string) {
     return this.historyFacade.getLeaderboard(limit, offset, gameId);
+  }
+
+  async getHeadToHead(userId1: string, userId2: string, gameId?: string) {
+    return this.historyFacade.getHeadToHead(userId1, userId2, gameId);
+  }
+
+  async getTrends(userId: string, gameId?: string, limit = 10) {
+    return this.historyFacade.getTrends(userId, gameId, limit);
   }
 
   async createRematchFromHistory(

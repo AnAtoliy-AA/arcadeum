@@ -68,6 +68,23 @@ export interface LeaderboardResponse {
   total: number;
 }
 
+export interface HeadToHeadResponse {
+  player1: { wins: number; losses: number; draws: number };
+  player2: { wins: number; losses: number; draws: number };
+  totalGames: number;
+}
+
+export interface TrendsResponse {
+  records: Array<{
+    result: 'won' | 'lost' | 'draw';
+    timestamp: number;
+    sessionId: string;
+  }>;
+  winRate: number;
+  currentStreak: number;
+  currentStreakType: 'won' | 'lost' | null;
+}
+
 export const historyApi = {
   getHistory: async (
     params: GetHistoryParams = {},
@@ -170,6 +187,34 @@ export const historyApi = {
     return apiClient.post<{ synced: number; duplicates: number }>(
       '/games/stats',
       { records },
+      options,
+    );
+  },
+
+  getHeadToHead: async (
+    userId2: string,
+    gameId?: string,
+    options?: ApiClientOptions,
+  ): Promise<HeadToHeadResponse> => {
+    const params = new URLSearchParams();
+    params.append('userId2', userId2);
+    if (gameId) params.append('gameId', gameId);
+    return apiClient.get<HeadToHeadResponse>(
+      `/games/stats/head-to-head?${params.toString()}`,
+      options,
+    );
+  },
+
+  getTrends: async (
+    gameId?: string,
+    limit = 10,
+    options?: ApiClientOptions,
+  ): Promise<TrendsResponse> => {
+    const params = new URLSearchParams();
+    if (gameId) params.append('gameId', gameId);
+    params.append('limit', String(limit));
+    return apiClient.get<TrendsResponse>(
+      `/games/stats/trends?${params.toString()}`,
       options,
     );
   },

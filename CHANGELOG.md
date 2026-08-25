@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.37] - 2026-08-25
+
+### Added
+- post-game analytics with head-to-head and trends (ARC-925) (ARC-925)
+
+### Fixed
+- sanitize gameId before Mongo query filters (ARC-925)
+
+
+## [1.26.36] - 2026-08-25
+
+### Added
+- add chess-notation block and real move sequences
+- add SEO content, new block types, and RelatedArticles integration
+
+
 ## [1.26.35] - 2026-08-25
 
 ### Fixed

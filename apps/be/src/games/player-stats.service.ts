@@ -1,8 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, type PipelineStage } from 'mongoose';
 import { PlayerStats } from './schemas/player-stats.schema';
 import { PlayerStatRecord } from './schemas/player-stat-record.schema';
+import { validateGameId } from './game-validation.util';
 
 interface SyncRecord {
   gameId: string;
@@ -21,6 +22,14 @@ export class PlayerStatsService {
     @InjectModel(PlayerStatRecord.name)
     private readonly recordModel: Model<PlayerStatRecord>,
   ) {}
+
+  private sanitizeGameIdFilter(
+    gameId: string | undefined,
+  ): Record<string, unknown> | undefined {
+    if (!gameId || typeof gameId !== 'string') return undefined;
+    validateGameId(gameId);
+    return { $eq: gameId };
+  }
 
   async recordGameResult(
     playerIds: string[],
@@ -270,10 +279,14 @@ export class PlayerStatsService {
     player2: { wins: number; losses: number; draws: number };
     totalGames: number;
   }> {
+    if (typeof userId2 !== 'string' || !userId2) {
+      throw new BadRequestException('userId2 is required');
+    }
+    const gameIdFilter = this.sanitizeGameIdFilter(gameId);
     const match: Record<string, unknown> = {
       userId: { $in: [userId1, userId2] },
     };
-    if (gameId) match.gameId = gameId;
+    if (gameIdFilter) match.gameId = gameIdFilter;
 
     const records = await this.recordModel
       .find(match)
@@ -330,8 +343,9 @@ export class PlayerStatsService {
       };
     }
 
+    const gameIdFilter = this.sanitizeGameIdFilter(gameId);
     const match: Record<string, unknown> = { userId: { $eq: userId } };
-    if (gameId) match.gameId = gameId;
+    if (gameIdFilter) match.gameId = gameIdFilter;
 
     const records = await this.recordModel
       .find(match)

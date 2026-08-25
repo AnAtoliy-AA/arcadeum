@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import CascadeLanding from './CascadeLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -145,6 +147,11 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
             { name?: string; description?: string } | undefined
           >
         }
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, ['Cascade', 'Card Game', 'Каскад'])}
+        gameName={landing?.hero?.title}
       />
     </>
   );

@@ -24,6 +24,8 @@ import { communityBy } from './community/by';
 import { rewardsBy } from './rewards/by';
 import { developersBy } from './developers/by';
 import { blogBy } from './blog/by';
+import { changelogBy } from './changelog/by';
+import { roadmapBy } from './roadmap/by';
 
 export const by = {
   admin: {
@@ -475,4 +477,6 @@ export const by = {
   clans: clansBy,
   events: eventsBy,
   seasons: seasonsBy,
+  changelog: changelogBy,
+  roadmap: roadmapBy,
 };

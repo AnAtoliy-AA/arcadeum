@@ -24,6 +24,8 @@ import { communityEn } from './community/en';
 import { rewardsEn } from './rewards/en';
 import { developersEn } from './developers/en';
 import { blogEn } from './blog/en';
+import { changelogEn } from './changelog/en';
+import { roadmapEn } from './roadmap/en';
 
 export const en = {
   admin: {
@@ -481,4 +483,6 @@ export const en = {
   clans: clansEn,
   events: eventsEn,
   seasons: seasonsEn,
+  changelog: changelogEn,
+  roadmap: roadmapEn,
 };

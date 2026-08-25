@@ -11,3 +11,7 @@ export * from './HeartsSymbol';
 export * from './SpadesSymbol';
 export * from './GoSymbol';
 export * from './PachisiSymbol';
+export * from './SolitaireSymbol';
+export * from './MinesweeperSymbol';
+export * from './SudokuSymbol';
+export * from './Game2048Symbol';

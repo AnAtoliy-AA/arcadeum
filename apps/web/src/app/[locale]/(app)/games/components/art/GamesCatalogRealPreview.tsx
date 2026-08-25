@@ -12,6 +12,10 @@ import { HeartsRealCards } from './HeartsRealCards';
 import { SpadesRealCards } from './SpadesRealCards';
 import { GoRealBoard } from './GoRealBoard';
 import { PachisiRealBoard } from './PachisiRealBoard';
+import { SolitaireRealCards } from './SolitaireRealCards';
+import { MinesweeperRealBoard } from './MinesweeperRealBoard';
+import { SudokuRealBoard } from './SudokuRealBoard';
+import { Game2048RealBoard } from './Game2048RealBoard';
 
 interface Props {
   gameId: string;
@@ -43,6 +47,14 @@ export function GamesCatalogRealPreview({ gameId }: Props) {
       return <GoRealBoard />;
     case 'pachisi_v1':
       return <PachisiRealBoard />;
+    case 'solitaire_v1':
+      return <SolitaireRealCards />;
+    case 'minesweeper_v1':
+      return <MinesweeperRealBoard />;
+    case 'sudoku_v1':
+      return <SudokuRealBoard />;
+    case 'game_2048_v1':
+      return <Game2048RealBoard />;
     case 'glimworm_v1':
     default:
       return <GlimwormRealArena />;

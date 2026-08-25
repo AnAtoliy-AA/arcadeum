@@ -343,7 +343,7 @@ const nextConfig: NextConfig = {
   // loopback hosts so e2e logs stay clean.
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
   reactCompiler: true,
-  transpilePackages: ['@arcadeum/ui'],
+  transpilePackages: ['@arcadeum/ui', '@arcadeum/games-core'],
   experimental: {
     inlineCss: true,
     optimizePackageImports: ['lucide-react', '@arcadeum/ui'],

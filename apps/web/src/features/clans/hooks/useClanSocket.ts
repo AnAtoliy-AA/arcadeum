@@ -14,7 +14,10 @@ interface ClanMemberLeftPayload {
 }
 
 export function useClanSocket() {
-  const { addMember, removeMemberById, myClan } = useClansStore();
+  // Actions are stable references; myClan is the only reactive slice.
+  const addMember = useClansStore((s) => s.addMember);
+  const removeMemberById = useClansStore((s) => s.removeMemberById);
+  const myClan = useClansStore((s) => s.myClan);
 
   const handleMemberJoined = useCallback(
     (payload: ClanMemberJoinedPayload) => {

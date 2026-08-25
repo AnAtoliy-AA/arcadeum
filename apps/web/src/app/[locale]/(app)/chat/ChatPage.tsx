@@ -38,14 +38,13 @@ export default function ChatPage() {
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Store
-  const {
-    messages,
-    setMessages,
-    reset,
-    loading: isLoading,
-    setLoading,
-  } = useChatStore();
+  // Store — field-level selectors keep unrelated chat-store writes from
+  // re-rendering the page.
+  const messages = useChatStore((s) => s.messages);
+  const setMessages = useChatStore((s) => s.setMessages);
+  const reset = useChatStore((s) => s.reset);
+  const isLoading = useChatStore((s) => s.loading);
+  const setLoading = useChatStore((s) => s.setLoading);
 
   // Handle chatId changes: reset messages and set loading state
   // We do this during render to avoid cascading renders in useEffect

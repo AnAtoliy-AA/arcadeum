@@ -82,7 +82,9 @@ const withPWA = withPWAInit({
         },
       },
       {
-        urlPattern: /\.(?:png|jpe?g|svg|webp|avif|mp3|wav|ogg|json)$/,
+        // No `json` here: the regex matches full URLs, so any API response
+        // ending in .json would be served stale for up to 30 days.
+        urlPattern: /\.(?:png|jpe?g|svg|webp|avif|mp3|wav|ogg)$/,
         handler: 'StaleWhileRevalidate',
         options: {
           cacheName: 'arcadeum-media-v1',
@@ -407,6 +409,7 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname, '../../'),
   },
   productionBrowserSourceMaps: false,
+  poweredByHeader: false,
   trailingSlash: false,
   async redirects() {
     return [

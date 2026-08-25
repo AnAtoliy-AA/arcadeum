@@ -79,7 +79,9 @@ export function ShopMannequinRail({
   labels,
   sellLabels,
 }: ShopMannequinRailProps) {
-  const { hoverItem, activeSlot, setActiveSlot } = useShopPreviewStore();
+  const hoverItem = useShopPreviewStore((s) => s.hoverItem);
+  const activeSlot = useShopPreviewStore((s) => s.activeSlot);
+  const setActiveSlot = useShopPreviewStore((s) => s.setActiveSlot);
 
   const displayName = useSessionStore(
     (s) => s.snapshot.displayName ?? s.snapshot.username ?? 'Player',

@@ -6,8 +6,8 @@ import type { SupportPageProps } from './SupportPage';
 const SupportPageDynamic = dynamic<SupportPageProps>(
   () => import('./SupportPage').then((mod) => mod.default),
   {
+    // Server-rendered so crawlers and AI engines see the page H1/content.
     loading: () => <PageLoading layout="grid" />,
-    ssr: false,
   },
 );
 

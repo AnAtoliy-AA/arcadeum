@@ -297,9 +297,9 @@ export default function LeaderboardsPageContent({
               <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase text-[var(--mythicAccent)]">
                 {heroT.eyebrow ?? 'Live · Season 4'}
               </span>
-              <span className="text-[48px] font-black tracking-[-1px] max-[800px]:text-[32px]">
+              <h1 className="m-0 text-[48px] font-black leading-[1.15] tracking-[-1px] max-[800px]:text-[32px]">
                 {heroT.title ?? 'Race the leaderboard.'}
-              </span>
+              </h1>
               <span className="text-[18px] opacity-[0.85]">
                 {heroT.tagline ??
                   'Updated every 30 seconds. Top 100 players gear up for the Champions Cup.'}

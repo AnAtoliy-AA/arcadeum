@@ -9,6 +9,7 @@ import {
   Badge,
   Container,
   GlassCard,
+  PageTitle,
   Typography,
 } from '@arcadeum/ui';
 import {
@@ -173,14 +174,13 @@ export default function CommunityPageContent({
                 </Badge>
               )}
 
-              <Typography
-                variant="heading"
-                uiSize="xl"
-                gradient="primary"
+              <PageTitle
+                size="xl"
+                gradient
                 className="text-4xl font-extrabold tracking-tight"
               >
                 {t?.title ?? 'Join the Community'}
-              </Typography>
+              </PageTitle>
 
               {t?.subtitle && (
                 <Typography variant="subheading" uiSize="md" alpha="medium">

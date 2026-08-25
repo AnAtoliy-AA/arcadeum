@@ -150,6 +150,15 @@ export async function buildPageMetadata({
 
   const path = resolvePath(buildRoutes(locale));
   const canonical = `${appConfig.siteUrl}${path}`;
+  // Locale-branded 1200×630 fallback card (see `app/[locale]/opengraph-image.tsx`).
+  // Page-level metadata replaces (not merges) the layout's openGraph, so every
+  // page must carry its own image or shares render without one.
+  const ogImage = {
+    url: `${appConfig.siteUrl}/${locale}/opengraph-image`,
+    width: 1200,
+    height: 630,
+    alt: title ?? appConfig.appName,
+  };
   const languages: Record<string, string> = Object.fromEntries(
     SUPPORTED_LOCALES.map((l) => {
       const localePath = resolvePath(buildRoutes(l));
@@ -180,12 +189,14 @@ export async function buildPageMetadata({
       title,
       description,
       url: canonical,
+      images: [ogImage],
     },
     twitter: {
       card: 'summary_large_image',
       site: '@_arcadeum_',
       title,
       description,
+      images: [ogImage.url],
     },
     ...(noIndex ? { robots: { index: false, follow: false } } : undefined),
   };

@@ -6,8 +6,6 @@ import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
-import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
-import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import PachisiLanding from './PachisiLanding';
@@ -83,39 +81,7 @@ export default async function PachisiLandingRoute({ params }: PageProps) {
     }),
   ];
 
-  const pageUrl = `${appConfig.siteUrl}${routes.pachisiLanding ?? `/${locale}/games/pachisi`}`;
   const comingSoon = await isGameComingSoon(PACHISI_SLUG);
-
-  const faqItems = landing?.faq;
-  if (faqItems) {
-    const faqQuestions = (
-      Object.values(faqItems) as Array<{ question: string; answer: string }>
-    ).map((item) => ({
-      question: item.question,
-      answer: item.answer,
-    }));
-    const faqJsonLd = buildFaqJsonLd({
-      locale,
-      questions: faqQuestions,
-      pageUrl,
-      speakableSelectors: ['#faq'],
-    });
-    if (faqJsonLd) jsonLd.push(faqJsonLd);
-  }
-
-  const howToSteps = landing?.steps;
-  if (howToSteps) {
-    const howToJsonLd = buildHowToJsonLd({
-      locale,
-      pageUrl,
-      name: `How to play ${gameName}`,
-      description: description ?? '',
-      steps: [howToSteps.create, howToSteps.join, howToSteps.play]
-        .filter((s): s is { title: string; body: string } => s !== undefined)
-        .map((s) => ({ name: s.title, text: s.body })),
-    });
-    if (howToJsonLd) jsonLd.push(howToJsonLd);
-  }
 
   return (
     <>

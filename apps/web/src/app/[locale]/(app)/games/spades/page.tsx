@@ -6,7 +6,6 @@ import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
-import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import SpadesLanding from './SpadesLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -80,25 +79,7 @@ export default async function SpadesLandingRoute({ params }: PageProps) {
     }),
   ];
 
-  const pageUrl = `${appConfig.siteUrl}${routes.spadesLanding ?? `/${locale}/games/spades`}`;
   const comingSoon = await isGameComingSoon(SPADES_SLUG);
-
-  const faqItems = landing?.faq;
-  if (faqItems) {
-    const faqQuestions = (
-      Object.values(faqItems) as Array<{ question: string; answer: string }>
-    ).map((item) => ({
-      question: item.question,
-      answer: item.answer,
-    }));
-    const faqJsonLd = buildFaqJsonLd({
-      locale,
-      questions: faqQuestions,
-      pageUrl,
-      speakableSelectors: ['#faq'],
-    });
-    if (faqJsonLd) jsonLd.push(faqJsonLd);
-  }
 
   return (
     <>

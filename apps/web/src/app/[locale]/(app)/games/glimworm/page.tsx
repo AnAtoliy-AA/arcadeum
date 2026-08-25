@@ -5,9 +5,7 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
-import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import { GlimwormLandingView } from './GlimwormLandingView';
@@ -73,7 +71,6 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
   const routes = buildRoutes(locale);
-  const pageUrl = `${appConfig.siteUrl}${routes.glimwormLanding}`;
   const comingSoon = await isGameComingSoon(GLIMWORM_SLUG);
   const messages = await getTranslations(locale);
   const landing = messages.games?.glimworm_v1?.landing;
@@ -101,42 +98,6 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
       },
     }),
   ];
-
-  const faqItems = landing?.faq?.items;
-  if (faqItems) {
-    const faqQuestions = Object.values(faqItems).map(
-      (item: { question: string; answer: string }) => ({
-        question: item.question,
-        answer: item.answer,
-      }),
-    );
-    const faqJsonLd = buildFaqJsonLd({
-      locale,
-      questions: faqQuestions,
-      pageUrl,
-      speakableSelectors: ['#faq'],
-    });
-    if (faqJsonLd) jsonLd.push(faqJsonLd);
-  }
-
-  const howToSteps = landing?.howToPlay?.steps;
-  if (howToSteps) {
-    const howToJsonLd = buildHowToJsonLd({
-      locale,
-      pageUrl,
-      name: landing?.howToPlay?.title ?? `How to play ${gameName}`,
-      description,
-      steps: [
-        howToSteps.setup,
-        howToSteps.slither,
-        howToSteps.evade,
-        howToSteps.survive,
-      ]
-        .filter((s): s is { title: string; body: string } => !!s)
-        .map((s) => ({ name: s.title, text: s.body })),
-    });
-    if (howToJsonLd) jsonLd.push(howToJsonLd);
-  }
 
   const relatedPosts = getPostsByTag(locale, ['Glimworm', 'Snake', 'Arcade']);
 

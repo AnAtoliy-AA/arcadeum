@@ -77,9 +77,10 @@ export class ShopWalletService {
 
     // Solana signatures are public chain data — reject any signature that
     // has already been redeemed by anyone, for any item (cross-user and
-    // one-to-many replay protection).
+    // one-to-many replay protection). `$eq` forces literal comparison so a
+    // non-string payload can never be interpreted as a query operator.
     const redeemed = await this.inventoryModel
-      .findOne({ walletSignature: signature })
+      .findOne({ walletSignature: { $eq: signature } })
       .lean()
       .exec();
     if (redeemed) {

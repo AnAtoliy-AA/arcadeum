@@ -187,6 +187,45 @@ export function BlogPostView({
                       ))}
                     </div>
                   );
+                case 'chess-notation': {
+                  const rows: string[][] = [];
+                  for (let i = 0; i < block.moves.length; i += 2) {
+                    rows.push(block.moves.slice(i, i + 2));
+                  }
+                  return (
+                    <div key={index} className={styles.chessNotation}>
+                      {block.title && (
+                        <h4 className={styles.chessNotationTitle}>
+                          {block.title}
+                        </h4>
+                      )}
+                      <div className={styles.chessNotationTable}>
+                        <table>
+                          <tbody>
+                            {rows.map((pair, rIndex) => (
+                              <tr key={rIndex}>
+                                <td className={styles.chessMoveNum}>
+                                  {rIndex + 1}.
+                                </td>
+                                <td className={styles.chessMoveWhite}>
+                                  {pair[0]}
+                                </td>
+                                <td className={styles.chessMoveBlack}>
+                                  {pair[1] ?? ''}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        {block.result && (
+                          <div className={styles.chessResult}>
+                            {block.result}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
                 default:
                   return null;
               }

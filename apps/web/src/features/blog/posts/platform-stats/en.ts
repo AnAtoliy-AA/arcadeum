@@ -111,11 +111,15 @@ export const post: BlogPost = {
       text: "Your stats are available on your profile page. Focus on three numbers: your current ELO (where you are), your peak ELO (your ceiling), and your win rate in the last 20 games (your current form). If your recent win rate is above 55%, you're climbing. Below 45%, you're in a slump — take a break or review your last few games.",
     },
     {
+      type: 'paragraph',
+      text: 'These numbers are from Season 3 data across all active players. For live leaderboard snapshots and your personal stats, check the stats page — it updates in real time as games finish.',
+    },
+    {
       type: 'cta',
-      href: '/games/chess',
-      text: 'Check your stats — play a ranked game',
+      href: '/stats',
+      text: 'View live stats and leaderboards',
       description:
-        'Your ELO, win rate, and streak are tracked automatically. See where you stand.',
+        'See real-time ELO distributions, your personal win rate, and the current top players.',
     },
     {
       type: 'heading',

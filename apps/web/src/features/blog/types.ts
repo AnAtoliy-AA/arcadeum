@@ -25,6 +25,14 @@ export type BlogBlock =
         type: 'added' | 'changed' | 'fixed' | 'removed';
         items: string[];
       }>;
+    }
+  | {
+      type: 'chess-notation';
+      title?: string;
+      /** SAN move strings, one per half-move (e.g. ["e4","e5","Nf3","Nc6"]). */
+      moves: string[];
+      /** e.g. "1-0", "0-1", "1/2-1/2". */
+      result?: string;
     };
 
 export interface BlogPost {

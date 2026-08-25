@@ -360,3 +360,63 @@
   margin-bottom: 0.3rem;
   font-size: 0.9375rem;
 }
+
+.chessNotation {
+  margin: 1.75rem 0;
+}
+
+.chessNotationTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.chessNotationTable {
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  overflow-x: auto;
+}
+
+.chessNotationTable table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9375rem;
+}
+
+.chessMoveNum {
+  width: 3rem;
+  text-align: right;
+  padding: 0.25rem 0.5rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.chessMoveWhite,
+.chessMoveBlack {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  text-align: center;
+  min-width: 4rem;
+}
+
+.chessMoveWhite {
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 600;
+}
+
+.chessMoveBlack {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.chessResult {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  font-weight: 700;
+  font-size: 1rem;
+  text-align: right;
+}

@@ -2,7 +2,7 @@
  * Refresh token management service.
  * Handles refresh token issuance, validation, and rotation.
  */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -23,6 +23,8 @@ import type {
 
 @Injectable()
 export class RefreshTokenService {
+  private readonly logger = new Logger(RefreshTokenService.name);
+
   constructor(
     private readonly config: ConfigService,
     @InjectModel(RefreshToken.name)
@@ -84,7 +86,13 @@ export class RefreshTokenService {
       }
     }
 
-    const candidates = await this.refreshModel.find({ revoked: false });
+    // Bounded fallback for legacy tokens without an extractable tokenId —
+    // an unbounded scan of every live token is a bcrypt DoS vector. Legacy
+    // tokens age out via the TTL index.
+    const candidates = await this.refreshModel
+      .find({ revoked: false })
+      .sort({ createdAt: -1 })
+      .limit(250);
     for (const candidate of candidates) {
       if (await bcrypt.compare(raw, candidate.tokenHash)) {
         return candidate;
@@ -92,6 +100,18 @@ export class RefreshTokenService {
     }
 
     return null;
+  }
+
+  /**
+   * Revoke every live refresh token for a user (token-family kill switch).
+   * Used when reuse/theft of a revoked token is detected or when the
+   * account becomes ineligible to hold sessions.
+   */
+  private async revokeAllForUser(userId: string): Promise<void> {
+    await this.refreshModel.updateMany(
+      { userId: new Types.ObjectId(userId), revoked: false },
+      { $set: { revoked: true } },
+    );
   }
 
   /**
@@ -130,6 +150,12 @@ export class RefreshTokenService {
     }
 
     if (stored.revoked) {
+      // Presenting an already-rotated/revoked token means it was copied —
+      // assume theft and kill the whole token family for this user.
+      this.logger.warn(
+        `Refresh token reuse detected for user ${String(stored.userId)} — revoking all sessions`,
+      );
+      await this.revokeAllForUser(String(stored.userId));
       throw new UnauthorizedException('Refresh token revoked');
     }
 
@@ -157,6 +183,13 @@ export class RefreshTokenService {
       stored.revoked = true;
       await stored.save();
       throw new UnauthorizedException('User not found for refresh token');
+    }
+
+    // Blocked or deleted accounts must not be able to mint new sessions —
+    // the per-request RolesGuard only protects admin surfaces.
+    if (userDoc.isBlocked || userDoc.deletedAt) {
+      await this.revokeAllForUser(userId);
+      throw new UnauthorizedException('Account is no longer active');
     }
 
     const user = await ensureUserUsername(userDoc);

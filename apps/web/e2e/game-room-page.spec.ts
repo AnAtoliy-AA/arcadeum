@@ -111,8 +111,9 @@ test.describe('Game Room Logic', () => {
     // Navigate with explicit watch mode
     await navigateTo(page, `${routes.gameRoom(roomId)}?mode=watch`);
 
-    // Verify the "Spectating" badge is visible in the control panel
-    const spectatingBadge = page.getByText(/spectating/i);
-    await expect(spectatingBadge).toBeVisible();
+    // Verify the "Spectating" badge is visible in the control panel and
+    // the spectator-mode pill renders above the board (ARC-926).
+    await expect(page.getByTestId('spectating-indicator')).toBeVisible();
+    await expect(page.getByTestId('spectator-mode-pill')).toBeVisible();
   });
 });

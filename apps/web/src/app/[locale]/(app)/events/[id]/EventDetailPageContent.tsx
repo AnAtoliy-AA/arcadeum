@@ -3,7 +3,11 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Container, Button, GlassCard } from '@arcadeum/ui';
-import { useEventsStore, EventLeaderboard } from '@/features/events';
+import {
+  useEventsStore,
+  EventLeaderboard,
+  EventPrizeBadge,
+} from '@/features/events';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { buildRoutes, type Locale } from '@/shared/config/routes';
 
@@ -212,9 +216,10 @@ export default function EventDetailPageContent({
               <span className="text-xs text-[var(--textSecondary)]">
                 {tt.prizeBadge ?? 'Reward'}
               </span>
-              <span className="text-xs md:text-sm font-semibold text-[var(--gold)]">
-                ★ {currentEvent.prizeBadge}
-              </span>
+              <EventPrizeBadge
+                badgeId={currentEvent.prizeBadge}
+                variant="chip"
+              />
             </div>
           )}
 
@@ -246,6 +251,18 @@ export default function EventDetailPageContent({
         </div>
 
         <div className="flex flex-col gap-6">
+          {currentEvent.prizeBadge && (
+            <div className="flex flex-col gap-2">
+              <h3 className="text-sm font-bold text-[var(--textSecondary)] uppercase tracking-wider">
+                {tt.prizeBadge ?? 'Event Reward'}
+              </h3>
+              <EventPrizeBadge
+                badgeId={currentEvent.prizeBadge}
+                variant="showcase"
+              />
+            </div>
+          )}
+
           <GlassCard className="p-5 md:p-6 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex flex-col gap-3">
             <h3 className="text-base font-bold text-color">
               {tt.rulesTitle ?? 'Event Rules'}

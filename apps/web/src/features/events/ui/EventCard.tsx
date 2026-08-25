@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { GlassCard, Button } from '@arcadeum/ui';
+import { EventPrizeBadge } from './EventPrizeBadge';
 import type { GameNightEvent } from '../model/types';
 import { buildRoutes, type Locale } from '@/shared/config/routes';
 
@@ -93,6 +94,12 @@ export const EventCard = ({
             {event.description}
           </p>
         </div>
+
+        {event.prizeBadge && (
+          <div>
+            <EventPrizeBadge badgeId={event.prizeBadge} variant="chip" />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-3 border-t border-[var(--glassBorder)] pt-3">

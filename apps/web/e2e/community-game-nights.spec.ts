@@ -77,7 +77,10 @@ test.describe('Community Game Nights', () => {
     await page.route('**/*', async (route) => {
       const req = route.request();
       const url = req.url();
-      if (req.resourceType() === 'fetch' && url.includes('/events/mock-event-1')) {
+      if (
+        req.resourceType() === 'fetch' &&
+        url.includes('/events/mock-event-1')
+      ) {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
@@ -146,10 +149,16 @@ test.describe('Community Game Nights', () => {
     await navigateTo(page, '/events/mock-event-1');
 
     await expect(page.getByTestId('event-detail-page')).toBeVisible();
-    await expect(page.getByText('Friday Night Blitz Chess')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Friday Night Blitz Chess' }),
+    ).toBeVisible();
     await expect(page.getByText('GrandmasterAlex').first()).toBeVisible();
     await expect(page.getByText('KnightRider')).toBeVisible();
     await expect(page.getByTestId('event-play-now-button')).toBeVisible();
+    await expect(
+      page.getByTestId('badge-showcase-champion_crown'),
+    ).toBeVisible();
+    await expect(page.getByText("Grandmaster's Crown").first()).toBeVisible();
   });
 
   test('home page renders event banner when featured event exists', async ({
@@ -188,5 +197,6 @@ test.describe('Community Game Nights', () => {
 
     await expect(page.getByTestId('event-banner')).toBeVisible();
     await expect(page.getByText('Friday Night Blitz Chess')).toBeVisible();
+    await expect(page.getByTestId('badge-chip-champion_crown')).toBeVisible();
   });
 });

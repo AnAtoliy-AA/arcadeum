@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@arcadeum/ui';
 import { useEventsStore } from '../store/eventsStore';
+import { EventPrizeBadge } from './EventPrizeBadge';
 import { buildRoutes, type Locale } from '@/shared/config/routes';
 
 interface EventBannerTranslations {
@@ -59,6 +60,12 @@ export const EventBanner = ({
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] px-2.5 py-0.5 rounded-md bg-[var(--glassBorder)]/40 border border-[var(--glassBorder)]">
                 {featuredEvent.gameType}
               </span>
+              {featuredEvent.prizeBadge && (
+                <EventPrizeBadge
+                  badgeId={featuredEvent.prizeBadge}
+                  variant="chip"
+                />
+              )}
             </div>
 
             <h2 className="text-xl md:text-2xl font-black text-color tracking-tight m-0">

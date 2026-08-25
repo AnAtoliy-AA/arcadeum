@@ -70,7 +70,7 @@ export default function EventsPageContent({
     <Container className="py-8 md:py-12 flex flex-col gap-8 max-w-7xl">
       <div className="flex flex-col gap-2">
         <PageTitle>{tt.title ?? 'Community Game Nights'}</PageTitle>
-        <p className="text-sm md:text-base text-[var(--textMuted)]">
+        <p className="text-sm md:text-base text-[var(--textSecondary)]">
           {tt.subtitle ??
             'Join scheduled community tournaments, compete in featured games, and claim exclusive cosmetic badges.'}
         </p>
@@ -83,7 +83,7 @@ export default function EventsPageContent({
           className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all ${
             activeTab === 'all'
               ? 'bg-[var(--primary)] text-white shadow-md shadow-[var(--primary)]/20'
-              : 'text-[var(--textMuted)] hover:text-[var(--text)] hover:bg-[var(--surfaceHover)]'
+              : 'text-[var(--textSecondary)] hover:text-color hover:bg-[var(--surfaceHover)]'
           }`}
         >
           All ({events.length})
@@ -110,7 +110,7 @@ export default function EventsPageContent({
           className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all ${
             activeTab === 'upcoming'
               ? 'bg-[var(--primary)] text-white shadow-md shadow-[var(--primary)]/20'
-              : 'text-[var(--textMuted)] hover:text-[var(--text)] hover:bg-[var(--surfaceHover)]'
+              : 'text-[var(--textSecondary)] hover:text-color hover:bg-[var(--surfaceHover)]'
           }`}
         >
           {tt.upcoming ?? 'Upcoming'} ({upcomingEvents.length})
@@ -121,8 +121,8 @@ export default function EventsPageContent({
           onClick={() => setActiveTab('completed')}
           className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all ${
             activeTab === 'completed'
-              ? 'bg-[var(--surfaceHover)] text-[var(--text)]'
-              : 'text-[var(--textMuted)] hover:text-[var(--text)] hover:bg-[var(--surfaceHover)]'
+              ? 'bg-[var(--surfaceHover)] text-color'
+              : 'text-[var(--textSecondary)] hover:text-color hover:bg-[var(--surfaceHover)]'
           }`}
         >
           {tt.pastEvents ?? 'Past'} ({pastEvents.length})

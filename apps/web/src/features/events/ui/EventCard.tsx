@@ -51,13 +51,13 @@ export const EventCard = ({
         );
       case 'completed':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--surfaceHover)] text-[var(--textMuted)] border border-[var(--glassBorder)]">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--surfaceHover)] text-[var(--textSecondary)] border border-[var(--glassBorder)]">
             {translations.completedBadge ?? 'COMPLETED'}
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--surfaceHover)] text-[var(--textMuted)] border border-[var(--glassBorder)]">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--surfaceHover)] text-[var(--textSecondary)] border border-[var(--glassBorder)]">
             {translations.cancelledBadge ?? 'CANCELLED'}
           </span>
         );
@@ -80,25 +80,25 @@ export const EventCard = ({
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
           {getStatusBadge()}
-          <span className="text-xs font-medium text-[var(--textMuted)] uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--surface)] border border-[var(--glassBorder)]">
+          <span className="text-xs font-medium text-[var(--textSecondary)] uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--surface)] border border-[var(--glassBorder)]">
             {event.gameType}
           </span>
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-[var(--text)] line-clamp-1">
+          <h3 className="text-lg font-bold text-color line-clamp-1">
             {event.title}
           </h3>
-          <p className="text-sm text-[var(--textMuted)] mt-1 line-clamp-2">
+          <p className="text-sm text-[var(--textSecondary)] mt-1 line-clamp-2">
             {event.description}
           </p>
         </div>
       </div>
 
       <div className="flex flex-col gap-3 border-t border-[var(--glassBorder)] pt-3">
-        <div className="flex items-center justify-between text-xs text-[var(--textMuted)]">
+        <div className="flex items-center justify-between text-xs text-[var(--textSecondary)]">
           <span>{formattedDate}</span>
-          <span className="font-semibold text-[var(--text)]">
+          <span className="font-semibold text-color">
             {event.participantCount}{' '}
             {translations.participants ?? 'participants'}
           </span>

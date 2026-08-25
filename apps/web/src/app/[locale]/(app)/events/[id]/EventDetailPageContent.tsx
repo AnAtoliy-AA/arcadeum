@@ -72,7 +72,7 @@ export default function EventDetailPageContent({
   if (!currentEvent && !loading) {
     return (
       <Container className="py-16 flex flex-col items-center justify-center gap-4 text-center max-w-4xl">
-        <h1 className="text-2xl font-bold text-[var(--text)]">
+        <h1 className="text-2xl font-bold text-color">
           {tt.eventNotFound ?? 'Event not found'}
         </h1>
         <Link href={routes.events}>
@@ -111,7 +111,7 @@ export default function EventDetailPageContent({
       <div>
         <Link
           href={routes.events}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--textMuted)] hover:text-[var(--primary)] transition-colors mb-4"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--textSecondary)] hover:text-[var(--primary)] transition-colors mb-4"
         >
           ← {tt.backToEvents ?? 'Back to Events'}
         </Link>
@@ -122,7 +122,7 @@ export default function EventDetailPageContent({
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               {isLive ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[var(--danger)]/20 text-[var(--danger)] border border-[var(--danger)]/40 animate-pulse">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[var(--errorBgSoft)] text-[var(--danger)] border border-[var(--errorBorder)] animate-pulse">
                   <span className="w-2 h-2 rounded-full bg-[var(--danger)]" />
                   {tt.liveBadge ?? 'LIVE NOW'}
                 </span>
@@ -135,15 +135,15 @@ export default function EventDetailPageContent({
                       : (tt.cancelledBadge ?? 'CANCELLED')}
                 </span>
               )}
-              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-[var(--surface)] text-[var(--textMuted)] border border-[var(--glassBorder)]">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-[var(--surface)] text-[var(--textSecondary)] border border-[var(--glassBorder)]">
                 {currentEvent.gameType}
               </span>
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-extrabold text-[var(--text)] tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-color tracking-tight">
               {currentEvent.title}
             </h1>
-            <p className="text-sm md:text-base text-[var(--textMuted)] max-w-2xl">
+            <p className="text-sm md:text-base text-[var(--textSecondary)] max-w-2xl">
               {currentEvent.description}
             </p>
           </div>
@@ -190,24 +190,26 @@ export default function EventDetailPageContent({
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-[var(--glassBorder)] pt-6">
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-[var(--textMuted)]">Time Window</span>
-            <span className="text-xs md:text-sm font-semibold text-[var(--text)]">
+            <span className="text-xs text-[var(--textSecondary)]">
+              Time Window
+            </span>
+            <span className="text-xs md:text-sm font-semibold text-color">
               {formattedStart} – {formattedEnd}
             </span>
           </div>
 
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-[var(--textMuted)]">
+            <span className="text-xs text-[var(--textSecondary)]">
               Participants
             </span>
-            <span className="text-xs md:text-sm font-semibold text-[var(--text)]">
+            <span className="text-xs md:text-sm font-semibold text-color">
               {currentEvent.participantCount} {tt.participants ?? 'players'}
             </span>
           </div>
 
           {currentEvent.prizeBadge && (
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-[var(--textMuted)]">
+              <span className="text-xs text-[var(--textSecondary)]">
                 {tt.prizeBadge ?? 'Reward'}
               </span>
               <span className="text-xs md:text-sm font-semibold text-[var(--gold)]">
@@ -218,11 +220,11 @@ export default function EventDetailPageContent({
 
           {currentEvent.mvpDisplayName && (
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-[var(--textMuted)]">
+              <span className="text-xs text-[var(--textSecondary)]">
                 {tt.mvp ?? 'Event MVP'}
               </span>
               <div className="flex items-center gap-1.5">
-                <span className="text-xs md:text-sm font-bold text-[var(--text)]">
+                <span className="text-xs md:text-sm font-bold text-color">
                   {currentEvent.mvpDisplayName}
                 </span>
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[var(--gold)]/20 text-[var(--gold)] border border-[var(--gold)]/40">
@@ -245,10 +247,10 @@ export default function EventDetailPageContent({
 
         <div className="flex flex-col gap-6">
           <GlassCard className="p-5 md:p-6 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex flex-col gap-3">
-            <h3 className="text-base font-bold text-[var(--text)]">
+            <h3 className="text-base font-bold text-color">
               {tt.rulesTitle ?? 'Event Rules'}
             </h3>
-            <p className="text-xs text-[var(--textMuted)] leading-relaxed">
+            <p className="text-xs text-[var(--textSecondary)] leading-relaxed">
               {tt.rulesDescription ??
                 'Queue for the featured game during the event window. Each match win awards 3 points, participation awards 1 point.'}
             </p>

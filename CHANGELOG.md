@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.35] - 2026-08-25
+
+### Fixed
+- use shared buildInviteUrl in RoomQrModal for consistent UTM params
+- resolve RN 0.87 type resolution and API drift
+
+
 ## [1.26.34] - 2026-08-25
 
 ### Added

@@ -166,12 +166,40 @@ export class RankingService {
       .lean<RankingEntry[]>()
       .exec();
 
-    const rows: MyRankingDto[] = [];
-    for (const d of docs) {
-      const ahead = await this.rankingModel
-        .countDocuments({ gameId: d.gameId, season, elo: { $gt: d.elo } })
-        .exec();
-      rows.push({
+    if (docs.length === 0) return [];
+
+    // A single grouped scan yields player counts per (gameId, elo) bucket so
+    // ranks for every entry resolve in one round-trip instead of one
+    // countDocuments query per game.
+    const gameIds = [...new Set(docs.map((d) => d.gameId))];
+    const eloBuckets = await this.rankingModel
+      .aggregate<{ gameId: string; elo: number; count: number }>([
+        { $match: { season, gameId: { $in: gameIds } } },
+        {
+          $group: {
+            _id: { gameId: '$gameId', elo: '$elo' },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            gameId: '$_id.gameId',
+            elo: '$_id.elo',
+            count: 1,
+          },
+        },
+      ])
+      .exec();
+
+    const rows: MyRankingDto[] = docs.map((d) => {
+      let ahead = 0;
+      for (const bucket of eloBuckets) {
+        if (bucket.gameId === d.gameId && bucket.elo > d.elo) {
+          ahead += bucket.count;
+        }
+      }
+      return {
         gameId: d.gameId,
         season,
         elo: d.elo,
@@ -182,8 +210,8 @@ export class RankingService {
         draws: d.draws,
         rankedGames: d.rankedGames,
         rank: ahead + 1,
-      });
-    }
+      };
+    });
     return rows;
   }
 

@@ -15,6 +15,7 @@ type AnyModel = {
   findOneAndUpdate: jest.Mock;
   find: jest.Mock;
   countDocuments: jest.Mock;
+  aggregate: jest.Mock;
   updateOne: jest.Mock;
 };
 
@@ -45,6 +46,7 @@ function makeModel(overrides: Partial<AnyModel> = {}): AnyModel {
       }),
     }),
     countDocuments: jest.fn().mockReturnValue(chain(0)),
+    aggregate: jest.fn().mockReturnValue(chain([])),
     updateOne: jest.fn().mockReturnValue(chain({})),
     ...overrides,
   };
@@ -318,7 +320,13 @@ describe('RankingService', () => {
   });
 
   describe('getMyRankings', () => {
-    it('computes a rank for each game entry', async () => {
+    it('computes a rank for each game entry via one aggregation', async () => {
+      const aggregate = jest.fn().mockReturnValue(
+        chain([
+          { gameId: 'chess_v1', elo: 1600, count: 7 },
+          { gameId: 'chess_v1', elo: 1551, count: 5 },
+        ]),
+      );
       const rankingModel = makeModel({
         find: jest.fn().mockReturnValue({
           sort: jest.fn().mockReturnValue({
@@ -338,12 +346,28 @@ describe('RankingService', () => {
             ),
           }),
         }),
-        countDocuments: jest.fn().mockReturnValue(chain(12)),
+        aggregate,
       });
       const service = buildService(rankingModel, makeModel(), makeModel());
 
       const rows = await service.getMyRankings('user1');
 
+      // One aggregation round-trip instead of a countDocuments per game.
+      expect(aggregate).toHaveBeenCalledTimes(1);
+      const pipeline = (
+        aggregate.mock.calls as unknown as Array<[Record<string, unknown>]>
+      )[0]?.[0];
+      expect(pipeline).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            $match: {
+              season,
+              gameId: { $in: ['chess_v1'] },
+            },
+          }),
+        ]),
+      );
+      // 12 players above 1550 -> rank 13.
       expect(rows).toHaveLength(1);
       expect(rows[0]).toMatchObject({
         gameId: 'chess_v1',
@@ -353,6 +377,24 @@ describe('RankingService', () => {
         rankedGames: 6,
         rank: 13,
       });
+    });
+
+    it('returns [] without hitting the aggregation when no entries exist', async () => {
+      const aggregate = jest.fn();
+      const rankingModel = makeModel({
+        find: jest.fn().mockReturnValue({
+          sort: jest.fn().mockReturnValue({
+            lean: jest.fn().mockReturnValue(chain([])),
+          }),
+        }),
+        aggregate,
+      });
+      const service = buildService(rankingModel, makeModel(), makeModel());
+
+      const rows = await service.getMyRankings('user1');
+
+      expect(rows).toEqual([]);
+      expect(aggregate).not.toHaveBeenCalled();
     });
   });
 });

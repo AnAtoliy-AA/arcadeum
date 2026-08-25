@@ -181,18 +181,20 @@ export class SeasonsService implements OnModuleInit {
       .lean<LeanSeason[]>()
       .exec();
 
-    for (const season of stale) {
-      const champions = await this.computeChampions(season.seasonId);
-      await this.seasonModel
-        .updateOne(
-          { seasonId: season.seasonId, status: 'active' },
-          { $set: { status: 'archived', archivedAt: new Date(), champions } },
-        )
-        .exec();
-      this.logger.log(
-        `Season ${season.seasonId} archived with ${champions.length} champion(s).`,
-      );
-    }
+    await Promise.all(
+      stale.map(async (season) => {
+        const champions = await this.computeChampions(season.seasonId);
+        await this.seasonModel
+          .updateOne(
+            { seasonId: season.seasonId, status: 'active' },
+            { $set: { status: 'archived', archivedAt: new Date(), champions } },
+          )
+          .exec();
+        this.logger.log(
+          `Season ${season.seasonId} archived with ${champions.length} champion(s).`,
+        );
+      }),
+    );
   }
 
   private async findOrCreateCurrent(): Promise<LeanSeason> {

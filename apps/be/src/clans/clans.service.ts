@@ -421,16 +421,19 @@ export class ClansService {
     }
     await clan.save();
 
-    for (const id of [...winnerIds, ...loserIds]) {
-      await this.clanMemberModel.updateOne(
-        { clanId: clan._id, userId: new Types.ObjectId(id) },
-        {
+    const ops = [...winnerIds, ...loserIds].map((id) => ({
+      updateOne: {
+        filter: { clanId: clan._id, userId: new Types.ObjectId(id) },
+        update: {
           $inc: {
             gamesPlayed: 1,
             ...(winnerIds.includes(id) ? { wins: 1 } : {}),
           },
         },
-      );
+      },
+    }));
+    if (ops.length > 0) {
+      await this.clanMemberModel.bulkWrite(ops);
     }
   }
 

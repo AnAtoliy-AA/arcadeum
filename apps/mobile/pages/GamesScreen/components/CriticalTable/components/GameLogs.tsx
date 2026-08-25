@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  type ScrollViewInstance,
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -24,7 +23,7 @@ interface GameLogsProps {
   canSendHistoryMessage: boolean;
   onSend: () => void;
   formatLogMessage: (message: string) => string;
-  logsScrollRef: React.RefObject<ScrollViewInstance | null>;
+  logsScrollRef: React.RefObject<ScrollView | null>;
   currentUserId: string | null;
   playerNameMap: Map<string, string>;
   styles: CriticalTableStyles;

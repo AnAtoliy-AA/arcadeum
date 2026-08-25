@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { trackGameCompleted } from '@/shared/analytics/funnel';
 
 export interface LocalGameRecord {
   gameId: string;
@@ -52,6 +53,9 @@ export const useLocalStatsStore = create<LocalStatsState>()(
           records.splice(0, records.length - MAX_RECORDS);
         }
         set({ records });
+        // Every completion (solo + multiplayer) funnels through here, so this
+        // is the single conversion point for both funnel cohorts.
+        trackGameCompleted(record.gameId, record.result, record.sessionId);
       },
 
       resetStats: () => set({ records: [] }),

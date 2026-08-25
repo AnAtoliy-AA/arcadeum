@@ -1,12 +1,12 @@
 {
   "name": "be",
-  "version": "1.26.32",
+  "version": "1.26.40",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "pnpm --filter @arcadeum/games-core run build && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "dev": "rm -rf dist && nest start --watch",

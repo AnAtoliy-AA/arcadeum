@@ -7,6 +7,8 @@ import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import HeartsLanding from './HeartsLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -123,6 +125,11 @@ export default async function HeartsLandingRoute({ params }: PageProps) {
             { name?: string; description?: string } | undefined
           >
         }
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, ['Hearts', 'Card Game', 'Валетныя'])}
+        gameName={landing?.hero?.title}
       />
     </>
   );

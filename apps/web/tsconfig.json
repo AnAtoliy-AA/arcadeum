@@ -25,7 +25,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "@arcadeum/ui": ["../../packages/ui/src"],
-      "@arcadeum/ui/*": ["../../packages/ui/src/*"]
+      "@arcadeum/ui/*": ["../../packages/ui/src/*"],
+      "@arcadeum/games-core": ["../../packages/games-core/src"],
+      "@arcadeum/games-core/*": ["../../packages/games-core/src/*"]
     }
   },
   "include": [

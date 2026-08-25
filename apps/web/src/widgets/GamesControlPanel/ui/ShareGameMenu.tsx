@@ -11,6 +11,8 @@ import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
 import { routes } from '@/shared/config/routes';
+import { RoomQrModal } from './RoomQrModal';
+import { trackInviteShared } from '@/shared/analytics/funnel';
 
 interface ShareGameMenuProps {
   roomId: string;
@@ -101,11 +103,45 @@ function CopyLinkIcon() {
   );
 }
 
-function buildInviteUrl(roomId: string, inviteCode?: string): string {
+function QrCodeIcon() {
+  return (
+    <svg
+      width={ICON_SIZE}
+      height={ICON_SIZE}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <path d="M14 14h3v3h-3z" />
+      <path d="M21 14v3" />
+      <path d="M14 21h3" />
+      <path d="M21 21h0.01" />
+    </svg>
+  );
+}
+
+/**
+ * Invite links carry campaign params (roadmap 6C) so attribution capture can
+ * credit the share when a recipient lands: utm_source identifies the app,
+ * utm_medium=invite marks it as an invite link, utm_content carries the room.
+ */
+export function buildInviteUrl(roomId: string, inviteCode?: string): string {
   if (typeof window === 'undefined') return '';
-  return `${window.location.origin}${routes.gameRoom(roomId)}${
-    inviteCode ? `?inviteCode=${inviteCode}` : ''
-  }`;
+  const params = new URLSearchParams({
+    utm_source: 'arcadeum',
+    utm_medium: 'invite',
+    utm_campaign: 'room_share',
+    ...(roomId ? { utm_content: roomId } : {}),
+    ...(inviteCode ? { inviteCode } : {}),
+  });
+  return `${window.location.origin}${routes.gameRoom(roomId)}?${params.toString()}`;
 }
 
 function buildChannels(
@@ -146,6 +182,7 @@ function buildChannels(
 export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [isQrOpen, setIsQrOpen] = useState(false);
   const [isCopied, setIsCopied] = useTimedTrue(2000);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -161,6 +198,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
     ) {
       try {
         await navigator.share({ title, text, url });
+        trackInviteShared('native', roomId);
         return;
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
@@ -196,14 +234,24 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
     if (!url) return;
     try {
       await navigator.clipboard.writeText(url);
+      trackInviteShared('copy', roomId);
       setIsCopied();
     } catch {}
   }, [roomId, inviteCode, setIsCopied]);
 
-  const handleChannelClick = useCallback((href: string) => {
-    if (typeof window === 'undefined') return;
-    window.open(href, '_blank', 'noopener,noreferrer');
+  const handleChannelClick = useCallback(
+    (channel: ShareChannel['key'], href: string) => {
+      if (typeof window === 'undefined') return;
+      window.open(href, '_blank', 'noopener,noreferrer');
+      trackInviteShared(channel, roomId);
+      setIsOpen(false);
+    },
+    [roomId],
+  );
+
+  const handleShowQr = useCallback(() => {
     setIsOpen(false);
+    setIsQrOpen(true);
   }, []);
 
   const url = buildInviteUrl(roomId, inviteCode);
@@ -244,7 +292,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
           {channels.map((c) => (
             <div
               className="flex flex-row items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-[rgba(255,255,255,0.08)] focus:bg-[rgba(255,255,255,0.08)]"
-              onClick={() => handleChannelClick(c.href)}
+              onClick={() => handleChannelClick(c.key, c.href)}
               key={c.key}
               role="menuitem"
               tabIndex={0}
@@ -268,8 +316,26 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
                 : t('games.common.shareVia.copyLink')}
             </span>
           </div>
+          <div className="mx-2 border-t border-[var(--glassBorder)]" />
+          <div
+            className="flex flex-row items-center gap-3 px-3 py-2 rounded-[8px] cursor-pointer hover:bg-[rgba(255,255,255,0.08)] focus:bg-[rgba(255,255,255,0.08)]"
+            onClick={handleShowQr}
+            role="menuitem"
+            tabIndex={0}
+            data-testid="share-via-qr"
+          >
+            <QrCodeIcon />
+            <span className="text-[14px]">{t('games.common.roomQr.menu')}</span>
+          </div>
         </div>
       )}
+
+      <RoomQrModal
+        open={isQrOpen}
+        onClose={() => setIsQrOpen(false)}
+        roomId={roomId}
+        inviteCode={inviteCode}
+      />
     </div>
   );
 }

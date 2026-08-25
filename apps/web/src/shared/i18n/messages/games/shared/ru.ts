@@ -116,6 +116,11 @@ export const ruMessages = {
       copyLink: 'Копировать ссылку',
       copied: 'Скопировано!',
     },
+    roomQr: {
+      menu: 'Показать QR-код',
+      title: 'QR-код комнаты',
+      hint: 'Отсканируй, чтобы присоединиться к игре',
+    },
     actions: {
       backToHome: 'На главную',
     },
@@ -405,6 +410,39 @@ export const ruMessages = {
       turns: 'Ходы',
       score: 'Счёт',
       accuracy: 'Точность',
+    },
+    analytics: {
+      view: 'Аналитика',
+      back: 'К результату',
+      noStats: 'Статистика недоступна для этой игры.',
+      tabs: {
+        stats: 'Статистика',
+        moves: 'Ходы',
+        headToHead: 'Личные встречи',
+        trends: 'Тренды',
+      },
+      moves: {
+        title: 'Хронология ходов',
+        empty: 'Данные о ходах отсутствуют.',
+      },
+      headToHead: {
+        title: 'Личные встречи',
+        wins: 'Победы',
+        losses: 'Поражения',
+        draws: 'Ничьи',
+        totalGames: 'Всего игр',
+        winRate: 'Процент побед',
+        noOpponent: 'Нет данных об оппоненте.',
+        empty: 'Пока нет данных о личных встречах.',
+      },
+      trends: {
+        title: 'Последние результаты',
+        winRate: 'Процент побед',
+        currentStreak: 'Серия',
+        oldest: 'Ранние',
+        newest: 'Последние',
+        empty: 'Сыграйте больше игр, чтобы увидеть тренды.',
+      },
     },
     rematch: {
       title: 'Сыграть еще?',

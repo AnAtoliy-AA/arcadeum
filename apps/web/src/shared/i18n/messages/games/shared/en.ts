@@ -116,6 +116,11 @@ export const enMessages = {
       copyLink: 'Copy link',
       copied: 'Copied!',
     },
+    roomQr: {
+      menu: 'Show QR code',
+      title: 'Room QR code',
+      hint: 'Scan to join the game',
+    },
     actions: {
       backToHome: 'Back to Home',
     },
@@ -404,6 +409,39 @@ export const enMessages = {
       turns: 'Turns / Moves',
       score: 'Score',
       accuracy: 'Accuracy',
+    },
+    analytics: {
+      view: 'View Analytics',
+      back: 'Back to Result',
+      noStats: 'No stats available for this game.',
+      tabs: {
+        stats: 'Stats',
+        moves: 'Moves',
+        headToHead: 'Head to Head',
+        trends: 'Trends',
+      },
+      moves: {
+        title: 'Move Timeline',
+        empty: 'No move data available.',
+      },
+      headToHead: {
+        title: 'Head to Head',
+        wins: 'Wins',
+        losses: 'Losses',
+        draws: 'Draws',
+        totalGames: 'Total Games',
+        winRate: 'Win Rate',
+        noOpponent: 'No opponent data available.',
+        empty: 'No head-to-head data yet.',
+      },
+      trends: {
+        title: 'Recent Performance',
+        winRate: 'Win Rate',
+        currentStreak: 'Streak',
+        oldest: 'Oldest',
+        newest: 'Newest',
+        empty: 'Play more games to see trends.',
+      },
     },
     rematch: {
       title: 'Play Again?',

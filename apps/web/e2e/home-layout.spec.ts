@@ -81,4 +81,31 @@ test.describe('Home Page Layout', () => {
     );
     expect(parseInt(fontWeight)).toBeGreaterThanOrEqual(700);
   });
+
+  test('H1 color should adapt to theme', async ({ page }) => {
+    const h1 = page.locator('h1#hero-heading');
+    await expect(h1).toBeVisible();
+
+    await page.evaluate(() => {
+      window.localStorage.setItem('theme', 'dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.style.setProperty('--color', '#ecefee');
+    });
+
+    const darkColor = await h1.evaluate(
+      (el) => window.getComputedStyle(el).color,
+    );
+
+    await page.evaluate(() => {
+      window.localStorage.setItem('theme', 'light');
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.style.setProperty('--color', '#0f172a');
+    });
+
+    const lightColor = await h1.evaluate(
+      (el) => window.getComputedStyle(el).color,
+    );
+
+    expect(darkColor).not.toBe(lightColor);
+  });
 });

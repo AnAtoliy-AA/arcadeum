@@ -160,3 +160,263 @@
   font-size: 1.5rem;
   flex: 0 0 auto;
 }
+
+.faq {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+}
+
+.faqItem {
+  margin-bottom: 1.5rem;
+}
+
+.faqQuestion {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.35rem;
+}
+
+.faqAnswer {
+  margin: 0;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.85));
+  line-height: 1.65;
+}
+
+.statCard {
+  margin: 1.75rem 0;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+}
+
+.statCardTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0.75rem 0.5rem;
+  border-radius: 0.5rem;
+  background: var(--color-bg, rgba(0, 0, 0, 0.2));
+}
+
+.statValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.statLabel {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
+  margin-top: 0.25rem;
+}
+
+.statDescription {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+  margin-top: 0.15rem;
+}
+
+.replayEmbed {
+  margin: 1.75rem 0;
+}
+
+.replayLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.18) 0%,
+    rgba(124, 58, 237, 0.06) 100%
+  );
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  text-decoration: none;
+  color: inherit;
+  transition: background 120ms ease;
+}
+
+.replayLink:hover {
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.replayIcon {
+  font-size: 1.5rem;
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(124, 58, 237, 0.25);
+}
+
+.replayTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  display: block;
+}
+
+.replayDescription {
+  font-size: 0.875rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
+  display: block;
+  margin-top: 0.15rem;
+}
+
+.patchNote {
+  margin: 1.75rem 0;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+}
+
+.patchHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+}
+
+.patchVersion {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-family: monospace;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  background: rgba(64, 145, 220, 0.2);
+}
+
+.patchDate {
+  font-size: 0.875rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
+}
+
+.patchSection {
+  margin-bottom: 0.75rem;
+}
+
+.patchSection:last-child {
+  margin-bottom: 0;
+}
+
+.patchBadge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  margin-bottom: 0.35rem;
+}
+
+.patchBadge.added {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.patchBadge.changed {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.patchBadge.fixed {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.patchBadge.removed {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.patchList {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.patchList li {
+  margin-bottom: 0.3rem;
+  font-size: 0.9375rem;
+}
+
+.chessNotation {
+  margin: 1.75rem 0;
+}
+
+.chessNotationTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.chessNotationTable {
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--color-surface, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  overflow-x: auto;
+}
+
+.chessNotationTable table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9375rem;
+}
+
+.chessMoveNum {
+  width: 3rem;
+  text-align: right;
+  padding: 0.25rem 0.5rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.chessMoveWhite,
+.chessMoveBlack {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  text-align: center;
+  min-width: 4rem;
+}
+
+.chessMoveWhite {
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 600;
+}
+
+.chessMoveBlack {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.chessResult {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  font-weight: 700;
+  font-size: 1rem;
+  text-align: right;
+}

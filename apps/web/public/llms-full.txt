@@ -1,44 +1,63 @@
-# Arcadeum — Free Online Board Games
+# Arcadeum — Free Online Board, Card & Puzzle Games
 
-> Play free online board games with friends. Battleship, strategy, and card games — create a room, share the link, and play in your browser.
+> Play free online games with friends. Board game classics, card games, and single-player puzzles — create a room and share the link, or play solo instantly in your browser.
 
-Arcadeum is a browser-based multiplayer platform for classic board games. No download, no signup required.
+Arcadeum is a browser-based gaming platform for classic board games, card games, and single-player puzzles. No download, no signup required.
 
 ## What is Arcadeum?
 
-Arcadeum lets you play board games online with friends or AI opponents. Each game runs in your browser — just create a room and share the link.
+Arcadeum lets you play classic games online with friends or AI opponents. Multiplayer games run in private rooms you share with a link or QR code; single-player puzzles run entirely in your browser.
 
-### Supported Games
+### Supported Multiplayer Games
 
 - [Sea Battle (Battleship)](https://arcadeum.games/en/games/sea-battle): Classic naval combat strategy game for 2–6 players. Place your ships, guess coordinates, and sink the enemy fleet.
 - [Critical](https://arcadeum.games/en/games/critical): Strategic card game for 3–5 players. Draw cards, defuse threats, and survive the explosion.
-- [Tic-Tac-Toe](https://arcadeum.games/en/games/tic-tac-toe): Six themed variants for 2–5 players. Boards from 3×3 to 9×9.
-- [Cascade](https://arcadeum.games/en/games/cascade): Shedding card game for 2–10 players. Draw-Two and Wild +4 stacking chains.
-- [Chess](https://arcadeum.games/en/games/chess): Classic strategy game for 2 players.
-- [Glimworm](https://arcadeum.games/en/games): Real-time glow-worm snake arena for 2–10 players.
+- [Chess](https://arcadeum.games/en/games/chess): Classic strategy game for 2 players. Full rules — castling, en passant, promotion — plus Chess960 variant and configurable time controls (3|0 to 30|0).
+- [Checkers](https://arcadeum.games/en/games/checkers): Classic draughts for 2 players. Forced captures, multi-jumps, and king promotion on an 8×8 board.
+- [Backgammon](https://arcadeum.games/en/games/backgammon): Dice-based racing game for 2 players. 24-point board, bar re-entry, bearing off, and the doubling cube.
+- [Hearts](https://arcadeum.games/en/games/hearts): Trick-taking card game for 4 players. Avoid taking hearts and the queen of spades; shoot the moon for a comeback.
+- [Spades](https://arcadeum.games/en/games/spades): Partnership trick-taking for 4 players. Bid your tricks, nil bids allowed, first team to the target score wins.
+- [Pachisi](https://arcadeum.games/en/games/pachisi): Classic race-and-capture dice game for 2–4 players. Move all four pieces around the board and home before your rivals.
+- [Go (Baduk)](https://arcadeum.games/en/games/go): Territory-control strategy for 2 players on 9×9, 13×13, and 19×19 boards. Liberty counting, captures, ko rule, area and territory scoring.
+- [Tic-Tac-Toe](https://arcadeum.games/en/games/tic-tac-toe): Six themed variants for 2–5 players. Boards from 3×3 up to 9×9 with adjustable win conditions.
+- [Cascade](https://arcadeum.games/en/games/cascade): Shedding card game for 2–10 players. Empty your hand first — beware Draw-Two and Wild +4 stacking chains.
+- [Glimworm](https://arcadeum.games/en/games/glimworm): Real-time glow-worm snake arena for 2–10 players.
+- [Cat Dash](https://arcadeum.games/en/games/cat-dash): Racing game where the first cat across the finish line wins.
+
+### Supported Single-Player Games
+
+These run entirely in your browser — no room, no account, no waiting:
+
+- [Solitaire](https://arcadeum.games/en/games/solitaire): Classic Klondike patience. Build the four foundation piles from Ace to King.
+- [Minesweeper](https://arcadeum.games/en/games/minesweeper): Reveal every safe cell using number clues without detonating a mine. Beginner to expert grid sizes.
+- [Sudoku](https://arcadeum.games/en/games/sudoku): Fill the 9×9 grid so every row, column, and 3×3 box contains 1–9 exactly once. Unique-solution puzzles with pencil marks.
+- [2048](https://arcadeum.games/en/games/2048): Slide tiles on a 4×4 grid; equal tiles merge and double. Reach 2048 — then keep going.
 
 ### How to Play
 
 1. Go to https://arcadeum.games
 2. Pick a game
-3. Create a room (or join one)
-4. Share the room link with friends
+3. For multiplayer: create a room (or join one) and share the room link or QR code
+4. For single-player: press play — the puzzle starts instantly
 5. Play in your browser — no install needed
 
 ### Features
 
-- **Private Rooms** — Create a room, get a shareable link, and play with friends anywhere.
-- **AI Bots** — Practice solo against computer opponents.
-- **Real-time Chat** — Talk to your friends while you play.
-- **Player Profiles** — Track your stats, wins, and game history.
-- **Leaderboards** — Climb the rankings and compete with friends.
+- **Private Rooms** — Create a room, get a shareable link or QR code, and play with friends anywhere.
+- **AI Bots** — Practice solo against computer opponents at easy, medium, hard, and expert difficulties.
+- **Ranked Play** — ELO ratings per game with Bronze-to-Master tiers, seasonal leaderboards, and tournaments.
+- **Real-time Chat** — Talk to friends while you play, with emotes and quick reactions.
+- **Replays & Analysis** — Watch game replays, spectate live matches, and review post-game analytics.
+- **Player Profiles** — Track your stats, wins, achievements, and game history.
+- **Daily Challenges** — Fresh objectives every day with streak bonuses.
 - **Daily Rewards** — Log in daily to earn coins and cosmetics.
 - **Cosmetic Shop** — Unlock avatars, badges, and color tags to personalize your profile.
 - **Multi-language** — Available in English, Spanish, French, Russian, and Belarusian.
+- **Works Offline-Friendly** — Installable as a PWA; single-player games run fully client-side.
 
 ### Tech Stack
 
-- **Frontend**: Next.js (React), Tailwind CSS, Tamagui
+- **Frontend**: Next.js (React), Tailwind CSS
 - **Backend**: NestJS, MongoDB, Socket.IO
 - **Mobile**: React Native / Expo
 - **Monorepo**: pnpm workspaces + Turborepo

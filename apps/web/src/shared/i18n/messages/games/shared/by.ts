@@ -116,6 +116,11 @@ export const byMessages = {
       copyLink: 'Скапіраваць спасылку',
       copied: 'Скапіявана!',
     },
+    roomQr: {
+      menu: 'Паказаць QR-код',
+      title: 'QR-код пакоя',
+      hint: 'Адскануй, каб далучыцца да гульні',
+    },
     actions: {
       backToHome: 'На галоўную',
     },
@@ -405,6 +410,39 @@ export const byMessages = {
       turns: 'Хады',
       score: 'Лік',
       accuracy: 'Дакладнасць',
+    },
+    analytics: {
+      view: 'Аналітыка',
+      back: 'Да выніку',
+      noStats: 'Статыстыка недаступная для гэтай гульні.',
+      tabs: {
+        stats: 'Статыстыка',
+        moves: 'Хады',
+        headToHead: 'Асабістыя сустрэчы',
+        trends: 'Трэнды',
+      },
+      moves: {
+        title: 'Храналогія хадоў',
+        empty: 'Даныя пра хады адсутнічаюць.',
+      },
+      headToHead: {
+        title: 'Асабістыя сустрэчы',
+        wins: 'Перамогі',
+        losses: 'Паразы',
+        draws: 'Нічыі',
+        totalGames: 'Усяго гульняў',
+        winRate: 'Працэнт перамог',
+        noOpponent: 'Няма даных пра апанента.',
+        empty: 'Пакуль няма даных пра асабістыя сустрэчы.',
+      },
+      trends: {
+        title: 'Апошнія вынікі',
+        winRate: 'Працэнт перамог',
+        currentStreak: 'Серыя',
+        oldest: 'Раннія',
+        newest: 'Апошнія',
+        empty: 'Згуляйце больш гульняў, каб убачыць трэнды.',
+      },
     },
     rematch: {
       title: 'Згуляць яшчэ?',

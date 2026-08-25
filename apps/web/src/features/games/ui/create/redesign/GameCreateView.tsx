@@ -9,6 +9,7 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { gamesApi, type CatalogResponse } from '@/features/games/api';
+import { trackSocialRoomCreated } from '@/shared/analytics/funnel';
 import {
   buildComingSoonMaps,
   isCreateBlocked,
@@ -326,6 +327,7 @@ export function GameCreateView() {
     onSuccess: (data) => {
       triggerRefresh(['games', 'rooms']);
       if (!data?.room?.id) return;
+      trackSocialRoomCreated(form.gameId);
       let roomUrl = routes.gameRoom(data.room.id);
       if (data.room.inviteCode) {
         roomUrl += `?inviteCode=${encodeURIComponent(data.room.inviteCode)}`;

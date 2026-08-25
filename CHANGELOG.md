@@ -7,38 +7,110 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.40] - 2026-08-25
+
+### Added
+- implement prize badges catalog and visual medallions across events (ARC-936) (ARC-936)
+
+### Fixed
+- fix event banner layout and replace invalid text tokens (ARC-936) (ARC-936)
+- adapt home hero heading and shadows to active theme (ARC-936) (ARC-936)
+
+
+## [1.26.39] - 2026-08-25
+
+### Fixed
+- restore android build compatibility (ARC-892) (ARC-892)
+- build games-core dist as part of be build (ARC-925)
+
+
+## [1.26.38] - 2026-08-25
+
+### Added
+
+- add opengraph previews for single-player games
+
+### Documentation
+
+- refresh llms catalogs and update roadmap statuses
+
+## [1.26.37] - 2026-08-25
+
+### Added
+
+- post-game analytics with head-to-head and trends (ARC-925) (ARC-925)
+
+### Fixed
+
+- sanitize gameId before Mongo query filters (ARC-925)
+
+## [1.26.36] - 2026-08-25
+
+### Added
+
+- add chess-notation block and real move sequences
+- add SEO content, new block types, and RelatedArticles integration
+
+## [1.26.35] - 2026-08-25
+
+### Fixed
+
+- use shared buildInviteUrl in RoomQrModal for consistent UTM params
+- resolve RN 0.87 type resolution and API drift
+
+## [1.26.34] - 2026-08-25
+
+### Added
+
+- add real board preview art and symbols for puzzle games (ARC-936) (ARC-936)
+
+### Fixed
+
+- export typescript source types for pre-build linting and type resolution (ARC-936) (ARC-936)
+- restore tsconfig rootDir to maintain dist/src/main structure (ARC-936) (ARC-936)
+
+## [1.26.33] - 2026-08-25
+
+### Added
+
+- add room QR code sharing (ARC-937)
+
 ## [1.26.32] - 2026-08-24
 
 ### Fixed
+
 - memoize server GETs and retry 429 during prerender
 - remove leftover src/middleware.ts after proxy rename
 - migrate middleware to proxy convention and declare CSP_CONNECT_SRC in turbo env
 
-
 ## [1.26.31] - 2026-08-24
 
 ### Added
+
 - add web offline runtime sources missed by initial staging (ARC-900)
 - offline play-vs-bot mode via shared games-core package (ARC-900)
 
 ### Fixed
+
 - forward event name through lazy socket proxy emit (ARC-900)
 - declare games-core dependency for be and web (ARC-900)
 - correct e2e mapper depth and sea-battle payload cast for nest build (ARC-900)
 - resolve games-core types from src so CI needs no prebuilt dist (ARC-900)
 
 ### Documentation
-- mark offline mode implemented and add offline step to new-game skill (ARC-900)
 
+- mark offline mode implemented and add offline step to new-game skill (ARC-900)
 
 ## [1.26.30] - 2026-08-24
 
 ### Added
+
 - segment all statistics metrics across registered and anonymous users (ARC-935) (ARC-935)
 - add anonymous and guest player telemetry with audience filters (ARC-935) (ARC-935)
 - add platform statistics dashboard with engagement metrics and pdf export (ARC-935) (ARC-935)
 
 ### Fixed
+
 - add delta and deltaType props to StatTile and fix test mock types (ARC-935) (ARC-935)
 - ensure profile menu and avatar render with exact colors in print/PDF (ARC-935) (ARC-935)
 - hide halo conic mask and profile dropdown in print to fix avatar white box in PDF (ARC-935) (ARC-935)
@@ -49,152 +121,161 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - prevent undefined toLocaleString in StatsGamesBreakdown (ARC-935) (ARC-935)
 - prevent runtime TypeError on undefined totalCount with deep merge and safe fallbacks (ARC-935) (ARC-935)
 
-
 ## [1.26.29] - 2026-08-24
 
 ### Added
+
 - register solo puzzle games in catalog, seo, and sitemap (ARC-924)
 - add 2048 widget, routes, and i18n (ARC-924)
 - add sudoku widget, routes, and i18n (ARC-924)
 - add minesweeper widget, routes, and i18n (ARC-924)
 
 ### Fixed
+
 - align component types with generated RN 0.81 definitions
 
 ### Refactored
-- extract shared solo game landing component (ARC-924)
 
+- extract shared solo game landing component (ARC-924)
 
 ## [1.26.28] - 2026-08-24
 
 ### Added
+
 - make starter cosmetic items implicit and purge legacy starter inventory rows (ARC-924) (ARC-924)
 - add reusable InfiniteScroll component with storybook and tests (ARC-924) (ARC-924)
 - rework command center and add infinite scroll to all admin pages (ARC-924) (ARC-924)
 
 ### Fixed
+
 - resolve setState in effect lint errors and add test data pruning script (ARC-925) (ARC-925)
 - wrap payment and user handlers in useCallback and clean filters styling (ARC-924) (ARC-924)
 - prevent infinite render loop by syncing accumulated items in useEffect (ARC-924) (ARC-924)
 
-
 ## [1.26.27] - 2026-08-24
 
 ### Added
+
 - add solitaire landing page with i18n in five locales (ARC-924)
 - register solitaire in catalog, routes, and seo metadata (ARC-924)
 - add solitaire widget UI and play route (ARC-924)
 - add solitaire client-side engine, store, and theme (ARC-924)
 
 ### Documentation
-- add single-player games tier to roadmap (ARC-924)
 
+- add single-player games tier to roadmap (ARC-924)
 
 ## [1.26.26] - 2026-08-24
 
 ### Added
+
 - add season banner with rewards and progress on player profile (ARC-899)
 - add seasons module with rollover cron and soft elo reset (ARC-899)
-
 
 ## [1.26.25] - 2026-08-24
 
 ### Added
+
 - add keyboard play to backgammon, sea battle, chess and checkers boards (ARC-898)
 - add keyboard navigation utilities and Escape-to-deselect (ARC-898)
 
 ### Documentation
-- mark keyboard navigation implemented in roadmap (ARC-898)
 
+- mark keyboard navigation implemented in roadmap (ARC-898)
 
 ## [1.26.24] - 2026-08-24
 
 ### Added
+
 - add real preview art for hearts, spades, go, and pachisi (ARC-923) (ARC-923)
 
 ### Documentation
-- update new-game skill checklist and gotchas for catalog preview art (ARC-923) (ARC-923)
 
+- update new-game skill checklist and gotchas for catalog preview art (ARC-923) (ARC-923)
 
 ## [1.26.23] - 2026-08-24
 
 ### Fixed
-- actionable health alerts, 400 for bad gameIds, spec fixes
 
+- actionable health alerts, 400 for bad gameIds, spec fixes
 
 ## [1.26.22] - 2026-08-24
 
 ### Added
+
 - add UI components, store, events pages, and home banner (ARC-892) (ARC-892)
 - add i18n messages, routes, and SEO metadata across all locales (ARC-892) (ARC-892)
 - implement backend module, service, schemas, and endpoints (ARC-892) (ARC-892)
 
 ### Fixed
-- update pnpm-lock.yaml with mobile dependencies (ARC-892) (ARC-892)
 
+- update pnpm-lock.yaml with mobile dependencies (ARC-892) (ARC-892)
 
 ## [1.26.21] - 2026-08-24
 
 ### Fixed
-- make named throttlers opt-in and harden client IP resolution
 
+- make named throttlers opt-in and harden client IP resolution
 
 ## [1.26.20] - 2026-08-24
 
 ### Fixed
-- exempt health endpoints from rate limiting
 
+- exempt health endpoints from rate limiting
 
 ## [1.26.19] - 2026-08-24
 
 ### Added
+
 - implement anti-chip dumping terms, IP matchmaking guard, and anti-collusion service (ARC-894) (ARC-894)
 - add guest disclaimer notice in game rooms (ARC-894) (ARC-894)
 - require 18+ age verification and terms agreement on registration (ARC-894) (ARC-894)
 
-
 ## [1.26.18] - 2026-08-24
 
 ### Fixed
-- add @react-native/assets-registry as devDependency to fix jest-expo module resolution
 
+- add @react-native/assets-registry as devDependency to fix jest-expo module resolution
 
 ## [1.26.17] - 2026-08-24
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.26.16] - 2026-08-24
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.26.15] - 2026-08-24
 
 ### Added
+
 - implement game replays (ARC-888) (ARC-888)
 
 ### Fixed
+
 - use i18n error message in replay client catch block (ARC-888)
 - sanitize replay query inputs against NoSQL injection (ARC-888) (ARC-888)
-
 
 ## [1.26.14] - 2026-08-24
 
 ### Added
+
 - add tutorial content in en, es, fr, ru, by for all games (ARC-895)
 - add interactive tutorial framework with spotlight overlay (ARC-895)
 
 ### Fixed
+
 - dismiss tutorial overlay before opening chat panel on mobile
 - bypass tutorial overlay blocker and fix theme translation keys
 - manage dialog focus and treat Escape on completion as finished (ARC-895)
 
 ### Documentation
-- refresh roadmap statuses for shipped features (ARC-895)
 
+- refresh roadmap statuses for shipped features (ARC-895)
 
 ## [1.26.13] - 2026-08-24
 

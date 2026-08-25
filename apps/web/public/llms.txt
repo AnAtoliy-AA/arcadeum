@@ -1,24 +1,42 @@
 # Arcadeum
 
-> Free online board games — play with friends in your browser. No download, no signup.
+> Free online board, card, and puzzle games — play with friends in your browser. No download, no signup.
 
-Arcadeum is a browser-based multiplayer platform for classic board games. Create a private room, share the link, and play instantly.
+Arcadeum is a browser-based gaming platform for classic board games, card games, and single-player puzzles. Create a private room, share the link, and play instantly — or jump into a solo puzzle that runs entirely client-side.
 
-## Core Games
+## Multiplayer Games
 
 - [Sea Battle (Battleship)](https://arcadeum.games/en/games/sea-battle): Classic naval combat strategy for 2–6 players
 - [Critical](https://arcadeum.games/en/games/critical): Strategic card game — draw, defuse, survive for 3–5 players
-- [Tic-Tac-Toe](https://arcadeum.games/en/games/tic-tac-toe): Six themed variants for 2–5 players
-- [Cascade](https://arcadeum.games/en/games/cascade): Shedding card game with stacking chains for 2–10 players
-- [Chess](https://arcadeum.games/en/games/chess): Classic strategy game for 2 players
-- [Glimworm](https://arcadeum.games/en/games): Real-time glow-worm snake arena for 2–10 players
+- [Chess](https://arcadeum.games/en/games/chess): Classic strategy with standard and Chess960 variants plus time controls for 2 players
+- [Checkers](https://arcadeum.games/en/games/checkers): Classic draughts with forced captures, multi-jumps, and king promotion for 2 players
+- [Backgammon](https://arcadeum.games/en/games/backgammon): Dice-based racing game with the doubling cube for 2 players
+- [Hearts](https://arcadeum.games/en/games/hearts): Trick-taking card game — avoid hearts and the queen of spades for 4 players
+- [Spades](https://arcadeum.games/en/games/spades): Bidding and partnership trick-taking for 4 players
+- [Pachisi](https://arcadeum.games/en/games/pachisi): Classic race-and-capture dice board game for 2–4 players
+- [Go (Baduk)](https://arcadeum.games/en/games/go): Ancient territory-control strategy on 9×9, 13×13, and 19×19 boards for 2 players
+- [Tic-Tac-Toe](https://arcadeum.games/en/games/tic-tac-toe): Six themed variants on boards from 3×3 to 9×9 for 2–5 players
+- [Cascade](https://arcadeum.games/en/games/cascade): Shedding card game with Draw-Two and Wild +4 stacking chains for 2–10 players
+- [Glimworm](https://arcadeum.games/en/games/glimworm): Real-time glow-worm snake arena for 2–10 players
+- [Cat Dash](https://arcadeum.games/en/games/cat-dash): Racing game — cross the finish line first against friends or bots
+
+## Single-Player Games
+
+No account needed — these run entirely in your browser:
+
+- [Solitaire](https://arcadeum.games/en/games/solitaire): Classic Klondike patience card puzzle
+- [Minesweeper](https://arcadeum.games/en/games/minesweeper): Clear beginner-to-expert grids without detonating a mine
+- [Sudoku](https://arcadeum.games/en/games/sudoku): Unique-solution puzzles on easy, medium, and hard grids with pencil marks
+- [2048](https://arcadeum.games/en/games/2048): Slide and merge equal tiles across a 4×4 grid to reach 2048
 
 ## Features
 
-- Private multiplayer rooms with shareable links
-- AI bots for solo practice
-- Real-time chat during gameplay
-- Player profiles, statistics, and leaderboards
+- Private multiplayer rooms with shareable links and QR codes
+- AI bots for solo practice with adjustable difficulty
+- Ranked play with ELO ratings, leaderboards, seasons, and tournaments
+- Real-time chat and emotes during gameplay
+- Game replays, spectator mode, and post-game analysis
+- Player profiles, statistics, achievements, and daily challenges
 - Daily rewards and cosmetic shop
 - Available in English, Spanish, French, Russian, and Belarusian
 

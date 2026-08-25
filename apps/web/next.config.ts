@@ -75,6 +75,36 @@ const withPWA = withPWAInit({
   },
 });
 
+// Analytics providers (roadmap 6C): only allowlisted when the corresponding
+// env vars are set at build time — deployments without analytics keep the
+// strict CSP. Plausible loads its script from the API host and beacons events
+// to the same host; PostHog uses the API host plus an -assets host for JS.
+function analyticsCspOrigins(): string[] {
+  const provider =
+    process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER?.trim().toLowerCase();
+  const origins = new Set<string>();
+  if (provider === 'plausible') {
+    const host =
+      process.env.NEXT_PUBLIC_PLAUSIBLE_API_HOST?.trim() ||
+      'https://plausible.io';
+    origins.add(host);
+  }
+  if (provider === 'posthog' && process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim()) {
+    const host = (
+      process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() || 'https://us.i.posthog.com'
+    ).replace(/\/$/, '');
+    const assetsHost =
+      host === 'https://eu.i.posthog.com'
+        ? 'https://eu-assets.i.posthog.com'
+        : 'https://us-assets.i.posthog.com';
+    origins.add(host);
+    origins.add(assetsHost);
+  }
+  return Array.from(origins);
+}
+
+const analyticsOrigins = analyticsCspOrigins();
+
 const defaultConnectSrc = [
   'https://arcadeum.games',
   'wss://arcadeum.games',
@@ -87,13 +117,18 @@ const defaultConnectSrc = [
   'wss://*.vercel.live',
   'https://*.vercel.app',
   process.env.NEXT_PUBLIC_CDN_URL || '',
-];
+].concat(analyticsOrigins);
 
 const cspConnectSrc = process.env.CSP_CONNECT_SRC
   ? (JSON.parse(process.env.CSP_CONNECT_SRC) as string[])
   : defaultConnectSrc;
 
-const cspScriptSrc = "'unsafe-inline' https://vercel.live https://*.vercel.app";
+const cspScriptSrc = [
+  "'unsafe-inline'",
+  'https://vercel.live',
+  'https://*.vercel.app',
+  ...analyticsOrigins,
+].join(' ');
 const cspStyleSrc = "'self' 'unsafe-inline'";
 const cspImgSrc = "'self' blob: data: https:";
 const cspFontSrc = "'self' data:";
@@ -343,7 +378,7 @@ const nextConfig: NextConfig = {
   // loopback hosts so e2e logs stay clean.
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
   reactCompiler: true,
-  transpilePackages: ['@arcadeum/ui'],
+  transpilePackages: ['@arcadeum/ui', '@arcadeum/games-core'],
   experimental: {
     inlineCss: true,
     optimizePackageImports: ['lucide-react', '@arcadeum/ui'],

@@ -38,10 +38,10 @@ export const EventLeaderboard = ({
   return (
     <GlassCard className="p-5 md:p-6 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-[var(--text)]">
+        <h3 className="text-lg font-bold text-color">
           {translations.leaderboard ?? 'Event Leaderboard'}
         </h3>
-        <span className="text-xs text-[var(--textMuted)]">
+        <span className="text-xs text-[var(--textSecondary)]">
           {participants.length} {translations.gamesPlayed ?? 'players'}
         </span>
       </div>
@@ -49,7 +49,7 @@ export const EventLeaderboard = ({
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-[var(--glassBorder)] text-xs text-[var(--textMuted)] uppercase tracking-wider">
+            <tr className="border-b border-[var(--glassBorder)] text-xs text-[var(--textSecondary)] uppercase tracking-wider">
               <th className="pb-3 pl-2 w-12">#</th>
               <th className="pb-3">Player</th>
               <th className="pb-3 text-center">
@@ -89,12 +89,12 @@ export const EventLeaderboard = ({
                         3
                       </span>
                     ) : (
-                      <span className="text-[var(--textMuted)] pl-2">
+                      <span className="text-[var(--textSecondary)] pl-2">
                         {rank}
                       </span>
                     )}
                   </td>
-                  <td className="py-3 font-semibold text-[var(--text)]">
+                  <td className="py-3 font-semibold text-color">
                     <div className="flex items-center gap-2">
                       <span>{p.displayName}</span>
                       {isMvp && (
@@ -104,7 +104,7 @@ export const EventLeaderboard = ({
                       )}
                     </div>
                   </td>
-                  <td className="py-3 text-center text-[var(--textMuted)]">
+                  <td className="py-3 text-center text-[var(--textSecondary)]">
                     {p.gamesPlayed}
                   </td>
                   <td className="py-3 text-center font-medium text-[var(--success)]">

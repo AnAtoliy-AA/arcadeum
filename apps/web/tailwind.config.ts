@@ -81,9 +81,9 @@ export default {
       },
       textShadow: {
         hero3d:
-          '1px 1px #2dd4bf, 2px 2px #0d9488, 3px 3px #0f766e, 4px 4px #115e59, 5px 5px #134e4a, 6px 6px #064e3b, 12px 18px 30px rgba(0, 0, 0, 0.6)',
+          '1px 1px var(--accent), 2px 2px var(--accent), 3px 3px var(--primary), 4px 4px var(--primary), 5px 5px var(--secondary), 6px 6px var(--secondary), 12px 18px 30px rgba(0, 0, 0, 0.6)',
         hero3dSub:
-          '1px 1px #2dd4bf, 2px 2px #14b8a6, 3px 3px #0d9488, 4px 4px #0f766e, 5px 5px #115e59, 6px 6px #134e4a, 10px 14px 24px rgba(0, 0, 0, 0.6)',
+          '1px 1px var(--accent), 2px 2px var(--primary), 3px 3px var(--secondary), 10px 14px 24px rgba(0, 0, 0, 0.6)',
         'card-text': '0 1px 2px rgba(0, 0, 0, 0.6)',
         'title-soft': '0 2px 16px rgba(0, 0, 0, 0.5)',
       },

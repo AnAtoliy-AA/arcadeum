@@ -9,7 +9,9 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 const ORIGIN = 'https://test.local';
 const ROOM_ID = 'abc123';
 const INVITE_CODE = 'INV-9';
-const EXPECTED_URL = `${ORIGIN}/en/rooms/${ROOM_ID}?inviteCode=${INVITE_CODE}`;
+// Invite URLs carry campaign params for attribution (roadmap 6C).
+const UTM_PARAMS = `utm_source=arcadeum&utm_medium=invite&utm_campaign=room_share&utm_content=${ROOM_ID}`;
+const EXPECTED_URL = `${ORIGIN}/en/rooms/${ROOM_ID}?${UTM_PARAMS}&inviteCode=${INVITE_CODE}`;
 const EXPECTED_TEXT = 'games.common.shareMessage';
 
 function renderMenu(
@@ -48,7 +50,7 @@ describe('ShareGameMenu', () => {
     expect(screen.queryByTestId('share-game-popover')).not.toBeInTheDocument();
   });
 
-  it('opens the popover with all 5 channel options when navigator.share is unavailable', async () => {
+  it('opens the popover with all 6 channel options when navigator.share is unavailable', async () => {
     renderMenu();
     await act(async () => {
       fireEvent.click(screen.getByTestId('share-game-button'));
@@ -59,6 +61,34 @@ describe('ShareGameMenu', () => {
     expect(screen.getByTestId('share-via-twitter')).toBeInTheDocument();
     expect(screen.getByTestId('share-via-facebook')).toBeInTheDocument();
     expect(screen.getByTestId('share-via-copy')).toBeInTheDocument();
+    expect(screen.getByTestId('share-via-qr')).toBeInTheDocument();
+  });
+
+  it('opens the room QR modal when the QR option is clicked', async () => {
+    renderMenu();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('share-game-button'));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('share-via-qr'));
+    });
+
+    const modal = screen.getByTestId('room-qr-modal');
+    expect(modal).toBeInTheDocument();
+    expect(screen.getByTestId('room-qr-svg')).toBeInTheDocument();
+
+    const urlEl = screen.getByTestId('room-qr-url');
+    expect(urlEl).toHaveTextContent(EXPECTED_URL);
+
+    // The rendered QR is an inline <svg> (testid lands on the svg root).
+    const qrSvg = screen.getByTestId('room-qr-svg');
+    expect(qrSvg.tagName.toLowerCase()).toBe('svg');
+
+    // Popover closed behind the modal.
+    expect(screen.queryByTestId('share-game-popover')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('modal-close-button'));
+    expect(screen.queryByTestId('room-qr-modal')).not.toBeInTheDocument();
   });
 
   it('opens each channel link in a new tab with the encoded invite URL', async () => {
@@ -131,7 +161,7 @@ describe('ShareGameMenu', () => {
       fireEvent.click(screen.getByTestId('share-game-button'));
     });
     fireEvent.click(screen.getByTestId('share-via-telegram'));
-    const expectedUrl = `${ORIGIN}/en/rooms/${ROOM_ID}`;
+    const expectedUrl = `${ORIGIN}/en/rooms/${ROOM_ID}?${UTM_PARAMS}`;
     expect(openSpy).toHaveBeenLastCalledWith(
       `https://t.me/share/url?url=${encodeURIComponent(expectedUrl)}&text=${encodeURIComponent(EXPECTED_TEXT)}`,
       '_blank',

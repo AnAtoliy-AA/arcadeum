@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.46] - 2026-08-25
+
+### Improved
+- seed client pages with server-fetched data instead of spinners
+- cache hot public reads, batch fan-out, and bound cron work
+- replace whole-store Zustand subscriptions with field selectors
+
+
 ## [1.26.45] - 2026-08-25
 
 ### Improved

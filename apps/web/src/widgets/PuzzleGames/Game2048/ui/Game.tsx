@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { Button, LoadingState, Modal } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
 import { Game2048ThemeProvider } from '../lib/Game2048ThemeContext';
 import {
   useGame2048Store,
@@ -12,6 +13,7 @@ import type { Direction } from '../types';
 import { Game2048Board } from './Game2048Board';
 
 export default function Game2048() {
+  useTrackSoloGameStarted('game_2048_v1');
   return (
     <Game2048ThemeProvider>
       <Game2048Table />
@@ -128,13 +130,7 @@ function Game2048Table() {
   );
 }
 
-function Stat({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
+function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <span className="flex flex-col">
       <span className="text-[10px] uppercase tracking-wide opacity-60">
@@ -161,14 +157,18 @@ function ResultDialog({
     <Modal open onClose={() => undefined}>
       <div className="flex flex-col items-center gap-4 p-6 text-center">
         <h2 className="text-2xl font-black">
-          {t(finished.won
-            ? 'games.game_2048_v1.result.wonTitle'
-            : 'games.game_2048_v1.result.lostTitle')}
+          {t(
+            finished.won
+              ? 'games.game_2048_v1.result.wonTitle'
+              : 'games.game_2048_v1.result.lostTitle',
+          )}
         </h2>
         <p className="text-sm opacity-80">
-          {t(finished.won
-            ? 'games.game_2048_v1.result.wonBody'
-            : 'games.game_2048_v1.result.lostBody')}
+          {t(
+            finished.won
+              ? 'games.game_2048_v1.result.wonBody'
+              : 'games.game_2048_v1.result.lostBody',
+          )}
         </p>
         <dl className="flex gap-6 text-sm">
           <div>
@@ -176,7 +176,9 @@ function ResultDialog({
             <dd className="font-mono text-lg">{finished.score}</dd>
           </div>
           <div>
-            <dt className="opacity-60">{t('games.game_2048_v1.hud.movesLabel')}</dt>
+            <dt className="opacity-60">
+              {t('games.game_2048_v1.hud.movesLabel')}
+            </dt>
             <dd className="font-mono text-lg">{finished.moves}</dd>
           </div>
           <div>

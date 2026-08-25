@@ -8,6 +8,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useMatchmaking } from '@/features/games/ui';
+import { trackSocialQuickplayStarted } from '@/shared/analytics/funnel';
 
 type Mode = 'ai' | 'human';
 
@@ -54,6 +55,7 @@ export function QuickplayButton({
         theme,
       };
       const { room } = await gamesApi.quickplay(gameId, options);
+      trackSocialQuickplayStarted(gameId, 'ai');
       router.push(routes.gameRoom(room.id));
     } catch (err) {
       console.warn(`Quickplay (${mode}) failed:`, err);

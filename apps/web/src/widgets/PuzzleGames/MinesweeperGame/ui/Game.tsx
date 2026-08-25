@@ -5,6 +5,7 @@ import { Button, LoadingState, Modal, Select } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
 import { MinesweeperThemeProvider } from '../lib/MinesweeperThemeContext';
 import {
   useMinesweeperStore,
@@ -20,6 +21,7 @@ const DIFFICULTY_OPTIONS: Array<{ value: Difficulty }> = [
 ];
 
 export default function MinesweeperGame() {
+  useTrackSoloGameStarted('minesweeper_v1');
   return (
     <MinesweeperThemeProvider>
       <MinesweeperTable />
@@ -44,7 +46,9 @@ function MinesweeperTable() {
   const finishedAt = useMinesweeperStore((state) => state.finishedAt);
   const reveal = useMinesweeperStore((state) => state.reveal);
   const flag = useMinesweeperStore((state) => state.flag);
-  const changeDifficulty = useMinesweeperStore((state) => state.changeDifficulty);
+  const changeDifficulty = useMinesweeperStore(
+    (state) => state.changeDifficulty,
+  );
   const newGame = useMinesweeperStore((state) => state.newGame);
 
   // The board is random and persisted, so it can only render after mount —
@@ -122,7 +126,9 @@ function MinesweeperTable() {
           onValueChange={(value) => changeDifficulty(value as Difficulty)}
           options={DIFFICULTY_OPTIONS.map(({ value }) => ({
             value,
-            label: t(`games.minesweeper_v1.difficulty.${value}` as TranslationKey),
+            label: t(
+              `games.minesweeper_v1.difficulty.${value}` as TranslationKey,
+            ),
           }))}
         />
       </div>
@@ -132,13 +138,7 @@ function MinesweeperTable() {
   );
 }
 
-function Stat({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
+function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <span className="flex flex-col">
       <span className="text-[10px] uppercase tracking-wide opacity-60">
@@ -168,15 +168,15 @@ function ResultDialog({
       <div className="flex flex-col items-center gap-4 p-6 text-center">
         <h2 className="text-2xl font-black">{t(titleKey)}</h2>
         <p className="text-sm opacity-80">
-          {t(finished.won
-            ? 'games.minesweeper_v1.result.wonBody'
-            : 'games.minesweeper_v1.result.lostBody')}
+          {t(
+            finished.won
+              ? 'games.minesweeper_v1.result.wonBody'
+              : 'games.minesweeper_v1.result.lostBody',
+          )}
         </p>
         {finished.durationSeconds !== null && (
           <dl className="text-sm">
-            <dt className="opacity-60">
-              {t('games.minesweeper_v1.hud.time')}
-            </dt>
+            <dt className="opacity-60">{t('games.minesweeper_v1.hud.time')}</dt>
             <dd className="font-mono text-lg">
               {formatDuration(finished.durationSeconds)}
             </dd>

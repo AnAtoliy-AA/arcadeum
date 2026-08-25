@@ -9,6 +9,10 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getAnonymousIdWithSignature } from '@/shared/lib/api-client';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  trackSocialMatchmakingJoined,
+  trackSocialMatchmakingMatched,
+} from '@/shared/analytics/funnel';
 import { create } from 'zustand';
 
 export interface MatchmakingStatus {
@@ -111,6 +115,7 @@ export function useMatchmaking() {
       if (!userId) return;
 
       store.startQueue(gameId, variant, ranked);
+      trackSocialMatchmakingJoined(gameId);
       void emitEncrypted(gameSocket, 'games.matchmaking.join', {
         userId,
         gameId,
@@ -190,6 +195,10 @@ export function MatchmakingQueueModal() {
   useSocket('games.matchmaking.success', (data: unknown) => {
     const payload = data as { roomId?: string };
     if (payload?.roomId) {
+      const queuedGameId = useMatchmakingStore.getState().gameId;
+      if (queuedGameId) {
+        trackSocialMatchmakingMatched(queuedGameId, payload.roomId);
+      }
       useMatchmakingStore.getState().stopQueue();
       router.push(routes.gameRoom(payload.roomId));
     }

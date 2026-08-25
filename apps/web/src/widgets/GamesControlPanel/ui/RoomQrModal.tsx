@@ -12,20 +12,13 @@ import {
 } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
-import { routes } from '@/shared/config/routes';
+import { buildInviteUrl } from './ShareGameMenu';
 
 interface RoomQrModalProps {
   open: boolean;
   onClose: () => void;
   roomId: string;
   inviteCode?: string;
-}
-
-function buildInviteUrl(roomId: string, inviteCode?: string): string {
-  if (typeof window === 'undefined') return '';
-  return `${window.location.origin}${routes.gameRoom(roomId)}${
-    inviteCode ? `?inviteCode=${inviteCode}` : ''
-  }`;
 }
 
 export function RoomQrModal({

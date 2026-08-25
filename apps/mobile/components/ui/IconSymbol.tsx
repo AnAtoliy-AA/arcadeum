@@ -88,14 +88,10 @@ export function IconSymbol({
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  // MaterialIcons only accepts string or OpaqueColorValue — numeric and
-  // platform colors fall back to the default tint instead of failing.
+  // MaterialIcons only accepts string or OpaqueColorValue — platform color
+  // objects fall back to the default tint instead of failing.
   const resolvedColor: string | OpaqueColorValue | undefined =
-    typeof color === 'number'
-      ? `#${color.toString(16).padStart(8, '0')}`
-      : typeof color === 'symbol'
-        ? undefined
-        : (color ?? undefined);
+    typeof color === 'symbol' ? undefined : (color ?? undefined);
 
   return (
     <MaterialIcons

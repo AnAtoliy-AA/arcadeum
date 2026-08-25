@@ -17,6 +17,10 @@ import { gamesApi } from '@/features/games/api';
 import { useGameRoom } from '@/features/games/hooks/useGameRoom';
 import type { GameType } from '@/features/games/hooks/useGameActions';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  trackSocialInviteAccepted,
+  trackSocialInviteLanded,
+} from '@/shared/analytics/funnel';
 import { useIdleReconnect } from '@/shared/hooks/useIdleReconnect';
 import { useIdleDetection } from '@/shared/hooks/useIdleDetection';
 import { Page } from '@/shared/ui/Page/Page';
@@ -202,6 +206,24 @@ export default function GameRoomPage({
 
   const isAutoJoining = autoJoinAttempted && !!urlInviteCode && !room && !error;
   const isManualSubmitting = manualSubmitPending && !room && !error;
+
+  // Invite-link funnel (roadmap 6C): landing on the room URL with an
+  // inviteCode marks the K-factor numerator candidate; a joined room marks
+  // the conversion. Both fire once per mounted page.
+  const inviteLandedRef = useRef(false);
+  useEffect(() => {
+    if (!urlInviteCode || inviteLandedRef.current) return;
+    inviteLandedRef.current = true;
+    trackSocialInviteLanded(roomId);
+  }, [urlInviteCode, roomId]);
+
+  const inviteAcceptedRef = useRef(false);
+  useEffect(() => {
+    if (!urlInviteCode || !room || inviteAcceptedRef.current) return;
+    if (roomMode !== 'play') return;
+    inviteAcceptedRef.current = true;
+    trackSocialInviteAccepted(roomId, room.gameId);
+  }, [urlInviteCode, room, roomId, roomMode]);
 
   const gameType: GameType = useMemo(() => {
     const gameId = room?.gameId;

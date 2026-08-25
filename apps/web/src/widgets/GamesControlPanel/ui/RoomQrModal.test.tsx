@@ -9,7 +9,8 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 const ORIGIN = 'https://test.local';
 const ROOM_ID = 'room-42';
 const INVITE_CODE = 'INV-7';
-const EXPECTED_URL = `${ORIGIN}/en/rooms/${ROOM_ID}?inviteCode=${INVITE_CODE}`;
+const UTM_PARAMS = `utm_source=arcadeum&utm_medium=invite&utm_campaign=room_share&utm_content=${ROOM_ID}`;
+const EXPECTED_URL = `${ORIGIN}/en/rooms/${ROOM_ID}?${UTM_PARAMS}&inviteCode=${INVITE_CODE}`;
 
 function renderModal(
   props: {
@@ -56,9 +57,8 @@ describe('RoomQrModal', () => {
 
   it('builds the URL without inviteCode when not provided', () => {
     renderModal({ inviteCode: null });
-    expect(screen.getByTestId('room-qr-url')).toHaveTextContent(
-      `${ORIGIN}/en/rooms/${ROOM_ID}`,
-    );
+    const expectedUrl = `${ORIGIN}/en/rooms/${ROOM_ID}?${UTM_PARAMS}`;
+    expect(screen.getByTestId('room-qr-url')).toHaveTextContent(expectedUrl);
   });
 
   it('copies the invite URL to the clipboard', async () => {

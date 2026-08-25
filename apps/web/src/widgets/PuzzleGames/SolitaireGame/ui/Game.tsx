@@ -3,12 +3,17 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Button, LoadingState, Modal } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
 import { SolitaireThemeProvider } from '../lib/SolitaireThemeContext';
-import { useSolitaireStore, type FinishedGameInfo } from '../store/solitaireStore';
+import {
+  useSolitaireStore,
+  type FinishedGameInfo,
+} from '../store/solitaireStore';
 import type { MoveSource } from '../types';
 import { SolitaireBoard } from './SolitaireBoard';
 
 export default function SolitaireGame() {
+  useTrackSoloGameStarted('solitaire_v1');
   return (
     <SolitaireThemeProvider>
       <SolitaireTable />
@@ -59,9 +64,7 @@ function SolitaireTable() {
   }, [isRunning, startedAt]);
 
   if (!mounted) {
-    return (
-      <LoadingState message={t('games.solitaire_v1.board.loading')} />
-    );
+    return <LoadingState message={t('games.solitaire_v1.board.loading')} />;
   }
 
   return (
@@ -96,13 +99,7 @@ function SolitaireTable() {
   );
 }
 
-function Stat({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
+function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <span className="flex flex-col">
       <span className="text-[10px] uppercase tracking-wide opacity-60">
@@ -132,9 +129,11 @@ function ResultDialog({
       <div className="flex flex-col items-center gap-4 p-6 text-center">
         <h2 className="text-2xl font-black">{t(titleKey)}</h2>
         <p className="text-sm opacity-80">
-          {t(finished.won
-            ? 'games.solitaire_v1.result.wonBody'
-            : 'games.solitaire_v1.result.lostBody')}
+          {t(
+            finished.won
+              ? 'games.solitaire_v1.result.wonBody'
+              : 'games.solitaire_v1.result.lostBody',
+          )}
         </p>
         <dl className="flex gap-6 text-sm">
           <div>

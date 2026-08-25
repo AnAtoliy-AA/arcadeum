@@ -5,11 +5,9 @@ import { Button, LoadingState, Modal, Select } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
 import { SudokuThemeProvider } from '../lib/SudokuThemeContext';
-import {
-  useSudokuStore,
-  type FinishedGameInfo,
-} from '../store/sudokuStore';
+import { useSudokuStore, type FinishedGameInfo } from '../store/sudokuStore';
 import type { Difficulty } from '../types';
 import { SudokuBoard } from './SudokuBoard';
 
@@ -22,6 +20,7 @@ const DIFFICULTY_OPTIONS: Array<{ value: Difficulty }> = [
 const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 export default function SudokuGame() {
+  useTrackSoloGameStarted('sudoku_v1');
   return (
     <SudokuThemeProvider>
       <SudokuTable />
@@ -143,8 +142,14 @@ function SudokuTable() {
     <div className="mx-auto flex w-full max-w-md flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-4 text-sm">
-          <Stat label={t('games.sudoku_v1.hud.mistakes')} value={game.mistakes} />
-          <Stat label={t('games.sudoku_v1.hud.time')} value={formatDuration(elapsedMs)} />
+          <Stat
+            label={t('games.sudoku_v1.hud.mistakes')}
+            value={game.mistakes}
+          />
+          <Stat
+            label={t('games.sudoku_v1.hud.time')}
+            value={formatDuration(elapsedMs)}
+          />
         </div>
         <Button variant="outline" size="sm" onClick={newGame}>
           {t('games.sudoku_v1.hud.newGame')}
@@ -219,9 +224,7 @@ function SudokuTable() {
             id="sudoku-difficulty"
             size="sm"
             value={game.difficulty}
-            onValueChange={(value) =>
-              changeDifficulty(value as Difficulty)
-            }
+            onValueChange={(value) => changeDifficulty(value as Difficulty)}
             options={DIFFICULTY_OPTIONS.map(({ value }) => ({
               value,
               label: t(`games.sudoku_v1.difficulty.${value}` as TranslationKey),
@@ -235,13 +238,7 @@ function SudokuTable() {
   );
 }
 
-function Stat({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
+function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <span className="flex flex-col">
       <span className="text-[10px] uppercase tracking-wide opacity-60">
@@ -271,7 +268,9 @@ function ResultDialog({
         <p className="text-sm opacity-80">
           {finished.mistakes === 0
             ? t('games.sudoku_v1.result.flawlessBody')
-            : t('games.sudoku_v1.result.wonBody', { mistakes: finished.mistakes })}
+            : t('games.sudoku_v1.result.wonBody', {
+                mistakes: finished.mistakes,
+              })}
         </p>
         <dl className="flex gap-6 text-sm">
           <div>

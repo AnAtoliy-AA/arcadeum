@@ -28,6 +28,12 @@ export interface GameResultModalProps {
   result: GameResultKind | null;
   gameName?: string;
   onRematch?: () => void;
+  rematchLabel?: string;
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+    testId?: string;
+  };
   onClose?: () => void;
   rematchLoading?: boolean;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
@@ -79,6 +85,8 @@ export function GameResultModal({
   result,
   gameName,
   onRematch,
+  rematchLabel,
+  secondaryAction,
   onClose,
   rematchLoading,
   t,
@@ -260,6 +268,19 @@ export function GameResultModal({
           )}
 
           <div className="animate-fade-in-up-delay-4 flex w-full flex-col gap-3">
+            {secondaryAction && (
+              <Button
+                variant="secondary"
+                size={media.sm ? 'md' : 'lg'}
+                onClick={secondaryAction.onClick}
+                data-testid={
+                  secondaryAction.testId ?? 'result-secondary-button'
+                }
+              >
+                {secondaryAction.label}
+              </Button>
+            )}
+
             {onRematch && (
               <Button
                 variant={isVictory ? 'primary' : 'secondary'}
@@ -272,7 +293,8 @@ export function GameResultModal({
               >
                 {rematchLoading
                   ? t('games.table.rematch.loading' as TranslationKey)
-                  : t('games.table.rematch.button' as TranslationKey)}
+                  : (rematchLabel ??
+                    t('games.table.rematch.button' as TranslationKey))}
               </Button>
             )}
 

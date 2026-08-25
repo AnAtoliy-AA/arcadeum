@@ -109,4 +109,36 @@ describe('GameResultModal', () => {
       screen.queryByTestId('detailed-analysis-content'),
     ).not.toBeInTheDocument();
   });
+
+  it('renders custom rematchLabel and secondaryAction button', () => {
+    const handleSecondary = vi.fn();
+    const handleRematch = vi.fn();
+
+    render(
+      <GameResultModal
+        isOpen={true}
+        result="victory"
+        onRematch={handleRematch}
+        rematchLabel="Play again"
+        secondaryAction={{
+          label: 'Keep going',
+          onClick: handleSecondary,
+          testId: 'keep-going-button',
+        }}
+        t={mockT}
+      />,
+    );
+
+    const rematchBtn = screen.getByTestId('rematch-button');
+    expect(rematchBtn).toHaveTextContent('Play again');
+
+    const secondaryBtn = screen.getByTestId('keep-going-button');
+    expect(secondaryBtn).toHaveTextContent('Keep going');
+
+    fireEvent.click(secondaryBtn);
+    expect(handleSecondary).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(rematchBtn);
+    expect(handleRematch).toHaveBeenCalledTimes(1);
+  });
 });

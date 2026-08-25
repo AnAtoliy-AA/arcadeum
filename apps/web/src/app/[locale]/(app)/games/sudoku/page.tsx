@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import SudokuLanding from './SudokuLanding';
 
 const SUDOKU_SLUG = 'sudoku_v1';
@@ -97,6 +99,10 @@ export default async function SudokuLandingRoute({ params }: PageProps) {
         landing={landing}
         playHref={routes.sudokuPlay}
         rules={rules}
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, ['Sudoku', 'Puzzle'])}
       />
     </>
   );

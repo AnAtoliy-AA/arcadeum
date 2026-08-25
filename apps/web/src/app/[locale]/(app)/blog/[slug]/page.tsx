@@ -14,6 +14,7 @@ import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildBlogPostJsonLd } from '@/shared/seo/blogPostJsonLd';
 import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { getPost, POST_SLUGS } from '@/features/blog/registry';
 import { BlogPostView } from './BlogPostView';
 
@@ -149,8 +150,15 @@ export default async function BlogPostRoute({ params }: PageProps) {
       })
     : null;
 
+  // FAQ rich results for Google + structured data for AI assistants.
+  // Questions must mirror visible content (rendered in BlogPostView).
+  const faqJsonLd = post.faq?.length
+    ? buildFaqJsonLd({ locale, questions: post.faq, pageUrl })
+    : null;
+
   const jsonLdNodes: Record<string, unknown>[] = [postJsonLd, breadcrumbJsonLd];
   if (howToJsonLd) jsonLdNodes.push(howToJsonLd);
+  if (faqJsonLd) jsonLdNodes.push(faqJsonLd);
 
   return (
     <>

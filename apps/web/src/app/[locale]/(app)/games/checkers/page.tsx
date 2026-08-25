@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import CheckersLanding from './CheckersLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -140,6 +142,17 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
             { name?: string; description?: string } | undefined
           >
         }
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, [
+          'Checkers',
+          'Draughts',
+          'Шашки',
+          'Шашкі',
+          'Dames',
+        ])}
+        gameName={landing?.hero?.title}
       />
     </>
   );

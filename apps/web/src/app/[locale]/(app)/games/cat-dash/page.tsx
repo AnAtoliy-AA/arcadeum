@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import CatDashLanding from './CatDashLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -140,6 +142,16 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
             { name?: string; description?: string } | undefined
           >
         }
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, [
+          'Cat Dash',
+          'Board Game',
+          'Racing',
+          'Гонки',
+        ])}
+        gameName={landing?.hero?.title}
       />
     </>
   );

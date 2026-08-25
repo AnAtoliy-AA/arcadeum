@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import TicTacToeLanding from './TicTacToeLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -142,6 +144,15 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
             { name?: string; description?: string } | undefined
           >
         }
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, [
+          'Tic Tac Toe',
+          'Board Game',
+          'Крестики-нолики',
+        ])}
+        gameName={landing?.hero?.title}
       />
     </>
   );

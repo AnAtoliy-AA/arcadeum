@@ -104,11 +104,149 @@ export function BlogPostView({
                       </Link>
                     </aside>
                   );
+                case 'stat-card':
+                  return (
+                    <div key={index} className={styles.statCard}>
+                      <h3 className={styles.statCardTitle}>{block.title}</h3>
+                      <div className={styles.statGrid}>
+                        {block.stats.map((stat, statIndex) => (
+                          <div key={statIndex} className={styles.statItem}>
+                            <span className={styles.statValue}>
+                              {stat.value}
+                            </span>
+                            <span className={styles.statLabel}>
+                              {stat.label}
+                            </span>
+                            {stat.description && (
+                              <span className={styles.statDescription}>
+                                {stat.description}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                case 'replay-embed':
+                  return (
+                    <div key={index} className={styles.replayEmbed}>
+                      <Link
+                        href={`/replay/${block.replayId}`}
+                        className={styles.replayLink}
+                      >
+                        <span className={styles.replayIcon} aria-hidden>
+                          ▶
+                        </span>
+                        <div>
+                          <strong className={styles.replayTitle}>
+                            {block.title}
+                          </strong>
+                          {block.description && (
+                            <span className={styles.replayDescription}>
+                              {block.description}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    </div>
+                  );
+                case 'patch-note':
+                  return (
+                    <div key={index} className={styles.patchNote}>
+                      <div className={styles.patchHeader}>
+                        <span className={styles.patchVersion}>
+                          {block.version}
+                        </span>
+                        <time
+                          className={styles.patchDate}
+                          dateTime={block.date}
+                        >
+                          {new Date(block.date).toLocaleDateString(
+                            post.locale,
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )}
+                        </time>
+                      </div>
+                      {block.sections.map((section, sIndex) => (
+                        <div key={sIndex} className={styles.patchSection}>
+                          <span
+                            className={`${styles.patchBadge} ${styles[section.type]}`}
+                          >
+                            {section.type}
+                          </span>
+                          <ul className={styles.patchList}>
+                            {section.items.map((item, iIndex) => (
+                              <li key={iIndex}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                case 'chess-notation': {
+                  const rows: string[][] = [];
+                  for (let i = 0; i < block.moves.length; i += 2) {
+                    rows.push(block.moves.slice(i, i + 2));
+                  }
+                  return (
+                    <div key={index} className={styles.chessNotation}>
+                      {block.title && (
+                        <h4 className={styles.chessNotationTitle}>
+                          {block.title}
+                        </h4>
+                      )}
+                      <div className={styles.chessNotationTable}>
+                        <table>
+                          <tbody>
+                            {rows.map((pair, rIndex) => (
+                              <tr key={rIndex}>
+                                <td className={styles.chessMoveNum}>
+                                  {rIndex + 1}.
+                                </td>
+                                <td className={styles.chessMoveWhite}>
+                                  {pair[0]}
+                                </td>
+                                <td className={styles.chessMoveBlack}>
+                                  {pair[1] ?? ''}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        {block.result && (
+                          <div className={styles.chessResult}>
+                            {block.result}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
                 default:
                   return null;
               }
             })}
           </div>
+
+          {post.faq && post.faq.length > 0 && (
+            <section className={styles.faq} aria-labelledby="faq-heading">
+              <h2 id="faq-heading" className={styles.heading2}>
+                Frequently Asked Questions
+              </h2>
+              <dl>
+                {post.faq.map((item, index) => (
+                  <div key={index} className={styles.faqItem}>
+                    <dt className={styles.faqQuestion}>{item.question}</dt>
+                    <dd className={styles.faqAnswer}>{item.answer}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
         </article>
       </Container>
     </PageLayout>

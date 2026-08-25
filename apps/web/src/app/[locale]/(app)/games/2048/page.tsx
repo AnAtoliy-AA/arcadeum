@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import Game2048Landing from './Game2048Landing';
 
 const GAME_2048_SLUG = 'game_2048_v1';
@@ -97,6 +99,10 @@ export default async function Game2048LandingRoute({ params }: PageProps) {
         landing={landing}
         playHref={routes.game2048Play}
         rules={rules}
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, ['2048', 'Puzzle', 'Numbers'])}
       />
     </>
   );

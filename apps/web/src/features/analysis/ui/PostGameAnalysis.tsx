@@ -1,12 +1,24 @@
 'use client';
 
 import { useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import { analyzeGame } from '../lib/analyzeGame';
 import type { MoveQuality } from '../lib/analyzeGame';
-import { EvalGraph } from './EvalGraph';
 import { MoveTimeline } from './MoveTimeline';
+
+// recharts is heavy; keep it out of the chess game chunk (same pattern as
+// MarketCapSparkline on the token page).
+const EvalGraph = dynamic(
+  () => import('./EvalGraph').then((m) => m.EvalGraph),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[180px] w-full animate-pulse rounded-lg bg-[rgba(255,255,255,0.04)]" />
+    ),
+  },
+);
 
 interface PostGameAnalysisProps {
   /** FEN per ply including the initial position. */

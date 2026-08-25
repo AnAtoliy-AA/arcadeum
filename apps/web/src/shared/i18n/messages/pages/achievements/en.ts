@@ -28,6 +28,21 @@ export const achievementsEn = {
     claimed: 'You claimed {n} XP!',
     unlocked: 'Achievement unlocked: {name}!',
   },
+  lockedTooltip: 'Locked — keep playing to unlock',
+  rewards: {
+    xp: 'XP',
+    coins: 'Coins',
+    gems: 'Gems',
+  },
+  popup: {
+    title: 'Achievement unlocked!',
+    unlocked: 'New achievement unlocked',
+    dismiss: 'Dismiss',
+    xp: 'XP',
+  },
 };
 
 export type AchievementsI18n = typeof achievementsEn;
+
+/** Labels consumed by the global unlock popup. */
+export type AchievementPopupLabels = typeof achievementsEn.popup;

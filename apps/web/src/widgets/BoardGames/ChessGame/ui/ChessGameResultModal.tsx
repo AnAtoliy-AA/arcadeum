@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { PostGameAnalysis } from '@/features/analysis/ui/PostGameAnalysis';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
@@ -44,6 +45,23 @@ export function ChessGameResultModal({
   const rawName = t('games.names.chess' as TranslationKey);
   const resolvedGameName =
     rawName && rawName !== 'games.names.chess' ? rawName : 'Chess';
+
+  // Post-game achievement sweep — fires once per open, enqueues any
+  // newly unlocked achievements into the global popup store.
+  const achievementsCheckedRef = useRef(false);
+  useEffect(() => {
+    if (!isOpen || achievementsCheckedRef.current) return;
+    achievementsCheckedRef.current = true;
+    import('@/features/achievements/actions')
+      .then((m) => m.checkNewlyUnlockedAchievements())
+      .then(async (items) => {
+        if (items.length === 0) return;
+        const { useAchievementsPopupStore } =
+          await import('@/features/achievements/store/achievementsPopupStore');
+        useAchievementsPopupStore.getState().enqueueMany(items);
+      })
+      .catch(() => {});
+  }, [isOpen]);
 
   return (
     <GameResultModal

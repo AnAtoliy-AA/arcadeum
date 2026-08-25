@@ -1,15 +1,38 @@
 import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
+import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
 import { buildProfilePageJsonLd } from '@/shared/seo/profilePageJsonLd';
 import { buildRoutes } from '@/shared/config/routes';
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { AchievementsList } from '@/features/achievements/ui/AchievementsList';
 import PlayerProfileClient from './PlayerProfileClient';
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
+}
+
+/**
+ * Extract the session user id (`sub` claim) from a JWT access token.
+ * The web app keeps no server-side session store, and the token is
+ * opaque to pages, so decoding the payload is the only way to learn
+ * who is viewing. Returns null for malformed/expired tokens.
+ */
+function getSessionUserIdFromToken(token: string): string | null {
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) return null;
+    // JWT payloads are base64url; convert to standard base64 alphabet.
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const claims = JSON.parse(
+      Buffer.from(base64, 'base64').toString('utf8'),
+    ) as { sub?: unknown }; // JSON.parse yields `any`; narrow immediately.
+    return typeof claims.sub === 'string' ? claims.sub : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function generateMetadata({
@@ -57,13 +80,27 @@ export default async function PlayerProfilePage({ params }: PageProps) {
     ],
   });
 
+  // Achievements are cookie-scoped, so only mount the section when the
+  // viewed profile belongs to the authenticated user.
+  const accessToken = await getServerAccessToken();
+  const sessionUserId = accessToken
+    ? getSessionUserIdFromToken(accessToken)
+    : null;
+  const isSelf = !!sessionUserId && sessionUserId === id;
+
   return (
     <>
       <JsonLd
         id={`json-ld-player-${id}-${locale}`}
         data={[profile, breadcrumb]}
       />
-      <PlayerProfileClient id={id} t={t} />
+      <PlayerProfileClient
+        id={id}
+        t={t}
+        achievementsSlot={
+          isSelf ? await AchievementsList({ locale, userId: id }) : undefined
+        }
+      />
     </>
   );
 }

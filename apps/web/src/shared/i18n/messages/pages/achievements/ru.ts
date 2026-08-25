@@ -28,4 +28,16 @@ export const achievementsRu = {
     claimed: 'Вы получили {n} XP!',
     unlocked: 'Достижение открыто: {name}!',
   },
+  lockedTooltip: 'Заблокировано — продолжайте играть, чтобы открыть',
+  rewards: {
+    xp: 'XP',
+    coins: 'Монеты',
+    gems: 'Кристаллы',
+  },
+  popup: {
+    title: 'Достижение открыто!',
+    unlocked: 'Открыто новое достижение',
+    dismiss: 'Закрыть',
+    xp: 'XP',
+  },
 };

@@ -28,6 +28,18 @@ export const achievementsFr = {
     claimed: 'Vous avez réclamé {n} XP !',
     unlocked: 'Succès débloqué : {name} !',
   },
+  lockedTooltip: 'Verrouillé — continuez à jouer pour le débloquer',
+  rewards: {
+    xp: 'XP',
+    coins: 'Pièces',
+    gems: 'Gemmes',
+  },
+  popup: {
+    title: 'Succès débloqué !',
+    unlocked: 'Nouveau succès débloqué',
+    dismiss: 'Fermer',
+    xp: 'XP',
+  },
 };
 
 export type AchievementsI18n = typeof achievementsFr;

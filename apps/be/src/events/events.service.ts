@@ -12,6 +12,7 @@ import {
   EventStatus,
 } from './schemas/event.schema';
 import { CreateEventDto, UpdateEventDto, RecordMatchDto } from './dto';
+import { buildDefaultSeedEvents } from './events.seeds';
 
 export interface EventParticipantView {
   userId: string;
@@ -365,79 +366,6 @@ export class EventsService implements OnModuleInit {
     const count = await this.eventModel.countDocuments();
     if (count > 0) return;
 
-    const now = Date.now();
-    const oneHour = 60 * 60 * 1000;
-    const oneDay = 24 * oneHour;
-
-    await this.eventModel.create([
-      {
-        title: 'Friday Night Blitz Chess',
-        description:
-          'Join the community blitz chess showdown. Fast 3-minute rounds with double points for winning streaks!',
-        gameType: 'chess',
-        status: 'active',
-        startTime: new Date(now - 30 * 60 * 1000),
-        endTime: new Date(now + 2 * oneHour),
-        prizeBadge: 'champion_crown',
-        participants: [
-          {
-            userId: new Types.ObjectId(),
-            displayName: 'GrandmasterAlex',
-            avatarUrl: null,
-            gamesPlayed: 4,
-            wins: 4,
-            points: 12,
-            registeredAt: new Date(now - 40 * 60 * 1000),
-          },
-          {
-            userId: new Types.ObjectId(),
-            displayName: 'KnightRider',
-            avatarUrl: null,
-            gamesPlayed: 3,
-            wins: 2,
-            points: 7,
-            registeredAt: new Date(now - 35 * 60 * 1000),
-          },
-          {
-            userId: new Types.ObjectId(),
-            displayName: 'TacticianPro',
-            avatarUrl: null,
-            gamesPlayed: 2,
-            wins: 1,
-            points: 4,
-            registeredAt: new Date(now - 20 * 60 * 1000),
-          },
-        ],
-        activeGamesCount: 2,
-        mvpPoints: 12,
-        mvpDisplayName: 'GrandmasterAlex',
-      },
-      {
-        title: 'Sea Battle Armada Clash',
-        description:
-          'Fleet commanders assemble! Compete in radar-enabled naval battles to secure the Admiral badge.',
-        gameType: 'sea-battle',
-        status: 'upcoming',
-        startTime: new Date(now + 1 * oneDay),
-        endTime: new Date(now + 1 * oneDay + 3 * oneHour),
-        prizeBadge: 'admiral_ribbon',
-        participants: [],
-        activeGamesCount: 0,
-        mvpPoints: 0,
-      },
-      {
-        title: 'Sunday Backgammon Derby',
-        description:
-          'High stakes doubling cube action with the classic 24-point board masters.',
-        gameType: 'backgammon',
-        status: 'upcoming',
-        startTime: new Date(now + 3 * oneDay),
-        endTime: new Date(now + 3 * oneDay + 4 * oneHour),
-        prizeBadge: 'golden_dice',
-        participants: [],
-        activeGamesCount: 0,
-        mvpPoints: 0,
-      },
-    ]);
+    await this.eventModel.create(buildDefaultSeedEvents());
   }
 }

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.33] - 2026-08-25
+
+### Added
+- add room QR code sharing (ARC-937)
+
+
 ## [1.26.32] - 2026-08-24
 
 ### Fixed

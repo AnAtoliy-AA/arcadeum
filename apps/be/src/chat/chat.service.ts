@@ -148,7 +148,10 @@ export class ChatService {
       doc: Message;
     }>([
       { $match: { chatId: { $in: chatIds } } },
-      { $sort: { timestamp: -1 } },
+      // Sort by (chatId, timestamp) so the {chatId:1, timestamp:-1} index
+      // serves the ordering as a streaming group; a global timestamp sort
+      // would be a blocking sort across every listed chat's messages.
+      { $sort: { chatId: 1, timestamp: -1 } },
       {
         $group: {
           _id: '$chatId',

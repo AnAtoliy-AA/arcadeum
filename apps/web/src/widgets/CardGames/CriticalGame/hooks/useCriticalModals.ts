@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { gameSocket } from '@/shared/lib/socket';
 import { maybeDecrypt } from '@/shared/lib/socket-encryption';
 import { useCriticalGameStore } from '../store/criticalGameStore';
@@ -18,26 +19,62 @@ interface UseCriticalModalsOptions {
 }
 
 /**
- * Hook for managing game modals and chat state
+ * Hook for managing game modals and chat state.
+ *
+ * State is subscribed via a shallow-compared slice and actions are read
+ * through getState(): this store updates on every card draw/play, so a
+ * whole-store subscription here would re-render the hottest tree in the
+ * game (and re-register socket listeners) on each tick.
  */
 export function useCriticalModals({
   playFavor,
   playEventCombo,
 }: UseCriticalModalsOptions = {}) {
-  const store = useCriticalGameStore();
+  const {
+    eventComboModal,
+    selectedMode,
+    selectedTarget,
+    selectedCard,
+    selectedIndex,
+    selectedDiscardCard,
+    selectedFiverCards,
+    favorModal,
+    targetedAttackModal,
+    seeTheFutureModal,
+    stashModal,
+    markModal,
+    stealDrawModal,
+    smiteModal,
+    omniscienceModal,
+  } = useCriticalGameStore(
+    useShallow((s) => ({
+      eventComboModal: s.eventComboModal,
+      selectedMode: s.selectedMode,
+      selectedTarget: s.selectedTarget,
+      selectedCard: s.selectedCard,
+      selectedIndex: s.selectedIndex,
+      selectedDiscardCard: s.selectedDiscardCard,
+      selectedFiverCards: s.selectedFiverCards,
+      favorModal: s.favorModal,
+      targetedAttackModal: s.targetedAttackModal,
+      seeTheFutureModal: s.seeTheFutureModal,
+      stashModal: s.stashModal,
+      markModal: s.markModal,
+      stealDrawModal: s.stealDrawModal,
+      smiteModal: s.smiteModal,
+      omniscienceModal: s.omniscienceModal,
+    })),
+  );
 
-  // Listen for See the Future response
+  // Listen for See the Future response. The handler only touches a stable
+  // action, so bind it once instead of re-subscribing per render/tick.
   useEffect(() => {
-    const handleSeeTheFuture = (data: { topCards: string[] }) => {
-      if (data.topCards) {
-        store.setSeeTheFutureModal({ cards: data.topCards as CriticalCard[] });
-      }
-    };
-
     const wrappedHandler = async (raw: unknown) => {
       const data = await maybeDecrypt<{ topCards: string[] }>(raw);
-      if (data) {
-        handleSeeTheFuture(data);
+      if (data?.topCards) {
+        useCriticalGameStore
+          .getState()
+          .setSeeTheFutureModal({ cards: data.topCards as CriticalCard[] });
       }
     };
 
@@ -46,109 +83,124 @@ export function useCriticalModals({
     return () => {
       gameSocket.off('games.session.see_the_future.played', wrappedHandler);
     };
-  }, [store]);
+  }, []);
 
   const handleConfirmEventCombo = useCallback(() => {
     if (!playEventCombo) return;
-    const comboCard = store.eventComboModal?.selectedComboCard;
-    if (store.selectedMode === 'pair') {
+    const current = useCriticalGameStore.getState();
+    const comboCard = current.eventComboModal?.selectedComboCard;
+    if (current.selectedMode === 'pair') {
       playEventCombo(
         comboCard ?? null,
         'pair',
-        store.selectedTarget ?? undefined,
+        current.selectedTarget ?? undefined,
         undefined,
-        store.selectedIndex ?? undefined,
+        current.selectedIndex ?? undefined,
       );
-    } else if (store.selectedMode === 'trio') {
+    } else if (current.selectedMode === 'trio') {
       playEventCombo(
         comboCard ?? null,
         'triple',
-        store.selectedTarget ?? undefined,
+        current.selectedTarget ?? undefined,
         comboCard ?? undefined,
       );
     }
-    store.closeEventComboModal();
-  }, [store, playEventCombo]);
+    current.closeEventComboModal();
+  }, [playEventCombo]);
 
   return {
     // Event combo modal
-    eventComboModal: store.eventComboModal,
-    selectedMode: store.selectedMode,
-    selectedTarget: store.selectedTarget,
-    selectedCard: store.selectedCard,
-    selectedIndex: store.selectedIndex,
-    setSelectedMode: store.setSelectedMode,
-    setSelectedTarget: store.setSelectedTarget,
-    setSelectedCard: store.setSelectedCard,
-    setSelectedIndex: store.setSelectedIndex,
-    handleOpenEventCombo: store.openEventCombo,
-    handleCloseEventComboModal: store.closeEventComboModal,
-    handleSelectComboCard: store.selectComboCard,
+    eventComboModal,
+    selectedMode,
+    selectedTarget,
+    selectedCard,
+    selectedIndex,
+    setSelectedMode: useCriticalGameStore((s) => s.setSelectedMode),
+    setSelectedTarget: useCriticalGameStore((s) => s.setSelectedTarget),
+    setSelectedCard: useCriticalGameStore((s) => s.setSelectedCard),
+    setSelectedIndex: useCriticalGameStore((s) => s.setSelectedIndex),
+    handleOpenEventCombo: useCriticalGameStore((s) => s.openEventCombo),
+    handleCloseEventComboModal: useCriticalGameStore(
+      (s) => s.closeEventComboModal,
+    ),
+    handleSelectComboCard: useCriticalGameStore((s) => s.selectComboCard),
     handleConfirmEventCombo,
 
     // Fiver mode state
-    selectedDiscardCard: store.selectedDiscardCard,
-    setSelectedDiscardCard: store.setSelectedDiscardCard,
-    selectedFiverCards: store.selectedFiverCards,
-    setSelectedFiverCards: store.setSelectedFiverCards,
-    handleToggleFiverCard: store.toggleFiverCard,
+    selectedDiscardCard,
+    setSelectedDiscardCard: useCriticalGameStore(
+      (s) => s.setSelectedDiscardCard,
+    ),
+    selectedFiverCards,
+    setSelectedFiverCards: useCriticalGameStore((s) => s.setSelectedFiverCards),
+    handleToggleFiverCard: useCriticalGameStore((s) => s.toggleFiverCard),
 
     // Favor modal
-    favorModal: store.favorModal,
-    setFavorModal: store.setFavorModal,
+    favorModal,
+    setFavorModal: useCriticalGameStore((s) => s.setFavorModal),
 
     // Targeted Attack modal
-    targetedAttackModal: store.targetedAttackModal,
-    setTargetedAttackModal: store.setTargetedAttackModal,
+    targetedAttackModal,
+    setTargetedAttackModal: useCriticalGameStore(
+      (s) => s.setTargetedAttackModal,
+    ),
 
     // See the future modal
-    seeTheFutureModal: store.seeTheFutureModal,
-    setSeeTheFutureModal: store.setSeeTheFutureModal,
+    seeTheFutureModal,
+    setSeeTheFutureModal: useCriticalGameStore((s) => s.setSeeTheFutureModal),
     // Theft Pack modals
-    stashModal: store.stashModal,
-    setStashModal: store.setStashModal,
-    markModal: store.markModal,
-    setMarkModal: store.setMarkModal,
-    stealDrawModal: store.stealDrawModal,
-    setStealDrawModal: store.setStealDrawModal,
-    smiteModal: store.smiteModal,
-    setSmiteModal: store.setSmiteModal,
-    omniscienceModal: store.omniscienceModal,
-    setOmniscienceModal: store.setOmniscienceModal,
+    stashModal,
+    setStashModal: useCriticalGameStore((s) => s.setStashModal),
+    markModal,
+    setMarkModal: useCriticalGameStore((s) => s.setMarkModal),
+    stealDrawModal,
+    setStealDrawModal: useCriticalGameStore((s) => s.setStealDrawModal),
+    smiteModal,
+    setSmiteModal: useCriticalGameStore((s) => s.setSmiteModal),
+    omniscienceModal,
+    setOmniscienceModal: useCriticalGameStore((s) => s.setOmniscienceModal),
 
-    // Handlers
-    handleOpenFavorModal: useCallback(() => store.setFavorModal(true), [store]),
+    // Handlers — actions are stable, so these only depend on prop callbacks.
+    handleOpenFavorModal: useCallback(
+      () => useCriticalGameStore.getState().setFavorModal(true),
+      [],
+    ),
     handleCloseFavorModal: useCallback(() => {
-      store.setFavorModal(false);
-      store.setSelectedTarget(null);
-    }, [store]),
+      const current = useCriticalGameStore.getState();
+      current.setFavorModal(false);
+      current.setSelectedTarget(null);
+    }, []),
     handleConfirmFavor: useCallback(() => {
-      if (store.selectedTarget && playFavor) {
-        playFavor(store.selectedTarget);
-        store.setFavorModal(false);
-        store.setSelectedTarget(null);
+      const current = useCriticalGameStore.getState();
+      if (current.selectedTarget && playFavor) {
+        playFavor(current.selectedTarget);
+        current.setFavorModal(false);
+        current.setSelectedTarget(null);
       }
-    }, [store, playFavor]),
+    }, [playFavor]),
     handleCloseSeeTheFutureModal: useCallback(
-      () => store.setSeeTheFutureModal(null),
-      [store],
+      () => useCriticalGameStore.getState().setSeeTheFutureModal(null),
+      [],
     ),
     handleCloseStashModal: useCallback(
-      () => store.setStashModal(false),
-      [store],
+      () => useCriticalGameStore.getState().setStashModal(false),
+      [],
     ),
-    handleCloseMarkModal: useCallback(() => store.setMarkModal(false), [store]),
+    handleCloseMarkModal: useCallback(
+      () => useCriticalGameStore.getState().setMarkModal(false),
+      [],
+    ),
     handleCloseStealDrawModal: useCallback(
-      () => store.setStealDrawModal(false),
-      [store],
+      () => useCriticalGameStore.getState().setStealDrawModal(false),
+      [],
     ),
     handleCloseSmiteModal: useCallback(
-      () => store.setSmiteModal(false),
-      [store],
+      () => useCriticalGameStore.getState().setSmiteModal(false),
+      [],
     ),
     handleCloseOmniscienceModal: useCallback(
-      () => store.setOmniscienceModal(null),
-      [store],
+      () => useCriticalGameStore.getState().setOmniscienceModal(null),
+      [],
     ),
   };
 }

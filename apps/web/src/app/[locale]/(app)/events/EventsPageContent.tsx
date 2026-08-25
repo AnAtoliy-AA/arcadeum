@@ -7,6 +7,7 @@ import {
   EventCard,
   type EventCardTranslations,
 } from '@/features/events';
+import type { GameNightEvent } from '@/features/events/model/types';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 
 interface EventsTranslations extends EventCardTranslations {
@@ -23,22 +24,44 @@ export default function EventsPageContent({
   t: tProp,
   locale = 'en',
   accessToken,
+  initialEvents,
 }: {
   t?: Record<string, string>;
   locale?: string;
   accessToken?: string;
+  initialEvents?: GameNightEvent[] | null;
 }) {
   const tt = useMemo(() => (tProp ?? {}) as EventsTranslations, [tProp]);
   const { snapshot } = useSessionTokens();
   const token = snapshot.accessToken ?? accessToken;
-  const { events, fetchEvents, loading } = useEventsStore();
+  // Field-level selectors: unrelated events-store writes (featured/detail)
+  // must not re-render the whole list page.
+  const storeEvents = useEventsStore((s) => s.events);
+  const fetchEvents = useEventsStore((s) => s.fetchEvents);
+  const storeLoading = useEventsStore((s) => s.loading);
   const [activeTab, setActiveTab] = useState<
     'all' | 'active' | 'upcoming' | 'completed'
   >('all');
 
+  // Server-fetched list is shown until the first client fetch lands, so the
+  // page paints content instead of a spinner (and crawlers see real HTML).
+  const [settled, setSettled] = useState(false);
   useEffect(() => {
-    fetchEvents(undefined, token);
+    let cancelled = false;
+    fetchEvents(undefined, token).finally(() => {
+      if (!cancelled) setSettled(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [fetchEvents, token]);
+
+  const events = useMemo(
+    () =>
+      settled || storeEvents.length > 0 ? storeEvents : (initialEvents ?? []),
+    [settled, storeEvents, initialEvents],
+  );
+  const loading = !settled && storeEvents.length === 0 && storeLoading;
 
   const activeEvents = useMemo(
     () => events.filter((e) => e.status === 'active'),

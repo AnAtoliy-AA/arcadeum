@@ -19,6 +19,7 @@ function buildCron(overrides: {
 
   const dispatcher = {
     dispatch: jest.fn().mockResolvedValue(undefined),
+    dispatchMany: jest.fn().mockResolvedValue(undefined),
   } as unknown as NotificationDispatcher;
   const notifications = {
     listUserIdsWithCategoryEnabled: jest
@@ -53,14 +54,17 @@ describe('DailyRewardsNotificationCron', () => {
     });
     const sent = await cron.notifyDueUsers([a, b]);
     expect(sent).toBe(2);
-    expect(dispatcher.dispatch).toHaveBeenCalledTimes(2);
-    expect(dispatcher.dispatch).toHaveBeenCalledWith(
+    // One batched fan-out instead of a serial dispatch per user; the cron
+    // already filtered opted-in users, so the pref re-check is skipped.
+    expect(dispatcher.dispatchMany).toHaveBeenCalledTimes(1);
+    expect(dispatcher.dispatchMany).toHaveBeenCalledWith(
+      [a.toHexString(), b.toHexString()],
       expect.objectContaining({
-        userId: a.toHexString(),
         category: 'daily_reward_ready',
         titleKey: 'notifications.daily_reward_ready.title',
         bodyKey: 'notifications.daily_reward_ready.body',
         url: '/daily-rewards',
+        skipCategoryCheck: true,
       }),
     );
   });
@@ -95,7 +99,7 @@ describe('DailyRewardsNotificationCron', () => {
         { userId: a, updatedAt: new Date(Date.now() - 24 * ONE_HOUR_MS) },
       ],
     });
-    (dispatcher.dispatch as jest.Mock).mockRejectedValue(new Error('boom'));
+    (dispatcher.dispatchMany as jest.Mock).mockRejectedValue(new Error('boom'));
     await expect(cron.run()).resolves.toBeUndefined();
   });
 });

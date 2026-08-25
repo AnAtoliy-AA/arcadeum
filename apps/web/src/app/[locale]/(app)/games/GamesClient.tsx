@@ -4,8 +4,9 @@ import dynamic from 'next/dynamic';
 import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 import type { GamesClientProps } from './types';
 
+// Server-rendered (no `ssr: false`) so the server-fetched room list is
+// visible in initial HTML instead of a spinner riding along unused.
 const GamesPageDynamic = dynamic(() => import('./GamesPage'), {
-  ssr: false,
   loading: () => <PageLoading layout="grid" />,
 });
 

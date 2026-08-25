@@ -8,6 +8,9 @@ import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provide
 export class GameRoomsChatService {
   private readonly logger = new Logger(GameRoomsChatService.name);
 
+  /** Keep embedded lobby logs bounded; older entries roll off the tail. */
+  private static readonly ROOM_CHAT_LOG_CAP = 100;
+
   constructor(
     @InjectModel(GameRoom.name, OCI_CONNECTION)
     private readonly ociRoomModel: Model<GameRoom>,
@@ -45,9 +48,22 @@ export class GameRoomsChatService {
       createdAt: new Date().toISOString(),
     };
 
-    room.chatLogs = [...(room.chatLogs ?? []), entry];
-    room.updatedAt = new Date();
-    await room.save();
+    // Atomic bounded push: keeps lobby logs from growing unbounded and
+    // avoids rewriting the whole room document via save().
+    await this.ociRoomModel
+      .updateOne(
+        { _id: room._id },
+        {
+          $push: {
+            chatLogs: {
+              $each: [entry],
+              $slice: GameRoomsChatService.ROOM_CHAT_LOG_CAP,
+            },
+          },
+          $set: { updatedAt: new Date() },
+        },
+      )
+      .exec();
 
     return entry;
   }

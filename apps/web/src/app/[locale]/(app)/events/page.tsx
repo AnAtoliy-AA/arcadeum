@@ -4,6 +4,8 @@ import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
 import { buildRoutes } from '@/shared/config/routes';
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
+import { eventsApi } from '@/features/events/api';
+import type { GameNightEvent } from '@/features/events/model/types';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import type { Metadata } from 'next';
 import EventsClient from './EventsClient';
@@ -29,6 +31,18 @@ export default async function EventsPage({
   const accessToken = await getServerAccessToken();
   const routes = buildRoutes(locale);
 
+  // Fetch once server-side: the client seeds its first render from these
+  // props instead of showing a spinner, and crawlers see the real list.
+  let initialEvents: GameNightEvent[] | null = null;
+  try {
+    initialEvents = await eventsApi.getEvents(
+      undefined,
+      accessToken ? { token: accessToken } : undefined,
+    );
+  } catch {
+    initialEvents = null;
+  }
+
   const breadcrumb = buildBreadcrumbJsonLd({
     locale,
     homeLabel: messages.navigation?.homeTab ?? 'Home',
@@ -47,6 +61,7 @@ export default async function EventsPage({
         t={t}
         locale={locale}
         accessToken={accessToken ?? undefined}
+        initialEvents={initialEvents}
       />
     </>
   );

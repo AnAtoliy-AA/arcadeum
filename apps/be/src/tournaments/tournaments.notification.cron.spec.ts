@@ -62,8 +62,10 @@ describe('TournamentsNotificationCron — starting soon', () => {
       ],
     });
     await cron.runStartingSoon();
-    expect(dispatcher.dispatch).toHaveBeenCalledTimes(2);
-    expect(dispatcher.dispatch).toHaveBeenCalledWith(
+    // Single batched fan-out for the whole registration list.
+    expect(dispatcher.dispatchMany).toHaveBeenCalledTimes(1);
+    expect(dispatcher.dispatchMany).toHaveBeenCalledWith(
+      [userA.toHexString(), userB.toHexString()],
       expect.objectContaining({
         category: 'tournament_starting_soon',
         i18nParams: expect.objectContaining({ name: 'Spring Cup' }) as unknown,

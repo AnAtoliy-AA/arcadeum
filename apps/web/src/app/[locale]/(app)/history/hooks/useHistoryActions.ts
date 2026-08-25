@@ -49,8 +49,11 @@ export function useHistoryActions({
   const { t } = useTranslation();
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
-  const { participantSelection, toggleParticipant, setParticipantSelection } =
-    useHistoryStore();
+  const participantSelection = useHistoryStore((s) => s.participantSelection);
+  const toggleParticipant = useHistoryStore((s) => s.toggleParticipant);
+  const setParticipantSelection = useHistoryStore(
+    (s) => s.setParticipantSelection,
+  );
 
   // Rematch state
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);

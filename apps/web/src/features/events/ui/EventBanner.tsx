@@ -23,7 +23,8 @@ export const EventBanner = ({
   locale?: string;
   translations?: EventBannerTranslations;
 }) => {
-  const { featuredEvent, fetchFeaturedEvent } = useEventsStore();
+  const featuredEvent = useEventsStore((s) => s.featuredEvent);
+  const fetchFeaturedEvent = useEventsStore((s) => s.fetchFeaturedEvent);
   const routes = buildRoutes(locale as Locale);
 
   useEffect(() => {

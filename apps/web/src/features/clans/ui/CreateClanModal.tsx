@@ -12,7 +12,8 @@ interface CreateClanModalProps {
 
 export function CreateClanModal({ open, onClose }: CreateClanModalProps) {
   const { snapshot } = useSessionTokens();
-  const { createClan, loading } = useClansStore();
+  const createClan = useClansStore((s) => s.createClan);
+  const loading = useClansStore((s) => s.loading);
   const [name, setName] = useState('');
   const [tag, setTag] = useState('');
   const [description, setDescription] = useState('');

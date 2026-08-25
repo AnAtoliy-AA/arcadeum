@@ -43,17 +43,17 @@ export class TournamentsNotificationCron {
           1,
           Math.round((t.scheduledAt.getTime() - now) / MINUTE_MS),
         );
-        for (const reg of t.registrations) {
-          await this.dispatcher.dispatch({
-            userId: reg.userId.toHexString(),
+        await this.dispatcher.dispatchMany(
+          t.registrations.map((reg) => reg.userId.toHexString()),
+          {
             category: 'tournament_starting_soon',
             titleKey: 'notifications.tournament_starting_soon.title',
             bodyKey: 'notifications.tournament_starting_soon.body',
             i18nParams: { name, minutes },
             url: `/tournaments/${idToHex(t._id)}`,
             data: { tournamentId: idToHex(t._id) },
-          });
-        }
+          },
+        );
         await this.model
           .updateOne(
             { _id: t._id },
@@ -106,6 +106,8 @@ export class TournamentsNotificationCron {
           i18nParams: { name },
           url: `/tournaments/${idToHex(t._id)}`,
           data: { tournamentId: idToHex(t._id) },
+          // Audience was pre-filtered via listUserIdsWithCategoryEnabled.
+          skipCategoryCheck: true,
         });
         await this.model
           .updateOne(

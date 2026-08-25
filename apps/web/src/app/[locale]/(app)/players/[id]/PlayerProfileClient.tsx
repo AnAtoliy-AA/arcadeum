@@ -25,10 +25,12 @@ export default function PlayerProfileClient({
   id,
   t,
   achievementsSlot,
+  initialProfile,
 }: {
   id: string;
   t?: PageTranslations;
   achievementsSlot?: ReactNode;
+  initialProfile?: PlayerProfile | null;
 }) {
   const router = useRouter();
   const {
@@ -38,6 +40,10 @@ export default function PlayerProfileClient({
   } = useQuery<PlayerProfile | null>({
     queryKey: ['player', id],
     queryFn: () => getPlayer(id),
+    // SSR-seeded profile renders instantly (and appears in initial HTML);
+    // background refresh still runs when no seed was provided.
+    initialData: initialProfile ?? null,
+    refetchOnMount: !initialProfile,
   });
   const missing = !!error || (!loading && !profile);
 

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.42] - 2026-08-25
+
+### Added
+- custom worker preserves push handlers; cache play documents
+- spectator reactions bar
+- unlock popup host and profile achievement grid
+- server-side chess coach hints via games gateway
+- bracket generation, reporting and public bracket page
+
+### Fixed
+- address e2e regressions from ARC-926 features (ARC-926)
+
+### Refactored
+- extract tournaments page messages into dedicated module
+
+
 ## [1.26.41] - 2026-08-25
 
 ### Added

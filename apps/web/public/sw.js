@@ -5,6 +5,13 @@
  * caching, and bolting a precaching SW on top has historically caused
  * stale-bundle bugs.
  *
+ * ARC-926: in production builds @ducanh2912/next-pwa OVERWRITES this file
+ * with its generated workbox service worker. The push + notificationclick
+ * handlers now live in worker/index.ts, which is compiled to a custom
+ * worker and importScripts'd into the generated bundle — so prod keeps
+ * working notifications. This hand-written copy remains as the dev/E2E
+ * fallback (the plugin is disabled there) and for reference.
+ *
  * The push payload shape is set by apps/be/src/notifications/push-sender.ts:
  *   { title, body, url, notificationId, icon? }
  */

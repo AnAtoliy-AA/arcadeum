@@ -7,9 +7,11 @@ import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { useLanguage } from '@/shared/i18n/context';
 import {
   fetchPublicTournaments,
+  fetchTournamentBracket,
   registerForTournament,
   unregisterFromTournament,
   type PublicTournamentsResponse,
+  type TournamentBracketResponse,
 } from './api';
 
 export const PUBLIC_TOURNAMENTS_REFRESH_KEY = 'public-tournaments';
@@ -21,6 +23,15 @@ export function usePublicTournaments() {
   return useQuery<PublicTournamentsResponse>({
     queryKey: ['public-tournaments', locale, accessToken ?? null],
     queryFn: () => fetchPublicTournaments({ locale, accessToken }),
+    refreshKey: PUBLIC_TOURNAMENTS_REFRESH_KEY,
+  });
+}
+
+export function useTournamentBracket(id: string) {
+  const accessToken = useSessionStore((s) => s.snapshot.accessToken);
+  return useQuery<TournamentBracketResponse>({
+    queryKey: ['tournament-bracket', id, accessToken ?? null],
+    queryFn: () => fetchTournamentBracket(id, { accessToken }),
     refreshKey: PUBLIC_TOURNAMENTS_REFRESH_KEY,
   });
 }

@@ -1,4 +1,5 @@
 'use client';
+import { Suspense, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   PageLayout,
@@ -23,9 +24,11 @@ import { SeasonBanner } from '@/features/seasons/ui';
 export default function PlayerProfileClient({
   id,
   t,
+  achievementsSlot,
 }: {
   id: string;
   t?: PageTranslations;
+  achievementsSlot?: ReactNode;
 }) {
   const router = useRouter();
   const {
@@ -71,6 +74,7 @@ export default function PlayerProfileClient({
               profile={profile}
               eyebrow={eyebrow}
               placeholder={placeholder}
+              achievementsSlot={achievementsSlot}
             />
           )}
         </div>
@@ -83,10 +87,12 @@ function Profile({
   profile,
   eyebrow,
   placeholder,
+  achievementsSlot,
 }: {
   profile: PlayerProfile;
   eyebrow: string;
   placeholder: string;
+  achievementsSlot?: ReactNode;
 }) {
   const { locale } = useLanguage();
   const {
@@ -193,6 +199,13 @@ function Profile({
           ))}
         </div>
       </div>
+      {achievementsSlot ? (
+        <Suspense fallback={null}>
+          <div className="flex w-full flex-col items-stretch">
+            {achievementsSlot}
+          </div>
+        </Suspense>
+      ) : null}
       {squad ? (
         <div className="flex flex-col items-stretch gap-2">
           <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">

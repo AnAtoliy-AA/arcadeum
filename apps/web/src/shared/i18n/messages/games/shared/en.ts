@@ -498,6 +498,10 @@ export const enMessages = {
     accepted: 'Undo accepted!',
     denied: 'Undo denied',
   },
+  spectator: {
+    modeLabel: 'Spectating',
+    reactionsLabel: 'React',
+  },
   emotes: {
     good_move: 'Nice!',
     lol: 'LOL',

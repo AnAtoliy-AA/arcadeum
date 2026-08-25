@@ -273,7 +273,8 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
           {
             phase: 1,
             title: 'Core UX',
-            features: 'Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms',
+            features:
+              'Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms',
             days: '10',
             status: '100% Completed',
             color: '#22c55e',
@@ -281,15 +282,17 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
           {
             phase: 2,
             title: 'Growth & SEO',
-            features: 'Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics',
+            features:
+              'Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics',
             days: '12',
-            status: 'In Progress (Active Focus)',
+            status: '100% Completed',
             color: '#3b82f6',
           },
           {
             phase: 3,
             title: 'Classic Games',
-            features: 'Chess Engine + Checkers Engine + Audio Cues + Chess Clock',
+            features:
+              'Chess Engine + Checkers Engine + Audio Cues + Chess Clock',
             days: '15',
             status: '100% Completed',
             color: '#6366f1',
@@ -297,7 +300,8 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
           {
             phase: 4,
             title: 'Competitive',
-            features: 'Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization',
+            features:
+              'Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization',
             days: '20',
             status: '100% Completed',
             color: '#a855f7',
@@ -305,7 +309,8 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
           {
             phase: 5,
             title: 'Retention',
-            features: 'Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings',
+            features:
+              'Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings',
             days: '15',
             status: '100% Completed',
             color: '#f59e0b',
@@ -313,25 +318,28 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
           {
             phase: 6,
             title: 'Card & Board',
-            features: 'Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach',
+            features:
+              'Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach',
             days: '25',
-            status: 'Post-Game Analysis + Coach Mode Completed (Rest Not started)',
+            status: '100% Completed (code-audited)',
             color: '#f97316',
           },
           {
             phase: 7,
             title: 'Advanced Social',
-            features: 'Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode',
+            features:
+              'Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode',
             days: '25',
-            status: 'Spectator Mode Completed (Rest Not started)',
+            status: '100% Completed (spectator UI reactions shipped)',
             color: '#ec4899',
           },
           {
             phase: 8,
             title: 'Platform Growth',
-            features: 'PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port',
+            features:
+              'PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port',
             days: '30',
-            status: 'PWA, Push, Share Completed (Offline/Mobile Partial)',
+            status: 'PWA, Push, Share + Offline Completed (Mobile Partial)',
             color: '#14b8a6',
           },
           {
@@ -339,7 +347,7 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
             title: 'Creator Tools',
             features: 'Visual Board Game Creator',
             days: '20',
-            status: 'Not started',
+            status: 'Deferred (revisit with larger community)',
             color: '#06b6d4',
           },
         ];

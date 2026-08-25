@@ -5,9 +5,7 @@ import type {
 } from '@/features/admin-tournaments/api';
 
 export type EffectiveTournamentStatus =
-  | TournamentStatus
-  | 'registration_closed'
-  | 'awaiting_results';
+  TournamentStatus | 'registration_closed' | 'awaiting_results';
 
 export interface PublicTournamentItem {
   id: string;
@@ -76,5 +74,36 @@ export async function unregisterFromTournament(
   await apiClient.delete<void>(
     `/tournaments/${encodeURIComponent(id)}/register`,
     { token: accessToken },
+  );
+}
+
+export type BracketFormat = 'single_elimination' | 'round_robin';
+
+export interface BracketMatchView {
+  round: number;
+  matchIndex: number;
+  playerA: string | null;
+  playerB: string | null;
+  winnerUserId: string | null;
+}
+
+export interface TournamentBracketView {
+  tournamentId: string;
+  status: TournamentStatus;
+  format: BracketFormat;
+  rounds: BracketMatchView[][];
+}
+
+export interface TournamentBracketResponse {
+  bracket: TournamentBracketView | null;
+}
+
+export async function fetchTournamentBracket(
+  id: string,
+  opts: { accessToken?: string | null } = {},
+): Promise<TournamentBracketResponse> {
+  return apiClient.get<TournamentBracketResponse>(
+    `/tournaments/${encodeURIComponent(id)}/bracket`,
+    opts.accessToken ? { token: opts.accessToken } : undefined,
   );
 }

@@ -28,6 +28,18 @@ export const achievementsBy = {
     claimed: 'Вы атрымалі {n} XP!',
     unlocked: 'Дасягненне адкрыта: {name}!',
   },
+  lockedTooltip: 'Заблакавана — працягвайце гуляць, каб адкрыць',
+  rewards: {
+    xp: 'XP',
+    coins: 'Манеты',
+    gems: 'Крышталі',
+  },
+  popup: {
+    title: 'Дасягненне адкрыта!',
+    unlocked: 'Адкрыта новае дасягненне',
+    dismiss: 'Закрыць',
+    xp: 'XP',
+  },
 };
 
 export type AchievementsI18n = typeof achievementsBy;

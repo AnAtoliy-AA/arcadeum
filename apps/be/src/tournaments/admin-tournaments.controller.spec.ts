@@ -9,6 +9,7 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 import { AdminTournamentsController } from './admin-tournaments.controller';
 import { TournamentsService } from './tournaments.service';
+import { TournamentsBracketsService } from './tournaments.brackets.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { User } from '../auth/schemas/user.schema';
@@ -45,12 +46,18 @@ describe('AdminTournamentsController — complete endpoint (Task 11)', () => {
   let app: INestApplication<App>;
   let userModel: { findById: jest.Mock };
   let service: { markComplete: jest.Mock };
+  let bracketsService: {
+    generateBracket: jest.Mock;
+    reportResult: jest.Mock;
+  };
 
   const tournamentId = new Types.ObjectId().toHexString();
   const winnerId = new Types.ObjectId().toHexString();
 
   beforeEach(() => {
     service.markComplete.mockReset();
+    bracketsService.generateBracket.mockReset();
+    bracketsService.reportResult.mockReset();
   });
 
   beforeAll(async () => {
@@ -60,12 +67,17 @@ describe('AdminTournamentsController — complete endpoint (Task 11)', () => {
       }),
     };
     service = { markComplete: jest.fn() };
+    bracketsService = {
+      generateBracket: jest.fn(),
+      reportResult: jest.fn(),
+    };
 
     const moduleRef = await Test.createTestingModule({
       controllers: [AdminTournamentsController],
       providers: [
         RolesGuard,
         { provide: TournamentsService, useValue: service },
+        { provide: TournamentsBracketsService, useValue: bracketsService },
         { provide: getModelToken(User.name), useValue: userModel },
       ],
     })
@@ -124,6 +136,125 @@ describe('AdminTournamentsController — complete endpoint (Task 11)', () => {
     await request(app.getHttpServer())
       .post(`/admin/tournaments/${tournamentId}/complete`)
       .send({ winnerUserId: winnerId })
+      .expect(400);
+  });
+});
+
+describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
+  let app: INestApplication<App>;
+  let userModel: { findById: jest.Mock };
+  let bracketsService: {
+    generateBracket: jest.Mock;
+    reportResult: jest.Mock;
+  };
+
+  const tournamentId = new Types.ObjectId().toHexString();
+  const winnerId = new Types.ObjectId().toHexString();
+
+  beforeEach(() => {
+    bracketsService.generateBracket.mockReset();
+    bracketsService.reportResult.mockReset();
+  });
+
+  beforeAll(async () => {
+    userModel = {
+      findById: jest.fn().mockReturnValue({
+        select: () => ({ lean: () => Promise.resolve({ role: 'admin' }) }),
+      }),
+    };
+    bracketsService = {
+      generateBracket: jest.fn(),
+      reportResult: jest.fn(),
+    };
+
+    const moduleRef = await Test.createTestingModule({
+      controllers: [AdminTournamentsController],
+      providers: [
+        RolesGuard,
+        { provide: TournamentsService, useValue: { markComplete: jest.fn() } },
+        { provide: TournamentsBracketsService, useValue: bracketsService },
+        { provide: getModelToken(User.name), useValue: userModel },
+      ],
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: (ctx: ExecutionContext) => {
+          const req = ctx.switchToHttp().getRequest<RequestWithUser>();
+          req.user = {
+            userId: mockAdminId,
+            email: 'admin@x',
+            username: 'admin',
+          };
+          return true;
+        },
+      })
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('POST :id/bracket calls brackets service with dto and returns item', async () => {
+    const item = buildTournamentItem({ id: tournamentId });
+    bracketsService.generateBracket.mockResolvedValue(item);
+
+    const res = await request(app.getHttpServer())
+      .post(`/admin/tournaments/${tournamentId}/bracket`)
+      .send({ format: 'single_elimination' })
+      .expect(201);
+
+    expect(bracketsService.generateBracket).toHaveBeenCalledWith(tournamentId, {
+      format: 'single_elimination',
+    });
+    expect(res.body).toMatchObject({ id: tournamentId });
+  });
+
+  it('rejects invalid bracket format with 400', async () => {
+    await request(app.getHttpServer())
+      .post(`/admin/tournaments/${tournamentId}/bracket`)
+      .send({ format: 'double_elimination' })
+      .expect(400);
+
+    expect(bracketsService.generateBracket).not.toHaveBeenCalled();
+  });
+
+  it('POST :id/bracket/result calls reportResult with coordinates', async () => {
+    const item = buildTournamentItem({ id: tournamentId });
+    bracketsService.reportResult.mockResolvedValue(item);
+
+    await request(app.getHttpServer())
+      .post(`/admin/tournaments/${tournamentId}/bracket/result`)
+      .send({ round: 1, matchIndex: 0, winnerUserId: winnerId })
+      .expect(201);
+
+    expect(bracketsService.reportResult).toHaveBeenCalledWith(
+      tournamentId,
+      1,
+      0,
+      winnerId,
+    );
+  });
+
+  it('rejects non-integer round with 400', async () => {
+    await request(app.getHttpServer())
+      .post(`/admin/tournaments/${tournamentId}/bracket/result`)
+      .send({ round: 1.5, matchIndex: 0, winnerUserId: winnerId })
+      .expect(400);
+
+    expect(bracketsService.reportResult).not.toHaveBeenCalled();
+  });
+
+  it('rejects empty winnerUserId with 400', async () => {
+    await request(app.getHttpServer())
+      .post(`/admin/tournaments/${tournamentId}/bracket/result`)
+      .send({ round: 1, matchIndex: 0, winnerUserId: '' })
       .expect(400);
   });
 });

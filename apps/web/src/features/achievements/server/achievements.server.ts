@@ -28,6 +28,33 @@ export async function getAchievementsStatus(): Promise<AchievementsStatus | null
   }
 }
 
+export async function checkAchievements(): Promise<string[]> {
+  try {
+    const token = await getToken();
+    if (!token) return [];
+
+    const res = await fetch(resolveApiUrl('/achievements/check'), {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify({}),
+      cache: 'no-store',
+    });
+
+    // A stale/invalid session is expected (logout, expiry) — no unlocks.
+    if (res.status === 401 || !res.ok) return [];
+
+    const data: unknown = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data.filter((id): id is string => typeof id === 'string');
+  } catch {
+    return [];
+  }
+}
+
 export async function claimAchievementReward(
   achievementId: string,
 ): Promise<

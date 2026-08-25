@@ -2,9 +2,15 @@ import type {
   TournamentStatus,
   TournamentGameType,
   TournamentLocale,
+  TournamentBracketFormat,
 } from '../schemas/tournament.schema';
 
-export type { TournamentStatus, TournamentGameType, TournamentLocale };
+export type {
+  TournamentStatus,
+  TournamentGameType,
+  TournamentLocale,
+  TournamentBracketFormat,
+};
 
 export type EffectiveTournamentStatus =
   TournamentStatus | 'registration_closed' | 'awaiting_results';
@@ -81,4 +87,23 @@ export interface RegistrationsListResponse {
   total: number;
   page: number;
   pageSize: number;
+}
+
+export interface BracketMatchItem {
+  round: number;
+  matchIndex: number;
+  playerA: string | null;
+  playerB: string | null;
+  winnerUserId: string | null;
+}
+
+export interface TournamentBracketView {
+  tournamentId: string;
+  status: TournamentStatus;
+  format: TournamentBracketFormat;
+  rounds: BracketMatchItem[][];
+}
+
+export interface TournamentBracketResponse {
+  bracket: TournamentBracketView | null;
 }

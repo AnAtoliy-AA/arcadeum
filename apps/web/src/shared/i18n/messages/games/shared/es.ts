@@ -508,6 +508,10 @@ export const esMessages = {
     accepted: '¡Deshacer aceptado!',
     denied: 'Deshacer rechazado',
   },
+  spectator: {
+    modeLabel: 'Espectador',
+    reactionsLabel: 'Reaccionar',
+  },
   emotes: {
     good_move: '¡Bien!',
     lol: 'JAJA',

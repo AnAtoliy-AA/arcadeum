@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.36] - 2026-08-25
+
+### Added
+- add chess-notation block and real move sequences
+- add SEO content, new block types, and RelatedArticles integration
+
+
 ## [1.26.35] - 2026-08-25
 
 ### Fixed

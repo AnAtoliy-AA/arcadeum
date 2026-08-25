@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import BackgammonLanding from './BackgammonLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -142,6 +144,11 @@ export default async function BackgammonLandingRoute({ params }: PageProps) {
           >
         }
         variants={variants}
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, ['Backgammon', 'Tavli', 'Нарды', 'Нарды'])}
+        gameName={landing?.hero?.title}
       />
     </>
   );

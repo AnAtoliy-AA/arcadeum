@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import SolitaireLanding from './SolitaireLanding';
 
 const SOLITAIRE_SLUG = 'solitaire_v1';
@@ -99,6 +101,15 @@ export default async function SolitaireLandingRoute({ params }: PageProps) {
         locale={locale}
         playHref={routes.solitairePlay}
         rules={rules}
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, [
+          'Solitaire',
+          'Klondike',
+          'Card Game',
+          'Пасьянс',
+        ])}
       />
     </>
   );

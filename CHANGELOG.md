@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.38] - 2026-08-25
+
+### Added
+- add opengraph previews for single-player games
+
+### Documentation
+- refresh llms catalogs and update roadmap statuses
+
+
 ## [1.26.37] - 2026-08-25
 
 ### Added

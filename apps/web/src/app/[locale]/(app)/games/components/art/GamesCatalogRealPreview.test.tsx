@@ -17,6 +17,10 @@ describe('GamesCatalogRealPreview', () => {
     'go_v1',
     'pachisi_v1',
     'glimworm_v1',
+    'solitaire_v1',
+    'minesweeper_v1',
+    'sudoku_v1',
+    'game_2048_v1',
   ];
 
   gameIds.forEach((gameId) => {

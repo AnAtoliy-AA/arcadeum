@@ -21,6 +21,10 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@arcadeum/games-core": ["../../packages/games-core/src"],
+      "@arcadeum/games-core/*": ["../../packages/games-core/src/*"]
+    }
   }
 }

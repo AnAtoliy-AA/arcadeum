@@ -4,14 +4,14 @@
   "private": true,
   "description": "Framework-agnostic game engines and bot cores shared by the NestJS backend and the web offline mode (ARC-900)",
   "main": "dist/index.js",
-  "types": "src/index.ts",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./*": {
-      "types": "./src/*.ts",
+      "types": "./dist/*.d.ts",
       "default": "./dist/*.js"
     }
   },

@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getPlatformKeypair } from './lib/solana-keypair';
-import { toRawAmount, fromRawAmount } from './lib/arcadeum-token';
+import {
+  toRawAmount,
+  fromRawAmount,
+  SOLANA_TOKEN_PROGRAM_IDS,
+} from './lib/arcadeum-token';
 
 type Web3Module = typeof import('@solana/web3.js');
 type SplTokenModule = typeof import('@solana/spl-token');
@@ -18,6 +22,12 @@ export class SolanaService {
   private arcadeumPriceCache: { price: number; expiresAt: number } | null =
     null;
   private static readonly CACHE_TTL_MS = 60_000;
+  /**
+   * A fresh quote must be at least this fraction of the previously accepted
+   * quote. Blocks thin-market pumps / poisoned oracle responses from briefly
+   * collapsing the ARC price used to price gem packages and shop items.
+   */
+  private static readonly ARCADEUM_PRICE_MIN_FRACTION_OF_PREVIOUS = 0.25;
 
   constructor(private readonly config: ConfigService) {}
 
@@ -104,6 +114,7 @@ export class SolanaService {
     const mintAddress = mint.toBase58();
 
     // Try CoinGecko first
+    let coinGeckoPrice = 0;
     try {
       const res = await fetch(
         `https://api.coingecko.com/api/v3/simple/token_price/solana?contract_addresses=${mintAddress}&vs_currencies=usd`,
@@ -112,11 +123,7 @@ export class SolanaService {
         const data = (await res.json()) as Record<string, { usd?: number }>;
         const price = data?.[mintAddress]?.usd ?? 0;
         if (price > 0) {
-          this.arcadeumPriceCache = {
-            price,
-            expiresAt: now + SolanaService.CACHE_TTL_MS,
-          };
-          return price;
+          coinGeckoPrice = price;
         }
       }
     } catch {
@@ -124,6 +131,7 @@ export class SolanaService {
     }
 
     // Fallback: calculate from pump.fun market cap
+    let pumpFunPrice = 0;
     try {
       const pfRes = await fetch(
         `https://frontend-api-v3.pump.fun/coins/${mintAddress}`,
@@ -139,20 +147,44 @@ export class SolanaService {
         const decimals = pfData.base_decimals ?? 6;
         const supplyHuman = supply / 10 ** decimals;
         if (mc > 0 && supplyHuman > 0) {
-          const price = mc / supplyHuman;
-          this.arcadeumPriceCache = {
-            price,
-            expiresAt: now + SolanaService.CACHE_TTL_MS,
-          };
-          return price;
+          pumpFunPrice = mc / supplyHuman;
         }
       }
     } catch {
       // Fall through
     }
 
-    this.logger.warn('Could not fetch ARCADEUM price from any source');
-    return 0;
+    // Sanity band: the price drives how many ARC a payment requires, so a
+    // manipulated oracle directly changes gem pricing. Reject quotes that
+    // move too far from the previously accepted reference within one TTL
+    // window, and require the sources to roughly agree when both respond.
+    const candidate =
+      coinGeckoPrice > 0 && pumpFunPrice > 0
+        ? Math.min(coinGeckoPrice, pumpFunPrice)
+        : Math.max(coinGeckoPrice, pumpFunPrice);
+
+    if (candidate <= 0) {
+      this.logger.warn('Could not fetch ARCADEUM price from any source');
+      return 0;
+    }
+
+    const previous = this.arcadeumPriceCache?.price ?? 0;
+    if (
+      previous > 0 &&
+      candidate <
+        previous * SolanaService.ARCADEUM_PRICE_MIN_FRACTION_OF_PREVIOUS
+    ) {
+      this.logger.error(
+        `ARCADEUM price sanity check failed: candidate ${candidate} deviates too far from reference ${previous} — rejecting quote`,
+      );
+      return 0;
+    }
+
+    this.arcadeumPriceCache = {
+      price: candidate,
+      expiresAt: now + SolanaService.CACHE_TTL_MS,
+    };
+    return candidate;
   }
 
   async getTokenMetadata(): Promise<{
@@ -225,28 +257,29 @@ export class SolanaService {
     const treasuryPubkey = new PublicKey(treasuryAddress);
     const solBalance = await connection.getBalance(treasuryPubkey);
 
-    // ARC is a Token-2022 token (pump.fun), must use Token-2022 program
-    const TOKEN_2022_PROGRAM_ID = new PublicKey(
-      'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
-    );
-
+    // ARC may live under either token program — resolve both ATAs and read
+    // whichever exists.
     let arcadeumBalance = 0;
-    try {
-      const ata = await getAssociatedTokenAddress(
-        mint,
-        treasuryPubkey,
-        true,
-        TOKEN_2022_PROGRAM_ID,
-      );
-      const account = await getAccount(
-        connection,
-        ata,
-        'confirmed',
-        TOKEN_2022_PROGRAM_ID,
-      );
-      arcadeumBalance = fromRawAmount(account.amount);
-    } catch {
-      this.logger.warn('Treasury wallet has no ARCADEUM token account');
+    for (const programId of SOLANA_TOKEN_PROGRAM_IDS) {
+      try {
+        const programPublicKey = new PublicKey(programId);
+        const ata = await getAssociatedTokenAddress(
+          mint,
+          treasuryPubkey,
+          true,
+          programPublicKey,
+        );
+        const account = await getAccount(
+          connection,
+          ata,
+          'confirmed',
+          programPublicKey,
+        );
+        arcadeumBalance += fromRawAmount(account.amount);
+      } catch {
+        // No token account under this program — expected when the mint uses
+        // the other program or the treasury holds no ARC yet.
+      }
     }
 
     return {
@@ -255,6 +288,19 @@ export class SolanaService {
     };
   }
 
+  /**
+   * Verify that `signature` is a confirmed on-chain transfer of at least
+   * `expectedAmount` ARCADEUM tokens (exact mint) into the platform
+   * treasury, initiated by `senderAddress`.
+   *
+   * Security invariants:
+   *  - The transferred token MUST match the configured ARCADEUM mint — any
+   *    other SPL asset is rejected.
+   *  - Funds MUST land in a treasury-owned destination (canonical ATA for
+   *    either token program, or an account explicitly owned by the treasury).
+   *  - Only parsed `transferChecked` instructions are accepted, so the mint,
+   *    decimals and raw amount are attested by the token program itself.
+   */
   async verifyTransaction(
     signature: string,
     expectedAmount: number,
@@ -264,9 +310,31 @@ export class SolanaService {
       const { PublicKey } = await this.loadWeb3();
       const connection = await this.getConnection();
       const keypair = await this.getKeypair();
-      const treasuryAddress = keypair.publicKey.toBase58();
+      const treasuryPubkey = keypair.publicKey;
+      const mint = await this.getArcadeumMintKey();
 
-      const transaction = await connection.getTransaction(signature, {
+      if (mint.equals(PublicKey.default)) {
+        this.logger.error(
+          'ARCADEUM_MINT_ADDRESS is not configured — refusing to verify deposits',
+        );
+        return false;
+      }
+
+      // Fail closed when the deposit recipient and the Solana Pay recipient
+      // are configured as different wallets.
+      const configuredTreasury =
+        this.config.get<string>('SOLANA_TREASURY_ADDRESS') ?? '';
+      if (
+        configuredTreasury &&
+        configuredTreasury !== treasuryPubkey.toBase58()
+      ) {
+        this.logger.error(
+          'SOLANA_TREASURY_ADDRESS does not match the platform keypair public key — refusing to verify deposits',
+        );
+        return false;
+      }
+
+      const transaction = await connection.getParsedTransaction(signature, {
         commitment: 'confirmed',
         maxSupportedTransactionVersion: 0,
       });
@@ -282,52 +350,87 @@ export class SolanaService {
       }
 
       const sender = new PublicKey(senderAddress);
-      const treasury = new PublicKey(treasuryAddress);
+      const { getAssociatedTokenAddress } = await this.loadSplToken();
+      const treasuryAtas = new Set<string>();
+      for (const programId of SOLANA_TOKEN_PROGRAM_IDS) {
+        try {
+          const ata = await getAssociatedTokenAddress(
+            mint,
+            treasuryPubkey,
+            true,
+            new PublicKey(programId),
+          );
+          treasuryAtas.add(ata.toBase58());
+        } catch {
+          // Unreachable in practice; treat as "no ATA under this program".
+        }
+      }
+      const treasuryBase58 = treasuryPubkey.toBase58();
+      const mintBase58 = mint.toBase58();
 
-      const message = transaction.transaction.message;
-      const accountKeys = message.staticAccountKeys ?? [];
-      const senderIndex = accountKeys.findIndex((key) => key.equals(sender));
-      const treasuryIndex = accountKeys.findIndex((key) =>
-        key.equals(treasury),
-      );
-
-      if (senderIndex === -1 || treasuryIndex === -1) {
-        this.logger.warn('Sender or treasury not found in transaction');
-        return false;
+      interface ParsedTransferInfo {
+        authority?: string;
+        multisigAuthority?: string;
+        source?: string;
+        destination?: string;
+        destinationOwner?: string;
+        mint?: string;
+        tokenAmount?: { amount?: string };
+        amount?: string | number;
       }
 
-      const innerInstructions =
-        transaction.meta?.innerInstructions?.flat() ?? [];
-      const tokenProgramId = new PublicKey(
-        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-      );
-      for (const ix of innerInstructions) {
-        const compiledIx = ix as unknown as {
-          programIdIndex: number;
-          accounts: number[];
-          data?: string;
-        };
-        const programId = accountKeys[compiledIx.programIdIndex];
-        if (programId?.equals(tokenProgramId)) {
-          const accounts = compiledIx.accounts;
-          if (accounts.length >= 4) {
-            const source = accountKeys[accounts[0]];
-            const destination = accountKeys[accounts[1]];
+      const instructions = [
+        ...(transaction.transaction.message.instructions ?? []),
+        ...(transaction.meta?.innerInstructions?.flatMap(
+          (inner) => inner.instructions,
+        ) ?? []),
+      ];
 
-            if (source?.equals(sender) && destination?.equals(treasury)) {
-              const data = compiledIx.data;
-              if (data) {
-                const buffer = Buffer.from(data, 'base64');
-                if (buffer.length >= 8) {
-                  const amount = Number(buffer.readBigUInt64LE(0));
-                  if (amount >= toRawAmount(expectedAmount)) {
-                    return true;
-                  }
-                }
-              }
-            }
-          }
+      const expectedRaw = toRawAmount(expectedAmount);
+
+      for (const ix of instructions) {
+        const parsedIx = ix as {
+          program?: string;
+          programId?: { toBase58?: () => string };
+          type?: string;
+          parsed?: { type?: string; info?: ParsedTransferInfo };
+        };
+
+        const isTokenProgram =
+          parsedIx.program === 'spl-token' ||
+          parsedIx.program === 'spl-token-2022' ||
+          (typeof parsedIx.programId?.toBase58 === 'function' &&
+            SOLANA_TOKEN_PROGRAM_IDS.includes(parsedIx.programId.toBase58()));
+        if (!isTokenProgram) continue;
+
+        const info = parsedIx.parsed?.info;
+        if (!info) continue;
+
+        // Only transferChecked carries an on-chain-attested mint + raw
+        // amount. Plain `transfer` cannot prove which token moved, so it is
+        // deliberately rejected.
+        if (
+          parsedIx.parsed?.type !== 'transferChecked' &&
+          parsedIx.type !== 'transferChecked'
+        ) {
+          continue;
         }
+
+        if (info.mint !== mintBase58) continue;
+
+        const rawAmount = BigInt(info.tokenAmount?.amount ?? '0');
+        if (rawAmount < expectedRaw) continue;
+
+        const destination = info.destination ?? '';
+        const destinationOwner = info.destinationOwner ?? '';
+        const toTreasury =
+          treasuryAtas.has(destination) || destinationOwner === treasuryBase58;
+        if (!toTreasury) continue;
+
+        const authority = info.authority ?? info.multisigAuthority ?? '';
+        if (authority !== sender.toBase58()) continue;
+
+        return true;
       }
 
       this.logger.warn('No matching ARC transfer found in transaction');

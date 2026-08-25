@@ -16,7 +16,7 @@ import { ClansService } from './clans.service';
 import { CreateClanDto } from './dto/create-clan.dto';
 import { UpdateClanDto } from './dto/update-clan.dto';
 import { JoinClanDto } from './dto/join-clan.dto';
-import { InviteToClanDto } from './dto/invite-to-clan.dto';
+import { SetMemberRoleDto } from './dto/set-member-role.dto';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
 interface RequestWithUser {
@@ -97,24 +97,23 @@ export class ClansController {
     return this.clansService.removeMember(req.user.userId, id, userId);
   }
 
-  @Post(':id/invite')
-  inviteToClan(
-    @Req() req: RequestWithUser,
-    @Param('id') id: string,
-    @Body() _dto: InviteToClanDto,
-  ) {
-    return this.clansService.joinClan(/* would need user lookup */ '', id);
-  }
-
+  // Clan invites are not implemented — the join flow uses invite codes via
+  // POST /clans/join and GET /clans/invite/:code. The previous stub route
+  // was removed rather than left half-wired.
   @Post(':id/role/:userId')
   @HttpCode(HttpStatus.NO_CONTENT)
   setMemberRole(
     @Req() req: RequestWithUser,
     @Param('id') id: string,
     @Param('userId') userId: string,
-    @Body('role') role: 'leader' | 'officer' | 'member',
+    @Body() dto: SetMemberRoleDto,
   ) {
-    return this.clansService.setMemberRole(req.user.userId, id, userId, role);
+    return this.clansService.setMemberRole(
+      req.user.userId,
+      id,
+      userId,
+      dto.role,
+    );
   }
 
   @Post(':id/regenerate-code')

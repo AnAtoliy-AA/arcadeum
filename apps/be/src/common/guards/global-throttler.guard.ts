@@ -39,7 +39,16 @@ export class GlobalThrottlerGuard extends ThrottlerGuard {
     this.trustCloudflare = config.get('TRUST_CF_CONNECTING_IP') === 'true';
   }
 
-  protected shouldSkip(_context: ExecutionContext): Promise<boolean> {
+  protected shouldSkip(context: ExecutionContext): Promise<boolean> {
+    // The IP-based tracker has no meaning for WebSocket message handlers
+    // (there is no HTTP request, so every socket event resolves to the same
+    // 'unknown' bucket). Worse, 429s from that shared bucket feed the
+    // auto-blocker, so one noisy socket could block ALL realtime users.
+    // Per-socket rate limiting should be implemented in the gateways
+    // themselves if needed.
+    if (context.getType<'ws' | 'http'>() !== 'http') {
+      return Promise.resolve(true);
+    }
     return Promise.resolve(isE2EMode());
   }
 
@@ -135,7 +144,12 @@ export class GlobalThrottlerGuard extends ThrottlerGuard {
     throttlerLimitDetail: ThrottlerLimitDetail,
   ): Promise<void> {
     const request = context.switchToHttp().getRequest<Request>();
-    void this.ipBlockService.record429(this.extractIp(request));
+    const ip = request ? this.extractIp(request) : '';
+    // Never feed an unresolvable identity into the auto-blocker — that
+    // would block every unidentified client (e.g. all sockets) at once.
+    if (ip && ip !== 'unknown') {
+      void this.ipBlockService.record429(ip);
+    }
     return super.throwThrottlingException(context, throttlerLimitDetail);
   }
 

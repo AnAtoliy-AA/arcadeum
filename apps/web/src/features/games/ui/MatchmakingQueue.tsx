@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import { gameSocket, emitEncrypted, useSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { getAnonymousIdWithSignature } from '@/shared/lib/api-client';
+import { getOrCreateAnonymousId } from '@/shared/lib/api-client';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
@@ -123,8 +123,7 @@ export function useMatchmaking() {
     async (gameId: string, variant?: string, ranked?: boolean) => {
       let userId = snapshot.userId;
       if (!userId) {
-        await getAnonymousIdWithSignature();
-        userId = localStorage.getItem('arcadeum_anon_id');
+        userId = await getOrCreateAnonymousId();
       }
       if (!userId) return;
 

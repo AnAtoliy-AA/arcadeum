@@ -9,6 +9,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { PaymentsService } from './payments.service';
 import { PaymentNotesService, PaginatedNotes } from './payment-notes.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -19,6 +20,11 @@ import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
+// These endpoints are intentionally public (anonymous donations) but each
+// PayPal order creation burns third-party API quota, so they get a tight
+// per-IP budget on top of the global limiter.
+const PAYMENT_CREATE_THROTTLE = { default: { limit: 10, ttl: 60_000 } };
+
 @Controller('payments')
 export class PaymentsController {
   constructor(
@@ -27,12 +33,14 @@ export class PaymentsController {
   ) {}
 
   @Post('session')
+  @Throttle(PAYMENT_CREATE_THROTTLE)
   @HttpCode(HttpStatus.CREATED)
   createSession(@Body() dto: CreatePaymentDto): Promise<PaymentSession> {
     return this.paymentsService.createSession(dto);
   }
 
   @Post('subscription')
+  @Throttle(PAYMENT_CREATE_THROTTLE)
   @HttpCode(HttpStatus.CREATED)
   createSubscription(
     @Body() dto: CreateSubscriptionDto,

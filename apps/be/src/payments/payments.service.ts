@@ -53,10 +53,11 @@ export class PaymentsService {
     }
     const description = dto.description?.trim() ?? 'Support contribution';
 
-    const returnUrl =
-      dto.successUrl?.trim() ?? this.getOptionalEnv('PAYPAL_RETURN_URL');
-    const cancelUrl =
-      dto.errorUrl?.trim() ?? this.getOptionalEnv('PAYPAL_CANCEL_URL');
+    // Redirect targets are ALWAYS server-configured. Client-supplied URLs
+    // are ignored so a phisher cannot point the post-payment redirect at an
+    // arbitrary domain.
+    const returnUrl = this.getOptionalEnv('PAYPAL_RETURN_URL');
+    const cancelUrl = this.getOptionalEnv('PAYPAL_CANCEL_URL');
 
     if (!returnUrl || !cancelUrl) {
       this.logger.error('Missing PayPal redirect URLs (return or cancel).');
@@ -75,7 +76,8 @@ export class PaymentsService {
       transactionId,
       paymentUrl,
       amount: numericAmount,
-      currency,
+      // The PayPal order is always created in USD (see paypal.gateway).
+      currency: 'USD',
     };
   }
 
@@ -92,10 +94,9 @@ export class PaymentsService {
       currency = 'USD';
     }
 
-    const returnUrl =
-      dto.returnUrl?.trim() ?? this.getOptionalEnv('PAYPAL_RETURN_URL');
-    const cancelUrl =
-      dto.cancelUrl?.trim() ?? this.getOptionalEnv('PAYPAL_CANCEL_URL');
+    // Redirect targets are ALWAYS server-configured (see createSession).
+    const returnUrl = this.getOptionalEnv('PAYPAL_RETURN_URL');
+    const cancelUrl = this.getOptionalEnv('PAYPAL_CANCEL_URL');
 
     if (!returnUrl || !cancelUrl) {
       this.logger.error('Missing PayPal redirect URLs (return or cancel).');

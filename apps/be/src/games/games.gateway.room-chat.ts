@@ -1,5 +1,6 @@
 import type { Logger } from '@nestjs/common';
 import type { Socket, Server } from 'socket.io';
+import { WsException } from '@nestjs/websockets';
 import { extractString } from './games.gateway.utils';
 import {
   maybeEncrypt,
@@ -20,18 +21,22 @@ function validateUserId(
   const anonId = (client.data as Record<string, unknown>)?.anonId as
     string | undefined;
 
-  if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
-    logger.warn(
-      `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
-    );
+  if (isAuthenticated) {
+    if (payloadUserId !== authUserId) {
+      logger.warn(
+        `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
+      );
+      throw new WsException('Cannot perform actions as another user.');
+    }
     return;
   }
 
-  if (!isAuthenticated && anonId && payloadUserId !== anonId) {
+  // Fail closed — identity-less sockets cannot send room chat at all.
+  if (!anonId || payloadUserId !== anonId) {
     logger.warn(
-      `Anonymous ${anonId} attempted to act as ${payloadUserId} — blocking`,
+      `Identity-less socket attempted to chat as ${payloadUserId} — blocking`,
     );
-    return;
+    throw new WsException('Cannot perform actions as another user.');
   }
 }
 
@@ -52,7 +57,7 @@ export async function handleRoomChat(
 
   const roomId = extractString(decrypted, 'roomId');
   const userId = extractString(decrypted, 'userId');
-  const message = extractString(decrypted, 'message');
+  const message = extractString(decrypted, 'message', { maxLength: 500 });
   const scopeRaw =
     typeof decrypted?.scope === 'string'
       ? decrypted.scope.trim().toLowerCase()

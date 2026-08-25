@@ -88,7 +88,8 @@ describe('GamesGateway – hint handler', () => {
     client = {
       rooms: new Set(['game-room:room-1']),
       emit: mockEmit,
-      data: {},
+      // Identity checks fail closed — the socket presents a verified id.
+      data: { authenticated: true, userId: 'user-a' },
     } as unknown as jest.Mocked<Socket>;
 
     // Inert stand-ins for matchmaking and the per-game gateways; only the
@@ -209,7 +210,15 @@ describe('GamesGateway – hint handler', () => {
   });
 
   it('rejects with reason "not_participant" when requester is not a player', async () => {
-    await gateway.onRequestHint(client, {
+    // A properly-authenticated spectator (their own identity) who is not a
+    // participant of the session.
+    const spectatorClient = {
+      rooms: new Set(['game-room:room-1']),
+      emit: mockEmit,
+      data: { authenticated: true, userId: 'user-spectator' },
+    } as unknown as jest.Mocked<Socket>;
+
+    await gateway.onRequestHint(spectatorClient, {
       roomId: 'room-1',
       sessionId: 'session-1',
       userId: 'user-spectator',
@@ -260,7 +269,7 @@ describe('GamesGateway – hint handler', () => {
     const outsider = {
       rooms: new Set(['other-room']),
       emit: mockEmit,
-      data: {},
+      data: { authenticated: true, userId: 'user-a' },
     } as unknown as jest.Mocked<Socket>;
 
     await gateway.onRequestHint(outsider, {

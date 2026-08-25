@@ -26,8 +26,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    // Raw internal messages (driver errors, CastError, etc.) must never
+    // reach clients — return a generic body for 5xx and keep the details in
+    // logs only.
     const message =
-      exception instanceof Error ? exception.message : 'Internal server error';
+      httpStatus >= 500
+        ? 'Internal server error'
+        : exception instanceof Error
+          ? exception.message
+          : 'Request failed';
 
     const request = ctx.getRequest<Record<string, unknown>>();
     const path =

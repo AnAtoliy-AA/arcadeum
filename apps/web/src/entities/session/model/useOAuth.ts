@@ -320,11 +320,14 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         handledCodes.add(code);
 
         const expectedState = readSessionValue(STATE_KEY);
-        if (expectedState && stateParam && expectedState !== stateParam) {
+        if (!expectedState || !stateParam || expectedState !== stateParam) {
           throw new Error('OAuth state mismatch. Please try again.');
         }
 
-        const verifier = readSessionValue(CODE_VERIFIER_KEY) ?? undefined;
+        const verifier = readSessionValue(CODE_VERIFIER_KEY);
+        if (!verifier) {
+          throw new Error('Login session expired. Please try again.');
+        }
         const redirectUri = resolveAuthRedirectUri();
 
         const tokenResponse = await exchangeCodeMutation({

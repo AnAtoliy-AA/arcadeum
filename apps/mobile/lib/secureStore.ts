@@ -1,21 +1,23 @@
-// Unified wrapper around expo-secure-store with an in-memory fallback for web / unsupported platforms.
+// Unified wrapper around expo-secure-store with a localStorage fallback on web and an in-memory fallback when localStorage is unavailable.
+import { Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+
 export interface SecureStoreLike {
   setItemAsync(key: string, value: string): Promise<void>;
   getItemAsync(key: string): Promise<string | null>;
   deleteItemAsync(key: string): Promise<void>;
 }
 
-function createMemoryStore(): SecureStoreLike {
-  const memory = new Map<string, string>();
+function createNativeStore(): SecureStoreLike {
   return {
     async setItemAsync(k, v) {
-      memory.set(k, v);
+      await SecureStore.setItemAsync(k, v);
     },
     async getItemAsync(k) {
-      return memory.get(k) ?? null;
+      return SecureStore.getItemAsync(k);
     },
     async deleteItemAsync(k) {
-      memory.delete(k);
+      await SecureStore.deleteItemAsync(k);
     },
   };
 }
@@ -46,16 +48,24 @@ function createBrowserStore(): SecureStoreLike | null {
   }
 }
 
+function createMemoryStore(): SecureStoreLike {
+  const memory = new Map<string, string>();
+  return {
+    async setItemAsync(k, v) {
+      memory.set(k, v);
+    },
+    async getItemAsync(k) {
+      return memory.get(k) ?? null;
+    },
+    async deleteItemAsync(k) {
+      memory.delete(k);
+    },
+  };
+}
+
 function resolveSecureStore(): SecureStoreLike {
-  try {
-    // Access expo-secure-store via globalThis to avoid eval/new Function.
-    const g = globalThis as Record<string, unknown>;
-    const maybe = g.expoSecureStore as SecureStoreLike | undefined;
-    if (maybe && typeof maybe.setItemAsync === 'function') {
-      return maybe;
-    }
-  } catch {
-    // ignore and fall through to other strategies
+  if (Platform.OS !== 'web') {
+    return createNativeStore();
   }
 
   const browser = createBrowserStore();

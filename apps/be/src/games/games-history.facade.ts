@@ -64,6 +64,14 @@ export class GamesHistoryFacade {
     return this.historyService.getLeaderboard(limit, offset, gameId);
   }
 
+  async getHeadToHead(userId1: string, userId2: string, gameId?: string) {
+    return this.playerStats.getHeadToHead(userId1, userId2, gameId);
+  }
+
+  async getTrends(userId: string, gameId?: string, limit = 10) {
+    return this.playerStats.getTrends(userId, gameId, limit);
+  }
+
   async createRematchFromHistory(
     userId: string,
     roomId: string,

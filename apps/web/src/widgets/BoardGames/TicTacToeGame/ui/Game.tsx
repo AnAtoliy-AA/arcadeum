@@ -9,8 +9,13 @@ import {
   useGameResult,
   useGameRoomActions,
 } from '@/features/games/hooks';
+import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
+import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { useGameChatStore } from '@/widgets/GameChat';
 import type { TicTacToeGameProps } from '../types';
 import { useTicTacToeState } from '../hooks/useTicTacToeState';
@@ -131,6 +136,19 @@ function TicTacToeGameImpl({
     resultMessages,
   });
 
+  const opponentId =
+    snapshot?.players && currentUserId
+      ? (snapshot.players.find((p) => p.playerId !== currentUserId)?.playerId ??
+        null)
+      : null;
+
+  const analytics = usePostGameAnalytics({
+    gameId: 'tic_tac_toe_v1',
+    session: snapshot as unknown as Record<string, unknown> | undefined,
+    currentUserId,
+    opponentId,
+  });
+
   const options = useMemo(
     () => resolveOptions(room?.gameOptions),
     [room?.gameOptions],
@@ -237,6 +255,26 @@ function TicTacToeGameImpl({
         })()}
         theme={visualTheme}
         t={t}
+        stats={analytics.stats}
+        analysis={{
+          content: (
+            <PostGameAnalytics
+              stats={analytics.stats}
+              moveTimeline={analytics.moveTimeline}
+              headToHead={analytics.headToHead}
+              headToHeadLoading={analytics.headToHeadLoading}
+              trends={analytics.trends}
+              trendsLoading={analytics.trendsLoading}
+              onLoadHeadToHead={analytics.loadHeadToHead}
+              onLoadTrends={analytics.loadTrends}
+              currentUserId={currentUserId}
+              opponentId={opponentId}
+              t={t}
+            />
+          ),
+          viewLabel: t('games.table.analytics.view' as TranslationKey),
+          backLabel: t('games.table.analytics.back' as TranslationKey),
+        }}
       />
       <RulesModal
         open={showRulesOpen}

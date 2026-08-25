@@ -10,6 +10,8 @@ import {
   useGameRoomActions,
   usePendingStart,
 } from '@/features/games/hooks';
+import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
+import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { SpadesGameProps } from '../types';
@@ -106,6 +108,19 @@ function SpadesGameImpl({
     isGameOver,
     result,
     resultMessages,
+  });
+
+  const opponentId =
+    snapshot?.players && currentUserId
+      ? (snapshot.players.find((p) => p.playerId !== currentUserId)?.playerId ??
+        null)
+      : null;
+
+  const analytics = usePostGameAnalytics({
+    gameId: 'spades_v1',
+    session: snapshot as unknown as Record<string, unknown> | undefined,
+    currentUserId,
+    opponentId,
   });
 
   const options = useMemo(
@@ -218,6 +233,26 @@ function SpadesGameImpl({
         gameName={t('games.spades_v1.name')}
         theme={visualTheme}
         t={t}
+        stats={analytics.stats}
+        analysis={{
+          content: (
+            <PostGameAnalytics
+              stats={analytics.stats}
+              moveTimeline={analytics.moveTimeline}
+              headToHead={analytics.headToHead}
+              headToHeadLoading={analytics.headToHeadLoading}
+              trends={analytics.trends}
+              trendsLoading={analytics.trendsLoading}
+              onLoadHeadToHead={analytics.loadHeadToHead}
+              onLoadTrends={analytics.loadTrends}
+              currentUserId={currentUserId}
+              opponentId={opponentId}
+              t={t}
+            />
+          ),
+          viewLabel: t('games.table.analytics.view'),
+          backLabel: t('games.table.analytics.back'),
+        }}
       />
       <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
     </>

@@ -1,8 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, type PipelineStage } from 'mongoose';
 import { PlayerStats } from './schemas/player-stats.schema';
 import { PlayerStatRecord } from './schemas/player-stat-record.schema';
+import { validateGameId } from './game-validation.util';
 
 interface SyncRecord {
   gameId: string;
@@ -21,6 +22,14 @@ export class PlayerStatsService {
     @InjectModel(PlayerStatRecord.name)
     private readonly recordModel: Model<PlayerStatRecord>,
   ) {}
+
+  private sanitizeGameIdFilter(
+    gameId: string | undefined,
+  ): Record<string, unknown> | undefined {
+    if (!gameId || typeof gameId !== 'string') return undefined;
+    validateGameId(gameId);
+    return { $eq: gameId };
+  }
 
   async recordGameResult(
     playerIds: string[],
@@ -259,6 +268,117 @@ export class PlayerStatsService {
       })),
       total: result.total[0]?.count ?? 0,
     };
+  }
+
+  async getHeadToHead(
+    userId1: string,
+    userId2: string,
+    gameId?: string,
+  ): Promise<{
+    player1: { wins: number; losses: number; draws: number };
+    player2: { wins: number; losses: number; draws: number };
+    totalGames: number;
+  }> {
+    if (typeof userId2 !== 'string' || !userId2) {
+      throw new BadRequestException('userId2 is required');
+    }
+    const gameIdFilter = this.sanitizeGameIdFilter(gameId);
+    const match: Record<string, unknown> = {
+      userId: { $in: [userId1, userId2] },
+    };
+    if (gameIdFilter) match.gameId = gameIdFilter;
+
+    const records = await this.recordModel
+      .find(match)
+      .sort({ timestamp: -1 })
+      .lean<{ userId: string; result: string }[]>()
+      .exec();
+
+    const player1 = { wins: 0, losses: 0, draws: 0 };
+    const player2 = { wins: 0, losses: 0, draws: 0 };
+
+    for (const record of records) {
+      const r = record.result as 'won' | 'lost' | 'draw';
+      if (record.userId === userId1) {
+        if (r === 'won') player1.wins++;
+        else if (r === 'lost') player1.losses++;
+        else player1.draws++;
+      } else if (record.userId === userId2) {
+        if (r === 'won') player2.wins++;
+        else if (r === 'lost') player2.losses++;
+        else player2.draws++;
+      }
+    }
+
+    return {
+      player1,
+      player2,
+      totalGames: Math.min(
+        player1.wins + player1.losses + player1.draws,
+        player2.wins + player2.losses + player2.draws,
+      ),
+    };
+  }
+
+  async getTrends(
+    userId: string,
+    gameId?: string,
+    limit = 10,
+  ): Promise<{
+    records: Array<{
+      result: 'won' | 'lost' | 'draw';
+      timestamp: number;
+      sessionId: string;
+    }>;
+    winRate: number;
+    currentStreak: number;
+    currentStreakType: 'won' | 'lost' | null;
+  }> {
+    if (userId.startsWith('anon_')) {
+      return {
+        records: [],
+        winRate: 0,
+        currentStreak: 0,
+        currentStreakType: null,
+      };
+    }
+
+    const gameIdFilter = this.sanitizeGameIdFilter(gameId);
+    const match: Record<string, unknown> = { userId: { $eq: userId } };
+    if (gameIdFilter) match.gameId = gameIdFilter;
+
+    const records = await this.recordModel
+      .find(match)
+      .sort({ timestamp: -1 })
+      .limit(limit)
+      .lean<{ result: string; timestamp: number; sessionId: string }[]>()
+      .exec();
+
+    const mapped = records.map((r) => ({
+      result: r.result as 'won' | 'lost' | 'draw',
+      timestamp: r.timestamp,
+      sessionId: r.sessionId,
+    }));
+
+    const wins = mapped.filter((r) => r.result === 'won').length;
+    const winRate =
+      mapped.length > 0 ? Math.round((wins / mapped.length) * 100) : 0;
+
+    let currentStreak = 0;
+    let currentStreakType: 'won' | 'lost' | null = null;
+    for (const record of mapped) {
+      if (record.result === 'draw') break;
+      if (currentStreakType === null) {
+        currentStreakType = record.result;
+        currentStreak = 1;
+      } else if (record.result === currentStreakType) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    return { records: mapped, winRate, currentStreak, currentStreakType };
   }
 
   async syncRecords(

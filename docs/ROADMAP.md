@@ -57,9 +57,9 @@
 | 4L. Push Notifications | —       | —                            | **Implemented** |
 | 4M. Tournaments        | —       | —                            | **Implemented** |
 | 4N. Leaderboards       | —       | —                            | **Implemented** |
-| 4O. Board Game Creator | ARC-901 | `ARC-901-board-game-creator` | Not started     |
+| 4O. Board Game Creator | ARC-901 | `ARC-901-board-game-creator` | **Deferred**    |
 | 4P. Mobile Games       | ARC-902 | `ARC-902-mobile-games`       | Partial         |
-| 4Q. Single-Player      | ARC-924 | `ARC-924-single-player`      | Not started     |
+| 4Q. Single-Player      | ARC-924 | `ARC-924-single-player`      | **Implemented** |
 | 5B. Monetization       | —       | —                            | **Implemented** |
 
 ---
@@ -855,6 +855,8 @@ Global and per-game leaderboards.
 
 **Effort: Very Hard (14-21 days)**
 
+> **DEFERRED** — highest-effort item in the roadmap and it serves creators, not players. Revisit when the platform has a large active community that demands user-generated content; until then, engineering capacity goes to player-facing reach (mobile port) and retention.
+
 Let community members define simple custom games.
 
 - Visual game editor: define board grid, pieces, basic movement rules
@@ -991,18 +993,18 @@ The platform's core infrastructure is highly mature. Phase 1 is fully complete, 
 | Phase / Focus                | Features & Ticket Scope                                                                                           | Est. Days | Status / Progress                                                |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------- |
 | **Phase 1: Core UX**         | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                         | 10        | **100% Completed**                                               |
-| **Phase 2: Growth & SEO**    | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning | 12        | **In Progress (Active Focus)**                                   |
+| **Phase 2: Growth & SEO**    | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning | 12        | **100% Completed**                                               |
 | **Phase 3: Classic Games**   | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                         | 15        | **100% Completed**                                               |
 | **Phase 4: Competitive**     | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                       | 20        | **100% Completed**                                               |
 | **Phase 5: Retention**       | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                | 15        | **100% Completed**                                               |
 | **Phase 6: Card & Board**    | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                         | 25        | **Post-Game Analysis + Coach Mode Completed** (Rest Not started) |
 | **Phase 7: Advanced Social** | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                 | 25        | **Spectator Mode + Clans Completed** (Rest Not started)          |
-| **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial)          |
-| **Phase 9: Creator Tools**   | Visual Board Game Creator                                                                                         | 20        | Not started                                                      |
-| **Phase 10: Single-Player**  | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                    | 12        | Not started                                                      |
+| **Phase 8: Platform Growth** | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                         | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial)        |
+| **Phase 9: Creator Tools**   | Visual Board Game Creator                                                                                         | 20        | **Deferred** (revisit with larger community)                     |
+| **Phase 10: Single-Player**  | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                    | 12        | **100% Completed**                                               |
 
 ### Summary of Completed vs. Outstanding Tasks
 
 - **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Spectator Mode (3G), Backgammon (3B), AI-vs-AI Spectator Rooms (3H), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Web Share (4K), Push Notifications (4L), Tournaments (4M), Leaderboards (4N), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I), Clans/Groups (3I), Season System (4H).
-- **Next Priorities (Growth & Marketing)**: Run the Week 0 audit, instrument PostHog/Plausible tracking (funnel split by Solo vs. Social), update homepage CTAs to prominently feature AI/Solo play, build out dedicated SEO landing pages for Chess and remaining games, and deploy the dynamic QR code/share sheet invite upgrades.
-- **Next Engineering Priorities**: Single-Player Games (4Q — Solitaire first, ARC-924), Keyboard-Only Navigation (4F), Offline Mode completion (4J), Board Game Creator (4O), Mobile App Games port (4P).
+- **Phase 6 Tier (Growth & Marketing) — Completed**: Week 0 audit, PostHog/Plausible funnel tracking split by Solo vs. Social, homepage CTAs featuring AI/Solo play, SEO landing pages for all games, QR code/share sheet invite upgrades, blog SEO content, post-game analytics (ARC-925).
+- **Next Engineering Priorities**: Mobile App Games port completion (4P — ARC-902), solo games OG preview images (small gap: solitaire/minesweeper/sudoku/2048 lack `opengraph-image.tsx`), Board Game Creator (4O — **deferred** until community scale).

@@ -2,6 +2,8 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useGameChatIntegration } from '@/features/games/hooks';
+import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
+import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import {
   useTranslation,
   type TranslationKey,
@@ -144,6 +146,21 @@ export function ActiveGameView({
     return alivePlayer === currentUserId ? ('won' as const) : ('lost' as const);
   }, [isGameOver, currentUserId, snapshot.players]);
   useRecordGameResult(criticalResult, 'critical_v1');
+
+  const opponentId = useMemo(() => {
+    if (!snapshot.players || !currentUserId) return null;
+    return (
+      snapshot.players.find((p) => p.playerId !== currentUserId && p.alive)
+        ?.playerId ?? null
+    );
+  }, [snapshot.players, currentUserId]);
+
+  const analytics = usePostGameAnalytics({
+    gameId: 'critical_v1',
+    session: snapshot as unknown as Record<string, unknown> | undefined,
+    currentUserId,
+    opponentId,
+  });
 
   const {
     eventComboModal,
@@ -431,6 +448,26 @@ export function ActiveGameView({
               cardVariant={cardVariant}
               theme={cardVariant}
               t={t}
+              stats={analytics.stats}
+              analysis={{
+                content: (
+                  <PostGameAnalytics
+                    stats={analytics.stats}
+                    moveTimeline={analytics.moveTimeline}
+                    headToHead={analytics.headToHead}
+                    headToHeadLoading={analytics.headToHeadLoading}
+                    trends={analytics.trends}
+                    trendsLoading={analytics.trendsLoading}
+                    onLoadHeadToHead={analytics.loadHeadToHead}
+                    onLoadTrends={analytics.loadTrends}
+                    currentUserId={currentUserId}
+                    opponentId={opponentId}
+                    t={t}
+                  />
+                ),
+                viewLabel: t('games.table.analytics.view' as TranslationKey),
+                backLabel: t('games.table.analytics.back' as TranslationKey),
+              }}
             />
           </>
         }

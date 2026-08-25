@@ -24,6 +24,8 @@ import { communityFr } from './community/fr';
 import { rewardsFr } from './rewards/fr';
 import { developersFr } from './developers/fr';
 import { blogFr } from './blog/fr';
+import { changelogFr } from './changelog/fr';
+import { roadmapFr } from './roadmap/fr';
 
 export const fr = {
   admin: {
@@ -493,4 +495,6 @@ export const fr = {
   clans: clansFr,
   events: eventsFr,
   seasons: seasonsFr,
+  changelog: changelogFr,
+  roadmap: roadmapFr,
 };

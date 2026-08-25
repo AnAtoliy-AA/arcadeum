@@ -1,37 +1,50 @@
+'use client';
+
 import { Typography } from '@arcadeum/ui';
+import { useTranslation } from '@/shared/lib/useTranslation';
 import type { Tier, TierFeature } from './roadmap-data';
 
 export function StatusBadge({ status }: { status: TierFeature['status'] }) {
+  const { t } = useTranslation();
+
   if (status === 'implemented') {
     return (
-      <div className="px-2 py-0.5 rounded-[9999px] bg-[rgba(34,197,94,0.15)] border border-[rgba(34,197,94,0.3)] shrink-0">
+      <div className="px-2.5 py-0.5 rounded-full bg-[var(--success)]/15 border border-[var(--success)]/30 shrink-0 flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)]" />
         <Typography
-          className={'font-bold text-[#22c55e]'}
+          className="font-bold text-[var(--success)] text-[11px]"
           variant="caption"
           uiSize="xs"
         >
-          Implemented
+          {t('pages.roadmap.statusBadges.implemented')}
         </Typography>
       </div>
     );
   }
   if (status === 'partial') {
     return (
-      <div className="px-2 py-0.5 rounded-[9999px] bg-[rgba(245,158,11,0.15)] border border-[rgba(245,158,11,0.3)] shrink-0">
+      <div className="px-2.5 py-0.5 rounded-full bg-[var(--warning)]/15 border border-[var(--warning)]/30 shrink-0 flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-[var(--warning)]" />
         <Typography
-          className={'font-bold text-[#f59e0b]'}
+          className="font-bold text-[var(--warning)] text-[11px]"
           variant="caption"
           uiSize="xs"
         >
-          In Progress
+          {t('pages.roadmap.statusBadges.inProgress')}
         </Typography>
       </div>
     );
   }
   return (
-    <div className="px-2 py-0.5 rounded-[9999px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] shrink-0">
-      <Typography variant="caption" uiSize="xs" alpha="medium">
-        Planned
+    <div className="px-2.5 py-0.5 rounded-full bg-[var(--bgCard)] border border-[var(--glassBorder)] shrink-0 flex items-center gap-1.5">
+      <span className="w-1.5 h-1.5 rounded-full bg-[var(--foregroundSecondary)] opacity-60" />
+      <Typography
+        variant="caption"
+        uiSize="xs"
+        alpha="medium"
+        className="text-[11px]"
+      >
+        {t('pages.roadmap.statusBadges.planned')}
       </Typography>
     </div>
   );
@@ -46,141 +59,148 @@ export function TierCard({
   isExpanded: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation();
   const implementedCount = tier.features.filter(
     (f) => f.status === 'implemented',
   ).length;
+  const progressPercent =
+    tier.features.length > 0
+      ? Math.round((implementedCount / tier.features.length) * 100)
+      : 0;
 
   return (
     <div
-      className="flex flex-col items-stretch rounded-2xl overflow-hidden"
-      style={{
-        background: isExpanded ? tier.gradient : 'rgba(255,255,255,0.02)',
-        borderWidth: 1,
-        borderColor: isExpanded ? `${tier.color}30` : 'rgba(255,255,255,0.06)',
-      }}
+      className={`flex flex-col rounded-2xl overflow-hidden transition-all border ${
+        isExpanded
+          ? 'bg-[var(--glassBg)] border-[var(--primary)]/30 shadow-lg shadow-[var(--primary)]/5'
+          : 'bg-[var(--glassBg)]/60 border-[var(--glassBorder)] hover:border-[var(--glassBorder)]/80'
+      }`}
     >
       <div
-        className="flex flex-col items-stretch active:opacity-[0.8] cursor-pointer p-4"
+        className="flex flex-col p-4 md:p-5 cursor-pointer select-none transition-colors active:opacity-80"
         onClick={onToggle}
       >
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-row gap-3 items-center flex-1">
-            <div
-              className="w-[40px] h-[40px] rounded-xl flex items-center justify-center shrink-0"
-              style={{ backgroundColor: `${tier.color}20` }}
-            >
-              <Typography uiSize="lg">{tier.icon}</Typography>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3.5 flex-1 min-w-0">
+            <div className="w-11 h-11 rounded-xl bg-[var(--primary)]/15 border border-[var(--primary)]/25 flex items-center justify-center shrink-0 text-xl">
+              {tier.icon}
             </div>
-            <div className="flex flex-col items-stretch flex-1 gap-1">
-              <div className="flex flex-row items-center gap-2 flex-wrap">
+            <div className="flex flex-col gap-1 min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
                 <Typography
-                  className={'font-bold'}
+                  className="font-extrabold text-[var(--foreground)]"
                   variant="heading"
                   uiSize="md"
                 >
                   {tier.label}
                 </Typography>
-                <div
-                  className="px-2 rounded-[9999px] border"
-                  style={{
-                    backgroundColor: `${tier.color}15`,
-                    borderColor: `${tier.color}30`,
-                  }}
-                >
-                  <Typography variant="caption" uiSize="xs" color={tier.color}>
-                    {tier.features.length} features
+                <div className="px-2 py-0.5 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20">
+                  <Typography
+                    variant="caption"
+                    uiSize="xs"
+                    className="text-[var(--primary)] font-semibold"
+                  >
+                    {t('pages.roadmap.tiers.featuresCount', {
+                      count: tier.features.length,
+                    })}
                   </Typography>
                 </div>
-                <div className="px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
-                  <Typography variant="caption" uiSize="xs" alpha="medium">
-                    {implementedCount}/{tier.features.length} done
+                <div className="px-2 py-0.5 rounded-full bg-[var(--bgCard)] border border-[var(--glassBorder)]">
+                  <Typography variant="caption" uiSize="xs" alpha="high">
+                    {t('pages.roadmap.tiers.doneRatio', {
+                      done: implementedCount,
+                      total: tier.features.length,
+                    })}{' '}
+                    ({progressPercent}%)
                   </Typography>
                 </div>
               </div>
-              <Typography variant="caption" alpha="medium">
+              <Typography variant="caption" alpha="medium" className="text-xs">
                 {tier.effort}
               </Typography>
             </div>
           </div>
-          <div className="w-[28px] h-[28px] rounded-[9999px] bg-[rgba(255,255,255,0.05)] flex items-center justify-center shrink-0">
-            <Typography
-              className={'font-bold'}
-              variant="body"
-              uiSize="sm"
-              alpha="medium"
-            >
+
+          <div className="flex items-center gap-3 self-end sm:self-auto">
+            <div className="w-20 sm:w-28 hidden sm:flex flex-col gap-1">
+              <div className="w-full h-1.5 rounded-full bg-[var(--bgCard)] overflow-hidden border border-[var(--glassBorder)]">
+                <div
+                  className="h-full rounded-full bg-[var(--primary)] transition-all duration-300"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+            <div className="w-7 h-7 rounded-full bg-[var(--glassBg)] border border-[var(--glassBorder)] flex items-center justify-center shrink-0 text-sm font-bold text-[var(--foregroundSecondary)]">
               {isExpanded ? '−' : '+'}
-            </Typography>
+            </div>
           </div>
         </div>
       </div>
 
       {isExpanded && (
-        <div className="flex flex-col items-stretch gap-0">
-          <div className="-mx-4 border-b border-b-[rgba(255,255,255,0.06)]" />
-          <div className="flex flex-col items-stretch p-4 gap-2">
-            {tier.features.map((f, idx) => (
-              <div
-                className="flex flex-row p-3 rounded-xl gap-3 items-start"
-                style={{
-                  background:
-                    idx % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
-                }}
-                key={f.title}
-              >
-                <div
-                  className="mt-1.5 w-[6px] h-[6px] rounded-[9999px] opacity-[0.6] shrink-0"
-                  style={{
-                    backgroundColor:
-                      f.status === 'implemented'
-                        ? '#22c55e'
-                        : f.status === 'partial'
-                          ? '#f59e0b'
-                          : tier.color,
-                  }}
+        <div className="flex flex-col border-t border-[var(--glassBorder)] p-4 md:p-6 gap-3 bg-[var(--bgCard)]/40">
+          {tier.features.map((f, idx) => (
+            <div
+              key={`${f.title}-${f.arc || idx}`}
+              className={`flex flex-col sm:flex-row sm:items-start justify-between p-3.5 rounded-xl gap-3 transition-colors border ${
+                idx % 2 === 0
+                  ? 'bg-[var(--glassBg)]/50 border-[var(--glassBorder)]/60'
+                  : 'bg-[var(--bgCard)]/30 border-transparent'
+              }`}
+            >
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <span
+                  className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${
+                    f.status === 'implemented'
+                      ? 'bg-[var(--success)]'
+                      : f.status === 'partial'
+                        ? 'bg-[var(--warning)]'
+                        : 'bg-[var(--foregroundSecondary)] opacity-60'
+                  }`}
                 />
-                <div className="flex flex-col items-stretch flex-1 gap-1">
-                  <div className="flex flex-row justify-between items-center gap-2 flex-wrap">
-                    <div className="flex flex-row items-center gap-2 flex-wrap">
-                      <Typography
-                        className={'font-bold'}
-                        variant="label"
-                        uiSize="sm"
-                      >
-                        {f.title}
-                      </Typography>
-                      {f.arc && (
-                        <div className="px-1.5 py-0.5 rounded bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)]">
-                          <Typography
-                            variant="caption"
-                            uiSize="xs"
-                            alpha="medium"
-                          >
-                            {f.arc}
-                          </Typography>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex flex-row items-center gap-2">
-                      <StatusBadge status={f.status} />
-                      <div className="px-2 rounded-[9999px] bg-[rgba(255,255,255,0.05)]">
-                        <Typography
-                          variant="caption"
-                          uiSize="xs"
-                          alpha="medium"
-                        >
-                          {f.effort}
-                        </Typography>
-                      </div>
-                    </div>
+                <div className="flex flex-col gap-1 flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Typography
+                      className="font-bold text-[var(--foreground)]"
+                      variant="label"
+                      uiSize="sm"
+                    >
+                      {f.title}
+                    </Typography>
+                    {f.arc && (
+                      <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/25">
+                        {f.arc}
+                      </span>
+                    )}
                   </div>
-                  <Typography variant="body" uiSize="sm" alpha="medium">
-                    {f.desc}
+                  {f.desc && (
+                    <Typography
+                      variant="body"
+                      uiSize="sm"
+                      alpha="medium"
+                      className="leading-relaxed"
+                    >
+                      {f.desc}
+                    </Typography>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                <StatusBadge status={f.status} />
+                <div className="px-2 py-0.5 rounded-md bg-[var(--bgCard)] border border-[var(--glassBorder)]">
+                  <Typography
+                    variant="caption"
+                    uiSize="xs"
+                    alpha="medium"
+                    className="font-mono text-[11px]"
+                  >
+                    {f.effort}
                   </Typography>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

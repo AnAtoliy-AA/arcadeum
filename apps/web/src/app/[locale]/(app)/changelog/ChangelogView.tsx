@@ -123,11 +123,53 @@ export default function ChangelogView({
     setExpandedVersions(new Set());
   }, []);
 
+  const handleSearchChange = useCallback(
+    (q: string) => {
+      setSearchQuery(q);
+      setDisplayLimit(PAGE_SIZE);
+      if (q.trim()) {
+        const query = q.trim().toLowerCase();
+        const matching = entries
+          .filter((e) => {
+            return (
+              e.version.toLowerCase().includes(query) ||
+              e.date.toLowerCase().includes(query) ||
+              e.sections.some((s) =>
+                s.items.some((item) => item.toLowerCase().includes(query)),
+              )
+            );
+          })
+          .map((e) => e.version);
+        setExpandedVersions(new Set(matching));
+      }
+    },
+    [entries],
+  );
+
+  const handleSelectCategory = useCallback(
+    (category: string | null) => {
+      setSelectedCategory(category);
+      setDisplayLimit(PAGE_SIZE);
+      if (category) {
+        const matching = entries
+          .filter((e) =>
+            e.sections.some(
+              (s) => s.type.toLowerCase() === category.toLowerCase(),
+            ),
+          )
+          .map((e) => e.version);
+        setExpandedVersions(new Set(matching));
+      }
+    },
+    [entries],
+  );
+
   const handleClearFilters = useCallback(() => {
     setSearchQuery('');
     setSelectedCategory(null);
     setDisplayLimit(PAGE_SIZE);
-  }, []);
+    setExpandedVersions(new Set(entries.slice(0, 1).map((e) => e.version)));
+  }, [entries]);
 
   const handleLoadMore = useCallback(() => {
     setDisplayLimit((prev) => prev + PAGE_SIZE);
@@ -196,15 +238,9 @@ export default function ChangelogView({
 
           <ChangelogFilters
             searchQuery={searchQuery}
-            onSearchChange={(q) => {
-              setSearchQuery(q);
-              setDisplayLimit(PAGE_SIZE);
-            }}
+            onSearchChange={handleSearchChange}
             selectedCategory={selectedCategory}
-            onSelectCategory={(c) => {
-              setSelectedCategory(c);
-              setDisplayLimit(PAGE_SIZE);
-            }}
+            onSelectCategory={handleSelectCategory}
             categories={categories}
             onExpandAll={handleExpandAll}
             onCollapseAll={handleCollapseAll}

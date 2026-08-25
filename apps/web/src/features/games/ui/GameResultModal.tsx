@@ -211,7 +211,7 @@ export function GameResultModal({
             {body}
           </p>
 
-          {stats && (
+          {stats && !showAnalysis && (
             <div className="animate-fade-in-up-delay-3 mb-5 w-full">
               <GameResultStatsGrid stats={stats} t={t} />
             </div>

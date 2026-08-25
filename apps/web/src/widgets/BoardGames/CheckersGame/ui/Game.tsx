@@ -377,7 +377,6 @@ function CheckersGameImpl({
         analysis={{
           content: (
             <PostGameAnalytics
-              stats={analytics.stats}
               moveTimeline={analytics.moveTimeline}
               headToHead={analytics.headToHead}
               headToHeadLoading={analytics.headToHeadLoading}

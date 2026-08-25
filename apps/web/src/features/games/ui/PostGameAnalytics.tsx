@@ -3,20 +3,15 @@
 import { useState } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
-import {
-  GameResultStatsGrid,
-  type GameResultStats,
-} from './GameResultStatsGrid';
 import type { MoveEntry } from '../hooks/usePostGameAnalytics';
 import type {
   HeadToHeadResponse,
   TrendsResponse,
 } from '@/features/history/api';
 
-type Tab = 'stats' | 'moves' | 'headToHead' | 'trends';
+type Tab = 'moves' | 'headToHead' | 'trends';
 
 interface PostGameAnalyticsProps {
-  stats: GameResultStats | null | undefined;
   moveTimeline: MoveEntry[];
   headToHead: HeadToHeadResponse | null;
   headToHeadLoading: boolean;
@@ -54,26 +49,6 @@ function TabButton({
   );
 }
 
-function StatsTab({
-  stats,
-  t,
-}: {
-  stats: GameResultStats | null | undefined;
-  t: PostGameAnalyticsProps['t'];
-}) {
-  if (!stats) {
-    return (
-      <div className="flex flex-col items-center gap-2 py-4">
-        <span className="text-2xl">📊</span>
-        <p className="text-center text-[13px] text-white/50">
-          {t('games.table.analytics.noStats')}
-        </p>
-      </div>
-    );
-  }
-  return <GameResultStatsGrid stats={stats} t={t} />;
-}
-
 function MovesTab({
   moveTimeline,
   currentUserId,
@@ -96,11 +71,11 @@ function MovesTab({
 
   return (
     <div className="flex max-h-[240px] flex-col gap-1 overflow-y-auto pr-1">
-      {moveTimeline.map((entry) => {
+      {moveTimeline.map((entry, idx) => {
         const isCurrent = entry.playerId === currentUserId;
         return (
           <div
-            key={entry.turn}
+            key={`${entry.turn}-${entry.playerId}-${idx}`}
             className={cx(
               'flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[12px] transition-colors',
               isCurrent ? 'bg-white/8 text-white/90' : 'text-white/50',
@@ -141,8 +116,8 @@ function HeadToHeadTab({
 
   if (loading) {
     return (
-      <div className="flex justify-center py-6">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white/70" />
+      <div className="flex items-center justify-center py-6">
+        <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
       </div>
     );
   }
@@ -178,69 +153,44 @@ function HeadToHeadTab({
             <span className="text-lg font-bold text-emerald-400">
               {data.player1.wins}
             </span>
-            <span className="text-[10px] text-white/30">vs</span>
-            <span className="text-lg font-bold text-emerald-400">
+            <span className="text-xs text-white/30">:</span>
+            <span className="text-lg font-bold text-rose-400">
               {data.player2.wins}
             </span>
           </div>
         </div>
-        <div className="rounded-xl border border-white/10 bg-black/30 p-2.5">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
-            {t('games.table.analytics.headToHead.losses')}
-          </span>
-          <div className="mt-1 flex items-center justify-center gap-2">
-            <span className="text-lg font-bold text-red-400">
-              {data.player1.losses}
-            </span>
-            <span className="text-[10px] text-white/30">vs</span>
-            <span className="text-lg font-bold text-red-400">
-              {data.player2.losses}
-            </span>
-          </div>
-        </div>
+
         <div className="rounded-xl border border-white/10 bg-black/30 p-2.5">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
             {t('games.table.analytics.headToHead.draws')}
           </span>
-          <div className="mt-1 flex items-center justify-center gap-2">
-            <span className="text-lg font-bold text-slate-400">
-              {data.player1.draws}
-            </span>
-            <span className="text-[10px] text-white/30">vs</span>
-            <span className="text-lg font-bold text-slate-400">
-              {data.player2.draws}
-            </span>
-          </div>
+          <p className="mt-1 text-lg font-bold text-slate-300">
+            {data.player1.draws}
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-white/10 bg-black/30 p-2.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+            {t('games.table.analytics.headToHead.totalGames')}
+          </span>
+          <p className="mt-1 text-lg font-bold text-white">{data.totalGames}</p>
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-black/30 p-3">
-        <div className="mb-1.5 flex items-center justify-between text-[11px]">
-          <span className="text-white/60">
-            {t('games.table.analytics.headToHead.winRate')}
-          </span>
-          <span className="font-mono text-white/40">
-            {data.totalGames}{' '}
-            {t('games.table.analytics.headToHead.totalGames').toLowerCase()}
-          </span>
-        </div>
-        <div className="h-2 overflow-hidden rounded-full bg-white/10">
-          <div className="flex h-full">
-            <div
-              className="bg-emerald-500 transition-all duration-500"
-              style={{ width: `${p1WinRate}%` }}
-            />
-            <div
-              className="bg-slate-500 transition-all duration-500"
-              style={{
-                width: `${(data.player1.draws / Math.max(data.totalGames, 1)) * 100}%`,
-              }}
-            />
-          </div>
-        </div>
-        <div className="mt-1 flex justify-between text-[10px] text-white/40">
+      <div className="flex flex-col gap-1">
+        <div className="flex justify-between text-[11px] text-white/50">
           <span>{p1WinRate}%</span>
           <span>{p2WinRate}%</span>
+        </div>
+        <div className="flex h-2 w-full overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full bg-emerald-400 transition-all duration-500"
+            style={{ width: `${p1WinRate}%` }}
+          />
+          <div
+            className="h-full bg-rose-400 transition-all duration-500"
+            style={{ width: `${p2WinRate}%` }}
+          />
         </div>
       </div>
     </div>
@@ -258,8 +208,8 @@ function TrendsTab({
 }) {
   if (loading) {
     return (
-      <div className="flex justify-center py-6">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white/70" />
+      <div className="flex items-center justify-center py-6">
+        <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white" />
       </div>
     );
   }
@@ -275,75 +225,75 @@ function TrendsTab({
     );
   }
 
+  const last10 = data.records.slice(-10);
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-3">
-        <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-center">
+      <div className="grid grid-cols-2 gap-2 text-center">
+        <div className="rounded-xl border border-white/10 bg-black/30 p-2.5">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
             {t('games.table.analytics.trends.winRate')}
           </span>
-          <p className="mt-0.5 text-lg font-bold text-white">{data.winRate}%</p>
+          <p className="mt-1 text-lg font-bold text-emerald-400">
+            {data.winRate}%
+          </p>
         </div>
-        {data.currentStreak > 0 && (
-          <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-center">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
-              {t('games.table.analytics.trends.currentStreak')}
-            </span>
-            <p
-              className={cx(
-                'mt-0.5 text-lg font-bold',
-                data.currentStreakType === 'won'
-                  ? 'text-emerald-400'
-                  : 'text-red-400',
-              )}
-            >
-              {data.currentStreak}{' '}
-              {data.currentStreakType === 'won' ? 'W' : 'L'}
-            </p>
-          </div>
-        )}
+
+        <div className="rounded-xl border border-white/10 bg-black/30 p-2.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+            {t('games.table.analytics.trends.currentStreak')}
+          </span>
+          <p
+            className={cx(
+              'mt-1 text-lg font-bold',
+              data.currentStreakType === 'won'
+                ? 'text-emerald-400'
+                : data.currentStreakType === 'lost'
+                  ? 'text-rose-400'
+                  : 'text-white/60',
+            )}
+          >
+            {data.currentStreak > 0
+              ? `${data.currentStreak}${data.currentStreakType === 'won' ? 'W' : 'L'}`
+              : '-'}
+          </p>
+        </div>
       </div>
 
-      <div className="flex items-end gap-1" style={{ height: 60 }}>
-        {[...data.records].reverse().map((record, idx) => (
-          <div
-            key={idx}
-            className={cx(
-              'flex-1 rounded-sm transition-all duration-300 hover:opacity-80',
-              record.result === 'won'
-                ? 'bg-emerald-500'
-                : record.result === 'lost'
-                  ? 'bg-red-500'
-                  : 'bg-slate-500',
-            )}
-            style={{
-              height:
-                record.result === 'won'
-                  ? '100%'
-                  : record.result === 'lost'
-                    ? '40%'
-                    : '60%',
-            }}
-            title={
-              record.result === 'won'
-                ? 'Win'
-                : record.result === 'lost'
-                  ? 'Loss'
-                  : 'Draw'
-            }
-          />
-        ))}
-      </div>
-      <div className="flex justify-between text-[9px] text-white/30">
-        <span>{t('games.table.analytics.trends.oldest')}</span>
-        <span>{t('games.table.analytics.trends.newest')}</span>
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+          {t('games.table.analytics.trends.title')}
+        </span>
+        <div className="flex items-center gap-1">
+          {last10.map((r, i) => {
+            const isWin = r.result === 'won';
+            const isLoss = r.result === 'lost';
+            return (
+              <div
+                key={`${r.sessionId}-${i}`}
+                title={new Date(r.timestamp).toLocaleDateString()}
+                className={cx(
+                  'flex h-6 flex-1 items-center justify-center rounded text-[10px] font-bold',
+                  isWin && 'bg-emerald-500/20 text-emerald-400',
+                  isLoss && 'bg-rose-500/20 text-rose-400',
+                  !isWin && !isLoss && 'bg-white/10 text-white/50',
+                )}
+              >
+                {isWin ? 'W' : isLoss ? 'L' : 'D'}
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex justify-between text-[9px] text-white/30">
+          <span>{t('games.table.analytics.trends.oldest')}</span>
+          <span>{t('games.table.analytics.trends.newest')}</span>
+        </div>
       </div>
     </div>
   );
 }
 
 export function PostGameAnalytics({
-  stats,
   moveTimeline,
   headToHead,
   headToHeadLoading,
@@ -355,7 +305,11 @@ export function PostGameAnalytics({
   opponentId,
   t,
 }: PostGameAnalyticsProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('stats');
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    if (moveTimeline.length > 0) return 'moves';
+    if (opponentId) return 'headToHead';
+    return 'trends';
+  });
 
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
@@ -366,12 +320,6 @@ export function PostGameAnalytics({
   return (
     <div className="flex w-full flex-col gap-3">
       <div className="flex flex-wrap gap-1">
-        <TabButton
-          active={activeTab === 'stats'}
-          onClick={() => handleTabChange('stats')}
-        >
-          {t('games.table.analytics.tabs.stats')}
-        </TabButton>
         {moveTimeline.length > 0 && (
           <TabButton
             active={activeTab === 'moves'}
@@ -397,7 +345,6 @@ export function PostGameAnalytics({
       </div>
 
       <div className="min-h-[80px]">
-        {activeTab === 'stats' && <StatsTab stats={stats} t={t} />}
         {activeTab === 'moves' && (
           <MovesTab
             moveTimeline={moveTimeline}

@@ -75,7 +75,7 @@ describe('GameResultModal', () => {
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
-  it('hides summary stats grid when detailed analysis is active', () => {
+  it('renders stats grid alongside analysis toggle', () => {
     render(
       <GameResultModal
         isOpen={true}
@@ -99,9 +99,7 @@ describe('GameResultModal', () => {
 
     fireEvent.click(screen.getByText('View Analysis'));
 
-    expect(
-      screen.queryByTestId('game-result-stats-grid'),
-    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('game-result-stats-grid')).toBeInTheDocument();
     expect(screen.getByTestId('detailed-analysis-content')).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('Back to Result'));

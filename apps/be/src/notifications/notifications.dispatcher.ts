@@ -16,7 +16,39 @@ export type DispatchParams = {
   url: string;
   data?: Record<string, unknown>;
   locale?: SupportedLocale;
+  /**
+   * Skip the per-user category-preference query. Set by batch callers that
+   * already filtered their audience (e.g. via listUserIdsWithCategoryEnabled)
+   * so fan-out does one preference read total instead of one per recipient.
+   */
+  skipCategoryCheck?: boolean;
 };
+
+/** Max users processed concurrently during batch dispatch. */
+const DISPATCH_CONCURRENCY = 10;
+
+/**
+ * Process items with bounded concurrency. Push providers rate-limit and
+ * each dispatch performs several DB round-trips, so full parallelism would
+ * stampede both; a small worker pool keeps cron windows comfortable.
+ */
+async function mapWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<void>,
+): Promise<void> {
+  let index = 0;
+  const workers = Array.from(
+    { length: Math.max(1, Math.min(limit, items.length)) },
+    async () => {
+      while (index < items.length) {
+        const item = items[index++];
+        await fn(item);
+      }
+    },
+  );
+  await Promise.all(workers);
+}
 
 @Injectable()
 export class NotificationDispatcher {
@@ -30,11 +62,13 @@ export class NotificationDispatcher {
 
   async dispatch(params: DispatchParams): Promise<void> {
     try {
-      const enabled = await this.service.isCategoryEnabled(
-        params.userId,
-        params.category,
-      );
-      if (!enabled) return;
+      if (!params.skipCategoryCheck) {
+        const enabled = await this.service.isCategoryEnabled(
+          params.userId,
+          params.category,
+        );
+        if (!enabled) return;
+      }
 
       const row = await this.service.createInboxRow({
         userId: new Types.ObjectId(params.userId),
@@ -96,9 +130,12 @@ export class NotificationDispatcher {
     userIds: string[],
     params: Omit<DispatchParams, 'userId'>,
   ): Promise<void> {
-    for (const userId of userIds) {
-      await this.dispatch({ ...params, userId });
-    }
+    // Bounded concurrency instead of a serial loop: each dispatch performs
+    // several awaits (inbox write, unread count, subscriptions, pushes), so
+    // sequential fan-out stretches cron windows linearly with the audience.
+    await mapWithConcurrency(userIds, DISPATCH_CONCURRENCY, (userId) =>
+      this.dispatch({ ...params, userId }),
+    );
   }
 }
 

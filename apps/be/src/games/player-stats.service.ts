@@ -288,26 +288,35 @@ export class PlayerStatsService {
     };
     if (gameIdFilter) match.gameId = gameIdFilter;
 
-    const records = await this.recordModel
-      .find(match)
-      .sort({ timestamp: -1 })
-      .lean<{ userId: string; result: string }[]>()
+    // Group counts in the database instead of pulling every record for both
+    // players into memory.
+    const buckets = await this.recordModel
+      .aggregate<{ _id: { userId: string; result: string }; count: number }>([
+        { $match: match },
+        {
+          $group: {
+            _id: { userId: '$userId', result: '$result' },
+            count: { $sum: 1 },
+          },
+        },
+      ])
       .exec();
 
     const player1 = { wins: 0, losses: 0, draws: 0 };
     const player2 = { wins: 0, losses: 0, draws: 0 };
 
-    for (const record of records) {
-      const r = record.result as 'won' | 'lost' | 'draw';
-      if (record.userId === userId1) {
-        if (r === 'won') player1.wins++;
-        else if (r === 'lost') player1.losses++;
-        else player1.draws++;
-      } else if (record.userId === userId2) {
-        if (r === 'won') player2.wins++;
-        else if (r === 'lost') player2.losses++;
-        else player2.draws++;
-      }
+    for (const bucket of buckets) {
+      const r = bucket._id.result as 'won' | 'lost' | 'draw';
+      const target =
+        bucket._id.userId === userId1
+          ? player1
+          : bucket._id.userId === userId2
+            ? player2
+            : null;
+      if (!target) continue;
+      if (r === 'won') target.wins += bucket.count;
+      else if (r === 'lost') target.losses += bucket.count;
+      else target.draws += bucket.count;
     }
 
     return {

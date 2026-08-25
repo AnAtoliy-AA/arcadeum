@@ -75,6 +75,17 @@ export class ShopWalletService {
       };
     }
 
+    // Solana signatures are public chain data — reject any signature that
+    // has already been redeemed by anyone, for any item (cross-user and
+    // one-to-many replay protection).
+    const redeemed = await this.inventoryModel
+      .findOne({ walletSignature: signature })
+      .lean()
+      .exec();
+    if (redeemed) {
+      throw new BadRequestException('shop.signatureAlreadyUsed');
+    }
+
     const effective = await this.catalog.getEffective(itemId);
     if (!effective) throw new BadRequestException('shop.unknownItem');
     if (!effective.available) throw new BadRequestException('shop.unavailable');
@@ -115,21 +126,30 @@ export class ShopWalletService {
     };
 
     await runInTransaction(this.connection, async (session) => {
-      const created = await this.inventoryModel.create(
-        [
-          {
-            userId: new Types.ObjectId(userId),
-            itemId: effective.id,
-            purchaseId,
-            acquiredVia: 'arcadeum',
-            paidAmount: effective.priceAmount,
-            paidCurrency: 'arcadeum',
-            walletSignature: signature,
-            walletSender: senderAddress,
-          },
-        ],
-        { session },
-      );
+      const created = await this.inventoryModel
+        .create(
+          [
+            {
+              userId: new Types.ObjectId(userId),
+              itemId: effective.id,
+              purchaseId,
+              acquiredVia: 'arcadeum',
+              paidAmount: effective.priceAmount,
+              paidCurrency: 'arcadeum',
+              walletSignature: signature,
+              walletSender: senderAddress,
+            },
+          ],
+          { session },
+        )
+        .catch((err: unknown) => {
+          // Concurrent request won the race on the unique walletSignature
+          // index (or purchaseId index) — surface a clean replay error.
+          if (err instanceof Error && err.message.includes('E11000')) {
+            throw new BadRequestException('shop.signatureAlreadyUsed');
+          }
+          throw err;
+        });
       inventoryRow = created[0];
       equipped = await this.ensureEquipped(userId, effective, session);
     });

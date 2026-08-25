@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.40] - 2026-08-25
+
+### Added
+- implement prize badges catalog and visual medallions across events (ARC-936) (ARC-936)
+
+### Fixed
+- fix event banner layout and replace invalid text tokens (ARC-936) (ARC-936)
+- adapt home hero heading and shadows to active theme (ARC-936) (ARC-936)
+
+
 ## [1.26.39] - 2026-08-25
 
 ### Fixed

@@ -43,4 +43,14 @@ export class LeaderboardsGateway implements OnGatewayInit {
     if (!this.server) return;
     this.server.emit('leaderboards.entry.updated', update);
   }
+
+  /**
+   * Coalesced variant of emitEntryUpdated: one namespace emission for a
+   * batch of users instead of one broadcast per user (markInMatch fans in
+   * whole match rosters).
+   */
+  emitEntriesUpdated(updates: LeaderboardEntryUpdate[]): void {
+    if (!this.server || updates.length === 0) return;
+    this.server.emit('leaderboards.entries.updated', { updates });
+  }
 }

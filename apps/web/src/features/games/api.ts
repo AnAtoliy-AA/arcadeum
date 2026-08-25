@@ -224,11 +224,12 @@ export const gamesApi = {
     gameId: string,
     options?: ApiClientOptions & { variant?: string; theme?: string },
   ): Promise<CreateRoomResponse> => {
-    const { variant, theme, ...rest } = options ?? {};
+    const variant = options?.variant;
+    const theme = options?.theme;
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
       { gameId, mode: 'ai', variant, theme },
-      rest,
+      options,
     );
   },
 
@@ -240,11 +241,13 @@ export const gamesApi = {
       aiMoveDelayMs?: number;
     },
   ): Promise<CreateRoomResponse> => {
-    const { variant, theme, aiMoveDelayMs, ...rest } = options ?? {};
+    const variant = options?.variant;
+    const theme = options?.theme;
+    const aiMoveDelayMs = options?.aiMoveDelayMs;
     return apiClient.post<CreateRoomResponse>(
       '/games/ai-vs-ai',
       { gameId, variant, theme, aiMoveDelayMs },
-      rest,
+      options,
     );
   },
 
@@ -252,11 +255,12 @@ export const gamesApi = {
     gameId: string,
     options?: ApiClientOptions & { variant?: string; theme?: string },
   ): Promise<CreateRoomResponse> => {
-    const { variant, theme, ...rest } = options ?? {};
+    const variant = options?.variant;
+    const theme = options?.theme;
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
       { gameId, mode: 'human', variant, theme },
-      rest,
+      options,
     );
   },
 

@@ -88,9 +88,11 @@ export const MusicBtn = ({
         border: active
           ? '1px solid var(--primary, #818cf8)'
           : '1px solid var(--borderColor, rgba(255, 255, 255, 0.18))',
-        background: active
-          ? 'color-mix(in srgb, var(--primary, #6366f1) 25%, transparent)'
-          : 'color-mix(in srgb, var(--color, #fff) 8%, transparent)',
+        background: `var(--gm-btn-bg, ${
+          active
+            ? 'color-mix(in srgb, var(--primary, #6366f1) 25%, transparent)'
+            : 'color-mix(in srgb, var(--color, #fff) 8%, transparent)'
+        })`,
         color:
           color ||
           (active
@@ -136,7 +138,7 @@ export const PlayBtn = ({
       border:
         '1px solid color-mix(in srgb, var(--primaryText, #fff) 30%, var(--primary, #6366f1))',
       background:
-        'linear-gradient(135deg, var(--primaryGradientStart, var(--primary, #6366f1)), var(--primaryGradientEnd, var(--secondary, #4f46e5)))',
+        'var(--gm-play-bg, linear-gradient(135deg, var(--primaryGradientStart, var(--primary, #6366f1)), var(--primaryGradientEnd, var(--secondary, #4f46e5))))',
       color: 'var(--primaryText, #ffffff)',
       cursor: 'pointer',
       flexShrink: 0,

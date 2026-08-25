@@ -9,11 +9,14 @@ export type ThemedTextProps = TextProps & {
 };
 
 export function ThemedText({
+  children,
   style,
   lightColor,
   darkColor,
   type = 'default',
-  ...rest
+  numberOfLines,
+  testID,
+  onPress,
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
@@ -28,8 +31,12 @@ export function ThemedText({
         type === 'link' ? styles.link : undefined,
         style,
       ]}
-      {...rest}
-    />
+      numberOfLines={numberOfLines}
+      testID={testID}
+      onPress={onPress}
+    >
+      {children}
+    </Text>
   );
 }
 

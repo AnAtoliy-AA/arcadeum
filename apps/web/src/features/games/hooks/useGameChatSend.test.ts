@@ -2,11 +2,11 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useGameChatSend } from './useGameChatSend';
 
-const emit = vi.fn();
+const { emit } = vi.hoisted(() => ({ emit: vi.fn() }));
 
 vi.mock('@/shared/lib/socket', () => ({
   gameSocket: {
-    emit: (...args: unknown[]) => emit(...args),
+    emit: emit,
   },
 }));
 

@@ -17,14 +17,29 @@ export interface MobileActionSheetProps {
 }
 
 function Sheet({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  role,
+  style,
+  'data-testid': testId,
+  'aria-modal': ariaModal,
+  children,
+}: {
+  className?: string;
+  role?: React.AriaRole;
+  style?: React.CSSProperties;
+  'data-testid'?: string;
+  'aria-modal'?: boolean;
+  children?: React.ReactNode;
+}) {
   return (
     <div
-      className={`flex flex-col items-stretch fixed left-0 right-0 bottom-0 gap-3 rounded-t-[24px] border-t border-[rgba(255,255,255,0.14)] bg-[rgba(15,23,42,0.95)] p-4 backdrop-blur-[16px] z-[200] ${className ?? ''}`}
-      {...props}
-    />
+      className="flex flex-col items-stretch fixed left-0 right-0 bottom-0 gap-3 rounded-t-[24px] border-t border-[rgba(255,255,255,0.14)] bg-[rgba(15,23,42,0.95)] p-4 backdrop-blur-[16px] z-[200]"
+      role={role}
+      style={style}
+      data-testid={testId}
+      aria-modal={ariaModal}
+    >
+      {children}
+    </div>
   );
 }
 

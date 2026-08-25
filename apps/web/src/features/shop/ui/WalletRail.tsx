@@ -26,22 +26,24 @@ function Tile({
   backgroundColor,
   borderColor,
   className,
-  ...props
+  children,
 }: {
   flex?: number | string;
   backgroundColor?: string;
   borderColor?: string;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  children?: React.ReactNode;
+}) {
   return (
     <div
+      style={{ flex, backgroundColor, borderColor }}
       className={cx(
         'flex flex-row items-center gap-2 px-3 py-2 rounded-xl border',
         className,
       )}
-      style={{ flex, backgroundColor, borderColor }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

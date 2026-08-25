@@ -21,14 +21,27 @@ const RANGES: Range[] = ['today', 'week', 'month', 'season'];
 function SegBtn({
   active,
   className,
-  ...props
+  children,
+  onClick,
+  tabIndex,
+  'aria-selected': ariaSelected,
+  'data-testid': dataTestId,
 }: {
   active?: boolean;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  children?: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  tabIndex?: number;
+  'aria-selected'?: boolean | 'true' | 'false';
+  'data-testid'?: string;
+}) {
   return (
     <div
       role="tab"
+      aria-selected={ariaSelected}
+      tabIndex={tabIndex}
+      onClick={onClick}
+      data-testid={dataTestId}
       className={cx(
         'flex flex-row items-center cursor-pointer rounded-lg border px-3 py-2 hover:bg-[rgba(255,255,255,0.04)]',
         active
@@ -36,8 +49,9 @@ function SegBtn({
           : 'border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

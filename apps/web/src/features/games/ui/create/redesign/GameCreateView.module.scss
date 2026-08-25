@@ -796,11 +796,11 @@
 }
 
 @include bp.narrow {
-  .rule {
-    border-right: 0 !important;
+  .rule.rule.rule {
+    border-right: 0;
   }
-  .rule:not(:last-child) {
-    border-bottom: 1px solid var(--gc-line) !important;
+  .rule.rule:not(:last-child) {
+    border-bottom: 1px solid var(--gc-line);
   }
 }
 

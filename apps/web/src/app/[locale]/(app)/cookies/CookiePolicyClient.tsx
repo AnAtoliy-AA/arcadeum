@@ -12,8 +12,8 @@ const CookiePolicyPageDynamic = dynamic(
   },
 );
 
-const CookiePolicyClient = (props: { t?: PageTranslations }) => {
-  return <CookiePolicyPageDynamic {...props} />;
+const CookiePolicyClient = ({ t }: { t?: PageTranslations }) => {
+  return <CookiePolicyPageDynamic t={t} />;
 };
 
 export default CookiePolicyClient;

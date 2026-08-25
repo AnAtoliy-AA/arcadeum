@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ConvertGemsForm } from './ConvertGemsForm';
 
-const mockConvertAction = vi.fn();
+const mockConvertAction = vi.hoisted(() => vi.fn());
 vi.mock('../server/gems.actions', () => ({
-  convertGemsAction: (...args: unknown[]) => mockConvertAction(...args),
+  convertGemsAction: mockConvertAction,
 }));
 
 const mockRouterRefresh = vi.fn();

@@ -11,7 +11,7 @@ export type SkeletonProps = {
   'data-testid'?: string;
   className?: string;
   style?: React.CSSProperties;
-} & React.HTMLAttributes<HTMLDivElement>;
+};
 
 /**
  * Keyframes for the shimmer effect. Injected via a <style> tag (same pattern
@@ -43,7 +43,6 @@ export const Skeleton = memo(function Skeleton({
   'data-testid': dataTestId,
   className,
   style: styleProp,
-  ...rest
 }: SkeletonProps) {
   const style = useMemo(() => {
     const s: React.CSSProperties = { ...styleProp };
@@ -72,24 +71,92 @@ export const Skeleton = memo(function Skeleton({
         )}
         style={style}
         data-testid={dataTestId}
-        {...rest}
       />
     </>
   );
 });
 
-export const SkeletonText: React.FC<SkeletonProps> = memo((props: SkeletonProps) => (
-  <Skeleton variant="text" {...props} />
-));
-export const SkeletonCircle: React.FC<SkeletonProps> = memo((props: SkeletonProps) => (
-  <Skeleton variant="circular" {...props} />
-));
-export const SkeletonAvatar: React.FC<SkeletonProps> = memo((props: SkeletonProps) => (
-  <Skeleton variant="circular" width={40} height={40} {...props} />
-));
-export const SkeletonButton: React.FC<SkeletonProps> = memo((props: SkeletonProps) => (
-  <Skeleton variant="rectangular" width={120} height={40} {...props} />
-));
+type SkeletonVariantProps = Omit<SkeletonProps, 'variant'>;
+
+export const SkeletonText = memo(function SkeletonText({
+  width,
+  height,
+  delay,
+  className,
+  style,
+  'data-testid': dataTestId,
+}: SkeletonVariantProps) {
+  return (
+    <Skeleton
+      variant="text"
+      width={width}
+      height={height}
+      delay={delay}
+      className={className}
+      style={style}
+      data-testid={dataTestId}
+    />
+  );
+});
+
+export const SkeletonCircle = memo(function SkeletonCircle({
+  width,
+  height,
+  delay,
+  className,
+  style,
+  'data-testid': dataTestId,
+}: SkeletonVariantProps) {
+  return (
+    <Skeleton
+      variant="circular"
+      width={width}
+      height={height}
+      delay={delay}
+      className={className}
+      style={style}
+      data-testid={dataTestId}
+    />
+  );
+});
+
+export const SkeletonAvatar = memo(function SkeletonAvatar({
+  delay,
+  className,
+  style,
+  'data-testid': dataTestId,
+}: SkeletonVariantProps) {
+  return (
+    <Skeleton
+      variant="circular"
+      width={40}
+      height={40}
+      delay={delay}
+      className={className}
+      style={style}
+      data-testid={dataTestId}
+    />
+  );
+});
+
+export const SkeletonButton = memo(function SkeletonButton({
+  delay,
+  className,
+  style,
+  'data-testid': dataTestId,
+}: SkeletonVariantProps) {
+  return (
+    <Skeleton
+      variant="rectangular"
+      width={120}
+      height={40}
+      delay={delay}
+      className={className}
+      style={style}
+      data-testid={dataTestId}
+    />
+  );
+});
 
 export type SkeletonTableRowProps = {
   columns: number;

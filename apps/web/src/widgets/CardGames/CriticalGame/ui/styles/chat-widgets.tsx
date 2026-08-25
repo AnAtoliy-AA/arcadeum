@@ -15,6 +15,8 @@ interface ChatBubbleContainerProps {
   position?: 'top' | 'bottom' | 'left' | 'right';
   children?: ReactNode;
   variant?: string;
+  style?: CSSProperties;
+  'data-testid'?: string;
 }
 
 export const ChatBubbleContainer = memo(function ChatBubbleContainer({
@@ -22,8 +24,9 @@ export const ChatBubbleContainer = memo(function ChatBubbleContainer({
   position,
   variant: _variant,
   style,
-  ...props
-}: ChatBubbleContainerProps & { style?: CSSProperties }): ReactElement {
+  'data-testid': testId,
+  children,
+}: ChatBubbleContainerProps): ReactElement {
   return (
     <div
       className={cx(
@@ -41,7 +44,9 @@ export const ChatBubbleContainer = memo(function ChatBubbleContainer({
         boxShadow: '0 2.5px 5px rgba(0, 0, 0, 0.3)',
         ...style,
       }}
-      {...props}
-    />
+      data-testid={testId}
+    >
+      {children}
+    </div>
   );
 });

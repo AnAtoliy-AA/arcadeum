@@ -1,14 +1,16 @@
-import type { HTMLAttributes } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
-
-type VariantProp = { variant?: string };
 
 export function CardNameContainer({
   className,
   variant,
-  ...props
-}: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  variant?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -19,52 +21,66 @@ export function CardNameContainer({
         className,
       )}
       style={{ backdropFilter: 'blur(8px)' }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 export function CardName({
   className,
-  ...props
-}: { className?: string } & VariantProp & HTMLAttributes<HTMLSpanElement>) {
+  children,
+}: {
+  className?: string;
+  variant?: string;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
         'text-[11px] font-extrabold uppercase tracking-[1px] text-white text-center line-clamp-1 [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 export function CardInner({
   className,
-  ...props
-}: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
+  style,
+  children,
+}: {
+  className?: string;
+  style?: CSSProperties;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-col flex-1 w-full items-center justify-center relative rounded-[12px] overflow-hidden',
         className,
       )}
-      {...props}
-    />
+      style={style}
+    >
+      {children}
+    </div>
   );
 }
 
 export function CardFrame({
   className,
-  ...props
-}: { className?: string } & VariantProp & HTMLAttributes<HTMLDivElement>) {
+}: {
+  className?: string;
+  variant?: string;
+}) {
   return (
     <div
       className={cx(
         'flex flex-col items-stretch absolute inset-0 border-2 border-[rgba(255,255,255,0.1)] rounded-[14px] pointer-events-none',
         className,
       )}
-      {...props}
     />
   );
 }
@@ -79,12 +95,11 @@ const CARD_CORNER_CLASS = {
 export function CardCorner({
   className,
   position,
-  ...props
 }: {
   className?: string;
   position?: keyof typeof CARD_CORNER_CLASS;
-} & VariantProp &
-  HTMLAttributes<HTMLDivElement>) {
+  variant?: string;
+}) {
   return (
     <div
       className={cx(
@@ -92,7 +107,6 @@ export function CardCorner({
         position ? CARD_CORNER_CLASS[position] : undefined,
         className,
       )}
-      {...props}
     />
   );
 }

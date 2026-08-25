@@ -3,9 +3,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { GameVariantSelector } from './GameVariantSelector';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 
-const mockEmit = vi.fn();
+const { mockEmit } = vi.hoisted(() => ({ mockEmit: vi.fn() }));
 vi.mock('@/shared/lib/socket', () => ({
-  gameSocket: { emit: (...args: unknown[]) => mockEmit(...args) },
+  gameSocket: { emit: mockEmit },
 }));
 
 vi.mock('next/navigation', () => ({

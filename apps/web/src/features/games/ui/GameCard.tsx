@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   useTranslation,
@@ -24,13 +24,12 @@ const Card = ({
   className,
   children,
   onClick,
-  ...props
 }: {
   disabled?: boolean;
   className?: string;
   children?: ReactNode;
   onClick?: () => void;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick'>) => (
+}) => (
   <SharedCard
     className={cx(
       'transition-all duration-300 ease-out',
@@ -40,68 +39,44 @@ const Card = ({
       className,
     )}
     onClick={onClick}
-    {...props}
   >
     {children}
   </SharedCard>
 );
 
-const CardGlow = ({
-  disabled = false,
-  className,
-  ...props
-}: {
-  disabled?: boolean;
-  className?: string;
-} & HTMLAttributes<HTMLDivElement>) => (
+const CardGlow = ({ disabled = false }: { disabled?: boolean }) => (
   <div
     className={cx(
       'absolute top-0 left-0 right-0 h-[3px]',
       disabled
         ? 'bg-[var(--outlineColor)]'
         : 'bg-[linear-gradient(90deg,var(--primary),var(--secondary))]',
-      className,
     )}
-    {...props}
   />
 );
 
 const GameImage = ({
   background,
-  className,
   children,
-  ...props
 }: {
   background?: string;
-  className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'w-[60px] h-[60px] rounded-[8px] bg-[var(--backgroundFocus)] border-2 border-[var(--borderColor)] mb-3 flex items-center justify-center',
-      className,
     )}
     style={background ? { background } : undefined}
-    {...props}
   >
     {children}
   </div>
 );
 
-const MetaTag = ({
-  className,
-  children,
-  ...props
-}: {
-  className?: string;
-  children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+const MetaTag = ({ children }: { children?: ReactNode }) => (
   <div
     className={cx(
       'flex flex-row items-center gap-1 bg-[var(--backgroundFocus)] px-2 py-1 rounded-[12px] border border-[var(--borderColor)]',
-      className,
     )}
-    {...props}
   >
     {children}
   </div>

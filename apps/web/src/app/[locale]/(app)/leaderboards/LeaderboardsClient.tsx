@@ -12,12 +12,18 @@ const LeaderboardsPageDynamic = dynamic(
   },
 );
 
-const LeaderboardsClient = (props: {
+const LeaderboardsClient = ({
+  t,
+  selfId,
+  accessToken,
+}: {
   t?: PageTranslations;
   selfId?: string;
   accessToken?: string;
 }) => {
-  return <LeaderboardsPageDynamic {...props} />;
+  return (
+    <LeaderboardsPageDynamic t={t} selfId={selfId} accessToken={accessToken} />
+  );
 };
 
 export default LeaderboardsClient;

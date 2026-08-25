@@ -36,64 +36,82 @@ type BalanceCurrency = keyof typeof BALANCE_CHIP_VARIANTS;
 function BalanceChip({
   currency,
   className,
-  ...props
+  'data-testid': dataTestId,
+  children,
 }: {
   currency: BalanceCurrency;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
+      data-testid={dataTestId}
       className={cx(
         'flex flex-row items-center gap-2 px-3 py-2 rounded-xl border',
         BALANCE_CHIP_VARIANTS[currency],
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 function NavLink({
   color,
   className,
-  ...props
+  'data-testid': dataTestId,
+  children,
 }: {
   color?: string;
   className?: string;
-} & React.HTMLAttributes<HTMLSpanElement>) {
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <Typography
       uiSize="sm"
       weight="700"
       tracking="sm"
       color={color === '#f5f7ff' ? '#f5f7ff' : '#94a3b8'}
+      data-testid={dataTestId}
       className={cx(
         'px-[10px] py-[6px] rounded-lg uppercase transition-colors',
         'hover:text-[#f5f7ff] hover:bg-[rgba(255,255,255,0.04)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </Typography>
   );
 }
 
 function TopUpBtn({
   onClick,
   className,
-  ...props
+  role,
+  'data-testid': dataTestId,
+  children,
 }: {
   onClick?: () => void;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  role?: string;
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
+      role={role}
+      data-testid={dataTestId}
+      onClick={onClick}
       className={cx(
         'flex flex-row items-center gap-1 px-3 py-2 rounded-xl border border-dashed border-[rgba(255,255,255,0.18)] cursor-pointer transition-colors hover:border-[rgba(167,139,250,0.6)] hover:bg-[rgba(167,139,250,0.06)]',
         className,
       )}
-      onClick={onClick}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -147,7 +165,6 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
           <NavLink
             color={isShop ? '#f5f7ff' : '#babfc7'}
             data-testid="shop-nav-shop"
-            data-active={isShop ? 'true' : 'false'}
           >
             {labels.nav.shop}
           </NavLink>
@@ -156,7 +173,6 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
           <NavLink
             color={isInventory ? '#f5f7ff' : '#babfc7'}
             data-testid="shop-nav-inventory"
-            data-active={isInventory ? 'true' : 'false'}
           >
             {labels.nav.inventory}
           </NavLink>

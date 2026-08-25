@@ -2,8 +2,13 @@ import React from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
-type CommonProps = React.HTMLAttributes<HTMLDivElement> & {
+type CommonProps = {
   className?: string;
+  style?: React.CSSProperties;
+  id?: string;
+  title?: string;
+  'data-testid'?: string;
+  children?: React.ReactNode;
 };
 
 type PlayerSectionProps = CommonProps & {
@@ -16,11 +21,13 @@ type PlayerSectionProps = CommonProps & {
 export const PlayerSection = ({
   className,
   style,
+  id,
+  title,
   isTargetable,
   animated,
   backgroundColor,
   borderColor,
-  ...props
+  children,
 }: PlayerSectionProps) => (
   <div
     className={cx(
@@ -32,20 +39,23 @@ export const PlayerSection = ({
       animated !== false && 'transition-all duration-300 ease-out',
       className,
     )}
+    id={id}
+    title={title}
     style={{
       ...(backgroundColor ? { backgroundColor } : {}),
       ...(borderColor ? { borderColor } : {}),
       ...(style ?? {}),
     }}
-    {...props}
-  />
+  >
+    {children}
+  </div>
 );
 
 // Natural-height wrapper. In fit-grid mode the `.sb-fit-grid > *` CSS
 // rule stretches it to fill its grid cell; in mobile vertical (1-col flex
 // column) we leave it at content height so the page scrolls naturally
 // between boards instead of each board taking the full viewport height.
-export const PlayerSectionWrapper = ({ className, ...props }: CommonProps) => (
+export const PlayerSectionWrapper = ({ className, children }: CommonProps) => (
   <div
     className={cx(
       'flex flex-col items-stretch relative overflow-visible pt-[8px] w-full min-w-0',
@@ -53,8 +63,9 @@ export const PlayerSectionWrapper = ({ className, ...props }: CommonProps) => (
       '[@media(max-height:480px)]:pt-[4px]',
       className,
     )}
-    {...props}
-  />
+  >
+    {children}
+  </div>
 );
 
 type BadgeWrapperProps = CommonProps;
@@ -62,7 +73,7 @@ type BadgeWrapperProps = CommonProps;
 export const BadgeWrapper = ({
   className,
   style,
-  ...props
+  children,
 }: BadgeWrapperProps) => (
   <div
     className={cx(
@@ -70,22 +81,28 @@ export const BadgeWrapper = ({
       className,
     )}
     style={style}
-    {...props}
-  />
+  >
+    {children}
+  </div>
 );
 
-type PlayerNameProps = React.HTMLAttributes<HTMLSpanElement> & {
+type PlayerNameProps = {
   className?: string;
   color?: string;
+  style?: React.CSSProperties;
+  'data-testid'?: string;
+  children?: React.ReactNode;
 };
 
 export const PlayerName = ({
   className,
   color,
   style,
-  ...props
+  'data-testid': testId,
+  children,
 }: PlayerNameProps) => (
   <span
+    data-testid={testId}
     className={cx(
       'is_PlayerName m-0 flex flex-row items-center justify-center gap-1.5 text-[15px] font-semibold text-center max-[800px]:text-[13px] min-w-0',
       className,
@@ -94,16 +111,18 @@ export const PlayerName = ({
       ...(color ? { color } : {}),
       ...(style ?? {}),
     }}
-    {...props}
-  />
+  >
+    {children}
+  </span>
 );
 
-export const PlayerStats = ({ className, ...props }: CommonProps) => (
+export const PlayerStats = ({ className, children }: CommonProps) => (
   <div
     className={cx(
       'is_PlayerStats flex flex-col items-stretch w-full text-[14px]',
       className,
     )}
-    {...props}
-  />
+  >
+    {children}
+  </div>
 );

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Button } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 
@@ -28,34 +28,28 @@ const ControlsContainer = ({
   variant = 'primary',
   className,
   children,
-  ...props
 }: {
   variant?: 'primary' | 'secondary' | 'minimal';
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-row items-center gap-3 px-4 py-3 rounded-[8px] border flex-wrap max-[800px]:gap-2 max-[800px]:px-3 max-[800px]:py-2',
       CONTROLS_VARIANT_CLASSES[variant],
       className,
     )}
-    {...props}
   >
     {children}
   </div>
 );
 
-const ControlDivider = ({
-  className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) => (
+const ControlDivider = ({ className }: { className?: string }) => (
   <div
     className={cx(
       'w-[1px] h-6 bg-[var(--borderColor)] opacity-[0.3] mx-1',
       className,
     )}
-    {...props}
   />
 );
 

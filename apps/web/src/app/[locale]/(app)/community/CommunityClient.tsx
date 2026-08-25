@@ -9,8 +9,8 @@ const CommunityPageDynamic = dynamic(() => import('./CommunityPageContent'), {
   loading: () => <PageLoading layout="standard" />,
 });
 
-const CommunityClient = (props: { t?: PageTranslations }) => {
-  return <CommunityPageDynamic {...props} />;
+const CommunityClient = ({ t }: { t?: PageTranslations }) => {
+  return <CommunityPageDynamic t={t} />;
 };
 
 export default CommunityClient;

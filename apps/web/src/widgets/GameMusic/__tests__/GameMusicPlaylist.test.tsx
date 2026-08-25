@@ -6,13 +6,17 @@ import { FALLBACK_TRACKS } from '../lib/GameMusicUtils';
 vi.mock('@arcadeum/ui', () => ({
   Typography: ({
     children,
-    uiSize: _uiSize,
-    ...props
+    className,
+    style,
   }: {
-    children: React.ReactNode;
-    uiSize?: string;
+    children?: React.ReactNode;
+    className?: string;
     style?: React.CSSProperties;
-  }) => <span {...props}>{children}</span>,
+  }) => (
+    <span className={className} style={style}>
+      {children}
+    </span>
+  ),
 }));
 
 const renderPlaylist = (

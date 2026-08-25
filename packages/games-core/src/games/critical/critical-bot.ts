@@ -108,14 +108,22 @@ export class CriticalBot {
     let newOrder = [...topCards];
     if (difficulty === 'expert') {
       // Bury any bombs to the back so the next player won't draw them.
-      const bombs = newOrder.filter((c) => c === 'critical_event');
-      const rest = newOrder.filter((c) => c !== 'critical_event');
-      newOrder = [...rest, ...bombs];
+      const bombs = newOrder.filter(
+        (c): c is CriticalCard => c === 'critical_event',
+      );
+      const remaining = newOrder.filter(
+        (c): c is CriticalCard => c !== 'critical_event',
+      );
+      newOrder = remaining.concat(bombs);
     } else if (difficulty === 'hard' && Math.random() < 0.5) {
       // Hard bots bury bombs half the time, otherwise shuffle randomly.
-      const bombs = newOrder.filter((c) => c === 'critical_event');
-      const rest = newOrder.filter((c) => c !== 'critical_event');
-      newOrder = [...rest, ...bombs];
+      const bombs = newOrder.filter(
+        (c): c is CriticalCard => c === 'critical_event',
+      );
+      const remaining = newOrder.filter(
+        (c): c is CriticalCard => c !== 'critical_event',
+      );
+      newOrder = remaining.concat(bombs);
     } else {
       // Weak bots shuffle randomly.
       newOrder = [...topCards].sort(() => Math.random() - 0.5);

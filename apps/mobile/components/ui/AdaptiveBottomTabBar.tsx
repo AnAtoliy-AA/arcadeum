@@ -205,12 +205,31 @@ function WebBottomTabBar({
   );
 }
 
-export function AdaptiveBottomTabBar(props: BottomTabBarProps) {
+export function AdaptiveBottomTabBar({
+  state,
+  descriptors,
+  navigation,
+  insets,
+}: BottomTabBarProps) {
   if (Platform.OS === 'web') {
-    return <WebBottomTabBar {...props} />;
+    return (
+      <WebBottomTabBar
+        state={state}
+        descriptors={descriptors}
+        navigation={navigation}
+        insets={insets}
+      />
+    );
   }
 
-  return <BottomTabBar {...props} />;
+  return (
+    <BottomTabBar
+      state={state}
+      descriptors={descriptors}
+      navigation={navigation}
+      insets={insets}
+    />
+  );
 }
 
 const createStyles = (palette: Palette) =>

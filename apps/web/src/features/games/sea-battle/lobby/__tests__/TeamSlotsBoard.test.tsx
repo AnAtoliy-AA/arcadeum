@@ -7,11 +7,31 @@ const emitAddBotToTeam = vi.fn();
 const emitRemoveBotFromTeam = vi.fn();
 const emitSetTeamConfig = vi.fn();
 
+interface AssignTeamEnv {
+  roomId: string;
+  userId: string;
+  targetUserId?: string;
+  teamId: string | null;
+}
+
+interface AddBotToTeamEnv {
+  roomId: string;
+  userId: string;
+  teamId: string;
+}
+
+interface RemoveBotFromTeamEnv {
+  roomId: string;
+  userId: string;
+  targetUserId: string;
+}
+
 vi.mock('../team-mode.api', () => ({
-  emitAssignTeam: (...args: unknown[]) => emitAssignTeam(...args),
-  emitAddBotToTeam: (...args: unknown[]) => emitAddBotToTeam(...args),
-  emitRemoveBotFromTeam: (...args: unknown[]) => emitRemoveBotFromTeam(...args),
-  emitSetTeamConfig: (...args: unknown[]) => emitSetTeamConfig(...args),
+  emitAssignTeam: (env: AssignTeamEnv) => emitAssignTeam(env),
+  emitAddBotToTeam: (env: AddBotToTeamEnv) => emitAddBotToTeam(env),
+  emitRemoveBotFromTeam: (env: RemoveBotFromTeamEnv) =>
+    emitRemoveBotFromTeam(env),
+  emitSetTeamConfig: (env: Record<string, unknown>) => emitSetTeamConfig(env),
 }));
 
 vi.mock('../team-controls', () => ({
@@ -38,15 +58,24 @@ interface ButtonProps extends ChildrenProps {
 }
 
 vi.mock('@arcadeum/ui', () => ({
-  Card: ({ children, ...rest }: ChildrenProps & { 'data-testid'?: string }) => (
-    <div data-testid={rest['data-testid']}>{children}</div>
+  Card: ({
+    children,
+    'data-testid': testId,
+  }: ChildrenProps & { 'data-testid'?: string }) => (
+    <div data-testid={testId}>{children}</div>
   ),
-  Button: ({ children, onClick, disabled, ...rest }: ButtonProps) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    'data-testid': testId,
+    'aria-label': ariaLabel,
+  }: ButtonProps) => (
     <button
       onClick={onClick}
       disabled={disabled}
-      data-testid={rest['data-testid']}
-      aria-label={rest['aria-label']}
+      data-testid={testId}
+      aria-label={ariaLabel}
     >
       {children}
     </button>

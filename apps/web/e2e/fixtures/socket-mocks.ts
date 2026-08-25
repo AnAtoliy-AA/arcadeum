@@ -17,14 +17,14 @@ export interface PlaywrightMocks {
 
 export interface MockSocket {
   _isGlobalMocked?: boolean;
-  _mockListeners?: Record<string, ((...args: unknown[]) => void)[]>;
-  on: (event: string, fn: (...args: unknown[]) => void) => MockSocket;
-  off: (event: string, fn: (...args: unknown[]) => void) => MockSocket;
-  trigger: (event: string, ...args: unknown[]) => void;
+  _mockListeners?: Record<string, ((payload?: unknown) => void)[]>;
+  on: (event: string, fn: (payload?: unknown) => void) => MockSocket;
+  off: (event: string, fn: (payload?: unknown) => void) => MockSocket;
+  trigger: (event: string, payload?: unknown) => void;
   connected: boolean;
   connect: () => MockSocket;
   disconnect: () => MockSocket;
-  emit: (event: string, ...args: unknown[]) => MockSocket;
+  emit: (event: string, payload?: unknown) => MockSocket;
 }
 
 declare global {
@@ -81,13 +81,13 @@ export async function mockGameSocket(
           s._isGlobalMocked = true;
           s._mockListeners = {};
           const originalOn = s.on.bind(s);
-          s.on = (event: string, fn: (...args: unknown[]) => void) => {
+          s.on = (event: string, fn: (payload?: unknown) => void) => {
             s._mockListeners![event] = s._mockListeners![event] || [];
             s._mockListeners![event].push(fn);
             return originalOn(event, fn);
           };
           const originalOff = s.off.bind(s);
-          s.off = (event: string, fn: (...args: unknown[]) => void) => {
+          s.off = (event: string, fn: (payload?: unknown) => void) => {
             if (s._mockListeners![event]) {
               s._mockListeners![event] = s._mockListeners![event].filter(
                 (l) => l !== fn,
@@ -95,10 +95,10 @@ export async function mockGameSocket(
             }
             return originalOff(event, fn);
           };
-          s.trigger = (event: string, ...args: unknown[]) => {
+          s.trigger = (event: string, payload?: unknown) => {
             const listeners =
               (s._mockListeners && s._mockListeners[event]) || [];
-            listeners.forEach((l) => l(...args));
+            listeners.forEach((l) => l(payload));
           };
           const originalConnectedProperty = s.connected;
           Object.defineProperty(s, 'connected', {
@@ -128,7 +128,7 @@ export async function mockGameSocket(
             return s;
           };
           const originalEmit = s.emit.bind(s);
-          s.emit = (event: string, ...args: unknown[]) => {
+          s.emit = (event: string, payload?: unknown) => {
             const mocks = window._playwrightMocks;
 
             if (
@@ -172,16 +172,16 @@ export async function mockGameSocket(
               return s;
             }
             if (event === 'games.room.chat' && mocks?.roomId) {
-              const payload = args[0] as Record<string, unknown>;
+              const data = payload as Record<string, unknown>;
               setTimeout(() => {
                 s.trigger('games.room.chat', {
                   id: `mock-log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
                   roomId: mocks.roomId,
-                  senderId: payload.userId ?? mocks.userId,
+                  senderId: data.userId ?? mocks.userId,
                   senderName: 'Test User',
-                  message: payload.message,
+                  message: data.message,
                   type: 'message',
-                  scope: payload.scope ?? 'all',
+                  scope: data.scope ?? 'all',
                   createdAt: new Date().toISOString(),
                   timestamp: Date.now(),
                 });
@@ -191,7 +191,7 @@ export async function mockGameSocket(
             if (mocks?.roomId && prop === 'gameSocket') {
               return s;
             }
-            return originalEmit(event, ...args);
+            return originalEmit(event, payload);
           };
         };
         Object.defineProperty(window, prop, {
@@ -227,14 +227,14 @@ export async function mockAllOnPage(page: Page): Promise<void> {
         s._mockListeners = {};
 
         const originalOn = s.on.bind(s);
-        s.on = (event: string, fn: (...args: unknown[]) => void) => {
+        s.on = (event: string, fn: (payload?: unknown) => void) => {
           s._mockListeners![event] = s._mockListeners![event] || [];
           s._mockListeners![event].push(fn);
           return originalOn(event, fn);
         };
 
         const originalOff = s.off.bind(s);
-        s.off = (event: string, fn: (...args: unknown[]) => void) => {
+        s.off = (event: string, fn: (payload?: unknown) => void) => {
           if (s._mockListeners![event]) {
             s._mockListeners![event] = s._mockListeners![event].filter(
               (l) => l !== fn,
@@ -243,9 +243,9 @@ export async function mockAllOnPage(page: Page): Promise<void> {
           return originalOff(event, fn);
         };
 
-        s.trigger = (event: string, ...args: unknown[]) => {
+        s.trigger = (event: string, payload?: unknown) => {
           const listeners = (s._mockListeners && s._mockListeners[event]) || [];
-          listeners.forEach((l) => l(...args));
+          listeners.forEach((l) => l(payload));
         };
 
         const originalConnectedProperty = s.connected;
@@ -276,7 +276,7 @@ export async function mockAllOnPage(page: Page): Promise<void> {
           return s;
         };
         const originalEmit = s.emit.bind(s);
-        s.emit = (event: string, ...args: unknown[]) => {
+        s.emit = (event: string, payload?: unknown) => {
           const mocks = window._playwrightMocks;
           if (
             mocks &&
@@ -317,16 +317,16 @@ export async function mockAllOnPage(page: Page): Promise<void> {
             return s;
           }
           if (event === 'games.room.chat' && mocks?.roomId) {
-            const payload = args[0] as Record<string, unknown>;
+            const data = payload as Record<string, unknown>;
             setTimeout(() => {
               s.trigger('games.room.chat', {
                 id: `mock-log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
                 roomId: mocks.roomId,
-                senderId: payload.userId ?? mocks.userId,
+                senderId: data.userId ?? mocks.userId,
                 senderName: 'Test User',
-                message: payload.message,
+                message: data.message,
                 type: 'message',
-                scope: payload.scope ?? 'all',
+                scope: data.scope ?? 'all',
                 createdAt: new Date().toISOString(),
                 timestamp: Date.now(),
               });
@@ -334,7 +334,7 @@ export async function mockAllOnPage(page: Page): Promise<void> {
             return s;
           }
           if (mocks?.roomId && prop === 'gameSocket') return s;
-          return originalEmit(event, ...args);
+          return originalEmit(event, payload);
         };
       };
       Object.defineProperty(window, prop, {

@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes } from 'react';
+import type { CSSProperties, MouseEventHandler, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
@@ -22,7 +22,10 @@ type CardProps = {
   cardType?: unknown;
   index?: unknown;
   isSticker?: boolean;
-} & HTMLAttributes<HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLDivElement>;
+  'data-testid'?: string;
+  children?: ReactNode;
+};
 
 /**
  * Base playing-card surface. `cardType` / `index` are no-op props kept for
@@ -35,7 +38,9 @@ export function Card({
   index: _index,
   isSticker,
   style,
-  ...props
+  onClick,
+  'data-testid': testId,
+  children,
 }: CardProps) {
   return (
     <div
@@ -48,8 +53,11 @@ export function Card({
         className,
       )}
       style={style}
-      {...props}
-    />
+      onClick={onClick}
+      data-testid={testId}
+    >
+      {children}
+    </div>
   );
 }
 

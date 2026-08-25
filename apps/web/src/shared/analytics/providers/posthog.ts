@@ -33,7 +33,7 @@ export function sendPostHogEvent(event: string, props: AnalyticsPayload): void {
   if (typeof window === 'undefined' || !clientPromise) return;
   void clientPromise.then((client) => {
     try {
-      client?.capture(event, { ...props });
+      client?.capture(event, props);
     } catch {
       // Never let analytics break product code.
     }

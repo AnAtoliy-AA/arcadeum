@@ -32,39 +32,29 @@ export default meta;
 type Story = StoryObj<typeof FormGroup>;
 
 export const Default: Story = {
-  args: {
-    label: 'Username',
-    htmlFor: 'username',
-  },
-  render: (args) => (
-    <FormGroup {...args}>
+  render: () => (
+    <FormGroup label="Username" htmlFor="username">
       <Input id="username" placeholder="Enter username" fullWidth />
     </FormGroup>
   ),
 };
 
 export const Required: Story = {
-  args: {
-    label: 'Email Address',
-    htmlFor: 'email',
-    required: true,
-  },
-  render: (args) => (
-    <FormGroup {...args}>
+  render: () => (
+    <FormGroup label="Email Address" htmlFor="email" required>
       <Input id="email" type="email" placeholder="you@example.com" fullWidth />
     </FormGroup>
   ),
 };
 
 export const WithError: Story = {
-  args: {
-    label: 'Password',
-    htmlFor: 'password',
-    required: true,
-    error: 'Password must be at least 8 characters',
-  },
-  render: (args) => (
-    <FormGroup {...args}>
+  render: () => (
+    <FormGroup
+      label="Password"
+      htmlFor="password"
+      required
+      error="Password must be at least 8 characters"
+    >
       <Input
         id="password"
         type="password"
@@ -77,26 +67,20 @@ export const WithError: Story = {
 };
 
 export const WithDescription: Story = {
-  args: {
-    label: 'Display Name',
-    htmlFor: 'displayname',
-    description: 'This is how your name will appear to other players',
-  },
-  render: (args) => (
-    <FormGroup {...args}>
+  render: () => (
+    <FormGroup
+      label="Display Name"
+      htmlFor="displayname"
+      description="This is how your name will appear to other players"
+    >
       <Input id="displayname" placeholder="Your display name" fullWidth />
     </FormGroup>
   ),
 };
 
 export const WithSelect: Story = {
-  args: {
-    label: 'Game Type',
-    htmlFor: 'gametype',
-    required: true,
-  },
-  render: (args) => (
-    <FormGroup {...args}>
+  render: () => (
+    <FormGroup label="Game Type" htmlFor="gametype" required>
       <Select id="gametype" fullWidth>
         <option value="">Select a game...</option>
         <option value="critical">Critical</option>
@@ -107,13 +91,12 @@ export const WithSelect: Story = {
 };
 
 export const WithTextArea: Story = {
-  args: {
-    label: 'Room Notes',
-    htmlFor: 'notes',
-    description: 'Add any notes or rules for your game room',
-  },
-  render: (args) => (
-    <FormGroup {...args}>
+  render: () => (
+    <FormGroup
+      label="Room Notes"
+      htmlFor="notes"
+      description="Add any notes or rules for your game room"
+    >
       <TextArea id="notes" placeholder="Enter notes..." fullWidth />
     </FormGroup>
   ),

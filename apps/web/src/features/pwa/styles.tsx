@@ -1,9 +1,8 @@
 'use client';
 
-export const PWAFeaturesList = ({
-  children,
-  ...rest
-}: React.HTMLAttributes<HTMLUListElement>) => (
+import type { ReactNode } from 'react';
+
+export const PWAFeaturesList = ({ children }: { children?: ReactNode }) => (
   <ul
     style={{
       padding: 0,
@@ -13,37 +12,26 @@ export const PWAFeaturesList = ({
       flexDirection: 'column',
       gap: 12,
     }}
-    {...rest}
   >
     {children}
   </ul>
 );
 
-export const PWAFeatureItem = ({
-  children,
-  ...rest
-}: React.HTMLAttributes<HTMLLIElement>) => (
-  <li
-    style={{ display: 'flex', alignItems: 'center', gap: 12, opacity: 0.7 }}
-    {...rest}
-  >
+export const PWAFeatureItem = ({ children }: { children?: ReactNode }) => (
+  <li style={{ display: 'flex', alignItems: 'center', gap: 12, opacity: 0.7 }}>
     {children}
   </li>
 );
 
-export const PWAFeatureIcon = ({
-  children,
-  ...rest
-}: React.HTMLAttributes<HTMLSpanElement>) => (
-  <span style={{ fontSize: 20 }} {...rest}>
-    {children}
-  </span>
+export const PWAFeatureIcon = ({ children }: { children?: ReactNode }) => (
+  <span style={{ fontSize: 20 }}>{children}</span>
 );
 
 export const PWAManualInstructions = ({
   children,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
+}: {
+  children?: ReactNode;
+}) => (
   <div
     style={{
       marginTop: 20,
@@ -54,7 +42,6 @@ export const PWAManualInstructions = ({
       borderStyle: 'solid',
       borderColor: 'var(--borderColor)',
     }}
-    {...rest}
   >
     {children}
   </div>

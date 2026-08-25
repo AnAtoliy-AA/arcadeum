@@ -205,45 +205,45 @@ export const StatsDashboard: Story = {
 };
 
 // Styled helpers
-const Row = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={`flex items-center gap-5 ${className ?? ''}`} {...props} />
+type HelperProps = { children?: React.ReactNode };
+
+const Row = ({ children }: HelperProps) => (
+  <div className="flex items-center gap-5">{children}</div>
 );
 
-const Column = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={`flex flex-col items-center gap-3 ${className ?? ''}`} {...props} />
+const Column = ({ children }: HelperProps) => (
+  <div className="flex flex-col items-center gap-3">{children}</div>
 );
 
-const Label = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) => (
-  <span className={`text-[14px] leading-[18px] text-[var(--color)] ${className ?? ''}`} {...props} />
+const Label = ({ children }: HelperProps) => (
+  <span className="text-[14px] leading-[18px] text-[var(--color)]">{children}</span>
 );
 
-const Stack = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={`flex flex-col gap-4 ${className ?? ''}`} style={{ width: 300 }} {...props} />
+const Stack = ({ children }: HelperProps) => (
+  <div className="flex flex-col gap-4" style={{ width: 300 }}>{children}</div>
 );
 
-const BarContainer = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={className} style={{ width: 300 }} {...props} />
+const BarContainer = ({ children }: HelperProps) => (
+  <div style={{ width: 300 }}>{children}</div>
 );
 
-const Dashboard = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
+const Dashboard = ({ children }: HelperProps) => (
   <div
-    className={`w-full gap-4 ${className ?? ''}`}
+    className="w-full gap-4"
     style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', maxWidth: 600 }}
-    {...props}
-  />
+  >
+    {children}
+  </div>
 );
 
-const DashboardCard = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={`flex flex-col items-center gap-4 rounded-3xl border border-[var(--borderColor)] p-5 ${className ?? ''}`}
-    {...props}
-  />
+const DashboardCard = ({ children }: HelperProps) => (
+  <div className="flex flex-col items-center gap-4 rounded-3xl border border-[var(--borderColor)] p-5">{children}</div>
 );
 
-const CardTitle = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) => (
-  <span className={`text-[14px] font-medium text-[var(--color)] opacity-[0.8] ${className ?? ''}`} {...props} />
+const CardTitle = ({ children }: HelperProps) => (
+  <span className="text-[14px] font-medium text-[var(--color)] opacity-[0.8]">{children}</span>
 );
 
-const BarText = ({ className, ...props }: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) => (
-  <span className={`mt-2 text-center text-[12px] text-[var(--color)] opacity-[0.7] ${className ?? ''}`} {...props} />
+const BarText = ({ children }: HelperProps) => (
+  <span className="mt-2 text-center text-[12px] text-[var(--color)] opacity-[0.7]">{children}</span>
 );

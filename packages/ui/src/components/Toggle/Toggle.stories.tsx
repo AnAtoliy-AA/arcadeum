@@ -17,34 +17,46 @@ const meta: Meta<typeof Toggle> = {
 export default meta;
 type Story = StoryObj<typeof Toggle>;
 
-function ControlledToggle(args: React.ComponentProps<typeof Toggle>) {
-  const [checked, setChecked] = useState(args.checked);
+function ControlledToggle({
+  initialChecked = false,
+  disabled,
+  ariaLabel = 'Sample toggle',
+  onLabel,
+  offLabel,
+}: {
+  initialChecked?: boolean;
+  disabled?: boolean;
+  ariaLabel?: string;
+  onLabel?: string;
+  offLabel?: string;
+}) {
+  const [checked, setChecked] = useState(initialChecked);
   return (
-    <Toggle {...args} checked={checked} onCheckedChange={setChecked} />
+    <Toggle
+      checked={checked}
+      onCheckedChange={setChecked}
+      disabled={disabled}
+      ariaLabel={ariaLabel}
+      onLabel={onLabel}
+      offLabel={offLabel}
+    />
   );
 }
 
 export const On: Story = {
-  args: { checked: true, ariaLabel: 'Sample toggle' },
-  render: (args) => <ControlledToggle {...args} />,
+  render: () => <ControlledToggle initialChecked ariaLabel="Sample toggle" />,
 };
 
 export const Off: Story = {
-  args: { checked: false, ariaLabel: 'Sample toggle' },
-  render: (args) => <ControlledToggle {...args} />,
+  render: () => <ControlledToggle ariaLabel="Sample toggle" />,
 };
 
 export const Disabled: Story = {
-  args: { checked: true, disabled: true, ariaLabel: 'Sample toggle' },
-  render: (args) => <ControlledToggle {...args} />,
+  render: () => <ControlledToggle initialChecked disabled ariaLabel="Sample toggle" />,
 };
 
 export const CustomLabels: Story = {
-  args: {
-    checked: false,
-    ariaLabel: 'Auto play',
-    onLabel: 'AUTO',
-    offLabel: 'MAN',
-  },
-  render: (args) => <ControlledToggle {...args} />,
+  render: () => (
+    <ControlledToggle ariaLabel="Auto play" onLabel="AUTO" offLabel="MAN" />
+  ),
 };

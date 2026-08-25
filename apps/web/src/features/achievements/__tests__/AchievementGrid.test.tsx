@@ -2,26 +2,25 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ReactNode } from 'react';
 
-const claimAchievementMock = vi.fn();
+const claimAchievementMock = vi.hoisted(() => vi.fn());
 
 vi.mock('../actions', () => ({
-  claimAchievement: (...args: unknown[]) => claimAchievementMock(...args),
+  claimAchievement: claimAchievementMock,
 }));
 
 interface ChildrenProps {
   children?: ReactNode;
+  className?: string;
+  'data-testid'?: string;
 }
 
 vi.mock('@arcadeum/ui', () => ({
   GlassCard: ({
     children,
     className,
-    ...rest
-  }: ChildrenProps & {
-    className?: string;
-    'data-testid'?: string;
-  }) => (
-    <div className={className} data-testid={rest['data-testid']}>
+    'data-testid': dataTestId,
+  }: ChildrenProps) => (
+    <div className={className} data-testid={dataTestId}>
       {children}
     </div>
   ),
@@ -30,7 +29,7 @@ vi.mock('@arcadeum/ui', () => ({
     onClick,
     disabled,
     loading,
-    ...rest
+    'data-testid': dataTestId,
   }: ChildrenProps & {
     onClick?: () => void;
     disabled?: boolean;
@@ -43,7 +42,7 @@ vi.mock('@arcadeum/ui', () => ({
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      data-testid={rest['data-testid']}
+      data-testid={dataTestId}
     >
       {children}
     </button>

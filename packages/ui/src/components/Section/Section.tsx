@@ -12,10 +12,14 @@ export type SectionProps = {
 };
 
 export const Section = forwardRef<HTMLDivElement, SectionProps>(
-  function Section({ title, description, variant, children, className, ...rest }, ref) {
+  function Section(
+    { title, description, variant, children, 'data-testid': dataTestId, className },
+    ref,
+  ) {
     return (
       <div
         ref={ref}
+        data-testid={dataTestId}
         className={cx(
           '',
           'flex',
@@ -30,7 +34,6 @@ export const Section = forwardRef<HTMLDivElement, SectionProps>(
             : 'rounded-2xl p-5',
           className,
         )}
-        {...rest}
       >
         {title && (
           <h2

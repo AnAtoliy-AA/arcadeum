@@ -1,10 +1,7 @@
-import { useEffect } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { resolveApiUrl } from './api-base';
 import {
-  maybeDecrypt,
   maybeEncrypt,
-  isSocketEncryptionEnabled,
   setEncryptionKey,
   resetEncryptionKey,
 } from './socket-encryption';
@@ -40,7 +37,7 @@ let _friendsSock: AuthenticatedSocket | null = null;
 let _walletSock: AuthenticatedSocket | null = null;
 let _clansSock: AuthenticatedSocket | null = null;
 
-function getGamesSocket(): AuthenticatedSocket {
+export function getGamesSocket(): AuthenticatedSocket {
   if (!_gamesSocket) {
     _gamesSocket = io(
       `${SOCKET_BASE_URL}/games`,
@@ -52,7 +49,7 @@ function getGamesSocket(): AuthenticatedSocket {
   return _gamesSocket;
 }
 
-function getChatsSocket(): AuthenticatedSocket {
+export function getChatsSocket(): AuthenticatedSocket {
   if (!_chatsSocket) {
     _chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
     guardEmit(_chatsSocket);
@@ -60,7 +57,7 @@ function getChatsSocket(): AuthenticatedSocket {
   return _chatsSocket;
 }
 
-function getLeaderboardsSocket(): AuthenticatedSocket {
+export function getLeaderboardsSocket(): AuthenticatedSocket {
   if (!_leaderboardsSocket) {
     _leaderboardsSocket = io(
       `${SOCKET_BASE_URL}/leaderboards`,
@@ -71,7 +68,7 @@ function getLeaderboardsSocket(): AuthenticatedSocket {
   return _leaderboardsSocket;
 }
 
-function getFriendsSock(): AuthenticatedSocket {
+export function getFriendsSock(): AuthenticatedSocket {
   if (!_friendsSock) {
     _friendsSock = io(
       `${SOCKET_BASE_URL}/friends`,
@@ -114,10 +111,17 @@ function getClansSock(): AuthenticatedSocket {
 // E2E mocks (Playwright) override `connected` via defineProperty to
 // return `true` even when the underlying engine was never created.
 function guardEmit(socket: Socket): void {
-  const originalEmit = socket.emit.bind(socket);
-  socket.emit = ((event: string, ...args: unknown[]) => {
+  const originalEmit = socket.emit.bind(socket) as (
+    event: string,
+    payload?: unknown,
+    extra?: unknown,
+  ) => unknown;
+  socket.emit = ((event: string, payload?: unknown, extra?: unknown) => {
     try {
-      return originalEmit(event, ...args);
+      if (extra === undefined) {
+        return originalEmit(event, payload);
+      }
+      return originalEmit(event, payload, extra);
     } catch {
       return socket;
     }
@@ -351,16 +355,16 @@ function createLazySocket(getter: () => AuthenticatedSocket): Socket {
   return new Proxy({} as Socket, {
     get(_target, prop, receiver) {
       if (prop === 'emit') {
-        return (event: string, ...args: unknown[]) => {
-          const payload = args[0] as Record<string, unknown> | undefined;
+        return (event: string, payload?: unknown, extra?: unknown) => {
+          const record = payload as Record<string, unknown> | undefined;
           if (
             offlineGameRouter &&
-            payload &&
-            typeof payload === 'object' &&
-            typeof payload.roomId === 'string' &&
-            isOfflineRoomId(payload.roomId)
+            record &&
+            typeof record === 'object' &&
+            typeof record.roomId === 'string' &&
+            isOfflineRoomId(record.roomId)
           ) {
-            offlineGameRouter(event, payload);
+            offlineGameRouter(event, record);
             return true;
           }
           const socket = getter();
@@ -368,13 +372,16 @@ function createLazySocket(getter: () => AuthenticatedSocket): Socket {
           const bound = Reflect.get(socket, 'emit', receiver) as (
             this: AuthenticatedSocket,
             event: string,
-            ...a: unknown[]
+            p?: unknown,
+            e?: unknown,
           ) => unknown;
           // Forward the event name AND the args — dropping `event` here
           // turns every emit into emit(payload), which servers and the
           // E2E socket mocks silently swallow (see ARC-900 CI run).
           return typeof bound === 'function'
-            ? bound.call(socket, event, ...args)
+            ? extra === undefined
+              ? bound.call(socket, event, payload)
+              : bound.call(socket, event, payload, extra)
             : undefined;
         };
       }
@@ -422,77 +429,9 @@ export async function emitEncrypted(
   socket.emit(event, data);
 }
 
-interface SocketEventHandler {
-  (...args: unknown[]): void;
-}
-
-export function useSocket(event: string, handler: SocketEventHandler): void {
-  useEffect(() => {
-    const listener = async (...args: unknown[]) => {
-      if (args.length > 0 && isSocketEncryptionEnabled()) {
-        const decrypted = await maybeDecrypt(args[0]);
-        handler(decrypted, ...args.slice(1));
-        return;
-      }
-      handler(...args);
-    };
-
-    const s = getGamesSocket();
-    s.on(event, listener);
-
-    return () => {
-      s.off(event, listener);
-    };
-  }, [event, handler]);
-}
-
-export function useChatSocket(
-  event: string,
-  handler: SocketEventHandler,
-): void {
-  useEffect(() => {
-    const listener = async (...args: unknown[]) => {
-      if (args.length > 0 && isSocketEncryptionEnabled()) {
-        const decrypted = await maybeDecrypt(args[0]);
-        handler(decrypted, ...args.slice(1));
-        return;
-      }
-      handler(...args);
-    };
-
-    const s = getChatsSocket();
-    s.on(event, listener);
-
-    return () => {
-      s.off(event, listener);
-    };
-  }, [event, handler]);
-}
-
-export function useLeaderboardSocket(
-  event: string,
-  handler: SocketEventHandler,
-): void {
-  useEffect(() => {
-    const listener = (...args: unknown[]) => handler(...args);
-    const s = getLeaderboardsSocket();
-    s.on(event, listener);
-    return () => {
-      s.off(event, listener);
-    };
-  }, [event, handler]);
-}
-
-export function useFriendsSocket(
-  event: string,
-  handler: SocketEventHandler,
-): void {
-  useEffect(() => {
-    const listener = (...args: unknown[]) => handler(...args);
-    const s = getFriendsSock();
-    s.on(event, listener);
-    return () => {
-      s.off(event, listener);
-    };
-  }, [event, handler]);
-}
+export {
+  useSocket,
+  useChatSocket,
+  useLeaderboardSocket,
+  useFriendsSocket,
+} from './socket-hooks';

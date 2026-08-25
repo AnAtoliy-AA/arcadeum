@@ -1,6 +1,4 @@
-import type { SVGProps } from 'react';
-
-export function CatDashSymbol(props: SVGProps<SVGSVGElement>) {
+export function CatDashSymbol({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 64"
@@ -9,7 +7,7 @@ export function CatDashSymbol(props: SVGProps<SVGSVGElement>) {
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      {...props}
+      className={className}
     >
       {/* Cat head */}
       <circle cx="32" cy="28" r="14" />

@@ -415,16 +415,27 @@ interface ThemedTextInputProps extends React.ComponentProps<typeof TextInput> {
 
 export function ThemedTextInput({
   styles,
-  ...props
+  placeholder,
+  value,
+  onChangeText,
+  keyboardType,
+  returnKeyType,
+  multiline,
+  numberOfLines,
+  textAlignVertical,
+  style,
 }: ThemedTextInputProps): React.JSX.Element {
   return (
     <TextInput
-      {...props}
-      style={[
-        styles.textInput,
-        props.multiline && styles.textInputMultiline,
-        props.style,
-      ]}
+      placeholder={placeholder}
+      value={value}
+      onChangeText={onChangeText}
+      keyboardType={keyboardType}
+      returnKeyType={returnKeyType}
+      multiline={multiline}
+      numberOfLines={numberOfLines}
+      textAlignVertical={textAlignVertical}
+      style={[styles.textInput, multiline && styles.textInputMultiline, style]}
       placeholderTextColor={styles.textInputPlaceholder.color as string}
     />
   );

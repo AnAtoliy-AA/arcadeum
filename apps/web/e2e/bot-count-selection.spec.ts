@@ -52,13 +52,13 @@ test.describe('Bot Count Selection', () => {
       const socket = window.gameSocket;
       if (!socket) return;
       const originalEmit = socket.emit.bind(socket);
-      socket.emit = (event: string, ...args: unknown[]) => {
+      socket.emit = (event: string, payload?: unknown) => {
         if (event === 'games.session.start') {
           (
             window as unknown as { __lastStartPayload: unknown }
-          ).__lastStartPayload = args[0];
+          ).__lastStartPayload = payload;
         }
-        return originalEmit(event, ...args);
+        return originalEmit(event, payload);
       };
     });
 

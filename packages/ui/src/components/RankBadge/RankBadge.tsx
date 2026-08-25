@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { cx } from '../../utils/cx';
 
 export type RankBadgeTier =
@@ -26,14 +26,16 @@ const rankTierClasses: Record<RankBadgeTier, string> = {
     'bg-[rgba(180,83,9,0.16)] text-[var(--bronzeAccent)] border-[var(--bronzeAccent)]',
 };
 
-export type RankBadgeProps = HTMLAttributes<HTMLSpanElement> & {
+export type RankBadgeProps = {
   tier?: RankBadgeTier;
   children?: ReactNode;
   className?: string;
 };
 
-export function RankBadge({ tier = 'gold', className, ...rest }: RankBadgeProps) {
+export function RankBadge({ tier = 'gold', className, children }: RankBadgeProps) {
   return (
-    <span className={cx(rankBadgeBase, rankTierClasses[tier], className)} {...rest} />
+    <span className={cx(rankBadgeBase, rankTierClasses[tier], className)}>
+      {children}
+    </span>
   );
 }

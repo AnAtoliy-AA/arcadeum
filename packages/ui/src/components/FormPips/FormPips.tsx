@@ -8,7 +8,7 @@ export type FormPipsProps = {
   size?: number;
   variant?: 'dot' | 'letter';
   className?: string;
-} & Omit<React.HTMLAttributes<HTMLDivElement>, 'children' | 'results'>;
+};
 
 const pipResultClasses: Record<FormResult, string> = {
   W: 'border-transparent bg-[var(--success)]',
@@ -34,7 +34,6 @@ export function FormPips({
   size,
   variant = 'dot',
   className,
-  ...rest
 }: FormPipsProps) {
   const sliced = results.slice(-max);
   const dotSize = size ?? 10;
@@ -43,7 +42,6 @@ export function FormPips({
     <div
       className={cx('flex items-center gap-1', className)}
       aria-label="Recent form"
-      {...rest}
     >
       {sliced.map((r, i) =>
         variant === 'letter' ? (

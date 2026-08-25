@@ -8,7 +8,10 @@ export type GlassCardProps = {
   animated?: boolean;
   className?: string;
   style?: React.CSSProperties;
-} & React.HTMLAttributes<HTMLDivElement>;
+  id?: string;
+  'data-testid'?: string;
+  'data-active'?: string | boolean;
+};
 
 /**
  * Glassmorphic card. Themed tokens resolve to runtime CSS vars minted by the
@@ -16,12 +19,23 @@ export type GlassCardProps = {
  */
 export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
   function GlassCard(
-    { children, animated = true, className, ...rest },
+    {
+      children,
+      animated = true,
+      className,
+      style,
+      id,
+      'data-testid': dataTestId,
+      'data-active': dataActive,
+    },
     ref,
   ) {
     return (
       <div
         ref={ref}
+        id={id}
+        data-testid={dataTestId}
+        data-active={dataActive}
         className={cx(
           'relative',
           'overflow-hidden',
@@ -36,7 +50,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
           animated && 'transition-all duration-500 ease-out',
           className,
         )}
-        {...rest}
+        style={style}
       >
         <span
           aria-hidden

@@ -10,8 +10,14 @@ const GamesPageDynamic = dynamic(() => import('./GamesPage'), {
   loading: () => <PageLoading layout="grid" />,
 });
 
-function GamesClient(props: GamesClientProps) {
-  return <GamesPageDynamic {...props} />;
+function GamesClient({ initialData, gameId, pageTitle }: GamesClientProps) {
+  return (
+    <GamesPageDynamic
+      initialData={initialData}
+      gameId={gameId}
+      pageTitle={pageTitle}
+    />
+  );
 }
 
 export type { GamesClientProps };

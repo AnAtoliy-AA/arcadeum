@@ -1,13 +1,11 @@
-import type { SVGProps } from 'react';
-
-export function SeaBattleSymbol(props: SVGProps<SVGSVGElement>) {
+export function SeaBattleSymbol({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 64"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
-      {...props}
+      className={className}
     >
       <rect x="12" y="12" width="40" height="40" rx="3" />
       <line x1="22" y1="12" x2="22" y2="52" />

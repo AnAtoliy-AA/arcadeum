@@ -93,7 +93,7 @@ function openDevClient(scheme, serial) {
     '-d',
     url,
   ];
-  const adbArgs = serial ? ['-s', serial, ...args] : args;
+  const adbArgs = serial ? ['-s', serial].concat(args) : args;
   const res = spawnSync('adb', adbArgs, { stdio: 'inherit' });
   if (res.status !== 0) {
     console.error(

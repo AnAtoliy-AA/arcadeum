@@ -8,103 +8,112 @@ interface AutoplayControlsProps {
 }
 
 function Container({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  onClick,
+  children,
+}: {
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  children?: React.ReactNode;
+}) {
   return (
     <div
-      className={`flex flex-col items-stretch relative z-[50] ${className ?? ''}`}
-      {...props}
-    />
+      className="flex flex-col items-stretch relative z-[50]"
+      onClick={onClick}
+    >
+      {children}
+    </div>
   );
 }
 
 function Header({
   expanded,
-  className,
-  ...props
+  onClick,
+  children,
 }: {
   expanded?: boolean;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-row items-center gap-2 cursor-pointer select-none rounded-2xl border border-[rgba(99,102,241,0.3)] px-3 py-2 hover:bg-[rgba(99,102,241,0.2)]',
         expanded ? 'bg-[rgba(99,102,241,0.2)]' : 'bg-[rgba(99,102,241,0.1)]',
-        className,
       )}
-      {...props}
-    />
+      onClick={onClick}
+    >
+      {children}
+    </div>
   );
 }
 
-function HeaderText({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+function HeaderText({ children }: { children?: React.ReactNode }) {
   return (
-    <span
-      className={`text-[16px] leading-[20px] font-semibold text-[rgba(255,255,255,0.95)] ${className ?? ''}`}
-      {...props}
-    />
+    <span className="text-[16px] leading-[20px] font-semibold text-[rgba(255,255,255,0.95)]">
+      {children}
+    </span>
   );
 }
 
-function Toggle({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+function Toggle({ children }: { children?: React.ReactNode }) {
   return (
-    <span
-      className={`text-[14px] leading-[18px] text-[rgba(255,255,255,0.7)] ${className ?? ''}`}
-      {...props}
-    />
+    <span className="text-[14px] leading-[18px] text-[rgba(255,255,255,0.7)]">
+      {children}
+    </span>
   );
 }
 
-function DropdownMenu({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function DropdownMenu({ children }: { children?: React.ReactNode }) {
   return (
     <div
-      className={`flex flex-col items-stretch absolute top-full right-0 mt-2 w-[280px] gap-1 overflow-hidden rounded-2xl border border-[rgba(99,102,241,0.3)] bg-[#1e1e2e] p-2 ${className ?? ''}`}
+      className="flex flex-col items-stretch absolute top-full right-0 mt-2 w-[280px] gap-1 overflow-hidden rounded-2xl border border-[rgba(99,102,241,0.3)] bg-[#1e1e2e] p-2"
       style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)' }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 function Label({
   secondary,
-  className,
-  ...props
+  style,
+  onClick,
+  children,
 }: {
   secondary?: boolean;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  style?: React.CSSProperties;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-row items-center gap-3 cursor-pointer rounded-lg px-3 py-2 hover:bg-[rgba(255,255,255,0.05)]',
         secondary && 'pl-6 opacity-[0.9]',
-        className,
       )}
-      {...props}
-    />
+      style={style}
+      onClick={onClick}
+    >
+      {children}
+    </div>
   );
 }
 
 function ControlText({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <span
       className={`text-[16px] leading-[20px] font-medium text-[rgba(255,255,255,0.9)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 

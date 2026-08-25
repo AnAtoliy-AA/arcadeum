@@ -75,15 +75,14 @@ vi.mock('../store/sessionStore', () => ({
   ),
 }));
 
-const mockRefreshFromCookie = vi.fn();
+const mockRefreshFromCookie = vi.hoisted(() => vi.fn());
 vi.mock('../api/authApi', () => ({
-  refreshSessionFromCookie: (...args: unknown[]) =>
-    mockRefreshFromCookie(...args),
+  refreshSessionFromCookie: mockRefreshFromCookie,
 }));
 
-const mockAcquireLock = vi.fn();
+const mockAcquireLock = vi.hoisted(() => vi.fn());
 vi.mock('../lib/refreshLock', () => ({
-  acquireRefreshLock: (...args: unknown[]) => mockAcquireLock(...args),
+  acquireRefreshLock: mockAcquireLock,
 }));
 
 import { apiClient, ApiError } from '@/shared/lib/api-client';

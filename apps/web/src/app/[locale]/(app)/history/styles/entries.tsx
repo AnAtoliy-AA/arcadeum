@@ -1,71 +1,52 @@
-import { forwardRef, type ReactNode } from 'react';
-import type * as React from 'react';
+import { forwardRef, type MouseEventHandler, type ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Card, Badge, Typography } from '@arcadeum/ui';
 
-type WithGetProps<T> =
-  T extends React.ComponentType<infer P>
-    ? P & React.HTMLAttributes<HTMLElement> & { children?: ReactNode }
-    : never;
-
-export function EntriesGrid({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+export function EntriesGrid({ children }: { children?: ReactNode }) {
   return (
     <div
-      className={cx('grid gap-4 w-full', className)}
+      className="grid gap-4 w-full"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 export function EntryCard({
-  className,
+  onClick,
+  'data-testid': dataTestId,
   children,
-  ...props
-}: React.ComponentProps<typeof Card>) {
+}: {
+  onClick?: MouseEventHandler<HTMLDivElement>;
+  'data-testid'?: string;
+  children?: ReactNode;
+}) {
   return (
     <Card
-      className={cx(
-        'flex flex-col items-stretch gap-3 cursor-pointer',
-        className,
-      )}
+      className="flex flex-col items-stretch gap-3 cursor-pointer"
       variant="elevated"
       padding="md"
       interactive
-      {...props}
+      onClick={onClick}
+      data-testid={dataTestId}
     >
       {children}
     </Card>
   );
 }
 
-export function EntryHeader({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+export function EntryHeader({ children }: { children?: ReactNode }) {
   return (
-    <div
-      className={cx(
-        'flex flex-row items-start justify-between gap-4',
-        className,
-      )}
-      {...props}
-    />
+    <div className="flex flex-row items-start justify-between gap-4">
+      {children}
+    </div>
   );
 }
 
-export function EntryTitleGroup({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+export function EntryTitleGroup({ children }: { children?: ReactNode }) {
   return (
-    <div
-      className={cx('flex flex-col items-stretch flex-1 min-w-0', className)}
-      {...props}
-    />
+    <div className="flex flex-col items-stretch flex-1 min-w-0">{children}</div>
   );
 }
 
@@ -73,95 +54,80 @@ const entryTextClasses =
   'w-full overflow-hidden whitespace-nowrap [text-overflow:ellipsis]';
 
 export const EntryGameName = ({
-  children,
   title,
-  ...props
-}: { title?: string } & React.ComponentProps<typeof Typography>) => (
+  children,
+}: {
+  title?: string;
+  children?: ReactNode;
+}) => (
   <Typography
     className={entryTextClasses}
     uiSize="lg"
     weight="600"
     title={title}
-    {...props}
   >
     {children}
   </Typography>
 );
 
 export const EntryRoomName = ({
-  children,
   title,
-  ...props
-}: { title?: string } & React.ComponentProps<typeof Typography>) => (
+  children,
+}: {
+  title?: string;
+  children?: ReactNode;
+}) => (
   <Typography
     className={entryTextClasses}
     uiSize="sm"
     alpha="medium"
     title={title}
-    {...props}
   >
     {children}
   </Typography>
 );
 
 export const EntryStatus = ({
+  'data-testid': dataTestId,
   children,
-  ...props
-}: WithGetProps<typeof Badge>) => (
-  <Badge
-    className={'rounded-[999px] shrink-0'}
-    variant="info"
-    size="sm"
-    {...props}
-  >
-    {children}
-  </Badge>
+}: {
+  'data-testid'?: string;
+  children?: ReactNode;
+}) => (
+  <span data-testid={dataTestId}>
+    <Badge className={'rounded-[999px] shrink-0'} variant="info" size="sm">
+      {children}
+    </Badge>
+  </span>
 );
 
-export function EntryMeta({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+export function EntryMeta({ children }: { children?: ReactNode }) {
   return (
-    <div
-      className={cx('flex flex-row items-stretch flex-wrap gap-2', className)}
-      {...props}
-    />
+    <div className="flex flex-row items-stretch flex-wrap gap-2">
+      {children}
+    </div>
   );
 }
 
-export function EntryFooter({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+export function EntryFooter({ children }: { children?: ReactNode }) {
   return (
-    <div
-      className={cx(
-        'flex flex-row items-center justify-between gap-4 mt-auto pt-3 border-t border-[var(--borderColor)]',
-        className,
-      )}
-      {...props}
-    />
+    <div className="flex flex-row items-center justify-between gap-4 mt-auto pt-3 border-t border-[var(--borderColor)]">
+      {children}
+    </div>
   );
 }
 
-export function EntryTimestamp({
-  children,
-  ...props
-}: { children?: ReactNode } & React.ComponentProps<typeof Typography>) {
+export function EntryTimestamp({ children }: { children?: ReactNode }) {
   return (
-    <Typography uiSize="xs" alpha="medium" {...props}>
+    <Typography uiSize="xs" alpha="medium">
       {children}
     </Typography>
   );
 }
 
-export function EntryViewDetails({
-  children,
-  ...props
-}: { children?: ReactNode } & React.ComponentProps<typeof Typography>) {
+export function EntryViewDetails({ children }: { children?: ReactNode }) {
   return (
-    <Typography uiSize="sm" weight="600" color="var(--primary)" {...props}>
+    <Typography uiSize="sm" weight="600" color="var(--primary)">
       {children}
     </Typography>
   );
@@ -169,8 +135,8 @@ export function EntryViewDetails({
 
 export const PaginationSpinner = forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(function PaginationSpinner({ className, ...props }, ref) {
+  { className?: string; children?: ReactNode }
+>(function PaginationSpinner({ className, children }, ref) {
   return (
     <div
       ref={ref}
@@ -178,22 +144,19 @@ export const PaginationSpinner = forwardRef<
         'flex flex-col items-center justify-center p-8 w-full [grid-column:1/-1]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 });
 
-export function EndOfListText({
-  children,
-  ...props
-}: { children?: ReactNode } & React.ComponentProps<typeof Typography>) {
+export function EndOfListText({ children }: { children?: ReactNode }) {
   return (
     <Typography
       className={'p-8 w-full [grid-column:1/-1]'}
       uiSize="sm"
       alpha="medium"
       textCenter
-      {...props}
     >
       {children}
     </Typography>

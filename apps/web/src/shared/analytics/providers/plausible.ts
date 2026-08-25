@@ -47,7 +47,7 @@ export function sendPlausibleEvent(
 ): void {
   if (typeof window === 'undefined') return;
   try {
-    window.plausible?.(event, props ? { props: { ...props } } : undefined);
+    window.plausible?.(event, props ? { props } : undefined);
   } catch {
     // Never let analytics break product code.
   }

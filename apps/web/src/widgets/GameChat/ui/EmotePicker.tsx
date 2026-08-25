@@ -1,8 +1,14 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  type MouseEventHandler,
+  type ReactNode,
+} from 'react';
 
-import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
@@ -31,55 +37,44 @@ export type EmoteId = (typeof EMOTES)[number]['id'];
 
 const RATE_LIMIT_MS = 2000;
 
-function PickerShell({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function PickerShell({ children }: { children?: ReactNode }) {
   return (
-    <div
-      className={cx(
-        'flex flex-row items-stretch gap-[4px] p-[6px] rounded-[14px] border border-[var(--glassBorder)] bg-[var(--glassBg)] flex-wrap justify-center',
-        className,
-      )}
-      {...props}
-    />
+    <div className="flex flex-row items-stretch gap-[4px] p-[6px] rounded-[14px] border border-[var(--glassBorder)] bg-[var(--glassBg)] flex-wrap justify-center">
+      {children}
+    </div>
   );
 }
 
 function EmoteBtn({
   opacity,
-  className,
-  ...props
+  onClick,
+  ariaLabel,
+  children,
 }: {
   opacity?: number;
-  className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  onClick: MouseEventHandler<HTMLDivElement>;
+  ariaLabel: string;
+  children: ReactNode;
+}) {
   return (
     <div
-      className={cx(
-        'flex flex-row items-center justify-center w-[40px] h-[40px] rounded-[10px] cursor-pointer transition-all duration-150 ease-out hover:bg-[var(--backgroundHover)] active:bg-[var(--backgroundPress)] active:scale-[0.92]',
-        className,
-      )}
+      className="flex flex-row items-center justify-center w-[40px] h-[40px] rounded-[10px] cursor-pointer transition-all duration-150 ease-out hover:bg-[var(--backgroundHover)] active:bg-[var(--backgroundPress)] active:scale-[0.92]"
       style={opacity !== undefined ? { opacity } : undefined}
       role="button"
       tabIndex={0}
-      {...props}
-    />
+      onClick={onClick}
+      aria-label={ariaLabel}
+    >
+      {children}
+    </div>
   );
 }
 
-function EmoteLabel({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+function EmoteLabel({ children }: { children?: ReactNode }) {
   return (
-    <span
-      className={cx(
-        'text-[9px] font-semibold text-[rgba(180,180,200,0.7)] text-center line-clamp-1',
-        className,
-      )}
-      {...props}
-    />
+    <span className="text-[9px] font-semibold text-[rgba(180,180,200,0.7)] text-center line-clamp-1">
+      {children}
+    </span>
   );
 }
 
@@ -118,7 +113,7 @@ export function EmotePicker({ onEmote, disabled }: EmotePickerProps) {
           <EmoteBtn
             onClick={() => handleEmote(e.id)}
             opacity={cooldown ? 0.5 : 1}
-            aria-label={t(`games.emotes.${e.id}` as TranslationKey)}
+            ariaLabel={t(`games.emotes.${e.id}` as TranslationKey)}
           >
             <span className="text-[20px]">{e.emoji}</span>
           </EmoteBtn>

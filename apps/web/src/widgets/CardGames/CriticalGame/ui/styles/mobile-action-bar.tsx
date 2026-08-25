@@ -1,15 +1,18 @@
-import type { CSSProperties, HTMLAttributes } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
 export function ActionBar({
   className,
   style,
-  ...props
+  'data-testid': testId,
+  children,
 }: {
   className?: string;
   style?: CSSProperties;
-} & HTMLAttributes<HTMLDivElement>) {
+  'data-testid'?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -21,7 +24,9 @@ export function ActionBar({
         backdropFilter: 'blur(12px)',
         ...style,
       }}
-      {...props}
-    />
+      data-testid={testId}
+    >
+      {children}
+    </div>
   );
 }

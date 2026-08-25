@@ -1,15 +1,24 @@
 'use client';
 
-import type { CSSProperties, HTMLAttributes } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
 const SCENE_LAYER_BASE = 'flex flex-col items-stretch';
 
+interface SceneLayerProps {
+  className?: string;
+  style?: CSSProperties;
+  'data-testid'?: string;
+  children?: ReactNode;
+}
+
 export function SceneShell({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  style,
+  'data-testid': testId,
+  children,
+}: SceneLayerProps) {
   return (
     <div
       className={cx(
@@ -17,15 +26,19 @@ export function SceneShell({
         'absolute top-0 left-0 right-0 bottom-0 overflow-hidden pointer-events-none z-[0]',
         className,
       )}
-      {...props}
-    />
+      style={style}
+      data-testid={testId}
+    >
+      {children}
+    </div>
   );
 }
 
 export function SceneGridFloor({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  style,
+  'data-testid': testId,
+}: SceneLayerProps) {
   return (
     <div
       className={cx(
@@ -33,50 +46,87 @@ export function SceneGridFloor({
         'absolute left-[-50%] right-[-50%] bottom-[-40%] h-[120%]',
         className,
       )}
-      {...props}
+      style={style}
+      data-testid={testId}
     />
   );
 }
 
 export function SceneHorizon({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
-  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+  style,
+  'data-testid': testId,
+}: SceneLayerProps) {
+  return (
+    <div
+      className={cx(SCENE_LAYER_BASE, className)}
+      style={style}
+      data-testid={testId}
+    />
+  );
 }
 
 export function SceneBacklight({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
-  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+  style,
+  'data-testid': testId,
+}: SceneLayerProps) {
+  return (
+    <div
+      className={cx(SCENE_LAYER_BASE, className)}
+      style={style}
+      data-testid={testId}
+    />
+  );
 }
 
 export function SceneScanlines({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
-  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+  style,
+  'data-testid': testId,
+}: SceneLayerProps) {
+  return (
+    <div
+      className={cx(SCENE_LAYER_BASE, className)}
+      style={style}
+      data-testid={testId}
+    />
+  );
 }
 
 export function SceneVignette({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
-  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+  style,
+  'data-testid': testId,
+}: SceneLayerProps) {
+  return (
+    <div
+      className={cx(SCENE_LAYER_BASE, className)}
+      style={style}
+      data-testid={testId}
+    />
+  );
 }
 
 export function SceneAmbientGlow({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
-  return <div className={cx(SCENE_LAYER_BASE, className)} {...props} />;
+  style,
+  'data-testid': testId,
+}: SceneLayerProps) {
+  return (
+    <div
+      className={cx(SCENE_LAYER_BASE, className)}
+      style={style}
+      data-testid={testId}
+    />
+  );
 }
 
 export function SceneBackgroundImage({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  style,
+  'data-testid': testId,
+}: SceneLayerProps) {
   return (
     <div
       className={cx(
@@ -84,15 +134,17 @@ export function SceneBackgroundImage({
         'absolute inset-0 z-[-1] opacity-[0.6]',
         className,
       )}
-      {...props}
+      style={style}
+      data-testid={testId}
     />
   );
 }
 
 export function SceneParticles({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  'data-testid': testId,
+  children,
+}: SceneLayerProps) {
   return (
     <div
       className={cx(
@@ -100,8 +152,10 @@ export function SceneParticles({
         'absolute top-0 left-0 right-0 bottom-0 pointer-events-none',
         className,
       )}
-      {...props}
-    />
+      data-testid={testId}
+    >
+      {children}
+    </div>
   );
 }
 

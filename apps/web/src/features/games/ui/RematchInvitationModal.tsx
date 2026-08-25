@@ -1,7 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { ModalButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Modal, ModalContent, ModalTitle, ModalActions } from './SharedModal';
@@ -26,12 +26,11 @@ interface RematchInvitationModalProps {
 const TitleText = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <ModalTitle className={cx('text-center mb-4', className)} {...props}>
+}) => (
+  <ModalTitle className={cx('text-center mb-4', className)}>
     {children}
   </ModalTitle>
 );
@@ -39,17 +38,15 @@ const TitleText = ({
 const MessageText = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLParagraphElement>) => (
+}) => (
   <p
     className={cx(
       'text-[16px] leading-[24px] text-center mb-6 text-[rgba(255,255,255,0.8)]',
       className,
     )}
-    {...props}
   >
     {children}
   </p>

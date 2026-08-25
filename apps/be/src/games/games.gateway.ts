@@ -116,12 +116,12 @@ export class GamesGateway {
     });
 
     this.server.on('connection', (socket: Socket) => {
-      socket.onAny((event: string, ...args: unknown[]) => {
+      socket.onAny((event: string, payload: unknown) => {
         const handler = registry.get(event);
         if (handler) {
           const result = handler(
             socket,
-            (args[0] as Record<string, unknown>) ?? {},
+            (payload as Record<string, unknown>) ?? {},
           );
           if (result && typeof result === 'object' && 'catch' in result) {
             result.catch((err: unknown) => {

@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 export type SpinnerSize = 'sm' | 'md' | 'lg' | 'small' | 'large' | 'tiny';
 
 const SIZE_MAP: Record<string, string> = {
@@ -26,19 +24,28 @@ export function Spinner({
   size = 'md',
   color,
   className,
-  ...props
+  id,
+  role,
+  'aria-label': ariaLabel,
+  'data-testid': dataTestId,
 }: {
   size?: SpinnerSize;
   color?: string;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  id?: string;
+  role?: string;
+  'aria-label'?: string;
+  'data-testid'?: string;
+}) {
   const s = SIZE_MAP[size] ?? SIZE_MAP.md;
   const b = BORDER_MAP[size] ?? BORDER_MAP.md;
 
   return (
     <div
-      role="status"
-      aria-label="Loading"
+      id={id}
+      role={role ?? 'status'}
+      aria-label={ariaLabel ?? 'Loading'}
+      data-testid={dataTestId}
       className={className}
       style={{
         width: s,
@@ -50,7 +57,6 @@ export function Spinner({
         display: 'inline-block',
         flexShrink: 0,
       }}
-      {...props}
     />
   );
 }

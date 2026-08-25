@@ -12,7 +12,7 @@
 
 /* PageLayout — shared @arcadeum/ui wrapper used across the app; the home
    route is the only one that currently bundles these styles. */
-.page-layout-glass-bg {
+.page-layout-glass-bg.page-layout-glass-bg {
   background: radial-gradient(
       circle at top left,
       var(--backgroundRadialStart),
@@ -23,7 +23,7 @@
       var(--backgroundRadialEnd),
       transparent 55%
     ),
-    var(--background) !important;
+    var(--background);
 }
 
 .page-layout-base {

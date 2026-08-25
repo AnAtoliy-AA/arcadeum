@@ -11,6 +11,18 @@ const SupportPageDynamic = dynamic<SupportPageProps>(
   },
 );
 
-export default function SupportClient(props: SupportPageProps) {
-  return <SupportPageDynamic {...props} />;
+export default function SupportClient({
+  appName,
+  supportT,
+  teamMembers,
+  actions,
+}: SupportPageProps) {
+  return (
+    <SupportPageDynamic
+      appName={appName}
+      supportT={supportT}
+      teamMembers={teamMembers}
+      actions={actions}
+    />
+  );
 }

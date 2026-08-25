@@ -1,14 +1,18 @@
-import type { HTMLAttributes } from 'react';
+import type { CSSProperties, MouseEventHandler, ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 
-type DivProps = HTMLAttributes<HTMLDivElement> & { className?: string };
-type SpanProps = HTMLAttributes<HTMLSpanElement> & { className?: string };
+type DivClickHandler = MouseEventHandler<HTMLDivElement>;
+type SpanClickHandler = MouseEventHandler<HTMLSpanElement>;
 
 export function PlayerCard({
   isActive = false,
   className,
-  ...props
-}: DivProps & { isActive?: boolean }) {
+  children,
+}: {
+  isActive?: boolean;
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -18,70 +22,109 @@ export function PlayerCard({
           : 'border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
-export function PlayerAvatar({ className, ...props }: DivProps) {
+export function PlayerAvatar({
+  className,
+  style,
+  children,
+}: {
+  className?: string;
+  style?: CSSProperties;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
         className,
       )}
-      {...props}
-    />
+      style={style}
+    >
+      {children}
+    </div>
   );
 }
 
-export function PlayerName({ className, ...props }: SpanProps) {
+export function PlayerName({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
         'truncate text-[13px] font-bold text-[#f8fafc] whitespace-nowrap',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
-export function PlayerRating({ className, ...props }: SpanProps) {
+export function PlayerRating({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
-    <span
-      className={cx('text-[11px] text-[rgba(148,163,184,0.8)]', className)}
-      {...props}
-    />
+    <span className={cx('text-[11px] text-[rgba(148,163,184,0.8)]', className)}>
+      {children}
+    </span>
   );
 }
 
-export function EvalBarContainer({ className, ...props }: DivProps) {
+export function EvalBarContainer({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'relative h-full min-h-[200px] w-6 shrink-0 overflow-hidden rounded-md border border-[rgba(255,255,255,0.06)] bg-[rgba(0,0,0,0.3)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
-export function ClockContainer({ className, ...props }: DivProps) {
+export function ClockContainer({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
-    <div
-      className={cx('flex w-full flex-row items-stretch gap-2', className)}
-      {...props}
-    />
+    <div className={cx('flex w-full flex-row items-stretch gap-2', className)}>
+      {children}
+    </div>
   );
 }
 
 export function ClockFace({
   isActive = false,
   className,
-  ...props
-}: DivProps & { isActive?: boolean }) {
+  children,
+}: {
+  isActive?: boolean;
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -91,8 +134,9 @@ export function ClockFace({
           : 'border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -100,8 +144,13 @@ export function ClockTime({
   isLow = false,
   isCritical = false,
   className,
-  ...props
-}: SpanProps & { isLow?: boolean; isCritical?: boolean }) {
+  children,
+}: {
+  isLow?: boolean;
+  isCritical?: boolean;
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
@@ -109,82 +158,139 @@ export function ClockTime({
         isCritical ? 'text-[#ef4444]' : isLow ? 'text-[#eab308]' : '',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
-export function ClockLabel({ className, ...props }: SpanProps) {
+export function ClockLabel({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
         'mt-0.5 text-[9px] font-semibold uppercase text-[rgba(148,163,184,0.6)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
-export function ModalOverlay({ className, ...props }: DivProps) {
+export function ModalOverlay({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'fixed inset-0 z-[1000] flex items-center justify-center bg-[rgba(0,0,0,0.6)] backdrop-blur-[8px]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
-export function ModalContent({ className, ...props }: DivProps) {
+export function ModalContent({
+  className,
+  style,
+  children,
+}: {
+  className?: string;
+  style?: CSSProperties;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-col items-center gap-5 rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(20,24,32,0.95)] p-7 backdrop-blur-[20px]',
         className,
       )}
-      style={{ boxShadow: '0 24px 48px rgba(0, 0, 0, 0.5)' }}
-      {...props}
-    />
+      style={{
+        boxShadow: '0 24px 48px rgba(0, 0, 0, 0.5)',
+        ...style,
+      }}
+    >
+      {children}
+    </div>
   );
 }
 
-export function ModalTitle({ className, ...props }: SpanProps) {
+export function ModalTitle({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
-    <span
-      className={cx('text-[18px] font-bold text-[#f8fafc]', className)}
-      {...props}
-    />
+    <span className={cx('text-[18px] font-bold text-[#f8fafc]', className)}>
+      {children}
+    </span>
   );
 }
 
-export function PromotionGrid({ className, ...props }: DivProps) {
+export function PromotionGrid({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-row items-stretch justify-center gap-3',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
-export function PromotionOption({ className, ...props }: DivProps) {
+export function PromotionOption({
+  className,
+  onClick,
+  children,
+}: {
+  className?: string;
+  onClick?: DivClickHandler;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex h-16 w-16 cursor-pointer flex-col items-center justify-center rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] transition-all duration-150 hover:scale-[1.08] hover:border-[rgba(167,139,250,0.5)] hover:bg-[rgba(255,255,255,0.12)]',
         className,
       )}
-      {...props}
-    />
+      onClick={onClick}
+    >
+      {children}
+    </div>
   );
 }
 
-export function ModalButton({ className, ...props }: SpanProps) {
+export function ModalButton({
+  className,
+  onClick,
+  children,
+}: {
+  className?: string;
+  onClick?: SpanClickHandler;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
@@ -192,19 +298,31 @@ export function ModalButton({ className, ...props }: SpanProps) {
         className,
       )}
       style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)' }}
-      {...props}
-    />
+      onClick={onClick}
+    >
+      {children}
+    </span>
   );
 }
 
-export function CancelButton({ className, ...props }: SpanProps) {
+export function CancelButton({
+  className,
+  onClick,
+  children,
+}: {
+  className?: string;
+  onClick?: SpanClickHandler;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
         'cursor-pointer rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] px-5 py-2 text-[13px] font-semibold text-[rgba(148,163,184,0.8)] transition-colors duration-150 hover:bg-[rgba(255,255,255,0.1)]',
         className,
       )}
-      {...props}
-    />
+      onClick={onClick}
+    >
+      {children}
+    </span>
   );
 }

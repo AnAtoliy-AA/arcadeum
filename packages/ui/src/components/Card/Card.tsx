@@ -27,10 +27,11 @@ export type CardProps = {
   padding?: CardPadding;
   interactive?: boolean;
   children?: ReactNode;
-  group?: string | boolean;
-  title?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>;
+  style?: React.CSSProperties;
+  'data-testid'?: string;
+};
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   {
@@ -38,14 +39,19 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     padding = 'md',
     interactive = false,
     children,
+    onClick,
     className,
-    ...rest
+    style,
+    'data-testid': dataTestId,
   },
   ref,
 ) {
   return (
     <div
       ref={ref}
+      onClick={onClick}
+      style={style}
+      data-testid={dataTestId}
       className={cx(
         'relative',
         '',
@@ -58,7 +64,6 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
         !interactive && 'transition-all duration-300 ease-out',
         className,
       )}
-      {...rest}
     >
       <span
         aria-hidden

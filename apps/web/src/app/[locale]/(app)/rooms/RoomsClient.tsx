@@ -10,8 +10,18 @@ const RoomsPageDynamic = dynamic(() => import('../games/GamesPage'), {
   loading: () => <PageLoading layout="grid" />,
 });
 
-export function RoomsClient(props: GamesClientProps) {
-  return <RoomsPageDynamic {...props} />;
+export function RoomsClient({
+  initialData,
+  gameId,
+  pageTitle,
+}: GamesClientProps) {
+  return (
+    <RoomsPageDynamic
+      initialData={initialData}
+      gameId={gameId}
+      pageTitle={pageTitle}
+    />
+  );
 }
 
 export default RoomsClient;

@@ -1,24 +1,24 @@
-import type { HTMLAttributes } from 'react';
+import type { CSSProperties, FormEventHandler, ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Input as UIInput } from '@arcadeum/ui';
 
 export const roomStyles = `
-  .games-room-container.is-fullscreen {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: 100vw !important;
-    margin: 0 !important;
-    padding: 0.5rem !important;
-    background: #151718 !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+  .games-room-container.games-room-container.is-fullscreen.is-fullscreen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0.5rem;
+    background: #151718;
+    overflow-y: auto;
+    overflow-x: hidden;
     z-index: 1000;
   }
   @media (min-width: 801px) {
-    .games-room-container.is-fullscreen {
-      padding: 1rem 1.5rem !important;
+    .games-room-container.games-room-container.is-fullscreen.is-fullscreen {
+      padding: 1rem 1.5rem;
     }
   }
 `;
@@ -72,83 +72,133 @@ export const errorShakeStyle = {
   animation: 'errorShake 0.4s ease-in-out',
 } as const;
 
-type DivProps = HTMLAttributes<HTMLDivElement> & { className?: string };
-type SpanProps = HTMLAttributes<HTMLSpanElement> & { className?: string };
-
-export function Container({ className, ...props }: DivProps) {
+export function Container({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex w-full max-w-[1400px] flex-col gap-4 p-4 mx-auto flex-1 min-h-0 max-[1150px]:overflow-y-auto max-[1023px]:p-3 max-[1023px]:gap-3 max-[800px]:p-2 max-[800px]:gap-2',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
-export function CenteredContainer({ className, ...props }: DivProps) {
+export function CenteredContainer({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
-    <Container
-      className={cx('items-center justify-center', className)}
-      {...props}
-    />
+    <Container className={cx('items-center justify-center', className)}>
+      {children}
+    </Container>
   );
 }
 
-export function LoadingContainer({ className, ...props }: DivProps) {
+export function LoadingContainer({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex min-h-[50vh] flex-col items-center justify-center text-[18px] text-[var(--textSecondary)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
-export function ErrorContainer({ className, ...props }: DivProps) {
+export function ErrorContainer({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-col items-center p-8 text-[var(--danger)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
-export function GameWrapper({ className, ...props }: DivProps) {
+export function GameWrapper({
+  className,
+  children,
+  'data-testid': dataTestId,
+}: {
+  className?: string;
+  children?: ReactNode;
+  'data-testid'?: string;
+}) {
   return (
     <div
+      data-testid={dataTestId}
       className={cx(
         'flex min-h-0 min-w-0 flex-1 flex-col overflow-visible rounded-2xl max-[1150px]:grow-0 max-[1150px]:shrink-0 max-[1150px]:basis-auto max-[1150px]:min-h-[calc(100dvh-180px)] max-[1023px]:grow-0 max-[1023px]:shrink-0 max-[1023px]:basis-auto max-[800px]:min-h-0',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
-export function Card({ className, ...props }: DivProps) {
+export function Card({
+  className,
+  children,
+  style,
+}: {
+  className?: string;
+  children?: ReactNode;
+  style?: CSSProperties;
+}) {
   return (
     <div
       className={cx(
         'flex w-full max-w-[460px] flex-col items-stretch gap-0 overflow-hidden rounded-[24px] border border-[var(--glassBorder)] bg-[var(--glassBg)] px-10 pb-10 pt-14 mx-auto backdrop-blur-[32px]',
         className,
       )}
-      style={{
-        boxShadow:
-          '0 24px 64px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04) inset',
-      }}
-      {...props}
-    />
+      style={
+        style ?? {
+          boxShadow:
+            '0 24px 64px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04) inset',
+        }
+      }
+    >
+      {children}
+    </div>
   );
 }
 
-export function IconCircle({ className, ...props }: DivProps) {
+export function IconCircle({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -160,87 +210,156 @@ export function IconCircle({ className, ...props }: DivProps) {
           'linear-gradient(135deg, rgba(99,102,241,0.3) 0%, rgba(168,85,247,0.18) 100%)',
         boxShadow: '0 4px 20px rgba(139,92,246,0.35)',
       }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
-export function IconEmoji({ className, ...props }: SpanProps) {
-  return <span className={cx('text-[36px]', className)} {...props} />;
+export function IconEmoji({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
+  return <span className={cx('text-[36px]', className)}>{children}</span>;
 }
 
-export function Title({ className, ...props }: SpanProps) {
+export function Title({
+  className,
+  children,
+  style,
+}: {
+  className?: string;
+  children?: ReactNode;
+  style?: CSSProperties;
+}) {
   return (
     <span
       className={cx(
         'mb-2.5 text-center text-[26px] font-bold tracking-[-0.15px] text-[var(--accent)]',
         className,
       )}
-      {...props}
-    />
+      style={style}
+    >
+      {children}
+    </span>
   );
 }
 
-export function Description({ className, ...props }: DivProps) {
+export function Description({
+  className,
+  children,
+  style,
+}: {
+  className?: string;
+  children?: ReactNode;
+  style?: CSSProperties;
+}) {
   return (
     <div
       className={cx('mb-8 flex flex-col items-center px-4', className)}
-      {...props}
-    />
+      style={style}
+    >
+      {children}
+    </div>
   );
 }
 
-export function DescriptionText({ className, ...props }: SpanProps) {
+export function DescriptionText({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
         'text-center text-[15px] leading-[22px] opacity-[0.6] text-[var(--color)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 export function Form({
   className,
-  ...props
-}: HTMLAttributes<HTMLFormElement> & { className?: string }) {
+  children,
+  style,
+  onSubmit,
+}: {
+  className?: string;
+  children?: ReactNode;
+  style?: CSSProperties;
+  onSubmit?: FormEventHandler<HTMLFormElement>;
+}) {
   return (
-    <form className={cx('flex w-full flex-col gap-4', className)} {...props} />
+    <form
+      className={cx('flex w-full flex-col gap-4', className)}
+      style={style}
+      onSubmit={onSubmit}
+    >
+      {children}
+    </form>
   );
 }
 
-export function InputRow({ className, ...props }: DivProps) {
+export function InputRow({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
-    <div
-      className={cx('flex w-full flex-col items-stretch gap-3', className)}
-      {...props}
-    />
+    <div className={cx('flex w-full flex-col items-stretch gap-3', className)}>
+      {children}
+    </div>
   );
 }
 
-export function ErrorMessage({ className, ...props }: DivProps) {
+export function ErrorMessage({
+  className,
+  children,
+  style,
+}: {
+  className?: string;
+  children?: ReactNode;
+  style?: CSSProperties;
+}) {
   return (
     <div
       className={cx(
         'flex flex-col items-center self-center rounded-xl border border-[var(--errorBorder)] bg-[var(--errorBg)] px-8 py-3',
         className,
       )}
-      {...props}
-    />
+      style={style}
+    >
+      {children}
+    </div>
   );
 }
 
-export function ErrorText({ className, ...props }: SpanProps) {
+export function ErrorText({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
         'text-center text-[14px] font-semibold text-[var(--error)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
@@ -248,27 +367,41 @@ export { UIInput as Input };
 
 export function LoginLink({
   className,
-  ...props
-}: HTMLAttributes<HTMLAnchorElement> & { className?: string }) {
+  children,
+  href,
+}: {
+  className?: string;
+  children?: ReactNode;
+  href?: string;
+}) {
   return (
     <a
       className={cx(
         'mt-4 inline-block text-[var(--accent)] underline',
         className,
       )}
-      {...props}
-    />
+      href={href}
+    >
+      {children}
+    </a>
   );
 }
 
-export function NoticeMessage({ className, ...props }: SpanProps) {
+export function NoticeMessage({
+  className,
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <span
       className={cx(
         'self-center rounded-xl border border-[rgba(139,92,246,0.12)] bg-[rgba(139,92,246,0.08)] px-4 py-2.5 text-center text-[13px] text-[var(--accent)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }

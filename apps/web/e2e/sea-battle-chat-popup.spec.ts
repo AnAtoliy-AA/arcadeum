@@ -27,16 +27,18 @@ test.describe('Sea Battle Chat Message Popup', () => {
       try {
         const style = document.createElement('style');
         style.textContent = `
-          * { 
-            animation-duration: 0.1s !important; 
-            animation-delay: 0s !important;
-            transition-duration: 0.1s !important;
-            transition-delay: 0s !important;
+          html body *:not([data-rm]):not([data-rm]):not([data-rm]),
+          html body *:not([data-rm]):not([data-rm]):not([data-rm])::before,
+          html body *:not([data-rm]):not([data-rm]):not([data-rm])::after {
+            animation-duration: 0.1s;
+            animation-delay: 0s;
+            transition-duration: 0.1s;
+            transition-delay: 0s;
           }
-          [data-testid="chat-message-popup"],
-          [data-testid="chat-message-popup"] * {
-            --popup-dismiss-duration: 30s !important;
-            animation-duration: 30s !important;
+          html body [data-testid="chat-message-popup"][data-testid="chat-message-popup"][data-testid="chat-message-popup"],
+          html body [data-testid="chat-message-popup"][data-testid="chat-message-popup"][data-testid="chat-message-popup"] * {
+            --popup-dismiss-duration: 30s;
+            animation-duration: 30s;
           }
         `;
         const container = document.head || document.documentElement;

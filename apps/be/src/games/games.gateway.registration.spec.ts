@@ -90,6 +90,8 @@ describe('GamesGateway game handler registration', () => {
       onAny: (cb: (event: string, ...args: unknown[]) => void) => {
         registered = cb;
       },
+      // Identity checks fail closed — sockets must present a verified id.
+      data: { authenticated: true, userId: 'user-1' },
     } as unknown as Socket;
     connectionCb(fakeSocket);
     if (!registered) throw new Error('socket.onAny not wired');

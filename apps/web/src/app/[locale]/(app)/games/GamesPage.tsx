@@ -306,7 +306,7 @@ export default function GamesPage({
           onCategoryChange={handleCategoryChange}
           aiVsAiFilter={aiVsAiFilter}
           onAiVsAiChange={handleAiVsAiChange}
-          isAuthenticated={!!snapshot.accessToken}
+          canFilterParticipation={!!snapshot.accessToken || !!snapshot.userId}
         />
 
         <GlassCard className={'p-6'}>

@@ -70,7 +70,18 @@ export class GameRoomsQueryBuilder {
       }
     }
 
-    if (typeof query.hostId !== 'string') {
+    // Anonymous-hosted rooms are hidden from general browsing, but never from
+    // queries scoped to the viewer's own participation — an anon player must
+    // still see rooms they host or joined (including other anon-hosted ones).
+    const isViewerParticipationFilter =
+      Boolean(filters.userId) &&
+      (filters.participation === 'host' ||
+        filters.participation === 'hosting' ||
+        filters.participation === 'participant' ||
+        filters.participation === 'joined' ||
+        filters.participation === 'any');
+
+    if (!isViewerParticipationFilter && typeof query.hostId !== 'string') {
       query.hostId = { ...((query.hostId as object) || {}), $not: /^anon_/ };
     }
 

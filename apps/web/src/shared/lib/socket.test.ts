@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import type { Socket } from 'socket.io-client';
+import { io, type Socket } from 'socket.io-client';
 import * as encryption from './socket-encryption';
 import { renderHook, waitFor } from '@testing-library/react';
 
@@ -169,6 +169,19 @@ describe('socket', () => {
         return this;
       },
     );
+  });
+
+  it('creates the wallet socket on its own manager so wallet failures cannot tear down games/chats', () => {
+    const ioMock = vi.mocked(io);
+    const walletCall = ioMock.mock.calls.find((c: unknown[]) =>
+      String(c[0]).endsWith('/wallet'),
+    );
+    expect(walletCall).toBeDefined();
+    expect(walletCall![1]).toMatchObject({
+      forceNew: true,
+      transports: ['websocket'],
+      autoConnect: false,
+    });
   });
 
   it('ignores invalid payload structures', () => {

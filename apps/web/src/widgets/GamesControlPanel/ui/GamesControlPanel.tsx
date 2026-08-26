@@ -387,7 +387,10 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
             variant="danger"
             size="sm"
             onClick={handleLeaveGame}
-            aria-label={t('games.table.controlPanel.leaveRoom')}
+            aria-label={
+              t('games.common.leaveRoom.button' as TranslationKey) ||
+              'Leave Room'
+            }
             title={
               t('games.table.controlPanel.leaveGameTooltip') ||
               'Remove yourself from the game and return to lobby'
@@ -396,7 +399,9 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           >
             🚪
             <span className="hidden sm:inline">
-              {' ' + t('games.table.controlPanel.leaveRoom')}
+              {' ' +
+                (t('games.common.leaveRoom.button' as TranslationKey) ||
+                  'Leave')}
             </span>
           </Button>
         )}
@@ -406,15 +411,18 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         open={showLeaveConfirm}
         onClose={() => setShowLeaveConfirm(false)}
         onConfirm={handleConfirmLeave}
-        title={t('games.table.leaveGame' as TranslationKey) || 'Leave Game'}
+        title={
+          t('games.common.leaveRoom.confirmTitle' as TranslationKey) ||
+          'Leave Room'
+        }
         message={
-          t('games.table.leaveGameConfirmation' as TranslationKey) ||
-          'Are you sure you want to leave the game?'
+          t('games.common.leaveRoom.confirmMessage' as TranslationKey) ||
+          'Are you sure you want to leave this room?'
         }
         confirmLabel={
-          t('games.table.controlPanel.leaveRoom' as TranslationKey) || 'Leave'
+          t('games.common.leaveRoom.confirmButton' as TranslationKey) || 'Leave'
         }
-        cancelLabel={t('common.close' as TranslationKey) || 'Cancel'}
+        cancelLabel={t('games.common.cancel' as TranslationKey) || 'Cancel'}
       />
     </div>
   );

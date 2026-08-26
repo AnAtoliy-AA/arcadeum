@@ -133,9 +133,14 @@ export const esMessages = {
       ariaLabel: 'Tablero de Go ({{size}}×{{size}})',
     },
     gameOver: {
-      won: '¡Victoria! Has rodeado más territorio.',
-      lost: 'Derrota — tu rival controló más área.',
-      draw: 'Empate — tablero perfectamente equilibrado.',
+      won: '¡Victoria!',
+      lost: 'Derrota',
+      draw: 'Empate',
+      messages: {
+        won: '¡Victoria! Has rodeado más territorio. ¿Listo para otra partida?',
+        lost: 'Derrota — tu rival controló más área. ¿Quieres la revancha?',
+        draw: 'Empate — tablero perfectamente equilibrado. ¿Jugar de nuevo?',
+      },
     },
     tutorial: {
       s1: {

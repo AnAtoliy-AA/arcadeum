@@ -106,7 +106,7 @@ export const GameRulesModal = memo(function GameRulesModal({
             data-testid="rules-modal-got-it-button"
             className="px-6 text-xs font-semibold"
           >
-            {t('common.close' as TranslationKey) || 'Got it'}
+            {t('common.actions.close' as TranslationKey) || 'Close'}
           </Button>
         </ModalActions>
       </ModalContent>

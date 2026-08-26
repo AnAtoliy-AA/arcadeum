@@ -130,9 +130,14 @@ export const frMessages = {
       ariaLabel: 'Plateau de Go ({{size}}×{{size}})',
     },
     gameOver: {
-      won: 'Victoire ! Vous avez encerclé plus de territoire.',
-      lost: 'Défaite — votre adversaire a contrôlé plus d’aire.',
-      draw: 'Match nul — plateau parfaitement équilibré.',
+      won: 'Victoire !',
+      lost: 'Défaite',
+      draw: 'Match nul',
+      messages: {
+        won: 'Victoire ! Vous avez encerclé plus de territoire. Prêt pour une revanche ?',
+        lost: 'Défaite — votre adversaire a contrôlé plus d’aire. Rejouer ?',
+        draw: 'Match nul — plateau parfaitement équilibré. Rejouer ?',
+      },
     },
     tutorial: {
       s1: {

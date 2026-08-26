@@ -241,6 +241,7 @@ function BackgammonGameImpl({
           variantEmoji: variantTokens.emoji,
           title: t('games.backgammon_v1.name'),
           subtitle: room?.name,
+          onToggleResult: gameEnd.toggleResult,
           turn: {
             onClockUserId: currentTurnUserId,
             isMyTurn: myTurn,

@@ -252,16 +252,22 @@ const TURN_TEXT_CLASSES: Record<TurnStatusVariant, string> = {
 export const TurnStatusPill = ({
   status = 'default',
   className,
+  onClick,
+  title,
   'data-testid': dataTestId,
   children,
 }: {
   status?: TurnStatusVariant;
   className?: string;
+  onClick?: () => void;
+  title?: string;
   'data-testid'?: string;
   children?: ReactNode;
 }) => (
   <div
     data-testid={dataTestId}
+    onClick={onClick}
+    title={title}
     className={cx(
       'flex flex-row items-center rounded-[20px] px-3 py-1 border shrink-0',
       TURN_PILL_CLASSES[status],
@@ -409,4 +415,5 @@ export interface SharedHeaderProps {
   turnAvatar?: React.ReactNode;
   extraActions?: React.ReactNode;
   titleGradient?: string;
+  onToggleResult?: () => void;
 }

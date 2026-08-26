@@ -1,5 +1,8 @@
-import { useState, useMemo, useCallback } from 'react';
+'use client';
+
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { GameSessionSummary } from '@/shared/types/games';
+import { useGameResultStore } from '../store/gameResultStore';
 
 export type GameResult = 'won' | 'lost' | 'draw' | null;
 export type SharedResult = 'victory' | 'defeat' | 'draw' | null;
@@ -9,33 +12,35 @@ export interface ResultMessages {
   message: string;
 }
 
-/**
- * Shared result-modal state for turn-based games. Computes the game result,
- * tracks which session has been dismissed, and derives the display values
- * the `GameResultModal` expects.
- */
 export function useGameResultModal(
   session: GameSessionSummary | null | undefined,
   result: GameResult,
   resultMessages: ResultMessages | undefined,
   isGameOver?: boolean,
 ) {
+  const storeIsOpen = useGameResultStore((state) => state.isOpen);
+  const setStoreIsOpen = useGameResultStore((state) => state.setIsOpen);
+  const setStoreHasResult = useGameResultStore((state) => state.setHasResult);
+
   const [dismissedSessionId, setDismissedSessionId] = useState<string | null>(
     null,
   );
   const [wasAlreadyOver] = useState(
     () => isGameOver === true && result !== null,
   );
-  const [hasSeenActiveGame, setHasSeenActiveGame] = useState(false);
 
-  if (!wasAlreadyOver && isGameOver && !hasSeenActiveGame) {
-    setHasSeenActiveGame(true);
-  }
+  useEffect(() => {
+    if (!wasAlreadyOver && isGameOver && result) {
+      useGameResultStore.getState().setHasResult(true);
+      useGameResultStore.getState().setIsOpen(true);
+    }
+  }, [wasAlreadyOver, isGameOver, result]);
 
   const showResultModal =
-    !!result &&
-    dismissedSessionId !== (session?.id ?? null) &&
-    hasSeenActiveGame;
+    storeIsOpen ||
+    (!wasAlreadyOver &&
+      !!result &&
+      dismissedSessionId !== (session?.id ?? 'dismissed'));
 
   const sharedResult: SharedResult = useMemo(() => {
     if (result === 'won') return 'victory';
@@ -43,15 +48,31 @@ export function useGameResultModal(
     return result;
   }, [result]);
 
-  const dismiss = useCallback(
-    () => setDismissedSessionId(session?.id ?? null),
-    [session?.id],
-  );
+  const dismiss = useCallback(() => {
+    setStoreIsOpen(false);
+    setDismissedSessionId(session?.id ?? 'dismissed');
+  }, [session?.id, setStoreIsOpen]);
+
+  const open = useCallback(() => {
+    setStoreHasResult(true);
+    setStoreIsOpen(true);
+    setDismissedSessionId(null);
+  }, [setStoreHasResult, setStoreIsOpen]);
+
+  const toggle = useCallback(() => {
+    if (showResultModal) {
+      dismiss();
+    } else {
+      open();
+    }
+  }, [showResultModal, dismiss, open]);
 
   return {
     showResultModal,
     sharedResult,
     resultMessages,
     dismiss,
+    open,
+    toggle,
   } as const;
 }

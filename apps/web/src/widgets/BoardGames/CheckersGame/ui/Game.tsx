@@ -412,6 +412,7 @@ function CheckersGameImpl({
           variantEmoji: variantTokens.emoji,
           title: 'Checkers',
           subtitle: room?.name,
+          onToggleResult: gameEnd.toggleResult,
           turn: {
             onClockUserId: currentTurnUserId,
             isMyTurn: myTurn,

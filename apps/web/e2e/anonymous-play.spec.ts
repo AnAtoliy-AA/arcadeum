@@ -12,7 +12,7 @@ import {
 import { routes } from '../src/shared/config/routes';
 
 test.describe('Anonymous Play', () => {
-  const anonymousId = 'anon_test_user_123';
+  const anonymousId = 'anon_1111222233334444';
 
   test.beforeEach(async ({ page }) => {
     await page.addInitScript((id) => {
@@ -121,8 +121,8 @@ test.describe('Anonymous Play', () => {
     await startBtn.click({ force: true });
   });
 
-  const hostId = 'anon-host-id';
-  const joinerId = 'anon-joiner-id';
+  const hostId = 'anon_aaaa1111bbbb2222';
+  const joinerId = 'anon_cccc3333dddd4444';
 
   test('should allow joining a private room as anonymous via invite link', async ({
     context,

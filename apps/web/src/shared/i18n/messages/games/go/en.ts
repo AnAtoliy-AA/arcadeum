@@ -130,9 +130,14 @@ export const enMessages = {
       ariaLabel: 'Go board ({{size}}×{{size}})',
     },
     gameOver: {
-      won: 'Victory! You surrounded more territory.',
-      lost: 'Defeat — your opponent controlled more area.',
-      draw: 'Draw — perfectly balanced board.',
+      won: 'Victory!',
+      lost: 'Defeat',
+      draw: 'Draw',
+      messages: {
+        won: 'Victory! You surrounded more territory. Ready for another round?',
+        lost: 'Defeat — your opponent controlled more area. Want a rematch?',
+        draw: 'Draw — perfectly balanced board. Play again?',
+      },
     },
     tutorial: {
       s1: {

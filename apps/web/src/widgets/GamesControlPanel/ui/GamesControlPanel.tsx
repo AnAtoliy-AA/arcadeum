@@ -2,19 +2,19 @@
 
 import { useCallback, useState, type RefObject } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { gameSocket } from '@/shared/lib/socket';
 import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { ConfirmationModal } from '@/features/games/ui/ConfirmationModal';
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  ModalBody,
-  ModalFooter,
   MaximizeIcon,
   MinimizeIcon,
   VolumeOnIcon,
@@ -73,13 +73,25 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
+  const rematchStoreIsGameOver = useGameRematchStore((s) => s.isGameOver);
+  const rematchStoreOnRematch = useGameRematchStore((s) => s.onRematch);
+  const rematchStoreLoading = useGameRematchStore((s) => s.rematchLoading);
+  const chatPanelOpen = useGameChatStore((s) => s.chatPanelOpen);
+  const setChatPanelOpen = useGameChatStore((s) => s.setChatPanelOpen);
+
+  const effectiveIsGameOver = isGameOver || rematchStoreIsGameOver;
+  const effectiveOnRematch = onRematch || rematchStoreOnRematch;
+  const effectiveRematchLoading = rematchLoading || rematchStoreLoading;
+  const isChatVisible = showChat !== undefined ? showChat : chatPanelOpen;
+  const handleToggleChat =
+    onToggleChat ?? (() => setChatPanelOpen(!chatPanelOpen));
+
   const toggleMusic = useCallback(() => {
     setMusicEnabled(!musicEnabled);
   }, [musicEnabled, setMusicEnabled]);
 
   const handleLeaveGame = useCallback(() => {
     if (isSpectating) {
-      // If spectating, we can just leave the room UI
       router.push('/games');
       return;
     }
@@ -116,147 +128,148 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
   return (
     <div
-      className={`flex flex-row items-center justify-start gap-4 flex-wrap max-[800px]:gap-2 max-[800px]:justify-center max-[800px]:py-2 max-[800px]:px-3 max-[800px]:rounded-[12px] py-3 px-6 bg-[var(--glassBg)] rounded-[16px] border border-[var(--glassBorderStrong)] ${className}`}
+      className={cx(
+        'relative z-[100] flex flex-row items-center justify-between gap-3 max-[800px]:gap-2 max-[800px]:py-2 max-[800px]:px-3 py-2 px-4 bg-[var(--glassBg)] rounded-2xl border border-[var(--glassBorderStrong)] backdrop-blur-md',
+        className,
+      )}
       data-testid="games-control-panel"
     >
-      {isSpectating && (
-        <div
-          className="flex flex-row bg-[rgba(56,_189,_248,_0.15)] border-[rgba(56,_189,_248,_0.4)] border px-3 py-2 rounded-[20px] items-center gap-2"
-          aria-label="Spectating mode"
-          data-testid="spectating-indicator"
-        >
-          <span className="text-[14px]">👁️</span>
-          <span className="text-[11px] font-extrabold text-[#0284c7] uppercase tracking-[1px]">
-            {t('games.table.controlPanel.spectating') || 'Spectating'}
-          </span>
-        </div>
-      )}
-
-      <Button
-        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
-        variant="glass"
-        size="sm"
-        data-testid="fullscreen-button"
-        onClick={toggleFullscreen}
-        aria-label={
-          isFullscreen
-            ? t('games.table.controlPanel.exitFullscreen')
-            : t('games.table.controlPanel.enterFullscreen')
-        }
-        title={
-          isFullscreen
-            ? t('games.table.controlPanel.exitFullscreen')
-            : t('games.table.controlPanel.enterFullscreen')
-        }
-      >
-        {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
-        <span className="max-[800px]:hidden">
-          {' ' + t('games.table.controlPanel.fullscreen')}
-        </span>
-      </Button>
-
-      <Button
-        className={cx(
-          'max-[640px]:scale-[0.9] max-[640px]:px-2',
-          soundEnabled &&
-            '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+      <div className="flex flex-row items-center gap-1.5 shrink-0 flex-wrap">
+        {isSpectating && (
+          <div
+            className="flex flex-row bg-[rgba(56,_189,_248,_0.15)] border-[rgba(56,_189,_248,_0.4)] border px-2.5 py-1 rounded-full items-center gap-1.5 mr-1"
+            aria-label="Spectating mode"
+            data-testid="spectating-indicator"
+          >
+            <span className="text-[13px]">👁️</span>
+            <span className="text-[10px] font-extrabold text-[#0284c7] uppercase tracking-wider hidden sm:inline">
+              {t('games.table.controlPanel.spectating') || 'Spectating'}
+            </span>
+          </div>
         )}
-        variant="glass"
-        size="sm"
-        aria-pressed={soundEnabled}
-        onClick={() => setSoundEnabled(!soundEnabled)}
-        aria-label={t('settings.soundLabel')}
-        title={t('settings.soundLabel')}
-        data-testid="sound-toggle-button"
-      >
-        {soundEnabled ? (
-          <VolumeOnIcon size={16} />
-        ) : (
-          <VolumeOffIcon size={16} />
-        )}
-        <span className="max-[800px]:hidden">
-          {' ' + t('settings.soundLabel')}
-        </span>
-      </Button>
 
-      <Button
-        className={cx(
-          'max-[640px]:scale-[0.9] max-[640px]:px-2',
-          musicEnabled &&
-            '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
-        )}
-        variant="glass"
-        size="sm"
-        aria-pressed={musicEnabled}
-        onClick={toggleMusic}
-        aria-label={t('settings.musicLabel')}
-        title={t('settings.musicLabel')}
-        data-testid="music-toggle-button"
-      >
-        {musicEnabled ? <MusicOnIcon size={16} /> : <MusicOffIcon size={16} />}
-        <span className="max-[800px]:hidden">
-          {' ' + t('settings.musicLabel')}
-        </span>
-      </Button>
-
-      {onShowRules && (
         <Button
-          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+          className="w-9 h-9 !p-0 shrink-0"
           variant="glass"
           size="sm"
-          onClick={onShowRules}
-          aria-label={t('games.table.controlPanel.rules') || 'Game Rules'}
-          title={t('games.table.controlPanel.rules') || 'Game Rules'}
-          data-testid="show-rules-button"
+          data-testid="fullscreen-button"
+          onClick={toggleFullscreen}
+          aria-label={
+            isFullscreen
+              ? t('games.table.controlPanel.exitFullscreen')
+              : t('games.table.controlPanel.enterFullscreen')
+          }
+          title={
+            isFullscreen
+              ? t('games.table.controlPanel.exitFullscreen')
+              : t('games.table.controlPanel.enterFullscreen')
+          }
         >
-          📖
-          <span className="max-[800px]:hidden">
-            {' ' + (t('games.table.controlPanel.rules') || 'Rules')}
-          </span>
+          {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
         </Button>
-      )}
 
-      {onShowTutorial && (
         <Button
-          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+          className={cx(
+            'w-9 h-9 !p-0 shrink-0',
+            soundEnabled &&
+              '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+          )}
           variant="glass"
           size="sm"
-          onClick={onShowTutorial}
-          aria-label={t('games.tutorial.ui.button')}
-          title={t('games.tutorial.ui.button')}
-          data-testid="show-tutorial-button"
+          aria-pressed={soundEnabled}
+          onClick={() => setSoundEnabled(!soundEnabled)}
+          aria-label={t('settings.soundLabel')}
+          title={t('settings.soundLabel')}
+          data-testid="sound-toggle-button"
         >
-          🎓
-          <span className="max-[800px]:hidden">
-            {' ' + t('games.tutorial.ui.button')}
-          </span>
+          {soundEnabled ? (
+            <VolumeOnIcon size={16} />
+          ) : (
+            <VolumeOffIcon size={16} />
+          )}
         </Button>
-      )}
 
-      {onToggleChat && (
         <Button
-          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+          className={cx(
+            'w-9 h-9 !p-0 shrink-0',
+            musicEnabled &&
+              '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+          )}
           variant="glass"
           size="sm"
-          onClick={onToggleChat}
+          aria-pressed={musicEnabled}
+          onClick={toggleMusic}
+          aria-label={t('settings.musicLabel')}
+          title={t('settings.musicLabel')}
+          data-testid="music-toggle-button"
+        >
+          {musicEnabled ? (
+            <MusicOnIcon size={16} />
+          ) : (
+            <MusicOffIcon size={16} />
+          )}
+        </Button>
+
+        <Button
+          className={cx(
+            'w-9 h-9 !p-0 shrink-0',
+            isChatVisible &&
+              '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+          )}
+          variant="glass"
+          size="sm"
+          onClick={handleToggleChat}
           data-testid="toggle-chat-button"
           aria-label={
-            showChat ? t('games.table.chat.hide') : t('games.table.chat.show')
+            isChatVisible
+              ? t('games.table.chat.hide')
+              : t('games.table.chat.show')
+          }
+          title={
+            isChatVisible
+              ? t('games.table.chat.hide')
+              : t('games.table.chat.show')
           }
         >
           💬
-          <span className="max-[800px]:hidden">
-            {' ' +
-              (showChat
-                ? t('games.table.chat.hide')
-                : t('games.table.chat.show'))}
-          </span>
         </Button>
-      )}
+
+        {(onShowRules || onShowTutorial) && (
+          <div className="h-5 w-px bg-white/10 mx-0.5 hidden sm:block" />
+        )}
+
+        {onShowRules && (
+          <Button
+            className="w-9 h-9 !p-0 shrink-0"
+            variant="glass"
+            size="sm"
+            onClick={onShowRules}
+            aria-label={t('games.table.controlPanel.rules') || 'Game Rules'}
+            title={t('games.table.controlPanel.rules') || 'Game Rules'}
+            data-testid="show-rules-button"
+          >
+            📖
+          </Button>
+        )}
+
+        {onShowTutorial && (
+          <Button
+            className="w-9 h-9 !p-0 shrink-0"
+            variant="glass"
+            size="sm"
+            onClick={onShowTutorial}
+            aria-label={t('games.tutorial.ui.button')}
+            title={t('games.tutorial.ui.button')}
+            data-testid="show-tutorial-button"
+          >
+            🎓
+          </Button>
+        )}
+      </div>
 
       {showMoveControls && (
         <div
-          className="flex flex-row items-stretch gap-1 border border-[var(--borderColor)] p-1 scale-[1] max-[800px]:scale-[0.9]"
+          className="flex flex-row items-stretch gap-1 border border-[var(--borderColor)] p-1 scale-[0.9]"
           data-testid="move-controls"
         >
           <Button
@@ -322,109 +335,95 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         </div>
       )}
 
-      {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
+      <div className="flex flex-row items-center gap-2 ml-auto shrink-0 flex-wrap">
+        {effectiveIsGameOver && effectiveOnRematch && (
+          <Button
+            className="active:scale-[0.95] text-xs font-semibold px-3"
+            variant="primary"
+            size="sm"
+            onClick={effectiveOnRematch}
+            disabled={effectiveRematchLoading}
+            data-testid="rematch-button"
+          >
+            🔄
+            <span className="hidden sm:inline">
+              {' ' +
+                (effectiveRematchLoading
+                  ? t('games.table.rematch.loading' as TranslationKey) ||
+                    'Loading...'
+                  : t('games.table.rematch.button' as TranslationKey) ||
+                    'Play Again')}
+            </span>
+          </Button>
+        )}
 
-      {isGameOver && onRematch && (
+        {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
+
         <Button
-          className="max-[640px]:scale-[0.9] max-[640px]:px-2 active:scale-[0.95]"
-          variant="primary"
+          className="max-[640px]:px-2.5"
+          variant="glass"
           size="sm"
-          onClick={onRematch}
-          disabled={rematchLoading}
-          data-testid="rematch-button"
-        >
-          🔄
-          <span className="max-[800px]:hidden">
-            {' ' +
-              (rematchLoading
-                ? t(
-                    'games.table.rematch.loading' as import('@/shared/lib/useTranslation').TranslationKey,
-                  ) || 'Loading...'
-                : t(
-                    'games.table.rematch.button' as import('@/shared/lib/useTranslation').TranslationKey,
-                  ) || 'Play Again')}
-          </span>
-        </Button>
-      )}
-
-      <Button
-        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
-        variant="glass"
-        size="sm"
-        onClick={handleExitRoom}
-        aria-label={t('games.table.controlPanel.exitRoom') || 'Exit'}
-        title={
-          t('games.table.controlPanel.exitRoomTooltip') ||
-          'Go back to lobby but stay in the game'
-        }
-        data-testid="exit-room-button"
-      >
-        🏃
-        <span className="max-[800px]:hidden">
-          {' ' + (t('games.table.controlPanel.exitRoom') || 'Exit')}
-        </span>
-      </Button>
-
-      {snapshot.userId && (
-        <Button
-          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
-          variant="danger"
-          size="sm"
-          onClick={handleLeaveGame}
-          aria-label={t('games.table.controlPanel.leaveRoom')}
-          title={
-            t('games.table.controlPanel.leaveGameTooltip') ||
-            'Remove yourself from the game and return to lobby'
+          onClick={handleExitRoom}
+          aria-label={
+            t('games.table.controlPanel.exitRoom' as TranslationKey) || 'Exit'
           }
-          data-testid="leave-game-button"
+          title={
+            t('games.table.controlPanel.exitRoomTooltip' as TranslationKey) ||
+            'Go back to lobby but stay in the game'
+          }
+          data-testid="exit-room-button"
         >
-          🚪
-          <span className="max-[800px]:hidden">
-            {' ' + t('games.table.controlPanel.leaveRoom')}
+          🏃
+          <span className="hidden sm:inline">
+            {' ' +
+              (t('games.table.controlPanel.exitRoom' as TranslationKey) ||
+                'Exit')}
           </span>
         </Button>
-      )}
 
-      <Modal open={showLeaveConfirm} onClose={() => setShowLeaveConfirm(false)}>
-        <ModalContent maxWidth="420px">
-          <ModalHeader onClose={() => setShowLeaveConfirm(false)}>
-            <ModalTitle>{t('games.table.controlPanel.leaveRoom')}</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <div className="flex flex-col gap-4 items-center py-4">
-              <div className="flex flex-col w-[80px] h-[80px] rounded-[40px] bg-[rgba(239,_68,_68,_0.1)] items-center justify-center -mb-2">
-                <span className="text-[32px]">🚪</span>
-              </div>
-              <span className="text-center text-[16px] leading-[24px] opacity-[0.8] font-medium">
-                {t('games.table.controlPanel.leaveConfirmMessage') ||
-                  'Are you sure you want to leave the game? You will be removed from the participants list.'}
-              </span>
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <div className="flex flex-row items-stretch gap-3 justify-center w-full">
-              <Button
-                className="rounded-[12px]"
-                style={{ flex: 1 }}
-                variant="secondary"
-                size="lg"
-                onClick={() => setShowLeaveConfirm(false)}
-              >
-                {t('games.common.cancel') || 'Cancel'}
-              </Button>
-              <Button
-                className="rounded-[12px]"
-                style={{ flex: 1 }}
-                variant="danger"
-                size="lg"
-                onClick={handleConfirmLeave}
-              >
-                {t('games.table.controlPanel.leaveRoom')}
-              </Button>
-            </div>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        {snapshot.userId && (
+          <Button
+            className="max-[640px]:px-2.5"
+            variant="danger"
+            size="sm"
+            onClick={handleLeaveGame}
+            aria-label={
+              t('games.common.leaveRoom.button' as TranslationKey) ||
+              'Leave Room'
+            }
+            title={
+              t('games.table.controlPanel.leaveGameTooltip') ||
+              'Remove yourself from the game and return to lobby'
+            }
+            data-testid="leave-game-button"
+          >
+            🚪
+            <span className="hidden sm:inline">
+              {' ' +
+                (t('games.common.leaveRoom.button' as TranslationKey) ||
+                  'Leave')}
+            </span>
+          </Button>
+        )}
+      </div>
+
+      <ConfirmationModal
+        open={showLeaveConfirm}
+        onClose={() => setShowLeaveConfirm(false)}
+        onConfirm={handleConfirmLeave}
+        title={
+          t('games.common.leaveRoom.confirmTitle' as TranslationKey) ||
+          'Leave Room'
+        }
+        message={
+          t('games.common.leaveRoom.confirmMessage' as TranslationKey) ||
+          'Are you sure you want to leave this room?'
+        }
+        confirmLabel={
+          t('games.common.leaveRoom.confirmButton' as TranslationKey) || 'Leave'
+        }
+        cancelLabel={t('games.common.cancel' as TranslationKey) || 'Cancel'}
+      />
     </div>
   );
 }

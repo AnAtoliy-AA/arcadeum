@@ -413,6 +413,8 @@ export function ActiveGameView({
                     ? 'victory'
                     : 'defeat',
                 dismissResult: () => setModalDismissed(true),
+                openResult: () => setModalDismissed(false),
+                toggleResult: () => setModalDismissed((d) => !d),
                 rematchLoading: rematch.rematchLoading,
                 rematchError: rematch.rematchError ?? null,
                 showRematchModal: rematch.showRematchModal,

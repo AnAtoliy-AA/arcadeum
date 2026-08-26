@@ -298,6 +298,7 @@ function TicTacToeGameImpl({
           variantEmoji: variantTokens.emoji,
           title: 'Tic-Tac-Toe',
           subtitle: room?.name,
+          onToggleResult: gameEnd.toggleResult,
           turn: {
             onClockUserId: currentShooterId,
             isMyTurn: myTurn,

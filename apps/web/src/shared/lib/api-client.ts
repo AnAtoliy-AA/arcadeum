@@ -47,7 +47,7 @@ export async function getOrCreateAnonymousId(): Promise<string | null> {
 
   let id = localStorage.getItem(ANONYMOUS_ID_KEY);
 
-  if (!id) {
+  if (!id || !ANONYMOUS_ID_PATTERN.test(id)) {
     const randomBytes = new Uint8Array(8);
     if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
       window.crypto.getRandomValues(randomBytes);
@@ -77,7 +77,8 @@ export async function getOrCreateAnonymousId(): Promise<string | null> {
 export function getAnonymousId() {
   if (typeof window === 'undefined') return null;
   const id = localStorage.getItem(ANONYMOUS_ID_KEY);
-  if (id) mirrorAnonymousIdCookie(id);
+  if (!id || !ANONYMOUS_ID_PATTERN.test(id)) return null;
+  mirrorAnonymousIdCookie(id);
   return id;
 }
 

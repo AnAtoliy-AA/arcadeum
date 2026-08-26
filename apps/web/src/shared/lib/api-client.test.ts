@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import { apiClient } from './api-client';
+import {
+  apiClient,
+  getOrCreateAnonymousId,
+  getAnonymousId,
+} from './api-client';
 
 // Mock global fetch
 global.fetch = vi.fn();
@@ -224,5 +228,38 @@ describe('apiClient', () => {
       expect.any(String),
       expect.objectContaining({ method: 'DELETE' }),
     );
+  });
+
+  describe('anonymous ID validation', () => {
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    it('generates a format-valid anonymous ID when none is stored', async () => {
+      const id = await getOrCreateAnonymousId();
+      expect(id).toMatch(/^anon_[0-9a-f-]{4,64}$/);
+      expect(localStorage.getItem('arcadeum_anon_id')).toBe(id);
+      expect(getAnonymousId()).toBe(id);
+    });
+
+    it('regenerates a format-valid ID when localStorage contains a malformed value', async () => {
+      localStorage.setItem('arcadeum_anon_id', 'corrupted_invalid_id');
+      expect(getAnonymousId()).toBeNull();
+
+      const newId = await getOrCreateAnonymousId();
+      expect(newId).toMatch(/^anon_[0-9a-f-]{4,64}$/);
+      expect(newId).not.toBe('corrupted_invalid_id');
+      expect(localStorage.getItem('arcadeum_anon_id')).toBe(newId);
+      expect(getAnonymousId()).toBe(newId);
+    });
+
+    it('preserves an existing valid anonymous ID', async () => {
+      const validId = 'anon_1234567890abcdef';
+      localStorage.setItem('arcadeum_anon_id', validId);
+
+      const id = await getOrCreateAnonymousId();
+      expect(id).toBe(validId);
+      expect(getAnonymousId()).toBe(validId);
+    });
   });
 });

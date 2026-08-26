@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.55] - 2026-08-26
+
+### Fixed
+- register pachisi gateway and add compile-time registration guard
+
+
 ## [1.26.54] - 2026-08-26
 
 ### Added

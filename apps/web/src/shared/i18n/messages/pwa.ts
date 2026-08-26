@@ -38,6 +38,25 @@ export const en = {
     unsupported: "This game can't be played offline yet.",
     start: 'Start offline match',
   },
+
+  offlineDownloads: {
+    title: 'Offline Games',
+    description:
+      'Select games to download so you can play them without an internet connection.',
+    selectAll: 'Select all',
+    downloading: 'Downloading…',
+    removing: 'Removing…',
+    downloaded: 'Downloaded',
+    storageUsed: 'Storage used',
+    download: 'Download',
+    remove: 'Remove',
+    retry: 'Retry',
+    error: 'Failed — try again',
+    updating: 'Updating…',
+    lastDownloaded: 'Downloaded {{time}}',
+    chooseIndividually: 'Choose individually',
+    notNow: 'Not now',
+  },
 };
 
 export const es = {
@@ -77,6 +96,25 @@ export const es = {
     backToGames: 'Volver a los juegos',
     unsupported: 'Este juego aún no se puede jugar sin conexión.',
     start: 'Empezar partida offline',
+  },
+
+  offlineDownloads: {
+    title: 'Juegos sin conexión',
+    description:
+      'Selecciona juegos para descargar y poder jugar sin conexión a internet.',
+    selectAll: 'Seleccionar todos',
+    downloading: 'Descargando…',
+    removing: 'Eliminando…',
+    downloaded: 'Descargado',
+    storageUsed: 'Almacenamiento usado',
+    download: 'Descargar',
+    remove: 'Eliminar',
+    retry: 'Reintentar',
+    error: 'Error — inténtalo de nuevo',
+    updating: 'Actualizando…',
+    lastDownloaded: 'Descargado hace {{time}}',
+    chooseIndividually: 'Elegir individualmente',
+    notNow: 'Ahora no',
   },
 };
 
@@ -119,6 +157,25 @@ export const fr = {
     unsupported: "Ce jeu n'est pas encore disponible hors ligne.",
     start: 'Lancer la partie hors ligne',
   },
+
+  offlineDownloads: {
+    title: 'Jeux hors ligne',
+    description:
+      'Sélectionnez les jeux à télécharger pour pouvoir jouer sans connexion internet.',
+    selectAll: 'Tout sélectionner',
+    downloading: 'Téléchargement…',
+    removing: 'Suppression…',
+    downloaded: 'Téléchargé',
+    storageUsed: 'Stockage utilisé',
+    download: 'Télécharger',
+    remove: 'Supprimer',
+    retry: 'Réessayer',
+    error: 'Échec — réessayez',
+    updating: 'Mise à jour…',
+    lastDownloaded: 'Téléchargé {{time}}',
+    chooseIndividually: 'Choisir individuellement',
+    notNow: 'Plus tard',
+  },
 };
 
 export const ru = {
@@ -159,6 +216,25 @@ export const ru = {
     unsupported: 'Эта игра пока недоступна офлайн.',
     start: 'Начать офлайн-матч',
   },
+
+  offlineDownloads: {
+    title: 'Офлайн-игры',
+    description:
+      'Выберите игры для скачивания — после этого они будут доступны без интернета.',
+    selectAll: 'Выбрать все',
+    downloading: 'Загрузка…',
+    removing: 'Удаление…',
+    downloaded: 'Загружено',
+    storageUsed: 'Использовано памяти',
+    download: 'Загрузить',
+    remove: 'Удалить',
+    retry: 'Повторить',
+    error: 'Ошибка — попробуйте снова',
+    updating: 'Обновление…',
+    lastDownloaded: 'Загружено {{time}}',
+    chooseIndividually: 'Выбрать вручную',
+    notNow: 'Не сейчас',
+  },
 };
 
 export const by = {
@@ -198,6 +274,25 @@ export const by = {
     backToGames: 'Да спісу гульняў',
     unsupported: 'Гэтая гульня пакуль недаступная афлайн.',
     start: 'Пачаць афлайн-матч',
+  },
+
+  offlineDownloads: {
+    title: 'Афлайн-гульні',
+    description:
+      'Выберыце гульні для спампоўкі — пасля яны будуць даступныя без інтэрнэту.',
+    selectAll: 'Выбраць усе',
+    downloading: 'Спампоўка…',
+    removing: 'Выдаленне…',
+    downloaded: 'Спампавана',
+    storageUsed: 'Выкарыстана памяці',
+    download: 'Спампаваць',
+    remove: 'Выдаліць',
+    retry: 'Паўтарыць',
+    error: 'Памылка — паспрабуйце зноў',
+    updating: 'Абнаўленне…',
+    lastDownloaded: 'Спампавана {{time}}',
+    chooseIndividually: 'Выбраць асобна',
+    notNow: 'Не зараз',
   },
 };
 

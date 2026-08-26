@@ -126,7 +126,7 @@ export function GamesCatalogClient({
               >
                 <span className="mr-1.5">{cat.icon}</span>
                 <span>{categoryLabels[cat.key] ?? cat.label}</span>
-                <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-white/10 opacity-80">
+                <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-current/10 opacity-80">
                   {count}
                 </span>
               </FilterChip>

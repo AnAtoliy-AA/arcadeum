@@ -169,7 +169,7 @@ describe('ShareGameMenu', () => {
     );
   });
 
-  it('calls navigator.share when available and does NOT open the popover', async () => {
+  it('opens custom popover with native share option when navigator.share is available', async () => {
     const shareFn = vi.fn().mockResolvedValue(undefined);
     (navigator as unknown as { share: typeof shareFn }).share = shareFn;
 
@@ -178,12 +178,18 @@ describe('ShareGameMenu', () => {
       fireEvent.click(screen.getByTestId('share-game-button'));
     });
 
+    expect(screen.getByTestId('share-game-popover')).toBeInTheDocument();
+    expect(screen.getByTestId('share-via-native')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('share-via-native'));
+    });
+
     expect(shareFn).toHaveBeenCalledWith({
       title: 'games.common.shareTitle',
       text: 'games.common.shareMessage',
       url: EXPECTED_URL,
     });
-    expect(screen.queryByTestId('share-game-popover')).not.toBeInTheDocument();
   });
 
   it('closes the popover on Escape', async () => {

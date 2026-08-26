@@ -129,7 +129,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   return (
     <div
       className={cx(
-        'flex flex-row items-center justify-between gap-3 max-[800px]:gap-2 max-[800px]:py-2 max-[800px]:px-3 py-2 px-4 bg-[var(--glassBg)] rounded-2xl border border-[var(--glassBorderStrong)] backdrop-blur-md',
+        'relative z-30 flex flex-row items-center justify-between gap-3 max-[800px]:gap-2 max-[800px]:py-2 max-[800px]:px-3 py-2 px-4 bg-[var(--glassBg)] rounded-2xl border border-[var(--glassBorderStrong)] backdrop-blur-md',
         className,
       )}
       data-testid="games-control-panel"

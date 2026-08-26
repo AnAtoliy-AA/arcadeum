@@ -7,10 +7,7 @@ import {
   connectWalletSocket,
   disconnectWalletSocket,
 } from '@/shared/lib/socket';
-
-interface Props {
-  authToken: string;
-}
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 
 const DEFER_MS = 2000;
 
@@ -19,16 +16,25 @@ const DEFER_MS = 2000;
  * users. Listens for `wallet:updated` events and calls `router.refresh()` so
  * any Server Component showing a balance re-fetches from the server.
  *
+ * The token is read from the client session store (the same plain JWT the
+ * games/chats sockets use) — NOT from the httpOnly cookie, which is stored
+ * encrypted and would fail the gateway's JWT verification.
+ *
  * The connection is deferred by 2 s so it doesn't compete with initial
  * rendering / LCP on pages where wallet data isn't displayed (e.g. landing).
  */
-export function WalletLiveBridge({ authToken }: Props) {
+export function WalletLiveBridge() {
   const router = useRouter();
+  const accessToken = useSessionStore((s) => s.snapshot.accessToken);
   const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
+    if (!accessToken) {
+      return;
+    }
+
     const timer = setTimeout(() => {
-      connectWalletSocket(authToken);
+      connectWalletSocket(accessToken);
 
       const onUpdate = () => router.refresh();
       walletSocket.on('wallet:updated', onUpdate);
@@ -43,7 +49,7 @@ export function WalletLiveBridge({ authToken }: Props) {
       clearTimeout(timer);
       cleanupRef.current?.();
     };
-  }, [authToken, router]);
+  }, [accessToken, router]);
 
   return null;
 }

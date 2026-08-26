@@ -7,31 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.53] - 2026-08-26
+
+### Fixed
+
+- let anon players see their games in rooms filters
+
+## [1.26.52] - 2026-08-26
+
+### Fixed
+
+- isolate wallet socket so bad tokens stop tearing down games/chats
+
+## [1.26.51] - 2026-08-26
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.26.50] - 2026-08-26
 
 ### Fixed
-- resolve circular DI TDZ and mongoose prop types under SWC
 
+- resolve circular DI TDZ and mongoose prop types under SWC
 
 ## [1.26.49] - 2026-08-26
 
 ### Fixed
+
 - forward props dropped by no-spread refactor
 - restore behavior parity after no-important/no-spread refactor
 
 ### Refactored
-- remove !important and rest/args/props spread patterns
 
+- remove !important and rest/args/props spread patterns
 
 ## [1.26.48] - 2026-08-25
 
 ### Added
-- rework 2048 styles and win/lose screen (ARC-940) (ARC-940)
 
+- rework 2048 styles and win/lose screen (ARC-940) (ARC-940)
 
 ## [1.26.47] - 2026-08-25
 
 ### Fixed
+
 - literal-compare wallet signature lookup (CodeQL js/sql-injection)
 - provide User model to EventsModule for RolesGuard
 - fail-closed OAuth, safe JsonLd, real SecureStore
@@ -39,14 +59,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - harden ARC deposit verification and shop replay protection
 - require verified identity on chat and games gateways
 
-
 ## [1.26.46] - 2026-08-25
 
 ### Improved
+
 - seed client pages with server-fetched data instead of spinners
 - cache hot public reads, batch fan-out, and bound cron work
 - replace whole-store Zustand subscriptions with field selectors
-
 
 ## [1.26.45] - 2026-08-25
 

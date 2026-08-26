@@ -165,12 +165,12 @@ function ChessGameImpl({
     isDraw,
     t,
   });
-  const { showResultModal, sharedResult, dismiss } = useGameResultModal(
-    session,
-    result,
-    resultMessages,
-    isGameOver,
-  );
+  const {
+    showResultModal,
+    sharedResult,
+    dismiss,
+    toggle: toggleResult,
+  } = useGameResultModal(session, result, resultMessages, isGameOver);
 
   const isFlipped = myColor === 'black';
   const lastMove = useMemo(() => {
@@ -430,6 +430,7 @@ function ChessGameImpl({
           variantEmoji: '♟',
           title: t('games.chess_v1.name'),
           subtitle: room?.name,
+          onToggleResult: toggleResult,
           turn: {
             onClockUserId:
               displaySnapshot?.players.find(

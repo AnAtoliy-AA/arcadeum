@@ -81,9 +81,14 @@ export function getFriendsSock(): AuthenticatedSocket {
 
 function getWalletSock(): AuthenticatedSocket {
   if (!_walletSock) {
+    // forceNew: give /wallet its own Manager + engine connection. Without it
+    // the wallet namespace multiplexes over the shared engine, and a hard
+    // server-side kick on a bad wallet token tears down games/chats too
+    // (seen as "WebSocket is closed before the connection is established").
     _walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
       transports: ['websocket'],
       autoConnect: false,
+      forceNew: true,
     }) as AuthenticatedSocket;
     guardEmit(_walletSock);
   }

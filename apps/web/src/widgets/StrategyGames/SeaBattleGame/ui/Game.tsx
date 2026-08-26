@@ -346,6 +346,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
         />
       ) : null,
       titleGradient: currentVariant?.gradient,
+      onToggleResult: gameEnd.toggleResult,
     }),
     [
       currentVariant,
@@ -354,6 +355,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       turnStatus,
       currentTurnPlayer,
       resolveDisplayNameBound,
+      gameEnd.toggleResult,
     ],
   );
 

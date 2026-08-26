@@ -1,7 +1,6 @@
 'use client';
 
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useSudokuTheme } from '../lib/SudokuThemeContext';
 import { colOf, findConflicts, isGiven, rowOf } from '../types';
 import type { SudokuState } from '../types';
 
@@ -18,25 +17,18 @@ export function SudokuBoard({
   notesMode,
   onSelect,
 }: SudokuBoardProps) {
-  const theme = useSudokuTheme();
-
   const conflicts = new Set(
     Array.from({ length: 81 }, (_, i) => i).flatMap((i) =>
       findConflicts(game.cells, i),
     ),
   );
-  const selectedValue =
-    selected === null ? 0 : game.cells[selected];
+  const selectedValue = selected === null ? 0 : game.cells[selected];
 
   return (
     <div
       role="grid"
       aria-label="Sudoku"
-      className="mx-auto grid aspect-square w-full max-w-[26rem] grid-cols-9 overflow-hidden rounded-xl border-2"
-      style={{
-        background: theme.boardBackground,
-        borderColor: theme.lineThick,
-      }}
+      className="mx-auto grid aspect-square w-full max-w-[28rem] grid-cols-9 rounded-2xl border-2 border-sky-500/30 bg-slate-950/90 p-1 shadow-2xl shadow-black/70 select-none"
     >
       {game.cells.map((value, index) => {
         const row = rowOf(index);
@@ -51,6 +43,7 @@ export function SudokuBoard({
         const isSameNumber =
           value !== 0 && selectedValue !== 0 && value === selectedValue;
         const hasConflict = conflicts.has(index);
+        const given = isGiven(game, index);
 
         return (
           <button
@@ -60,45 +53,43 @@ export function SudokuBoard({
             aria-selected={isSelected}
             onClick={() => onSelect(index)}
             className={cx(
-              'relative flex items-center justify-center font-semibold transition-colors',
-              'border-r border-b',
-              col % 3 === 2 && col !== 8 && 'border-r-2',
-              row % 3 === 2 && row !== 8 && 'border-b-2',
+              'relative flex items-center justify-center font-mono transition-colors',
+              col % 3 === 2 && col !== 8
+                ? 'border-r-2 border-r-sky-500/40'
+                : 'border-r border-r-slate-800/80',
+              row % 3 === 2 && row !== 8
+                ? 'border-b-2 border-b-sky-500/40'
+                : 'border-b border-b-slate-800/80',
+              isSelected
+                ? 'z-10 bg-sky-500/30 ring-2 ring-sky-400 ring-inset'
+                : isSameNumber
+                  ? 'bg-sky-400/20 text-sky-200'
+                  : isPeer
+                    ? 'bg-sky-950/30'
+                    : 'bg-transparent hover:bg-slate-800/40',
+              hasConflict &&
+                'bg-red-950/70 text-red-400 ring-1 ring-red-500/50',
             )}
-            style={{
-              borderColor: theme.lineThin,
-              background: isSelected
-                ? theme.selectedCell
-                : isPeer
-                  ? theme.peerCell
-                  : isSameNumber
-                    ? theme.sameNumberCell
-                    : 'transparent',
-              color: hasConflict
-                ? theme.conflictColor
-                : isGiven(game, index)
-                  ? theme.givenColor
-                  : value !== 0
-                    ? theme.playerValueColor
-                    : undefined,
-            }}
           >
             {value !== 0 ? (
               <span
                 className={cx(
-                  'text-lg sm:text-xl',
-                  !isGiven(game, index) && 'font-bold',
+                  'text-lg sm:text-xl tabular-nums',
+                  given
+                    ? 'font-bold text-slate-100'
+                    : 'font-extrabold text-sky-400',
+                  hasConflict && 'text-red-400',
                 )}
               >
                 {value}
               </span>
             ) : (
-              <NotesGrid notes={game.notes[index]} color={theme.noteColor} />
+              <NotesGrid notes={game.notes[index]} />
             )}
             {notesMode && isSelected && (
               <span
                 aria-hidden="true"
-                className="absolute right-0.5 top-0 text-[8px] leading-none opacity-60"
+                className="absolute right-0.5 top-0 text-[9px] leading-none text-sky-300 opacity-80"
               >
                 ✎
               </span>
@@ -116,21 +107,19 @@ function boxIdOf(index: number): number {
   return boxRow * 3 + boxCol;
 }
 
-function NotesGrid({
-  notes,
-  color,
-}: {
-  notes: number[];
-  color: string;
-}) {
+function NotesGrid({ notes }: { notes: number[] }) {
   if (notes.length === 0) return null;
   return (
     <span className="grid h-full w-full grid-cols-3 grid-rows-3 p-[1px]">
       {Array.from({ length: 9 }, (_, i) => i + 1).map((digit) => (
         <span
           key={digit}
-          className="flex items-center justify-center text-[9px] leading-none sm:text-[10px]"
-          style={{ color: notes.includes(digit) ? color : 'transparent' }}
+          className={cx(
+            'flex items-center justify-center font-mono text-[9px] leading-none sm:text-[10px]',
+            notes.includes(digit)
+              ? 'text-sky-300/90 font-medium'
+              : 'text-transparent',
+          )}
         >
           {digit}
         </span>

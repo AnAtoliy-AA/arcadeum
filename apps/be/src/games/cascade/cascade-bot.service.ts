@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { CascadeService } from './cascade.service';
+import type { CascadeService as ICascadeService } from './cascade.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import { GAME_PHASE } from '@arcadeum/games-core/games/cascade/cascade.constants';
 import type { CascadeState } from '@arcadeum/games-core/games/cascade/cascade.types';
@@ -31,7 +32,7 @@ export class CascadeBotService extends CascadeBot {
 
   constructor(
     @Inject(forwardRef(() => CascadeService))
-    private readonly cascadeService: CascadeService,
+    private readonly cascadeService: ICascadeService,
   ) {
     super();
   }

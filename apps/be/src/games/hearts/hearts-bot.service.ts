@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import { HeartsService } from './hearts.service';
+import type { HeartsService as IHeartsService } from './hearts.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import { GAME_PHASE } from '../engines/hearts/hearts.constants';
@@ -20,7 +21,7 @@ export class HeartsBotService extends HeartsBot {
 
   constructor(
     @Inject(forwardRef(() => HeartsService))
-    private readonly heartsService: HeartsService,
+    private readonly heartsService: IHeartsService,
     private readonly sessionsService: GameSessionsService,
   ) {
     super();

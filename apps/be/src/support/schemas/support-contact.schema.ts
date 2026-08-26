@@ -6,10 +6,10 @@ export type SupportChannelStatus =
 
 @Schema({ _id: false })
 class SupportDeliveryStatus {
-  @Prop({ required: true, default: 'pending' })
+  @Prop({ type: String, required: true, default: 'pending' })
   discord!: SupportChannelStatus;
 
-  @Prop({ required: true, default: 'pending' })
+  @Prop({ type: String, required: true, default: 'pending' })
   email!: SupportChannelStatus;
 }
 const SupportDeliveryStatusSchema = SchemaFactory.createForClass(

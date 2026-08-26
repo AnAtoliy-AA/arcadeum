@@ -46,7 +46,7 @@ export class SeasonRewardTier {
   @Prop({ required: true })
   rewardId!: string;
 
-  @Prop({ required: true, enum: SEASON_REWARD_KINDS })
+  @Prop({ type: String, required: true, enum: SEASON_REWARD_KINDS })
   kind!: SeasonRewardKind;
 
   @Prop({ required: true, maxlength: 60 })
@@ -93,6 +93,7 @@ export class Season {
   number!: number;
 
   @Prop({
+    type: String,
     required: true,
     enum: SEASON_STATUSES,
     default: 'active',
@@ -100,7 +101,7 @@ export class Season {
   })
   status!: SeasonStatus;
 
-  @Prop({ required: true, enum: SEASON_THEMES })
+  @Prop({ type: String, required: true, enum: SEASON_THEMES })
   theme!: SeasonTheme;
 
   @Prop({ type: Date, required: true })

@@ -7,25 +7,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.54] - 2026-08-26
+
+### Added
+- create GameRulesModal with close button and modern card layout (ARC-896) (ARC-896)
+- connect games control panel and game widgets via zustand for result screen toggling (ARC-896) (ARC-896)
+- modernize single-player games UI and unify win-loss modal (ARC-896) (ARC-896)
+- apply global color vision accessibility filters (ARC-896) (ARC-896)
+
+### Fixed
+- increase control panel z-index to z-[100] above game header (ARC-896) (ARC-896)
+- fix share dropdown z-index and keep native share as menu option (ARC-896) (ARC-896)
+- fix translation keys in GameRulesModal, control panel, and Go gameOver (ARC-896) (ARC-896)
+- synchronize game result store in effect avoiding setState during render (ARC-896) (ARC-896)
+- ensure full square aspect ratio and dimensions for go board (ARC-896) (ARC-896)
+- fix go board sizing and layout to fill playable area (ARC-896) (ARC-896)
+- slow down celebration sparkle bubble animation speed for graceful float
+- smooth continuous linear bubble rise with 4 directional floating drifts
+- disperse celebration bubbles organically with negative delay
+- expand draw celebration sparkle particles and slots across full screen width
+- span sparkle particles across full screen width on draw celebration
+- validate and self-heal anonymous id format in api-client
+
+
+## [1.26.53] - 2026-08-26
+
+### Fixed
+
+- let anon players see their games in rooms filters
+
+## [1.26.52] - 2026-08-26
+
+### Fixed
+
+- isolate wallet socket so bad tokens stop tearing down games/chats
+
+## [1.26.51] - 2026-08-26
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.26.50] - 2026-08-26
+
+### Fixed
+
+- resolve circular DI TDZ and mongoose prop types under SWC
+
 ## [1.26.49] - 2026-08-26
 
 ### Fixed
+
 - forward props dropped by no-spread refactor
 - restore behavior parity after no-important/no-spread refactor
 
 ### Refactored
-- remove !important and rest/args/props spread patterns
 
+- remove !important and rest/args/props spread patterns
 
 ## [1.26.48] - 2026-08-25
 
 ### Added
-- rework 2048 styles and win/lose screen (ARC-940) (ARC-940)
 
+- rework 2048 styles and win/lose screen (ARC-940) (ARC-940)
 
 ## [1.26.47] - 2026-08-25
 
 ### Fixed
+
 - literal-compare wallet signature lookup (CodeQL js/sql-injection)
 - provide User model to EventsModule for RolesGuard
 - fail-closed OAuth, safe JsonLd, real SecureStore
@@ -33,14 +82,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - harden ARC deposit verification and shop replay protection
 - require verified identity on chat and games gateways
 
-
 ## [1.26.46] - 2026-08-25
 
 ### Improved
+
 - seed client pages with server-fetched data instead of spinners
 - cache hot public reads, batch fan-out, and bound cron work
 - replace whole-store Zustand subscriptions with field selectors
-
 
 ## [1.26.45] - 2026-08-25
 

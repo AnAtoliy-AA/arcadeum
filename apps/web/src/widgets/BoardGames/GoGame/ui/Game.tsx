@@ -1,6 +1,7 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
+import { Button } from '@arcadeum/ui';
 import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
 import {
   useGameChatIntegration,
@@ -132,7 +133,6 @@ function GoGameImpl({
 
   const visualTheme = options.theme ?? options.variant ?? 'adventure';
 
-  // Lobby renders OUTSIDE GameWidgetContainer so it gets full page height.
   if (isLobby) {
     return (
       <GoThemeProvider variant={visualTheme}>
@@ -159,7 +159,7 @@ function GoGameImpl({
   }
 
   const board = (
-    <div className="box-border flex w-full flex-col items-stretch gap-3 p-3">
+    <div className="box-border flex w-full max-w-2xl mx-auto flex-col items-center gap-4 p-2 sm:p-4">
       {snapshot ? (
         <>
           <TurnBadge
@@ -169,7 +169,7 @@ function GoGameImpl({
             resolveName={resolveDisplayNameBound}
             captures={snapshot.captures}
           />
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex w-full flex-col items-center gap-4">
             <GoBoard
               board={snapshot.board}
               size={snapshot.boardSize ?? snapshot.options.boardSize ?? 9}
@@ -183,19 +183,19 @@ function GoGameImpl({
               onCellClick={placeStone}
             />
             {!isGameOver && myTurn ? (
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="md"
                 data-testid="go-pass-button"
                 onClick={handlePass}
-                className="rounded-lg border border-[var(--borderColor)] bg-[var(--backgroundHover)] px-5 py-2 text-sm font-semibold transition-colors hover:bg-[var(--backgroundActive)]"
               >
                 {t('games.go_v1.game.pass')}
-              </button>
+              </Button>
             ) : null}
             {snapshot.scores ? (
               <div
                 data-testid="go-final-scores"
-                className="text-center text-sm opacity-80"
+                className="text-center text-sm font-semibold opacity-90"
               >
                 ⚫ {snapshot.scores.black} · ⚪ {snapshot.scores.white}{' '}
                 {`(komi +${GO_KOMI})`}
@@ -254,6 +254,7 @@ function GoGameImpl({
           variantEmoji: variantTokens.emoji,
           title: 'Go',
           subtitle: room?.name,
+          onToggleResult: gameEnd.toggleResult,
           turn: {
             onClockUserId: currentPlayerId,
             isMyTurn: myTurn,

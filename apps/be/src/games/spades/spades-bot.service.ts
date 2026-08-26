@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import { SpadesService } from './spades.service';
+import type { SpadesService as ISpadesService } from './spades.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import { GAME_PHASE } from '@arcadeum/games-core/games/spades/spades.constants';
@@ -17,7 +18,7 @@ export class SpadesBotService extends SpadesBot {
 
   constructor(
     @Inject(forwardRef(() => SpadesService))
-    private readonly spadesService: SpadesService,
+    private readonly spadesService: ISpadesService,
     private readonly sessionsService: GameSessionsService,
   ) {
     super();

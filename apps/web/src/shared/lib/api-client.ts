@@ -15,21 +15,14 @@ interface NetworkError extends Error {
 }
 
 const ANONYMOUS_ID_KEY = 'arcadeum_anon_id';
+const ANON_ID_REGEX = /^anon_[0-9a-f-]{4,64}$/;
 
-/**
- * Returns the persisted anonymous id, generating one if needed.
- *
- * Anonymous identities are NOT signed client-side: a signing secret in the
- * browser bundle is public by definition. The backend treats unsigned
- * (format-validated) anon ids as unprivileged guests — this only ever
- * personalizes public read endpoints.
- */
 export async function getOrCreateAnonymousId(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
 
   let id = localStorage.getItem(ANONYMOUS_ID_KEY);
 
-  if (!id) {
+  if (!id || !ANON_ID_REGEX.test(id)) {
     const randomBytes = new Uint8Array(8);
     if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
       window.crypto.getRandomValues(randomBytes);
@@ -56,7 +49,11 @@ export async function getOrCreateAnonymousId(): Promise<string | null> {
 
 export function getAnonymousId() {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem(ANONYMOUS_ID_KEY);
+  const id = localStorage.getItem(ANONYMOUS_ID_KEY);
+  if (id && ANON_ID_REGEX.test(id)) {
+    return id;
+  }
+  return null;
 }
 
 export interface ApiClientOptions extends Omit<RequestInit, 'cache'> {

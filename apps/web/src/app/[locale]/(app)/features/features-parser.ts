@@ -55,7 +55,10 @@ const SECTION_METADATA: Record<
   22: { category: 'platform', icon: '🏗️', badge: 'NestJS + Redis' },
 };
 
-const FEATURES_PATH = join(process.cwd(), 'docs', 'FEATURES.md');
+const CANDIDATE_PATHS = [
+  join(process.cwd(), 'docs', 'FEATURES.md'),
+  join(process.cwd(), '..', '..', 'docs', 'FEATURES.md'),
+];
 
 function slugify(text: string): string {
   return text
@@ -65,12 +68,17 @@ function slugify(text: string): string {
 }
 
 export async function getFeaturesData(): Promise<FeatureSection[]> {
-  try {
-    const content = await readFile(FEATURES_PATH, 'utf-8');
-    return parseFeatures(content);
-  } catch {
-    return [];
+  for (const filePath of CANDIDATE_PATHS) {
+    try {
+      const content = await readFile(filePath, 'utf-8');
+      if (content) {
+        return parseFeatures(content);
+      }
+    } catch {
+      continue;
+    }
   }
+  return [];
 }
 
 export function parseFeatures(content: string): FeatureSection[] {

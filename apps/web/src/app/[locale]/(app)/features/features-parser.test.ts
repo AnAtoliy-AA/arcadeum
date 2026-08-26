@@ -63,4 +63,11 @@ describe('features-parser', () => {
     expect(sections[1].badge).toBe('WebSocket AES-GCM');
     expect(sections[1].subsections[0].items).toHaveLength(2);
   });
+
+  it('loads real sections from FEATURES.md via getFeaturesData', async () => {
+    const { getFeaturesData } = await import('./features-parser');
+    const sections = await getFeaturesData();
+    expect(sections.length).toBeGreaterThanOrEqual(20);
+    expect(sections[0].title).toContain('Games');
+  });
 });

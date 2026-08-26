@@ -26,7 +26,8 @@ interface GamesFiltersProps {
   onCategoryChange: (category: GamesCategoryFilter) => void;
   aiVsAiFilter: GamesAiVsAiFilter;
   onAiVsAiChange: (filter: GamesAiVsAiFilter) => void;
-  isAuthenticated: boolean;
+  /** Authenticated users and anonymous players with an anon id both qualify. */
+  canFilterParticipation: boolean;
 }
 
 const STATUS_KEYS = {
@@ -54,7 +55,7 @@ export function GamesFilters({
   onCategoryChange,
   aiVsAiFilter,
   onAiVsAiChange,
-  isAuthenticated,
+  canFilterParticipation,
 }: GamesFiltersProps) {
   const { t } = useTranslation();
 
@@ -180,7 +181,7 @@ export function GamesFilters({
           <FilterLabel>
             {t('games.lounge.filters.participationLabel')}
           </FilterLabel>
-          {!isAuthenticated && (
+          {!canFilterParticipation && (
             <span
               className="mb-1 text-[12px] italic opacity-60"
               style={{ color: 'var(--color)' }}
@@ -201,7 +202,7 @@ export function GamesFilters({
               <FilterChip
                 key={value}
                 active={isActive}
-                disabled={value !== 'all' && !isAuthenticated}
+                disabled={value !== 'all' && !canFilterParticipation}
                 onClick={() => onParticipationChange(value)}
                 aria-label={`Filter by participation: ${label || value}`}
                 aria-pressed={isActive}

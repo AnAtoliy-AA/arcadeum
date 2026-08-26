@@ -15,6 +15,24 @@ interface NetworkError extends Error {
 }
 
 const ANONYMOUS_ID_KEY = 'arcadeum_anon_id';
+export const ANONYMOUS_ID_COOKIE_NAME = ANONYMOUS_ID_KEY;
+
+// Ids are generated as `anon_` + 16 hex chars; keep in sync with the
+// backend's anonymous-id validation (jwt-optional.guard).
+export const ANONYMOUS_ID_PATTERN = /^anon_[0-9a-f-]{4,64}$/;
+
+const ANONYMOUS_ID_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+let mirroredCookieAnonId: string | null = null;
+
+/**
+ * Mirrors the anonymous id into a plain cookie so server components can
+ * forward the identity on SSR fetches (localStorage is browser-only).
+ */
+function mirrorAnonymousIdCookie(id: string): void {
+  if (typeof document === 'undefined' || mirroredCookieAnonId === id) return;
+  document.cookie = `${ANONYMOUS_ID_KEY}=${id}; path=/; max-age=${ANONYMOUS_ID_COOKIE_MAX_AGE}; samesite=lax`;
+  mirroredCookieAnonId = id;
+}
 
 /**
  * Returns the persisted anonymous id, generating one if needed.
@@ -51,16 +69,25 @@ export async function getOrCreateAnonymousId(): Promise<string | null> {
     localStorage.setItem(ANONYMOUS_ID_KEY, id);
   }
 
+  mirrorAnonymousIdCookie(id);
+
   return id;
 }
 
 export function getAnonymousId() {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem(ANONYMOUS_ID_KEY);
+  const id = localStorage.getItem(ANONYMOUS_ID_KEY);
+  if (id) mirrorAnonymousIdCookie(id);
+  return id;
 }
 
 export interface ApiClientOptions extends Omit<RequestInit, 'cache'> {
   token?: string;
+  /**
+   * Explicit anonymous identity (e.g. from the anon cookie on the server).
+   * In the browser the id is picked up from localStorage automatically.
+   */
+  anonymousId?: string;
   data?: unknown;
   timeout?: number;
   cache?: RequestCache;
@@ -121,6 +148,7 @@ export const apiClient = {
     const {
       method = 'GET',
       token,
+      anonymousId,
       data,
       headers: customHeaders,
       timeout = defaultTimeout(),
@@ -131,7 +159,11 @@ export const apiClient = {
 
     // Only deduplicate GET requests
     const isGet = method.toUpperCase() === 'GET';
-    const cacheKey = isGet ? `${method}:${url}:${token || ''}` : null;
+    // Include the anonymous id so SSR-cached/deduped responses are never
+    // shared between different anon identities.
+    const cacheKey = isGet
+      ? `${method}:${url}:${token || ''}:${anonymousId || ''}`
+      : null;
 
     // Server-side responses are memoized briefly so static prerendering
     // (every page × locale during `next build`) doesn't hammer the API
@@ -186,6 +218,7 @@ export const apiClient = {
   ): Promise<T> {
     const {
       token,
+      anonymousId,
       data,
       headers: customHeaders,
       timeout,
@@ -203,7 +236,7 @@ export const apiClient = {
       (headers as Record<string, string>).Authorization = `Bearer ${token}`;
     }
 
-    const anonId = await getOrCreateAnonymousId();
+    const anonId = anonymousId ?? (await getOrCreateAnonymousId());
     if (anonId) {
       (headers as Record<string, string>)['x-anonymous-id'] = anonId;
     }

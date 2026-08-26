@@ -115,7 +115,7 @@ describe('GamePickerModal', () => {
     });
 
     await waitFor(() => {
-      expect(quickplay).toHaveBeenCalledWith('chess_v1', {
+      expect(quickplay).toHaveBeenCalledWith('chess_v1', undefined, {
         token: 'token-123',
       });
     });
@@ -139,7 +139,7 @@ describe('GamePickerModal', () => {
     });
 
     await waitFor(() => {
-      expect(quickplay).toHaveBeenCalledWith('chess_v1', {
+      expect(quickplay).toHaveBeenCalledWith('chess_v1', undefined, {
         token: 'token-123',
       });
     });

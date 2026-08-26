@@ -235,7 +235,6 @@ export function makeAmbientGlowStyle(
     height: '220%',
     background: `radial-gradient(circle at 30% 30%, ${glow1} 0%, transparent 35%),
                  radial-gradient(circle at 70% 70%, ${glow2} 0%, transparent 35%)`,
-    animation: 'ambientGlow 12s ease-in-out infinite',
     pointerEvents: 'none',
     zIndex: 0,
   };

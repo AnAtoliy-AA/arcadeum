@@ -30,13 +30,20 @@ export const ProfileMenuContainer = ({
   </div>
 );
 
-export const UserName = ({ children, color, style, className }: ProfileTypographyProps) => (
+export const UserName = ({
+  children,
+  color,
+  style,
+  className,
+  'data-testid': dataTestId,
+}: ProfileTypographyProps) => (
   <Typography
     uiSize="sm"
     weight="500"
     color={color}
     style={style ?? { maxWidth: 140 }}
     className={className}
+    data-testid={dataTestId}
   >
     {children}
   </Typography>

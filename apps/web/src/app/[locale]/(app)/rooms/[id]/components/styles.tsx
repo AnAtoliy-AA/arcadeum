@@ -23,8 +23,6 @@ export const roomStyles = `
   }
 `;
 
-const ease = 'cubic-bezier(0.16, 1, 0.3, 1)';
-
 export const formAnimationsCss = `
   @keyframes cardEnter {
     0% { opacity: 0; transform: translateY(24px) scale(0.96); }
@@ -59,18 +57,22 @@ export const formAnimationsCss = `
   }
 `;
 
-export const cardEnterStyle = {
-  animation: `cardEnter 500ms ${ease} both`,
-} as const;
+/**
+ * Animation utilities for the room forms. The `animation` declarations live
+ * in classes (not inline styles) so the global reduced-motion kill-switch in
+ * utilities.scss keeps applying to them.
+ */
+export const cardEnterClass =
+  '[animation:cardEnter_500ms_cubic-bezier(0.16,1,0.3,1)_both]';
 
-export const fadeInUpDelayed = (delay: string) =>
-  ({
-    animation: `fadeInUp 500ms ${ease} ${delay} both`,
-  }) as const;
+export const fadeInUpClass =
+  '[animation:fadeInUp_500ms_cubic-bezier(0.16,1,0.3,1)_var(--anim-delay)_both]';
 
-export const errorShakeStyle = {
-  animation: 'errorShake 0.4s ease-in-out',
-} as const;
+/** Per-element stagger delay consumed by `fadeInUpClass`. */
+export const animationDelayVars = (delay: string): CSSProperties =>
+  ({ '--anim-delay': delay }) as CSSProperties;
+
+export const errorShakeClass = 'animate-[errorShake_0.4s_ease-in-out]';
 
 export function Container({
   className,

@@ -30,10 +30,7 @@ export function LiveChip({ label = 'Live', testID, className }: LiveChipProps) {
         className,
       )}
     >
-      <div
-        className="h-2 w-2 rounded bg-[#ef4444]"
-        style={{ animation: 'arcadeum-live-pulse 1.6s ease-in-out infinite' }}
-      />
+      <div className="h-2 w-2 animate-[arcadeum-live-pulse_1.6s_ease-in-out_infinite] rounded bg-[#ef4444]" />
       <span className="text-[12px] font-bold tracking-[1px] text-[#ef4444]">
         {label.toUpperCase()}
       </span>

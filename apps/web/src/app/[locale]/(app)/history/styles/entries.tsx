@@ -94,8 +94,8 @@ export const EntryStatus = ({
   'data-testid'?: string;
   children?: ReactNode;
 }) => (
-  <span data-testid={dataTestId}>
-    <Badge className={'rounded-[999px] shrink-0'} variant="info" size="sm">
+  <span data-testid={dataTestId} className="shrink-0">
+    <Badge className={'rounded-[999px]'} variant="info" size="sm">
       {children}
     </Badge>
   </span>

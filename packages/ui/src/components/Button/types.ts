@@ -30,6 +30,12 @@ export type ButtonProps = {
   variant?: ButtonVariant | ButtonVariant[];
   size?: ButtonSize;
   shape?: ButtonShape;
+  /**
+   * Explicit padding utility (`px-2 py-2`, `p-0`, …). When set, it replaces
+   * the padding from `size` and the variant map instead of fighting them in
+   * the cascade — no `!important` required.
+   */
+  padding?: string;
   loading?: boolean;
   showShimmer?: boolean;
   fullWidth?: boolean;

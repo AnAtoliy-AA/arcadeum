@@ -14,9 +14,10 @@ import {
   ErrorMessage,
   ErrorText,
   NoticeMessage,
-  cardEnterStyle,
-  fadeInUpDelayed,
-  errorShakeStyle,
+  animationDelayVars,
+  cardEnterClass,
+  errorShakeClass,
+  fadeInUpClass,
   formAnimationsCss,
 } from './styles';
 
@@ -54,15 +55,18 @@ export function PrivateRoomForm({
   return (
     <>
       <style>{formAnimationsCss}</style>
-      <Card style={cardEnterStyle}>
+      <Card className={cardEnterClass}>
         <IconCircle className="icon-pulse">
           <IconEmoji>🔒</IconEmoji>
         </IconCircle>
 
-        <Title style={fadeInUpDelayed('100ms')}>
+        <Title className={fadeInUpClass} style={animationDelayVars('100ms')}>
           {t('games.roomPage.privateRoom.title')}
         </Title>
-        <Description style={fadeInUpDelayed('200ms')}>
+        <Description
+          className={fadeInUpClass}
+          style={animationDelayVars('200ms')}
+        >
           <DescriptionText>
             {t('games.roomPage.privateRoom.description')}
           </DescriptionText>
@@ -70,7 +74,8 @@ export function PrivateRoomForm({
 
         <Form
           {...({ onSubmit: handleSubmit } as Record<string, unknown>)}
-          style={fadeInUpDelayed('300ms')}
+          className={fadeInUpClass}
+          style={animationDelayVars('300ms')}
         >
           <InputRow>
             <Input
@@ -121,7 +126,7 @@ export function PrivateRoomForm({
           )}
 
           {displayError && (
-            <ErrorMessage style={errorShakeStyle}>
+            <ErrorMessage className={errorShakeClass}>
               <ErrorText>{displayError}</ErrorText>
             </ErrorMessage>
           )}

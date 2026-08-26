@@ -125,7 +125,7 @@ export const SkeletonAvatar = memo(function SkeletonAvatar({
   className,
   style,
   'data-testid': dataTestId,
-}: SkeletonVariantProps) {
+}: Omit<SkeletonVariantProps, 'width' | 'height'>) {
   return (
     <Skeleton
       variant="circular"
@@ -144,7 +144,7 @@ export const SkeletonButton = memo(function SkeletonButton({
   className,
   style,
   'data-testid': dataTestId,
-}: SkeletonVariantProps) {
+}: Omit<SkeletonVariantProps, 'width' | 'height'>) {
   return (
     <Skeleton
       variant="rectangular"

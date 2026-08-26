@@ -9,10 +9,6 @@ import {
 
 type SocketEventHandler = (payload: unknown) => void;
 
-function listenerAdapter(handler: SocketEventHandler): SocketEventHandler {
-  return handler;
-}
-
 export function useSocket(event: string, handler: SocketEventHandler): void {
   useEffect(() => {
     const listener = async (payload: unknown) => {
@@ -62,9 +58,9 @@ export function useLeaderboardSocket(
 ): void {
   useEffect(() => {
     const s = getLeaderboardsSocket();
-    s.on(event, listenerAdapter(handler));
+    s.on(event, handler);
     return () => {
-      s.off(event, listenerAdapter(handler));
+      s.off(event, handler);
     };
   }, [event, handler]);
 }
@@ -75,9 +71,9 @@ export function useFriendsSocket(
 ): void {
   useEffect(() => {
     const s = getFriendsSock();
-    s.on(event, listenerAdapter(handler));
+    s.on(event, handler);
     return () => {
-      s.off(event, listenerAdapter(handler));
+      s.off(event, handler);
     };
   }, [event, handler]);
 }

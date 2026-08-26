@@ -1,6 +1,5 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
 import { EMOTES, type EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
 import { FloatingBubbleLabel } from './FloatingBubble';
 import { useActiveEmotes } from './GameWidgetContainer.styles';
@@ -22,22 +21,13 @@ function findEmoji(emoteId: EmoteId): string {
 
 const ACCENT_COLOR = 'rgba(236,72,153,0.9)';
 
-export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleProps) {
-  const ref = useRef<HTMLDivElement>(null);
+export function EmoteBubble({
+  playerId,
+  activeEmotes,
+  senderName,
+}: EmoteBubbleProps) {
   const ctx = useActiveEmotes();
   const equipped = ctx.resolveEquipped?.(playerId) ?? null;
-
-  useEffect(() => {
-    const el = ref.current;
-    if (el) {
-      el.style.animation = 'floatingBubbleFloat 2.4s ease-out forwards';
-      const label = el.querySelector('[data-bubble-label]');
-      if (label) {
-        (label as HTMLElement).style.animation =
-          'floatingLabelPop 2.4s ease-out forwards';
-      }
-    }
-  }, []);
 
   const current = activeEmotes.find((e) => e.id === playerId);
   if (!current) return null;
@@ -56,45 +46,9 @@ export function EmoteBubble({ playerId, activeEmotes, senderName }: EmoteBubbleP
   ) : undefined;
 
   return (
-    <div
-      ref={ref}
-      style={{
-        position: 'absolute',
-        top: 100,
-        right: 24,
-        zIndex: 10,
-        pointerEvents: 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 6,
-        opacity: 0,
-      }}
-    >
-      <div
-        style={{
-          position: 'relative',
-          width: 96,
-          height: 96,
-        }}
-      >
-        <div
-          style={{
-            width: 96,
-            height: 96,
-            borderRadius: 48,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(15, 5, 24, 0.88)',
-            borderWidth: 1.5,
-            borderStyle: 'solid',
-            borderColor: 'rgba(236, 72, 153, 0.5)',
-            boxShadow: '0 0 18px 2px rgba(236, 72, 153, 0.45)',
-            fontSize: 56,
-            lineHeight: '64px',
-          }}
-        >
+    <div className="pointer-events-none absolute top-[100px] right-6 z-10 flex flex-col items-center gap-1.5 opacity-0 animate-[floatingBubbleFloat_2.4s_ease-out_forwards] [&_[data-bubble-label]]:animate-[floatingLabelPop_2.4s_ease-out_forwards]">
+      <div className="relative h-24 w-24">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full border-[1.5px] border-[rgba(236,72,153,0.5)] bg-[rgba(15,5,24,0.88)] text-[56px] leading-[64px] shadow-[0_0_18px_2px_rgba(236,72,153,0.45)]">
           {findEmoji(current.emoteId)}
         </div>
       </div>

@@ -24,7 +24,7 @@ export interface MockSocket {
   connected: boolean;
   connect: () => MockSocket;
   disconnect: () => MockSocket;
-  emit: (event: string, payload?: unknown) => MockSocket;
+  emit: (event: string, payload?: unknown, ack?: unknown) => MockSocket;
 }
 
 declare global {
@@ -128,7 +128,7 @@ export async function mockGameSocket(
             return s;
           };
           const originalEmit = s.emit.bind(s);
-          s.emit = (event: string, payload?: unknown) => {
+          s.emit = (event: string, payload?: unknown, ack?: unknown) => {
             const mocks = window._playwrightMocks;
 
             if (
@@ -191,7 +191,7 @@ export async function mockGameSocket(
             if (mocks?.roomId && prop === 'gameSocket') {
               return s;
             }
-            return originalEmit(event, payload);
+            return originalEmit(event, payload, ack);
           };
         };
         Object.defineProperty(window, prop, {
@@ -276,7 +276,7 @@ export async function mockAllOnPage(page: Page): Promise<void> {
           return s;
         };
         const originalEmit = s.emit.bind(s);
-        s.emit = (event: string, payload?: unknown) => {
+        s.emit = (event: string, payload?: unknown, ack?: unknown) => {
           const mocks = window._playwrightMocks;
           if (
             mocks &&
@@ -334,7 +334,7 @@ export async function mockAllOnPage(page: Page): Promise<void> {
             return s;
           }
           if (mocks?.roomId && prop === 'gameSocket') return s;
-          return originalEmit(event, payload);
+          return originalEmit(event, payload, ack);
         };
       };
       Object.defineProperty(window, prop, {

@@ -49,12 +49,11 @@ export function QuickplayButton({
     }
     setLoading(true);
     try {
-      const options = {
-        token: snapshot.accessToken || undefined,
-        variant,
-        theme,
-      };
-      const { room } = await gamesApi.quickplay(gameId, options);
+      const { room } = await gamesApi.quickplay(
+        gameId,
+        { variant, theme },
+        { token: snapshot.accessToken || undefined },
+      );
       trackSocialQuickplayStarted(gameId, 'ai');
       router.push(routes.gameRoom(room.id));
     } catch (err) {

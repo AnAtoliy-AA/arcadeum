@@ -27,7 +27,8 @@ export const BotCountButton = ({
     onClick={onClick}
     data-testid={dataTestId}
     data-active={active ? 'on' : undefined}
-    className="!px-2 !py-2 font-semibold"
+    padding="px-2 py-2"
+    className="font-semibold"
   >
     {children}
   </Button>
@@ -97,6 +98,9 @@ export const StartButton = ({
 export const IconButton = ({
   size = 'sm',
   variant,
+  shape,
+  rotatable,
+  padding,
   icon,
   title,
   'aria-label': ariaLabel,
@@ -110,6 +114,9 @@ export const IconButton = ({
   <Button
     variant={variant ?? 'icon'}
     size={size}
+    shape={shape}
+    rotatable={rotatable}
+    padding={padding}
     icon={icon}
     title={title}
     aria-label={ariaLabel}
@@ -138,7 +145,8 @@ export const RefreshButton = ({
     onClick={onClick}
     data-testid={dataTestId}
     title={title}
-    className="!p-1 hover:opacity-100"
+    className="hover:opacity-100"
+    padding="p-1"
     style={{ opacity }}
   >
     {children}
@@ -253,7 +261,8 @@ export const OptionButton = ({
     gameVariant={gameVariant}
     onClick={onClick}
     style={style}
-    className="flex flex-col gap-2 !p-4"
+    padding="p-4"
+    className="flex flex-col gap-2"
   >
     {children}
   </Button>

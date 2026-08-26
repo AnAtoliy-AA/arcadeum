@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.53] - 2026-08-26
+
+### Fixed
+- let anon players see their games in rooms filters
+
+
 ## [1.26.52] - 2026-08-26
 
 ### Fixed

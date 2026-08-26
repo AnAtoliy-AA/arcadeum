@@ -308,16 +308,27 @@
 
 @keyframes sparkle-rise {
   0% {
-    transform: translateY(0);
+    transform: translateY(0) translateX(0) scale(0.6);
     opacity: 0;
   }
 
-  15% {
-    opacity: 1;
+  20% {
+    opacity: 0.85;
+    transform: translateY(-18vh) translateX(8px) scale(1);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: translateY(-45vh) translateX(-10px) scale(1.1);
+  }
+
+  80% {
+    opacity: 0.7;
+    transform: translateY(-72vh) translateX(6px) scale(0.9);
   }
 
   100% {
-    transform: translateY(-70vh);
+    transform: translateY(-100vh) translateX(-4px) scale(0.5);
     opacity: 0;
   }
 }
@@ -460,9 +471,9 @@
 
 @for $i from 0 through 59 {
   .sparkle-slot-#{$i} {
-    left: ($i * 1.63% + 1%);
-    bottom: (($i * 23) % 70 + 5) * 1%;
-    animation-delay: ($i % 15) * 0.15s;
-    animation-duration: 2.2s + (($i % 8) * 0.3s);
+    left: ((($i * 47) % 96) * 1% + 2%);
+    bottom: ((($i * 31) % 85) * 1% - 10%);
+    animation-delay: -1s * ((($i * 17) % 30) * 0.1s);
+    animation-duration: 2.8s + ((($i * 11) % 8) * 0.3s);
   }
 }

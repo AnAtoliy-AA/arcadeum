@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.49] - 2026-08-26
+
+### Fixed
+- forward props dropped by no-spread refactor
+- restore behavior parity after no-important/no-spread refactor
+
+### Refactored
+- remove !important and rest/args/props spread patterns
+
+
 ## [1.26.48] - 2026-08-25
 
 ### Added

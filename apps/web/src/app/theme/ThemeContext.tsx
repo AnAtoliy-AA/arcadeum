@@ -23,6 +23,7 @@ import {
   useVisionModeSetting,
   useVisionModeDocumentAttribute,
 } from '@/shared/hooks/useVisionModeSetting';
+import { VisionFilters } from '@/shared/ui/VisionFilters';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -198,6 +199,7 @@ export function AppThemeProvider({
 
   return (
     <ThemeContext.Provider value={contextValue}>
+      <VisionFilters />
       {children}
     </ThemeContext.Provider>
   );

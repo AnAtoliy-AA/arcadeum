@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { GameSessionSummary } from '@/shared/types/games';
 import { useGameResultStore } from '../store/gameResultStore';
 
@@ -28,19 +28,19 @@ export function useGameResultModal(
   const [wasAlreadyOver] = useState(
     () => isGameOver === true && result !== null,
   );
-  const [hasSeenActiveGame, setHasSeenActiveGame] = useState(false);
 
-  if (!wasAlreadyOver && isGameOver && !hasSeenActiveGame) {
-    setHasSeenActiveGame(true);
-    setStoreHasResult(true);
-    setStoreIsOpen(true);
-  }
+  useEffect(() => {
+    if (!wasAlreadyOver && isGameOver && result) {
+      useGameResultStore.getState().setHasResult(true);
+      useGameResultStore.getState().setIsOpen(true);
+    }
+  }, [wasAlreadyOver, isGameOver, result]);
 
   const showResultModal =
     storeIsOpen ||
-    (!!result &&
-      dismissedSessionId !== (session?.id ?? 'dismissed') &&
-      hasSeenActiveGame);
+    (!wasAlreadyOver &&
+      !!result &&
+      dismissedSessionId !== (session?.id ?? 'dismissed'));
 
   const sharedResult: SharedResult = useMemo(() => {
     if (result === 'won') return 'victory';

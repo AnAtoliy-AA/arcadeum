@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.57] - 2026-08-26
+
+### Fixed
+- adapt games catalog and picker cards for light theme
+
+
 ## [1.26.56] - 2026-08-26
 
 ### Added

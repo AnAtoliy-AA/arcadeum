@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { SeaBattleService } from './sea-battle.service';
+import type { SeaBattleService as ISeaBattleService } from './sea-battle.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import type {
   SeaBattlePlayer,
@@ -49,7 +50,7 @@ export class SeaBattleBotService extends SeaBattleBot {
 
   constructor(
     @Inject(forwardRef(() => SeaBattleService))
-    private readonly seaBattleService: SeaBattleService,
+    private readonly seaBattleService: ISeaBattleService,
   ) {
     super();
   }

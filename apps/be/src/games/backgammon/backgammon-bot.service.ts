@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { BackgammonService } from './backgammon.service';
+import type { BackgammonService as IBackgammonService } from './backgammon.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import { GAME_PHASE } from '@arcadeum/games-core/games/backgammon/backgammon.constants';
 import type { BackgammonState } from '@arcadeum/games-core/games/backgammon/backgammon.types';
@@ -15,7 +16,7 @@ export class BackgammonBotService extends BackgammonBot {
 
   constructor(
     @Inject(forwardRef(() => BackgammonService))
-    private readonly backgammonService: BackgammonService,
+    private readonly backgammonService: IBackgammonService,
   ) {
     super();
   }

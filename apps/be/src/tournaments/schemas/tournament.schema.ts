@@ -104,7 +104,7 @@ const TournamentBracketMatchSchema = SchemaFactory.createForClass(
 
 @Schema({ _id: false })
 class TournamentBracket {
-  @Prop({ required: true, enum: TOURNAMENT_BRACKET_FORMATS })
+  @Prop({ type: String, required: true, enum: TOURNAMENT_BRACKET_FORMATS })
   format!: TournamentBracketFormat;
 
   @Prop({ type: [[TournamentBracketMatchSchema]], default: [] })
@@ -120,10 +120,15 @@ export type TournamentBracketDocument = TournamentBracket & Document;
 
 @Schema({ timestamps: true, collection: 'tournaments' })
 export class Tournament {
-  @Prop({ required: true, enum: TOURNAMENT_STATUSES, default: 'scheduled' })
+  @Prop({
+    type: String,
+    required: true,
+    enum: TOURNAMENT_STATUSES,
+    default: 'scheduled',
+  })
   status!: TournamentStatus;
 
-  @Prop({ required: true, enum: TOURNAMENT_GAME_TYPES })
+  @Prop({ type: String, required: true, enum: TOURNAMENT_GAME_TYPES })
   gameType!: TournamentGameType;
 
   @Prop({ type: Date, required: true })

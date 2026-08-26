@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { ChessService } from '../../chess/chess.service';
+import type { ChessService as IChessService } from '../../chess/chess.service';
 import type {
   ChessMove,
   ChessState,
@@ -30,7 +31,7 @@ export class ChessBotService extends ChessBot {
 
   constructor(
     @Inject(forwardRef(() => ChessService))
-    private readonly chessService: ChessService,
+    private readonly chessService: IChessService,
   ) {
     super();
   }

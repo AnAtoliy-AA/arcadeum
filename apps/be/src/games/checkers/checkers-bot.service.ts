@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { CheckersService } from './checkers.service';
+import type { CheckersService as ICheckersService } from './checkers.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import { GAME_PHASE } from '@arcadeum/games-core/games/checkers/checkers.constants';
 import type {
@@ -18,7 +19,7 @@ export class CheckersBotService extends CheckersBot {
 
   constructor(
     @Inject(forwardRef(() => CheckersService))
-    private readonly checkersService: CheckersService,
+    private readonly checkersService: ICheckersService,
   ) {
     super();
   }

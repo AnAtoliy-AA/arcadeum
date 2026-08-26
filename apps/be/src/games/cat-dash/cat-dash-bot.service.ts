@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { CatDashService } from './cat-dash.service';
+import type { CatDashService as ICatDashService } from './cat-dash.service';
 import { GameSessionSummary } from '../sessions/game-sessions.service';
 import type { CatDashState } from '../engines/cat-dash/cat-dash.types';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
@@ -16,7 +17,7 @@ export class CatDashBotService {
 
   constructor(
     @Inject(forwardRef(() => CatDashService))
-    private readonly catDashService: CatDashService,
+    private readonly catDashService: ICatDashService,
   ) {}
 
   async checkAndPlay(session: GameSessionSummary): Promise<void> {

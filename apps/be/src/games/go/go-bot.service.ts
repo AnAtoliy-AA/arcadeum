@@ -5,6 +5,7 @@ import type { GoState } from '../engines/go/go.types';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../common/ai-vs-ai';
 import { pickStrategyMove } from './go-bot.strategy';
 import { GoService } from './go.service';
+import type { GoService as IGoService } from './go.service';
 
 const MOVE_DELAY_MS = 500;
 
@@ -15,7 +16,7 @@ export class GoBotService {
 
   constructor(
     @Inject(forwardRef(() => GoService))
-    private readonly goService: GoService,
+    private readonly goService: IGoService,
   ) {}
 
   isBot(userId: string): boolean {

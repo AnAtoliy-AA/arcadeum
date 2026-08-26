@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { CriticalService } from './critical.service';
+import type { CriticalService as ICriticalService } from './critical.service';
 import type {
   CriticalState,
   CriticalPlayerState,
@@ -20,7 +21,7 @@ export class CriticalBotService extends CriticalBot {
 
   constructor(
     @Inject(forwardRef(() => CriticalService))
-    private readonly criticalService: CriticalService,
+    private readonly criticalService: ICriticalService,
   ) {
     super();
   }

@@ -49,6 +49,7 @@ export class GameNightEvent {
   gameType!: string;
 
   @Prop({
+    type: String,
     required: true,
     enum: EVENT_STATUSES,
     default: 'upcoming',

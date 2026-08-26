@@ -100,6 +100,7 @@ export const en = {
   footerHelpCenter: 'Help Center',
   footerRoadmap: 'Roadmap',
   footerChangelog: 'Changelog',
+  footerFeatures: 'Features',
   footerGamingBlog: 'Gaming Blog',
   footerDevelopers: 'Developers (API)',
   footerLegalTitle: 'Legal',

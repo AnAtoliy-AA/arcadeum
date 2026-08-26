@@ -87,6 +87,7 @@ export const buildRoutes = (locale: Locale) => {
     contact: `/${locale}/${s('contact')}`,
     cookies: `/${locale}/${s('cookies')}`,
     help: `/${locale}/${s('help')}`,
+    features: `/${locale}/${s('features')}`,
     roadmap: `/${locale}/${s('roadmap')}`,
     changelog: `/${locale}/${s('changelog')}`,
 

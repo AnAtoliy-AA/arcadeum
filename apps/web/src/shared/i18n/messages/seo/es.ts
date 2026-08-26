@@ -211,6 +211,10 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Desarrolladores · ${APP}`,
     description: `Conoce al equipo que está construyendo ${APP} y descubre cómo participar.`,
   },
+  features: {
+    title: `Características de la Plataforma · ${APP}`,
+    description: `Descubre todas las características de ${APP} — 20+ juegos multijugador, rankings, funciones sociales, economía, seguridad y SEO.`,
+  },
   admin: {
     title: `Admin · ${APP}`,
     description: `Controles administrativos de ${APP}.`,

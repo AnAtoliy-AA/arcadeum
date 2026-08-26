@@ -1,13 +1,9 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
-import { useGoTheme } from '../lib/GoThemeContext';
 import { STAR_POINTS, type Cell, type Point, type StoneColor } from '../types';
-
-const CELL_PX = 30;
-const GAP_PX = 2;
-const BOARD_PADDING_PX = 10;
 
 interface GoBoardProps {
   board: Cell[][];
@@ -15,7 +11,6 @@ interface GoBoardProps {
   disabled: boolean;
   lastMove: Point | null;
   koPoint: Point | null;
-  /** Colour the local player would place — used for the hover ghost. */
   myColor: StoneColor | null;
   ariaLabel?: string;
   onCellClick: (row: number, col: number) => void;
@@ -24,13 +19,13 @@ interface GoBoardProps {
 interface CellProps {
   row: number;
   col: number;
+  size: number;
   cell: Cell;
   isStar: boolean;
   isLastMove: boolean;
   isKo: boolean;
   disabled: boolean;
   myColor: StoneColor | null;
-  theme: ReturnType<typeof useGoTheme>;
   focusProps: Record<string, unknown>;
   onCellClick: (row: number, col: number) => void;
 }
@@ -38,13 +33,13 @@ interface CellProps {
 const CellRenderer = memo(function CellRenderer({
   row,
   col,
+  size,
   cell,
   isStar,
   isLastMove,
   isKo,
   disabled,
   myColor,
-  theme,
   focusProps,
   onCellClick,
 }: CellProps) {
@@ -52,10 +47,10 @@ const CellRenderer = memo(function CellRenderer({
     if (!disabled && cell === null) onCellClick(row, col);
   }, [disabled, cell, onCellClick, row, col]);
 
-  const stoneStyle: React.CSSProperties =
-    cell === 'black'
-      ? { background: theme.blackStone, borderColor: theme.stoneBorder }
-      : { background: theme.whiteStone, borderColor: theme.stoneBorder };
+  const isLeftEdge = col === 0;
+  const isRightEdge = col === size - 1;
+  const isTopEdge = row === 0;
+  const isBottomEdge = row === size - 1;
 
   return (
     <button
@@ -65,94 +60,81 @@ const CellRenderer = memo(function CellRenderer({
       data-board-cell={`${row}:${col}`}
       disabled={disabled || cell !== null}
       onClick={handleClick}
-      className="group relative m-0 flex items-center justify-center border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)]"
-      style={{ cursor: disabled ? 'default' : 'pointer' }}
+      className={cx(
+        'group relative m-0 flex flex-1 items-center justify-center p-0 border-0 bg-transparent aspect-square outline-none',
+        disabled || cell !== null ? 'cursor-default' : 'cursor-pointer',
+        'focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:z-20',
+      )}
       {...focusProps}
     >
-      {/* Intersection cross-hair lines */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute"
-        style={{
-          inset: '0',
-          borderTop: `1px solid ${theme.gridLine}`,
-          borderLeft: `1px solid ${theme.gridLine}`,
-          opacity: 0.9,
-        }}
+        className={cx(
+          'pointer-events-none absolute top-1/2 -translate-y-1/2 h-[2px] bg-amber-600/40 z-0',
+          isLeftEdge
+            ? 'left-1/2 right-0'
+            : isRightEdge
+              ? 'left-0 right-1/2'
+              : 'left-0 right-0',
+        )}
       />
-      {/* Hover ghost stone */}
-      {!disabled && cell === null && !isKo && myColor ? (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute rounded-full opacity-0 transition-opacity duration-150 group-hover:opacity-40"
-          style={{
-            width: '78%',
-            height: '78%',
-            background:
-              myColor === 'black' ? theme.blackStone : theme.whiteStone,
-            boxShadow: `inset 0 -1px 2px rgba(255,255,255,0.25), inset 0 1px 3px rgba(0,0,0,0.45)`,
-            zIndex: 1,
-          }}
-        />
-      ) : null}
-      {/* Star point */}
+
+      <span
+        aria-hidden="true"
+        className={cx(
+          'pointer-events-none absolute left-1/2 -translate-x-1/2 w-[2px] bg-amber-600/40 z-0',
+          isTopEdge
+            ? 'top-1/2 bottom-0'
+            : isBottomEdge
+              ? 'top-0 bottom-1/2'
+              : 'top-0 bottom-0',
+        )}
+      />
+
       {isStar && !cell ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute rounded-full"
-          style={{
-            width: '18%',
-            height: '18%',
-            background: theme.gridLine,
-            opacity: 1,
-            zIndex: 0,
-          }}
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-2.5 w-2.5 rounded-full bg-amber-600/80 z-0"
         />
       ) : null}
-      {/* Placed stone */}
+
+      {!disabled && cell === null && !isKo && myColor ? (
+        <span
+          aria-hidden="true"
+          className={cx(
+            'pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[82%] w-[82%] rounded-full opacity-0 transition-opacity duration-150 group-hover:opacity-40 z-10',
+            myColor === 'black'
+              ? 'bg-black shadow-md'
+              : 'bg-white shadow-md border border-slate-300',
+          )}
+        />
+      ) : null}
+
       {cell ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute rounded-full"
-          style={{
-            ...stoneStyle,
-            width: '82%',
-            height: '82%',
-            borderWidth: 1,
-            borderStyle: 'solid',
-            boxShadow:
-              cell === 'black'
-                ? 'inset 0 1px 3px rgba(255,255,255,0.28), 0 1px 2px rgba(0,0,0,0.5)'
-                : 'inset 0 1px 3px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.35)',
-            zIndex: 2,
-          }}
+          className={cx(
+            'pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[84%] w-[84%] rounded-full z-10 transition-transform duration-100',
+            cell === 'black'
+              ? 'bg-gradient-to-br from-neutral-800 via-neutral-900 to-black shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_2px_3px_rgba(255,255,255,0.25)] border border-neutral-700/50'
+              : 'bg-gradient-to-br from-white via-slate-100 to-slate-300 shadow-[0_4px_10px_rgba(0,0,0,0.5),inset_0_2px_3px_rgba(255,255,255,0.9)] border border-slate-300',
+          )}
         >
-          {/* Last-move marker */}
           {isLastMove ? (
             <span
-              className="absolute left-1/2 top-1/2 block -translate-x-1/2 -translate-y-1/2 rounded-full"
-              style={{
-                width: '34%',
-                height: '34%',
-                border: `2px solid ${
-                  cell === 'black' ? '#ffffffcc' : '#11131899'
-                }`,
-              }}
+              className={cx(
+                'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[36%] w-[36%] rounded-full border-2',
+                cell === 'black' ? 'border-white/80' : 'border-neutral-900/80',
+              )}
             />
           ) : null}
         </span>
       ) : null}
+
       {isKo ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute rounded-full"
-          style={{
-            width: '46%',
-            height: '46%',
-            border: `2px dashed ${theme.lastMoveMarker}`,
-            opacity: 0.8,
-            zIndex: 1,
-          }}
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[50%] w-[50%] rounded-full border-2 border-dashed border-red-500/80 z-10"
         />
       ) : null}
     </button>
@@ -169,65 +151,11 @@ function GoBoardImpl({
   ariaLabel = 'Go board',
   onCellClick,
 }: GoBoardProps) {
-  const theme = useGoTheme();
-
   const stars = useMemo(() => {
     const set = new Set<string>();
     for (const [r, c] of STAR_POINTS[size] ?? []) set.add(`${r}:${c}`);
     return set;
   }, [size]);
-
-  const isScrollable = size > 13;
-
-  // The grid is a column of `role="row"` rows so the ARIA structure is valid
-  // (grid → row → gridcell), mirroring ChessBoard.
-  const boardStyle: React.CSSProperties = useMemo(
-    () =>
-      isScrollable
-        ? {
-            display: 'flex',
-            flexDirection: 'column',
-            gap: `${GAP_PX}px`,
-            padding: `${BOARD_PADDING_PX}px`,
-            backgroundColor: theme.boardBackground,
-            borderRadius: theme.borderRadius,
-            width: 'max-content',
-          }
-        : {
-            display: 'flex',
-            flexDirection: 'column',
-            gap: `${GAP_PX}px`,
-            padding: `${BOARD_PADDING_PX}px`,
-            backgroundColor: theme.boardBackground,
-            borderRadius: theme.borderRadius,
-            // Explicit width + border-box prevents an empty-grid collapse.
-            width: '100%',
-            maxWidth: 'min(88vmin, 560px)',
-            aspectRatio: '1 / 1',
-            boxSizing: 'border-box',
-            margin: '0 auto',
-          },
-    [isScrollable, theme.boardBackground, theme.borderRadius],
-  );
-
-  const rowStyle: React.CSSProperties = useMemo(
-    () =>
-      isScrollable
-        ? {
-            display: 'grid',
-            gridTemplateColumns: `repeat(${size}, ${CELL_PX}px)`,
-            gridTemplateRows: `${CELL_PX}px`,
-            gap: `${GAP_PX}px`,
-          }
-        : {
-            display: 'grid',
-            gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`,
-            gridTemplateRows: 'minmax(0, 1fr)',
-            gap: `${GAP_PX}px`,
-            flex: 1,
-          },
-    [isScrollable, size],
-  );
 
   const handleActivate = useCallback(
     ({ row, col }: { row: number; col: number }) => {
@@ -246,32 +174,23 @@ function GoBoardImpl({
   return (
     <div
       data-testid="go-board-wrapper"
-      style={
-        isScrollable
-          ? {
-              width: '100%',
-              maxWidth: 'min(92vmin, 640px)',
-              margin: '0 auto',
-              overflow: 'auto',
-              borderRadius: theme.borderRadius,
-            }
-          : undefined
-      }
+      className="w-full max-w-[min(90vw,540px)] mx-auto select-none"
     >
       <div
         role="grid"
         aria-label={ariaLabel}
         data-testid="go-board"
-        style={boardStyle}
+        className="w-full aspect-square flex flex-col rounded-3xl border-2 border-amber-800/60 bg-gradient-to-br from-[#d49b4b] via-[#c68938] to-[#b37526] p-3 sm:p-5 shadow-2xl shadow-black/80 ring-1 ring-amber-500/20"
         {...gridProps}
       >
         {board.map((row, rowIdx) => (
-          <div key={`row-${rowIdx}`} role="row" style={rowStyle}>
+          <div key={`row-${rowIdx}`} role="row" className="flex flex-1 w-full">
             {row.map((cell, colIdx) => (
               <CellRenderer
                 key={`${rowIdx}-${colIdx}`}
                 row={rowIdx}
                 col={colIdx}
+                size={size}
                 cell={cell}
                 isStar={stars.has(`${rowIdx}:${colIdx}`)}
                 isLastMove={
@@ -284,7 +203,6 @@ function GoBoardImpl({
                 }
                 disabled={disabled}
                 myColor={myColor}
-                theme={theme}
                 focusProps={getCellProps(rowIdx, colIdx)}
                 onCellClick={onCellClick}
               />

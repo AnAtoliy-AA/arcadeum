@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { PachisiService } from './pachisi.service';
+import type { PachisiService as IPachisiService } from './pachisi.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import { GAME_PHASE } from '@arcadeum/games-core/games/pachisi/pachisi.constants';
 import type { PachisiState } from '@arcadeum/games-core/games/pachisi/pachisi.types';
@@ -17,7 +18,7 @@ export class PachisiBotService extends PachisiBot {
 
   constructor(
     @Inject(forwardRef(() => PachisiService))
-    private readonly pachisiService: PachisiService,
+    private readonly pachisiService: IPachisiService,
   ) {
     super();
   }

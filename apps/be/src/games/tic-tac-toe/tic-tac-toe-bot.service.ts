@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { TicTacToeService } from './tic-tac-toe.service';
+import type { TicTacToeService as ITicTacToeService } from './tic-tac-toe.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
 import {
   GAME_PHASE,
@@ -19,7 +20,7 @@ export class TicTacToeBotService extends TicTacToeBot {
 
   constructor(
     @Inject(forwardRef(() => TicTacToeService))
-    private readonly ticTacToeService: TicTacToeService,
+    private readonly ticTacToeService: ITicTacToeService,
   ) {
     super();
   }

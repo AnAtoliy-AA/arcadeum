@@ -80,8 +80,20 @@ function MinesweeperTable() {
     return () => clearInterval(interval);
   }, [isRunning, startedAt]);
 
+  const [isDismissed, setIsDismissed] = useState(false);
+  const isGameOver = game.status === 'won' || game.status === 'lost';
+
   const handleCloseModal = useCallback(() => {
-    useMinesweeperStore.setState({ finished: null });
+    setIsDismissed(true);
+  }, []);
+
+  const handleNewGame = useCallback(() => {
+    setIsDismissed(false);
+    newGame();
+  }, [newGame]);
+
+  const handleOpenModal = useCallback(() => {
+    setIsDismissed(false);
   }, []);
 
   const stats: GameResultStats | null = useMemo(() => {
@@ -171,6 +183,17 @@ function MinesweeperTable() {
         </div>
 
         <div className="flex items-center gap-2">
+          {isGameOver && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleOpenModal}
+              data-testid="minesweeper-show-results-button"
+              className="border-amber-500/40 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60"
+            >
+              🏆 {t('games.table.analytics.view') || 'Results'}
+            </Button>
+          )}
           <Button
             variant={flagMode ? 'primary' : 'outline'}
             size="sm"
@@ -180,7 +203,7 @@ function MinesweeperTable() {
           >
             🚩 {t('games.minesweeper_v1.hud.flagMode')}
           </Button>
-          <Button variant="secondary" size="sm" onClick={newGame}>
+          <Button variant="secondary" size="sm" onClick={handleNewGame}>
             {t('games.minesweeper_v1.hud.newGame')}
           </Button>
         </div>
@@ -195,10 +218,10 @@ function MinesweeperTable() {
       />
 
       <GameResultModal
-        isOpen={finished !== null}
+        isOpen={finished !== null && !isDismissed}
         result={finished ? (finished.won ? 'victory' : 'defeat') : null}
         gameName="Minesweeper"
-        onRematch={newGame}
+        onRematch={handleNewGame}
         rematchLabel={t('games.minesweeper_v1.result.playAgain')}
         onClose={handleCloseModal}
         t={t}

@@ -254,6 +254,7 @@ function GoGameImpl({
           variantEmoji: variantTokens.emoji,
           title: 'Go',
           subtitle: room?.name,
+          onToggleResult: gameEnd.toggleResult,
           turn: {
             onClockUserId: currentPlayerId,
             isMyTurn: myTurn,

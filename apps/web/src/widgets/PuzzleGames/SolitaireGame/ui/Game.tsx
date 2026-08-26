@@ -65,8 +65,19 @@ function SolitaireTable() {
     return () => clearInterval(interval);
   }, [isRunning, startedAt]);
 
+  const [isDismissed, setIsDismissed] = useState(false);
+
   const handleCloseModal = useCallback(() => {
-    useSolitaireStore.setState({ finished: null });
+    setIsDismissed(true);
+  }, []);
+
+  const handleNewGame = useCallback(() => {
+    setIsDismissed(false);
+    newGame();
+  }, [newGame]);
+
+  const handleOpenModal = useCallback(() => {
+    setIsDismissed(false);
   }, []);
 
   const stats: GameResultStats | null = useMemo(() => {
@@ -100,14 +111,27 @@ function SolitaireTable() {
           />
         </div>
 
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={newGame}
-          data-testid="solitaire-new-game-button"
-        >
-          {t('games.solitaire_v1.hud.newGame')}
-        </Button>
+        <div className="flex items-center gap-2">
+          {finished !== null && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleOpenModal}
+              data-testid="solitaire-show-results-button"
+              className="border-amber-500/40 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60"
+            >
+              🏆 {t('games.table.analytics.view') || 'Results'}
+            </Button>
+          )}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleNewGame}
+            data-testid="solitaire-new-game-button"
+          >
+            {t('games.solitaire_v1.hud.newGame')}
+          </Button>
+        </div>
       </div>
 
       <SolitaireBoard
@@ -119,10 +143,10 @@ function SolitaireTable() {
       />
 
       <GameResultModal
-        isOpen={finished !== null}
+        isOpen={finished !== null && !isDismissed}
         result={finished ? (finished.won ? 'victory' : 'defeat') : null}
         gameName="Solitaire"
-        onRematch={newGame}
+        onRematch={handleNewGame}
         rematchLabel={t('games.solitaire_v1.result.playAgain')}
         onClose={handleCloseModal}
         t={t}

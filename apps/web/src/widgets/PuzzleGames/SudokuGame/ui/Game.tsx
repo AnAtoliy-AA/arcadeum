@@ -162,8 +162,19 @@ function SudokuTable() {
     [applyDigit, erase, moveSelection],
   );
 
+  const [isDismissed, setIsDismissed] = useState(false);
+
   const handleCloseModal = useCallback(() => {
-    useSudokuStore.setState({ finished: null });
+    setIsDismissed(true);
+  }, []);
+
+  const handleNewGame = useCallback(() => {
+    setIsDismissed(false);
+    newGame();
+  }, [newGame]);
+
+  const handleOpenModal = useCallback(() => {
+    setIsDismissed(false);
   }, []);
 
   const stats: GameResultStats | null = useMemo(() => {
@@ -217,10 +228,21 @@ function SudokuTable() {
               label: t(`games.sudoku_v1.difficulty.${value}` as TranslationKey),
             }))}
           />
+          {finished && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleOpenModal}
+              data-testid="sudoku-show-results-button"
+              className="border-amber-500/40 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60"
+            >
+              🏆 {t('games.table.analytics.view') || 'Results'}
+            </Button>
+          )}
           <Button
             variant="secondary"
             size="sm"
-            onClick={newGame}
+            onClick={handleNewGame}
             data-testid="sudoku-new-game-button"
           >
             {t('games.sudoku_v1.hud.newGame')}
@@ -313,10 +335,10 @@ function SudokuTable() {
       </div>
 
       <GameResultModal
-        isOpen={finished !== null}
+        isOpen={finished !== null && !isDismissed}
         result="victory"
         gameName="Sudoku"
-        onRematch={newGame}
+        onRematch={handleNewGame}
         rematchLabel={t('games.sudoku_v1.result.playAgain')}
         onClose={handleCloseModal}
         t={t}

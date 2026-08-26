@@ -2,19 +2,20 @@
 
 import { useCallback, useState, type RefObject } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { gameSocket } from '@/shared/lib/socket';
 import { useGameStore } from '@/features/games/store/gameStore';
+import { useGameResultStore } from '@/features/games/store/gameResultStore';
+import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { ConfirmationModal } from '@/features/games/ui/ConfirmationModal';
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTitle,
-  ModalBody,
-  ModalFooter,
   MaximizeIcon,
   MinimizeIcon,
   VolumeOnIcon,
@@ -73,13 +74,27 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
+  const hasResult = useGameResultStore((s) => s.hasResult);
+  const toggleResult = useGameResultStore((s) => s.toggle);
+  const rematchStoreIsGameOver = useGameRematchStore((s) => s.isGameOver);
+  const rematchStoreOnRematch = useGameRematchStore((s) => s.onRematch);
+  const rematchStoreLoading = useGameRematchStore((s) => s.rematchLoading);
+  const chatPanelOpen = useGameChatStore((s) => s.chatPanelOpen);
+  const setChatPanelOpen = useGameChatStore((s) => s.setChatPanelOpen);
+
+  const effectiveIsGameOver = isGameOver || rematchStoreIsGameOver || hasResult;
+  const effectiveOnRematch = onRematch || rematchStoreOnRematch;
+  const effectiveRematchLoading = rematchLoading || rematchStoreLoading;
+  const isChatVisible = showChat !== undefined ? showChat : chatPanelOpen;
+  const handleToggleChat =
+    onToggleChat ?? (() => setChatPanelOpen(!chatPanelOpen));
+
   const toggleMusic = useCallback(() => {
     setMusicEnabled(!musicEnabled);
   }, [musicEnabled, setMusicEnabled]);
 
   const handleLeaveGame = useCallback(() => {
     if (isSpectating) {
-      // If spectating, we can just leave the room UI
       router.push('/games');
       return;
     }
@@ -233,26 +248,26 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         </Button>
       )}
 
-      {onToggleChat && (
-        <Button
-          className="max-[640px]:scale-[0.9] max-[640px]:px-2"
-          variant="glass"
-          size="sm"
-          onClick={onToggleChat}
-          data-testid="toggle-chat-button"
-          aria-label={
-            showChat ? t('games.table.chat.hide') : t('games.table.chat.show')
-          }
-        >
-          💬
-          <span className="max-[800px]:hidden">
-            {' ' +
-              (showChat
-                ? t('games.table.chat.hide')
-                : t('games.table.chat.show'))}
-          </span>
-        </Button>
-      )}
+      <Button
+        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+        variant="glass"
+        size="sm"
+        onClick={handleToggleChat}
+        data-testid="toggle-chat-button"
+        aria-label={
+          isChatVisible
+            ? t('games.table.chat.hide')
+            : t('games.table.chat.show')
+        }
+      >
+        💬
+        <span className="max-[800px]:hidden">
+          {' ' +
+            (isChatVisible
+              ? t('games.table.chat.hide')
+              : t('games.table.chat.show'))}
+        </span>
+      </Button>
 
       {showMoveControls && (
         <div
@@ -324,19 +339,36 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
       {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
 
-      {isGameOver && onRematch && (
+      {effectiveIsGameOver && (
+        <Button
+          className="max-[640px]:scale-[0.9] max-[640px]:px-2 active:scale-[0.95] !border-amber-500/50 !bg-amber-950/40 text-amber-300 hover:!bg-amber-900/60"
+          variant="glass"
+          size="sm"
+          onClick={toggleResult}
+          data-testid="show-game-result-button"
+          aria-label={t('games.table.analytics.view') || 'Results'}
+          title={t('games.table.analytics.view') || 'Results'}
+        >
+          🏆
+          <span className="max-[800px]:hidden">
+            {' ' + (t('games.table.analytics.view') || 'Results')}
+          </span>
+        </Button>
+      )}
+
+      {effectiveIsGameOver && effectiveOnRematch && (
         <Button
           className="max-[640px]:scale-[0.9] max-[640px]:px-2 active:scale-[0.95]"
           variant="primary"
           size="sm"
-          onClick={onRematch}
-          disabled={rematchLoading}
+          onClick={effectiveOnRematch}
+          disabled={effectiveRematchLoading}
           data-testid="rematch-button"
         >
           🔄
           <span className="max-[800px]:hidden">
             {' ' +
-              (rematchLoading
+              (effectiveRematchLoading
                 ? t(
                     'games.table.rematch.loading' as import('@/shared/lib/useTranslation').TranslationKey,
                   ) || 'Loading...'
@@ -385,46 +417,20 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         </Button>
       )}
 
-      <Modal open={showLeaveConfirm} onClose={() => setShowLeaveConfirm(false)}>
-        <ModalContent maxWidth="420px">
-          <ModalHeader onClose={() => setShowLeaveConfirm(false)}>
-            <ModalTitle>{t('games.table.controlPanel.leaveRoom')}</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <div className="flex flex-col gap-4 items-center py-4">
-              <div className="flex flex-col w-[80px] h-[80px] rounded-[40px] bg-[rgba(239,_68,_68,_0.1)] items-center justify-center -mb-2">
-                <span className="text-[32px]">🚪</span>
-              </div>
-              <span className="text-center text-[16px] leading-[24px] opacity-[0.8] font-medium">
-                {t('games.table.controlPanel.leaveConfirmMessage') ||
-                  'Are you sure you want to leave the game? You will be removed from the participants list.'}
-              </span>
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <div className="flex flex-row items-stretch gap-3 justify-center w-full">
-              <Button
-                className="rounded-[12px]"
-                style={{ flex: 1 }}
-                variant="secondary"
-                size="lg"
-                onClick={() => setShowLeaveConfirm(false)}
-              >
-                {t('games.common.cancel') || 'Cancel'}
-              </Button>
-              <Button
-                className="rounded-[12px]"
-                style={{ flex: 1 }}
-                variant="danger"
-                size="lg"
-                onClick={handleConfirmLeave}
-              >
-                {t('games.table.controlPanel.leaveRoom')}
-              </Button>
-            </div>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <ConfirmationModal
+        open={showLeaveConfirm}
+        onClose={() => setShowLeaveConfirm(false)}
+        onConfirm={handleConfirmLeave}
+        title={t('games.table.leaveGame' as TranslationKey) || 'Leave Game'}
+        message={
+          t('games.table.leaveGameConfirmation' as TranslationKey) ||
+          'Are you sure you want to leave the game?'
+        }
+        confirmLabel={
+          t('games.table.controlPanel.leaveRoom' as TranslationKey) || 'Leave'
+        }
+        cancelLabel={t('common.close' as TranslationKey) || 'Cancel'}
+      />
     </div>
   );
 }

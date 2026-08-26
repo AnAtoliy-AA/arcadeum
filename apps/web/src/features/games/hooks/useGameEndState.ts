@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useMemo } from 'react';
 import { useRematch } from './useRematch';
 import { useGameResultModal } from './useGameResultModal';
@@ -22,23 +24,6 @@ export interface UseGameEndStateOptions {
   players?: PlayerInfo[];
 }
 
-/**
- * Unified hook that combines game result + rematch state into one.
- * Returns a stable object (via useMemo) so consumers don't re-render
- * unnecessarily.
- *
- * Usage:
- * ```ts
- * const gameEnd = useGameEndState({
- *   roomId, session,
- *   result: computeGameResult(isGameOver, currentUserId, { winnerId }),
- *   players: snapshot?.players.map(p => ({ playerId: p.playerId, displayName: name, alive: p.alive })),
- * });
- *
- * // In JSX — pass the whole object to GameEndModals:
- * <GameEndModals gameEnd={gameEnd} currentUserId={currentUserId} t={t} />
- * ```
- */
 export function useGameEndState({
   roomId,
   session,
@@ -56,11 +41,10 @@ export function useGameEndState({
     sharedResult,
     resultMessages: defaultMessages,
     dismiss,
+    open: openResult,
+    toggle: toggleResult,
   } = useGameResultModal(session, result, resultMessages, isGameOver);
 
-  // On ranked matches the backend attaches `ratingDeltas` to
-  // `session.state.gameResult` — surface the local player's change so the
-  // result modal can show "+12 ★ Gold".
   const ratingDelta = useMemo<RatingDelta | null>(() => {
     if (!currentUserId || !session?.state) return null;
     const gameResult = session.state.gameResult as
@@ -74,8 +58,7 @@ export function useGameEndState({
     } else {
       void rematch.handleRematch([], undefined);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [players.length, rematch.openRematchModal, rematch.handleRematch]);
+  }, [players.length, rematch]);
 
   return useMemo(
     () => ({
@@ -83,6 +66,8 @@ export function useGameEndState({
       sharedResult,
       resultMessages: resultMessages || defaultMessages,
       dismissResult: dismiss,
+      openResult,
+      toggleResult,
       ratingDelta,
 
       rematchLoading: rematch.rematchLoading,
@@ -109,6 +94,8 @@ export function useGameEndState({
       resultMessages,
       defaultMessages,
       dismiss,
+      openResult,
+      toggleResult,
       ratingDelta,
       rematch.rematchLoading,
       rematch.rematchError,

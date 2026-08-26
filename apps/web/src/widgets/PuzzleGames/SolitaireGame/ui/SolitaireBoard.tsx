@@ -3,11 +3,7 @@
 import { useMemo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import {
-  getSourceCards,
-  isValidMove,
-} from '../lib/engine';
-import { useSolitaireTheme } from '../lib/SolitaireThemeContext';
+import { getSourceCards, isValidMove } from '../lib/engine';
 import type {
   Card,
   MoveSource,
@@ -19,7 +15,6 @@ import { CardView } from './CardView';
 
 interface SolitaireBoardProps {
   game: SolitaireState;
-  /** Currently grabbed source, if any. */
   selection: MoveSource | null;
   onSelect: (source: MoveSource | null) => void;
   onDraw: () => void;
@@ -33,9 +28,8 @@ const SUIT_GLYPHS: Record<Suit, string> = {
   clubs: '♣',
 };
 
-/** Vertical offset between consecutive face-down / face-up cards in a fan. */
-const FACEDOWN_FAN_OFFSET = 10;
-const FACEUP_FAN_OFFSET = 24;
+const FACEDOWN_FAN_OFFSET = 12;
+const FACEUP_FAN_OFFSET = 26;
 
 export function SolitaireBoard({
   game,
@@ -44,7 +38,6 @@ export function SolitaireBoard({
   onDraw,
   onMove,
 }: SolitaireBoardProps) {
-  const theme = useSolitaireTheme();
   const { t } = useTranslation();
 
   const selectedCards = useMemo(
@@ -98,8 +91,6 @@ export function SolitaireBoard({
   };
 
   const handleTableauClick = (pileIndex: number, cardIndex: number | null) => {
-    // A pending selection aimed at this column becomes a move attempt;
-    // otherwise the click toggles card selection within the column.
     if (
       selection &&
       !(
@@ -122,20 +113,8 @@ export function SolitaireBoard({
     toggleSelect({ kind: 'tableau', pileIndex, cardIndex });
   };
 
-  const slotStyle = {
-    background: theme.emptySlot,
-    borderColor: theme.emptySlotBorder,
-  } as const;
-
   return (
-    <div
-      className="rounded-2xl border p-3 [--card-h:72px] [--card-w:52px] sm:p-5 sm:[--card-h:96px] sm:[--card-w:68px]"
-      style={{
-        background: theme.tableBackground,
-        borderColor: theme.tableBorder,
-      }}
-    >
-      {/* Top row: stock + waste on the left, foundations on the right */}
+    <div className="w-full rounded-3xl border-2 border-emerald-800/60 bg-emerald-950/80 p-3 sm:p-6 shadow-2xl shadow-black/80 select-none">
       <div className="flex items-start justify-between gap-2 sm:gap-4">
         <div className="flex gap-2 sm:gap-3">
           <button
@@ -147,12 +126,11 @@ export function SolitaireBoard({
                 : t('games.solitaire_v1.board.recycle')
             }
             className={cx(
-              'relative h-[var(--card-h)] w-[var(--card-w)] rounded-[10px] border',
-              game.stock.length > 0 || game.waste.length > 0
-                ? 'cursor-pointer'
-                : 'cursor-default',
+              'relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 transition-all',
+              game.stock.length > 0
+                ? 'cursor-pointer border-indigo-400/40'
+                : 'cursor-pointer border-dashed border-emerald-700/50 bg-emerald-900/30 hover:border-emerald-500',
             )}
-            style={slotStyle}
           >
             {game.stock.length > 0 ? (
               <div className="absolute inset-0">
@@ -166,7 +144,7 @@ export function SolitaireBoard({
             ) : (
               game.waste.length > 0 && (
                 <span
-                  className="absolute inset-0 flex items-center justify-center text-xl opacity-40"
+                  className="absolute inset-0 flex items-center justify-center text-2xl text-emerald-400/60"
                   aria-hidden="true"
                 >
                   ↻
@@ -175,18 +153,13 @@ export function SolitaireBoard({
             )}
           </button>
 
-          <div
-            className="relative h-[var(--card-h)] w-[var(--card-w)] rounded-[10px] border"
-            style={slotStyle}
-          >
+          <div className="relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 border-dashed border-emerald-700/40 bg-emerald-900/20">
             {game.waste.length > 0 && (
               <div className="absolute inset-0">
                 <CardView
                   card={game.waste[game.waste.length - 1]}
                   selected={isSameSelection(selection, { kind: 'waste' })}
-                  onClick={() =>
-                    toggleSelect({ kind: 'waste' })
-                  }
+                  onClick={() => toggleSelect({ kind: 'waste' })}
                   onDoubleClick={() =>
                     tryAutoFoundation(game.waste[game.waste.length - 1])
                   }
@@ -203,12 +176,9 @@ export function SolitaireBoard({
               <button
                 key={suit}
                 type="button"
-                onClick={() =>
-                  tryMove({ kind: 'foundation', foundationIndex })
-                }
+                onClick={() => tryMove({ kind: 'foundation', foundationIndex })}
                 aria-label={`${t('games.solitaire_v1.board.foundation')} ${SUIT_GLYPHS[suit]}`}
-                className="relative h-[var(--card-h)] w-[var(--card-w)] rounded-[10px] border"
-                style={slotStyle}
+                className="relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 border-dashed border-emerald-600/50 bg-emerald-900/30 transition-colors hover:border-emerald-400/80"
               >
                 {pile.length > 0 ? (
                   <div className="pointer-events-none absolute inset-0">
@@ -216,7 +186,7 @@ export function SolitaireBoard({
                   </div>
                 ) : (
                   <span
-                    className="flex h-full w-full items-center justify-center text-xl opacity-30"
+                    className="flex h-full w-full items-center justify-center text-2xl text-emerald-400/30"
                     aria-hidden="true"
                   >
                     {SUIT_GLYPHS[suit]}
@@ -228,17 +198,15 @@ export function SolitaireBoard({
         </div>
       </div>
 
-      {/* Tableau: seven columns, natural flow with overlapping fans */}
-      <div className="mt-4 grid grid-cols-7 gap-1.5 sm:gap-3">
+      <div className="mt-6 grid grid-cols-7 gap-1.5 sm:gap-3">
         {game.tableau.map((pile, pileIndex) => (
-          <div key={pileIndex} className="relative">
+          <div key={pileIndex} className="relative min-h-24 sm:min-h-32">
             {pile.length === 0 ? (
               <button
                 type="button"
                 aria-label={`${t('games.solitaire_v1.board.pile')} ${pileIndex + 1}`}
                 onClick={() => tryMove({ kind: 'tableau', pileIndex })}
-                className="h-[var(--card-h)] w-full cursor-pointer rounded-[10px] border"
-                style={slotStyle}
+                className="h-20 w-full cursor-pointer rounded-xl border-2 border-dashed border-emerald-700/40 bg-emerald-900/20 hover:border-emerald-500/60"
               />
             ) : (
               <ul className="m-0 flex list-none flex-col p-0">
@@ -252,14 +220,13 @@ export function SolitaireBoard({
                   return (
                     <li
                       key={card.id}
-                      className="w-full"
+                      className="w-full relative"
                       style={{
                         marginTop: pullUp > 0 ? -pullUp : undefined,
                         zIndex: cardIndex,
-                        position: 'relative',
                       }}
                     >
-                      <div className="aspect-[68/96]">
+                      <div className="aspect-[68/96] w-full">
                         <CardView
                           card={card}
                           selected={
@@ -289,7 +256,10 @@ export function SolitaireBoard({
       </div>
 
       {selectedCards.length > 0 && (
-        <p className="mt-3 text-center text-xs opacity-70" role="status">
+        <p
+          className="mt-4 text-center text-xs text-emerald-300 font-semibold"
+          role="status"
+        >
           {t('games.solitaire_v1.board.selectedHint')}
         </p>
       )}
@@ -302,7 +272,6 @@ function foundationSuitOf(index: number): Suit {
   return suits[index] ?? 'spades';
 }
 
-/** Locates which pile currently holds `card` and returns its move source. */
 function findCardSource(game: SolitaireState, card: Card): MoveSource {
   if (game.waste[game.waste.length - 1]?.id === card.id) {
     return { kind: 'waste' };

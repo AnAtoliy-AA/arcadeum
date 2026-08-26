@@ -1,13 +1,21 @@
 'use client';
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
-import { Button, LoadingState, Modal, Select } from '@arcadeum/ui';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from 'react';
+import { Button, LoadingState, Select } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
+import { GameResultModal } from '@/features/games/ui/GameResultModal';
+import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import { SudokuThemeProvider } from '../lib/SudokuThemeContext';
-import { useSudokuStore, type FinishedGameInfo } from '../store/sudokuStore';
+import { useSudokuStore } from '../store/sudokuStore';
 import type { Difficulty } from '../types';
 import { SudokuBoard } from './SudokuBoard';
 
@@ -49,8 +57,6 @@ function SudokuTable() {
   const changeDifficulty = useSudokuStore((state) => state.changeDifficulty);
   const newGame = useSudokuStore((state) => state.newGame);
 
-  // The puzzle is random and persisted, so it can only render after mount —
-  // otherwise SSR markup (fresh puzzle on the server) never matches the client.
   const mounted = useSyncExternalStore(
     subscribeNoop,
     () => true,
@@ -59,9 +65,8 @@ function SudokuTable() {
 
   const [selected, setSelected] = useState<number | null>(null);
   const [notesMode, setNotesMode] = useState(false);
-
-  // Elapsed timer; only ticks while the game is running.
   const [elapsedMs, setElapsedMs] = useState(0);
+
   const isRunning = mounted && finished === null;
   useEffect(() => {
     if (!isRunning) return undefined;
@@ -71,6 +76,26 @@ function SudokuTable() {
     );
     return () => clearInterval(interval);
   }, [isRunning, startedAt]);
+
+  const digitCounts = useMemo(() => {
+    const counts: Record<number, number> = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+      6: 0,
+      7: 0,
+      8: 0,
+      9: 0,
+    };
+    for (const cell of game.cells) {
+      if (cell >= 1 && cell <= 9) {
+        counts[cell] = (counts[cell] ?? 0) + 1;
+      }
+    }
+    return counts;
+  }, [game.cells]);
 
   const applyDigit = useCallback(
     (digit: number) => {
@@ -115,6 +140,9 @@ function SudokuTable() {
           moveSelection(0, 1);
           break;
         case 'Backspace':
+          event.preventDefault();
+          erase();
+          break;
         case 'Delete':
           event.preventDefault();
           erase();
@@ -134,92 +162,51 @@ function SudokuTable() {
     [applyDigit, erase, moveSelection],
   );
 
+  const handleCloseModal = useCallback(() => {
+    useSudokuStore.setState({ finished: null });
+  }, []);
+
+  const stats: GameResultStats | null = useMemo(() => {
+    if (!finished) return null;
+    return {
+      duration: formatDuration(finished.durationMs),
+      customStats: [
+        {
+          id: 'mistakes',
+          label: t('games.sudoku_v1.hud.mistakes'),
+          value: finished.mistakes,
+        },
+        {
+          id: 'difficulty',
+          label: t('games.sudoku_v1.hud.difficulty'),
+          value: t(
+            `games.sudoku_v1.difficulty.${game.difficulty}` as TranslationKey,
+          ),
+        },
+      ],
+    };
+  }, [finished, game.difficulty, t]);
+
   if (!mounted) {
     return <LoadingState message={t('games.sudoku_v1.board.loading')} />;
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-4 text-sm">
-          <Stat
+    <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-5 px-3">
+      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-sky-500/20 bg-slate-950/70 p-3 shadow-xl shadow-black/50 backdrop-blur-md sm:p-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <StatCard
             label={t('games.sudoku_v1.hud.mistakes')}
             value={game.mistakes}
+            highlight={game.mistakes > 0}
           />
-          <Stat
+          <StatCard
             label={t('games.sudoku_v1.hud.time')}
             value={formatDuration(elapsedMs)}
           />
         </div>
-        <Button variant="outline" size="sm" onClick={newGame}>
-          {t('games.sudoku_v1.hud.newGame')}
-        </Button>
-      </div>
 
-      <div onKeyDown={handleKeyDown} tabIndex={0} className="outline-none">
-        <SudokuBoard
-          game={game}
-          selected={selected}
-          notesMode={notesMode}
-          onSelect={setSelected}
-        />
-      </div>
-
-      {/* Controls: notes toggle + number pad */}
-      <div className="flex flex-col items-center gap-3">
-        <div className="grid w-full max-w-xs grid-cols-5 gap-2">
-          {DIGITS.map((digit) => (
-            <button
-              key={digit}
-              type="button"
-              onClick={() => applyDigit(digit)}
-              disabled={selected === null}
-              aria-label={
-                notesMode
-                  ? t('games.sudoku_v1.controls.noteDigit', { digit })
-                  : t('games.sudoku_v1.controls.placeDigit', { digit })
-              }
-              className={cx(
-                'rounded-lg border py-2 font-mono text-base font-bold transition-colors',
-                'border-[var(--borderColor)] bg-[var(--glassBg)] hover:bg-[var(--primary)]/15',
-                'disabled:cursor-not-allowed disabled:opacity-40',
-                notesMode && 'text-[var(--primary)]',
-              )}
-            >
-              {digit}
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => setNotesMode((mode) => !mode)}
-            aria-pressed={notesMode}
-            title={t('games.sudoku_v1.controls.notesHint')}
-            className={cx(
-              'rounded-lg border py-2 text-sm font-bold transition-colors',
-              notesMode
-                ? 'border-[var(--primary)] bg-[var(--primary)]/20'
-                : 'border-[var(--borderColor)] bg-[var(--glassBg)] hover:bg-[var(--primary)]/10',
-            )}
-          >
-            ✎ {t('games.sudoku_v1.controls.notes')}
-          </button>
-          <button
-            type="button"
-            onClick={erase}
-            disabled={selected === null}
-            className={cx(
-              'rounded-lg border border-[var(--borderColor)] bg-[var(--glassBg)] py-2 text-sm font-bold transition-colors',
-              'hover:bg-[var(--primary)]/10 disabled:cursor-not-allowed disabled:opacity-40',
-            )}
-          >
-            ⌫ {t('games.sudoku_v1.controls.erase')}
-          </button>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <label className="text-xs opacity-70" htmlFor="sudoku-difficulty">
-            {t('games.sudoku_v1.hud.difficulty')}
-          </label>
+        <div className="flex items-center gap-2">
           <Select
             id="sudoku-difficulty"
             size="sm"
@@ -230,64 +217,149 @@ function SudokuTable() {
               label: t(`games.sudoku_v1.difficulty.${value}` as TranslationKey),
             }))}
           />
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={newGame}
+            data-testid="sudoku-new-game-button"
+          >
+            {t('games.sudoku_v1.hud.newGame')}
+          </Button>
         </div>
       </div>
 
-      <ResultDialog finished={finished} onNewGame={newGame} />
+      <div
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        className="w-full outline-none"
+      >
+        <SudokuBoard
+          game={game}
+          selected={selected}
+          notesMode={notesMode}
+          onSelect={setSelected}
+        />
+      </div>
+
+      <div className="flex w-full max-w-md flex-col items-center gap-3">
+        <div className="grid w-full grid-cols-9 gap-1.5 sm:gap-2">
+          {DIGITS.map((digit) => {
+            const count = digitCounts[digit] ?? 0;
+            const remaining = Math.max(9 - count, 0);
+            const isCompleted = remaining === 0;
+
+            return (
+              <button
+                key={digit}
+                type="button"
+                onClick={() => applyDigit(digit)}
+                disabled={selected === null || isCompleted}
+                aria-label={
+                  notesMode
+                    ? t('games.sudoku_v1.controls.noteDigit', { digit })
+                    : t('games.sudoku_v1.controls.placeDigit', { digit })
+                }
+                className={cx(
+                  'flex flex-col items-center justify-center rounded-xl border py-2 font-mono transition-all',
+                  isCompleted
+                    ? 'border-dashed border-slate-800 bg-slate-900/30 opacity-30 cursor-not-allowed'
+                    : notesMode
+                      ? 'border-sky-500/40 bg-sky-950/40 text-sky-300 hover:bg-sky-500/20 active:scale-95'
+                      : 'border-slate-800 bg-slate-900/80 text-white hover:border-sky-500/40 hover:bg-slate-800 active:scale-95',
+                  'disabled:opacity-40 disabled:cursor-not-allowed',
+                )}
+              >
+                <span className="text-base font-extrabold sm:text-lg">
+                  {digit}
+                </span>
+                <span className="text-[10px] text-slate-400 font-medium">
+                  {remaining}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex w-full items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setNotesMode((mode) => !mode)}
+            aria-pressed={notesMode}
+            title={t('games.sudoku_v1.controls.notesHint')}
+            className={cx(
+              'flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs sm:text-sm font-bold transition-all',
+              notesMode
+                ? 'border-sky-400 bg-sky-500/25 text-sky-200 shadow-md shadow-sky-500/20 ring-1 ring-sky-400'
+                : 'border-slate-800 bg-slate-900/70 text-slate-300 hover:border-slate-700 hover:bg-slate-800',
+            )}
+          >
+            <span>✎</span>
+            <span>{t('games.sudoku_v1.controls.notes')}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={erase}
+            disabled={selected === null}
+            className={cx(
+              'flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-300 transition-all',
+              'hover:border-red-500/40 hover:bg-red-950/30 hover:text-red-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40',
+            )}
+          >
+            <span>⌫</span>
+            <span>{t('games.sudoku_v1.controls.erase')}</span>
+          </button>
+        </div>
+      </div>
+
+      <GameResultModal
+        isOpen={finished !== null}
+        result="victory"
+        gameName="Sudoku"
+        onRematch={newGame}
+        rematchLabel={t('games.sudoku_v1.result.playAgain')}
+        onClose={handleCloseModal}
+        t={t}
+        messages={{
+          title: t('games.sudoku_v1.result.wonTitle'),
+          message:
+            finished?.mistakes === 0
+              ? t('games.sudoku_v1.result.flawlessBody')
+              : t('games.sudoku_v1.result.wonBody', {
+                  mistakes: finished?.mistakes ?? 0,
+                }),
+        }}
+        theme="cyberpunk"
+        stats={stats}
+      />
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string | number }) {
+function StatCard({
+  label,
+  value,
+  highlight = false,
+}: {
+  label: string;
+  value: string | number;
+  highlight?: boolean;
+}) {
   return (
-    <span className="flex flex-col">
-      <span className="text-[10px] uppercase tracking-wide opacity-60">
+    <div
+      className={cx(
+        'flex flex-col items-center justify-center rounded-xl border px-3 py-1.5 backdrop-blur-sm sm:px-4 sm:py-2',
+        highlight
+          ? 'border-red-500/30 bg-red-950/40 text-red-300'
+          : 'border-white/5 bg-black/40 text-white',
+      )}
+    >
+      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
         {label}
       </span>
-      <span className="font-mono text-lg font-bold leading-tight">{value}</span>
-    </span>
-  );
-}
-
-function ResultDialog({
-  finished,
-  onNewGame,
-}: {
-  finished: FinishedGameInfo | null;
-  onNewGame: () => void;
-}) {
-  const { t } = useTranslation();
-  if (!finished) return null;
-
-  return (
-    <Modal open onClose={() => undefined}>
-      <div className="flex flex-col items-center gap-4 p-6 text-center">
-        <h2 className="text-2xl font-black">
-          {t('games.sudoku_v1.result.wonTitle')}
-        </h2>
-        <p className="text-sm opacity-80">
-          {finished.mistakes === 0
-            ? t('games.sudoku_v1.result.flawlessBody')
-            : t('games.sudoku_v1.result.wonBody', {
-                mistakes: finished.mistakes,
-              })}
-        </p>
-        <dl className="flex gap-6 text-sm">
-          <div>
-            <dt className="opacity-60">{t('games.sudoku_v1.hud.time')}</dt>
-            <dd className="font-mono text-lg">
-              {formatDuration(finished.durationMs)}
-            </dd>
-          </div>
-          <div>
-            <dt className="opacity-60">{t('games.sudoku_v1.hud.mistakes')}</dt>
-            <dd className="font-mono text-lg">{finished.mistakes}</dd>
-          </div>
-        </dl>
-        <Button onClick={onNewGame}>
-          {t('games.sudoku_v1.result.playAgain')}
-        </Button>
-      </div>
-    </Modal>
+      <span className="font-mono text-base font-extrabold tabular-nums sm:text-lg">
+        {value}
+      </span>
+    </div>
   );
 }

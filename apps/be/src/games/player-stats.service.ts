@@ -440,10 +440,13 @@ export class PlayerStatsService {
     }));
 
     try {
-      await this.recordModel.bulkWrite(recordOps);
-      await this.statsModel.bulkWrite(statsOps);
+      await this.recordModel.bulkWrite(recordOps, { ordered: false });
+      await this.statsModel.bulkWrite(statsOps, { ordered: false });
       return { synced: newRecords.length, duplicates };
     } catch (err) {
+      if ((err as { code?: number }).code === 11000) {
+        return { synced: 0, duplicates: records.length };
+      }
       this.logger.warn(
         `Failed to batch sync records for ${userId}: ${(err as Error).message}`,
       );

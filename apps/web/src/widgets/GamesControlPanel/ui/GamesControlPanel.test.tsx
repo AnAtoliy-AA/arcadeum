@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { GamesControlPanel } from './GamesControlPanel';
-import { useGameResultStore } from '@/features/games/store/gameResultStore';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 
 vi.mock('next/navigation', () => ({
@@ -29,45 +28,22 @@ vi.mock('@/entities/session/model/useSessionTokens', () => ({
 describe('GamesControlPanel', () => {
   beforeEach(() => {
     act(() => {
-      useGameResultStore.getState().reset();
       useGameRematchStore.getState().reset();
     });
   });
 
-  it('renders control buttons', () => {
+  it('renders control buttons including exit and leave', () => {
     render(<GamesControlPanel isFullscreen={false} />);
     expect(screen.getByTestId('games-control-panel')).toBeInTheDocument();
     expect(screen.getByTestId('fullscreen-button')).toBeInTheDocument();
     expect(screen.getByTestId('sound-toggle-button')).toBeInTheDocument();
     expect(screen.getByTestId('music-toggle-button')).toBeInTheDocument();
+    expect(screen.getByTestId('exit-room-button')).toBeInTheDocument();
+    expect(screen.getByTestId('leave-game-button')).toBeInTheDocument();
   });
 
-  it('renders and toggles game result button via Zustand store', () => {
-    render(<GamesControlPanel isGameOver={false} />);
-    expect(
-      screen.queryByTestId('show-game-result-button'),
-    ).not.toBeInTheDocument();
-
-    act(() => {
-      useGameResultStore.getState().setHasResult(true);
-    });
-
-    expect(screen.getByTestId('show-game-result-button')).toBeInTheDocument();
-    expect(useGameResultStore.getState().isOpen).toBe(false);
-
-    act(() => {
-      fireEvent.click(screen.getByTestId('show-game-result-button'));
-    });
-    expect(useGameResultStore.getState().isOpen).toBe(true);
-
-    act(() => {
-      fireEvent.click(screen.getByTestId('show-game-result-button'));
-    });
-    expect(useGameResultStore.getState().isOpen).toBe(false);
-  });
-
-  it('renders game result button when isGameOver prop is true', () => {
-    render(<GamesControlPanel isGameOver={true} />);
-    expect(screen.getByTestId('show-game-result-button')).toBeInTheDocument();
+  it('renders rematch button when isGameOver and onRematch are active', () => {
+    render(<GamesControlPanel isGameOver={true} onRematch={() => {}} />);
+    expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
   });
 });

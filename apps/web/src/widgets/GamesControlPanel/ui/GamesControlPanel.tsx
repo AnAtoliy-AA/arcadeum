@@ -9,7 +9,7 @@ import {
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { gameSocket } from '@/shared/lib/socket';
-import { useGameResultStore } from '@/features/games/store/gameResultStore';
+import { useGameStore } from '@/features/games/store/gameStore';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { useGameChatStore } from '@/widgets/GameChat';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -73,15 +73,13 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
-  const hasResult = useGameResultStore((s) => s.hasResult);
-  const toggleResult = useGameResultStore((s) => s.toggle);
   const rematchStoreIsGameOver = useGameRematchStore((s) => s.isGameOver);
   const rematchStoreOnRematch = useGameRematchStore((s) => s.onRematch);
   const rematchStoreLoading = useGameRematchStore((s) => s.rematchLoading);
   const chatPanelOpen = useGameChatStore((s) => s.chatPanelOpen);
   const setChatPanelOpen = useGameChatStore((s) => s.setChatPanelOpen);
 
-  const effectiveIsGameOver = isGameOver || rematchStoreIsGameOver || hasResult;
+  const effectiveIsGameOver = isGameOver || rematchStoreIsGameOver;
   const effectiveOnRematch = onRematch || rematchStoreOnRematch;
   const effectiveRematchLoading = rematchLoading || rematchStoreLoading;
   const isChatVisible = showChat !== undefined ? showChat : chatPanelOpen;
@@ -115,6 +113,11 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
     setShowLeaveConfirm(false);
   }, [roomId, snapshot.userId, router]);
 
+  const handleExitRoom = useCallback(() => {
+    useGameStore.setState({ room: null, session: null });
+    router.push('/games');
+  }, [router]);
+
   const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
     onMovePlayer?.(direction);
   };
@@ -126,7 +129,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   return (
     <div
       className={cx(
-        'flex flex-row items-center justify-between gap-3 max-[800px]:gap-2 max-[800px]:py-2 max-[800px]:px-3 py-2.5 px-4 bg-[var(--glassBg)] rounded-2xl border border-[var(--glassBorderStrong)] backdrop-blur-md',
+        'flex flex-row items-center justify-between gap-3 max-[800px]:gap-2 max-[800px]:py-2 max-[800px]:px-3 py-2 px-4 bg-[var(--glassBg)] rounded-2xl border border-[var(--glassBorderStrong)] backdrop-blur-md',
         className,
       )}
       data-testid="games-control-panel"
@@ -333,20 +336,6 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       )}
 
       <div className="flex flex-row items-center gap-2 ml-auto shrink-0 flex-wrap">
-        {effectiveIsGameOver && (
-          <Button
-            className="!border-amber-500/50 !bg-amber-950/40 text-amber-300 hover:!bg-amber-900/60 font-semibold text-xs px-3"
-            variant="glass"
-            size="sm"
-            onClick={toggleResult}
-            data-testid="show-game-result-button"
-            aria-label={t('games.table.analytics.view') || 'Results'}
-            title={t('games.table.analytics.view') || 'Results'}
-          >
-            🏆 {t('games.table.analytics.view') || 'Results'}
-          </Button>
-        )}
-
         {effectiveIsGameOver && effectiveOnRematch && (
           <Button
             className="active:scale-[0.95] text-xs font-semibold px-3"
@@ -372,21 +361,45 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
         <Button
           className="max-[640px]:px-2.5"
-          variant="danger"
+          variant="glass"
           size="sm"
-          onClick={handleLeaveGame}
-          aria-label={t('games.table.controlPanel.leaveRoom')}
-          title={
-            t('games.table.controlPanel.leaveGameTooltip') ||
-            'Remove yourself from the game and return to lobby'
+          onClick={handleExitRoom}
+          aria-label={
+            t('games.table.controlPanel.exitRoom' as TranslationKey) || 'Exit'
           }
-          data-testid="leave-game-button"
+          title={
+            t('games.table.controlPanel.exitRoomTooltip' as TranslationKey) ||
+            'Go back to lobby but stay in the game'
+          }
+          data-testid="exit-room-button"
         >
-          🚪
+          🏃
           <span className="hidden sm:inline">
-            {' ' + t('games.table.controlPanel.leaveRoom')}
+            {' ' +
+              (t('games.table.controlPanel.exitRoom' as TranslationKey) ||
+                'Exit')}
           </span>
         </Button>
+
+        {snapshot.userId && (
+          <Button
+            className="max-[640px]:px-2.5"
+            variant="danger"
+            size="sm"
+            onClick={handleLeaveGame}
+            aria-label={t('games.table.controlPanel.leaveRoom')}
+            title={
+              t('games.table.controlPanel.leaveGameTooltip') ||
+              'Remove yourself from the game and return to lobby'
+            }
+            data-testid="leave-game-button"
+          >
+            🚪
+            <span className="hidden sm:inline">
+              {' ' + t('games.table.controlPanel.leaveRoom')}
+            </span>
+          </Button>
+        )}
       </div>
 
       <ConfirmationModal

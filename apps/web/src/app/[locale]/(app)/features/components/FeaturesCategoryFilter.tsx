@@ -43,6 +43,7 @@ export function FeaturesCategoryFilter({
               key={cat.id}
               active={isActive}
               onClick={() => onSelectCategory(cat.id)}
+              data-testid={`filter-${cat.id}`}
             >
               <span className="mr-1.5">{cat.icon}</span>
               {cat.label} ({cat.count})

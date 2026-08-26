@@ -10,8 +10,8 @@ test.describe('Features Page', () => {
     await expect(page.locator('h1')).toContainText(
       'Platform Architecture & Features',
     );
-    await expect(page.getByText('Modules')).toBeVisible();
-    await expect(page.getByText('Games Live')).toBeVisible();
+    await expect(page.getByTestId('stat-modules')).toBeVisible();
+    await expect(page.getByTestId('stat-games')).toBeVisible();
     await expect(page.getByText('1. Games (20+)')).toBeVisible();
   });
 
@@ -35,14 +35,14 @@ test.describe('Features Page', () => {
     await navigateTo(page, '/features');
     await page.waitForLoadState('domcontentloaded');
 
-    const gamesChip = page.getByRole('button', { name: /Games & Engine/i });
+    const gamesChip = page.getByTestId('filter-games');
     await gamesChip.click();
 
     await expect(page.getByText('1. Games (20+)')).toBeVisible();
     await expect(page.getByText('2. Game Session & Matchmaking')).toBeVisible();
     await expect(page.getByText('8. Real-Time (WebSocket)')).not.toBeVisible();
 
-    const allChip = page.getByRole('button', { name: /All Modules/i });
+    const allChip = page.getByTestId('filter-all');
     await allChip.click();
 
     await expect(page.getByText('8. Real-Time (WebSocket)')).toBeVisible();

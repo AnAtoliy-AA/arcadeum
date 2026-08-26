@@ -26,6 +26,7 @@ import { rewardsRu } from './rewards/ru';
 import { developersRu } from './developers/ru';
 import { blogRu } from './blog/ru';
 import { changelogRu } from './changelog/ru';
+import { featuresRu } from './features/ru';
 import { roadmapRu } from './roadmap/ru';
 
 export const ru = {
@@ -420,5 +421,6 @@ export const ru = {
   events: eventsRu,
   seasons: seasonsRu,
   changelog: changelogRu,
+  features: featuresRu,
   roadmap: roadmapRu,
 };

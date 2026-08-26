@@ -102,6 +102,7 @@ export const ru = {
   footerHelpCenter: 'Центр помощи',
   footerRoadmap: 'Дорожная карта',
   footerChangelog: 'История изменений',
+  footerFeatures: 'Возможности',
   footerGamingBlog: 'Блог о играх',
   footerDevelopers: 'Разработчикам (API)',
   footerLegalTitle: 'Юридическая информация',

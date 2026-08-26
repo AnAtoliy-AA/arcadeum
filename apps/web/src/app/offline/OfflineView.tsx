@@ -6,12 +6,16 @@ interface OfflineViewProps {
   title: string;
   description: string;
   retryText: string;
+  manageHref?: string;
+  manageLabel?: string;
 }
 
 export function OfflineView({
   title,
   description,
   retryText,
+  manageHref,
+  manageLabel,
 }: OfflineViewProps) {
   const handleRetry = () => {
     window.location.reload();
@@ -46,9 +50,19 @@ export function OfflineView({
       >
         {description}
       </p>
-      <Button onClick={handleRetry} size="lg">
-        {retryText}
-      </Button>
+      <div className="flex flex-col items-center gap-3">
+        <Button onClick={handleRetry} size="lg">
+          {retryText}
+        </Button>
+        {manageHref && manageLabel && (
+          <a
+            href={manageHref}
+            className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
+          >
+            {manageLabel}
+          </a>
+        )}
+      </div>
     </div>
   );
 }

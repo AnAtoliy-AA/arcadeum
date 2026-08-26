@@ -40,6 +40,7 @@ import { OptionCard } from '@/shared/ui/OptionCard/OptionCard';
 import { BlockedUsersSection } from './BlockedUsersSection';
 import { NotificationSettingsSection } from '@/features/notifications/NotificationSettingsSection';
 import { InstallAppCta } from '@/widgets/install-app';
+import { OfflineDownloadsSection } from '@/features/offline-download/ui/OfflineDownloadsSection';
 
 type DownloadConfig = {
   title: string;
@@ -416,6 +417,10 @@ export default function SettingsContent({
               />
             </ToggleRow>
           </Section>
+
+          <div id="offline-downloads">
+            <OfflineDownloadsSection />
+          </div>
 
           <BlockedUsersSection />
 

@@ -47,25 +47,11 @@ describe('GamesGateway – emote handler', () => {
     gateway = new GamesGateway(
       gamesService,
       realtime,
+      {} as never, // sessions service (unused by emote handler)
       mockJwt,
       mockConfig,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      inert as never,
-      // go handler
-      inert as never,
+      inert as never, // matchmaking
+      [inert],
     );
     (gateway as unknown as { server: Server }).server = server;
   });

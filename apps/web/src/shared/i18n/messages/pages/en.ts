@@ -26,6 +26,7 @@ import { rewardsEn } from './rewards/en';
 import { developersEn } from './developers/en';
 import { blogEn } from './blog/en';
 import { changelogEn } from './changelog/en';
+import { featuresEn } from './features/en';
 import { roadmapEn } from './roadmap/en';
 
 export const en = {
@@ -418,5 +419,6 @@ export const en = {
   events: eventsEn,
   seasons: seasonsEn,
   changelog: changelogEn,
+  features: featuresEn,
   roadmap: roadmapEn,
 };

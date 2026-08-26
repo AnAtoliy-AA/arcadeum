@@ -7,6 +7,7 @@ import {
   PWAContext,
 } from './context';
 import { InstallPWAModal } from './InstallPWA';
+import { OfflineGamesPrompt } from '@/features/offline-download/ui/OfflineGamesPrompt';
 
 interface PWAProviderProps {
   children: ReactNode;
@@ -94,6 +95,7 @@ export function PWAProvider({ children }: PWAProviderProps) {
     <PWAContext.Provider value={value}>
       {children}
       <InstallPWAModal />
+      <OfflineGamesPrompt />
     </PWAContext.Provider>
   );
 }

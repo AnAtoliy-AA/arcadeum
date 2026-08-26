@@ -105,6 +105,7 @@ export const es = {
   footerHelpCenter: 'Centro de ayuda',
   footerRoadmap: 'Hoja de ruta',
   footerChangelog: 'Registro de cambios',
+  footerFeatures: 'Funciones',
   footerGamingBlog: 'Blog de juegos',
   footerDevelopers: 'Desarrolladores (API)',
   footerLegalTitle: 'Legal',

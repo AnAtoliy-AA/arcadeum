@@ -24,7 +24,7 @@ export function GamesCatalogCard({
 
   return (
     <div
-      className={`group box-border relative flex flex-col justify-between rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-white/30 text-inherit ${
+      className={`group box-border relative flex flex-col justify-between rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-[var(--primary)]/50 text-inherit ${
         isDisabled ? 'opacity-70 pointer-events-none' : ''
       }`}
     >
@@ -34,8 +34,8 @@ export function GamesCatalogCard({
         data-testid={`games-catalog-card-${game.id}`}
         className="flex flex-col flex-1 no-underline text-inherit cursor-pointer"
       >
-        <div className="box-border relative h-52 w-full bg-black/60 border-b border-[var(--borderColor)] overflow-hidden flex items-center justify-center">
-          <div className="box-border absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent z-[2] pointer-events-none" />
+        <div className="box-border relative h-52 w-full bg-slate-950 border-b border-[var(--borderColor)] overflow-hidden flex items-center justify-center">
+          <div className="box-border absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-[2] pointer-events-none" />
           <div className="box-border absolute -inset-4 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent blur-xl pointer-events-none" />
 
           <GameSymbol
@@ -73,7 +73,7 @@ export function GamesCatalogCard({
           </div>
 
           <div className="box-border absolute bottom-2.5 right-2.5 z-[4] flex items-center gap-1 pointer-events-none">
-            <span className="box-border text-[10px] font-medium px-2 py-0.5 rounded-md bg-black/80 text-white/80 border border-white/10 backdrop-blur-md">
+            <span className="box-border text-[10px] font-medium px-2 py-0.5 rounded-md bg-black/80 text-white/90 border border-white/10 backdrop-blur-md">
               ⏱ {game.duration}
             </span>
           </div>
@@ -82,12 +82,12 @@ export function GamesCatalogCard({
         <div className="box-border p-5 pb-3 flex flex-col flex-1 justify-between gap-3">
           <div className="box-border flex flex-col gap-2">
             <div className="box-border flex items-center justify-between gap-2">
-              <h3 className="box-border m-0 text-xl font-bold text-white group-hover:text-[var(--primary)] transition-colors truncate">
+              <h3 className="box-border m-0 text-xl font-bold text-[var(--color)] group-hover:text-[var(--primary)] transition-colors truncate">
                 {game.name}
               </h3>
             </div>
 
-            <p className="box-border m-0 text-xs sm:text-sm text-white/75 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+            <p className="box-border m-0 text-xs sm:text-sm text-[var(--color)] opacity-75 line-clamp-2 leading-relaxed min-h-[2.5rem]">
               {game.description}
             </p>
           </div>
@@ -95,10 +95,10 @@ export function GamesCatalogCard({
       </Link>
 
       <div className="box-border px-5 pb-5 pt-3 flex flex-wrap items-center gap-2 border-t border-[var(--borderColor)]">
-        <span className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-white/5 text-white/90 border border-white/10">
+        <span className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-[var(--color)]/5 text-[var(--color)] border border-[var(--borderColor)]">
           👥 {game.players}
         </span>
-        <span className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-white/5 text-white/90 border border-white/10">
+        <span className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-[var(--color)]/5 text-[var(--color)] border border-[var(--borderColor)]">
           🤖 AI Bots
         </span>
         {game.offlineSlug && offlineBadgeLabel ? (
@@ -110,7 +110,7 @@ export function GamesCatalogCard({
             📶 {offlineBadgeLabel}
           </Link>
         ) : null}
-        <span className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-white/5 text-white/90 border border-white/10">
+        <span className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-[var(--color)]/5 text-[var(--color)] border border-[var(--borderColor)]">
           ⚡ Instant
         </span>
       </div>

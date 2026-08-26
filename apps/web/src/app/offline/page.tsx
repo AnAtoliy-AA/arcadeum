@@ -25,6 +25,8 @@ export default async function OfflinePage() {
           'You are currently offline. Please check your internet connection.'
         }
         retryText={t?.retry || 'Retry'}
+        manageHref="/settings#offline-downloads"
+        manageLabel="Manage offline games"
       />
     </BrowserRegistry>
   );

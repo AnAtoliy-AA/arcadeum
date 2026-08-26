@@ -26,6 +26,7 @@ import { rewardsFr } from './rewards/fr';
 import { developersFr } from './developers/fr';
 import { blogFr } from './blog/fr';
 import { changelogFr } from './changelog/fr';
+import { featuresFr } from './features/fr';
 import { roadmapFr } from './roadmap/fr';
 
 export const fr = {
@@ -416,5 +417,6 @@ export const fr = {
   events: eventsFr,
   seasons: seasonsFr,
   changelog: changelogFr,
+  features: featuresFr,
   roadmap: roadmapFr,
 };

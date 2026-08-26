@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.58] - 2026-08-26
+
+### Added
+- rework features page with interactive views, filters, and full i18n
+
+### Fixed
+- use data-testid selectors in e2e tests to avoid i18n and role mismatches
+- resolve FEATURES.md path across root and web app contexts
+
+### Documentation
+- add comprehensive feature list covering user, SEO, and AI search features
+
+
 ## [1.26.57] - 2026-08-26
 
 ### Fixed

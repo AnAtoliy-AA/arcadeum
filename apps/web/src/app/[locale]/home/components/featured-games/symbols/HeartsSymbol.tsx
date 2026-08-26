@@ -1,6 +1,4 @@
-import type { SVGProps } from 'react';
-
-export function HeartsSymbol(props: SVGProps<SVGSVGElement>) {
+export function HeartsSymbol({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 64"
@@ -9,7 +7,7 @@ export function HeartsSymbol(props: SVGProps<SVGSVGElement>) {
       strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      {...props}
+      className={className}
     >
       {/* Three cards in a fan — trick-taking table silhouette */}
       <g transform="translate(22 26) rotate(-14)">

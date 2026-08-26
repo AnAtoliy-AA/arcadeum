@@ -1,13 +1,11 @@
-import type { SVGProps } from 'react';
-
-export function ChessSymbol(props: SVGProps<SVGSVGElement>) {
+export function ChessSymbol({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 64"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
-      {...props}
+      className={className}
     >
       <rect x="8" y="8" width="48" height="48" rx="3" />
       <line x1="14" y1="8" x2="14" y2="56" />

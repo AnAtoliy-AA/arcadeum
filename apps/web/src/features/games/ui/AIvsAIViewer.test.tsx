@@ -44,10 +44,11 @@ describe('AIvsAIViewer', () => {
     fireEvent.click(screen.getByTestId('ai-vs-ai-button'));
 
     await waitFor(() => {
-      expect(createAiVsAi).toHaveBeenCalledWith('chess_v1', {
-        token: 'token-1',
-        aiMoveDelayMs: 2000,
-      });
+      expect(createAiVsAi).toHaveBeenCalledWith(
+        'chess_v1',
+        { aiMoveDelayMs: 2000 },
+        { token: 'token-1' },
+      );
     });
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith('/games/rooms/room-42?mode=watch');
@@ -60,10 +61,11 @@ describe('AIvsAIViewer', () => {
     fireEvent.click(screen.getByTestId('ai-vs-ai-button'));
 
     await waitFor(() => {
-      expect(createAiVsAi).toHaveBeenCalledWith('checkers_v1', {
-        token: 'token-1',
-        aiMoveDelayMs: 5000,
-      });
+      expect(createAiVsAi).toHaveBeenCalledWith(
+        'checkers_v1',
+        { aiMoveDelayMs: 5000 },
+        { token: 'token-1' },
+      );
     });
   });
 

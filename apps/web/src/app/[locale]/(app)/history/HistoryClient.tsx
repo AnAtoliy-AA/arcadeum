@@ -12,8 +12,8 @@ const HistoryPageDynamic = dynamic<HistoryPageProps>(
   },
 );
 
-const HistoryClient = (props: HistoryPageProps) => {
-  return <HistoryPageDynamic {...props} />;
+const HistoryClient = ({ initialData }: HistoryPageProps) => {
+  return <HistoryPageDynamic initialData={initialData} />;
 };
 
 export default HistoryClient;

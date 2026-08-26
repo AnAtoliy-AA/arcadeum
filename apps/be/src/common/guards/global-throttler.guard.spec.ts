@@ -23,7 +23,7 @@ const OPTIONS = [
 
 function createContext(
   handler: (req: unknown) => string | undefined,
-  controllerClass: abstract new (...args: never[]) => unknown,
+  controllerClass: abstract new () => unknown,
   ip = '1.2.3.4',
   type = 'http',
 ): ExecutionContext {

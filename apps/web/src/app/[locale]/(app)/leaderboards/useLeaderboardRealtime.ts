@@ -16,6 +16,10 @@ interface LeaderboardEntryUpdatePayload {
   rating?: number;
 }
 
+function isEntryUpdate(value: unknown): value is LeaderboardEntryUpdatePayload {
+  return typeof value === 'object' && value !== null && 'userId' in value;
+}
+
 interface UseLeaderboardRealtimeArgs {
   accessToken?: string;
   enabled: boolean;
@@ -63,8 +67,8 @@ export function useLeaderboardRealtime({
   useLeaderboardSocket('leaderboards.captured', handleCaptured);
 
   const applyEntryUpdate = useCallback(
-    (update: LeaderboardEntryUpdatePayload | undefined) => {
-      if (!update?.userId) return;
+    (update: unknown) => {
+      if (!isEntryUpdate(update)) return;
       if (update.mode && update.mode !== mode) return;
       setAccumulated((prev) =>
         prev.map((p) =>
@@ -82,8 +86,8 @@ export function useLeaderboardRealtime({
   );
 
   const handleEntryUpdated = useCallback(
-    (...args: unknown[]) => {
-      applyEntryUpdate(args[0] as LeaderboardEntryUpdatePayload | undefined);
+    (update?: unknown) => {
+      applyEntryUpdate(update);
     },
     [applyEntryUpdate],
   );
@@ -92,11 +96,18 @@ export function useLeaderboardRealtime({
   // Batched variant: the backend coalesces markInMatch updates into a single
   // emission instead of fanning out one namespace broadcast per user.
   const handleEntriesUpdated = useCallback(
-    (...args: unknown[]) => {
-      const payload = args[0] as { updates?: unknown } | undefined;
-      if (!Array.isArray(payload?.updates)) return;
-      for (const update of payload.updates) {
-        applyEntryUpdate(update as LeaderboardEntryUpdatePayload);
+    (payload?: unknown) => {
+      if (
+        typeof payload !== 'object' ||
+        payload === null ||
+        !('updates' in payload)
+      ) {
+        return;
+      }
+      const updates: unknown = payload.updates;
+      if (!Array.isArray(updates)) return;
+      for (const update of updates) {
+        applyEntryUpdate(update);
       }
     },
     [applyEntryUpdate],

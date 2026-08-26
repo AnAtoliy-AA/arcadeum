@@ -314,9 +314,9 @@ export class GameTestUtils {
   static testResponsiveProps(props: BaseGameProps) {
     // Test that props work in different scenarios
     const scenarios = {
-      mobile: { ...props, isMobile: true },
-      desktop: { ...props, isMobile: false },
-      fullscreen: { ...props, fullscreen: true },
+      mobile: Object.assign({}, props, { isMobile: true }),
+      desktop: Object.assign({}, props, { isMobile: false }),
+      fullscreen: Object.assign({}, props, { fullscreen: true }),
     };
 
     return scenarios;

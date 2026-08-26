@@ -84,7 +84,18 @@ function makeSnapshot(
 function renderBoard(props: React.ComponentProps<typeof CascadeBoard>) {
   return render(
     <CascadeThemeProvider variant="cosmic">
-      <CascadeBoard {...props} />
+      <CascadeBoard
+        snapshot={props.snapshot}
+        currentUserId={props.currentUserId}
+        myHand={props.myHand}
+        myTurn={props.myTurn}
+        disabled={props.disabled}
+        cardStyle={props.cardStyle}
+        members={props.members}
+        onPlayCard={props.onPlayCard}
+        onDraw={props.onDraw}
+        onCallCascade={props.onCallCascade}
+      />
     </CascadeThemeProvider>,
   );
 }

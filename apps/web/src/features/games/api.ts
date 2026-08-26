@@ -222,41 +222,56 @@ export const gamesApi = {
 
   quickplay: async (
     gameId: string,
-    options?: ApiClientOptions & { variant?: string; theme?: string },
+    params?: { variant?: string; theme?: string },
+    options?: ApiClientOptions,
   ): Promise<CreateRoomResponse> => {
-    const { variant, theme, ...rest } = options ?? {};
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
-      { gameId, mode: 'ai', variant, theme },
-      rest,
+      {
+        gameId,
+        mode: 'ai',
+        variant: params?.variant,
+        theme: params?.theme,
+      },
+      options,
     );
   },
 
   createAiVsAi: async (
     gameId: string,
-    options?: ApiClientOptions & {
+    params?: {
       variant?: string;
       theme?: string;
       aiMoveDelayMs?: number;
     },
+    options?: ApiClientOptions,
   ): Promise<CreateRoomResponse> => {
-    const { variant, theme, aiMoveDelayMs, ...rest } = options ?? {};
     return apiClient.post<CreateRoomResponse>(
       '/games/ai-vs-ai',
-      { gameId, variant, theme, aiMoveDelayMs },
-      rest,
+      {
+        gameId,
+        variant: params?.variant,
+        theme: params?.theme,
+        aiMoveDelayMs: params?.aiMoveDelayMs,
+      },
+      options,
     );
   },
 
   findHumanMatch: async (
     gameId: string,
-    options?: ApiClientOptions & { variant?: string; theme?: string },
+    params?: { variant?: string; theme?: string },
+    options?: ApiClientOptions,
   ): Promise<CreateRoomResponse> => {
-    const { variant, theme, ...rest } = options ?? {};
     return apiClient.post<CreateRoomResponse>(
       '/games/quickplay',
-      { gameId, mode: 'human', variant, theme },
-      rest,
+      {
+        gameId,
+        mode: 'human',
+        variant: params?.variant,
+        theme: params?.theme,
+      },
+      options,
     );
   },
 

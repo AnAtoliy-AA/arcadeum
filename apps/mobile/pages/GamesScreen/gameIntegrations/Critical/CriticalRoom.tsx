@@ -45,8 +45,8 @@ function swatchBackgroundColor(style: ViewStyle): string {
 }
 
 export const CriticalRoom = forwardRef<CriticalRoomHandle, CriticalRoomProps>(
-  ({ ...props }, ref) => {
-    const {
+  (
+    {
       room,
       session,
       fallbackName,
@@ -66,7 +66,9 @@ export const CriticalRoom = forwardRef<CriticalRoomHandle, CriticalRoomProps>(
       onViewGame,
       setRoom,
       setSession,
-    } = props;
+    },
+    ref,
+  ) => {
     const styles = useThemedStyles(createStyles);
     const { t } = useTranslation();
     const [actionBusy, setActionBusy] = useState<ActionBusyType>(null);

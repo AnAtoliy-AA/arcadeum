@@ -30,6 +30,12 @@ export type ButtonProps = {
   variant?: ButtonVariant | ButtonVariant[];
   size?: ButtonSize;
   shape?: ButtonShape;
+  /**
+   * Explicit padding utility (`px-2 py-2`, `p-0`, …). When set, it replaces
+   * the padding from `size` and the variant map instead of fighting them in
+   * the cascade — no `!important` required.
+   */
+  padding?: string;
   loading?: boolean;
   showShimmer?: boolean;
   fullWidth?: boolean;
@@ -59,6 +65,10 @@ export type ButtonProps = {
   'aria-label'?: string;
   'aria-pressed'?: boolean | 'true' | 'false';
   'aria-selected'?: boolean | 'true' | 'false';
+  'aria-expanded'?: boolean | 'true' | 'false';
+  'aria-haspopup'?: React.AriaAttributes['aria-haspopup'];
+  'aria-controls'?: string;
+  'aria-live'?: React.AriaAttributes['aria-live'];
   role?: React.AriaRole;
   onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
   onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;

@@ -37,16 +37,18 @@ const mockTournament = {
 };
 
 const renderDialog = (
-  props: Partial<Parameters<typeof MarkCompleteDialog>[0]> = {},
+  overrides: {
+    open?: boolean;
+    onClose?: () => void;
+  } = {},
 ) =>
   render(
     <Wrapper>
       <MarkCompleteDialog
         tournament={mockTournament}
-        open={true}
-        onClose={() => undefined}
+        open={overrides.open ?? true}
+        onClose={overrides.onClose ?? (() => undefined)}
         labels={labels}
-        {...props}
       />
     </Wrapper>,
   );

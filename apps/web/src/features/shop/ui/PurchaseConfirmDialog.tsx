@@ -53,7 +53,19 @@ export function PurchaseConfirmDialog(
   // local state (UUID nonce, succeeded flag, error) resets without
   // setState-in-effect. The inner key is the item id so opening a *different*
   // item also remounts.
-  return <PurchaseConfirmDialogInner key={props.item.id} {...props} />;
+  return (
+    <PurchaseConfirmDialogInner
+      key={props.item.id}
+      item={props.item}
+      itemName={props.itemName}
+      itemDesc={props.itemDesc}
+      balance={props.balance}
+      open={props.open}
+      onClose={props.onClose}
+      onSuccess={props.onSuccess}
+      labels={props.labels}
+    />
+  );
 }
 
 function PurchaseConfirmDialogInner({

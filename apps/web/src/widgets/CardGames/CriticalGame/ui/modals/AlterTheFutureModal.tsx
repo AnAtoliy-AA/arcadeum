@@ -35,13 +35,41 @@ import { CardImage } from '../styles/card-image';
 import { type GameVariant } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
+interface SortableCardWrapperProps {
+  isDragging?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+  role?: string;
+  tabIndex?: number;
+  'aria-disabled'?: boolean;
+  'aria-pressed'?: boolean;
+  'aria-roledescription'?: string;
+  'aria-describedby'?: string;
+  onPointerDown?: (event: React.SyntheticEvent) => void;
+  onKeyDown?: (event: React.SyntheticEvent) => void;
+  children?: React.ReactNode;
+}
+
 const SortableCardWrapper = forwardRef<
   HTMLDivElement,
+  SortableCardWrapperProps
+>(function SortableCardWrapper(
   {
-    isDragging?: boolean;
-    className?: string;
-  } & React.HTMLAttributes<HTMLDivElement>
->(function SortableCardWrapper({ isDragging, className, ...props }, ref) {
+    isDragging,
+    className,
+    style,
+    role,
+    tabIndex,
+    'aria-disabled': ariaDisabled,
+    'aria-pressed': ariaPressed,
+    'aria-roledescription': ariaRoledescription,
+    'aria-describedby': ariaDescribedby,
+    onPointerDown,
+    onKeyDown,
+    children,
+  },
+  ref,
+) {
   return (
     <div
       className={cx(
@@ -51,12 +79,21 @@ const SortableCardWrapper = forwardRef<
       )}
       style={
         isDragging
-          ? { boxShadow: '0 0 10px rgba(255,255,255,0.5)', ...props.style }
-          : props.style
+          ? { boxShadow: '0 0 10px rgba(255,255,255,0.5)', ...style }
+          : style
       }
       ref={ref}
-      {...props}
-    />
+      role={role}
+      tabIndex={tabIndex}
+      aria-disabled={ariaDisabled}
+      aria-pressed={ariaPressed}
+      aria-roledescription={ariaRoledescription}
+      aria-describedby={ariaDescribedby}
+      onPointerDown={onPointerDown}
+      onKeyDown={onKeyDown}
+    >
+      {children}
+    </div>
   );
 });
 
@@ -83,16 +120,25 @@ function SortableCard({ id, card, index, t, cardVariant }: SortableCardProps) {
     transition,
   };
 
-  const { role, ...restAttributes } = attributes;
-
   return (
     <SortableCardWrapper
       ref={(node: HTMLDivElement | null) => setNodeRef(node)}
       style={{ ...style, touchAction: 'none' }}
       isDragging={isDragging}
-      role={role}
-      {...restAttributes}
-      {...listeners}
+      role={attributes.role}
+      tabIndex={attributes.tabIndex}
+      aria-disabled={attributes['aria-disabled']}
+      aria-pressed={attributes['aria-pressed']}
+      aria-roledescription={attributes['aria-roledescription']}
+      aria-describedby={attributes['aria-describedby']}
+      onPointerDown={
+        listeners?.onPointerDown as
+          ((event: React.SyntheticEvent) => void) | undefined
+      }
+      onKeyDown={
+        listeners?.onKeyDown as
+          ((event: React.SyntheticEvent) => void) | undefined
+      }
     >
       <div className="mb-1 text-[14px] text-[rgba(255,255,255,0.6)]">
         #{index + 1}

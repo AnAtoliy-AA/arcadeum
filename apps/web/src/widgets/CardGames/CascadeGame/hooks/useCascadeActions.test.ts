@@ -6,7 +6,7 @@ const emit = vi.fn();
 
 vi.mock('@/shared/lib/socket', () => ({
   gameSocket: {
-    emit: (...args: unknown[]) => emit(...args),
+    emit: (event: string, payload?: unknown) => emit(event, payload),
   },
 }));
 

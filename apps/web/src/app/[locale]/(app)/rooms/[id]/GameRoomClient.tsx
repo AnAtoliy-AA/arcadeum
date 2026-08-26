@@ -14,8 +14,8 @@ interface GameRoomClientProps {
   params: Promise<{ id: string }>;
 }
 
-const GameRoomClient = (props: GameRoomClientProps) => {
-  return <GameRoomPageDynamic {...props} />;
+const GameRoomClient = ({ initialData }: GameRoomClientProps) => {
+  return <GameRoomPageDynamic initialData={initialData} />;
 };
 
 export default GameRoomClient;

@@ -18,10 +18,16 @@ export interface PageLayoutProps {
   'data-testid'?: string;
 }
 
-export const PageLayout = ({ children, className = '', ...props }: PageLayoutProps) => {
+export const PageLayout = ({
+  children,
+  className = '',
+  id,
+  'data-testid': dataTestId,
+}: PageLayoutProps) => {
   return (
     <div
-      {...props}
+      id={id}
+      data-testid={dataTestId}
       className={`page-layout-glass-bg page-layout-base ${className}`}
     >
       {children}

@@ -10,17 +10,34 @@ import { handWithUids } from '../../lib/combo';
 import type { CriticalCard } from '../../types';
 
 function renderCards(
-  props: Partial<React.ComponentProps<typeof HandCards>> = {},
+  override: Partial<React.ComponentProps<typeof HandCards>> = {},
 ) {
-  const merged: React.ComponentProps<typeof HandCards> = {
-    cards: handWithUids(['strike', 'strike', 'evade'] as CriticalCard[]),
-    selectedUids: [],
-    onToggleSelect: vi.fn(),
-    ...props,
+  const props: React.ComponentProps<typeof HandCards> = {
+    cards:
+      override.cards ??
+      handWithUids(['strike', 'strike', 'evade'] as CriticalCard[]),
+    selectedUids: override.selectedUids ?? [],
+    onToggleSelect: override.onToggleSelect ?? vi.fn(),
+    cardVariant: override.cardVariant,
+    disabled: override.disabled,
+    showName: override.showName,
+    showDescription: override.showDescription,
+    isFanned: override.isFanned,
   };
   return {
-    ...render(<HandCards {...merged} />),
-    props: merged,
+    ...render(
+      <HandCards
+        cards={props.cards}
+        selectedUids={props.selectedUids}
+        onToggleSelect={props.onToggleSelect}
+        cardVariant={props.cardVariant}
+        disabled={props.disabled}
+        showName={props.showName}
+        showDescription={props.showDescription}
+        isFanned={props.isFanned}
+      />,
+    ),
+    props,
   };
 }
 
@@ -139,7 +156,18 @@ describe('HandCards', () => {
     const before = screen.getByTestId('hand-card-strike-0');
     expect(before.className).toMatch(/w-\[124px\]/);
     expect(before.className).toMatch(/h-\[172px\]/);
-    rerender(<HandCards {...props} selectedUids={['strike-0']} />);
+    rerender(
+      <HandCards
+        cards={props.cards}
+        selectedUids={['strike-0']}
+        onToggleSelect={props.onToggleSelect}
+        cardVariant={props.cardVariant}
+        disabled={props.disabled}
+        showName={props.showName}
+        showDescription={props.showDescription}
+        isFanned={props.isFanned}
+      />,
+    );
     const after = screen.getByTestId('hand-card-strike-0');
     expect(after).toHaveAttribute('data-selected', 'true');
     expect(after.className).toMatch(/w-\[124px\]/);

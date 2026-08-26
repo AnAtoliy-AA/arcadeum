@@ -7,7 +7,7 @@ test.describe('Home Page Layout', () => {
     // Disable animations for stable testing
     await page.addStyleTag({
       content:
-        '[data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }',
+        'html body [data-reveal][data-reveal] { opacity: 1; transform: none; transition: none; }',
     });
   });
 

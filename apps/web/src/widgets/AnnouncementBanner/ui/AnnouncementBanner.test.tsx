@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import type { AnnouncementPublicItem } from '../api';
+import type { DismissedEntry } from '../lib/dismissedStorage';
 
 const renderBanner = (announcement: AnnouncementPublicItem | null) =>
   render(<AnnouncementBanner initialAnnouncement={announcement} />);
@@ -8,9 +9,9 @@ const renderBanner = (announcement: AnnouncementPublicItem | null) =>
 const addDismissedMock = vi.fn();
 const writeDismissedCookieMock = vi.fn();
 vi.mock('../lib/dismissedStorage', () => ({
-  addDismissed: (...args: unknown[]) => addDismissedMock(...args),
-  writeDismissedCookie: (...args: unknown[]) =>
-    writeDismissedCookieMock(...args),
+  addDismissed: (entry: DismissedEntry) => addDismissedMock(entry),
+  writeDismissedCookie: (entry: DismissedEntry) =>
+    writeDismissedCookieMock(entry),
 }));
 
 vi.mock('@/shared/i18n/context', () => ({

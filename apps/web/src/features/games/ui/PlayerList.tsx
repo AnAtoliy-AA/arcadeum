@@ -1,5 +1,5 @@
 import React from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { GameSessionSummary } from '@/shared/types/games';
 import { Card, Badge, Avatar, Typography } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
@@ -25,17 +25,15 @@ const STATUS_COLOR_CLASSES: Record<PlayerStatus, string> = {
 const List = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-col items-stretch gap-2 max-h-[300px] overflow-y-auto',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -47,14 +45,13 @@ const PlayerItem = ({
   className,
   children,
   onClick,
-  ...props
 }: {
   isCurrent?: boolean;
   isHost?: boolean;
   className?: string;
   children?: ReactNode;
   onClick?: () => void;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'onClick'>) => (
+}) => (
   <Card
     className={cx(
       'flex flex-row items-center cursor-pointer transition-all duration-300 ease-out hover:translate-x-[2px] hover:shadow-[0_0_8px_rgba(0,0,0,0.1)]',
@@ -65,28 +62,13 @@ const PlayerItem = ({
       className,
     )}
     onClick={onClick}
-    {...props}
   >
     {children}
   </Card>
 );
 
-const StatusIndicator = ({
-  status = 'active',
-  className,
-  ...props
-}: {
-  status?: PlayerStatus;
-  className?: string;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx(
-      'w-2 h-2 rounded-[4px]',
-      STATUS_COLOR_CLASSES[status],
-      className,
-    )}
-    {...props}
-  />
+const StatusIndicator = ({ status = 'active' }: { status?: PlayerStatus }) => (
+  <div className={cx('w-2 h-2 rounded-[4px]', STATUS_COLOR_CLASSES[status])} />
 );
 
 export function PlayerList({

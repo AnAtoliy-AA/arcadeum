@@ -99,17 +99,15 @@ describe('deriveEffectiveStatus', () => {
   });
 
   it('respects terminal completed/cancelled', () => {
-    const args = {
-      scheduledAt,
-      registrationOpensAt: null,
-      registrationClosesAt: null,
-      now: new Date('2026-05-20T00:00:00Z'),
-    } as const;
-    expect(deriveEffectiveStatus({ ...args, status: 'completed' })).toBe(
-      'completed',
-    );
-    expect(deriveEffectiveStatus({ ...args, status: 'cancelled' })).toBe(
-      'cancelled',
-    );
+    const statusAtWindowStart = (status: 'completed' | 'cancelled') =>
+      deriveEffectiveStatus({
+        status,
+        scheduledAt,
+        registrationOpensAt: null,
+        registrationClosesAt: null,
+        now: new Date('2026-05-20T00:00:00Z'),
+      });
+    expect(statusAtWindowStart('completed')).toBe('completed');
+    expect(statusAtWindowStart('cancelled')).toBe('cancelled');
   });
 });

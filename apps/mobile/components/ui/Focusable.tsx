@@ -25,7 +25,19 @@ export interface FocusableProps extends PressableProps {
  * A wrapper around Pressable that provides automatic focus styling for TV.
  */
 export const Focusable = forwardRef<View, FocusableProps>(function Focusable(
-  { style, focusStyle, focusScale = 1.05, ...props },
+  {
+    style,
+    focusStyle,
+    focusScale = 1.05,
+    onPress,
+    disabled,
+    testID,
+    accessibilityRole,
+    accessibilityLabel,
+    accessibilityHint,
+    accessibilityState,
+    children,
+  },
   ref,
 ) {
   const focusColor = useThemeColor({}, 'tint');
@@ -33,7 +45,13 @@ export const Focusable = forwardRef<View, FocusableProps>(function Focusable(
   return (
     <Pressable
       ref={ref}
-      {...props}
+      onPress={onPress}
+      disabled={disabled}
+      testID={testID}
+      accessibilityRole={accessibilityRole}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={accessibilityState}
       style={(state: PressableStateCallbackType) => {
         const { focused } = state as PressableStateCallbackType & {
           focused?: boolean;
@@ -53,6 +71,8 @@ export const Focusable = forwardRef<View, FocusableProps>(function Focusable(
 
         return [baseStyle, tvStyle];
       }}
-    />
+    >
+      {children}
+    </Pressable>
   );
 });

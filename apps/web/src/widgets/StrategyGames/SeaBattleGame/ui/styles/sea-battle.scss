@@ -132,10 +132,10 @@
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
-.sb-board-grid-layout {
-  display: grid !important;
-  grid-template-columns: repeat(var(--sb-grid-size, 10), 1fr) !important;
-  grid-template-rows: repeat(var(--sb-grid-size, 10), 1fr) !important;
+.sb-board-grid-layout.sb-board-grid-layout.sb-board-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(var(--sb-grid-size, 10), 1fr);
+  grid-template-rows: repeat(var(--sb-grid-size, 10), 1fr);
   aspect-ratio: 1;
   padding: 6px;
   gap: 2px;
@@ -154,10 +154,10 @@
   box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.12), 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-.sb-board-with-labels-layout {
-  display: grid !important;
-  grid-template-columns: auto minmax(0, 1fr) !important;
-  grid-template-rows: auto minmax(0, 1fr) !important;
+.sb-board-with-labels-layout.sb-board-with-labels-layout.sb-board-with-labels-layout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 3px;
   width: 100%;
   max-width: 100%;
@@ -189,31 +189,31 @@
 }
 
 .sb-fit-grid .sb-board-with-labels-layout .sb-board-grid-layout {
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
 }
 
-.sb-row-labels {
-  display: grid !important;
-  grid-template-rows: repeat(var(--sb-grid-size, 10), 1fr) !important;
-  height: 100% !important;
+.sb-row-labels.sb-row-labels.sb-row-labels {
+  display: grid;
+  grid-template-rows: repeat(var(--sb-grid-size, 10), 1fr);
+  height: 100%;
 }
 
-.sb-col-labels {
-  display: grid !important;
-  grid-template-columns: repeat(var(--sb-grid-size, 10), 1fr) !important;
-  width: 100% !important;
+.sb-col-labels.sb-col-labels.sb-col-labels {
+  display: grid;
+  grid-template-columns: repeat(var(--sb-grid-size, 10), 1fr);
+  width: 100%;
 }
 
-.sb-label {
+.sb-label.sb-label.sb-label {
   font-size: 11px;
   font-weight: 700;
   width: 100%;
   height: 100%;
   text-align: center;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: 0.75;
   color: #38bdf8;
   letter-spacing: 0.5px;
@@ -346,11 +346,11 @@
 
 /* Performance Cursors */
 .sb-board-grid.sb-my-turn .sb-cell.sb-attackable {
-  cursor: crosshair !important;
+  cursor: crosshair;
 }
 
 .sb-board-grid:not(.sb-my-turn) .sb-cell {
-  cursor: default !important;
+  cursor: default;
 }
 
 /* Optimistic "shot fired" state — shown until the server confirms the hit/miss.
@@ -410,8 +410,8 @@
   }
 }
 
-.sb-cell.sb-cell-pending {
-  cursor: wait !important;
+.sb-board-grid .sb-cell.sb-cell-pending.sb-cell-pending.sb-cell-pending {
+  cursor: wait;
 }
 
 .sb-cell.sb-cell-pending .sb-aim {

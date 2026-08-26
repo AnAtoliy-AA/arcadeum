@@ -9,8 +9,14 @@ const ClansPageContent = dynamic(() => import('./ClansPageContent'), {
   loading: () => <PageLoading layout="standard" />,
 });
 
-const ClansClient = (props: { t?: PageTranslations; accessToken?: string }) => {
-  return <ClansPageContent {...props} />;
+const ClansClient = ({
+  t,
+  accessToken,
+}: {
+  t?: PageTranslations;
+  accessToken?: string;
+}) => {
+  return <ClansPageContent t={t} accessToken={accessToken} />;
 };
 
 export default ClansClient;

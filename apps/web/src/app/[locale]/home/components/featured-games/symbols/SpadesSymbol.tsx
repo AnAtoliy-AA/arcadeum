@@ -1,6 +1,4 @@
-import type { SVGProps } from 'react';
-
-export function SpadesSymbol(props: SVGProps<SVGSVGElement>) {
+export function SpadesSymbol({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 64"
@@ -9,7 +7,7 @@ export function SpadesSymbol(props: SVGProps<SVGSVGElement>) {
       strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      {...props}
+      className={className}
     >
       {/* Two facing card seats — partnership table silhouette */}
       <g transform="translate(20 24) rotate(-10)">

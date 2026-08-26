@@ -1,4 +1,4 @@
-import React, { type ComponentProps } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { GlassCard } from '@arcadeum/ui';
 import { CopyActionButton } from '@/features/support/copy-action/ui/CopyActionButton';
@@ -49,19 +49,16 @@ export function AnimatedGlassCard({
   delay,
   style,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   delay?: string;
-} & ComponentProps<typeof GlassCard>) {
+  style?: React.CSSProperties;
+  className?: string;
+}) {
   return (
     <GlassCard
       className={`support-animated-card ${className || ''}`}
-      style={{
-        ...(style ?? {}),
-        animationDelay: delay || '0s',
-      }}
-      {...props}
+      style={{ ...style, animationDelay: delay || '0s' }}
     >
       {children}
     </GlassCard>
@@ -88,15 +85,13 @@ export function Header({ children }: { children: React.ReactNode }) {
 export function Tagline({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLParagraphElement>) {
+}) {
   return (
     <p
       className={`max-w-[650px] leading-[24px] opacity-[0.7] text-[var(--color)] ${className ?? ''}`}
-      {...props}
     >
       {children}
     </p>
@@ -120,15 +115,13 @@ export function SectionTitle({
 export function HeaderDescription({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLParagraphElement>) {
+}) {
   return (
     <p
       className={`max-w-[700px] leading-[24px] opacity-[0.5] text-[var(--color)] ${className ?? ''}`}
-      {...props}
     >
       {children}
     </p>
@@ -169,15 +162,13 @@ export function TeamCardInner({
 export function TeamHeader({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+}) {
   return (
     <div
       className={`flex flex-row items-start justify-between w-full ${className ?? ''}`}
-      {...props}
     >
       {children}
     </div>
@@ -186,12 +177,15 @@ export function TeamHeader({
 
 export function TeamIcon({
   children,
-  ...props
-}: React.HTMLAttributes<HTMLSpanElement>) {
+  'aria-hidden': ariaHidden,
+}: {
+  children: React.ReactNode;
+  'aria-hidden'?: boolean | 'true' | 'false';
+}) {
   return (
     <span
+      aria-hidden={ariaHidden}
       style={{ fontSize: '2.5rem', marginBottom: '0.5rem', display: 'block' }}
-      {...props}
     >
       {children}
     </span>
@@ -201,15 +195,13 @@ export function TeamIcon({
 export function TeamName({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLHeadingElement>) {
+}) {
   return (
     <h3
       className={`m-0 mb-1 text-[24px] leading-[30px] font-bold text-[var(--color)] ${className ?? ''}`}
-      {...props}
     >
       {children}
     </h3>
@@ -219,16 +211,12 @@ export function TeamName({
 export function TeamRole({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLParagraphElement>) {
+}) {
   return (
-    <p
-      className={`mb-2 opacity-[0.8] text-[var(--color)] ${className ?? ''}`}
-      {...props}
-    >
+    <p className={`mb-2 opacity-[0.8] text-[var(--color)] ${className ?? ''}`}>
       {children}
     </p>
   );
@@ -237,15 +225,13 @@ export function TeamRole({
 export function TeamBio({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLParagraphElement>) {
+}) {
   return (
     <p
       className={`leading-[32px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
-      {...props}
     >
       {children}
     </p>
@@ -269,16 +255,12 @@ export function ActionList({ children }: { children: React.ReactNode }) {
 export function ActionHeader({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+}) {
   return (
-    <div
-      className={`flex flex-row items-center gap-3 ${className ?? ''}`}
-      {...props}
-    >
+    <div className={`flex flex-row items-center gap-3 ${className ?? ''}`}>
       {children}
     </div>
   );
@@ -287,15 +269,13 @@ export function ActionHeader({
 export function ActionTitle({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLHeadingElement>) {
+}) {
   return (
     <h3
       className={`text-[24px] leading-[30px] font-bold opacity-[0.9] text-[var(--color)] ${className ?? ''}`}
-      {...props}
     >
       {children}
     </h3>
@@ -305,15 +285,13 @@ export function ActionTitle({
 export function ActionDescription({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLParagraphElement>) {
+}) {
   return (
     <p
       className={`leading-[32px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
-      {...props}
     >
       {children}
     </p>
@@ -323,15 +301,13 @@ export function ActionDescription({
 export function CtaRow({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+}) {
   return (
     <div
       className={`flex flex-row items-center justify-between gap-3 flex-wrap ${className ?? ''}`}
-      {...props}
     >
       {children}
     </div>
@@ -341,34 +317,59 @@ export function CtaRow({
 export const CtaLink = ({
   children,
   href,
-  ...props
 }: {
   children: React.ReactNode;
   href: string;
-} & Omit<ComponentProps<typeof Link>, 'href' | 'children'>) => (
-  <Link className="support-cta" href={href} {...props}>
+}) => (
+  <Link className="support-cta" href={href}>
     {children}
   </Link>
 );
 
 export const ExternalCta = ({
   children,
-  ...props
-}: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+  href,
+  target,
+  rel,
+  'data-testid': dataTestId,
+}: {
   children?: React.ReactNode;
+  href?: string;
+  target?: string;
+  rel?: string;
+  'data-testid'?: string;
 }) => (
-  <a className="support-cta" {...props}>
+  <a
+    className="support-cta"
+    href={href}
+    target={target}
+    rel={rel}
+    data-testid={dataTestId}
+  >
     {children}
   </a>
 );
 
 export const LinkedInButton = ({
   children,
-  ...props
-}: React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+  href,
+  target,
+  rel,
+  'aria-label': ariaLabel,
+}: {
   children?: React.ReactNode;
+  href?: string;
+  target?: string;
+  rel?: string;
+  'aria-label'?: string;
 }) => (
-  <a className="support-cta support-linkedin-btn" {...props}>
+  <a
+    className="support-cta support-linkedin-btn"
+    href={href}
+    target={target}
+    rel={rel}
+    aria-label={ariaLabel}
+  >
     {children}
   </a>
 );
@@ -401,15 +402,13 @@ export const CtaIcon = ({ children }: { children: React.ReactNode }) => (
 export function Thanks({
   children,
   className,
-  ...props
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLParagraphElement>) {
+}) {
   return (
     <p
       className={`leading-[24px] opacity-[0.6] text-[var(--color)] ${className ?? ''}`}
-      {...props}
     >
       {children}
     </p>

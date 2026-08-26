@@ -4,7 +4,9 @@ import { BoardSizeSelector } from './BoardSizeSelector';
 
 const mockEmit = vi.fn();
 vi.mock('@/shared/lib/socket', () => ({
-  gameSocket: { emit: (...args: unknown[]) => mockEmit(...args) },
+  gameSocket: {
+    emit: (event: string, payload?: unknown) => mockEmit(event, payload),
+  },
 }));
 
 vi.mock('@/shared/lib/useTranslation', () => ({

@@ -138,7 +138,18 @@ export default function OfflineGameView({ slug }: OfflineGameViewProps) {
   const Widget = widget;
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6">
-      <Widget {...props} />
+      <Widget
+        roomId={props.roomId}
+        room={props.room}
+        session={props.session}
+        currentUserId={props.currentUserId}
+        isHost={props.isHost}
+        accessToken={props.accessToken}
+        showRulesOpen={props.showRulesOpen}
+        onShowRulesClose={props.onShowRulesClose}
+        isFullscreen={props.isFullscreen}
+        toggleFullscreen={props.toggleFullscreen}
+      />
     </div>
   );
 }
@@ -152,7 +163,9 @@ function OfflineNotice({
 }) {
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-2 text-center">
-      <p className="text-lg font-semibold text-[var(--textPrimary)]">{message}</p>
+      <p className="text-lg font-semibold text-[var(--textPrimary)]">
+        {message}
+      </p>
       <a
         className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
         href="../games"

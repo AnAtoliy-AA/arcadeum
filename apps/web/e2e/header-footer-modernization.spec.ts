@@ -11,7 +11,7 @@ test.describe('Header and Footer Modernization', () => {
     // Disable transitions for social icons to make hover state changes instantaneous
     await page.addStyleTag({
       content:
-        '[data-testid^="footer-social-"] { transition: none !important; animation: none !important; }',
+        'html body [data-testid^="footer-social-"][data-testid^="footer-social-"][data-testid^="footer-social-"] { transition: none; animation: none; }',
     });
   });
 

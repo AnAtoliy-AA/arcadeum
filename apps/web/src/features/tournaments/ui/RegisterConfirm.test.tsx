@@ -13,20 +13,27 @@ const labels: RegisterConfirmLabels = {
 };
 
 const renderConfirm = (
-  props: Partial<Parameters<typeof RegisterConfirm>[0]> = {},
+  overrides: {
+    open?: boolean;
+    entryFeeCoins?: number;
+    currentBalanceCoins?: number;
+    onRegister?: Parameters<typeof RegisterConfirm>[0]['onRegister'];
+    onClose?: () => void;
+  } = {},
 ) =>
   render(
     <Wrapper>
       <RegisterConfirm
         tournamentId="tour-1"
-        entryFeeCoins={50}
-        currentBalanceCoins={200}
-        open={true}
-        onClose={() => undefined}
+        entryFeeCoins={overrides.entryFeeCoins ?? 50}
+        currentBalanceCoins={overrides.currentBalanceCoins ?? 200}
+        open={overrides.open ?? true}
+        onClose={overrides.onClose ?? (() => undefined)}
         onSuccess={() => undefined}
-        onRegister={vi.fn().mockResolvedValue(undefined)}
+        onRegister={
+          overrides.onRegister ?? vi.fn().mockResolvedValue(undefined)
+        }
         labels={labels}
-        {...props}
       />
     </Wrapper>,
   );

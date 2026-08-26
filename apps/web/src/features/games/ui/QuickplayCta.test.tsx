@@ -65,11 +65,11 @@ describe('QuickplayCta theme pass-through', () => {
     );
     fireEvent.click(screen.getByText('Play vs AI now'));
     await waitFor(() =>
-      expect(gamesApi.quickplay).toHaveBeenCalledWith('sea_battle_v1', {
-        token: 'token',
-        variant: undefined,
-        theme: 'cyberpunk',
-      }),
+      expect(gamesApi.quickplay).toHaveBeenCalledWith(
+        'sea_battle_v1',
+        { variant: undefined, theme: 'cyberpunk' },
+        { token: 'token' },
+      ),
     );
   });
 
@@ -97,11 +97,11 @@ describe('QuickplayCta theme pass-through', () => {
     );
     fireEvent.click(screen.getByText('Play vs AI now'));
     await waitFor(() =>
-      expect(gamesApi.quickplay).toHaveBeenCalledWith('sea_battle_v1', {
-        token: 'token',
-        variant: undefined,
-        theme: undefined,
-      }),
+      expect(gamesApi.quickplay).toHaveBeenCalledWith(
+        'sea_battle_v1',
+        { variant: undefined, theme: undefined },
+        { token: 'token' },
+      ),
     );
   });
 });

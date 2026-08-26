@@ -26,7 +26,7 @@ export interface ItemAssetProps {
 
 export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
   if (item.category === 'name_color') {
-    const props = nameColorRenderProps(item.colorValue ?? null);
+    const renderProps = nameColorRenderProps(item.colorValue ?? null);
     return (
       <div
         className="flex h-full w-full flex-col items-center justify-center"
@@ -34,8 +34,11 @@ export function ItemAsset({ item, size, priority = false }: ItemAssetProps) {
       >
         <span
           className="font-black"
-          style={{ fontSize: Math.round(size * 0.55), color: props.color }}
-          {...props}
+          style={{
+            fontSize: Math.round(size * 0.55),
+            color: renderProps.color,
+            ...renderProps.style,
+          }}
         >
           Aa
         </span>

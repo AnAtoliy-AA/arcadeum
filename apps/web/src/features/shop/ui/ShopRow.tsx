@@ -54,12 +54,13 @@ function RowHost({
   active,
   highlight,
   className,
-  ...props
+  children,
 }: {
   active?: boolean;
   highlight?: boolean;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -69,19 +70,21 @@ function RowHost({
           'border-[rgba(250,204,21,0.30)] bg-[rgba(250,204,21,0.04)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 function Scroller({
   expanded,
   className,
-  ...props
+  children,
 }: {
   expanded?: boolean;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -89,8 +92,9 @@ function Scroller({
         expanded && 'flex-wrap overflow-visible',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

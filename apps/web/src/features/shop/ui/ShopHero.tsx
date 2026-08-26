@@ -45,16 +45,23 @@ export interface ShopHeroProps {
 
 function HeroFrame({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  style,
+  children,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}) {
   return (
     <div
+      style={style}
       className={cx(
         'w-full px-5 py-5 rounded-3xl border border-[rgba(255,255,255,0.08)] overflow-hidden relative shrink-0 max-[800px]:min-h-[400px]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -62,21 +69,26 @@ function HeroTag({
   backgroundColor,
   borderColor,
   className,
-  ...props
+  'data-testid': dataTestId,
+  children,
 }: {
   backgroundColor?: string;
   borderColor?: string;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
+      data-testid={dataTestId}
       className={cx(
         'flex flex-row items-center gap-2 px-[10px] py-1 rounded-lg border self-start',
         className,
       )}
       style={{ backgroundColor, borderColor }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

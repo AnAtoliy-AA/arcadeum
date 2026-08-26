@@ -1,42 +1,84 @@
 import { cx } from '@arcadeum/ui/utils/cx';
+import type {
+  CSSProperties,
+  KeyboardEventHandler,
+  FocusEventHandler,
+  MouseEventHandler,
+  PointerEventHandler,
+  ReactNode,
+} from 'react';
 
 export function CardFrame({
   small,
   className,
-  ...props
+  id,
+  'data-testid': dataTestId,
+  'data-rarity': dataRarity,
+  'data-owned': dataOwned,
+  'data-equipped': dataEquipped,
+  'data-action': dataAction,
+  style,
+  onPointerEnter,
+  onPointerLeave,
+  children,
 }: {
   small?: boolean;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  id?: string;
+  'data-testid'?: string;
+  'data-rarity'?: string;
+  'data-owned'?: string;
+  'data-equipped'?: string;
+  'data-action'?: string;
+  style?: CSSProperties;
+  onPointerEnter?: PointerEventHandler<HTMLDivElement>;
+  onPointerLeave?: PointerEventHandler<HTMLDivElement>;
+  children?: ReactNode;
+}) {
   return (
     <div
+      id={id}
+      data-testid={dataTestId}
+      data-rarity={dataRarity}
+      data-owned={dataOwned}
+      data-equipped={dataEquipped}
+      data-action={dataAction}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+      style={style}
       className={cx(
         'relative flex flex-col items-stretch shrink-0 overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
         small ? 'w-[144px]' : 'w-[200px]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 export function ArtBox({
   small,
   className,
-  ...props
+  style,
+  children,
 }: {
   small?: boolean;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  style?: CSSProperties;
+  children?: ReactNode;
+}) {
   return (
     <div
+      style={style}
       className={cx(
         'relative flex items-center justify-center',
         small ? 'h-[96px]' : 'h-[140px]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -44,12 +86,13 @@ export function Chip({
   backgroundColor,
   borderColor,
   className,
-  ...props
+  children,
 }: {
   backgroundColor?: string;
   borderColor?: string;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -57,8 +100,9 @@ export function Chip({
         className,
       )}
       style={{ backgroundColor, borderColor }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -75,16 +119,47 @@ export function ActionButton({
   affordable = true,
   pending = false,
   className,
-  ...props
+  role,
+  tabIndex,
+  onClick,
+  onKeyDown,
+  onFocus,
+  onBlur,
+  style,
+  'aria-disabled': ariaDisabled,
+  'data-testid': dataTestId,
+  'data-affordable': dataAffordable,
+  children,
 }: {
   intent: keyof typeof ACTION_INTENT_CLASS;
   affordable?: boolean;
   pending?: boolean;
   className?: string;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  role?: string;
+  tabIndex?: number;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLButtonElement>;
+  onFocus?: FocusEventHandler<HTMLButtonElement>;
+  onBlur?: FocusEventHandler<HTMLButtonElement>;
+  style?: CSSProperties;
+  'aria-disabled'?: boolean;
+  'data-testid'?: string;
+  'data-affordable'?: string;
+  children?: ReactNode;
+}) {
   return (
     <button
       type="button"
+      role={role}
+      tabIndex={tabIndex}
+      onClick={onClick}
+      onKeyDown={onKeyDown}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      aria-disabled={ariaDisabled}
+      data-testid={dataTestId}
+      data-affordable={dataAffordable}
+      style={style}
       className={cx(
         'flex w-full cursor-pointer flex-row items-center justify-center gap-1.5 rounded-xl border px-4 py-2 transition-colors duration-150 focus:outline-2 focus:outline-[rgba(125,211,252,0.6)] focus:outline-offset-1 focus:outline-solid',
         ACTION_INTENT_CLASS[intent],
@@ -92,8 +167,9 @@ export function ActionButton({
         pending && 'opacity-[0.55]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </button>
   );
 }
 

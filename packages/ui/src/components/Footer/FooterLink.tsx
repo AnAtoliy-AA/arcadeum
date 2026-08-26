@@ -2,15 +2,24 @@ import { cx } from '../../utils/cx';
 
 export type FooterLinkProps = {
   href: string;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
   children?: React.ReactNode;
   className?: string;
   'data-testid'?: string;
-} & React.AnchorHTMLAttributes<HTMLAnchorElement>;
+};
 
-export function FooterLink({ href, children, className, ...rest }: FooterLinkProps) {
+export function FooterLink({
+  href,
+  onClick,
+  children,
+  className,
+  'data-testid': dataTestId,
+}: FooterLinkProps) {
   return (
     <a
       href={href}
+      onClick={onClick}
+      data-testid={dataTestId}
       className={cx(
         'no-underline transition-all duration-200',
         'text-[15px] leading-6 text-[var(--color)] opacity-85',
@@ -18,7 +27,6 @@ export function FooterLink({ href, children, className, ...rest }: FooterLinkPro
         'active:scale-[0.98] active:opacity-80',
         className,
       )}
-      {...rest}
     >
       {children}
     </a>

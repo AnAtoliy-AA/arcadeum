@@ -22,9 +22,9 @@ const ChatListPageDynamic = dynamic<ChatListPageProps>(
 const ChatsClient = ({
   chatListT: _chatListT,
   navigationT: _navigationT,
-  ...props
+  initialData,
 }: ChatsClientProps) => {
-  return <ChatListPageDynamic {...props} />;
+  return <ChatListPageDynamic initialData={initialData} />;
 };
 
 export default ChatsClient;

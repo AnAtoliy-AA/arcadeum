@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { GameSessionSummary, GameRoomSummary } from '@/shared/types/games';
 import { Typography } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
@@ -17,17 +17,15 @@ interface GameStatusProps {
 const StatusContainer = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-row items-center gap-3 px-4 py-3 bg-[var(--background)] rounded-[8px] border border-[var(--borderColor)]',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -36,12 +34,11 @@ const StatusContainer = ({
 const StatusItem = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div className={cx('flex flex-row items-center gap-1', className)} {...props}>
+}) => (
+  <div className={cx('flex flex-row items-center gap-1', className)}>
     {children}
   </div>
 );

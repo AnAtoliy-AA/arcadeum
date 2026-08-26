@@ -341,27 +341,31 @@ export default function StatsPage({
   );
 }
 
-function Container({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function Container({ children }: { children?: React.ReactNode }) {
   return (
-    <div
-      className={`flex flex-col items-stretch gap-5 max-w-[1200px] ${className ?? ''}`}
-      {...props}
-    />
+    <div className="flex flex-col items-stretch gap-5 max-w-[1200px]">
+      {children}
+    </div>
   );
 }
 
 function TabGroup({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  role,
+  'aria-label': ariaLabel,
+  children,
+}: {
+  role?: React.AriaRole;
+  'aria-label'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
-      className={`flex flex-row items-stretch gap-3 flex-wrap ${className ?? ''}`}
-      {...props}
-    />
+      role={role}
+      aria-label={ariaLabel}
+      className="flex flex-row items-stretch gap-3 flex-wrap"
+    >
+      {children}
+    </div>
   );
 }
 
@@ -373,50 +377,46 @@ interface TabButtonProps {
   'data-testid'?: string;
 }
 
-const TabButton = ({ isActive, children, ...props }: TabButtonProps) => (
+const TabButton = ({
+  isActive,
+  onClick,
+  children,
+  'aria-pressed': ariaPressed,
+  'data-testid': dataTestId,
+}: TabButtonProps) => (
   <Button
     className={'min-w-[120px] justify-center'}
     variant={isActive ? 'primary' : 'chip'}
     size="md"
     active={isActive}
-    {...props}
+    onClick={onClick}
+    aria-pressed={ariaPressed}
+    data-testid={dataTestId}
   >
     {children}
   </Button>
 );
 
-function FilterContainer({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function FilterContainer({ children }: { children?: React.ReactNode }) {
   return (
-    <div
-      className={`flex flex-row items-center gap-4 p-4 px-5 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] ${className ?? ''}`}
-      {...props}
-    />
+    <div className="flex flex-row items-center gap-4 p-4 px-5 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)]">
+      {children}
+    </div>
   );
 }
 
-function FilterLabel({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+function FilterLabel({ children }: { children?: React.ReactNode }) {
   return (
-    <span
-      className={`text-[16px] leading-[20px] font-semibold tracking-[0.5px] select-none text-[var(--color)] ${className ?? ''}`}
-      {...props}
-    />
+    <span className="text-[16px] leading-[20px] font-semibold tracking-[0.5px] select-none text-[var(--color)]">
+      {children}
+    </span>
   );
 }
 
-function LocalStatsBanner({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function LocalStatsBanner({ children }: { children?: React.ReactNode }) {
   return (
-    <div
-      className={`flex flex-row items-center p-4 px-5 rounded-xl border border-[rgba(255,200,50,0.2)] bg-[rgba(255,200,50,0.08)] ${className ?? ''}`}
-      {...props}
-    />
+    <div className="flex flex-row items-center p-4 px-5 rounded-xl border border-[rgba(255,200,50,0.2)] bg-[rgba(255,200,50,0.08)]">
+      {children}
+    </div>
   );
 }

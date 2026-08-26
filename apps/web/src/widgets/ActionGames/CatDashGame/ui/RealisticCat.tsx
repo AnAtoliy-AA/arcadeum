@@ -1,12 +1,14 @@
-import type { ComponentProps } from 'react';
 import type { CatId } from '../types';
 
 export function RealisticCat({
   catId,
   size = 20,
   className,
-  ...props
-}: { catId: CatId; size?: number } & ComponentProps<'svg'>) {
+}: {
+  catId: CatId;
+  size?: number;
+  className?: string;
+}) {
   const colors: Record<
     CatId,
     { main: string; ear: string; eye: string; accent: string }
@@ -52,13 +54,7 @@ export function RealisticCat({
   const c = colors[catId] ?? colors.neon;
 
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 100 100"
-      className={className}
-      {...props}
-    >
+    <svg width={size} height={size} viewBox="0 0 100 100" className={className}>
       {/* Glow Effect / Shadow */}
       <circle
         cx="50"

@@ -1,6 +1,4 @@
-import type { SVGProps } from 'react';
-
-export function CriticalSymbol(props: SVGProps<SVGSVGElement>) {
+export function CriticalSymbol({ className }: { className?: string }) {
   // Three cards fanned out from a shared pivot near the bottom of the
   // viewBox. Drawn back-to-front so the rightmost card sits on top.
   return (
@@ -11,7 +9,7 @@ export function CriticalSymbol(props: SVGProps<SVGSVGElement>) {
       strokeWidth="1.8"
       strokeLinejoin="round"
       strokeLinecap="round"
-      {...props}
+      className={className}
     >
       <rect
         x="19.5"

@@ -86,41 +86,40 @@ function RailSection({ children }: RailSectionProps) {
 }
 
 function RailButton({
-  height,
-  borderRadius,
-  flex,
-  width,
-  paddingHorizontal,
   className,
-  style,
-  ...props
+  disabled,
+  onClick,
+  'data-testid': testId,
+  'data-combo-kind': comboKind,
+  'aria-label': ariaLabel,
+  'aria-pressed': ariaPressed,
+  children,
 }: {
-  height?: number;
-  borderRadius?: number;
-  flex?: number;
-  width?: string | number;
-  paddingHorizontal?: number;
   className?: string;
-  style?: React.CSSProperties;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  disabled?: boolean;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  'data-testid'?: string;
+  'data-combo-kind'?: string;
+  'aria-label'?: string;
+  'aria-pressed'?: boolean;
+  children?: React.ReactNode;
+}) {
   return (
     <button
       className={cx(
         'flex select-none cursor-pointer items-center justify-center transition-colors duration-150',
         className,
       )}
-      style={{
-        height,
-        borderRadius,
-        flex,
-        width,
-        paddingLeft: paddingHorizontal,
-        paddingRight: paddingHorizontal,
-        ...style,
-      }}
       type="button"
-      {...props}
-    />
+      disabled={disabled}
+      onClick={onClick}
+      data-testid={testId}
+      data-combo-kind={comboKind}
+      aria-label={ariaLabel}
+      aria-pressed={ariaPressed}
+    >
+      {children}
+    </button>
   );
 }
 

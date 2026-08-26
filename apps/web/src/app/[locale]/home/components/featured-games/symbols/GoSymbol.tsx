@@ -1,13 +1,11 @@
-import type { SVGProps } from 'react';
-
-export function GoSymbol(props: SVGProps<SVGSVGElement>) {
+export function GoSymbol({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 64"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
-      {...props}
+      className={className}
     >
       {/* Board frame */}
       <rect x="8" y="8" width="48" height="48" rx="3" />
@@ -24,9 +22,23 @@ export function GoSymbol(props: SVGProps<SVGSVGElement>) {
       <line x1="8" y1="50.5" x2="56" y2="50.5" />
       {/* Stones (fill via currentColor for monochrome consistency) */}
       <circle cx="25" cy="25" r="5.4" fill="currentColor" stroke="none" />
-      <circle cx="42" cy="33.5" r="5.4" fill="currentColor" stroke="none" opacity={0.35} />
+      <circle
+        cx="42"
+        cy="33.5"
+        r="5.4"
+        fill="currentColor"
+        stroke="none"
+        opacity={0.35}
+      />
       <circle cx="33.5" cy="42" r="5.4" fill="currentColor" stroke="none" />
-      <circle cx="16.5" cy="42" r="5.4" fill="currentColor" stroke="none" opacity={0.35} />
+      <circle
+        cx="16.5"
+        cy="42"
+        r="5.4"
+        fill="currentColor"
+        stroke="none"
+        opacity={0.35}
+      />
     </svg>
   );
 }

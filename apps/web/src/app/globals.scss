@@ -9,26 +9,26 @@
 @tailwind utilities;
 
 /* Typography classes — inlined from @arcadeum/ui to avoid a separate render-blocking chunk */
-.typography-gradient-primary {
+.typography-gradient-primary.typography-gradient-primary {
   background: linear-gradient(135deg, var(--color) 0%, var(--primary) 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: transparent !important;
+  color: transparent;
 }
-.typography-gradient-gold {
+.typography-gradient-gold.typography-gradient-gold {
   background: linear-gradient(135deg, #ffe866 0%, #ffb500 50%, #ff9500 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: transparent !important;
+  color: transparent;
 }
-.typography-gradient-silver {
+.typography-gradient-silver.typography-gradient-silver {
   background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: transparent !important;
+  color: transparent;
 }
 .typography-size-xs { font-size: 12px; line-height: 16px; }
 .typography-size-sm { font-size: 14px; line-height: 18px; }

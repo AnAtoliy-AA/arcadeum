@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.52] - 2026-08-26
+
+### Fixed
+- isolate wallet socket so bad tokens stop tearing down games/chats
+
+
 ## [1.26.51] - 2026-08-26
 
 ### Changed

@@ -89,8 +89,21 @@ export const ShipItem = ({
   </div>
 );
 
-export const ShipPreview = ({ className, children }: CommonProps) => (
-  <div className={cx('flex flex-row items-stretch gap-[1.5px]', className)}>
+export const ShipPreview = ({
+  className,
+  style,
+  id,
+  title,
+  'data-testid': testId,
+  children,
+}: CommonProps) => (
+  <div
+    className={cx('flex flex-row items-stretch gap-[1.5px]', className)}
+    style={style}
+    id={id}
+    title={title}
+    data-testid={testId}
+  >
     {children}
   </div>
 );
@@ -143,7 +156,14 @@ export const ShipName = ({
   </span>
 );
 
-export const PlacementActions = ({ className, children }: CommonProps) => (
+export const PlacementActions = ({
+  className,
+  style,
+  id,
+  title,
+  'data-testid': testId,
+  children,
+}: CommonProps) => (
   <div
     className={cx(
       'flex flex-row items-center justify-center gap-2 w-full px-2 py-2 flex-wrap',
@@ -151,6 +171,10 @@ export const PlacementActions = ({ className, children }: CommonProps) => (
       '[@media(max-height:480px)]:py-1 [@media(max-height:480px)]:gap-1.5',
       className,
     )}
+    style={style}
+    id={id}
+    title={title}
+    data-testid={testId}
   >
     {children}
   </div>

@@ -110,12 +110,12 @@ export function Tab({
   className,
   children,
   role,
-  ariaSelected,
+  'aria-selected': ariaSelected,
   onClick,
   style,
 }: DivProps & {
   role?: AriaRole;
-  ariaSelected?: boolean;
+  'aria-selected'?: boolean | 'true' | 'false';
   onClick?: MouseEventHandler<HTMLDivElement>;
   style?: CSSProperties;
 }) {

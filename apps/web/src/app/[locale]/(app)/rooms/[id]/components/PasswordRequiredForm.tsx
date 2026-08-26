@@ -70,9 +70,9 @@ export function PasswordRequiredForm({
         </Description>
 
         <Form
-          {...({ onSubmit: handleSubmit } as Record<string, unknown>)}
           className={fadeInUpClass}
           style={animationDelayVars('300ms')}
+          onSubmit={handleSubmit}
         >
           <InputRow>
             <Input

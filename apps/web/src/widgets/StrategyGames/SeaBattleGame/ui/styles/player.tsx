@@ -55,7 +55,14 @@ export const PlayerSection = ({
 // rule stretches it to fill its grid cell; in mobile vertical (1-col flex
 // column) we leave it at content height so the page scrolls naturally
 // between boards instead of each board taking the full viewport height.
-export const PlayerSectionWrapper = ({ className, children }: CommonProps) => (
+export const PlayerSectionWrapper = ({
+  className,
+  style,
+  id,
+  title,
+  'data-testid': testId,
+  children,
+}: CommonProps) => (
   <div
     className={cx(
       'flex flex-col items-stretch relative overflow-visible pt-[8px] w-full min-w-0',
@@ -63,6 +70,10 @@ export const PlayerSectionWrapper = ({ className, children }: CommonProps) => (
       '[@media(max-height:480px)]:pt-[4px]',
       className,
     )}
+    style={style}
+    id={id}
+    title={title}
+    data-testid={testId}
   >
     {children}
   </div>
@@ -73,6 +84,9 @@ type BadgeWrapperProps = CommonProps;
 export const BadgeWrapper = ({
   className,
   style,
+  id,
+  title,
+  'data-testid': testId,
   children,
 }: BadgeWrapperProps) => (
   <div
@@ -81,6 +95,9 @@ export const BadgeWrapper = ({
       className,
     )}
     style={style}
+    id={id}
+    title={title}
+    data-testid={testId}
   >
     {children}
   </div>
@@ -116,12 +133,23 @@ export const PlayerName = ({
   </span>
 );
 
-export const PlayerStats = ({ className, children }: CommonProps) => (
+export const PlayerStats = ({
+  className,
+  style,
+  id,
+  title,
+  'data-testid': testId,
+  children,
+}: CommonProps) => (
   <div
     className={cx(
       'is_PlayerStats flex flex-col items-stretch w-full text-[14px]',
       className,
     )}
+    style={style}
+    id={id}
+    title={title}
+    data-testid={testId}
   >
     {children}
   </div>

@@ -11,7 +11,14 @@ type CommonProps = {
   children?: React.ReactNode;
 };
 
-export const MainGameArea = ({ className, children }: CommonProps) => (
+export const MainGameArea = ({
+  className,
+  style,
+  id,
+  title,
+  'data-testid': testId,
+  children,
+}: CommonProps) => (
   <div
     className={cx(
       'flex flex-col items-stretch gap-2 w-full flex-1 min-h-0 min-w-0 p-1',
@@ -19,6 +26,10 @@ export const MainGameArea = ({ className, children }: CommonProps) => (
       'max-[800px]:gap-1 max-[800px]:p-0',
       className,
     )}
+    style={style}
+    id={id}
+    title={title}
+    data-testid={testId}
   >
     {children}
   </div>
@@ -30,6 +41,10 @@ type GameBoardWrapperProps = CommonProps & {
 
 export const GameBoardWrapper = ({
   className,
+  style,
+  id,
+  title,
+  'data-testid': testId,
   onDragEnd,
   children,
 }: GameBoardWrapperProps) => (
@@ -40,6 +55,10 @@ export const GameBoardWrapper = ({
       'max-[800px]:flex-col max-[800px]:gap-2',
       className,
     )}
+    style={style}
+    id={id}
+    title={title}
+    data-testid={testId}
     onDragEnd={onDragEnd}
   >
     {children}
@@ -52,8 +71,11 @@ type BoardContainerProps = CommonProps & {
 
 export const BoardContainer = ({
   className,
-  alignSelf,
   style,
+  id,
+  title,
+  'data-testid': testId,
+  alignSelf,
   children,
 }: BoardContainerProps) => (
   <div
@@ -64,6 +86,9 @@ export const BoardContainer = ({
       '[@media(max-height:480px)]:max-w-[420px]',
       className,
     )}
+    id={id}
+    title={title}
+    data-testid={testId}
     style={{
       ...(alignSelf ? { alignSelf } : {}),
       ...(style ?? {}),

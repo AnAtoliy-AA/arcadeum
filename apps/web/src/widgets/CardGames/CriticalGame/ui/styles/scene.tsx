@@ -142,6 +142,7 @@ export function SceneBackgroundImage({
 
 export function SceneParticles({
   className,
+  style,
   'data-testid': testId,
   children,
 }: SceneLayerProps) {
@@ -152,6 +153,7 @@ export function SceneParticles({
         'absolute top-0 left-0 right-0 bottom-0 pointer-events-none',
         className,
       )}
+      style={style}
       data-testid={testId}
     >
       {children}

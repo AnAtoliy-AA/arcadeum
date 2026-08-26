@@ -294,7 +294,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
   const channels = buildChannels(t, url, text);
 
   return (
-    <div ref={containerRef} className="relative inline-flex">
+    <div ref={containerRef} className="relative inline-flex z-[100]">
       <Button
         className="max-[640px]:scale-[0.9] max-[640px]:px-2"
         variant="glass"

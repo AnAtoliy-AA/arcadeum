@@ -102,6 +102,7 @@ export const by = {
   footerHelpCenter: 'Цэнтр дапамогі',
   footerRoadmap: 'Дарожная карта',
   footerChangelog: 'Гісторыя зменаў',
+  footerFeatures: 'Магчымасці',
   footerGamingBlog: 'Блог пра гульні',
   footerDevelopers: 'Распрацоўшчыкам (API)',
   footerLegalTitle: 'Юрыдычная інфармацыя',

@@ -209,6 +209,10 @@ export const en = {
     title: `Developers · ${APP}`,
     description: `Meet the team building ${APP} and learn how to get involved.`,
   },
+  features: {
+    title: `Platform Features · ${APP}`,
+    description: `Explore all implemented features on ${APP} — 20+ multiplayer games, ranking, social, economy, security, SEO, and more.`,
+  },
   admin: {
     title: `Admin · ${APP}`,
     description: `Administrative controls for ${APP}.`,

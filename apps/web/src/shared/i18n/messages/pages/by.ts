@@ -26,6 +26,7 @@ import { rewardsBy } from './rewards/by';
 import { developersBy } from './developers/by';
 import { blogBy } from './blog/by';
 import { changelogBy } from './changelog/by';
+import { featuresBy } from './features/by';
 import { roadmapBy } from './roadmap/by';
 
 export const by = {
@@ -412,5 +413,6 @@ export const by = {
   events: eventsBy,
   seasons: seasonsBy,
   changelog: changelogBy,
+  features: featuresBy,
   roadmap: roadmapBy,
 };

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.50] - 2026-08-26
+
+### Fixed
+- resolve circular DI TDZ and mongoose prop types under SWC
+
+
 ## [1.26.49] - 2026-08-26
 
 ### Fixed

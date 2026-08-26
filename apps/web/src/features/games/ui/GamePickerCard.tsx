@@ -56,11 +56,11 @@ export function GamePickerCard({
           ? 'opacity-50 cursor-not-allowed'
           : isLoading
             ? 'cursor-wait opacity-90'
-            : 'cursor-pointer hover:-translate-y-1 hover:shadow-2xl hover:border-white/30 active:scale-[0.98]'
+            : 'cursor-pointer hover:-translate-y-1 hover:shadow-2xl hover:border-[var(--primary)]/50 active:scale-[0.98]'
       }`}
     >
-      <div className="box-border relative h-40 sm:h-44 w-full bg-black/60 border-b border-[var(--borderColor)] overflow-hidden flex items-center justify-center">
-        <div className="box-border absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent z-[2] pointer-events-none" />
+      <div className="box-border relative h-40 sm:h-44 w-full bg-slate-950 border-b border-[var(--borderColor)] overflow-hidden flex items-center justify-center">
+        <div className="box-border absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-[2] pointer-events-none" />
         <div className="box-border absolute -inset-4 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent blur-xl pointer-events-none" />
 
         <GameSymbol
@@ -98,7 +98,7 @@ export function GamePickerCard({
         </div>
 
         <div className="box-border absolute bottom-2.5 right-2.5 z-[4] flex items-center gap-1 pointer-events-none">
-          <span className="box-border text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-black/80 text-white/80 border border-white/10 backdrop-blur-md">
+          <span className="box-border text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-black/80 text-white/90 border border-white/10 backdrop-blur-md">
             ⏱ {game.duration}
           </span>
         </div>
@@ -115,19 +115,19 @@ export function GamePickerCard({
 
       <div className="box-border p-4 flex flex-col flex-1 justify-between gap-3">
         <div className="box-border flex flex-col gap-1">
-          <h3 className="box-border m-0 text-base font-bold text-white group-hover:text-[var(--primary)] transition-colors truncate">
+          <h3 className="box-border m-0 text-base font-bold text-[var(--color)] group-hover:text-[var(--primary)] transition-colors truncate">
             {game.name}
           </h3>
-          <p className="box-border m-0 text-xs text-white/75 line-clamp-2 leading-relaxed min-h-[2rem]">
+          <p className="box-border m-0 text-xs text-[var(--color)] opacity-75 line-clamp-2 leading-relaxed min-h-[2rem]">
             {game.description}
           </p>
         </div>
 
         <div className="box-border flex flex-wrap items-center gap-1.5 pt-2 border-t border-[var(--borderColor)]">
-          <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-white/5 text-white/90 border border-white/10">
+          <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--color)]/5 text-[var(--color)] border border-[var(--borderColor)]">
             👥 {game.players}
           </span>
-          <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-white/5 text-white/90 border border-white/10">
+          <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--color)]/5 text-[var(--color)] border border-[var(--borderColor)]">
             🤖 AI Bot
           </span>
           <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30 font-semibold">

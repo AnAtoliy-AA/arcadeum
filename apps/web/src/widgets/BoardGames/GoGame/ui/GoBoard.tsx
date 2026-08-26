@@ -61,7 +61,7 @@ const CellRenderer = memo(function CellRenderer({
       disabled={disabled || cell !== null}
       onClick={handleClick}
       className={cx(
-        'group relative m-0 flex flex-1 items-center justify-center p-0 border-0 bg-transparent aspect-square outline-none',
+        'group relative m-0 flex flex-1 h-full w-full min-h-0 min-w-0 items-center justify-center p-0 border-0 bg-transparent aspect-square outline-none',
         disabled || cell !== null ? 'cursor-default' : 'cursor-pointer',
         'focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:z-20',
       )}
@@ -70,7 +70,7 @@ const CellRenderer = memo(function CellRenderer({
       <span
         aria-hidden="true"
         className={cx(
-          'pointer-events-none absolute top-1/2 -translate-y-1/2 h-[2px] bg-amber-600/40 z-0',
+          'pointer-events-none absolute top-1/2 -translate-y-1/2 h-[1.5px] bg-[#5c3008]/75 z-0',
           isLeftEdge
             ? 'left-1/2 right-0'
             : isRightEdge
@@ -82,7 +82,7 @@ const CellRenderer = memo(function CellRenderer({
       <span
         aria-hidden="true"
         className={cx(
-          'pointer-events-none absolute left-1/2 -translate-x-1/2 w-[2px] bg-amber-600/40 z-0',
+          'pointer-events-none absolute left-1/2 -translate-x-1/2 w-[1.5px] bg-[#5c3008]/75 z-0',
           isTopEdge
             ? 'top-1/2 bottom-0'
             : isBottomEdge
@@ -94,7 +94,7 @@ const CellRenderer = memo(function CellRenderer({
       {isStar && !cell ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-2.5 w-2.5 rounded-full bg-amber-600/80 z-0"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-2.5 w-2.5 rounded-full bg-[#4a2404] shadow-sm z-0"
         />
       ) : null}
 
@@ -116,15 +116,15 @@ const CellRenderer = memo(function CellRenderer({
           className={cx(
             'pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[84%] w-[84%] rounded-full z-10 transition-transform duration-100',
             cell === 'black'
-              ? 'bg-gradient-to-br from-neutral-800 via-neutral-900 to-black shadow-[0_4px_10px_rgba(0,0,0,0.8),inset_0_2px_3px_rgba(255,255,255,0.25)] border border-neutral-700/50'
-              : 'bg-gradient-to-br from-white via-slate-100 to-slate-300 shadow-[0_4px_10px_rgba(0,0,0,0.5),inset_0_2px_3px_rgba(255,255,255,0.9)] border border-slate-300',
+              ? 'bg-gradient-to-br from-[#3a3d40] via-[#1c1d1f] to-[#0a0a0b] shadow-[0_4px_8px_rgba(0,0,0,0.7),inset_0_2px_4px_rgba(255,255,255,0.3)] border border-black/40'
+              : 'bg-gradient-to-br from-[#ffffff] via-[#f0f3f6] to-[#d6dce3] shadow-[0_4px_8px_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.9)] border border-slate-300',
           )}
         >
           {isLastMove ? (
             <span
               className={cx(
                 'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[36%] w-[36%] rounded-full border-2',
-                cell === 'black' ? 'border-white/80' : 'border-neutral-900/80',
+                cell === 'black' ? 'border-white/90' : 'border-neutral-900/90',
               )}
             />
           ) : null}
@@ -174,17 +174,21 @@ function GoBoardImpl({
   return (
     <div
       data-testid="go-board-wrapper"
-      className="w-full max-w-[min(90vw,540px)] mx-auto select-none"
+      className="flex justify-center items-center w-full select-none p-1"
     >
       <div
         role="grid"
         aria-label={ariaLabel}
         data-testid="go-board"
-        className="w-full aspect-square flex flex-col rounded-3xl border-2 border-amber-800/60 bg-gradient-to-br from-[#d49b4b] via-[#c68938] to-[#b37526] p-3 sm:p-5 shadow-2xl shadow-black/80 ring-1 ring-amber-500/20"
+        className="w-[min(88vw,520px)] h-[min(88vw,520px)] aspect-square flex flex-col rounded-2xl border-[6px] border-[#8a4b14] bg-gradient-to-br from-[#e4a853] via-[#d1913c] to-[#b87828] p-3 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_2px_4px_rgba(255,255,255,0.3)] ring-1 ring-amber-900/50 shrink-0"
         {...gridProps}
       >
         {board.map((row, rowIdx) => (
-          <div key={`row-${rowIdx}`} role="row" className="flex flex-1 w-full">
+          <div
+            key={`row-${rowIdx}`}
+            role="row"
+            className="flex flex-1 w-full h-full min-h-0 min-w-0"
+          >
             {row.map((cell, colIdx) => (
               <CellRenderer
                 key={`${rowIdx}-${colIdx}`}

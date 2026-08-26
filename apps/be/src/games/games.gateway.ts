@@ -6,7 +6,7 @@ import {
   WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
@@ -32,20 +32,7 @@ import { maybeEncrypt, isSocketEncryptionEnabled, getEncryptionKeyHex } from '..
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import type { GameMessageHandler } from './game-message-handler.interface';
-import { CheckersGateway } from './checkers.gateway';
-import { TicTacToeGateway } from './tic-tac-toe.gateway';
-import { ChessGateway } from './chess.gateway';
-import { CascadeGateway } from './cascade.gateway';
-import { CatDashGateway } from './cat-dash.gateway';
-import { TexasHoldemGateway } from './texas-holdem.gateway';
-import { CriticalGateway } from './critical.gateway';
-import { CriticalActionsGateway } from './critical-actions.gateway';
-import { SeaBattleGateway } from './sea-battle.gateway';
-import { GlimwormGateway } from './glimworm.gateway';
-import { BackgammonGateway } from './backgammon.gateway';
-import { HeartsGateway } from './hearts.gateway';
-import { SpadesGateway } from './spades.gateway';
-import { GoGateway } from './go.gateway';
+import { GAME_GATEWAYS } from './game-message-handler.interface';
 
 @WebSocketGateway({
   namespace: 'games',
@@ -63,44 +50,14 @@ export class GamesGateway {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     private readonly matchmakingService: GameRoomsMatchmakingService,
-    private readonly checkersHandler: CheckersGateway,
-    private readonly ticTacToeHandler: TicTacToeGateway,
-    private readonly chessHandler: ChessGateway,
-    private readonly cascadeHandler: CascadeGateway,
-    private readonly catDashHandler: CatDashGateway,
-    private readonly texasHoldemHandler: TexasHoldemGateway,
-    private readonly criticalHandler: CriticalGateway,
-    private readonly criticalActionsHandler: CriticalActionsGateway,
-    private readonly seaBattleHandler: SeaBattleGateway,
-    private readonly glimwormHandler: GlimwormGateway,
-    private readonly backgammonHandler: BackgammonGateway,
-    private readonly heartsHandler: HeartsGateway,
-    private readonly spadesHandler: SpadesGateway,
-    private readonly goHandler: GoGateway,
+    @Inject(GAME_GATEWAYS) private readonly gameHandlers: GameMessageHandler[],
     private readonly chessBotService?: ChessBotService,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
 
-    const gameHandlers: GameMessageHandler[] = [
-      this.checkersHandler,
-      this.ticTacToeHandler,
-      this.chessHandler,
-      this.cascadeHandler,
-      this.catDashHandler,
-      this.texasHoldemHandler,
-      this.criticalHandler,
-      this.criticalActionsHandler,
-      this.seaBattleHandler,
-      this.glimwormHandler,
-      this.backgammonHandler,
-      this.heartsHandler,
-      this.spadesHandler,
-      this.goHandler,
-    ];
-
     const registry = new Map<string, GameMessageHandler['handlers'][string]>();
-    for (const handler of gameHandlers) {
+    for (const handler of this.gameHandlers) {
       for (const [event, fn] of Object.entries(handler.handlers)) {
         registry.set(event, fn);
       }

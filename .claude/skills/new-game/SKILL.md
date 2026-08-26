@@ -61,9 +61,12 @@ apps/be/src/games/
 
 Gateway handlers use `@SubscribeMessage('<camelCase>.session.start' | '.<action>' | '.forfeit')` — see Socket events parity below.
 
-Wire into [apps/be/src/games/games.module.ts](apps/be/src/games/games.module.ts) — add all three as providers; gateway is a provider, not an export.
-
 **Socket events parity (BE ↔ FE):** the strings in `@SubscribeMessage(...)` on the BE gateway MUST match the strings in `gameSocket.emit(...)` from the FE's `useActions.ts` hook, character for character. Drift here results in silent no-ops with no error.
+
+**Gateways and Socket Routing (New Architecture):**
+1. Gateways are wired into the central dispatcher via the `GAME_GATEWAYS` token in `apps/be/src/games/games.module.ts`. 
+2. **Add your new Gateway to the `inject` list of the `GAME_GATEWAYS` provider** so it is automatically registered in the socket event registry.
+3. **Update the compile-time type guard**: Add your game's start event (e.g., `'<prefix>.session.start'`) to the `EXPECTED_START_EVENT` map in `apps/be/src/games/games.gateway.registration.spec.ts`. The map is type-checked against `GAME_CATALOG`, so forgetting this will fail the build.
 
 **AI vs AI support (required for every turn-based game):** every turn-based game must be spectatable as bot-vs-bot (ARC-890). The bot service MUST:
 1. Import `getAiMoveDelayMs` / `isAiVsAiSession` from [`apps/be/src/games/common/ai-vs-ai.ts`](apps/be/src/games/common/ai-vs-ai.ts).
@@ -358,6 +361,7 @@ node scripts/shorts-factory/gameplay.js --preview --short-only --url http://loca
 Walk this list manually — these are the surfaces where missing wiring causes silent regressions (text-only thumbnails, "Unsupported game type" toasts, button-clicks that toggle state into the void, etc.):
 
 - [ ] BE engine registered in `engines.module.ts`; service+bot+gateway in `games.module.ts`; entry in `games.catalog.ts`.
+- [ ] **Gateway added to `GAME_GATEWAYS` inject array in `games.module.ts`**; `<prefix>.session.start` added to `EXPECTED_START_EVENT` in `games.gateway.registration.spec.ts`.
 - [ ] Web widget folder has an `index.ts` barrel that default-exports the memoized `Game`.
 - [ ] Widget registered in `features/games/registry.ts` (loader + metadata).
 - [ ] `<game>_v1` added to **both** `GameType` unions: `lib/gameIdMapping.ts` AND `hooks/useGameActions.ts`.

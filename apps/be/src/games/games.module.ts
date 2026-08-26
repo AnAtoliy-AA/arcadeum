@@ -97,6 +97,10 @@ import { GoGateway } from './go.gateway';
 import { PachisiService } from './pachisi/pachisi.service';
 import { PachisiBotService } from './pachisi/pachisi-bot.service';
 import { PachisiGateway } from './pachisi.gateway';
+import {
+  GAME_GATEWAYS,
+  type GameMessageHandler,
+} from './game-message-handler.interface';
 import { GameReplayService } from './replays/game-replay.service';
 import { GameReplayController } from './replays/game-replay.controller';
 import { GameReplay, GameReplaySchema } from './schemas/game-replay.schema';
@@ -258,6 +262,27 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     SpadesGateway,
     GoGateway,
     PachisiGateway,
+    {
+      provide: GAME_GATEWAYS,
+      useFactory: (...handlers: GameMessageHandler[]) => handlers,
+      inject: [
+        CheckersGateway,
+        TicTacToeGateway,
+        ChessGateway,
+        CascadeGateway,
+        CatDashGateway,
+        TexasHoldemGateway,
+        CriticalGateway,
+        CriticalActionsGateway,
+        SeaBattleGateway,
+        GlimwormGateway,
+        BackgammonGateway,
+        HeartsGateway,
+        SpadesGateway,
+        GoGateway,
+        PachisiGateway,
+      ],
+    },
     AntiCollusionService,
   ],
   exports: [

@@ -102,20 +102,7 @@ describe('GamesGateway – hint handler', () => {
       mockJwt,
       mockConfig,
       inert as never, // matchmaking
-      inert as never, // checkers
-      inert as never, // tic-tac-toe
-      inert as never, // chess
-      inert as never, // cascade
-      inert as never, // cat dash
-      inert as never, // texas hold'em
-      inert as never, // critical
-      inert as never, // critical actions
-      inert as never, // sea battle
-      inert as never, // glimworm
-      inert as never, // backgammon
-      inert as never, // hearts
-      inert as never, // spades
-      inert as never, // go handler
+      [inert],
       chessBotService,
     );
     (gateway as unknown as { server: Server }).server = server;

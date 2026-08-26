@@ -11,7 +11,6 @@ import { PWAProvider } from '@/features/pwa/PWAContext';
 import { StatsReplay } from '@/shared/ui/StatsReplay';
 import { RootModals } from './RootModals';
 import { SoundProvider } from '@/shared/lib/sound';
-import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import {
   isLocale,
   SUPPORTED_LOCALES,
@@ -107,15 +106,13 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const [authToken, seoMessages, initialMessages, announcement] =
-    await Promise.all([
-      getServerAccessToken(),
-      loadSeo(locale),
-      getInitialTranslations(locale),
-      // Fetched in parallel with the layout deps and rendered into the
-      // initial HTML so the banner never appears after first paint (CLS).
-      getActiveAnnouncement(locale),
-    ]);
+  const [seoMessages, initialMessages, announcement] = await Promise.all([
+    loadSeo(locale),
+    getInitialTranslations(locale),
+    // Fetched in parallel with the layout deps and rendered into the
+    // initial HTML so the banner never appears after first paint (CLS).
+    getActiveAnnouncement(locale),
+  ]);
 
   const localeUrl = `${appConfig.siteUrl}/${locale}`;
   const routes = buildRoutes(locale);
@@ -173,7 +170,7 @@ export default async function LocaleLayout({
               </main>
               <LayoutFooter />
             </LayoutShell>
-            <RootModals authToken={authToken} />
+            <RootModals />
             <StatsReplay />
           </SoundProvider>
         </PWAProvider>

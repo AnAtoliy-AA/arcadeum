@@ -34,7 +34,9 @@ export class WalletGateway implements OnGatewayConnection {
 
     if (typeof token !== 'string' || token.trim().length === 0) {
       this.logger.warn(`WalletGateway: missing token for socket ${client.id}`);
-      client.disconnect(true);
+      // Namespace-only disconnect — `true` would close the shared engine
+      // connection and take down games/chats/friends/clans with it.
+      client.disconnect(false);
       return;
     }
 
@@ -53,7 +55,7 @@ export class WalletGateway implements OnGatewayConnection {
       this.logger.warn(
         `WalletGateway: invalid token for socket ${client.id}: ${String(err)}`,
       );
-      client.disconnect(true);
+      client.disconnect(false);
     }
   }
 

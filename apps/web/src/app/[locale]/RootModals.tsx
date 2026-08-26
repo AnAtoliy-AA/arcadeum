@@ -29,14 +29,15 @@ const AchievementPopupHost = dynamic(
 /**
  * Client-mounted modals that render nothing in the initial HTML:
  * the matchmaking queue is only shown while queuing and the wallet
- * bridge only connects for authenticated sessions. `ssr: false` keeps
- * their chunks (and the socket client they import) out of the critical
- * path on the marketing home page.
+ * bridge only connects for authenticated sessions (it reads the token
+ * from the client session store). `ssr: false` keeps their chunks
+ * (and the socket client they import) out of the critical path on the
+ * marketing home page.
  */
-export function RootModals({ authToken }: { authToken?: string | null }) {
+export function RootModals() {
   return (
     <>
-      {authToken ? <WalletLiveBridge authToken={authToken} /> : null}
+      <WalletLiveBridge />
       <MatchmakingQueueModal />
       <AchievementPopupHost />
     </>

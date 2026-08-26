@@ -1,0 +1,294 @@
+/* --- Victory & Game Result celebration FX (GameResultModal) --------------------------- */
+
+@keyframes sparkle-rise-1 {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.7);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0.9;
+  }
+
+  88% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(-110vh) translateX(24px) scale(0.7);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkle-rise-2 {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.65);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0.9;
+  }
+
+  88% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(-110vh) translateX(-22px) scale(0.65);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkle-rise-3 {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.8);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0.9;
+  }
+
+  88% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(-110vh) translateX(8px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkle-rise-4 {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0.9;
+  }
+
+  88% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(-110vh) translateX(-12px) scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-bloom {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes celebration-burst {
+  0% {
+    transform: scale(0.2);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-ember-fall {
+  0% {
+    transform: translateY(-5vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.7;
+  }
+
+  80% {
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateY(105vh) translateX(25px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes celebration-fall {
+  0% {
+    transform: translateY(-24px) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+
+  25% {
+    transform: translateY(28vh) translateX(16px) rotate(160deg);
+  }
+
+  50% {
+    transform: translateY(56vh) translateX(-14px) rotate(340deg);
+  }
+
+  75% {
+    transform: translateY(82vh) translateX(12px) rotate(520deg);
+  }
+
+  100% {
+    transform: translateY(108vh) translateX(-8px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.celebration-layer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1205;
+}
+
+.celebration-bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70vmin;
+  height: 70vmin;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  filter: blur(24px);
+  animation: celebration-bloom 3.2s ease-in-out infinite;
+}
+
+.celebration-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40vmin;
+  height: 40vmin;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  border-width: 2px;
+  border-style: solid;
+  animation: celebration-burst 1.1s ease-out forwards;
+}
+
+.celebration-confetti-particle {
+  position: absolute;
+  top: -24px;
+  animation-name: celebration-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+.celebration-sparkle-particle {
+  position: absolute;
+  animation-name: sparkle-rise-1;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+
+  &:nth-child(4n + 1) {
+    animation-name: sparkle-rise-1;
+  }
+
+  &:nth-child(4n + 2) {
+    animation-name: sparkle-rise-2;
+  }
+
+  &:nth-child(4n + 3) {
+    animation-name: sparkle-rise-3;
+  }
+
+  &:nth-child(4n) {
+    animation-name: sparkle-rise-4;
+  }
+}
+
+.celebration-ember-particle {
+  position: absolute;
+  top: -16px;
+  animation-name: celebration-ember-fall;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@for $i from 0 through 79 {
+  .particle-slot-#{$i} {
+    left: ($i * 1.22% + 0.8%);
+    animation-delay: ($i % 20) * 0.12s;
+    animation-duration: 2.2s + (($i % 10) * 0.3s);
+  }
+}
+
+.sparkle-slot-0 { left: 6.1%; bottom: 13.3%; animation-delay: -1.68s; animation-duration: 2.74s; }
+.sparkle-slot-1 { left: 60.5%; bottom: 76%; animation-delay: -1.82s; animation-duration: 2.62s; }
+.sparkle-slot-2 { left: 2.6%; bottom: 76.4%; animation-delay: -0.23s; animation-duration: 2.52s; }
+.sparkle-slot-3 { left: 55%; bottom: 6.2%; animation-delay: -2.87s; animation-duration: 2.76s; }
+.sparkle-slot-4 { left: 78.1%; bottom: 16.6%; animation-delay: -2.22s; animation-duration: 3.28s; }
+.sparkle-slot-5 { left: 24.8%; bottom: -3.9%; animation-delay: -1.33s; animation-duration: 2.98s; }
+.sparkle-slot-6 { left: 42.2%; bottom: 26.1%; animation-delay: -3.05s; animation-duration: 3.46s; }
+.sparkle-slot-7 { left: 45%; bottom: 6.3%; animation-delay: -1.01s; animation-duration: 2.73s; }
+.sparkle-slot-8 { left: 69.1%; bottom: 14%; animation-delay: -2.32s; animation-duration: 3.73s; }
+.sparkle-slot-9 { left: 9%; bottom: 58.6%; animation-delay: -1.96s; animation-duration: 4.1s; }
+.sparkle-slot-10 { left: 30.3%; bottom: 42.9%; animation-delay: -2.93s; animation-duration: 3.34s; }
+.sparkle-slot-11 { left: 85%; bottom: -4.2%; animation-delay: -0.48s; animation-duration: 3.67s; }
+.sparkle-slot-12 { left: 42.1%; bottom: 12.6%; animation-delay: -0.3s; animation-duration: 4.17s; }
+.sparkle-slot-13 { left: 14.1%; bottom: 13.9%; animation-delay: -1.74s; animation-duration: 4.03s; }
+.sparkle-slot-14 { left: 30.1%; bottom: -4.3%; animation-delay: -2.57s; animation-duration: 3.07s; }
+.sparkle-slot-15 { left: 60.3%; bottom: 37.2%; animation-delay: -0.69s; animation-duration: 2.9s; }
+.sparkle-slot-16 { left: 72.9%; bottom: 27.7%; animation-delay: -0.72s; animation-duration: 2.93s; }
+.sparkle-slot-17 { left: 28.5%; bottom: 68.7%; animation-delay: -1.54s; animation-duration: 2.5s; }
+.sparkle-slot-18 { left: 89.8%; bottom: 33.4%; animation-delay: -1.04s; animation-duration: 3.24s; }
+.sparkle-slot-19 { left: 82.9%; bottom: 48.2%; animation-delay: -2.43s; animation-duration: 2.9s; }
+.sparkle-slot-20 { left: 73.5%; bottom: 60%; animation-delay: -3.24s; animation-duration: 4.03s; }
+.sparkle-slot-21 { left: 55%; bottom: 73.1%; animation-delay: -1.59s; animation-duration: 3.95s; }
+.sparkle-slot-22 { left: 94.2%; bottom: 38.4%; animation-delay: -1.35s; animation-duration: 3.65s; }
+.sparkle-slot-23 { left: 11.2%; bottom: 5.9%; animation-delay: -1.16s; animation-duration: 3.71s; }
+.sparkle-slot-24 { left: 36%; bottom: 32.4%; animation-delay: -1.39s; animation-duration: 2.58s; }
+.sparkle-slot-25 { left: 66.7%; bottom: 26.1%; animation-delay: -0.46s; animation-duration: 2.83s; }
+.sparkle-slot-26 { left: 40.7%; bottom: 62.5%; animation-delay: -3.21s; animation-duration: 3.43s; }
+.sparkle-slot-27 { left: 69.7%; bottom: 37.7%; animation-delay: -0.8s; animation-duration: 3.29s; }
+.sparkle-slot-28 { left: 21.4%; bottom: 41.2%; animation-delay: -3.16s; animation-duration: 2.67s; }
+.sparkle-slot-29 { left: 75.6%; bottom: 0.3%; animation-delay: -2.07s; animation-duration: 2.75s; }
+.sparkle-slot-30 { left: 2.4%; bottom: 6.1%; animation-delay: -1.74s; animation-duration: 4.03s; }
+.sparkle-slot-31 { left: 90%; bottom: 0.8%; animation-delay: -1.17s; animation-duration: 2.94s; }
+.sparkle-slot-32 { left: 50.6%; bottom: 56.1%; animation-delay: -1.68s; animation-duration: 3.98s; }
+.sparkle-slot-33 { left: 42.4%; bottom: 43.2%; animation-delay: -1.65s; animation-duration: 2.78s; }
+.sparkle-slot-34 { left: 58.6%; bottom: 51.9%; animation-delay: -3.37s; animation-duration: 3.81s; }
+.sparkle-slot-35 { left: 51.1%; bottom: 29.6%; animation-delay: -0.74s; animation-duration: 2.41s; }
+.sparkle-slot-36 { left: 21.4%; bottom: 56.6%; animation-delay: -0.58s; animation-duration: 3.22s; }
+.sparkle-slot-37 { left: 64.2%; bottom: 9.1%; animation-delay: -3.43s; animation-duration: 3.53s; }
+.sparkle-slot-38 { left: 81%; bottom: 65.7%; animation-delay: -0.96s; animation-duration: 3.74s; }
+.sparkle-slot-39 { left: 91.6%; bottom: 52.3%; animation-delay: -1.18s; animation-duration: 2.6s; }
+.sparkle-slot-40 { left: 53.6%; bottom: 47%; animation-delay: -3.27s; animation-duration: 3.56s; }
+.sparkle-slot-41 { left: 26.1%; bottom: 29.4%; animation-delay: -0.78s; animation-duration: 3.19s; }
+.sparkle-slot-42 { left: 16.3%; bottom: 60.7%; animation-delay: -1.73s; animation-duration: 2.85s; }
+.sparkle-slot-43 { left: 30.6%; bottom: 59.8%; animation-delay: -1.09s; animation-duration: 3.24s; }
+.sparkle-slot-44 { left: 90.6%; bottom: 65%; animation-delay: -2.09s; animation-duration: 3.47s; }
+.sparkle-slot-45 { left: 12.6%; bottom: 44.5%; animation-delay: -1.34s; animation-duration: 2.78s; }
+.sparkle-slot-46 { left: 80.7%; bottom: 55.7%; animation-delay: -2.62s; animation-duration: 4.05s; }
+.sparkle-slot-47 { left: 30.9%; bottom: 66%; animation-delay: -2.04s; animation-duration: 3.43s; }
+.sparkle-slot-48 { left: 32.5%; bottom: 13.1%; animation-delay: -1.22s; animation-duration: 3.83s; }
+.sparkle-slot-49 { left: 18.1%; bottom: 28.2%; animation-delay: -1.57s; animation-duration: 2.53s; }
+.sparkle-slot-50 { left: 66.2%; bottom: -2.6%; animation-delay: -1.52s; animation-duration: 2.49s; }
+.sparkle-slot-51 { left: 47.3%; bottom: 75.5%; animation-delay: -2.3s; animation-duration: 2.43s; }
+.sparkle-slot-52 { left: 85.3%; bottom: 31.3%; animation-delay: -2.38s; animation-duration: 4.02s; }
+.sparkle-slot-53 { left: 56.5%; bottom: 13%; animation-delay: -1.95s; animation-duration: 2.41s; }
+.sparkle-slot-54 { left: 7.9%; bottom: 31.2%; animation-delay: -0.34s; animation-duration: 3.26s; }
+.sparkle-slot-55 { left: 76.4%; bottom: 67%; animation-delay: -2.91s; animation-duration: 4.01s; }
+.sparkle-slot-56 { left: 87.3%; bottom: 9.7%; animation-delay: -2.87s; animation-duration: 3.3s; }
+.sparkle-slot-57 { left: 3.1%; bottom: 46.9%; animation-delay: -0.72s; animation-duration: 3.97s; }
+.sparkle-slot-58 { left: 17.5%; bottom: 66.9%; animation-delay: -2.34s; animation-duration: 3.73s; }
+.sparkle-slot-59 { left: 27.7%; bottom: 20.2%; animation-delay: -3.23s; animation-duration: 2.94s; }

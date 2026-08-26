@@ -11,7 +11,14 @@ import type { CriticalCard } from '../../types';
 function renderCard(
   props: React.ComponentProps<typeof ComboCard>,
 ): ReturnType<typeof render> {
-  return render(<ComboCard {...props} />);
+  return render(
+    <ComboCard
+      hand={props.hand}
+      allowActionCardCombos={props.allowActionCardCombos}
+      combo={props.combo}
+      onClearSelection={props.onClearSelection}
+    />,
+  );
 }
 
 describe('ComboCard', () => {

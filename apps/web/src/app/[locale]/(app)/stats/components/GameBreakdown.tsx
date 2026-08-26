@@ -1,5 +1,4 @@
 import type React from 'react';
-import { cx } from '@arcadeum/ui/utils/cx';
 import type { PlayerStats } from '@/features/history/api';
 import {
   useTranslation,
@@ -47,87 +46,43 @@ interface GameBreakdownProps {
   loading: boolean;
 }
 
-function Table({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function Table({ children }: { children?: React.ReactNode }) {
   return (
-    <div
-      className={cx(
-        'flex flex-col items-stretch w-full rounded-xl overflow-hidden',
-        className,
-      )}
-      {...props}
-    />
+    <div className="flex flex-col items-stretch w-full rounded-xl overflow-hidden">
+      {children}
+    </div>
   );
 }
 
-function GameInfo({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function GameInfo({ children }: { children?: React.ReactNode }) {
+  return <div className="flex flex-row items-center gap-3">{children}</div>;
+}
+
+function GameIcon({ children }: { children?: React.ReactNode }) {
+  return <span className="text-[20px] w-[40px] h-[40px]">{children}</span>;
+}
+
+function GameName({ children }: { children?: React.ReactNode }) {
   return (
-    <div
-      className={cx('flex flex-row items-center gap-3', className)}
-      {...props}
-    />
+    <span className="text-[16px] leading-[20px] font-semibold text-[var(--color)]">
+      {children}
+    </span>
   );
 }
 
-function GameIcon({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+function StatCell({ children }: { children?: React.ReactNode }) {
   return (
-    <span
-      className={cx('text-[20px] w-[40px] h-[40px]', className)}
-      {...props}
-    />
+    <span className="text-[16px] leading-[20px] font-medium text-[var(--color)]">
+      {children}
+    </span>
   );
 }
 
-function GameName({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+function WinRateCell({ children }: { children?: React.ReactNode }) {
   return (
-    <span
-      className={cx(
-        'text-[16px] leading-[20px] font-semibold text-[var(--color)]',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-function StatCell({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cx(
-        'text-[16px] leading-[20px] font-medium text-[var(--color)]',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-function WinRateCell({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cx(
-        'flex flex-row items-center gap-3 min-w-[120px]',
-        className,
-      )}
-      {...props}
-    />
+    <div className="flex flex-row items-center gap-3 min-w-[120px]">
+      {children}
+    </div>
   );
 }
 

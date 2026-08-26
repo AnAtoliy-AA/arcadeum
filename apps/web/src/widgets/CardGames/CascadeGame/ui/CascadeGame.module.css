@@ -905,25 +905,25 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .playable,
-  .callButton,
-  .handSlot,
-  .card,
-  .pod,
-  .podThink i,
-  .podLast,
-  .drawButton,
-  .drawMust,
-  .dirArrow,
-  .pickerBackdrop,
-  .pickerPanel,
-  .swatch,
-  .toast,
-  .shake {
-    animation: none !important;
-    transition: none !important;
+  .playable.playable,
+  .callButton.callButton,
+  .handSlot.handSlot,
+  .card.card,
+  .pod.pod,
+  .podThink.podThink i,
+  .podLast.podLast,
+  .drawButton.drawButton,
+  .drawMust.drawMust,
+  .dirArrow.dirArrow,
+  .pickerBackdrop.pickerBackdrop,
+  .pickerPanel.pickerPanel,
+  .swatch.swatch,
+  .toast.toast,
+  .shake.shake {
+    animation: none;
+    transition: none;
   }
-  .fly {
-    transition: none !important;
+  .fly.fly {
+    transition: none;
   }
 }

@@ -1,17 +1,19 @@
-import type { CSSProperties, HTMLAttributes } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 import { getVariantStyles } from './variants';
-
-type VariantProp = { variant?: string };
 
 export function TableInfo({
   className,
   style,
   variant,
-  ...props
-}: { className?: string; style?: CSSProperties } & VariantProp &
-  HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  style?: CSSProperties;
+  variant?: string;
+  children?: ReactNode;
+}) {
   const config = getVariantStyles(variant).tableInfo;
   return (
     <div
@@ -30,8 +32,9 @@ export function TableInfo({
         ...config.getStyles?.(),
         ...style,
       }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -39,9 +42,13 @@ export function TableStat({
   className,
   style,
   variant,
-  ...props
-}: { className?: string; style?: CSSProperties } & VariantProp &
-  HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  style?: CSSProperties;
+  variant?: string;
+  children?: ReactNode;
+}) {
   const statStyles = getVariantStyles(variant).tableInfo.getTableStatStyles?.();
   return (
     <div
@@ -50,20 +57,23 @@ export function TableStat({
         className,
       )}
       style={{ ...statStyles, ...style }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 export function StatIcon({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
-    <div
-      className={cx('flex flex-col items-center justify-center', className)}
-      {...props}
-    />
+    <div className={cx('flex flex-col items-center justify-center', className)}>
+      {children}
+    </div>
   );
 }
 
@@ -72,13 +82,14 @@ export function StatValue({
   style,
   isWarning,
   variant,
-  ...props
+  children,
 }: {
   className?: string;
   style?: CSSProperties;
   isWarning?: boolean;
-} & VariantProp &
-  HTMLAttributes<HTMLSpanElement>) {
+  variant?: string;
+  children?: ReactNode;
+}) {
   const config = getVariantStyles(variant).tableInfo;
   const glow = config.getTextGlow();
   return (
@@ -93,8 +104,9 @@ export function StatValue({
         textShadow: glow === 'inherit' ? 'none' : `0 0 8px ${glow}`,
         ...style,
       }}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 

@@ -7,13 +7,9 @@ vi.mock('@/shared/lib/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-function renderOverlay(
-  props: Partial<React.ComponentProps<typeof TutorialOverlay>> = {},
-) {
+function renderOverlay() {
   const onClose = vi.fn();
-  render(
-    <TutorialOverlay gameId="chess_v1" open onClose={onClose} {...props} />,
-  );
+  render(<TutorialOverlay gameId="chess_v1" open onClose={onClose} />);
   return onClose;
 }
 

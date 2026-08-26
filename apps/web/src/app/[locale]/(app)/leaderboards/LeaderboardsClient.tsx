@@ -7,17 +7,23 @@ import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 const LeaderboardsPageDynamic = dynamic(
   () => import('./LeaderboardsPageContent'),
   {
-    ssr: false,
+    // Server-rendered so crawlers and AI engines see the page H1/content.
     loading: () => <PageLoading layout="standard" />,
   },
 );
 
-const LeaderboardsClient = (props: {
+const LeaderboardsClient = ({
+  t,
+  selfId,
+  accessToken,
+}: {
   t?: PageTranslations;
   selfId?: string;
   accessToken?: string;
 }) => {
-  return <LeaderboardsPageDynamic {...props} />;
+  return (
+    <LeaderboardsPageDynamic t={t} selfId={selfId} accessToken={accessToken} />
+  );
 };
 
 export default LeaderboardsClient;

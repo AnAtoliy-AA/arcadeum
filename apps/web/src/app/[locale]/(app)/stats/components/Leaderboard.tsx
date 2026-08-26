@@ -289,103 +289,69 @@ function RankDisplay({ rank }: { rank: number }) {
   return <RankBadge>{rank}</RankBadge>;
 }
 
-function Table({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function Table({ children }: { children?: React.ReactNode }) {
   return (
-    <div
-      className={`flex flex-col items-stretch w-full rounded-xl overflow-hidden ${className ?? ''}`}
-      {...props}
-    />
+    <div className="flex flex-col items-stretch w-full rounded-xl overflow-hidden">
+      {children}
+    </div>
   );
 }
 
-function PlayerInfo({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={`flex flex-row items-center gap-3 ${className ?? ''}`}
-      {...props}
-    />
-  );
+function PlayerInfo({ children }: { children?: React.ReactNode }) {
+  return <div className="flex flex-row items-center gap-3">{children}</div>;
 }
 
-function PlayerName({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={`flex flex-row items-center gap-2 ${className ?? ''}`}
-      {...props}
-    />
-  );
+function PlayerName({ children }: { children?: React.ReactNode }) {
+  return <div className="flex flex-row items-center gap-2">{children}</div>;
 }
 
 function StatCell({
   color,
-  className,
-  ...props
+  children,
 }: {
   color?: string;
-  className?: string;
-} & React.HTMLAttributes<HTMLSpanElement>) {
+  children?: React.ReactNode;
+}) {
   return (
     <span
-      className={`font-medium text-[var(--color)] ${className ?? ''}`}
+      className="font-medium text-[var(--color)]"
       style={color ? { color } : undefined}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
-function RankBadge({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function RankBadge({ children }: { children?: React.ReactNode }) {
   return (
-    <div
-      className={`flex items-center justify-center w-[36px] h-[36px] rounded-full border border-[var(--borderColor)] bg-[var(--background)] ${className ?? ''}`}
-      {...props}
-    />
+    <div className="flex items-center justify-center w-[36px] h-[36px] rounded-full border border-[var(--borderColor)] bg-[var(--background)]">
+      {children}
+    </div>
   );
 }
 
 function TrophyIcon({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  style,
+  children,
+}: {
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}) {
   return (
-    <span
-      className={`text-[24px] leading-[30px] ${className ?? ''}`}
-      {...props}
-    />
+    <span className="text-[24px] leading-[30px]" style={style}>
+      {children}
+    </span>
   );
 }
 
-function LoadingMoreRow({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={`flex flex-row items-center gap-3 p-4 ${className ?? ''}`}
-      {...props}
-    />
-  );
+function LoadingMoreRow({ children }: { children?: React.ReactNode }) {
+  return <div className="flex flex-row items-center gap-3 p-4">{children}</div>;
 }
 
-function EndOfList({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+function EndOfList({ children }: { children?: React.ReactNode }) {
   return (
-    <span
-      className={`text-[14px] leading-[18px] p-4 opacity-[0.7] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
-      {...props}
-    />
+    <span className="text-[14px] leading-[18px] p-4 opacity-[0.7] text-[rgba(236,239,238,0.45)]">
+      {children}
+    </span>
   );
 }

@@ -14,16 +14,20 @@ interface ClanMemberLeftPayload {
 }
 
 export function useClanSocket() {
-  const { addMember, removeMemberById, myClan } = useClansStore();
+  // Actions are stable references; myClan is the only reactive slice.
+  const addMember = useClansStore((s) => s.addMember);
+  const removeMemberById = useClansStore((s) => s.removeMemberById);
+  const myClan = useClansStore((s) => s.myClan);
 
   const handleMemberJoined = useCallback(
-    (payload: ClanMemberJoinedPayload) => {
+    (payload: unknown) => {
+      const data = payload as ClanMemberJoinedPayload;
       addMember({
-        id: payload.userId,
-        userId: payload.userId,
-        username: payload.username,
-        displayName: payload.displayName,
-        equippedAvatarId: payload.equippedAvatarId,
+        id: data.userId,
+        userId: data.userId,
+        username: data.username,
+        displayName: data.displayName,
+        equippedAvatarId: data.equippedAvatarId,
         role: 'member',
         wins: 0,
         gamesPlayed: 0,
@@ -35,20 +39,15 @@ export function useClanSocket() {
   );
 
   const handleMemberLeft = useCallback(
-    (payload: ClanMemberLeftPayload) => {
-      removeMemberById(payload.userId);
+    (payload: unknown) => {
+      const data = payload as ClanMemberLeftPayload;
+      removeMemberById(data.userId);
     },
     [removeMemberById],
   );
 
-  useFriendsSocket(
-    'clan:member-joined',
-    handleMemberJoined as (...args: unknown[]) => void,
-  );
-  useFriendsSocket(
-    'clan:member-left',
-    handleMemberLeft as (...args: unknown[]) => void,
-  );
+  useFriendsSocket('clan:member-joined', handleMemberJoined);
+  useFriendsSocket('clan:member-left', handleMemberLeft);
 
   const connectToClanRoom = useCallback(() => {
     if (myClan) {

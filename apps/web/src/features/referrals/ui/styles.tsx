@@ -14,91 +14,158 @@ export const referralsStyles = `
 
 function DashboardContainer({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  children,
+  id,
+  'data-testid': dataTestId,
+  style,
+  role,
+  'aria-label': ariaLabel,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+  id?: string;
+  'data-testid'?: string;
+  style?: React.CSSProperties;
+  role?: string;
+  'aria-label'?: string;
+}) {
   return (
     <div
+      id={id}
+      data-testid={dataTestId}
+      style={style}
+      role={role}
+      aria-label={ariaLabel}
       className={cx(
         'flex flex-col items-stretch gap-6 p-7 max-w-[720px] self-center md:py-9 md:px-8',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 function DashboardTitle({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLHeadingElement>) {
+  children,
+  id,
+  'data-testid': dataTestId,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+  id?: string;
+  'data-testid'?: string;
+}) {
   return (
     <h1
+      id={id}
+      data-testid={dataTestId}
       className={`m-0 text-[32px] leading-[38px] font-bold text-[var(--color)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </h1>
   );
 }
 
 function DashboardSubtitle({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLParagraphElement>) {
+  children,
+  id,
+  'data-testid': dataTestId,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+  id?: string;
+  'data-testid'?: string;
+}) {
   return (
     <p
+      id={id}
+      data-testid={dataTestId}
       className={`-mt-2 mb-3 text-[16px] leading-[24px] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </p>
   );
 }
 
 function CardTitle({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLHeadingElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <h2
       className={`flex flex-row items-center gap-2 mb-3 text-[18px] leading-[24px] font-semibold text-[var(--color)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </h2>
   );
 }
 
 function CodeContainer({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={`flex flex-row items-center gap-3 p-3 px-4 rounded-[10px] border border-[var(--borderColor)] bg-[var(--backgroundHover)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 function CodeText({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  'data-testid': dataTestId,
+  children,
+}: {
+  className?: string;
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <span
+      data-testid={dataTestId}
       className={`flex-1 text-[20px] leading-[28px] font-bold text-[var(--accent)] ${className ?? ''}`}
       style={{
         fontFamily: "'SF Mono','Fira Code','Courier New',monospace",
         letterSpacing: '2px',
       }}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 export function CopyButton({
+  onClick,
+  disabled,
+  'data-testid': dataTestId,
+  'aria-label': ariaLabel,
   children,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+}: {
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  disabled?: boolean;
+  'data-testid'?: string;
+  'aria-label'?: string;
   children: React.ReactNode;
 }) {
   return (
-    <button className="referrals-copy-btn" {...props}>
+    <button
+      className="referrals-copy-btn"
+      onClick={onClick}
+      disabled={disabled}
+      data-testid={dataTestId}
+      aria-label={ariaLabel}
+    >
       {children}
     </button>
   );
@@ -106,86 +173,111 @@ export function CopyButton({
 
 function ShareLinkRow({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div
-      className={`flex flex-row items-center gap-2 mt-3 ${className ?? ''}`}
-      {...props}
-    />
+    <div className={`flex flex-row items-center gap-2 mt-3 ${className ?? ''}`}>
+      {children}
+    </div>
   );
 }
 
 function ShareLink({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <span
       className={`text-[var(--accent)] ${className ?? ''}`}
       style={{ wordBreak: 'break-all' }}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 function ProgressSection({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div
-      className={`flex flex-col items-stretch gap-2 ${className ?? ''}`}
-      {...props}
-    />
+    <div className={`flex flex-col items-stretch gap-2 ${className ?? ''}`}>
+      {children}
+    </div>
   );
 }
 
 function ProgressLabel({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={`flex flex-row items-center justify-between ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 function ProgressCount({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  'data-testid': dataTestId,
+  children,
+}: {
+  className?: string;
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <span
+      data-testid={dataTestId}
       className={`text-[28px] leading-[34px] font-bold text-[var(--color)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 function ProgressTarget({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <span
       className={`font-medium text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 function TierList({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div
-      className={`flex flex-col items-stretch gap-4 ${className ?? ''}`}
-      {...props}
-    />
+    <div className={`flex flex-col items-stretch gap-4 ${className ?? ''}`}>
+      {children}
+    </div>
   );
 }
 
@@ -196,9 +288,16 @@ interface TierCardProps {
   'data-unlocked'?: boolean;
 }
 
-export function TierCard({ unlocked, children, ...props }: TierCardProps) {
+export function TierCard({
+  unlocked,
+  'data-testid': dataTestId,
+  'data-unlocked': dataUnlocked,
+  children,
+}: TierCardProps) {
   return (
     <div
+      data-testid={dataTestId}
+      data-unlocked={dataUnlocked}
       className={cx(
         'flex flex-row items-start gap-4 p-4 rounded-[12px] border',
         unlocked && 'referrals-tier-card-unlocked',
@@ -212,7 +311,6 @@ export function TierCard({ unlocked, children, ...props }: TierCardProps) {
           : 'var(--backgroundHover)',
         opacity: unlocked ? 1 : 0.6,
       }}
-      {...props}
     >
       {children}
     </div>
@@ -238,37 +336,58 @@ export function TierIcon({
 
 function TierContent({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={`flex flex-col items-stretch gap-2 flex-1 ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 function TierTitle({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <span
       className={`text-[16px] leading-[20px] font-semibold text-[var(--color)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 function TierDescription({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  'data-testid': dataTestId,
+  'data-coins': dataCoins,
+  style,
+  children,
+}: {
+  className?: string;
+  'data-testid'?: string;
+  'data-coins'?: number;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}) {
   return (
     <span
+      data-testid={dataTestId}
+      data-coins={dataCoins}
+      style={style}
       className={`text-[14px] leading-[18px] text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
@@ -304,25 +423,33 @@ export function TierBadge({
 
 function CopiedNotice({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <span
       className={`text-[14px] leading-[18px] font-medium text-[var(--accent)] ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 function BadgesRowContainer({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={`flex flex-row items-stretch gap-2 flex-wrap ${className ?? ''}`}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

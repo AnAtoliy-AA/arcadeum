@@ -37,12 +37,29 @@ function renderTile(
   override: Partial<React.ComponentProps<typeof OpponentTile>> = {},
 ) {
   const props: React.ComponentProps<typeof OpponentTile> = {
-    player: makePlayer(),
-    isCurrentTurn: false,
-    resolveDisplayName: (_id, fb) => fb,
-    ...override,
+    player: override.player ?? makePlayer(),
+    isCurrentTurn: override.isCurrentTurn ?? false,
+    isTarget: override.isTarget,
+    isDuel: override.isDuel,
+    isMobile: override.isMobile,
+    isIdle: override.isIdle,
+    onSelect: override.onSelect,
+    resolveDisplayName: override.resolveDisplayName ?? ((_id, fb) => fb),
+    logs: override.logs,
   };
-  return render(<OpponentTile {...props} />);
+  return render(
+    <OpponentTile
+      player={props.player}
+      isCurrentTurn={props.isCurrentTurn}
+      isTarget={props.isTarget}
+      isDuel={props.isDuel}
+      isMobile={props.isMobile}
+      isIdle={props.isIdle}
+      onSelect={props.onSelect}
+      resolveDisplayName={props.resolveDisplayName}
+      logs={props.logs}
+    />,
+  );
 }
 
 describe('OpponentTile', () => {

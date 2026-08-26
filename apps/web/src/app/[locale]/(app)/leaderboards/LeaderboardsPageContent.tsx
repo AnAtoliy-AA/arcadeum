@@ -9,10 +9,6 @@ import {
 import { useRouter } from 'next/navigation';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
-import {
-  connectLeaderboardSocket,
-  useLeaderboardSocket,
-} from '@/shared/lib/socket';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import {
   PageLayout,
@@ -49,6 +45,7 @@ import {
 } from './_components/LeaderboardControls';
 import { FreshnessIndicator } from './_components/FreshnessIndicator';
 import { MythicBloom } from './_components/MythicBloom';
+import { useLeaderboardRealtime } from './useLeaderboardRealtime';
 
 const PAGE_SIZE = 50;
 const SELF_ROW_FALLBACK_HEIGHT = 88;
@@ -119,56 +116,14 @@ export default function LeaderboardsPageContent({
     process.env.NEXT_PUBLIC_E2E !== 'true' &&
     process.env.NEXT_PUBLIC_USE_LEADERBOARD_MOCK !== 'true';
 
-  // Page-scoped: only the leaderboards namespace socket connects on this
-  // route, and it tears down on unmount so background pings don't follow
-  // the user to other pages.
-  useEffect(() => {
-    if (!realtimeEnabled) return;
-    return connectLeaderboardSocket(accessToken ?? null);
-  }, [accessToken, realtimeEnabled]);
-
-  // Bug #6: stable handlers via useCallback so the socket subscription
-  // doesn't re-bind on every render.
-  const [freshnessPulseKey, setFreshnessPulseKey] = useState(0);
-  const handleCaptured = useCallback(() => {
-    setFreshnessPulseKey((k) => k + 1);
-    if (page === 1) {
-      refetch().catch((err: unknown) => {
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn('[leaderboards] refetch on capture failed', err);
-        }
-      });
-    }
-  }, [page, refetch]);
-  useLeaderboardSocket('leaderboards.captured', handleCaptured);
-
-  const handleEntryUpdated = useCallback(
-    (...args: unknown[]) => {
-      const update = args[0] as
-        | {
-            userId?: string;
-            mode?: GameMode;
-            isInMatch?: boolean;
-            rating?: number;
-          }
-        | undefined;
-      if (!update?.userId) return;
-      if (update.mode && update.mode !== mode) return;
-      setAccumulated((prev) =>
-        prev.map((p) =>
-          p.id === update.userId
-            ? {
-                ...p,
-                isInMatch: update.isInMatch ?? p.isInMatch,
-                rating: update.rating ?? p.rating,
-              }
-            : p,
-        ),
-      );
-    },
-    [mode],
-  );
-  useLeaderboardSocket('leaderboards.entry.updated', handleEntryUpdated);
+  const freshnessPulseKey = useLeaderboardRealtime({
+    accessToken,
+    enabled: realtimeEnabled,
+    page,
+    refetch,
+    mode,
+    setAccumulated,
+  });
 
   function resetAndSet<T>(setter: (v: T) => void, next: T) {
     startTransition(() => {
@@ -297,9 +252,9 @@ export default function LeaderboardsPageContent({
               <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase text-[var(--mythicAccent)]">
                 {heroT.eyebrow ?? 'Live · Season 4'}
               </span>
-              <span className="text-[48px] font-black tracking-[-1px] max-[800px]:text-[32px]">
+              <h1 className="m-0 text-[48px] font-black leading-[1.15] tracking-[-1px] max-[800px]:text-[32px]">
                 {heroT.title ?? 'Race the leaderboard.'}
-              </span>
+              </h1>
               <span className="text-[18px] opacity-[0.85]">
                 {heroT.tagline ??
                   'Updated every 30 seconds. Top 100 players gear up for the Champions Cup.'}

@@ -13,7 +13,10 @@ interface JoinClanModalProps {
 
 export function JoinClanModal({ open, onClose }: JoinClanModalProps) {
   const { snapshot } = useSessionTokens();
-  const { searchClans, joinClan, searchResults, loading } = useClansStore();
+  const searchClans = useClansStore((s) => s.searchClans);
+  const joinClan = useClansStore((s) => s.joinClan);
+  const searchResults = useClansStore((s) => s.searchResults);
+  const loading = useClansStore((s) => s.loading);
   const [query, setQuery] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [error, setError] = useState<string | null>(null);

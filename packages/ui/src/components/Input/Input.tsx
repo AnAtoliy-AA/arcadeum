@@ -13,21 +13,32 @@ export type InputProps = {
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onFocus?: React.FocusEventHandler<HTMLInputElement>;
   onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
   disabled?: boolean;
   required?: boolean;
+  readOnly?: boolean;
+  autoFocus?: boolean;
   type?: string;
   id?: string;
   name?: string;
   maxLength?: number;
+  minLength?: number;
   min?: number | string;
   max?: number | string;
+  step?: number | string;
+  pattern?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
   autoComplete?: string;
+  spellCheck?: boolean;
+  tabIndex?: number;
+  title?: string;
+  onClick?: React.MouseEventHandler<HTMLInputElement>;
   'data-testid'?: string;
   'aria-label'?: string;
-  'aria-required'?: boolean | string;
+  'aria-required'?: boolean | 'true' | 'false';
   className?: string;
   style?: React.CSSProperties;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'onChange'>;
+};
 
 const sizeClasses: Record<NonNullable<InputProps['size']>, string> = {
   sm: 'h-9 px-3 text-[14px]',
@@ -40,10 +51,37 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     size = 'md',
     error,
     fullWidth,
+    value,
+    defaultValue,
+    placeholder,
+    onChange,
+    onFocus,
+    onBlur,
+    onKeyDown,
+    disabled,
+    required,
+    readOnly,
+    autoFocus,
+    type,
+    id,
+    name,
+    maxLength,
+    minLength,
+    min,
+    max,
+    step,
+    pattern,
+    inputMode,
+    autoComplete,
+    spellCheck,
+    tabIndex,
+    title,
+    onClick,
+    'data-testid': dataTestId,
+    'aria-label': ariaLabel,
+    'aria-required': ariaRequired,
     className,
     style,
-    onChange,
-    ...rest
   },
   ref,
 ) {
@@ -58,8 +96,35 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         className,
       )}
       style={style}
+      value={value}
+      defaultValue={defaultValue}
+      placeholder={placeholder}
       onChange={onChange}
-      {...rest}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onKeyDown={onKeyDown}
+      disabled={disabled}
+      required={required}
+      readOnly={readOnly}
+      autoFocus={autoFocus}
+      type={type}
+      id={id}
+      name={name}
+      maxLength={maxLength}
+      minLength={minLength}
+      min={min}
+      max={max}
+      step={step}
+      pattern={pattern}
+      inputMode={inputMode}
+      autoComplete={autoComplete}
+      spellCheck={spellCheck}
+      tabIndex={tabIndex}
+      title={title}
+      onClick={onClick}
+      data-testid={dataTestId}
+      aria-label={ariaLabel}
+      aria-required={ariaRequired}
     />
   );
 });

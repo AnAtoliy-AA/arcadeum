@@ -52,7 +52,7 @@ function pickDevice(devices) {
 
 function reversePort(serial) {
   const args = ['reverse', 'tcp:8081', 'tcp:8081'];
-  const adbArgs = serial ? ['-s', serial, ...args] : args;
+  const adbArgs = serial ? ['-s', serial].concat(args) : args;
   const result = spawnSync('adb', adbArgs, { stdio: 'inherit' });
   if (result.status !== 0) {
     console.error('[android:reverse] Failed to configure adb reverse.');

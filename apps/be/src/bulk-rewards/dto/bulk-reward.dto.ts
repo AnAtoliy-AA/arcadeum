@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   Max,
+  MaxLength,
   Min,
 } from 'class-validator';
 
@@ -33,4 +34,14 @@ export class BulkRewardDto {
   @IsString()
   @IsOptional()
   reason?: string;
+
+  /**
+   * Stable identifier for this bulk operation. Supply the SAME value when
+   * retrying a partially-failed run so already-rewarded users are not paid
+   * twice. Generated per invocation when omitted.
+   */
+  @IsString()
+  @IsOptional()
+  @MaxLength(64)
+  operationId?: string;
 }

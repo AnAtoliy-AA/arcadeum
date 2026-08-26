@@ -8,11 +8,25 @@ import type { GameSessionSummary } from '../../sessions/game-sessions.service';
 import { ChessBot } from '@arcadeum/games-core/games/chess/chess-bot';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../../common/ai-vs-ai';
 
+export interface ChessBotMovePayload {
+  fromFile: string;
+  fromRank: number;
+  toFile: string;
+  toRank: number;
+  promotion?: string;
+}
+
 @Injectable()
 export class ChessBotService extends ChessBot {
   private readonly logger = new Logger(ChessBotService.name);
   private readonly processing = new Set<string>();
-  private moveFn: ((...args: unknown[]) => Promise<unknown>) | null = null;
+  private moveFn:
+    | ((
+        userId: string,
+        roomId: string,
+        move: ChessBotMovePayload,
+      ) => Promise<unknown>)
+    | null = null;
 
   constructor(
     @Inject(forwardRef(() => ChessService))
@@ -21,7 +35,13 @@ export class ChessBotService extends ChessBot {
     super();
   }
 
-  setMoveFn(fn: (...args: unknown[]) => Promise<unknown>) {
+  setMoveFn(
+    fn: (
+      userId: string,
+      roomId: string,
+      move: ChessBotMovePayload,
+    ) => Promise<unknown>,
+  ) {
     this.moveFn = fn;
   }
   isBot(userId: string): boolean {

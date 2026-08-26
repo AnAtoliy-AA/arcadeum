@@ -49,22 +49,42 @@ function SlotTile({
   active,
   previewing,
   className,
-  ...props
+  onClick,
+  role,
+  tabIndex,
+  'data-testid': dataTestId,
+  'data-active': dataActive,
+  'data-previewing': dataPreviewing,
+  children,
 }: {
   active?: boolean;
   previewing?: boolean;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  role?: string;
+  tabIndex?: number;
+  'data-testid'?: string;
+  'data-active'?: string;
+  'data-previewing'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
+      onClick={onClick}
+      role={role}
+      tabIndex={tabIndex}
+      data-testid={dataTestId}
+      data-active={dataActive}
+      data-previewing={dataPreviewing}
       className={cx(
         'flex flex-row items-center gap-[10px] p-[10px] rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] cursor-pointer min-h-[62px] transition-colors hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
         active && 'border-[rgba(96,165,250,0.6)] bg-[rgba(96,165,250,0.08)]',
         previewing && 'border-[rgba(34,197,94,0.6)] bg-[rgba(16,185,129,0.10)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

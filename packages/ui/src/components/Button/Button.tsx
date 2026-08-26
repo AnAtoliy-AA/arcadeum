@@ -26,6 +26,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     variant = 'primary',
     size = 'md',
     shape,
+    padding,
     loading = false,
     showShimmer = false,
     fullWidth = false,
@@ -49,7 +50,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     'data-active': dataActive,
     'aria-pressed': ariaPressed,
     'aria-label': ariaLabel,
-    ...rest
+    'aria-selected': ariaSelected,
+    'aria-expanded': ariaExpanded,
+    'aria-haspopup': ariaHaspopup,
+    'aria-controls': ariaControls,
+    'aria-live': ariaLive,
+    role,
+    onMouseEnter,
+    onMouseLeave,
+    onFocus,
+    onBlur,
+    onKeyDown,
   },
   ref,
 ) {
@@ -60,6 +71,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         gameVariant,
         size,
         shape,
+        padding,
         active,
         outline,
         ghost,
@@ -76,6 +88,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       gameVariant,
       size,
       shape,
+      padding,
       active,
       outline,
       ghost,
@@ -101,13 +114,23 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       aria-disabled={isDisabled || undefined}
       aria-pressed={ariaPressed}
       aria-label={ariaLabel}
+      aria-selected={ariaSelected}
+      aria-expanded={ariaExpanded}
+      aria-haspopup={ariaHaspopup}
+      aria-controls={ariaControls}
+      aria-live={ariaLive}
+      role={role}
       data-testid={dataTestId}
       data-active={dataActive}
       style={style}
       tabIndex={tabIndex}
       title={title}
       onClick={onClick}
-      {...rest}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onKeyDown={onKeyDown}
     >
       <span className="flex h-full w-full flex-row items-center justify-center gap-2 font-semibold tracking-[0.5px]">
         {icon}

@@ -35,15 +35,18 @@ const sampleRows = [
 ];
 
 function renderDrawer(
-  props: Partial<Parameters<typeof EconomyAuditDrawer>[0]> = {},
+  overrides: {
+    open?: boolean;
+    economyKey?: Parameters<typeof EconomyAuditDrawer>[0]['economyKey'];
+    onClose?: () => void;
+  } = {},
 ) {
   return render(
     <EconomyAuditDrawer
-      open={true}
-      onClose={vi.fn()}
-      economyKey="game_win_coin_reward"
+      open={overrides.open ?? true}
+      economyKey={overrides.economyKey ?? 'game_win_coin_reward'}
+      onClose={overrides.onClose ?? vi.fn()}
       labels={labels}
-      {...props}
     />,
   );
 }

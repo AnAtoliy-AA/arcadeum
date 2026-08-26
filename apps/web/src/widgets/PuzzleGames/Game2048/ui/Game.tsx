@@ -1,14 +1,19 @@
 'use client';
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
-import { Button, LoadingState, Modal } from '@arcadeum/ui';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from 'react';
+import { Button, LoadingState } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
+import { GameResultModal } from '@/features/games/ui/GameResultModal';
+import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import { Game2048ThemeProvider } from '../lib/Game2048ThemeContext';
-import {
-  useGame2048Store,
-  type FinishedGameInfo,
-} from '../store/game2048Store';
+import { useGame2048Store } from '../store/game2048Store';
 import type { Direction } from '../types';
 import { Game2048Board } from './Game2048Board';
 
@@ -43,15 +48,12 @@ function Game2048Table() {
   const continuePlaying = useGame2048Store((state) => state.continuePlaying);
   const newGame = useGame2048Store((state) => state.newGame);
 
-  // The board is random and persisted, so it can only render after mount —
-  // otherwise SSR markup (fresh board on the server) never matches the client.
   const mounted = useSyncExternalStore(
     subscribeNoop,
     () => true,
     () => false,
   );
 
-  // Arrow keys / WASD drive the board.
   useEffect(() => {
     if (!mounted) return undefined;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -78,7 +80,6 @@ function Game2048Table() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [mounted, move]);
 
-  // Elapsed timer; ticks until the game finishes.
   const [elapsedMs, setElapsedMs] = useState(0);
   const isRunning = mounted && finished === null;
   useEffect(() => {
@@ -95,110 +96,167 @@ function Game2048Table() {
     [move],
   );
 
+  const maxTile = useMemo(() => Math.max(0, ...grid), [grid]);
+
+  const stats: GameResultStats | null = useMemo(() => {
+    if (!finished) return null;
+    return {
+      score: finished.score,
+      turns: finished.moves,
+      duration: formatDuration(finished.durationMs),
+      customStats: [
+        {
+          id: 'best-score',
+          label: t('games.game_2048_v1.hud.best'),
+          value: best,
+        },
+        {
+          id: 'max-tile',
+          label: 'Max Tile',
+          value: maxTile,
+        },
+      ],
+    };
+  }, [finished, best, maxTile, t]);
+
+  const handleCloseModal = useCallback(() => {
+    useGame2048Store.setState({ finished: null });
+  }, []);
+
   if (!mounted) {
     return <LoadingState message={t('games.game_2048_v1.board.loading')} />;
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-4 text-sm">
-          <Stat label={t('games.game_2048_v1.hud.score')} value={score} />
-          <Stat label={t('games.game_2048_v1.hud.best')} value={best} />
-          <Stat
+    <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-5 px-3">
+      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 shadow-xl backdrop-blur-md sm:p-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <StatCard
+            label={t('games.game_2048_v1.hud.score')}
+            value={score}
+            dataTestId="game-2048-score"
+          />
+          <StatCard
+            label={t('games.game_2048_v1.hud.best')}
+            value={best}
+            dataTestId="game-2048-best"
+          />
+          <StatCard
             label={t('games.game_2048_v1.hud.time')}
             value={formatDuration(elapsedMs)}
+            dataTestId="game-2048-timer"
           />
         </div>
-        <Button variant="outline" size="sm" onClick={newGame}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={newGame}
+          data-testid="game-2048-new-game-button"
+        >
           {t('games.game_2048_v1.hud.newGame')}
         </Button>
       </div>
 
       <Game2048Board grid={grid} onMove={handleMove} />
 
-      <p className="text-center text-xs opacity-60">
-        {t('games.game_2048_v1.board.controlsHint')}
-      </p>
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex items-center gap-2 sm:hidden">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleMove('up')}
+            data-testid="pad-up"
+          >
+            ▲
+          </Button>
+        </div>
+        <div className="flex items-center gap-2 sm:hidden">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleMove('left')}
+            data-testid="pad-left"
+          >
+            ◀
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleMove('down')}
+            data-testid="pad-down"
+          >
+            ▼
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleMove('right')}
+            data-testid="pad-right"
+          >
+            ▶
+          </Button>
+        </div>
+        <p className="text-center text-xs text-slate-400">
+          {t('games.game_2048_v1.board.controlsHint')}
+        </p>
+      </div>
 
-      <ResultDialog
-        finished={finished}
-        onNewGame={newGame}
-        onContinue={continuePlaying}
+      <GameResultModal
+        isOpen={finished !== null}
+        result={finished ? (finished.won ? 'victory' : 'defeat') : null}
+        gameName="2048"
+        onRematch={newGame}
+        rematchLabel={t('games.game_2048_v1.result.playAgain')}
+        secondaryAction={
+          finished?.won
+            ? {
+                label: t('games.game_2048_v1.result.keepGoing'),
+                onClick: continuePlaying,
+                testId: 'keep-going-button',
+              }
+            : undefined
+        }
+        onClose={handleCloseModal}
+        t={t}
+        messages={{
+          title: t(
+            finished?.won
+              ? 'games.game_2048_v1.result.wonTitle'
+              : 'games.game_2048_v1.result.lostTitle',
+          ),
+          message: t(
+            finished?.won
+              ? 'games.game_2048_v1.result.wonBody'
+              : 'games.game_2048_v1.result.lostBody',
+          ),
+        }}
+        theme="zen"
+        stats={stats}
       />
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string | number }) {
+function StatCard({
+  label,
+  value,
+  dataTestId,
+}: {
+  label: string;
+  value: string | number;
+  dataTestId?: string;
+}) {
   return (
-    <span className="flex flex-col">
-      <span className="text-[10px] uppercase tracking-wide opacity-60">
+    <div
+      data-testid={dataTestId}
+      className="flex flex-col items-center justify-center rounded-xl border border-white/5 bg-black/40 px-2.5 py-1.5 backdrop-blur-sm sm:px-3 sm:py-2"
+    >
+      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
         {label}
       </span>
-      <span className="font-mono text-lg font-bold leading-tight">{value}</span>
-    </span>
-  );
-}
-
-function ResultDialog({
-  finished,
-  onNewGame,
-  onContinue,
-}: {
-  finished: FinishedGameInfo | null;
-  onNewGame: () => void;
-  onContinue: () => void;
-}) {
-  const { t } = useTranslation();
-  if (!finished) return null;
-
-  return (
-    <Modal open onClose={() => undefined}>
-      <div className="flex flex-col items-center gap-4 p-6 text-center">
-        <h2 className="text-2xl font-black">
-          {t(
-            finished.won
-              ? 'games.game_2048_v1.result.wonTitle'
-              : 'games.game_2048_v1.result.lostTitle',
-          )}
-        </h2>
-        <p className="text-sm opacity-80">
-          {t(
-            finished.won
-              ? 'games.game_2048_v1.result.wonBody'
-              : 'games.game_2048_v1.result.lostBody',
-          )}
-        </p>
-        <dl className="flex gap-6 text-sm">
-          <div>
-            <dt className="opacity-60">{t('games.game_2048_v1.hud.score')}</dt>
-            <dd className="font-mono text-lg">{finished.score}</dd>
-          </div>
-          <div>
-            <dt className="opacity-60">
-              {t('games.game_2048_v1.hud.movesLabel')}
-            </dt>
-            <dd className="font-mono text-lg">{finished.moves}</dd>
-          </div>
-          <div>
-            <dt className="opacity-60">{t('games.game_2048_v1.hud.time')}</dt>
-            <dd className="font-mono text-lg">
-              {formatDuration(finished.durationMs)}
-            </dd>
-          </div>
-        </dl>
-        <div className="flex gap-3">
-          {finished.won && (
-            <Button variant="outline" onClick={onContinue}>
-              {t('games.game_2048_v1.result.keepGoing')}
-            </Button>
-          )}
-          <Button onClick={onNewGame}>
-            {t('games.game_2048_v1.result.playAgain')}
-          </Button>
-        </div>
-      </div>
-    </Modal>
+      <span className="font-mono text-base font-extrabold tabular-nums text-white sm:text-lg">
+        {value}
+      </span>
+    </div>
   );
 }

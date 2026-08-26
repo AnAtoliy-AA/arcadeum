@@ -14,8 +14,9 @@ import {
 
 /**
  * Validates that the client-supplied userId matches the server-verified
- * identity for authenticated users. Blocks impersonation.
- * For unauthenticated (anonymous) clients, allows the payload userId.
+ * identity for authenticated users, or the handshake-declared anonId for
+ * anonymous clients. Fails closed: a socket with no verified identity
+ * cannot act as anyone.
  */
 export function validatePayloadUserId(
   client: Socket,
@@ -24,8 +25,17 @@ export function validatePayloadUserId(
   const authUserId = (client.data as Record<string, unknown>)?.userId as
     string | undefined;
   const isAuthenticated = getIsAuthenticated(client);
-  if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
-    throw new WsException('Cannot perform actions as another user.');
+  if (isAuthenticated) {
+    if (payloadUserId !== authUserId) {
+      throw new WsException('Cannot perform actions as another user.');
+    }
+    return;
+  }
+
+  const anonId = (client.data as Record<string, unknown>)?.anonId as
+    string | undefined;
+  if (!anonId || payloadUserId !== anonId) {
+    throw new WsException('Unauthorized.');
   }
 }
 
@@ -87,18 +97,22 @@ export function toCriticalCard(value?: string): CriticalCard | undefined {
 }
 
 /**
- * Validates and extracts string payload field
+ * Validates and extracts string field
  */
 export function extractString(
   payload: Record<string, unknown>,
   fieldName: string,
-  options?: { toLowerCase?: boolean },
+  options?: { toLowerCase?: boolean; maxLength?: number },
 ): string {
   const value =
     typeof payload?.[fieldName] === 'string' ? payload[fieldName].trim() : '';
 
   if (!value) {
     throw new WsException(`${fieldName} is required.`);
+  }
+
+  if (options?.maxLength && value.length > options.maxLength) {
+    throw new WsException(`${fieldName} is too long.`);
   }
 
   return options?.toLowerCase ? value.toLowerCase() : value;

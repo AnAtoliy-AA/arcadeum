@@ -50,9 +50,18 @@ interface LeanTopPerGameRow {
 
 const SEASON_ID_PATTERN = /^\d{4}Q[1-4]$/;
 
+/** TTL for cached season standings; matches the leaderboards cache convention. */
+const STANDINGS_TTL_MS = 30_000;
+
+interface StandingsCacheEntry {
+  expiresAt: number;
+  value: SeasonBoardSnapshotDto;
+}
+
 @Injectable()
 export class SeasonsService implements OnModuleInit {
   private readonly logger = new Logger(SeasonsService.name);
+  private standingsCache = new Map<string, StandingsCacheEntry>();
 
   constructor(
     @InjectModel(Season.name, OCI_CONNECTION)
@@ -127,6 +136,14 @@ export class SeasonsService implements OnModuleInit {
       return { seasonId, gameId: query.gameId ?? null, total: 0, entries: [] };
     }
 
+    // Public endpoint: the whole-season $group scan is cached briefly and
+    // de-duped so bursts of profile/leaderboard views share one aggregation.
+    const cacheKey = `${seasonId}|${query.gameId ?? 'all'}|${limit}|${offset}`;
+    const cached = this.standingsCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value;
+    }
+
     const filter: Record<string, unknown> = { season: seasonId };
     if (query.gameId) filter.gameId = query.gameId;
 
@@ -167,7 +184,17 @@ export class SeasonsService implements OnModuleInit {
       rankedGames: r.rankedGames ?? 0,
     }));
 
-    return { seasonId, gameId: query.gameId ?? null, total, entries };
+    const snapshot: SeasonBoardSnapshotDto = {
+      seasonId,
+      gameId: query.gameId ?? null,
+      total,
+      entries,
+    };
+    this.standingsCache.set(cacheKey, {
+      value: snapshot,
+      expiresAt: Date.now() + STANDINGS_TTL_MS,
+    });
+    return snapshot;
   }
 
   /**
@@ -181,18 +208,20 @@ export class SeasonsService implements OnModuleInit {
       .lean<LeanSeason[]>()
       .exec();
 
-    for (const season of stale) {
-      const champions = await this.computeChampions(season.seasonId);
-      await this.seasonModel
-        .updateOne(
-          { seasonId: season.seasonId, status: 'active' },
-          { $set: { status: 'archived', archivedAt: new Date(), champions } },
-        )
-        .exec();
-      this.logger.log(
-        `Season ${season.seasonId} archived with ${champions.length} champion(s).`,
-      );
-    }
+    await Promise.all(
+      stale.map(async (season) => {
+        const champions = await this.computeChampions(season.seasonId);
+        await this.seasonModel
+          .updateOne(
+            { seasonId: season.seasonId, status: 'active' },
+            { $set: { status: 'archived', archivedAt: new Date(), champions } },
+          )
+          .exec();
+        this.logger.log(
+          `Season ${season.seasonId} archived with ${champions.length} champion(s).`,
+        );
+      }),
+    );
   }
 
   private async findOrCreateCurrent(): Promise<LeanSeason> {

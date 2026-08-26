@@ -9,8 +9,13 @@ const StatsPageDynamic = dynamic<StatsPageProps>(() => import('./StatsPage'), {
   loading: () => <StatsLoading />,
 });
 
-const StatsClient = (props: StatsPageProps) => {
-  return <StatsPageDynamic {...props} />;
+const StatsClient = ({ initialStats, initialLeaderboard }: StatsPageProps) => {
+  return (
+    <StatsPageDynamic
+      initialStats={initialStats}
+      initialLeaderboard={initialLeaderboard}
+    />
+  );
 };
 
 export default StatsClient;

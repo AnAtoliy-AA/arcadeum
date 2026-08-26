@@ -20,7 +20,11 @@ export default function ReplayClient({
   replayId,
 }: ReplayClientProps) {
   const { t } = useTranslation();
-  const { replay, loadReplay, loading, error, reset } = useReplayStore();
+  const replay = useReplayStore((s) => s.replay);
+  const loadReplay = useReplayStore((s) => s.loadReplay);
+  const loading = useReplayStore((s) => s.loading);
+  const error = useReplayStore((s) => s.error);
+  const reset = useReplayStore((s) => s.reset);
 
   useEffect(() => {
     if (initialReplay) {

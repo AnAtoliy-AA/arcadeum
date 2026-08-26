@@ -92,7 +92,11 @@ export function AppThemeProvider({
   children: ReactNode;
   initialTheme?: ThemeName;
 }) {
-  const { themePreference, setThemePreference } = useThemeStore();
+  // Field-level selectors: this provider wraps the entire app, so a
+  // whole-store subscription would re-render the tree on any themeStore
+  // write. Actions are stable references.
+  const themePreference = useThemeStore((s) => s.themePreference);
+  const setThemePreference = useThemeStore((s) => s.setThemePreference);
   const { visionMode } = useVisionModeSetting();
   const systemTheme = useSystemTheme();
   const isHydrated = useSyncExternalStore(

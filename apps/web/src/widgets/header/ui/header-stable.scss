@@ -182,14 +182,14 @@
     margin-right: 0;
   }
   /* Keep coin/gem pills side-by-side and compact them */
-  .wallet-balance-chip {
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 6px !important;
+  .wallet-balance-chip.wallet-balance-chip {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
   }
-  .wallet-balance-pill {
-    padding: 2px 8px !important;
-    font-size: 11px !important;
-    line-height: 1.3 !important;
+  .wallet-balance-pill.wallet-balance-pill {
+    padding: 2px 8px;
+    font-size: 11px;
+    line-height: 1.3;
   }
 }

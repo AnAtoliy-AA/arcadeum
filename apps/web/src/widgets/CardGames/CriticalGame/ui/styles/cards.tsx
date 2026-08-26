@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Button, type ButtonProps, type GameVariant } from '@arcadeum/ui';
@@ -16,7 +16,10 @@ export type ActionButtonProps = ButtonProps & {
 export const ActionButton = ({
   variant,
   accent,
-  ...props
+  disabled,
+  onClick,
+  children,
+  'data-testid': testId,
 }: ActionButtonProps) => {
   const media = useMediaQuery();
   return (
@@ -24,12 +27,14 @@ export const ActionButton = ({
       variant={(variant || 'primary') as ButtonProps['variant']}
       size={media.sm ? 'sm' : 'md'}
       gameVariant={(variant || accent) as GameVariant}
-      {...props}
-    />
+      disabled={disabled}
+      onClick={onClick}
+      data-testid={testId}
+    >
+      {children}
+    </Button>
   );
 };
-
-type VariantProp = { variant?: string };
 
 export function LastPlayedCard({
   className,
@@ -37,16 +42,17 @@ export function LastPlayedCard({
   isAnimating = false,
   variant,
   cardType: _cardType,
+  'data-testid': testId,
   children,
-  ...props
 }: {
   className?: string;
   style?: CSSProperties;
   isAnimating?: boolean;
+  variant?: string;
   cardType?: unknown;
+  'data-testid'?: string;
   children?: ReactNode;
-} & VariantProp &
-  HTMLAttributes<HTMLDivElement>) {
+}) {
   const cards = getVariantStyles(variant).cards;
   return (
     <div
@@ -58,7 +64,7 @@ export function LastPlayedCard({
         boxShadow: `0 10px 30px rgba(0,0,0,0.5), ${cards.glowEffect}`,
         ...style,
       }}
-      {...props}
+      data-testid={testId}
     >
       <div
         className={cx(
@@ -89,11 +95,12 @@ const CARDS_GRID_LAYOUT_CLASS = {
 export function CardsGrid({
   className,
   layout,
-  ...props
+  children,
 }: {
   className?: string;
   layout?: keyof typeof CARDS_GRID_LAYOUT_CLASS;
-} & HTMLAttributes<HTMLDivElement>) {
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -101,8 +108,9 @@ export function CardsGrid({
         layout ? CARDS_GRID_LAYOUT_CLASS[layout] : undefined,
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -110,9 +118,15 @@ export function DeckCard({
   className,
   style,
   variant,
-  ...props
-}: { className?: string; style?: CSSProperties } & VariantProp &
-  HTMLAttributes<HTMLDivElement>) {
+  'data-testid': testId,
+  children,
+}: {
+  className?: string;
+  style?: CSSProperties;
+  variant?: string;
+  'data-testid'?: string;
+  children?: ReactNode;
+}) {
   const config = getVariantStyles(variant).cards;
   return (
     <BaseCard
@@ -130,7 +144,9 @@ export function DeckCard({
         } as CSSProperties
       }
       variant={variant}
-      {...props}
-    />
+      data-testid={testId}
+    >
+      {children}
+    </BaseCard>
   );
 }

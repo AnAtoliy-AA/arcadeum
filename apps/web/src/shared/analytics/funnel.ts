@@ -26,11 +26,12 @@ function trackFunnel(
   event: string,
   props: AnalyticsPayload = {},
 ): void {
-  track(event, {
-    funnelPath: path,
-    ...attributionEventProps(),
-    ...props,
-  });
+  const payload: AnalyticsPayload = attributionEventProps();
+  payload.funnelPath = path;
+  for (const key of Object.keys(props)) {
+    payload[key] = props[key];
+  }
+  track(event, payload);
 }
 
 export function trackSoloGameStarted(gameId: string): void {

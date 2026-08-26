@@ -31,20 +31,27 @@ import { chatApi, ChatParticipant, ChatSummary } from '@/features/chat/api';
 import { formatSafeDate } from '@/shared/lib/date';
 import { DEBOUNCE } from '@/shared/config/constants';
 
-interface SearchResultItemProps extends ComponentProps<typeof Button> {
+interface SearchResultItemProps {
   isLast?: boolean;
+  onClick?: ComponentProps<typeof Button>['onClick'];
   children?: ReactNode;
 }
 
-const SearchResultItem = ({ isLast, ...props }: SearchResultItemProps) => (
+const SearchResultItem = ({
+  isLast,
+  onClick,
+  children,
+}: SearchResultItemProps) => (
   <Button
     className={`p-4 w-full justify-start rounded-none bg-[var(--background)] text-[var(--color)] gap-3 hover:bg-[var(--background)] hover:opacity-90 ${
       isLast ? 'border-b-0' : 'border-b border-b-[var(--borderColor)]'
     }`}
     variant="ghost"
     size="md"
-    {...props}
-  />
+    onClick={onClick}
+  >
+    {children}
+  </Button>
 );
 
 export interface ChatListPageProps {

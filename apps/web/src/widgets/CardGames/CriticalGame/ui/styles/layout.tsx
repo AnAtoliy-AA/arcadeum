@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
@@ -19,27 +19,33 @@ import { cx } from '@arcadeum/ui/utils/cx';
 // width via @container queries.
 export function MatchWidgetGrid({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  'data-testid': testId,
+  children,
+}: {
+  className?: string;
+  'data-testid'?: string;
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-col items-stretch w-full max-w-[1240px] mx-auto px-[12px] py-[12px] gap-3 max-[800px]:px-2 max-[800px]:gap-2 max-[800px]:pb-[120px]',
         className,
       )}
-      {...props}
-    />
+      data-testid={testId}
+    >
+      {children}
+    </div>
   );
 }
 
 export function FrostyVignette({
   className,
   style,
-  ...props
 }: {
   className?: string;
   style?: CSSProperties;
-} & HTMLAttributes<HTMLDivElement>) {
+}) {
   return (
     <div
       className={cx(
@@ -51,7 +57,6 @@ export function FrostyVignette({
           'radial-gradient(circle at center, transparent 50%, rgba(255, 255, 255, 0.02) 70%, rgba(125, 211, 252, 0.08) 100%)',
         ...style,
       }}
-      {...props}
     />
   );
 }

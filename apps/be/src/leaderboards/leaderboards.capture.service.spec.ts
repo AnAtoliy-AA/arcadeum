@@ -3,6 +3,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { LeaderboardsCaptureService } from './leaderboards.capture.service';
 import { LeaderboardsGateway } from './leaderboards.gateway';
 import { LeaderboardsCacheService } from './leaderboards.cache';
+import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
 import { LeaderboardEntry } from './schemas/leaderboard-entry.schema';
 
 describe('LeaderboardsCaptureService', () => {
@@ -10,6 +11,7 @@ describe('LeaderboardsCaptureService', () => {
   let entryModel: Record<string, jest.Mock>;
   let gateway: { emitCaptured: jest.Mock };
   let cache: { invalidateAll: jest.Mock };
+  let historyStats: { invalidateLeaderboardCache: jest.Mock };
   let module: TestingModule;
 
   beforeEach(async () => {
@@ -19,6 +21,7 @@ describe('LeaderboardsCaptureService', () => {
     };
     gateway = { emitCaptured: jest.fn() };
     cache = { invalidateAll: jest.fn() };
+    historyStats = { invalidateLeaderboardCache: jest.fn() };
 
     module = await Test.createTestingModule({
       providers: [
@@ -29,6 +32,7 @@ describe('LeaderboardsCaptureService', () => {
         },
         { provide: LeaderboardsGateway, useValue: gateway },
         { provide: LeaderboardsCacheService, useValue: cache },
+        { provide: GameHistoryStatsService, useValue: historyStats },
       ],
     }).compile();
 
@@ -81,13 +85,14 @@ describe('LeaderboardsCaptureService', () => {
     expect(entryModel.bulkWrite).not.toHaveBeenCalled();
   });
 
-  it('captureAll iterates all modes, invalidates cache, and emits', async () => {
+  it('captureAll iterates all modes, invalidates both caches, and emits', async () => {
     entryModel.find.mockReturnValue(wireFind([]));
     const all = await service.captureAll();
     // Matches GAME_MODE_VALUES length (all + per-game modes).
     expect(all.length).toBeGreaterThanOrEqual(2);
     expect(all[0]?.mode).toBe('all');
     expect(cache.invalidateAll).toHaveBeenCalledTimes(1);
+    expect(historyStats.invalidateLeaderboardCache).toHaveBeenCalledTimes(1);
     expect(gateway.emitCaptured).toHaveBeenCalledWith(all);
   });
 });

@@ -131,55 +131,48 @@ export function StatsOverview({
   );
 }
 
-function StatLabel({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+function StatLabel({ children }: { children?: React.ReactNode }) {
   return (
-    <span
-      className={`text-[14px] leading-[18px] uppercase tracking-[1.2px] font-medium text-[rgba(236,239,238,0.45)] ${className ?? ''}`}
-      {...props}
-    />
+    <span className="text-[14px] leading-[18px] uppercase tracking-[1.2px] font-medium text-[rgba(236,239,238,0.45)]">
+      {children}
+    </span>
   );
 }
 
 function StatValue({
   color,
   className,
-  ...props
+  'data-testid': dataTestId,
+  children,
 }: {
   color?: string;
   className?: string;
-} & React.HTMLAttributes<HTMLSpanElement>) {
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <span
+      data-testid={dataTestId}
       className={`text-[48px] font-extrabold leading-none tracking-[-0.5px] text-[var(--primaryGradientStart)] ${className ?? ''}`}
       style={color ? { color } : undefined}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
-function WinRateCardContent({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function WinRateCardContent({ children }: { children?: React.ReactNode }) {
   return (
-    <div
-      className={`flex flex-col items-center justify-center gap-4 ${className ?? ''}`}
-      {...props}
-    />
+    <div className="flex flex-col items-center justify-center gap-4">
+      {children}
+    </div>
   );
 }
 
-function StreakSuffix({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+function StreakSuffix({ children }: { children?: React.ReactNode }) {
   return (
-    <span
-      className={`text-[20px] font-semibold leading-[28px] ml-0.5 text-[var(--colorMuted, rgba(180,180,200,0.7))] ${className ?? ''}`}
-      {...props}
-    />
+    <span className="text-[20px] font-semibold leading-[28px] ml-0.5 text-[var(--colorMuted, rgba(180,180,200,0.7))]">
+      {children}
+    </span>
   );
 }

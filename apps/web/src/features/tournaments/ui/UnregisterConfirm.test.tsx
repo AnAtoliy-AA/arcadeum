@@ -16,20 +16,27 @@ const labels: UnregisterConfirmLabels = {
 };
 
 const renderConfirm = (
-  props: Partial<Parameters<typeof UnregisterConfirm>[0]> = {},
+  overrides: {
+    open?: boolean;
+    status?: Parameters<typeof UnregisterConfirm>[0]['status'];
+    entryFeeCoins?: number;
+    onUnregister?: Parameters<typeof UnregisterConfirm>[0]['onUnregister'];
+    onClose?: () => void;
+  } = {},
 ) =>
   render(
     <Wrapper>
       <UnregisterConfirm
         tournamentId="tour-1"
-        entryFeeCoins={50}
-        status="registration_open"
-        open={true}
-        onClose={() => undefined}
+        entryFeeCoins={overrides.entryFeeCoins ?? 50}
+        status={overrides.status ?? 'registration_open'}
+        open={overrides.open ?? true}
+        onClose={overrides.onClose ?? (() => undefined)}
         onSuccess={() => undefined}
-        onUnregister={vi.fn().mockResolvedValue(undefined)}
+        onUnregister={
+          overrides.onUnregister ?? vi.fn().mockResolvedValue(undefined)
+        }
         labels={labels}
-        {...props}
       />
     </Wrapper>,
   );

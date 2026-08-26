@@ -20,7 +20,11 @@ const makeService = () =>
   };
 
 const makeSocket = () =>
-  ({ emit: jest.fn() }) as unknown as Socket & { emit: jest.Mock };
+  ({
+    emit: jest.fn(),
+    // Identity checks fail closed — sockets must present a verified id.
+    data: { authenticated: true, userId: 'u1' },
+  }) as unknown as Socket & { emit: jest.Mock };
 
 const makeVisibility = (
   overrides: Partial<{ assertVisible: jest.Mock; canSee: jest.Mock }> = {},

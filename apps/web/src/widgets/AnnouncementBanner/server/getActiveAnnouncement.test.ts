@@ -7,7 +7,8 @@ vi.mock('next/headers', () => ({
 
 const serverAuthFetchMock = vi.fn();
 vi.mock('@/shared/lib/server-auth-fetch', () => ({
-  serverAuthFetch: (...args: unknown[]) => serverAuthFetchMock(...args),
+  serverAuthFetch: (path: string, init?: RequestInit) =>
+    serverAuthFetchMock(path, init),
 }));
 
 import { getActiveAnnouncement } from './getActiveAnnouncement';

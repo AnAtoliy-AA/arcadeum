@@ -20,16 +20,20 @@ const BORDER_MAP: Record<string, string> = {
   large: '4px',
 };
 
-export interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface SpinnerProps {
   size?: SpinnerSize;
   color?: string;
+  className?: string;
+  'aria-label'?: string;
+  'data-testid'?: string;
 }
 
 export const Spinner: React.FC<SpinnerProps> = ({
   size = 'md',
   color,
   className,
-  ...props
+  'aria-label': ariaLabel,
+  'data-testid': dataTestId,
 }) => {
   const s = SIZE_MAP[size] ?? SIZE_MAP.md;
   const b = BORDER_MAP[size] ?? BORDER_MAP.md;
@@ -37,8 +41,9 @@ export const Spinner: React.FC<SpinnerProps> = ({
   return (
     <div
       role="status"
-      aria-label="Loading"
+      aria-label={ariaLabel ?? 'Loading'}
       className={className}
+      data-testid={dataTestId}
       style={{
         width: s,
         height: s,
@@ -49,7 +54,6 @@ export const Spinner: React.FC<SpinnerProps> = ({
         display: 'inline-block',
         flexShrink: 0,
       }}
-      {...props}
     />
   );
 };

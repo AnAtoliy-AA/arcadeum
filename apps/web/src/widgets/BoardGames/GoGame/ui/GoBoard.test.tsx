@@ -13,7 +13,16 @@ function emptyBoard(size: number): Cell[][] {
 function renderBoard(props: React.ComponentProps<typeof GoBoard>) {
   return render(
     <GoThemeProvider variant="adventure">
-      <GoBoard {...props} />
+      <GoBoard
+        board={props.board}
+        size={props.size}
+        disabled={props.disabled}
+        lastMove={props.lastMove}
+        koPoint={props.koPoint}
+        myColor={props.myColor}
+        ariaLabel={props.ariaLabel}
+        onCellClick={props.onCellClick}
+      />
     </GoThemeProvider>,
   );
 }

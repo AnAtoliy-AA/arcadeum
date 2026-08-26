@@ -51,26 +51,26 @@ export type DownloadLinkAnchorProps = {
   rel?: string;
   type?: 'button' | 'submit' | 'reset';
   onClick?: (event: React.MouseEvent) => void;
-  ref?: React.Ref<HTMLAnchorElement | HTMLButtonElement | HTMLDivElement>;
 };
 
 export const DownloadLinkAnchor = React.forwardRef<
   HTMLAnchorElement | HTMLButtonElement | HTMLDivElement,
   DownloadLinkAnchorProps
 >(function DownloadLinkAnchor(
-  { tag = 'a', className, style, 'data-testid': dataTestId, children, ...rest },
+  { tag = 'a', className, style, 'data-testid': dataTestId, children, href, target, rel, type, onClick },
   ref,
 ) {
   const classes = cx(downloadLinkClasses, className);
-  const common = { className: classes, style, 'data-testid': dataTestId };
 
   if (tag === 'button') {
     return (
       <button
         ref={ref as React.Ref<HTMLButtonElement>}
-        type={rest.type ?? 'button'}
-        onClick={rest.onClick as React.MouseEventHandler<HTMLButtonElement> | undefined}
-        {...common}
+        type={type ?? 'button'}
+        onClick={onClick as React.MouseEventHandler<HTMLButtonElement> | undefined}
+        className={classes}
+        style={style}
+        data-testid={dataTestId}
       >
         {children}
       </button>
@@ -78,7 +78,13 @@ export const DownloadLinkAnchor = React.forwardRef<
   }
   if (tag === 'div') {
     return (
-      <div ref={ref as React.Ref<HTMLDivElement>} onClick={rest.onClick} {...common}>
+      <div
+        ref={ref as React.Ref<HTMLDivElement>}
+        onClick={onClick as React.MouseEventHandler<HTMLDivElement> | undefined}
+        className={classes}
+        style={style}
+        data-testid={dataTestId}
+      >
         {children}
       </div>
     );
@@ -86,11 +92,13 @@ export const DownloadLinkAnchor = React.forwardRef<
   return (
     <a
       ref={ref as React.Ref<HTMLAnchorElement>}
-      href={rest.href}
-      target={rest.target}
-      rel={rest.rel}
-      onClick={rest.onClick}
-      {...common}
+      href={href}
+      target={target}
+      rel={rel}
+      onClick={onClick as React.MouseEventHandler<HTMLAnchorElement> | undefined}
+      className={classes}
+      style={style}
+      data-testid={dataTestId}
     >
       {children}
     </a>

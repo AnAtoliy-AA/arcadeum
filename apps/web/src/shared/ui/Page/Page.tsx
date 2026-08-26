@@ -6,7 +6,7 @@ import { cx } from '@arcadeum/ui/utils/cx';
  * Reusable Page container component.
  * Handles consistent background, color, and optional viewport height fitting.
  */
-export type PageProps = React.HTMLAttributes<HTMLElement> & {
+export type PageProps = {
   /**
    * When true, the page is capped to the viewport below the sticky header
    * (100dvh minus the --header-height token). Inner layouts can then fill
@@ -24,6 +24,14 @@ export type PageProps = React.HTMLAttributes<HTMLElement> & {
    * Optional radial gradient background for premium look on landing/dashboard pages.
    */
   radialBackground?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+  id?: string;
+  role?: string;
+  'aria-label'?: string;
+  'data-testid'?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  children?: React.ReactNode;
 };
 
 export function Page({
@@ -32,10 +40,20 @@ export function Page({
   radialBackground,
   className,
   style,
-  ...props
+  id,
+  role,
+  'aria-label': ariaLabel,
+  'data-testid': dataTestId,
+  onClick,
+  children,
 }: PageProps) {
   return (
     <div
+      id={id}
+      role={role}
+      aria-label={ariaLabel}
+      data-testid={dataTestId}
+      onClick={onClick}
       className={cx(
         'flex flex-col items-stretch relative w-full',
         fixedHeight
@@ -53,7 +71,8 @@ export function Page({
           : { background: 'var(--background)' }),
         ...style,
       }}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }

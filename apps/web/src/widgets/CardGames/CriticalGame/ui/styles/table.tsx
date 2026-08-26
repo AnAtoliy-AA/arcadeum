@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
@@ -11,12 +11,13 @@ export function CardSlot({
   className,
   style,
   role,
-  ...props
+  children,
 }: {
   className?: string;
   style?: CSSProperties;
   role?: 'deck' | 'lastPlayed';
-} & HTMLAttributes<HTMLDivElement>) {
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -25,7 +26,8 @@ export function CardSlot({
         className,
       )}
       style={style}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }

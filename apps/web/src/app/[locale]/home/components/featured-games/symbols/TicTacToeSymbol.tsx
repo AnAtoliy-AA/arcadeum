@@ -1,6 +1,4 @@
-import type { SVGProps } from 'react';
-
-export function TicTacToeSymbol(props: SVGProps<SVGSVGElement>) {
+export function TicTacToeSymbol({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 64"
@@ -8,7 +6,7 @@ export function TicTacToeSymbol(props: SVGProps<SVGSVGElement>) {
       stroke="currentColor"
       strokeWidth="2.4"
       strokeLinecap="round"
-      {...props}
+      className={className}
     >
       <line x1="26" y1="10" x2="26" y2="54" />
       <line x1="38" y1="10" x2="38" y2="54" />

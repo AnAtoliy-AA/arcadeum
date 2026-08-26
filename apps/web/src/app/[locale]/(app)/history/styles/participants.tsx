@@ -1,41 +1,24 @@
-import type React from 'react';
-import { type ReactNode, type ComponentProps } from 'react';
+import type { ChangeEventHandler, ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Typography } from '@arcadeum/ui';
 
-export function ParticipantRow({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+export function ParticipantRow({ children }: { children?: ReactNode }) {
   return (
-    <div
-      className={cx(
-        'flex flex-row items-center justify-between px-5 py-4 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] transition-colors hover:border-[var(--primary)] hover:bg-[var(--backgroundHover)]',
-        className,
-      )}
-      {...props}
-    />
+    <div className="flex flex-row items-center justify-between px-5 py-4 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] transition-colors hover:border-[var(--primary)] hover:bg-[var(--backgroundHover)]">
+      {children}
+    </div>
   );
 }
 
-export function ParticipantInfo({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+export function ParticipantInfo({ children }: { children?: ReactNode }) {
   return (
-    <div
-      className={cx('flex flex-row items-center gap-3 flex-1', className)}
-      {...props}
-    />
+    <div className="flex flex-row items-center gap-3 flex-1">{children}</div>
   );
 }
 
-export function ParticipantName({
-  children,
-  ...props
-}: { children?: ReactNode } & ComponentProps<typeof Typography>) {
+export function ParticipantName({ children }: { children?: ReactNode }) {
   return (
-    <Typography className={'flex-1'} weight="500" {...props}>
+    <Typography className={'flex-1'} weight="500">
       {children}
     </Typography>
   );
@@ -74,12 +57,27 @@ const checkboxClasses = [
   'checked:after:font-bold',
 ].join(' ');
 
-export function Checkbox(props: ComponentProps<'input'>) {
+export function Checkbox({
+  type,
+  checked,
+  disabled,
+  onChange,
+  'aria-label': ariaLabel,
+}: {
+  type?: string;
+  checked?: boolean;
+  disabled?: boolean;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  'aria-label'?: string;
+}) {
   return (
     <input
-      {...props}
-      type="checkbox"
-      className={cx(checkboxClasses, props.className)}
+      type={type ?? 'checkbox'}
+      checked={checked}
+      disabled={disabled}
+      onChange={onChange}
+      aria-label={ariaLabel}
+      className={cx(checkboxClasses)}
     />
   );
 }

@@ -12,18 +12,16 @@ interface ReplayControlsProps {
 }
 
 export function ReplayControls({ t }: ReplayControlsProps) {
-  const {
-    replay,
-    currentStep,
-    isPlaying,
-    playbackSpeed,
-    play,
-    pause,
-    stepForward,
-    stepBackward,
-    goToStep,
-    setSpeed,
-  } = useReplayStore();
+  const replay = useReplayStore((s) => s.replay);
+  const currentStep = useReplayStore((s) => s.currentStep);
+  const isPlaying = useReplayStore((s) => s.isPlaying);
+  const playbackSpeed = useReplayStore((s) => s.playbackSpeed);
+  const play = useReplayStore((s) => s.play);
+  const pause = useReplayStore((s) => s.pause);
+  const stepForward = useReplayStore((s) => s.stepForward);
+  const stepBackward = useReplayStore((s) => s.stepBackward);
+  const goToStep = useReplayStore((s) => s.goToStep);
+  const setSpeed = useReplayStore((s) => s.setSpeed);
 
   const progressRef = useRef<HTMLDivElement>(null);
 

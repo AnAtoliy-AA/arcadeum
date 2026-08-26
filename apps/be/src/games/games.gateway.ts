@@ -116,12 +116,12 @@ export class GamesGateway {
     });
 
     this.server.on('connection', (socket: Socket) => {
-      socket.onAny((event: string, ...args: unknown[]) => {
+      socket.onAny((event: string, payload: unknown) => {
         const handler = registry.get(event);
         if (handler) {
           const result = handler(
             socket,
-            (args[0] as Record<string, unknown>) ?? {},
+            (payload as Record<string, unknown>) ?? {},
           );
           if (result && typeof result === 'object' && 'catch' in result) {
             result.catch((err: unknown) => {
@@ -225,16 +225,21 @@ export class GamesGateway {
     const anonId = (client.data as Record<string, unknown>)?.anonId as
       string | undefined;
 
-    if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
-      this.logger.warn(
-        `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
-      );
-      throw new WsException('Cannot perform actions as another user.');
+    if (isAuthenticated) {
+      if (payloadUserId !== authUserId) {
+        this.logger.warn(
+          `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
+        );
+        throw new WsException('Cannot perform actions as another user.');
+      }
+      return;
     }
 
-    if (!isAuthenticated && anonId && payloadUserId !== anonId) {
+    // Fail closed — anonymous sockets must present the same server-tracked
+    // anonId from their handshake; identity-less sockets cannot act at all.
+    if (!anonId || payloadUserId !== anonId) {
       this.logger.warn(
-        `Anonymous ${anonId} attempted to act as ${payloadUserId} — blocking`,
+        `Identity-less socket attempted to act as ${payloadUserId} — blocking`,
       );
       throw new WsException('Cannot perform actions as another user.');
     }

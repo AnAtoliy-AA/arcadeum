@@ -58,8 +58,8 @@ test.describe('Idle Connection Overlay', () => {
       const win = window as unknown as Record<string, unknown>;
       const socket = win.gameSocket as
         | {
-            trigger?: (event: string, ...args: unknown[]) => void;
-            listeners?: (event: string) => ((...args: unknown[]) => void)[];
+            trigger?: (event: string, payload?: unknown) => void;
+            listeners?: (event: string) => ((payload?: unknown) => void)[];
           }
         | undefined;
       if (socket) {
@@ -104,8 +104,8 @@ test.describe('Idle Connection Overlay', () => {
       const win = window as unknown as Record<string, unknown>;
       const socket = win.gameSocket as
         | {
-            trigger?: (event: string, ...args: unknown[]) => void;
-            listeners?: (event: string) => ((...args: unknown[]) => void)[];
+            trigger?: (event: string, payload?: unknown) => void;
+            listeners?: (event: string) => ((payload?: unknown) => void)[];
             _mockConnected?: boolean;
           }
         | undefined;
@@ -164,8 +164,8 @@ test.describe('Idle Connection Overlay', () => {
       const win = window as unknown as Record<string, unknown>;
       const socket = win.gameSocket as
         | {
-            trigger?: (event: string, ...args: unknown[]) => void;
-            listeners?: (event: string) => ((...args: unknown[]) => void)[];
+            trigger?: (event: string, payload?: unknown) => void;
+            listeners?: (event: string) => ((payload?: unknown) => void)[];
           }
         | undefined;
       if (socket) {

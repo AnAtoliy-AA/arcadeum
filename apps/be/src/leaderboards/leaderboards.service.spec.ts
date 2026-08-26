@@ -52,6 +52,11 @@ describe('LeaderboardsService', () => {
   let tickerModel: Record<string, jest.Mock>;
   let userModel: Record<string, jest.Mock>;
   let historyStats: { getLeaderboard: jest.Mock };
+  let gateway: {
+    emitCaptured: jest.Mock;
+    emitEntryUpdated: jest.Mock;
+    emitEntriesUpdated: jest.Mock;
+  };
   let module: TestingModule;
 
   beforeEach(async () => {
@@ -69,6 +74,11 @@ describe('LeaderboardsService', () => {
     historyStats = {
       getLeaderboard: jest.fn().mockResolvedValue(realBoard),
     };
+    gateway = {
+      emitCaptured: jest.fn(),
+      emitEntryUpdated: jest.fn(),
+      emitEntriesUpdated: jest.fn(),
+    };
 
     module = await Test.createTestingModule({
       providers: [
@@ -83,7 +93,7 @@ describe('LeaderboardsService', () => {
         { provide: getModelToken(User.name), useValue: userModel },
         {
           provide: LeaderboardsGateway,
-          useValue: { emitCaptured: jest.fn(), emitEntryUpdated: jest.fn() },
+          useValue: gateway,
         },
         LeaderboardsCacheService,
         { provide: GameHistoryStatsService, useValue: historyStats },
@@ -170,7 +180,7 @@ describe('LeaderboardsService', () => {
     expect(snap.self?.rank).toBe(2);
   });
 
-  it('markInMatch updates entries and emits per user when mode is given', async () => {
+  it('markInMatch updates entries and emits one batched event when mode is given', async () => {
     entryModel.updateMany = jest.fn().mockReturnValue({
       exec: jest.fn().mockResolvedValue({ modifiedCount: 2 }),
     });
@@ -184,6 +194,23 @@ describe('LeaderboardsService', () => {
       { userId: { $in: ['u1', 'u2'] }, mode: 'critical_v1' },
       { $set: { isInMatch: true } },
     );
+    // Single coalesced emission instead of one broadcast per user.
+    const seasonMatcher = expect.any(String) as unknown as string;
+    expect(gateway.emitEntriesUpdated).toHaveBeenCalledTimes(1);
+    expect(gateway.emitEntriesUpdated).toHaveBeenCalledWith([
+      {
+        userId: 'u1',
+        mode: 'critical_v1',
+        season: seasonMatcher,
+        isInMatch: true,
+      },
+      {
+        userId: 'u2',
+        mode: 'critical_v1',
+        season: seasonMatcher,
+        isInMatch: true,
+      },
+    ]);
   });
 
   it('markInMatch is a no-op for empty user list', async () => {

@@ -44,10 +44,15 @@ export default async function TournamentsPage({
     description?: string;
     itemType?: string;
   }> = [];
+  let initialTournaments: Awaited<
+    ReturnType<typeof fetchPublicTournaments>
+  > | null = null;
 
   try {
-    const res = await fetchPublicTournaments({ locale, accessToken });
-    items = (res.items ?? []).map((t) => ({
+    // Fetched once on the server: feeds both the JSON-LD below and the
+    // client's first render, so the page never paints a loading spinner.
+    initialTournaments = await fetchPublicTournaments({ locale, accessToken });
+    items = (initialTournaments.items ?? []).map((t) => ({
       name: t.name,
       url: `${routes.tournaments}#${t.id}`,
       description: t.description || t.prizeDescription || undefined,
@@ -81,7 +86,7 @@ export default async function TournamentsPage({
         id={`json-ld-tournaments-${locale}`}
         data={[collectionPage, breadcrumb]}
       />
-      <TournamentsClient />
+      <TournamentsClient initialTournaments={initialTournaments} />
     </>
   );
 }

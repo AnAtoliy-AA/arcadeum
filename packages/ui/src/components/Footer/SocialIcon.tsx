@@ -2,15 +2,30 @@ import { cx } from '../../utils/cx';
 
 export type SocialIconProps = {
   href: string;
+  target?: string;
+  rel?: string;
+  'aria-label'?: string;
   children?: React.ReactNode;
   className?: string;
   'data-testid'?: string;
-} & React.AnchorHTMLAttributes<HTMLAnchorElement>;
+};
 
-export function SocialIcon({ href, children, className, ...rest }: SocialIconProps) {
+export function SocialIcon({
+  href,
+  target,
+  rel,
+  'aria-label': ariaLabel,
+  children,
+  className,
+  'data-testid': dataTestId,
+}: SocialIconProps) {
   return (
     <a
       href={href}
+      target={target}
+      rel={rel}
+      aria-label={ariaLabel}
+      data-testid={dataTestId}
       className={cx(
         'flex h-10 w-10 items-center justify-center rounded-[10px] border',
         'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)]',
@@ -22,7 +37,6 @@ export function SocialIcon({ href, children, className, ...rest }: SocialIconPro
         'opacity-80',
         className,
       )}
-      {...rest}
     >
       {children}
     </a>

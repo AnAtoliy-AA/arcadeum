@@ -1,7 +1,6 @@
 'use client';
 
 import type React from 'react';
-import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { PageTitle, Button } from '@arcadeum/ui';
 
@@ -21,18 +20,11 @@ interface StatsHeaderProps {
   onRefresh: () => void;
 }
 
-function Header({
-  className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+function Header({ children }: { children?: React.ReactNode }) {
   return (
-    <div
-      className={cx(
-        'flex flex-row items-center justify-between mb-7',
-        className,
-      )}
-      {...props}
-    />
+    <div className="flex flex-row items-center justify-between mb-7">
+      {children}
+    </div>
   );
 }
 

@@ -11,21 +11,38 @@ type UseLeaderboardArgs = GetLeaderboardArgs & {
 };
 
 export function useLeaderboard({
+  mode,
+  page,
+  pageSize,
+  selfId,
+  accessToken,
+  q,
+  scope,
+  range,
   onSuccess,
-  ...args
 }: UseLeaderboardArgs = {}) {
   return useQuery({
     queryKey: [
       'leaderboard',
-      args.mode ?? 'all',
-      args.page ?? 1,
-      args.selfId ?? null,
-      args.accessToken ? 'authed' : 'anon',
-      args.q?.trim() ?? '',
-      args.scope ?? '',
-      args.range ?? '',
+      mode ?? 'all',
+      page ?? 1,
+      selfId ?? null,
+      accessToken ? 'authed' : 'anon',
+      q?.trim() ?? '',
+      scope ?? '',
+      range ?? '',
     ],
-    queryFn: () => getLeaderboard(args),
+    queryFn: () =>
+      getLeaderboard({
+        mode,
+        page,
+        pageSize,
+        selfId,
+        accessToken,
+        q,
+        scope,
+        range,
+      }),
     onSuccess,
   });
 }

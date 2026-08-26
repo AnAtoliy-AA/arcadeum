@@ -5,31 +5,71 @@ import React from 'react';
 import Link from 'next/link';
 import { cx } from '../../utils/cx';
 
+type ProfileTypographyProps = Pick<
+  React.ComponentProps<typeof Typography>,
+  'children' | 'color' | 'style' | 'className' | 'data-testid'
+>;
+
 export const ProfileMenuContainer = ({
+  children,
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
+  'data-testid': dataTestId,
+  'data-profile-menu': dataProfileMenu,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+  'data-testid'?: string;
+  'data-profile-menu'?: string | boolean;
+}) => (
   <div
     className={cx('relative z-[100] hidden sm:block print:block', className)}
-    {...rest}
-  />
+    data-testid={dataTestId}
+    data-profile-menu={dataProfileMenu}
+  >
+    {children}
+  </div>
 );
 
-export const UserName = ({ children, ...rest }: React.ComponentProps<typeof Typography>) => (
-  <Typography uiSize="sm" weight="500" style={{ maxWidth: 140 }} {...rest}>
+export const UserName = ({
+  children,
+  color,
+  style,
+  className,
+  'data-testid': dataTestId,
+}: ProfileTypographyProps) => (
+  <Typography
+    uiSize="sm"
+    weight="500"
+    color={color}
+    style={style ?? { maxWidth: 140 }}
+    className={className}
+    data-testid={dataTestId}
+  >
     {children}
   </Typography>
 );
 
 export const UserNameEllipsis = ({
   children,
-  ...rest
-}: React.ComponentProps<typeof Typography>) => (
+  color,
+  style,
+  className,
+  'data-testid': dataTestId,
+}: ProfileTypographyProps) => (
   <Typography
     uiSize="sm"
     weight="800"
-    style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}
-    {...rest}
+    color={color}
+    style={
+      style ?? {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        maxWidth: 140,
+      }
+    }
+    className={className}
+    data-testid={dataTestId}
   >
     {children}
   </Typography>

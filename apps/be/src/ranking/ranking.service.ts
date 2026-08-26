@@ -35,9 +35,18 @@ interface RankedOutcome {
 
 const ELO_K = 32;
 
+/** TTL for the shared (season, gameIds) → elo-buckets cache. */
+const ELO_BUCKET_TTL_MS = 30_000;
+
+interface EloBucketCacheEntry {
+  expiresAt: number;
+  value: Array<{ gameId: string; elo: number; count: number }>;
+}
+
 @Injectable()
 export class RankingService {
   private readonly logger = new Logger(RankingService.name);
+  private eloBucketCache = new Map<string, EloBucketCacheEntry>();
 
   constructor(
     @InjectModel(RankingEntry.name, OCI_CONNECTION)
@@ -166,12 +175,53 @@ export class RankingService {
       .lean<RankingEntry[]>()
       .exec();
 
-    const rows: MyRankingDto[] = [];
-    for (const d of docs) {
-      const ahead = await this.rankingModel
-        .countDocuments({ gameId: d.gameId, season, elo: { $gt: d.elo } })
+    if (docs.length === 0) return [];
+
+    // A single grouped scan yields player counts per (gameId, elo) bucket so
+    // ranks for every entry resolve in one round-trip instead of one
+    // countDocuments query per game. Buckets depend only on (season,
+    // gameIds), so they are cached briefly and shared across users.
+    const gameIds = [...new Set(docs.map((d) => d.gameId))];
+    const bucketKey = `${season}|${[...gameIds].sort().join(',')}`;
+    let cachedBuckets = this.eloBucketCache.get(bucketKey);
+    if (!cachedBuckets || cachedBuckets.expiresAt < Date.now()) {
+      const value = await this.rankingModel
+        .aggregate<{ gameId: string; elo: number; count: number }>([
+          { $match: { season, gameId: { $in: gameIds } } },
+          {
+            $group: {
+              _id: { gameId: '$gameId', elo: '$elo' },
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              gameId: '$_id.gameId',
+              elo: '$_id.elo',
+              count: 1,
+            },
+          },
+        ])
         .exec();
-      rows.push({
+      cachedBuckets = { value, expiresAt: Date.now() + ELO_BUCKET_TTL_MS };
+      if (this.eloBucketCache.size >= 100) {
+        const oldest = this.eloBucketCache.keys().next().value as
+          string | undefined;
+        if (oldest) this.eloBucketCache.delete(oldest);
+      }
+      this.eloBucketCache.set(bucketKey, cachedBuckets);
+    }
+    const eloBuckets = cachedBuckets.value;
+
+    const rows: MyRankingDto[] = docs.map((d) => {
+      let ahead = 0;
+      for (const bucket of eloBuckets) {
+        if (bucket.gameId === d.gameId && bucket.elo > d.elo) {
+          ahead += bucket.count;
+        }
+      }
+      return {
         gameId: d.gameId,
         season,
         elo: d.elo,
@@ -182,8 +232,8 @@ export class RankingService {
         draws: d.draws,
         rankedGames: d.rankedGames,
         rank: ahead + 1,
-      });
-    }
+      };
+    });
     return rows;
   }
 

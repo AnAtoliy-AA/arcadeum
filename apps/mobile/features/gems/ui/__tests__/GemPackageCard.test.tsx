@@ -10,29 +10,39 @@ jest.mock('@/hooks/useThemedStyles', () => ({
 jest.mock('@/components/ThemedText', () => ({
   ThemedText: ({
     children,
-    ...props
-  }: { children: React.ReactNode } & Record<string, unknown>) => {
+    type,
+    style,
+  }: {
+    children: React.ReactNode;
+    type?: string;
+    style?: unknown;
+  }) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { Text } = require('react-native') as {
       Text: React.ComponentType<Record<string, unknown>>;
     };
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mockReact = require('react') as typeof import('react');
-    return mockReact.createElement(Text, props, children);
+    return mockReact.createElement(Text, { type, style }, children);
   },
 }));
 jest.mock('@/components/ThemedView', () => ({
   ThemedView: ({
     children,
-    ...props
-  }: { children: React.ReactNode } & Record<string, unknown>) => {
+    style,
+    testID,
+  }: {
+    children: React.ReactNode;
+    style?: unknown;
+    testID?: string;
+  }) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { View } = require('react-native') as {
       View: React.ComponentType<Record<string, unknown>>;
     };
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mockReact = require('react') as typeof import('react');
-    return mockReact.createElement(View, props, children);
+    return mockReact.createElement(View, { style, testID }, children);
   },
 }));
 jest.mock('@/lib/platformShadow', () => ({

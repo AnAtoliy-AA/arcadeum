@@ -166,9 +166,10 @@ export class LeaderboardsService {
       this.cache.invalidateAll();
       if (mode) {
         const season = currentSeason();
-        for (const userId of userIds) {
-          this.gateway.emitEntryUpdated({ userId, mode, season, isInMatch });
-        }
+        // Single batched emission instead of one broadcast per user.
+        this.gateway.emitEntriesUpdated(
+          userIds.map((userId) => ({ userId, mode, season, isInMatch })),
+        );
       }
     }
     return matched;

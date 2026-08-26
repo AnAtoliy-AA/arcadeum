@@ -12,7 +12,20 @@ const players: TicTacToePlayer[] = [
 function renderBoard(props: React.ComponentProps<typeof TicTacToeBoard>) {
   return render(
     <TicTacToeThemeProvider variant="classic">
-      <TicTacToeBoard {...props} />
+      <TicTacToeBoard
+        board={props.board}
+        winLine={props.winLine}
+        players={props.players}
+        teams={props.teams}
+        teamMode={props.teamMode}
+        origin={props.origin}
+        disabled={props.disabled}
+        ariaLabel={props.ariaLabel}
+        onCellClick={props.onCellClick}
+        highlightedCell={props.highlightedCell}
+        maxBoardSize={props.maxBoardSize}
+        currentPlayerId={props.currentPlayerId}
+      />
     </TicTacToeThemeProvider>,
   );
 }

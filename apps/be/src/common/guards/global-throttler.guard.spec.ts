@@ -23,8 +23,9 @@ const OPTIONS = [
 
 function createContext(
   handler: (req: unknown) => string | undefined,
-  controllerClass: abstract new (...args: never[]) => unknown,
+  controllerClass: abstract new () => unknown,
   ip = '1.2.3.4',
+  type = 'http',
 ): ExecutionContext {
   const req = {
     ip,
@@ -33,6 +34,7 @@ function createContext(
   } as unknown as Request;
   const res = { header: () => res } as unknown as Response;
   return {
+    getType: () => type,
     switchToHttp: () => ({ getRequest: () => req, getResponse: () => res }),
     getHandler: () => handler,
     getClass: () => controllerClass,
@@ -143,5 +145,19 @@ describe('GlobalThrottlerGuard named-throttler opt-in', () => {
     await guard.canActivate(ctx);
     await guard.canActivate(ctx);
     await expect(guard.canActivate(ctx)).rejects.toThrow();
+  });
+
+  it('skips non-HTTP (WebSocket) contexts entirely', async () => {
+    const allowed = await guard.canActivate(
+      createContext(
+        PlainController.prototype.handler,
+        PlainController,
+        '1.2.3.4',
+        'ws',
+      ),
+    );
+    expect(allowed).toBe(true);
+    // Nothing was recorded — WS traffic must not share an IP bucket.
+    expect(storage.storage.size).toBe(0);
   });
 });

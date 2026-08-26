@@ -17,15 +17,20 @@ jest.mock('@/lib/i18n', () => ({
 jest.mock('@/components/ThemedText', () => ({
   ThemedText: ({
     children,
-    ...props
-  }: { children: React.ReactNode } & Record<string, unknown>) => {
+    style,
+    testID,
+  }: {
+    children: React.ReactNode;
+    style?: unknown;
+    testID?: string;
+  }) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { Text } = require('react-native') as {
       Text: React.ComponentType<Record<string, unknown>>;
     };
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mockReact = require('react') as typeof import('react');
-    return mockReact.createElement(Text, props, children);
+    return mockReact.createElement(Text, { style, testID }, children);
   },
 }));
 jest.mock('@/features/wallet/api/useWallet', () => ({

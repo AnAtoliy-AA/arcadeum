@@ -189,53 +189,54 @@ export const LeaderboardSkeleton: Story = {
 };
 
 // Styled helpers for stories
-type DivProps = { className?: string } & React.HTMLAttributes<HTMLDivElement>;
-type SpanProps = { className?: string } & React.HTMLAttributes<HTMLSpanElement>;
+type HelperProps = { children?: React.ReactNode };
 
-const Container = ({ className, ...props }: DivProps) => (
-  <div className={`flex flex-col gap-4 p-4 ${className ?? ''}`} {...props} />
+const Container = ({ children }: HelperProps) => (
+  <div className="flex flex-col gap-4 p-4">{children}</div>
 );
 
-const Row = ({ className, ...props }: DivProps) => (
-  <div className={`flex items-center gap-4 ${className ?? ''}`} {...props} />
+const Row = ({ children }: HelperProps) => (
+  <div className="flex items-center gap-4">{children}</div>
 );
 
-const Label = ({ className, ...props }: SpanProps) => (
-  <span className={`w-[100px] text-[14px] leading-[18px] text-[var(--color)] opacity-[0.7] ${className ?? ''}`} {...props} />
+const Label = ({ children }: HelperProps) => (
+  <span className="w-[100px] text-[14px] leading-[18px] text-[var(--color)] opacity-[0.7]">{children}</span>
 );
 
-const Card = ({ className, ...props }: DivProps) => (
-  <div className={`flex max-w-[300px] flex-col gap-3 rounded-3xl border border-[var(--borderColor)] p-5 ${className ?? ''}`} {...props} />
+const Card = ({ children }: HelperProps) => (
+  <div className="flex max-w-[300px] flex-col gap-3 rounded-3xl border border-[var(--borderColor)] p-5">{children}</div>
 );
 
-const ProfileCard = ({ className, ...props }: DivProps) => (
-  <div className={`flex max-w-[250px] items-center gap-4 rounded-2xl border border-[var(--borderColor)] p-4 ${className ?? ''}`} {...props} />
+const ProfileCard = ({ children }: HelperProps) => (
+  <div className="flex max-w-[250px] items-center gap-4 rounded-2xl border border-[var(--borderColor)] p-4">{children}</div>
 );
 
-const ProfileInfo = ({ className, ...props }: DivProps) => (
-  <div className={`flex flex-col gap-2 ${className ?? ''}`} {...props} />
+const ProfileInfo = ({ children }: HelperProps) => (
+  <div className="flex flex-col gap-2">{children}</div>
 );
 
-const TableContainer = ({ className, ...props }: DivProps) => (
-  <div className={`overflow-hidden rounded-2xl border border-[var(--borderColor)] ${className ?? ''}`} {...props} />
+const TableContainer = ({ children }: HelperProps) => (
+  <div className="overflow-hidden rounded-2xl border border-[var(--borderColor)]">{children}</div>
 );
 
-const TableRow = ({ className, ...props }: DivProps) => (
+const TableRow = ({ children }: HelperProps) => (
   <div
-    className={`gap-4 border-b border-[var(--borderColor)] p-4 ${className ?? ''}`}
+    className="gap-4 border-b border-[var(--borderColor)] p-4"
     style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr' }}
-    {...props}
-  />
+  >
+    {children}
+  </div>
 );
 
-const LeaderboardContainer = ({ className, ...props }: DivProps) => (
-  <div className={`overflow-hidden rounded-3xl border border-[var(--borderColor)] ${className ?? ''}`} {...props} />
+const LeaderboardContainer = ({ children }: HelperProps) => (
+  <div className="overflow-hidden rounded-3xl border border-[var(--borderColor)]">{children}</div>
 );
 
-const LeaderboardRow = ({ className, ...props }: DivProps) => (
+const LeaderboardRow = ({ children }: HelperProps) => (
   <div
-    className={`gap-2 border-b border-[var(--borderColor)] px-5 py-4 ${className ?? ''}`}
+    className="gap-2 border-b border-[var(--borderColor)] px-5 py-4"
     style={{ display: 'grid', gridTemplateColumns: '60px 2fr 80px 80px 80px 100px' }}
-    {...props}
-  />
+  >
+    {children}
+  </div>
 );

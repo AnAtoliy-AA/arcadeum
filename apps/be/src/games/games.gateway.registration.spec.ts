@@ -85,11 +85,14 @@ describe('GamesGateway game handler registration', () => {
     const connectionCb = connectionHandlers[0];
     if (!connectionCb) throw new Error('server.on("connection") not wired');
 
-    let registered: ((event: string, ...args: unknown[]) => void) | undefined;
+    type AnyEventHandler = (event: string, payload: unknown) => void;
+    let registered: AnyEventHandler | undefined;
     const fakeSocket = {
-      onAny: (cb: (event: string, ...args: unknown[]) => void) => {
+      onAny: (cb: AnyEventHandler) => {
         registered = cb;
       },
+      // Identity checks fail closed — sockets must present a verified id.
+      data: { authenticated: true, userId: 'user-1' },
     } as unknown as Socket;
     connectionCb(fakeSocket);
     if (!registered) throw new Error('socket.onAny not wired');

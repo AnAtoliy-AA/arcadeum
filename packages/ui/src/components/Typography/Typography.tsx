@@ -21,8 +21,17 @@ export type TypographyProps = {
   className?: string;
   title?: string;
   id?: string;
-  ref?: React.Ref<HTMLElement>;
-} & React.HTMLAttributes<HTMLElement>;
+  onClick?: React.MouseEventHandler<HTMLElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLElement>;
+  role?: React.AriaRole;
+  tabIndex?: number;
+  'aria-expanded'?: boolean | 'true' | 'false';
+  'aria-label'?: string;
+  'data-testid'?: string;
+  'data-expanded'?: boolean | string;
+};
 
 const uiSizeClasses: Record<NonNullable<TypographyProps['uiSize']>, string> = {
   xs: 'typography-size-xs',
@@ -114,11 +123,19 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
       className,
       title,
       id,
-      ...rest
+      onClick,
+      onKeyDown,
+      onMouseEnter,
+      onMouseLeave,
+      role,
+      tabIndex,
+      'aria-expanded': ariaExpanded,
+      'aria-label': ariaLabel,
+      'data-testid': dataTestId,
+      'data-expanded': dataExpanded,
     },
     ref,
   ) {
-    const spanProps = rest as React.HTMLAttributes<HTMLElement>;
     const typographyStyle: React.CSSProperties = {
       ...(alpha ? { opacity: alphaOpacities[alpha] } : null),
       ...(tracking ? { letterSpacing: trackingSpacings[tracking] } : null),
@@ -137,6 +154,16 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
         ref,
         id,
         title,
+        onClick,
+        onKeyDown,
+        onMouseEnter,
+        onMouseLeave,
+        role,
+        tabIndex,
+        'aria-expanded': ariaExpanded,
+        'aria-label': ariaLabel,
+        'data-testid': dataTestId,
+        'data-expanded': dataExpanded,
         className: cx(
           uiSizeClasses[uiSize],
           variantClasses[variant],
@@ -147,7 +174,6 @@ export const Typography = forwardRef<HTMLElement, TypographyProps>(
           className,
         ),
         style: { ...typographyStyle, ...style },
-        ...spanProps,
       },
       children,
     );

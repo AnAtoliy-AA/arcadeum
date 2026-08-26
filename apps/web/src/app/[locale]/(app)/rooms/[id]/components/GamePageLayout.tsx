@@ -163,7 +163,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
       .registerFallbackResolveDisplayName(resolveDisplayName);
   }, [resolveDisplayName]);
 
-  const { isGameOver, onRematch, rematchLoading } = useGameRematchStore();
+  const isGameOver = useGameRematchStore((s) => s.isGameOver);
+  const onRematch = useGameRematchStore((s) => s.onRematch);
+  const rematchLoading = useGameRematchStore((s) => s.rematchLoading);
 
   const isLobby = room.status === 'lobby';
   const isHost = room.hostId === userId;

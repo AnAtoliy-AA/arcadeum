@@ -3,9 +3,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BuyGemsButton } from './BuyGemsButton';
 
 // Mock the server action
-const mockBuyGemsAction = vi.fn();
+const mockBuyGemsAction = vi.hoisted(() => vi.fn());
 vi.mock('../server/gems.actions', () => ({
-  buyGemsAction: (...args: unknown[]) => mockBuyGemsAction(...args),
+  buyGemsAction: mockBuyGemsAction,
 }));
 
 // Mock the app router so the component can navigate to /auth via router.push

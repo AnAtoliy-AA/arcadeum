@@ -77,9 +77,7 @@ export default function WelcomeScreen() {
           <ThemedText
             type="title"
             style={styles.title}
-            {...(platform.isWeb
-              ? { accessibilityRole: 'header' as const }
-              : {})}
+            accessibilityRole="header"
           >
             {appName}
           </ThemedText>

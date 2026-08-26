@@ -132,7 +132,7 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
     async (gameId: string) => {
       setLoadingGame(gameId);
       try {
-        const { room } = await gamesApi.quickplay(gameId, {
+        const { room } = await gamesApi.quickplay(gameId, undefined, {
           token: snapshot.accessToken || undefined,
         });
         onClose();

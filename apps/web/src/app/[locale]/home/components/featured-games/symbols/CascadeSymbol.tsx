@@ -1,6 +1,4 @@
-import type { SVGProps } from 'react';
-
-export function CascadeSymbol(props: SVGProps<SVGSVGElement>) {
+export function CascadeSymbol({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 64 64"
@@ -9,7 +7,7 @@ export function CascadeSymbol(props: SVGProps<SVGSVGElement>) {
       strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
-      {...props}
+      className={className}
     >
       {/* Three cards in a fan — the Cascade silhouette */}
       <g transform="translate(32 38) rotate(-18)">

@@ -65,15 +65,26 @@ export class GamePostMatchService {
     }
   }
 
-  async payoutGameWin(session: GameSessionSummary): Promise<void> {
+  async payoutGameWin(
+    session: GameSessionSummary,
+    playerIds: string[] = [],
+  ): Promise<void> {
     try {
       const sessionId = session.id;
       const winners = await this.sessionsService.getWinners(sessionId);
-      if (winners.length === 0) return;
+      // Bots never receive rewards, and solo-vs-bot matches pay nothing —
+      // otherwise grinding an easy bot is an unbounded coin faucet. PvP
+      // (2+ humans) pays as before.
+      const humanPlayers = playerIds.filter((id) => !id.startsWith('bot-'));
+      const payableWinners =
+        humanPlayers.length >= 2
+          ? winners.filter((id) => !id.startsWith('bot-'))
+          : [];
+      if (payableWinners.length === 0) return;
       const reward = await this.economy.getNumber('game_win_coin_reward');
       if (reward <= 0) return;
       await Promise.allSettled(
-        winners.map((winnerId) =>
+        payableWinners.map((winnerId) =>
           this.wallet
             .credit(
               winnerId,

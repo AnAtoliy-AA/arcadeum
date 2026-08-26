@@ -92,10 +92,12 @@ export function generateRoundRobinBracket(
     // Circle method: fix seat 0, rotate the rest by one.
     const fixed = circle[0];
     if (fixed === undefined) break;
-    const rest = circle.slice(1);
-    const last = rest.pop();
-    if (last !== undefined) rest.unshift(last);
-    circle.splice(0, circle.length, fixed, ...rest);
+    const rotatedTail = circle.slice(1);
+    const last = rotatedTail.pop();
+    if (last !== undefined) rotatedTail.unshift(last);
+    circle.length = 0;
+    circle.push(fixed);
+    for (const seat of rotatedTail) circle.push(seat);
   }
 
   return { format: 'round_robin', rounds };

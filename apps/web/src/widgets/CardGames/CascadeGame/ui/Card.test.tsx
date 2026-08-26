@@ -29,7 +29,17 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 function renderCard(props: React.ComponentProps<typeof Card>) {
   return render(
     <CascadeThemeProvider variant="cyberpunk">
-      <Card {...props} />
+      <Card
+        card={props.card}
+        faceDown={props.faceDown}
+        playable={props.playable}
+        selected={props.selected}
+        disabled={props.disabled}
+        dimmed={props.dimmed}
+        onClick={props.onClick}
+        size={props.size}
+        ariaLabel={props.ariaLabel}
+      />
     </CascadeThemeProvider>,
   );
 }

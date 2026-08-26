@@ -40,7 +40,7 @@ function waitForMetro(url = 'http://localhost:8081/status', timeoutMs = 30000) {
 function runNpm(cmd, args = []) {
   return spawn(
     process.platform === 'win32' ? 'npm.cmd' : 'npm',
-    ['run', cmd, ...args],
+    ['run', cmd].concat(args),
     {
       stdio: 'inherit',
       shell: true,

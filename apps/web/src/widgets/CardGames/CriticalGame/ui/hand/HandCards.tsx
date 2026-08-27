@@ -18,6 +18,8 @@ interface HandCardsProps {
    * cards already scroll horizontally and rotation eats horizontal space.
    */
   isFanned?: boolean;
+  /** Fired on double-click / double-tap on a card to play it directly. */
+  onDoubleClick?: (uid: string) => void;
 }
 
 const EDGE_FADE_MASK =
@@ -39,6 +41,7 @@ export function HandCards({
   showName = true,
   showDescription = true,
   isFanned = true,
+  onDoubleClick,
 }: HandCardsProps) {
   const selected = useMemo(() => new Set(selectedUids), [selectedUids]);
   const countsById = useMemo(() => {
@@ -49,7 +52,7 @@ export function HandCards({
 
   return (
     <div
-      className="flex flex-row flex-1 flex-nowrap items-end justify-start gap-2 pb-12 px-4 w-full overflow-x-auto overflow-y-visible touch-pan-x overscroll-x-contain no-scrollbar max-[800px]:flex-[0] max-[800px]:basis-[auto] max-[800px]:w-full max-[800px]:min-h-[200px]"
+      className="flex flex-row flex-1 flex-nowrap items-end justify-start gap-2 pb-12 px-4 w-full overflow-x-auto overflow-y-visible overscroll-x-contain no-scrollbar max-[800px]:flex-[0] max-[800px]:basis-[auto] max-[800px]:w-full max-[800px]:min-h-[200px]"
       style={{
         paddingTop: isFanned ? 24 : 14,
         WebkitMaskImage: EDGE_FADE_MASK,
@@ -94,6 +97,9 @@ export function HandCards({
               showName={showName}
               showDescription={showDescription}
               onToggle={() => onToggleSelect(card.uid)}
+              onDoubleClick={
+                onDoubleClick ? () => onDoubleClick(card.uid) : undefined
+              }
             />
           </div>
         );

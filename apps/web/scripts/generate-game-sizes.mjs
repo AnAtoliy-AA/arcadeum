@@ -80,61 +80,76 @@ function landingManifestPath(slug) {
 }
 
 function main() {
-  // 1. Base chunks shared by all offline bot-mode games (layout + offline view).
-  const offlineChunks = new Set(chunksFromManifest(offlineManifestPath()));
-  const baseBytes = sumChunkBytes([...offlineChunks]);
+  try {
+    // 1. Base chunks shared by all offline bot-mode games (layout + offline view).
+    const offlineChunks = new Set(chunksFromManifest(offlineManifestPath()));
+    const baseBytes = sumChunkBytes([...offlineChunks]);
 
-  // 2. Bot-mode games: base + game-specific widget chunks from landing pages.
-  const BOT_GAMES = [
-    'chess',
-    'checkers',
-    'backgammon',
-    'hearts',
-    'spades',
-    'cascade',
-    'tic-tac-toe',
-    'go',
-    'pachisi',
-    'sea-battle',
-    'critical',
-    'cat-dash',
-  ];
+    // 2. Bot-mode games: base + game-specific widget chunks from landing pages.
+    const BOT_GAMES = [
+      'chess',
+      'checkers',
+      'backgammon',
+      'hearts',
+      'spades',
+      'cascade',
+      'tic-tac-toe',
+      'go',
+      'pachisi',
+      'sea-battle',
+      'critical',
+      'cat-dash',
+    ];
 
-  const gameSizes = {};
+    const gameSizes = {};
 
-  for (const slug of BOT_GAMES) {
-    const allChunks = chunksFromManifest(landingManifestPath(slug));
-    const gameSpecific = allChunks.filter((c) => !offlineChunks.has(c));
-    gameSizes[slug] = baseBytes + sumChunkBytes(gameSpecific);
-  }
-
-  // 3. Puzzle games: full route chunks (includes statically imported widgets).
-  const PUZZLE_SLUGS = ['solitaire', 'minesweeper', 'sudoku', '2048'];
-
-  for (const slug of PUZZLE_SLUGS) {
-    const chunks = chunksFromManifest(puzzleManifestPath(slug));
-    gameSizes[slug] = sumChunkBytes(chunks);
-  }
-
-  // 4. Total unique bytes across all games (union of all chunk sets).
-  const allUniqueChunks = new Set(offlineChunks);
-  for (const slug of BOT_GAMES) {
-    for (const c of chunksFromManifest(landingManifestPath(slug))) {
-      allUniqueChunks.add(c);
+    for (const slug of BOT_GAMES) {
+      const allChunks = chunksFromManifest(landingManifestPath(slug));
+      const gameSpecific = allChunks.filter((c) => !offlineChunks.has(c));
+      gameSizes[slug] = baseBytes + sumChunkBytes(gameSpecific);
     }
-  }
-  for (const slug of PUZZLE_SLUGS) {
-    for (const c of chunksFromManifest(puzzleManifestPath(slug))) {
-      allUniqueChunks.add(c);
-    }
-  }
-  const totalBytes = sumChunkBytes([...allUniqueChunks]);
 
-  const manifest = { games: gameSizes, totalBytes };
-  writeFileSync(OUT_FILE, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
-  console.log(
-    `[generate-game-sizes] wrote ${OUT_FILE} — ${Object.keys(gameSizes).length} games, ${(totalBytes / 1024).toFixed(0)} KB total unique`,
-  );
+    // 3. Puzzle games: full route chunks (includes statically imported widgets).
+    const PUZZLE_SLUGS = ['solitaire', 'minesweeper', 'sudoku', '2048'];
+
+    for (const slug of PUZZLE_SLUGS) {
+      const chunks = chunksFromManifest(puzzleManifestPath(slug));
+      gameSizes[slug] = sumChunkBytes(chunks);
+    }
+
+    // 4. Total unique bytes across all games (union of all chunk sets).
+    const allUniqueChunks = new Set(offlineChunks);
+    for (const slug of BOT_GAMES) {
+      for (const c of chunksFromManifest(landingManifestPath(slug))) {
+        allUniqueChunks.add(c);
+      }
+    }
+    for (const slug of PUZZLE_SLUGS) {
+      for (const c of chunksFromManifest(puzzleManifestPath(slug))) {
+        allUniqueChunks.add(c);
+      }
+    }
+    const totalBytes = sumChunkBytes([...allUniqueChunks]);
+
+    const manifest = { games: gameSizes, totalBytes };
+    writeFileSync(OUT_FILE, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+    console.log(
+      `[generate-game-sizes] wrote ${OUT_FILE} — ${Object.keys(gameSizes).length} games, ${(totalBytes / 1024).toFixed(0)} KB total unique`,
+    );
+  } catch (error) {
+    // Non-fatal: write an empty manifest so the client can detect the
+    // missing data and show "Sizes available after download" instead of
+    // silently showing nothing.
+    console.warn(
+      '[generate-game-sizes] failed to read build manifests, writing empty fallback:',
+      error instanceof Error ? error.message : error,
+    );
+    writeFileSync(
+      OUT_FILE,
+      `${JSON.stringify({ games: {}, totalBytes: 0 }, null, 2)}\n`,
+      'utf8',
+    );
+  }
 }
 
 main();

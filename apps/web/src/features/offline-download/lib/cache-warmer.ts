@@ -28,7 +28,22 @@ export type WarmResult = {
 export function isOfflineDownloadSupported(): boolean {
   if (typeof window === 'undefined') return false;
   if (!('caches' in window)) return false;
-  // No active controller ⇒ PWA plugin is disabled (dev / E2E builds).
+  // Active SW controller means everything is ready.
+  if (Boolean(navigator.serviceWorker?.controller)) return true;
+  // Fallback: caches API is available AND a PWA manifest is present, meaning
+  // the SW may still be installing or waiting to claim.  The section should
+  // render so users can discover the feature; downloads are gated on the
+  // actual SW controller check inside each download action.
+  return document.querySelector('link[rel="manifest"]') !== null;
+}
+
+/**
+ * Returns true only when a service worker is actively controlling the page.
+ * Use this to gate actions that require the SW (cache warming, etc.) as
+ * opposed to just rendering the section.
+ */
+export function isSWActive(): boolean {
+  if (typeof window === 'undefined') return false;
   return Boolean(navigator.serviceWorker?.controller);
 }
 

@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.63] - 2026-08-27
+
+### Added
+- expand scenarios to 50, add gameplay auth injection
+
+### Fixed
+- run gameplay scenarios anonymous, expand fallback tracks
+
+
+## [1.26.62] - 2026-08-27
+
+### Fixed
+- handle View Transition AbortError when playing action cards
+
+
+## [1.26.61] - 2026-08-27
+
+### Fixed
+- quote heredoc and fix metadata in release social poster
+
+
+## [1.26.60] - 2026-08-27
+
+### Fixed
+- make card text fully visible and add double-click to play
+- improve mobile playability with safe areas, tap handling, and responsive modals
+
+
+## [1.26.59] - 2026-08-27
+
+### Fixed
+- fix offline game downloads not working and missing sizes
+
+
 ## [1.26.58] - 2026-08-26
 
 ### Added

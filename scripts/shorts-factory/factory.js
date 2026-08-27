@@ -94,6 +94,10 @@ const CONFIG = {
   // Telegram Bot API
   tgBotUrl: process.env.TG_BOT_URL || 'http://localhost:4001',
 
+  // Factory bot account for gameplay recording (optional)
+  factoryBotToken: process.env.SHORTS_FACTORY_BOT_TOKEN || '',
+  factoryBotRefreshToken: process.env.SHORTS_FACTORY_BOT_REFRESH_TOKEN || '',
+
   // Approval settings
   approvalTimeoutMs: 3 * 60 * 60 * 1000, // 3 hours
   pollIntervalMs: 30 * 1000, // 30 seconds
@@ -247,146 +251,509 @@ async function reportResult(id, success, message, platforms) {
 // ============================================================================
 
 const CAPTIONS = [
-  'Check out this awesome gaming platform! 🎮',
-  'Play games, win rewards, have fun! 🏆',
-  'The future of blockchain gaming is here ⚡',
-  'Join the arcade revolution! 🕹️',
-  'Free to play, easy to win 💰',
-  'Gaming meets Web3 - experience the difference 🚀',
-  'Your next favorite game is waiting 🎯',
-  'Play. Compete. Earn. Repeat! 🔄',
-  'Level up your gaming experience! ⬆️',
-  'Where gamers become champions! 👑',
-  'Unlock exclusive rewards today! 🔓',
-  'The ultimate gaming destination awaits! 🌟',
+  'This is what web3 gaming actually looks like 🎮⚡',
+  'Play games, win real rewards, no wallet needed 💰🏆',
+  'The future of multiplayer gaming is live on Arcadeum ⚡',
+  'POV: you just found the best gaming platform online 🕹️🔥',
+  'Free to play. Easy to win. Impossible to stop 🚀',
+  'Gaming meets Web3 — and it slaps 🎯',
+  'Your next favorite game is one click away 🌟',
+  'Play. Compete. Earn. Repeat! 🔄💎',
+  'Level up your gaming experience today! ⬆️',
+  'Where casual gamers become champions 👑',
+  'Unlock exclusive drops just by playing 🔓🎁',
+  'The ultimate gaming destination just dropped 🌟',
+  'Real multiplayer. Real stakes. Real fun 🏅',
+  'Web3 gaming that actually works — no gas fees 😤⚡',
+  'Sink ships, climb ranks, collect rewards ⚓🏆',
+  'Chess with stakes? Sign me up 👑♟️',
+  'This snake game goes HARD 🐍🔥',
+  'Classic games, Web3 rewards — best combo ever 🎲💰',
+  'Drop in, play a quick game, win something epic 🎮🏆',
+  'Arcadeum just changed the game. Literally. 🚀',
 ];
 
 // ============================================================================
-// SCENARIOS - 30 pre-defined user journeys (one per day, no repeats)
+// GAMEPLAY AUTH HELPER
+// ============================================================================
+
+/**
+ * Injects bot auth tokens into the browser context so gameplay pages load
+ * as an authenticated user. Requires SHORTS_FACTORY_BOT_TOKEN in env.
+ * Returns true if tokens were injected, false if no token configured.
+ */
+async function injectBotAuth(context) {
+  if (!CONFIG.factoryBotToken) {
+    return false;
+  }
+  await context.addInitScript(
+    ({ accessToken, refreshToken }) => {
+      try {
+        const session = {
+          accessToken,
+          refreshToken,
+          expiresAt: Date.now() + 60 * 60 * 1000,
+        };
+        localStorage.setItem('arcadeum_session', JSON.stringify(session));
+        localStorage.setItem('arcadeum_access_token', accessToken);
+        if (refreshToken) {
+          localStorage.setItem('arcadeum_refresh_token', refreshToken);
+        }
+      } catch {}
+    },
+    {
+      accessToken: CONFIG.factoryBotToken,
+      refreshToken: CONFIG.factoryBotRefreshToken,
+    },
+  );
+  return true;
+}
+
+// ============================================================================
+// SCENARIOS — 50 pre-defined user journeys (one per day, no repeats)
 // ============================================================================
 
 const SCENARIOS = [
-  // --- Week 1: Game Discovery ---
+  // ─── GAMEPLAY ROOMS (require SHORTS_FACTORY_BOT_TOKEN) ──────────────────
+
+  {
+    name: 'seaBattleGameplay',
+    requiresAuth: true,
+    caption:
+      'Live Sea Battle gameplay on Arcadeum! Sink fleets, earn rewards ⚓🔥 #seabattle #web3gaming',
+    steps: [
+      { type: 'navigate', url: '/en/games/sea-battle', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 6000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 100, wait: 600 },
+    ],
+  },
+  {
+    name: 'chessGameplay',
+    requiresAuth: true,
+    caption:
+      'Play chess vs AI for real rewards on Arcadeum! ♟️👑 #chess #web3gaming #onlinechess',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 6000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 100, wait: 600 },
+    ],
+  },
+  {
+    name: 'ticTacToeGameplay',
+    requiresAuth: true,
+    caption:
+      'Tic-Tac-Toe with real stakes — can you beat the AI? ❌⭕🔥 #tictactoe #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 6000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+    ],
+  },
+  {
+    name: 'criticalGameplay',
+    requiresAuth: true,
+    caption:
+      'Critical card game — high pressure, high reward ⚡🃏 #cardgame #arcade #web3',
+    steps: [
+      { type: 'navigate', url: '/en/games/critical', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 6000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'glimwormGameplay',
+    requiresAuth: true,
+    caption:
+      'Snake game goes multiplayer! Glimworm is wild 🐍⚡ #snakegame #gaming #arcade',
+    steps: [
+      { type: 'navigate', url: '/en/games/glimworm', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 6000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 100, wait: 600 },
+    ],
+  },
+  {
+    name: 'checkersGameplay',
+    requiresAuth: true,
+    caption:
+      'Checkers online for real rewards — can you dominate? 🔴⚫🏆 #checkers #boardgame',
+    steps: [
+      { type: 'navigate', url: '/en/games/checkers', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 6000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'cascadeGameplay',
+    requiresAuth: true,
+    caption:
+      'Cascade card game — the strategy is DEEP 🎴🏆 #cardgame #strategy #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/games/cascade', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 6000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+
+  // ─── GAME LANDINGS — rich scrolling demos ────────────────────────────────
+
   {
     name: 'gameExplorer',
-    caption: 'Ready to level up? Discover next-gen web3 multiplayer games instantly on Arcadeum! ⚡🎮 #web3gaming #gaming',
+    caption:
+      'Ready to level up? Discover next-gen web3 multiplayer games instantly on Arcadeum! ⚡🎮 #web3gaming #gaming',
     steps: [
       { type: 'navigate', url: '/en', wait: 2500 },
+      { type: 'scroll', y: 500, wait: 800 },
       {
-        type: 'click',
-        selector: '[data-testid="mobile-menu-button"]',
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-sea_battle_v1"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-chess_v1"]',
         wait: 1000,
       },
-      {
-        type: 'click',
-        selector: '[data-mobile-menu] a[href*="/games"]',
-        wait: 3000,
-      },
-      { type: 'scroll', y: 400, wait: 800 },
-      { type: 'hover', selector: '[data-testid="room-card"]', wait: 1500 },
-      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'scroll', y: 300, wait: 600 },
     ],
   },
   {
     name: 'seaBattleIntro',
-    caption: 'Sink enemy fleets & claim real rewards! ⚓ Play Sea Battle live on Arcadeum 🔥 #seabattle #indiegames',
+    caption:
+      'Sink enemy fleets & claim real rewards! ⚓ Play Sea Battle live on Arcadeum 🔥 #seabattle #indiegames',
     steps: [
-      { type: 'navigate', url: '/en/games', wait: 2500 },
-      { type: 'click', selector: 'a[href*="/games/sea-battle"]', wait: 3000 },
-      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'navigate', url: '/en/games/sea-battle', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
       {
         type: 'hover',
-        selector: '[data-testid="sea-battle-landing-board"]',
-        wait: 1500,
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
       },
-      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
     ],
   },
   {
-    name: 'criticalClicks',
-    caption: 'Test your reaction speed in Critical! High stakes, fast turns, endless thrill ⚡🔥 #arcade #gaming',
+    name: 'chessLanding',
+    caption:
+      'Play chess with real stakes vs. live opponents 👑♟️ Ranked matches on Arcadeum! #chess #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 400, wait: 800 },
+    ],
+  },
+  {
+    name: 'glimwormLanding',
+    caption:
+      'A snake game that went MULTIPLAYER 🐍⚡ Glimworm on Arcadeum is insane #snakegame #arcade',
+    steps: [
+      { type: 'navigate', url: '/en/games/glimworm', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'criticalLanding',
+    caption:
+      'Test your nerve in Critical! High stakes, fast turns, endless thrill ⚡🔥 #arcade #gaming',
     steps: [
       { type: 'navigate', url: '/en/games/critical', wait: 3000 },
-      { type: 'scroll', y: 300, wait: 800 },
-      { type: 'hover', selector: '[data-testid="hand-rail-play"]', wait: 1500 },
       { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
     ],
   },
   {
-    name: 'tictactoeFun',
-    caption: 'Think Tic-Tac-Toe is easy? Try competing for real ranks on Arcadeum! ❌⭕ #boardgames #onlinegaming',
+    name: 'tictactoeLanding',
+    caption:
+      'Think Tic-Tac-Toe is easy? Try competing for real ranks on Arcadeum! ❌⭕ #boardgames #onlinegaming',
     steps: [
       { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 3000 },
-      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 200, wait: 600 },
       {
         type: 'hover',
-        selector: '[data-testid="game-board-section"]',
+        selector: '[data-testid="quickplay-ai-button"]',
         wait: 1500,
       },
-      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
     ],
   },
   {
-    name: 'cascadeChaos',
-    caption: 'Master the ultimate card cascade! Outsmart opponents & flex your strategy 🎲🏆 #cardgame #strategy',
+    name: 'cascadeLanding',
+    caption:
+      'Master the ultimate card cascade! Outsmart opponents & flex your strategy 🎲🏆 #cardgame #strategy',
     steps: [
       { type: 'navigate', url: '/en/games/cascade', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'checkersLanding',
+    caption:
+      'Classic checkers with a competitive edge 🔴⚫ Ranked online play on Arcadeum! #checkers',
+    steps: [
+      { type: 'navigate', url: '/en/games/checkers', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'backgammonLanding',
+    caption:
+      'Backgammon online with real opponents — the OG strategy game is back 🎲♟️ #backgammon',
+    steps: [
+      { type: 'navigate', url: '/en/games/backgammon', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'heartsLanding',
+    caption:
+      'Hearts card game online — avoid the Queen, win the round! 🃏❤️ #cardgame #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/games/hearts', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'spadesLanding',
+    caption:
+      'Spades online — team up & dominate the table! 🃏♠️ #spades #cardgame #multiplayer',
+    steps: [
+      { type: 'navigate', url: '/en/games/spades', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'catDashLanding',
+    caption:
+      'Cat Dash — the most chaotic runner game on web3 🐱💨 #catdash #arcade #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/games/cat-dash', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: '2048Landing',
+    caption:
+      '2048 online with multiplayer twist — how high can you score? 🧩🏆 #2048 #puzzle',
+    steps: [
+      { type: 'navigate', url: '/en/games/2048', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+
+  // ─── GAMES CATALOG ───────────────────────────────────────────────────────
+
+  {
+    name: 'gamesCatalogBrowse',
+    caption:
+      '20+ games and counting! The Arcadeum catalog keeps growing 🎮🌟 #gaming #web3',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
       {
         type: 'hover',
-        selector: '[data-testid="game-board-section"]',
+        selector: '[data-testid="games-catalog-card-sea_battle_v1"]',
+        wait: 1000,
+      },
+      { type: 'scroll', y: 400, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-chess_v1"]',
+        wait: 1000,
+      },
+      { type: 'scroll', y: 400, wait: 600 },
+    ],
+  },
+  {
+    name: 'gamesCatalogFilter',
+    caption:
+      'Strategy, action, cards — Arcadeum has it all 🎯🃏⚔️ #web3gaming #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      {
+        type: 'click',
+        selector: '[data-testid="category-filter-strategy"]',
         wait: 1500,
       },
-      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid="category-filter-action"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 300, wait: 600 },
     ],
   },
   {
     name: 'createYourGame',
-    caption: 'Create your custom game room in under 10 seconds and challenge your friends! 🛠️🔥 #gamedev #multiplayer',
+    caption:
+      'Create your custom game room in under 10 seconds and challenge your friends! 🛠️🔥 #gamedev #multiplayer',
     steps: [
       { type: 'navigate', url: '/en/games/create', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
-      { type: 'hover', selector: 'form button[type="submit"]', wait: 1500 },
+      {
+        type: 'hover',
+        selector: 'form button[type="submit"]',
+        wait: 1500,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
 
-  // --- Week 2: Social & Community ---
+  // ─── SOCIAL & COMMUNITY ──────────────────────────────────────────────────
+
   {
     name: 'leaderboardClimb',
-    caption: 'Climb the global leaderboards and earn recognition! 🏆',
+    caption:
+      'Climb the global leaderboards and earn recognition! 🏆 #gaming #leaderboard',
     steps: [
-      { type: 'navigate', url: '/en', wait: 2500 },
-      {
-        type: 'click',
-        selector: '[data-testid="mobile-menu-button"]',
-        wait: 1000,
-      },
-      {
-        type: 'click',
-        selector: '[data-mobile-menu] a[href*="/leaderboards"]',
-        wait: 3000,
-      },
+      { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
-      { type: 'hover', selector: 'table tr', wait: 1500 },
+      { type: 'hover', selector: '[data-testid^="player-row-"]', wait: 1500 },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
   {
     name: 'communityBuzz',
-    caption: 'Connect and chat with fellow gamers in real-time! 💬',
+    caption:
+      'Connect with gamers from around the world in real-time! 💬🌍 #gaming #community',
     steps: [
-      { type: 'navigate', url: '/en', wait: 2500 },
-      {
-        type: 'click',
-        selector: '[data-testid="mobile-menu-button"]',
-        wait: 1000,
-      },
-      {
-        type: 'click',
-        selector: '[data-mobile-menu] a[href*="/community"]',
-        wait: 3000,
-      },
+      { type: 'navigate', url: '/en/community', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
       {
         type: 'hover',
@@ -397,8 +764,30 @@ const SCENARIOS = [
     ],
   },
   {
+    name: 'clansPage',
+    caption:
+      'Join or create a clan and compete together for epic rewards! ⚔️🏰 #clans #gaming #teamwork',
+    steps: [
+      { type: 'navigate', url: '/en/clans', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'friendsPage',
+    caption:
+      'Play with friends, challenge rivals, build your squad 🤝🎮 #friends #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/friends', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
     name: 'tournamentTime',
-    caption: 'Join daily tournaments and win massive prizes! 🏅',
+    caption:
+      'Join daily tournaments and win massive prizes! 🏅🔥 #tournament #esports',
     steps: [
       { type: 'navigate', url: '/en/tournaments', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -411,18 +800,20 @@ const SCENARIOS = [
     ],
   },
   {
-    name: 'chatHighlights',
-    caption: 'Real-time global chat keeps you connected! 🗣️',
+    name: 'eventsPage',
+    caption:
+      "Special events with exclusive rewards — don't miss out! 🎉🎁 #events #gaming",
     steps: [
-      { type: 'navigate', url: '/en/community', wait: 2500 },
-      { type: 'scroll', y: 200, wait: 800 },
-      { type: 'hover', selector: 'input[placeholder*="message"]', wait: 1500 },
-      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'navigate', url: '/en/events', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 200, wait: 600 },
     ],
   },
   {
     name: 'playerProfiles',
-    caption: 'Check out detailed player stats and achievements! 👤',
+    caption:
+      'Check out detailed player stats and achievements! 👤📊 #gaming #stats',
     steps: [
       { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -431,22 +822,9 @@ const SCENARIOS = [
     ],
   },
   {
-    name: 'statsDeepDive',
-    caption: 'Analyze your gameplay performance with in-depth stats! 📊',
-    steps: [
-      { type: 'navigate', url: '/en/stats', wait: 2500 },
-      { type: 'scroll', y: 300, wait: 800 },
-      {
-        type: 'hover',
-        selector: '[data-testid="stats-overview-card"]',
-        wait: 1500,
-      },
-      { type: 'scroll', y: 200, wait: 600 },
-    ],
-  },
-  {
     name: 'referralRewards',
-    caption: 'Invite friends to Arcadeum and earn bonus rewards! 🎁',
+    caption:
+      'Invite friends to Arcadeum and earn bonus rewards! 🎁🔗 #referral #gaming',
     steps: [
       { type: 'navigate', url: '/en/referrals', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -459,10 +837,12 @@ const SCENARIOS = [
     ],
   },
 
-  // --- Week 3: Rewards & Economy ---
+  // ─── REWARDS & ECONOMY ───────────────────────────────────────────────────
+
   {
     name: 'rewardHunter',
-    caption: 'Earn tokens and gems daily just for playing! 💰',
+    caption:
+      'Earn tokens and gems daily just for playing! 💰💎 #playtoearn #web3',
     steps: [
       { type: 'navigate', url: '/en/rewards', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -471,8 +851,9 @@ const SCENARIOS = [
     ],
   },
   {
-    name: 'shopWindow',
-    caption: 'Get custom avatars and custom skins in the shop! 🛒',
+    name: 'shopAvatars',
+    caption:
+      'Get custom avatars and unique skins in the Arcadeum shop! 🛒🎨 #gaming #cosmetics',
     steps: [
       { type: 'navigate', url: '/en/shop', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -486,7 +867,8 @@ const SCENARIOS = [
   },
   {
     name: 'shopInventory',
-    caption: 'Manage and equip your custom collected skins! 🎒',
+    caption:
+      'Manage and equip your custom collected skins! 🎒✨ #gaming #customization',
     steps: [
       { type: 'navigate', url: '/en/shop/inventory', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -500,7 +882,8 @@ const SCENARIOS = [
   },
   {
     name: 'walletWatch',
-    caption: 'Securely manage your tokens and assets in the wallet! 💎',
+    caption:
+      'Securely manage your tokens and assets in the Arcadeum wallet! 💎🔐 #web3 #crypto',
     steps: [
       { type: 'navigate', url: '/en/wallet', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -514,7 +897,8 @@ const SCENARIOS = [
   },
   {
     name: 'tokenInfo',
-    caption: 'Join the next generation web3 gaming ecosystem! 🪙',
+    caption:
+      'Join the next generation web3 gaming ecosystem! 🪙🚀 #web3 #blockchain',
     steps: [
       { type: 'navigate', url: '/en/token', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -528,7 +912,8 @@ const SCENARIOS = [
   },
   {
     name: 'battlePass',
-    caption: 'Unlock legendary drops with the Battle Pass! 🎫',
+    caption:
+      'Unlock legendary drops with the Arcadeum Battle Pass! 🎫🏆 #battlepass #gaming',
     steps: [
       { type: 'navigate', url: '/en/battle-pass', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -540,31 +925,77 @@ const SCENARIOS = [
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
-  {
-    name: 'shopBrowse',
-    caption: 'Vibrant designs and custom skins waiting for you! 🎨',
-    steps: [
-      { type: 'navigate', url: '/en/shop', wait: 2500 },
-      { type: 'scroll', y: 300, wait: 800 },
-      { type: 'hover', selector: '[data-testid^="shop-card-"]', wait: 1500 },
-      { type: 'scroll', y: 200, wait: 600 },
-    ],
-  },
 
-  // --- Week 4: Exploration & Flow ---
+  // ─── EXPLORATION & FLOW ──────────────────────────────────────────────────
+
   {
     name: 'homepageTour',
-    caption: 'Welcome to Arcadeum - the ultimate web3 playground! 🚀',
+    caption:
+      'Welcome to Arcadeum — the ultimate web3 gaming playground! 🚀🎮 #web3gaming',
     steps: [
       { type: 'navigate', url: '/en', wait: 3000 },
       { type: 'scroll', y: 400, wait: 800 },
-      { type: 'hover', selector: '[data-testid^="game-card-"]', wait: 1500 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="games-catalog-card-"]',
+        wait: 1500,
+      },
       { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 400, wait: 600 },
+    ],
+  },
+  {
+    name: 'replaysPage',
+    caption:
+      'Replay your greatest victories and learn from your losses! 🎬🏆 #gaming #replay',
+    steps: [
+      { type: 'navigate', url: '/en/replays', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', selector: '[data-testid="history-row"]', wait: 1500 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'historyReplay',
+    caption:
+      'Review and replay your best game moments! 🎬⚡ #gaming #replay #arcadeum',
+    steps: [
+      { type: 'navigate', url: '/en/history', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', selector: '[data-testid="history-row"]', wait: 1500 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'statsDeepDive',
+    caption:
+      'Analyze your gameplay performance with in-depth stats! 📊🎮 #gaming #stats',
+    steps: [
+      { type: 'navigate', url: '/en/stats', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="stats-overview-card"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'roadmapPage',
+    caption:
+      'Big things are coming to Arcadeum! Check out the roadmap 🗺️🚀 #gaming #web3',
+    steps: [
+      { type: 'navigate', url: '/en/roadmap', wait: 2500 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
     ],
   },
   {
     name: 'blogRead',
-    caption: 'Stay updated with the latest gaming news and updates! 📰',
+    caption:
+      'Stay updated with the latest gaming news and updates! 📰🎮 #gaming #news',
     steps: [
       { type: 'navigate', url: '/en/blog', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -578,7 +1009,8 @@ const SCENARIOS = [
   },
   {
     name: 'multiPageFlow',
-    caption: 'A seamless, immersive web3 gaming experience! ✨',
+    caption:
+      'A seamless, immersive web3 gaming experience! ✨🎮 #web3gaming #arcadeum',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -588,7 +1020,7 @@ const SCENARIOS = [
   },
   {
     name: 'gameToLeaderboard',
-    caption: 'Play hard, rank high, and win prizes! 📈',
+    caption: 'Play hard, rank high, and win prizes! 📈🏆 #competitive #gaming',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -598,7 +1030,8 @@ const SCENARIOS = [
   },
   {
     name: 'shopToRewards',
-    caption: 'Unlock premium cosmetics and climb the ranks! 🛍️',
+    caption:
+      'Unlock premium cosmetics and climb the ranks! 🛍️🏆 #gaming #rewards',
     steps: [
       { type: 'navigate', url: '/en/shop', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -608,7 +1041,8 @@ const SCENARIOS = [
   },
   {
     name: 'communityToTournament',
-    caption: 'Engage with the community and join active matches! 🏆',
+    caption:
+      'Engage with the community and join active matches! 🏆💬 #esports #gaming',
     steps: [
       { type: 'navigate', url: '/en/community', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -617,18 +1051,9 @@ const SCENARIOS = [
     ],
   },
   {
-    name: 'settingsCheck',
-    caption: 'Customize your theme and accessibility settings! ⚙️',
-    steps: [
-      { type: 'navigate', url: '/en/settings', wait: 2500 },
-      { type: 'scroll', y: 300, wait: 800 },
-      { type: 'hover', selector: '[data-testid="settings-form"]', wait: 1500 },
-      { type: 'scroll', y: 200, wait: 600 },
-    ],
-  },
-  {
     name: 'developersPortal',
-    caption: 'Build the future of gaming on Arcadeum SDK! 👨‍💻',
+    caption:
+      'Build the future of gaming on the Arcadeum SDK! 👨‍💻🚀 #gamedev #web3',
     steps: [
       { type: 'navigate', url: '/en/developers', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -637,22 +1062,24 @@ const SCENARIOS = [
     ],
   },
   {
-    name: 'historyReplay',
-    caption: 'Review and replay your best game moments! 🎬',
+    name: 'changelogPage',
+    caption:
+      "Arcadeum ships fast — check out what's new! 🚢⚡ #gaming #updates #changelog",
     steps: [
-      { type: 'navigate', url: '/en/history', wait: 2500 },
+      { type: 'navigate', url: '/en/changelog', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
-      { type: 'hover', selector: '[data-testid="history-row"]', wait: 1500 },
-      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
     ],
   },
   {
-    name: 'contactPage',
-    caption: 'Reach out to the team for any support or feedback! 📬',
+    name: 'settingsCheck',
+    caption:
+      'Customize your theme and accessibility settings! ⚙️🎨 #gaming #customization',
     steps: [
-      { type: 'navigate', url: '/en/contact', wait: 2500 },
+      { type: 'navigate', url: '/en/settings', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
-      { type: 'hover', selector: '[data-testid="contact-form"]', wait: 1500 },
+      { type: 'hover', selector: '[data-testid="settings-form"]', wait: 1500 },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -693,9 +1120,16 @@ async function getAudioTracks() {
     });
   }
 
-  // Fallback: tracks known to exist on CDN
+  // Fallback: tracks known to exist on CDN (511+ available via tracks.json)
   cachedTracks = [
+    `${MUSIC_CDN_URL}/arcade-skybreak.mp3`,
     `${MUSIC_CDN_URL}/battleship-grid.mp3`,
+    `${MUSIC_CDN_URL}/black-pawn-smoke.mp3`,
+    `${MUSIC_CDN_URL}/cafe-checkmate.mp3`,
+    `${MUSIC_CDN_URL}/card-table-glow.mp3`,
+    `${MUSIC_CDN_URL}/chrome-overdrive.mp3`,
+    `${MUSIC_CDN_URL}/chrome-riot.mp3`,
+    `${MUSIC_CDN_URL}/circuit-tactics.mp3`,
     `${MUSIC_CDN_URL}/clockwork-horizon.mp3`,
     `${MUSIC_CDN_URL}/glass-grid.mp3`,
     `${MUSIC_CDN_URL}/grid-of-torpedoes.mp3`,
@@ -703,6 +1137,11 @@ async function getAudioTracks() {
     `${MUSIC_CDN_URL}/gridwater-clash.mp3`,
     `${MUSIC_CDN_URL}/iron-tide.mp3`,
     `${MUSIC_CDN_URL}/iron-wake.mp3`,
+    `${MUSIC_CDN_URL}/neon-district-drift.mp3`,
+    `${MUSIC_CDN_URL}/neon-district-pulse.mp3`,
+    `${MUSIC_CDN_URL}/neon-district-run.mp3`,
+    `${MUSIC_CDN_URL}/neon-district-surge.mp3`,
+    `${MUSIC_CDN_URL}/pixel-chase.mp3`,
   ];
   log('info', `Using ${cachedTracks.length} fallback audio tracks`);
   return cachedTracks;
@@ -924,19 +1363,7 @@ async function captureBrowsing() {
     });
     log('info', 'Browser launched successfully');
 
-    const context = await browser.newContext({
-      viewport: CONFIG.viewport,
-      recordVideo: {
-        dir: CONFIG.rawCapturesDir,
-        size: CONFIG.viewport,
-      },
-    });
-    log('info', 'Browser context created with video recording');
-
-    const page = await context.newPage();
-    log('info', 'New page created');
-
-    // Pick a scenario
+    // Pick a scenario BEFORE creating context so we know if auth is needed
     let scenario;
     if (parsedArgs.testScenario) {
       scenario = SCENARIOS.find((s) => s.name === parsedArgs.testScenario);
@@ -951,7 +1378,35 @@ async function captureBrowsing() {
     }
     if (!scenario) {
       scenario = randomElement(SCENARIOS);
+      if (!CONFIG.factoryBotToken) {
+        log(
+          'info',
+          'No SHORTS_FACTORY_BOT_TOKEN set — gameplay will record as anonymous. Set it to enable authenticated gameplay.',
+        );
+      }
     }
+
+    const context = await browser.newContext({
+      viewport: CONFIG.viewport,
+      recordVideo: {
+        dir: CONFIG.rawCapturesDir,
+        size: CONFIG.viewport,
+      },
+    });
+    log('info', 'Browser context created with video recording');
+
+    if (scenario.requiresAuth) {
+      const injected = await injectBotAuth(context);
+      log(
+        'info',
+        injected
+          ? 'Bot auth tokens injected into browser context'
+          : 'Auth scenario selected but no token available — will record unauthenticated',
+      );
+    }
+
+    const page = await context.newPage();
+    log('info', 'New page created');
     log('info', `Running scenario: ${scenario.name}`);
     log('info', `Caption will be: "${scenario.caption}"`);
 
@@ -1086,30 +1541,66 @@ const END_CARD_CTAS = [
 function getScenarioTags(scenarioName) {
   const name = (scenarioName || '').toLowerCase();
   const tags = ['#arcadeum', '#web3', '#gaming'];
+
   if (
+    name.includes('gameplay') ||
     name.includes('game') ||
     name.includes('battle') ||
     name.includes('critical') ||
     name.includes('tictactoe') ||
-    name.includes('cascade')
+    name.includes('cascade') ||
+    name.includes('chess') ||
+    name.includes('checkers') ||
+    name.includes('glimworm') ||
+    name.includes('backgammon') ||
+    name.includes('hearts') ||
+    name.includes('spades') ||
+    name.includes('catdash') ||
+    name.includes('2048') ||
+    name.includes('sea')
   ) {
-    tags.push('#gamers', '#p2e');
+    tags.push('#gamers', '#p2e', '#onlinegaming');
   }
+
+  if (name.includes('gameplay') || name.includes('room')) {
+    tags.push('#liveplay', '#multiplayer');
+  }
+
   if (
     name.includes('shop') ||
     name.includes('reward') ||
+    name.includes('wallet') ||
+    name.includes('token') ||
+    name.includes('battlepass') ||
     name.includes('economy')
   ) {
-    tags.push('#crypto', '#rewards');
+    tags.push('#crypto', '#rewards', '#playtoearn');
   }
+
   if (
     name.includes('community') ||
     name.includes('leaderboard') ||
     name.includes('chat') ||
-    name.includes('profile')
+    name.includes('profile') ||
+    name.includes('clan') ||
+    name.includes('friend') ||
+    name.includes('tournament')
   ) {
-    tags.push('#community', '#social');
+    tags.push('#community', '#social', '#esports');
   }
+
+  if (name.includes('replay') || name.includes('history')) {
+    tags.push('#highlights', '#clips');
+  }
+
+  if (
+    name.includes('roadmap') ||
+    name.includes('changelog') ||
+    name.includes('developer')
+  ) {
+    tags.push('#gamedev', '#buildinpublic');
+  }
+
   return tags.join(' ');
 }
 

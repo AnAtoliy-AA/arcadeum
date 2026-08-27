@@ -26,6 +26,7 @@ export function OfflineDownloadsSection() {
   const { messages } = useLanguage();
   const {
     supported,
+    swReady,
     games,
     busySlugs,
     refreshInProgress,
@@ -54,7 +55,20 @@ export function OfflineDownloadsSection() {
     });
   };
 
-  if (!supported) return null;
+  if (!supported) {
+    return (
+      <Section
+        title={dl?.title ?? 'Offline Games'}
+        description={dl?.description ?? ''}
+        data-testid="offline-downloads-section"
+      >
+        <p className="text-[13px] text-[var(--textSecondary)]">
+          {dl?.installRequired ??
+            'Install Arcadeum as an app to download games for offline play.'}
+        </p>
+      </Section>
+    );
+  }
 
   return (
     <Section
@@ -63,12 +77,22 @@ export function OfflineDownloadsSection() {
       data-testid="offline-downloads-section"
     >
       <div className="flex flex-col gap-3">
+        {!swReady && (
+          <div className="flex items-center gap-2 rounded-lg border border-[var(--borderColor)] bg-[var(--glassBg)] px-4 py-2 text-[13px] text-[var(--textSecondary)]">
+            <Spinner size="sm" />
+            <span>
+              {dl?.swLoading ??
+                'Waiting for the app to fully load — downloads will be available shortly…'}
+            </span>
+          </div>
+        )}
+
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Button
             variant="secondary"
             size="sm"
             onClick={allSelected ? handleRemoveAll : handleSelectAll}
-            disabled={refreshInProgress}
+            disabled={refreshInProgress || !swReady}
             data-testid="offline-downloads-select-all"
           >
             {allSelected
@@ -81,7 +105,8 @@ export function OfflineDownloadsSection() {
               ? `${dl?.storageUsed ?? 'Storage used'}: ${formatBytes(totalSizeBytes)}`
               : totalManifestBytes !== null
                 ? `${formatBytes(totalManifestBytes)} total`
-                : ''}
+                : (dl?.sizesAvailableAfterDownload ??
+                  'Sizes shown after download')}
           </span>
         </div>
 
@@ -104,6 +129,7 @@ export function OfflineDownloadsSection() {
             onRetry={() => retry(game.slug)}
             strings={dl}
             busy={busySlugs.includes(game.slug)}
+            disabled={!swReady}
           />
         ))}
       </div>
@@ -129,6 +155,7 @@ interface GameDownloadRowProps {
   onToggle: () => void;
   onRetry: () => void;
   busy: boolean;
+  disabled: boolean;
   strings: RowStrings;
 }
 
@@ -141,6 +168,7 @@ function GameDownloadRow({
   onToggle,
   onRetry,
   busy,
+  disabled,
   strings: dl,
 }: GameDownloadRowProps) {
   const isDownloaded = sizeBytes > 0;
@@ -167,7 +195,7 @@ function GameDownloadRow({
             className="peer sr-only"
             checked={checked}
             onChange={onToggle}
-            disabled={busy}
+            disabled={busy || disabled}
             aria-label={name}
             data-testid={`offline-cb-${slug}`}
           />

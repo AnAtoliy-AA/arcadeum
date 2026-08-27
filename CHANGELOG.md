@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.61] - 2026-08-27
+
+### Fixed
+- quote heredoc and fix metadata in release social poster
+
+
 ## [1.26.60] - 2026-08-27
 
 ### Fixed

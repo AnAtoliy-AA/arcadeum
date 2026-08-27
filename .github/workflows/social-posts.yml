@@ -449,7 +449,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_RELEASE: ${{ secrets.DISCORD_WEBHOOK_RELEASE }}
         run: |
-          python - <<EOF
+          python - <<'EOF'
           import json
           import os
           import subprocess
@@ -703,8 +703,10 @@ jobs:
                       if not channel_id:
                           print(f"Skipping Buffer post to {name} — channel ID not set")
                           continue
-                      metadata_key = platform
-                      metadata_json = json.dumps({metadata_key: {"type": "post"}})
+                      if platform:
+                          metadata_json = json.dumps({platform: {"type": "post"}})
+                      else:
+                          metadata_json = "{}"
                       for i, text in enumerate(texts):
                           variables = {
                               "text": text,

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.60] - 2026-08-27
+
+### Fixed
+- make card text fully visible and add double-click to play
+- improve mobile playability with safe areas, tap handling, and responsive modals
+
+
 ## [1.26.59] - 2026-08-27
 
 ### Fixed

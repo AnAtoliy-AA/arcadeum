@@ -1,0 +1,48 @@
+# Dependencies
+node_modules
+
+# Build artifacts
+apps/*/dist
+apps/*/build
+apps/*/.next
+packages/*/dist
+packages/*/build
+
+# Android build artifacts
+apps/mobile/android/.gradle
+apps/mobile/android/build
+apps/mobile/android/app/build
+apps/mobile/android/app/.cxx
+
+# iOS build artifacts
+apps/mobile/ios/build
+apps/mobile/ios/Pods
+
+# Dev/editor files
+.git
+.vscode
+.idea
+*.swp
+*.swo
+
+# Tests
+**/__tests__
+**/*.test.*
+**/*.spec.*
+**/coverage
+
+# Documentation
+docs
+*.md
+LICENSE
+
+# CI/CD
+.github
+
+# Turbo
+.turbo
+
+# Misc
+.env*
+*.log
+.DS_Store

@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.27.0",
   "scripts": {
+    "postinstall": "find node_modules/.pnpm -path '*/react-native/sdks/hermesc/linux64-bin/hermesc' -exec chmod 755 {} + 2>/dev/null; find node_modules/react-native -path '*/sdks/hermesc/linux64-bin/hermesc' -exec chmod 755 {} + 2>/dev/null; true",
     "dev": "node ./scripts/dev.js",
     "start": "expo start",
     "start:localhost": "expo start --host localhost",

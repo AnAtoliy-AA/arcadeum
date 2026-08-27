@@ -60,7 +60,15 @@ jobs:
             rm -f "$DEPLOY_DIR/.git/index.lock"
 
             BRANCH="${{ github.event.inputs.branch || 'staging' }}"
-            git fetch origin "$BRANCH"
+
+            for attempt in 1 2 3; do
+              if git fetch origin "$BRANCH"; then
+                break
+              fi
+              echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
+              rm -f "$DEPLOY_DIR/.git/index.lock"
+              sleep 5
+            done
             git reset --hard "origin/$BRANCH"
 
             pnpm install --frozen-lockfile

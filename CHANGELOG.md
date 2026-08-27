@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.62] - 2026-08-27
+
+### Fixed
+- handle View Transition AbortError when playing action cards
+
+
 ## [1.26.61] - 2026-08-27
 
 ### Fixed

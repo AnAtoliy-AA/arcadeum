@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.59] - 2026-08-27
+
+### Fixed
+- fix offline game downloads not working and missing sizes
+
+
 ## [1.26.58] - 2026-08-26
 
 ### Added

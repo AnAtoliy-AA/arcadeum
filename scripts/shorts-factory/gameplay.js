@@ -96,6 +96,9 @@ const CONFIG = {
   postizInstagramId: process.env.POSTIZ_INSTAGRAM_INTEGRATION_ID || '',
   postizTiktokId: process.env.POSTIZ_TIKTOK_INTEGRATION_ID || '',
   postizXId: process.env.POSTIZ_X_INTEGRATION_ID || '',
+  // Bot account for authenticated gameplay recording
+  botToken: process.env.SHORTS_FACTORY_BOT_TOKEN || '',
+  botRefreshToken: process.env.SHORTS_FACTORY_BOT_REFRESH_TOKEN || '',
 };
 
 // ============================================================================
@@ -576,9 +579,13 @@ const GAMES = [
     slug: 'go_v1',
     url: '/en/games/go',
     hookText: '⚫⚪ SURROUND & CONQUER!',
-    actionPhrases: ['⚫ STONE PLACED!', '⚪ GROUP CAPTURED!', '🏆 TERRITORY CONTROLLED!'],
+    actionPhrases: [
+      '⚫ STONE PLACED!',
+      '⚪ GROUP CAPTURED!',
+      '🏆 TERRITORY CONTROLLED!',
+    ],
     captions: [
-      "The ancient game of Go — simple rules, infinite depth! ⚫⚪ Play free on arcadeum.games #go #baduk #boardgame #strategy",
+      'The ancient game of Go — simple rules, infinite depth! ⚫⚪ Play free on arcadeum.games #go #baduk #boardgame #strategy',
     ],
     moves: [],
     async waitForGame(page) {
@@ -1015,6 +1022,33 @@ async function recordSession(
 
     const context = await browser.newContext(contextOptions);
     const sessionStartTime = Date.now();
+
+    // Inject bot auth tokens so quickplay works as an authenticated user
+    if (CONFIG.botToken) {
+      await context.addInitScript(
+        ({ accessToken, refreshToken }) => {
+          try {
+            const session = {
+              accessToken,
+              refreshToken,
+              expiresAt: Date.now() + 60 * 60 * 1000,
+            };
+            localStorage.setItem('arcadeum_session', JSON.stringify(session));
+            localStorage.setItem('arcadeum_access_token', accessToken);
+            if (refreshToken) {
+              localStorage.setItem('arcadeum_refresh_token', refreshToken);
+            }
+          } catch {}
+        },
+        { accessToken: CONFIG.botToken, refreshToken: CONFIG.botRefreshToken },
+      );
+      log('info', `${label}: bot auth tokens injected into browser context`);
+    } else {
+      log(
+        'warn',
+        `${label}: SHORTS_FACTORY_BOT_TOKEN not set — quickplay may fail if auth is required. Set it in .env to enable authenticated gameplay recording.`,
+      );
+    }
 
     const page = await context.newPage();
 

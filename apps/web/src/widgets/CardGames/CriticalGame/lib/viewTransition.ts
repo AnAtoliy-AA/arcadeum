@@ -19,6 +19,8 @@ type ViewTransitionDocument = Document & {
   startViewTransition?: (callback: () => void | Promise<void>) => unknown;
 };
 
+let activeTransition: ViewTransition | null = null;
+
 export function withViewTransition(fn: () => void): void {
   if (typeof document === 'undefined') {
     fn();
@@ -33,5 +35,21 @@ export function withViewTransition(fn: () => void): void {
     fn();
     return;
   }
-  doc.startViewTransition(fn);
+  if (activeTransition) {
+    fn();
+    return;
+  }
+  try {
+    activeTransition = doc.startViewTransition(fn) as ViewTransition;
+    activeTransition.finished.finally(() => {
+      activeTransition = null;
+    });
+  } catch (err) {
+    activeTransition = null;
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      fn();
+    } else {
+      throw err;
+    }
+  }
 }

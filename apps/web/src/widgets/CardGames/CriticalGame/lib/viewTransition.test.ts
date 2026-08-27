@@ -36,7 +36,10 @@ describe('withViewTransition', () => {
       .fn()
       .mockImplementation((cb: () => void | Promise<void>) => {
         wrappedCallbacks.push(cb);
-        return { ready: Promise.resolve() };
+        return {
+          ready: Promise.resolve(),
+          finished: { finally: vi.fn().mockResolvedValue(undefined) },
+        };
       });
 
     const fn = vi.fn();

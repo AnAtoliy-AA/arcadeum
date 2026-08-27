@@ -20,6 +20,7 @@ import {
   fetchCurrentBuildId,
   fetchGameSizes,
   isOfflineDownloadSupported,
+  isSWActive,
   purgeCachedUrls,
 } from '../lib/cache-warmer';
 import type { GameSizesManifest } from '../lib/cache-warmer';
@@ -53,6 +54,7 @@ export function useOfflineDownloads() {
   );
 
   const supported = useMemo(() => isOfflineDownloadSupported(), []);
+  const swReady = useMemo(() => isSWActive(), []);
 
   // Build-time manifest sizes (fetched once on mount).
   const [manifestSizes, setManifestSizes] = useState<GameSizesManifest | null>(
@@ -180,6 +182,7 @@ export function useOfflineDownloads() {
 
   return {
     supported,
+    swReady,
     games,
     busySlugs,
     refreshInProgress,

@@ -1,6 +1,12 @@
 'use client';
 
 import { useThemeController } from '@/app/theme/ThemeContext';
+import dynamic from 'next/dynamic';
+
+const RootModals = dynamic(
+  () => import('../RootModals').then((m) => m.RootModals),
+  { ssr: false },
+);
 
 /**
  * Client half of the (app) route-group layout. Theme state is provided by
@@ -9,5 +15,10 @@ import { useThemeController } from '@/app/theme/ThemeContext';
  */
 export function AppLayoutClient({ children }: { children: React.ReactNode }) {
   useThemeController();
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <RootModals />
+    </>
+  );
 }

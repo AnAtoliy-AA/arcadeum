@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.1] - 2026-08-27
+
+### Fixed
+- resolve Docker build, deploy lock race, and Android hermesc failures
+
+
 ## [1.27.0] - 2026-08-27
 
 ### Changed

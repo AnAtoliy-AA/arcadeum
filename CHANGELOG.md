@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.63] - 2026-08-27
+
+### Added
+- expand scenarios to 50, add gameplay auth injection
+
+### Fixed
+- run gameplay scenarios anonymous, expand fallback tracks
+
+
 ## [1.26.62] - 2026-08-27
 
 ### Fixed

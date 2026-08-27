@@ -75,3 +75,11 @@ button,
   outline: 2px solid var(--accent, #81f1ff);
   outline-offset: 2px;
 }
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

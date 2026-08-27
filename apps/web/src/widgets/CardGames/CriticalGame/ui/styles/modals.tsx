@@ -92,7 +92,7 @@ function ModalFrame({
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch bg-[var(--background)] border-2 border-[var(--borderColor)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[1001]',
+        'flex flex-col items-stretch bg-[var(--background)] border-2 border-[var(--borderColor)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[1001] max-[480px]:rounded-[16px] max-[480px]:max-h-[85vh] max-[480px]:mx-2',
         MODAL_FRAME_VARIANT_CLASS[key],
         className,
       )}
@@ -115,7 +115,7 @@ function ScrollArea({
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch overflow-y-auto p-6 w-full h-full',
+        'flex flex-col items-stretch overflow-y-auto p-6 w-full h-full max-[480px]:p-4',
         className,
       )}
     >
@@ -287,7 +287,10 @@ export function OptionGrid({
 }) {
   return (
     <div
-      className={cx('flex flex-row items-stretch flex-wrap gap-3', className)}
+      className={cx(
+        'flex flex-row items-stretch flex-wrap gap-3 max-[480px]:flex-col max-[480px]:gap-2',
+        className,
+      )}
     >
       {children}
     </div>
@@ -302,7 +305,12 @@ export function ModalActions({
   children?: React.ReactNode;
 }) {
   return (
-    <div className={cx('flex flex-row items-stretch gap-3 mt-8', className)}>
+    <div
+      className={cx(
+        'flex flex-row items-stretch gap-3 mt-8 max-[480px]:flex-col max-[480px]:gap-2 max-[480px]:mt-6',
+        className,
+      )}
+    >
       {children}
     </div>
   );
@@ -316,7 +324,12 @@ export function ScrollableCardsGrid({
   children?: React.ReactNode;
 }) {
   return (
-    <CardsGrid className={cx('max-h-[55vh] overflow-y-auto p-2', className)}>
+    <CardsGrid
+      className={cx(
+        'max-h-[55vh] overflow-y-auto p-2 max-[480px]:max-h-[40vh] max-[480px]:p-1',
+        className,
+      )}
+    >
       {children}
     </CardsGrid>
   );

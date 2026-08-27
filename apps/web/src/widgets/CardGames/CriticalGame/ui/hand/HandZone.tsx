@@ -27,6 +27,8 @@ interface HandZoneProps {
   onToggleFullscreen?: () => void;
   onToggleCardName: () => void;
   onToggleCardDescription: () => void;
+  /** Fired on double-click / double-tap on a card to play it directly. */
+  onDoubleClickCard?: (uid: string) => void;
 }
 
 /**
@@ -57,6 +59,7 @@ export function HandZone(props: HandZoneProps) {
           showName={props.showCardName}
           showDescription={props.showCardDescription}
           isFanned={false}
+          onDoubleClick={props.onDoubleClickCard}
         />
         <MobileHandBar
           handCount={props.cards.length}
@@ -114,6 +117,7 @@ export function HandZone(props: HandZoneProps) {
         cardVariant={props.cardVariant}
         showName={props.showCardName}
         showDescription={props.showCardDescription}
+        onDoubleClick={props.onDoubleClickCard}
       />
     </div>
   );

@@ -22,6 +22,7 @@ export function ActionBar({
       style={{
         backgroundColor: 'rgba(15,17,22,0.85)',
         backdropFilter: 'blur(12px)',
+        paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))',
         ...style,
       }}
       data-testid={testId}

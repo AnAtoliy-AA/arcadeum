@@ -11,7 +11,7 @@ import {
   SwordsIcon,
   Typography,
 } from '@arcadeum/ui';
-import type { FC } from 'react';
+import { useCallback, useRef, type FC } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   getCardTranslationKey,
@@ -20,6 +20,9 @@ import {
 import { getCardRole, type CardRole } from '../../lib/cardRoles';
 import { CardImage, hasArtFor } from '../styles/card-image';
 import type { HandCardInstance } from '../../lib/combo';
+
+const TAP_THRESHOLD = 10;
+const DOUBLE_TAP_MS = 300;
 
 interface HandCardProps {
   card: HandCardInstance;
@@ -38,6 +41,8 @@ interface HandCardProps {
   /** Show / hide the description block under the name (default: true). */
   showDescription?: boolean;
   onToggle: () => void;
+  /** Fired on double-click / double-tap to play the card directly. */
+  onDoubleClick?: () => void;
 }
 
 const ROLE_BORDER: Record<CardRole, string> = {
@@ -94,17 +99,46 @@ export function HandCard({
   showName = true,
   showDescription = true,
   onToggle,
+  onDoubleClick,
 }: HandCardProps) {
   const { t } = useTranslation();
   const role = getCardRole(card.id);
   const name = t(getCardTranslationKey(card.id, cardVariant));
   const description = t(getCardDescriptionKey(card.id));
   const borderColor = isSelected ? SELECT_RING : ROLE_BORDER[role];
-  // Stable id so the outer button can `aria-describedby` the visible
-  // description block. Screen readers otherwise stop at the aria-label
-  // (card name) and never hear the rules text.
   const descriptionId = `hand-card-description-${card.uid}`;
   const linkDescription = showDescription && !!description;
+
+  const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  const lastTapTime = useRef<number>(0);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    pointerStart.current = { x: e.clientX, y: e.clientY };
+  }, []);
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (!pointerStart.current || disabled) {
+        pointerStart.current = null;
+        return;
+      }
+      const dx = e.clientX - pointerStart.current.x;
+      const dy = e.clientY - pointerStart.current.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      pointerStart.current = null;
+      if (distance <= TAP_THRESHOLD) {
+        const now = Date.now();
+        if (onDoubleClick && now - lastTapTime.current < DOUBLE_TAP_MS) {
+          lastTapTime.current = 0;
+          onDoubleClick();
+        } else {
+          lastTapTime.current = now;
+          onToggle();
+        }
+      }
+    },
+    [disabled, onToggle, onDoubleClick],
+  );
 
   // Fixed card silhouette (~3:4) regardless of which text rows show —
   // text overlays the art rather than pushing the cell taller. Cell
@@ -114,14 +148,17 @@ export function HandCard({
 
   return (
     <div
-      className={`flex flex-col items-stretch rounded-[10px] border-[2px] bg-[rgba(8,12,20,0.85)] overflow-hidden relative shrink-0 w-[124px] h-[172px] transition-all duration-150 ease-out select-none touch-manipulation ${disabled ? '' : 'hover:translate-y-[-4px] active:scale-[0.97]'} ${isSelected ? 'ring-2 ring-[#34d399] shadow-[0_0_15px_rgba(52,211,153,0.5)]' : ''} focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#34d399]`}
+      className={`flex flex-col items-stretch rounded-[10px] border-[2px] bg-[rgba(8,12,20,0.85)] overflow-hidden relative shrink-0 w-[124px] h-[172px] transition-all duration-150 ease-out select-none ${disabled ? '' : 'hover:translate-y-[-4px] active:scale-[0.97]'} ${isSelected ? 'ring-2 ring-[#34d399] shadow-[0_0_15px_rgba(52,211,153,0.5)]' : ''} focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#34d399]`}
       style={{
         borderColor: borderColor,
         transform: isSelected ? 'translateY(-12px)' : undefined,
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.7 : 1,
+        touchAction: disabled ? 'auto' : 'manipulation',
       }}
-      onClick={disabled ? undefined : onToggle}
+      onPointerDown={disabled ? undefined : handlePointerDown}
+      onPointerUp={disabled ? undefined : handlePointerUp}
+      onDoubleClick={disabled || !onDoubleClick ? undefined : onDoubleClick}
       data-testid={`hand-card-${card.uid}`}
       data-card={card.id}
       data-role={role}
@@ -151,10 +188,10 @@ export function HandCard({
       />
       {(showName || showDescription) && (
         <div
-          className="flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-8 pb-8 gap-2 pointer-events-none"
+          className="flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-3 pb-3 pt-6 gap-1 pointer-events-none"
           style={{
             background:
-              'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0) 100%)',
+              'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 100%)',
           }}
           data-testid={`hand-card-overlay-${card.uid}`}
         >
@@ -162,7 +199,7 @@ export function HandCard({
             <Typography
               uiSize="xs"
               weight="800"
-              className="text-[10px] tracking-[0.4px] uppercase text-center line-clamp-1"
+              className="text-[10px] tracking-[0.4px] uppercase text-center"
               style={{ color: borderColor }}
               data-testid={`hand-card-name-${card.uid}`}
             >
@@ -172,7 +209,7 @@ export function HandCard({
           {showDescription && (
             <Typography
               uiSize="xs"
-              className="text-[10px] leading-[12px] text-center line-clamp-2 text-[rgba(226,_232,_240,_0.88)]"
+              className="text-[9px] leading-[11px] font-semibold text-center text-[rgba(226,_232,_240,_0.92)]"
               id={descriptionId}
               data-testid={descriptionId}
             >

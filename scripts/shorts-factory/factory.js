@@ -1120,9 +1120,16 @@ async function getAudioTracks() {
     });
   }
 
-  // Fallback: tracks known to exist on CDN
+  // Fallback: tracks known to exist on CDN (511+ available via tracks.json)
   cachedTracks = [
+    `${MUSIC_CDN_URL}/arcade-skybreak.mp3`,
     `${MUSIC_CDN_URL}/battleship-grid.mp3`,
+    `${MUSIC_CDN_URL}/black-pawn-smoke.mp3`,
+    `${MUSIC_CDN_URL}/cafe-checkmate.mp3`,
+    `${MUSIC_CDN_URL}/card-table-glow.mp3`,
+    `${MUSIC_CDN_URL}/chrome-overdrive.mp3`,
+    `${MUSIC_CDN_URL}/chrome-riot.mp3`,
+    `${MUSIC_CDN_URL}/circuit-tactics.mp3`,
     `${MUSIC_CDN_URL}/clockwork-horizon.mp3`,
     `${MUSIC_CDN_URL}/glass-grid.mp3`,
     `${MUSIC_CDN_URL}/grid-of-torpedoes.mp3`,
@@ -1130,6 +1137,11 @@ async function getAudioTracks() {
     `${MUSIC_CDN_URL}/gridwater-clash.mp3`,
     `${MUSIC_CDN_URL}/iron-tide.mp3`,
     `${MUSIC_CDN_URL}/iron-wake.mp3`,
+    `${MUSIC_CDN_URL}/neon-district-drift.mp3`,
+    `${MUSIC_CDN_URL}/neon-district-pulse.mp3`,
+    `${MUSIC_CDN_URL}/neon-district-run.mp3`,
+    `${MUSIC_CDN_URL}/neon-district-surge.mp3`,
+    `${MUSIC_CDN_URL}/pixel-chase.mp3`,
   ];
   log('info', `Using ${cachedTracks.length} fallback audio tracks`);
   return cachedTracks;
@@ -1365,17 +1377,13 @@ async function captureBrowsing() {
       }
     }
     if (!scenario) {
-      const hasToken = Boolean(CONFIG.factoryBotToken);
-      const eligible = hasToken
-        ? SCENARIOS
-        : SCENARIOS.filter((s) => !s.requiresAuth);
-      if (!hasToken) {
+      scenario = randomElement(SCENARIOS);
+      if (!CONFIG.factoryBotToken) {
         log(
           'info',
-          'No SHORTS_FACTORY_BOT_TOKEN set — skipping gameplay scenarios. Set it to enable live gameplay recordings.',
+          'No SHORTS_FACTORY_BOT_TOKEN set — gameplay will record as anonymous. Set it to enable authenticated gameplay.',
         );
       }
-      scenario = randomElement(eligible);
     }
 
     const context = await browser.newContext({

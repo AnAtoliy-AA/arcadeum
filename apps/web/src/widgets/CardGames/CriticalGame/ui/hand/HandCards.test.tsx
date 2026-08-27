@@ -23,6 +23,7 @@ function renderCards(
     showName: override.showName,
     showDescription: override.showDescription,
     isFanned: override.isFanned,
+    onDoubleClick: override.onDoubleClick,
   };
   return {
     ...render(
@@ -35,6 +36,7 @@ function renderCards(
         showName={props.showName}
         showDescription={props.showDescription}
         isFanned={props.isFanned}
+        onDoubleClick={props.onDoubleClick}
       />,
     ),
     props,
@@ -77,6 +79,23 @@ describe('HandCards', () => {
     fireEvent.pointerDown(card, { clientX: 50, clientY: 50 });
     fireEvent.pointerUp(card, { clientX: 50, clientY: 50 });
     expect(onToggleSelect).not.toHaveBeenCalled();
+  });
+
+  it('fires onDoubleClick when a card is double-tapped', () => {
+    vi.useFakeTimers();
+    const onDoubleClick = vi.fn();
+    renderCards({ onDoubleClick });
+    const card = screen.getByTestId('hand-card-evade-2');
+    // First tap
+    fireEvent.pointerDown(card, { clientX: 50, clientY: 50 });
+    fireEvent.pointerUp(card, { clientX: 50, clientY: 50 });
+    // Advance time so the second tap is within the double-tap threshold
+    vi.advanceTimersByTime(50);
+    // Second tap
+    fireEvent.pointerDown(card, { clientX: 50, clientY: 50 });
+    fireEvent.pointerUp(card, { clientX: 50, clientY: 50 });
+    expect(onDoubleClick).toHaveBeenCalledWith('evade-2');
+    vi.useRealTimers();
   });
 
   it('tags each card tile with the role its border colour is derived from', () => {

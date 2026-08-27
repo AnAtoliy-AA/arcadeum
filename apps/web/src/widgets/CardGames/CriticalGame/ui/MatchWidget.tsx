@@ -368,6 +368,24 @@ export function MatchWidget({
     setTargetPlayerId(null);
   }, [setSelectedUids]);
 
+  // Double-click / double-tap on a card selects it and immediately plays.
+  // We queue the uid in a ref, set selectedUids, and let the effect below
+  // fire handlePlay on the next render when `detected` has recomputed.
+  const pendingDoubleClickUid = useRef<string | null>(null);
+  const handleDoubleClickCard = useCallback(
+    (uid: string) => {
+      if (isGameOver || !canAct) return;
+      pendingDoubleClickUid.current = uid;
+      setSelectedUids([uid]);
+    },
+    [isGameOver, canAct, setSelectedUids],
+  );
+  useEffect(() => {
+    if (!pendingDoubleClickUid.current) return;
+    pendingDoubleClickUid.current = null;
+    if (canPlay) handlePlay();
+  }, [selectedUids, canPlay, handlePlay]);
+
   const showHand = !!currentPlayer && currentPlayer.alive && !isGameOver;
 
   const showAutoplayBar = !isGameOver && !!currentPlayer;
@@ -452,6 +470,7 @@ export function MatchWidget({
               onToggleFullscreen={toggleFullscreen}
               onToggleCardName={handleToggleCardName}
               onToggleCardDescription={handleToggleCardDescription}
+              onDoubleClickCard={handleDoubleClickCard}
             />
           )}
         </MatchWidgetGrid>

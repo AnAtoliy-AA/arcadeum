@@ -22,6 +22,7 @@ import { CardImage, hasArtFor } from '../styles/card-image';
 import type { HandCardInstance } from '../../lib/combo';
 
 const TAP_THRESHOLD = 10;
+const DOUBLE_TAP_MS = 300;
 
 interface HandCardProps {
   card: HandCardInstance;
@@ -40,6 +41,8 @@ interface HandCardProps {
   /** Show / hide the description block under the name (default: true). */
   showDescription?: boolean;
   onToggle: () => void;
+  /** Fired on double-click / double-tap to play the card directly. */
+  onDoubleClick?: () => void;
 }
 
 const ROLE_BORDER: Record<CardRole, string> = {
@@ -96,6 +99,7 @@ export function HandCard({
   showName = true,
   showDescription = true,
   onToggle,
+  onDoubleClick,
 }: HandCardProps) {
   const { t } = useTranslation();
   const role = getCardRole(card.id);
@@ -106,6 +110,7 @@ export function HandCard({
   const linkDescription = showDescription && !!description;
 
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  const lastTapTime = useRef<number>(0);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     pointerStart.current = { x: e.clientX, y: e.clientY };
@@ -122,10 +127,17 @@ export function HandCard({
       const distance = Math.sqrt(dx * dx + dy * dy);
       pointerStart.current = null;
       if (distance <= TAP_THRESHOLD) {
-        onToggle();
+        const now = Date.now();
+        if (onDoubleClick && now - lastTapTime.current < DOUBLE_TAP_MS) {
+          lastTapTime.current = 0;
+          onDoubleClick();
+        } else {
+          lastTapTime.current = now;
+          onToggle();
+        }
       }
     },
-    [disabled, onToggle],
+    [disabled, onToggle, onDoubleClick],
   );
 
   // Fixed card silhouette (~3:4) regardless of which text rows show —
@@ -146,6 +158,7 @@ export function HandCard({
       }}
       onPointerDown={disabled ? undefined : handlePointerDown}
       onPointerUp={disabled ? undefined : handlePointerUp}
+      onDoubleClick={disabled || !onDoubleClick ? undefined : onDoubleClick}
       data-testid={`hand-card-${card.uid}`}
       data-card={card.id}
       data-role={role}
@@ -175,10 +188,10 @@ export function HandCard({
       />
       {(showName || showDescription) && (
         <div
-          className="flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-8 pb-8 gap-2 pointer-events-none"
+          className="flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-3 pb-3 pt-6 gap-1 pointer-events-none"
           style={{
             background:
-              'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0) 100%)',
+              'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 100%)',
           }}
           data-testid={`hand-card-overlay-${card.uid}`}
         >
@@ -186,7 +199,7 @@ export function HandCard({
             <Typography
               uiSize="xs"
               weight="800"
-              className="text-[10px] tracking-[0.4px] uppercase text-center line-clamp-1"
+              className="text-[10px] tracking-[0.4px] uppercase text-center"
               style={{ color: borderColor }}
               data-testid={`hand-card-name-${card.uid}`}
             >
@@ -196,7 +209,7 @@ export function HandCard({
           {showDescription && (
             <Typography
               uiSize="xs"
-              className="text-[10px] leading-[12px] text-center line-clamp-2 text-[rgba(226,_232,_240,_0.88)]"
+              className="text-[9px] leading-[11px] font-semibold text-center text-[rgba(226,_232,_240,_0.92)]"
               id={descriptionId}
               data-testid={descriptionId}
             >

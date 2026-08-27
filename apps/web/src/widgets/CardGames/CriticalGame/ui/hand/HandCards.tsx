@@ -18,6 +18,8 @@ interface HandCardsProps {
    * cards already scroll horizontally and rotation eats horizontal space.
    */
   isFanned?: boolean;
+  /** Fired on double-click / double-tap on a card to play it directly. */
+  onDoubleClick?: (uid: string) => void;
 }
 
 const EDGE_FADE_MASK =
@@ -39,6 +41,7 @@ export function HandCards({
   showName = true,
   showDescription = true,
   isFanned = true,
+  onDoubleClick,
 }: HandCardsProps) {
   const selected = useMemo(() => new Set(selectedUids), [selectedUids]);
   const countsById = useMemo(() => {
@@ -94,6 +97,9 @@ export function HandCards({
               showName={showName}
               showDescription={showDescription}
               onToggle={() => onToggleSelect(card.uid)}
+              onDoubleClick={
+                onDoubleClick ? () => onDoubleClick(card.uid) : undefined
+              }
             />
           </div>
         );

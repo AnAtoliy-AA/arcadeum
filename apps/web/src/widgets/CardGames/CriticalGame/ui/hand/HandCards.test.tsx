@@ -61,17 +61,21 @@ describe('HandCards', () => {
     );
   });
 
-  it('fires onToggleSelect when a card is clicked', () => {
+  it('fires onToggleSelect when a card is tapped (pointer events)', () => {
     const onToggleSelect = vi.fn();
     renderCards({ onToggleSelect });
-    fireEvent.click(screen.getByTestId('hand-card-evade-2'));
+    const card = screen.getByTestId('hand-card-evade-2');
+    fireEvent.pointerDown(card, { clientX: 50, clientY: 50 });
+    fireEvent.pointerUp(card, { clientX: 50, clientY: 50 });
     expect(onToggleSelect).toHaveBeenCalledWith('evade-2');
   });
 
   it('does not call onToggleSelect when disabled', () => {
     const onToggleSelect = vi.fn();
     renderCards({ onToggleSelect, disabled: true });
-    fireEvent.click(screen.getByTestId('hand-card-evade-2'));
+    const card = screen.getByTestId('hand-card-evade-2');
+    fireEvent.pointerDown(card, { clientX: 50, clientY: 50 });
+    fireEvent.pointerUp(card, { clientX: 50, clientY: 50 });
     expect(onToggleSelect).not.toHaveBeenCalled();
   });
 

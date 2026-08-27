@@ -2,7 +2,11 @@ import type { MetadataRoute } from 'next';
 
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
-import { SUPPORTED_LOCALES, localeToHreflang } from '@/shared/i18n';
+import {
+  SUPPORTED_LOCALES,
+  DEFAULT_LOCALE,
+  localeToHreflang,
+} from '@/shared/i18n';
 import { POST_SLUGS, getPost } from '@/features/blog/registry';
 
 type RouteKey =
@@ -39,6 +43,10 @@ type RouteKey =
   | 'chessLanding'
   | 'checkersLanding'
   | 'catDashLanding'
+  | 'solitaireLanding'
+  | 'minesweeperLanding'
+  | 'sudokuLanding'
+  | 'game2048Landing'
   | 'shop';
 
 // Last-meaningful-content-change per page. Update by hand when the
@@ -79,6 +87,10 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   chessLanding: '2026-05-21',
   checkersLanding: '2026-05-21',
   catDashLanding: '2026-05-21',
+  solitaireLanding: '2026-08-24',
+  minesweeperLanding: '2026-08-24',
+  sudokuLanding: '2026-08-24',
+  game2048Landing: '2026-08-24',
   shop: '2026-05-21',
 };
 
@@ -89,7 +101,7 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
  * URLs it will refuse to index, and surfaces a "submitted URL marked
  * noindex" warning in Search Console.
  *
- * Keep this set in sync with `PRIVATE_SLUG_KEYS` in `src/middleware.ts`.
+ * Keep this set in sync with `PRIVATE_SLUG_KEYS` in `src/proxy.ts`.
  */
 const NOINDEX_KEYS: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'auth',
@@ -114,6 +126,10 @@ const GAME_LANDING_KEYS: RouteKey[] = [
   'chessLanding',
   'checkersLanding',
   'catDashLanding',
+  'solitaireLanding',
+  'minesweeperLanding',
+  'sudokuLanding',
+  'game2048Landing',
 ];
 
 const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
@@ -138,6 +154,10 @@ const PAGE_CHANGE_FREQ: Partial<
   glimwormLanding: 'weekly',
   ticTacToeLanding: 'weekly',
   cascadeLanding: 'weekly',
+  solitaireLanding: 'weekly',
+  minesweeperLanding: 'weekly',
+  sudokuLanding: 'weekly',
+  game2048Landing: 'weekly',
   terms: 'yearly',
   privacy: 'yearly',
   cookies: 'yearly',
@@ -176,6 +196,10 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   chessLanding: 0.9,
   checkersLanding: 0.9,
   catDashLanding: 0.9,
+  solitaireLanding: 0.9,
+  minesweeperLanding: 0.9,
+  sudokuLanding: 0.9,
+  game2048Landing: 0.9,
   leaderboards: 0.7,
   tournaments: 0.7,
   rewards: 0.7,
@@ -203,7 +227,7 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
 };
 
 function alternatesFor(key: RouteKey): Record<string, string> {
-  return Object.fromEntries(
+  const languages = Object.fromEntries(
     SUPPORTED_LOCALES.map((locale) => {
       const r = buildRoutes(locale);
       const value = r[key];
@@ -213,6 +237,12 @@ function alternatesFor(key: RouteKey): Record<string, string> {
       ];
     }),
   );
+  // `x-default` points search engines at the English page for users whose
+  // language/locale isn't covered by the alternates above (matches the
+  // head-level hreflang emitted by `buildPageMetadata`).
+  languages['x-default'] =
+    `${appConfig.siteUrl}${buildRoutes(DEFAULT_LOCALE)[key] as string}`;
+  return languages;
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -250,7 +280,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       const post = getPost(slug, locale);
       if (!post || post.locale !== locale) continue;
 
-      const postLanguages: Record<string, string> = {};
+      const postLanguages: Record<string, string> = {
+        // Unmatched languages fall back to the English post.
+        'x-default': `${appConfig.siteUrl}${buildRoutes(DEFAULT_LOCALE).blogPost(slug)}`,
+      };
       for (const l of SUPPORTED_LOCALES) {
         const localized = getPost(slug, l);
         if (localized && localized.locale === l) {

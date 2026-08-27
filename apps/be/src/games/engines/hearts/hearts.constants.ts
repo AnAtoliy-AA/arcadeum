@@ -1,0 +1,30 @@
+/** Moved to @arcadeum/games-core (ARC-900 offline mode). Re-export shim. */
+export {
+  MIN_PLAYERS,
+  MAX_PLAYERS,
+  HAND_SIZE,
+  CARDS_PER_PASS,
+  SUITS,
+  RANKS,
+  TWO_CLUBS,
+  QUEEN_OF_SPADES,
+  HEART_SUIT,
+  PASS_DIRECTIONS,
+  PASS_ROTATION,
+  GAME_PHASE,
+  ACTION,
+  TARGET_SCORES,
+  POINTS_HEART,
+  POINTS_QUEEN_OF_SPADES,
+  MOON_SHOOT_POINTS,
+  DEFAULT_OPTIONS,
+} from '@arcadeum/games-core/games/hearts/hearts.constants';
+export type {
+  HeartsOptions,
+  Suit,
+  Rank,
+  PassDirection,
+  GamePhase,
+  ActionType,
+  TargetScore,
+} from '@arcadeum/games-core/games/hearts/hearts.constants';

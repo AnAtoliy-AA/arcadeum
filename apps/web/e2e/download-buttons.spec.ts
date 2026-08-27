@@ -11,9 +11,10 @@ test.describe('Download Buttons', () => {
 
       const originalAddEventListener = window.addEventListener;
       window.addEventListener = function (
-        ...args: Parameters<typeof window.addEventListener>
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | AddEventListenerOptions,
       ) {
-        const [type, listener] = args;
         if (type === 'beforeinstallprompt') {
           const event = new Event(
             'beforeinstallprompt',
@@ -33,7 +34,7 @@ test.describe('Download Buttons', () => {
             }
           }, 500);
         }
-        return originalAddEventListener.apply(this, args);
+        return originalAddEventListener.call(this, type, listener, options);
       };
     });
   });

@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useFonts } from 'expo-font';
 import {
   DarkTheme,
   DefaultTheme,
+  Stack,
   ThemeProvider,
-} from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack, useRouter } from 'expo-router';
+  useRouter,
+} from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

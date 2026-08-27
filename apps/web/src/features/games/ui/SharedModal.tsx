@@ -1,12 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import type {
-  ComponentProps,
-  CSSProperties,
-  HTMLAttributes,
-  ReactNode,
-} from 'react';
+import type { ComponentProps, CSSProperties, ReactNode } from 'react';
 import { Button, type GameVariant } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 
@@ -72,7 +67,11 @@ export type ModalFrameProps = {
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style'>;
+  id?: string;
+  role?: string;
+  'aria-label'?: string;
+  'data-testid'?: string;
+};
 
 const FRAME_VARIANT_CLASSES: Record<ModalVariant, string> = {
   default:
@@ -88,9 +87,16 @@ export const ModalFrame = ({
   className,
   style,
   children,
-  ...props
+  id,
+  role,
+  'aria-label': ariaLabel,
+  'data-testid': dataTestId,
 }: ModalFrameProps) => (
   <div
+    id={id}
+    role={role}
+    aria-label={ariaLabel}
+    data-testid={dataTestId}
     className={cx(
       'relative w-full max-w-[600px] max-h-[calc(100vh-40px)] overflow-hidden',
       variant === 'cyberpunk' ? 'rounded-[4px]' : 'rounded-[24px]',
@@ -98,7 +104,6 @@ export const ModalFrame = ({
       className,
     )}
     style={style}
-    {...props}
   >
     {children}
   </div>
@@ -106,18 +111,19 @@ export const ModalFrame = ({
 
 export const ScrollArea = ({
   className,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
+    data-testid={dataTestId}
     className={cx(
       'flex flex-col items-stretch w-full h-full p-5 overflow-y-auto',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -129,22 +135,29 @@ export const ModalContent = ({
   maxWidth,
   className,
   style,
-  ...props
+  id,
+  'aria-label': ariaLabel,
+  'data-testid': dataTestId,
 }: {
   variant?: string;
   maxWidth?: string | number;
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'className' | 'style'>) => {
+  id?: string;
+  'aria-label'?: string;
+  'data-testid'?: string;
+}) => {
   const resolvedVariant = resolveModalVariant(variant);
 
   return (
     <ModalFrame
+      id={id}
+      aria-label={ariaLabel}
+      data-testid={dataTestId}
       className={cx('m-auto', className)}
       style={maxWidth ? { maxWidth, ...style } : style}
       variant={resolvedVariant}
-      {...props}
     >
       {resolvedVariant === 'cyberpunk' && (
         <>
@@ -170,19 +183,17 @@ export const ModalHeader = ({
   variant,
   className,
   children,
-  ...props
 }: {
   variant?: string;
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-row items-center justify-between mb-4 pb-3 border-b-2 border-b-[var(--borderColor)]',
       variant === 'cyberpunk' && 'border-b-[rgba(6,182,212,0.3)]',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -199,23 +210,24 @@ const TITLE_VARIANT_CLASSES: Record<ModalVariant, string> = {
 export const ModalTitle = ({
   variant,
   className,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   variant?: string;
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => {
+}) => {
   const resolvedVariant = resolveModalVariant(variant);
 
   return (
     <span
+      data-testid={dataTestId}
       className={cx(
         'text-[28px] font-bold',
         TITLE_VARIANT_CLASSES[resolvedVariant],
         className,
       )}
-      {...props}
     >
       {children}
     </span>
@@ -226,29 +238,39 @@ interface CloseButtonProps extends ComponentProps<typeof Button> {
   accent?: string;
 }
 
-export const CloseButton = ({ accent, ...props }: CloseButtonProps) => (
+export const CloseButton = ({
+  accent,
+  onClick,
+  disabled,
+  className,
+  title,
+  'aria-label': ariaLabel,
+  'data-testid': dataTestId,
+  children,
+}: CloseButtonProps) => (
   <Button
-    className="hover:rotate-[180deg] hover:scale-[1.1]"
+    className={cx('hover:rotate-[180deg] hover:scale-[1.1]', className)}
     variant="icon"
     size="sm"
-    data-testid="modal-close-button"
+    data-testid={dataTestId}
     gameVariant={accent as GameVariant}
-    {...props}
-  />
+    onClick={onClick}
+    disabled={disabled}
+    title={title}
+    aria-label={ariaLabel}
+  >
+    {children}
+  </Button>
 );
 
 export const ModalActions = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx('flex flex-row items-stretch gap-3 mt-5', className)}
-    {...props}
-  >
+}) => (
+  <div className={cx('flex flex-row items-stretch gap-3 mt-5', className)}>
     {children}
   </div>
 );
@@ -256,12 +278,11 @@ export const ModalActions = ({
 export const ModalSection = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div className={cx('flex flex-col items-stretch mb-4', className)} {...props}>
+}) => (
+  <div className={cx('flex flex-col items-stretch mb-4', className)}>
     {children}
   </div>
 );
@@ -276,12 +297,11 @@ export const SectionLabel = ({
   variant,
   className,
   children,
-  ...props
 }: {
   variant?: string;
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => {
+}) => {
   const resolvedVariant = resolveModalVariant(variant);
 
   return (
@@ -291,7 +311,6 @@ export const SectionLabel = ({
         SECTION_LABEL_VARIANT_CLASSES[resolvedVariant],
         className,
       )}
-      {...props}
     >
       {children}
     </span>
@@ -300,15 +319,16 @@ export const SectionLabel = ({
 
 export const RulesText = ({
   className,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
+}) => (
   <span
+    data-testid={dataTestId}
     className={cx('text-[16px] leading-[20px] opacity-[0.9]', className)}
-    {...props}
   >
     {children}
   </span>
@@ -316,13 +336,17 @@ export const RulesText = ({
 
 export const RulesTextPre = ({
   className,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <RulesText className={cx('whitespace-pre-line', className)} {...props}>
+}) => (
+  <RulesText
+    data-testid={dataTestId}
+    className={cx('whitespace-pre-line', className)}
+  >
     {children}
   </RulesText>
 );

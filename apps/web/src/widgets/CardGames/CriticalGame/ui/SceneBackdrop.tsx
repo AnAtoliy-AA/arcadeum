@@ -39,6 +39,7 @@ export function SceneBackdrop() {
     >
       <SceneAmbientGlow
         data-testid={SCENE_LAYER_TESTIDS.ambientGlow}
+        className="[animation:ambientGlow_12s_ease-in-out_infinite]"
         style={makeAmbientGlowStyle(p.ambientGlowColorA, p.ambientGlowColorB)}
       />
       {p.sceneBackgroundImage && (

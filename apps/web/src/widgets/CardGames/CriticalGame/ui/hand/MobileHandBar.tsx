@@ -83,9 +83,9 @@ export function MobileHandBar({
     background: 'rgba(7, 10, 17, 0.94)',
     borderTop: '1px solid rgba(255,255,255,0.10)',
     boxShadow: '0 -8px 24px rgba(0,0,0,0.45)',
-    // Above `.critical-game-widget.is-fullscreen` (z-index 1100), so the
-    // sticky bar stays visible when the widget is in fullscreen mode.
-    zIndex: isFullscreen ? 1200 : 40,
+    // Above OpponentTile (z-100) and below modals (z-1000+).
+    // In fullscreen mode, above GameWidgetContainer (z-1100).
+    zIndex: isFullscreen ? 1200 : 150,
     backdropFilter: 'blur(8px)',
   };
 
@@ -145,8 +145,11 @@ export function MobileHandBar({
       fontWeight: 800,
       letterSpacing: '0.3px',
       textTransform: 'uppercase',
-      opacity: opts.enabled ? 1 : 0.6,
-      cursor: opts.enabled ? 'pointer' : 'default',
+      opacity: opts.enabled ? 1 : 0.4,
+      cursor: opts.enabled ? 'pointer' : 'not-allowed',
+      transition: 'opacity 150ms ease, transform 100ms ease',
+      transform: opts.enabled ? 'scale(1)' : 'scale(0.98)',
+      filter: opts.enabled ? 'none' : 'grayscale(50%)',
     };
   }
 
@@ -235,6 +238,11 @@ export function MobileHandBar({
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}
+          aria-label={
+            !canPlay && !isInvalid
+              ? t('games.table.hud.combo.pickTarget')
+              : combo.label
+          }
         >
           {isInvalid ? `✕ ${combo.label}` : combo.label}
         </button>

@@ -8,6 +8,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useMatchmaking } from '@/features/games/ui';
+import { trackSocialQuickplayStarted } from '@/shared/analytics/funnel';
 
 type Mode = 'ai' | 'human';
 
@@ -48,12 +49,12 @@ export function QuickplayButton({
     }
     setLoading(true);
     try {
-      const options = {
-        token: snapshot.accessToken || undefined,
-        variant,
-        theme,
-      };
-      const { room } = await gamesApi.quickplay(gameId, options);
+      const { room } = await gamesApi.quickplay(
+        gameId,
+        { variant, theme },
+        { token: snapshot.accessToken || undefined },
+      );
+      trackSocialQuickplayStarted(gameId, 'ai');
       router.push(routes.gameRoom(room.id));
     } catch (err) {
       console.warn(`Quickplay (${mode}) failed:`, err);

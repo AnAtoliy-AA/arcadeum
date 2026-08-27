@@ -55,17 +55,19 @@ export class DailyRewardsNotificationCron {
       .exec();
 
     let sent = 0;
-    for (const doc of docs) {
-      const userId = doc.userId.toHexString();
-      await this.dispatcher.dispatch({
-        userId,
+    await this.dispatcher.dispatchMany(
+      docs.map((doc) => doc.userId.toHexString()),
+      {
         category: 'daily_reward_ready',
         titleKey: 'notifications.daily_reward_ready.title',
         bodyKey: 'notifications.daily_reward_ready.body',
         url: '/daily-rewards',
-      });
-      sent += 1;
-    }
+        // The cron already filtered to opted-in users — skip the per-user
+        // preference query inside dispatch().
+        skipCategoryCheck: true,
+      },
+    );
+    sent = docs.length;
     return sent;
   }
 }

@@ -122,10 +122,14 @@ export class GamePropsFactory {
     session: GameSessionSummary | null,
   ): BaseGameProps {
     return {
-      ...props,
       roomId: props.room.id,
+      room: props.room,
       session,
+      currentUserId: props.currentUserId,
       isHost: props.room.hostId === props.currentUserId,
+      config: props.config,
+      onPostHistoryNote: props.onPostHistoryNote,
+      onAction: props.onAction,
     };
   }
 

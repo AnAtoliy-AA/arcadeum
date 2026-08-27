@@ -7,7 +7,12 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 
 export type DownloadButtonsProps = Omit<SharedProps, 'labels'>;
 
-export const DownloadButtons: React.FC<DownloadButtonsProps> = (props) => {
+export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
+  iosHref,
+  androidHref,
+  onInstall,
+  onShowInstructions,
+}) => {
   const { t } = useTranslation();
 
   const labels = {
@@ -27,5 +32,13 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = (props) => {
     appGuide: t('pwa.install.appGuide'),
   };
 
-  return <SharedDownloadButtons {...props} labels={labels} />;
+  return (
+    <SharedDownloadButtons
+      iosHref={iosHref}
+      androidHref={androidHref}
+      onInstall={onInstall}
+      onShowInstructions={onShowInstructions}
+      labels={labels}
+    />
+  );
 };

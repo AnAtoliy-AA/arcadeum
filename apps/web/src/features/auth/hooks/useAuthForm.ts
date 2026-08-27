@@ -80,6 +80,7 @@ export function useAuthForm() {
   const [username, setUsername] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
+  const [agreeAgeTerms, setAgreeAgeTerms] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [magicLinkEmail, setMagicLinkEmail] = useState('');
 
@@ -200,9 +201,9 @@ export function useAuthForm() {
     toggleMode();
     setPassword('');
     setUsername(storedUsername ? sanitizeUsername(storedUsername) : '');
+    setAgreeAgeTerms(false);
   }, [toggleMode, storedUsername]);
 
-  // Validation
   const trimmedEmail = email.trim();
   const trimmedUsername = username.trim();
   const isEmailValid = EMAIL_REGEX.test(trimmedEmail);
@@ -217,6 +218,7 @@ export function useAuthForm() {
     !password ||
     (isRegisterMode && !trimmedUsername) ||
     showUsernameTooShort ||
+    (isRegisterMode && !agreeAgeTerms) ||
     (isRegisterMode && usernameAvailability === 'taken') ||
     (isRegisterMode && emailAvailability === 'taken');
 
@@ -310,6 +312,8 @@ export function useAuthForm() {
     referralCode,
     rememberMe,
     setRememberMe,
+    agreeAgeTerms,
+    setAgreeAgeTerms,
     magicLinkSent,
     magicLinkEmail,
 

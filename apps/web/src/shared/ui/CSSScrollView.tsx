@@ -15,7 +15,14 @@ type ScrollViewProps = {
   height?: number | string;
   padding?: number | string;
   gap?: number | string;
-} & React.HTMLAttributes<HTMLDivElement>;
+  id?: string;
+  role?: string;
+  'data-testid'?: string;
+  'aria-label'?: string;
+  tabIndex?: number;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  onScroll?: React.UIEventHandler<HTMLDivElement>;
+};
 
 export const ScrollView = forwardRef<HTMLDivElement, ScrollViewProps>(
   function ScrollView(
@@ -32,13 +39,26 @@ export const ScrollView = forwardRef<HTMLDivElement, ScrollViewProps>(
       height,
       padding,
       gap,
-      ...props
+      id,
+      role,
+      'data-testid': dataTestId,
+      'aria-label': ariaLabel,
+      tabIndex,
+      onClick,
+      onScroll,
     },
     ref,
   ) {
     return (
       <div
         ref={ref}
+        id={id}
+        role={role}
+        data-testid={dataTestId}
+        aria-label={ariaLabel}
+        tabIndex={tabIndex}
+        onClick={onClick}
+        onScroll={onScroll}
         className={className}
         style={{
           overflow: 'auto',
@@ -55,7 +75,6 @@ export const ScrollView = forwardRef<HTMLDivElement, ScrollViewProps>(
           ...(gap !== undefined ? { gap } : {}),
           ...style,
         }}
-        {...props}
       >
         {children}
       </div>

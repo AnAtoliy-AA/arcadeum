@@ -13,6 +13,8 @@ interface CheckersBoardProps {
   disabled: boolean;
   ariaLabel: string;
   onCellClick: (row: number, col: number) => void;
+  /** Clears the current piece selection (Escape key). */
+  onDeselect?: () => void;
   isFlipped?: boolean;
 }
 
@@ -24,6 +26,7 @@ export function CheckersBoard({
   disabled,
   ariaLabel,
   onCellClick,
+  onDeselect,
   isFlipped = false,
 }: CheckersBoardProps) {
   const theme = useCheckersTheme();
@@ -59,6 +62,7 @@ export function CheckersBoard({
     cols: boardSize,
     disabled,
     onActivate: ({ row, col }) => handleClick(row, col),
+    onDeselect,
   });
 
   const cellLabel = useCallback(
@@ -104,7 +108,7 @@ export function CheckersBoard({
 
             return (
               <div
-                className="flex flex-col flex-1 items-center justify-center relative select-none"
+                className="flex flex-col flex-1 items-center justify-center relative select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)]"
                 style={{
                   cursor: disabled ? 'default' : 'pointer',
                   backgroundColor: isSelected

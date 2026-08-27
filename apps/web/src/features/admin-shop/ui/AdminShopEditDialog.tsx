@@ -102,14 +102,7 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
             value={priceAmount}
             onChange={(e) => setPriceAmount(e.target.value)}
             data-testid="admin-shop-edit-price-amount"
-            style={{
-              padding: '8px 10px',
-              background: 'var(--backgroundFocus)',
-              border: '1px solid var(--borderColor)',
-              borderRadius: 6,
-              color: 'inherit',
-              fontSize: 14,
-            }}
+            className="py-2 px-2.5 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
           />
         </div>
 
@@ -123,14 +116,7 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
               setPriceCurrency(e.target.value as 'coins' | 'gems' | 'arcadeum')
             }
             data-testid="admin-shop-edit-price-currency"
-            style={{
-              padding: '8px 10px',
-              background: 'var(--backgroundFocus)',
-              border: '1px solid var(--borderColor)',
-              borderRadius: 6,
-              color: 'inherit',
-              fontSize: 14,
-            }}
+            className="py-2 px-2.5 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
           >
             <option value="coins">coins</option>
             <option value="gems">gems</option>

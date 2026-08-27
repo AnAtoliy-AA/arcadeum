@@ -1,8 +1,7 @@
+import { PageTitle, Typography } from '@arcadeum/ui';
 import { requireAdmin } from '@/entities/session/api/requireAdmin';
 import { listAdminPackagesAction } from '@/features/admin-gem-packages/server/admin-gems.actions';
 import { AdminGemPackagesTable } from '@/features/admin-gem-packages/ui/AdminGemPackagesTable';
-
-// No metadata export — inherit noindex/nofollow from /admin/layout.tsx.
 
 export default async function AdminGemPackagesPage() {
   await requireAdmin();
@@ -10,21 +9,14 @@ export default async function AdminGemPackagesPage() {
   const packages = await listAdminPackagesAction();
 
   return (
-    <div style={{ maxWidth: '1024px', margin: '0 auto', padding: '32px 16px' }}>
-      <div style={{ marginBottom: '24px' }}>
-        <h1
-          style={{
-            fontSize: '24px',
-            fontWeight: 700,
-            color: 'var(--color-text, #e4e4e7)',
-            marginBottom: '4px',
-          }}
-        >
+    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <PageTitle size="lg" gradient>
           Gem Packages
-        </h1>
-        <p style={{ fontSize: '14px', color: '#71717a' }}>
+        </PageTitle>
+        <Typography variant="body" uiSize="md" alpha="medium">
           Manage purchasable gem packages shown to players.
-        </p>
+        </Typography>
       </div>
 
       <AdminGemPackagesTable initialPackages={packages} />

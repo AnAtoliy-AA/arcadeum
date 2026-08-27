@@ -47,10 +47,84 @@ const withPWA = withPWAInit({
   fallbacks: {
     document: '/offline',
   },
+  // ARC-926: compile worker/index.ts (push + notificationclick handlers)
+  // into worker-<hash>.js and prepend it to the generated service worker
+  // via importScripts. Without this, next-pwa overwrites public/sw.js on
+  // prod builds and the push handlers are lost.
+  customWorkerSrc: 'worker',
   workboxOptions: {
     skipWaiting: true,
+    // ARC-900 offline mode: cache only immutable build assets + static
+    // media. Documents/HTML stay network-first via the /offline fallback so
+    // stale-bundle issues (see public/sw.js history) cannot resurface.
+    runtimeCaching: [
+      {
+        // ARC-926: document navigations for game play + offline pages.
+        // NetworkFirst with a short timeout — never serve stale HTML for
+        // these routes, but keep them usable when offline.
+        urlPattern:
+          /\/(?:games\/[a-z0-9-]+\/play|offline\/[a-z0-9-]+)(?:\?.*)?$/,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'arcadeum-pages-v1',
+          networkTimeoutSeconds: 3,
+          expiration: { maxEntries: 60, maxAgeSeconds: 7 * 24 * 60 * 60 },
+          cacheableResponse: { statuses: [200] },
+        },
+      },
+      {
+        urlPattern: /\/_next\/static\/.+\.(?:js|css|woff2?)$/,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'arcadeum-static-v1',
+          expiration: { maxEntries: 300, maxAgeSeconds: 60 * 24 * 60 * 60 },
+          cacheableResponse: { statuses: [200] },
+        },
+      },
+      {
+        // No `json` here: the regex matches full URLs, so any API response
+        // ending in .json would be served stale for up to 30 days.
+        urlPattern: /\.(?:png|jpe?g|svg|webp|avif|mp3|wav|ogg)$/,
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'arcadeum-media-v1',
+          expiration: { maxEntries: 200, maxAgeSeconds: 30 * 24 * 60 * 60 },
+          cacheableResponse: { statuses: [200] },
+        },
+      },
+    ],
   },
 });
+
+// Analytics providers (roadmap 6C): only allowlisted when the corresponding
+// env vars are set at build time — deployments without analytics keep the
+// strict CSP. Plausible loads its script from the API host and beacons events
+// to the same host; PostHog uses the API host plus an -assets host for JS.
+function analyticsCspOrigins(): string[] {
+  const provider =
+    process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER?.trim().toLowerCase();
+  const origins = new Set<string>();
+  if (provider === 'plausible') {
+    const host =
+      process.env.NEXT_PUBLIC_PLAUSIBLE_API_HOST?.trim() ||
+      'https://plausible.io';
+    origins.add(host);
+  }
+  if (provider === 'posthog' && process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim()) {
+    const host = (
+      process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() || 'https://us.i.posthog.com'
+    ).replace(/\/$/, '');
+    const assetsHost =
+      host === 'https://eu.i.posthog.com'
+        ? 'https://eu-assets.i.posthog.com'
+        : 'https://us-assets.i.posthog.com';
+    origins.add(host);
+    origins.add(assetsHost);
+  }
+  return Array.from(origins);
+}
+
+const analyticsOrigins = analyticsCspOrigins();
 
 const defaultConnectSrc = [
   'https://arcadeum.games',
@@ -64,13 +138,18 @@ const defaultConnectSrc = [
   'wss://*.vercel.live',
   'https://*.vercel.app',
   process.env.NEXT_PUBLIC_CDN_URL || '',
-];
+].concat(analyticsOrigins);
 
 const cspConnectSrc = process.env.CSP_CONNECT_SRC
   ? (JSON.parse(process.env.CSP_CONNECT_SRC) as string[])
   : defaultConnectSrc;
 
-const cspScriptSrc = "'unsafe-inline' https://vercel.live https://*.vercel.app";
+const cspScriptSrc = [
+  "'unsafe-inline'",
+  'https://vercel.live',
+  'https://*.vercel.app',
+  ...analyticsOrigins,
+].join(' ');
 const cspStyleSrc = "'self' 'unsafe-inline'";
 const cspImgSrc = "'self' blob: data: https:";
 const cspFontSrc = "'self' data:";
@@ -320,7 +399,7 @@ const nextConfig: NextConfig = {
   // loopback hosts so e2e logs stay clean.
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
   reactCompiler: true,
-  transpilePackages: ['@arcadeum/ui'],
+  transpilePackages: ['@arcadeum/ui', '@arcadeum/games-core'],
   experimental: {
     inlineCss: true,
     optimizePackageImports: ['lucide-react', '@arcadeum/ui'],
@@ -330,6 +409,7 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname, '../../'),
   },
   productionBrowserSourceMaps: false,
+  poweredByHeader: false,
   trailingSlash: false,
   async redirects() {
     return [

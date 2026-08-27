@@ -19,11 +19,16 @@ const rowBase =
 function Row({
   className,
   minHeight,
-  ...props
+  children,
+  'data-testid': dataTestId,
+  'data-self': dataSelf,
 }: {
   className?: string;
   minHeight?: number;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  children?: React.ReactNode;
+  'data-testid'?: string;
+  'data-self'?: string;
+}) {
   return (
     <div
       className={cx(
@@ -32,30 +37,40 @@ function Row({
         className,
       )}
       style={minHeight ? { minHeight } : undefined}
-      {...props}
-    />
+      data-testid={dataTestId}
+      data-self={dataSelf}
+    >
+      {children}
+    </div>
   );
 }
 
 function HeaderRow({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cx(rowBase, 'px-3 py-2', className)} {...props} />;
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
+  return <div className={cx(rowBase, 'px-3 py-2', className)}>{children}</div>;
 }
 
 function TagPill({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-row items-stretch rounded-full border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] px-2 py-0.5',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 

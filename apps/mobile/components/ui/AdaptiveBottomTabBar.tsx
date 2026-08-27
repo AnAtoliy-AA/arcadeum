@@ -1,6 +1,6 @@
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { BottomTabBar } from '@react-navigation/bottom-tabs';
-import { CommonActions } from '@react-navigation/native';
+import type { BottomTabBarProps } from 'expo-router/js-tabs';
+import { BottomTabBar } from 'expo-router/js-tabs';
+import { CommonActions } from 'expo-router/react-navigation';
 import React from 'react';
 import {
   Platform,
@@ -205,12 +205,31 @@ function WebBottomTabBar({
   );
 }
 
-export function AdaptiveBottomTabBar(props: BottomTabBarProps) {
+export function AdaptiveBottomTabBar({
+  state,
+  descriptors,
+  navigation,
+  insets,
+}: BottomTabBarProps) {
   if (Platform.OS === 'web') {
-    return <WebBottomTabBar {...props} />;
+    return (
+      <WebBottomTabBar
+        state={state}
+        descriptors={descriptors}
+        navigation={navigation}
+        insets={insets}
+      />
+    );
   }
 
-  return <BottomTabBar {...props} />;
+  return (
+    <BottomTabBar
+      state={state}
+      descriptors={descriptors}
+      navigation={navigation}
+      insets={insets}
+    />
+  );
 }
 
 const createStyles = (palette: Palette) =>

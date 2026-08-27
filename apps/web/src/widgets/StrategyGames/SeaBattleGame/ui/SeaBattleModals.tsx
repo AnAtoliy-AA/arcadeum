@@ -1,8 +1,13 @@
 'use client';
 
-import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { RulesModal } from './RulesModal';
 import { GameEndModals } from '@/features/games/ui';
+import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
+import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import type { SeaBattleSnapshot } from '../types';
 import type { UseGameEndStateResult } from '@/features/games/hooks/useGameEndState';
 
@@ -48,6 +53,20 @@ export function SeaBattleModals({
         alive: p.alive,
       })) || [];
 
+  const opponentId =
+    snapshot?.players && currentUserId
+      ? (snapshot.players.find(
+          (p) => p.playerId !== currentUserId && !p.playerId.startsWith('bot-'),
+        )?.playerId ?? null)
+      : null;
+
+  const analytics = usePostGameAnalytics({
+    gameId: 'sea_battle_v1',
+    session: snapshot as unknown as Record<string, unknown> | undefined,
+    currentUserId,
+    opponentId,
+  });
+
   return (
     <>
       <RulesModal
@@ -70,6 +89,25 @@ export function SeaBattleModals({
         theme={cardVariant}
         t={t}
         onRematch={onRematch}
+        stats={analytics.stats}
+        analysis={{
+          content: (
+            <PostGameAnalytics
+              moveTimeline={analytics.moveTimeline}
+              headToHead={analytics.headToHead}
+              headToHeadLoading={analytics.headToHeadLoading}
+              trends={analytics.trends}
+              trendsLoading={analytics.trendsLoading}
+              onLoadHeadToHead={analytics.loadHeadToHead}
+              onLoadTrends={analytics.loadTrends}
+              currentUserId={currentUserId}
+              opponentId={opponentId}
+              t={t}
+            />
+          ),
+          viewLabel: t('games.table.analytics.view'),
+          backLabel: t('games.table.analytics.back'),
+        }}
       />
     </>
   );

@@ -54,9 +54,46 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Cat Dash · Carrera de gatos multijugador · ${APP}`,
     description: `Juega Cat Dash en ${APP} — carreras de gatos con dados, habilidades únicas y pistas temáticas. 2–6 jugadores, gratis.`,
   },
+  pachisiLanding: {
+    title: `Pachisi (Ludo) · Juego de mesa de carrera gratis · ${APP}`,
+    description: `Juega Pachisi en línea en ${APP} — saca un seis, captura rivales, esquiva peligros y lleva tus cuatro fichas a casa. 2–4 jugadores, bots IA, salas gratis.`,
+  },
+  backgammonLanding: {
+    title: `Backgammon · Juego de mesa multijugador gratis · ${APP}`,
+    description: `Juega Backgammon en línea en ${APP} — tablero clásico de 24 puntos, dados, capturas al bar y bots IA. Gratis, sin descargas.`,
+  },
+  heartsLanding: {
+    title: `Corazones · Juego de cartas multijugador gratis · ${APP}`,
+    description: `Juega Corazones en línea en ${APP} — clásico juego de cartas de 4 jugadores con pass, Corazones, Reina de Espadas y oponentes IA. Gratis.`,
+  },
+  spadesLanding: {
+    title: `Espadas · Juego de cartas multijugador gratis · ${APP}`,
+    description: `Juega Espadas en línea en ${APP} — clásico juego de cartas por parejas de 4 jugadores con apuestas, Nil, bolsas y oponentes IA. Gratis.`,
+  },
   seaBattleLanding: {
     title: `Batalla naval en línea · Juega Battleship gratis · ${APP}`,
     description: `Juega Batalla Naval (Battleship) en línea gratis en ${APP}. Partida rápida contra un bot, busca un oponente humano o invita amigos a una partida privada.`,
+  },
+  goLanding: {
+    title: `Go · Juego de Tablero Multijugador Online Gratis · ${APP}`,
+    description: `Juega al Go online en ${APP} — Baduk/Weiqi clásico en tableros de 9×9, 13×13 y 19×19 con capturas, regla de ko, puntuación por área e IA. Salas instantáneas gratis.`,
+  },
+
+  solitaireLanding: {
+    title: `Solitario · Juego de Cartas Klondike Gratis Online · ${APP}`,
+    description: `Juega al Solitario (Klondike) online en ${APP} — el rompecabezas de cartas clásico para un jugador con puntuación, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
+  },
+  minesweeperLanding: {
+    title: `Buscaminas · Juego de Rompecabezas Clásico Gratis Online · ${APP}`,
+    description: `Juega al Buscaminas online en ${APP} — tableros de principiante a experto con banderas, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
+  },
+  sudokuLanding: {
+    title: `Sudoku · Juego de Rompecabezas Numérico Gratis Online · ${APP}`,
+    description: `Juega al Sudoku online en ${APP} — niveles fácil, medio y difícil con solución única, notas a lápiz y progreso guardado. Gratis, instantáneo, sin descarga.`,
+  },
+  game2048Landing: {
+    title: `2048 · Juego de Rompecabezas de Fichas Gratis Online · ${APP}`,
+    description: `Juega al 2048 online en ${APP} — desliza y fusiona fichas numeradas en una cuadrícula 4×4, bate tu récord y sigue más allá del 2048. Gratis, instantáneo, sin descarga.`,
   },
   settings: {
     title: `Ajustes · ${APP}`,
@@ -81,6 +118,14 @@ export const es: DeepPartial<SeoMessages> = {
   friends: {
     title: `Amigos · ${APP}`,
     description: `Administra tu lista de amigos en ${APP}, envía solicitudes y mira quién está en línea.`,
+  },
+  clans: {
+    title: `Clanes · ${APP}`,
+    description: `Únete o crea clanes en ${APP}, forma equipo con otros jugadores, escala en las clasificaciones de clanes y domina junto.`,
+  },
+  events: {
+    title: `Noches de juego comunitarias y eventos · ${APP}`,
+    description: `Únete a noches de juegos comunitarias programadas en ${APP}. Compite en juegos destacados, sube en la tabla de clasificación en vivo y gana recompensas exclusivas.`,
   },
   tournaments: {
     title: `Torneos · ${APP}`,
@@ -165,6 +210,10 @@ export const es: DeepPartial<SeoMessages> = {
   developers: {
     title: `Desarrolladores · ${APP}`,
     description: `Conoce al equipo que está construyendo ${APP} y descubre cómo participar.`,
+  },
+  features: {
+    title: `Características de la Plataforma · ${APP}`,
+    description: `Descubre todas las características de ${APP} — 20+ juegos multijugador, rankings, funciones sociales, economía, seguridad y SEO.`,
   },
   admin: {
     title: `Admin · ${APP}`,

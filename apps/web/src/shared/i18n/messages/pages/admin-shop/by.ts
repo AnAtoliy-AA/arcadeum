@@ -4,6 +4,15 @@ export const adminShopBy = {
     'Toggle availability, override prices, and grant items to specific users.',
   loading: 'Loading shop catalog...',
   empty: 'No catalog items found.',
+  totalLabel: '{total} прадметаў',
+  showingCount: 'Паказана {current} з {total} прадметаў',
+  allLoaded: 'Усе {total} прадметаў загружаны',
+  loadMore: 'Загрузіць яшчэ',
+  pagination: {
+    prev: 'Назад',
+    next: 'Уперад',
+    of: 'Старонка {current} з {total}',
+  },
   columns: {
     id: 'ID',
     category: 'Category',

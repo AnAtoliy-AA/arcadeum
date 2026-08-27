@@ -11,6 +11,25 @@ import { PlayerStatsService } from '../player-stats.service';
  */
 @Injectable()
 export class GameHistoryStatsService {
+  /** Matches the leaderboards snapshot/raw cache TTL convention. */
+  private static readonly LEADERBOARD_TTL_MS = 30_000;
+
+  private leaderboardCache = new Map<
+    string,
+    {
+      expiresAt: number;
+      value: {
+        entries: LeaderboardEntry[];
+        hasMore: boolean;
+        total: number;
+      };
+    }
+  >();
+  private leaderboardInFlight = new Map<
+    string,
+    Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }>
+  >();
+
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
@@ -37,9 +56,52 @@ export class GameHistoryStatsService {
     };
   }
 
+  /**
+   * Cached + de-duped leaderboard read. The upstream scan dominates latency;
+   * both the public games route and the leaderboards page hit this, so a
+   * short shared TTL coalesces bursts into one computation. Invalidate via
+   * `invalidateLeaderboardCache` when ranks are rewritten.
+   */
   async getLeaderboard(
     limit: number = 20,
     offset: number = 0,
+    gameId?: string,
+  ): Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }> {
+    const key = `${gameId ?? 'all'}|${limit}|${offset}`;
+    const cached = this.leaderboardCache.get(key);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value;
+    }
+    const existing = this.leaderboardInFlight.get(key);
+    if (existing) return existing;
+
+    const fresh = this.computeLeaderboard(limit, offset, gameId)
+      .then((value) => {
+        if (this.leaderboardCache.size >= 100) {
+          const oldest = this.leaderboardCache.keys().next().value as
+            string | undefined;
+          if (oldest) this.leaderboardCache.delete(oldest);
+        }
+        this.leaderboardCache.set(key, {
+          value,
+          expiresAt: Date.now() + GameHistoryStatsService.LEADERBOARD_TTL_MS,
+        });
+        return value;
+      })
+      .finally(() => {
+        this.leaderboardInFlight.delete(key);
+      });
+    this.leaderboardInFlight.set(key, fresh);
+    return fresh;
+  }
+
+  invalidateLeaderboardCache(): void {
+    this.leaderboardCache.clear();
+  }
+
+  private async computeLeaderboard(
+    limit: number,
+    offset: number,
     gameId?: string,
   ): Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }> {
     const { entries: rawEntries, total } =

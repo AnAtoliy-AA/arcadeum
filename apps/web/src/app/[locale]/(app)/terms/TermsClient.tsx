@@ -34,8 +34,24 @@ const TermsContentDynamic = dynamic<TermsContentProps>(
   },
 );
 
-const TermsClient = (props: TermsContentProps) => {
-  return <TermsContentDynamic {...props} />;
+const TermsClient = ({
+  t,
+  contactT,
+  LEGAL_NAME,
+  ID_CODE,
+  SUPPORT_EMAIL,
+  WORKING_HOURS,
+}: TermsContentProps) => {
+  return (
+    <TermsContentDynamic
+      t={t}
+      contactT={contactT}
+      LEGAL_NAME={LEGAL_NAME}
+      ID_CODE={ID_CODE}
+      SUPPORT_EMAIL={SUPPORT_EMAIL}
+      WORKING_HOURS={WORKING_HOURS}
+    />
+  );
 };
 
 export default TermsClient;

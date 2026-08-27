@@ -8,6 +8,15 @@ import type { CascadeMessages } from './cascade/index';
 import type { ChessMessages } from './chess/index';
 import type { CheckersMessages } from './checkers/index';
 import type { CatDashMessages } from './cat-dash/index';
+import type { BackgammonMessages } from './backgammon/index';
+import type { HeartsMessages } from './hearts/index';
+import type { SpadesMessages } from './spades/index';
+import type { GoMessages } from './go/index';
+import type { PachisiMessages } from './pachisi/index';
+import type { SolitaireMessages } from './solitaire/index';
+import type { MinesweeperMessages } from './minesweeper/index';
+import type { SudokuMessages } from './sudoku/index';
+import type { Game2048Messages } from './game-2048/index';
 
 export type GamesMessagesBundle = SharedGamesMessages &
   CriticalGamesMessages &
@@ -18,4 +27,13 @@ export type GamesMessagesBundle = SharedGamesMessages &
   CascadeMessages &
   ChessMessages &
   CheckersMessages &
-  CatDashMessages;
+  CatDashMessages &
+  BackgammonMessages &
+  HeartsMessages &
+  SpadesMessages &
+  GoMessages &
+  PachisiMessages &
+  SolitaireMessages &
+  MinesweeperMessages &
+  SudokuMessages &
+  Game2048Messages;

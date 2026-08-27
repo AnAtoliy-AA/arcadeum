@@ -41,7 +41,18 @@ describe('GamesGateway – emote handler', () => {
       data: {},
     } as unknown as jest.Mocked<Socket>;
 
-    gateway = new GamesGateway(gamesService, realtime, mockJwt, mockConfig);
+    // Inert stand-ins for the per-game gateways; only the emote handler
+    // (declared on GamesGateway itself) is exercised here.
+    const inert = { handlers: {} };
+    gateway = new GamesGateway(
+      gamesService,
+      realtime,
+      {} as never, // sessions service (unused by emote handler)
+      mockJwt,
+      mockConfig,
+      inert as never, // matchmaking
+      [inert],
+    );
     (gateway as unknown as { server: Server }).server = server;
   });
 
@@ -92,6 +103,32 @@ describe('GamesGateway – emote handler', () => {
       });
 
       expect(mockServerTo).not.toHaveBeenCalled();
+    });
+
+    it('allows spectators in the spectator channel to react and broadcasts to both channels', () => {
+      const spectator = {
+        rooms: new Set(['game-room-spectators:room-1']),
+        emit: mockEmit,
+        data: {},
+      } as unknown as jest.Mocked<Socket>;
+
+      gateway.handleEmote(spectator, {
+        roomId: 'room-1',
+        userId: 'user-spectator',
+        emoteId: 'fire',
+      });
+
+      expect(mockServerTo).toHaveBeenCalledWith('game-room:room-1');
+      expect(mockServerTo).toHaveBeenCalledWith('game-room-spectators:room-1');
+      expect(mockServerEmit).toHaveBeenCalledTimes(2);
+      expect(mockServerEmit).toHaveBeenCalledWith(
+        'games.session.emote',
+        maybeEncrypt({
+          userId: 'user-spectator',
+          emoteId: 'fire',
+          ts: expect.any(Number) as unknown,
+        }),
+      );
     });
 
     it('throws WsException when roomId is missing', () => {

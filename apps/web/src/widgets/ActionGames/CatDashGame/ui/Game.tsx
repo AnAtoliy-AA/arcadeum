@@ -9,8 +9,13 @@ import {
   useGameResult,
   useGameRoomActions,
 } from '@/features/games/hooks';
+import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
+import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import type { CatDashGameProps } from '../types';
 import { useCatDashState } from '../hooks/useCatDashState';
 import { useCatDashActions } from '../hooks/useCatDashActions';
@@ -92,6 +97,19 @@ function CatDashGameImpl({
     isGameOver,
     result,
     resultMessages,
+  });
+
+  const opponentId =
+    snapshot?.players && currentUserId
+      ? (snapshot.players.find((p) => p.playerId !== currentUserId)?.playerId ??
+        null)
+      : null;
+
+  const analytics = usePostGameAnalytics({
+    gameId: 'cat_dash_v1',
+    session: snapshot as unknown as Record<string, unknown> | undefined,
+    currentUserId,
+    opponentId,
   });
 
   const options = useMemo(
@@ -199,6 +217,25 @@ function CatDashGameImpl({
         })()}
         theme={options.theme}
         t={t}
+        stats={analytics.stats}
+        analysis={{
+          content: (
+            <PostGameAnalytics
+              moveTimeline={analytics.moveTimeline}
+              headToHead={analytics.headToHead}
+              headToHeadLoading={analytics.headToHeadLoading}
+              trends={analytics.trends}
+              trendsLoading={analytics.trendsLoading}
+              onLoadHeadToHead={analytics.loadHeadToHead}
+              onLoadTrends={analytics.loadTrends}
+              currentUserId={currentUserId}
+              opponentId={opponentId}
+              t={t}
+            />
+          ),
+          viewLabel: t('games.table.analytics.view' as TranslationKey),
+          backLabel: t('games.table.analytics.back' as TranslationKey),
+        }}
       />
       <CatDashRulesModal
         open={!!showRulesOpen}

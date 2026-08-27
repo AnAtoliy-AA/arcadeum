@@ -1,4 +1,5 @@
 import { Tabs, useRouter } from 'expo-router';
+import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -104,8 +105,14 @@ export default function TabLayout() {
 
         return options;
       }}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      tabBar={(props: any) => <AdaptiveBottomTabBar {...props} />}
+      tabBar={(tabBarProps: BottomTabBarProps) => (
+        <AdaptiveBottomTabBar
+          state={tabBarProps.state}
+          descriptors={tabBarProps.descriptors}
+          navigation={tabBarProps.navigation}
+          insets={tabBarProps.insets}
+        />
+      )}
     >
       <Tabs.Screen
         name="index"

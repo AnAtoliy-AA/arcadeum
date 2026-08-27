@@ -9,6 +9,24 @@ export const enMessages = {
       empty: 'Empty',
     },
     challengePlayer: 'Challenge {{name}} to Sea Battle?',
+    tutorial: {
+      s1: {
+        title: 'Hide your fleet',
+        body: 'Place all five ships on your grid before battle begins. Ships may not overlap or touch — click to place, rotate with the button.',
+      },
+      s2: {
+        title: 'Fire at will',
+        body: "On your turn click a cell on the opponent's waters. Hits are marked red, misses white — triangulate and hunt them down.",
+      },
+      s3: {
+        title: 'Sink to win',
+        body: 'Every cell of a ship must be hit before it sinks. Sink the entire enemy fleet to claim victory.',
+      },
+      s4: {
+        title: 'Battle station',
+        body: 'Adjust sound and music, go fullscreen for a clearer view, or open the Rules book mid-battle from this panel.',
+      },
+    },
     rules: {
       title: 'Game Rules',
       headers: {

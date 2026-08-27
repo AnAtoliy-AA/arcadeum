@@ -8,23 +8,52 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 import { HandRail } from './HandRail';
 
 function renderRail(
-  props: Partial<React.ComponentProps<typeof HandRail>> = {},
+  override: Partial<React.ComponentProps<typeof HandRail>> = {},
 ) {
-  const merged: React.ComponentProps<typeof HandRail> = {
-    handCount: 5,
-    defuseCount: 1,
-    combo: { kind: 'none', label: 'Select cards' },
-    canPlay: false,
-    canDraw: true,
-    canNope: false,
-    onPlay: vi.fn(),
-    onDraw: vi.fn(),
-    onNope: vi.fn(),
-    ...props,
+  const props: React.ComponentProps<typeof HandRail> = {
+    handCount: override.handCount ?? 5,
+    defuseCount: override.defuseCount ?? 1,
+    combo: override.combo ?? { kind: 'none', label: 'Select cards' },
+    canPlay: override.canPlay ?? false,
+    canDraw: override.canDraw ?? true,
+    canNope: override.canNope ?? false,
+    cardVariant: override.cardVariant,
+    isFullscreen: override.isFullscreen,
+    showCardName: override.showCardName,
+    showCardDescription: override.showCardDescription,
+    onToggleCardName: override.onToggleCardName,
+    onToggleCardDescription: override.onToggleCardDescription,
+    onClearSelection: override.onClearSelection,
+    onPlay: override.onPlay ?? vi.fn(),
+    onDraw: override.onDraw ?? vi.fn(),
+    onNope: override.onNope ?? vi.fn(),
+    onOpenRules: override.onOpenRules,
+    onToggleFullscreen: override.onToggleFullscreen,
   };
   return {
-    ...render(<HandRail {...merged} />),
-    props: merged,
+    ...render(
+      <HandRail
+        handCount={props.handCount}
+        defuseCount={props.defuseCount}
+        combo={props.combo}
+        canPlay={props.canPlay}
+        canDraw={props.canDraw}
+        canNope={props.canNope}
+        cardVariant={props.cardVariant}
+        isFullscreen={props.isFullscreen}
+        showCardName={props.showCardName}
+        showCardDescription={props.showCardDescription}
+        onToggleCardName={props.onToggleCardName}
+        onToggleCardDescription={props.onToggleCardDescription}
+        onClearSelection={props.onClearSelection}
+        onPlay={props.onPlay}
+        onDraw={props.onDraw}
+        onNope={props.onNope}
+        onOpenRules={props.onOpenRules}
+        onToggleFullscreen={props.onToggleFullscreen}
+      />,
+    ),
+    props,
   };
 }
 

@@ -4,8 +4,21 @@ import type { ReactNode } from 'react';
 
 const emitSetTeamConfig = vi.fn();
 
+interface SetTeamConfigEnv {
+  roomId: string;
+  userId: string;
+  teams: Array<{
+    id?: string;
+    name: string;
+    color: string;
+    targetSize: number;
+  }>;
+  hideShipsFromTeammates?: boolean;
+  maxTotalPlayers?: number;
+}
+
 vi.mock('../team-mode.api', () => ({
-  emitSetTeamConfig: (...args: unknown[]) => emitSetTeamConfig(...args),
+  emitSetTeamConfig: (env: SetTeamConfigEnv) => emitSetTeamConfig(env),
 }));
 
 vi.mock('@/shared/lib/useTranslation', () => ({
@@ -37,27 +50,42 @@ interface InputProps {
 }
 
 vi.mock('@arcadeum/ui', () => ({
-  Card: ({ children, ...rest }: ChildrenProps & { 'data-testid'?: string }) => (
-    <div data-testid={rest['data-testid']}>{children}</div>
+  Card: ({
+    children,
+    'data-testid': testId,
+  }: ChildrenProps & { 'data-testid'?: string }) => (
+    <div data-testid={testId}>{children}</div>
   ),
-  Button: ({ children, onClick, disabled, ...rest }: ButtonProps) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    'data-testid': testId,
+    'aria-label': ariaLabel,
+  }: ButtonProps) => (
     <button
       onClick={onClick}
       disabled={disabled}
-      data-testid={rest['data-testid']}
-      aria-label={rest['aria-label']}
+      data-testid={testId}
+      aria-label={ariaLabel}
     >
       {children}
     </button>
   ),
-  Input: ({ value, onChange, placeholder, ...rest }: InputProps) => (
+  Input: ({
+    value,
+    onChange,
+    placeholder,
+    'data-testid': testId,
+    'aria-label': ariaLabel,
+  }: InputProps) => (
     <input
       type="text"
       value={value}
       placeholder={placeholder}
       onChange={onChange}
-      data-testid={rest['data-testid']}
-      aria-label={rest['aria-label']}
+      data-testid={testId}
+      aria-label={ariaLabel}
     />
   ),
   Typography: ({ children }: ChildrenProps) => <span>{children}</span>,

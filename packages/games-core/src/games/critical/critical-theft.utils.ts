@@ -1,0 +1,486 @@
+import {
+  CriticalState,
+  CriticalCard,
+  CriticalPlayerState,
+  COLLECTION_CARDS,
+} from './critical.state';
+export { executeSnatch } from './critical-theft-snatch.utils';
+import { executeSnatch } from './critical-theft-snatch.utils';
+import {
+  GameActionResult,
+  GameLogEntry,
+  ChatScope,
+} from '../../base/game-engine.interface';
+
+export interface LogEntryOptions {
+  kind?: string;
+  scope?: ChatScope;
+  senderId?: string | null;
+  senderName?: string | null;
+  targetId?: string | null;
+}
+
+export interface EngineHelpers {
+  addLog: (state: CriticalState, entry: GameLogEntry) => void;
+  createLogEntry: (
+    type: string,
+    message: string,
+    options?: LogEntryOptions,
+  ) => GameLogEntry;
+  advanceTurn: (state: CriticalState) => void;
+  shuffleArray: <T>(array: T[]) => void;
+  findPlayer: (
+    state: CriticalState,
+    playerId: string,
+  ) => CriticalPlayerState | undefined;
+  dispatchCard?: (
+    state: CriticalState,
+    playerId: string,
+    card: CriticalCard,
+    targetPlayerId?: string,
+  ) => GameActionResult<CriticalState> | null;
+}
+
+// Maximum number of cards that can be stored in stash
+const MAX_STASH_SIZE = 3;
+
+/**
+ * Dispatcher for all Theft Pack cards.
+ * Handles removing the card from the player's hand and routing to the specific executor.
+ * Returns null if the card is not a Theft Pack card.
+ */
+export function dispatchTheftPackAction(
+  state: CriticalState,
+  playerId: string,
+  card: CriticalCard,
+  targetPlayerId: string | undefined,
+  helpers: EngineHelpers,
+  payload?: {
+    partnerCard?: CriticalCard; // For wildcard combo
+    selectedIndex?: number; // For pair combos
+    requestedCard?: CriticalCard; // For trio combos
+    cardsToStash?: CriticalCard[]; // For stash action
+    cardsToUnstash?: CriticalCard[]; // For unstash action
+  },
+): GameActionResult<CriticalState> | null {
+  const player = state.players.find((p) => p.playerId === playerId);
+  if (!player) return null;
+
+  // Helper to remove card and add to discard
+  const playCard = () => {
+    const idx = player.hand.indexOf(card);
+    if (idx > -1) {
+      player.hand.splice(idx, 1);
+      state.discardPile.push(card);
+    }
+  };
+
+  switch (card) {
+    case 'wildcard':
+      // Wildcard is used as part of combos, handled separately
+      return null;
+
+    case 'mark':
+      if (!targetPlayerId) {
+        return { success: false, error: 'Target player required for Mark' };
+      }
+      playCard();
+      return executeMark(state, playerId, targetPlayerId, helpers);
+
+    case 'steal_draw':
+      if (!targetPlayerId) {
+        return {
+          success: false,
+          error: 'Target player required for Steal Draw',
+        };
+      }
+      playCard();
+      return executeStealDraw(state, playerId, targetPlayerId, helpers);
+
+    case 'stash':
+      playCard();
+      return executeStash(state, playerId, payload?.cardsToStash, helpers);
+
+    case 'unstash' as CriticalCard:
+      return executeUnstash(
+        state,
+        playerId,
+        payload?.cardsToUnstash || [],
+        helpers,
+      );
+
+    case 'swap_hands':
+      if (!targetPlayerId) {
+        return {
+          success: false,
+          error: 'Target player required for Swap Hands',
+        };
+      }
+      playCard();
+      return executeSwapHands(state, playerId, targetPlayerId, helpers);
+
+    case 'snatch': {
+      if (!targetPlayerId) return { success: false, error: 'Target required' };
+      const snatchPayload = payload;
+      if (!snatchPayload?.requestedCard)
+        return { success: false, error: 'requestedCard required' };
+      playCard();
+      return executeSnatch(
+        state,
+        playerId,
+        targetPlayerId,
+        snatchPayload.requestedCard,
+        helpers,
+      );
+    }
+
+    default:
+      return null;
+  }
+}
+
+/** Execute Swap Hands - swap entire hand with a target player's hand */
+export function executeSwapHands(
+  state: CriticalState,
+  playerId: string,
+  targetPlayerId: string,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const player = helpers.findPlayer(state, playerId);
+  const target = helpers.findPlayer(state, targetPlayerId);
+  if (!player || !player.alive || !target || !target.alive) {
+    return { success: false, error: 'Invalid target' };
+  }
+  if (playerId === targetPlayerId) {
+    return { success: false, error: 'Cannot swap with yourself' };
+  }
+  // Before swap, capture original hands (card already removed from hand by dispatcher's playCard())
+  const originalPlayerHand = [...player.hand];
+  const originalTargetHand = [...target.hand];
+
+  // Swap
+  player.hand = [...originalTargetHand];
+  target.hand = [...originalPlayerHand];
+  state.pendingAction = {
+    type: 'swap_hands',
+    playerId,
+    payload: {
+      targetPlayerId,
+      originalPlayerHand,
+      originalTargetHand,
+    },
+    nopeCount: 0,
+  };
+  helpers.addLog(
+    state,
+    helpers.createLogEntry('action', 'Played Swap Hands!', {
+      scope: 'all',
+      senderId: playerId,
+      targetId: targetPlayerId,
+    }),
+  );
+  return { success: true, state };
+}
+
+/**
+ * Check if a wildcard can substitute for a collection card in combos
+ */
+export function isWildcardValidForCombo(
+  cards: CriticalCard[],
+  wildcardCount: number,
+): boolean {
+  // Wildcard can substitute for any collection card
+  // For pair: 1 wildcard + 1 collection card
+  // For trio: 1-2 wildcards + remaining collection cards of same type
+  const collectionCards = cards.filter((c) =>
+    COLLECTION_CARDS.includes(c as (typeof COLLECTION_CARDS)[number]),
+  );
+  const wildcards = cards.filter((c) => c === 'wildcard');
+
+  if (wildcards.length !== wildcardCount) return false;
+  if (collectionCards.length + wildcards.length < 2) return false;
+
+  // For pair/trio, all collection cards should be the same type
+  if (collectionCards.length > 0) {
+    const firstCard = collectionCards[0];
+    return collectionCards.every((c) => c === firstCard);
+  }
+
+  // Only wildcards - valid for any combo
+  return true;
+}
+
+/**
+ * Execute Mark - tag a random card in target's hand to steal later
+ */
+export function executeMark(
+  state: CriticalState,
+  playerId: string,
+  targetPlayerId: string,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const target = helpers.findPlayer(state, targetPlayerId);
+  if (!target || !target.alive) {
+    return { success: false, error: 'Target player not found or eliminated' };
+  }
+
+  if (target.hand.length === 0) {
+    return { success: false, error: 'Target has no cards to mark' };
+  }
+
+  // Initialize markedCards array if not present
+  if (!target.markedCards) {
+    target.markedCards = [];
+  }
+
+  // Pick a random card index to mark
+  const randomIndex = Math.floor(Math.random() * target.hand.length);
+
+  // Add mark info
+  target.markedCards.push({
+    cardIndex: randomIndex,
+    markedBy: playerId,
+  });
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry('action', `Marked a card in their hand 🏷️`, {
+      scope: 'all',
+      senderId: playerId,
+      targetId: targetPlayerId,
+    }),
+  );
+
+  // Private message to marker showing which card was marked
+  const markedCard = target.hand[randomIndex];
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `mark.reveal:cards:${markedCard}:index:${randomIndex}`,
+      {
+        scope: 'private',
+        senderId: playerId,
+      },
+    ),
+  );
+
+  // Set pending action for nope
+  state.pendingAction = {
+    type: 'mark',
+    playerId,
+    payload: { targetPlayerId, cardIndex: randomIndex },
+    nopeCount: 0,
+  };
+
+  return { success: true, state };
+}
+
+/**
+ * Execute Steal Draw - steal the next card a player draws
+ */
+export function executeStealDraw(
+  state: CriticalState,
+  playerId: string,
+  targetPlayerId: string,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const target = helpers.findPlayer(state, targetPlayerId);
+  if (!target || !target.alive) {
+    return { success: false, error: 'Target player not found or eliminated' };
+  }
+
+  // Set pending steal on target
+  target.pendingStealDraw = playerId;
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `Played I'll Take That! Their next drawn card goes to me 🤏`,
+      {
+        scope: 'all',
+        senderId: playerId,
+        targetId: targetPlayerId,
+      },
+    ),
+  );
+
+  // Set pending action for nope
+  state.pendingAction = {
+    type: 'steal_draw',
+    playerId,
+    payload: { targetPlayerId },
+    nopeCount: 0,
+  };
+
+  return { success: true, state };
+}
+
+/**
+ * Check if a drawn card should be stolen and handle the steal
+ * This should be called during draw_card execution
+ */
+export function checkAndHandleStealDraw(
+  state: CriticalState,
+  drawingPlayerId: string,
+  drawnCard: CriticalCard,
+  helpers: EngineHelpers,
+): { stolen: boolean; thief?: string } {
+  const player = helpers.findPlayer(state, drawingPlayerId);
+  if (!player?.pendingStealDraw) {
+    return { stolen: false };
+  }
+
+  const thiefId = player.pendingStealDraw;
+  const thief = helpers.findPlayer(state, thiefId);
+
+  if (!thief || !thief.alive) {
+    // Thief is gone, clear the pending steal
+    player.pendingStealDraw = undefined;
+    return { stolen: false };
+  }
+
+  // Give card to thief instead
+  thief.hand.push(drawnCard);
+
+  // Clear the pending steal
+  player.pendingStealDraw = undefined;
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `Stolen! The drawn card went to another player! 🤏`,
+      {
+        scope: 'all',
+        senderId: thiefId,
+      },
+    ),
+  );
+
+  return { stolen: true, thief: thiefId };
+}
+
+/**
+ * Execute Stash (Tower of Power) - move cards to protected storage
+ */
+export function executeStash(
+  state: CriticalState,
+  playerId: string,
+  cardsToStash: CriticalCard[] | undefined,
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const player = helpers.findPlayer(state, playerId);
+  if (!player) {
+    return { success: false, error: 'Player not found' };
+  }
+
+  // Initialize stash if not present
+  if (!player.stash) {
+    player.stash = [];
+  }
+
+  // If no cards specified, just activate the stash card (allows future stashing)
+  if (!cardsToStash || cardsToStash.length === 0) {
+    helpers.addLog(
+      state,
+      helpers.createLogEntry('action', `Activated Tower of Power! 🏰`, {
+        scope: 'all',
+        senderId: playerId,
+      }),
+    );
+    return { success: true, state };
+  }
+
+  // Validate stash limits
+  if (player.stash.length + cardsToStash.length > MAX_STASH_SIZE) {
+    return {
+      success: false,
+      error: `Stash can only hold ${MAX_STASH_SIZE} cards maximum`,
+    };
+  }
+
+  // Validate player has the cards
+  for (const card of cardsToStash) {
+    const idx = player.hand.indexOf(card);
+    if (idx === -1) {
+      return { success: false, error: `You don't have card: ${card}` };
+    }
+  }
+
+  // Move cards from hand to stash
+  for (const card of cardsToStash) {
+    const idx = player.hand.indexOf(card);
+    if (idx > -1) {
+      player.hand.splice(idx, 1);
+      player.stash.push(card);
+    }
+  }
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `Stashed ${cardsToStash.length} card(s) in Tower of Power 🏰`,
+      {
+        scope: 'all',
+        senderId: playerId,
+      },
+    ),
+  );
+
+  return { success: true, state };
+}
+
+/**
+ * Execute Unstash - retrieve cards from stash back to hand
+ */
+export function executeUnstash(
+  state: CriticalState,
+  playerId: string,
+  cardsToRetrieve: CriticalCard[],
+  helpers: EngineHelpers,
+): GameActionResult<CriticalState> {
+  const player = helpers.findPlayer(state, playerId);
+  if (!player) {
+    return { success: false, error: 'Player not found' };
+  }
+
+  if (!player.stash || player.stash.length === 0) {
+    return { success: false, error: 'No cards in stash' };
+  }
+
+  // Validate player has the cards in stash
+  for (const card of cardsToRetrieve) {
+    const idx = player.stash.indexOf(card);
+    if (idx === -1) {
+      return { success: false, error: `Card not in stash: ${card}` };
+    }
+  }
+
+  // Move cards from stash to hand
+  for (const card of cardsToRetrieve) {
+    const idx = player.stash.indexOf(card);
+    if (idx > -1) {
+      player.stash.splice(idx, 1);
+      player.hand.push(card);
+    }
+  }
+
+  helpers.addLog(
+    state,
+    helpers.createLogEntry(
+      'action',
+      `Retrieved ${cardsToRetrieve.length} card(s) from stash`,
+      {
+        scope: 'all',
+        senderId: playerId,
+      },
+    ),
+  );
+
+  return { success: true, state };
+}
+
+export { checkAndHandleMarkedCard } from './critical-theft-mark-check.utils';

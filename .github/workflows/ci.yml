@@ -48,13 +48,13 @@ jobs:
           cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run Build
         run: pnpm exec turbo run build --filter web --filter be
 
       - name: Bundle Build Artifacts
-        run: tar -cvf build-artifacts.tar apps/web/.next apps/be/dist
+        run: tar -cvf build-artifacts.tar apps/web/.next apps/be/dist packages/games-core/dist
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v7
@@ -62,6 +62,29 @@ jobs:
           name: build-outputs
           path: build-artifacts.tar
           retention-days: 1
+
+  docs-links:
+    name: Documentation Links
+    if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Documentation Link Checker
+        run: pnpm docs:check
 
   lint-and-test-unit:
     name: Lint & Unit Tests
@@ -86,10 +109,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      - name: Run Documentation Link Checker
-        run: pnpm docs:check
+        run: pnpm install --frozen-lockfile
 
       - name: Run Linting
         run: pnpm run lint
@@ -123,7 +143,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Run Backend E2E Tests
         run: pnpm --filter be test:e2e
@@ -160,7 +180,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v8

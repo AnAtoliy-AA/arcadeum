@@ -24,19 +24,40 @@ function renderCenter(
   override: Partial<React.ComponentProps<typeof ArenaCenter>> = {},
 ) {
   const props: React.ComponentProps<typeof ArenaCenter> = {
-    isMyTurn: true,
-    currentPlayerName: 'Alice',
-    pendingDraws: 1,
-    hand: ['strike', 'evade'] as CriticalCard[],
-    allowActionCardCombos: false,
-    deck: ['strike'] as CriticalCard[],
-    logs: [],
-    formatLogMessage: (m?: string | null) => m ?? '',
-    ...override,
+    isMyTurn: override.isMyTurn ?? true,
+    currentPlayerName: override.currentPlayerName ?? 'Alice',
+    pendingDraws: override.pendingDraws ?? 1,
+    hand: override.hand ?? (['strike', 'evade'] as CriticalCard[]),
+    allowActionCardCombos: override.allowActionCardCombos ?? false,
+    combo: override.combo,
+    onClearSelection: override.onClearSelection,
+    deck: override.deck ?? (['strike'] as CriticalCard[]),
+    serverOverloadOdds: override.serverOverloadOdds,
+    criticalsRemaining: override.criticalsRemaining,
+    hiddenCount: override.hiddenCount,
+    logs: override.logs ?? [],
+    formatLogMessage:
+      override.formatLogMessage ?? ((m?: string | null) => m ?? ''),
+    resolveDisplayName: override.resolveDisplayName,
   };
   return render(
     <ScenePaletteProvider palette={palette}>
-      <ArenaCenter {...props} />
+      <ArenaCenter
+        isMyTurn={props.isMyTurn}
+        currentPlayerName={props.currentPlayerName}
+        pendingDraws={props.pendingDraws}
+        hand={props.hand}
+        allowActionCardCombos={props.allowActionCardCombos}
+        combo={props.combo}
+        onClearSelection={props.onClearSelection}
+        deck={props.deck}
+        serverOverloadOdds={props.serverOverloadOdds}
+        criticalsRemaining={props.criticalsRemaining}
+        hiddenCount={props.hiddenCount}
+        logs={props.logs}
+        formatLogMessage={props.formatLogMessage}
+        resolveDisplayName={props.resolveDisplayName}
+      />
     </ScenePaletteProvider>,
   );
 }

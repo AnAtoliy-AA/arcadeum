@@ -25,7 +25,7 @@ jobs:
     outputs:
       be-or-tg: ${{ steps.filter.outputs.be-or-tg }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.OCI_SSH_HOST }}
           username: ${{ secrets.OCI_SSH_USER }}
@@ -52,7 +52,9 @@ jobs:
           port: ${{ secrets.OCI_SSH_PORT || 22 }}
           script: |
             set -euo pipefail
-            DEPLOY_DIR="/opt/arcadeum"
+            # Dev/staging deploys use a SEPARATE checkout so they never touch
+            # the prod tree at /opt/arcadeum (which tracks origin/main).
+            DEPLOY_DIR="/opt/arcadeum-dev"
             cd "$DEPLOY_DIR"
 
             rm -f "$DEPLOY_DIR/.git/index.lock"
@@ -63,15 +65,15 @@ jobs:
 
             pnpm install --frozen-lockfile
 
-            pnpm --filter be build
+            pnpm --filter @arcadeum/games-core build && pnpm --filter be build
             pnpm --filter tg-bot build
 
             mkdir -p "${DEPLOY_DIR}/scripts"
 
-            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/be/.env.dev\nset +a\ncd /opt/arcadeum\nexec node apps/be/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-be-dev.sh"
+            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum-dev/apps/be/.env.dev\nset +a\ncd /opt/arcadeum-dev\nexec node apps/be/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-be-dev.sh"
             chmod +x "${DEPLOY_DIR}/scripts/start-be-dev.sh"
 
-            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/tg-bot/.env.dev\nset +a\ncd /opt/arcadeum\nexec node bots/tg-bot/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-tg-bot-dev.sh"
+            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum-dev/apps/tg-bot/.env.dev\nset +a\ncd /opt/arcadeum-dev\nexec node bots/tg-bot/dist/src/main.js\n' > "${DEPLOY_DIR}/scripts/start-tg-bot-dev.sh"
             chmod +x "${DEPLOY_DIR}/scripts/start-tg-bot-dev.sh"
 
             pm2 restart arcadeum-be-dev || pm2 start "${DEPLOY_DIR}/scripts/start-be-dev.sh" --name arcadeum-be-dev

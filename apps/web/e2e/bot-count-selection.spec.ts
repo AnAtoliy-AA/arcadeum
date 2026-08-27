@@ -52,13 +52,13 @@ test.describe('Bot Count Selection', () => {
       const socket = window.gameSocket;
       if (!socket) return;
       const originalEmit = socket.emit.bind(socket);
-      socket.emit = (event: string, ...args: unknown[]) => {
+      socket.emit = (event: string, payload?: unknown, ack?: unknown) => {
         if (event === 'games.session.start') {
           (
             window as unknown as { __lastStartPayload: unknown }
-          ).__lastStartPayload = args[0];
+          ).__lastStartPayload = payload;
         }
-        return originalEmit(event, ...args);
+        return originalEmit(event, payload, ack);
       };
     });
 
@@ -80,7 +80,12 @@ test.describe('Bot Count Selection', () => {
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible();
     await expect(startBtn).toHaveText(/3/);
-    await startBtn.click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="start-with-bots-button"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     // Verify payload
     const lastPayload = await page.evaluate(

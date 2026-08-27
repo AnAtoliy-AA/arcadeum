@@ -25,8 +25,8 @@ export default meta;
 type Story = StoryObj<typeof Select>;
 
 export const Default: Story = {
-  render: (args) => (
-    <Select {...args}>
+  render: () => (
+    <Select>
       <option value="">Select an option...</option>
       <option value="option1">Option 1</option>
       <option value="option2">Option 2</option>
@@ -36,8 +36,8 @@ export const Default: Story = {
 };
 
 export const WithValue: Story = {
-  render: (args) => (
-    <Select {...args} defaultValue="option2">
+  render: () => (
+    <Select defaultValue="option2">
       <option value="option1">Option 1</option>
       <option value="option2">Option 2</option>
       <option value="option3">Option 3</option>
@@ -46,8 +46,8 @@ export const WithValue: Story = {
 };
 
 export const Error: Story = {
-  render: (args) => (
-    <Select {...args} error>
+  render: () => (
+    <Select error>
       <option value="">Please select...</option>
       <option value="option1">Option 1</option>
       <option value="option2">Option 2</option>
@@ -56,8 +56,8 @@ export const Error: Story = {
 };
 
 export const Disabled: Story = {
-  render: (args) => (
-    <Select {...args} disabled defaultValue="option1">
+  render: () => (
+    <Select disabled defaultValue="option1">
       <option value="option1">Cannot change</option>
       <option value="option2">Option 2</option>
     </Select>
@@ -65,8 +65,8 @@ export const Disabled: Story = {
 };
 
 export const FullWidth: Story = {
-  render: (args) => (
-    <Select {...args} fullWidth>
+  render: () => (
+    <Select fullWidth>
       <option value="">Full width select...</option>
       <option value="option1">Option 1</option>
       <option value="option2">Option 2</option>
@@ -75,8 +75,8 @@ export const FullWidth: Story = {
 };
 
 export const GameSelect: Story = {
-  render: (args) => (
-    <Select {...args}>
+  render: () => (
+    <Select>
       <option value="">Choose a game...</option>
       <option value="critical">Critical</option>
       <option value="texas_holdem">Texas Hold&apos;em</option>

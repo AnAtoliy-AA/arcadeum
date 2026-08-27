@@ -1,0 +1,23 @@
+{
+  "name": "@arcadeum/games-core",
+  "version": "1.26.63",
+  "private": true,
+  "description": "Framework-agnostic game engines and bot cores shared by the NestJS backend and the web offline mode (ARC-900)",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "type-check": "tsc --noEmit"
+  }
+}

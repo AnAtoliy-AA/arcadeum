@@ -3,13 +3,19 @@ import { RankingEntry } from './ranking.schema';
 import { PlayerStats } from '../games/schemas/player-stats.schema';
 import { User } from '../auth/schemas/user.schema';
 import type { Model } from 'mongoose';
+import { ConfigService } from '@nestjs/config';
 import { currentSeason, tierForRating } from './ranking.constants';
+import {
+  SEASON_RESET_ANCHOR_DEFAULT,
+  SEASON_RESET_FACTOR_DEFAULT,
+} from '../seasons/seasons.constants';
 
 type AnyModel = {
   findOne: jest.Mock;
   findOneAndUpdate: jest.Mock;
   find: jest.Mock;
   countDocuments: jest.Mock;
+  aggregate: jest.Mock;
   updateOne: jest.Mock;
 };
 
@@ -23,6 +29,11 @@ function makeModel(overrides: Partial<AnyModel> = {}): AnyModel {
       select: jest.fn().mockReturnValue({
         lean: jest.fn().mockReturnValue(chain(null)),
       }),
+      sort: jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          lean: jest.fn().mockReturnValue(chain(null)),
+        }),
+      }),
     }),
     findOneAndUpdate: jest.fn().mockReturnValue(chain(null)),
     find: jest.fn().mockReturnValue({
@@ -35,22 +46,38 @@ function makeModel(overrides: Partial<AnyModel> = {}): AnyModel {
       }),
     }),
     countDocuments: jest.fn().mockReturnValue(chain(0)),
+    aggregate: jest.fn().mockReturnValue(chain([])),
     updateOne: jest.fn().mockReturnValue(chain({})),
     ...overrides,
   };
+}
+
+function makeConfig(values: Record<string, number> = {}): ConfigService {
+  return {
+    get: jest.fn((key: string) => values[key]),
+  } as unknown as ConfigService;
 }
 
 function buildService(
   rankingModel: AnyModel,
   statsModel: AnyModel,
   userModel: AnyModel,
+  config: ConfigService = makeConfig(),
 ): RankingService {
   return new RankingService(
     rankingModel as unknown as Model<RankingEntry>,
     statsModel as unknown as Model<PlayerStats>,
     userModel as unknown as Model<User>,
+    config,
   );
 }
+
+describe('seasonResetRating defaults', () => {
+  it('exposes roadmap reset tuning', () => {
+    expect(SEASON_RESET_ANCHOR_DEFAULT).toBe(1500);
+    expect(SEASON_RESET_FACTOR_DEFAULT).toBe(0.5);
+  });
+});
 
 describe('RankingService', () => {
   const season = currentSeason();
@@ -128,7 +155,7 @@ describe('RankingService', () => {
       expect(result.user2.delta).toBe(0);
     });
 
-    it('seeds from an existing PlayerStats elo when no entry exists', async () => {
+    it('soft-resets all-time Elo toward the season anchor when no season entry exists', async () => {
       const rankingModel = makeModel();
       const statsModel = makeModel({
         findOne: jest.fn().mockImplementation((query: { userId?: string }) => ({
@@ -143,18 +170,86 @@ describe('RankingService', () => {
       });
       const service = buildService(rankingModel, statsModel, makeModel());
 
-      // user1 at 1500 vs user2 at 1200 -> user1 favoured, smaller win delta
+      // user1's all-time 1500 sits on the anchor -> seeds at 1500.
+      // user2's all-time 1200 pulls toward 1500 by factor 0.5 -> 1350.
       const result = await service.recordRankedResult(
         ['user1', 'user2'],
         'chess_v1',
         ['user1'],
       );
 
-      const e1 = 1 / (1 + Math.pow(10, (1200 - 1500) / 400));
-      const expectedNew1 = Math.round(1500 + 32 * (1 - e1));
-      expect(result.user1.elo).toBe(expectedNew1);
-      expect(result.user1.elo).toBeLessThan(1516);
-      expect(result.user2.elo).toBeGreaterThan(1184);
+      // Winner at 1500 beats the 1350 underdog for less than a full K=16.
+      const e1 = 1 / (1 + Math.pow(10, (1350 - 1500) / 400));
+      const e2 = 1 / (1 + Math.pow(10, (1500 - 1350) / 400));
+      expect(result.user1.elo).toBe(Math.round(1500 + 32 * (1 - e1)));
+      expect(result.user2.elo).toBe(Math.round(1350 - 32 * e2));
+      expect(result.user2.delta).toBeLessThan(0);
+    });
+
+    it('seeds from the most recent prior-season rating over the all-time mirror', async () => {
+      const rankingModel = makeModel({
+        findOne: jest
+          .fn()
+          .mockImplementation((query: Record<string, unknown>) => {
+            const isCurrent = typeof query.season === 'string';
+            return {
+              select: jest.fn().mockReturnValue({
+                lean: jest
+                  .fn()
+                  .mockReturnValue(
+                    isCurrent ? chain(null) : chain({ elo: 1400 }),
+                  ),
+              }),
+              sort: jest.fn().mockReturnValue({
+                select: jest.fn().mockReturnValue({
+                  lean: jest.fn().mockReturnValue(chain({ elo: 1400 })),
+                }),
+              }),
+            };
+          }),
+      });
+      const service = buildService(rankingModel, makeModel(), makeModel());
+
+      // Prior-season Elo of 1400 soft-resets to 1450 (pull toward 1500 at
+      // factor 0.5), then a win vs the equal 1450 opponent adds +16.
+      const result = await service.recordRankedResult(
+        ['user1', 'user2'],
+        'chess_v1',
+        ['user1'],
+      );
+
+      expect(result.user1.elo).toBe(1466);
+      expect(result.user1.tier).toBe('gold');
+    });
+
+    it('honors configured reset anchor and factor', async () => {
+      // anchor 1200, factor 1 -> no pull at all; raw mirror used as-is.
+      const config = makeConfig({
+        SEASON_RESET_ANCHOR: 1200,
+        SEASON_RESET_FACTOR: 1,
+      });
+      const statsModel = makeModel({
+        findOne: jest.fn().mockImplementation(() => ({
+          select: jest.fn().mockReturnValue({
+            lean: jest.fn().mockReturnValue(chain({ elo: 1500 })),
+          }),
+        })),
+      });
+      const service = buildService(
+        makeModel(),
+        statsModel,
+        makeModel(),
+        config,
+      );
+
+      const result = await service.recordRankedResult(
+        ['user1', 'user2'],
+        'chess_v1',
+        [],
+      );
+
+      expect(result.user1.elo).toBe(1500);
+      expect(result.user2.elo).toBe(1500);
     });
   });
 
@@ -225,7 +320,13 @@ describe('RankingService', () => {
   });
 
   describe('getMyRankings', () => {
-    it('computes a rank for each game entry', async () => {
+    it('computes a rank for each game entry via one aggregation', async () => {
+      const aggregate = jest.fn().mockReturnValue(
+        chain([
+          { gameId: 'chess_v1', elo: 1600, count: 7 },
+          { gameId: 'chess_v1', elo: 1551, count: 5 },
+        ]),
+      );
       const rankingModel = makeModel({
         find: jest.fn().mockReturnValue({
           sort: jest.fn().mockReturnValue({
@@ -245,12 +346,28 @@ describe('RankingService', () => {
             ),
           }),
         }),
-        countDocuments: jest.fn().mockReturnValue(chain(12)),
+        aggregate,
       });
       const service = buildService(rankingModel, makeModel(), makeModel());
 
       const rows = await service.getMyRankings('user1');
 
+      // One aggregation round-trip instead of a countDocuments per game.
+      expect(aggregate).toHaveBeenCalledTimes(1);
+      const pipeline = (
+        aggregate.mock.calls as unknown as Array<[Record<string, unknown>]>
+      )[0]?.[0];
+      expect(pipeline).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            $match: {
+              season,
+              gameId: { $in: ['chess_v1'] },
+            },
+          }),
+        ]),
+      );
+      // 12 players above 1550 -> rank 13.
       expect(rows).toHaveLength(1);
       expect(rows[0]).toMatchObject({
         gameId: 'chess_v1',
@@ -260,6 +377,24 @@ describe('RankingService', () => {
         rankedGames: 6,
         rank: 13,
       });
+    });
+
+    it('returns [] without hitting the aggregation when no entries exist', async () => {
+      const aggregate = jest.fn();
+      const rankingModel = makeModel({
+        find: jest.fn().mockReturnValue({
+          sort: jest.fn().mockReturnValue({
+            lean: jest.fn().mockReturnValue(chain([])),
+          }),
+        }),
+        aggregate,
+      });
+      const service = buildService(rankingModel, makeModel(), makeModel());
+
+      const rows = await service.getMyRankings('user1');
+
+      expect(rows).toEqual([]);
+      expect(aggregate).not.toHaveBeenCalled();
     });
   });
 });

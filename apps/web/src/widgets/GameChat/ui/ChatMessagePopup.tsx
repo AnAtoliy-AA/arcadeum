@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import { FloatingBubbleLabel } from '@/features/games/ui/FloatingBubble';
 
 interface ChatMessagePopupProps {
@@ -32,20 +32,6 @@ export function ChatMessagePopup({
   visible,
   onDismiss,
 }: ChatMessagePopupProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (el) {
-      el.style.animation = 'floatingBubbleFloat 3s ease-out forwards';
-      const label = el.querySelector('[data-bubble-label]');
-      if (label) {
-        (label as HTMLElement).style.animation =
-          'floatingLabelPop 3s ease-out forwards';
-      }
-    }
-  }, []);
-
   useEffect(() => {
     const timer = setTimeout(() => onDismiss(), 3000);
     return () => clearTimeout(timer);
@@ -68,44 +54,11 @@ export function ChatMessagePopup({
 
   return (
     <div
-      ref={containerRef}
       onClick={onDismiss}
       data-testid="chat-message-popup"
-      style={{
-        position: 'absolute',
-        top: 24,
-        right: 8,
-        zIndex: 10000,
-        pointerEvents: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 6,
-        opacity: 0,
-        cursor: 'pointer',
-        maxWidth: 220,
-      }}
+      className="pointer-events-auto absolute top-6 right-2 z-[10000] flex max-w-[220px] cursor-pointer flex-col items-center gap-1.5 opacity-0 animate-[floatingBubbleFloat_3s_ease-out_forwards] [&_[data-bubble-label]]:animate-[floatingLabelPop_3s_ease-out_forwards]"
     >
-      <div
-        style={{
-          padding: '8px 14px',
-          borderRadius: 16,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'rgba(15, 5, 24, 0.88)',
-          borderWidth: 1.5,
-          borderStyle: 'solid',
-          borderColor: 'rgba(99, 102, 241, 0.5)',
-          boxShadow: '0 0 18px 2px rgba(99, 102, 241, 0.45)',
-          fontSize: 13,
-          lineHeight: '18px',
-          color: '#fff',
-          fontWeight: 600,
-          textAlign: 'center',
-          wordBreak: 'break-word',
-        }}
-      >
+      <div className="flex items-center justify-center rounded-2xl border-[1.5px] border-[rgba(99,102,241,0.5)] bg-[rgba(15,5,24,0.88)] px-3.5 py-2 text-center text-[13px] leading-[18px] font-semibold break-words text-white shadow-[0_0_18px_2px_rgba(99,102,241,0.45)]">
         {message}
       </div>
       {label}

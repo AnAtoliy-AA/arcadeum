@@ -10,17 +10,36 @@ import { handWithUids } from '../../lib/combo';
 import type { CriticalCard } from '../../types';
 
 function renderCards(
-  props: Partial<React.ComponentProps<typeof HandCards>> = {},
+  override: Partial<React.ComponentProps<typeof HandCards>> = {},
 ) {
-  const merged: React.ComponentProps<typeof HandCards> = {
-    cards: handWithUids(['strike', 'strike', 'evade'] as CriticalCard[]),
-    selectedUids: [],
-    onToggleSelect: vi.fn(),
-    ...props,
+  const props: React.ComponentProps<typeof HandCards> = {
+    cards:
+      override.cards ??
+      handWithUids(['strike', 'strike', 'evade'] as CriticalCard[]),
+    selectedUids: override.selectedUids ?? [],
+    onToggleSelect: override.onToggleSelect ?? vi.fn(),
+    cardVariant: override.cardVariant,
+    disabled: override.disabled,
+    showName: override.showName,
+    showDescription: override.showDescription,
+    isFanned: override.isFanned,
+    onDoubleClick: override.onDoubleClick,
   };
   return {
-    ...render(<HandCards {...merged} />),
-    props: merged,
+    ...render(
+      <HandCards
+        cards={props.cards}
+        selectedUids={props.selectedUids}
+        onToggleSelect={props.onToggleSelect}
+        cardVariant={props.cardVariant}
+        disabled={props.disabled}
+        showName={props.showName}
+        showDescription={props.showDescription}
+        isFanned={props.isFanned}
+        onDoubleClick={props.onDoubleClick}
+      />,
+    ),
+    props,
   };
 }
 
@@ -44,18 +63,39 @@ describe('HandCards', () => {
     );
   });
 
-  it('fires onToggleSelect when a card is clicked', () => {
+  it('fires onToggleSelect when a card is tapped (pointer events)', () => {
     const onToggleSelect = vi.fn();
     renderCards({ onToggleSelect });
-    fireEvent.click(screen.getByTestId('hand-card-evade-2'));
+    const card = screen.getByTestId('hand-card-evade-2');
+    fireEvent.pointerDown(card, { clientX: 50, clientY: 50 });
+    fireEvent.pointerUp(card, { clientX: 50, clientY: 50 });
     expect(onToggleSelect).toHaveBeenCalledWith('evade-2');
   });
 
   it('does not call onToggleSelect when disabled', () => {
     const onToggleSelect = vi.fn();
     renderCards({ onToggleSelect, disabled: true });
-    fireEvent.click(screen.getByTestId('hand-card-evade-2'));
+    const card = screen.getByTestId('hand-card-evade-2');
+    fireEvent.pointerDown(card, { clientX: 50, clientY: 50 });
+    fireEvent.pointerUp(card, { clientX: 50, clientY: 50 });
     expect(onToggleSelect).not.toHaveBeenCalled();
+  });
+
+  it('fires onDoubleClick when a card is double-tapped', () => {
+    vi.useFakeTimers();
+    const onDoubleClick = vi.fn();
+    renderCards({ onDoubleClick });
+    const card = screen.getByTestId('hand-card-evade-2');
+    // First tap
+    fireEvent.pointerDown(card, { clientX: 50, clientY: 50 });
+    fireEvent.pointerUp(card, { clientX: 50, clientY: 50 });
+    // Advance time so the second tap is within the double-tap threshold
+    vi.advanceTimersByTime(50);
+    // Second tap
+    fireEvent.pointerDown(card, { clientX: 50, clientY: 50 });
+    fireEvent.pointerUp(card, { clientX: 50, clientY: 50 });
+    expect(onDoubleClick).toHaveBeenCalledWith('evade-2');
+    vi.useRealTimers();
   });
 
   it('tags each card tile with the role its border colour is derived from', () => {
@@ -139,7 +179,18 @@ describe('HandCards', () => {
     const before = screen.getByTestId('hand-card-strike-0');
     expect(before.className).toMatch(/w-\[124px\]/);
     expect(before.className).toMatch(/h-\[172px\]/);
-    rerender(<HandCards {...props} selectedUids={['strike-0']} />);
+    rerender(
+      <HandCards
+        cards={props.cards}
+        selectedUids={['strike-0']}
+        onToggleSelect={props.onToggleSelect}
+        cardVariant={props.cardVariant}
+        disabled={props.disabled}
+        showName={props.showName}
+        showDescription={props.showDescription}
+        isFanned={props.isFanned}
+      />,
+    );
     const after = screen.getByTestId('hand-card-strike-0');
     expect(after).toHaveAttribute('data-selected', 'true');
     expect(after.className).toMatch(/w-\[124px\]/);

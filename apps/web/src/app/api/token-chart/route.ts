@@ -23,8 +23,10 @@ function isValidLimit(lim: string): boolean {
   return LIMIT_REGEX.test(lim) && lim.length <= 5;
 }
 
+const ALLOWED_UPSTREAM_ORIGIN = /^https:\/\/api\.geckoterminal\.com\//;
+
 function safeFetch(url: URL): ReturnType<typeof fetch> {
-  if (url.hostname !== GECKOTERMINAL_API.hostname) {
+  if (url.protocol !== 'https:' || !ALLOWED_UPSTREAM_ORIGIN.test(url.href)) {
     throw new Error('Request blocked: unexpected hostname');
   }
   return fetch(url.toString(), { next: { revalidate: 30 } });

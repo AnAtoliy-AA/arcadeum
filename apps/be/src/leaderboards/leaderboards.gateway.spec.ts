@@ -36,6 +36,38 @@ describe('LeaderboardsGateway', () => {
     });
   });
 
+  it('emitEntriesUpdated batches updates into a single emission', () => {
+    const updates = [
+      {
+        userId: 'u1',
+        mode: 'chess' as const,
+        season: '2026Q2',
+        isInMatch: true,
+      },
+      {
+        userId: 'u2',
+        mode: 'chess' as const,
+        season: '2026Q2',
+        isInMatch: false,
+      },
+    ];
+    gateway.emitEntriesUpdated(updates);
+    expect(server.emit).toHaveBeenCalledTimes(1);
+    expect(server.emit).toHaveBeenCalledWith('leaderboards.entries.updated', {
+      updates,
+    });
+  });
+
+  it('emitEntriesUpdated skips empty batches and detached server', () => {
+    gateway.emitEntriesUpdated([]);
+    expect(server.emit).not.toHaveBeenCalled();
+
+    Object.assign(gateway, { server: undefined });
+    expect(() =>
+      gateway.emitEntriesUpdated([{ userId: 'u', mode: 'all', season: 's' }]),
+    ).not.toThrow();
+  });
+
   it('is a no-op when the server is not yet attached', () => {
     Object.assign(gateway, { server: undefined });
     expect(() => gateway.emitCaptured([])).not.toThrow();

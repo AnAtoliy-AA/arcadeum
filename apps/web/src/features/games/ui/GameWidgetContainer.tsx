@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { MaximizeIcon, MinimizeIcon } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { useAutoExitFullscreen } from '../hooks/useAutoExitFullscreen';
 import { GameChatPopupOverlay } from '@/widgets/GameChat';
@@ -9,6 +10,7 @@ import { EmoteBubble } from './EmoteBubble';
 import type { EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
 import { LiveRegion } from '@/shared/lib/a11y';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useGameResultStore } from '../store/gameResultStore';
 import {
   WidgetFullscreenContext,
   useActiveEmotes,
@@ -91,6 +93,11 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
     exitFullscreen,
   });
 
+  const hasResult = useGameResultStore((state) => state.hasResult);
+  const toggleResultStore = useGameResultStore((state) => state.toggle);
+  const handleToggleResult = headerProps?.onToggleResult ?? toggleResultStore;
+  const isFinished = isGameOver || hasResult;
+
   const pillStatus: TurnStatusVariant = headerProps
     ? headerProps.turn
       ? resolveTurnStatus(headerProps.turn)
@@ -131,7 +138,13 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
         {headerProps.turn ? (
           <TurnStatusPill
             status={pillStatus}
-            className="gap-2 pl-1"
+            onClick={isFinished ? handleToggleResult : undefined}
+            className={cx(
+              'gap-2 pl-1',
+              isFinished
+                ? 'cursor-pointer hover:brightness-110 active:scale-95 transition-transform'
+                : undefined,
+            )}
             data-testid="turn-status-pill"
           >
             <TurnIndicator turn={headerProps.turn} />
@@ -139,7 +152,13 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
         ) : (
           <TurnStatusPill
             status={pillStatus}
-            className={headerProps.turnAvatar ? 'gap-2 pl-1' : undefined}
+            onClick={isFinished ? handleToggleResult : undefined}
+            className={cx(
+              headerProps.turnAvatar ? 'gap-2 pl-1' : undefined,
+              isFinished
+                ? 'cursor-pointer hover:brightness-110 active:scale-95 transition-transform'
+                : undefined,
+            )}
             data-testid="turn-status-pill"
           >
             {headerProps.turnAvatar}
@@ -151,6 +170,17 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
 
         <HeaderActions>
           {headerProps.extraActions}
+
+          {isFinished ? (
+            <button
+              type="button"
+              onClick={handleToggleResult}
+              data-testid="toggle-result-modal-button"
+              className="flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-950/50 px-2.5 py-1 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-900/60 active:scale-95"
+            >
+              🏆 {t('games.table.analytics.view') || 'Results'}
+            </button>
+          ) : null}
 
           <FullscreenButton
             onClick={toggleFullscreen}

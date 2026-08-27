@@ -2,11 +2,23 @@ import React from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 
-type CommonProps = React.HTMLAttributes<HTMLDivElement> & {
+type CommonProps = {
   className?: string;
+  style?: React.CSSProperties;
+  id?: string;
+  title?: string;
+  'data-testid'?: string;
+  children?: React.ReactNode;
 };
 
-export const MainGameArea = ({ className, ...props }: CommonProps) => (
+export const MainGameArea = ({
+  className,
+  style,
+  id,
+  title,
+  'data-testid': testId,
+  children,
+}: CommonProps) => (
   <div
     className={cx(
       'flex flex-col items-stretch gap-2 w-full flex-1 min-h-0 min-w-0 p-1',
@@ -14,11 +26,28 @@ export const MainGameArea = ({ className, ...props }: CommonProps) => (
       'max-[800px]:gap-1 max-[800px]:p-0',
       className,
     )}
-    {...props}
-  />
+    style={style}
+    id={id}
+    title={title}
+    data-testid={testId}
+  >
+    {children}
+  </div>
 );
 
-export const GameBoardWrapper = ({ className, ...props }: CommonProps) => (
+type GameBoardWrapperProps = CommonProps & {
+  onDragEnd?: React.DragEventHandler<HTMLDivElement>;
+};
+
+export const GameBoardWrapper = ({
+  className,
+  style,
+  id,
+  title,
+  'data-testid': testId,
+  onDragEnd,
+  children,
+}: GameBoardWrapperProps) => (
   <div
     className={cx(
       'flex flex-row items-stretch gap-4 flex-wrap w-full justify-center',
@@ -26,8 +55,14 @@ export const GameBoardWrapper = ({ className, ...props }: CommonProps) => (
       'max-[800px]:flex-col max-[800px]:gap-2',
       className,
     )}
-    {...props}
-  />
+    style={style}
+    id={id}
+    title={title}
+    data-testid={testId}
+    onDragEnd={onDragEnd}
+  >
+    {children}
+  </div>
 );
 
 type BoardContainerProps = CommonProps & {
@@ -36,9 +71,12 @@ type BoardContainerProps = CommonProps & {
 
 export const BoardContainer = ({
   className,
-  alignSelf,
   style,
-  ...props
+  id,
+  title,
+  'data-testid': testId,
+  alignSelf,
+  children,
 }: BoardContainerProps) => (
   <div
     className={cx(
@@ -48,10 +86,14 @@ export const BoardContainer = ({
       '[@media(max-height:480px)]:max-w-[420px]',
       className,
     )}
+    id={id}
+    title={title}
+    data-testid={testId}
     style={{
       ...(alignSelf ? { alignSelf } : {}),
       ...(style ?? {}),
     }}
-    {...props}
-  />
+  >
+    {children}
+  </div>
 );

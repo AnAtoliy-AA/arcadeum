@@ -15,7 +15,10 @@ import {
 } from '@/features/tournaments/ui/TournamentCard';
 import { RegisterConfirm } from '@/features/tournaments/ui/RegisterConfirm';
 import { UnregisterConfirm } from '@/features/tournaments/ui/UnregisterConfirm';
-import type { PublicTournamentItem } from '@/features/tournaments/api';
+import type {
+  PublicTournamentItem,
+  PublicTournamentsResponse,
+} from '@/features/tournaments/api';
 
 interface TournamentsListI18n {
   loading: string;
@@ -30,14 +33,20 @@ interface TournamentsTopMessages {
   list?: TournamentsListI18n;
 }
 
-export default function TournamentsPageContent() {
+export default function TournamentsPageContent({
+  initialTournaments,
+}: {
+  initialTournaments?: PublicTournamentsResponse | null;
+}) {
   const { messages } = useLanguage();
   const t = messages.pages?.tournaments as TournamentsTopMessages | undefined;
   const listT = t?.list;
 
   const accessToken = useSessionStore((s) => s.snapshot.accessToken);
   const isAuthenticated = !!accessToken;
-  const { data, isLoading } = usePublicTournaments();
+  const { data, isLoading } = usePublicTournaments({
+    initialData: initialTournaments,
+  });
   const registerMut = useRegisterTournament();
   const unregisterMut = useUnregisterTournament();
 

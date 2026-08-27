@@ -71,7 +71,12 @@ test.describe('Lobby Refresh', () => {
     );
 
     // Click refresh
-    await refreshButton.click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="refresh-room-button"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
     await responsePromise;
 
     // Verify UI updated

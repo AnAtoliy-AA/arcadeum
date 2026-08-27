@@ -26,7 +26,7 @@ export const playerStyles = `
 }
 .game-music-player.is-dragging,
 .game-music-player.is-dragging * {
-  cursor: grabbing !important;
+  cursor: grabbing;
 }
 .game-music-player.is-playing {
   animation: gameMusicPlayerIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -245,30 +245,30 @@ export const playerStyles = `
   transition: height 80ms ease;
 }
 .game-music-mini {
-  width: 52px !important;
-  padding: 10px !important;
-  gap: 0 !important;
+  width: 52px;
+  padding: 10px;
+  gap: 0;
 }
 .game-music-mini .game-music-title,
 .game-music-mini .game-music-progress,
 .game-music-mini > div:nth-child(2),
 .game-music-mini > div:nth-child(3) {
-  display: none !important;
+  display: none;
 }
 .game-music-mini-expand {
-  margin-left: 8px !important;
+  margin-left: 8px;
 }
 .game-music-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, color 150ms ease, box-shadow 200ms ease;
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
-  padding: 0 !important;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
   flex-shrink: 0;
 }
 .game-music-btn:hover {
-  background-color: rgba(255,255,255,0.2) !important;
+  --gm-btn-bg: rgba(255,255,255,0.2);
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .game-music-btn:active {
@@ -277,15 +277,15 @@ export const playerStyles = `
 .game-music-play-btn {
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, box-shadow 200ms ease;
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
-  width: 34px !important;
-  height: 34px !important;
-  min-width: 34px !important;
-  min-height: 34px !important;
-  padding: 0 !important;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
   flex-shrink: 0;
 }
 .game-music-play-btn:hover {
-  background-color: rgba(129, 140, 248, 0.35) !important;
+  --gm-play-bg: rgba(129, 140, 248, 0.35);
   box-shadow: 0 6px 18px rgba(99, 102, 241, 0.55);
 }
 .game-music-play-btn:active {
@@ -301,33 +301,33 @@ export const playerStyles = `
 }
 @media (max-width: 480px) {
   .game-music-player {
-    padding-bottom: 14px !important;
-    width: 320px !important;
-    border-radius: 24px !important;
+    padding-bottom: 14px;
+    min-width: 320px;
+    border-radius: 24px;
   }
   .game-music-btn {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
   }
   .game-music-play-btn {
-    width: 38px !important;
-    height: 38px !important;
-    min-width: 38px !important;
-    min-height: 38px !important;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
   }
-  .game-music-volume,
-  .game-music-progress {
-    height: 6px !important;
+  .game-music-volume.game-music-volume,
+  .game-music-progress.game-music-progress {
+    height: 6px;
   }
   .game-music-volume::-webkit-slider-thumb,
   .game-music-progress::-webkit-slider-thumb {
-    width: 16px !important;
-    height: 16px !important;
+    width: 16px;
+    height: 16px;
   }
   .game-music-progress::-webkit-slider-thumb {
-    opacity: 1 !important;
+    opacity: 1;
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -9,11 +9,14 @@ const FriendsPageDynamic = dynamic(() => import('./FriendsPageContent'), {
   loading: () => <PageLoading layout="standard" />,
 });
 
-const FriendsClient = (props: {
+const FriendsClient = ({
+  t,
+  accessToken,
+}: {
   t?: PageTranslations;
   accessToken?: string;
 }) => {
-  return <FriendsPageDynamic {...props} />;
+  return <FriendsPageDynamic t={t} accessToken={accessToken} />;
 };
 
 export default FriendsClient;

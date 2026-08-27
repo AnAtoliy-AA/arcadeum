@@ -1,12 +1,7 @@
-export const AI_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as const;
-
-export type AiDifficulty = (typeof AI_DIFFICULTIES)[number];
-
-export const DEFAULT_AI_DIFFICULTY: AiDifficulty = 'medium';
-
-export function isAiDifficulty(value: unknown): value is AiDifficulty {
-  return (
-    typeof value === 'string' &&
-    (AI_DIFFICULTIES as readonly string[]).includes(value)
-  );
-}
+/** Moved to @arcadeum/games-core (ARC-900 offline mode). Re-export shim. */
+export {
+  AI_DIFFICULTIES,
+  DEFAULT_AI_DIFFICULTY,
+  isAiDifficulty,
+} from '@arcadeum/games-core/lib/ai-difficulty';
+export type { AiDifficulty } from '@arcadeum/games-core/lib/ai-difficulty';

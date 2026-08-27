@@ -8,6 +8,24 @@ export const frMessages = {
     description:
       'Un jeu de cartes stratégique où vous évitez les incidents critiques',
     landing,
+    tutorial: {
+      s1: {
+        title: 'N’explosez pas',
+        body: 'Jouez des cartes d’action à votre tour, puis piochez. Tirez un Critical sans Defuse en main et vous êtes éliminé !',
+      },
+      s2: {
+        title: 'Combo pour voler',
+        body: 'Deux identiques volent une carte au hasard, trois identiques nomment une carte et cinq titres différents récupèrent une carte du rebut.',
+      },
+      s3: {
+        title: 'Les salons rapides tiquent',
+        body: 'Dans les salons rapides, un minuteur joue pour vous quand le temps expire — gardez le rythme et anticipez.',
+      },
+      s4: {
+        title: 'Discussion de table',
+        body: 'Discutez avec tout le monde ou seulement avec les joueurs vivants, et gardez des notes privées visibles par vous seul.',
+      },
+    },
     rules: {
       title: 'Règles du Jeu',
       headers: {

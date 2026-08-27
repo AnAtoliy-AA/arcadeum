@@ -27,6 +27,9 @@ import { SupportModule } from './support/support.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { BulkRewardsModule } from './bulk-rewards/bulk-rewards.module';
 import { FriendsModule } from './friends/friends.module';
+import { ClansModule } from './clans/clans.module';
+import { EventsModule } from './events/events.module';
+import { SeasonsModule } from './seasons/seasons.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import {
@@ -72,11 +75,16 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     ThrottlerModule.forRoot([
       { name: 'default', ttl: 60_000, limit: 100 },
       { name: 'auth', ttl: 60_000, limit: 10 },
-      { name: 'strict', ttl: 60_000 * 60, limit: 5 },
+      // Long window for abuse accounting, but blocks expire quickly so
+      // accidental offenders (NAT'd users, pollers) recover in seconds.
+      { name: 'strict', ttl: 3_600_000, limit: 5, blockDuration: 60_000 },
     ]),
     SupportModule,
     BulkRewardsModule,
     FriendsModule,
+    ClansModule,
+    EventsModule,
+    SeasonsModule,
     MongooseModule.forRoot(resolveMongoUri(), {
       ...resolveMongoOptions(),
       connectionName: OCI_CONNECTION,

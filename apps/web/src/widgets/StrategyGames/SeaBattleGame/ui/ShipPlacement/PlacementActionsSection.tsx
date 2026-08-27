@@ -76,6 +76,7 @@ export const PlacementActionsSection = memo(
           size={btnSize}
           disabled={!isAllShipsPlaced || isPlacementComplete}
           onClick={onConfirm}
+          data-testid="sea-battle-confirm-placement"
           className={
             isAllShipsPlaced && !isPlacementComplete
               ? 'sb-valid-pulse'
@@ -104,6 +105,7 @@ export const PlacementActionsSection = memo(
             variant="secondary"
             size={btnSize}
             onClick={onAutoPlace}
+            data-testid="sea-battle-auto-place"
           >
             🎲{' '}
             {placedShipIdsSize > 0

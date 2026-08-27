@@ -20,18 +20,19 @@ export function useGameRoomChat(
   useEffect(() => {
     if (!isLobby || !userId) return;
 
-    const handleChat = async (...args: unknown[]) => {
-      const entry = await maybeDecrypt<CriticalLogEntry>(args[0]);
+    const handleChat = async (payload: unknown) => {
+      const entry = await maybeDecrypt<CriticalLogEntry>(payload);
       if (entry?.id) {
         useGameChatStore.getState().addLog(entry);
       }
     };
 
-    const handleDelete = async (...args: unknown[]) => {
-      const payload = await maybeDecrypt<{ messageId: string }>(args[0]);
-      if (payload?.messageId) {
+    const handleDelete = async (payload: unknown) => {
+      const data = await maybeDecrypt<{ messageId: string }>(payload);
+      if (data?.messageId) {
+        const messageId = data.messageId;
         useGameChatStore.setState((s) => ({
-          logs: s.logs.filter((l) => l.id !== payload.messageId),
+          logs: s.logs.filter((l) => l.id !== messageId),
         }));
       }
     };

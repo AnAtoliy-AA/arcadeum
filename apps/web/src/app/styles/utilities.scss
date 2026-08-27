@@ -91,22 +91,22 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-delay: -1ms !important;
-    animation-duration: 1ms !important;
-    animation-iteration-count: 1 !important;
-    background-attachment: initial !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0s !important;
-    transition-delay: 0s !important;
+  html:root body *:not([data-rm]):not([data-rm]):not([data-rm]),
+  html:root body *:not([data-rm]):not([data-rm]):not([data-rm])::before,
+  html:root body *:not([data-rm]):not([data-rm]):not([data-rm])::after {
+    animation-delay: -1ms;
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    background-attachment: initial;
+    scroll-behavior: auto;
+    transition-duration: 0s;
+    transition-delay: 0s;
   }
 
-  [data-reveal],
-  .pulse-ring {
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
+  html:root body [data-reveal][data-reveal][data-reveal],
+  html:root body .pulse-ring.pulse-ring.pulse-ring {
+    animation: none;
+    transition: none;
+    transform: none;
   }
 }

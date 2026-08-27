@@ -54,9 +54,46 @@ export const fr: DeepPartial<SeoMessages> = {
     title: `Cat Dash · Course de chats multijoueur · ${APP}`,
     description: `Jouez à Cat Dash sur ${APP} — courses de chats avec dés, capacités uniques et pistes thématiques. 2–6 joueurs, gratuit.`,
   },
+  pachisiLanding: {
+    title: `Pachisi (Ludo) · Jeu de plateau de course gratuit · ${APP}`,
+    description: `Jouez au Pachisi en ligne sur ${APP} — faites un six pour lancer vos pions, capturez vos rivaux et rentrez les quatre à la maison. 2–4 joueurs, bots IA, salons gratuits.`,
+  },
+  backgammonLanding: {
+    title: `Backgammon · Jeu de plateau multijoueur gratuit · ${APP}`,
+    description: `Jouez au Backgammon en ligne sur ${APP} — plateau classique à 24 flèches, dés, sorties de pions et bots IA. Gratuit, sans téléchargement.`,
+  },
+  heartsLanding: {
+    title: `Coeurs · Jeu de cartes multijoueur gratuit · ${APP}`,
+    description: `Jouez aux Coeurs en ligne sur ${APP} — classique jeu de cartes à 4 joueurs avec passage, Coeurs, Reine de Pique et adversaires IA. Gratuit.`,
+  },
+  spadesLanding: {
+    title: `Pique · Jeu de cartes multijoueur gratuit · ${APP}`,
+    description: `Jouez au Pique en ligne sur ${APP} — classique jeu de cartes en partenariat à 4 joueurs avec annonces, Nil, sacs et adversaires IA. Gratuit.`,
+  },
   seaBattleLanding: {
     title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,
+  },
+  goLanding: {
+    title: `Go · Jeu de Plateau Multijoueur en Ligne Gratuit · ${APP}`,
+    description: `Jouez au Go en ligne sur ${APP} — Baduk/Weiqi classique sur plateaux 9×9, 13×13 et 19×19 avec captures, règle du ko, comptage par aire et IA. Salons instantanés gratuits.`,
+  },
+
+  solitaireLanding: {
+    title: `Solitaire · Jeu de Cartes Klondike Gratuit en Ligne · ${APP}`,
+    description: `Jouez au Solitaire (Klondike) en ligne sur ${APP} — le casse-tête de cartes classique solo avec score, chronomètre et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
+  },
+  minesweeperLanding: {
+    title: `Démineur · Jeu de Réflexion Classique Gratuit en Ligne · ${APP}`,
+    description: `Jouez au Démineur en ligne sur ${APP} — grilles de débutant à expert avec drapeaux, chrono et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
+  },
+  sudokuLanding: {
+    title: `Sudoku · Jeu de Puzzle de Chiffres Gratuit en Ligne · ${APP}`,
+    description: `Jouez au Sudoku en ligne sur ${APP} — niveaux facile, moyen et difficile à solution unique, crayon et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
+  },
+  game2048Landing: {
+    title: `2048 · Jeu de Puzzle à Fusion de Tuiles Gratuit en Ligne · ${APP}`,
+    description: `Jouez à 2048 en ligne sur ${APP} — glissez et fusionnez des tuiles sur une grille 4×4, battez votre record et continuez après 2048. Gratuit, instantané, sans téléchargement.`,
   },
   settings: {
     title: `Paramètres · ${APP}`,
@@ -81,6 +118,14 @@ export const fr: DeepPartial<SeoMessages> = {
   friends: {
     title: `Amis · ${APP}`,
     description: `Gérez votre liste d'amis sur ${APP}, envoyez des demandes et voyez qui est en ligne.`,
+  },
+  clans: {
+    title: `Clans · ${APP}`,
+    description: `Rejoignez ou créez des clans sur ${APP}, formez une équipe avec d'autres joueurs, montez dans les classements de clans et dominez ensemble.`,
+  },
+  events: {
+    title: `Soirées de jeux communautaires et événements · ${APP}`,
+    description: `Rejoignez des soirées de jeux communautaires programmées sur ${APP}. Participez aux jeux mis en avant, grimpez dans le classement en direct et gagnez des récompenses exclusives.`,
   },
   tournaments: {
     title: `Tournois · ${APP}`,
@@ -165,6 +210,10 @@ export const fr: DeepPartial<SeoMessages> = {
   developers: {
     title: `Développeurs · ${APP}`,
     description: `Découvrez l'équipe qui construit ${APP} et comment vous impliquer.`,
+  },
+  features: {
+    title: `Fonctionnalités de la Plateforme · ${APP}`,
+    description: `Explorez toutes les fonctionnalités de ${APP} — 20+ jeux multijoueurs, classements, fonctionnalités sociales, économie, sécurité et SEO.`,
   },
   admin: {
     title: `Admin · ${APP}`,

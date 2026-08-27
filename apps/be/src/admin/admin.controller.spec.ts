@@ -4,6 +4,7 @@ import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AdminController } from './admin.controller';
+import { AdminStatisticsService } from './admin-statistics.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { User } from '../auth/schemas/user.schema';
@@ -16,6 +17,12 @@ interface RequestWithUser {
 describe('AdminController (integration)', () => {
   let app: INestApplication<App>;
   let userModel: { findById: jest.Mock };
+  const mockStatisticsService = {
+    getStatistics: jest.fn().mockResolvedValue({
+      timestamp: '2026-08-24T00:00:00.000Z',
+      users: { totalUsers: 50 },
+    }),
+  };
 
   const mockRole = (role: string | null) =>
     userModel.findById.mockReturnValue({
@@ -35,6 +42,10 @@ describe('AdminController (integration)', () => {
         {
           provide: getConnectionToken(),
           useValue: { db: null },
+        },
+        {
+          provide: AdminStatisticsService,
+          useValue: mockStatisticsService,
         },
       ],
     })
@@ -80,5 +91,16 @@ describe('AdminController (integration)', () => {
       .get('/admin/ping')
       .expect(200);
     expect(res.body).toEqual({ ok: true });
+  });
+
+  it('returns 200 and statistics payload for GET /admin/statistics', async () => {
+    mockRole('admin');
+    const res = await request(app.getHttpServer())
+      .get('/admin/statistics')
+      .expect(200);
+    expect(res.body).toEqual({
+      timestamp: '2026-08-24T00:00:00.000Z',
+      users: { totalUsers: 50 },
+    });
   });
 });

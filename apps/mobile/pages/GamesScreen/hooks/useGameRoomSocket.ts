@@ -9,6 +9,7 @@ import {
 } from '@/lib/apiMessageCatalog';
 import { gameSocket as socket } from '@/hooks/useSocket';
 import { maybeDecrypt } from '@/lib/socket-encryption';
+import type { TFunction } from '@/lib/i18n';
 
 import { type GameRoomSummary, type GameSessionSummary } from '../api/gamesApi';
 import { type CriticalRoomHandle } from '../gameIntegrations/Critical/CriticalRoom';
@@ -24,8 +25,7 @@ interface UseGameRoomSocketParams {
   userId: string | undefined;
   deleting: boolean;
   router: ReturnType<typeof useRouter>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: (...args: any[]) => string;
+  t: TFunction;
   setRoom: React.Dispatch<React.SetStateAction<GameRoomSummary | null>>;
   setSession: React.Dispatch<React.SetStateAction<GameSessionSummary | null>>;
   integrationRef: React.MutableRefObject<

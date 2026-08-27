@@ -8,6 +8,24 @@ export const esMessages = {
     description:
       'Un juego de cartas estratégico donde evitas incidentes críticos',
     landing,
+    tutorial: {
+      s1: {
+        title: 'No explotes',
+        body: 'Juega cartas de acción en tu turno y luego roba del mazo. ¡Si robas un Critical sin un Defuse en la mano, quedas eliminado!',
+      },
+      s2: {
+        title: 'Combos para robar',
+        body: 'Dos iguales roba una carta al azar, tres iguales nombra una carta y cinco títulos distintos sacan una del descarte.',
+      },
+      s3: {
+        title: 'Las salas rápidas corren',
+        body: 'En salas rápidas, un temporizador juega por ti cuando se acaba el tiempo — mantén el ritmo y planifica con antelación.',
+      },
+      s4: {
+        title: 'Charla de mesa',
+        body: 'Chatea con todos o solo con jugadores vivos, y guarda notas privadas visibles solo para ti.',
+      },
+    },
     rules: {
       title: 'Reglas del Juego',
       headers: {

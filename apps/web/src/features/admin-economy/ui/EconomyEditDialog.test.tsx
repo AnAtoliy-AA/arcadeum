@@ -31,17 +31,24 @@ const labels = {
 };
 
 function renderDialog(
-  props: Partial<Parameters<typeof EconomyEditDialog>[0]> = {},
+  overrides: {
+    open?: boolean;
+    economyKey?: Parameters<typeof EconomyEditDialog>[0]['economyKey'];
+    currentValue?: number;
+    defaultValue?: number;
+    onSuccess?: () => void;
+    onClose?: () => void;
+  } = {},
 ) {
   return render(
     <EconomyEditDialog
-      open={true}
-      onClose={vi.fn()}
-      economyKey="game_win_coin_reward"
-      currentValue={50}
-      defaultValue={50}
+      open={overrides.open ?? true}
+      economyKey={overrides.economyKey ?? 'game_win_coin_reward'}
+      currentValue={overrides.currentValue ?? 50}
+      defaultValue={overrides.defaultValue ?? 50}
+      onSuccess={overrides.onSuccess}
+      onClose={overrides.onClose ?? vi.fn()}
       labels={labels}
-      {...props}
     />,
   );
 }

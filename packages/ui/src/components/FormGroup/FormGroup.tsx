@@ -10,7 +10,8 @@ export type FormGroupProps = {
   description?: string;
   children: ReactNode;
   className?: string;
-} & Omit<React.HTMLAttributes<HTMLDivElement>, 'children'>;
+  style?: React.CSSProperties;
+};
 
 export const FormGroup = memo(function FormGroup({
   label,
@@ -21,13 +22,11 @@ export const FormGroup = memo(function FormGroup({
   children,
   className,
   style,
-  ...rest
 }: FormGroupProps) {
   return (
     <div
       className={cx('flex w-full flex-col gap-2', className)}
       style={style}
-      {...rest}
     >
       {label && (
         <label htmlFor={htmlFor} className="block cursor-pointer">

@@ -1,6 +1,9 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { getServerAccessToken } from '@/entities/session/api/serverTokens';
+import {
+  getServerAccessToken,
+  getServerAnonymousId,
+} from '@/entities/session/api/serverTokens';
 import { gamesApi } from '@/features/games/api';
 import { SSR_TIMEOUT } from '@/shared/config/app-config';
 import { handleSsrFetchError } from '@/shared/lib/ssr';
@@ -65,6 +68,9 @@ async function RoomsDataFetcher({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const accessToken = await getServerAccessToken();
+  // Anonymous players: forward the cookie-mirrored anon id so SSR respects
+  // participation filters (games they host/joined), same as client fetches.
+  const anonymousId = accessToken ? null : await getServerAnonymousId();
 
   const gameId =
     typeof searchParams.gameId === 'string' ? searchParams.gameId : undefined;
@@ -92,6 +98,7 @@ async function RoomsDataFetcher({
       },
       {
         token: accessToken || undefined,
+        anonymousId: anonymousId || undefined,
         timeout: SSR_TIMEOUT,
       },
     );

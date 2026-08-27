@@ -1,3 +1,4 @@
+import { tournamentsEs } from './tournaments/es';
 import { helpEs } from './help/es';
 import { adminAnnouncementsEs } from './admin-announcements/es';
 import { adminTournamentsEs } from './admin-tournaments/es';
@@ -6,6 +7,7 @@ import { adminWalletEs } from './admin-wallet/es';
 import { gemsEs } from './gems/es';
 import { adminGemPackagesEs } from './admin-gem-packages/es';
 import { adminEconomyEs } from './admin-economy/es';
+import { adminStatisticsEs } from './admin-statistics/es';
 import { dailyRewardsEs } from './daily-rewards/es';
 import { dailyChallengesEs } from './daily-challenges/es';
 import { achievementsEs } from './achievements/es';
@@ -16,10 +18,16 @@ import { adminBlockedIpsEs } from './admin-blocked-ips/es';
 import { adminUsersEs } from './admin-users/es';
 import { adminBulkRewardsEs } from './admin-bulk-rewards/es';
 import { friendsEs } from './friends/es';
+import { clansEs } from './clans/es';
+import { eventsEs } from './events/es';
+import { seasonsEs } from './seasons/es';
 import { communityEs } from './community/es';
 import { rewardsEs } from './rewards/es';
 import { developersEs } from './developers/es';
 import { blogEs } from './blog/es';
+import { changelogEs } from './changelog/es';
+import { featuresEs } from './features/es';
+import { roadmapEs } from './roadmap/es';
 
 export const es = {
   admin: {
@@ -30,17 +38,110 @@ export const es = {
     signedInAs: 'Sesión iniciada como {username}',
     nav: {
       dashboard: 'Panel',
+      statistics: 'Estadísticas',
       users: 'Usuarios',
       payments: 'Pagos',
       announcements: 'Anuncios',
       tournaments: 'Torneos',
       economy: 'Economía',
       shop: 'Tienda',
+      gemPackages: 'Paquetes de Gemas',
       games: 'Juegos',
       gameRules: 'Reglas del Juego',
       bulkRewards: 'Recompensas Masivas',
       blockedIps: 'IPs Bloqueados',
+      geoBlock: 'Bloqueo Geográfico',
       comingSoon: 'Próximamente',
+    },
+    statistics: adminStatisticsEs,
+    dashboard: {
+      title: 'Centro de Comando',
+      subtitle:
+        'Salud del sistema, métricas clave y resumen de módulos de administración',
+      systemHealth: 'Salud del Sistema',
+      statusOnline: 'Operativo',
+      statusDegraded: 'Degradado',
+      database: 'Base de datos',
+      collections: 'Colecciones',
+      totalDocuments: 'Total de documentos',
+      dataSize: 'Tamaño de datos (MB)',
+      storageSize: 'Tamaño de almacenamiento (MB)',
+      indexSize: 'Tamaño de índices (MB)',
+      activeModules: 'Módulos Activos',
+      modulesTitle: 'Módulos de Administración',
+      modulesSubtitle:
+        'Acceso directo para administrar juegos, jugadores, transacciones y seguridad',
+      modules: {
+        statistics: {
+          title: 'Analítica de Plataforma',
+          description:
+            'Inspecciona MAU, DAU, retención, tiempo de juego e ingresos',
+        },
+        users: {
+          title: 'Gestión de Usuarios',
+          description:
+            'Administrar cuentas de jugadores, roles, estados y sanciones',
+        },
+        payments: {
+          title: 'Pagos y Notas',
+          description:
+            'Auditar registros de pagos, transacciones y notas internas',
+        },
+        tournaments: {
+          title: 'Torneos',
+          description: 'Programar y gestionar torneos competitivos y premios',
+        },
+        gemPackages: {
+          title: 'Paquetes de Gemas',
+          description: 'Configurar niveles de gemas, precios y bonificaciones',
+        },
+        shop: {
+          title: 'Tienda y Cosméticos',
+          description:
+            'Gestionar inventario, rarezas de cosméticos y otorgamiento',
+        },
+        economy: {
+          title: 'Economía y Tesorería',
+          description:
+            'Monitorear circulación de tokens, faucet y quema de recompensas',
+        },
+        bulkRewards: {
+          title: 'Recompensas Masivas',
+          description: 'Distribuir recompensas masivas a cohortes de jugadores',
+        },
+        games: {
+          title: 'Visibilidad de Juegos',
+          description: 'Controlar disponibilidad y estado de modos de juego',
+        },
+        gameRules: {
+          title: 'Reglas del Juego',
+          description:
+            'Configurar variantes de reglas, temporizadores y mecánicas',
+        },
+        announcements: {
+          title: 'Anuncios',
+          description:
+            'Emitir avisos globales, actualizaciones y alertas de mantenimiento',
+        },
+        blockedIps: {
+          title: 'IPs Bloqueados',
+          description: 'Inspeccionar y bloquear direcciones IP maliciosas',
+        },
+        geoBlock: {
+          title: 'Bloqueo Geográfico',
+          description:
+            'Configurar restricciones jurisdiccionales y territoriales',
+        },
+      },
+      openPanel: 'Abrir Panel',
+      collectionsOverview: 'Desglose de Colecciones de Base de Datos',
+      collectionName: 'Colección',
+      docsCount: 'Documentos',
+      sizeMb: 'Tamaño (MB)',
+      avgDocSize: 'Tamaño Medio',
+      indexesCount: 'Índices',
+      liveStatus: 'Estado Actual',
+      environment: 'Entorno',
     },
     error: {
       title: 'Algo salió mal',
@@ -85,74 +186,7 @@ export const es = {
     blockedIps: adminBlockedIpsEs,
     bulkRewards: adminBulkRewardsEs,
   },
-  tournaments: {
-    title: 'Torneos',
-    subtitle: 'Compite contra los mejores jugadores del mundo',
-    description:
-      'Únete a emocionantes torneos, escala los brackets y compite por premios exclusivos. Se añaden nuevos torneos regularmente.',
-    features: [
-      {
-        title: 'Brackets dinámicos',
-        description:
-          'Sigue tu progreso a través de brackets actualizados en tiempo real.',
-      },
-      {
-        title: 'Recompensas exclusivas',
-        description:
-          'Gana cosméticos premium, potenciadores y recompensas estacionales.',
-      },
-      {
-        title: 'Matchmaking por nivel',
-        description:
-          'Compite contra jugadores de nivel similar para una experiencia justa.',
-      },
-    ],
-    comingSoon: 'El modo torneo llegará pronto. ¡Mantente atento!',
-    list: {
-      loading: 'Cargando torneos…',
-      empty: 'Aún no hay torneos. ¡Vuelve pronto!',
-      card: {
-        registered: 'Inscritos {count} / {max}',
-        prize: 'Premio',
-        entryFee: 'Cuota de entrada',
-        prizePool: 'Premio en juego',
-        registerCta: 'Inscribirse',
-        unregisterCta: 'Cancelar inscripción',
-        signInToRegister: 'Inicia sesión para inscribirte',
-        full: 'Lista de espera',
-        registrationClosed: 'Inscripción cerrada',
-        confirmRegister: {
-          title: 'Confirmar entrada',
-          body: 'Este torneo cuesta {fee} monedas. Tu saldo: {balance} monedas.',
-          confirm: 'Pagar e inscribirse',
-          cancel: 'Cancelar',
-        },
-        confirmUnregister: {
-          refund: 'Se te devolverán {amount} monedas.',
-          title: 'Cancelar inscripción',
-          body: '¿Estás seguro?',
-          confirm: 'Sí, cancelar',
-          cancelButton: 'No, mantenerme',
-        },
-        errors: {
-          insufficientFunds: 'No tienes suficientes monedas para participar.',
-        },
-        effectiveStatus: {
-          scheduled: 'Programado',
-          registration_open: 'Inscripción abierta',
-          registration_closed: 'Inscripción cerrada',
-          live: 'En curso',
-          awaiting_results: 'Esperando resultados',
-          completed: 'Finalizado',
-          cancelled: 'Cancelado',
-        },
-        gameType: {
-          critical_v1: 'Critical',
-          sea_battle_v1: 'Batalla naval',
-        },
-      },
-    },
-  },
+  tournaments: tournamentsEs,
   blog: blogEs,
   community: communityEs,
   cookies: {
@@ -244,6 +278,11 @@ export const es = {
         name: 'Cat Dash',
         subtitle: 'Carrera de gatos',
         icon: '🐱',
+      },
+      backgammon_v1: {
+        name: 'Backgammon',
+        subtitle: 'Estrategia de tablero',
+        icon: '🎲',
       },
     },
     cup: {
@@ -376,4 +415,10 @@ export const es = {
   adminShop: adminShopEs,
   adminGames: adminGamesEs,
   friends: friendsEs,
+  clans: clansEs,
+  events: eventsEs,
+  seasons: seasonsEs,
+  changelog: changelogEs,
+  features: featuresEs,
+  roadmap: roadmapEs,
 };

@@ -1,0 +1,216 @@
+import { randomInt, randomUUID } from '../lib/random';
+import {
+  IGameEngine,
+  BaseGameState,
+  GameMetadata,
+  GameActionResult,
+  GameActionContext,
+  GameLogEntry,
+  GamePlayerState,
+  GameResult,
+  ChatScope,
+} from './game-engine.interface';
+
+/**
+ * Abstract Base Game Engine
+ * Provides common functionality for all game engines
+ */
+export abstract class BaseGameEngine<
+  TState extends BaseGameState = BaseGameState,
+> implements IGameEngine<TState> {
+  /** Max log entries per session to prevent BSON document bloat. */
+  protected static readonly MAX_LOG_ENTRIES = 100;
+  /**
+   * Subclasses must implement this to provide game metadata
+   */
+  abstract getMetadata(): GameMetadata;
+
+  /**
+   * Subclasses must implement this to initialize game state
+   */
+  abstract initializeState(
+    playerIds: string[],
+    config?: Record<string, unknown>,
+  ): TState;
+
+  /**
+   * Subclasses must implement this to validate actions
+   */
+  abstract validateAction(
+    state: TState,
+    action: string,
+    context: GameActionContext,
+    payload?: unknown,
+  ): boolean;
+
+  /**
+   * Subclasses must implement this to execute actions
+   */
+  abstract executeAction(
+    state: TState,
+    action: string,
+    context: GameActionContext,
+    payload?: unknown,
+  ): GameActionResult<TState>;
+
+  /**
+   * Subclasses must implement this to check if game is over
+   */
+  abstract isGameOver(state: TState): boolean;
+
+  /**
+   * Subclasses must implement this to get winners
+   */
+  abstract getWinners(state: TState): string[];
+
+  /**
+   * Standardized game result. Override in engines with explicit draw detection.
+   */
+  getResult(state: TState): GameResult {
+    if (!this.isGameOver(state)) {
+      return { winnerIds: [], isDraw: false };
+    }
+    const winnerIds = this.getWinners(state);
+    return { winnerIds, isDraw: winnerIds.length === 0 };
+  }
+
+  /**
+   * Subclasses must implement this to sanitize state
+   */
+  abstract sanitizeStateForPlayer(
+    state: TState,
+    playerId: string,
+  ): Partial<TState>;
+
+  /**
+   * Subclasses must implement this to get available actions
+   */
+  abstract getAvailableActions(state: TState, playerId: string): string[];
+
+  /**
+   * Helper: Create a log entry
+   */
+  protected createLogEntry(
+    type: 'system' | 'action' | 'message',
+    message: string,
+    options?: {
+      kind?: string;
+      scope?: ChatScope;
+      senderId?: string;
+      senderName?: string;
+      targetId?: string;
+    },
+  ): GameLogEntry {
+    return {
+      id: randomUUID(),
+      type,
+      kind: options?.kind,
+      message,
+      createdAt: new Date().toISOString(),
+      scope: options?.scope || 'all',
+      senderId: options?.senderId || null,
+      senderName: options?.senderName || null,
+      targetId: options?.targetId || null,
+    };
+  }
+
+  /**
+   * Helper: Clone state deeply
+   */
+  protected cloneState(state: TState): TState {
+    return structuredClone(state);
+  }
+
+  /**
+   * Helper: Shuffle array in place
+   */
+  protected shuffleArray<T>(array: T[]): void {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = randomInt(i + 1);
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  /**
+   * Helper: Find player in state
+   */
+  protected findPlayer(
+    state: TState,
+    playerId: string,
+  ): GamePlayerState | undefined {
+    return state.players.find((p) => p.playerId === playerId);
+  }
+
+  /**
+   * Helper: Get current player
+   */
+  protected getCurrentPlayer(state: TState): GamePlayerState | undefined {
+    if (state.currentTurnIndex === undefined) {
+      return undefined;
+    }
+    return state.players[state.currentTurnIndex];
+  }
+
+  /**
+   * Helper: Check if it's a player's turn
+   */
+  protected isPlayerTurn(state: TState, playerId: string): boolean {
+    const currentPlayer = this.getCurrentPlayer(state);
+    return currentPlayer?.playerId === playerId;
+  }
+
+  /**
+   * Helper: Advance turn to next player
+   */
+  protected advanceTurn(state: TState): void {
+    if (state.currentTurnIndex === undefined) {
+      return;
+    }
+    state.currentTurnIndex =
+      (state.currentTurnIndex + 1) % state.players.length;
+  }
+
+  /**
+   * Helper: Add log to state (capped to prevent unbounded growth)
+   */
+  protected addLog(state: TState, log: GameLogEntry): void {
+    state.logs.push(log);
+    if (state.logs.length > BaseGameEngine.MAX_LOG_ENTRIES) {
+      state.logs = state.logs.slice(-BaseGameEngine.MAX_LOG_ENTRIES);
+    }
+  }
+
+  /**
+   * Helper: Create success result
+   */
+  protected successResult(
+    state: TState,
+    logs?: GameLogEntry[],
+  ): GameActionResult<TState> {
+    return {
+      success: true,
+      state,
+      logs,
+    };
+  }
+
+  /**
+   * Helper: Create error result
+   */
+  protected errorResult(error: string): GameActionResult<TState> {
+    return {
+      success: false,
+      error,
+    };
+  }
+
+  /**
+   * Default implementation for statistics
+   */
+  getStatistics(state: TState): Record<string, unknown> {
+    return {
+      playerCount: state.players.length,
+      logCount: state.logs.length,
+    };
+  }
+}

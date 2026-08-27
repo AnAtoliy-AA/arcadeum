@@ -15,44 +15,39 @@ interface NetworkError extends Error {
 }
 
 const ANONYMOUS_ID_KEY = 'arcadeum_anon_id';
+export const ANONYMOUS_ID_COOKIE_NAME = ANONYMOUS_ID_KEY;
 
-async function deriveSigningKey(secret: string): Promise<CryptoKey> {
-  const enc = new TextEncoder();
-  return crypto.subtle.importKey(
-    'raw',
-    enc.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign', 'verify'],
-  );
+// Ids are generated as `anon_` + 16 hex chars; keep in sync with the
+// backend's anonymous-id validation (jwt-optional.guard).
+export const ANONYMOUS_ID_PATTERN = /^anon_[0-9a-f-]{4,64}$/;
+
+const ANONYMOUS_ID_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+let mirroredCookieAnonId: string | null = null;
+
+/**
+ * Mirrors the anonymous id into a plain cookie so server components can
+ * forward the identity on SSR fetches (localStorage is browser-only).
+ */
+function mirrorAnonymousIdCookie(id: string): void {
+  if (typeof document === 'undefined' || mirroredCookieAnonId === id) return;
+  document.cookie = `${ANONYMOUS_ID_KEY}=${id}; path=/; max-age=${ANONYMOUS_ID_COOKIE_MAX_AGE}; samesite=lax`;
+  mirroredCookieAnonId = id;
 }
 
-async function signAnonymousId(id: string): Promise<string> {
-  const secret =
-    typeof process !== 'undefined'
-      ? (process.env.NEXT_PUBLIC_ANON_SECRET ?? '')
-      : '';
-  if (!secret) return '';
-  const key = await deriveSigningKey(secret);
-  const signature = await crypto.subtle.sign(
-    'HMAC',
-    key,
-    new TextEncoder().encode(id),
-  );
-  return Array.from(new Uint8Array(signature))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
-export async function getAnonymousIdWithSignature(): Promise<{
-  id: string;
-  signature: string;
-} | null> {
+/**
+ * Returns the persisted anonymous id, generating one if needed.
+ *
+ * Anonymous identities are NOT signed client-side: a signing secret in the
+ * browser bundle is public by definition. The backend treats unsigned
+ * (format-validated) anon ids as unprivileged guests — this only ever
+ * personalizes public read endpoints.
+ */
+export async function getOrCreateAnonymousId(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
 
   let id = localStorage.getItem(ANONYMOUS_ID_KEY);
 
-  if (!id) {
+  if (!id || !ANONYMOUS_ID_PATTERN.test(id)) {
     const randomBytes = new Uint8Array(8);
     if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
       window.crypto.getRandomValues(randomBytes);
@@ -74,17 +69,26 @@ export async function getAnonymousIdWithSignature(): Promise<{
     localStorage.setItem(ANONYMOUS_ID_KEY, id);
   }
 
-  const signature = await signAnonymousId(id);
-  return { id, signature };
+  mirrorAnonymousIdCookie(id);
+
+  return id;
 }
 
 export function getAnonymousId() {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem(ANONYMOUS_ID_KEY);
+  const id = localStorage.getItem(ANONYMOUS_ID_KEY);
+  if (!id || !ANONYMOUS_ID_PATTERN.test(id)) return null;
+  mirrorAnonymousIdCookie(id);
+  return id;
 }
 
 export interface ApiClientOptions extends Omit<RequestInit, 'cache'> {
   token?: string;
+  /**
+   * Explicit anonymous identity (e.g. from the anon cookie on the server).
+   * In the browser the id is picked up from localStorage automatically.
+   */
+  anonymousId?: string;
   data?: unknown;
   timeout?: number;
   cache?: RequestCache;
@@ -104,11 +108,48 @@ export class ApiError extends Error {
 
 const inFlightRequests = new Map<string, Promise<unknown>>();
 
+interface SsrCacheEntry {
+  value: unknown;
+  expiresAt: number;
+}
+
+const SSR_CACHE_TTL_MS = 60_000;
+const SSR_CACHE_MAX_ENTRIES = 200;
+
+function ssrResponseCache(): Map<string, SsrCacheEntry> {
+  const store = globalThis as typeof globalThis & {
+    __arcadeumSsrResponseCache?: Map<string, SsrCacheEntry>;
+  };
+  store.__arcadeumSsrResponseCache ??= new Map();
+  return store.__arcadeumSsrResponseCache;
+}
+
+function readSsrCache(key: string): unknown | undefined {
+  const cache = ssrResponseCache();
+  const entry = cache.get(key);
+  if (!entry) return undefined;
+  if (entry.expiresAt <= Date.now()) {
+    cache.delete(key);
+    return undefined;
+  }
+  return entry.value;
+}
+
+function writeSsrCache(key: string, value: unknown): void {
+  const cache = ssrResponseCache();
+  if (cache.size >= SSR_CACHE_MAX_ENTRIES) {
+    const oldest = cache.keys().next();
+    if (!oldest.done) cache.delete(oldest.value);
+  }
+  cache.set(key, { value, expiresAt: Date.now() + SSR_CACHE_TTL_MS });
+}
+
 export const apiClient = {
   async fetch<T>(path: string, options: ApiClientOptions = {}): Promise<T> {
     const {
       method = 'GET',
       token,
+      anonymousId,
       data,
       headers: customHeaders,
       timeout = defaultTimeout(),
@@ -119,7 +160,24 @@ export const apiClient = {
 
     // Only deduplicate GET requests
     const isGet = method.toUpperCase() === 'GET';
-    const cacheKey = isGet ? `${method}:${url}:${token || ''}` : null;
+    // Include the anonymous id so SSR-cached/deduped responses are never
+    // shared between different anon identities.
+    const cacheKey = isGet
+      ? `${method}:${url}:${token || ''}:${anonymousId || ''}`
+      : null;
+
+    // Server-side responses are memoized briefly so static prerendering
+    // (every page × locale during `next build`) doesn't hammer the API
+    // and trip its rate limiter (429 ThrottlerException).
+    const ssrKey =
+      typeof window === 'undefined' && cacheKey && options.cache !== 'no-store'
+        ? `ssr:${cacheKey}`
+        : null;
+
+    if (ssrKey) {
+      const cached = readSsrCache(ssrKey);
+      if (cached !== undefined) return cached as T;
+    }
 
     if (cacheKey && inFlightRequests.has(cacheKey)) {
       return inFlightRequests.get(cacheKey) as Promise<T>;
@@ -140,6 +198,7 @@ export const apiClient = {
           },
           path,
         );
+        if (ssrKey) writeSsrCache(ssrKey, result);
         return result;
       } finally {
         if (cacheKey) inFlightRequests.delete(cacheKey);
@@ -160,15 +219,13 @@ export const apiClient = {
   ): Promise<T> {
     const {
       token,
+      anonymousId,
       data,
       headers: customHeaders,
       timeout,
       signal: customSignal,
       ...fetchOptions
     } = options;
-
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
@@ -180,33 +237,37 @@ export const apiClient = {
       (headers as Record<string, string>).Authorization = `Bearer ${token}`;
     }
 
-    const anon = await getAnonymousIdWithSignature();
-    if (anon) {
-      (headers as Record<string, string>)['x-anonymous-id'] = anon.id;
-      if (anon.signature) {
-        (headers as Record<string, string>)['x-anonymous-signature'] =
-          anon.signature;
-      }
-    }
-
-    const config: RequestInit = {
-      ...fetchOptions,
-      headers,
-      credentials: 'include',
-      cache: options.cache ?? 'no-cache',
-      signal: customSignal || controller.signal,
-      ...(typeof window === 'undefined' ? { next: { revalidate: 60 } } : {}),
-    };
-
-    if (data) {
-      config.body = JSON.stringify(data);
+    const anonId = anonymousId ?? (await getOrCreateAnonymousId());
+    if (anonId) {
+      (headers as Record<string, string>)['x-anonymous-id'] = anonId;
     }
 
     const isDev = process.env.NODE_ENV === 'development';
+    const isServer = typeof window === 'undefined';
     let attempts = 0;
-    const maxAttempts = isDev ? 2 : 1;
+    // The server retries once so build-time prerendering survives transient
+    // API hiccups (rate limits, cold starts); browsers fail fast instead.
+    const maxAttempts = isDev || isServer ? 2 : 1;
 
     while (attempts < maxAttempts) {
+      attempts++;
+
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
+
+      const config: RequestInit = {
+        ...fetchOptions,
+        headers,
+        credentials: 'include',
+        cache: options.cache ?? 'no-cache',
+        signal: customSignal || controller.signal,
+        ...(typeof window === 'undefined' ? { next: { revalidate: 60 } } : {}),
+      };
+
+      if (data) {
+        config.body = JSON.stringify(data);
+      }
+
       try {
         const response = await fetch(url, config);
 
@@ -219,6 +280,20 @@ export const apiClient = {
             errorMessage = errorData.message || errorMessage;
           } catch {
             // Ignore JSON parse error
+          }
+
+          if (
+            response.status === HttpStatus.TOO_MANY_REQUESTS &&
+            attempts < maxAttempts
+          ) {
+            clearTimeout(id);
+            const retryAfterSec = Number(response.headers.get('retry-after'));
+            const delayMs =
+              Number.isFinite(retryAfterSec) && retryAfterSec > 0
+                ? Math.min(retryAfterSec * 1000, 5000)
+                : 1000;
+            await new Promise((resolve) => setTimeout(resolve, delayMs));
+            continue;
           }
 
           throw new ApiError(errorMessage, response.status, errorData);
@@ -239,7 +314,6 @@ export const apiClient = {
           return {} as T;
         }
       } catch (error) {
-        attempts++;
         const networkError = error as NetworkError;
         const isConnectionError =
           error instanceof Error &&
@@ -261,6 +335,7 @@ export const apiClient = {
             );
           }
           // Wait a bit before retrying to give the backend time to wake up
+          clearTimeout(id);
           await new Promise((resolve) => setTimeout(resolve, 2000));
           continue;
         }
@@ -272,6 +347,7 @@ export const apiClient = {
         }
 
         // Production fallback: try backup instance on network/timeout errors
+        clearTimeout(id);
         const isClient = typeof window !== 'undefined';
         if (isClient && isConnectionError) {
           const fallbackUrl = resolveApiFallbackUrl(path ?? '');
@@ -280,7 +356,6 @@ export const apiClient = {
               console.warn(
                 `[apiClient] Primary ${url} unreachable, trying fallback ${fallbackUrl}`,
               );
-              clearTimeout(id);
               const fallbackResult = await this.performFetch<T>(
                 fallbackUrl,
                 options,
@@ -292,7 +367,6 @@ export const apiClient = {
           }
         }
 
-        clearTimeout(id);
         if (error instanceof Error && error.name === 'AbortError') {
           // If the external (caller-provided) signal was aborted, propagate
           // the AbortError so callers can distinguish cancellation from timeout.

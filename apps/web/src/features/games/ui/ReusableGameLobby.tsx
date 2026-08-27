@@ -161,16 +161,21 @@ export function ReusableGameLobby({
       .catch(() => {});
   }, [room.gameId, onRuleComingSoonChange]);
 
-  const [botCount, setBotCount] = useState(1);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const members = room.members ?? [];
+  const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 6;
+  // Preselect every seat a game requires to reach its minimum (e.g. 3 bots
+  // for a 4-player game like Hearts). The server pads up to minPlayers
+  // anyway, so defaulting to anything less would mislead the host.
+  const [botCount, setBotCount] = useState(() =>
+    Math.max(1, Math.min(minPlayers - 1, maxPlayers - 1)),
+  );
   const [difficulty, setDifficulty] = useState<
     'easy' | 'medium' | 'hard' | 'expert'
   >(() => {
     const settings = loadStoredSettings();
     return settings.aiDifficulty ?? 'medium';
   });
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const members = room.members ?? [];
-  const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 6;
   const cooldownRef = React.useRef(0);
 
   useEffect(() => {

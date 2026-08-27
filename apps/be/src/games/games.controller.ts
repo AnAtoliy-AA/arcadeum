@@ -61,6 +61,19 @@ export class GamesController {
   }
 
   @UseGuards(JwtOptionalAuthGuard)
+  @Get('my-room-count')
+  async getMyRoomCount(
+    @Req() req: Request,
+  ): Promise<{ count: number; nextRoomNumber: number }> {
+    const user = req.user as AuthenticatedUser | undefined | null;
+    if (!user?.userId) {
+      return { count: 0, nextRoomNumber: 1 };
+    }
+    const count = await this.gamesService.countHostRooms(user.userId);
+    return { count, nextRoomNumber: count + 1 };
+  }
+
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('rooms')
   async createRoom(
     @Req() req: Request,
@@ -246,6 +259,40 @@ export class GamesController {
       limitNum,
       offsetNum,
       gameId || undefined,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('stats/head-to-head')
+  async getHeadToHead(
+    @Req() req: Request,
+    @Query('userId2') userId2: string,
+    @Query('gameId') gameId?: string,
+  ) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+    if (!userId2) throw new BadRequestException('userId2 is required');
+    return this.gamesService.getHeadToHead(
+      user.userId,
+      userId2,
+      gameId || undefined,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('stats/trends')
+  async getTrends(
+    @Req() req: Request,
+    @Query('gameId') gameId?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+    const limitNum = limit ? parseInt(limit, 10) : 10;
+    return this.gamesService.getTrends(
+      user.userId,
+      gameId || undefined,
+      limitNum,
     );
   }
   @UseGuards(JwtOptionalAuthGuard)

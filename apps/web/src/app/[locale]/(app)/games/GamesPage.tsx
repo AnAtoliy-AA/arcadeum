@@ -294,11 +294,7 @@ export default function GamesPage({
 
   return (
     <PageLayout>
-      <Container
-        className={'gap-6'}
-        size="xl"
-        style={{ animation: 'fadeInUp 0.5s ease-out' }}
-      >
+      <Container className={'animate-[fadeInUp_0.5s_ease-out] gap-6'} size="xl">
         <GamesFilters
           searchQuery={searchQuery}
           onSearch={handleSearch}
@@ -310,7 +306,7 @@ export default function GamesPage({
           onCategoryChange={handleCategoryChange}
           aiVsAiFilter={aiVsAiFilter}
           onAiVsAiChange={handleAiVsAiChange}
-          isAuthenticated={!!snapshot.accessToken}
+          canFilterParticipation={!!snapshot.accessToken || !!snapshot.userId}
         />
 
         <GlassCard className={'p-6'}>

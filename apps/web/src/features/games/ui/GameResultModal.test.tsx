@@ -74,4 +74,71 @@ describe('GameResultModal', () => {
     fireEvent.click(screen.getByTestId('modal-close-button'));
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
+
+  it('renders stats grid alongside analysis toggle', () => {
+    render(
+      <GameResultModal
+        isOpen={true}
+        result="victory"
+        stats={{ turns: 10, score: 100 }}
+        analysis={{
+          content: (
+            <div data-testid="detailed-analysis-content">Analytics Content</div>
+          ),
+          viewLabel: 'View Analysis',
+          backLabel: 'Back to Result',
+        }}
+        t={mockT}
+      />,
+    );
+
+    expect(screen.getByTestId('game-result-stats-grid')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('detailed-analysis-content'),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('View Analysis'));
+
+    expect(screen.getByTestId('game-result-stats-grid')).toBeInTheDocument();
+    expect(screen.getByTestId('detailed-analysis-content')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Back to Result'));
+
+    expect(screen.getByTestId('game-result-stats-grid')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('detailed-analysis-content'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders custom rematchLabel and secondaryAction button', () => {
+    const handleSecondary = vi.fn();
+    const handleRematch = vi.fn();
+
+    render(
+      <GameResultModal
+        isOpen={true}
+        result="victory"
+        onRematch={handleRematch}
+        rematchLabel="Play again"
+        secondaryAction={{
+          label: 'Keep going',
+          onClick: handleSecondary,
+          testId: 'keep-going-button',
+        }}
+        t={mockT}
+      />,
+    );
+
+    const rematchBtn = screen.getByTestId('rematch-button');
+    expect(rematchBtn).toHaveTextContent('Play again');
+
+    const secondaryBtn = screen.getByTestId('keep-going-button');
+    expect(secondaryBtn).toHaveTextContent('Keep going');
+
+    fireEvent.click(secondaryBtn);
+    expect(handleSecondary).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(rematchBtn);
+    expect(handleRematch).toHaveBeenCalledTimes(1);
+  });
 });

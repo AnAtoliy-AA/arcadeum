@@ -1,23 +1,44 @@
 import { AuthGuard } from '@nestjs/passport';
 import { ExecutionContext, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import type { AuthenticatedUser } from './jwt.strategy';
 
+const ANON_ID_PREFIX_LENGTH = 5;
+const ANON_ID_REGEX = /^anon_[0-9a-f-]{4,64}$/;
+const ANON_SIGNATURE_REGEX = /^[0-9a-f]{64}$/;
+
+function normalizeHeader(value: unknown): string {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+/**
+ * Always-executed verification: folds format validation and constant-time
+ * MAC comparison into a single boolean so no request data can decide
+ * whether the check itself runs.
+ */
 function verifyAnonymousSignature(
   id: string,
   signature: string,
   secret: string,
 ): boolean {
-  if (!secret || !signature) return false;
   const expected = crypto.createHmac('sha256', secret).update(id).digest('hex');
-  return crypto.timingSafeEqual(
-    Buffer.from(expected, 'hex'),
-    Buffer.from(signature, 'hex'),
-  );
+  const idOk = ANON_ID_REGEX.test(id) ? 1 : 0;
+  const sigOk = ANON_SIGNATURE_REGEX.test(signature) ? 1 : 0;
+  let diff = (expected.length ^ signature.length) | (idOk ^ 1) | (sigOk ^ 1);
+  const n = Math.min(expected.length, signature.length);
+  for (let i = 0; i < n; i++) {
+    diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
+  }
+  return diff === 0;
 }
 
 @Injectable()
 export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
+  constructor(private readonly configService: ConfigService) {
+    super();
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       await super.canActivate(context);
@@ -36,7 +57,6 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
     status?: unknown,
   ): TUser {
     void info;
-    void context;
     void status;
 
     if (err) {
@@ -53,35 +73,40 @@ export class JwtOptionalAuthGuard extends AuthGuard('jwt') {
       return user as TUser;
     }
 
-    // Check for anonymous ID header with HMAC signature
     const req = context.switchToHttp().getRequest<{
       headers: Record<string, string | undefined>;
     }>();
-    const anonId = req.headers['x-anonymous-id'];
-    const anonSig = req.headers['x-anonymous-signature'];
+    const anonId = normalizeHeader(req.headers['x-anonymous-id']);
+    const anonSig = normalizeHeader(req.headers['x-anonymous-signature']);
 
-    if (anonId && typeof anonId === 'string' && anonId.startsWith('anon_')) {
-      const secret = process.env.ANONYMOUS_ID_SECRET ?? '';
-      if (secret && anonSig) {
-        if (!verifyAnonymousSignature(anonId, anonSig, secret)) {
-          return null as TUser;
-        }
-      } else if (secret && !anonSig) {
-        // Secret is configured but signature is missing — reject
-        return null as TUser;
-      }
-      // If no secret is configured, accept without verification (dev mode)
+    const secret = this.configService.get<string>('ANONYMOUS_ID_SECRET') ?? '';
 
-      const suffix = anonId.replace('anon_', '').slice(0, 4);
-      return {
-        userId: anonId,
-        email: 'anonymous@example.com',
-        username: `Anonymous #${suffix}`,
-        displayName: `Anonymous #${suffix}`,
-        role: 'user',
-      } as unknown as TUser;
+    // Verification runs unconditionally — request data never decides
+    // whether the check executes.
+    //
+    // Anonymous identities are treated as UNPRIVILEGED guests. Clients do
+    // not sign anon ids anymore (a secret shipped to browsers is public),
+    // so a format-valid unsigned id still gets a stable guest identity for
+    // personalizing public read endpoints — but never a real user role.
+    // A validly signed id (legacy) keeps the legacy 'user' role.
+    const signatureValid = verifyAnonymousSignature(anonId, anonSig, secret);
+    const idFormatValid = ANON_ID_REGEX.test(anonId);
+
+    if (!idFormatValid) {
+      return null as TUser;
     }
 
-    return null as TUser;
+    const suffix = anonId.slice(
+      ANON_ID_PREFIX_LENGTH,
+      ANON_ID_PREFIX_LENGTH + 4,
+    );
+    return {
+      userId: anonId,
+      email: 'anonymous@example.com',
+      username: `Anonymous #${suffix}`,
+      displayName: `Anonymous #${suffix}`,
+      role: signatureValid ? 'user' : 'guest',
+      anonymous: true,
+    } as unknown as TUser;
   }
 }

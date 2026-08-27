@@ -44,12 +44,23 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   chessLanding: (r) => r.chessLanding,
   checkersLanding: (r) => r.checkersLanding,
   catDashLanding: (r) => r.catDashLanding,
+  backgammonLanding: (r) => r.backgammonLanding,
+  pachisiLanding: (r) => r.pachisiLanding,
+  heartsLanding: (r) => r.heartsLanding,
+  spadesLanding: (r) => r.spadesLanding,
+  goLanding: (r) => r.goLanding,
+  solitaireLanding: (r) => r.solitaireLanding,
+  minesweeperLanding: (r) => r.minesweeperLanding,
+  sudokuLanding: (r) => r.sudokuLanding,
+  game2048Landing: (r) => r.game2048Landing,
   settings: (r) => r.settings,
   history: (r) => r.history,
   stats: (r) => r.stats,
   referrals: (r) => r.referrals,
   leaderboards: (r) => r.leaderboards,
   friends: (r) => r.friends,
+  clans: (r) => r.clans,
+  events: (r) => r.events,
   tournaments: (r) => r.tournaments,
   rewards: (r) => r.rewards,
   wallet: (r) => r.wallet,
@@ -71,6 +82,7 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   blog: (r) => r.blog,
   community: (r) => r.community,
   developers: (r) => r.developers,
+  features: (r) => r.features,
   admin: (r) => r.admin,
   // playerProfile is dynamic — callers must pass `pathFor`, but we map it
   // here to the locale root so hreflang at least covers all locales.
@@ -139,6 +151,15 @@ export async function buildPageMetadata({
 
   const path = resolvePath(buildRoutes(locale));
   const canonical = `${appConfig.siteUrl}${path}`;
+  // Locale-branded 1200×630 fallback card (see `app/[locale]/opengraph-image.tsx`).
+  // Page-level metadata replaces (not merges) the layout's openGraph, so every
+  // page must carry its own image or shares render without one.
+  const ogImage = {
+    url: `${appConfig.siteUrl}/${locale}/opengraph-image`,
+    width: 1200,
+    height: 630,
+    alt: title ?? appConfig.appName,
+  };
   const languages: Record<string, string> = Object.fromEntries(
     SUPPORTED_LOCALES.map((l) => {
       const localePath = resolvePath(buildRoutes(l));
@@ -169,12 +190,14 @@ export async function buildPageMetadata({
       title,
       description,
       url: canonical,
+      images: [ogImage],
     },
     twitter: {
       card: 'summary_large_image',
       site: '@_arcadeum_',
       title,
       description,
+      images: [ogImage.url],
     },
     ...(noIndex ? { robots: { index: false, follow: false } } : undefined),
   };

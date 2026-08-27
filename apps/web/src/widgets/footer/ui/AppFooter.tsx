@@ -50,6 +50,7 @@ export default function AppFooter() {
       title: t('home.footerResourcesTitle'),
       links: [
         { href: routes.help, label: t('home.footerHelpCenter') },
+        { href: routes.features, label: t('home.footerFeatures') },
         { href: routes.roadmap, label: t('home.footerRoadmap') },
         { href: routes.changelog, label: t('home.footerChangelog') },
         { href: routes.blog, label: t('home.footerGamingBlog') },
@@ -89,7 +90,7 @@ export default function AppFooter() {
 
   return (
     <Footer
-      className="sm:px-2"
+      className="sm:px-2 print:hidden"
       data-testid="app-footer"
       appName={appName}
       socialLinks={socialLinks}

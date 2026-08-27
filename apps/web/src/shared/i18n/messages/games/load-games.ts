@@ -21,6 +21,15 @@ const GAME_LOADERS: Record<string, GameLoader> = {
   chess: () => import('./chess/index'),
   checkers: () => import('./checkers/index'),
   catDash: () => import('./cat-dash/index'),
+  backgammon: () => import('./backgammon/index'),
+  hearts: () => import('./hearts/index'),
+  spades: () => import('./spades/index'),
+  go: () => import('./go/index'),
+  pachisi: () => import('./pachisi/index'),
+  solitaire: () => import('./solitaire/index'),
+  minesweeper: () => import('./minesweeper/index'),
+  sudoku: () => import('./sudoku/index'),
+  game2048: () => import('./game-2048/index'),
 };
 
 function deepMerge(

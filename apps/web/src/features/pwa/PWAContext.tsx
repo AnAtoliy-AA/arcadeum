@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback, ReactNode } from 'react';
+import { useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import {
   BeforeInstallPromptEvent,
   PWAContextValue,
   PWAContext,
 } from './context';
 import { InstallPWAModal } from './InstallPWA';
+import { OfflineGamesPrompt } from '@/features/offline-download/ui/OfflineGamesPrompt';
 
 interface PWAProviderProps {
   children: ReactNode;
@@ -75,20 +76,26 @@ export function PWAProvider({ children }: PWAProviderProps) {
     }
   }, [deferredPrompt]);
 
-  const value: PWAContextValue = {
-    canInstall: !isInstalled,
-    isInstalled,
-    isModalOpen,
-    openModal,
-    closeModal,
-    install,
-    isPromptAvailable: deferredPrompt !== null,
-  };
+  // Memoized so a prompt/modal flip doesn't re-render every consumer of the
+  // app-wide provider (header menus etc.) when unrelated state changes.
+  const value: PWAContextValue = useMemo(
+    () => ({
+      canInstall: !isInstalled,
+      isInstalled,
+      isModalOpen,
+      openModal,
+      closeModal,
+      install,
+      isPromptAvailable: deferredPrompt !== null,
+    }),
+    [isInstalled, isModalOpen, openModal, closeModal, install, deferredPrompt],
+  );
 
   return (
     <PWAContext.Provider value={value}>
       {children}
       <InstallPWAModal />
+      <OfflineGamesPrompt />
     </PWAContext.Provider>
   );
 }

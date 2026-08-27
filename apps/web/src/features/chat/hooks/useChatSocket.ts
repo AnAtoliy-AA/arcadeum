@@ -12,7 +12,8 @@ interface UseChatSocketProps {
 
 export const useChatSocket = ({ chatId, receiverIds }: UseChatSocketProps) => {
   const { snapshot } = useSessionTokens();
-  const { addMessage, setMessages } = useChatStore();
+  const addMessage = useChatStore((s) => s.addMessage);
+  const setMessages = useChatStore((s) => s.setMessages);
   const [isConnected, setIsConnected] = useState(chatSocket.connected);
 
   useEffect(() => {

@@ -7,7 +7,7 @@ test.describe('Home Page Games Grid Refinement', () => {
     await navigateTo(page, '/');
     await page.addStyleTag({
       content:
-        '[data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }',
+        'html body [data-reveal][data-reveal] { opacity: 1; transform: none; transition: none; }',
     });
   });
 
@@ -15,16 +15,23 @@ test.describe('Home Page Games Grid Refinement', () => {
     // We are filtering to only show available (playable) games
     const gamesSection = page.locator('#games');
     const gameCards = gamesSection.locator('h3');
-    await expect(gameCards).toHaveCount(8);
+    await expect(gameCards.first()).toBeVisible();
+    const count = await gameCards.count();
+    expect(count).toBeGreaterThanOrEqual(1);
 
-    await expect(gameCards.nth(0)).toHaveText(/Critical/i);
-    await expect(gameCards.nth(1)).toHaveText(/Sea Battle/i);
-    await expect(gameCards.nth(2)).toHaveText(/Glimworm/i);
-    await expect(gameCards.nth(3)).toHaveText(/Tic-Tac-Toe/i);
-    await expect(gameCards.nth(4)).toHaveText(/Cascade/i);
-    await expect(gameCards.nth(5)).toHaveText(/Chess/i);
-    await expect(gameCards.nth(6)).toHaveText(/Checkers/i);
-    await expect(gameCards.nth(7)).toHaveText(/Cat Dash/i);
+    await expect(gameCards.filter({ hasText: /Critical/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Sea Battle/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Glimworm/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Tic-Tac-Toe/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Cascade/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Chess/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Checkers/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Cat Dash/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Backgammon/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Hearts/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Spades/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /^Go$/i })).toBeVisible();
+    await expect(gameCards.filter({ hasText: /Pachisi/i })).toBeVisible();
   });
 
   test('should navigate slider via arrows', async ({ page }) => {

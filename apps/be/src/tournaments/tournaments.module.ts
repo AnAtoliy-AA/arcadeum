@@ -6,6 +6,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { Tournament, TournamentSchema } from './schemas/tournament.schema';
 import { TournamentsService } from './tournaments.service';
+import { TournamentsBracketsService } from './tournaments.brackets.service';
 import { AdminTournamentsController } from './admin-tournaments.controller';
 import { PublicTournamentsController } from './public-tournaments.controller';
 import { TournamentsBootstrap } from './lib/tournaments-bootstrap';
@@ -25,10 +26,11 @@ import { TournamentsNotificationCron } from './tournaments.notification.cron';
   controllers: [AdminTournamentsController, PublicTournamentsController],
   providers: [
     TournamentsService,
+    TournamentsBracketsService,
     RolesGuard,
     TournamentsBootstrap,
     TournamentsNotificationCron,
   ],
-  exports: [TournamentsService],
+  exports: [TournamentsService, TournamentsBracketsService],
 })
 export class TournamentsModule {}

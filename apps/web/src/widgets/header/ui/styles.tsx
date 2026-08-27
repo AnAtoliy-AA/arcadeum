@@ -30,44 +30,81 @@ export function Logo({
 
 export const NavLinkWrapper = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => (
   <div
     className={cx(
       'relative flex h-[72px] items-center justify-center',
       className,
     )}
-    {...rest}
-  />
+  >
+    {children}
+  </div>
 );
 
 /** Visible from md (768px) up only. */
 export const DesktopOnly = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx('hidden items-center gap-2 md:flex', className)}
-    {...rest}
-  />
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => (
+  <div className={cx('hidden items-center gap-2 md:flex', className)}>
+    {children}
+  </div>
 );
 
 /** Hidden at narrow widths — used to move a header action into the mobile menu. */
 export const HeaderMobileHidden = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cx('hidden items-center sm:flex', className)} {...rest} />
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => (
+  <div className={cx('hidden items-center sm:flex print:flex', className)}>
+    {children}
+  </div>
 );
 
+interface HeaderLinkProps {
+  href: string;
+  variant?: LinkButtonProps['variant'];
+  size?: LinkButtonProps['size'];
+  icon?: LinkButtonProps['icon'];
+  onClick?: LinkButtonProps['onClick'];
+  className?: string;
+  children: React.ReactNode;
+}
+
 export const NavHeaderLink = ({
-  isActive,
-  accent,
+  href,
+  variant,
+  size,
+  icon,
+  onClick,
   className,
   children,
-  ...props
-}: LinkButtonProps & { accent?: boolean; isActive?: boolean }) => (
+  isActive,
+  accent,
+  'data-testid': testId,
+  'data-active': dataActive,
+}: HeaderLinkProps & {
+  isActive?: boolean;
+  accent?: boolean;
+  'data-testid'?: string;
+  'data-active'?: string | boolean;
+}) => (
   <LinkButton
+    href={href}
+    variant={variant}
+    size={size}
+    icon={icon}
+    onClick={onClick}
     className={cx(
       'overflow-visible rounded-[16px] hover:bg-[var(--backgroundHover)] hover:-translate-y-[1px] active:translate-y-[1px]',
       isActive && '!bg-[rgba(87,195,255,0.12)] text-[var(--primary)] font-bold',
@@ -75,7 +112,8 @@ export const NavHeaderLink = ({
       className,
     )}
     style={accent ? { color: 'var(--accent)' } : undefined}
-    {...props}
+    data-testid={testId}
+    data-active={dataActive}
   >
     {children}
   </LinkButton>
@@ -85,96 +123,142 @@ export const NavHeaderLink = ({
 
 export const MobileMenuContainer = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={className} {...rest} />
-);
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => <div className={className}>{children}</div>;
 
 export const MobileNav = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
+  children,
+  'data-testid': testId,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+  'data-mobile-menu'?: boolean;
+  'data-testid'?: string;
+}) => (
   <div
     className={cx(
       'fixed bottom-0 left-0 right-0 top-[var(--header-height,64px)] z-[1] flex h-[100dvh] w-full max-w-[100vw] flex-col gap-1 overflow-y-auto border-t border-[var(--glassBorder)] bg-[var(--background)] px-5 pb-4 pt-4',
       className,
     )}
-    {...rest}
-  />
+    data-mobile-menu
+    data-testid={testId}
+  >
+    {children}
+  </div>
 );
 
 export const MobileVersionText = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => (
   <div
     className={cx(
       'mt-auto px-2 py-4 text-center text-[12px] leading-[16px] opacity-80',
       className,
     )}
-    {...rest}
-  />
+  >
+    {children}
+  </div>
 );
 
 export const MobileUserCard = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
+  children,
+  'data-testid': testId,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+  'data-testid'?: string;
+}) => (
   <div
     className={cx(
       'flex flex-wrap items-center gap-3 rounded-[16px] border border-[var(--glassBorder)] bg-[rgba(255,255,255,0.04)] p-3',
       className,
     )}
-    {...rest}
-  />
+    data-testid={testId}
+  >
+    {children}
+  </div>
 );
 
 export const MobileSection = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cx('flex flex-col gap-1', className)} {...rest} />
-);
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => <div className={cx('flex flex-col gap-1', className)}>{children}</div>;
 
 export const MobileSectionLabel = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => (
   <div
     className={cx(
       'px-4 pb-1 pt-3 text-[12px] font-bold leading-[16px] tracking-[3px] opacity-80',
       className,
     )}
-    {...rest}
-  />
+  >
+    {children}
+  </div>
 );
 
 export const MobileBottomBar = ({
   className,
-  ...rest
-}: React.HTMLAttributes<HTMLDivElement>) => (
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) => (
   <div
     className={cx(
       'mt-auto flex flex-wrap items-center justify-between gap-3 px-2 py-3',
       className,
     )}
-    {...rest}
-  />
+  >
+    {children}
+  </div>
 );
 
 export const NavMobileLink = ({
-  isActive,
+  href,
+  variant,
+  size,
+  fullWidth,
+  icon,
+  onClick,
   className,
   children,
-  ...props
-}: LinkButtonProps & { isActive?: boolean }) => (
+  isActive,
+  'data-testid': testId,
+}: HeaderLinkProps & {
+  fullWidth?: boolean;
+  isActive?: boolean;
+  'data-testid'?: string;
+}) => (
   <LinkButton
+    href={href}
+    variant={variant}
+    size={size}
+    fullWidth={fullWidth}
+    icon={icon}
+    onClick={onClick}
     className={cx(
       'justify-start px-4 py-3 hover:bg-[rgba(255,255,255,0.05)]',
       isActive && '!bg-[rgba(255,255,255,0.08)] !text-[var(--primary)]',
       className,
     )}
-    {...props}
+    data-testid={testId}
   >
     {children}
   </LinkButton>

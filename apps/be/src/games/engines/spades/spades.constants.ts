@@ -1,0 +1,31 @@
+/** Moved to @arcadeum/games-core (ARC-900 offline mode). Re-export shim. */
+export {
+  MIN_PLAYERS,
+  MAX_PLAYERS,
+  HAND_SIZE,
+  TOTAL_TRICKS,
+  SUITS,
+  RANKS,
+  SPADE_SUIT,
+  GAME_PHASE,
+  ACTION,
+  TARGET_SCORES,
+  MIN_BID,
+  MAX_BID,
+  NIL_BID,
+  POINTS_PER_TRICK_OF_BID,
+  NIL_SUCCESS_POINTS,
+  NIL_FAILURE_PENALTY,
+  BAG_PENALTY_THRESHOLD,
+  BAG_PENALTY_POINTS,
+  DEFAULT_OPTIONS,
+} from '@arcadeum/games-core/games/spades/spades.constants';
+export type {
+  SpadesOptions,
+  Suit,
+  Rank,
+  GamePhase,
+  ActionType,
+  TargetScore,
+  TeamSide,
+} from '@arcadeum/games-core/games/spades/spades.constants';

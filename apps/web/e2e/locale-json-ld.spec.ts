@@ -82,7 +82,7 @@ test.describe('Locale JSON-LD — structured data per page', () => {
     expect(items[1]?.item).toMatch(/\/ru\/nastroyki$/);
   });
 
-  test('sea-battle landing keeps its VideoGame + FAQPage + BreadcrumbList', async ({
+  test('sea-battle landing keeps its VideoGame + BreadcrumbList without deprecated FAQPage', async ({
     page,
   }) => {
     await page.goto('/en/games/sea-battle', { waitUntil: 'domcontentloaded' });
@@ -94,7 +94,9 @@ test.describe('Locale JSON-LD — structured data per page', () => {
     const blobs = await collectJsonLd(page);
     expect(findByType(blobs, 'VideoGame')).toBeDefined();
     expect(findByType(blobs, 'BreadcrumbList')).toBeDefined();
-    expect(findByType(blobs, 'FAQPage')).toBeDefined();
+    // FAQPage rich results are restricted to government/health sites since
+    // Aug 2023 — the landing must not emit it (visible FAQ content stays).
+    expect(findByType(blobs, 'FAQPage')).toBeUndefined();
   });
 
   test('player profile page emits ProfilePage + Person', async ({ page }) => {

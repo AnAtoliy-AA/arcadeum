@@ -6,7 +6,7 @@ import {
   WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
@@ -16,13 +16,9 @@ import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
 import { extractString } from './games.gateway.utils';
 import { handleEmote } from './games.gateway.emote';
-import {
-  handleRoomChat,
-  handleDeleteRoomChat,
-} from './games.gateway.room-chat';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
-import { handleHistoryNote } from './games.gateway.history-note';
-import { handleSessionDeleteChat } from './games.gateway.session-delete-chat';
+import { handleRequestHint } from './games.gateway.hint';
+import { ChessBotService } from './engines/chess/chess-bot.service';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -30,24 +26,13 @@ import {
   handleWatchRoom,
   handleSetOption,
 } from './games.gateway.room';
-import {
-  maybeEncrypt,
-  isSocketEncryptionEnabled,
-  getEncryptionKeyHex,
-} from '../common/utils/socket-encryption.util';
+import { registerChatHandlers } from './games.gateway.chat-handlers';
+// prettier-ignore
+import { maybeEncrypt, isSocketEncryptionEnabled, getEncryptionKeyHex } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import type { GameMessageHandler } from './game-message-handler.interface';
-import { CheckersGateway } from './checkers.gateway';
-import { TicTacToeGateway } from './tic-tac-toe.gateway';
-import { ChessGateway } from './chess.gateway';
-import { CascadeGateway } from './cascade.gateway';
-import { CatDashGateway } from './cat-dash.gateway';
-import { TexasHoldemGateway } from './texas-holdem.gateway';
-import { CriticalGateway } from './critical.gateway';
-import { CriticalActionsGateway } from './critical-actions.gateway';
-import { SeaBattleGateway } from './sea-battle.gateway';
-import { GlimwormGateway } from './glimworm.gateway';
+import { GAME_GATEWAYS } from './game-message-handler.interface';
 
 @WebSocketGateway({
   namespace: 'games',
@@ -65,89 +50,35 @@ export class GamesGateway {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     private readonly matchmakingService: GameRoomsMatchmakingService,
-    private readonly checkersHandler: CheckersGateway,
-    private readonly ticTacToeHandler: TicTacToeGateway,
-    private readonly chessHandler: ChessGateway,
-    private readonly cascadeHandler: CascadeGateway,
-    private readonly catDashHandler: CatDashGateway,
-    private readonly texasHoldemHandler: TexasHoldemGateway,
-    private readonly criticalHandler: CriticalGateway,
-    private readonly criticalActionsHandler: CriticalActionsGateway,
-    private readonly seaBattleHandler: SeaBattleGateway,
-    private readonly glimwormHandler: GlimwormGateway,
+    @Inject(GAME_GATEWAYS) private readonly gameHandlers: GameMessageHandler[],
+    private readonly chessBotService?: ChessBotService,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
 
-    const gameHandlers: GameMessageHandler[] = [
-      this.checkersHandler,
-      this.ticTacToeHandler,
-      this.chessHandler,
-      this.cascadeHandler,
-      this.catDashHandler,
-      this.texasHoldemHandler,
-      this.criticalHandler,
-      this.criticalActionsHandler,
-      this.seaBattleHandler,
-      this.glimwormHandler,
-    ];
-
     const registry = new Map<string, GameMessageHandler['handlers'][string]>();
-    for (const handler of gameHandlers) {
+    for (const handler of this.gameHandlers) {
       for (const [event, fn] of Object.entries(handler.handlers)) {
         registry.set(event, fn);
       }
     }
 
-    registry.set('games.room.chat', (socket, payload) =>
-      handleRoomChat(
-        this.logger,
-        this.server,
-        socket,
-        this.realtime,
-        this.gamesService,
-        payload,
-      ),
-    );
-    registry.set('games.room.delete_chat', (socket, payload) =>
-      handleDeleteRoomChat(
-        this.logger,
-        this.server,
-        socket,
-        this.realtime,
-        this.gamesService,
-        payload,
-      ),
-    );
-
-    registry.set('games.session.history_note', (socket, payload) =>
-      handleHistoryNote(
-        this.logger,
-        socket,
-        this.gamesService,
-        (c, u) => this.validateUserId(c, u),
-        payload,
-      ),
-    );
-
-    registry.set('games.session.delete_chat', (socket, payload) =>
-      handleSessionDeleteChat(
-        this.logger,
-        socket,
-        this.sessionsService,
-        this.realtime,
-        (c, u) => this.validateUserId(c, u),
-        payload,
-      ),
-    );
+    registerChatHandlers(registry, {
+      logger: this.logger,
+      server: this.server,
+      realtime: this.realtime,
+      gamesService: this.gamesService,
+      sessionsService: this.sessionsService,
+      validateUserId: (c, u) => this.validateUserId(c, u),
+    });
 
     this.server.on('connection', (socket: Socket) => {
-      socket.onAny((event: string, ...args: unknown[]) => {
+      socket.onAny((event: string, payload: unknown) => {
         const handler = registry.get(event);
         if (handler) {
           const result = handler(
             socket,
-            (args[0] as Record<string, unknown>) ?? {},
+            (payload as Record<string, unknown>) ?? {},
           );
           if (result && typeof result === 'object' && 'catch' in result) {
             result.catch((err: unknown) => {
@@ -251,16 +182,21 @@ export class GamesGateway {
     const anonId = (client.data as Record<string, unknown>)?.anonId as
       string | undefined;
 
-    if (isAuthenticated && authUserId && payloadUserId !== authUserId) {
-      this.logger.warn(
-        `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
-      );
-      throw new WsException('Cannot perform actions as another user.');
+    if (isAuthenticated) {
+      if (payloadUserId !== authUserId) {
+        this.logger.warn(
+          `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
+        );
+        throw new WsException('Cannot perform actions as another user.');
+      }
+      return;
     }
 
-    if (!isAuthenticated && anonId && payloadUserId !== anonId) {
+    // Fail closed — anonymous sockets must present the same server-tracked
+    // anonId from their handshake; identity-less sockets cannot act at all.
+    if (!anonId || payloadUserId !== anonId) {
       this.logger.warn(
-        `Anonymous ${anonId} attempted to act as ${payloadUserId} — blocking`,
+        `Identity-less socket attempted to act as ${payloadUserId} — blocking`,
       );
       throw new WsException('Cannot perform actions as another user.');
     }
@@ -448,6 +384,23 @@ export class GamesGateway {
     handleEmote(this.logger, this.server, client, this.realtime, payload);
   }
 
+  @SubscribeMessage('games.session.hint')
+  async onRequestHint(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: unknown,
+  ): Promise<void> {
+    await handleRequestHint(
+      this.logger,
+      this.server,
+      client,
+      this.realtime,
+      payload,
+      this.sessionsService,
+      this.gamesService,
+      this.chessBotService!,
+    );
+  }
+
   @SubscribeMessage('games.matchmaking.join')
   handleMatchmakingJoin(
     @ConnectedSocket() client: Socket,
@@ -466,12 +419,20 @@ export class GamesGateway {
 
     this.validateUserId(client, userId);
 
+    const ipHeader = client.handshake.headers['x-forwarded-for'];
+    const ip =
+      typeof ipHeader === 'string'
+        ? ipHeader.split(',')[0].trim()
+        : client.handshake.address;
+
     this.matchmakingService.joinQueue(
       userId,
       client.id,
       gameId,
       variant,
       ranked,
+      undefined,
+      ip,
     );
     client.emit(
       'games.matchmaking.joined',

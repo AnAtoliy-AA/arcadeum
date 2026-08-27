@@ -76,4 +76,27 @@ describe('settings-storage', () => {
     );
     expect(loadStoredSettings().aiDifficulty).toBeUndefined();
   });
+
+  it.each(['none', 'deuteranopia', 'protanopia', 'tritanopia', 'highContrast'])(
+    'saves and loads the %s vision mode',
+    (mode) => {
+      saveStoredSettings({
+        visionMode: mode as
+          | 'none'
+          | 'deuteranopia'
+          | 'protanopia'
+          | 'tritanopia'
+          | 'highContrast',
+      });
+      expect(loadStoredSettings().visionMode).toBe(mode);
+    },
+  );
+
+  it('ignores an invalid stored vision mode', () => {
+    window.localStorage.setItem(
+      SETTINGS_STORAGE_KEY,
+      JSON.stringify({ visionMode: 'grayscale' }),
+    );
+    expect(loadStoredSettings().visionMode).toBeUndefined();
+  });
 });

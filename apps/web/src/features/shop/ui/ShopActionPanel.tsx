@@ -58,23 +58,45 @@ export interface ShopActionPanelProps {
 
 function PanelFrame({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  role,
+  'data-testid': dataTestId,
+  'data-mode': dataMode,
+  'aria-live': ariaLive,
+  'aria-label': ariaLabel,
+  children,
+}: {
+  className?: string;
+  role?: string;
+  'data-testid'?: string;
+  'data-mode'?: string;
+  'aria-live'?: 'polite' | 'assertive' | 'off';
+  'aria-label'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
+      role={role}
+      aria-live={ariaLive}
+      aria-label={ariaLabel}
+      data-testid={dataTestId}
+      data-mode={dataMode}
       className={cx(
         'flex flex-col items-stretch w-full gap-3 p-3 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
 function Eyebrow({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <Typography
       uiSize="xs"
@@ -82,8 +104,9 @@ function Eyebrow({
       color="#94a3b8"
       tracking="lg"
       className={cx('uppercase', className)}
-      {...props}
-    />
+    >
+      {children}
+    </Typography>
   );
 }
 

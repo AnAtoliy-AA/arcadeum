@@ -4,7 +4,36 @@ export type BlogBlock =
   | { type: 'heading'; level: 2 | 3; text: string; id?: string }
   | { type: 'paragraph'; text: string }
   | { type: 'list'; items: string[] }
-  | { type: 'cta'; href: string; text: string; description?: string };
+  | { type: 'cta'; href: string; text: string; description?: string }
+  | {
+      type: 'stat-card';
+      title: string;
+      stats: Array<{ label: string; value: string; description?: string }>;
+    }
+  | {
+      type: 'replay-embed';
+      replayId: string;
+      title: string;
+      description?: string;
+      gameId?: string;
+    }
+  | {
+      type: 'patch-note';
+      version: string;
+      date: string;
+      sections: Array<{
+        type: 'added' | 'changed' | 'fixed' | 'removed';
+        items: string[];
+      }>;
+    }
+  | {
+      type: 'chess-notation';
+      title?: string;
+      /** SAN move strings, one per half-move (e.g. ["e4","e5","Nf3","Nc6"]). */
+      moves: string[];
+      /** e.g. "1-0", "0-1", "1/2-1/2". */
+      result?: string;
+    };
 
 export interface BlogPost {
   /** URL-safe slug, identical across locales (English by convention). */
@@ -55,4 +84,11 @@ export interface BlogPost {
       url?: string;
     }>;
   };
+  /**
+   * Optional FAQ schema payload. When present, the post renders visible
+   * Q&A on the page AND emits a Schema.org `FAQPage` node so Google
+   * can show FAQ rich results and AI assistants can extract structured
+   * answers. Questions must mirror visible content (Google guideline).
+   */
+  faq?: Array<{ question: string; answer: string }>;
 }

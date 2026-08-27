@@ -38,6 +38,31 @@ export const buttonSizes: Record<ButtonSizeKey, string> = {
   lg: 'h-[60px] px-8 py-4 rounded-[20px]',
 };
 
+/** Size classes without padding — used when a variant or `padding` owns spacing. */
+export const buttonSizesWithoutPadding: Record<ButtonSizeKey, string> = {
+  sm: 'h-9 rounded-[12px]',
+  md: 'h-12 rounded-[16px]',
+  lg: 'h-[60px] rounded-[20px]',
+};
+
+/**
+ * Variants that define their own padding (`p-0`) — the chosen size must not
+ * emit competing `px-*` / `py-*` utilities (shorthand-vs-longhand cascade
+ * fights that previously required `!important` to resolve).
+ */
+const selfPaddedVariants: ReadonlySet<string> = new Set(['icon', 'icon glass', 'link']);
+
+/**
+ * Drop padding utilities (`p-*`, `px-*`, `py-*`, `pt/pr/pb/pl-*`, banged or
+ * not) from a class string so an explicit `padding` config can win outright.
+ */
+function stripPaddingUtilities(classes: string): string {
+  return classes
+    .split(' ')
+    .filter((c) => c !== '' && !/^\!?p([trblxy]?)-/.test(c))
+    .join(' ');
+}
+
 /**
  * Corner shapes. Radius overrides from the size are named utilities
  * (`rounded-full`, `rounded-none`) that sort after arbitrary values in the
@@ -46,7 +71,7 @@ export const buttonSizes: Record<ButtonSizeKey, string> = {
 export const buttonShapes: Record<string, string> = {
   round: 'rounded-full',
   square: 'rounded-none',
-  circle: 'aspect-square rounded-full !p-0 justify-center items-center',
+  circle: 'aspect-square rounded-full p-0 justify-center items-center',
 };
 
 /** Variant → [base classes] applied via className. */
@@ -158,7 +183,7 @@ export const buttonVariants: Record<string, string> = {
     'aspect-square',
     'justify-center',
     'items-center',
-    '!p-0',
+    'p-0',
     'text-[var(--color)]',
     'shadow-none',
     'bg-[color:color-mix(in_srgb,var(--color)_8%,transparent)]',
@@ -178,7 +203,7 @@ export const buttonVariants: Record<string, string> = {
     'aspect-square',
     'justify-center',
     'items-center',
-    '!p-0',
+    'p-0',
     'relative',
     'border',
     'border-white/20',
@@ -208,7 +233,7 @@ export const buttonVariants: Record<string, string> = {
     'bg-transparent',
     'border-transparent',
     'h-auto',
-    '!p-0',
+    'p-0',
     'shadow-none',
     'hover:opacity-70',
     'hover:shadow-none',
@@ -398,6 +423,8 @@ export type ButtonStyleConfig = {
   gameVariant?: GameVariant;
   size?: ButtonSizeKey;
   shape?: ButtonShape;
+  /** Explicit padding utility — replaces size/variant padding instead of competing with it. */
+  padding?: string;
   active?: boolean;
   outline?: boolean;
   ghost?: boolean;
@@ -428,6 +455,7 @@ export function resolveButtonClasses(config: ButtonStyleConfig): string {
     gameVariant,
     size = 'md',
     shape,
+    padding,
     active = false,
     outline = false,
     ghost = false,
@@ -443,26 +471,39 @@ export function resolveButtonClasses(config: ButtonStyleConfig): string {
   const variantList = Array.isArray(variant) ? variant : [variant];
   const chipActiveSwapped = active && variantList.includes('chip');
 
+  // Variants that own their padding (or an explicit `padding` override) must
+  // not receive the size's `px-*` / `py-*` utilities — otherwise shorthand vs
+  // longhand cascade order decides the winner and only `!important` could.
+  const ownsPadding =
+    padding !== undefined ||
+    shape === 'circle' ||
+    variantList.some((v) => selfPaddedVariants.has(v));
+
+  const resolvedVariants = variantList
+    .map((v) => {
+      const baseKey = chipActiveSwapped && v === 'chip' ? 'chip gold' : v;
+      const styledKey =
+        outline && buttonVariants[`outline ${baseKey}`]
+          ? `outline ${baseKey}`
+          : ghost && buttonVariants[`ghost ${baseKey}`]
+            ? `ghost ${baseKey}`
+            : baseKey;
+      return buttonVariants[styledKey];
+    })
+    .join(' ');
+
   return compileButtonClasses([
     buttonBase,
-    buttonSizes[size],
+    ownsPadding ? buttonSizesWithoutPadding[size] : buttonSizes[size],
     gameVariant
       ? gameButtonVariants[gameVariant]
-      : variantList
-          .map((v) => {
-            const baseKey = chipActiveSwapped && v === 'chip' ? 'chip gold' : v;
-            const styledKey =
-              outline && buttonVariants[`outline ${baseKey}`]
-                ? `outline ${baseKey}`
-                : ghost && buttonVariants[`ghost ${baseKey}`]
-                  ? `ghost ${baseKey}`
-                  : baseKey;
-            return buttonVariants[styledKey];
-          })
-          .join(' '),
+      : padding !== undefined
+        ? stripPaddingUtilities(resolvedVariants)
+        : resolvedVariants,
     shape === 'round' && buttonShapes.round,
     shape === 'square' && buttonShapes.square,
     shape === 'circle' && buttonShapes.circle,
+    padding,
     fullWidth && buttonFlags.fullWidth,
     active && !chipActiveSwapped && buttonFlags.isActive,
     rotatable && buttonFlags.rotatable,

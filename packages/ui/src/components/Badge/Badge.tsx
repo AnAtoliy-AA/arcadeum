@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import type { CSSProperties, HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { CSSProperties, ReactElement, ReactNode } from 'react';
 import { cx } from '../../utils/cx';
 import type { GameVariant } from '../Button/types';
 
@@ -51,7 +51,7 @@ const badgeGameVariants: Record<GameVariant, string> = {
   'high-altitude-hike': 'border-[#0ea5e9] text-[#38bdf8]',
 };
 
-export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, 'onClick' | 'style'> & {
+export type BadgeProps = {
   variant?: BadgeVariant;
   size?: BadgeSize;
   accent?: string;
@@ -68,14 +68,15 @@ export const Badge = memo(function Badge({
   accent,
   dot = false,
   gameVariant,
+  title,
   className,
   children,
-  ...rest
 }: BadgeProps): ReactElement {
   if (accent) {
     const style = { '--pill-accent': accent } as CSSProperties;
     return (
       <span
+        title={title}
         className={cx(
           badgeBase,
           badgeSizes[size ?? 'sm'],
@@ -83,7 +84,6 @@ export const Badge = memo(function Badge({
           className,
         )}
         style={style}
-        {...rest}
       >
         {dot ? (
           <span
@@ -100,6 +100,7 @@ export const Badge = memo(function Badge({
 
   return (
     <span
+      title={title}
       className={cx(
         badgeBase,
         badgeSizes[size ?? 'sm'],
@@ -108,7 +109,6 @@ export const Badge = memo(function Badge({
         gameVariant && badgeGameVariants[gameVariant],
         className,
       )}
-      {...rest}
     >
       {dot && resolvedVariant.dotColor ? (
         <span

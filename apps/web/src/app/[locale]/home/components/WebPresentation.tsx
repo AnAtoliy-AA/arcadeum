@@ -149,12 +149,11 @@ export function WebPresentation() {
                 loading={index === 0 ? 'lazy' : undefined}
                 quality={70}
                 sizes="(max-width: 768px) 85vw, (max-width: 1200px) 70vw, 800px"
-                style={{
-                  objectFit: 'cover',
-                  animation: isActive
-                    ? 'scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1)'
-                    : 'none',
-                }}
+                className={
+                  isActive
+                    ? 'animate-[scaleIn_0.6s_cubic-bezier(0.22,1,0.36,1)] object-cover'
+                    : 'object-cover'
+                }
               />
             ) : null}
           </div>

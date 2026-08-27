@@ -1,10 +1,7 @@
-import { useEffect } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { resolveApiUrl } from './api-base';
 import {
-  maybeDecrypt,
   maybeEncrypt,
-  isSocketEncryptionEnabled,
   setEncryptionKey,
   resetEncryptionKey,
 } from './socket-encryption';
@@ -38,8 +35,9 @@ let _chatsSocket: AuthenticatedSocket | null = null;
 let _leaderboardsSocket: AuthenticatedSocket | null = null;
 let _friendsSock: AuthenticatedSocket | null = null;
 let _walletSock: AuthenticatedSocket | null = null;
+let _clansSock: AuthenticatedSocket | null = null;
 
-function getGamesSocket(): AuthenticatedSocket {
+export function getGamesSocket(): AuthenticatedSocket {
   if (!_gamesSocket) {
     _gamesSocket = io(
       `${SOCKET_BASE_URL}/games`,
@@ -51,7 +49,7 @@ function getGamesSocket(): AuthenticatedSocket {
   return _gamesSocket;
 }
 
-function getChatsSocket(): AuthenticatedSocket {
+export function getChatsSocket(): AuthenticatedSocket {
   if (!_chatsSocket) {
     _chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
     guardEmit(_chatsSocket);
@@ -59,7 +57,7 @@ function getChatsSocket(): AuthenticatedSocket {
   return _chatsSocket;
 }
 
-function getLeaderboardsSocket(): AuthenticatedSocket {
+export function getLeaderboardsSocket(): AuthenticatedSocket {
   if (!_leaderboardsSocket) {
     _leaderboardsSocket = io(
       `${SOCKET_BASE_URL}/leaderboards`,
@@ -70,7 +68,7 @@ function getLeaderboardsSocket(): AuthenticatedSocket {
   return _leaderboardsSocket;
 }
 
-function getFriendsSock(): AuthenticatedSocket {
+export function getFriendsSock(): AuthenticatedSocket {
   if (!_friendsSock) {
     _friendsSock = io(
       `${SOCKET_BASE_URL}/friends`,
@@ -83,13 +81,29 @@ function getFriendsSock(): AuthenticatedSocket {
 
 function getWalletSock(): AuthenticatedSocket {
   if (!_walletSock) {
+    // forceNew: give /wallet its own Manager + engine connection. Without it
+    // the wallet namespace multiplexes over the shared engine, and a hard
+    // server-side kick on a bad wallet token tears down games/chats too
+    // (seen as "WebSocket is closed before the connection is established").
     _walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
       transports: ['websocket'],
       autoConnect: false,
+      forceNew: true,
     }) as AuthenticatedSocket;
     guardEmit(_walletSock);
   }
   return _walletSock;
+}
+
+function getClansSock(): AuthenticatedSocket {
+  if (!_clansSock) {
+    _clansSock = io(
+      `${SOCKET_BASE_URL}/clans`,
+      SOCKET_OPTIONS,
+    ) as AuthenticatedSocket;
+    guardEmit(_clansSock);
+  }
+  return _clansSock;
 }
 
 // Guard against emit() calls on a socket whose transport was never
@@ -102,10 +116,17 @@ function getWalletSock(): AuthenticatedSocket {
 // E2E mocks (Playwright) override `connected` via defineProperty to
 // return `true` even when the underlying engine was never created.
 function guardEmit(socket: Socket): void {
-  const originalEmit = socket.emit.bind(socket);
-  socket.emit = ((event: string, ...args: unknown[]) => {
+  const originalEmit = socket.emit.bind(socket) as (
+    event: string,
+    payload?: unknown,
+    extra?: unknown,
+  ) => unknown;
+  socket.emit = ((event: string, payload?: unknown, extra?: unknown) => {
     try {
-      return originalEmit(event, ...args);
+      if (extra === undefined) {
+        return originalEmit(event, payload);
+      }
+      return originalEmit(event, payload, extra);
     } catch {
       return socket;
     }
@@ -181,6 +202,7 @@ export function connectSockets(token: string | null | undefined): void {
   applyAuth(getGamesSocket(), token);
   applyAuth(getChatsSocket(), token);
   applyAuth(getFriendsSock(), token);
+  applyAuth(getClansSock(), token);
 
   if (!getGamesSocket().connected) {
     getGamesSocket().connect();
@@ -190,6 +212,9 @@ export function connectSockets(token: string | null | undefined): void {
   }
   if (!getFriendsSock().connected) {
     getFriendsSock().connect();
+  }
+  if (!getClansSock().connected) {
+    getClansSock().connect();
   }
 }
 
@@ -274,12 +299,16 @@ export function disconnectSockets(): void {
   if (_walletSock) {
     _walletSock.disconnect();
   }
+  if (_clansSock) {
+    _clansSock.disconnect();
+  }
 
   if (_gamesSocket) _gamesSocket.auth = {};
   if (_chatsSocket) _chatsSocket.auth = {};
   if (_leaderboardsSocket) _leaderboardsSocket.auth = {};
   if (_friendsSock) _friendsSock.auth = {};
   if (_walletSock) _walletSock.auth = {};
+  if (_clansSock) _clansSock.auth = {};
   resetEncryptionKey();
 }
 
@@ -304,10 +333,63 @@ export function getWalletSocketRef(): Socket {
   return getWalletSock();
 }
 
+export function getClansSocketRef(): Socket {
+  return getClansSock();
+}
+
 // Backward-compatible exports — lazily delegate to actual socket instances
+
+/**
+ * Offline game event router (ARC-900). Registered by the offline feature;
+ * when it returns true the emit never reaches the network.
+ */
+let offlineGameRouter:
+  ((event: string, payload: Record<string, unknown>) => void) | null = null;
+
+export function setOfflineGameRouter(
+  fn: ((event: string, payload: Record<string, unknown>) => void) | null,
+): void {
+  offlineGameRouter = fn;
+}
+
+export function isOfflineRoomId(roomId: string): boolean {
+  return roomId.startsWith('offline_');
+}
+
 function createLazySocket(getter: () => AuthenticatedSocket): Socket {
   return new Proxy({} as Socket, {
     get(_target, prop, receiver) {
+      if (prop === 'emit') {
+        return (event: string, payload?: unknown, extra?: unknown) => {
+          const record = payload as Record<string, unknown> | undefined;
+          if (
+            offlineGameRouter &&
+            record &&
+            typeof record === 'object' &&
+            typeof record.roomId === 'string' &&
+            isOfflineRoomId(record.roomId)
+          ) {
+            offlineGameRouter(event, record);
+            return true;
+          }
+          const socket = getter();
+          if (!socket) return undefined;
+          const bound = Reflect.get(socket, 'emit', receiver) as (
+            this: AuthenticatedSocket,
+            event: string,
+            p?: unknown,
+            e?: unknown,
+          ) => unknown;
+          // Forward the event name AND the args — dropping `event` here
+          // turns every emit into emit(payload), which servers and the
+          // E2E socket mocks silently swallow (see ARC-900 CI run).
+          return typeof bound === 'function'
+            ? extra === undefined
+              ? bound.call(socket, event, payload)
+              : bound.call(socket, event, payload, extra)
+            : undefined;
+        };
+      }
       const socket = getter();
       if (!socket) return undefined;
       const value = Reflect.get(socket, prop, receiver);
@@ -331,6 +413,7 @@ export const leaderboardSocket: Socket = createLazySocket(
 );
 export const friendsSocket: Socket = createLazySocket(getFriendsSock);
 export const walletSocket: Socket = createLazySocket(getWalletSock);
+export const clansSocket: Socket = createLazySocket(getClansSock);
 
 // Expose sockets to window for E2E testing
 if (typeof window !== 'undefined') {
@@ -351,77 +434,9 @@ export async function emitEncrypted(
   socket.emit(event, data);
 }
 
-interface SocketEventHandler {
-  (...args: unknown[]): void;
-}
-
-export function useSocket(event: string, handler: SocketEventHandler): void {
-  useEffect(() => {
-    const listener = async (...args: unknown[]) => {
-      if (args.length > 0 && isSocketEncryptionEnabled()) {
-        const decrypted = await maybeDecrypt(args[0]);
-        handler(decrypted, ...args.slice(1));
-        return;
-      }
-      handler(...args);
-    };
-
-    const s = getGamesSocket();
-    s.on(event, listener);
-
-    return () => {
-      s.off(event, listener);
-    };
-  }, [event, handler]);
-}
-
-export function useChatSocket(
-  event: string,
-  handler: SocketEventHandler,
-): void {
-  useEffect(() => {
-    const listener = async (...args: unknown[]) => {
-      if (args.length > 0 && isSocketEncryptionEnabled()) {
-        const decrypted = await maybeDecrypt(args[0]);
-        handler(decrypted, ...args.slice(1));
-        return;
-      }
-      handler(...args);
-    };
-
-    const s = getChatsSocket();
-    s.on(event, listener);
-
-    return () => {
-      s.off(event, listener);
-    };
-  }, [event, handler]);
-}
-
-export function useLeaderboardSocket(
-  event: string,
-  handler: SocketEventHandler,
-): void {
-  useEffect(() => {
-    const listener = (...args: unknown[]) => handler(...args);
-    const s = getLeaderboardsSocket();
-    s.on(event, listener);
-    return () => {
-      s.off(event, listener);
-    };
-  }, [event, handler]);
-}
-
-export function useFriendsSocket(
-  event: string,
-  handler: SocketEventHandler,
-): void {
-  useEffect(() => {
-    const listener = (...args: unknown[]) => handler(...args);
-    const s = getFriendsSock();
-    s.on(event, listener);
-    return () => {
-      s.off(event, listener);
-    };
-  }, [event, handler]);
-}
+export {
+  useSocket,
+  useChatSocket,
+  useLeaderboardSocket,
+  useFriendsSocket,
+} from './socket-hooks';

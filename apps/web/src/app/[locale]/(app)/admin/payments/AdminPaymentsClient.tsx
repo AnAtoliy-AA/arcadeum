@@ -1,9 +1,13 @@
 'use client';
-import { useState } from 'react';
+
+import { useState, useCallback } from 'react';
 import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { useAdminPaymentNotes } from '@/features/admin-payments/hooks';
-import type { AdminNotesVisibility } from '@/features/admin-payments/api';
+import type {
+  AdminNotesVisibility,
+  AdminPaymentNoteItem,
+} from '@/features/admin-payments/api';
 import { AdminPaymentsFilters } from '@/features/admin-payments/ui/AdminPaymentsFilters';
 import { AdminPaymentsTable } from '@/features/admin-payments/ui/AdminPaymentsTable';
 
@@ -28,7 +32,7 @@ interface PaymentsI18n {
   };
   chip: { public: string; private: string; anonymous: string };
   empty: { noResults: string; noNotes: string };
-  pagination: { prev: string; next: string; of: string };
+  pagination?: { prev: string; next: string; of: string };
   totalLabel: string;
 }
 
@@ -41,22 +45,47 @@ export default function AdminPaymentsClient() {
   const [page, setPage] = useState(1);
   const [q, setQ] = useState('');
   const [visibility, setVisibility] = useState<AdminNotesVisibility>('all');
+  const [accumulatedNotes, setAccumulatedNotes] = useState<
+    AdminPaymentNoteItem[]
+  >([]);
 
-  const { data, isLoading } = useAdminPaymentNotes({
-    page,
-    pageSize: PAGE_SIZE,
-    q,
-    visibility,
-  });
+  const { data, isLoading } = useAdminPaymentNotes(
+    {
+      page,
+      pageSize: PAGE_SIZE,
+      q,
+      visibility,
+    },
+    {
+      onSuccess: (res) => {
+        setAccumulatedNotes((prev) => {
+          if (page === 1) {
+            return res.items;
+          }
+          const existingIds = new Set(prev.map((it) => it.id));
+          const newItems = res.items.filter((it) => !existingIds.has(it.id));
+          if (newItems.length === 0) return prev;
+          return [...prev, ...newItems];
+        });
+      },
+    },
+  );
 
-  const onFilterChange = (next: {
-    q: string;
-    visibility: AdminNotesVisibility;
-  }) => {
-    setQ(next.q);
-    setVisibility(next.visibility);
-    setPage(1);
-  };
+  const onFilterChange = useCallback(
+    (next: { q: string; visibility: AdminNotesVisibility }) => {
+      setQ(next.q);
+      setVisibility(next.visibility);
+      setPage(1);
+      setAccumulatedNotes([]);
+    },
+    [],
+  );
+
+  const handleLoadMore = useCallback(() => {
+    if (!isLoading && data && accumulatedNotes.length < data.total) {
+      setPage((p) => p + 1);
+    }
+  }, [isLoading, data, accumulatedNotes.length]);
 
   const filtersLabels = t
     ? {
@@ -101,13 +130,15 @@ export default function AdminPaymentsClient() {
           )}
           {tableLabels && (
             <AdminPaymentsTable
-              items={data?.items ?? []}
+              items={
+                accumulatedNotes.length > 0
+                  ? accumulatedNotes
+                  : (data?.items ?? [])
+              }
               total={data?.total ?? 0}
-              page={page}
-              pageSize={PAGE_SIZE}
               isLoading={isLoading}
               hasFilter={!!q || visibility !== 'all'}
-              onPageChange={setPage}
+              onLoadMore={handleLoadMore}
               labels={tableLabels}
             />
           )}

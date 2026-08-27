@@ -8,6 +8,11 @@ import { CascadeEngine } from './cascade/cascade.engine';
 import { ChessEngine } from './chess/chess.engine';
 import { CheckersEngine } from './checkers/checkers.engine';
 import { CatDashEngine } from './cat-dash/cat-dash.engine';
+import { BackgammonEngine } from './backgammon/backgammon.engine';
+import { HeartsEngine } from './hearts/hearts.engine';
+import { SpadesEngine } from './spades/spades.engine';
+import { GoEngine } from './go/go.engine';
+import { PachisiEngine } from './pachisi/pachisi.engine';
 
 /**
  * Game Engines Module
@@ -24,6 +29,11 @@ import { CatDashEngine } from './cat-dash/cat-dash.engine';
     ChessEngine,
     CheckersEngine,
     CatDashEngine,
+    BackgammonEngine,
+    HeartsEngine,
+    SpadesEngine,
+    GoEngine,
+    PachisiEngine,
   ],
   exports: [GameEngineRegistry],
 })
@@ -40,6 +50,11 @@ export class GameEnginesModule implements OnModuleInit {
     private readonly chessEngine: ChessEngine,
     private readonly checkersEngine: CheckersEngine,
     private readonly catDashEngine: CatDashEngine,
+    private readonly backgammonEngine: BackgammonEngine,
+    private readonly heartsEngine: HeartsEngine,
+    private readonly spadesEngine: SpadesEngine,
+    private readonly goEngine: GoEngine,
+    private readonly pachisiEngine: PachisiEngine,
   ) {}
 
   /**
@@ -57,6 +72,11 @@ export class GameEnginesModule implements OnModuleInit {
     this.registry.register(this.chessEngine);
     this.registry.register(this.checkersEngine);
     this.registry.register(this.catDashEngine);
+    this.registry.register(this.backgammonEngine);
+    this.registry.register(this.heartsEngine);
+    this.registry.register(this.spadesEngine);
+    this.registry.register(this.goEngine);
+    this.registry.register(this.pachisiEngine);
 
     // Log registration summary
     const stats = this.registry.getStats();

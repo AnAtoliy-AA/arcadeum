@@ -89,6 +89,24 @@ export const enMessages = {
       medium: 'Medium',
       hard: 'Hard',
     },
+    tutorial: {
+      s1: {
+        title: 'Checkmate the king',
+        body: 'Move your pieces across the 8×8 board to attack the enemy king. Trap it so it cannot escape and you win by checkmate.',
+      },
+      s2: {
+        title: 'Moving pieces',
+        body: 'Click one of your pieces to highlight its legal squares, then click a destination. Castling, en passant and promotion are all supported.',
+      },
+      s3: {
+        title: 'Watch the clock',
+        body: 'Your clock counts down on your turn — running out of time loses the game. Sound, music and share options live in this panel.',
+      },
+      s4: {
+        title: 'Help when you need it',
+        body: 'Open the Rules book any time for a refresher, use hints where available, and chat with your opponent while you play.',
+      },
+    },
     rules: {
       title: 'Chess Rules',
       objective: 'Objective',

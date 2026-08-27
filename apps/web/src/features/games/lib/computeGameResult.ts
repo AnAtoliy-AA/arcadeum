@@ -20,6 +20,8 @@ export function computeGameResult(
   currentUserId: string | null | undefined,
   options: {
     winnerId?: string | null;
+    /** All players who share the win (co-winners). Takes precedence over `winnerId`. */
+    winnerIds?: string[] | null;
     isDraw?: boolean;
     isWinner?: () => boolean;
     backendResult?: BackendGameResult;
@@ -36,6 +38,11 @@ export function computeGameResult(
 
   if (options.isDraw) return 'draw';
   if (options.isWinner) return options.isWinner() ? 'won' : 'lost';
+  // Multi-winner games (e.g. a 4-player forfeit) list every co-winner.
+  if (options.winnerIds) {
+    if (options.winnerIds.length === 0) return 'lost';
+    return options.winnerIds.includes(currentUserId) ? 'won' : 'lost';
+  }
   if (!options.winnerId) return 'lost';
   return options.winnerId === currentUserId ? 'won' : 'lost';
 }

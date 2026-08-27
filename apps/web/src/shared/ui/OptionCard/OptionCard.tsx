@@ -36,7 +36,6 @@ export function OptionCard({
   'data-testid': dataTestId,
   className,
   style,
-  ...rest
 }: OptionCardProps) {
   return (
     <button
@@ -55,7 +54,6 @@ export function OptionCard({
       onClick={onClick}
       data-testid={dataTestId}
       aria-pressed={isActive ? 'true' : 'false'}
-      {...rest}
     >
       <ActiveIndicator visible={isActive} />
       <div className="flex flex-col items-stretch gap-1">

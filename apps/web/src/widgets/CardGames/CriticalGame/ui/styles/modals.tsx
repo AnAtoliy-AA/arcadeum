@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import type { CSSProperties, HTMLAttributes } from 'react';
+import type { CSSProperties } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 import {
@@ -15,16 +15,26 @@ export { ModalButton, OptionButton };
 
 function Overlay({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  onClick,
+  'data-testid': testId,
+  children,
+}: {
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-col items-stretch fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.8)] z-[1000] items-center justify-center',
         className,
       )}
-      {...props}
-    />
+      onClick={onClick}
+      data-testid={testId}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -66,37 +76,51 @@ const MODAL_FRAME_VARIANT_CLASS = {
 function ModalFrame({
   variant,
   className,
-  ...props
+  style,
+  onClick,
+  'data-testid': testId,
+  children,
 }: {
   variant?: GameVariant | string;
   className?: string;
-} & HTMLAttributes<HTMLDivElement>) {
+  style?: CSSProperties;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   const key = (variant ?? '') as keyof typeof MODAL_FRAME_VARIANT_CLASS;
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch bg-[var(--background)] border-2 border-[var(--borderColor)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[1001]',
+        'flex flex-col items-stretch bg-[var(--background)] border-2 border-[var(--borderColor)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[1001] max-[480px]:rounded-[16px] max-[480px]:max-h-[85vh] max-[480px]:mx-2',
         MODAL_FRAME_VARIANT_CLASS[key],
         className,
       )}
-      style={{ boxShadow: '0 5px 10px rgba(0, 0, 0, 0.3)' }}
-      {...props}
-    />
+      style={{ boxShadow: '0 5px 10px rgba(0, 0, 0, 0.3)', ...style }}
+      onClick={onClick}
+      data-testid={testId}
+    >
+      {children}
+    </div>
   );
 }
 
 function ScrollArea({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch overflow-y-auto p-6 w-full h-full',
+        'flex flex-col items-stretch overflow-y-auto p-6 w-full h-full max-[480px]:p-4',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -104,21 +128,24 @@ export const ModalContent = ({
   children,
   variant,
   onClick,
-  ...props
+  style,
+  'data-testid': testId,
 }: {
   children: React.ReactNode;
   variant?: GameVariant;
-  onClick?: (e: { stopPropagation: () => void }) => void;
-  [key: string]: unknown;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  style?: CSSProperties;
+  'data-testid'?: string;
 }) => {
   return (
     <ModalFrame
       variant={variant}
-      onClick={(e: React.MouseEvent) => {
+      style={style}
+      data-testid={testId}
+      onClick={(e) => {
         e.stopPropagation();
-        onClick?.({ stopPropagation: () => {} });
+        onClick?.(e);
       }}
-      {...props}
     >
       <ScrollArea>{children}</ScrollArea>
     </ModalFrame>
@@ -138,8 +165,12 @@ const MODAL_ACCENT_BORDER_CLASS = {
 export function ModalHeader({
   className,
   variant,
-  ...props
-}: { className?: string; variant?: string } & HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  variant?: string;
+  children?: React.ReactNode;
+}) {
   const key = (variant ?? '') as keyof typeof MODAL_ACCENT_BORDER_CLASS;
   return (
     <div
@@ -148,8 +179,9 @@ export function ModalHeader({
         MODAL_ACCENT_BORDER_CLASS[key],
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -166,11 +198,12 @@ const MODAL_ACCENT_TEXT_CLASS = {
 export function ModalTitle({
   className,
   variant,
-  ...props
+  children,
 }: {
   className?: string;
   variant?: string;
-} & HTMLAttributes<HTMLSpanElement>) {
+  children?: React.ReactNode;
+}) {
   const key = (variant ?? '') as keyof typeof MODAL_ACCENT_TEXT_CLASS;
   return (
     <span
@@ -179,8 +212,9 @@ export function ModalTitle({
         MODAL_ACCENT_TEXT_CLASS[key],
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
@@ -188,12 +222,12 @@ export const CloseButton = ({
   variant,
   children,
   onClick,
-  ...props
+  'data-testid': testId,
 }: {
   variant?: GameVariant;
   children?: React.ReactNode;
-  onClick?: (e: { stopPropagation: () => void }) => void;
-  [key: string]: unknown;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  'data-testid'?: string;
 }) => (
   <Button
     className="hover:rotate-[90deg]"
@@ -201,7 +235,7 @@ export const CloseButton = ({
     size="sm"
     gameVariant={variant as GameVariant}
     onClick={onClick}
-    {...props}
+    data-testid={testId}
   >
     {children}
   </Button>
@@ -209,24 +243,27 @@ export const CloseButton = ({
 
 export function ModalSection({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div
-      className={cx('flex flex-col items-stretch mb-6', className)}
-      {...props}
-    />
+    <div className={cx('flex flex-col items-stretch mb-6', className)}>
+      {children}
+    </div>
   );
 }
 
 export function SectionLabel({
   className,
   variant,
-  ...props
+  children,
 }: {
   className?: string;
   variant?: string;
-} & HTMLAttributes<HTMLSpanElement>) {
+  children?: React.ReactNode;
+}) {
   const key = (variant ?? '') as keyof typeof MODAL_ACCENT_TEXT_CLASS;
   return (
     <span
@@ -235,44 +272,66 @@ export function SectionLabel({
         MODAL_ACCENT_TEXT_CLASS[key],
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </span>
   );
 }
 
 export function OptionGrid({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
-      className={cx('flex flex-row items-stretch flex-wrap gap-3', className)}
-      {...props}
-    />
+      className={cx(
+        'flex flex-row items-stretch flex-wrap gap-3 max-[480px]:flex-col max-[480px]:gap-2',
+        className,
+      )}
+    >
+      {children}
+    </div>
   );
 }
 
 export function ModalActions({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
-      className={cx('flex flex-row items-stretch gap-3 mt-8', className)}
-      {...props}
-    />
+      className={cx(
+        'flex flex-row items-stretch gap-3 mt-8 max-[480px]:flex-col max-[480px]:gap-2 max-[480px]:mt-6',
+        className,
+      )}
+    >
+      {children}
+    </div>
   );
 }
 
 export function ScrollableCardsGrid({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLDivElement>) {
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <CardsGrid
-      className={cx('max-h-[55vh] overflow-y-auto p-2', className)}
-      {...props}
-    />
+      className={cx(
+        'max-h-[55vh] overflow-y-auto p-2 max-[480px]:max-h-[40vh] max-[480px]:p-1',
+        className,
+      )}
+    >
+      {children}
+    </CardsGrid>
   );
 }
 
@@ -283,36 +342,49 @@ export function SelectableCard({
   variant,
   cardType: _cardType,
   index: _index,
-  ...props
+  onClick,
+  children,
 }: {
   className?: string;
   style?: CSSProperties;
   selected?: boolean;
+  variant?: string;
   cardType?: unknown;
   index?: unknown;
-} & { variant?: string } & HTMLAttributes<HTMLDivElement>) {
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
+  children?: React.ReactNode;
+}) {
   return (
     <BaseCard
       className={cx(selected ? 'scale-[1.05]' : undefined, className)}
       style={selected ? { ...style, borderColor: 'white' } : style}
       variant={variant}
-      {...props}
-    />
+      onClick={onClick}
+    >
+      {children}
+    </BaseCard>
   );
 }
 
 export function RulesText({
   className,
-  ...props
-}: { className?: string } & HTMLAttributes<HTMLSpanElement>) {
+  style,
+  children,
+}: {
+  className?: string;
+  style?: CSSProperties;
+  children?: React.ReactNode;
+}) {
   return (
     <span
       className={cx('leading-[24px] opacity-[0.9]', className)}
-      {...props}
-    />
+      style={style}
+    >
+      {children}
+    </span>
   );
 }
 
-export function RulesTextPre(props: HTMLAttributes<HTMLSpanElement>) {
-  return <RulesText className="whitespace-pre-line" {...props} />;
+export function RulesTextPre({ children }: { children?: React.ReactNode }) {
+  return <RulesText className="whitespace-pre-line">{children}</RulesText>;
 }

@@ -46,12 +46,11 @@ export function AIvsAIViewer({
     setErrored(false);
     setLoading(true);
     try {
-      const { room } = await gamesApi.createAiVsAi(gameId, {
-        token: snapshot.accessToken || undefined,
-        variant,
-        theme,
-        aiMoveDelayMs: delay,
-      });
+      const { room } = await gamesApi.createAiVsAi(
+        gameId,
+        { variant, theme, aiMoveDelayMs: delay },
+        { token: snapshot.accessToken || undefined },
+      );
       router.push(`${routes.gameRoom(room.id)}?mode=watch`);
     } catch (err) {
       console.warn('AI vs AI create failed:', err);

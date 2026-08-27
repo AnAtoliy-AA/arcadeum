@@ -172,21 +172,19 @@ export async function emitEncrypted(
 /**
  * Shared hook for subscribing to socket events with optional decryption.
  */
-function useSocketListener<T extends unknown[]>(
+function useSocketListener<T>(
   socket: Socket,
   event: string,
-  handler: (...args: T) => void,
+  handler: (payload: T) => void,
 ): void {
   useEffect(() => {
-    const listener = async (...args: unknown[]) => {
-      // Decrypt the first argument if encryption is enabled
-      if (args.length > 0 && isSocketEncryptionEnabled()) {
-        const decrypted = await maybeDecrypt<T[0]>(args[0]);
-        const reconstructed = [decrypted, ...args.slice(1)] as unknown as T;
-        handler(...reconstructed);
+    const listener = async (payload: unknown) => {
+      if (isSocketEncryptionEnabled()) {
+        const decrypted = await maybeDecrypt<T>(payload);
+        handler(decrypted);
         return;
       }
-      handler(...(args as T));
+      handler(payload as T);
     };
 
     socket.on(event, listener);
@@ -197,16 +195,16 @@ function useSocketListener<T extends unknown[]>(
   }, [socket, event, handler]);
 }
 
-export function useSocket<T extends unknown[]>(
+export function useSocket<T>(
   event: string,
-  handler: (...args: T) => void,
+  handler: (payload: T) => void,
 ): void {
   useSocketListener(gameSocket, event, handler);
 }
 
-export function useChatSocket<T extends unknown[]>(
+export function useChatSocket<T>(
   event: string,
-  handler: (...args: T) => void,
+  handler: (payload: T) => void,
 ): void {
   useSocketListener(chatSocket, event, handler);
 }

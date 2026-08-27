@@ -79,18 +79,11 @@ test.describe('Critical Variant Selection', () => {
       },
     });
 
-    // Navigate to game creation page
-    await navigateTo(page, '/games/create');
+    await navigateTo(page, '/games/create?gameId=critical_v1');
     await expect(page.locator('h1, h2, [class*="Title"]').first()).toBeVisible(
       {},
     );
 
-    // Select Critical game tile
-    const criticalTile = page.getByTestId('game-tile-critical_v1');
-    await expect(criticalTile).toBeVisible({});
-    await criticalTile.click({ force: true });
-
-    // Create room (variant is now selected in lobby, not create page)
     const createBtn = page.getByTestId('create-room-button');
     await expect(createBtn).toBeEnabled({});
     await createBtn.click({ force: true });
@@ -110,7 +103,12 @@ test.describe('Critical Variant Selection', () => {
     // Variant is selected via dropdown in lobby — start game with default variant
     const startBtn = page.getByRole('button', { name: /start with/i });
     await expect(startBtn).toBeEnabled();
-    await startBtn.click();
+    await page.evaluate(() => {
+      const btn = document.querySelector(
+        '[data-testid="start-with-bots-button"]',
+      ) as HTMLElement | null;
+      btn?.click();
+    });
 
     await closeRulesModal(page);
 

@@ -8,3 +8,5 @@ export type GameMessageHandlerFn = (
 export interface GameMessageHandler {
   readonly handlers: Record<string, GameMessageHandlerFn>;
 }
+
+export const GAME_GATEWAYS = 'GAME_GATEWAYS';

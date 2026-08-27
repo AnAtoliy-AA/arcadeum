@@ -34,8 +34,14 @@ const PrivacyContentDynamic = dynamic<PrivacyContentProps>(
   },
 );
 
-const PrivacyClient = (props: PrivacyContentProps) => {
-  return <PrivacyContentDynamic {...props} />;
+const PrivacyClient = ({ t, contactT, PRIVACY_EMAIL }: PrivacyContentProps) => {
+  return (
+    <PrivacyContentDynamic
+      t={t}
+      contactT={contactT}
+      PRIVACY_EMAIL={PRIVACY_EMAIL}
+    />
+  );
 };
 
 export default PrivacyClient;

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { Button } from '@arcadeum/ui';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import {
   TOURNAMENT_GAME_TYPES,
@@ -34,14 +35,6 @@ export interface AdminTournamentsFiltersProps {
   labels: AdminTournamentsFiltersLabels;
 }
 
-const SELECT_STYLE = {
-  padding: '6px 10px',
-  borderRadius: 6,
-  border: '1px solid #555',
-  background: 'transparent',
-  color: 'inherit' as const,
-};
-
 export function AdminTournamentsFilters({
   q,
   status,
@@ -54,9 +47,10 @@ export function AdminTournamentsFilters({
   const debouncedQ = useDebounce(localQ, 300);
 
   useEffect(() => {
-    if (debouncedQ !== q) onChange({ q: debouncedQ, status, gameType });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedQ]);
+    if (debouncedQ !== q) {
+      onChange({ q: debouncedQ, status, gameType });
+    }
+  }, [debouncedQ, q, status, gameType, onChange]);
 
   return (
     <div className="flex flex-row gap-3 items-center flex-wrap">
@@ -64,14 +58,7 @@ export function AdminTournamentsFilters({
         placeholder={labels.searchPlaceholder}
         value={localQ}
         onChange={(e) => setLocalQ(e.target.value)}
-        style={{
-          padding: '6px 10px',
-          borderRadius: 6,
-          border: '1px solid #555',
-          background: 'transparent',
-          color: 'inherit',
-          minWidth: 220,
-        }}
+        className="px-3 py-1.5 rounded-lg border border-[var(--borderColor)] bg-[var(--backgroundFocus)] text-[var(--colorText)] min-w-[220px] text-sm focus:outline-none focus:border-[var(--primary)]"
       />
       <select
         data-testid="status-filter"
@@ -83,7 +70,7 @@ export function AdminTournamentsFilters({
             gameType,
           })
         }
-        style={SELECT_STYLE}
+        className="px-3 py-1.5 rounded-lg border border-[var(--borderColor)] bg-[var(--backgroundFocus)] text-[var(--colorText)] text-sm cursor-pointer focus:outline-none focus:border-[var(--primary)]"
       >
         {STATUS_OPTIONS.map((s) => (
           <option key={s} value={s}>
@@ -104,7 +91,7 @@ export function AdminTournamentsFilters({
                 : (e.target.value as TournamentGameType),
           })
         }
-        style={SELECT_STYLE}
+        className="px-3 py-1.5 rounded-lg border border-[var(--borderColor)] bg-[var(--backgroundFocus)] text-[var(--colorText)] text-sm cursor-pointer focus:outline-none focus:border-[var(--primary)]"
       >
         <option value="">{labels.gameTypeFilterAll}</option>
         {TOURNAMENT_GAME_TYPES.map((g) => (
@@ -114,22 +101,14 @@ export function AdminTournamentsFilters({
         ))}
       </select>
       <div className="flex flex-row items-stretch flex-1" />
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="sm"
         onClick={onNewClick}
         data-testid="new-tournament"
-        style={{
-          padding: '6px 14px',
-          borderRadius: 6,
-          border: '1px solid #555',
-          background: 'transparent',
-          color: 'inherit',
-          cursor: 'pointer',
-          fontWeight: 600,
-        }}
       >
         {labels.newButton}
-      </button>
+      </Button>
     </div>
   );
 }

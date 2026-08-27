@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback, useSyncExternalStore } from 'react';
-import type { HTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'react';
+import type { ReactNode } from 'react';
 import { ModalButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Modal, ModalContent, ModalTitle, ModalActions } from './SharedModal';
@@ -28,14 +28,12 @@ interface RematchModalProps {
 const ModalDescription = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
+}) => (
   <span
     className={cx('text-[16px] text-[var(--textSecondary)] mb-4', className)}
-    {...props}
   >
     {children}
   </span>
@@ -44,38 +42,32 @@ const ModalDescription = ({
 const PlayerList = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cx('flex flex-col items-stretch gap-2 mb-4', className)}
-    {...props}
-  >
+}) => (
+  <div className={cx('flex flex-col items-stretch gap-2 mb-4', className)}>
     {children}
   </div>
 );
 
 const PlayerItem = ({
   selected = false,
-  className,
+  onClick,
   children,
-  ...props
 }: {
   selected?: boolean;
-  className?: string;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
+    onClick={onClick}
     className={cx(
       'flex flex-row items-center gap-3 p-3 rounded-[12px] cursor-pointer border transition-colors hover:bg-[rgba(255,255,255,0.1)]',
       selected
         ? 'bg-[rgba(99,102,241,0.2)] border-[rgba(99,102,241,0.5)]'
         : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)]',
-      className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -83,86 +75,56 @@ const PlayerItem = ({
 
 const CheckboxCircle = ({
   selected = false,
-  className,
   children,
-  ...props
 }: {
   selected?: boolean;
-  className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'w-[20px] h-[20px] rounded-[10px] border-2 border-[rgba(255,255,255,0.3)] flex items-center justify-center shrink-0',
       selected && 'bg-[#6366f1] border-[#6366f1]',
-      className,
     )}
-    {...props}
   >
     {children}
   </div>
 );
 
-const PlayerName = ({
-  className,
-  children,
-  ...props
-}: {
-  className?: string;
-  children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <span
-    className={cx('text-[16px] text-[var(--color)] flex-1', className)}
-    {...props}
-  >
+const PlayerName = ({ children }: { children?: ReactNode }) => (
+  <span className={cx('text-[16px] text-[var(--color)] flex-1')}>
     {children}
   </span>
 );
 
-const EliminatedBadge = ({
-  className,
-  children,
-  ...props
-}: {
-  className?: string;
-  children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <span className={cx('text-[14px] ml-1', className)} {...props}>
-    {children}
-  </span>
+const EliminatedBadge = ({ children }: { children?: ReactNode }) => (
+  <span className={cx('text-[14px] ml-1')}>{children}</span>
 );
 
-const EmptyMessage = ({
-  className,
-  children,
-  ...props
-}: {
-  className?: string;
-  children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
-  <span
-    className={cx('p-4 text-center text-[var(--textSecondary)]', className)}
-    {...props}
-  >
+const EmptyMessage = ({ children }: { children?: ReactNode }) => (
+  <span className={cx('p-4 text-center text-[var(--textSecondary)]')}>
     {children}
   </span>
 );
 
 const MessageInput = ({
+  value,
   onChange,
-  className,
-  ...props
+  placeholder,
+  disabled,
 }: {
+  value?: string | number | readonly string[];
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
-  className?: string;
-} & TextareaHTMLAttributes<HTMLTextAreaElement>) => (
+  placeholder?: string;
+  disabled?: boolean;
+}) => (
   <textarea
     className={cx(
       'w-full p-3 mb-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[var(--color)] min-h-[80px] text-[16px] outline-none transition-colors placeholder:text-[#8e9196] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
-      className,
     )}
+    value={value}
     onChange={onChange}
-    {...props}
+    placeholder={placeholder}
+    disabled={disabled}
   />
 );
 

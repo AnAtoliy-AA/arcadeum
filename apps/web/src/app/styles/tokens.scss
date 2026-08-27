@@ -31,3 +31,25 @@
   --backgroundRadialStart: rgba(56, 189, 248, 0.12);
   --backgroundRadialEnd: #151718;
 }
+
+[data-vision-mode='deuteranopia'] {
+  filter: url('#arcadeum-vision-deuteranopia');
+}
+
+[data-vision-mode='protanopia'] {
+  filter: url('#arcadeum-vision-protanopia');
+}
+
+[data-vision-mode='tritanopia'] {
+  filter: url('#arcadeum-vision-tritanopia');
+}
+
+[data-vision-mode='highContrast'] {
+  filter: contrast(1.25) brightness(1.05);
+}
+
+[data-vision-mode='highContrast'] [role='gridcell'] {
+  outline: 1px solid
+    color-mix(in srgb, var(--foreground, #ecefee) 45%, transparent);
+  outline-offset: -1px;
+}

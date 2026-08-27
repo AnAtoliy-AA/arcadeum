@@ -22,17 +22,21 @@ function resolveKey(
     return undefined;
   }
 
-  const [next, ...rest] = segments;
-  const nextValue = tree[next];
+  const segment = segments[0];
+  if (typeof segment === 'undefined') {
+    return undefined;
+  }
+  const remainingSegments = segments.slice(1);
+  const nextValue = tree[segment];
   if (typeof nextValue === 'undefined') {
     return undefined;
   }
 
-  if (rest.length === 0) {
+  if (remainingSegments.length === 0) {
     return typeof nextValue === 'string' ? nextValue : undefined;
   }
 
-  return resolveKey(nextValue, rest);
+  return resolveKey(nextValue, remainingSegments);
 }
 
 function applyReplacements(

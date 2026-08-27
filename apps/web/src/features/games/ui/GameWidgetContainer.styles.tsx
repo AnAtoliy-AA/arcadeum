@@ -1,6 +1,6 @@
 import './scrollbar.scss';
 import React, { createContext, useContext, forwardRef, memo } from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { IconButton, type GameVariant } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { getThemeById } from '@/features/games/lib/shared-themes';
@@ -64,7 +64,11 @@ export type ContainerProps = {
   className?: string;
   style?: React.CSSProperties;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>;
+  id?: string;
+  role?: string;
+  'aria-label'?: string;
+  'data-testid'?: string;
+};
 
 const AMBIENT_GLOW_BACKGROUNDS: Partial<Record<GameVariant, string>> = {
   cyberpunk:
@@ -92,7 +96,10 @@ export const Container = memo(
       className,
       style,
       children,
-      ...props
+      id,
+      role,
+      'aria-label': ariaLabel,
+      'data-testid': dataTestId,
     },
     ref,
   ) {
@@ -110,6 +117,10 @@ export const Container = memo(
     return (
       <div
         ref={ref}
+        id={id}
+        role={role}
+        aria-label={ariaLabel}
+        data-testid={dataTestId}
         className={cx(
           'flex flex-col flex-1 w-full overflow-y-auto overflow-x-hidden bg-[var(--background)]',
           'modern-scrollbar gap-5 px-1 pt-0 pb-0 min-h-0 h-auto min-w-0',
@@ -123,7 +134,6 @@ export const Container = memo(
           className,
         )}
         style={style}
-        {...props}
       >
         {resolvedBgImage && (
           <div
@@ -147,18 +157,19 @@ export const Container = memo(
 
 export const GameHeader = ({
   className,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
+    data-testid={dataTestId}
     className={cx(
       'flex flex-row items-center justify-between gap-3 px-7 py-2 bg-[var(--glassBg)] border-b border-b-[var(--glassBorderStrong)] -mx-1 mt-0 sticky top-0 z-[30] shrink-0 max-[800px]:px-4 max-[800px]:py-2 max-[800px]:-mx-2 max-[800px]:mt-0 max-[800px]:top-0 max-[800px]:gap-1 max-[800px]:flex-nowrap',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -167,17 +178,15 @@ export const GameHeader = ({
 export const GameInfo = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-row items-center gap-2 min-w-0 flex-1 relative max-[800px]:min-w-0 max-[800px]:flex-1',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -186,17 +195,15 @@ export const GameInfo = ({
 export const VariantIconBadge = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-col items-center justify-center w-[30px] h-[30px] rounded-[8px] bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.12)] shrink-0 max-[800px]:w-6 max-[800px]:h-6',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -205,20 +212,21 @@ export const VariantIconBadge = ({
 export const GameTitle = ({
   numberOfLines,
   className,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   numberOfLines?: number;
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
+}) => (
   <span
+    data-testid={dataTestId}
     className={cx(
       'text-[16px] font-extrabold tracking-[-0.3px] max-[800px]:text-[13px]',
       numberOfLines ? 'line-clamp-1' : 'truncate',
       className,
     )}
-    {...props}
   >
     {children}
   </span>
@@ -244,20 +252,27 @@ const TURN_TEXT_CLASSES: Record<TurnStatusVariant, string> = {
 export const TurnStatusPill = ({
   status = 'default',
   className,
+  onClick,
+  title,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   status?: TurnStatusVariant;
   className?: string;
+  onClick?: () => void;
+  title?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
+    data-testid={dataTestId}
+    onClick={onClick}
+    title={title}
     className={cx(
       'flex flex-row items-center rounded-[20px] px-3 py-1 border shrink-0',
       TURN_PILL_CLASSES[status],
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -267,19 +282,17 @@ export const TurnStatusText = ({
   status = 'default',
   className,
   children,
-  ...props
 }: {
   status?: TurnStatusVariant;
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>) => (
+}) => (
   <span
     className={cx(
       'text-[14px] font-semibold',
       TURN_TEXT_CLASSES[status],
       className,
     )}
-    {...props}
   >
     {children}
   </span>
@@ -288,46 +301,65 @@ export const TurnStatusText = ({
 export const HeaderActions = ({
   className,
   children,
-  ...props
 }: {
   className?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
     className={cx(
       'flex flex-row items-center gap-2 flex-wrap justify-end',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
 );
 
-export const FullscreenButton = (
-  props: React.ComponentProps<typeof IconButton>,
-) => (
+export const FullscreenButton = ({
+  onClick,
+  title,
+  disabled,
+  className,
+  'data-testid': dataTestId,
+  'aria-label': ariaLabel,
+  children,
+}: {
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  title?: string;
+  disabled?: boolean;
+  className?: string;
+  'data-testid'?: string;
+  'aria-label'?: string;
+  children?: ReactNode;
+}) => (
   <IconButton
-    className="p-2 active:bg-[rgba(255,255,255,0.2)]"
+    className={cx('p-2 active:bg-[rgba(255,255,255,0.2)]', className)}
     size="sm"
-    {...props}
-  />
+    onClick={onClick}
+    title={title}
+    disabled={disabled}
+    data-testid={dataTestId}
+    aria-label={ariaLabel}
+  >
+    {children}
+  </IconButton>
 );
 
 export const SharedGameBoard = ({
   className,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
+    data-testid={dataTestId}
     className={cx(
       'flex flex-col items-stretch gap-4 z-[20] relative w-full flex-1 min-h-0 min-w-0 overflow-visible max-[800px]:p-2',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -335,18 +367,19 @@ export const SharedGameBoard = ({
 
 export const SharedTableArea = ({
   className,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
+    data-testid={dataTestId}
     className={cx(
       'flex flex-col items-stretch gap-4 min-h-0 relative z-[1] w-full grow-0 shrink-0 basis-auto h-auto',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -354,18 +387,19 @@ export const SharedTableArea = ({
 
 export const SharedHandSection = ({
   className,
+  'data-testid': dataTestId,
   children,
-  ...props
 }: {
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>) => (
+}) => (
   <div
+    data-testid={dataTestId}
     className={cx(
       'flex flex-col items-stretch gap-4 w-full shrink-0 z-[30] relative border-t border-t-[var(--borderColor)] pt-4',
       className,
     )}
-    {...props}
   >
     {children}
   </div>
@@ -381,4 +415,5 @@ export interface SharedHeaderProps {
   turnAvatar?: React.ReactNode;
   extraActions?: React.ReactNode;
   titleGradient?: string;
+  onToggleResult?: () => void;
 }

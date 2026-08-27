@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { AiVsAiService } from './ai-vs-ai.service';
+import { AI_VS_AI_GAME_IDS } from '../common/ai-vs-ai';
 import type { GameRoomsMapper } from '../rooms/game-rooms.mapper';
 import type { GamesRealtimeService } from '../games.realtime.service';
 import type { Model } from 'mongoose';
@@ -11,9 +12,16 @@ import type { CascadeService } from '../cascade/cascade.service';
 import type { CatDashService } from '../cat-dash/cat-dash.service';
 import type { SeaBattleService } from '../sea-battle/sea-battle.service';
 import type { CriticalService } from '../critical/critical.service';
+import type { BackgammonService } from '../backgammon/backgammon.service';
+import type { HeartsService } from '../hearts/hearts.service';
+import type { SpadesService } from '../spades/spades.service';
+import type { GoService } from '../go/go.service';
+import type { PachisiService } from '../pachisi/pachisi.service';
+import type { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 
 interface RoomArg {
   hostId: string;
+  maxPlayers: number;
   participants: Array<{ userId: string }>;
   gameOptions: Record<string, unknown>;
 }
@@ -48,7 +56,29 @@ function buildService() {
     catDash: { startSession: jest.fn() } as unknown as CatDashService,
     seaBattle: { startSession: jest.fn() } as unknown as SeaBattleService,
     critical: { startSession: jest.fn() } as unknown as CriticalService,
+    backgammon: { startSession: jest.fn() } as unknown as BackgammonService,
+    hearts: { startSession: jest.fn() } as unknown as HeartsService,
+    spades: { startSession: jest.fn() } as unknown as SpadesService,
+    go: { startSession: jest.fn() } as unknown as GoService,
+    pachisi: { startSession: jest.fn() } as unknown as PachisiService,
   };
+  const engineMetadata: Record<
+    string,
+    { minPlayers: number; maxPlayers: number }
+  > = {
+    chess_v1: { minPlayers: 2, maxPlayers: 2 },
+    checkers_v1: { minPlayers: 2, maxPlayers: 2 },
+    sea_battle_v1: { minPlayers: 2, maxPlayers: 2 },
+    hearts_v1: { minPlayers: 4, maxPlayers: 4 },
+    spades_v1: { minPlayers: 4, maxPlayers: 4 },
+  };
+  const engineRegistry = {
+    // Legacy AI-vs-AI games are all 1v1; only hearts_v1 overrides the table.
+    getMetadata: jest.fn(
+      (gameId: string) =>
+        engineMetadata[gameId] ?? { minPlayers: 2, maxPlayers: 2 },
+    ),
+  } as unknown as GameEngineRegistry;
   const service = new AiVsAiService(
     gameRoomModel,
     gameRoomsMapper,
@@ -60,11 +90,26 @@ function buildService() {
     services.catDash,
     services.seaBattle,
     services.critical,
+    services.backgammon,
+    services.hearts,
+    services.spades,
+    services.go,
+    services.pachisi,
+    engineRegistry,
   );
   return { service, gameRoomModel, gameRoomsMapper, realtimeService, services };
 }
 
 describe('AiVsAiService', () => {
+  it('can start every game listed in AI_VS_AI_GAME_IDS (no drift)', async () => {
+    const { service } = buildService();
+    for (const gameId of AI_VS_AI_GAME_IDS) {
+      await expect(
+        service.createAIvsAIRoom('user-1', { gameId }),
+      ).resolves.toBeDefined();
+    }
+  });
+
   it('rejects games outside the supported list', async () => {
     const { service } = buildService();
     await expect(
@@ -156,5 +201,65 @@ describe('AiVsAiService', () => {
       undefined,
       expect.objectContaining({ aiVsAi: true }),
     );
+  });
+
+  it('starts backgammon with extras in startSession', async () => {
+    const { service, services } = buildService();
+    await service.createAIvsAIRoom('user-1', { gameId: 'backgammon_v1' });
+    expect(services.backgammon.startSession).toHaveBeenCalledWith(
+      expect.stringMatching(/^bot-ai-/),
+      'room-1',
+      false,
+      0,
+      expect.objectContaining({ aiVsAi: true }),
+    );
+  });
+
+  it('fields a full four-bot table for hearts', async () => {
+    const { service, gameRoomModel, services } = buildService();
+    await service.createAIvsAIRoom('user-1', { gameId: 'hearts_v1' });
+
+    const roomArg = createdRoomArg(gameRoomModel);
+    expect(roomArg.maxPlayers).toBe(4);
+    expect(roomArg.participants).toHaveLength(4);
+    const seatIds = new Set(roomArg.participants.map((p) => p.userId));
+    expect(seatIds.size).toBe(4);
+    expect(roomArg.hostId).toBe(roomArg.participants[0].userId);
+
+    expect(services.hearts.startSession).toHaveBeenCalledWith(
+      roomArg.hostId,
+      'room-1',
+      false,
+      0,
+      expect.objectContaining({ aiVsAi: true }),
+    );
+  });
+
+  it('fields a full four-bot table for spades', async () => {
+    const { service, gameRoomModel, services } = buildService();
+    await service.createAIvsAIRoom('user-1', { gameId: 'spades_v1' });
+
+    const roomArg = createdRoomArg(gameRoomModel);
+    expect(roomArg.maxPlayers).toBe(4);
+    expect(roomArg.participants).toHaveLength(4);
+    const seatIds = new Set(roomArg.participants.map((p) => p.userId));
+    expect(seatIds.size).toBe(4);
+
+    expect(services.spades.startSession).toHaveBeenCalledWith(
+      roomArg.hostId,
+      'room-1',
+      false,
+      0,
+      expect.objectContaining({ aiVsAi: true }),
+    );
+  });
+
+  it('keeps the two-bot layout for 1v1 games', async () => {
+    const { service, gameRoomModel } = buildService();
+    await service.createAIvsAIRoom('user-1', { gameId: 'checkers_v1' });
+
+    const roomArg = createdRoomArg(gameRoomModel);
+    expect(roomArg.maxPlayers).toBe(2);
+    expect(roomArg.participants).toHaveLength(2);
   });
 });

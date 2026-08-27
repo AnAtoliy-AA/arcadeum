@@ -42,16 +42,26 @@ export interface ShopMannequinRailProps {
 
 function RailHost({
   className,
-  ...props
-}: { className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  id,
+  'data-testid': dataTestId,
+  children,
+}: {
+  className?: string;
+  id?: string;
+  'data-testid'?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div
+      id={id}
+      data-testid={dataTestId}
       className={cx(
         'flex flex-col items-stretch w-[320px] gap-3 sticky top-4 self-start shrink-0 max-[1150px]:w-[280px] max-[800px]:w-full max-[800px]:relative max-[800px]:top-0',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -79,7 +89,9 @@ export function ShopMannequinRail({
   labels,
   sellLabels,
 }: ShopMannequinRailProps) {
-  const { hoverItem, activeSlot, setActiveSlot } = useShopPreviewStore();
+  const hoverItem = useShopPreviewStore((s) => s.hoverItem);
+  const activeSlot = useShopPreviewStore((s) => s.activeSlot);
+  const setActiveSlot = useShopPreviewStore((s) => s.setActiveSlot);
 
   const displayName = useSessionStore(
     (s) => s.snapshot.displayName ?? s.snapshot.username ?? 'Player',

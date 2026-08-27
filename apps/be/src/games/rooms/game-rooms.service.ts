@@ -28,6 +28,7 @@ import {
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomsRematchService } from './game-rooms.rematch.service';
 import { GameRoomsChatService } from './game-rooms.chat.service';
+import { sanitizeNotes } from '../utils/sanitize-notes';
 import { generateUniqueInviteCode } from './game-rooms.invite-code';
 import { GameRoomsQueryBuilder } from './game-rooms.query';
 import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
@@ -47,6 +48,11 @@ import {
   getRoomParticipantIds,
   reorderRoomParticipants,
 } from './game-rooms.participants';
+import {
+  loadRoomEntity,
+  mirrorRoomToAtlas,
+  canViewRoom,
+} from './game-rooms.helpers';
 import {
   OCI_CONNECTION,
   ATLAS_CONNECTION,
@@ -91,6 +97,7 @@ export class GameRoomsService {
       hostId: userId,
       visibility: dto.visibility,
       maxPlayers: dto.maxPlayers || null,
+      notes: dto.notes ? sanitizeNotes(dto.notes) : undefined,
       inviteCode,
       password: hashedPassword,
       participants: [
@@ -108,13 +115,19 @@ export class GameRoomsService {
     // Mirror room to Atlas for history queries
     // toObject() returns the class-typed doc shape; widen via unknown to fit
     // the helper's plain-record patch parameter.
-    await this.mirrorRoomToAtlas(
+    await mirrorRoomToAtlas(
+      this.atlasRoomModel,
+      this.logger,
       room._id.toString(),
       room.toObject() as unknown as Record<string, unknown>,
       true,
     );
 
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
+  }
+
+  async countHostRooms(userId: string): Promise<number> {
+    return this.ociRoomModel.countDocuments({ hostId: userId }).exec();
   }
 
   async listRooms(
@@ -178,11 +191,11 @@ export class GameRoomsService {
   }
 
   async getRoom(roomId: string, userId?: string): Promise<GameRoomSummary> {
-    const room = await this.loadRoomEntity(roomId, {
+    const room = await loadRoomEntity(this.ociRoomModel, roomId, {
       lean: true,
       select: '-password',
     });
-    if (!this.canViewRoom(room, userId)) {
+    if (!canViewRoom(room, userId)) {
       throw new ForbiddenException('Cannot view this room');
     }
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
@@ -237,7 +250,7 @@ export class GameRoomsService {
     if (typeof roomId !== 'string' || typeof userId !== 'string') {
       throw new BadRequestException('Invalid roomId or userId');
     }
-    const room = await this.loadRoomEntity(roomId);
+    const room = await loadRoomEntity(this.ociRoomModel, roomId);
     if (addRoomParticipant(room, userId)) {
       room.updatedAt = new Date();
       await room.save();
@@ -335,14 +348,13 @@ export class GameRoomsService {
     roomId: string,
     status: GameRoomStatus,
   ): Promise<GameRoom> {
-    const room = await this.loadRoomEntity(roomId);
+    const room = await loadRoomEntity(this.ociRoomModel, roomId);
 
     room.status = status;
     room.updatedAt = new Date();
     await room.save();
 
-    // Mirror status update to Atlas
-    await this.mirrorRoomToAtlas(roomId, {
+    await mirrorRoomToAtlas(this.atlasRoomModel, this.logger, roomId, {
       status,
       updatedAt: room.updatedAt,
     });
@@ -351,8 +363,17 @@ export class GameRoomsService {
   }
 
   async getRoomParticipants(roomId: string): Promise<string[]> {
-    const room = await this.loadRoomEntity(roomId, { lean: true });
+    const room = await loadRoomEntity(this.ociRoomModel, roomId, {
+      lean: true,
+    });
     return getRoomParticipantIds(room);
+  }
+
+  async getRoomRaw(roomId: string): Promise<GameRoom | null> {
+    return this.ociRoomModel
+      .findById(roomId)
+      .lean()
+      .exec() as Promise<GameRoom | null>;
   }
 
   async updateRoomOptions(
@@ -362,7 +383,7 @@ export class GameRoomsService {
   ): Promise<GameRoomSummary> {
     if (typeof roomId !== 'string' || typeof userId !== 'string')
       throw new BadRequestException('Invalid roomId or userId');
-    const room = await this.loadRoomEntity(roomId);
+    const room = await loadRoomEntity(this.ociRoomModel, roomId);
     if (room.hostId !== userId)
       throw new ForbiddenException('Only the host can update room options');
     if (room.status !== 'lobby')
@@ -382,60 +403,11 @@ export class GameRoomsService {
   ): Promise<GameRoomSummary> {
     if (typeof roomId !== 'string' || typeof userId !== 'string')
       throw new BadRequestException('Invalid roomId or userId');
-    const room = await this.loadRoomEntity(roomId);
+    const room = await loadRoomEntity(this.ociRoomModel, roomId);
     reorderRoomParticipants(room, userId, newOrder);
     room.updatedAt = new Date();
     await room.save();
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
-  }
-
-  private async loadRoomEntity(
-    roomId: string,
-    options: { lean?: boolean; select?: string } = {},
-  ): Promise<GameRoom> {
-    if (typeof roomId !== 'string')
-      throw new NotFoundException('Invalid room ID');
-    if (!Types.ObjectId.isValid(roomId))
-      throw new NotFoundException(`Invalid room ID format: ${roomId}`);
-    const query = options.select
-      ? this.ociRoomModel.findById(roomId).select(options.select)
-      : this.ociRoomModel.findById(roomId);
-    const room = options.lean ? await query.lean().exec() : await query.exec();
-    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
-    return room as unknown as GameRoom;
-  }
-
-  private async mirrorRoomToAtlas(
-    roomId: string,
-    patch: Record<string, unknown>,
-    upsert = false,
-  ): Promise<void> {
-    if (!this.atlasRoomModel) return;
-    if (typeof roomId !== 'string' || !Types.ObjectId.isValid(roomId)) {
-      this.logger.warn(
-        `Skipping Atlas mirror due to invalid room ID: ${roomId}`,
-      );
-      return;
-    }
-    try {
-      await this.atlasRoomModel.updateOne(
-        { _id: { $eq: roomId } },
-        { $set: patch },
-        upsert ? { upsert: true } : undefined,
-      );
-    } catch (err) {
-      this.logger.warn(
-        `Failed to mirror room to Atlas for room ${roomId}: ${(err as Error).message}`,
-      );
-    }
-  }
-
-  private canViewRoom(room: GameRoom, userId?: string | null): boolean {
-    if (room.visibility === 'public') return true;
-    if (!userId) return false;
-    return (
-      room.hostId === userId || isRoomParticipant(room.participants, userId)
-    );
   }
 
   async declineRematchInvitation(

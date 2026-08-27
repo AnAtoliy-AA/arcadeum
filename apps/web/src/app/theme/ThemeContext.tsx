@@ -19,6 +19,11 @@ import {
   themeTokens,
 } from '@/shared/config/theme';
 import { themeDefinitions } from '@arcadeum/ui/themeDefinitions';
+import {
+  useVisionModeSetting,
+  useVisionModeDocumentAttribute,
+} from '@/shared/hooks/useVisionModeSetting';
+import { VisionFilters } from '@/shared/ui/VisionFilters';
 
 type ThemeContextValue = {
   themePreference: ThemePreference;
@@ -88,7 +93,12 @@ export function AppThemeProvider({
   children: ReactNode;
   initialTheme?: ThemeName;
 }) {
-  const { themePreference, setThemePreference } = useThemeStore();
+  // Field-level selectors: this provider wraps the entire app, so a
+  // whole-store subscription would re-render the tree on any themeStore
+  // write. Actions are stable references.
+  const themePreference = useThemeStore((s) => s.themePreference);
+  const setThemePreference = useThemeStore((s) => s.setThemePreference);
+  const { visionMode } = useVisionModeSetting();
   const systemTheme = useSystemTheme();
   const isHydrated = useSyncExternalStore(
     emptySubscribe,
@@ -178,6 +188,10 @@ export function AppThemeProvider({
     }
   }, [isHydrated, setThemePreference]);
 
+  // Color-vision accessibility mode — mirrors the persisted setting onto
+  // `<html data-vision-mode>` for CSS-side effects (ARC-896).
+  useVisionModeDocumentAttribute(visionMode);
+
   const contextValue = useMemo<ThemeContextValue>(
     () => ({ themePreference, resolvedTheme, setThemePreference }),
     [themePreference, resolvedTheme, setThemePreference],
@@ -185,6 +199,7 @@ export function AppThemeProvider({
 
   return (
     <ThemeContext.Provider value={contextValue}>
+      <VisionFilters />
       {children}
     </ThemeContext.Provider>
   );

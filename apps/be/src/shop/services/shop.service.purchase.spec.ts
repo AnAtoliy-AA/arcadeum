@@ -15,7 +15,11 @@ describe('ShopService.purchase', () => {
 
   it('happy path: debits wallet, inserts row, equips, emits', async () => {
     h.catalog.getEffective.mockResolvedValue(effectiveItem());
-    h.wallet.getBalance.mockResolvedValue({ coins: 800, gems: 50 });
+    h.wallet.getBalance.mockResolvedValue({
+      coins: 800,
+      gems: 50,
+      arcadeum: 0,
+    });
 
     const result = await h.service.purchase(
       h.userId,
@@ -37,7 +41,7 @@ describe('ShopService.purchase', () => {
       'avatar-fox-01',
     );
     expect(h.wallet.emitAfterCommit).toHaveBeenCalledTimes(1);
-    expect(result.balance).toEqual({ coins: 800, gems: 50 });
+    expect(result.balance).toEqual({ coins: 800, gems: 50, arcadeum: 0 });
     expect(result.equipped.avatar).toBe('avatar-fox-01');
   });
 
@@ -53,7 +57,11 @@ describe('ShopService.purchase', () => {
       paidCurrency: 'coins',
       createdAt: new Date(),
     });
-    h.wallet.getBalance.mockResolvedValue({ coins: 800, gems: 50 });
+    h.wallet.getBalance.mockResolvedValue({
+      coins: 800,
+      gems: 50,
+      arcadeum: 0,
+    });
 
     const result = await h.service.purchase(h.userId, 'avatar-fox-01', 'p1');
 
@@ -75,7 +83,11 @@ describe('ShopService.purchase', () => {
       paidCurrency: 'coins',
       createdAt: new Date(),
     });
-    h.wallet.getBalance.mockResolvedValue({ coins: 800, gems: 50 });
+    h.wallet.getBalance.mockResolvedValue({
+      coins: 800,
+      gems: 50,
+      arcadeum: 0,
+    });
 
     const result = await h.service.purchase(
       h.userId,
@@ -91,7 +103,7 @@ describe('ShopService.purchase', () => {
       'avatar-fox-01',
     );
     expect(result.equipped.avatar).toBe('avatar-fox-01');
-    expect(result.balance).toEqual({ coins: 800, gems: 50 });
+    expect(result.balance).toEqual({ coins: 800, gems: 50, arcadeum: 0 });
   });
 
   it('rejects unknown item with 404', async () => {

@@ -203,8 +203,7 @@ export function CriticalTable({
     session?.id,
     isCurrentUserPlayer,
     onPostHistoryNote as
-      | ((message: string, visibility: ChatScope) => Promise<void>)
-      | undefined,
+      ((message: string, visibility: ChatScope) => Promise<void>) | undefined,
   );
   const catComboHandling = useCatComboHandling(
     catCombo,

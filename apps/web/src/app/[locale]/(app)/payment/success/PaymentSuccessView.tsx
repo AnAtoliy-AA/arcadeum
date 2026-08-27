@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef, type CSSProperties } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Typography } from '@arcadeum/ui';
 import {
@@ -110,23 +110,22 @@ function SuccessContent() {
         {particles.map((p) => (
           <div
             key={p.id}
-            style={{
-              position: 'absolute',
-              top: -20,
-              left: `${p.left}%`,
-              width: 10,
-              height: 10,
-              backgroundColor: p.color,
-              borderRadius: '50%',
-              animation: `confettiFall ${p.duration}s linear infinite`,
-              animationDelay: `${p.delay}s`,
-            }}
+            className="absolute -top-5 h-2.5 w-2.5 rounded-full [animation:confettiFall_var(--confetti-duration)_linear_infinite]"
+            style={
+              {
+                left: `${p.left}%`,
+                backgroundColor: p.color,
+                animationDelay: `${p.delay}s`,
+                '--confetti-duration': `${p.duration}s`,
+              } as CSSProperties
+            }
           />
         ))}
       </div>
 
       <Container
         size="sm"
+        className="animate-[fadeIn_0.6s_ease-out]"
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -136,11 +135,11 @@ function SuccessContent() {
           paddingTop: '6rem',
           position: 'relative',
           zIndex: 10,
-          animation: 'fadeIn 0.6s ease-out',
         }}
       >
         {/* Icon */}
         <div
+          className="[animation:popIn_0.5s_cubic-bezier(0.175,0.885,0.32,1.275)_0.2s_backwards,float_3s_ease-in-out_infinite_0.7s]"
           style={{
             width: 100,
             height: 100,
@@ -155,8 +154,6 @@ function SuccessContent() {
             marginBottom: '0.5rem',
             boxShadow: '0 0 40px rgba(34,197,94,0.2)',
             border: '1px solid rgba(34,197,94,0.3)',
-            animation:
-              'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s backwards, float 3s ease-in-out infinite 0.7s',
           }}
         >
           🎉
@@ -183,11 +180,10 @@ function SuccessContent() {
           <Card
             className={
               'detail-card' +
-              ' bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.08)] max-w-[420px] w-full'
+              ' animate-[fadeIn_0.6s_ease-out_0.3s_backwards] bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.08)] max-w-[420px] w-full'
             }
             style={{
               margin: '0 auto',
-              animation: 'fadeIn 0.6s ease-out 0.3s backwards',
             }}
           >
             <p
@@ -220,10 +216,7 @@ function SuccessContent() {
           </Card>
         )}
 
-        <div
-          className="flex flex-row items-stretch gap-6 -mt-6"
-          style={{ animation: 'fadeIn 0.6s ease-out 0.4s backwards' }}
-        >
+        <div className="-mt-6 flex animate-[fadeIn_0.6s_ease-out_0.4s_backwards] flex-row items-stretch gap-6">
           <LinkButton href="/" size="lg" variant="primary">
             {t('payments.successPage.returnHome') || 'Return Home'}
           </LinkButton>

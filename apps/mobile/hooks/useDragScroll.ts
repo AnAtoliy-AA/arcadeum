@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { Platform, type ScrollView } from 'react-native';
+import { Platform, ScrollView } from 'react-native';
 
-type EnsureScrollableNode<T> = T & {
+/** DOM surface exposed by ScrollView on the web target only. */
+type ScrollableWebNode = {
   getScrollableNode?: () => HTMLElement | null;
   getInnerViewNode?: () => HTMLElement | null;
 };
@@ -55,7 +56,7 @@ export function useDragScroll<T extends ScrollView>(
       return;
     }
 
-    const scrollView = scrollRef.current as EnsureScrollableNode<T> | null;
+    const scrollView = scrollRef.current as ScrollableWebNode | null;
     const node =
       scrollView?.getScrollableNode?.() ??
       scrollView?.getInnerViewNode?.() ??

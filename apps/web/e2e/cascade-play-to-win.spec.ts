@@ -17,8 +17,8 @@ interface EmittedEvent {
 }
 
 interface MockSocket {
-  emit: (event: string, ...args: unknown[]) => MockSocket;
-  bind: (context: unknown) => (...args: unknown[]) => MockSocket;
+  emit: (event: string, payload?: unknown) => MockSocket;
+  bind: (context: unknown) => (event: string, payload?: unknown) => MockSocket;
 }
 
 test.describe('Cascade play to win', () => {

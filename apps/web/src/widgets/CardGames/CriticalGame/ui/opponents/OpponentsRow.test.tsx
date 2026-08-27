@@ -29,12 +29,23 @@ function renderRow(
   override: Partial<React.ComponentProps<typeof OpponentsRow>> = {},
 ) {
   const props: React.ComponentProps<typeof OpponentsRow> = {
-    opponents: makePlayers(2),
-    currentTurnPlayerId: null,
-    resolveDisplayName: (_id, fb) => fb,
-    ...override,
+    opponents: override.opponents ?? makePlayers(2),
+    currentTurnPlayerId: override.currentTurnPlayerId ?? null,
+    targetPlayerId: override.targetPlayerId,
+    onSelectTarget: override.onSelectTarget,
+    resolveDisplayName: override.resolveDisplayName ?? ((_id, fb) => fb),
+    logs: override.logs,
   };
-  return render(<OpponentsRow {...props} />);
+  return render(
+    <OpponentsRow
+      opponents={props.opponents}
+      currentTurnPlayerId={props.currentTurnPlayerId}
+      targetPlayerId={props.targetPlayerId}
+      onSelectTarget={props.onSelectTarget}
+      resolveDisplayName={props.resolveDisplayName}
+      logs={props.logs}
+    />,
+  );
 }
 
 describe('OpponentsRow', () => {

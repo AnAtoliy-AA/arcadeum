@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
-import { buildFaqJsonLd, type FaqQuestion } from '@/shared/seo/faqJsonLd';
 import { buildRoutes } from '@/shared/config/routes';
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
@@ -39,24 +38,7 @@ export default async function RewardsPage({
     ],
   });
 
-  const rawFaqItems = t?.faq?.items ?? [];
-  const faqQuestions: FaqQuestion[] = rawFaqItems
-    .filter((item): item is { question: string; answer: string } =>
-      Boolean(item?.question && item?.answer),
-    )
-    .map((item) => ({
-      question: item.question,
-      answer: item.answer,
-    }));
-
-  const faqSchema = buildFaqJsonLd({
-    locale,
-    questions: faqQuestions,
-    pageUrl: `${routes.rewards}`,
-    speakableSelectors: ['#faq'],
-  });
-
-  const jsonLdData = faqSchema ? [breadcrumb, faqSchema] : [breadcrumb];
+  const jsonLdData = [breadcrumb];
 
   return (
     <>

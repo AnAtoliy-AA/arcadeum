@@ -4,21 +4,21 @@ type JsonLdProps = {
 };
 
 /**
- * Renders a Schema.org JSON-LD `<script>` block. The `data` object is
- * serialized via `JSON.stringify` — this is safe because:
- * 1. JSON-LD script blocks are not executed as JavaScript.
- * 2. `JSON.stringify` escapes `</script>` sequences inside string values.
- * 3. All callers pass server-controlled, static data (no raw user input).
+ * Renders a Schema.org JSON-LD `<script>` block.
  *
- * Never pass user-supplied strings directly as `data` values without
- * server-side sanitization.
+ * `JSON.stringify` does not escape `<`, so a value containing `</script>`
+ * would prematurely terminate the script tag and allow HTML/script
+ * injection. All `<` are replaced with `\u003c`, which is valid JSON but
+ * safe to embed inside a `<script>` element.
  */
 export function JsonLd({ data, id = 'json-ld' }: JsonLdProps) {
   return (
     <script
       id={id}
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(data).replace(/</g, '\\u003c'),
+      }}
     />
   );
 }

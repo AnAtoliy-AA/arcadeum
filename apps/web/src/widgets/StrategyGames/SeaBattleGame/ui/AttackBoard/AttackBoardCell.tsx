@@ -4,6 +4,7 @@ import type React from 'react';
 import { CELL_STATE } from '../../types';
 import { BoardCell } from '../styles';
 import type { SeaBattleTheme } from '../../lib/theme';
+import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import { getCellBg, getCellIcon, getCellAnimClass } from './cell-helpers';
 
 interface AttackBoardCellProps {
@@ -21,6 +22,8 @@ interface AttackBoardCellProps {
   isWeaponPreview?: boolean;
   weaponPreviewType?: 'sonar' | 'radar' | null;
   isWeaponClickable?: boolean;
+  /** Roving-tabindex/focus attributes from the board's keyboard navigation. */
+  cellFocusProps?: Record<string, unknown>;
 }
 
 export const AttackBoardCell = memo(function AttackBoardCell({
@@ -38,6 +41,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   isWeaponPreview = false,
   weaponPreviewType,
   isWeaponClickable = false,
+  cellFocusProps,
 }: AttackBoardCellProps) {
   const icon = getCellIcon(isSunk, displayState);
   const animClass = getCellAnimClass(isSunk, displayState);
@@ -115,7 +119,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
 
   return (
     <BoardCell
-      className={`sb-cell ${isAttackable || isWeaponClickable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${isWeaponPreview ? 'sb-weapon-preview' : ''} ${animClass || ''}`}
+      className={`sb-cell ${BOARD_CELL_FOCUS_CLASS} ${isAttackable || isWeaponClickable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${isWeaponPreview ? 'sb-weapon-preview' : ''} ${animClass || ''}`}
       style={{
         background: isShipCell
           ? 'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)'
@@ -133,6 +137,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
       aria-label={cellLabel}
       data-row={!isMe ? rIndex : undefined}
       data-col={!isMe ? cIndex : undefined}
+      {...cellFocusProps}
     >
       {isShipCell && !icon && !isPending && (
         <div className="w-[6px] h-[6px] rounded-full bg-[#cbd5e1] opacity-75 shadow-sm pointer-events-none mx-auto" />

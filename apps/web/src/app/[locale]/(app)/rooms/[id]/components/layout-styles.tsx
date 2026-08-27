@@ -1,4 +1,4 @@
-import type React from 'react';
+import type { ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 
 /**
@@ -7,18 +7,20 @@ import { cx } from '@arcadeum/ui/utils/cx';
  */
 export function GameRow({
   className,
-  ...props
+  children,
 }: {
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  children?: ReactNode;
+}) {
   return (
     <div
       className={cx(
         'flex flex-row flex-1 items-stretch gap-4 relative min-h-0 max-[1150px]:flex-col',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }
 
@@ -30,19 +32,24 @@ export function GameRow({
 export function ChatPanel({
   visible,
   className,
-  ...props
+  children,
+  'data-testid': dataTestId,
 }: {
   visible?: boolean;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  children?: ReactNode;
+  'data-testid'?: string;
+}) {
   return (
     <div
+      data-testid={dataTestId}
       className={cx(
         'w-[350px] min-w-[350px] h-full min-h-0 shrink-0 rounded-2xl overflow-hidden max-[1150px]:w-full max-[1150px]:min-w-0 max-[1150px]:min-h-0 max-[1150px]:h-auto max-[1150px]:mt-2 max-[1150px]:rounded-lg',
         visible === false && 'hidden',
         className,
       )}
-      {...props}
-    />
+    >
+      {children}
+    </div>
   );
 }

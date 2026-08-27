@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { VerifyGemPurchaseButton } from './VerifyGemPurchaseButton';
 
-const mockFinalize = vi.fn();
+const mockFinalize = vi.hoisted(() => vi.fn());
 vi.mock('../server/gems.actions', () => ({
-  finalizeGemPurchaseAction: (...args: unknown[]) => mockFinalize(...args),
+  finalizeGemPurchaseAction: mockFinalize,
 }));
 
 const mockRouterRefresh = vi.fn();

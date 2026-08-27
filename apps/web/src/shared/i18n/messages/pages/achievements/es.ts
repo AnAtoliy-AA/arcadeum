@@ -28,6 +28,18 @@ export const achievementsEs = {
     claimed: '¡Reclamaste {n} XP!',
     unlocked: '¡Logro desbloqueado: {name}!',
   },
+  lockedTooltip: 'Bloqueado: sigue jugando para desbloquearlo',
+  rewards: {
+    xp: 'XP',
+    coins: 'Monedas',
+    gems: 'Gemas',
+  },
+  popup: {
+    title: '¡Logro desbloqueado!',
+    unlocked: 'Nuevo logro desbloqueado',
+    dismiss: 'Cerrar',
+    xp: 'XP',
+  },
 };
 
 export type AchievementsI18n = typeof achievementsEs;

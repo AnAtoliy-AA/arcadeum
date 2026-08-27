@@ -64,6 +64,46 @@ const CatDashRulesModal = dynamic(
   { ssr: false },
 );
 
+const BackgammonRulesModal = dynamic(
+  () =>
+    import('@/widgets/BoardGames/BackgammonGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
+const HeartsRulesModal = dynamic(
+  () =>
+    import('@/widgets/CardGames/HeartsGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
+const SpadesRulesModal = dynamic(
+  () =>
+    import('@/widgets/CardGames/SpadesGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
+const GoRulesModal = dynamic(
+  () =>
+    import('@/widgets/BoardGames/GoGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
+const PachisiRulesModal = dynamic(
+  () =>
+    import('@/widgets/BoardGames/PachisiGame/ui/RulesModal').then(
+      (m) => m.RulesModal,
+    ),
+  { ssr: false },
+);
+
 interface Props {
   gameId: GameId;
   themeId: string;
@@ -134,6 +174,21 @@ export function RulesAccess({ gameId, themeId }: Props) {
       ) : null}
       {gameId === 'cat_dash_v1' ? (
         <CatDashRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'backgammon_v1' ? (
+        <BackgammonRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'hearts_v1' ? (
+        <HeartsRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'spades_v1' ? (
+        <SpadesRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'go_v1' ? (
+        <GoRulesModal open={open} onClose={() => setOpen(false)} />
+      ) : null}
+      {gameId === 'pachisi_v1' ? (
+        <PachisiRulesModal open={open} onClose={() => setOpen(false)} />
       ) : null}
     </>
   );

@@ -7,6 +7,7 @@ import { cookies } from 'next/headers';
 import { appConfig } from '@/shared/config/app-config';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { WebVitalsReporter } from '@/shared/seo/WebVitalsReporter';
+import { AnalyticsProvider } from '@/shared/analytics/AnalyticsProvider';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -77,6 +78,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#151718',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default async function RootLayout({
@@ -174,6 +178,7 @@ export default async function RootLayout({
           Skip to content
         </a>
         <WebVitalsReporter />
+        <AnalyticsProvider />
         {process.env.NODE_ENV === 'production' && process.env.VERCEL && (
           <>
             <SpeedInsights />

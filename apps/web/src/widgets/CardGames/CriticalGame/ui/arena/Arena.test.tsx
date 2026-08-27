@@ -27,23 +27,48 @@ function renderArena(
   override: Partial<React.ComponentProps<typeof Arena>> = {},
 ) {
   const props: React.ComponentProps<typeof Arena> = {
-    deck: ['strike', 'evade', 'trade'] as CriticalCard[],
-    discardPile: ['strike'] as CriticalCard[],
-    cardVariant: 'cyberpunk',
-    isMyTurn: true,
-    isGameOver: false,
-    onDrawAndEnd: vi.fn(),
-    hand: ['strike'] as CriticalCard[],
-    allowActionCardCombos: false,
-    currentPlayerName: 'Alice',
-    pendingDraws: 1,
-    logs: [],
-    formatLogMessage: (m?: string | null) => m ?? '',
-    ...override,
+    deck: override.deck ?? (['strike', 'evade', 'trade'] as CriticalCard[]),
+    discardPile: override.discardPile ?? (['strike'] as CriticalCard[]),
+    cardVariant: override.cardVariant ?? 'cyberpunk',
+    isMyTurn: override.isMyTurn ?? true,
+    isGameOver: override.isGameOver ?? false,
+    onDrawAndEnd: override.onDrawAndEnd ?? vi.fn(),
+    onClearSelection: override.onClearSelection,
+    hand: override.hand ?? (['strike'] as CriticalCard[]),
+    allowActionCardCombos: override.allowActionCardCombos ?? false,
+    combo: override.combo,
+    currentPlayerName: override.currentPlayerName ?? 'Alice',
+    pendingDraws: override.pendingDraws ?? 1,
+    logs: override.logs ?? [],
+    formatLogMessage:
+      override.formatLogMessage ?? ((m?: string | null) => m ?? ''),
+    resolveDisplayName: override.resolveDisplayName,
+    serverOverloadOdds: override.serverOverloadOdds,
+    criticalsRemaining: override.criticalsRemaining,
+    hiddenCount: override.hiddenCount,
   };
   return render(
     <ScenePaletteProvider palette={palette}>
-      <Arena {...props} />
+      <Arena
+        deck={props.deck}
+        discardPile={props.discardPile}
+        cardVariant={props.cardVariant}
+        isMyTurn={props.isMyTurn}
+        isGameOver={props.isGameOver}
+        onDrawAndEnd={props.onDrawAndEnd}
+        onClearSelection={props.onClearSelection}
+        hand={props.hand}
+        allowActionCardCombos={props.allowActionCardCombos}
+        combo={props.combo}
+        currentPlayerName={props.currentPlayerName}
+        pendingDraws={props.pendingDraws}
+        logs={props.logs}
+        formatLogMessage={props.formatLogMessage}
+        resolveDisplayName={props.resolveDisplayName}
+        serverOverloadOdds={props.serverOverloadOdds}
+        criticalsRemaining={props.criticalsRemaining}
+        hiddenCount={props.hiddenCount}
+      />
     </ScenePaletteProvider>,
   );
 }

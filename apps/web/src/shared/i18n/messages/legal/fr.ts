@@ -35,10 +35,11 @@ export const fr: LegalMessages = {
         ],
       },
       accounts: {
-        title: '4. Comptes Utilisateurs',
+        title: '4. Comptes Utilisateurs et Éligibilité',
         intro:
-          'Pour utiliser certaines fonctionnalités de {{appName}}, vous devez créer un compte. Vous acceptez de :',
+          'Pour utiliser certaines fonctionnalités de {{appName}}, vous devez créer un compte. En vous inscrivant, vous confirmez avoir au moins 18 ans (ou l’âge légal de la majorité dans votre juridiction) et acceptez de :',
         items: [
+          'Confirmer que vous avez au moins 18 ans ou plus',
           "Fournir des informations d'inscription exactes et complètes",
           'Maintenir la sécurité de vos identifiants de compte',
           'Être responsable de toutes les activités sous votre compte',
@@ -73,14 +74,16 @@ export const fr: LegalMessages = {
           'Pour demander un remboursement, veuillez nous contacter via notre page de support.',
       },
       acceptableUse: {
-        title: '8. Utilisation Acceptable',
+        title: '8. Utilisation Acceptable et Jeu Équitable',
         intro: 'Vous acceptez de ne pas :',
         items: [
           'Utiliser le service à des fins illégales',
           "Harceler, abuser ou nuire à d'autres utilisateurs",
           "Tenter d'exploiter, pirater ou perturber le service",
-          'Créer plusieurs comptes pour abuser des promotions',
-          'Utiliser des outils automatisés ou des bots',
+          'Créer plusieurs comptes pour abuser des promotions ou accumuler des pièces',
+          'Utiliser des outils automatisés, des scripts ou des bots',
+          'Vous livrer au transfert intentionnel de jetons (chip dumping), au trucage de parties ou aux défaites volontaires pour transférer des pièces ou du classement',
+          'Vous entendre avec d’autres joueurs pour manipuler les parties, les cagnottes, les tournois ou les classements',
         ],
       },
       intellectualProperty: {

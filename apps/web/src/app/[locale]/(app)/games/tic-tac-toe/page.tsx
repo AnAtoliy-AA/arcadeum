@@ -6,8 +6,8 @@ import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
-import { buildFaqJsonLd } from '@/shared/seo/faqJsonLd';
-import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import TicTacToeLanding from './TicTacToeLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -84,39 +84,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
     }),
   ];
 
-  const pageUrl = `${appConfig.siteUrl}${routes.ticTacToeLanding}`;
   const comingSoon = await isGameComingSoon(TIC_TAC_TOE_SLUG);
-
-  const faqItems = landing?.faq;
-  if (faqItems) {
-    const faqQuestions = Object.values(faqItems).map(
-      (item: { question: string; answer: string }) => ({
-        question: item.question,
-        answer: item.answer,
-      }),
-    );
-    const faqJsonLd = buildFaqJsonLd({
-      locale,
-      questions: faqQuestions,
-      pageUrl,
-      speakableSelectors: ['#faq'],
-    });
-    if (faqJsonLd) jsonLd.push(faqJsonLd);
-  }
-
-  const howToSteps = landing?.steps;
-  if (howToSteps) {
-    const howToJsonLd = buildHowToJsonLd({
-      locale,
-      pageUrl,
-      name: `How to play ${gameName}`,
-      description: description ?? '',
-      steps: [howToSteps.create, howToSteps.join, howToSteps.play]
-        .filter((s): s is { title: string; body: string } => s !== undefined)
-        .map((s) => ({ name: s.title, text: s.body })),
-    });
-    if (howToJsonLd) jsonLd.push(howToJsonLd);
-  }
 
   return (
     <>
@@ -142,6 +110,15 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
             { name?: string; description?: string } | undefined
           >
         }
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={getPostsByTag(locale, [
+          'Tic Tac Toe',
+          'Board Game',
+          'Крестики-нолики',
+        ])}
+        gameName={landing?.hero?.title}
       />
     </>
   );

@@ -3,6 +3,7 @@
 import React, {
   useMemo,
   useEffect,
+  useRef,
   Suspense,
   useState,
   useCallback,
@@ -16,12 +17,21 @@ import { gamesApi } from '@/features/games/api';
 import { useGameRoom } from '@/features/games/hooks/useGameRoom';
 import type { GameType } from '@/features/games/hooks/useGameActions';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  trackSocialInviteAccepted,
+  trackSocialInviteLanded,
+} from '@/shared/analytics/funnel';
 import { useIdleReconnect } from '@/shared/hooks/useIdleReconnect';
 import { useIdleDetection } from '@/shared/hooks/useIdleDetection';
 import { Page } from '@/shared/ui/Page/Page';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
+import {
+  TutorialOverlay,
+  hasTutorialSteps,
+  useTutorialStore,
+} from '@/features/tutorial';
 import type { GameInitialData, GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
@@ -55,6 +65,10 @@ export default function GameRoomPage({
   const [showRules, setShowRules] = useState(false);
   const handleShowRules = useCallback(() => setShowRules(true), []);
   const handleCloseRules = useCallback(() => setShowRules(false), []);
+
+  const [showTutorial, setShowTutorial] = useState(false);
+  const handleCloseTutorial = useCallback(() => setShowTutorial(false), []);
+  const handleShowTutorial = useCallback(() => setShowTutorial(true), []);
 
   const isAuthenticated = !!snapshot.accessToken && !!snapshot.userId;
 
@@ -193,10 +207,43 @@ export default function GameRoomPage({
   const isAutoJoining = autoJoinAttempted && !!urlInviteCode && !room && !error;
   const isManualSubmitting = manualSubmitPending && !room && !error;
 
+  // Invite-link funnel (roadmap 6C): landing on the room URL with an
+  // inviteCode marks the K-factor numerator candidate; a joined room marks
+  // the conversion. Both fire once per mounted page.
+  const inviteLandedRef = useRef(false);
+  useEffect(() => {
+    if (!urlInviteCode || inviteLandedRef.current) return;
+    inviteLandedRef.current = true;
+    trackSocialInviteLanded(roomId);
+  }, [urlInviteCode, roomId]);
+
+  const inviteAcceptedRef = useRef(false);
+  useEffect(() => {
+    if (!urlInviteCode || !room || inviteAcceptedRef.current) return;
+    if (roomMode !== 'play') return;
+    inviteAcceptedRef.current = true;
+    trackSocialInviteAccepted(roomId, room.gameId);
+  }, [urlInviteCode, room, roomId, roomMode]);
+
   const gameType: GameType = useMemo(() => {
     const gameId = room?.gameId;
     return mapToGameType(gameId);
   }, [room]);
+
+  // Auto-open the interactive tutorial on a player's first visit to any
+  // room of this game (spectators and seen/skipped players are excluded).
+  const tutorialAutoOpenRef = useRef<string | null>(null);
+  const supportsTutorial = !!room?.gameId && hasTutorialSteps(room.gameId);
+  useEffect(() => {
+    const gameId = room?.gameId;
+    if (!gameId || !roomId || !supportsTutorial || roomMode !== 'play') return;
+    const autoKey = `${roomId}:${gameId}`;
+    if (tutorialAutoOpenRef.current === autoKey) return;
+    tutorialAutoOpenRef.current = autoKey;
+    if (!useTutorialStore.getState().hasSeenTutorial(gameId)) {
+      queueMicrotask(() => setShowTutorial(true));
+    }
+  }, [roomId, room?.gameId, roomMode, supportsTutorial]);
 
   const [isGameReady, setIsGameReady] = useState(false);
   const [gameLoading, setGameLoading] = useState(false);
@@ -385,6 +432,7 @@ export default function GameRoomPage({
           isSpectating={roomMode === 'watch'}
           onReconnect={reconnect}
           onShowRules={handleShowRules}
+          onShowTutorial={supportsTutorial ? handleShowTutorial : undefined}
         >
           {({ isFullscreen, toggleFullscreen }) => {
             const gameProps = gamePropsBase
@@ -392,7 +440,12 @@ export default function GameRoomPage({
               : null;
 
             return (
-              <GameWrapper>
+              <GameWrapper data-testid="game-board-area">
+                <TutorialOverlay
+                  gameId={room.gameId}
+                  open={showTutorial}
+                  onClose={handleCloseTutorial}
+                />
                 <Suspense
                   fallback={
                     <LoadingContainer>

@@ -7,31 +7,59 @@ import { CascadeSymbol } from './symbols/CascadeSymbol';
 import { ChessSymbol } from './symbols/ChessSymbol';
 import { CheckersSymbol } from './symbols/CheckersSymbol';
 import { CatDashSymbol } from './symbols/CatDashSymbol';
+import { BackgammonSymbol } from './symbols/BackgammonSymbol';
+import { HeartsSymbol } from './symbols/HeartsSymbol';
+import { SpadesSymbol } from './symbols/SpadesSymbol';
+import { GoSymbol } from './symbols/GoSymbol';
+import { PachisiSymbol } from './symbols/PachisiSymbol';
+import { SolitaireSymbol } from './symbols/SolitaireSymbol';
+import { MinesweeperSymbol } from './symbols/MinesweeperSymbol';
+import { SudokuSymbol } from './symbols/SudokuSymbol';
+import { Game2048Symbol } from './symbols/Game2048Symbol';
 
 export const FALLBACK_ACCENT = '#38bdf8';
 
 interface GameSymbolProps extends SVGProps<SVGSVGElement> {
   gameId: string;
+  className?: string;
 }
 
-export function GameSymbol({ gameId, ...rest }: GameSymbolProps) {
+export function GameSymbol({ gameId, className }: GameSymbolProps) {
   switch (gameId) {
     case 'critical_v1':
-      return <CriticalSymbol {...rest} />;
+      return <CriticalSymbol className={className} />;
     case 'sea_battle_v1':
-      return <SeaBattleSymbol {...rest} />;
+      return <SeaBattleSymbol className={className} />;
     case 'glimworm_v1':
-      return <GlimwormSymbol {...rest} />;
+      return <GlimwormSymbol className={className} />;
     case 'tic_tac_toe_v1':
-      return <TicTacToeSymbol {...rest} />;
+      return <TicTacToeSymbol className={className} />;
     case 'cascade_v1':
-      return <CascadeSymbol {...rest} />;
+      return <CascadeSymbol className={className} />;
     case 'chess_v1':
-      return <ChessSymbol {...rest} />;
+      return <ChessSymbol className={className} />;
     case 'checkers_v1':
-      return <CheckersSymbol {...rest} />;
+      return <CheckersSymbol className={className} />;
     case 'cat_dash_v1':
-      return <CatDashSymbol {...rest} />;
+      return <CatDashSymbol className={className} />;
+    case 'backgammon_v1':
+      return <BackgammonSymbol className={className} />;
+    case 'hearts_v1':
+      return <HeartsSymbol className={className} />;
+    case 'spades_v1':
+      return <SpadesSymbol className={className} />;
+    case 'go_v1':
+      return <GoSymbol className={className} />;
+    case 'pachisi_v1':
+      return <PachisiSymbol className={className} />;
+    case 'solitaire_v1':
+      return <SolitaireSymbol className={className} />;
+    case 'minesweeper_v1':
+      return <MinesweeperSymbol className={className} />;
+    case 'sudoku_v1':
+      return <SudokuSymbol className={className} />;
+    case 'game_2048_v1':
+      return <Game2048Symbol className={className} />;
     default:
       return null;
   }

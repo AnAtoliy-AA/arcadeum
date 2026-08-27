@@ -31,6 +31,9 @@ export class BulkRewardsService {
       throw new BadRequestException('bulkRewards.itemIdRequired');
     }
 
+    const operationId =
+      dto.operationId?.trim() || `op-${Date.now().toString(36)}`;
+
     const users = await this.userModel
       .find({ deletedAt: null })
       .select('_id')
@@ -48,7 +51,7 @@ export class BulkRewardsService {
       const batch = users.slice(i, i + BATCH_SIZE);
       const batchResults = await Promise.allSettled(
         batch.map((user) =>
-          this.rewardUser(user._id.toString(), dto, adminUserId),
+          this.rewardUser(user._id.toString(), dto, adminUserId, operationId),
         ),
       );
 
@@ -77,8 +80,13 @@ export class BulkRewardsService {
     userId: string,
     dto: BulkRewardDto,
     adminUserId: string,
+    operationId: string,
   ): Promise<void> {
-    const idempotencyKey = `bulk-reward-${dto.type}-${dto.amount}-${dto.itemId || 'none'}-${userId}-${Date.now()}`;
+    // The idempotency key MUST be stable across retries of the same logical
+    // operation, otherwise a partially-failed batch re-run double-pays
+    // everyone already credited. Pass `operationId` in the request body when
+    // retrying; it is generated once per invocation otherwise.
+    const idempotencyKey = `bulk-reward-${dto.type}-${dto.amount}-${dto.itemId || 'none'}-${operationId}-${userId}`;
 
     switch (dto.type) {
       case BulkRewardType.COINS:

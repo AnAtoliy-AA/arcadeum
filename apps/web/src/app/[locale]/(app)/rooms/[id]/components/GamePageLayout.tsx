@@ -11,10 +11,15 @@ import { useEmotes } from '@/features/games/hooks/useEmotes';
 import { useGameRoomChat } from '@/features/games/hooks/useGameRoomChat';
 import { gameSocket } from '@/shared/lib/socket';
 import { ActiveEmotesProvider } from '@/features/games/ui/GameWidgetContainer';
+import {
+  SpectatorReactionsBar,
+  buildSpectatorReactionsLabels,
+} from '@/features/games/ui/SpectatorReactionsBar';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
+import { GuestTermsNotice } from '@/features/games/ui';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
 import { roomStyles } from './styles';
 import { GameRow, ChatPanel } from './layout-styles';
@@ -35,6 +40,9 @@ interface GamePageLayoutProps {
 
   // Rules
   onShowRules: () => void;
+
+  // Interactive tutorial (only when the game has one)
+  onShowTutorial?: () => void;
 
   isSpectating?: boolean;
 
@@ -58,6 +66,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     isIdle,
     onReconnect,
     onShowRules,
+    onShowTutorial,
     isSpectating,
     children,
   } = props;
@@ -154,7 +163,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
       .registerFallbackResolveDisplayName(resolveDisplayName);
   }, [resolveDisplayName]);
 
-  const { isGameOver, onRematch, rematchLoading } = useGameRematchStore();
+  const isGameOver = useGameRematchStore((s) => s.isGameOver);
+  const onRematch = useGameRematchStore((s) => s.onRematch);
+  const rematchLoading = useGameRematchStore((s) => s.rematchLoading);
 
   const isLobby = room.status === 'lobby';
   const isHost = room.hostId === userId;
@@ -252,11 +263,37 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           showChat={showChat}
           onToggleChat={handleToggleChat}
           onShowRules={onShowRules}
+          onShowTutorial={onShowTutorial}
           isSpectating={isSpectating}
           isGameOver={isGameOver}
           onRematch={onRematch ?? undefined}
           rematchLoading={rematchLoading}
         />
+
+        {!isAuthenticated && <GuestTermsNotice />}
+
+        {/* ARC-926: spectator chrome — mode pill + compact reactions bar,
+            rendered above the game row so it never overlaps the board. */}
+        {isSpectating && (
+          <>
+            <div className="flex w-full justify-center">
+              <span
+                role="status"
+                aria-live="polite"
+                data-testid="spectator-mode-pill"
+                className="rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 py-1 text-xs font-medium text-[var(--textSecondary)]"
+              >
+                {t('games.spectator.modeLabel')}
+              </span>
+            </div>
+            <div className="flex w-full justify-center">
+              <SpectatorReactionsBar
+                sendEmote={sendEmote}
+                labels={buildSpectatorReactionsLabels(t)}
+              />
+            </div>
+          </>
+        )}
 
         <GameRow>
           <ActiveEmotesProvider

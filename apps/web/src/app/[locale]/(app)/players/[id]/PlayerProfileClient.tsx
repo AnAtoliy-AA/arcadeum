@@ -1,4 +1,5 @@
 'use client';
+import { Suspense, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   PageLayout,
@@ -18,13 +19,18 @@ import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { useLanguage } from '@/shared/i18n/context';
 import { formatNumber } from '@/shared/i18n/formatters';
+import { SeasonBanner } from '@/features/seasons/ui';
 
 export default function PlayerProfileClient({
   id,
   t,
+  achievementsSlot,
+  initialProfile,
 }: {
   id: string;
   t?: PageTranslations;
+  achievementsSlot?: ReactNode;
+  initialProfile?: PlayerProfile | null;
 }) {
   const router = useRouter();
   const {
@@ -34,6 +40,10 @@ export default function PlayerProfileClient({
   } = useQuery<PlayerProfile | null>({
     queryKey: ['player', id],
     queryFn: () => getPlayer(id),
+    // SSR-seeded profile renders instantly (and appears in initial HTML);
+    // background refresh still runs when no seed was provided.
+    initialData: initialProfile ?? null,
+    refetchOnMount: !initialProfile,
   });
   const missing = !!error || (!loading && !profile);
 
@@ -70,6 +80,7 @@ export default function PlayerProfileClient({
               profile={profile}
               eyebrow={eyebrow}
               placeholder={placeholder}
+              achievementsSlot={achievementsSlot}
             />
           )}
         </div>
@@ -82,10 +93,12 @@ function Profile({
   profile,
   eyebrow,
   placeholder,
+  achievementsSlot,
 }: {
   profile: PlayerProfile;
   eyebrow: string;
   placeholder: string;
+  achievementsSlot?: ReactNode;
 }) {
   const { locale } = useLanguage();
   const {
@@ -163,6 +176,7 @@ function Profile({
           value={player.region ? player.region.toUpperCase() : '—'}
         />
       </div>
+      <SeasonBanner className="w-full max-w-[520px]" />
       <div className="flex flex-col items-stretch gap-2 w-full max-w-[520px]">
         <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
           Recent form
@@ -191,6 +205,13 @@ function Profile({
           ))}
         </div>
       </div>
+      {achievementsSlot ? (
+        <Suspense fallback={null}>
+          <div className="flex w-full flex-col items-stretch">
+            {achievementsSlot}
+          </div>
+        </Suspense>
+      ) : null}
       {squad ? (
         <div className="flex flex-col items-stretch gap-2">
           <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">

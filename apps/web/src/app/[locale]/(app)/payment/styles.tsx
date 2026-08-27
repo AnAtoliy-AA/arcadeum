@@ -1,16 +1,47 @@
-import type { ComponentProps } from 'react';
+import type { ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { TextArea } from '@arcadeum/ui';
+import { TextArea, type TextAreaProps } from '@arcadeum/ui';
 
-export function PaymentTextArea(
-  props: ComponentProps<typeof TextArea> & { 'aria-label'?: string },
-) {
+export function PaymentTextArea({
+  value,
+  defaultValue,
+  placeholder,
+  onChange,
+  onFocus,
+  onBlur,
+  disabled,
+  error,
+  fullWidth,
+  'data-testid': dataTestId,
+  id,
+  name,
+  autoFocus,
+  rows,
+  required,
+  style,
+  'aria-label': ariaLabel,
+}: Omit<TextAreaProps, 'className'> & { 'aria-label'?: string }) {
   return (
     <TextArea
-      {...props}
+      value={value}
+      defaultValue={defaultValue}
+      placeholder={placeholder}
+      onChange={onChange}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      disabled={disabled}
+      error={error}
+      fullWidth={fullWidth}
+      data-testid={dataTestId}
+      id={id}
+      name={name}
+      autoFocus={autoFocus}
+      rows={rows}
+      required={required}
+      style={style}
+      {...(ariaLabel !== undefined ? { 'aria-label': ariaLabel } : {})}
       className={cx(
         'rounded-2xl border border-[var(--borderColor)] p-4 text-[18px] leading-[24px]',
-        props.className,
       )}
     />
   );
@@ -20,12 +51,11 @@ export function StatusMessage({
   messageType,
   className,
   children,
-  ...props
 }: {
   messageType: 'error' | 'success';
   className?: string;
-  children: React.ReactNode;
-} & React.HTMLAttributes<HTMLDivElement>) {
+  children: ReactNode;
+}) {
   return (
     <div
       className={cx(
@@ -35,7 +65,6 @@ export function StatusMessage({
           : 'bg-[rgba(34,197,94,0.1)] border-[rgba(34,197,94,0.2)]',
         className,
       )}
-      {...props}
     >
       {children}
     </div>

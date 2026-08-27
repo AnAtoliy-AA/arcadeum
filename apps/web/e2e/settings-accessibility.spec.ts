@@ -28,20 +28,48 @@ test.describe('Settings Accessibility and UX', () => {
     await expect(darkBtn).toHaveAttribute('aria-pressed', 'false', {});
   });
 
-  test('language buttons should toggle active states', async ({ page }) => {
-    const enBtn = page.getByTestId('lang-btn-en');
-    const esBtn = page.getByTestId('lang-btn-es');
+  test('vision mode buttons should update html data-vision-mode and active state', async ({
+    page,
+  }) => {
+    const deutBtn = page.getByTestId('vision-deuteranopia');
+    const protBtn = page.getByTestId('vision-protanopia');
+    const tritBtn = page.getByTestId('vision-tritanopia');
+    const hcBtn = page.getByTestId('vision-highContrast');
+    const noneBtn = page.getByTestId('vision-none');
 
-    // Default should be English (usually)
-    await enBtn.click({ force: true });
-    await expect
-      .poll(async () => await enBtn.getAttribute('aria-pressed'), {})
-      .toBe('true');
+    await deutBtn.click({ force: true });
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-vision-mode',
+      'deuteranopia',
+    );
+    await expect(deutBtn).toHaveAttribute('aria-pressed', 'true');
 
-    await esBtn.click({ force: true });
-    await expect
-      .poll(async () => await esBtn.getAttribute('aria-pressed'), {})
-      .toBe('true');
-    await expect(enBtn).toHaveAttribute('aria-pressed', 'false', {});
+    await protBtn.click({ force: true });
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-vision-mode',
+      'protanopia',
+    );
+    await expect(protBtn).toHaveAttribute('aria-pressed', 'true');
+
+    await tritBtn.click({ force: true });
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-vision-mode',
+      'tritanopia',
+    );
+    await expect(tritBtn).toHaveAttribute('aria-pressed', 'true');
+
+    await hcBtn.click({ force: true });
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-vision-mode',
+      'highContrast',
+    );
+    await expect(hcBtn).toHaveAttribute('aria-pressed', 'true');
+
+    await noneBtn.click({ force: true });
+    await expect(page.locator('html')).toHaveAttribute(
+      'data-vision-mode',
+      'none',
+    );
+    await expect(noneBtn).toHaveAttribute('aria-pressed', 'true');
   });
 });

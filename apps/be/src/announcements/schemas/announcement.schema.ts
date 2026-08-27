@@ -69,13 +69,18 @@ export const SEVERITY_RANK: Record<AnnouncementSeverity, number> = {
 
 @Schema({ timestamps: true, collection: 'announcements' })
 export class Announcement {
-  @Prop({ required: true, enum: ANNOUNCEMENT_SEVERITIES })
+  @Prop({ type: String, required: true, enum: ANNOUNCEMENT_SEVERITIES })
   severity!: AnnouncementSeverity;
 
   @Prop({ required: true, type: Number })
   severityRank!: number;
 
-  @Prop({ required: true, enum: ANNOUNCEMENT_AUDIENCES, default: 'all' })
+  @Prop({
+    type: String,
+    required: true,
+    enum: ANNOUNCEMENT_AUDIENCES,
+    default: 'all',
+  })
   audience!: AnnouncementAudience;
 
   @Prop({ type: Date, default: null })

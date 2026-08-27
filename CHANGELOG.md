@@ -7,34 +7,677 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.63] - 2026-08-27
+
+### Added
+- expand scenarios to 50, add gameplay auth injection
+
+### Fixed
+- run gameplay scenarios anonymous, expand fallback tracks
+
+
+## [1.26.62] - 2026-08-27
+
+### Fixed
+- handle View Transition AbortError when playing action cards
+
+
+## [1.26.61] - 2026-08-27
+
+### Fixed
+- quote heredoc and fix metadata in release social poster
+
+
+## [1.26.60] - 2026-08-27
+
+### Fixed
+- make card text fully visible and add double-click to play
+- improve mobile playability with safe areas, tap handling, and responsive modals
+
+
+## [1.26.59] - 2026-08-27
+
+### Fixed
+- fix offline game downloads not working and missing sizes
+
+
+## [1.26.58] - 2026-08-26
+
+### Added
+- rework features page with interactive views, filters, and full i18n
+
+### Fixed
+- use data-testid selectors in e2e tests to avoid i18n and role mismatches
+- resolve FEATURES.md path across root and web app contexts
+
+### Documentation
+- add comprehensive feature list covering user, SEO, and AI search features
+
+
+## [1.26.57] - 2026-08-26
+
+### Fixed
+- adapt games catalog and picker cards for light theme
+
+
+## [1.26.56] - 2026-08-26
+
+### Added
+- offline game downloads with sizes and install prompt
+
+
+## [1.26.55] - 2026-08-26
+
+### Fixed
+- register pachisi gateway and add compile-time registration guard
+
+
+## [1.26.54] - 2026-08-26
+
+### Added
+- create GameRulesModal with close button and modern card layout (ARC-896) (ARC-896)
+- connect games control panel and game widgets via zustand for result screen toggling (ARC-896) (ARC-896)
+- modernize single-player games UI and unify win-loss modal (ARC-896) (ARC-896)
+- apply global color vision accessibility filters (ARC-896) (ARC-896)
+
+### Fixed
+- increase control panel z-index to z-[100] above game header (ARC-896) (ARC-896)
+- fix share dropdown z-index and keep native share as menu option (ARC-896) (ARC-896)
+- fix translation keys in GameRulesModal, control panel, and Go gameOver (ARC-896) (ARC-896)
+- synchronize game result store in effect avoiding setState during render (ARC-896) (ARC-896)
+- ensure full square aspect ratio and dimensions for go board (ARC-896) (ARC-896)
+- fix go board sizing and layout to fill playable area (ARC-896) (ARC-896)
+- slow down celebration sparkle bubble animation speed for graceful float
+- smooth continuous linear bubble rise with 4 directional floating drifts
+- disperse celebration bubbles organically with negative delay
+- expand draw celebration sparkle particles and slots across full screen width
+- span sparkle particles across full screen width on draw celebration
+- validate and self-heal anonymous id format in api-client
+
+
+## [1.26.53] - 2026-08-26
+
+### Fixed
+
+- let anon players see their games in rooms filters
+
+## [1.26.52] - 2026-08-26
+
+### Fixed
+
+- isolate wallet socket so bad tokens stop tearing down games/chats
+
+## [1.26.51] - 2026-08-26
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.26.50] - 2026-08-26
+
+### Fixed
+
+- resolve circular DI TDZ and mongoose prop types under SWC
+
+## [1.26.49] - 2026-08-26
+
+### Fixed
+
+- forward props dropped by no-spread refactor
+- restore behavior parity after no-important/no-spread refactor
+
+### Refactored
+
+- remove !important and rest/args/props spread patterns
+
+## [1.26.48] - 2026-08-25
+
+### Added
+
+- rework 2048 styles and win/lose screen (ARC-940) (ARC-940)
+
+## [1.26.47] - 2026-08-25
+
+### Fixed
+
+- literal-compare wallet signature lookup (CodeQL js/sql-injection)
+- provide User model to EventsModule for RolesGuard
+- fail-closed OAuth, safe JsonLd, real SecureStore
+- tighten session, RBAC, payments and economy abuse limits
+- harden ARC deposit verification and shop replay protection
+- require verified identity on chat and games gateways
+
+## [1.26.46] - 2026-08-25
+
+### Improved
+
+- seed client pages with server-fetched data instead of spinners
+- cache hot public reads, batch fan-out, and bound cron work
+- replace whole-store Zustand subscriptions with field selectors
+
+## [1.26.45] - 2026-08-25
+
+### Improved
+
+- code-split recharts eval graph, handle batched leaderboard events
+- remove hot-path N+1s, bound bcrypt fallback, batch socket fan-out
+
+## [1.26.44] - 2026-08-25
+
+### Fixed
+
+- remove deprecated schema, restore SSR content (ARC-938) (ARC-938)
+
+## [1.26.43] - 2026-08-25
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.26.42] - 2026-08-25
+
+### Added
+
+- custom worker preserves push handlers; cache play documents
+- spectator reactions bar
+- unlock popup host and profile achievement grid
+- server-side chess coach hints via games gateway
+- bracket generation, reporting and public bracket page
+
+### Fixed
+
+- address e2e regressions from ARC-926 features (ARC-926)
+
+### Refactored
+
+- extract tournaments page messages into dedicated module
+
+## [1.26.41] - 2026-08-25
+
+### Added
+
+- rework post game analytics with match highlights, filterable timeline, rivalry duel, and form trends (ARC-937) (ARC-937)
+- rework changelog and roadmap pages with rich metrics, filters, and tabbed views (ARC-937) (ARC-937)
+
+### Fixed
+
+- extract rich move messages and descriptions in post-game analytics timeline (ARC-937) (ARC-937)
+- keep full stats on end screen and remove redundant stats tab from analytics (ARC-937) (ARC-937)
+- auto-expand matching changelog cards on search or category filter (ARC-937) (ARC-937)
+- hide summary stats grid when detailed analysis is open to avoid duplicate display (ARC-937) (ARC-937)
+- prevent nested anchor hydration error in GamesCatalogCard (ARC-937) (ARC-937)
+
+## [1.26.40] - 2026-08-25
+
+### Added
+
+- implement prize badges catalog and visual medallions across events (ARC-936) (ARC-936)
+
+### Fixed
+
+- fix event banner layout and replace invalid text tokens (ARC-936) (ARC-936)
+- adapt home hero heading and shadows to active theme (ARC-936) (ARC-936)
+
+## [1.26.39] - 2026-08-25
+
+### Fixed
+
+- restore android build compatibility (ARC-892) (ARC-892)
+- build games-core dist as part of be build (ARC-925)
+
+## [1.26.38] - 2026-08-25
+
+### Added
+
+- add opengraph previews for single-player games
+
+### Documentation
+
+- refresh llms catalogs and update roadmap statuses
+
+## [1.26.37] - 2026-08-25
+
+### Added
+
+- post-game analytics with head-to-head and trends (ARC-925) (ARC-925)
+
+### Fixed
+
+- sanitize gameId before Mongo query filters (ARC-925)
+
+## [1.26.36] - 2026-08-25
+
+### Added
+
+- add chess-notation block and real move sequences
+- add SEO content, new block types, and RelatedArticles integration
+
+## [1.26.35] - 2026-08-25
+
+### Fixed
+
+- use shared buildInviteUrl in RoomQrModal for consistent UTM params
+- resolve RN 0.87 type resolution and API drift
+
+## [1.26.34] - 2026-08-25
+
+### Added
+
+- add real board preview art and symbols for puzzle games (ARC-936) (ARC-936)
+
+### Fixed
+
+- export typescript source types for pre-build linting and type resolution (ARC-936) (ARC-936)
+- restore tsconfig rootDir to maintain dist/src/main structure (ARC-936) (ARC-936)
+
+## [1.26.33] - 2026-08-25
+
+### Added
+
+- add room QR code sharing (ARC-937)
+
+## [1.26.32] - 2026-08-24
+
+### Fixed
+
+- memoize server GETs and retry 429 during prerender
+- remove leftover src/middleware.ts after proxy rename
+- migrate middleware to proxy convention and declare CSP_CONNECT_SRC in turbo env
+
+## [1.26.31] - 2026-08-24
+
+### Added
+
+- add web offline runtime sources missed by initial staging (ARC-900)
+- offline play-vs-bot mode via shared games-core package (ARC-900)
+
+### Fixed
+
+- forward event name through lazy socket proxy emit (ARC-900)
+- declare games-core dependency for be and web (ARC-900)
+- correct e2e mapper depth and sea-battle payload cast for nest build (ARC-900)
+- resolve games-core types from src so CI needs no prebuilt dist (ARC-900)
+
+### Documentation
+
+- mark offline mode implemented and add offline step to new-game skill (ARC-900)
+
+## [1.26.30] - 2026-08-24
+
+### Added
+
+- segment all statistics metrics across registered and anonymous users (ARC-935) (ARC-935)
+- add anonymous and guest player telemetry with audience filters (ARC-935) (ARC-935)
+- add platform statistics dashboard with engagement metrics and pdf export (ARC-935) (ARC-935)
+
+### Fixed
+
+- add delta and deltaType props to StatTile and fix test mock types (ARC-935) (ARC-935)
+- ensure profile menu and avatar render with exact colors in print/PDF (ARC-935) (ARC-935)
+- hide halo conic mask and profile dropdown in print to fix avatar white box in PDF (ARC-935) (ARC-935)
+- segment revenue and wallet transactions across audience modes (ARC-935) (ARC-935)
+- add registeredGames and anonymousGames to daily trend objects (ARC-935) (ARC-935)
+- resolve audience mode filtering so Registered correctly shows active users and games (ARC-935) (ARC-935)
+- reconcile audience metrics to ensure All strictly equals Reg plus Anon (ARC-935) (ARC-935)
+- prevent undefined toLocaleString in StatsGamesBreakdown (ARC-935) (ARC-935)
+- prevent runtime TypeError on undefined totalCount with deep merge and safe fallbacks (ARC-935) (ARC-935)
+
+## [1.26.29] - 2026-08-24
+
+### Added
+
+- register solo puzzle games in catalog, seo, and sitemap (ARC-924)
+- add 2048 widget, routes, and i18n (ARC-924)
+- add sudoku widget, routes, and i18n (ARC-924)
+- add minesweeper widget, routes, and i18n (ARC-924)
+
+### Fixed
+
+- align component types with generated RN 0.81 definitions
+
+### Refactored
+
+- extract shared solo game landing component (ARC-924)
+
+## [1.26.28] - 2026-08-24
+
+### Added
+
+- make starter cosmetic items implicit and purge legacy starter inventory rows (ARC-924) (ARC-924)
+- add reusable InfiniteScroll component with storybook and tests (ARC-924) (ARC-924)
+- rework command center and add infinite scroll to all admin pages (ARC-924) (ARC-924)
+
+### Fixed
+
+- resolve setState in effect lint errors and add test data pruning script (ARC-925) (ARC-925)
+- wrap payment and user handlers in useCallback and clean filters styling (ARC-924) (ARC-924)
+- prevent infinite render loop by syncing accumulated items in useEffect (ARC-924) (ARC-924)
+
+## [1.26.27] - 2026-08-24
+
+### Added
+
+- add solitaire landing page with i18n in five locales (ARC-924)
+- register solitaire in catalog, routes, and seo metadata (ARC-924)
+- add solitaire widget UI and play route (ARC-924)
+- add solitaire client-side engine, store, and theme (ARC-924)
+
+### Documentation
+
+- add single-player games tier to roadmap (ARC-924)
+
+## [1.26.26] - 2026-08-24
+
+### Added
+
+- add season banner with rewards and progress on player profile (ARC-899)
+- add seasons module with rollover cron and soft elo reset (ARC-899)
+
+## [1.26.25] - 2026-08-24
+
+### Added
+
+- add keyboard play to backgammon, sea battle, chess and checkers boards (ARC-898)
+- add keyboard navigation utilities and Escape-to-deselect (ARC-898)
+
+### Documentation
+
+- mark keyboard navigation implemented in roadmap (ARC-898)
+
+## [1.26.24] - 2026-08-24
+
+### Added
+
+- add real preview art for hearts, spades, go, and pachisi (ARC-923) (ARC-923)
+
+### Documentation
+
+- update new-game skill checklist and gotchas for catalog preview art (ARC-923) (ARC-923)
+
+## [1.26.23] - 2026-08-24
+
+### Fixed
+
+- actionable health alerts, 400 for bad gameIds, spec fixes
+
+## [1.26.22] - 2026-08-24
+
+### Added
+
+- add UI components, store, events pages, and home banner (ARC-892) (ARC-892)
+- add i18n messages, routes, and SEO metadata across all locales (ARC-892) (ARC-892)
+- implement backend module, service, schemas, and endpoints (ARC-892) (ARC-892)
+
+### Fixed
+
+- update pnpm-lock.yaml with mobile dependencies (ARC-892) (ARC-892)
+
+## [1.26.21] - 2026-08-24
+
+### Fixed
+
+- make named throttlers opt-in and harden client IP resolution
+
+## [1.26.20] - 2026-08-24
+
+### Fixed
+
+- exempt health endpoints from rate limiting
+
+## [1.26.19] - 2026-08-24
+
+### Added
+
+- implement anti-chip dumping terms, IP matchmaking guard, and anti-collusion service (ARC-894) (ARC-894)
+- add guest disclaimer notice in game rooms (ARC-894) (ARC-894)
+- require 18+ age verification and terms agreement on registration (ARC-894) (ARC-894)
+
+## [1.26.18] - 2026-08-24
+
+### Fixed
+
+- add @react-native/assets-registry as devDependency to fix jest-expo module resolution
+
+## [1.26.17] - 2026-08-24
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.26.16] - 2026-08-24
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.26.15] - 2026-08-24
+
+### Added
+
+- implement game replays (ARC-888) (ARC-888)
+
+### Fixed
+
+- use i18n error message in replay client catch block (ARC-888)
+- sanitize replay query inputs against NoSQL injection (ARC-888) (ARC-888)
+
+## [1.26.14] - 2026-08-24
+
+### Added
+
+- add tutorial content in en, es, fr, ru, by for all games (ARC-895)
+- add interactive tutorial framework with spotlight overlay (ARC-895)
+
+### Fixed
+
+- dismiss tutorial overlay before opening chat panel on mobile
+- bypass tutorial overlay blocker and fix theme translation keys
+- manage dialog focus and treat Escape on completion as finished (ARC-895)
+
+### Documentation
+
+- refresh roadmap statuses for shipped features (ARC-895)
+
+## [1.26.13] - 2026-08-24
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.26.12] - 2026-08-24
+
+### Added
+
+- add clans/groups feature (ARC-891)
+
+### Fixed
+
+- wrap clanId with ObjectId in all Mongoose queries (ARC-891)
+- sanitize user input in clan DB queries (ARC-891)
+- add missing clans i18n translation files (ARC-891)
+
+### Documentation
+
+- mark clans/groups feature as implemented in roadmap
+
+## [1.26.11] - 2026-08-23
+
+### Added
+
+- add go landing page, home card and create-page wiring (ARC-887)
+- add go web widget with shared theme support (ARC-887)
+- wire go service, MCTS bot and socket gateway (ARC-887)
+- add go engine with captures, ko rule and area scoring (ARC-887)
+
+### Fixed
+
+- offer forfeit via available actions and fix Go i18n interpolation (ARC-887)
+- bound Go bot compute and harden engine/landing review findings (ARC-887)
+- use crypto randomInt for go randomness (ARC-887)
+
+## [1.26.10] - 2026-08-23
+
+### Fixed
+
+- run anonymous verification unconditionally in optional guard
+- make anonymous-identity gates reject-only for CodeQL bypass rule
+- harden anonymous auth guard, SSRF barriers and URL checks
+
+## [1.26.9] - 2026-08-23
+
+### Fixed
+
+- patch vulnerable transitive dependencies
+
+## [1.26.8] - 2026-08-23
+
+### Added
+
+- wire pachisi into registries, home, create page, and landing (ARC-886)
+- add PachisiGame web widget (ARC-886)
+- add pachisi i18n messages for en, es, fr, ru, by (ARC-886)
+- support pachisi in AI-vs-AI spectator rooms (ARC-886)
+- add pachisi engine, service, bot, and gateway (ARC-886)
+
+### Fixed
+
+- route pachisi landing and board labels through i18n, validate options (ARC-886)
+- make track tokens clickable and award all players on forfeit (ARC-886)
+
+## [1.26.7] - 2026-08-23
+
+### Added
+
+- add spades card game (ARC-884)
+- support AI vs AI for hearts (ARC-884) (ARC-884)
+- add Hearts card game (ARC-884) (ARC-884)
+
+### Fixed
+
+- harden hearts after PR review (ARC-884) (ARC-884)
+- address hearts code-review findings (ARC-884) (ARC-884)
+- wire HeartsGateway into central event dispatcher (ARC-884) (ARC-884)
+- size quickplay rooms from engine metadata (ARC-884) (ARC-884)
+- preselect all required bots in lobby (ARC-884) (ARC-884)
+- address hearts PR review findings (ARC-884) (ARC-884)
+
+### Improved
+
+- halve bot-stall recovery via watchdog threshold (ARC-884) (ARC-884)
+
+## [1.26.6] - 2026-08-23
+
+### Added
+
+- add accessibility section with vision mode selector (ARC-896)
+- add color-vision transforms and vision-mode setting (ARC-896)
+
+### Documentation
+
+- mark colorblind modes as PR open (ARC-896) (ARC-896)
+
+## [1.26.5] - 2026-08-23
+
+### Fixed
+
+- harden bots against duplicate triggers in AI-vs-AI (ARC-890) (ARC-890)
+- stop spawning bot chains from session reads (ARC-890) (ARC-890)
+
+### Refactored
+
+- make AiVsAiService starters the single source of truth (ARC-890) (ARC-890)
+
+### Documentation
+
+- require AI-vs-AI support in new-game skill, update roadmap (ARC-890) (ARC-890)
+
+## [1.26.4] - 2026-08-23
+
+### Refactored
+
+- use expo-router instead of direct react-navigation
+
+## [1.26.3] - 2026-08-23
+
+### Added
+
+- add incremental room counter to default name and UI (ARC-922) (ARC-922)
+- rework room create page with interactive theme preview and secure room notes (ARC-922) (ARC-922)
+
+### Fixed
+
+- sanitize notes using single-character angle bracket removal (ARC-922) (ARC-922)
+- resolve incomplete multi-character sanitization (ARC-922) (ARC-922)
+
+## [1.26.2] - 2026-08-22
+
+### Added
+
+- add all popular rule variants to lobby and update skill (ARC-885) (ARC-885)
+- add AI vs AI spectating support (ARC-885) (ARC-885)
+- add Long Nardy, Hypergammon, and Tavla rule variants (ARC-885) (ARC-885)
+- add AnimatedDice to shared UI and fix backgammon bot turn loop (ARC-885) (ARC-885)
+- add doubles celebration, blot hit indicators, and race lead meter (ARC-885) (ARC-885)
+- add catalog real board preview and skill documentation (ARC-885) (ARC-885)
+- add backgammon (ARC-885) (ARC-885)
+
+### Fixed
+
+- make BackgammonEngine dice roller optional for Nest DI (ARC-885) (ARC-885)
+- harden backgammon engine and bot (ARC-885) (ARC-885)
+- register BackgammonGateway in GamesGateway (ARC-885) (ARC-885)
+
+### Documentation
+
+- update new-game skill for single-prompt autonomous execution (ARC-885) (ARC-885)
+
+## [1.26.1] - 2026-08-22
+
+### Added
+
+- enhance gameplay shorts with kinetic badges, sfx audio, telegram approvals, and expanded games (ARC-892) (ARC-892)
+- read WEB_PORT from env with fallback to 3000 (ARC-892) (ARC-892)
+- add gameplay shorts pipeline, daily runner and branded outro (ARC-892) (ARC-892)
+
+### Documentation
+
+- document shorts factory integration in new-game skill (ARC-892) (ARC-892)
+
+## [1.26.0] - 2026-08-21
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.25.65] - 2026-08-21
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.25.64] - 2026-08-21
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.25.63] - 2026-08-21
 
 ### Fixed
+
 - fix failing post-merge CI jobs
 - use correct Buffer modes for release posts to Facebook and Threads
-
 
 ## [1.25.62] - 2026-08-21
 
 ### Added
-- rework play vs ai modal with catalog previews and lazy loading (ARC-921) (ARC-921)
 
+- rework play vs ai modal with catalog previews and lazy loading (ARC-921) (ARC-921)
 
 ## [1.25.61] - 2026-08-21
 
 ### Added
+
 - make catalog cards full landing links, remove buttons, and fix preview clipping (ARC-920) (ARC-920)
 - align in-game board cells and ship hulls with real board artwork (ARC-920) (ARC-920)
 - elevate in-game board coordinates, vector marks, and card emblems (ARC-920) (ARC-920)
@@ -42,8 +685,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - modernize games catalog previews and in-game board visuals (ARC-920) (ARC-920)
 
 ### Fixed
-- add responsive container side padding to game landing layout (ARC-920) (ARC-920)
 
+- add responsive container side padding to game landing layout (ARC-920) (ARC-920)
 
 ## [1.25.60] - 2026-08-20
 

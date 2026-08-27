@@ -51,11 +51,16 @@ export const en = {
     download: 'Download',
     remove: 'Remove',
     retry: 'Retry',
-    error: 'Failed — try again',
+    error: 'Download failed — check your connection and retry',
     updating: 'Updating…',
     lastDownloaded: 'Downloaded {{time}}',
     chooseIndividually: 'Choose individually',
     notNow: 'Not now',
+    installRequired:
+      'Install Arcadeum as an app to download games for offline play.',
+    swLoading:
+      'Waiting for the app to fully load — downloads will be available shortly…',
+    sizesAvailableAfterDownload: 'Sizes shown after download',
   },
 };
 
@@ -110,11 +115,16 @@ export const es = {
     download: 'Descargar',
     remove: 'Eliminar',
     retry: 'Reintentar',
-    error: 'Error — inténtalo de nuevo',
+    error: 'Error de descarga — comprueba tu conexión y reintenta',
     updating: 'Actualizando…',
     lastDownloaded: 'Descargado hace {{time}}',
     chooseIndividually: 'Elegir individualmente',
     notNow: 'Ahora no',
+    installRequired:
+      'Instala Arcadeum como aplicación para descargar juegos sin conexión.',
+    swLoading:
+      'Esperando a que la aplicación cargue completamente — las descargas estarán disponibles pronto…',
+    sizesAvailableAfterDownload: 'Tamaños mostrados tras la descarga',
   },
 };
 
@@ -170,11 +180,16 @@ export const fr = {
     download: 'Télécharger',
     remove: 'Supprimer',
     retry: 'Réessayer',
-    error: 'Échec — réessayez',
+    error: 'Échec du téléchargement — vérifiez votre connexion et réessayez',
     updating: 'Mise à jour…',
     lastDownloaded: 'Téléchargé {{time}}',
     chooseIndividually: 'Choisir individuellement',
     notNow: 'Plus tard',
+    installRequired:
+      'Installez Arcadeum comme application pour télécharger les jeux hors ligne.',
+    swLoading:
+      "En attente du chargement complet de l'application — les téléchargements seront bientôt disponibles…",
+    sizesAvailableAfterDownload: 'Tailles affichées après téléchargement',
   },
 };
 
@@ -229,11 +244,16 @@ export const ru = {
     download: 'Загрузить',
     remove: 'Удалить',
     retry: 'Повторить',
-    error: 'Ошибка — попробуйте снова',
+    error: 'Ошибка загрузки — проверьте подключение и попробуйте снова',
     updating: 'Обновление…',
     lastDownloaded: 'Загружено {{time}}',
     chooseIndividually: 'Выбрать вручную',
     notNow: 'Не сейчас',
+    installRequired:
+      'Установите Arcadeum как приложение, чтобы скачивать игры для офлайн-игры.',
+    swLoading:
+      'Ожидание полной загрузки приложения — скачивание будет доступно shortly…',
+    sizesAvailableAfterDownload: 'Размеры отображаются после загрузки',
   },
 };
 
@@ -288,11 +308,16 @@ export const by = {
     download: 'Спампаваць',
     remove: 'Выдаліць',
     retry: 'Паўтарыць',
-    error: 'Памылка — паспрабуйце зноў',
+    error: 'Памылка спампоўкі — праверце злучэнне і паспрабуйце зноў',
     updating: 'Абнаўленне…',
     lastDownloaded: 'Спампавана {{time}}',
     chooseIndividually: 'Выбраць асобна',
     notNow: 'Не зараз',
+    installRequired:
+      'Усталюйце Arcadeum як прыкладанне, каб спампоўваць гульні для афлайн-гульні.',
+    swLoading:
+      'Чаканне поўнай загрузкі прыкладання — спампоўка будзе даступна неўзабаве…',
+    sizesAvailableAfterDownload: 'Памеры паказваюцца пасля спампоўкі',
   },
 };
 

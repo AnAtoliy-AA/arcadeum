@@ -64,13 +64,12 @@ export function OfflineGamesPrompt() {
   const handleDownloadAll = () => {
     markDismissed();
     setOpen(false);
-    // Navigate to settings, then trigger downloads.
     router.push('/settings#offline-downloads');
-    // Fire after a tick so the section mounts.
-    setTimeout(() => {
-      games.forEach((g) => {
-        if (!g.info) void toggle(g.game.slug);
-      });
+    // Fire sequentially so each download sets its busy flag before the next starts.
+    setTimeout(async () => {
+      for (const g of games) {
+        if (!g.info) await toggle(g.game.slug);
+      }
     }, 500);
   };
 
@@ -100,7 +99,7 @@ export function OfflineGamesPrompt() {
               'Select games to download so you can play them without an internet connection.'}
           </p>
           <p className="mt-2 text-[13px] text-[var(--textSecondary)]">
-            16 games — ~{formatTotalBytes(games)}
+            {games.length} games — ~{formatTotalBytes(games)}
           </p>
         </ModalBody>
         <ModalFooter>

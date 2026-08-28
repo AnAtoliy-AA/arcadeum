@@ -68,7 +68,10 @@ export class OfflineSession {
       }
       this.state = result.state;
     } catch (err) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : String(err),
+      };
     }
     this.publishSnapshot();
     return { ok: true };
@@ -109,11 +112,7 @@ export class OfflineSession {
 
   /** Run bot turns until it's the human's turn again or the game ends. */
   async runBots(): Promise<void> {
-    while (
-      this.status === 'active' &&
-      this.state &&
-      !this.isGameOver()
-    ) {
+    while (this.status === 'active' && this.state && !this.isGameOver()) {
       const turnId = this.currentTurnPlayerId();
       if (!turnId || !turnId.startsWith('bot-')) break;
       await sleep(BOT_THINK_MS);
@@ -121,7 +120,7 @@ export class OfflineSession {
       // Re-check whose turn it is after the delay.
       if (this.currentTurnPlayerId() !== turnId) continue;
       const entry = registryEntryFor(this.engineId);
-      const decision = entry?.botDecide(this.state, this.engine, turnId);
+      const decision = await entry?.botDecide(this.state, this.engine, turnId);
       if (!decision) break;
       const res = this.applyAction(turnId, decision.action, decision.payload);
       if (!res.ok) break;

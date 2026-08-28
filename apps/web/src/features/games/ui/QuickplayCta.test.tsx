@@ -25,7 +25,7 @@ vi.mock('@/entities/session/model/useSessionTokens', () => ({
   }),
 }));
 
-vi.mock('@/features/games/ui', () => ({
+vi.mock('@/features/games/ui/MatchmakingQueue', () => ({
   useMatchmaking: () => ({ joinQueue: joinQueueMock }),
 }));
 

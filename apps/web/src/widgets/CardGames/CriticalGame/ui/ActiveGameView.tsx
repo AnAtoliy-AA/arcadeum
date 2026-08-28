@@ -26,7 +26,8 @@ import {
 } from '../hooks';
 import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameStatusMessage } from './GameStatusMessage';
-import { GameEndModals, GameWidgetContainer } from '@/features/games/ui';
+import { GameEndModals } from '@/features/games/ui/GameEndModals';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { MatchWidget } from './MatchWidget';
 import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';

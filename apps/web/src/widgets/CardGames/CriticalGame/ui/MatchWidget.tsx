@@ -5,7 +5,7 @@ import { MatchWidgetGrid } from './styles/layout';
 import { Arena } from './arena/Arena';
 import { OpponentsRow } from './opponents/OpponentsRow';
 import { HandZone } from './hand/HandZone';
-import { GameIdleTimer } from '@/features/games/ui';
+import { GameIdleTimer } from '@/features/games/ui/GameIdleTimer';
 import { AutoplayControls } from './AutoplayControls';
 import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
 import {

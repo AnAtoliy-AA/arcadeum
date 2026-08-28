@@ -5,13 +5,13 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
-  ReusableGameLobby,
   LobbyOptionSection,
-  GameThemePicker,
   LobbyChipGroup,
-  getLobbyTheme,
-} from '@/features/games/ui';
+} from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RulesModal } from './RulesModal';
 import { PACHISI_VARIANTS } from '../lib/constants';

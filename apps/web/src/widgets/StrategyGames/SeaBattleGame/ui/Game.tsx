@@ -16,7 +16,7 @@ import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import {
   GameWidgetContainer,
   type TurnStatusVariant,
-} from '@/features/games/ui';
+} from '@/features/games/ui/GameWidgetContainer';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 
 import { SeaBattleLobby } from './SeaBattleLobby';
@@ -24,7 +24,7 @@ import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { SEA_BATTLE_VARIANTS } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { getPlayerColor } from '@/shared/lib/playerColors';
-import { InGameAvatar } from '@/features/games/ui';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { useShowRulesOnRoomEntry } from '@/shared/hooks/useShowRulesOnRoomEntry';
 
 import { SeaBattleModals } from './SeaBattleModals';

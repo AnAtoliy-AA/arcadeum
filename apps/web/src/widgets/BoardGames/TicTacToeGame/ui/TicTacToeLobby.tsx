@@ -3,12 +3,10 @@
 import { useMemo, useState } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import {
-  ReusableGameLobby,
-  LobbyOptionSection,
-  GameThemePicker,
-  getLobbyTheme,
-} from '@/features/games/ui';
+import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
+import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { BoardSizeSelector } from './BoardSizeSelector';
 import { TicTacToeTeamPanel } from './TicTacToeTeamPanel';

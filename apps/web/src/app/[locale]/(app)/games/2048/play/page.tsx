@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { PageLayout } from '@arcadeum/ui';
-import Game2048 from '@/widgets/PuzzleGames/Game2048';
+import { Game2048Client } from './Game2048Client';
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -29,7 +29,7 @@ export default async function Game2048PlayRoute({ params }: PageProps) {
   return (
     <PageLayout>
       <div className="box-border min-h-screen py-6">
-        <Game2048 />
+        <Game2048Client />
       </div>
     </PageLayout>
   );

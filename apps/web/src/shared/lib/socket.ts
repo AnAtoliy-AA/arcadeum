@@ -416,7 +416,7 @@ export const walletSocket: Socket = createLazySocket(getWalletSock);
 export const clansSocket: Socket = createLazySocket(getClansSock);
 
 // Expose sockets to window for E2E testing
-if (typeof window !== 'undefined') {
+if (process.env.NODE_ENV !== 'production' && typeof window !== 'undefined') {
   const win = window as unknown as Record<string, unknown>;
   win.gameSocket = getGamesSocket();
   win.chatSocket = getChatsSocket();

@@ -8,8 +8,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { WebVitalsReporter } from '@/shared/seo/WebVitalsReporter';
 import { AnalyticsProvider } from '@/shared/analytics/AnalyticsProvider';
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/react';
+import { VercelAnalytics } from './VercelAnalytics';
 
 import BrowserRegistry from './BrowserRegistry';
 import {
@@ -180,10 +179,7 @@ export default async function RootLayout({
         <WebVitalsReporter />
         <AnalyticsProvider />
         {process.env.NODE_ENV === 'production' && process.env.VERCEL && (
-          <>
-            <SpeedInsights />
-            <Analytics />
-          </>
+          <VercelAnalytics />
         )}
         <AppThemeProvider initialTheme={theme}>
           <BrowserRegistry>

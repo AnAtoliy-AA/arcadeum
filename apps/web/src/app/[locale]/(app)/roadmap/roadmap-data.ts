@@ -326,6 +326,88 @@ export const TIERS: Tier[] = [
       },
     ],
   },
+  {
+    id: 'tier6',
+    label: 'Growth & SEO',
+    effort: '2–5 days each',
+    color: '#14b8a6',
+    gradient:
+      'linear-gradient(135deg, rgba(20,184,166,0.15), rgba(20,184,166,0.05))',
+    icon: '📈',
+    features: [
+      {
+        title: 'Viral & Invite Loop Optimization',
+        desc: 'One-tap share sheet, room QR codes, OG preview images, group rematch flow.',
+        effort: '2–3 days',
+        status: 'not_started',
+      },
+      {
+        title: 'SEO & Crawler Optimizations',
+        desc: 'Game-specific landing pages, structured schema markup, hreflang config, SEO strategy articles.',
+        effort: '3–5 days',
+        status: 'not_started',
+      },
+      {
+        title: 'Analytics & Funnel Instrumentation',
+        desc: 'Privacy-first funnel tracking, separated cohorts, campaign attribution.',
+        effort: '2–3 days',
+        status: 'not_started',
+      },
+      {
+        title: 'Homepage & UX Refactoring',
+        desc: 'Elevate "Play vs AI" CTA, featured games carousel, interactive lobby fallbacks.',
+        effort: '2–3 days',
+        status: 'not_started',
+      },
+    ],
+  },
+  {
+    id: 'tier7',
+    label: 'Growth Acceleration',
+    effort: '1–5 days each',
+    color: '#06b6d4',
+    gradient:
+      'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05))',
+    icon: '🚀',
+    features: [
+      {
+        title: 'Funnel Measurement',
+        desc: 'UTM campaign tracking, funnel events, game funnel audit.',
+        effort: '2–3 days',
+        status: 'not_started',
+      },
+      {
+        title: 'Sea Battle Acquisition Spearhead',
+        desc: 'Simplified hero CTA, "Play Battleship online with friends" messaging.',
+        effort: '3–5 days',
+        status: 'not_started',
+      },
+      {
+        title: 'Viral Challenge Flow',
+        desc: 'Challenge a friend link, enhanced result screen, "Click → game" flow.',
+        effort: '3–4 days',
+        status: 'not_started',
+      },
+      {
+        title: 'Live Activity Social Proof',
+        desc: 'Real-time player/game counters, "12 games happening now" on homepage.',
+        effort: '2–3 days',
+        status: 'not_started',
+      },
+      {
+        title: 'Simplified Homepage',
+        desc: '30-second test: arrive → understand → choose → play. New hero + game grid.',
+        effort: '2–3 days',
+        status: 'not_started',
+      },
+      {
+        title: 'Technical Quality Fixes',
+        desc: 'Fix chunk-loading errors, error boundaries, e2e critical flow tests.',
+        effort: '1–2 days',
+        status: 'not_started',
+      },
+    ],
+  },
 ];
 
 export const PHASES = [
@@ -389,8 +471,8 @@ export const PHASES = [
 ];
 
 export const STATS = [
-  { label: 'Features', value: '37', icon: '📋' },
+  { label: 'Features', value: '49', icon: '📋' },
   { label: 'Implemented', value: '25', icon: '✅' },
   { label: 'In Progress', value: '2', icon: '⏳' },
-  { label: 'Planned', value: '10', icon: '🗺️' },
+  { label: 'Planned', value: '22', icon: '🗺️' },
 ];

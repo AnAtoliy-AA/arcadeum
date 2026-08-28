@@ -7,6 +7,10 @@ import { AnnouncementBanner } from '@/widgets/AnnouncementBanner/ui/Announcement
 import { getActiveAnnouncement } from '@/widgets/AnnouncementBanner/server/getActiveAnnouncement';
 import { LayoutFooter } from '@/widgets/footer';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
+import { PWAProvider } from '@/features/pwa/PWAContext';
+import { StatsReplay } from '@/shared/ui/StatsReplay';
+import { RootModals } from './RootModals';
+import { SoundProvider } from '@/shared/lib/sound';
 import {
   isLocale,
   SUPPORTED_LOCALES,
@@ -14,7 +18,6 @@ import {
   type Locale,
 } from '@/shared/i18n';
 import { getInitialTranslations } from '@/shared/i18n/server';
-import { ClientProviders } from './ClientProviders';
 
 /** Lazy-load only the seo namespace — avoids pulling 20+ modules into the RSC payload. */
 async function loadSeo(locale: Locale) {
@@ -157,16 +160,20 @@ export default async function LocaleLayout({
     <>
       <JsonLd id={`json-ld-locale-${locale}`} data={localeJsonLd} />
       <LanguageProvider locale={locale} initialMessages={initialMessages}>
-        <ClientProviders>
-          <LayoutShell>
-            <AnnouncementBanner initialAnnouncement={announcement} />
-            <Header />
-            <main id="main-content" className="layout-main">
-              {children}
-            </main>
-            <LayoutFooter />
-          </LayoutShell>
-        </ClientProviders>
+        <PWAProvider>
+          <SoundProvider>
+            <LayoutShell>
+              <AnnouncementBanner initialAnnouncement={announcement} />
+              <Header />
+              <main id="main-content" className="layout-main">
+                {children}
+              </main>
+              <LayoutFooter />
+            </LayoutShell>
+            <RootModals />
+            <StatsReplay />
+          </SoundProvider>
+        </PWAProvider>
       </LanguageProvider>
     </>
   );

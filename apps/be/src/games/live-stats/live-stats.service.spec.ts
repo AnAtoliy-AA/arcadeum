@@ -54,6 +54,9 @@ describe('LiveStatsService', () => {
           }),
         }),
       }),
+      aggregate: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue([]),
+      }),
     };
 
     mockPlayerStatModel = {

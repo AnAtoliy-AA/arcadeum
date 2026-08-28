@@ -49,6 +49,8 @@ export class LiveStatsService {
   async getLiveStats(): Promise<LiveStatsResponse> {
     const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
     const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const oneDayAgoDate = new Date(oneDayAgo);
+    const oneWeekAgoDate = new Date(oneWeekAgo);
 
     const publicHostFilter = { $not: /^anon_/ };
     const baseRoomFilter = {
@@ -59,11 +61,14 @@ export class LiveStatsService {
     const [
       activeGames,
       waitingRooms,
-      matchesToday,
+      statMatchesToday,
+      completedRoomsToday,
       openRoomsDocs,
       recentRecords,
       gameAggregation,
       gameWeekAggregation,
+      roomDayAggregation,
+      roomWeekAggregation,
     ] = await Promise.all([
       this.roomModel
         .countDocuments({ ...baseRoomFilter, status: 'in_progress' })
@@ -73,6 +78,12 @@ export class LiveStatsService {
         .exec(),
       this.playerStatModel
         .countDocuments({ timestamp: { $gte: oneDayAgo } })
+        .exec(),
+      this.roomModel
+        .countDocuments({
+          status: 'completed',
+          updatedAt: { $gte: oneDayAgoDate },
+        })
         .exec(),
       this.roomModel
         .find({
@@ -103,7 +114,31 @@ export class LiveStatsService {
           { $sort: { matches: -1 } },
         ])
         .exec(),
+      this.roomModel
+        .aggregate<{ _id: string; matches: number }>([
+          {
+            $match: {
+              updatedAt: { $gte: oneDayAgoDate },
+              status: { $in: ['in_progress', 'completed'] },
+            },
+          },
+          { $group: { _id: '$gameId', matches: { $sum: 1 } } },
+        ])
+        .exec(),
+      this.roomModel
+        .aggregate<{ _id: string; matches: number }>([
+          {
+            $match: {
+              updatedAt: { $gte: oneWeekAgoDate },
+              status: { $in: ['in_progress', 'completed'] },
+            },
+          },
+          { $group: { _id: '$gameId', matches: { $sum: 1 } } },
+        ])
+        .exec(),
     ]);
+
+    const matchesToday = Math.max(statMatchesToday, completedRoomsToday);
 
     const userIdsToFetch = new Set<string>();
     for (const room of openRoomsDocs) {
@@ -173,16 +208,22 @@ export class LiveStatsService {
     }));
 
     const gameMatchesMap = new Map<string, number>();
-    for (const agg of gameAggregation) {
+    for (const agg of [...gameAggregation, ...roomDayAggregation]) {
       if (agg._id) {
-        gameMatchesMap.set(agg._id, agg.matches);
+        gameMatchesMap.set(
+          agg._id,
+          (gameMatchesMap.get(agg._id) ?? 0) + agg.matches,
+        );
       }
     }
 
     const gameWeekMatchesMap = new Map<string, number>();
-    for (const agg of gameWeekAggregation) {
+    for (const agg of [...gameWeekAggregation, ...roomWeekAggregation]) {
       if (agg._id) {
-        gameWeekMatchesMap.set(agg._id, agg.matches);
+        gameWeekMatchesMap.set(
+          agg._id,
+          (gameWeekMatchesMap.get(agg._id) ?? 0) + agg.matches,
+        );
       }
     }
 

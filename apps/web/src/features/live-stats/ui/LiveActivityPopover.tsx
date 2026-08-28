@@ -10,6 +10,14 @@ interface LiveActivityPopoverProps {
   onClose?: () => void;
 }
 
+function getGameLandingUrl(
+  gameId: string,
+  routes: ReturnType<typeof useRoutes>,
+): string {
+  const slug = gameId.replace(/_v\d+$/, '').replace(/_/g, '-');
+  return routes.gameDetail(slug);
+}
+
 export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
   const { t } = useTranslation();
   const routes = useRoutes();
@@ -43,11 +51,22 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
     onClose?.();
   };
 
+  const trendingGamesList = (
+    stats.popularGames.length > 0
+      ? [...stats.popularGames].sort((a, b) => b.matchesCount - a.matchesCount)
+      : [
+          { gameId: 'sea_battle_v1', activePlayers: 0, matchesCount: 0 },
+          { gameId: 'chess_v1', activePlayers: 0, matchesCount: 0 },
+          { gameId: 'cascade_v1', activePlayers: 0, matchesCount: 0 },
+          { gameId: 'hearts_v1', activePlayers: 0, matchesCount: 0 },
+        ]
+  ).slice(0, 4);
+
   return (
     <div
       ref={popoverRef}
       data-testid="live-activity-popover"
-      className="absolute right-0 top-12 z-50 w-[92vw] max-w-[420px] rounded-2xl border border-white/15 bg-neutral-950/90 p-4 text-white shadow-2xl backdrop-blur-xl animate-[fadeInUp_0.2s_ease-out]"
+      className="absolute right-0 top-12 z-50 w-[94vw] max-w-[440px] rounded-2xl border border-white/15 bg-neutral-950/95 p-4 text-white shadow-2xl backdrop-blur-xl animate-[fadeInUp_0.2s_ease-out]"
     >
       <div className="flex items-center justify-between border-b border-white/10 pb-3">
         <div className="flex items-center gap-2">
@@ -81,31 +100,50 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
         </button>
       </div>
 
-      <div className="my-3 grid grid-cols-3 gap-2 text-center">
-        <div className="rounded-xl border border-white/10 bg-white/5 p-2">
-          <div className="font-mono text-base font-extrabold text-emerald-400">
+      <div className="my-3 grid grid-cols-4 gap-2 text-center">
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-2">
+          <div className="font-mono text-sm font-extrabold text-emerald-400">
             {stats.onlineUsers}
           </div>
-          <div className="text-[10px] uppercase tracking-wider text-white/60">
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">
             {t('home.liveBadgeOnline')}
           </div>
         </div>
-        <div className="rounded-xl border border-white/10 bg-white/5 p-2">
-          <div className="font-mono text-base font-extrabold text-amber-400">
+
+        <Link
+          href={`${routes.rooms}?status=in_progress`}
+          onClick={handleClose}
+          className="rounded-xl border border-amber-500/20 bg-amber-950/20 p-2 transition-all hover:border-amber-500/40 hover:bg-amber-900/30"
+        >
+          <div className="font-mono text-sm font-extrabold text-amber-400">
             {stats.activeGames}
           </div>
-          <div className="text-[10px] uppercase tracking-wider text-white/60">
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">
             {t('home.liveBadgeActiveGames')}
           </div>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-white/5 p-2">
-          <div className="font-mono text-base font-extrabold text-cyan-400">
+        </Link>
+
+        <div className="rounded-xl border border-cyan-500/20 bg-cyan-950/20 p-2">
+          <div className="font-mono text-sm font-extrabold text-cyan-400">
             {stats.matchesToday}
           </div>
-          <div className="text-[10px] uppercase tracking-wider text-white/60">
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">
             {t('home.liveBadgeMatchesToday')}
           </div>
         </div>
+
+        <Link
+          href={`${routes.rooms}?status=lobby`}
+          onClick={handleClose}
+          className="rounded-xl border border-indigo-500/20 bg-indigo-950/20 p-2 transition-all hover:border-indigo-500/40 hover:bg-indigo-900/30"
+        >
+          <div className="font-mono text-sm font-extrabold text-indigo-400">
+            {stats.waitingRooms}
+          </div>
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">
+            {t('home.liveBadgeWaitingRooms')}
+          </div>
+        </Link>
       </div>
 
       <div className="mb-3">
@@ -114,7 +152,7 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
             {t('home.liveOpenLobbiesTitle')}
           </span>
           <Link
-            href={`${routes.rooms}?status=lobby`}
+            href={routes.rooms}
             onClick={handleClose}
             className="text-[11px] font-semibold text-emerald-400 hover:underline"
           >
@@ -160,32 +198,33 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
         <div className="mb-2 text-xs font-bold uppercase tracking-wider text-white/80">
           {t('home.livePopularGamesTitle')}
         </div>
-        <div className="grid grid-cols-2 gap-1.5">
-          {(stats.popularGames.length > 0
-            ? stats.popularGames.slice(0, 4)
-            : [
-                { gameId: 'sea_battle_v1', activePlayers: 0, matchesCount: 0 },
-                { gameId: 'chess_v1', activePlayers: 0, matchesCount: 0 },
-                { gameId: 'cascade_v1', activePlayers: 0, matchesCount: 0 },
-                { gameId: 'hearts_v1', activePlayers: 0, matchesCount: 0 },
-              ]
-          ).map((game) => {
+        <div className="grid grid-cols-2 gap-2">
+          {trendingGamesList.map((game) => {
             const cleanName = game.gameId.replace('_v1', '').replace('_', ' ');
+            const landingUrl = getGameLandingUrl(game.gameId, routes);
             return (
               <Link
                 key={game.gameId}
-                href={routes.games}
+                href={landingUrl}
                 onClick={handleClose}
-                className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs transition-colors hover:border-emerald-400/40 hover:bg-white/10"
+                className="group flex flex-col justify-between rounded-xl border border-white/10 bg-white/5 p-2.5 text-xs transition-all hover:border-emerald-400/40 hover:bg-white/10 hover:scale-[1.02]"
               >
-                <span className="font-semibold capitalize text-white group-hover:text-emerald-400">
-                  {cleanName}
-                </span>
-                <span className="text-[10px] text-emerald-400/90 font-mono">
-                  {game.activePlayers > 0
-                    ? `${game.activePlayers} 🟢`
-                    : 'Play →'}
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold capitalize text-white group-hover:text-emerald-400">
+                    {cleanName}
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-bold opacity-70 group-hover:opacity-100">
+                    →
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center justify-between text-[10px] text-white/50">
+                  <span>{game.matchesCount} played today</span>
+                  {game.activePlayers > 0 && (
+                    <span className="font-mono text-emerald-400">
+                      {game.activePlayers} 🟢
+                    </span>
+                  )}
+                </div>
               </Link>
             );
           })}

@@ -77,7 +77,7 @@ export function HomeLivePulse() {
           </div>
 
           <Link
-            href={`${routes.rooms}?status=lobby`}
+            href={routes.rooms}
             className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold text-white shadow-sm backdrop-blur-md transition-all hover:border-emerald-400/40 hover:bg-white/15 hover:scale-[1.02] active:scale-[0.98]"
           >
             <span>{t('home.liveViewAllRooms')}</span>

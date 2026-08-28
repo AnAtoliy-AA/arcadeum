@@ -143,28 +143,28 @@ export const TIERS: Tier[] = [
         title: 'Hearts',
         desc: '4-player trick-taking — queen of spades, shooting the moon, passing phase.',
         effort: '5–7 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-884',
       },
       {
         title: 'Spades',
         desc: '4-player trick-taking with bidding, nil bid, partnerships.',
         effort: '5–7 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-884',
       },
       {
         title: 'Backgammon',
         desc: '24-point board, bearing off, doubling cube. Probability-based bot.',
         effort: '5–7 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-885',
       },
       {
         title: 'Pachisi',
         desc: 'Original Ludo — 4-player race game with dice and home stretch.',
         effort: '4–5 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-886',
       },
       {
@@ -196,7 +196,7 @@ export const TIERS: Tier[] = [
         title: 'Go (Baduk)',
         desc: '9×9 / 13×13 / 19×19. Liberty counting, capture, ko rule. MCTS bot.',
         effort: '10–14 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-887',
       },
       {
@@ -269,14 +269,14 @@ export const TIERS: Tier[] = [
         title: 'Season System',
         desc: 'Quarterly seasons with soft resets, seasonal cosmetics, and leaderboards.',
         effort: '5–7 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-899',
       },
       {
         title: 'Colorblind Modes',
         desc: 'Deuteranopia / Protanopia / Tritanopia presets with pattern overlays.',
         effort: '1–2 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-896',
       },
       {
@@ -472,7 +472,7 @@ export const PHASES = [
 
 export const STATS = [
   { label: 'Features', value: '49', icon: '📋' },
-  { label: 'Implemented', value: '35', icon: '✅' },
-  { label: 'In Progress', value: '3', icon: '⏳' },
-  { label: 'Planned', value: '11', icon: '🗺️' },
+  { label: 'Implemented', value: '42', icon: '✅' },
+  { label: 'In Progress', value: '1', icon: '⏳' },
+  { label: 'Planned', value: '6', icon: '🗺️' },
 ];

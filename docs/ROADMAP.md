@@ -1573,38 +1573,51 @@ Fix quality issues that destroy trust before driving traffic.
 
 The platform's core infrastructure is highly mature. Phase 1-10 are fully complete, and several advanced features from later phases are already shipped.
 
-| Phase / Focus                     | Features & Ticket Scope                                                                                                                                     | Est. Days | Status / Progress                                                              |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------ |
-| **Phase 1: Core UX**              | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                                                                   | 10        | **100% Completed**                                                             |
-| **Phase 2: Growth & SEO**         | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning                                           | 12        | **100% Completed**                                                             |
-| **Phase 3: Classic Games**        | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                                                                   | 15        | **100% Completed**                                                             |
-| **Phase 4: Competitive**          | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                                                                 | 20        | **100% Completed**                                                             |
-| **Phase 5: Retention**            | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                                                          | 15        | **100% Completed**                                                             |
-| **Phase 6: Card & Board**         | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                                                                   | 25        | **100% Completed** (code-audited: all four games shipped end-to-end)           |
-| **Phase 7: Advanced Social**      | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                                                           | 25        | **100% Completed** (spectator via socket plumbing, no dedicated UI module yet) |
-| **Phase 8: Platform Growth**      | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                                                                   | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial)                      |
-| **Phase 9: Creator Tools**        | Visual Board Game Creator                                                                                                                                   | 20        | **Deferred** (revisit with larger community)                                   |
-| **Phase 10: Single-Player**       | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                                                              | 12        | **100% Completed**                                                             |
-| **Phase 11: Growth Acceleration** | 30-day execution plan: funnel measurement, Sea Battle spearhead, viral challenge flow, live activity, Reddit/TikTok/SEO/Discord/LinkedIn, technical quality | 30        | **Not Started** (Goal: 1,000 players in 30 days)                               |
+| Phase / Focus                     | Features & Ticket Scope                                                                                                                                     | Est. Days | Status / Progress                                         |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------- |
+| **Phase 1: Core UX**              | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                                                                   | 10        | **100% Completed**                                        |
+| **Phase 2: Growth & SEO**         | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning                                           | 12        | **100% Completed**                                        |
+| **Phase 3: Classic Games**        | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                                                                   | 15        | **100% Completed**                                        |
+| **Phase 4: Competitive**          | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                                                                 | 20        | **100% Completed**                                        |
+| **Phase 5: Retention**            | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                                                          | 15        | **100% Completed**                                        |
+| **Phase 6: Card & Board**         | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                                                                   | 25        | **100% Completed**                                        |
+| **Phase 7: Advanced Social**      | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                                                           | 25        | **100% Completed**                                        |
+| **Phase 8: Platform Growth**      | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                                                                   | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial) |
+| **Phase 9: Creator Tools**        | Visual Board Game Creator                                                                                                                                   | 20        | **Deferred** (revisit with larger community)              |
+| **Phase 10: Single-Player**       | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                                                              | 12        | **100% Completed**                                        |
+| **Phase 11: Growth Acceleration** | 30-day execution plan: funnel measurement, Sea Battle spearhead, viral challenge flow, live activity, Reddit/TikTok/SEO/Discord/LinkedIn, technical quality | 30        | **Code Complete** (marketing execution ongoing)           |
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J), Web Share (4K), Push Notifications (4L), Tournaments — registration/lobby only (4M), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I), Season System (4H).
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J), Web Share (4K), Push Notifications (4L), Tournaments — registration/lobby only (4M), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I), Season System (4H), Colorblind Modes (4F).
 - **Phase 6 Tier (Growth & Marketing) — Completed**: Week 0 audit, PostHog/Plausible funnel tracking split by Solo vs. Social, homepage CTAs featuring AI/Solo play, SEO landing pages for all games, QR code/share sheet invite upgrades, blog SEO content, post-game analytics (ARC-925).
-- **Phase 11 (Growth Acceleration) — 30-Day Execution Plan** (Goal: 1,000 players in 30 days):
+- **Phase 11 (Growth Acceleration) — Code Complete, Marketing Execution Ongoing** (Goal: 1,000 players in 30 days):
 
-  | Days  | Focus                | Key Actions                                                       |
-  | ----- | -------------------- | ----------------------------------------------------------------- |
-  | 1-3   | Funnel Measurement   | Analytics setup, campaign URLs, game funnel audit                 |
-  | 3-7   | Sea Battle Spearhead | Simplified CTA, "Play Battleship online with friends" messaging   |
-  | 4-30  | Viral Loop           | Challenge friend flow, enhanced result screen, "Click → game"     |
-  | 4-30  | Live Activity        | Real-time player/game counters, "12 games happening now"          |
-  | 5-30  | Reddit               | 5 posts, genuine angle, read rules, engage community              |
-  | 4-30  | TikTok/Reels         | 9+ videos, 10-20 sec clips, make 30 pieces, double down on winner |
-  | 7-30  | SEO                  | 5+ targeted pages for actual search queries                       |
-  | 25    | Discord              | Find-a-player channel, retention layer                            |
-  | 12-30 | LinkedIn             | 2 posts/week, building process stories                            |
-  | 1-3   | Technical Quality    | Fix chunk-loading, error boundaries, e2e tests                    |
+  **Implemented in this PR (code features):**
+
+  | Feature                | Files                                                                                        |
+  | ---------------------- | -------------------------------------------------------------------------------------------- |
+  | Share utility          | `apps/web/src/shared/lib/share.ts` — Web Share API + clipboard fallback                      |
+  | Campaign URL builder   | `apps/web/src/shared/lib/campaigns.ts` — UTM parameter builder                               |
+  | Funnel events          | `apps/web/src/shared/analytics/funnel.ts` — 4 new post-game events                           |
+  | FAQPage JSON-LD        | `apps/web/src/shared/seo/faqPageJsonLd.ts` — structured data builder                         |
+  | PostGameSuggestions    | `apps/web/src/features/games/ui/PostGameSuggestions.tsx` — challenge/share/play another CTAs |
+  | ActivityBanner         | `apps/web/src/features/activity/ui/ActivityBanner.tsx` — live player/game counters           |
+  | Activity API           | `apps/web/src/app/api/activity/route.ts` — stats endpoint                                    |
+  | ErrorBoundary          | `apps/web/src/features/games/ui/ErrorBoundary.tsx` — retry-on-error wrapper                  |
+  | GameResultModal update | `apps/web/src/features/games/ui/GameResultModal.tsx` — renders PostGameSuggestions           |
+  | GameEndModals update   | `apps/web/src/features/games/ui/GameEndModals.tsx` — passes new props through                |
+  | Homepage integration   | `apps/web/src/app/[locale]/home/HomePage.tsx` — renders ActivityBanner                       |
+
+  **Remaining marketing/strategy items** (not code-implementable):
+
+  | Days  | Focus        | Key Actions                                                       |
+  | ----- | ------------ | ----------------------------------------------------------------- |
+  | 5-30  | Reddit       | 5 posts, genuine angle, read rules, engage community              |
+  | 4-30  | TikTok/Reels | 9+ videos, 10-20 sec clips, make 30 pieces, double down on winner |
+  | 7-30  | SEO pages    | 5+ targeted pages for actual search queries                       |
+  | 25    | Discord      | Find-a-player channel, retention layer                            |
+  | 12-30 | LinkedIn     | 2 posts/week, building process stories                            |
 
   **North-star metric:** Number of people who actually play a game.
 

@@ -48,6 +48,7 @@ export class LiveStatsService {
 
   async getLiveStats(): Promise<LiveStatsResponse> {
     const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
     const publicHostFilter = { $not: /^anon_/ };
     const baseRoomFilter = {
@@ -62,6 +63,7 @@ export class LiveStatsService {
       openRoomsDocs,
       recentRecords,
       gameAggregation,
+      gameWeekAggregation,
     ] = await Promise.all([
       this.roomModel
         .countDocuments({ ...baseRoomFilter, status: 'in_progress' })
@@ -90,6 +92,13 @@ export class LiveStatsService {
       this.playerStatModel
         .aggregate<{ _id: string; matches: number }>([
           { $match: { timestamp: { $gte: oneDayAgo } } },
+          { $group: { _id: '$gameId', matches: { $sum: 1 } } },
+          { $sort: { matches: -1 } },
+        ])
+        .exec(),
+      this.playerStatModel
+        .aggregate<{ _id: string; matches: number }>([
+          { $match: { timestamp: { $gte: oneWeekAgo } } },
           { $group: { _id: '$gameId', matches: { $sum: 1 } } },
           { $sort: { matches: -1 } },
         ])
@@ -170,12 +179,21 @@ export class LiveStatsService {
       }
     }
 
+    const gameWeekMatchesMap = new Map<string, number>();
+    for (const agg of gameWeekAggregation) {
+      if (agg._id) {
+        gameWeekMatchesMap.set(agg._id, agg.matches);
+      }
+    }
+
     const popularGames: LivePopularGame[] = POPULAR_GAME_IDS.map((gameId) => {
       const matchCount = gameMatchesMap.get(gameId) ?? 0;
+      const matchesWeekCount = gameWeekMatchesMap.get(gameId) ?? matchCount;
       return {
         gameId,
         activePlayers: matchCount > 0 ? matchCount * 2 : 0,
         matchesCount: matchCount,
+        matchesWeekCount,
       };
     });
 

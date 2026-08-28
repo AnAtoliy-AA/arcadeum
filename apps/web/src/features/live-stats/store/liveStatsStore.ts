@@ -5,6 +5,7 @@ export interface LivePopularGame {
   gameId: string;
   activePlayers: number;
   matchesCount: number;
+  matchesWeekCount?: number;
 }
 
 export interface LiveRoomItem {

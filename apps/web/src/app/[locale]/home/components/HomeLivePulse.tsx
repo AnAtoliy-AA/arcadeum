@@ -132,7 +132,10 @@ export function HomeLivePulse() {
             </div>
           </Link>
 
-          <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-950/20 to-black/30 p-4 transition-all hover:border-cyan-500/40 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+          <Link
+            href={`${routes.rooms}?status=completed`}
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-950/20 to-black/30 p-4 transition-all hover:border-cyan-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] active:scale-[0.98]"
+          >
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
                 {t('home.liveBadgeMatchesToday')}
@@ -147,10 +150,13 @@ export function HomeLivePulse() {
             >
               {stats.matchesToday.toLocaleString()}
             </div>
-            <div className="mt-1 text-[11px] font-medium text-cyan-300/60">
-              Completed today
+            <div className="mt-1 flex items-center justify-between text-[11px] font-medium text-cyan-300/60">
+              <span>Completed today</span>
+              <span className="text-cyan-400 font-bold transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
             </div>
-          </div>
+          </Link>
 
           <Link
             href={`${routes.rooms}?status=lobby`}

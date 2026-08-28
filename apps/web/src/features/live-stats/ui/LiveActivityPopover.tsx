@@ -123,14 +123,18 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
           </div>
         </Link>
 
-        <div className="rounded-xl border border-cyan-500/20 bg-cyan-950/20 p-2">
+        <Link
+          href={`${routes.rooms}?status=completed`}
+          onClick={handleClose}
+          className="rounded-xl border border-cyan-500/20 bg-cyan-950/20 p-2 transition-all hover:border-cyan-500/40 hover:bg-cyan-900/30"
+        >
           <div className="font-mono text-sm font-extrabold text-cyan-400">
             {stats.matchesToday}
           </div>
           <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">
             {t('home.liveBadgeMatchesToday')}
           </div>
-        </div>
+        </Link>
 
         <Link
           href={`${routes.rooms}?status=lobby`}
@@ -202,6 +206,10 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
           {trendingGamesList.map((game) => {
             const cleanName = game.gameId.replace('_v1', '').replace('_', ' ');
             const landingUrl = getGameLandingUrl(game.gameId, routes);
+            const weekMatches =
+              typeof game.matchesWeekCount === 'number'
+                ? game.matchesWeekCount
+                : game.matchesCount;
             return (
               <Link
                 key={game.gameId}
@@ -218,7 +226,9 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
                   </span>
                 </div>
                 <div className="mt-1 flex items-center justify-between text-[10px] text-white/50">
-                  <span>{game.matchesCount} played today</span>
+                  <span>
+                    {game.matchesCount} today · {weekMatches} this week
+                  </span>
                   {game.activePlayers > 0 && (
                     <span className="font-mono text-emerald-400">
                       {game.activePlayers} 🟢

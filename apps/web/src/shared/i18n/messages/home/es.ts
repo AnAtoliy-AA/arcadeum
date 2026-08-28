@@ -84,6 +84,31 @@ export const es = {
   stepPlayTitle: 'Juega Juntos',
   stepPlayDescription:
     'Disfruta de juegos de mesa mientras {{appName}} maneja reglas, turnos y puntuación automáticamente.',
+  // Live stats & activity
+  liveTitle: 'Actividad en Vivo de la Plataforma',
+  liveSubtitle:
+    'Partidas en tiempo real, jugadores activos y salas abiertas ahora mismo',
+  liveBadgeOnline: 'En línea ahora',
+  liveBadgeActiveGames: 'Partidas activas',
+  liveBadgeWaitingRooms: 'Salas abiertas',
+  liveBadgeMatchesToday: 'Partidas hoy',
+  liveOpenLobbiesTitle: 'Salas Abiertas',
+  liveOpenLobbiesSubtitle:
+    'Únete directamente a una sala abierta o sé espectador de partidas en curso',
+  liveJoinAction: 'Unirse a la sala',
+  liveSpectateAction: 'Espectar',
+  liveQuickPlayAction: 'Juego rápido',
+  liveNoOpenRooms:
+    'No hay salas abiertas en este momento. ¡Crea una o juega una partida rápida vs IA o jugadores!',
+  liveRecentActivityTitle: 'Pulso de la Comunidad',
+  liveActivityWon: 'ganó una partida en',
+  liveActivityStreak: 'está en racha de victorias en',
+  liveActivityCreated: 'creó una nueva sala de',
+  livePopularGamesTitle: 'Juegos Populares',
+  livePlayersCount: '{{count}} jugadores',
+  liveMatchesCount: '{{count}} partidas',
+  liveViewAllRooms: 'Ver todas las salas',
+  liveViewAllGames: 'Explorar catálogo',
   // Coming soon labels
   comingSoon: 'Próximamente',
   mobileComingSoonDescription:

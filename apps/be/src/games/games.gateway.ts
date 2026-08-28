@@ -6,11 +6,18 @@ import {
   WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Logger,
+  Optional,
+  forwardRef,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
+import { LiveStatsService } from './live-stats/live-stats.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameRoomsMatchmakingService } from './rooms/game-rooms.matchmaking.service';
@@ -52,6 +59,9 @@ export class GamesGateway {
     private readonly matchmakingService: GameRoomsMatchmakingService,
     @Inject(GAME_GATEWAYS) private readonly gameHandlers: GameMessageHandler[],
     private readonly chessBotService?: ChessBotService,
+    @Optional()
+    @Inject(forwardRef(() => LiveStatsService))
+    private readonly liveStatsService?: LiveStatsService,
   ) {}
   afterInit(): void {
     this.realtime.registerServer(this.server);
@@ -116,12 +126,11 @@ export class GamesGateway {
         typeof client.handshake?.query?.anonId === 'string'
           ? client.handshake.query.anonId
           : undefined;
-      if (anonId) {
-        (client.data as Record<string, unknown>).anonId = anonId;
-        this.realtime.trackSocket(anonId, client.id);
-      }
+      const guestId = anonId || `guest_${client.id}`;
+      (client.data as Record<string, unknown>).anonId = guestId;
+      this.realtime.trackSocket(guestId, client.id);
       this.logger.verbose(
-        `Anonymous client connected to games namespace: ${client.id}`,
+        `Client connected to games namespace: ${client.id} (${guestId})`,
       );
     }
 
@@ -147,6 +156,11 @@ export class GamesGateway {
     }
 
     void client.join(this.realtime.lobbyChannel());
+    if (this.liveStatsService) {
+      void this.liveStatsService.getLiveStats().then((stats) => {
+        this.liveStatsService?.broadcastLiveStats(stats);
+      });
+    }
   }
 
   handleDisconnect(client: Socket): void {
@@ -156,10 +170,15 @@ export class GamesGateway {
       string | undefined;
     const anonId = (client.data as Record<string, unknown>)?.anonId as
       string | undefined;
-    const activeUserId = userId || anonId;
+    const activeUserId = userId || anonId || `guest_${client.id}`;
     if (activeUserId) {
       this.realtime.untrackSocket(activeUserId, client.id);
       this.matchmakingService.leaveQueue(activeUserId);
+    }
+    if (this.liveStatsService) {
+      void this.liveStatsService.getLiveStats().then((stats) => {
+        this.liveStatsService?.broadcastLiveStats(stats);
+      });
     }
     if (!activeUserId || !this.server) return;
 

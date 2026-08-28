@@ -62,6 +62,7 @@ const NotificationBell = dynamic(
   { ssr: false },
 );
 import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
+import { LivePulseBadge, LiveActivityPopover } from '@/features/live-stats';
 
 import {
   DesktopOnly,
@@ -178,6 +179,11 @@ export function HeaderInteractive() {
       <div className="actions-styled">
         {isMounted && (
           <>
+            <div className="relative inline-flex items-center">
+              <LivePulseBadge />
+              <LiveActivityPopover />
+            </div>
+
             <HeaderMobileHidden>
               <Link
                 href={routes.support}

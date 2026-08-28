@@ -81,6 +81,31 @@ export const en = {
   stepPlayTitle: 'Play Together',
   stepPlayDescription:
     'Enjoy board games with {{appName}} handling rules, turns, and scoring automatically.',
+  // Live stats & activity
+  liveTitle: 'Live Platform Activity',
+  liveSubtitle:
+    'Real-time matches, active players, and open lobbies happening right now',
+  liveBadgeOnline: 'Online Now',
+  liveBadgeActiveGames: 'Active Matches',
+  liveBadgeWaitingRooms: 'Open Lobbies',
+  liveBadgeMatchesToday: 'Matches Today',
+  liveOpenLobbiesTitle: 'Open Lobbies',
+  liveOpenLobbiesSubtitle:
+    'Jump straight into an open game room or spectate ongoing matches',
+  liveJoinAction: 'Join Room',
+  liveSpectateAction: 'Spectate',
+  liveQuickPlayAction: 'Quick Play',
+  liveNoOpenRooms:
+    'No open rooms at this moment. Create one or quick-match vs AI or online players!',
+  liveRecentActivityTitle: 'Community Pulse',
+  liveActivityWon: 'won a match in',
+  liveActivityStreak: 'is on a win streak in',
+  liveActivityCreated: 'created a new lobby for',
+  livePopularGamesTitle: 'Trending Games',
+  livePlayersCount: '{{count}} players',
+  liveMatchesCount: '{{count}} matches',
+  liveViewAllRooms: 'View all rooms',
+  liveViewAllGames: 'Explore catalog',
   // Coming soon labels
   comingSoon: 'Coming Soon',
   // Footer

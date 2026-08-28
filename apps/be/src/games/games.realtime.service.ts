@@ -44,6 +44,15 @@ export class GamesRealtimeService {
     }
   }
 
+  getConnectedUsersCount(): number {
+    return this.userIdToSockets.size;
+  }
+
+  getConnectedSocketsCount(): number {
+    if (!this.server) return 0;
+    return this.server.sockets?.sockets?.size ?? 0;
+  }
+
   roomChannel(roomId: string): string {
     return `game-room:${roomId}`;
   }

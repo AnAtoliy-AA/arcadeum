@@ -83,6 +83,31 @@ export const by = {
   stepPlayTitle: 'Гуляць разам',
   stepPlayDescription:
     'Атрымлівайце асалоду ад настольных гульняў, пакуль {{appName}} аўтаматычна кіруе правіламі, хадамі і ачкамі.',
+  // Live stats & activity
+  liveTitle: 'Актыўнасць на платформе ў рэальным часе',
+  liveSubtitle:
+    'Матчы ў прамым эфіры, актыўныя гульцы і адкрытыя пакоі прама зараз',
+  liveBadgeOnline: 'Зараз анлайн',
+  liveBadgeActiveGames: 'Ідзе матчаў',
+  liveBadgeWaitingRooms: 'Адкрытыя пакоі',
+  liveBadgeMatchesToday: 'Згуляна сёння',
+  liveOpenLobbiesTitle: 'Адкрытыя пакоі',
+  liveOpenLobbiesSubtitle:
+    'Далучайцеся да адкрытых пакояў або назірайце за бягучымі бітвамі',
+  liveJoinAction: 'Увайсці ў гульню',
+  liveSpectateAction: 'Глядзець',
+  liveQuickPlayAction: 'Хуткая гульня',
+  liveNoOpenRooms:
+    'Зараз няма адкрытых пакояў. Стварыце свой або пачніце хуткі матч з ІІ або гульцамі!',
+  liveRecentActivityTitle: 'Пульс супольнасці',
+  liveActivityWon: 'атрымаў перамогу ў',
+  liveActivityStreak: 'на серыі перамог у',
+  liveActivityCreated: 'стварыў новы пакой для',
+  livePopularGamesTitle: 'Папулярныя гульні',
+  livePlayersCount: '{{count}} гульцоў',
+  liveMatchesCount: '{{count}} матчаў',
+  liveViewAllRooms: 'Усе пакоі',
+  liveViewAllGames: 'Увесь каталог',
   // Coming soon labels
   comingSoon: 'Хутка',
   // Footer

@@ -125,6 +125,13 @@ export const frMessages = {
     actions: {
       backToHome: "Retour à l'Accueil",
     },
+    postGame: {
+      whatNext: 'Et maintenant ?',
+      challengeFriend: 'Défier un Ami',
+      shareResult: 'Partager le Résultat',
+      playAnother: 'Rejouer',
+      linkCopied: 'Lien copié !',
+    },
     deleteRoom: {
       button: 'Supprimer la salle',
       confirmTitle: 'Supprimer la salle',

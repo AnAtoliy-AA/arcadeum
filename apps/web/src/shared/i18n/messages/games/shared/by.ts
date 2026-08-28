@@ -124,6 +124,13 @@ export const byMessages = {
     actions: {
       backToHome: 'На галоўную',
     },
+    postGame: {
+      whatNext: 'Што далей?',
+      challengeFriend: 'Выклікаць сябра',
+      shareResult: 'Падзяліцца вынікам',
+      playAnother: 'Згуляць яшчэ',
+      linkCopied: 'Спасылка скапіявана!',
+    },
     deleteRoom: {
       button: 'Выдаліць залу',
       confirmTitle: 'Выдаліць залу',

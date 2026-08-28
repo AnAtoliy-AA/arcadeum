@@ -124,6 +124,13 @@ export const ruMessages = {
     actions: {
       backToHome: 'На главную',
     },
+    postGame: {
+      whatNext: 'Что дальше?',
+      challengeFriend: 'Вызвать друга',
+      shareResult: 'Поделиться результатом',
+      playAnother: 'Сыграть ещё',
+      linkCopied: 'Ссылка скопирована!',
+    },
     deleteRoom: {
       button: 'Удалить зал',
       confirmTitle: 'Удалить зал',

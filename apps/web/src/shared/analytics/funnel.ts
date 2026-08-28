@@ -19,6 +19,10 @@ export const FUNNEL_EVENTS = {
   socialInviteAccepted: 'social.invite.accepted',
   socialGameCompleted: 'social.game.completed',
   inviteShared: 'invite.shared',
+  challengeShared: 'challenge.shared',
+  postGameChallenge: 'post_game.challenge',
+  postGameShare: 'post_game.share',
+  postGamePlayAnother: 'post_game.play_another',
 } as const;
 
 function trackFunnel(
@@ -98,4 +102,24 @@ export function trackSocialInviteAccepted(
 
 export function trackInviteShared(channel: string, roomId: string): void {
   trackFunnel('social', FUNNEL_EVENTS.inviteShared, { channel, roomId });
+}
+
+/** Post-game: player challenged a friend via share sheet. */
+export function trackChallengeShared(gameId: string, roomId: string): void {
+  trackFunnel('social', FUNNEL_EVENTS.challengeShared, { gameId, roomId });
+}
+
+/** Post-game: player clicked "Challenge a Friend" button. */
+export function trackPostGameChallenge(gameId: string): void {
+  trackFunnel('social', FUNNEL_EVENTS.postGameChallenge, { gameId });
+}
+
+/** Post-game: player clicked "Share Result" button. */
+export function trackPostGameShare(gameId: string): void {
+  trackFunnel('social', FUNNEL_EVENTS.postGameShare, { gameId });
+}
+
+/** Post-game: player clicked "Play Another Game" button. */
+export function trackPostGamePlayAnother(gameId: string): void {
+  trackFunnel('solo', FUNNEL_EVENTS.postGamePlayAnother, { gameId });
 }

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useLiveStatsStore } from '@/features/live-stats';
-import { getGamesSocket } from '@/shared/lib/socket';
+import { getGamesSocket, connectSocketsAnonymous } from '@/shared/lib/socket';
 
 export function HomeLivePulse() {
   const { t } = useTranslation();
@@ -16,7 +16,11 @@ export function HomeLivePulse() {
   useEffect(() => {
     const socket = getGamesSocket();
     if (!socket.connected) {
-      socket.connect();
+      const storedAnonId =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('arcadeum_anon_id')
+          : null;
+      connectSocketsAnonymous(storedAnonId || undefined);
     }
     void fetchLiveStats();
 

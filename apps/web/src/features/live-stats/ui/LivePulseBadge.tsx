@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useLiveStatsStore } from '../store/liveStatsStore';
-import { getGamesSocket } from '@/shared/lib/socket';
+import { getGamesSocket, connectSocketsAnonymous } from '@/shared/lib/socket';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 export function LivePulseBadge() {
@@ -14,7 +14,11 @@ export function LivePulseBadge() {
   useEffect(() => {
     const socket = getGamesSocket();
     if (!socket.connected) {
-      socket.connect();
+      const storedAnonId =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('arcadeum_anon_id')
+          : null;
+      connectSocketsAnonymous(storedAnonId || undefined);
     }
     void fetchLiveStats();
 

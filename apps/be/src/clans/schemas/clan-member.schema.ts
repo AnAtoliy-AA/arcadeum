@@ -6,10 +6,10 @@ export type ClanMemberDocument = ClanMember & Document;
 
 @Schema({ timestamps: true })
 export class ClanMember {
-  @Prop({ type: Types.ObjectId, ref: 'Clan', required: true, index: true })
+  @Prop({ type: Types.ObjectId, ref: 'Clan', required: true })
   clanId!: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId!: Types.ObjectId;
 
   @Prop({

@@ -10,7 +10,11 @@ import {
  */
 export async function getServerAccessToken(): Promise<string | null> {
   const cookieStore = await cookies();
-  return cookieStore.get('access_token')?.value || null;
+  return (
+    cookieStore.get('access_token')?.value ||
+    cookieStore.get('web_access_token')?.value ||
+    null
+  );
 }
 
 /**

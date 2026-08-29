@@ -129,12 +129,17 @@ export default {
           '0%': { transform: 'translateX(-100%)' },
           '60%, 100%': { transform: 'translateX(280%)' },
         },
+        'arcadeum-shimmer': {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
       },
       animation: {
         'hero-float-3d': 'hero-float-3d 6s ease-in-out infinite',
         'sub-hue-shift': 'sub-hue-shift 15s linear infinite',
         'hero-color-shift': 'hero-color-shift 15s linear infinite',
         'pulse-ring': 'pulse-animation 2s infinite',
+        shimmer: 'arcadeum-shimmer 2s ease-in-out infinite',
       },
     },
   },

@@ -1,5 +1,4 @@
-'use client';
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { cx } from '../../utils/cx';
 
 export type SkeletonProps = {
@@ -13,14 +12,6 @@ export type SkeletonProps = {
   style?: React.CSSProperties;
 };
 
-/**
- * Keyframes for the shimmer effect. Injected via a <style> tag (same pattern
- * as PageLoading) so the component is self-contained and works in any host
- * app without config changes.
- */
-const SKIMMER_KEYFRAMES =
-  '@keyframes arcadeum-sk-shimmer{0%{background-position:150% 0}100%{background-position:-150% 0}}';
-
 const variantClasses: Record<NonNullable<SkeletonProps['variant']>, string> = {
   rectangular: 'rounded-lg',
   circular: 'rounded-full',
@@ -29,9 +20,9 @@ const variantClasses: Record<NonNullable<SkeletonProps['variant']>, string> = {
 
 const animationClasses: Record<NonNullable<SkeletonProps['animation']>, string> = {
   shimmer:
-    'animate-[arcadeum-sk-shimmer_2s_linear_infinite] [background-image:linear-gradient(90deg,var(--borderColor),rgba(255,255,255,0.18),var(--borderColor))] [background-size:200%_100%]',
-  pulse: 'animate-pulse',
-  none: '',
+    'animate-shimmer bg-gradient-to-r from-[var(--borderColor)]/30 via-white/10 to-[var(--borderColor)]/30 bg-[length:200%_100%]',
+  pulse: 'animate-pulse bg-[var(--borderColor)]/40',
+  none: 'bg-[var(--borderColor)]/30',
 };
 
 export const Skeleton = memo(function Skeleton({
@@ -39,40 +30,24 @@ export const Skeleton = memo(function Skeleton({
   height,
   variant = 'rectangular',
   animation = 'shimmer',
-  delay,
   'data-testid': dataTestId,
   className,
-  style: styleProp,
 }: SkeletonProps) {
-  const style = useMemo(() => {
-    const s: React.CSSProperties = { ...styleProp };
-    if (width !== undefined) s.width = width;
-    if (height !== undefined) s.height = height;
-    if (width === undefined && height === undefined && !className) {
-      s.width = '100%';
-      s.height = variant === 'text' ? 16 : 20;
-    }
-    if (delay) {
-      s.animationDelay = typeof delay === 'number' ? `${delay}s` : delay;
-    }
-    return s;
-  }, [width, height, delay, variant, className, styleProp]);
+  const widthClass = typeof width === 'number' ? undefined : width;
+  const heightClass = typeof height === 'number' ? undefined : height;
 
   return (
-    <>
-      {animation === 'shimmer' && <style>{SKIMMER_KEYFRAMES}</style>}
-      <div
-        className={cx(
-          'bg-[var(--borderColor)]',
-          'opacity-50',
-          variantClasses[variant],
-          animationClasses[animation],
-          className,
-        )}
-        style={style}
-        data-testid={dataTestId}
-      />
-    </>
+    <div
+      className={cx(
+        'shrink-0',
+        widthClass ?? (width === undefined && !className ? 'w-full' : ''),
+        heightClass ?? (height === undefined && !className ? (variant === 'text' ? 'h-4' : 'h-5') : ''),
+        variantClasses[variant],
+        animationClasses[animation],
+        className,
+      )}
+      data-testid={dataTestId}
+    />
   );
 });
 
@@ -83,7 +58,6 @@ export const SkeletonText = memo(function SkeletonText({
   height,
   delay,
   className,
-  style,
   'data-testid': dataTestId,
 }: SkeletonVariantProps) {
   return (
@@ -93,7 +67,6 @@ export const SkeletonText = memo(function SkeletonText({
       height={height}
       delay={delay}
       className={className}
-      style={style}
       data-testid={dataTestId}
     />
   );
@@ -104,7 +77,6 @@ export const SkeletonCircle = memo(function SkeletonCircle({
   height,
   delay,
   className,
-  style,
   'data-testid': dataTestId,
 }: SkeletonVariantProps) {
   return (
@@ -114,7 +86,6 @@ export const SkeletonCircle = memo(function SkeletonCircle({
       height={height}
       delay={delay}
       className={className}
-      style={style}
       data-testid={dataTestId}
     />
   );
@@ -123,17 +94,13 @@ export const SkeletonCircle = memo(function SkeletonCircle({
 export const SkeletonAvatar = memo(function SkeletonAvatar({
   delay,
   className,
-  style,
   'data-testid': dataTestId,
 }: Omit<SkeletonVariantProps, 'width' | 'height'>) {
   return (
     <Skeleton
       variant="circular"
-      width={40}
-      height={40}
       delay={delay}
-      className={className}
-      style={style}
+      className={cx('h-10 w-10', className)}
       data-testid={dataTestId}
     />
   );
@@ -142,17 +109,13 @@ export const SkeletonAvatar = memo(function SkeletonAvatar({
 export const SkeletonButton = memo(function SkeletonButton({
   delay,
   className,
-  style,
   'data-testid': dataTestId,
 }: Omit<SkeletonVariantProps, 'width' | 'height'>) {
   return (
     <Skeleton
       variant="rectangular"
-      width={120}
-      height={40}
       delay={delay}
-      className={className}
-      style={style}
+      className={cx('h-10 w-28 rounded-xl', className)}
       data-testid={dataTestId}
     />
   );
@@ -164,14 +127,16 @@ export type SkeletonTableRowProps = {
 };
 
 export const SkeletonTableRow = memo(function SkeletonTableRow({ columns, delay }: SkeletonTableRowProps) {
-  const cells = useMemo(
-    () => Array.from({ length: columns }, (_, i) => ({ key: i, width: i === 0 ? '60%' : '40px' })),
-    [columns]
-  );
+  const columnIndices = Array.from({ length: columns }, (_, i) => i);
   return (
-    <div className="flex w-full flex-row gap-2">
-      {cells.map(({ key, width }) => (
-        <Skeleton key={key} width={width} height={16} variant="text" delay={delay} />
+    <div className="flex w-full flex-row items-center gap-3">
+      {columnIndices.map((i) => (
+        <Skeleton
+          key={i}
+          variant="text"
+          delay={delay}
+          className={i === 0 ? 'h-4 w-3/5' : 'h-4 w-12'}
+        />
       ))}
     </div>
   );

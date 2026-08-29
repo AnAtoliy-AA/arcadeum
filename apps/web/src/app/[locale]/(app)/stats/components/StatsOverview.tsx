@@ -37,11 +37,7 @@ export function StatsOverview({
         <div className="stats-overview-grid">
           {[1, 2, 3, 4].map((i) => (
             <Card key={i} variant="glass" padding="md">
-              <SkeletonText
-                className={'w-[60%]'}
-                style={{ height: '14px' }}
-                delay={i * 0.1}
-              />
+              <SkeletonText className="h-3.5 w-[60%]" delay={i * 0.1} />
               <SkeletonText
                 width="100px"
                 height="32px"

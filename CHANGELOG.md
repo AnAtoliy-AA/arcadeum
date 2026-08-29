@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.6] - 2026-08-29
+
+### Added
+- implement daily habit streak and viral score sharing (ARC-930)
+- implement smart re-engagement and winback engine (ARC-934)
+- implement instant room boot and zero-cls asset preloader (ARC-936)
+- implement web worker ai engine offloader and worker pool (ARC-935)
+- implement websocket state delta and compression engine (ARC-937)
+
+### Documentation
+- update tier 8 and tier 9 roadmap statuses to implemented (ARC-930) (ARC-930)
+
+
 ## [1.27.5] - 2026-08-29
 
 ### Added

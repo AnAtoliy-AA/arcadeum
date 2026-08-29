@@ -49,6 +49,31 @@ export async function mockSession(
     document.cookie = `web_refresh_token=${s.refreshToken}; path=/; max-age=3600; SameSite=Lax`;
   };
 
+  // Set cookies on the browser context so they are present in HTTP
+  // request headers when the proxy gate checks them server-side.
+  // addInitScript only sets document.cookie client-side (too late for proxy).
+  const cookieDomain = new URL(page.url()).hostname || '127.0.0.1';
+  await page.context().addCookies([
+    {
+      name: 'web_access_token',
+      value: snapshot.accessToken,
+      path: '/',
+      httpOnly: false,
+      sameSite: 'Lax',
+      expires: Math.floor(Date.now() / 1000) + 3600,
+      domain: cookieDomain,
+    },
+    {
+      name: 'web_refresh_token',
+      value: snapshot.refreshToken,
+      path: '/',
+      httpOnly: false,
+      sameSite: 'Lax',
+      expires: Math.floor(Date.now() / 1000) + 86400,
+      domain: cookieDomain,
+    },
+  ]);
+
   if (persistent) {
     await page.addInitScript(setSession, snapshot);
   } else {

@@ -252,14 +252,16 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: 'Batalla Naval — Juega Online Gratis con Amigos | Arcadeum',
+        title:
+          'Batalla Naval Online Gratis (Hundir la Flota) — Jugar con Amigos o Bot | Arcadeum',
         description:
-          'Juega Batalla Naval online gratis. Combate naval clásico para 2–4 jugadores, con bots de IA, modo equipos y más de 10 temas. Sin descargas ni registros — crea una sala y comparte el enlace.',
-        ogTitle: 'Batalla Naval Online — Multijugador Gratis',
+          'Juega a Batalla Naval (Hundir la Flota) online gratis sin registro. Modos para 2–4 jugadores: reta a tus amigos por enlace o compite contra la IA. Mejores tácticas y más de 10 temas visuales.',
+        ogTitle:
+          'Batalla Naval Online Gratis (Hundir la Flota) — Multijugador con Amigos o IA',
         ogDescription:
-          'Coloca tu flota, dispara a las cuadrículas enemigas y hunde todos sus barcos. Juega en el navegador con amigos o contra la IA.',
+          'Coloca tu flota en la cuadrícula 10×10, dispara a las coordenadas enemigas y hunde todos los barcos. Juega gratis en el navegador sin descargas.',
         keywords:
-          'batalla naval, batalla naval online, jugar batalla naval, batallas navales multijugador, batalla naval gratis',
+          'batalla naval, batalla naval online, jugar batalla naval, hundir la flota online, batalla naval gratis, jugar batalla naval con amigos, batalla naval multijugador',
       },
       hero: {
         title: 'Batalla Naval',
@@ -385,6 +387,22 @@ export const esMessages = {
             question: '¿Cuántos jugadores puede tener una partida?',
             answer:
               'De dos a cuatro jugadores por sala. El modo equipos permite hasta cuatro equipos de dos o más jugadores.',
+          },
+          friends: {
+            question: '¿Cómo jugar a Batalla Naval online con amigos?',
+            answer:
+              'Haz clic en «Crear sala», elige la configuración y comparte el enlace directo con tu amigo para jugar al instante sin registro.',
+          },
+          shipsCount: {
+            question: '¿Cuántos barcos y casillas hay en Batalla Naval?',
+            answer:
+              'El juego utiliza una cuadrícula de 10×10 (100 casillas). La flota está compuesta por barcos de 1 a 4 casillas (acorazados, cruceros, destructores y submarinos) que no pueden tocarse.',
+          },
+          bestPlacement: {
+            question:
+              '¿Cuál es la mejor colocación de barcos en Batalla Naval?',
+            answer:
+              'La táctica más eficaz consiste en alinear los barcos grandes a lo largo de los bordes exteriores del tablero y dispersar los submarinos de 1 casilla en el centro.',
           },
           ai: {
             question: '¿Puedo jugar contra la computadora?',

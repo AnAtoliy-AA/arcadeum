@@ -71,8 +71,8 @@ export const fr: DeepPartial<SeoMessages> = {
     description: `Jouez au Pique en ligne sur ${APP} — classique jeu de cartes en partenariat à 4 joueurs avec annonces, Nil, sacs et adversaires IA. Gratuit.`,
   },
   seaBattleLanding: {
-    title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
-    description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,
+    title: `Bataille Navale en Ligne Gratuite (Touché-Coulé) · ${APP}`,
+    description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre l'IA, adversaire en ligne ou salon privé entre amis sans inscription.`,
   },
   goLanding: {
     title: `Go · Jeu de Plateau Multijoueur en Ligne Gratuit · ${APP}`,

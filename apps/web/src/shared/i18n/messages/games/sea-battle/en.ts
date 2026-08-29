@@ -251,14 +251,16 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: 'Sea Battle — Play Online Free with Friends | Battleship Game',
+        title:
+          'Sea Battle (Battleship) Online — Play Free with Friends or AI (2–4 Players) | Arcadeum',
         description:
-          'Play Sea Battle (Battleship) online for free. Classic naval combat for 2–4 players, with AI bots, team mode, and 10+ themes. No download, no signup — just create a room and share the link.',
-        ogTitle: 'Sea Battle Online — Free Multiplayer Battleship',
+          'Play Sea Battle (Battleship) online for free! 2–4 players multiplayer: challenge friends with an invite link or practice against smart AI bots on a 10×10 grid. Best fleet setups, tactics & 10+ themes.',
+        ogTitle:
+          'Sea Battle (Battleship) Online — Play Free with Friends or AI',
         ogDescription:
-          'Place your fleet, fire at enemy grids, sink every ship to win. Play in your browser with friends or AI.',
+          'Place your fleet on a 10×10 grid, fire at enemy coordinates and sink every ship. Play free in your browser with friends or AI bots.',
         keywords:
-          'sea battle, battleship, battleship online, sea battle online, play battleship, multiplayer battleship, naval combat game',
+          'sea battle online, battleship online, play battleship with friends, free battleship game, battleship strategy, how to play seabattle, games to invite friends online, naval combat game',
       },
       hero: {
         title: 'Sea Battle',
@@ -387,6 +389,21 @@ export const enMessages = {
             question: 'How many players can play Sea Battle?',
             answer:
               'Sea Battle supports two to four players per room. Team mode allows up to four teams of two or more players each.',
+          },
+          friends: {
+            question: 'How do I play Sea Battle online with friends?',
+            answer:
+              'Click "Create Room", customize your settings, and copy the invite link to share with your friends. They can join immediately in any browser with no signup.',
+          },
+          shipsCount: {
+            question: 'How many ships and cells are in Battleship?',
+            answer:
+              'The standard board is a 10×10 grid (100 cells). The fleet features 5 to 10 ships spanning 1 to 4 cells each (battleship, cruisers, destroyers, and submarines). Ships cannot overlap or touch.',
+          },
+          bestPlacement: {
+            question: 'What is the best ship placement in Battleship?',
+            answer:
+              'The strongest layout hugs larger ships along the outer board perimeter while scattering smaller 1-cell submarines in the central zones, making them elusive against checkerboard parity search.',
           },
           ai: {
             question: 'Can I play Sea Battle against the computer?',

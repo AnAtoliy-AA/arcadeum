@@ -8,6 +8,12 @@ import { post as howToPlaySeaBattleFr } from './posts/how-to-play-sea-battle/fr'
 import { post as howToPlaySeaBattleRu } from './posts/how-to-play-sea-battle/ru';
 import { post as howToPlaySeaBattleBy } from './posts/how-to-play-sea-battle/by';
 
+import { post as seaBattlePlacementsEn } from './posts/sea-battle-best-strategies-and-placements/en';
+import { post as seaBattlePlacementsEs } from './posts/sea-battle-best-strategies-and-placements/es';
+import { post as seaBattlePlacementsFr } from './posts/sea-battle-best-strategies-and-placements/fr';
+import { post as seaBattlePlacementsRu } from './posts/sea-battle-best-strategies-and-placements/ru';
+import { post as seaBattlePlacementsBy } from './posts/sea-battle-best-strategies-and-placements/by';
+
 import { post as howToPlayChessEn } from './posts/how-to-play-chess/en';
 import { post as howToPlayChessEs } from './posts/how-to-play-chess/es';
 import { post as howToPlayChessFr } from './posts/how-to-play-chess/fr';
@@ -108,6 +114,13 @@ import { post as patchNotesV124En } from './posts/patch-notes-v1-24/en';
  * (locale, slug) pair without a directory scan at request time.
  */
 const POSTS: Record<string, Partial<Record<Locale, BlogPost>>> = {
+  'sea-battle-best-strategies-and-placements': {
+    en: seaBattlePlacementsEn,
+    es: seaBattlePlacementsEs,
+    fr: seaBattlePlacementsFr,
+    ru: seaBattlePlacementsRu,
+    by: seaBattlePlacementsBy,
+  },
   'how-to-play-sea-battle': {
     en: howToPlaySeaBattleEn,
     es: howToPlaySeaBattleEs,

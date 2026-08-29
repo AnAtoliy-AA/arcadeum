@@ -253,14 +253,15 @@ export const frMessages = {
     landing: {
       meta: {
         title:
-          'Bataille Navale — Jouez en ligne gratuitement avec vos amis | Arcadeum',
+          'Bataille Navale en Ligne Gratuite (Touché-Coulé) — Jouer à 2 avec un Ami ou IA',
         description:
-          'Jouez à Bataille Navale en ligne gratuitement. Combat naval classique pour 2 à 4 joueurs, avec bots IA, mode équipes et plus de 10 thèmes. Sans téléchargement ni inscription — créez une salle et partagez le lien.',
-        ogTitle: 'Bataille Navale en ligne — Multijoueur gratuit (Battleship)',
+          'Jouez à la Bataille Navale (touché-coulé) en ligne multijoueur gratuit. Créez une salle pour 2 à 4 joueurs avec un ami ou affrontez l’ordinateur (IA) sur grille 10x10. Sans inscription.',
+        ogTitle:
+          'Bataille Navale en Ligne Gratuite (Touché-Coulé) — Multijoueur sans inscription',
         ogDescription:
-          'Placez votre flotte, tirez sur les grilles ennemies et coulez tous leurs navires. Jouez dans votre navigateur avec des amis ou contre l’IA.',
+          'Placez votre flotte, tirez sur les grilles ennemies et coulez tous leurs navires. Jouez en ligne gratuitement avec un ami ou contre l’IA.',
         keywords:
-          'bataille navale, bataille navale en ligne, jouer bataille navale, battleship en ligne, bataille navale multijoueur',
+          'bataille navale en ligne, bataille navale gratuite, touche coule en ligne, jeux bataille navale en ligne, bataille navale avec un ami, bataille navale multijoueur, jeu de bataille navale gratuit',
       },
       hero: {
         title: 'Bataille Navale',
@@ -385,6 +386,23 @@ export const frMessages = {
             question: 'Combien de joueurs peuvent jouer ?',
             answer:
               'De deux à quatre joueurs par salle. Le mode équipes permet jusqu’à quatre équipes de deux joueurs ou plus.',
+          },
+          friends: {
+            question:
+              'Comment jouer à la Bataille Navale en ligne avec un ami ?',
+            answer:
+              'Cliquez sur « Créer une salle », configurez votre partie et partagez le lien avec votre ami pour commencer immédiatement sans inscription.',
+          },
+          shipsCount: {
+            question:
+              'Combien de navires et de cases dans la Bataille Navale ?',
+            answer:
+              'Le jeu se déroule sur une grille 10×10 (100 cases). La flotte comprend des navires de 1 à 4 cases (cuirassé, croiseurs, destroyers et sous-marins). Les navires ne peuvent pas se toucher.',
+          },
+          bestPlacement: {
+            question: 'Quel est le meilleur placement à la Bataille Navale ?',
+            answer:
+              'La tactique du périmètre (grands navires placés sur les bords) combinée à la dispersion aléatoire des sous-marins au centre est la plus difficile à déjouer pour l’adversaire.',
           },
           ai: {
             question: 'Puis-je jouer contre l’ordinateur ?',

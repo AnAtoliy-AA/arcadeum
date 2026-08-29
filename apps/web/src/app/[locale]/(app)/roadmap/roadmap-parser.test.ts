@@ -70,4 +70,74 @@ Pure frontend feature. No backend changes needed.
       { label: 'Planned', value: '1', icon: '🗺️' },
     ]);
   });
+
+  it('parses Tier 6 and Tier 7 with ## Tier X heading format', () => {
+    const sampleMarkdown = `
+# Arcadeum Platform Expansion Plan
+
+## Feature Roadmap
+
+### TIER 1 — Low Effort, High Impact
+
+#### 1A. Stat Tracking \`ARC-871\`
+
+**Effort: Easy (1-2 days)**
+
+- Create a Zustand store
+
+## Tier 6 — Growth, SEO, and Analytics (8-Week Action Plan)
+
+### 6A. Viral & Invite Loop Optimization
+
+**Effort: Medium (3-4 days)**
+
+One-tap share sheet for instant invite copying.
+
+### 6B. SEO & Crawler Optimizations
+
+**Effort: Medium (5-7 days)**
+
+Dedicated crawlable landing pages for each game.
+
+## Tier 7 — Growth Acceleration (30-Day Execution Plan)
+
+### 7A. Funnel Measurement
+
+**Effort: Easy (2-3 days)**
+
+UTM tracking, funnel events, campaign URLs.
+
+### 7B. Simplified Homepage
+
+**Effort: Medium (2-3 days)**
+
+New user should arrive → play within 30 seconds.
+`;
+
+    const data = parseRoadmapMarkdown(sampleMarkdown);
+
+    expect(data.tiers).toHaveLength(3);
+
+    expect(data.tiers[0].id).toBe('tier1');
+    expect(data.tiers[0].label).toBe('Quick Wins');
+    expect(data.tiers[0].features).toHaveLength(1);
+
+    expect(data.tiers[1].id).toBe('tier6');
+    expect(data.tiers[1].label).toBe('Growth & SEO');
+    expect(data.tiers[1].icon).toBe('📈');
+    expect(data.tiers[1].features).toHaveLength(2);
+    expect(data.tiers[1].features[0].title).toBe(
+      'Viral & Invite Loop Optimization',
+    );
+    expect(data.tiers[1].features[0].status).toBe('not_started');
+    expect(data.tiers[1].features[1].title).toBe('SEO & Crawler Optimizations');
+
+    expect(data.tiers[2].id).toBe('tier7');
+    expect(data.tiers[2].label).toBe('Growth Acceleration');
+    expect(data.tiers[2].icon).toBe('🚀');
+    expect(data.tiers[2].features).toHaveLength(2);
+    expect(data.tiers[2].features[0].title).toBe('Funnel Measurement');
+    expect(data.tiers[2].features[1].title).toBe('Simplified Homepage');
+    expect(data.tiers[2].features[1].desc).toContain('30 seconds');
+  });
 });

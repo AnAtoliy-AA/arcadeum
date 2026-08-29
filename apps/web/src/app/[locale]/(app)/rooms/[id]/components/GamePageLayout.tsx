@@ -19,7 +19,7 @@ import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
-import { GuestTermsNotice } from '@/features/games/ui';
+import { GuestTermsNotice } from '@/features/games/ui/GuestTermsNotice';
 import { AutoExitFullscreenOnFinish } from './AutoExitFullscreenOnFinish';
 import { roomStyles } from './styles';
 import { GameRow, ChatPanel } from './layout-styles';

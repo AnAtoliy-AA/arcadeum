@@ -1,7 +1,8 @@
 'use client';
 
 import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
-import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
   useGameChatSend,

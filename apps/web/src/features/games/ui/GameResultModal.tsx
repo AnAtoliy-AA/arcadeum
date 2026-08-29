@@ -12,6 +12,7 @@ import {
   GameResultStatsGrid,
   type GameResultStats,
 } from './GameResultStatsGrid';
+import { PostGameSuggestions } from './PostGameSuggestions';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import type { RatingDelta } from '@/features/ranking/model/types';
@@ -27,6 +28,8 @@ export interface GameResultModalProps {
   isOpen: boolean;
   result: GameResultKind | null;
   gameName?: string;
+  /** Game slug for routing (e.g. "chess", "sea-battle"). */
+  gameSlug?: string;
   onRematch?: () => void;
   rematchLabel?: string;
   secondaryAction?: {
@@ -46,6 +49,12 @@ export interface GameResultModalProps {
     viewLabel: string;
     backLabel: string;
   } | null;
+  /** Room ID for challenge/share CTAs (post-game viral loop, roadmap 7C). */
+  roomId?: string;
+  /** Invite code for the room. */
+  inviteCode?: string;
+  /** Callback to navigate to a new game. */
+  onPlayAnother?: () => void;
 }
 
 const TONE_BACKDROP_CLASSES: Record<GameResultKind, string> = {
@@ -84,6 +93,7 @@ export function GameResultModal({
   isOpen,
   result,
   gameName,
+  gameSlug,
   onRematch,
   rematchLabel,
   secondaryAction,
@@ -95,6 +105,9 @@ export function GameResultModal({
   theme,
   stats,
   analysis,
+  roomId,
+  inviteCode,
+  onPlayAnother,
 }: GameResultModalProps) {
   const isClient = useSyncExternalStore(
     () => () => {},
@@ -264,6 +277,19 @@ export function GameResultModal({
                   {analysis.viewLabel}
                 </Button>
               )}
+            </div>
+          )}
+
+          {/* Post-game viral loop CTAs (roadmap 7C) */}
+          {gameSlug && (
+            <div className="animate-fade-in-up-delay-4 mb-4 w-full">
+              <PostGameSuggestions
+                gameName={gameName ?? gameSlug}
+                gameSlug={gameSlug}
+                roomId={roomId}
+                inviteCode={inviteCode}
+                onPlayAnother={onPlayAnother}
+              />
             </div>
           )}
 

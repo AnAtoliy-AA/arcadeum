@@ -5,7 +5,7 @@ import './../styles/hud.scss';
 import { TurnBanner } from '../TurnBanner';
 import { ThreatStrip } from '../ThreatStrip';
 import { FlashBanner } from '../FlashBanner';
-import { GameMoveHistory } from '@/features/games/ui';
+import { GameMoveHistory } from '@/features/games/ui/GameMoveHistory';
 import { ComboCard, type ComboKind } from './ComboCard';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
 

@@ -46,22 +46,30 @@ export default function OfflineGameView({ slug }: OfflineGameViewProps) {
 
   // Lazily create + auto-start the local session (render-time external init;
   // bot progress is streamed through the offline bus, not component state).
-  const session = useMemo(() => {
-    if (!engineId || !userId) return null;
+  const [session, setSession] = useState<OfflineSession | null>(null);
+  useEffect(() => {
+    if (!engineId || !userId) return;
+    let cancelled = false;
     const entry = OFFLINE_GAMES[engineId];
     const difficulty = loadDifficulty();
-    const s = new OfflineSession({
-      roomId,
-      engineId,
-      engine: entry.createEngine(),
-      humanId: userId,
+    entry.createEngine().then((engine) => {
+      if (cancelled) return;
+      const s = new OfflineSession({
+        roomId,
+        engineId,
+        engine,
+        humanId: userId,
+      });
+      attachSession(s);
+      s.start([userId, 'bot-1'], {
+        options: { aiDifficulty: difficulty },
+        aiDifficulty: difficulty,
+      });
+      setSession(s);
     });
-    attachSession(s);
-    s.start([userId, 'bot-1'], {
-      options: { aiDifficulty: difficulty },
-      aiDifficulty: difficulty,
-    });
-    return s;
+    return () => {
+      cancelled = true;
+    };
   }, [engineId, roomId, userId]);
 
   useEffect(() => {

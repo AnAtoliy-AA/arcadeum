@@ -2,14 +2,14 @@
 
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
-  ReusableGameLobby,
   LobbyOptionSection,
   LobbyChipGroup,
   LobbyToggle,
-  GameThemePicker,
-  getLobbyTheme,
-} from '@/features/games/ui';
+} from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { MIN_PLAYERS } from '../types';

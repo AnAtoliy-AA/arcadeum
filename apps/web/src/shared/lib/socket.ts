@@ -415,8 +415,14 @@ export const friendsSocket: Socket = createLazySocket(getFriendsSock);
 export const walletSocket: Socket = createLazySocket(getWalletSock);
 export const clansSocket: Socket = createLazySocket(getClansSock);
 
-// Expose sockets to window for E2E testing
-if (typeof window !== 'undefined') {
+// Expose sockets to window for E2E testing.
+// window.isPlaywright is set by Playwright's addInitScript() before any
+// page scripts run, so it's available at module-evaluation time even in
+// production builds where NEXT_PUBLIC_E2E isn't inlined.
+if (
+  typeof window !== 'undefined' &&
+  (window as unknown as { isPlaywright?: boolean }).isPlaywright
+) {
   const win = window as unknown as Record<string, unknown>;
   win.gameSocket = getGamesSocket();
   win.chatSocket = getChatsSocket();

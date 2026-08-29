@@ -341,7 +341,7 @@ const nextConfig: NextConfig = {
               key: 'Cache-Control',
               value: isDev
                 ? 'no-cache, no-store, must-revalidate'
-                : 'public, max-age=0, must-revalidate, stale-while-revalidate=59',
+                : 'public, s-maxage=60, stale-while-revalidate=300',
             },
           ],
         }));

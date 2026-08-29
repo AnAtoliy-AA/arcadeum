@@ -124,6 +124,13 @@ export const enMessages = {
     actions: {
       backToHome: 'Back to Home',
     },
+    postGame: {
+      whatNext: 'What next?',
+      challengeFriend: 'Challenge a Friend',
+      shareResult: 'Share Result',
+      playAnother: 'Play Another Game',
+      linkCopied: 'Link copied!',
+    },
     deleteRoom: {
       button: 'Delete Room',
       confirmTitle: 'Delete Room',

@@ -125,6 +125,13 @@ export const esMessages = {
     actions: {
       backToHome: 'Volver al Inicio',
     },
+    postGame: {
+      whatNext: '¿Qué sigue?',
+      challengeFriend: 'Desafiar a un Amigo',
+      shareResult: 'Compartir Resultado',
+      playAnother: 'Jugar Otra Partida',
+      linkCopied: '¡Enlace copiado!',
+    },
     deleteRoom: {
       button: 'Eliminar sala',
       confirmTitle: 'Eliminar sala',

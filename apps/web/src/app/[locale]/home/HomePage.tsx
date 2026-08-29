@@ -16,6 +16,10 @@ const EventBanner = dynamic(() =>
   import('@/features/events').then((m) => m.EventBanner),
 );
 
+const ActivityBanner = dynamic(() =>
+  import('@/features/activity/ui/ActivityBanner').then((m) => m.ActivityBanner),
+);
+
 // Single concatenated bundle of hero + presentation + section styles.
 // The originals each became a separate render-blocking chunk under the
 // Lighthouse simulator's per-chunk model (~303ms penalty each). Bundling
@@ -38,6 +42,8 @@ export default function HomePage({ locale }: { locale: Locale }) {
       {/* Server-rendered navigation for AI agents */}
       <ServerGamesNav />
       <HomeHero locale={locale} />
+      {/* Live activity social proof (roadmap 7D) */}
+      <ActivityBanner className="mx-auto -mt-4 max-w-[600px]" />
       <EventBanner locale={locale} />
       <DailyRewardChip />
       <HomeGames />

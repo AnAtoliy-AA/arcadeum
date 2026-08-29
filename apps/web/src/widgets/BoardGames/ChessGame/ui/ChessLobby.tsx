@@ -3,12 +3,14 @@
 import { useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
-  ReusableGameLobby,
   type GameLobbyTheme,
+  ReusableGameLobby,
+} from '@/features/games/ui/ReusableGameLobby';
+import {
   LobbyOptionSection,
   LobbyChipGroup,
-  GameThemePicker,
-} from '@/features/games/ui';
+} from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import type { BotDifficulty } from '@/features/games/ui/DifficultySelector';

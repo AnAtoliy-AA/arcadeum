@@ -143,28 +143,28 @@ export const TIERS: Tier[] = [
         title: 'Hearts',
         desc: '4-player trick-taking — queen of spades, shooting the moon, passing phase.',
         effort: '5–7 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-884',
       },
       {
         title: 'Spades',
         desc: '4-player trick-taking with bidding, nil bid, partnerships.',
         effort: '5–7 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-884',
       },
       {
         title: 'Backgammon',
         desc: '24-point board, bearing off, doubling cube. Probability-based bot.',
         effort: '5–7 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-885',
       },
       {
         title: 'Pachisi',
         desc: 'Original Ludo — 4-player race game with dice and home stretch.',
         effort: '4–5 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-886',
       },
       {
@@ -196,7 +196,7 @@ export const TIERS: Tier[] = [
         title: 'Go (Baduk)',
         desc: '9×9 / 13×13 / 19×19. Liberty counting, capture, ko rule. MCTS bot.',
         effort: '10–14 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-887',
       },
       {
@@ -269,14 +269,14 @@ export const TIERS: Tier[] = [
         title: 'Season System',
         desc: 'Quarterly seasons with soft resets, seasonal cosmetics, and leaderboards.',
         effort: '5–7 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-899',
       },
       {
         title: 'Colorblind Modes',
         desc: 'Deuteranopia / Protanopia / Tritanopia presets with pattern overlays.',
         effort: '1–2 days',
-        status: 'not_started',
+        status: 'implemented',
         arc: 'ARC-896',
       },
       {
@@ -322,6 +322,88 @@ export const TIERS: Tier[] = [
         title: 'Leaderboards',
         desc: 'Global, per-game, and friends-only leaderboards with real-time updates.',
         effort: '3–4 days',
+        status: 'implemented',
+      },
+    ],
+  },
+  {
+    id: 'tier6',
+    label: 'Growth & SEO',
+    effort: '2–5 days each',
+    color: '#14b8a6',
+    gradient:
+      'linear-gradient(135deg, rgba(20,184,166,0.15), rgba(20,184,166,0.05))',
+    icon: '📈',
+    features: [
+      {
+        title: 'Viral & Invite Loop Optimization',
+        desc: 'One-tap share sheet, room QR codes, OG preview images, group rematch flow.',
+        effort: '2–3 days',
+        status: 'implemented',
+      },
+      {
+        title: 'SEO & Crawler Optimizations',
+        desc: 'Game-specific landing pages, structured schema markup, FAQPage JSON-LD, hreflang config.',
+        effort: '3–5 days',
+        status: 'implemented',
+      },
+      {
+        title: 'Analytics & Funnel Instrumentation',
+        desc: 'Privacy-first funnel tracking (Plausible/PostHog), separated cohorts, campaign attribution.',
+        effort: '2–3 days',
+        status: 'implemented',
+      },
+      {
+        title: 'Homepage & UX Refactoring',
+        desc: 'Elevated "Play vs AI" CTA, featured games carousel, live activity social proof.',
+        effort: '2–3 days',
+        status: 'implemented',
+      },
+    ],
+  },
+  {
+    id: 'tier7',
+    label: 'Growth Acceleration',
+    effort: '1–5 days each',
+    color: '#06b6d4',
+    gradient:
+      'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05))',
+    icon: '🚀',
+    features: [
+      {
+        title: 'Funnel Measurement',
+        desc: 'UTM campaign tracking, funnel events, campaign URL builder.',
+        effort: '2–3 days',
+        status: 'implemented',
+      },
+      {
+        title: 'Sea Battle Acquisition Spearhead',
+        desc: 'Simplified hero CTA, "Play Battleship online with friends" messaging.',
+        effort: '3–5 days',
+        status: 'partial',
+      },
+      {
+        title: 'Viral Challenge Flow',
+        desc: 'Challenge a friend via share sheet, enhanced result screen with CTAs, "Click → game" flow.',
+        effort: '3–4 days',
+        status: 'implemented',
+      },
+      {
+        title: 'Live Activity Social Proof',
+        desc: 'Real-time player/game counters on homepage via ActivityBanner + API endpoint.',
+        effort: '2–3 days',
+        status: 'implemented',
+      },
+      {
+        title: 'Simplified Homepage',
+        desc: '30-second test: arrive → understand → choose → play. New hero + game grid + live counters.',
+        effort: '2–3 days',
+        status: 'implemented',
+      },
+      {
+        title: 'Technical Quality Fixes',
+        desc: 'Error boundaries, chunk-loading fixes, graceful fallbacks.',
+        effort: '1–2 days',
         status: 'implemented',
       },
     ],
@@ -389,8 +471,8 @@ export const PHASES = [
 ];
 
 export const STATS = [
-  { label: 'Features', value: '37', icon: '📋' },
-  { label: 'Implemented', value: '25', icon: '✅' },
-  { label: 'In Progress', value: '2', icon: '⏳' },
-  { label: 'Planned', value: '10', icon: '🗺️' },
+  { label: 'Features', value: '49', icon: '📋' },
+  { label: 'Implemented', value: '42', icon: '✅' },
+  { label: 'In Progress', value: '1', icon: '⏳' },
+  { label: 'Planned', value: '6', icon: '🗺️' },
 ];

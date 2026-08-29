@@ -1,18 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { OfflineSession } from '../lib/offline-session';
-import {
-  OFFLINE_GAMES,
-  makeOfflineContext,
-} from '../lib/offline-registry';
+import { OFFLINE_GAMES, makeOfflineContext } from '../lib/offline-registry';
 import { OFFLINE_GAME_SLUGS } from '../lib/offline-capable';
 import { isOfflineRoomId, createOfflineRoomId } from '../lib/offline-room';
 
 describe('offline-capable manifest parity', () => {
   it('lists every engine in the registry with a matching slug', () => {
     for (const [engineId, entry] of Object.entries(OFFLINE_GAMES)) {
-      const manifest = OFFLINE_GAME_SLUGS.find(
-        (g) => g.engineId === engineId,
-      );
+      const manifest = OFFLINE_GAME_SLUGS.find((g) => g.engineId === engineId);
       expect({ engineId, slug: manifest?.slug }).toEqual({
         engineId,
         slug: entry.slug,
@@ -37,12 +32,13 @@ describe('offline room ids', () => {
 });
 
 describe('OfflineSession — tic-tac-toe vs bot', () => {
-  function newSession(): OfflineSession {
+  async function newSession(): Promise<OfflineSession> {
     const entry = OFFLINE_GAMES['tic_tac_toe_v1'];
+    const engine = await entry.createEngine();
     const s = new OfflineSession({
       roomId: createOfflineRoomId('tic-tac-toe'),
       engineId: 'tic_tac_toe_v1',
-      engine: entry.createEngine(),
+      engine,
       humanId: 'player-1',
     });
     s.start(['player-1', 'bot-1'], {
@@ -52,8 +48,8 @@ describe('OfflineSession — tic-tac-toe vs bot', () => {
     return s;
   }
 
-  it('starts active with a bot that immediately moves', () => {
-    const s = newSession();
+  it('starts active with a bot that immediately moves', async () => {
+    const s = await newSession();
     expect(s.status).toBe('active');
     expect(s.state).toBeTruthy();
     // Bot plays instantly after the human if the human starts, or the bot
@@ -63,7 +59,7 @@ describe('OfflineSession — tic-tac-toe vs bot', () => {
   });
 
   it('validates and applies a human move then lets the bot answer', async () => {
-    const s = newSession();
+    const s = await newSession();
     // Ensure it is the human's turn before acting.
     await waitForHumanTurn(s);
     const res = s.applyAction('player-1', 'place_mark', { row: 0, col: 0 });
@@ -74,7 +70,7 @@ describe('OfflineSession — tic-tac-toe vs bot', () => {
   }, 10_000);
 
   it('rejects invalid moves without corrupting state', async () => {
-    const s = newSession();
+    const s = await newSession();
     await waitForHumanTurn(s);
     const before = JSON.stringify(s.state?.board ?? null);
     const res = s.applyAction('player-1', 'place_mark', { row: -5, col: 99 });
@@ -83,7 +79,7 @@ describe('OfflineSession — tic-tac-toe vs bot', () => {
   });
 
   it('completes a full game and records a gameResult', async () => {
-    const s = newSession();
+    const s = await newSession();
     await playToCompletion(s);
     expect(s.isGameOver() || s.status === 'completed').toBe(true);
     if (s.status === 'completed') {
@@ -91,8 +87,8 @@ describe('OfflineSession — tic-tac-toe vs bot', () => {
     }
   }, 20_000);
 
-  it('exposes a session summary shaped like GameSessionSummary', () => {
-    const s = newSession();
+  it('exposes a session summary shaped like GameSessionSummary', async () => {
+    const s = await newSession();
     const summary = s.toSummary();
     expect(summary.roomId).toBe(s.roomId);
     expect(summary.engine).toBe('tic_tac_toe_v1');

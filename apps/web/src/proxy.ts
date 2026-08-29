@@ -238,8 +238,7 @@ export function proxy(req: NextRequest) {
     if (
       isAdminPath(localeFromUrl, segments.slice(1)) &&
       !req.cookies.get('access_token')?.value &&
-      !req.cookies.get('web_access_token')?.value &&
-      req.headers.get('accept')?.includes('text/html')
+      !req.cookies.get('web_access_token')?.value
     ) {
       return new Response(null, { status: 404 });
     }

@@ -79,6 +79,12 @@ function isPrivatePath(locale: Locale, segmentsAfterLocale: string[]): boolean {
   return false;
 }
 
+function isAdminPath(locale: Locale, segmentsAfterLocale: string[]): boolean {
+  const [first] = segmentsAfterLocale;
+  if (!first) return false;
+  return LOCALE_SLUGS[locale].admin === first;
+}
+
 function isVercelFeedbackOrigin(origin: string | null): boolean {
   if (!origin) return false;
 
@@ -228,6 +234,12 @@ export function proxy(req: NextRequest) {
     const response = NextResponse.next();
     if (isPrivatePath(localeFromUrl, segments.slice(1))) {
       response.headers.set('x-robots-tag', 'noindex, nofollow');
+    }
+    if (
+      isAdminPath(localeFromUrl, segments.slice(1)) &&
+      !req.cookies.get('access_token')?.value
+    ) {
+      return new Response(null, { status: 404 });
     }
     return response;
   }

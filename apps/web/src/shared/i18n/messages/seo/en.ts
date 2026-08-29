@@ -25,8 +25,8 @@ export const en = {
     description: `Join a live game room on ${APP}, take a seat, and start playing — or spectate matches in progress.`,
   },
   seaBattleLanding: {
-    title: `Sea Battle Online · Play Battleship Free · ${APP}`,
-    description: `Play Sea Battle (Battleship) online for free on ${APP}. Quickplay against a bot, find a human opponent, or invite friends to a private match.`,
+    title: `Sea Battle (Battleship) Online — Play Free with Friends or AI · ${APP}`,
+    description: `Play Sea Battle (Battleship) online for free on ${APP}. Quickplay against a bot, find a human opponent, or invite friends to a private match on a 10×10 grid.`,
   },
   criticalLanding: {
     title: `Critical · Free Exploding Card Game Online · ${APP}`,

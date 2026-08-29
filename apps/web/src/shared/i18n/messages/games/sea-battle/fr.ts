@@ -1,3 +1,7 @@
+import { appConfig } from '../../../../config/app-config';
+
+const APP = appConfig.appName;
+
 export const frMessages = {
   sea_battle_v1: {
     name: 'Bataille Navale',
@@ -252,21 +256,19 @@ export const frMessages = {
     },
     landing: {
       meta: {
-        title:
-          'Bataille Navale — Jouez en ligne gratuitement avec vos amis | Arcadeum',
-        description:
-          'Jouez à Bataille Navale en ligne gratuitement. Combat naval classique pour 2 à 4 joueurs, avec bots IA, mode équipes et plus de 10 thèmes. Sans téléchargement ni inscription — créez une salle et partagez le lien.',
-        ogTitle: 'Bataille Navale en ligne — Multijoueur gratuit (Battleship)',
+        title: `Bataille Navale en Ligne Gratuite (Touché-Coulé) — Jouer à 2 avec un Ami ou IA | ${APP}`,
+        description: `Jouez à la Bataille Navale (touché-coulé) en ligne multijoueur gratuit sur ${APP}. Créez une salle pour 2 à 4 joueurs avec un ami ou affrontez l’ordinateur (IA) sur grille 10x10. Sans inscription.`,
+        ogTitle:
+          'Bataille Navale en Ligne Gratuite (Touché-Coulé) — Multijoueur sans inscription',
         ogDescription:
-          'Placez votre flotte, tirez sur les grilles ennemies et coulez tous leurs navires. Jouez dans votre navigateur avec des amis ou contre l’IA.',
+          'Placez votre flotte, tirez sur les grilles ennemies et coulez tous leurs navires. Jouez en ligne gratuitement avec un ami ou contre l’IA.',
         keywords:
-          'bataille navale, bataille navale en ligne, jouer bataille navale, battleship en ligne, bataille navale multijoueur',
+          'bataille navale en ligne, bataille navale gratuite, touche coule en ligne, jeux bataille navale en ligne, bataille navale avec un ami, bataille navale multijoueur, jeu de bataille navale gratuit',
       },
       hero: {
         title: 'Bataille Navale',
         tagline: 'Jouez à la Bataille Navale en ligne — gratuit et multijoueur',
-        intro:
-          'La Bataille Navale est le jeu de combat naval intemporel où deux amiraux ou plus placent secrètement leurs flottes sur une grille 10×10 et échangent des salves jusqu’à ce qu’une seule flotte reste à flot. Sur Arcadeum, vous pouvez jouer à la Bataille Navale directement dans votre navigateur — sans téléchargement, sans inscription — avec des amis, des inconnus ou des bots IA.',
+        intro: `La Bataille Navale est le jeu de combat naval intemporel où deux amiraux ou plus placent secrètement leurs flottes sur une grille 10×10 et échangent des salves jusqu’à ce qu’une seule flotte reste à flot. Sur ${APP}, vous pouvez jouer à la Bataille Navale directement dans votre navigateur — sans téléchargement, sans inscription — avec des amis, des inconnus ou des bots IA.`,
         ctaPlay: 'Créer une salle de Bataille Navale',
         ctaRooms: 'Voir les salles ouvertes',
         ctaQuickplay: 'Jouer contre l’IA maintenant',
@@ -282,7 +284,7 @@ export const frMessages = {
         ],
       },
       sections: {
-        highlightsKicker: 'Pourquoi Arcadeum',
+        highlightsKicker: `Pourquoi ${APP}`,
         howToKicker: 'Quatre étapes · ~20 minutes',
         themesKicker: 'Choisissez votre flotte',
         themesTitle: '10+ thèmes, un seul jeu',
@@ -316,7 +318,7 @@ export const frMessages = {
           },
           memory: {
             title: 'Notez les tirs manqués, pas seulement les touches',
-            body: 'Les manqués sont des informations. Mémorisez les zones mortes et l’espace de recherche se réduit de moitié à mi-partie. La plupart des thèmes Arcadeum affichent déjà les marqueurs de tirs ratés.',
+            body: `Les manqués sont des informations. Mémorisez les zones mortes et l’espace de recherche se réduit de moitié à mi-partie. La plupart des thèmes ${APP} affichent déjà les marqueurs de tirs ratés.`,
           },
         },
       },
@@ -325,7 +327,7 @@ export const frMessages = {
         paragraphs: [
           'La Bataille Navale, connue dans le monde sous le nom de Battleship, est l’un des plus anciens jeux de stratégie sur grille encore joués. Bien avant les plateaux en plastique, les règles se dessinaient sur des cahiers à carreaux : deux adversaires, deux grilles secrètes de 10×10, et le simple frisson d’annoncer une coordonnée à la fois.',
           'Au milieu du XXᵉ siècle, le jeu est passé du papier au plastique et est devenu un classique des soirées familiales, avant de migrer sur les écrans — versions électroniques de poche, adaptations PC, et désormais multijoueur natif au navigateur.',
-          'Arcadeum conserve la grille originale de 10×10 et la flotte de cinq navires, puis ajoute ce que la version papier n’a jamais eu : matchmaking instantané, adversaires IA, mode équipe, dix thèmes visuels et liens de lobby partageables. Que vous cherchiez une partie rapide contre l’ordinateur ou un duel plus long contre un humain, les règles restent celles que les amiraux discutent depuis un siècle.',
+          `${APP} conserve la grille originale de 10×10 et la flotte de cinq navires, puis ajoute ce que la version papier n’a jamais eu : matchmaking instantané, adversaires IA, mode équipe, dix thèmes visuels et liens de lobby partageables. Que vous cherchiez une partie rapide contre l’ordinateur ou un duel plus long contre un humain, les règles restent celles que les amiraux discutent depuis un siècle.`,
         ],
       },
       board: {
@@ -334,7 +336,7 @@ export const frMessages = {
         cycleAriaLabel: 'Changer l’aperçu du thème, actuellement {{variant}}',
       },
       highlights: {
-        title: 'Pourquoi jouer à la Bataille Navale sur Arcadeum',
+        title: `Pourquoi jouer à la Bataille Navale sur ${APP}`,
         players: {
           title: '2 à 4 joueurs',
           body: 'Duels en tête-à-tête ou mêlée jusqu’à quatre amiraux par salle.',
@@ -378,13 +380,29 @@ export const frMessages = {
         items: {
           free: {
             question: 'La Bataille Navale est-elle gratuite ?',
-            answer:
-              'Oui. La Bataille Navale sur Arcadeum est entièrement gratuite et se joue dans le navigateur sans téléchargement.',
+            answer: `Oui. La Bataille Navale sur ${APP} est entièrement gratuite et se joue dans le navigateur sans téléchargement.`,
           },
           players: {
             question: 'Combien de joueurs peuvent jouer ?',
             answer:
               'De deux à quatre joueurs par salle. Le mode équipes permet jusqu’à quatre équipes de deux joueurs ou plus.',
+          },
+          friends: {
+            question:
+              'Comment jouer à la Bataille Navale en ligne avec un ami ?',
+            answer:
+              'Cliquez sur « Créer une salle », configurez votre partie et partagez le lien avec votre ami pour commencer immédiatement sans inscription.',
+          },
+          shipsCount: {
+            question:
+              'Combien de navires et de cases dans la Bataille Navale ?',
+            answer:
+              'Le jeu se déroule sur une grille 10×10 (100 cases). La flotte comprend des navires de 1 à 4 cases (cuirassé, croiseurs, destroyers et sous-marins). Les navires ne peuvent pas se toucher.',
+          },
+          bestPlacement: {
+            question: 'Quel est le meilleur placement à la Bataille Navale ?',
+            answer:
+              'La tactique du périmètre (grands navires placés sur les bords) combinée à la dispersion aléatoire des sous-marins au centre est la plus difficile à déjouer pour l’adversaire.',
           },
           ai: {
             question: 'Puis-je jouer contre l’ordinateur ?',

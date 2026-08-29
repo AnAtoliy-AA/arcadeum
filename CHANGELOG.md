@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.4] - 2026-08-29
+
+### Added
+- dynamically use app name from env across sea battle landing and guides (ARC-945) (ARC-945)
+- optimize sea battle search ranking metadata and add strategy guide (ARC-945) (ARC-945)
+
+
 ## [1.27.3] - 2026-08-29
 
 ### Added

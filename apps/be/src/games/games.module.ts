@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { GamesController } from './games.controller';
+import { LiveStatsController } from './live-stats/live-stats.controller';
+import { LiveStatsService } from './live-stats/live-stats.service';
 import { GamesCatalogService } from './games-catalog.service';
 import { GamesHistoryController } from './games.history.controller';
 import { GamesService } from './games.service';
@@ -170,8 +172,14 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     DailyChallengesModule,
     AchievementsModule,
   ],
-  controllers: [GamesController, GamesHistoryController, GameReplayController],
+  controllers: [
+    GamesController,
+    GamesHistoryController,
+    GameReplayController,
+    LiveStatsController,
+  ],
   providers: [
+    LiveStatsService,
     // Core services
     GameRoomsService,
     GameRoomsMapper,

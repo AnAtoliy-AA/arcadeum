@@ -85,6 +85,31 @@ export const fr = {
   stepPlayTitle: 'Jouez Ensemble',
   stepPlayDescription:
     'Profitez des jeux de société pendant que {{appName}} gère les règles, les tours et les scores automatiquement.',
+  // Live stats & activity
+  liveTitle: 'Activité en Direct de la Plateforme',
+  liveSubtitle:
+    'Parties en temps réel, joueurs actifs et salons ouverts en ce moment',
+  liveBadgeOnline: 'En ligne',
+  liveBadgeActiveGames: 'Parties en cours',
+  liveBadgeWaitingRooms: 'Salons ouverts',
+  liveBadgeMatchesToday: "Parties aujourd'hui",
+  liveOpenLobbiesTitle: 'Salons Ouverts',
+  liveOpenLobbiesSubtitle:
+    'Rejoignez directement un salon ouvert ou observez les parties en cours',
+  liveJoinAction: 'Rejoindre le salon',
+  liveSpectateAction: 'Regarder',
+  liveQuickPlayAction: 'Partie rapide',
+  liveNoOpenRooms:
+    'Aucun salon ouvert actuellement. Créez-en un ou lancez une partie rapide vs IA ou joueurs !',
+  liveRecentActivityTitle: 'Pouls de la Communauté',
+  liveActivityWon: 'a remporté une partie de',
+  liveActivityStreak: 'est sur une série de victoires en',
+  liveActivityCreated: 'a créé un nouveau salon pour',
+  livePopularGamesTitle: 'Jeux Populaires',
+  livePlayersCount: '{{count}} joueurs',
+  liveMatchesCount: '{{count}} parties',
+  liveViewAllRooms: 'Voir tous les salons',
+  liveViewAllGames: 'Explorer le catalogue',
   // Coming soon labels
   comingSoon: 'Bientôt disponible',
   mobileComingSoonDescription:

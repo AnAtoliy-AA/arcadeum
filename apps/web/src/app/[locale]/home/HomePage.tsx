@@ -27,6 +27,9 @@ const ActivityBanner = dynamic(() =>
 // See docs/superpowers/specs/2026-05-06-home-perf-phase-2-diagnostic-results.md
 import './components/styles/home-bundle.scss';
 
+const HomeLivePulse = dynamic(() =>
+  import('./components/HomeLivePulse').then((m) => m.HomeLivePulse),
+);
 const HomeGames = dynamic(() => import('./components/HomeGames'));
 const HomeHowItWorks = dynamic(() => import('./components/HomeHowItWorks'));
 const HomeFeatures = dynamic(() => import('./components/HomeFeatures'));
@@ -46,6 +49,7 @@ export default function HomePage({ locale }: { locale: Locale }) {
       <ActivityBanner className="mx-auto -mt-4 max-w-[600px]" />
       <EventBanner locale={locale} />
       <DailyRewardChip />
+      <HomeLivePulse />
       <HomeGames />
       <HomeHowItWorks />
       <HomeFeatures />

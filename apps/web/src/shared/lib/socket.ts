@@ -134,6 +134,7 @@ function guardEmit(socket: Socket): void {
 }
 
 let currentAuthToken: string | null = null;
+let currentAnonId: string | null = null;
 
 /**
  * Message queue for messages waiting on encryption key
@@ -187,6 +188,8 @@ export function connectSockets(token: string | null | undefined): void {
     disconnectSockets();
     return;
   }
+
+  currentAnonId = null;
 
   if (currentAuthToken !== token) {
     currentAuthToken = token;
@@ -260,29 +263,42 @@ export function disconnectWalletSocket(): void {
  * Pass the anonymous userId so the backend sends the encryption key
  */
 export function connectSocketsAnonymous(userId?: string): void {
-  // Disconnect if currently authenticated
+  const targetAnonId = userId || null;
+
   if (currentAuthToken) {
     disconnectSockets();
   }
 
-  // Clear any auth
-  getGamesSocket().auth = {};
+  const gamesSock = getGamesSocket();
 
-  // Pass anonId so gateway recognizes the client and sends encryption key
-  if (userId) {
-    getGamesSocket().io.opts.query = {
-      ...(getGamesSocket().io.opts.query as Record<string, string>),
-      anonId: userId,
-    };
+  if (currentAnonId !== targetAnonId && gamesSock.connected) {
+    gamesSock.disconnect();
   }
 
-  if (!getGamesSocket().connected) {
-    getGamesSocket().connect();
+  currentAnonId = targetAnonId;
+  gamesSock.auth = {};
+
+  if (gamesSock.io?.opts) {
+    if (targetAnonId) {
+      gamesSock.io.opts.query = {
+        ...(gamesSock.io.opts.query as Record<string, string>),
+        anonId: targetAnonId,
+      };
+    } else if (gamesSock.io.opts.query) {
+      const query = { ...(gamesSock.io.opts.query as Record<string, string>) };
+      delete query.anonId;
+      gamesSock.io.opts.query = query;
+    }
+  }
+
+  if (!gamesSock.connected) {
+    gamesSock.connect();
   }
 }
 
 export function disconnectSockets(): void {
   currentAuthToken = null;
+  currentAnonId = null;
 
   if (_gamesSocket) {
     _gamesSocket.disconnect();

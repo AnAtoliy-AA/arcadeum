@@ -83,6 +83,31 @@ export const ru = {
   stepPlayTitle: 'Играйте вместе',
   stepPlayDescription:
     'Наслаждайтесь настольными играми, пока {{appName}} автоматически управляет правилами, ходами и очками.',
+  // Live stats & activity
+  liveTitle: 'Активность на платформе в реальном времени',
+  liveSubtitle:
+    'Матчи в прямом эфире, активные игроки и открытые комнаты прямо сейчас',
+  liveBadgeOnline: 'Сейчас онлайн',
+  liveBadgeActiveGames: 'Идёт матчей',
+  liveBadgeWaitingRooms: 'Открытые комнаты',
+  liveBadgeMatchesToday: 'Сыграно сегодня',
+  liveOpenLobbiesTitle: 'Открытые комнаты',
+  liveOpenLobbiesSubtitle:
+    'Присоединяйтесь к открытым играм или наблюдайте за текущими сражениями',
+  liveJoinAction: 'Войти в игру',
+  liveSpectateAction: 'Смотреть',
+  liveQuickPlayAction: 'Быстрая игра',
+  liveNoOpenRooms:
+    'Сейчас нет открытых комнат. Создайте свою или начните быстрый матч с ИИ или игроками!',
+  liveRecentActivityTitle: 'Пульс сообщества',
+  liveActivityWon: 'одержал победу в',
+  liveActivityStreak: 'на серии побед в',
+  liveActivityCreated: 'создал новую комнату для',
+  livePopularGamesTitle: 'Популярные игры',
+  livePlayersCount: '{{count}} игроков',
+  liveMatchesCount: '{{count}} матчей',
+  liveViewAllRooms: 'Все комнаты',
+  liveViewAllGames: 'Весь каталог',
   // Coming soon labels
   comingSoon: 'Скоро',
   // Footer

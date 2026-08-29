@@ -30,6 +30,7 @@ import { FriendsModule } from './friends/friends.module';
 import { ClansModule } from './clans/clans.module';
 import { EventsModule } from './events/events.module';
 import { SeasonsModule } from './seasons/seasons.module';
+import { EngagementModule } from './engagement/engagement.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import {
@@ -85,6 +86,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     ClansModule,
     EventsModule,
     SeasonsModule,
+    EngagementModule,
     MongooseModule.forRoot(resolveMongoUri(), {
       ...resolveMongoOptions(),
       connectionName: OCI_CONNECTION,

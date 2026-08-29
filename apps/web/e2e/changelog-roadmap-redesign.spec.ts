@@ -91,7 +91,12 @@ test.describe('Changelog and Roadmap UI Redesign', () => {
     await expect(tiersTab).toBeVisible();
     await tiersTab.click();
 
-    await expect(page.getByText(/Quick Wins/i).first()).toBeVisible();
+    await expect(
+      page.getByText(/Retention & Habit Loops/i).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Performance & Latency/i).first(),
+    ).toBeVisible();
     await expect(
       page.getByText(/100% Legal|Все игры в общественном достоянии/i).first(),
     ).toBeVisible();

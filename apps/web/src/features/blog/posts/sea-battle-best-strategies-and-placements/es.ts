@@ -1,3 +1,4 @@
+import { appConfig } from '@/shared/config/app-config';
 import type { BlogPost } from '../../types';
 
 export const post: BlogPost = {
@@ -6,9 +7,9 @@ export const post: BlogPost = {
   title:
     'Mejores estrategias y colocación de barcos en Batalla Naval (Hundir la Flota)',
   excerpt:
-    'Descubre las mejores estrategias de colocación en Batalla Naval: esquemas de tablero 10×10, táctica de disparo en tablero de ajedrez y secretos para ganar online.',
+    'Descubre las mejores tácticas de colocación en cuadrícula 10×10, la regla de zonas muertas y el patrón de disparo en ajedrez para ganar online.',
   publishedAt: '2026-08-29',
-  author: 'Equipo Arcadeum',
+  author: `Equipo ${appConfig.appName}`,
   tags: [
     'Batalla Naval',
     'Hundir la Flota',
@@ -79,7 +80,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'En Arcadeum puedes jugar gratis a Batalla Naval desde el navegador sin descargas ni registros. Crea una sala privada con enlace para retar a tus amigos o perfecciona tu técnica frente a bots con inteligencia artificial.',
+      text: `En ${appConfig.appName} puedes jugar gratis a Batalla Naval desde el navegador sin descargas ni registros. Crea una sala privada con enlace para retar a tus amigos o perfecciona tu técnica frente a bots con inteligencia artificial.`,
     },
     {
       type: 'cta',
@@ -102,8 +103,7 @@ export const post: BlogPost = {
     },
     {
       question: '¿Se puede jugar con amigos gratis sin descargar nada?',
-      answer:
-        'Sí, en Arcadeum puedes crear una sala al instante y compartir el enlace con tus amigos para jugar directamente desde el navegador.',
+      answer: `Sí, en ${appConfig.appName} puedes crear una sala al instante y compartir el enlace con tus amigos para jugar directamente desde el navegador.`,
     },
   ],
 };

@@ -1,3 +1,4 @@
+import { appConfig } from '@/shared/config/app-config';
 import type { BlogPost } from '../../types';
 
 export const post: BlogPost = {
@@ -7,7 +8,7 @@ export const post: BlogPost = {
   excerpt:
     'Master the board with the best Battleship fleet placements, 10×10 grid tactics, parity search methods, and target hunting strategies for free online multiplayer.',
   publishedAt: '2026-08-29',
-  author: 'Arcadeum Team',
+  author: `${appConfig.appName} Team`,
   tags: [
     'Battleship',
     'Sea Battle',
@@ -82,7 +83,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'On Arcadeum, you can jump into Sea Battle directly in your browser without downloads or signups. Create an instant room to invite friends, team up in 2v2 battles, or refine your tactics against intelligent AI bots.',
+      text: `On ${appConfig.appName}, you can jump into Sea Battle directly in your browser without downloads or signups. Create an instant room to invite friends, team up in 2v2 battles, or refine your tactics against intelligent AI bots.`,
     },
     {
       type: 'cta',
@@ -105,8 +106,7 @@ export const post: BlogPost = {
     },
     {
       question: 'Can I play Sea Battle online with friends for free?',
-      answer:
-        'Yes! Arcadeum lets you create a multiplayer room in one click and share the link with friends. No registration or download required.',
+      answer: `Yes! ${appConfig.appName} lets you create a multiplayer room in one click and share the link with friends. No registration or download required.`,
     },
   ],
 };

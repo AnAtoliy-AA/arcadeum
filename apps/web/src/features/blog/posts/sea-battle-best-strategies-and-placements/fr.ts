@@ -1,3 +1,4 @@
+import { appConfig } from '@/shared/config/app-config';
 import type { BlogPost } from '../../types';
 
 export const post: BlogPost = {
@@ -6,9 +7,9 @@ export const post: BlogPost = {
   title:
     'Meilleures stratégies et placements pour la Bataille Navale (Touché-Coulé)',
   excerpt:
-    'Guide complet pour gagner à la Bataille Navale : schémas de placement de flotte 10×10, recherche en damier (Parity Search) et astuces pour jouer en ligne.',
+    'Découvrez les meilleures techniques de placement de navires, l’optimisation par damier (parity search) et les tactiques avancées pour gagner en ligne.',
   publishedAt: '2026-08-29',
-  author: 'Équipe Arcadeum',
+  author: `Équipe ${appConfig.appName}`,
   tags: [
     'Bataille Navale',
     'Touché-Coulé',
@@ -79,7 +80,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Sur Arcadeum, jouez instantanément à la Bataille Navale dans votre navigateur. Créez une salle privée en un clic, invitez un ami via un simple lien ou affrontez une IA tactique.',
+      text: `Sur ${appConfig.appName}, jouez instantanément à la Bataille Navale dans votre navigateur. Créez une salle privée en un clic, invitez un ami via un simple lien ou affrontez une IA tactique.`,
     },
     {
       type: 'cta',
@@ -102,8 +103,7 @@ export const post: BlogPost = {
     },
     {
       question: 'Peut-on jouer à 2 en ligne gratuitement ?',
-      answer:
-        'Oui, Arcadeum permet de créer une salle et de partager un lien d’invitation pour jouer instantanément dans le navigateur sans téléchargement.',
+      answer: `Oui, ${appConfig.appName} permet de créer une salle et de partager un lien d’invitation pour jouer instantanément dans le navigateur sans téléchargement.`,
     },
   ],
 };

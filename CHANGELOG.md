@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.3] - 2026-08-29
+
+### Added
+- implement Tier 6 & 7 growth features
+
+### Fixed
+- restore 404 status and streamed json-ld ordering
+- use window.isPlaywright to gate socket exposure for E2E
+- parse Tier 6 & 7 headings from ROADMAP.md
+- remove webpack splitChunks that broke mobile LCP
+
+### Improved
+- lazy-load analytics and game play pages
+
+### Documentation
+- update roadmap with Tier 3-5 implementations and Tier 6/7 progress
+
+
 ## [1.27.2] - 2026-08-27
 
 ### Documentation

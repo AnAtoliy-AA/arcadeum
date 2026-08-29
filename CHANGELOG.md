@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.5] - 2026-08-29
+
+### Added
+- add player retention loops and high-performance engine tracks (ARC-930) (ARC-930)
+
+
 ## [1.27.4] - 2026-08-29
 
 ### Added

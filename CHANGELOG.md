@@ -7,12 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.27.8] - 2026-08-30
 
-- implement asynchronous turn-based matches engine and active match drawer (ARC-931)
-- implement dynamic quests and battle pass objectives progression (ARC-932)
-- implement weekly social leagues and division standings (ARC-933)
+### Added
 - implement offline service worker caching and offline status indicator (ARC-900)
+- implement weekly social leagues and standings card (ARC-933)
+- implement quest objectives and battle pass progression system (ARC-932)
+- implement asynchronous turn-based matches engine and active match drawer (ARC-931)
+
+### Fixed
+- update e2e tests for post metrics and get activity endpoints (ARC-931)
+- update e2e test assertions and be test memory allocation (ARC-931)
+
+### Documentation
+- update changelog with tier 2 retention and performance features (ARC-931)
+
 
 ## [1.27.7] - 2026-08-29
 

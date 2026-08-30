@@ -14,6 +14,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - implement weekly social leagues and division standings (ARC-933)
 - implement offline service worker caching and offline status indicator (ARC-900)
 
+## [1.27.7] - 2026-08-29
+
+### Added
+
+- rework loading pages with modern skeleton layouts (ARC-897) (ARC-897)
+
+### Fixed
+
+- set web_access_token cookie on browser context in mockSession
+- revert web_access_token fallback in getServerAccessToken to fix Firefox hydration
+- remove Accept header check from admin proxy gate
+- refine admin proxy gate for e2e tests
+- add admin auth gate to proxy and generate e2e placeholder files
+- specify entryFile in nest-cli and remove duplicate userId index in clan member schema (ARC-897) (ARC-897)
+
 ## [1.27.6] - 2026-08-29
 
 ### Added

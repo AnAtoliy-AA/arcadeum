@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
@@ -33,22 +33,39 @@ function registerCleanupSignals(): void {
   }
 }
 
-export default async function globalSetup(): Promise<void> {
-  // Generate placeholder offline-download manifests so the dev server
-  // doesn't log 404 noise for /game-sizes.json and /build-id.json on
-  // every page load.  The real files are produced by `postbuild` and
-  // gitignored; during e2e the dev server never runs `next build`.
-  const webRoot = process.cwd();
+async function writePlaceholderFiles(dir: string): Promise<void> {
   await Promise.all([
     writeFile(
-      join(webRoot, 'public', 'build-id.json'),
+      join(dir, 'build-id.json'),
       JSON.stringify({ buildId: 'e2e-placeholder' }) + '\n',
     ),
     writeFile(
-      join(webRoot, 'public', 'game-sizes.json'),
+      join(dir, 'game-sizes.json'),
       JSON.stringify({ games: {}, totalBytes: 0 }) + '\n',
     ),
   ]);
+}
+
+export default async function globalSetup(): Promise<void> {
+  // Generate placeholder offline-download manifests so the server
+  // doesn't log 404 noise for /game-sizes.json and /build-id.json on
+  // every page load.  The real files are produced by `postbuild` and
+  // gitignored; during e2e the server never runs `next build`.
+  //
+  // In dev mode (`next dev`), static files are served from `public/`.
+  // In CI production mode (`next start` with `output: 'standalone'`),
+  // the standalone server serves from `.next/standalone/public/` which
+  // is NOT included in the build-artifacts tar.  Write to both so the
+  // 404s disappear regardless of which server is running.
+  const webRoot = process.cwd();
+  await writePlaceholderFiles(join(webRoot, 'public'));
+
+  // `.next/standalone/public/` doesn't exist after `next build` —
+  // the OCI deploy workflow copies it, but e2e doesn't.  Create it
+  // so the standalone server can find the placeholders.
+  const standalonePublic = join(webRoot, '.next', 'standalone', 'public');
+  await mkdir(standalonePublic, { recursive: true });
+  await writePlaceholderFiles(standalonePublic);
 
   // Honor an external MONGODB_OCI_URI so a developer pointing at a local mongod —
   // or a CI service container — wins over the throwaway replset.

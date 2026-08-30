@@ -1,5 +1,3 @@
-'use client';
-
 import SettingsPage from './SettingsPage';
 import type { SettingsPageProps } from './SettingsPage';
 

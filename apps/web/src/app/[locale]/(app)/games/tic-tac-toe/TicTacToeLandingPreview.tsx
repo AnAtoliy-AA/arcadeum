@@ -1,5 +1,3 @@
-'use client';
-
 import { getTicTacToeTheme } from '@/widgets/BoardGames/TicTacToeGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

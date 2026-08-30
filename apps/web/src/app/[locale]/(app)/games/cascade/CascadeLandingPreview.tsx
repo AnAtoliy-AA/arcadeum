@@ -1,5 +1,3 @@
-'use client';
-
 import { getTheme as getCascadeTheme } from '@/widgets/CardGames/CascadeGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

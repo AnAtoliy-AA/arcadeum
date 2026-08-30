@@ -1,5 +1,3 @@
-'use client';
-
 interface BadgePillProps {
   icon: string;
   label: string;

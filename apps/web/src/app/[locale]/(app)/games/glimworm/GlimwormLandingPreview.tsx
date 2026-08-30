@@ -1,5 +1,3 @@
-'use client';
-
 import { getGlimwormTheme } from '@/widgets/ActionGames/GlimwormGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

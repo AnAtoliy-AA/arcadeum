@@ -1,5 +1,3 @@
-'use client';
-
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';

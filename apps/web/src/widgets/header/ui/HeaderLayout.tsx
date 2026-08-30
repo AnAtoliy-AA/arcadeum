@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { appConfig } from '@/shared/config/app-config';

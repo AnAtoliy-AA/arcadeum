@@ -1,5 +1,3 @@
-'use client';
-
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import type { EffectiveShopItem } from '../server/shop.types';
 

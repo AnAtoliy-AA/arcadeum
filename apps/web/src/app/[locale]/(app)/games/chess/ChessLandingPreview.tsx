@@ -1,5 +1,3 @@
-'use client';
-
 import { getChessTheme } from '@/widgets/BoardGames/ChessGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

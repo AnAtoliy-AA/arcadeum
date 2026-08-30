@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { GlassCard, Button } from '@arcadeum/ui';
 import { EventPrizeBadge } from './EventPrizeBadge';

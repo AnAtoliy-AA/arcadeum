@@ -1,5 +1,3 @@
-'use client';
-
 import { getPachisiTheme } from '@/widgets/BoardGames/PachisiGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 import {

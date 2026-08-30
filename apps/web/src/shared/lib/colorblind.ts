@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Color-vision accessibility transforms (ARC-896).
  *

@@ -1,5 +1,3 @@
-'use client';
-
 import { getTheme } from '@/widgets/CardGames/HeartsGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

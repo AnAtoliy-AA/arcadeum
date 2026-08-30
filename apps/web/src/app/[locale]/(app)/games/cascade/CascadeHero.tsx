@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 import styles from './CascadeLanding.module.scss';

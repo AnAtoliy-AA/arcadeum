@@ -1,5 +1,3 @@
-'use client';
-
 import { getThemeById } from '@/features/games/lib/shared-themes';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

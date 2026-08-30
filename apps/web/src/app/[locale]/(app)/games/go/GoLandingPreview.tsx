@@ -1,5 +1,3 @@
-'use client';
-
 import { getGoTheme } from '@/widgets/BoardGames/GoGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 
@@ -33,7 +31,13 @@ export function GoLandingPreview() {
               borderColor: theme.gridLine,
             }}
           >
-            <div className="grid h-full w-full" style={{ gridTemplateColumns: `repeat(${size}, 1fr)`, gridTemplateRows: `repeat(${size}, 1fr)` }}>
+            <div
+              className="grid h-full w-full"
+              style={{
+                gridTemplateColumns: `repeat(${size}, 1fr)`,
+                gridTemplateRows: `repeat(${size}, 1fr)`,
+              }}
+            >
               {Array.from({ length: size * size }).map((_, idx) => {
                 const row = Math.floor(idx / size);
                 const col = idx % size;
@@ -57,7 +61,11 @@ export function GoLandingPreview() {
                     {(isStar || isCenterStar) && !stone ? (
                       <span
                         className="rounded-full"
-                        style={{ width: '16%', height: '16%', background: theme.gridLine }}
+                        style={{
+                          width: '16%',
+                          height: '16%',
+                          background: theme.gridLine,
+                        }}
                       />
                     ) : null}
                     {stone ? (

@@ -1,5 +1,3 @@
-'use client';
-
 import { memo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { HeartsCardBack } from './HeartsCard';

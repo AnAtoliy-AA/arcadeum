@@ -59,59 +59,59 @@
 
 ## ARC Ticket Reference
 
-| Feature                 | ARC     | Branch                       | Status                                         |
-| ----------------------- | ------- | ---------------------------- | ---------------------------------------------- |
-| 1A. Stat Tracking       | ARC-871 | `ARC-871-stat-tracking`      | **Implemented**                                |
-| 1B. Emotes              | ARC-872 | `ARC-872-emotes`             | **Implemented**                                |
-| 1C. House Rules         | ARC-873 | `ARC-873-house-rules`        | **Implemented**                                |
-| 1D. Dark Mode           | —       | —                            | **Implemented**                                |
-| 1E. Undo/Take-Back      | ARC-874 | `ARC-874-undo-takeback`      | **Implemented**                                |
-| 1F. Password Rooms      | ARC-875 | `ARC-875-password-rooms`     | **Implemented**                                |
-| 2A. Matchmaking Queue   | ARC-876 | `ARC-876-matchmaking`        | **Implemented**                                |
-| 2B. Chess Engine        | ARC-877 | `ARC-877-chess-engine`       | **Implemented**                                |
-| 2C. Checkers Engine     | ARC-878 | `ARC-878-checkers-engine`    | **Implemented**                                |
-| 2D. Audio Cues          | ARC-879 | `ARC-879-audio-cues`         | **Implemented**                                |
-| 2E. AI Difficulty       | ARC-880 | `ARC-880-ai-difficulty`      | **Implemented**                                |
-| 2F. Ranked/ELO          | ARC-881 | `ARC-881-ranked-elo`         | **Implemented**                                |
-| 2G. Achievements        | —       | —                            | **Implemented**                                |
-| 2H. Post-Game Analysis  | ARC-882 | `ARC-882-post-game-analysis` | **Implemented**                                |
-| 2I. Coach Mode          | ARC-883 | `ARC-883-coach-mode`         | **Implemented**                                |
-| 3A. Hearts/Spades       | ARC-884 | `ARC-884-hearts-spades`      | **Implemented**                                |
-| 3B. Backgammon          | ARC-885 | `ARC-885-backgammon`         | **Implemented**                                |
-| 3C. Pachisi             | ARC-886 | `ARC-886-pachisi`            | **Implemented**                                |
-| 3D. Go                  | ARC-887 | `ARC-887-go`                 | **Implemented**                                |
-| 3F. Game Replays        | ARC-888 | `ARC-888-game-replays`       | **Implemented**                                |
-| 3G. Spectator Mode      | ARC-889 | `ARC-889-spectator-mode`     | **Implemented**                                |
-| 3H. AI-vs-AI            | ARC-890 | `ARC-890-ai-vs-ai`           | **Implemented**                                |
-| 3I. Clans               | ARC-891 | `ARC-891-clans`              | **Implemented**                                |
-| 3J. Game Nights         | ARC-892 | `ARC-892-game-nights`        | **Implemented**                                |
-| 4A. Chess Clock         | ARC-893 | `ARC-893-chess-clock`        | **Implemented**                                |
-| 4B. Stats Dashboard     | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented**                                |
-| 4C. Tutorials           | ARC-895 | `ARC-895-tutorials`          | **Implemented**                                |
-| 4D. Colorblind          | ARC-896 | `ARC-896-colorblind`         | **Implemented**                                |
-| 4E. Screen Reader       | ARC-897 | `ARC-897-screen-reader`      | **Implemented**                                |
-| 4F. Keyboard Nav        | ARC-898 | `ARC-898-keyboard-nav`       | **Implemented**                                |
-| 4G. Daily Challenges    | —       | —                            | **Implemented**                                |
-| 4H. Season System       | ARC-899 | `ARC-899-season-system`      | **Implemented**                                |
-| 4I. PWA Support         | ARC-903 | `ARC-903-pwa-support`        | **Implemented**                                |
-| 4J. Offline Mode        | ARC-900 | `ARC-900-offline-mode`       | Mostly implemented (SW engine caching pending) |
-| 4K. Web Share           | —       | —                            | **Implemented**                                |
-| 4L. Push Notifications  | —       | —                            | **Implemented**                                |
-| 4M. Tournaments         | —       | —                            | **Implemented** (brackets pending)             |
-| 4N. Leaderboards        | —       | —                            | **Implemented**                                |
-| 4O. Board Game Creator  | ARC-901 | `ARC-901-board-game-creator` | **Deferred**                                   |
-| 4P. Mobile Games        | ARC-902 | `ARC-902-mobile-games`       | Partial                                        |
-| 4Q. Single-Player       | ARC-924 | `ARC-924-single-player`      | **Implemented**                                |
-| 5B. Monetization        | —       | —                            | **Implemented**                                |
-| 8A. Daily Habit System  | ARC-930 | `ARC-930-daily-habit`        | **Implemented**                                |
-| 8B. Async Turn-Based    | ARC-931 | `ARC-931-async-turn-based`   | Planned                                        |
-| 8C. Quest & Battle Pass | ARC-932 | `ARC-932-quests-battlepass`  | Planned                                        |
-| 8D. Social Leagues      | ARC-933 | `ARC-933-social-leagues`     | Planned                                        |
-| 8E. Winback Triggers    | ARC-934 | `ARC-934-winback-triggers`   | **Implemented**                                |
-| 9A. Web Worker AI       | ARC-935 | `ARC-935-web-worker-ai`      | **Implemented**                                |
-| 9B. Instant Room Boot   | ARC-936 | `ARC-936-instant-room-boot`  | **Implemented**                                |
-| 9C. State Delta Sync    | ARC-937 | `ARC-937-state-delta-sync`   | **Implemented**                                |
-| 9D. Core Web Vitals     | ARC-938 | `ARC-938-core-web-vitals`    | **Implemented**                                |
+| Feature                 | ARC     | Branch                       | Status                             |
+| ----------------------- | ------- | ---------------------------- | ---------------------------------- |
+| 1A. Stat Tracking       | ARC-871 | `ARC-871-stat-tracking`      | **Implemented**                    |
+| 1B. Emotes              | ARC-872 | `ARC-872-emotes`             | **Implemented**                    |
+| 1C. House Rules         | ARC-873 | `ARC-873-house-rules`        | **Implemented**                    |
+| 1D. Dark Mode           | —       | —                            | **Implemented**                    |
+| 1E. Undo/Take-Back      | ARC-874 | `ARC-874-undo-takeback`      | **Implemented**                    |
+| 1F. Password Rooms      | ARC-875 | `ARC-875-password-rooms`     | **Implemented**                    |
+| 2A. Matchmaking Queue   | ARC-876 | `ARC-876-matchmaking`        | **Implemented**                    |
+| 2B. Chess Engine        | ARC-877 | `ARC-877-chess-engine`       | **Implemented**                    |
+| 2C. Checkers Engine     | ARC-878 | `ARC-878-checkers-engine`    | **Implemented**                    |
+| 2D. Audio Cues          | ARC-879 | `ARC-879-audio-cues`         | **Implemented**                    |
+| 2E. AI Difficulty       | ARC-880 | `ARC-880-ai-difficulty`      | **Implemented**                    |
+| 2F. Ranked/ELO          | ARC-881 | `ARC-881-ranked-elo`         | **Implemented**                    |
+| 2G. Achievements        | —       | —                            | **Implemented**                    |
+| 2H. Post-Game Analysis  | ARC-882 | `ARC-882-post-game-analysis` | **Implemented**                    |
+| 2I. Coach Mode          | ARC-883 | `ARC-883-coach-mode`         | **Implemented**                    |
+| 3A. Hearts/Spades       | ARC-884 | `ARC-884-hearts-spades`      | **Implemented**                    |
+| 3B. Backgammon          | ARC-885 | `ARC-885-backgammon`         | **Implemented**                    |
+| 3C. Pachisi             | ARC-886 | `ARC-886-pachisi`            | **Implemented**                    |
+| 3D. Go                  | ARC-887 | `ARC-887-go`                 | **Implemented**                    |
+| 3F. Game Replays        | ARC-888 | `ARC-888-game-replays`       | **Implemented**                    |
+| 3G. Spectator Mode      | ARC-889 | `ARC-889-spectator-mode`     | **Implemented**                    |
+| 3H. AI-vs-AI            | ARC-890 | `ARC-890-ai-vs-ai`           | **Implemented**                    |
+| 3I. Clans               | ARC-891 | `ARC-891-clans`              | **Implemented**                    |
+| 3J. Game Nights         | ARC-892 | `ARC-892-game-nights`        | **Implemented**                    |
+| 4A. Chess Clock         | ARC-893 | `ARC-893-chess-clock`        | **Implemented**                    |
+| 4B. Stats Dashboard     | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented**                    |
+| 4C. Tutorials           | ARC-895 | `ARC-895-tutorials`          | **Implemented**                    |
+| 4D. Colorblind          | ARC-896 | `ARC-896-colorblind`         | **Implemented**                    |
+| 4E. Screen Reader       | ARC-897 | `ARC-897-screen-reader`      | **Implemented**                    |
+| 4F. Keyboard Nav        | ARC-898 | `ARC-898-keyboard-nav`       | **Implemented**                    |
+| 4G. Daily Challenges    | —       | —                            | **Implemented**                    |
+| 4H. Season System       | ARC-899 | `ARC-899-season-system`      | **Implemented**                    |
+| 4I. PWA Support         | ARC-903 | `ARC-903-pwa-support`        | **Implemented**                    |
+| 4J. Offline Mode        | ARC-900 | `ARC-900-offline-mode`       | **Implemented**                    |
+| 4K. Web Share           | —       | —                            | **Implemented**                    |
+| 4L. Push Notifications  | —       | —                            | **Implemented**                    |
+| 4M. Tournaments         | —       | —                            | **Implemented** (brackets pending) |
+| 4N. Leaderboards        | —       | —                            | **Implemented**                    |
+| 4O. Board Game Creator  | ARC-901 | `ARC-901-board-game-creator` | **Deferred**                       |
+| 4P. Mobile Games        | ARC-902 | `ARC-902-mobile-games`       | Partial                            |
+| 4Q. Single-Player       | ARC-924 | `ARC-924-single-player`      | **Implemented**                    |
+| 5B. Monetization        | —       | —                            | **Implemented**                    |
+| 8A. Daily Habit System  | ARC-930 | `ARC-930-daily-habit`        | **Implemented**                    |
+| 8B. Async Turn-Based    | ARC-931 | `ARC-931-async-turn-based`   | **Implemented**                    |
+| 8C. Quest & Battle Pass | ARC-932 | `ARC-932-quests-battlepass`  | **Implemented**                    |
+| 8D. Social Leagues      | ARC-933 | `ARC-933-social-leagues`     | **Implemented**                    |
+| 8E. Winback Triggers    | ARC-934 | `ARC-934-winback-triggers`   | **Implemented**                    |
+| 9A. Web Worker AI       | ARC-935 | `ARC-935-web-worker-ai`      | **Implemented**                    |
+| 9B. Instant Room Boot   | ARC-936 | `ARC-936-instant-room-boot`  | **Implemented**                    |
+| 9C. State Delta Sync    | ARC-937 | `ARC-937-state-delta-sync`   | **Implemented**                    |
+| 9D. Core Web Vitals     | ARC-938 | `ARC-938-core-web-vitals`    | **Implemented**                    |
 
 ---
 

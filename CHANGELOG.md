@@ -7,12 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- implement asynchronous turn-based matches engine and active match drawer (ARC-931)
+- implement dynamic quests and battle pass objectives progression (ARC-932)
+- implement weekly social leagues and division standings (ARC-933)
+- implement offline service worker caching and offline status indicator (ARC-900)
+
 ## [1.27.7] - 2026-08-29
 
 ### Added
+
 - rework loading pages with modern skeleton layouts (ARC-897) (ARC-897)
 
 ### Fixed
+
 - set web_access_token cookie on browser context in mockSession
 - revert web_access_token fallback in getServerAccessToken to fix Firefox hydration
 - remove Accept header check from admin proxy gate
@@ -20,10 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add admin auth gate to proxy and generate e2e placeholder files
 - specify entryFile in nest-cli and remove duplicate userId index in clan member schema (ARC-897) (ARC-897)
 
-
 ## [1.27.6] - 2026-08-29
 
 ### Added
+
 - implement daily habit streak and viral score sharing (ARC-930)
 - implement smart re-engagement and winback engine (ARC-934)
 - implement instant room boot and zero-cls asset preloader (ARC-936)
@@ -31,132 +40,140 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - implement websocket state delta and compression engine (ARC-937)
 
 ### Documentation
-- update tier 8 and tier 9 roadmap statuses to implemented (ARC-930) (ARC-930)
 
+- update tier 8 and tier 9 roadmap statuses to implemented (ARC-930) (ARC-930)
 
 ## [1.27.5] - 2026-08-29
 
 ### Added
-- add player retention loops and high-performance engine tracks (ARC-930) (ARC-930)
 
+- add player retention loops and high-performance engine tracks (ARC-930) (ARC-930)
 
 ## [1.27.4] - 2026-08-29
 
 ### Added
+
 - dynamically use app name from env across sea battle landing and guides (ARC-945) (ARC-945)
 - optimize sea battle search ranking metadata and add strategy guide (ARC-945) (ARC-945)
-
 
 ## [1.27.3] - 2026-08-29
 
 ### Added
+
 - implement Tier 6 & 7 growth features
 
 ### Fixed
+
 - restore 404 status and streamed json-ld ordering
 - use window.isPlaywright to gate socket exposure for E2E
 - parse Tier 6 & 7 headings from ROADMAP.md
 - remove webpack splitChunks that broke mobile LCP
 
 ### Improved
+
 - lazy-load analytics and game play pages
 
 ### Documentation
-- update roadmap with Tier 3-5 implementations and Tier 6/7 progress
 
+- update roadmap with Tier 3-5 implementations and Tier 6/7 progress
 
 ## [1.27.2] - 2026-08-27
 
 ### Documentation
-- add 30-day growth acceleration strategy
 
+- add 30-day growth acceleration strategy
 
 ## [1.27.1] - 2026-08-27
 
 ### Fixed
-- resolve Docker build, deploy lock race, and Android hermesc failures
 
+- resolve Docker build, deploy lock race, and Android hermesc failures
 
 ## [1.27.0] - 2026-08-27
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.26.63] - 2026-08-27
 
 ### Added
+
 - expand scenarios to 50, add gameplay auth injection
 
 ### Fixed
-- run gameplay scenarios anonymous, expand fallback tracks
 
+- run gameplay scenarios anonymous, expand fallback tracks
 
 ## [1.26.62] - 2026-08-27
 
 ### Fixed
-- handle View Transition AbortError when playing action cards
 
+- handle View Transition AbortError when playing action cards
 
 ## [1.26.61] - 2026-08-27
 
 ### Fixed
-- quote heredoc and fix metadata in release social poster
 
+- quote heredoc and fix metadata in release social poster
 
 ## [1.26.60] - 2026-08-27
 
 ### Fixed
+
 - make card text fully visible and add double-click to play
 - improve mobile playability with safe areas, tap handling, and responsive modals
-
 
 ## [1.26.59] - 2026-08-27
 
 ### Fixed
-- fix offline game downloads not working and missing sizes
 
+- fix offline game downloads not working and missing sizes
 
 ## [1.26.58] - 2026-08-26
 
 ### Added
+
 - rework features page with interactive views, filters, and full i18n
 
 ### Fixed
+
 - use data-testid selectors in e2e tests to avoid i18n and role mismatches
 - resolve FEATURES.md path across root and web app contexts
 
 ### Documentation
-- add comprehensive feature list covering user, SEO, and AI search features
 
+- add comprehensive feature list covering user, SEO, and AI search features
 
 ## [1.26.57] - 2026-08-26
 
 ### Fixed
-- adapt games catalog and picker cards for light theme
 
+- adapt games catalog and picker cards for light theme
 
 ## [1.26.56] - 2026-08-26
 
 ### Added
-- offline game downloads with sizes and install prompt
 
+- offline game downloads with sizes and install prompt
 
 ## [1.26.55] - 2026-08-26
 
 ### Fixed
-- register pachisi gateway and add compile-time registration guard
 
+- register pachisi gateway and add compile-time registration guard
 
 ## [1.26.54] - 2026-08-26
 
 ### Added
+
 - create GameRulesModal with close button and modern card layout (ARC-896) (ARC-896)
 - connect games control panel and game widgets via zustand for result screen toggling (ARC-896) (ARC-896)
 - modernize single-player games UI and unify win-loss modal (ARC-896) (ARC-896)
 - apply global color vision accessibility filters (ARC-896) (ARC-896)
 
 ### Fixed
+
 - increase control panel z-index to z-[100] above game header (ARC-896) (ARC-896)
 - fix share dropdown z-index and keep native share as menu option (ARC-896) (ARC-896)
 - fix translation keys in GameRulesModal, control panel, and Go gameOver (ARC-896) (ARC-896)
@@ -169,7 +186,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - expand draw celebration sparkle particles and slots across full screen width
 - span sparkle particles across full screen width on draw celebration
 - validate and self-heal anonymous id format in api-client
-
 
 ## [1.26.53] - 2026-08-26
 

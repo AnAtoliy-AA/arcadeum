@@ -10,10 +10,15 @@ import {
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
+import dynamic from 'next/dynamic';
 import { routes } from '@/shared/config/routes';
-import { RoomQrModal } from './RoomQrModal';
 import { trackInviteShared } from '@/shared/analytics/funnel';
 import { cx } from '@arcadeum/ui/utils/cx';
+
+const RoomQrModal = dynamic(
+  () => import('./RoomQrModal').then((m) => m.RoomQrModal),
+  { ssr: false },
+);
 
 interface ShareGameMenuProps {
   roomId: string;

@@ -65,11 +65,10 @@ export default function GamesPage({
     () => {
       const raw = searchParams ? searchParams.get('status') : null;
       if (raw === null || raw === undefined) {
-        return ['lobby', 'in_progress'];
+        return [];
       }
       return parseStatusFilterFromUrl(raw);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pathname triggers re-parse when navigating
     [searchParams, pathname],
   );
   const participationFilter =

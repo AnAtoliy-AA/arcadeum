@@ -75,4 +75,19 @@ describe('GameRoomsQueryBuilder', () => {
 
     expect(query.hostId).toEqual({ $not: /^anon_/ });
   });
+
+  it('filters by single status', () => {
+    const query = build({ status: 'in_progress' });
+    expect(query.status).toBe('in_progress');
+  });
+
+  it('filters by multiple comma-separated statuses', () => {
+    const query = build({ status: 'lobby,in_progress' });
+    expect(query.status).toEqual({ $in: ['lobby', 'in_progress'] });
+  });
+
+  it('does not filter status when status is all', () => {
+    const query = build({ status: 'all' });
+    expect(query.status).toBeUndefined();
+  });
 });

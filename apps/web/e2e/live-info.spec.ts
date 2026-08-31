@@ -90,4 +90,24 @@ test.describe('Live Platform Info & Online Users', () => {
     const activeMatches = page.getByTestId('landing-live-active-matches');
     await expect(activeMatches).toBeVisible();
   });
+
+  test('should allow filtering by in_progress status and clearing filters', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/rooms');
+    const filtersContainer = page.getByTestId('games-filters-container');
+    await expect(filtersContainer).toBeVisible();
+
+    const inProgressBtn = filtersContainer.getByRole('checkbox', {
+      name: /In Progress|Идут матчи|En curso|En cours|Ідуць матчы/i,
+    });
+    await expect(inProgressBtn).toBeVisible();
+    await inProgressBtn.click();
+    await expect(page).toHaveURL(/.*status=in_progress.*/);
+
+    const clearAllBtn = page.getByTestId('rooms-filter-clear-all');
+    await expect(clearAllBtn).toBeVisible();
+    await clearAllBtn.click();
+    await expect(page).toHaveURL(/^((?!status=).)*$/);
+  });
 });

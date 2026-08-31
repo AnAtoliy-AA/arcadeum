@@ -235,7 +235,7 @@ export class LiveStatsService {
       currentPlayers: Array.isArray(r.participants) ? r.participants.length : 1,
       maxPlayers: r.maxPlayers || 2,
       status: r.status === 'in_progress' ? 'in_progress' : 'lobby',
-      hasPassword: Boolean(r.passwordHash),
+      hasPassword: Boolean(r.password),
       visibility: r.visibility,
       createdAt: r.createdAt
         ? new Date(r.createdAt).toISOString()

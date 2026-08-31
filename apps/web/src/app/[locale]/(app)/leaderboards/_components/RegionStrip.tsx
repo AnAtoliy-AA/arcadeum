@@ -1,4 +1,3 @@
-'use client';
 import type { RegionDistribution } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 

@@ -1,5 +1,3 @@
-'use client';
-
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import type { EquippedResolver } from './types';
 

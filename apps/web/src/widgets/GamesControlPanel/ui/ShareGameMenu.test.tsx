@@ -73,15 +73,15 @@ describe('ShareGameMenu', () => {
       fireEvent.click(screen.getByTestId('share-via-qr'));
     });
 
-    const modal = screen.getByTestId('room-qr-modal');
+    const modal = await screen.findByTestId('room-qr-modal');
     expect(modal).toBeInTheDocument();
-    expect(screen.getByTestId('room-qr-svg')).toBeInTheDocument();
+    expect(await screen.findByTestId('room-qr-svg')).toBeInTheDocument();
 
     const urlEl = screen.getByTestId('room-qr-url');
     expect(urlEl).toHaveTextContent(EXPECTED_URL);
 
     // The rendered QR is an inline <svg> (testid lands on the svg root).
-    const qrSvg = screen.getByTestId('room-qr-svg');
+    const qrSvg = await screen.findByTestId('room-qr-svg');
     expect(qrSvg.tagName.toLowerCase()).toBe('svg');
 
     // Popover closed behind the modal.

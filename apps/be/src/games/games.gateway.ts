@@ -44,6 +44,9 @@ import { GAME_GATEWAYS } from './game-message-handler.interface';
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
+  perMessageDeflate: {
+    threshold: 1024,
+  },
 })
 @Injectable()
 export class GamesGateway {

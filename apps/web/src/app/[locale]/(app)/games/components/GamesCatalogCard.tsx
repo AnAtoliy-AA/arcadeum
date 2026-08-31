@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { GamesCatalogRealPreview } from './art/GamesCatalogRealPreview';
 import { GameSymbol } from '@/app/[locale]/home/components/featured-games/gameMeta';

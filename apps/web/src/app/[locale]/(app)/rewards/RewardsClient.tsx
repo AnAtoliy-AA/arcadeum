@@ -1,5 +1,3 @@
-'use client';
-
 import RewardsPageContent, {
   type RewardsPageContentProps,
 } from './RewardsPageContent';

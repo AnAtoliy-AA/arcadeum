@@ -152,24 +152,24 @@ export default async function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        {process.env.NEXT_PUBLIC_CDN_URL && (
+        {process.env.NEXT_PUBLIC_CDN_URL ? (
           <>
             <link rel="preconnect" href={process.env.NEXT_PUBLIC_CDN_URL} />
             <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_CDN_URL} />
           </>
-        )}
-        {process.env.NEXT_PUBLIC_API_BASE_URL && (
-          <>
-            <link
-              rel="preconnect"
-              href={process.env.NEXT_PUBLIC_API_BASE_URL}
-            />
-            <link
-              rel="dns-prefetch"
-              href={process.env.NEXT_PUBLIC_API_BASE_URL}
-            />
-          </>
-        )}
+        ) : null}
+        <link
+          rel="preconnect"
+          href={
+            process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.arcadeum.games'
+          }
+        />
+        <link
+          rel="dns-prefetch"
+          href={
+            process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.arcadeum.games'
+          }
+        />
         <JsonLd data={jsonLd} />
       </head>
       <body className={FONT_CLASS}>

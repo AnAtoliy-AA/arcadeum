@@ -1,5 +1,3 @@
-'use client';
-
 import {
   PlayerCard as PlayerCardStyled,
   PlayerAvatar,

@@ -1,4 +1,3 @@
-'use client';
 import { memo } from 'react';
 import type React from 'react';
 import { CELL_STATE } from '../../types';

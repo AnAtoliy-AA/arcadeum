@@ -1,5 +1,3 @@
-'use client';
-
 import { GlassCard, EmptyState } from '@arcadeum/ui';
 import type { EventParticipant } from '../model/types';
 

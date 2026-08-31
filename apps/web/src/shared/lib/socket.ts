@@ -25,7 +25,7 @@ type AuthenticatedSocket = Socket & {
 };
 
 const SOCKET_OPTIONS = {
-  transports: ['polling', 'websocket'],
+  transports: ['polling', 'websocket'] as string[],
   autoConnect: false,
 };
 
@@ -95,7 +95,7 @@ function getWalletSock(): AuthenticatedSocket {
   return _walletSock;
 }
 
-function getClansSock(): AuthenticatedSocket {
+export function getClansSock(): AuthenticatedSocket {
   if (!_clansSock) {
     _clansSock = io(
       `${SOCKET_BASE_URL}/clans`,

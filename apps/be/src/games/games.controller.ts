@@ -9,8 +9,10 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  UseInterceptors,
   BadRequestException,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
@@ -53,6 +55,8 @@ export class GamesController {
     private readonly aiVsAiService: AiVsAiService,
   ) {}
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000)
   @UseGuards(JwtOptionalAuthGuard)
   @Get('catalog')
   async getCatalog(@Req() req: Request): Promise<CatalogResponse> {
@@ -247,6 +251,8 @@ export class GamesController {
 
     return this.gamesService.syncPlayerStats(user.userId, dto.records);
   }
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
   @Get('leaderboard')
   async getLeaderboard(
     @Query('limit') limit?: string,

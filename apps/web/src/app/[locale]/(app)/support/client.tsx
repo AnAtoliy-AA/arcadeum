@@ -1,4 +1,3 @@
-'use client';
 import dynamic from 'next/dynamic';
 import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 import type { SupportPageProps } from './SupportPage';

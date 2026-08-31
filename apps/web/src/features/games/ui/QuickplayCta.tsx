@@ -1,5 +1,3 @@
-'use client';
-
 import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 
 interface Props {

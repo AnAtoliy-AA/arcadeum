@@ -6,7 +6,9 @@ import {
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
@@ -26,6 +28,8 @@ export class RankingController {
     return this.ranking.getMyRankings(user.userId);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
   @Get(':gameId')
   @UseGuards(JwtOptionalAuthGuard)
   async getRankings(

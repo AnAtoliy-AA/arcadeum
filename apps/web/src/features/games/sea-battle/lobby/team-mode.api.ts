@@ -1,5 +1,3 @@
-'use client';
-
 import { gameSocket } from '@/shared/lib/socket';
 
 interface BaseEnvelope {

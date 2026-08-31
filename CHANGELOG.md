@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.20] - 2026-08-31
+
+### Fixed
+- add R2 CDN URL to connect-src CSP for music catalog fetch
+- warn when NEXT_PUBLIC_CDN_URL is missing for music catalog
+- rewrite /offline/{game} to locale-prefixed path to fix 404s
+
+### Improved
+- additional free optimizations across web, BE, and mobile
+- free performance optimizations across web, BE, and mobile
+
+
 ## [1.27.19] - 2026-08-31
 
 ### Added

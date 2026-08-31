@@ -126,6 +126,7 @@ export const ru = {
   footerRewards: 'Награды',
   footerToken: 'Токен',
   footerResourcesTitle: 'Ресурсы',
+  footerSupport: 'Поддержать проект',
   footerHelpCenter: 'Центр помощи',
   footerRoadmap: 'Дорожная карта',
   footerChangelog: 'История изменений',

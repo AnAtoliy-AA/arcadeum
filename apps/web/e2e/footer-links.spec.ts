@@ -90,4 +90,13 @@ test.describe('Footer Links', () => {
 
     await expect(socialLinks.first()).toBeVisible({});
   });
+
+  test('should display support link in footer resources section', async ({
+    page,
+  }) => {
+    await scrollToFooter(page);
+    const footer = page.locator('footer').first();
+    const supportLink = footer.locator(`a[href="${routes.support}"]`);
+    await expect(supportLink).toBeVisible();
+  });
 });

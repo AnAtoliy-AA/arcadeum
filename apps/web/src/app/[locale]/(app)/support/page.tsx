@@ -74,7 +74,7 @@ function buildActions(): SupportAction[] {
       key: 'socialRewards',
       icon: '💎',
       type: 'route',
-      href: '/rewards',
+      href: '/community',
       title: 'Follow socials & get free rewards',
       description:
         'Subscribe to our official social networks (Discord, Telegram, X, GitHub) and earn free gems and rewards.',

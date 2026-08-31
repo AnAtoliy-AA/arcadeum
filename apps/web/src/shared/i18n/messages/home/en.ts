@@ -122,6 +122,7 @@ export const en = {
   footerRewards: 'Rewards',
   footerToken: 'Token',
   footerResourcesTitle: 'Resources',
+  footerSupport: 'Support the Developers',
   footerHelpCenter: 'Help Center',
   footerRoadmap: 'Roadmap',
   footerChangelog: 'Changelog',

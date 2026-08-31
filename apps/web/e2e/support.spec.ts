@@ -34,13 +34,15 @@ test.describe('Support Page', () => {
     );
   });
 
-  test('should link to social rewards on rewards page', async ({ page }) => {
-    const rewardsLink = page.locator(
-      'section[aria-labelledby="support-actions-heading"] a[href*="/rewards"]',
+  test('should link to community and rewards from support page', async ({
+    page,
+  }) => {
+    const communityLink = page.locator(
+      'section[aria-labelledby="support-actions-heading"] a[href*="/community"]',
     );
-    await expect(rewardsLink).toBeVisible();
-    await rewardsLink.click();
-    await expect(page).toHaveURL(/\/rewards/);
+    await expect(communityLink).toBeVisible();
+    await communityLink.click();
+    await expect(page).toHaveURL(/\/community/);
   });
 
   test('should have working external links', async ({ page }) => {

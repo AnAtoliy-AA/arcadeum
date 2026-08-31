@@ -144,4 +144,17 @@ export const rewardsFr: typeof rewardsEn = {
       'Rejoignez un salon de jeu dès maintenant et commencez à accumuler des pièces.',
     button: 'Jouer Gratuitement',
   },
+  socialRewards: {
+    title: 'Récompenses réseaux sociaux',
+    subtitle:
+      'Abonnez-vous et suivez nos chaînes officielles pour obtenir des gemmes gratuites.',
+    badge: 'RÉCOMPENSE EN GEMMES',
+    claim: 'Récupérer +{n} 💎',
+    claimed: 'Récupéré ✓',
+    followAndClaim: 'S’abonner et récupérer +{n} 💎',
+    toastSuccess: '+{n} gemme récupérée avec succès !',
+    errorAlreadyClaimed: 'Déjà récupéré !',
+    errorUnauthorized: 'Connectez-vous pour réclamer des récompenses.',
+    errorGeneric: 'Échec de la récupération. Réessayez.',
+  },
 };

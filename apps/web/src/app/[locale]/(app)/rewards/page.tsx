@@ -5,6 +5,7 @@ import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
 import { buildRoutes } from '@/shared/config/routes';
 import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
+import { getSocialRewardsStatus } from '@/features/social-rewards/server/social-rewards.server';
 import RewardsClient from './RewardsClient';
 
 export async function generateMetadata({
@@ -23,7 +24,10 @@ export default async function RewardsPage({
 }) {
   const { locale: rawLocale } = await params;
   const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
-  const messages = await getTranslations(locale);
+  const [messages, socialRewardsStatus] = await Promise.all([
+    getTranslations(locale),
+    getSocialRewardsStatus(),
+  ]);
   const t = messages.pages?.rewards;
   const routes = buildRoutes(locale);
 
@@ -43,7 +47,7 @@ export default async function RewardsPage({
   return (
     <>
       <JsonLd id={`json-ld-rewards-${locale}`} data={jsonLdData} />
-      <RewardsClient t={t} />
+      <RewardsClient t={t} socialRewardsStatus={socialRewardsStatus} />
     </>
   );
 }

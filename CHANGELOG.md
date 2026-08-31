@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.9] - 2026-08-31
+
+### Fixed
+- restore use client to game landing preview components (ARC-939) (ARC-939)
+
+### Improved
+- remove redundant use client directives from presentational components (ARC-939) (ARC-939)
+- enable perMessageDeflate compression on games gateway (ARC-939) (ARC-939)
+- optimize bundle size, response caching, and preconnect (ARC-939) (ARC-939)
+
+
 ## [1.27.8] - 2026-08-30
 
 ### Added

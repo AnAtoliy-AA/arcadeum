@@ -1,6 +1,6 @@
 {
   "name": "task-bot",
-  "version": "1.27.8",
+  "version": "1.27.9",
   "description": "Telegram bot for automated task implementation",
   "private": true,
   "license": "UNLICENSED",

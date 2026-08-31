@@ -60,17 +60,13 @@ export default function GamesPage({
   const router = useRouter();
   const pathname = usePathname();
 
-  // URL state management
-  const selectedStatuses = useMemo<GamesStatusFilter>(
-    () => {
-      const raw = searchParams ? searchParams.get('status') : null;
-      if (raw === null || raw === undefined) {
-        return [];
-      }
-      return parseStatusFilterFromUrl(raw);
-    },
-    [searchParams, pathname],
-  );
+  const selectedStatuses = useMemo<GamesStatusFilter>(() => {
+    const raw = searchParams ? searchParams.get('status') : null;
+    if (raw === null || raw === undefined) {
+      return [];
+    }
+    return parseStatusFilterFromUrl(raw);
+  }, [searchParams]);
   const participationFilter =
     (searchParams?.get('participation') as GamesParticipationFilter) || 'all';
   const aiVsAiFilter = parseAiVsAiFilterFromUrl(
@@ -236,6 +232,7 @@ export default function GamesPage({
       deferredSearchQuery,
       gameId ?? null,
       snapshot.accessToken,
+      snapshot.userId,
     ],
     queryFn: async ({ pageParam = 0 }) => {
       return gamesApi.getRooms(
@@ -253,7 +250,7 @@ export default function GamesPage({
     },
     getNextPageParam: (lastPage, allPages) => {
       const totalPages = Math.ceil(lastPage.total / PAGE_SIZE);
-      const nextPage = allPages.length; // 0-based: length of 1 means index 1 is next
+      const nextPage = allPages.length;
       return nextPage < totalPages ? nextPage : undefined;
     },
     initialPageParam: 0,
@@ -336,10 +333,9 @@ export default function GamesPage({
           />
 
           <div
-            className={`${styles.roomsContainer}${
+            className={`mt-6 ${styles.roomsContainer}${
               viewMode === 'list' ? ` ${styles.listView}` : ''
             }`}
-            style={{ marginTop: '1.5rem' }}
           >
             {renderContent()}
           </div>

@@ -203,6 +203,15 @@ export function proxy(req: NextRequest) {
   if (feedbackPreflight) return feedbackPreflight;
 
   if (SKIP_PREFIXES.some((p) => pathname.startsWith(p))) {
+    // PWA offline game pages: rewrite /offline/{game} → /en/offline/{game}
+    // so the [locale] segment gets a valid locale instead of "offline".
+    if (pathname.startsWith('/offline/') && pathname !== '/offline') {
+      const game = pathname.slice('/offline/'.length);
+      const url = req.nextUrl.clone();
+      url.pathname = `/en/offline/${game}`;
+      url.search = search;
+      return NextResponse.rewrite(url);
+    }
     return NextResponse.next();
   }
   if (PUBLIC_FILE.test(pathname)) return NextResponse.next();

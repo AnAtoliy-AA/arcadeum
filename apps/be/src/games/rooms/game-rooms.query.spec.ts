@@ -9,10 +9,40 @@ const build = (filters: ListRoomsFilters): FilterQuery<GameRoom> & QueryShape =>
   GameRoomsQueryBuilder.buildListQuery(filters);
 
 describe('GameRoomsQueryBuilder', () => {
-  it('hides anonymous-hosted rooms from general browsing', () => {
+  it('hides anonymous-hosted rooms from unauthenticated general browsing', () => {
     const query = build({});
 
     expect(query.hostId).toEqual({ $not: /^anon_/ });
+  });
+
+  it('allows own and joined rooms for anonymous user in general browsing', () => {
+    const query = build({ userId: 'anon_abc123' });
+
+    expect(query.$or).toEqual([
+      { hostId: { $not: /^anon_/ } },
+      { hostId: 'anon_abc123' },
+      { 'participants.userId': 'anon_abc123' },
+    ]);
+  });
+
+  it('combines search and anonymous visibility in general browsing', () => {
+    const query = build({ userId: 'anon_abc123', search: 'chess' });
+
+    expect(query.$and).toEqual([
+      {
+        $or: [
+          { name: { $options: 'i', $regex: 'chess' } },
+          { inviteCode: 'chess' },
+        ],
+      },
+      {
+        $or: [
+          { hostId: { $not: /^anon_/ } },
+          { hostId: 'anon_abc123' },
+          { 'participants.userId': 'anon_abc123' },
+        ],
+      },
+    ]);
   });
 
   it('keeps the anonymous exclusion for not_joined discovery queries', () => {
@@ -70,10 +100,14 @@ describe('GameRoomsQueryBuilder', () => {
     expect(query.hostId).toEqual({ $ne: 'user-1' });
   });
 
-  it('still hides anonymous-hosted rooms when a user id is present without a participation filter', () => {
+  it('allows own and joined rooms for registered user without participation filter', () => {
     const query = build({ userId: 'user-1' });
 
-    expect(query.hostId).toEqual({ $not: /^anon_/ });
+    expect(query.$or).toEqual([
+      { hostId: { $not: /^anon_/ } },
+      { hostId: 'user-1' },
+      { 'participants.userId': 'user-1' },
+    ]);
   });
 
   it('filters by single status', () => {

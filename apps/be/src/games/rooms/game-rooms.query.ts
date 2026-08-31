@@ -13,12 +13,6 @@ export class GameRoomsQueryBuilder {
       query.gameId = filters.gameId;
     }
 
-    if (filters.search) {
-      const escaped = escapeRegExp(filters.search);
-      const searchRegex = { $regex: escaped, $options: 'i' };
-      query.$or = [{ name: searchRegex }, { inviteCode: filters.search }];
-    }
-
     if (filters.status && filters.status !== 'all') {
       if (filters.status.includes(',')) {
         const statuses = filters.status.split(',').filter(isValidStatus);
@@ -47,6 +41,15 @@ export class GameRoomsQueryBuilder {
       query['gameOptions.aiVsAi'] = true;
     }
 
+    let searchOr: FilterQuery<GameRoom>['$or'] | undefined;
+    if (filters.search) {
+      const escaped = escapeRegExp(filters.search);
+      const searchRegex = { $regex: escaped, $options: 'i' };
+      searchOr = [{ name: searchRegex }, { inviteCode: filters.search }];
+    }
+
+    let anonOr: FilterQuery<GameRoom>['$or'] | undefined;
+
     if (filters.participation && filters.userId) {
       switch (filters.participation) {
         case 'host':
@@ -60,30 +63,38 @@ export class GameRoomsQueryBuilder {
           break;
         case 'not_joined':
           query['participants.userId'] = { $ne: filters.userId };
-          query.hostId = { $ne: filters.userId };
+          query.hostId = { $ne: filters.userId, $not: /^anon_/ };
           break;
         case 'any':
-          query.$or = [
+          anonOr = [
+            { hostId: filters.userId },
+            { 'participants.userId': filters.userId },
+          ];
+          break;
+        default:
+          anonOr = [
+            { hostId: { $not: /^anon_/ } },
             { hostId: filters.userId },
             { 'participants.userId': filters.userId },
           ];
           break;
       }
+    } else if (filters.userId) {
+      anonOr = [
+        { hostId: { $not: /^anon_/ } },
+        { hostId: filters.userId },
+        { 'participants.userId': filters.userId },
+      ];
+    } else {
+      query.hostId = { ...((query.hostId as object) || {}), $not: /^anon_/ };
     }
 
-    // Anonymous-hosted rooms are hidden from general browsing, but never from
-    // queries scoped to the viewer's own participation — an anon player must
-    // still see rooms they host or joined (including other anon-hosted ones).
-    const isViewerParticipationFilter =
-      Boolean(filters.userId) &&
-      (filters.participation === 'host' ||
-        filters.participation === 'hosting' ||
-        filters.participation === 'participant' ||
-        filters.participation === 'joined' ||
-        filters.participation === 'any');
-
-    if (!isViewerParticipationFilter && typeof query.hostId !== 'string') {
-      query.hostId = { ...((query.hostId as object) || {}), $not: /^anon_/ };
+    if (searchOr && anonOr) {
+      query.$and = [{ $or: searchOr }, { $or: anonOr }];
+    } else if (searchOr) {
+      query.$or = searchOr;
+    } else if (anonOr) {
+      query.$or = anonOr;
     }
 
     return query;

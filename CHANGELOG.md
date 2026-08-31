@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.11] - 2026-08-31
+
+### Fixed
+- use absolute locale-prefixed path for offline badge links
+- include public manifests in build artifact to fix e2e 404s
+
+### Refactored
+- isolate search params and modularize language provider
+
+
 ## [1.27.10] - 2026-08-31
 
 ### Fixed

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.19] - 2026-08-31
+
+### Added
+- link create room button to games page and allow own anon rooms in list (ARC-713) (ARC-713)
+
+
 ## [1.27.18] - 2026-08-31
 
 ### Fixed

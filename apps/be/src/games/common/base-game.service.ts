@@ -1,7 +1,6 @@
 import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import type { Connection } from 'mongoose';
 import type Redis from 'ioredis';
-import type { Server as SocketIOServer } from 'socket.io';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,

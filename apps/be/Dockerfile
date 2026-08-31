@@ -31,4 +31,4 @@ EXPOSE 4000
 USER node
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "--max-old-space-size=768", "dist/src/main"]
+CMD ["node", "--max-old-space-size=1536", "dist/src/main"]

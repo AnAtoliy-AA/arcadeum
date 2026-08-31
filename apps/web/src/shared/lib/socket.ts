@@ -1,4 +1,4 @@
-import { io, type Socket } from 'socket.io-client';
+import { io, type Socket, type Manager } from 'socket.io-client';
 import { resolveApiUrl } from './api-base';
 import {
   maybeEncrypt,
@@ -29,6 +29,22 @@ const SOCKET_OPTIONS = {
   autoConnect: false,
 };
 
+/**
+ * Single shared Socket.IO Manager — all namespace sockets multiplex over
+ * one TCP connection instead of creating separate engines per namespace.
+ */
+let _manager: Manager | null = null;
+
+function getManager(): Manager {
+  if (!_manager) {
+    _manager = io(SOCKET_BASE_URL, {
+      ...SOCKET_OPTIONS,
+      multiplex: true,
+    }).io as Manager;
+  }
+  return _manager;
+}
+
 // Lazy socket instances — created on first access to avoid heavy init at module load
 let _gamesSocket: AuthenticatedSocket | null = null;
 let _chatsSocket: AuthenticatedSocket | null = null;
@@ -39,10 +55,7 @@ let _clansSock: AuthenticatedSocket | null = null;
 
 export function getGamesSocket(): AuthenticatedSocket {
   if (!_gamesSocket) {
-    _gamesSocket = io(
-      `${SOCKET_BASE_URL}/games`,
-      SOCKET_OPTIONS,
-    ) as AuthenticatedSocket;
+    _gamesSocket = getManager().socket('/games') as AuthenticatedSocket;
     guardEmit(_gamesSocket);
     setupEncryptionKeyHandler(_gamesSocket);
   }
@@ -51,7 +64,7 @@ export function getGamesSocket(): AuthenticatedSocket {
 
 export function getChatsSocket(): AuthenticatedSocket {
   if (!_chatsSocket) {
-    _chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
+    _chatsSocket = getManager().socket('/') as AuthenticatedSocket;
     guardEmit(_chatsSocket);
   }
   return _chatsSocket;
@@ -59,10 +72,7 @@ export function getChatsSocket(): AuthenticatedSocket {
 
 export function getLeaderboardsSocket(): AuthenticatedSocket {
   if (!_leaderboardsSocket) {
-    _leaderboardsSocket = io(
-      `${SOCKET_BASE_URL}/leaderboards`,
-      SOCKET_OPTIONS,
-    ) as AuthenticatedSocket;
+    _leaderboardsSocket = getManager().socket('/leaderboards') as AuthenticatedSocket;
     guardEmit(_leaderboardsSocket);
   }
   return _leaderboardsSocket;
@@ -70,10 +80,7 @@ export function getLeaderboardsSocket(): AuthenticatedSocket {
 
 export function getFriendsSock(): AuthenticatedSocket {
   if (!_friendsSock) {
-    _friendsSock = io(
-      `${SOCKET_BASE_URL}/friends`,
-      SOCKET_OPTIONS,
-    ) as AuthenticatedSocket;
+    _friendsSock = getManager().socket('/friends') as AuthenticatedSocket;
     guardEmit(_friendsSock);
   }
   return _friendsSock;
@@ -81,15 +88,7 @@ export function getFriendsSock(): AuthenticatedSocket {
 
 function getWalletSock(): AuthenticatedSocket {
   if (!_walletSock) {
-    // forceNew: give /wallet its own Manager + engine connection. Without it
-    // the wallet namespace multiplexes over the shared engine, and a hard
-    // server-side kick on a bad wallet token tears down games/chats too
-    // (seen as "WebSocket is closed before the connection is established").
-    _walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
-      transports: ['websocket'],
-      autoConnect: false,
-      forceNew: true,
-    }) as AuthenticatedSocket;
+    _walletSock = getManager().socket('/wallet') as AuthenticatedSocket;
     guardEmit(_walletSock);
   }
   return _walletSock;
@@ -97,10 +96,7 @@ function getWalletSock(): AuthenticatedSocket {
 
 export function getClansSock(): AuthenticatedSocket {
   if (!_clansSock) {
-    _clansSock = io(
-      `${SOCKET_BASE_URL}/clans`,
-      SOCKET_OPTIONS,
-    ) as AuthenticatedSocket;
+    _clansSock = getManager().socket('/clans') as AuthenticatedSocket;
     guardEmit(_clansSock);
   }
   return _clansSock;

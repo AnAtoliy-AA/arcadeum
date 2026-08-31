@@ -27,6 +27,10 @@ export interface LiveActivityItem {
 
 export interface LiveStatsResponse {
   onlineUsers: number;
+  totalUsers: number;
+  totalMatches: number;
+  totalSubscribers: number;
+  platformSubscribers: Record<string, number>;
   activeGames: number;
   waitingRooms: number;
   matchesToday: number;

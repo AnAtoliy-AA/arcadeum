@@ -106,6 +106,10 @@ import {
 import { GameReplayService } from './replays/game-replay.service';
 import { GameReplayController } from './replays/game-replay.controller';
 import { GameReplay, GameReplaySchema } from './schemas/game-replay.schema';
+import {
+  SocialRewardClaim,
+  SocialRewardClaimSchema,
+} from '../social-rewards/schemas/social-reward-claim.schema';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { RankingModule } from '../ranking/ranking.module';
@@ -144,6 +148,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     MongooseModule.forFeature([
       { name: PlayerStats.name, schema: PlayerStatsSchema },
       { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
+      { name: SocialRewardClaim.name, schema: SocialRewardClaimSchema },
     ]),
     // Atlas connection models (archive, history, stats) — only when Atlas is configured
     ...(resolveAtlasUri()
@@ -156,6 +161,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
               { name: PlayerStats.name, schema: PlayerStatsSchema },
               { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
               { name: User.name, schema: UserSchema },
+              { name: SocialRewardClaim.name, schema: SocialRewardClaimSchema },
             ],
             ATLAS_CONNECTION,
           ),

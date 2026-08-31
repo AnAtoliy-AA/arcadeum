@@ -116,7 +116,7 @@ export const fr = {
     featureProgressDetail: 'stats, amis et déblocages sont conservés.',
     proof:
       'Rejoint par {{count}} joueurs cette semaine — voyez qui est en ligne dans Parcourir les jeux.',
-    proofCount: '240 000+',
+    proofCount: '',
     footHome: "← Retour à l'accueil",
     footGames: 'Parcourir les jeux',
     footHelp: "Besoin d'aide ?",

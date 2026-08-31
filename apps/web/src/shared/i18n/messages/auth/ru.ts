@@ -115,7 +115,7 @@ export const ru = {
     featureProgressDetail: 'статистика, друзья и достижения переносятся.',
     proof:
       'На этой неделе присоединилось {{count}} игроков — смотрите, кто онлайн в Играх.',
-    proofCount: '240 000+',
+    proofCount: '',
     footHome: '← Назад на главную',
     footGames: 'Игры',
     footHelp: 'Нужна помощь?',

@@ -5,9 +5,9 @@ export const communityRu = {
     'Делитесь стратегиями, участвуйте в общественных мероприятиях и поддерживайте связь через все наши социальные каналы.',
   badge: 'Глобальная экосистема',
   stats: {
-    players: '10K+',
+    players: '',
     playersLabel: 'Активных игроков',
-    discordMembers: '5K+',
+    discordMembers: '',
     discordLabel: 'Участников Discord',
     githubStars: 'Open Source',
     githubLabel: 'Открытый код',

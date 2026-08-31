@@ -4,6 +4,7 @@ import { LiveStatsService } from './live-stats.service';
 import { GameRoom } from '../schemas/game-room.schema';
 import { PlayerStatRecord } from '../schemas/player-stat-record.schema';
 import { User } from '../../auth/schemas/user.schema';
+import { SocialRewardClaim } from '../../social-rewards/schemas/social-reward-claim.schema';
 import { GamesRealtimeService } from '../games.realtime.service';
 import {
   OCI_CONNECTION,
@@ -23,6 +24,11 @@ describe('LiveStatsService', () => {
   };
   let mockUserModel: {
     find: jest.Mock;
+    countDocuments: jest.Mock;
+  };
+  let mockClaimModel: {
+    countDocuments: jest.Mock;
+    aggregate: jest.Mock;
   };
   let mockRealtimeService: {
     lobbyChannel: jest.Mock;
@@ -89,6 +95,9 @@ describe('LiveStatsService', () => {
     };
 
     mockUserModel = {
+      countDocuments: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(128),
+      }),
       find: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
           lean: jest.fn().mockReturnValue({
@@ -106,6 +115,18 @@ describe('LiveStatsService', () => {
             ]),
           }),
         }),
+      }),
+    };
+
+    mockClaimModel = {
+      countDocuments: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(75),
+      }),
+      aggregate: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue([
+          { _id: 'discord', count: 45 },
+          { _id: 'telegram', count: 30 },
+        ]),
       }),
     };
 
@@ -132,6 +153,10 @@ describe('LiveStatsService', () => {
           useValue: mockUserModel,
         },
         {
+          provide: getModelToken(SocialRewardClaim.name),
+          useValue: mockClaimModel,
+        },
+        {
           provide: GamesRealtimeService,
           useValue: mockRealtimeService,
         },
@@ -151,6 +176,11 @@ describe('LiveStatsService', () => {
     expect(stats.activeGames).toBe(5);
     expect(stats.waitingRooms).toBe(5);
     expect(stats.matchesToday).toBe(42);
+    expect(stats.totalUsers).toBe(128);
+    expect(stats.totalMatches).toBe(42);
+    expect(stats.totalSubscribers).toBe(75);
+    expect(stats.platformSubscribers.discord).toBe(45);
+    expect(stats.platformSubscribers.telegram).toBe(30);
     expect(stats.onlineUsers).toBeGreaterThan(0);
     expect(stats.openRooms).toHaveLength(1);
     expect(stats.openRooms[0].hostName).toBe('Alice G');
@@ -162,6 +192,10 @@ describe('LiveStatsService', () => {
   it('should broadcast live stats to lobby channel', () => {
     const mockData = {
       onlineUsers: 100,
+      totalUsers: 128,
+      totalMatches: 42,
+      totalSubscribers: 75,
+      platformSubscribers: { discord: 45 },
       activeGames: 10,
       waitingRooms: 4,
       matchesToday: 50,

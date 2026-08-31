@@ -32,6 +32,10 @@ export const ruMessages = {
       },
       aiVsAiLabel: 'Режим',
       aiVsAi: 'ИИ против ИИ',
+      clearAll: 'Очистить всё',
+      moreFilters: 'Ещё фильтры',
+      hideFilters: 'Скрыть фильтры',
+      activeFiltersCount: '{{count}} активных',
     },
   },
   aiVsAi: {

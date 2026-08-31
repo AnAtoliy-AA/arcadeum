@@ -32,6 +32,10 @@ export const enMessages = {
       },
       aiVsAiLabel: 'Mode',
       aiVsAi: 'AI vs AI',
+      clearAll: 'Clear all',
+      moreFilters: 'More filters',
+      hideFilters: 'Fewer filters',
+      activeFiltersCount: '{{count}} active',
     },
   },
   aiVsAi: {

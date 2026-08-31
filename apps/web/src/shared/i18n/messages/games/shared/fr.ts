@@ -32,7 +32,11 @@ export const frMessages = {
         not_joined: 'Non rejoint',
       },
       aiVsAiLabel: 'Mode',
-      aiVsAi: 'IA contre IA',
+      aiVsAi: 'IA vs IA',
+      clearAll: 'Tout effacer',
+      moreFilters: 'Plus de filtres',
+      hideFilters: 'Moins de filtres',
+      activeFiltersCount: '{{count}} actifs',
     },
   },
   aiVsAi: {

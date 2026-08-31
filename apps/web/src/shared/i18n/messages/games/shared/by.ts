@@ -31,7 +31,11 @@ export const byMessages = {
         not_joined: 'Не ўдзельнічаю',
       },
       aiVsAiLabel: 'Рэжым',
-      aiVsAi: 'ШІ супраць ШІ',
+      aiVsAi: 'ІІ супраць ІІ',
+      clearAll: 'Ачысціць усё',
+      moreFilters: 'Яшчэ фільтры',
+      hideFilters: 'Схаваць фільтры',
+      activeFiltersCount: '{{count}} актыўных',
     },
   },
   aiVsAi: {

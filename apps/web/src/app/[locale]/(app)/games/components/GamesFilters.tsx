@@ -1,4 +1,6 @@
-import { useCallback } from 'react';
+'use client';
+
+import { useState, useCallback } from 'react';
 import { GamesSearch } from '@/features/games';
 import {
   useTranslation,
@@ -26,7 +28,6 @@ interface GamesFiltersProps {
   onCategoryChange: (category: GamesCategoryFilter) => void;
   aiVsAiFilter: GamesAiVsAiFilter;
   onAiVsAiChange: (filter: GamesAiVsAiFilter) => void;
-  /** Authenticated users and anonymous players with an anon id both qualify. */
   canFilterParticipation: boolean;
 }
 
@@ -58,6 +59,7 @@ export function GamesFilters({
   canFilterParticipation,
 }: GamesFiltersProps) {
   const { t } = useTranslation();
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleStatusToggle = useCallback(
     (value: (typeof ALL_STATUS_VALUES)[number]) => {
@@ -79,14 +81,85 @@ export function GamesFilters({
     [statusFilter, onStatusChange],
   );
 
+  const hasSearch = Boolean(searchQuery.trim());
+  const hasCategory = Boolean(categoryFilter);
+  const hasStatus =
+    statusFilter.length > 0 && statusFilter.length < STATUS_VALUES.length;
+  const hasAi = aiVsAiFilter === 'ai_vs_ai';
+  const hasParticipation = participationFilter !== 'all';
+
+  const activeCount =
+    (hasSearch ? 1 : 0) +
+    (hasCategory ? 1 : 0) +
+    (hasStatus ? 1 : 0) +
+    (hasAi ? 1 : 0) +
+    (hasParticipation ? 1 : 0);
+
+  const handleClearAll = useCallback(() => {
+    onSearch('');
+    onCategoryChange('');
+    onStatusChange([]);
+    onAiVsAiChange('all');
+    onParticipationChange('all');
+  }, [
+    onSearch,
+    onCategoryChange,
+    onStatusChange,
+    onAiVsAiChange,
+    onParticipationChange,
+  ]);
+
   return (
     <Filters>
-      <GamesSearch
-        onSearch={onSearch}
-        initialValue={searchQuery}
-        placeholder={t('games.lounge.searchPlaceholder') || 'Search games...'}
-        buttonLabel={t('games.lounge.searchButton') || 'Search'}
-      />
+      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex-1">
+          <GamesSearch
+            onSearch={onSearch}
+            initialValue={searchQuery}
+            placeholder={
+              t('games.lounge.searchPlaceholder') || 'Search games...'
+            }
+            buttonLabel={t('games.lounge.searchButton') || 'Search'}
+          />
+        </div>
+
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          {activeCount > 0 && (
+            <button
+              type="button"
+              onClick={handleClearAll}
+              data-testid="rooms-filter-clear-all"
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-rose-300 transition-colors hover:bg-rose-500/10 hover:border-rose-500/20 active:scale-95"
+            >
+              <span>✕</span>
+              <span>{t('games.lounge.filters.clearAll')}</span>
+              <span className="rounded-full bg-rose-500/20 px-1.5 py-0.2 text-[10px] text-rose-200">
+                {activeCount}
+              </span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setShowAdvanced((prev) => !prev)}
+            data-testid="rooms-filter-toggle-advanced"
+            className="inline-flex md:hidden cursor-pointer items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-slate-300 transition-colors hover:bg-white/[0.08] active:scale-95"
+          >
+            <span>⚙️</span>
+            <span>
+              {showAdvanced
+                ? t('games.lounge.filters.hideFilters')
+                : t('games.lounge.filters.moreFilters')}
+            </span>
+            {(hasAi || hasParticipation) && (
+              <span className="rounded-full bg-indigo-500/30 px-1.5 py-0.2 text-[10px] text-indigo-200">
+                {(hasAi ? 1 : 0) + (hasParticipation ? 1 : 0)}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
       <FilterGroup>
         <FilterLabel>
           {t('games.lounge.filters.categoryLabel') || 'Category'}
@@ -149,71 +222,74 @@ export function GamesFilters({
         </FilterChips>
       </FilterGroup>
 
-      <FilterGroup>
-        <FilterLabel>
-          {t('games.lounge.filters.aiVsAiLabel') || 'Mode'}
-        </FilterLabel>
-        <FilterChips>
-          {(['all', 'ai_vs_ai'] as const).map((value) => {
-            const label =
-              value === 'all'
-                ? t('games.lounge.filters.status.all') || 'All'
-                : t('games.lounge.filters.aiVsAi') || 'AI vs AI';
-            const isActive = aiVsAiFilter === value;
-            return (
-              <FilterChip
-                key={value}
-                active={isActive}
-                onClick={() => onAiVsAiChange(value)}
-                aria-label={`Filter by mode: ${label}`}
-                aria-pressed={isActive}
-              >
-                {label}
-                {isActive ? ' ✓' : ''}
-              </FilterChip>
-            );
-          })}
-        </FilterChips>
-      </FilterGroup>
-
-      <FilterGroup>
-        <div className="flex items-center gap-2">
+      <div
+        className={`${
+          showAdvanced ? 'flex' : 'hidden'
+        } md:flex flex-col md:flex-row md:items-start gap-4 w-full pt-1 border-t border-white/5`}
+      >
+        <FilterGroup className="md:w-auto">
           <FilterLabel>
-            {t('games.lounge.filters.participationLabel')}
+            {t('games.lounge.filters.aiVsAiLabel') || 'Mode'}
           </FilterLabel>
-          {!canFilterParticipation && (
-            <span
-              className="mb-1 text-[12px] italic opacity-60"
-              style={{ color: 'var(--color)' }}
-            >
-              ({t('games.create.loginRequired').toLowerCase()})
-            </span>
-          )}
-        </div>
-        <FilterChips>
-          {(
-            Object.keys(PARTICIPATION_KEYS) as Array<
-              keyof typeof PARTICIPATION_KEYS
-            >
-          ).map((value) => {
-            const label = t(PARTICIPATION_KEYS[value] as TranslationKey);
-            const isActive = participationFilter === value;
-            return (
-              <FilterChip
-                key={value}
-                active={isActive}
-                disabled={value !== 'all' && !canFilterParticipation}
-                onClick={() => onParticipationChange(value)}
-                aria-label={`Filter by participation: ${label || value}`}
-                aria-pressed={isActive}
+          <FilterChips>
+            {(['all', 'ai_vs_ai'] as const).map((value) => {
+              const label =
+                value === 'all'
+                  ? t('games.lounge.filters.status.all') || 'All'
+                  : t('games.lounge.filters.aiVsAi') || 'AI vs AI';
+              const isActive = aiVsAiFilter === value;
+              return (
+                <FilterChip
+                  key={value}
+                  active={isActive}
+                  onClick={() => onAiVsAiChange(value)}
+                  aria-label={`Filter by mode: ${label}`}
+                  aria-pressed={isActive}
+                >
+                  {label}
+                  {isActive ? ' ✓' : ''}
+                </FilterChip>
+              );
+            })}
+          </FilterChips>
+        </FilterGroup>
+
+        <FilterGroup className="md:w-auto">
+          <div className="flex items-center gap-2">
+            <FilterLabel>
+              {t('games.lounge.filters.participationLabel')}
+            </FilterLabel>
+            {!canFilterParticipation && (
+              <span className="text-[11px] italic text-slate-400 opacity-60">
+                ({t('games.create.loginRequired').toLowerCase()})
+              </span>
+            )}
+          </div>
+          <FilterChips>
+            {(
+              Object.keys(PARTICIPATION_KEYS) as Array<
+                keyof typeof PARTICIPATION_KEYS
               >
-                {label || value}
-                {isActive ? ' ✓' : ''}
-              </FilterChip>
-            );
-          })}
-        </FilterChips>
-      </FilterGroup>
+            ).map((value) => {
+              const label = t(PARTICIPATION_KEYS[value] as TranslationKey);
+              const isActive = participationFilter === value;
+              return (
+                <FilterChip
+                  key={value}
+                  active={isActive}
+                  disabled={value !== 'all' && !canFilterParticipation}
+                  onClick={() => onParticipationChange(value)}
+                  aria-label={`Filter by participation: ${label || value}`}
+                  aria-pressed={isActive}
+                >
+                  {label || value}
+                  {isActive ? ' ✓' : ''}
+                </FilterChip>
+              );
+            })}
+          </FilterChips>
+        </FilterGroup>
+      </div>
     </Filters>
   );
 }

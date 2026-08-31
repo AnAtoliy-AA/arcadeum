@@ -72,9 +72,7 @@ test.describe('Games List Page', () => {
     await expect(createLink).toBeVisible();
 
     const href = await createLink.getAttribute('href');
-    expect(href).toContain(
-      routes.gameCreate.replace(/^\/(?:en|es|fr|ru|by)/, ''),
-    );
+    expect(href).toContain(routes.games.replace(/^\/(?:en|es|fr|ru|by)/, ''));
   });
 
   test('should display game cards or empty state', async ({ page }) => {

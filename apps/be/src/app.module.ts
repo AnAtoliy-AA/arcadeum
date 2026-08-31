@@ -31,6 +31,7 @@ import { ClansModule } from './clans/clans.module';
 import { EventsModule } from './events/events.module';
 import { SeasonsModule } from './seasons/seasons.module';
 import { EngagementModule } from './engagement/engagement.module';
+import { SocialRewardsModule } from './social-rewards/social-rewards.module';
 import { AsyncMatchModule } from './games/async-match/async-match.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -88,6 +89,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     EventsModule,
     SeasonsModule,
     EngagementModule,
+    SocialRewardsModule,
     AsyncMatchModule,
     MongooseModule.forRoot(resolveMongoUri(), {
       ...resolveMongoOptions(),

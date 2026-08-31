@@ -132,6 +132,8 @@ export const frMessages = {
       shareResult: 'Partager le Résultat',
       playAnother: 'Rejouer',
       linkCopied: 'Lien copié !',
+      rewardsPrompt: 'Besoin de plus de gemmes ? Abonnez-vous à nos réseaux !',
+      rewardsClaim: 'Réclamer',
     },
     deleteRoom: {
       button: 'Supprimer la salle',

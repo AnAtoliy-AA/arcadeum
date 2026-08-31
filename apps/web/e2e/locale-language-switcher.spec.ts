@@ -20,7 +20,6 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
     }
 
     await frButton.click();
-    await page.waitForURL(/\/fr\/parametres\b/, { timeout: 5000 });
     await expect(page).toHaveURL(/\/fr\/parametres\b/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   });
@@ -34,7 +33,6 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
     }
 
     await ruButton.click();
-    await page.waitForURL(/\/ru\/igry\b/, { timeout: 5000 });
     await expect(page).toHaveURL(/\/ru\/igry\b/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
   });
@@ -49,7 +47,7 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
       test.skip(true, 'Inline language switcher not visible at this viewport.');
     }
     await esButton.click();
-    await page.waitForURL(/\/es\/ajustes\b/, { timeout: 5000 });
+    await expect(page).toHaveURL(/\/es\/ajustes\b/);
 
     // The switcher writes an app-language cookie that the proxy reads.
     // Wait for it to land so the subsequent navigation can't race it.

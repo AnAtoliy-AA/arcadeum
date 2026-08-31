@@ -12,8 +12,15 @@ export const shopEs = {
       shop: 'Tienda',
       inventory: 'Inventario',
       wallet: 'Monedero',
+      rewards: 'Recompensas',
     },
     topUp: 'Recargar',
+  },
+  freeRewardsBanner: {
+    title: 'Recompensas y misiones gratis',
+    subtitle:
+      '¡Suscríbete a nuestras redes sociales oficiales para ganar gemas gratis!',
+    cta: 'Reclamar gemas',
   },
   signIn: {
     title: 'Inicia sesión para comprar y equipar artículos',

@@ -131,6 +131,8 @@ export const enMessages = {
       shareResult: 'Share Result',
       playAnother: 'Play Another Game',
       linkCopied: 'Link copied!',
+      rewardsPrompt: 'Need more gems? Subscribe to socials!',
+      rewardsClaim: 'Claim',
     },
     deleteRoom: {
       button: 'Delete Room',

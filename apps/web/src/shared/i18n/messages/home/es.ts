@@ -128,6 +128,7 @@ export const es = {
   footerRewards: 'Recompensas',
   footerToken: 'Token',
   footerResourcesTitle: 'Recursos',
+  footerSupport: 'Apoyar el proyecto',
   footerHelpCenter: 'Centro de ayuda',
   footerRoadmap: 'Hoja de ruta',
   footerChangelog: 'Registro de cambios',

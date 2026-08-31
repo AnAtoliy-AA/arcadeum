@@ -15,6 +15,8 @@ import { useLanguage } from '@/shared/i18n/context';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { rewardsEn } from '@/shared/i18n/messages/pages/rewards/en';
+import { SocialRewardsSection } from '@/features/social-rewards/ui/SocialRewardsSection';
+import type { SocialRewardsStatus } from '@/features/social-rewards/server/social-rewards.types';
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
@@ -30,6 +32,7 @@ export type RewardsMessages = DeepPartial<typeof rewardsEn>;
 
 export interface RewardsPageContentProps {
   t?: RewardsMessages;
+  socialRewardsStatus?: SocialRewardsStatus | null;
 }
 
 const STREAK_DAYS = [
@@ -44,6 +47,7 @@ const STREAK_DAYS = [
 
 export default function RewardsPageContent({
   t: initialT,
+  socialRewardsStatus,
 }: RewardsPageContentProps) {
   const { messages } = useLanguage();
   const routes = useRoutes();
@@ -56,6 +60,7 @@ export default function RewardsPageContent({
   const dailyStreak = rewards?.dailyStreak;
   const quests = rewards?.quests;
   const tiers = rewards?.tiers;
+  const socialRewards = rewards?.socialRewards;
   const referral = rewards?.referralHero;
   const faq = rewards?.faq;
   const cta = rewards?.cta;
@@ -267,6 +272,24 @@ export default function RewardsPageContent({
                 ))}
               </div>
             </div>
+          </Section>
+
+          <Section>
+            <SocialRewardsSection
+              status={socialRewardsStatus}
+              labels={{
+                title: socialRewards?.title,
+                subtitle: socialRewards?.subtitle,
+                badge: socialRewards?.badge,
+                claim: socialRewards?.claim,
+                claimed: socialRewards?.claimed,
+                followAndClaim: socialRewards?.followAndClaim,
+                toastSuccess: socialRewards?.toastSuccess,
+                errorAlreadyClaimed: socialRewards?.errorAlreadyClaimed,
+                errorUnauthorized: socialRewards?.errorUnauthorized,
+                errorGeneric: socialRewards?.errorGeneric,
+              }}
+            />
           </Section>
 
           {referral && (

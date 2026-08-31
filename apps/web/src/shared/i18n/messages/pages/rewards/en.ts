@@ -138,4 +138,16 @@ export const rewardsEn = {
       'Jump into a game room now and start racking up coins and quest progress.',
     button: 'Play Free Now',
   },
+  socialRewards: {
+    title: 'Social Network Rewards',
+    subtitle: 'Subscribe and follow our official channels to claim free gems.',
+    badge: 'GEMS REWARD',
+    claim: 'Claim +{n} 💎',
+    claimed: 'Claimed ✓',
+    followAndClaim: 'Subscribe & Claim +{n} 💎',
+    toastSuccess: 'Claimed +{n} Gem successfully!',
+    errorAlreadyClaimed: 'Already claimed!',
+    errorUnauthorized: 'Please sign in to claim rewards.',
+    errorGeneric: 'Failed to claim reward. Try again.',
+  },
 };

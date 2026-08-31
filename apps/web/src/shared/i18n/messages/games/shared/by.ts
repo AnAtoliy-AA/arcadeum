@@ -131,6 +131,8 @@ export const byMessages = {
       shareResult: 'Падзяліцца вынікам',
       playAnother: 'Згуляць яшчэ',
       linkCopied: 'Спасылка скапіявана!',
+      rewardsPrompt: 'Патрэбна больш гемаў? Падпішыцеся на сацсеткі!',
+      rewardsClaim: 'Забраць',
     },
     deleteRoom: {
       button: 'Выдаліць залу',

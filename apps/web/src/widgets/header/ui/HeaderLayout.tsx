@@ -5,11 +5,9 @@ import { Logo } from './styles';
 
 interface HeaderLayoutProps {
   children: ReactNode;
-  /** Optional wallet balance chip rendered from the Server-Component parent. */
-  balanceChip?: ReactNode;
 }
 
-export function HeaderLayout({ children, balanceChip }: HeaderLayoutProps) {
+export function HeaderLayout({ children }: HeaderLayoutProps) {
   return (
     <header className="header-outer" role="banner">
       <div className="header-inner" data-testid="header-inner">
@@ -26,7 +24,6 @@ export function HeaderLayout({ children, balanceChip }: HeaderLayoutProps) {
             <span className="logo-text-bottom">Games</span>
           </span>
         </Logo>
-        {balanceChip}
         {children}
       </div>
       <div className="header-border-line" />

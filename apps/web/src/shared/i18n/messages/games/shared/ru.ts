@@ -131,6 +131,8 @@ export const ruMessages = {
       shareResult: 'Поделиться результатом',
       playAnother: 'Сыграть ещё',
       linkCopied: 'Ссылка скопирована!',
+      rewardsPrompt: 'Нужно больше гемов? Подпишитесь на соцсети!',
+      rewardsClaim: 'Забрать',
     },
     deleteRoom: {
       button: 'Удалить зал',

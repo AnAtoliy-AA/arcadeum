@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { appConfig } from '@/shared/config/app-config';
 import {
   PageLayout,
@@ -146,12 +148,15 @@ export default function CommunityPageContent({
   t: initialT,
 }: CommunityPageContentProps) {
   const { messages } = useLanguage();
+  const routes = useRoutes();
   const t =
     (messages.pages?.community as unknown as PageTranslations) || initialT;
 
   const sections =
     (t?.sections as Record<string, Record<string, string>>) || {};
   const stats = (t?.stats as Record<string, string>) || {};
+  const rewardsBanner = (t?.rewardsBanner as Record<string, string>) || {};
+  const rewardBadge = (t?.rewardBadge as string) ?? '+1 💎';
 
   return (
     <PageLayout>
@@ -243,6 +248,33 @@ export default function CommunityPageContent({
             </div>
           </GlassCard>
 
+          <Link
+            href={routes.rewards}
+            className="no-underline"
+            data-testid="community-rewards-banner"
+          >
+            <div className="flex items-center justify-between gap-4 rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-500/15 via-purple-500/10 to-amber-500/10 p-4 transition-all duration-200 hover:border-amber-400/50 hover:bg-amber-500/20">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-400/20 text-lg border border-amber-400/30">
+                  💎
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-amber-300">
+                    {rewardsBanner.title ??
+                      'Earn Free Gems by Joining Our Channels'}
+                  </span>
+                  <span className="text-xs text-slate-300">
+                    {rewardsBanner.description ??
+                      'Subscribe or follow any official channel to claim gems instantly'}
+                  </span>
+                </div>
+              </div>
+              <span className="hidden sm:inline-flex items-center gap-1 rounded-xl bg-amber-400 px-3.5 py-1.5 text-xs font-bold text-zinc-950 shadow-md shadow-amber-500/20">
+                {rewardsBanner.cta ?? 'Claim Rewards'} →
+              </span>
+            </div>
+          </Link>
+
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
               <Typography variant="heading" uiSize="md">
@@ -288,9 +320,14 @@ export default function CommunityPageContent({
                           >
                             <IconComponent size={24} />
                           </div>
-                          {subtitle && (
-                            <Badge accent={net.color}>{subtitle}</Badge>
-                          )}
+                          <div className="flex items-center gap-1.5">
+                            {subtitle && (
+                              <Badge accent={net.color}>{subtitle}</Badge>
+                            )}
+                            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-300 border border-amber-400/30">
+                              {rewardBadge}
+                            </span>
+                          </div>
                         </div>
 
                         <div className="flex flex-col gap-1">

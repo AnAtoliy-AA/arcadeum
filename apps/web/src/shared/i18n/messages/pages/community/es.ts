@@ -75,5 +75,12 @@ export const communityEs = {
         'Conéctate con Arcadeum profesionalmente, lee actualizaciones de la empresa y explora oportunidades.',
     },
   },
+  rewardsBanner: {
+    title: 'Gana gemas gratis uniéndote a nuestros canales',
+    description:
+      'Suscríbete o sigue cualquier canal oficial para reclamar gemas al instante',
+    cta: 'Reclamar recompensas',
+  },
+  rewardBadge: '+1 💎',
   comingSoon: '¡La comunidad llegará pronto!',
 };

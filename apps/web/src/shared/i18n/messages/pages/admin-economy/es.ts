@@ -100,6 +100,11 @@ export const adminEconomyEs = {
       description:
         'Cantidad de gemas otorgadas a un nuevo usuario al registrarse.',
     },
+    social_reward_gems: {
+      name: 'Recompensa por suscripción a redes: gemas',
+      description:
+        'Cantidad de gemas otorgadas por suscripción/seguimiento a cada red social.',
+    },
   },
   table: {
     key: 'Ajuste',

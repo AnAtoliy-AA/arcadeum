@@ -126,6 +126,7 @@ export const by = {
   footerRewards: 'Узнагароды',
   footerToken: 'Токен',
   footerResourcesTitle: 'Рэсурсы',
+  footerSupport: 'Падтрымаць праект',
   footerHelpCenter: 'Цэнтр дапамогі',
   footerRoadmap: 'Дарожная карта',
   footerChangelog: 'Гісторыя зменаў',

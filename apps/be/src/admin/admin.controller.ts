@@ -1,5 +1,8 @@
 import * as os from 'os';
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Session } from 'node:inspector';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
@@ -57,6 +60,16 @@ interface ServerMetricsResponse {
     nodeVersion: string;
     platform: string;
   };
+}
+
+interface CpuProfileDto {
+  durationMs?: number;
+}
+
+interface CpuProfileResponse {
+  file: string;
+  durationMs: number;
+  pid: number;
 }
 
 function sampleCpuPercent(): number[] {
@@ -167,6 +180,52 @@ export class AdminController {
         nodeVersion: process.version,
         platform: os.platform(),
       },
+    };
+  }
+
+  @Post('cpu-profile')
+  async captureCpuProfile(
+    @Body() dto: CpuProfileDto,
+  ): Promise<CpuProfileResponse> {
+    const durationMs = Math.min(dto?.durationMs ?? 30_000, 60_000);
+    const profile = await new Promise<Record<string, unknown>>(
+      (resolve, reject) => {
+        const session = new Session();
+        session.connect();
+        session.post('Profiler.enable', () => {
+          session.post(
+            'Profiler.start',
+            { samplingInterval: 1000 },
+            () => {
+              setTimeout(() => {
+                session.post(
+                  'Profiler.stop',
+                  (
+                    err: Error | null,
+                    data: { profile: Record<string, unknown> },
+                  ) => {
+                    session.disconnect();
+                    if (err) return reject(err);
+                    resolve(data.profile);
+                  },
+                );
+              }, durationMs);
+            },
+          );
+        });
+      },
+    );
+
+    const dir = path.join(process.cwd(), 'profiles');
+    fs.mkdirSync(dir, { recursive: true });
+    const filename = `cpu-${Date.now()}-${process.pid}.cpuprofile`;
+    const filePath = path.join(dir, filename);
+    fs.writeFileSync(filePath, JSON.stringify(profile));
+
+    return {
+      file: filename,
+      durationMs,
+      pid: process.pid,
     };
   }
 }

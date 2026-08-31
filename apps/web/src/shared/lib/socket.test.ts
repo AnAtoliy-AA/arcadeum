@@ -3,38 +3,40 @@ import { io, type Socket } from 'socket.io-client';
 import * as encryption from './socket-encryption';
 import { renderHook, waitFor } from '@testing-library/react';
 
-const { mockSocket, rawEmit } = vi.hoisted(() => {
+const { mockSocket, rawEmit, mockManager } = vi.hoisted(() => {
   const rawEmit = vi.fn();
-  return {
-    mockSocket: {
-      connected: false,
-      connect: vi.fn().mockImplementation(function (this: {
-        connected: boolean;
-      }) {
-        this.connected = true;
-        return this;
-      }),
-      disconnect: vi.fn().mockImplementation(function (this: {
-        connected: boolean;
-      }) {
-        this.connected = false;
-        return this;
-      }),
+  const mockSocket = {
+    connected: false,
+    connect: vi.fn().mockImplementation(function (this: {
+      connected: boolean;
+    }) {
+      this.connected = true;
+      return this;
+    }),
+    disconnect: vi.fn().mockImplementation(function (this: {
+      connected: boolean;
+    }) {
+      this.connected = false;
+      return this;
+    }),
+    on: vi.fn(),
+    off: vi.fn(),
+    emit: rawEmit,
+    auth: {},
+    io: {
       on: vi.fn(),
-      off: vi.fn(),
-      emit: rawEmit,
-      auth: {},
-      io: {
-        on: vi.fn(),
-      },
     },
-    rawEmit,
   };
+  const mockManager = {
+    socket: vi.fn(() => mockSocket),
+    on: vi.fn(),
+  };
+  return { mockSocket, rawEmit, mockManager };
 });
 
 vi.mock('socket.io-client', () => {
   return {
-    io: vi.fn(() => mockSocket),
+    io: vi.fn(() => ({ io: mockManager })),
   };
 });
 
@@ -50,6 +52,11 @@ import {
   useChatSocket,
   gameSocket,
   setOfflineGameRouter,
+  getGamesSocket,
+  getChatsSocket,
+  getLeaderboardsSocket,
+  getFriendsSock,
+  getClansSock,
 } from './socket';
 
 // Trigger lazy socket initialization so encryption handlers are registered
@@ -171,17 +178,20 @@ describe('socket', () => {
     );
   });
 
-  it('creates the wallet socket on its own manager so wallet failures cannot tear down games/chats', () => {
+  it('creates all namespace sockets from a single shared manager', () => {
+    connectLeaderboardSocket('init-all');
+    connectWalletSocket('init-all');
+
     const ioMock = vi.mocked(io);
-    const walletCall = ioMock.mock.calls.find((c: unknown[]) =>
-      String(c[0]).endsWith('/wallet'),
-    );
-    expect(walletCall).toBeDefined();
-    expect(walletCall![1]).toMatchObject({
-      forceNew: true,
-      transports: ['websocket'],
-      autoConnect: false,
-    });
+    // io() should only be called once — single shared manager, not per-namespace
+    expect(ioMock.mock.calls.length).toBeLessThanOrEqual(1);
+
+    // All namespace getters exist and return sockets
+    expect(getGamesSocket()).toBeDefined();
+    expect(getChatsSocket()).toBeDefined();
+    expect(getLeaderboardsSocket()).toBeDefined();
+    expect(getFriendsSock()).toBeDefined();
+    expect(getClansSock()).toBeDefined();
   });
 
   it('ignores invalid payload structures', () => {

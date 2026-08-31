@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n/context';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { useLiveStatsStore } from '@/features/live-stats';
 import { appConfig } from '@/shared/config/app-config';
 import {
   PageLayout,
@@ -149,6 +150,12 @@ export default function CommunityPageContent({
 }: CommunityPageContentProps) {
   const { messages } = useLanguage();
   const routes = useRoutes();
+  const { stats: liveStats, fetchLiveStats } = useLiveStatsStore();
+
+  useEffect(() => {
+    void fetchLiveStats();
+  }, [fetchLiveStats]);
+
   const t =
     (messages.pages?.community as unknown as PageTranslations) || initialT;
 
@@ -157,6 +164,19 @@ export default function CommunityPageContent({
   const stats = (t?.stats as Record<string, string>) || {};
   const rewardsBanner = (t?.rewardsBanner as Record<string, string>) || {};
   const rewardBadge = (t?.rewardBadge as string) ?? '+1 💎';
+
+  const displayPlayersCount =
+    liveStats.totalUsers > 0
+      ? liveStats.totalUsers.toLocaleString()
+      : liveStats.onlineUsers > 0
+        ? liveStats.onlineUsers.toLocaleString()
+        : '0';
+
+  const displayDiscordCount = (
+    liveStats.platformSubscribers?.['discord'] ??
+    liveStats.totalSubscribers ??
+    0
+  ).toLocaleString();
 
   return (
     <PageLayout>
@@ -204,35 +224,44 @@ export default function CommunityPageContent({
             </div>
 
             <div className="flex flex-wrap gap-6 mt-6 justify-center sm:flex-row max-sm:flex-col max-sm:gap-3">
-              <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 items-center min-w-[160px] flex flex-col">
+              <div
+                data-testid="community-stat-players"
+                className="bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 items-center min-w-[160px] flex flex-col"
+              >
                 <Typography
                   variant="heading"
                   uiSize="lg"
                   style={{ color: '#818CF8' }}
                   className="font-extrabold"
                 >
-                  {stats.players ?? '10K+'}
+                  {displayPlayersCount}
                 </Typography>
                 <Typography variant="caption" alpha="medium">
                   {stats.playersLabel ?? 'Active Players'}
                 </Typography>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 items-center min-w-[160px] flex flex-col">
+              <div
+                data-testid="community-stat-discord"
+                className="bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 items-center min-w-[160px] flex flex-col"
+              >
                 <Typography
                   variant="heading"
                   uiSize="lg"
                   style={{ color: '#38BDF8' }}
                   className="font-extrabold"
                 >
-                  {stats.discordMembers ?? '5K+'}
+                  {displayDiscordCount}
                 </Typography>
                 <Typography variant="caption" alpha="medium">
                   {stats.discordLabel ?? 'Discord Gamers'}
                 </Typography>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 items-center min-w-[160px] flex flex-col">
+              <div
+                data-testid="community-stat-github"
+                className="bg-white/5 border border-white/10 rounded-2xl px-6 py-3.5 items-center min-w-[160px] flex flex-col"
+              >
                 <Typography
                   variant="heading"
                   uiSize="lg"

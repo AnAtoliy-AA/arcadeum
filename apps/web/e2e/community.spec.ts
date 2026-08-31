@@ -20,8 +20,11 @@ test.describe('Community Page', () => {
     ).toBeVisible();
 
     await expect(page.getByText(/global ecosystem/i)).toBeVisible();
-    await expect(page.getByText(/10K\+/i)).toBeVisible();
-    await expect(page.getByText(/5K\+/i)).toBeVisible();
+    await expect(page.getByTestId('community-stat-players')).toBeVisible();
+    await expect(page.getByTestId('community-stat-discord')).toBeVisible();
+    await expect(page.getByTestId('community-stat-github')).toBeVisible();
+    await expect(page.getByText(/active players/i)).toBeVisible();
+    await expect(page.getByText(/discord gamers/i)).toBeVisible();
   });
 
   test('should display grid with all community networks', async ({ page }) => {

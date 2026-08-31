@@ -115,7 +115,7 @@ export const by = {
     featureProgressDetail: 'статыстыка, сябры і дасягненні застаюцца.',
     proof:
       'На гэтым тыдні далучылася {{count}} гульцоў — паглядзіце, хто ў сетцы ў Гульнях.',
-    proofCount: '240 000+',
+    proofCount: '',
     footHome: '← Назад на галоўную',
     footGames: 'Гульні',
     footHelp: 'Патрэбна дапамога?',

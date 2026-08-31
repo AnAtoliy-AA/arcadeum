@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
+import { useLiveStatsStore } from '@/features/live-stats';
 import type { AuthBrandLabels } from '../types';
 import { CheckGlyph, SparkleGlyph } from './AuthProviderIcons';
 
@@ -74,6 +76,19 @@ function BrandHero({
   brand: AuthBrandLabels;
   className?: string;
 }) {
+  const { stats, fetchLiveStats } = useLiveStatsStore();
+
+  useEffect(() => {
+    void fetchLiveStats();
+  }, [fetchLiveStats]);
+
+  const displayProofCount =
+    stats.totalUsers > 0
+      ? stats.totalUsers.toLocaleString()
+      : stats.onlineUsers > 0
+        ? stats.onlineUsers.toLocaleString()
+        : brand.proofCount || '0';
+
   return (
     <div
       className={`flex flex-col items-stretch gap-5 max-w-[680px] self-center w-full ${className ?? ''}`}
@@ -174,7 +189,7 @@ function BrandHero({
         >
           {brand.proofBefore}
           <Typography variant="body" uiSize="sm" weight="600">
-            {brand.proofCount}
+            {displayProofCount}
           </Typography>
           {brand.proofAfter}
         </Typography>

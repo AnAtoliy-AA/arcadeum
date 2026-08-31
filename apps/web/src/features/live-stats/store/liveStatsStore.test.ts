@@ -6,6 +6,10 @@ describe('liveStatsStore', () => {
     useLiveStatsStore.setState({
       stats: {
         onlineUsers: 1,
+        totalUsers: 10,
+        totalMatches: 20,
+        totalSubscribers: 5,
+        platformSubscribers: { discord: 3 },
         activeGames: 0,
         waitingRooms: 0,
         matchesToday: 0,

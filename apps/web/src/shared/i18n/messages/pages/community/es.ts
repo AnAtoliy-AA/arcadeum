@@ -5,9 +5,9 @@ export const communityEs = {
     'Comparte estrategias, participa en eventos comunitarios y conecta con jugadores en todos nuestros canales sociales y de la comunidad.',
   badge: 'Ecosistema Global',
   stats: {
-    players: '10K+',
+    players: '',
     playersLabel: 'Jugadores Activos',
-    discordMembers: '5K+',
+    discordMembers: '',
     discordLabel: 'Miembros en Discord',
     githubStars: 'Open Source',
     githubLabel: 'Impulsado por la comunidad',

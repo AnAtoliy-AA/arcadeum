@@ -7,6 +7,10 @@ import {
   type PlayerStatRecordDocument,
 } from '../schemas/player-stat-record.schema';
 import { User, type UserDocument } from '../../auth/schemas/user.schema';
+import {
+  SocialRewardClaim,
+  type SocialRewardClaimDocument,
+} from '../../social-rewards/schemas/social-reward-claim.schema';
 import { GamesRealtimeService } from '../games.realtime.service';
 import {
   OCI_CONNECTION,
@@ -44,6 +48,9 @@ export class LiveStatsService {
     @Optional()
     @InjectModel(User.name, ATLAS_CONNECTION)
     private readonly userModel?: Model<UserDocument>,
+    @Optional()
+    @InjectModel(SocialRewardClaim.name)
+    private readonly claimModel?: Model<SocialRewardClaimDocument>,
   ) {}
 
   async getLiveStats(): Promise<LiveStatsResponse> {
@@ -69,6 +76,10 @@ export class LiveStatsService {
       gameWeekAggregation,
       roomDayAggregation,
       roomWeekAggregation,
+      totalUsers,
+      totalMatches,
+      totalSubscribers,
+      socialClaimAgg,
     ] = await Promise.all([
       this.roomModel
         .countDocuments({ ...baseRoomFilter, status: 'in_progress' })
@@ -136,6 +147,30 @@ export class LiveStatsService {
           { $group: { _id: '$gameId', matches: { $sum: 1 } } },
         ])
         .exec(),
+      this.userModel
+        ? this.userModel
+            .countDocuments()
+            .exec()
+            .catch(() => 0)
+        : Promise.resolve(0),
+      this.playerStatModel
+        .countDocuments()
+        .exec()
+        .catch(() => 0),
+      this.claimModel
+        ? this.claimModel
+            .countDocuments()
+            .exec()
+            .catch(() => 0)
+        : Promise.resolve(0),
+      this.claimModel
+        ? this.claimModel
+            .aggregate<{ _id: string; count: number }>([
+              { $group: { _id: '$platform', count: { $sum: 1 } } },
+            ])
+            .exec()
+            .catch(() => [])
+        : Promise.resolve([]),
     ]);
 
     const matchesToday = Math.max(statMatchesToday, completedRoomsToday);
@@ -242,8 +277,19 @@ export class LiveStatsService {
     const realSockets = this.realtimeService.getConnectedSocketsCount();
     const onlineUsers = Math.max(realUsers, realSockets);
 
+    const platformSubscribers: Record<string, number> = {};
+    for (const item of socialClaimAgg) {
+      if (item._id) {
+        platformSubscribers[item._id] = item.count;
+      }
+    }
+
     return {
       onlineUsers,
+      totalUsers: totalUsers ?? 0,
+      totalMatches: totalMatches ?? 0,
+      totalSubscribers: totalSubscribers ?? 0,
+      platformSubscribers,
       activeGames,
       waitingRooms,
       matchesToday,

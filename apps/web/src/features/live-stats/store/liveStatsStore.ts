@@ -30,6 +30,10 @@ export interface LiveActivityItem {
 
 export interface LiveStatsData {
   onlineUsers: number;
+  totalUsers: number;
+  totalMatches: number;
+  totalSubscribers: number;
+  platformSubscribers: Record<string, number>;
   activeGames: number;
   waitingRooms: number;
   matchesToday: number;
@@ -40,6 +44,10 @@ export interface LiveStatsData {
 
 const DEFAULT_STATS: LiveStatsData = {
   onlineUsers: 0,
+  totalUsers: 0,
+  totalMatches: 0,
+  totalSubscribers: 0,
+  platformSubscribers: {},
   activeGames: 0,
   waitingRooms: 0,
   matchesToday: 0,

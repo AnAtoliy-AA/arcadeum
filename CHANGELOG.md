@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.14] - 2026-08-31
+
+### Added
+- replace hardcoded user and subscriber counts with live real numbers (ARC-710) (ARC-710)
+
+
 ## [1.27.13] - 2026-08-31
 
 ### Added

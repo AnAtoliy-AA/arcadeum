@@ -42,6 +42,7 @@ const NotificationBell = dynamic(
     ),
   { ssr: false },
 );
+import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
 import { LivePulseBadge, LiveActivityPopover } from '@/features/live-stats';
 
 import {
@@ -131,6 +132,13 @@ export function HeaderInteractive({
             {isAuthenticated && (
               <HeaderMobileHidden>{balanceChip}</HeaderMobileHidden>
             )}
+
+            <HeaderMobileHidden>
+              <LanguageSwitcher
+                data-testid="header-language-switcher"
+                className="header-language-switcher"
+              />
+            </HeaderMobileHidden>
 
             {isAuthenticated && (
               <HeaderMobileHidden>

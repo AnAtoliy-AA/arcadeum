@@ -1,9 +1,11 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { shareLink, buildChallengeShareText } from '@/shared/lib/share';
 import { trackInviteShared } from '@/shared/analytics/funnel';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
@@ -32,6 +34,7 @@ export function PostGameSuggestions({
   onChallengeShared,
 }: PostGameSuggestionsProps) {
   const { t } = useTranslation();
+  const routes = useRoutes();
   const { sm } = useMediaQuery();
   const [challengeCopied, setChallengeCopied] = useState(false);
 
@@ -125,6 +128,19 @@ export function PostGameSuggestions({
             {t('games.common.postGame.playAnother')}
           </Button>
         )}
+
+        <Link
+          href={routes.rewards}
+          className="flex items-center justify-between rounded-xl border border-amber-400/30 bg-amber-400/10 px-3.5 py-2.5 text-xs text-amber-300 no-underline transition-all duration-200 hover:bg-amber-400/20"
+          data-testid="post-game-rewards-prompt"
+        >
+          <span className="font-semibold">
+            💎 {t('games.common.postGame.rewardsPrompt')}
+          </span>
+          <span className="font-bold">
+            {t('games.common.postGame.rewardsClaim')} →
+          </span>
+        </Link>
       </div>
     </div>
   );

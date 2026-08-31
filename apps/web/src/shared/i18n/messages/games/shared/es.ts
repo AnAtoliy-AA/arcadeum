@@ -132,6 +132,8 @@ export const esMessages = {
       shareResult: 'Compartir Resultado',
       playAnother: 'Jugar Otra Partida',
       linkCopied: '¡Enlace copiado!',
+      rewardsPrompt: '¿Necesitas más gemas? ¡Suscríbete a nuestras redes!',
+      rewardsClaim: 'Reclamar',
     },
     deleteRoom: {
       button: 'Eliminar sala',

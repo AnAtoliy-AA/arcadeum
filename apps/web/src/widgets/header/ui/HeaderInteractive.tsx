@@ -110,6 +110,11 @@ export function HeaderInteractive() {
         icon: <MusicIcon size={16} />,
       },
       {
+        href: routes.rewards,
+        label: t('navigation.rewardsTab'),
+        icon: <GiftIcon size={16} />,
+      },
+      {
         href: routes.shop,
         label: t('navigation.shopTab'),
         icon: <GiftIcon size={16} />,

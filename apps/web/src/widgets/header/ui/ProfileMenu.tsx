@@ -186,6 +186,20 @@ export default function ProfileMenu() {
         )}
 
         <DropdownLink
+          href={routes.rewards}
+          onClick={closeMenu}
+          data-testid="header-rewards-link"
+          icon={<GiftIcon size={18} />}
+        >
+          <span className="flex items-center justify-between w-full">
+            <span>{t('navigation.rewardsTab')}</span>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+              FREE GEMS
+            </span>
+          </span>
+        </DropdownLink>
+
+        <DropdownLink
           href={routes.wallet}
           onClick={closeMenu}
           data-testid="header-wallet-link"

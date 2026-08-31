@@ -75,5 +75,12 @@ export const communityEn = {
         'Connect with Arcadeum professionally, read company updates, and explore opportunities.',
     },
   },
+  rewardsBanner: {
+    title: 'Earn Free Gems by Joining Our Channels',
+    description:
+      'Subscribe or follow any official channel to claim gems instantly',
+    cta: 'Claim Rewards',
+  },
+  rewardBadge: '+1 💎',
   comingSoon: 'Community hub is coming soon. Stay tuned!',
 };

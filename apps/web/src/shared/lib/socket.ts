@@ -52,6 +52,7 @@ let _leaderboardsSocket: AuthenticatedSocket | null = null;
 let _friendsSock: AuthenticatedSocket | null = null;
 let _walletSock: AuthenticatedSocket | null = null;
 let _clansSock: AuthenticatedSocket | null = null;
+let _notificationsSocket: AuthenticatedSocket | null = null;
 
 export function getGamesSocket(): AuthenticatedSocket {
   if (!_gamesSocket) {
@@ -72,7 +73,9 @@ export function getChatsSocket(): AuthenticatedSocket {
 
 export function getLeaderboardsSocket(): AuthenticatedSocket {
   if (!_leaderboardsSocket) {
-    _leaderboardsSocket = getManager().socket('/leaderboards') as AuthenticatedSocket;
+    _leaderboardsSocket = getManager().socket(
+      '/leaderboards',
+    ) as AuthenticatedSocket;
     guardEmit(_leaderboardsSocket);
   }
   return _leaderboardsSocket;
@@ -100,6 +103,16 @@ export function getClansSock(): AuthenticatedSocket {
     guardEmit(_clansSock);
   }
   return _clansSock;
+}
+
+export function getNotificationsSocket(): AuthenticatedSocket {
+  if (!_notificationsSocket) {
+    _notificationsSocket = getManager().socket(
+      '/notifications',
+    ) as AuthenticatedSocket;
+    guardEmit(_notificationsSocket);
+  }
+  return _notificationsSocket;
 }
 
 // Guard against emit() calls on a socket whose transport was never
@@ -202,6 +215,7 @@ export function connectSockets(token: string | null | undefined): void {
   applyAuth(getChatsSocket(), token);
   applyAuth(getFriendsSock(), token);
   applyAuth(getClansSock(), token);
+  applyAuth(getNotificationsSocket(), token);
 
   if (!getGamesSocket().connected) {
     getGamesSocket().connect();
@@ -214,6 +228,9 @@ export function connectSockets(token: string | null | undefined): void {
   }
   if (!getClansSock().connected) {
     getClansSock().connect();
+  }
+  if (!getNotificationsSocket().connected) {
+    getNotificationsSocket().connect();
   }
 }
 
@@ -314,6 +331,9 @@ export function disconnectSockets(): void {
   if (_clansSock) {
     _clansSock.disconnect();
   }
+  if (_notificationsSocket) {
+    _notificationsSocket.disconnect();
+  }
 
   if (_gamesSocket) _gamesSocket.auth = {};
   if (_chatsSocket) _chatsSocket.auth = {};
@@ -321,6 +341,7 @@ export function disconnectSockets(): void {
   if (_friendsSock) _friendsSock.auth = {};
   if (_walletSock) _walletSock.auth = {};
   if (_clansSock) _clansSock.auth = {};
+  if (_notificationsSocket) _notificationsSocket.auth = {};
   resetEncryptionKey();
 }
 
@@ -347,6 +368,10 @@ export function getWalletSocketRef(): Socket {
 
 export function getClansSocketRef(): Socket {
   return getClansSock();
+}
+
+export function getNotificationSocketRef(): Socket {
+  return getNotificationsSocket();
 }
 
 // Backward-compatible exports — lazily delegate to actual socket instances
@@ -426,6 +451,9 @@ export const leaderboardSocket: Socket = createLazySocket(
 export const friendsSocket: Socket = createLazySocket(getFriendsSock);
 export const walletSocket: Socket = createLazySocket(getWalletSock);
 export const clansSocket: Socket = createLazySocket(getClansSock);
+export const notificationSocket: Socket = createLazySocket(
+  getNotificationsSocket,
+);
 
 // Expose sockets to window for E2E testing.
 // window.isPlaywright is set by Playwright's addInitScript() before any
@@ -457,4 +485,5 @@ export {
   useChatSocket,
   useLeaderboardSocket,
   useFriendsSocket,
+  useNotificationSocket,
 } from './socket-hooks';

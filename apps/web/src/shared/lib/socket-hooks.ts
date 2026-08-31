@@ -5,6 +5,7 @@ import {
   getFriendsSock,
   getGamesSocket,
   getLeaderboardsSocket,
+  getNotificationsSocket,
 } from './socket';
 
 type SocketEventHandler = (payload: unknown) => void;
@@ -71,6 +72,19 @@ export function useFriendsSocket(
 ): void {
   useEffect(() => {
     const s = getFriendsSock();
+    s.on(event, handler);
+    return () => {
+      s.off(event, handler);
+    };
+  }, [event, handler]);
+}
+
+export function useNotificationSocket(
+  event: string,
+  handler: SocketEventHandler,
+): void {
+  useEffect(() => {
+    const s = getNotificationsSocket();
     s.on(event, handler);
     return () => {
       s.off(event, handler);

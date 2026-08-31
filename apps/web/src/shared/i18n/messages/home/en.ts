@@ -1,9 +1,9 @@
 export const en = {
-  kicker: 'Free online board games',
+  kicker: 'Free online board & mini-games',
   tagline:
-    '{{appName}} is the ultimate platform to play free board games online with friends or solo vs AI — Battleship, strategy, cards, and more.',
+    '{{appName}} is the ultimate platform to play free board games, card games, and multiplayer mini-games online with friends or solo vs AI.',
   description:
-    'Enjoy a wide variety of free board games and tabletop experiences online. Challenge intelligent bots, create real-time game rooms, invite your friends, and let {{appName}} handle rules, scoring, and turns so you can focus on the fun.',
+    'Enjoy a wide variety of free board games, card games, and quick mini-games online. Challenge intelligent bots, create real-time game rooms, invite your friends, and let {{appName}} handle rules, scoring, and turns so you can focus on the fun.',
   primaryCtaLabel: 'Get started',
   playWithBotsLabel: 'Play vs AI',
   defaultRoomName: "{{name}}'s game #{{number}}",
@@ -12,12 +12,12 @@ export const en = {
   supportCtaLabel: 'Support the developers',
   downloadsTitle: 'Install Arcadeum',
   pwaDescription:
-    'Install {{appName}} as a Web App on your device for the ultimate board game experience. Same performance, more convenience.',
+    'Install {{appName}} as a Web App on your device for the ultimate online gaming experience. Same performance, more convenience.',
   downloadsDescription: 'Grab the latest builds directly from the web app.',
   downloadsIosLabel: 'Download for iOS',
   downloadsAndroidLabel: 'Download for Android',
   gamesTitle: 'Featured Games',
-  gamesSubtitle: 'Explore our growing library of tabletop experiences',
+  gamesSubtitle: 'Explore our growing library of board, card, and mini-games',
   gamePlayButton: 'Play now',
   gameTryDemo: 'Try demo',
   gameRulesButton: 'Game Rules',
@@ -41,7 +41,7 @@ export const en = {
   // Features section
   featuresTitle: 'Why {{appName}}?',
   featuresSubtitle:
-    'Everything you need to play board games online with friends',
+    'Everything you need to play board games, card games, and mini-games online with friends',
   featureBotsTitle: 'Play vs AI & Bots',
   featureBotsDescription:
     'Practice solo or challenge intelligent bots at easy, medium, or hard difficulties whenever friends are offline.',

@@ -40,10 +40,28 @@ const GAMES = [
   {
     id: 'chess_v1',
     name: 'Chess',
-    description: 'Classic strategy game for two players.',
+    description: 'Classic strategy game for two players with AI bot support.',
     players: '2',
     duration: '15 min',
     href: '/games/chess',
+  },
+  {
+    id: 'checkers_v1',
+    name: 'Checkers',
+    description:
+      'Classic 8×8 board game with forced captures and king promotion.',
+    players: '2',
+    duration: '10 min',
+    href: '/games/checkers',
+  },
+  {
+    id: 'game_2048',
+    name: '2048',
+    description:
+      'Slide and merge numbered tiles on a 4×4 grid to reach the 2048 tile.',
+    players: '1',
+    duration: '5 min',
+    href: '/games/2048',
   },
   {
     id: 'glimworm_v1',
@@ -52,7 +70,7 @@ const GAMES = [
       'Real-time glow-worm snake arena. Slither, survive, and eat the lights.',
     players: '2–10',
     duration: '90 sec',
-    href: '/games',
+    href: '/games/glimworm',
   },
 ];
 
@@ -150,7 +168,8 @@ export function NoscriptFallback() {
             Get Started
           </h2>
           <p className="mb-4">
-            Play free online board games with friends. No download required.
+            Play free online board games, card games, and multiplayer mini-games
+            with friends. No download required.
           </p>
           <Link
             href="/en/games"

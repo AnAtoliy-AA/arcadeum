@@ -2,6 +2,8 @@ import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import HomeHero from './components/HomeHero';
 import { NoscriptFallback } from './components/NoscriptFallback';
 import { ServerGamesNav } from './components/ServerGamesNav';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { buildHomeFaqJsonLd } from '@/shared/seo/homeFaqJsonLd';
 import type { Locale } from '@/shared/i18n';
 
 import dynamic from 'next/dynamic';
@@ -42,7 +44,10 @@ const InstallAppCta = dynamic(() =>
 export default function HomePage({ locale }: { locale: Locale }) {
   return (
     <PageLayout data-testid="page-layout">
-      {/* Server-rendered navigation for AI agents */}
+      <JsonLd
+        id={`json-ld-home-faq-${locale}`}
+        data={buildHomeFaqJsonLd(locale)}
+      />
       <ServerGamesNav />
       <HomeHero locale={locale} />
       {/* Live activity social proof (roadmap 7D) */}

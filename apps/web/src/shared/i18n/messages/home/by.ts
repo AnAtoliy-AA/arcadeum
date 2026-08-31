@@ -90,9 +90,12 @@ export const by = {
   liveSubtitle:
     'Матчы ў прамым эфіры, актыўныя гульцы і адкрытыя пакоі прама зараз',
   liveBadgeOnline: 'Зараз анлайн',
-  liveBadgeActiveGames: 'Ідзе матчаў',
+  liveBadgeActiveGames: 'Ідуць матчы',
   liveBadgeWaitingRooms: 'Адкрытыя пакоі',
-  liveBadgeMatchesToday: 'Згуляна сёння',
+  liveBadgeWaitingPlayers: 'Шукаюць матч',
+  liveWaitingRoomsSub: 'Пакоі чакаюць гульцоў',
+  liveWaitingPlayersSub: 'Гульцы чакаюць у чарзе',
+  liveBadgeMatchesToday: 'Матчаў сёння',
   liveOpenLobbiesTitle: 'Адкрытыя пакоі',
   liveOpenLobbiesSubtitle:
     'Далучайцеся да адкрытых пакояў або назірайце за бягучымі бітвамі',

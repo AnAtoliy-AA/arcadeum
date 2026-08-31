@@ -12,6 +12,7 @@ describe('liveStatsStore', () => {
         platformSubscribers: { discord: 3 },
         activeGames: 0,
         waitingRooms: 0,
+        waitingPlayers: 0,
         matchesToday: 0,
         popularGames: [],
         openRooms: [],
@@ -60,6 +61,7 @@ describe('liveStatsStore', () => {
         onlineUsers: 250,
         activeGames: 30,
         waitingRooms: 8,
+        waitingPlayers: 5,
         matchesToday: 150,
         popularGames: [
           { gameId: 'chess_v1', activePlayers: 50, matchesCount: 40 },

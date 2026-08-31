@@ -33,6 +33,7 @@ export interface LiveStatsResponse {
   platformSubscribers: Record<string, number>;
   activeGames: number;
   waitingRooms: number;
+  waitingPlayers: number;
   matchesToday: number;
   popularGames: LivePopularGame[];
   openRooms: LiveRoomItem[];

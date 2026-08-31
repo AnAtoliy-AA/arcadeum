@@ -36,6 +36,7 @@ export interface LiveStatsData {
   platformSubscribers: Record<string, number>;
   activeGames: number;
   waitingRooms: number;
+  waitingPlayers: number;
   matchesToday: number;
   popularGames: LivePopularGame[];
   openRooms: LiveRoomItem[];
@@ -50,6 +51,7 @@ const DEFAULT_STATS: LiveStatsData = {
   platformSubscribers: {},
   activeGames: 0,
   waitingRooms: 0,
+  waitingPlayers: 0,
   matchesToday: 0,
   popularGames: [],
   openRooms: [],

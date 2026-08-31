@@ -16,6 +16,7 @@ import {
   OCI_CONNECTION,
   ATLAS_CONNECTION,
 } from '../../common/providers/mongo-connections.provider';
+import { GameRoomsMatchmakingService } from '../rooms/game-rooms.matchmaking.service';
 import type {
   LiveStatsResponse,
   LivePopularGame,
@@ -51,6 +52,8 @@ export class LiveStatsService {
     @Optional()
     @InjectModel(SocialRewardClaim.name)
     private readonly claimModel?: Model<SocialRewardClaimDocument>,
+    @Optional()
+    private readonly matchmakingService?: GameRoomsMatchmakingService,
   ) {}
 
   async getLiveStats(): Promise<LiveStatsResponse> {
@@ -284,6 +287,12 @@ export class LiveStatsService {
       }
     }
 
+    let waitingPlayers = 0;
+    if (this.matchmakingService) {
+      const overview = this.matchmakingService.getQueueOverview();
+      waitingPlayers = Object.values(overview).reduce((sum, n) => sum + n, 0);
+    }
+
     return {
       onlineUsers,
       totalUsers: totalUsers ?? 0,
@@ -292,6 +301,7 @@ export class LiveStatsService {
       platformSubscribers,
       activeGames,
       waitingRooms,
+      waitingPlayers,
       matchesToday,
       popularGames,
       openRooms,

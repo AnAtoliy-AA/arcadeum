@@ -92,6 +92,9 @@ export const es = {
   liveBadgeOnline: 'En línea ahora',
   liveBadgeActiveGames: 'Partidas activas',
   liveBadgeWaitingRooms: 'Salas abiertas',
+  liveBadgeWaitingPlayers: 'Buscando partida',
+  liveWaitingRoomsSub: 'Salas esperando jugadores',
+  liveWaitingPlayersSub: 'Jugadores en cola',
   liveBadgeMatchesToday: 'Partidas hoy',
   liveOpenLobbiesTitle: 'Salas Abiertas',
   liveOpenLobbiesSubtitle:

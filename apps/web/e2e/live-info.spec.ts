@@ -56,6 +56,12 @@ test.describe('Live Platform Info & Online Users', () => {
     const waitingRoomsCounter = page.getByTestId('live-waiting-rooms-counter');
     await expect(waitingRoomsCounter).toBeVisible();
     await expect(waitingRoomsCounter).toContainText(/\d+/);
+
+    const waitingPlayersCounter = page.getByTestId(
+      'live-waiting-players-counter',
+    );
+    await expect(waitingPlayersCounter).toBeVisible();
+    await expect(waitingPlayersCounter).toContainText(/\d+/);
   });
 
   test('should navigate to rooms page filtered by lobby status when clicking open lobbies', async ({

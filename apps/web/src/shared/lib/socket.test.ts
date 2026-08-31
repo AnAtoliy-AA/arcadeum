@@ -57,9 +57,10 @@ import {
   getLeaderboardsSocket,
   getFriendsSock,
   getClansSock,
+  getNotificationsSocket,
+  useNotificationSocket,
 } from './socket';
 
-// Trigger lazy socket initialization so encryption handlers are registered
 connectSockets('init-trigger');
 disconnectSockets();
 
@@ -156,20 +157,17 @@ describe('socket', () => {
     expect(mockSocket.auth).toEqual({});
   });
 
-  it('disconnects games + chat + leaderboards + friends + wallet sockets when connected', () => {
-    // Initialize all 5 lazy socket instances
+  it('disconnects games + chat + leaderboards + friends + wallet + clans + notifications sockets when connected', () => {
     connectSockets('init-all');
     connectLeaderboardSocket('init-all');
     connectWalletSocket('init-all');
-    // Reset mock state for clean assertions
     mockSocket.connected = true;
     (mockSocket.disconnect as unknown as Mock).mockClear();
 
     disconnectSockets();
 
-    expect(mockSocket.disconnect).toHaveBeenCalledTimes(6);
+    expect(mockSocket.disconnect).toHaveBeenCalledTimes(7);
 
-    // Restore default behavior
     (mockSocket.disconnect as unknown as Mock).mockImplementation(
       function (this: { connected: boolean }) {
         this.connected = false;
@@ -183,15 +181,14 @@ describe('socket', () => {
     connectWalletSocket('init-all');
 
     const ioMock = vi.mocked(io);
-    // io() should only be called once — single shared manager, not per-namespace
     expect(ioMock.mock.calls.length).toBeLessThanOrEqual(1);
 
-    // All namespace getters exist and return sockets
     expect(getGamesSocket()).toBeDefined();
     expect(getChatsSocket()).toBeDefined();
     expect(getLeaderboardsSocket()).toBeDefined();
     expect(getFriendsSock()).toBeDefined();
     expect(getClansSock()).toBeDefined();
+    expect(getNotificationsSocket()).toBeDefined();
   });
 
   it('ignores invalid payload structures', () => {
@@ -391,5 +388,23 @@ describe('socket hooks', () => {
     await waitFor(() => {
       expect(handler).toHaveBeenCalledWith('plain-message');
     });
+  });
+
+  it('useNotificationSocket sets up and tears down listener', () => {
+    const handler = vi.fn();
+    const { unmount } = renderHook(() =>
+      useNotificationSocket('notification:new', handler),
+    );
+
+    expect(mockSocket.on).toHaveBeenCalledWith(
+      'notification:new',
+      expect.any(Function),
+    );
+
+    unmount();
+    expect(mockSocket.off).toHaveBeenCalledWith(
+      'notification:new',
+      expect.any(Function),
+    );
   });
 });

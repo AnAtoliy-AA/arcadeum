@@ -83,6 +83,30 @@ describe('TutorialOverlay', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it('clicking close button dismisses the tutorial', async () => {
+    useTutorialStore.setState({ completedAt: {}, dismissedAt: {} });
+    const onClose = renderOverlay();
+    fireEvent.click(screen.getByTestId('tutorial-close-button'));
+    await waitFor(() => {
+      expect(useTutorialStore.getState().hasSeenTutorial('chess_v1')).toBe(
+        true,
+      );
+    });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('clicking blocker dismisses the tutorial', async () => {
+    useTutorialStore.setState({ completedAt: {}, dismissedAt: {} });
+    const onClose = renderOverlay();
+    fireEvent.click(screen.getByTestId('tutorial-blocker'));
+    await waitFor(() => {
+      expect(useTutorialStore.getState().hasSeenTutorial('chess_v1')).toBe(
+        true,
+      );
+    });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it('Escape dismisses without completing', () => {
     useTutorialStore.setState({ completedAt: {}, dismissedAt: {} });
     const onClose = renderOverlay();

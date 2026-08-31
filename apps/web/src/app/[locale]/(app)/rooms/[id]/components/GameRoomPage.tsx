@@ -27,11 +27,7 @@ import { Page } from '@/shared/ui/Page/Page';
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { gameFactory } from '@/features/games/lib/gameFactory';
 import { gameMetadata } from '@/features/games/registry';
-import {
-  TutorialOverlay,
-  hasTutorialSteps,
-  useTutorialStore,
-} from '@/features/tutorial';
+import { TutorialOverlay, hasTutorialSteps } from '@/features/tutorial';
 import type { GameInitialData, GameSessionSummary } from '@/shared/types/games';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 
@@ -230,20 +226,7 @@ export default function GameRoomPage({
     return mapToGameType(gameId);
   }, [room]);
 
-  // Auto-open the interactive tutorial on a player's first visit to any
-  // room of this game (spectators and seen/skipped players are excluded).
-  const tutorialAutoOpenRef = useRef<string | null>(null);
   const supportsTutorial = !!room?.gameId && hasTutorialSteps(room.gameId);
-  useEffect(() => {
-    const gameId = room?.gameId;
-    if (!gameId || !roomId || !supportsTutorial || roomMode !== 'play') return;
-    const autoKey = `${roomId}:${gameId}`;
-    if (tutorialAutoOpenRef.current === autoKey) return;
-    tutorialAutoOpenRef.current = autoKey;
-    if (!useTutorialStore.getState().hasSeenTutorial(gameId)) {
-      queueMicrotask(() => setShowTutorial(true));
-    }
-  }, [roomId, room?.gameId, roomMode, supportsTutorial]);
 
   const [isGameReady, setIsGameReady] = useState(false);
   const [gameLoading, setGameLoading] = useState(false);

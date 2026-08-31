@@ -50,6 +50,7 @@ export const enMessages = {
       completeTitle: 'Tutorial complete!',
       completeBody:
         'Nice — you know the basics of {{game}} now. Good luck at the table!',
+      close: 'Close',
     },
   },
   rooms: {

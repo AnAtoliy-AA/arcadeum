@@ -50,6 +50,7 @@ export const ruMessages = {
       completeTitle: 'Обучение завершено!',
       completeBody:
         'Отлично — теперь вы знаете основы игры {{game}}. Удачи за столом!',
+      close: 'Закрыть',
     },
   },
   rooms: {

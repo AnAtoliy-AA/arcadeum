@@ -1,67 +1,53 @@
 import { expect } from '@playwright/test';
-import { test, ensureNavigationVisible } from './fixtures/test-utils';
-import { navigateTo } from './fixtures/test-utils';
+import {
+  test,
+  ensureNavigationVisible,
+  navigateTo,
+} from './fixtures/test-utils';
 
 test.describe('Language Switching', () => {
   test('should change language and persist across pages', async ({ page }) => {
-    // 1. Start at Home Page in English
     await navigateTo(page, '/');
     await ensureNavigationVisible(page);
     await expect(
       page.getByRole('link', { name: /rooms/i }).first(),
     ).toBeVisible();
 
-    // 2. Go to Settings and change to Russian
     await navigateTo(page, '/settings');
-    // Verify English is selected
-    await expect(page.getByTestId('lang-btn-en')).toHaveAttribute(
+    await expect(page.getByTestId('lang-btn-en').first()).toHaveAttribute(
       'aria-pressed',
       'true',
     );
 
-    // Switch to Russian using the page button
-    await page.getByTestId('lang-btn-ru').click();
+    await page.getByTestId('lang-btn-ru').first().click();
 
-    // Verify page content changed to Russian using polling for stability
     await expect(async () => {
       const settingsTitle = page.getByRole('heading', { level: 1 });
       const text = await settingsTitle.innerText();
       if (!/настройки/i.test(text)) {
         throw new Error(`Not yet Russian. Current text: "${text}"`);
       }
-    }).toPass({});
+    }).toPass();
 
-    // 4. Navigate back to Home and verify it is translated
     await navigateTo(page, '/');
 
     await ensureNavigationVisible(page);
-    // Verify the nav link text changed to Russian
     await expect(
       page.getByRole('link', { name: /комнаты/i }).first(),
-    ).toBeVisible({});
+    ).toBeVisible();
 
-    // 5. Reload page and verify language persists
-    // Use domcontentloaded to avoid hanging on ChunkLoadError in slow CI.
-    // The data-hydrated check below handles waiting for full hydration.
-    await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
-    // Wait for hydration after reload
-    await expect(page.locator('html')).toHaveAttribute(
-      'data-hydrated',
-      'true',
-      {},
-    );
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
 
     await ensureNavigationVisible(page);
     await expect(
       page.getByRole('link', { name: /комнаты/i }).first(),
-    ).toBeVisible({});
+    ).toBeVisible();
 
-    // 6. Change back to English
     await navigateTo(page, '/settings');
-    await page.getByTestId('lang-btn-en').click();
+    await page.getByTestId('lang-btn-en').first().click();
     await expect(page.getByRole('heading', { level: 1 })).toContainText(
       /settings/i,
-      {},
     );
   });
 });

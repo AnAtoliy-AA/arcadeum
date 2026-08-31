@@ -15,6 +15,7 @@
 
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
+const fs = require('fs');
 const {
   readdir,
   unlink,
@@ -671,6 +672,47 @@ const GAMES = [
   },
 ];
 
+const FALLBACK_GAME_SLUGS = [
+  'critical_v1',
+  'sea_battle_v1',
+  'texas_holdem_v1',
+  'glimworm_v1',
+  'tic_tac_toe_v1',
+  'cascade_v1',
+  'chess_v1',
+  'checkers_v1',
+  'cat_dash_v1',
+  'backgammon_v1',
+  'hearts_v1',
+  'spades_v1',
+  'go_v1',
+  'pachisi_v1',
+];
+
+function loadBackendGameCatalogSlugs() {
+  try {
+    const catalogPath = path.join(
+      rootDir,
+      'apps',
+      'be',
+      'src',
+      'games',
+      'games.catalog.ts',
+    );
+    const content = fs.readFileSync(catalogPath, 'utf8');
+    const matches = Array.from(
+      content.matchAll(/gameId:\s*'([^']+)'/g),
+      (m) => m[1],
+    );
+    if (matches.length > 0) {
+      return Array.from(new Set(matches));
+    }
+  } catch {}
+  return FALLBACK_GAME_SLUGS;
+}
+
+const ALL_GAME_SLUGS = loadBackendGameCatalogSlugs();
+
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
@@ -1023,11 +1065,10 @@ async function recordSession(
     const context = await browser.newContext(contextOptions);
     const sessionStartTime = Date.now();
 
-    // Inject bot auth tokens so quickplay works as an authenticated user
-    if (CONFIG.botToken) {
-      await context.addInitScript(
-        ({ accessToken, refreshToken }) => {
-          try {
+    await context.addInitScript(
+      ({ accessToken, refreshToken, gameSlugs }) => {
+        try {
+          if (accessToken) {
             const session = {
               accessToken,
               refreshToken,
@@ -1038,10 +1079,28 @@ async function recordSession(
             if (refreshToken) {
               localStorage.setItem('arcadeum_refresh_token', refreshToken);
             }
-          } catch {}
-        },
-        { accessToken: CONFIG.botToken, refreshToken: CONFIG.botRefreshToken },
-      );
+          }
+          const completedMap = {};
+          (gameSlugs || []).forEach((slug) => {
+            completedMap[slug] = Date.now();
+          });
+          localStorage.setItem(
+            'arcadeum_tutorials_v1',
+            JSON.stringify({
+              state: { completedAt: completedMap, dismissedAt: completedMap },
+              version: 0,
+            }),
+          );
+        } catch {}
+      },
+      {
+        accessToken: CONFIG.botToken,
+        refreshToken: CONFIG.botRefreshToken,
+        gameSlugs: ALL_GAME_SLUGS,
+      },
+    );
+
+    if (CONFIG.botToken) {
       log('info', `${label}: bot auth tokens injected into browser context`);
     } else {
       log(
@@ -1055,7 +1114,33 @@ async function recordSession(
     const gameUrl = `${CONFIG.baseUrl}${game.url}`;
     await page.goto(gameUrl, { waitUntil: 'networkidle', timeout: 30000 });
 
-    // Step 1: Wait for and click "Play vs AI now" button
+    const dismissAnyOverlays = async () => {
+      try {
+        const dismissSelectors = [
+          '[data-testid="tutorial-close-button"]',
+          '[data-testid="tutorial-skip-button"]',
+          '[data-testid="tutorial-blocker"]',
+          '[data-testid="close-rules-button"]',
+          '[data-testid="close-modal"]',
+          '[data-testid="modal-close-button"]',
+          'button[aria-label*="Close"]',
+          'button:has-text("✕")',
+        ];
+        for (const sel of dismissSelectors) {
+          const loc = page.locator(sel);
+          if ((await loc.count()) > 0 && (await loc.first().isVisible())) {
+            await loc
+              .first()
+              .click({ force: true })
+              .catch(() => {});
+            await sleep(200);
+          }
+        }
+      } catch {}
+    };
+
+    await dismissAnyOverlays();
+
     log('info', `${label}: looking for Play vs AI button...`);
     const quickplayBtn = page
       .locator('[data-testid="quickplay-ai-button"]')
@@ -1064,24 +1149,12 @@ async function recordSession(
     await quickplayBtn.click({ force: true });
     log('info', `${label}: clicked Play vs AI`);
 
-    // Step 2: Wait for lobby, dismiss rules modal if present, then select random theme and click "Start Game"
     log('info', `${label}: looking for Start Game button...`);
-    try {
-      const closeRules = page
-        .locator(
-          'button[aria-label*="Close"], button:has-text("✕"), [data-testid="close-modal"], [data-testid="close-rules-button"]',
-        )
-        .first();
-      if ((await closeRules.count()) > 0 && (await closeRules.isVisible())) {
-        await closeRules.click({ force: true });
-        await sleep(400);
-      }
-    } catch {}
+    await dismissAnyOverlays();
 
     const startBtn = page.locator('[data-testid="start-with-bots-button"]');
     await startBtn.waitFor({ state: 'visible', timeout: 15000 });
 
-    // Select a random theme if available (Cascade has variant buttons)
     const themes = await page
       .locator('[data-testid^="cascade-variant-"]')
       .all();
@@ -1095,19 +1168,7 @@ async function recordSession(
       await sleep(500);
     }
 
-    // Dismiss any rules modal that might have opened after lobby mount
-    try {
-      const closeRules = page.locator(
-        'button[aria-label*="Close"], button:has-text("✕"), [data-testid="close-modal"], [data-testid="close-rules-button"]',
-      );
-      if ((await closeRules.count()) > 0) {
-        await closeRules
-          .first()
-          .click({ force: true })
-          .catch(() => {});
-        await sleep(300);
-      }
-    } catch {}
+    await dismissAnyOverlays();
 
     const gameplayStartOffsetMs = Date.now() - sessionStartTime;
     await startBtn

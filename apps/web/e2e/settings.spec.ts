@@ -85,8 +85,8 @@ test.describe('Settings Page', () => {
   });
 
   test('should switch languages', async ({ page }) => {
-    const spanishBtn = page.getByTestId('lang-btn-es');
-    const englishBtn = page.getByTestId('lang-btn-en');
+    const spanishBtn = page.getByTestId('lang-btn-es').first();
+    const englishBtn = page.getByTestId('lang-btn-en').first();
 
     await expect(spanishBtn).toBeVisible();
     await spanishBtn.click({ force: true });

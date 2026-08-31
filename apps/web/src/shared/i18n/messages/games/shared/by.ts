@@ -50,6 +50,7 @@ export const byMessages = {
       completeTitle: 'Навучанне завершана!',
       completeBody:
         'Выдатна — цяпер вы ведаеце асновы гульні {{game}}. Поспеху за сталом!',
+      close: 'Закрыць',
     },
   },
   rooms: {

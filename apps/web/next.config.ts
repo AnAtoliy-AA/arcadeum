@@ -144,6 +144,13 @@ const cspConnectSrc = process.env.CSP_CONNECT_SRC
   ? (JSON.parse(process.env.CSP_CONNECT_SRC) as string[])
   : defaultConnectSrc;
 
+// Always include the CDN URL in connect-src so fetch() to tracks.json works,
+// even when CSP_CONNECT_SRC override is set.
+const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL || '';
+if (cdnUrl && !cspConnectSrc.includes(cdnUrl)) {
+  cspConnectSrc.push(cdnUrl);
+}
+
 const cspScriptSrc = [
   "'unsafe-inline'",
   'https://vercel.live',

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.10] - 2026-08-31
+
+### Fixed
+- prevent duplicate language buttons in dom and use first locator (ARC-939) (ARC-939)
+- dismiss tutorial on click and prevent blocking in shorts (ARC-939) (ARC-939)
+
+
 ## [1.27.9] - 2026-08-31
 
 ### Fixed

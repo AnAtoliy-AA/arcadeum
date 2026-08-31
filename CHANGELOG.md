@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.13] - 2026-08-31
+
+### Added
+- add support link to footer resources and update support page link (ARC-709) (ARC-709)
+- add social networks rewards callout to support page (ARC-709) (ARC-709)
+- enhance discoverability across header, community, post-game, and wallet (ARC-709) (ARC-709)
+- implement gem rewards for social network subscriptions (ARC-709) (ARC-709)
+
+### Fixed
+- restore language switcher to header and update e2e tests (ARC-709) (ARC-709)
+
+### Refactored
+- streamline header to 1-row layout and integrate rewards into shop (ARC-709) (ARC-709)
+
+
 ## [1.27.12] - 2026-08-31
 
 ### Added

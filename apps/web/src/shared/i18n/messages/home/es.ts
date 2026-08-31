@@ -94,7 +94,10 @@ export const es = {
   liveBadgeWaitingRooms: 'Salas abiertas',
   liveBadgeWaitingPlayers: 'Buscando partida',
   liveWaitingRoomsSub: 'Salas esperando jugadores',
+  liveWaitingRoomsWithMine: '{{count}} salas abiertas (+{{mine}} tuya)',
+  liveWaitingRoomsOnlyMine: 'Tu sala está esperando jugadores',
   liveWaitingPlayersSub: 'Jugadores en cola',
+  liveWaitingPlayersForGame: '{{count}} buscando en este juego',
   liveBadgeMatchesToday: 'Partidas hoy',
   liveOpenLobbiesTitle: 'Salas Abiertas',
   liveOpenLobbiesSubtitle:

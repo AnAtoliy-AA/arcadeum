@@ -9,10 +9,13 @@ export interface LiveRoomItem {
   id: string;
   gameId: string;
   name: string;
+  hostId: string;
   hostName: string;
   currentPlayers: number;
   maxPlayers: number;
   status: 'lobby' | 'in_progress';
+  hasPassword?: boolean;
+  visibility?: 'public' | 'unlisted' | 'private';
   createdAt: string;
 }
 
@@ -34,6 +37,7 @@ export interface LiveStatsResponse {
   activeGames: number;
   waitingRooms: number;
   waitingPlayers: number;
+  waitingQueues?: Record<string, number>;
   matchesToday: number;
   popularGames: LivePopularGame[];
   openRooms: LiveRoomItem[];

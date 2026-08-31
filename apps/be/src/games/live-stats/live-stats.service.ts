@@ -230,10 +230,13 @@ export class LiveStatsService {
       id: String(r._id),
       gameId: r.gameId,
       name: r.name || `${r.gameId} Arena`,
+      hostId: String(r.hostId),
       hostName: resolveDisplayName(r.hostId),
       currentPlayers: Array.isArray(r.participants) ? r.participants.length : 1,
       maxPlayers: r.maxPlayers || 2,
       status: r.status === 'in_progress' ? 'in_progress' : 'lobby',
+      hasPassword: Boolean(r.passwordHash),
+      visibility: r.visibility,
       createdAt: r.createdAt
         ? new Date(r.createdAt).toISOString()
         : new Date().toISOString(),
@@ -291,9 +294,13 @@ export class LiveStatsService {
     }
 
     let waitingPlayers = 0;
+    let waitingQueues: Record<string, number> = {};
     if (this.matchmakingService) {
-      const overview = this.matchmakingService.getQueueOverview();
-      waitingPlayers = Object.values(overview).reduce((sum, n) => sum + n, 0);
+      waitingQueues = this.matchmakingService.getQueueOverview();
+      waitingPlayers = Object.values(waitingQueues).reduce(
+        (sum, n) => sum + n,
+        0,
+      );
     }
 
     return {
@@ -305,6 +312,7 @@ export class LiveStatsService {
       activeGames,
       waitingRooms,
       waitingPlayers,
+      waitingQueues,
       matchesToday,
       popularGames,
       openRooms,

@@ -94,7 +94,10 @@ export const by = {
   liveBadgeWaitingRooms: 'Адкрытыя пакоі',
   liveBadgeWaitingPlayers: 'Шукаюць матч',
   liveWaitingRoomsSub: 'Пакоі чакаюць гульцоў',
+  liveWaitingRoomsWithMine: '{{count}} адкрытых пакояў (+{{mine}} ваш)',
+  liveWaitingRoomsOnlyMine: 'Ваш пакой чакае гульцоў',
   liveWaitingPlayersSub: 'Гульцы чакаюць у чарзе',
+  liveWaitingPlayersForGame: '{{count}} у пошуку гэтай гульні',
   liveBadgeMatchesToday: 'Матчаў сёння',
   liveOpenLobbiesTitle: 'Адкрытыя пакоі',
   liveOpenLobbiesSubtitle:

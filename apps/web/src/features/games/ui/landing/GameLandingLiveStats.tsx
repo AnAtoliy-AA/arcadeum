@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useLiveStatsStore } from '@/features/live-stats';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { getGamesSocket, connectSocketsAnonymous } from '@/shared/lib/socket';
@@ -14,6 +15,7 @@ interface GameLandingLiveStatsProps {
 export function GameLandingLiveStats({ gameId }: GameLandingLiveStatsProps) {
   const { t } = useTranslation();
   const routes = useRoutes();
+  const { snapshot } = useSessionTokens();
   const { stats, fetchLiveStats, setLiveStats } = useLiveStatsStore();
   const socketRef = useRef(false);
 
@@ -53,15 +55,52 @@ export function GameLandingLiveStats({ gameId }: GameLandingLiveStatsProps) {
     }
   }, [fetchLiveStats, setLiveStats]);
 
-  const matchingOpenRooms = gameId
-    ? stats.openRooms.filter((r) => r.gameId === gameId && r.status === 'lobby')
-        .length
-    : stats.waitingRooms;
+  const currentUserId =
+    snapshot.userId ||
+    (typeof window !== 'undefined'
+      ? localStorage.getItem('arcadeum_anon_id')
+      : null);
 
-  const displayOpenRooms = gameId ? matchingOpenRooms : stats.waitingRooms;
+  const activeGameLobbies = stats.openRooms.filter(
+    (r) =>
+      (!gameId || r.gameId === gameId) &&
+      r.status === 'lobby' &&
+      !r.hasPassword &&
+      r.visibility !== 'private',
+  );
+
+  const myLobbies = activeGameLobbies.filter(
+    (r) => Boolean(currentUserId) && r.hostId === currentUserId,
+  );
+  const otherLobbies = activeGameLobbies.filter(
+    (r) => !currentUserId || r.hostId !== currentUserId,
+  );
+
+  const otherCount = otherLobbies.length;
+  const myCount = myLobbies.length;
+
+  const queuedPlayersCount = gameId
+    ? stats.waitingQueues?.[gameId] ?? 0
+    : stats.waitingPlayers;
+
   const roomsHref = gameId
     ? `${routes.rooms}?status=lobby&gameId=${gameId}`
     : `${routes.rooms}?status=lobby`;
+
+  let lobbyLabel = `${otherCount} ${t('home.liveWaitingRoomsSub')}`;
+  if (myCount > 0 && otherCount > 0) {
+    lobbyLabel = t('home.liveWaitingRoomsWithMine', {
+      count: otherCount,
+      mine: myCount,
+    });
+  } else if (myCount > 0 && otherCount === 0) {
+    lobbyLabel = t('home.liveWaitingRoomsOnlyMine');
+  }
+
+  const playersLabel =
+    gameId && queuedPlayersCount > 0
+      ? t('home.liveWaitingPlayersForGame', { count: queuedPlayersCount })
+      : `${stats.waitingPlayers} ${t('home.liveWaitingPlayersSub')}`;
 
   return (
     <div
@@ -84,10 +123,7 @@ export function GameLandingLiveStats({ gameId }: GameLandingLiveStatsProps) {
         className="flex items-center gap-1.5 rounded-lg bg-indigo-500/10 px-2.5 py-1 font-medium text-indigo-300 border border-indigo-500/20 hover:bg-indigo-500/20 transition-colors"
       >
         <span>🎮</span>
-        <span className="font-bold text-white">{displayOpenRooms}</span>
-        <span className="text-indigo-200">
-          {t('home.liveWaitingRoomsSub')}
-        </span>
+        <span className="text-indigo-200">{lobbyLabel}</span>
       </Link>
 
       <Link
@@ -96,10 +132,7 @@ export function GameLandingLiveStats({ gameId }: GameLandingLiveStatsProps) {
         className="flex items-center gap-1.5 rounded-lg bg-fuchsia-500/10 px-2.5 py-1 font-medium text-fuchsia-300 border border-fuchsia-500/20 hover:bg-fuchsia-500/20 transition-colors"
       >
         <span>👥</span>
-        <span className="font-bold text-white">{stats.waitingPlayers}</span>
-        <span className="text-fuchsia-200">
-          {t('home.liveWaitingPlayersSub')}
-        </span>
+        <span className="text-fuchsia-200">{playersLabel}</span>
       </Link>
 
       <div className="flex items-center gap-1.5 text-slate-400 pl-1">

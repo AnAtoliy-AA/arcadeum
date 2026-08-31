@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.12] - 2026-08-31
+
+### Added
+- update positioning to board, card and mini-games with SEO/AEO/GEO schemas (ARC-708) (ARC-708)
+
+
 ## [1.27.11] - 2026-08-31
 
 ### Fixed

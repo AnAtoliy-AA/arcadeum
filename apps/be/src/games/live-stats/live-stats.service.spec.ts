@@ -19,15 +19,18 @@ describe('LiveStatsService', () => {
   };
   let mockPlayerStatModel: {
     countDocuments: jest.Mock;
+    estimatedDocumentCount: jest.Mock;
     find: jest.Mock;
     aggregate: jest.Mock;
   };
   let mockUserModel: {
     find: jest.Mock;
     countDocuments: jest.Mock;
+    estimatedDocumentCount: jest.Mock;
   };
   let mockClaimModel: {
     countDocuments: jest.Mock;
+    estimatedDocumentCount: jest.Mock;
     aggregate: jest.Mock;
   };
   let mockRealtimeService: {
@@ -69,6 +72,9 @@ describe('LiveStatsService', () => {
       countDocuments: jest.fn().mockReturnValue({
         exec: jest.fn().mockResolvedValue(42),
       }),
+      estimatedDocumentCount: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(42),
+      }),
       find: jest.fn().mockReturnValue({
         sort: jest.fn().mockReturnValue({
           limit: jest.fn().mockReturnValue({
@@ -98,6 +104,9 @@ describe('LiveStatsService', () => {
       countDocuments: jest.fn().mockReturnValue({
         exec: jest.fn().mockResolvedValue(128),
       }),
+      estimatedDocumentCount: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(128),
+      }),
       find: jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
           lean: jest.fn().mockReturnValue({
@@ -120,6 +129,9 @@ describe('LiveStatsService', () => {
 
     mockClaimModel = {
       countDocuments: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(75),
+      }),
+      estimatedDocumentCount: jest.fn().mockReturnValue({
         exec: jest.fn().mockResolvedValue(75),
       }),
       aggregate: jest.fn().mockReturnValue({

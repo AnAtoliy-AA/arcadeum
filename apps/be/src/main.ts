@@ -90,14 +90,14 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? process.env.BE_PORT ?? 4000;
   await app.listen(port, '0.0.0.0');
-  console.log(`[Backend] Listening on port ${port}`);
+  logger.log(`[Backend] Listening on port ${port}`);
 
   if (process.send) {
     process.send('ready');
   }
 
   const shutdown = async (signal: string) => {
-    console.log(`\n[Backend] ${signal} received — shutting down gracefully`);
+    logger.log(`\n[Backend] ${signal} received — shutting down gracefully`);
     await app.close();
     process.exit(0);
   };

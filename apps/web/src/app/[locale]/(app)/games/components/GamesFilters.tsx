@@ -94,19 +94,35 @@ export function GamesFilters({
     onSearch('');
   };
 
-  const handleStatusSelect = useCallback(
+  const isAllStatus =
+    statusFilter.length === 0 || statusFilter.length === STATUS_VALUES.length;
+
+  const handleStatusToggle = useCallback(
     (value: (typeof ALL_STATUS_VALUES)[number]) => {
       if (value === 'all') {
         onStatusChange([]);
-      } else {
+        return;
+      }
+
+      if (isAllStatus) {
         onStatusChange([value]);
+        return;
+      }
+
+      if (statusFilter.includes(value)) {
+        const next = statusFilter.filter((s) => s !== value);
+        onStatusChange(next);
+      } else {
+        const next = [...statusFilter, value];
+        if (next.length === STATUS_VALUES.length) {
+          onStatusChange([]);
+        } else {
+          onStatusChange(next);
+        }
       }
     },
-    [onStatusChange],
+    [isAllStatus, statusFilter, onStatusChange],
   );
-
-  const isAllStatus =
-    statusFilter.length === 0 || statusFilter.length === STATUS_VALUES.length;
 
   const hasSearch = Boolean(searchQuery.trim());
   const hasCategory = Boolean(categoryFilter);
@@ -147,16 +163,18 @@ export function GamesFilters({
             const label = t(STATUS_KEYS[value] as TranslationKey);
             const icon = STATUS_ICONS[value] || '🎮';
             const isActive =
-              value === 'all' ? isAllStatus : statusFilter.includes(value);
+              value === 'all'
+                ? isAllStatus
+                : !isAllStatus && statusFilter.includes(value);
 
             return (
               <button
                 key={value}
                 type="button"
-                role="tab"
-                aria-selected={isActive}
+                role="checkbox"
+                aria-checked={isActive}
                 aria-label={`Filter status: ${label || value}`}
-                onClick={() => handleStatusSelect(value)}
+                onClick={() => handleStatusToggle(value)}
                 className={`relative inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all select-none cursor-pointer ${
                   isActive
                     ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-500/25'
@@ -165,6 +183,9 @@ export function GamesFilters({
               >
                 <span>{icon}</span>
                 <span>{label || value}</span>
+                {isActive && value !== 'all' && (
+                  <span className="text-[10px] opacity-80">✓</span>
+                )}
               </button>
             );
           })}

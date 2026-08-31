@@ -126,13 +126,21 @@ export class GameSessionsService {
     gameId: string,
     staleThresholdMs: number,
     limit: number = 100,
+    maxAgeMs?: number,
   ): Promise<GameSessionSummary[]> {
+    const filter: Record<string, unknown> = {
+      gameId,
+      status: 'active',
+      updatedAt: { $lt: new Date(Date.now() - staleThresholdMs) },
+    };
+    if (maxAgeMs) {
+      filter.updatedAt = {
+        $lt: new Date(Date.now() - staleThresholdMs),
+        $gt: new Date(Date.now() - maxAgeMs),
+      };
+    }
     const sessions = await this.ociSessionModel
-      .find({
-        gameId,
-        status: 'active',
-        updatedAt: { $lt: new Date(Date.now() - staleThresholdMs) },
-      })
+      .find(filter)
       .limit(limit)
       .lean()
       .exec();

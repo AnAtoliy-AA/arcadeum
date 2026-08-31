@@ -18,6 +18,7 @@ const SESSION_LIMIT = 100;
 const READY_STATE = 1;
 const LOCK_TTL_MS = 30_000;
 const LOCK_PREFIX = 'bot:lock:';
+const MAX_SESSION_AGE_MS = 60 * 60 * 1000; // 1 hour — ignore sessions older than this
 
 export interface BotService {
   checkAndPlay(session: GameSessionSummary): Promise<void>;
@@ -86,6 +87,7 @@ export class GameBotWatchdog {
         this.gameId,
         STALE_THRESHOLD_MS,
         SESSION_LIMIT,
+        MAX_SESSION_AGE_MS,
       );
 
       for (const session of staleSessions) {

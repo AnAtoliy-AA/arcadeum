@@ -75,4 +75,16 @@ test.describe('Live Platform Info & Online Users', () => {
     await waitingRoomsCard.click();
     await expect(page).toHaveURL(/.*\/rooms\?status=lobby/);
   });
+
+  test('should render live stats on game landing page', async ({ page }) => {
+    await navigateTo(page, '/games/sea-battle');
+    const liveStats = page.getByTestId('game-landing-live-stats');
+    await expect(liveStats).toBeVisible();
+
+    const openLobbies = page.getByTestId('landing-live-open-lobbies');
+    await expect(openLobbies).toBeVisible();
+
+    const waitingPlayers = page.getByTestId('landing-live-waiting-players');
+    await expect(waitingPlayers).toBeVisible();
+  });
 });

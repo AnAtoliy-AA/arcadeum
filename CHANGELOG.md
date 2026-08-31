@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.17] - 2026-08-31
+
+### Added
+- wire notifications socket and ensure multiplexed connection (ARC-712) (ARC-712)
+
+
 ## [1.27.16] - 2026-08-31
 
 ### Added

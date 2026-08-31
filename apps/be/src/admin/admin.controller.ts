@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Session } from 'node:inspector';
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { IsOptional, IsInt, Min, Max } from 'class-validator';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
@@ -62,7 +63,11 @@ interface ServerMetricsResponse {
   };
 }
 
-interface CpuProfileDto {
+export class CpuProfileDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1_000)
+  @Max(60_000)
   durationMs?: number;
 }
 
@@ -187,7 +192,7 @@ export class AdminController {
   async captureCpuProfile(
     @Body() dto: CpuProfileDto,
   ): Promise<CpuProfileResponse> {
-    const durationMs = Math.min(dto?.durationMs ?? 30_000, 60_000);
+    const durationMs = Math.min(Math.max(dto?.durationMs ?? 30_000, 1_000), 60_000);
     const profile = await new Promise<Record<string, unknown>>(
       (resolve, reject) => {
         const session = new Session();

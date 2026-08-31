@@ -13,7 +13,7 @@ test.describe('Matchmaking Queue', () => {
     await mockSession(page);
   });
 
-  test('should open matchmaking modal when playing vs human and support cancellation', async ({
+  test('should open matchmaking modal, display players ahead, and support cancellation', async ({
     page,
   }) => {
     await navigateTo(page, routes.seaBattleLanding);
@@ -21,29 +21,77 @@ test.describe('Matchmaking Queue', () => {
     const humanBtn = page.getByTestId('quickplay-human-button').first();
     await expect(humanBtn).toBeVisible();
 
-    // Trigger joinQueue via the function exposed from MatchmakingQueueModal's useEffect.
-    // This guarantees the correct Zustand store instance is used regardless of HMR
-    // module duplication between the layout and the sea-battle page bundle.
+    await page.waitForFunction(
+      () =>
+        typeof (window as Window & { __joinMatchmaking?: unknown })
+          .__joinMatchmaking === 'function',
+    );
+
     await page.evaluate(() =>
       (
         window as Window & { __joinMatchmaking?: (g: string) => Promise<void> }
       ).__joinMatchmaking?.('sea_battle_v1'),
     );
 
-    // Verify Matchmaking Queue modal appears
     const modal = page.getByTestId('matchmaking-modal');
     await expect(modal).toBeVisible();
 
-    // Verify timer starts displaying elapsed time
     const timer = page.getByTestId('matchmaking-timer');
     await expect(timer).toBeVisible();
 
-    // Click Cancel Matchmaking
-    const cancelBtn = page.getByRole('button', { name: /cancel matchmaking/i });
+    const playersAheadBadge = page.getByTestId('matchmaking-players-ahead');
+    await expect(playersAheadBadge).toBeVisible();
+
+    const positionText = page.getByTestId('matchmaking-position');
+    await expect(positionText).toBeVisible();
+
+    const cancelBtn = page.getByTestId('matchmaking-cancel');
     await expect(cancelBtn).toBeVisible();
     await cancelBtn.click();
 
-    // Verify Matchmaking Queue modal disappears
+    await expect(modal).not.toBeVisible();
+  });
+
+  test('should support minimizing to floating bar and expanding back', async ({
+    page,
+  }) => {
+    await navigateTo(page, routes.seaBattleLanding);
+
+    const humanBtn = page.getByTestId('quickplay-human-button').first();
+    await expect(humanBtn).toBeVisible();
+
+    await page.waitForFunction(
+      () =>
+        typeof (window as Window & { __joinMatchmaking?: unknown })
+          .__joinMatchmaking === 'function',
+    );
+
+    await page.evaluate(() =>
+      (
+        window as Window & { __joinMatchmaking?: (g: string) => Promise<void> }
+      ).__joinMatchmaking?.('sea_battle_v1'),
+    );
+
+    const modal = page.getByTestId('matchmaking-modal');
+    await expect(modal).toBeVisible();
+
+    const minimizeBtn = page.getByTestId('matchmaking-minimize');
+    await expect(minimizeBtn).toBeVisible();
+    await minimizeBtn.click();
+
+    await expect(modal).not.toBeVisible();
+    const floatingBar = page.getByTestId('matchmaking-floating-bar');
+    await expect(floatingBar).toBeVisible();
+
+    const expandBtn = page.getByTestId('matchmaking-expand');
+    await expect(expandBtn).toBeVisible();
+    await expandBtn.click();
+
+    await expect(floatingBar).not.toBeVisible();
+    await expect(modal).toBeVisible();
+
+    const cancelBtn = page.getByTestId('matchmaking-cancel');
+    await cancelBtn.click();
     await expect(modal).not.toBeVisible();
   });
 });

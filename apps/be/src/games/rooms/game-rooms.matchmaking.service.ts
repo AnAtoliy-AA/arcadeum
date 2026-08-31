@@ -21,7 +21,9 @@ export interface MatchmakingStatus {
   ranked?: boolean;
   queueSize: number;
   position: number;
+  playersAhead: number;
   estimatedWaitSeconds: number;
+  activeQueues?: Record<string, number>;
 }
 
 const DEFAULT_TIMEOUT_MS = 30_000;
@@ -48,6 +50,16 @@ export class GameRoomsMatchmakingService {
   private queueKey(gameId: string, variant?: string, ranked?: boolean): string {
     const base = variant ? `${gameId}::${variant}` : gameId;
     return ranked ? `${base}::ranked` : `${base}::casual`;
+  }
+
+  getQueueOverview(): Record<string, number> {
+    const overview: Record<string, number> = {};
+    for (const bucket of this.queue.values()) {
+      for (const entry of bucket.values()) {
+        overview[entry.gameId] = (overview[entry.gameId] ?? 0) + 1;
+      }
+    }
+    return overview;
   }
 
   joinQueue(
@@ -109,7 +121,7 @@ export class GameRoomsMatchmakingService {
       timeoutId,
     });
 
-    this.emitStatus(userId, gameId, variant, ranked);
+    this.emitStatusesFor(gameId, variant, ranked);
   }
 
   leaveQueue(userId: string): void {
@@ -206,8 +218,6 @@ export class GameRoomsMatchmakingService {
 
     this.leaveQueue(userId);
 
-    // Prefer pairing with anyone still queued for the same game over
-    // dropping the player into a bot match.
     const queuedOpponent = this.findMatch(
       gameId,
       variant,
@@ -260,13 +270,16 @@ export class GameRoomsMatchmakingService {
     const bucket = this.queue.get(key);
     const queueSize = bucket?.size ?? 0;
     const position = this.positionInBucket(bucket, userId);
+    const playersAhead = Math.max(0, position - 1);
     this.realtimeService.emitToUser(userId, 'games.matchmaking.status', {
       gameId,
       variant,
       ranked,
       queueSize,
       position,
+      playersAhead,
       estimatedWaitSeconds: this.estimateWaitSeconds(queueSize, position),
+      activeQueues: this.getQueueOverview(),
     } satisfies MatchmakingStatus);
   }
 
@@ -299,7 +312,6 @@ export class GameRoomsMatchmakingService {
   private estimateWaitSeconds(queueSize: number, position: number): number {
     const remainingMs = this.timeoutMs;
     if (queueSize >= 2 && position === 1) {
-      // A fresh opponent join will pair us almost immediately.
       return Math.max(2, Math.round(ESTIMATED_WAIT_WITH_PLAYERS_MS / 1000));
     }
     const ahead = Math.max(0, position - 1);

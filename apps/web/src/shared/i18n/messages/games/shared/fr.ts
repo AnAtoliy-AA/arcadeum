@@ -554,6 +554,18 @@ export const frMessages = {
     cancel: 'Annuler la recherche',
     estimatedWait: 'Attente estimée : ~{{seconds}}s',
     queuePosition: 'Position dans la file : {{position}} sur {{total}}',
+    playersAheadSingle: '1 joueur devant vous',
+    playersAheadMultiple: '{{count}} joueurs devant vous',
+    nextInLine:
+      'Vous êtes le prochain dans la file ! Le prochain match est à vous.',
+    playersInQueue: '{{count}} en recherche dans ce jeu',
+    activeQueuesTitle: 'Joueurs actifs dans d’autres jeux',
+    switchGame: 'Passer à {{game}}',
+    playAiNow: 'Jouer contre l’IA maintenant',
+    minimize: 'Réduire',
+    expand: 'Agrandir',
+    modeCasual: 'Amical',
+    modeRanked: 'Classé',
   },
   ranking: {
     ratingUpdated: 'Classement mis à jour',

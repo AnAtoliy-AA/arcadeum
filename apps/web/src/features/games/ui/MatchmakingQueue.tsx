@@ -12,8 +12,11 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   trackSocialMatchmakingJoined,
   trackSocialMatchmakingMatched,
+  trackSocialQuickplayStarted,
 } from '@/shared/analytics/funnel';
+import { gamesApi } from '@/features/games/api';
 import { create } from 'zustand';
+import { MatchmakingFloatingBar } from './MatchmakingFloatingBar';
 
 export interface MatchmakingStatus {
   gameId: string;
@@ -21,20 +24,26 @@ export interface MatchmakingStatus {
   ranked?: boolean;
   queueSize: number;
   position: number;
+  playersAhead: number;
   estimatedWaitSeconds: number;
+  activeQueues?: Record<string, number>;
 }
 
 interface MatchmakingState {
   isQueued: boolean;
+  isMinimized: boolean;
   gameId: string | null;
   variant: string | null;
   ranked: boolean | null;
   startTime: number | null;
   queueSize: number | null;
   position: number | null;
+  playersAhead: number | null;
   estimatedWaitSeconds: number | null;
+  activeQueues: Record<string, number>;
   startQueue: (gameId: string, variant?: string, ranked?: boolean) => void;
   stopQueue: () => void;
+  setMinimized: (minimized: boolean) => void;
   setQueued: (
     queued: boolean,
     gameId?: string | null,
@@ -46,23 +55,29 @@ interface MatchmakingState {
 
 export const useMatchmakingStore = create<MatchmakingState>((set, get) => ({
   isQueued: false,
+  isMinimized: false,
   gameId: null,
   variant: null,
   ranked: null,
   startTime: null,
   queueSize: null,
   position: null,
+  playersAhead: null,
   estimatedWaitSeconds: null,
+  activeQueues: {},
   startQueue: (gameId, variant, ranked) => {
     set({
       isQueued: true,
+      isMinimized: false,
       gameId,
       variant: variant ?? null,
       ranked: ranked ?? null,
       startTime: Date.now(),
-      queueSize: null,
-      position: null,
+      queueSize: 1,
+      position: 1,
+      playersAhead: 0,
       estimatedWaitSeconds: null,
+      activeQueues: {},
     });
   },
   stopQueue: () => {
@@ -70,70 +85,94 @@ export const useMatchmakingStore = create<MatchmakingState>((set, get) => ({
     if (isQueued) {
       set({
         isQueued: false,
+        isMinimized: false,
         gameId: null,
         variant: null,
         ranked: null,
         startTime: null,
         queueSize: null,
         position: null,
+        playersAhead: null,
         estimatedWaitSeconds: null,
+        activeQueues: {},
       });
     }
+  },
+  setMinimized: (minimized) => {
+    set({ isMinimized: minimized });
   },
   setQueued: (queued, gameId = null, variant = null, ranked = null) => {
     set({
       isQueued: queued,
+      isMinimized: false,
       gameId,
       variant,
       ranked,
       startTime: queued ? Date.now() : null,
-      queueSize: null,
-      position: null,
+      queueSize: queued ? 1 : null,
+      position: queued ? 1 : null,
+      playersAhead: queued ? 0 : null,
       estimatedWaitSeconds: null,
+      activeQueues: {},
     });
   },
   setStatus: (status) => {
+    const position = status.position;
+    const playersAhead =
+      typeof status.playersAhead === 'number'
+        ? status.playersAhead
+        : Math.max(0, position - 1);
     set({
       queueSize: status.queueSize,
-      position: status.position,
+      position,
+      playersAhead,
       estimatedWaitSeconds: status.estimatedWaitSeconds,
+      activeQueues: status.activeQueues ?? {},
     });
   },
 }));
 
 export function useMatchmaking() {
   const { snapshot } = useSessionTokens();
-  // Field-level selectors: queue-status ticks (size/position/wait) arrive
-  // continuously while queued, so a whole-store subscription here would
-  // re-render every consumer on each tick. Actions are stable references.
+  const router = useRouter();
+  const routes = useRoutes();
+
   const isQueued = useMatchmakingStore((s) => s.isQueued);
+  const isMinimized = useMatchmakingStore((s) => s.isMinimized);
   const gameId = useMatchmakingStore((s) => s.gameId);
   const variant = useMatchmakingStore((s) => s.variant);
   const ranked = useMatchmakingStore((s) => s.ranked);
   const startTime = useMatchmakingStore((s) => s.startTime);
   const queueSize = useMatchmakingStore((s) => s.queueSize);
   const position = useMatchmakingStore((s) => s.position);
+  const playersAhead = useMatchmakingStore((s) => s.playersAhead);
   const estimatedWaitSeconds = useMatchmakingStore(
     (s) => s.estimatedWaitSeconds,
   );
+  const activeQueues = useMatchmakingStore((s) => s.activeQueues);
   const startQueue = useMatchmakingStore((s) => s.startQueue);
   const stopQueue = useMatchmakingStore((s) => s.stopQueue);
+  const setMinimized = useMatchmakingStore((s) => s.setMinimized);
 
   const joinQueue = useCallback(
-    async (gameId: string, variant?: string, ranked?: boolean) => {
+    async (
+      targetGameId: string,
+      targetVariant?: string,
+      isRanked?: boolean,
+    ) => {
       let userId = snapshot.userId;
       if (!userId) {
         userId = await getOrCreateAnonymousId();
       }
       if (!userId) return;
 
-      startQueue(gameId, variant, ranked);
-      trackSocialMatchmakingJoined(gameId);
+      startQueue(targetGameId, targetVariant, isRanked);
+      trackSocialMatchmakingJoined(targetGameId);
       void emitEncrypted(gameSocket, 'games.matchmaking.join', {
         userId,
-        gameId,
-        variant,
-        ranked,
+        gameId: targetGameId,
+        variant: targetVariant,
+        ranked: isRanked,
       });
     },
     [snapshot.userId, startQueue],
@@ -149,17 +188,51 @@ export function useMatchmaking() {
     void emitEncrypted(gameSocket, 'games.matchmaking.leave', { userId });
   }, [snapshot.userId, stopQueue]);
 
+  const playVsAiNow = useCallback(async () => {
+    const currentGameId = useMatchmakingStore.getState().gameId;
+    const currentVariant = useMatchmakingStore.getState().variant;
+    if (!currentGameId) return;
+
+    await leaveQueue();
+
+    try {
+      const { room } = await gamesApi.quickplay(
+        currentGameId,
+        { variant: currentVariant || undefined },
+        { token: snapshot.accessToken || undefined },
+      );
+      trackSocialQuickplayStarted(currentGameId, 'ai');
+      router.push(routes.gameRoom(room.id));
+    } catch {
+      router.push(routes.gameDetail(currentGameId));
+    }
+  }, [leaveQueue, router, routes, snapshot.accessToken]);
+
+  const switchGame = useCallback(
+    async (nextGameId: string) => {
+      await leaveQueue();
+      await joinQueue(nextGameId);
+    },
+    [joinQueue, leaveQueue],
+  );
+
   return {
     isQueued,
+    isMinimized,
     gameId,
     variant,
     ranked,
     startTime,
     queueSize,
     position,
+    playersAhead,
     estimatedWaitSeconds,
+    activeQueues,
     joinQueue,
     leaveQueue,
+    setMinimized,
+    playVsAiNow,
+    switchGame,
   };
 }
 
@@ -169,23 +242,29 @@ export function MatchmakingQueueModal() {
   const { t } = useTranslation();
   const {
     isQueued,
+    isMinimized,
     gameId,
+    variant,
+    ranked,
     leaveQueue,
     joinQueue,
+    setMinimized,
+    playVsAiNow,
+    switchGame,
     startTime,
     queueSize,
     position,
+    playersAhead,
     estimatedWaitSeconds,
+    activeQueues,
   } = useMatchmaking();
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const w = window as Window & {
-      isPlaywright?: boolean;
       __joinMatchmaking?: (g: string) => Promise<void>;
     };
-    if (!w.isPlaywright) return;
     w.__joinMatchmaking = joinQueue;
     return () => {
       delete w.__joinMatchmaking;
@@ -204,7 +283,6 @@ export function MatchmakingQueueModal() {
 
   const elapsed = startTime ? Math.floor((now - startTime) / 1000) : 0;
 
-  // Listen to match success events
   useSocket('games.matchmaking.success', (data: unknown) => {
     const payload = data as { roomId?: string };
     if (payload?.roomId) {
@@ -217,7 +295,6 @@ export function MatchmakingQueueModal() {
     }
   });
 
-  // Listen to queue status updates (queue size, position, estimated wait)
   useSocket('games.matchmaking.status', (data: unknown) => {
     const payload = data as MatchmakingStatus;
     if (payload && typeof payload.queueSize === 'number') {
@@ -225,7 +302,6 @@ export function MatchmakingQueueModal() {
     }
   });
 
-  // Handle page navigation / unmount cleanup safely without re-triggering on hook updates
   const leaveQueueRef = React.useRef(leaveQueue);
   useEffect(() => {
     leaveQueueRef.current = leaveQueue;
@@ -233,7 +309,6 @@ export function MatchmakingQueueModal() {
 
   useEffect(() => {
     return () => {
-      // Auto-cancel queue on unmount
       if (useMatchmakingStore.getState().isQueued) {
         leaveQueueRef.current();
       }
@@ -252,81 +327,168 @@ export function MatchmakingQueueModal() {
 
   const gameLabel = gameId
     ? gameId.replace('_v1', '').replace(/_/g, ' ').toUpperCase()
-    : 'game';
+    : 'GAME';
 
-  const showQueueInfo = queueSize !== null && position !== null;
+  const otherActiveQueues = Object.entries(activeQueues).filter(
+    ([qGameId, count]) => qGameId !== gameId && count > 0,
+  );
+
+  const isNextInLine = playersAhead === 0 || position === 1;
+
+  if (isMinimized) {
+    return createPortal(
+      <MatchmakingFloatingBar
+        gameLabel={gameLabel}
+        isNextInLine={isNextInLine}
+        playersAhead={playersAhead}
+        elapsedTime={formatTime(elapsed)}
+        onExpand={() => setMinimized(false)}
+        onLeave={leaveQueue}
+      />,
+      document.body,
+    );
+  }
 
   return createPortal(
     <>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.85)',
-          zIndex: 1299,
-        }}
-      />
+      <div className="fixed inset-0 z-[1299] bg-black/80 backdrop-blur-sm" />
       <div
         data-testid="matchmaking-modal"
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 1300,
-          maxWidth: 400,
-          width: '90%',
-          borderRadius: 24,
-          padding: 24,
-          backgroundColor: '#18001e',
-          border: '2px solid rgba(192, 38, 211, 0.6)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-        }}
+        className="fixed left-1/2 top-1/2 z-[1300] w-[92%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-fuchsia-500/40 bg-[#18001e]/95 p-6 shadow-2xl backdrop-blur-xl text-slate-100"
       >
-        <div className="flex flex-col items-center gap-4">
-          <Spinner size="large" color="#d946ef" />
-          <p className="m-0 text-center text-[24px] font-bold text-[#f8fafc]">
-            {t('games.matchmaking.searchingTitle')}
-          </p>
-          <p className="m-0 text-center text-[16px] text-[#94a3b8]">
-            {t('games.matchmaking.searchingSubtitle', { game: gameLabel })}
-          </p>
+        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+          <div className="flex items-center gap-2">
+            <span className="rounded-md bg-fuchsia-500/20 px-2 py-0.5 text-xs font-bold uppercase text-fuchsia-300 border border-fuchsia-500/30">
+              {ranked
+                ? t('games.matchmaking.modeRanked')
+                : t('games.matchmaking.modeCasual')}
+            </span>
+            {variant && (
+              <span className="rounded-md bg-cyan-500/20 px-2 py-0.5 text-xs font-semibold text-cyan-300 border border-cyan-500/30">
+                {variant}
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setMinimized(true)}
+            data-testid="matchmaking-minimize"
+            className="rounded-lg p-1 text-slate-400 hover:bg-white/10 hover:text-white transition-colors text-xs font-medium px-2"
+          >
+            {t('games.matchmaking.minimize')}
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center gap-4 py-4">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute h-24 w-24 rounded-full border border-fuchsia-500/30 animate-ping opacity-60" />
+            <div className="absolute h-16 w-16 rounded-full border border-cyan-400/40 animate-pulse" />
+            <Spinner size="large" color="#d946ef" />
+          </div>
+
+          <div className="text-center">
+            <h3 className="m-0 text-xl font-bold text-slate-100">
+              {t('games.matchmaking.searchingTitle')}
+            </h3>
+            <p className="mt-1 text-sm text-slate-400">
+              {t('games.matchmaking.searchingSubtitle', { game: gameLabel })}
+            </p>
+          </div>
+
           <p
             data-testid="matchmaking-timer"
-            className="m-0 text-center text-[28px] font-extrabold text-[#38bdf8]"
+            className="m-0 text-center text-3xl font-mono font-extrabold text-cyan-400 tracking-wider"
           >
             {formatTime(elapsed)}
           </p>
-          {showQueueInfo && (
-            <div className="flex flex-col items-center gap-1">
-              <p
+
+          <div className="w-full rounded-2xl bg-white/[0.04] p-3.5 border border-white/10 flex flex-col gap-2">
+            <div
+              data-testid="matchmaking-players-ahead"
+              className={`flex items-center justify-center gap-2 rounded-xl p-2 text-center text-xs font-bold ${
+                isNextInLine
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                  : 'bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30'
+              }`}
+            >
+              <span>{isNextInLine ? '🎯' : '👥'}</span>
+              <span>
+                {isNextInLine
+                  ? t('games.matchmaking.nextInLine')
+                  : playersAhead === 1
+                    ? t('games.matchmaking.playersAheadSingle')
+                    : t('games.matchmaking.playersAheadMultiple', {
+                        count: playersAhead ?? 0,
+                      })}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between text-xs px-1 text-slate-400">
+              <span data-testid="matchmaking-position">
+                {t('games.matchmaking.queuePosition', {
+                  position: position ?? 1,
+                  total: queueSize ?? 1,
+                })}
+              </span>
+              <span
                 data-testid="matchmaking-estimated-wait"
-                className="m-0 text-center text-[14px] font-semibold text-[#c084fc]"
+                className="text-fuchsia-400 font-medium"
               >
                 {t('games.matchmaking.estimatedWait', {
-                  seconds: estimatedWaitSeconds ?? 0,
+                  seconds: estimatedWaitSeconds ?? 30,
                 })}
-              </p>
-              <p
-                data-testid="matchmaking-position"
-                className="m-0 text-center text-[13px] text-[#94a3b8]"
-              >
-                {t('games.matchmaking.queuePosition', {
-                  position: position ?? 0,
-                  total: queueSize ?? 0,
+              </span>
+            </div>
+          </div>
+
+          {otherActiveQueues.length > 0 && (
+            <div className="w-full flex flex-col gap-1.5 pt-1">
+              <span className="text-[11px] font-semibold uppercase text-slate-400">
+                {t('games.matchmaking.activeQueuesTitle')}
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {otherActiveQueues.map(([qGameId, count]) => {
+                  const targetLabel = qGameId
+                    .replace('_v1', '')
+                    .replace(/_/g, ' ')
+                    .toUpperCase();
+                  return (
+                    <button
+                      key={qGameId}
+                      type="button"
+                      onClick={() => switchGame(qGameId)}
+                      data-testid={`matchmaking-switch-${qGameId}`}
+                      className="flex items-center gap-1.5 rounded-lg bg-cyan-500/10 px-2.5 py-1 text-xs font-medium text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors"
+                    >
+                      <span>{targetLabel}</span>
+                      <span className="rounded-full bg-cyan-400/20 px-1.5 py-0.2 text-[10px] font-bold">
+                        {count}
+                      </span>
+                    </button>
+                  );
                 })}
-              </p>
+              </div>
             </div>
           )}
-          <button
-            type="button"
-            onClick={leaveQueue}
-            data-testid="matchmaking-cancel"
-            className="mt-2.5 w-full rounded-[10px] border-none px-4 py-3 text-center text-[15px] font-semibold text-white transition-colors duration-150 hover:bg-[#b91c1c]"
-            style={{ backgroundColor: '#dc2626' }}
-          >
-            {t('games.matchmaking.cancel')}
-          </button>
+
+          <div className="w-full flex flex-col gap-2 pt-2">
+            <button
+              type="button"
+              onClick={playVsAiNow}
+              data-testid="matchmaking-play-ai"
+              className="w-full rounded-xl border border-fuchsia-500/30 bg-fuchsia-950/40 px-4 py-2.5 text-center text-sm font-semibold text-fuchsia-200 transition-colors hover:bg-fuchsia-900/50 hover:text-white"
+            >
+              🤖 {t('games.matchmaking.playAiNow')}
+            </button>
+            <button
+              type="button"
+              onClick={leaveQueue}
+              data-testid="matchmaking-cancel"
+              className="w-full rounded-xl bg-red-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-red-700 active:scale-[0.99]"
+            >
+              {t('games.matchmaking.cancel')}
+            </button>
+          </div>
         </div>
       </div>
     </>,

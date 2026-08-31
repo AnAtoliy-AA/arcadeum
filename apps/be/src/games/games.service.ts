@@ -153,13 +153,6 @@ export class GamesService {
 
     // Trigger bot if exists
     if (session) {
-      // Track player reconnection (for bot watchdog)
-      const state = session.state as Record<string, unknown>;
-      if (!state.playerLastActiveAt) {
-        state.playerLastActiveAt = {};
-      }
-      (state.playerLastActiveAt as Record<string, number>)[userId] =
-        Date.now();
       await touchEngineSession(
         session,
         this.seaBattleService,

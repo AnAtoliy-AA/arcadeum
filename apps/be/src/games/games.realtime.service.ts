@@ -18,6 +18,10 @@ export class GamesRealtimeService {
 
   private server: Server | null = null;
 
+  getSocketServer(): Server | null {
+    return this.server;
+  }
+
   private readonly userIdToSockets = new Map<string, Set<string>>();
 
   registerServer(server: Server): void {

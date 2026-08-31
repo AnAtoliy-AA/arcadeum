@@ -130,7 +130,7 @@ export class GameSessionsService {
     const sessions = await this.ociSessionModel
       .find({
         gameId,
-        status: 'active',
+        status: { $in: ['active', 'inactive'] },
         updatedAt: { $lt: new Date(Date.now() - staleThresholdMs) },
       })
       .limit(limit)
@@ -292,14 +292,6 @@ export class GameSessionsService {
 
       // Safety valve: strip stateHistory if document is approaching BSON limit
       enforceStateSizeLimit(session, sessionId, this.logger);
-
-      // Track when each player was last active (for bot watchdog)
-      if (!session.state.playerLastActiveAt) {
-        (session.state as Record<string, unknown>).playerLastActiveAt = {};
-      }
-      (
-        session.state.playerLastActiveAt as Record<string, number>
-      )[userId] = Date.now();
 
       session.updatedAt = new Date();
 

@@ -6,7 +6,9 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
@@ -17,6 +19,8 @@ import { ClaimAchievementDto } from './dto/claim-achievement.dto';
 export class AchievementsController {
   constructor(private readonly service: AchievementsService) {}
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
   @Get('me')
   @UseGuards(JwtAuthGuard)
   getStatus(@Req() req: Request) {

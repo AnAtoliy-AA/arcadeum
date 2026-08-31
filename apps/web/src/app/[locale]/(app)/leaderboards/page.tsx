@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { getTranslations } from '@/shared/i18n/server';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
@@ -63,11 +64,13 @@ export default async function LeaderboardsPage({
         id={`json-ld-leaderboards-${locale}`}
         data={[collectionPage, breadcrumb]}
       />
-      <LeaderboardsClient
-        t={t}
-        selfId={selfId}
-        accessToken={accessToken ?? undefined}
-      />
+      <Suspense>
+        <LeaderboardsClient
+          t={t}
+          selfId={selfId}
+          accessToken={accessToken ?? undefined}
+        />
+      </Suspense>
     </>
   );
 }

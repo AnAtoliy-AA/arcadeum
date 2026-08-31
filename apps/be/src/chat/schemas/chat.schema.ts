@@ -13,4 +13,4 @@ export class Chat extends Document {
 export const ChatSchema = SchemaFactory.createForClass(Chat);
 
 ChatSchema.index({ users: 1 });
-ChatSchema.index({ chatId: 1 });
+ChatSchema.index({ chatId: 1 }, { unique: true });

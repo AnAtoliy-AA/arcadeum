@@ -83,9 +83,20 @@ export function GameLandingLiveStats({ gameId }: GameLandingLiveStatsProps) {
     ? stats.waitingQueues?.[gameId] ?? 0
     : stats.waitingPlayers;
 
+  const activeMatchesCount = gameId
+    ? (stats.activeGamesByGame?.[gameId] ??
+      stats.openRooms.filter(
+        (r) => r.gameId === gameId && r.status === 'in_progress',
+      ).length)
+    : stats.activeGames;
+
   const roomsHref = gameId
     ? `${routes.rooms}?status=lobby&gameId=${gameId}`
     : `${routes.rooms}?status=lobby`;
+
+  const inProgressHref = gameId
+    ? `${routes.rooms}?status=in_progress&gameId=${gameId}`
+    : `${routes.rooms}?status=in_progress`;
 
   let lobbyLabel = `${otherCount} ${t('home.liveWaitingRoomsSub')}`;
   if (myCount > 0 && otherCount > 0) {
@@ -135,13 +146,17 @@ export function GameLandingLiveStats({ gameId }: GameLandingLiveStatsProps) {
         <span className="text-fuchsia-200">{playersLabel}</span>
       </Link>
 
-      <div className="flex items-center gap-1.5 text-slate-400 pl-1">
+      <Link
+        href={inProgressHref}
+        data-testid="landing-live-active-matches"
+        className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2.5 py-1 font-medium text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
+      >
         <span>⚔️</span>
-        <span className="font-semibold text-slate-300">
-          {stats.activeGames}
+        <span className="font-bold text-white">{activeMatchesCount}</span>
+        <span className="text-emerald-200">
+          {t('home.liveBadgeActiveGames')}
         </span>
-        <span>{t('home.liveBadgeActiveGames')}</span>
-      </div>
+      </Link>
     </div>
   );
 }

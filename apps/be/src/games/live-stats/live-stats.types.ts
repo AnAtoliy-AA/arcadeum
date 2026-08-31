@@ -35,6 +35,7 @@ export interface LiveStatsResponse {
   totalSubscribers: number;
   platformSubscribers: Record<string, number>;
   activeGames: number;
+  activeGamesByGame?: Record<string, number>;
   waitingRooms: number;
   waitingPlayers: number;
   waitingQueues?: Record<string, number>;

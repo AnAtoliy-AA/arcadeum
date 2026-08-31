@@ -82,6 +82,7 @@ export class LiveStatsService {
       gameWeekAggregation,
       roomDayAggregation,
       roomWeekAggregation,
+      inProgressByGameAgg,
       totalUsers,
       totalMatches,
       totalSubscribers,
@@ -151,6 +152,12 @@ export class LiveStatsService {
             },
           },
           { $group: { _id: '$gameId', matches: { $sum: 1 } } },
+        ])
+        .exec(),
+      this.roomModel
+        .aggregate<{ _id: string; count: number }>([
+          { $match: { ...baseRoomFilter, status: 'in_progress' } },
+          { $group: { _id: '$gameId', count: { $sum: 1 } } },
         ])
         .exec(),
       this.userModel
@@ -303,6 +310,13 @@ export class LiveStatsService {
       );
     }
 
+    const activeGamesByGame: Record<string, number> = {};
+    for (const item of inProgressByGameAgg) {
+      if (item._id) {
+        activeGamesByGame[item._id] = item.count;
+      }
+    }
+
     return {
       onlineUsers,
       totalUsers: totalUsers ?? 0,
@@ -310,6 +324,7 @@ export class LiveStatsService {
       totalSubscribers: totalSubscribers ?? 0,
       platformSubscribers,
       activeGames,
+      activeGamesByGame,
       waitingRooms,
       waitingPlayers,
       waitingQueues,

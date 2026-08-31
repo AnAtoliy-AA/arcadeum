@@ -38,6 +38,7 @@ export interface LiveStatsData {
   totalSubscribers: number;
   platformSubscribers: Record<string, number>;
   activeGames: number;
+  activeGamesByGame?: Record<string, number>;
   waitingRooms: number;
   waitingPlayers: number;
   waitingQueues?: Record<string, number>;
@@ -54,6 +55,7 @@ const DEFAULT_STATS: LiveStatsData = {
   totalSubscribers: 0,
   platformSubscribers: {},
   activeGames: 0,
+  activeGamesByGame: {},
   waitingRooms: 0,
   waitingPlayers: 0,
   waitingQueues: {},

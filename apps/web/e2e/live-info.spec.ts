@@ -86,5 +86,8 @@ test.describe('Live Platform Info & Online Users', () => {
 
     const waitingPlayers = page.getByTestId('landing-live-waiting-players');
     await expect(waitingPlayers).toBeVisible();
+
+    const activeMatches = page.getByTestId('landing-live-active-matches');
+    await expect(activeMatches).toBeVisible();
   });
 });

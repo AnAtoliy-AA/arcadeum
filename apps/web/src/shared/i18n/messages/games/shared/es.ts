@@ -51,6 +51,7 @@ export const esMessages = {
       completeTitle: '¡Tutorial completado!',
       completeBody:
         'Genial: ya conoces los fundamentos de {{game}}. ¡Buena suerte en la mesa!',
+      close: 'Cerrar',
     },
   },
   rooms: {

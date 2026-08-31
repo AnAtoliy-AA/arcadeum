@@ -51,6 +51,7 @@ export const frMessages = {
       completeTitle: 'Tutoriel terminé !',
       completeBody:
         'Bravo — vous connaissez maintenant les bases de {{game}}. Bonne chance à la table !',
+      close: 'Fermer',
     },
   },
   rooms: {

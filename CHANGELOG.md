@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.15] - 2026-08-31
+
+### Added
+- consolidate socket connections and add CPU profiling
+- add server CPU/RAM monitoring to admin dashboard
+
+### Fixed
+- validate CpuProfileDto with class-validator
+- extract ServerResourcesCard to fix lint errors
+- stabilize PM2 — auto-tune cluster mode, V8 heap, and ready signal
+
+
 ## [1.27.14] - 2026-08-31
 
 ### Added

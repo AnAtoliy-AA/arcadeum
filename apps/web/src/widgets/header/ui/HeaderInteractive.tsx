@@ -1,36 +1,17 @@
 'use client';
 
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import {
   MenuIcon,
   CloseIcon,
-  SupportIcon,
   GiftIcon,
 } from '@arcadeum/ui/components/Icons/index';
-
-const MusicIcon = ({ size = 20 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M9 18V5l12-2v13" />
-    <circle cx="6" cy="18" r="3" />
-    <circle cx="18" cy="16" r="3" />
-  </svg>
-);
 
 const GearIcon = ({ size = 20 }: { size?: number }) => (
   <span className="gear-icon-wrapper">
@@ -61,7 +42,6 @@ const NotificationBell = dynamic(
     ),
   { ssr: false },
 );
-import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
 import { LivePulseBadge, LiveActivityPopover } from '@/features/live-stats';
 
 import {
@@ -75,7 +55,11 @@ import { useHeaderAuth } from './useHeaderAuth';
 import { useMobileMenu } from './useMobileMenu';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 
-export function HeaderInteractive() {
+export function HeaderInteractive({
+  balanceChip,
+}: {
+  balanceChip?: React.ReactNode;
+}) {
   const isMounted = useIsMounted();
   const pathname = usePathname();
   const {
@@ -89,31 +73,10 @@ export function HeaderInteractive() {
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
     useMobileMenu();
 
-  const { musicEnabled, setMusicEnabled } = useMusicSetting();
-
-  const toggleMusic = useCallback(() => {
-    setMusicEnabled(!musicEnabled);
-  }, [musicEnabled, setMusicEnabled]);
-
   const navItems = useMemo(
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
       { href: routes.rooms, label: t('navigation.roomsTab') },
-      { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
-      {
-        href: '#',
-        label: t('navigation.musicTab'),
-        onClick: (e: React.MouseEvent) => {
-          e.preventDefault();
-          toggleMusic();
-        },
-        icon: <MusicIcon size={16} />,
-      },
-      {
-        href: routes.rewards,
-        label: t('navigation.rewardsTab'),
-        icon: <GiftIcon size={16} />,
-      },
       {
         href: routes.shop,
         label: t('navigation.shopTab'),
@@ -121,21 +84,12 @@ export function HeaderInteractive() {
         accent: true,
       },
     ],
-    [t, routes, toggleMusic],
+    [t, routes],
   );
 
   const mobileNavItems = useMemo(
     () => [
-      ...navItems.map((item) => ({
-        ...item,
-        href: item.onClick ? '#' : item.href,
-        onClick: item.onClick
-          ? (e: React.MouseEvent) => {
-              e.preventDefault();
-              item.onClick!(e);
-            }
-          : undefined,
-      })),
+      ...navItems,
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
@@ -150,33 +104,18 @@ export function HeaderInteractive() {
         {isMounted &&
           navItems.map((item) => (
             <NavLinkWrapper key={item.label}>
-              {item.onClick ? (
-                <NavHeaderLink
-                  href={item.href}
-                  variant="ghost"
-                  size="sm"
-                  isActive={false}
-                  accent={item.accent}
-                  icon={item.icon}
-                  onClick={item.onClick}
-                  data-testid={`nav-${item.label.toLowerCase()}`}
-                >
-                  {item.label}
-                </NavHeaderLink>
-              ) : (
-                <NavHeaderLink
-                  href={item.href}
-                  variant="ghost"
-                  size="sm"
-                  isActive={pathname === item.href}
-                  accent={item.accent}
-                  icon={item.icon}
-                  data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
-                  data-active={pathname === item.href ? 'true' : undefined}
-                >
-                  {item.label}
-                </NavHeaderLink>
-              )}
+              <NavHeaderLink
+                href={item.href}
+                variant="ghost"
+                size="sm"
+                isActive={pathname === item.href}
+                accent={item.accent}
+                icon={item.icon}
+                data-testid={`nav-${item.href.split('/').filter(Boolean).pop() ?? 'home'}`}
+                data-active={pathname === item.href ? 'true' : undefined}
+              >
+                {item.label}
+              </NavHeaderLink>
             </NavLinkWrapper>
           ))}
       </nav>
@@ -189,31 +128,9 @@ export function HeaderInteractive() {
               <LiveActivityPopover />
             </div>
 
-            <HeaderMobileHidden>
-              <Link
-                href={routes.support}
-                aria-label={t('common.actions.support')}
-                style={{ textDecoration: 'none', display: 'inline-flex' }}
-                data-testid="header-support-button"
-              >
-                <Button
-                  variant="icon"
-                  size="md"
-                  aria-label={t('common.actions.support')}
-                  tabIndex={-1}
-                  className="hover:-translate-y-[2px] hover:scale-[1.1] hover:bg-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.25)]"
-                >
-                  <SupportIcon size={20} />
-                </Button>
-              </Link>
-            </HeaderMobileHidden>
-
-            <HeaderMobileHidden>
-              <LanguageSwitcher
-                data-testid="header-language-switcher"
-                className="header-language-switcher"
-              />
-            </HeaderMobileHidden>
+            {isAuthenticated && (
+              <HeaderMobileHidden>{balanceChip}</HeaderMobileHidden>
+            )}
 
             {isAuthenticated && (
               <HeaderMobileHidden>

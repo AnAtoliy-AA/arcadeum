@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { Select } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
@@ -24,7 +23,6 @@ export default function LanguageSwitcher({
   className,
   'data-testid': testId,
 }: LanguageSwitcherProps) {
-  const router = useRouter();
   const { locale: storeLocale, setLocale, initialLocale } = useLanguage();
 
   const mounted = useIsMounted();
@@ -33,12 +31,9 @@ export default function LanguageSwitcher({
 
   const handleLocaleChange = useCallback(
     (val: string) => {
-      const next = val as Locale;
-      document.cookie = `app-language=${next}; path=/; max-age=31536000; SameSite=Lax`;
-      setLocale(next);
-      router.refresh();
+      setLocale(val as Locale);
     },
-    [setLocale, router],
+    [setLocale],
   );
 
   const options = useMemo(

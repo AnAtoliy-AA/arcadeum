@@ -555,6 +555,10 @@ export const ruMessages = {
     expand: 'Развернуть',
     modeCasual: 'Обычный',
     modeRanked: 'Рейтинговый',
+    noRoomsSuggestTitle: 'Нет открытых комнат',
+    noRoomsSuggestSubtitle:
+      'Создайте свою комнату и ждите подключения игроков!',
+    createRoomAction: 'Создать комнату',
   },
   ranking: {
     ratingUpdated: 'Рейтинг обновлён',

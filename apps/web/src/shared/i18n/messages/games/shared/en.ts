@@ -552,6 +552,10 @@ export const enMessages = {
     expand: 'Expand',
     modeCasual: 'Casual',
     modeRanked: 'Ranked',
+    noRoomsSuggestTitle: 'No active rooms found',
+    noRoomsSuggestSubtitle:
+      'Create your own room and wait for players to join you!',
+    createRoomAction: 'Create Room',
   },
   ranking: {
     ratingUpdated: 'Rating updated',

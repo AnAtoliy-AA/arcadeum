@@ -15,122 +15,13 @@ import {
   trackSocialQuickplayStarted,
 } from '@/shared/analytics/funnel';
 import { gamesApi } from '@/features/games/api';
-import { create } from 'zustand';
+import {
+  useMatchmakingStore,
+  type MatchmakingStatus,
+} from './matchmakingStore';
 import { MatchmakingFloatingBar } from './MatchmakingFloatingBar';
 
-export interface MatchmakingStatus {
-  gameId: string;
-  variant?: string;
-  ranked?: boolean;
-  queueSize: number;
-  position: number;
-  playersAhead: number;
-  estimatedWaitSeconds: number;
-  activeQueues?: Record<string, number>;
-}
-
-interface MatchmakingState {
-  isQueued: boolean;
-  isMinimized: boolean;
-  gameId: string | null;
-  variant: string | null;
-  ranked: boolean | null;
-  startTime: number | null;
-  queueSize: number | null;
-  position: number | null;
-  playersAhead: number | null;
-  estimatedWaitSeconds: number | null;
-  activeQueues: Record<string, number>;
-  startQueue: (gameId: string, variant?: string, ranked?: boolean) => void;
-  stopQueue: () => void;
-  setMinimized: (minimized: boolean) => void;
-  setQueued: (
-    queued: boolean,
-    gameId?: string | null,
-    variant?: string | null,
-    ranked?: boolean | null,
-  ) => void;
-  setStatus: (status: MatchmakingStatus) => void;
-}
-
-export const useMatchmakingStore = create<MatchmakingState>((set, get) => ({
-  isQueued: false,
-  isMinimized: false,
-  gameId: null,
-  variant: null,
-  ranked: null,
-  startTime: null,
-  queueSize: null,
-  position: null,
-  playersAhead: null,
-  estimatedWaitSeconds: null,
-  activeQueues: {},
-  startQueue: (gameId, variant, ranked) => {
-    set({
-      isQueued: true,
-      isMinimized: false,
-      gameId,
-      variant: variant ?? null,
-      ranked: ranked ?? null,
-      startTime: Date.now(),
-      queueSize: 1,
-      position: 1,
-      playersAhead: 0,
-      estimatedWaitSeconds: null,
-      activeQueues: {},
-    });
-  },
-  stopQueue: () => {
-    const { isQueued } = get();
-    if (isQueued) {
-      set({
-        isQueued: false,
-        isMinimized: false,
-        gameId: null,
-        variant: null,
-        ranked: null,
-        startTime: null,
-        queueSize: null,
-        position: null,
-        playersAhead: null,
-        estimatedWaitSeconds: null,
-        activeQueues: {},
-      });
-    }
-  },
-  setMinimized: (minimized) => {
-    set({ isMinimized: minimized });
-  },
-  setQueued: (queued, gameId = null, variant = null, ranked = null) => {
-    set({
-      isQueued: queued,
-      isMinimized: false,
-      gameId,
-      variant,
-      ranked,
-      startTime: queued ? Date.now() : null,
-      queueSize: queued ? 1 : null,
-      position: queued ? 1 : null,
-      playersAhead: queued ? 0 : null,
-      estimatedWaitSeconds: null,
-      activeQueues: {},
-    });
-  },
-  setStatus: (status) => {
-    const position = status.position;
-    const playersAhead =
-      typeof status.playersAhead === 'number'
-        ? status.playersAhead
-        : Math.max(0, position - 1);
-    set({
-      queueSize: status.queueSize,
-      position,
-      playersAhead,
-      estimatedWaitSeconds: status.estimatedWaitSeconds,
-      activeQueues: status.activeQueues ?? {},
-    });
-  },
-}));
+export { useMatchmakingStore, type MatchmakingStatus };
 
 export function useMatchmaking() {
   const { snapshot } = useSessionTokens();
@@ -149,6 +40,7 @@ export function useMatchmaking() {
   const estimatedWaitSeconds = useMatchmakingStore(
     (s) => s.estimatedWaitSeconds,
   );
+  const openRoomsCount = useMatchmakingStore((s) => s.openRoomsCount);
   const activeQueues = useMatchmakingStore((s) => s.activeQueues);
   const startQueue = useMatchmakingStore((s) => s.startQueue);
   const stopQueue = useMatchmakingStore((s) => s.stopQueue);
@@ -208,6 +100,13 @@ export function useMatchmaking() {
     }
   }, [leaveQueue, router, routes, snapshot.accessToken]);
 
+  const createRoomAndHost = useCallback(async () => {
+    const currentGameId = useMatchmakingStore.getState().gameId;
+    if (!currentGameId) return;
+    await leaveQueue();
+    router.push(`${routes.gameCreate}?gameId=${currentGameId}`);
+  }, [leaveQueue, router, routes.gameCreate]);
+
   const switchGame = useCallback(
     async (nextGameId: string) => {
       await leaveQueue();
@@ -227,11 +126,13 @@ export function useMatchmaking() {
     position,
     playersAhead,
     estimatedWaitSeconds,
+    openRoomsCount,
     activeQueues,
     joinQueue,
     leaveQueue,
     setMinimized,
     playVsAiNow,
+    createRoomAndHost,
     switchGame,
   };
 }
@@ -250,12 +151,14 @@ export function MatchmakingQueueModal() {
     joinQueue,
     setMinimized,
     playVsAiNow,
+    createRoomAndHost,
     switchGame,
     startTime,
     queueSize,
     position,
     playersAhead,
     estimatedWaitSeconds,
+    openRoomsCount,
     activeQueues,
   } = useMatchmaking();
   const [now, setNow] = useState(() => Date.now());
@@ -334,6 +237,7 @@ export function MatchmakingQueueModal() {
   );
 
   const isNextInLine = playersAhead === 0 || position === 1;
+  const showNoRoomsSuggestion = openRoomsCount === 0 || openRoomsCount === null;
 
   if (isMinimized) {
     return createPortal(
@@ -440,6 +344,30 @@ export function MatchmakingQueueModal() {
               </span>
             </div>
           </div>
+
+          {showNoRoomsSuggestion && (
+            <div
+              data-testid="matchmaking-no-rooms-suggestion"
+              className="w-full flex items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-left"
+            >
+              <div className="flex flex-col">
+                <span className="text-xs font-bold text-amber-300">
+                  {t('games.matchmaking.noRoomsSuggestTitle')}
+                </span>
+                <span className="text-[11px] text-slate-300">
+                  {t('games.matchmaking.noRoomsSuggestSubtitle')}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={createRoomAndHost}
+                data-testid="matchmaking-create-room"
+                className="shrink-0 rounded-xl border border-amber-500/40 bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-200 hover:bg-amber-500/30 transition-colors"
+              >
+                {t('games.matchmaking.createRoomAction')}
+              </button>
+            </div>
+          )}
 
           {otherActiveQueues.length > 0 && (
             <div className="w-full flex flex-col gap-1.5 pt-1">

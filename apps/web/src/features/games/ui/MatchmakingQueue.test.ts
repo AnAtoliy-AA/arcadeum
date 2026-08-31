@@ -17,6 +17,7 @@ describe('useMatchmakingStore', () => {
       position: null,
       playersAhead: null,
       estimatedWaitSeconds: null,
+      openRoomsCount: null,
       activeQueues: {},
     });
   });
@@ -32,6 +33,7 @@ describe('useMatchmakingStore', () => {
     expect(state.queueSize).toBe(1);
     expect(state.position).toBe(1);
     expect(state.playersAhead).toBe(0);
+    expect(state.openRoomsCount).toBeNull();
     expect(state.estimatedWaitSeconds).toBeNull();
   });
 
@@ -44,6 +46,7 @@ describe('useMatchmakingStore', () => {
       position: 1,
       playersAhead: 0,
       estimatedWaitSeconds: 30,
+      openRoomsCount: 0,
     } satisfies MatchmakingStatus);
     store.stopQueue();
 
@@ -54,10 +57,11 @@ describe('useMatchmakingStore', () => {
     expect(state.queueSize).toBeNull();
     expect(state.position).toBeNull();
     expect(state.playersAhead).toBeNull();
+    expect(state.openRoomsCount).toBeNull();
     expect(state.estimatedWaitSeconds).toBeNull();
   });
 
-  it('applies matchmaking status updates and calculates playersAhead', () => {
+  it('applies matchmaking status updates and calculates playersAhead and openRoomsCount', () => {
     const store = useMatchmakingStore.getState();
     store.startQueue('sea_battle_v1');
     store.setStatus({
@@ -66,6 +70,7 @@ describe('useMatchmakingStore', () => {
       position: 2,
       playersAhead: 1,
       estimatedWaitSeconds: 12,
+      openRoomsCount: 0,
       activeQueues: { chess_v1: 2 },
     } satisfies MatchmakingStatus);
 
@@ -73,6 +78,7 @@ describe('useMatchmakingStore', () => {
     expect(state.queueSize).toBe(3);
     expect(state.position).toBe(2);
     expect(state.playersAhead).toBe(1);
+    expect(state.openRoomsCount).toBe(0);
     expect(state.estimatedWaitSeconds).toBe(12);
     expect(state.activeQueues).toEqual({ chess_v1: 2 });
   });
@@ -98,6 +104,7 @@ describe('useMatchmakingStore', () => {
       position: 1,
       playersAhead: 0,
       estimatedWaitSeconds: 12,
+      openRoomsCount: 0,
     } satisfies MatchmakingStatus);
     store.startQueue('sea_battle_v1', 'blitz');
 

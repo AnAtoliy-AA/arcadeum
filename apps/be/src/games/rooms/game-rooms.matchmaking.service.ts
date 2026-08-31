@@ -24,6 +24,7 @@ export interface MatchmakingStatus {
   playersAhead: number;
   estimatedWaitSeconds: number;
   activeQueues?: Record<string, number>;
+  openRoomsCount?: number;
 }
 
 const DEFAULT_TIMEOUT_MS = 30_000;
@@ -280,6 +281,7 @@ export class GameRoomsMatchmakingService {
       playersAhead,
       estimatedWaitSeconds: this.estimateWaitSeconds(queueSize, position),
       activeQueues: this.getQueueOverview(),
+      openRoomsCount: 0,
     } satisfies MatchmakingStatus);
   }
 

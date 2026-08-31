@@ -36,6 +36,7 @@ describe('GameRoomsMatchmakingService', () => {
     roomsService = {
       createRoom: jest.fn().mockResolvedValue(roomSummary),
       joinRoom: jest.fn().mockResolvedValue({ room: roomSummary, added: true }),
+      listRooms: jest.fn().mockResolvedValue({ rooms: [], total: 0 }),
     } as unknown as jest.Mocked<GameRoomsService>;
 
     quickplayService = {
@@ -230,6 +231,7 @@ describe('GameRoomsMatchmakingService', () => {
           playersAhead: 0,
           estimatedWaitSeconds: 30,
           activeQueues: { sea_battle_v1: 1 },
+          openRoomsCount: 0,
         }),
       );
     });

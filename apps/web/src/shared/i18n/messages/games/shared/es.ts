@@ -562,6 +562,10 @@ export const esMessages = {
     expand: 'Expandir',
     modeCasual: 'Casual',
     modeRanked: 'Clasificatorio',
+    noRoomsSuggestTitle: 'No hay salas abiertas',
+    noRoomsSuggestSubtitle:
+      '¡Crea tu propia sala y espera a que se unan jugadores!',
+    createRoomAction: 'Crear sala',
   },
   ranking: {
     ratingUpdated: 'Rating actualizado',

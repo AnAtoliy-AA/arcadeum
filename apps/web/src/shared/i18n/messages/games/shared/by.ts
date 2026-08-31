@@ -555,6 +555,10 @@ export const byMessages = {
     expand: 'Разгарнуць',
     modeCasual: 'Звычайны',
     modeRanked: 'Рэйтынгавы',
+    noRoomsSuggestTitle: 'Няма адкрытых пакояў',
+    noRoomsSuggestSubtitle:
+      'Стварыце свой пакой і чакайце падключэння гульцоў!',
+    createRoomAction: 'Стварыць пакой',
   },
   ranking: {
     ratingUpdated: 'Рэйтынг абноўлены',

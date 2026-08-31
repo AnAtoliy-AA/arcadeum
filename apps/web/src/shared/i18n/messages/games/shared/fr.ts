@@ -566,6 +566,10 @@ export const frMessages = {
     expand: 'Agrandir',
     modeCasual: 'Amical',
     modeRanked: 'Classé',
+    noRoomsSuggestTitle: 'Aucun salon ouvert',
+    noRoomsSuggestSubtitle:
+      'Créez votre propre salon et attendez que des joueurs vous rejoignent !',
+    createRoomAction: 'Créer un salon',
   },
   ranking: {
     ratingUpdated: 'Classement mis à jour',

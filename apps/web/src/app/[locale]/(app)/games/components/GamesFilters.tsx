@@ -26,6 +26,7 @@ interface GamesFiltersProps {
   aiVsAiFilter: GamesAiVsAiFilter;
   onAiVsAiChange: (filter: GamesAiVsAiFilter) => void;
   canFilterParticipation: boolean;
+  onClearAll?: () => void;
 }
 
 const STATUS_KEYS = {
@@ -77,20 +78,17 @@ export function GamesFilters({
   aiVsAiFilter,
   onAiVsAiChange,
   canFilterParticipation,
+  onClearAll,
 }: GamesFiltersProps) {
   const { t } = useTranslation();
   const searchInputId = useId();
-  const [searchInput, setSearchInput] = useState(searchQuery);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setSearchInput(val);
-    onSearch(val);
+    onSearch(e.target.value);
   };
 
   const handleSearchClear = () => {
-    setSearchInput('');
     onSearch('');
   };
 
@@ -138,13 +136,17 @@ export function GamesFilters({
     (hasParticipation ? 1 : 0);
 
   const handleClearAll = useCallback(() => {
-    setSearchInput('');
-    onSearch('');
-    onCategoryChange('');
-    onStatusChange([]);
-    onAiVsAiChange('all');
-    onParticipationChange('all');
+    if (onClearAll) {
+      onClearAll();
+    } else {
+      onSearch('');
+      onCategoryChange('');
+      onStatusChange([]);
+      onAiVsAiChange('all');
+      onParticipationChange('all');
+    }
   }, [
+    onClearAll,
     onSearch,
     onCategoryChange,
     onStatusChange,
@@ -274,14 +276,14 @@ export function GamesFilters({
           <input
             id={searchInputId}
             type="text"
-            value={searchInput}
+            value={searchQuery}
             onChange={handleSearchChange}
             placeholder={
               t('games.lounge.searchPlaceholder') || 'Search games...'
             }
             className="w-full rounded-xl border border-white/10 bg-black/25 py-2 pl-9 pr-8 text-xs text-white placeholder-slate-500 transition-colors focus:border-indigo-500/60 focus:bg-black/40 focus:outline-none"
           />
-          {searchInput && (
+          {searchQuery && (
             <button
               type="button"
               onClick={handleSearchClear}

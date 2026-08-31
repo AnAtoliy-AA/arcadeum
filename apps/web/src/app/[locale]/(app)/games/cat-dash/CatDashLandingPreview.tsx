@@ -1,3 +1,5 @@
+'use client';
+
 import { getTheme as getCatDashTheme } from '@/widgets/ActionGames/CatDashGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

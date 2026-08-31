@@ -1,3 +1,5 @@
+'use client';
+
 import { SeaBattleThemeProvider } from '@/widgets/StrategyGames/SeaBattleGame/lib/SeaBattleThemeContext';
 import { SeaBattleThemePreview } from '@/widgets/StrategyGames/SeaBattleGame/ui/SeaBattleThemePreview';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';

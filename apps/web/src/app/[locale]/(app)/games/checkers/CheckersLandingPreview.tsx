@@ -1,3 +1,5 @@
+'use client';
+
 import { getCheckersTheme } from '@/widgets/BoardGames/CheckersGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

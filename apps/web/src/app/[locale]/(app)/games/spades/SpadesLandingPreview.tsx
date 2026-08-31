@@ -1,3 +1,5 @@
+'use client';
+
 import { getTheme } from '@/widgets/CardGames/SpadesGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

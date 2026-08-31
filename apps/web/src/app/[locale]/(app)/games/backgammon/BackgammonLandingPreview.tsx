@@ -1,3 +1,5 @@
+'use client';
+
 import { getBackgammonTheme } from '@/widgets/BoardGames/BackgammonGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

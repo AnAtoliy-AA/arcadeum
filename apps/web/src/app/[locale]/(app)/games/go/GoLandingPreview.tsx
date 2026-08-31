@@ -1,3 +1,5 @@
+'use client';
+
 import { getGoTheme } from '@/widgets/BoardGames/GoGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 

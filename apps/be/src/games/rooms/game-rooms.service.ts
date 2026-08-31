@@ -151,13 +151,9 @@ export class GameRoomsService {
       this.ociRoomModel.countDocuments(query).exec(),
     ]);
 
-    const summaries = await Promise.all(
-      rooms.map((room) =>
-        this.gameRoomsMapper.prepareRoomSummary(
-          room as unknown as GameRoom,
-          viewerId,
-        ),
-      ),
+    const summaries = await this.gameRoomsMapper.prepareRoomSummaryBatch(
+      rooms as unknown as GameRoom[],
+      viewerId,
     );
 
     return {

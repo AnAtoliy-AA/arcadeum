@@ -162,17 +162,17 @@ export class LiveStatsService {
         .exec(),
       this.userModel
         ? this.userModel
-            .countDocuments()
+            .estimatedDocumentCount()
             .exec()
             .catch(() => 0)
         : Promise.resolve(0),
       this.playerStatModel
-        .countDocuments()
+        .estimatedDocumentCount()
         .exec()
         .catch(() => 0),
       this.claimModel
         ? this.claimModel
-            .countDocuments()
+            .estimatedDocumentCount()
             .exec()
             .catch(() => 0)
         : Promise.resolve(0),

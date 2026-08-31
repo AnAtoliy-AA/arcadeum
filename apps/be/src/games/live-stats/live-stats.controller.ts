@@ -10,7 +10,7 @@ export class LiveStatsController {
   constructor(private readonly liveStatsService: LiveStatsService) {}
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(5000)
+  @CacheTTL(15000)
   @SkipThrottle({ default: true, auth: true, strict: true })
   @UseGuards(JwtOptionalAuthGuard)
   @Get('live-info')

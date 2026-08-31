@@ -83,6 +83,9 @@ export function GemStoreList() {
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         scrollEnabled={false}
+        removeClippedSubviews={true}
+        windowSize={3}
+        maxToRenderPerBatch={5}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
     </View>

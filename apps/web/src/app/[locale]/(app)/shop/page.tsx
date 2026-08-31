@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { getTranslations } from '@/shared/i18n/server';
@@ -112,16 +113,18 @@ export default async function ShopPage({
         id={`json-ld-shop-${locale}`}
         data={[collectionPage, breadcrumb]}
       />
-      <ShopPageView
-        catalog={catalog}
-        inventory={inventory}
-        balance={balance}
-        nextGemPack={nextGemPack}
-        featuredDrop={featuredDrop}
-        gemToCoinRate={gemToCoinRate}
-        isAuthenticated={Boolean(accessToken)}
-        labels={labels}
-      />
+      <Suspense>
+        <ShopPageView
+          catalog={catalog}
+          inventory={inventory}
+          balance={balance}
+          nextGemPack={nextGemPack}
+          featuredDrop={featuredDrop}
+          gemToCoinRate={gemToCoinRate}
+          isAuthenticated={Boolean(accessToken)}
+          labels={labels}
+        />
+      </Suspense>
     </>
   );
 }

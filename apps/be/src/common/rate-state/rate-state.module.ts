@@ -19,7 +19,7 @@ import { RedisRateStateStore } from './redis-rate-state.store';
           try {
             const redis = new Redis(redisUrl, {
               maxRetriesPerRequest: 3,
-              enableOfflineQueue: false,
+              enableOfflineQueue: true,
               lazyConnect: true,
             });
             redis.on('error', (err: Error) => {

@@ -214,9 +214,10 @@ export function GamesFilters({
       <div className="flex w-full items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         <button
           type="button"
+          role="checkbox"
+          aria-checked={categoryFilter === ''}
           onClick={() => onCategoryChange('')}
           aria-label="Filter by category: All"
-          aria-pressed={categoryFilter === ''}
           className={`inline-flex shrink-0 h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-all select-none cursor-pointer ${
             categoryFilter === ''
               ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300 shadow-sm'
@@ -237,9 +238,10 @@ export function GamesFilters({
             <button
               key={cat}
               type="button"
+              role="checkbox"
+              aria-checked={isActive}
               onClick={() => onCategoryChange(isActive ? '' : cat)}
               aria-label={`Filter by category: ${label}`}
-              aria-pressed={isActive}
               className={`inline-flex shrink-0 h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-all select-none cursor-pointer ${
                 isActive
                   ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300 shadow-sm'

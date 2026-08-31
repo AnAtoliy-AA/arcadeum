@@ -50,7 +50,7 @@ export interface GameRoomSummary {
 export interface ListRoomsFilters {
   gameId?: string;
   search?: string;
-  status?: GameRoomStatus | 'all' | string;
+  status?: string;
   statuses?: GameRoomStatus[];
   visibility?:
     'public' | 'private' | 'friends' | ('public' | 'private' | 'friends')[];

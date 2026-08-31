@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.18] - 2026-08-31
+
+### Fixed
+- remove unused SocketIOServer import
+- complete AI vs AI sessions when no watchers, remove lastActiveAt
+- track player lastActiveAt, bot waits 15min after last human action
+- add max age cutoff to bot watchdog and clean stale sessions
+- add Redis distributed lock to bot watchdog for cluster mode
+- enable Redis offline queue for cluster mode compatibility
+
+
 ## [1.27.17] - 2026-08-31
 
 ### Added

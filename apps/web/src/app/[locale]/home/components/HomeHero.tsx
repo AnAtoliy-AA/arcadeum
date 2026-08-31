@@ -21,13 +21,13 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
   const gamesCopy = messages.games ?? {};
   const routes = buildRoutes(locale);
 
-  const kicker = homeCopy.kicker ?? 'Free online board games';
+  const kicker = homeCopy.kicker ?? 'Free online board & mini-games';
   const tagline =
     homeCopy.tagline?.replace('{{appName}}', appConfig.appName) ??
-    `${appConfig.appName} is the ultimate platform to play free board games online with friends or solo vs AI — Battleship, strategy, cards, and more.`;
+    `${appConfig.appName} is the ultimate platform to play free board games, card games, and multiplayer mini-games online with friends or solo vs AI.`;
   const description =
     homeCopy.description?.replace('{{appName}}', appConfig.appName) ??
-    `Enjoy a wide variety of free board games and tabletop experiences online. Challenge intelligent bots, create real-time game rooms, invite your friends, and let ${appConfig.appName} handle rules, scoring, and turns so you can focus on the fun.`;
+    `Enjoy a wide variety of free board games, card games, and quick mini-games online. Challenge intelligent bots, create real-time game rooms, invite your friends, and let ${appConfig.appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
   const playWithBotsLabel = homeCopy.playWithBotsLabel ?? 'Play vs AI';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';

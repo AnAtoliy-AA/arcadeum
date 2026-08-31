@@ -6,13 +6,13 @@ const APP = appConfig.appName;
 
 export const es: DeepPartial<SeoMessages> = {
   home: {
-    title: `${APP} — Juega gratis a juegos de mesa en línea con amigos`,
-    description: `Juega gratis a juegos de mesa en línea con amigos en ${APP}. Battleship, estrategia y cartas — crea una sala, comparte el enlace y juega en tu navegador. Sin descarga, sin registro.`,
+    title: `${APP} — Juegos de mesa, cartas y minijuegos gratis online`,
+    description: `Juega gratis a juegos de mesa, juegos de cartas y minijuegos multijugador con amigos en ${APP}. Ajedrez, Batalla Naval, Damas, Cascade, 2048 y más — crea una sala y juega en tu navegador. Sin descargas.`,
     badge: 'Juega con amigos o con IA',
   },
   games: {
-    title: `Catálogo de Juegos de Mesa Online · ${APP}`,
-    description: `Explora el catálogo de juegos multijugador online en ${APP}. Juega ajedrez, batalla naval, damas, cascade y más en tu navegador.`,
+    title: `Juegos de Mesa, Cartas y Minijuegos Gratis · ${APP}`,
+    description: `Explora el catálogo completo de juegos multijugador online en ${APP}. Juega ajedrez, batalla naval, damas, cascade, 2048 y más en tu navegador sin descargas.`,
   },
   rooms: {
     title: `Salas de Juego en Vivo · ${APP}`,

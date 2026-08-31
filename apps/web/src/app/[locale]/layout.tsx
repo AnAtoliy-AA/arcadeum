@@ -148,6 +148,22 @@ export default async function LocaleLayout({
       description: localizedDescription,
       operatingSystem: 'Any',
       applicationCategory: 'GameApplication',
+      genre: [
+        'Board Game',
+        'Card Game',
+        'Mini Game',
+        'Puzzle Game',
+        'Arcade Game',
+      ],
+      gamePlatform: ['Web Browser', 'Mobile Web', 'PWA'],
+      featureList: [
+        'Instant multiplayer game rooms',
+        'Intelligent AI opponents and bots',
+        'No download or installation required',
+        'Cross-platform desktop and mobile support',
+        'Real-time turns, scoring, and automated rules',
+        'Themed card decks and custom boards',
+      ],
       offers: {
         '@type': 'Offer',
         price: '0',

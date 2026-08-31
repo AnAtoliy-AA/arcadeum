@@ -1,9 +1,9 @@
 export const fr = {
-  kicker: 'Jeux de société gratuits en ligne',
+  kicker: 'Jeux de société et mini-jeux gratuits',
   tagline:
-    "{{appName}} est votre plateforme pour jouer gratuitement à des jeux de société en ligne entre amis ou en solo contre l'IA — Bataille navale, stratégie, cartes et plus.",
+    "{{appName}} est votre plateforme pour jouer gratuitement à des jeux de société, jeux de cartes et mini-jeux en ligne entre amis ou en solo contre l'IA.",
   description:
-    "Profitez d'une large sélection de jeux de société gratuits en ligne. Défiez des bots intelligents, créez des salons en temps réel, rassemblez vos amis et laissez {{appName}} automatiser règles, scores et tours pour que vous puissiez vous concentrer sur le plaisir.",
+    "Profitez d'une large sélection de jeux de société, jeux de cartes et mini-jeux gratuits en ligne. Défiez des bots intelligents, créez des salons en temps réel, rassemblez vos amis et laissez {{appName}} automatiser règles, scores et tours pour que vous puissiez vous concentrer sur le plaisir.",
   primaryCtaLabel: 'Commencer',
   playWithBotsLabel: "Jouer contre l'IA",
   defaultRoomName: 'Partie de {{name}} #{{number}}',
@@ -20,7 +20,7 @@ export const fr = {
   // Games section
   gamesTitle: 'Jeux en Vedette',
   gamesSubtitle:
-    "Explorez notre bibliothèque croissante d'expériences de table",
+    'Explorez notre bibliothèque croissante de jeux de société, cartes et mini-jeux',
   gamePlayButton: 'Jouer Maintenant',
   gameTryDemo: 'Essayer la démo',
   gameRulesButton: 'Règles du Jeu',
@@ -35,7 +35,7 @@ export const fr = {
   demoBadgeLabel: 'Version démo',
   featuresTitle: 'Pourquoi {{appName}} ?',
   featuresSubtitle:
-    'Tout ce dont vous avez besoin pour jouer aux jeux de société en ligne with vos amis',
+    'Tout ce dont vous avez besoin pour jouer aux jeux de société, cartes et mini-jeux en ligne entre amis',
   featureBotsTitle: "Jouer contre l'IA",
   featureBotsDescription:
     'Entraînez-vous en solo ou défiez des bots intelligents en mode facile, moyen ou difficile quand vos amis ne sont pas en ligne.',

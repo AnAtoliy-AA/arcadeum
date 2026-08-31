@@ -3,11 +3,11 @@ import type { DeepPartial } from '../base-types';
 export const en = {
   title: 'Support the developers',
   tagline:
-    'Keep {{appName}} iterating quickly and accessible to the tabletop community.',
+    'Keep {{appName}} iterating quickly and accessible to the gaming community.',
   description:
     'Arcade labs, infrastructure, and community events are self-funded today. Your backing keeps the realtime servers online, unlocks more playtest nights, and helps us ship the next wave of prototypes.',
   thanks:
-    'Every contribution keeps {{appName}} evolving. Thank you for helping us build the future of remote tabletop play!',
+    'Every contribution keeps {{appName}} evolving. Thank you for helping us build the future of remote multiplayer play!',
   teamSectionTitle: 'Meet the core team',
   actionsSectionTitle: 'Ways to contribute',
   team: {

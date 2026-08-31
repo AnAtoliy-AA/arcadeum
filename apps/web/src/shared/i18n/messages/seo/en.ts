@@ -4,13 +4,13 @@ const APP = appConfig.appName;
 
 export const en = {
   home: {
-    title: `${APP} — Play Free Online Board Games with Friends`,
-    description: `Play free online board games with friends on ${APP}. Battleship, strategy, and card games — create a room, share the link, and play in your browser. No download, no signup.`,
+    title: `${APP} — Free Online Board Games, Card Games & Mini-Games`,
+    description: `Play free online board games, card games, and multiplayer mini-games with friends on ${APP}. Chess, Battleship, Checkers, Cascade, 2048, and more — create a room, share the link, and play in your browser. No download, no signup.`,
     badge: 'Play with Friends or AI',
   },
   games: {
-    title: `Free Online Board Games & Card Games · ${APP}`,
-    description: `Explore the complete catalog of free online multiplayer games on ${APP}. Play Chess, Battleship, Checkers, Tic-Tac-Toe, Cascade, and more in your browser with no download.`,
+    title: `Free Online Board, Card & Mini-Games · ${APP}`,
+    description: `Explore our library of free online multiplayer board games, card games, puzzles, and arcade mini-games on ${APP}. Play Chess, Battleship, Checkers, Tic-Tac-Toe, Cascade, 2048, and more in your browser with no download.`,
   },
   rooms: {
     title: `Live Game Rooms & Open Matches · ${APP}`,

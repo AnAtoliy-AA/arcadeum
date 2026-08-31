@@ -60,7 +60,7 @@ export const communityEn = {
       title: 'Threads',
       subtitle: 'Discussions & Musings',
       description:
-        'Join daily gaming discussions, dev thoughts, and tabletop trivia.',
+        'Join daily gaming discussions, dev thoughts, and gaming trivia.',
     },
     facebook: {
       title: 'Facebook',

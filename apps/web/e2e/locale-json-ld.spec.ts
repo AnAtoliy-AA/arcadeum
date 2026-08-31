@@ -39,7 +39,7 @@ function findByType(blobs: Schema[], type: string): Schema | undefined {
 }
 
 test.describe('Locale JSON-LD — structured data per page', () => {
-  test('home page emits Organization + locale-tagged WebSite', async ({
+  test('home page emits Organization + locale-tagged WebSite and SoftwareApplication', async ({
     page,
   }) => {
     await page.goto('/fr', { waitUntil: 'domcontentloaded' });
@@ -48,6 +48,13 @@ test.describe('Locale JSON-LD — structured data per page', () => {
     const website = findByType(blobs, 'WebSite');
     expect(website).toBeDefined();
     expect(website?.inLanguage).toBe('fr-FR');
+    const softwareApp = findByType(blobs, 'SoftwareApplication');
+    expect(softwareApp).toBeDefined();
+    expect(softwareApp?.genre).toEqual(
+      expect.arrayContaining(['Board Game', 'Card Game', 'Mini Game']),
+    );
+    const faqPage = findByType(blobs, 'FAQPage');
+    expect(faqPage).toBeDefined();
   });
 
   test('games page emits CollectionPage with French inLanguage', async ({

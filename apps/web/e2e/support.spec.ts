@@ -9,7 +9,6 @@ test.describe('Support Page', () => {
 
   test('should load support page', async ({ page }) => {
     await expect(page).toHaveURL(/\/support/);
-    // Use a broad check for the title content
     await expect(page.locator('body')).toContainText(
       /support|поддержите|apoya/i,
     );
@@ -35,8 +34,16 @@ test.describe('Support Page', () => {
     );
   });
 
+  test('should link to social rewards on rewards page', async ({ page }) => {
+    const rewardsLink = page.locator(
+      'section[aria-labelledby="support-actions-heading"] a[href*="/rewards"]',
+    );
+    await expect(rewardsLink).toBeVisible();
+    await rewardsLink.click();
+    await expect(page).toHaveURL(/\/rewards/);
+  });
+
   test('should have working external links', async ({ page }) => {
-    // Both social links in footer and external links in section
     const externalLinks = page.locator('a[target="_blank"]');
     await expect(externalLinks.first()).toBeVisible({});
     expect(await externalLinks.count()).toBeGreaterThan(0);
@@ -46,16 +53,12 @@ test.describe('Support Page', () => {
     const sponsorLink = page.getByText(
       /sponsor development|patrocinar|soutenir|спонсор|become a sponsor/i,
     );
-    // It should be a route link now, so check if it redirects within the app
     await sponsorLink.click();
     await expect(page).toHaveURL(/payment\?mode=subscription/);
   });
 
   test('should satisfy accessibility requirements', async ({ page }) => {
-    // Check for standard landmarks like banner (header)
     await expect(page.getByRole('banner').first()).toBeVisible();
-
-    // Scroll to bottom to ensure footer is visible
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await expect(page.getByRole('contentinfo')).toBeVisible();
   });

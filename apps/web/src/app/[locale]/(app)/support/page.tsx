@@ -71,6 +71,16 @@ function buildActions(): SupportAction[] {
       cta: 'Sponsor development',
     },
     {
+      key: 'socialRewards',
+      icon: '💎',
+      type: 'route',
+      href: '/rewards',
+      title: 'Follow socials & get free rewards',
+      description:
+        'Subscribe to our official social networks (Discord, Telegram, X, GitHub) and earn free gems and rewards.',
+      cta: 'Claim rewards',
+    },
+    {
       key: 'github',
       icon: '🐙',
       type: 'external',

@@ -5,9 +5,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DEFAULT_LOCALE, Locale, TranslationBundle } from '@/shared/i18n';
 
 const mockReplace = vi.fn();
+const mockRefresh = vi.fn();
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ replace: mockReplace }),
+  useRouter: () => ({ replace: mockReplace, refresh: mockRefresh }),
   usePathname: () => `/${DEFAULT_LOCALE}/games`,
   useSearchParams: () => new URLSearchParams(),
 }));
@@ -17,16 +18,12 @@ vi.mock('@/shared/i18n', async () => {
     await vi.importActual<typeof import('@/shared/i18n')>('@/shared/i18n');
   return {
     ...actual,
-    getMessages: vi.fn(
-      (locale: Locale): TranslationBundle => ({
-        common: { labels: { email: `messages for ${locale}` } },
-      }),
-    ),
-    loadMessages: vi.fn(
-      async (locale: Locale): Promise<TranslationBundle> => ({
-        common: { labels: { email: `messages for ${locale}` } },
-      }),
-    ),
+    getMessages: vi.fn((locale: Locale): TranslationBundle => ({
+      common: { labels: { email: `messages for ${locale}` } },
+    })),
+    loadMessages: vi.fn(async (locale: Locale): Promise<TranslationBundle> => ({
+      common: { labels: { email: `messages for ${locale}` } },
+    })),
   };
 });
 

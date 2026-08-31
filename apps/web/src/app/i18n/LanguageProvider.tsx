@@ -2,6 +2,7 @@
 
 import {
   ReactNode,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -9,72 +10,81 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import {
   DEFAULT_LOCALE,
-  SUPPORTED_LOCALES,
   Locale,
   TranslationBundle,
   formatMessage,
   getMessages,
   loadMessages,
 } from '@/shared/i18n';
-import { LOCALE_SLUGS, type SlugKey } from '@/shared/config/locale-slugs';
 
 import {
   LanguageContext,
   LanguageContextValue,
 } from '@/shared/i18n/LanguageContext';
 
+import { SearchParamsSyncer } from './SearchParamsSyncer';
+
+type SetLocaleFn = (next: Locale) => void;
+
 const emptySubscribe = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
 
-const LOCALIZED_SLUG_TO_KEY: Record<
-  Locale,
-  Record<string, SlugKey>
-> = Object.fromEntries(
-  SUPPORTED_LOCALES.map((locale) => [
-    locale,
-    Object.fromEntries(
-      Object.entries(LOCALE_SLUGS[locale]).map(([key, slug]) => [
-        slug,
-        key as SlugKey,
-      ]),
+function useIsHydrated() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
+}
+
+function useLazyMessages(locale: Locale, initialMessages?: TranslationBundle) {
+  const [messages, setMessages] = useState<TranslationBundle>(
+    () => initialMessages ?? getMessages(locale ?? DEFAULT_LOCALE),
+  );
+
+  const hasFullBundle = useRef(
+    !!(
+      initialMessages?.settings &&
+      Object.keys(initialMessages.settings).length > 0
     ),
-  ]),
-) as Record<Locale, Record<string, SlugKey>>;
+  );
 
-/**
- * Swap both the locale prefix AND the localized first slug when the
- * user changes language. `/fr/jeux/create` -> `/ru/igry/create`.
- */
-function swapLocaleInPath(pathname: string, nextLocale: Locale): string {
-  const segments = pathname.split('/').filter(Boolean);
-  const currentLocale = segments[0];
-  const isLocale =
-    !!currentLocale &&
-    (SUPPORTED_LOCALES as readonly string[]).includes(currentLocale);
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    document.documentElement.setAttribute('lang', locale);
+    document.documentElement.setAttribute('data-hydrated', 'true');
+    document.documentElement.setAttribute('data-app-ready', 'true');
+    document.cookie = `app-language=${locale}; path=/; max-age=31536000; SameSite=Lax`;
 
-  if (!isLocale) {
-    return `/${nextLocale}${pathname === '/' ? '' : pathname}`;
-  }
+    if (hasFullBundle.current) return;
 
-  segments[0] = nextLocale;
+    let mounted = true;
 
-  // Translate the second segment if it's a recognized localized slug
-  // under the current locale (`LOCALIZED_SLUG_TO_KEY['en']` is just the
-  // identity map since English slugs equal their keys).
-  const secondSegment = segments[1];
-  if (secondSegment) {
-    const key = LOCALIZED_SLUG_TO_KEY[currentLocale as Locale]?.[secondSegment];
-    if (key) {
-      segments[1] = LOCALE_SLUGS[nextLocale][key];
+    const load = () => {
+      loadMessages(locale).then((msgs) => {
+        if (mounted) {
+          setMessages(msgs);
+          hasFullBundle.current = true;
+        }
+      });
+    };
+
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(load, { timeout: 2000 });
+    } else {
+      load();
     }
-  }
 
-  return '/' + segments.join('/');
+    return () => {
+      mounted = false;
+    };
+  }, [locale]);
+
+  return messages;
 }
 
 export function LanguageProvider({
@@ -86,90 +96,25 @@ export function LanguageProvider({
   locale: Locale;
   initialMessages?: TranslationBundle;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const isReady = useSyncExternalStore(
-    emptySubscribe,
-    getClientSnapshot,
-    getServerSnapshot,
-  );
+  const messages = useLazyMessages(locale, initialMessages);
+  const isReady = useIsHydrated();
 
-  const [loadedMessages, setLoadedMessages] = useState<TranslationBundle>(
-    () => initialMessages ?? getMessages(locale ?? DEFAULT_LOCALE),
-  );
-
-  // Track whether we have already loaded the *complete* translation bundle.
-  // `getInitialTranslations()` returns partial bundles (empty settings, auth,
-  // chat, etc.) — these must not prevent the deferred full-bundle load.
-  const hasFullBundle = useRef(
-    !!(
-      initialMessages?.settings &&
-      Object.keys(initialMessages.settings).length > 0
-    ),
-  );
-
-  // Defer heavy translation loading until the browser is idle so hydration,
-  // first paint, and interactivity are not blocked by 19+ dynamic imports.
-  // Server-rendered HTML already contains the correct translated text for the
-  // initial page; client-side translations are only needed for SPA navigation
-  // and dynamic content updates that happen after the page is interactive.
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-    document.documentElement.setAttribute('lang', locale);
-    document.documentElement.setAttribute('data-hydrated', 'true');
-    document.documentElement.setAttribute('data-app-ready', 'true');
-
-    document.cookie = `app-language=${locale}; path=/; max-age=31536000; SameSite=Lax`;
-
-    // Skip loading only when the full bundle has already been loaded for this
-    // locale.  Partial bundles from `getInitialTranslations()` still need the
-    // deferred load so that SPA navigation has complete translations.
-    if (hasFullBundle.current) return;
-
-    let mounted = true;
-    const scheduleLoad = () => {
-      loadMessages(locale).then((msgs) => {
-        if (mounted) {
-          setLoadedMessages(msgs);
-          hasFullBundle.current = true;
-        }
-      });
-    };
-    // Use requestIdleCallback when available (not Safari), otherwise setTimeout
-    if (typeof requestIdleCallback === 'function') {
-      requestIdleCallback(scheduleLoad, { timeout: 2000 });
-    } else {
-      setTimeout(scheduleLoad, 0);
-    }
-    return () => {
-      mounted = false;
-    };
-  }, [locale]);
-
+  const setLocaleRef = useRef<SetLocaleFn>(() => {});
   const setLocale = useCallback(
-    (next: Locale) => {
-      if (next === locale) return;
-      const nextPath = swapLocaleInPath(pathname ?? `/${locale}`, next);
-      const query = searchParams?.toString();
-      router.replace(query ? `${nextPath}?${query}` : nextPath);
-    },
-    [locale, pathname, searchParams, router],
+    (next: Locale) => setLocaleRef.current(next),
+    [],
   );
 
   const value = useMemo<LanguageContextValue>(
-    () => ({
-      locale,
-      setLocale,
-      messages: loadedMessages,
-      isReady,
-      initialLocale: locale,
-    }),
-    [locale, setLocale, loadedMessages, isReady],
+    () => ({ locale, setLocale, messages, isReady, initialLocale: locale }),
+    [locale, setLocale, messages, isReady],
   );
 
   return (
     <LanguageContext.Provider value={value}>
+      <Suspense>
+        <SearchParamsSyncer locale={locale} setLocaleRef={setLocaleRef} />
+      </Suspense>
       {children}
     </LanguageContext.Provider>
   );

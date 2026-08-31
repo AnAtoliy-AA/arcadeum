@@ -59,13 +59,16 @@ export class LiveStatsService {
   async getLiveStats(): Promise<LiveStatsResponse> {
     const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
     const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000;
     const oneDayAgoDate = new Date(oneDayAgo);
     const oneWeekAgoDate = new Date(oneWeekAgo);
+    const twoHoursAgoDate = new Date(twoHoursAgo);
 
     const publicHostFilter = { $not: /^anon_/ };
     const baseRoomFilter = {
       visibility: { $ne: 'private' },
       hostId: publicHostFilter,
+      updatedAt: { $gte: twoHoursAgoDate },
     };
 
     const [

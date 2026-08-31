@@ -54,11 +54,14 @@ export function GameLandingLiveStats({ gameId }: GameLandingLiveStatsProps) {
   }, [fetchLiveStats, setLiveStats]);
 
   const matchingOpenRooms = gameId
-    ? stats.openRooms.filter((r) => r.gameId === gameId).length
+    ? stats.openRooms.filter((r) => r.gameId === gameId && r.status === 'lobby')
+        .length
     : stats.waitingRooms;
 
-  const displayOpenRooms =
-    gameId && matchingOpenRooms > 0 ? matchingOpenRooms : stats.waitingRooms;
+  const displayOpenRooms = gameId ? matchingOpenRooms : stats.waitingRooms;
+  const roomsHref = gameId
+    ? `${routes.rooms}?status=lobby&gameId=${gameId}`
+    : `${routes.rooms}?status=lobby`;
 
   return (
     <div
@@ -76,7 +79,7 @@ export function GameLandingLiveStats({ gameId }: GameLandingLiveStatsProps) {
       <div className="h-3.5 w-px bg-white/20" />
 
       <Link
-        href={`${routes.rooms}?status=lobby`}
+        href={roomsHref}
         data-testid="landing-live-open-lobbies"
         className="flex items-center gap-1.5 rounded-lg bg-indigo-500/10 px-2.5 py-1 font-medium text-indigo-300 border border-indigo-500/20 hover:bg-indigo-500/20 transition-colors"
       >

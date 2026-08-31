@@ -69,6 +69,13 @@ export async function fetchTracks(): Promise<readonly MusicTrack[]> {
       // Fall through to fallback
     }
   }
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      '[GameMusic] NEXT_PUBLIC_CDN_URL is not set — using 10 fallback tracks. Set the env var to load the full catalog from R2.',
+    );
+  }
+
   return FALLBACK_TRACKS;
 }
 

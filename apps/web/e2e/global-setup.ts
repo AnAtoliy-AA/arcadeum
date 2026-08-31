@@ -38,16 +38,43 @@ export default async function globalSetup(): Promise<void> {
   // doesn't log 404 noise for /game-sizes.json and /build-id.json on
   // every page load.  The real files are produced by `postbuild` and
   // gitignored; during e2e the dev server never runs `next build`.
+  //
+  // In dev mode (`next dev`) Next.js serves directly from public/, so
+  // writing there is enough.  In production mode (`next start` with
+  // output:'standalone') the server reads public files from the
+  // standalone copy at .next/standalone/<webRoot>/public/, so we write
+  // the placeholders there too (silently ignoring if the dir doesn't
+  // exist yet, e.g. before the first local build).
   const webRoot = process.cwd();
+  const buildId = JSON.stringify({ buildId: 'e2e-placeholder' }) + '\n';
+  const gameSizes = JSON.stringify({ games: {}, totalBytes: 0 }) + '\n';
   await Promise.all([
+    writeFile(join(webRoot, 'public', 'build-id.json'), buildId),
+    writeFile(join(webRoot, 'public', 'game-sizes.json'), gameSizes),
     writeFile(
-      join(webRoot, 'public', 'build-id.json'),
-      JSON.stringify({ buildId: 'e2e-placeholder' }) + '\n',
-    ),
+      join(
+        webRoot,
+        '.next',
+        'standalone',
+        'apps',
+        'web',
+        'public',
+        'build-id.json',
+      ),
+      buildId,
+    ).catch(() => {}),
     writeFile(
-      join(webRoot, 'public', 'game-sizes.json'),
-      JSON.stringify({ games: {}, totalBytes: 0 }) + '\n',
-    ),
+      join(
+        webRoot,
+        '.next',
+        'standalone',
+        'apps',
+        'web',
+        'public',
+        'game-sizes.json',
+      ),
+      gameSizes,
+    ).catch(() => {}),
   ]);
 
   // Honor an external MONGODB_OCI_URI so a developer pointing at a local mongod —

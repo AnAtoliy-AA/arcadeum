@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.16] - 2026-08-31
+
+### Added
+- rework rooms filters UI with responsive mobile ergonomics (ARC-711) (ARC-711)
+- show in-progress matches for current game on landing (ARC-711) (ARC-711)
+- show active public lobbies and own lobby indicator in game landing (ARC-711) (ARC-711)
+- add live stats ticker with open lobbies and waiting queue players to game landings (ARC-711) (ARC-711)
+- display count of open lobbies and waiting queue players (ARC-711) (ARC-711)
+- suggest creating room when no active rooms exist in matchmaking queue (ARC-711) (ARC-711)
+- rework matchmaking queue with players ahead display and opponent discovery (ARC-711) (ARC-711)
+
+### Fixed
+- resolve eslint union type in be and restore checkbox role on categories in web (ARC-711) (ARC-711)
+- allow string and all in ListRoomsFilters status type (ARC-711) (ARC-711)
+- support multi-status and in_progress query filtering on backend and frontend (ARC-711) (ARC-711)
+- implement atomic clear filters and synchronized search (ARC-711) (ARC-711)
+- enable status multi-selection in rooms filters (ARC-711) (ARC-711)
+- reference correct room password field in live stats (ARC-711) (ARC-711)
+- filter stale lobby rooms in live stats and link game-specific lobbies (ARC-711) (ARC-711)
+
+### Refactored
+- redesign rooms filters with segmented tabs and modern glassmorphism (ARC-711) (ARC-711)
+
+
 ## [1.27.15] - 2026-08-31
 
 ### Added

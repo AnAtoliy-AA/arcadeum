@@ -19,19 +19,20 @@ export class GameRoomsQueryBuilder {
       query.$or = [{ name: searchRegex }, { inviteCode: filters.search }];
     }
 
-    if (filters.status) {
-      const status = filters.status;
-      if (!isValidStatus(status)) {
-        throw new Error(`Invalid status: ${String(status)}`);
-      }
-      query.status = status;
-    } else if (filters.statuses && filters.statuses.length > 0) {
-      for (const s of filters.statuses) {
-        if (!isValidStatus(s)) {
-          throw new Error(`Invalid status: ${String(s)}`);
+    if (filters.status && filters.status !== 'all') {
+      if (filters.status.includes(',')) {
+        const statuses = filters.status.split(',').filter(isValidStatus);
+        if (statuses.length > 0) {
+          query.status = { $in: statuses };
         }
+      } else if (isValidStatus(filters.status)) {
+        query.status = filters.status;
       }
-      query.status = { $in: filters.statuses };
+    } else if (filters.statuses && filters.statuses.length > 0) {
+      const valid = filters.statuses.filter(isValidStatus);
+      if (valid.length > 0) {
+        query.status = { $in: valid };
+      }
     }
 
     if (filters.visibility) {

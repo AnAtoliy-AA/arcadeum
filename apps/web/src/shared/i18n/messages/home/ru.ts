@@ -92,6 +92,12 @@ export const ru = {
   liveBadgeOnline: 'Сейчас онлайн',
   liveBadgeActiveGames: 'Идёт матчей',
   liveBadgeWaitingRooms: 'Открытые комнаты',
+  liveBadgeWaitingPlayers: 'Ищут соперника',
+  liveWaitingRoomsSub: 'Комнаты ждут игроков',
+  liveWaitingRoomsWithMine: '{{count}} открытых комнат (+{{mine}} ваша)',
+  liveWaitingRoomsOnlyMine: 'Ваша комната ждёт игроков',
+  liveWaitingPlayersSub: 'Игроки ждут в очереди',
+  liveWaitingPlayersForGame: '{{count}} в поиске этой игры',
   liveBadgeMatchesToday: 'Сыграно сегодня',
   liveOpenLobbiesTitle: 'Открытые комнаты',
   liveOpenLobbiesSubtitle:

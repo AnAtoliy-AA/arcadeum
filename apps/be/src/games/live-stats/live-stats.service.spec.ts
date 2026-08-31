@@ -175,6 +175,7 @@ describe('LiveStatsService', () => {
     expect(stats).toBeDefined();
     expect(stats.activeGames).toBe(5);
     expect(stats.waitingRooms).toBe(5);
+    expect(stats.waitingPlayers).toBe(0);
     expect(stats.matchesToday).toBe(42);
     expect(stats.totalUsers).toBe(128);
     expect(stats.totalMatches).toBe(42);
@@ -198,6 +199,7 @@ describe('LiveStatsService', () => {
       platformSubscribers: { discord: 45 },
       activeGames: 10,
       waitingRooms: 4,
+      waitingPlayers: 0,
       matchesToday: 50,
       popularGames: [],
       openRooms: [],

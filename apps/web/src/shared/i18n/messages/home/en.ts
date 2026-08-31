@@ -88,6 +88,12 @@ export const en = {
   liveBadgeOnline: 'Online Now',
   liveBadgeActiveGames: 'Active Matches',
   liveBadgeWaitingRooms: 'Open Lobbies',
+  liveBadgeWaitingPlayers: 'Seeking Matches',
+  liveWaitingRoomsSub: 'Lobbies waiting for players',
+  liveWaitingRoomsWithMine: '{{count}} open lobbies (+{{mine}} yours)',
+  liveWaitingRoomsOnlyMine: 'Your lobby is waiting for players',
+  liveWaitingPlayersSub: 'Players waiting in queue',
+  liveWaitingPlayersForGame: '{{count}} searching in this game',
   liveBadgeMatchesToday: 'Matches Today',
   liveOpenLobbiesTitle: 'Open Lobbies',
   liveOpenLobbiesSubtitle:

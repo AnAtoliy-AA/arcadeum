@@ -65,11 +65,10 @@ export default function GamesPage({
     () => {
       const raw = searchParams ? searchParams.get('status') : null;
       if (raw === null || raw === undefined) {
-        return ['lobby', 'in_progress'];
+        return [];
       }
       return parseStatusFilterFromUrl(raw);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pathname triggers re-parse when navigating
     [searchParams, pathname],
   );
   const participationFilter =
@@ -156,6 +155,24 @@ export default function GamesPage({
     },
     [updateParams],
   );
+
+  const handleClearAll = useCallback(() => {
+    setSearchQuery('');
+    setCategoryFilter('');
+    const currentParams = new URLSearchParams(
+      searchParamsRef.current?.toString() || '',
+    );
+    currentParams.delete('search');
+    currentParams.delete('category');
+    currentParams.delete('status');
+    currentParams.delete('aiVsAi');
+    currentParams.delete('participation');
+    currentParams.delete('page');
+
+    router.push(`${pathname}?${currentParams.toString()}`, {
+      scroll: false,
+    });
+  }, [pathname, router]);
 
   // Sync deferred search query to URL - only if it actually changed from current URL
   useEffect(() => {
@@ -307,6 +324,7 @@ export default function GamesPage({
           aiVsAiFilter={aiVsAiFilter}
           onAiVsAiChange={handleAiVsAiChange}
           canFilterParticipation={!!snapshot.accessToken || !!snapshot.userId}
+          onClearAll={handleClearAll}
         />
 
         <GlassCard className={'p-6'}>

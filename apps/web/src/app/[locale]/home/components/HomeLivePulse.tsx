@@ -89,7 +89,7 @@ export function HomeLivePulse() {
           </Link>
         </div>
 
-        <div className="relative z-[1] grid grid-cols-2 gap-3 sm:grid-cols-4 md:gap-4">
+        <div className="relative z-[1] grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 md:gap-4">
           <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-b from-emerald-950/20 to-black/30 p-4 transition-all hover:border-emerald-500/40 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)]">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
@@ -137,32 +137,6 @@ export function HomeLivePulse() {
           </Link>
 
           <Link
-            href={`${routes.rooms}?status=completed`}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-950/20 to-black/30 p-4 transition-all hover:border-cyan-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] active:scale-[0.98]"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
-                {t('home.liveBadgeMatchesToday')}
-              </span>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 text-xs">
-                🏆
-              </span>
-            </div>
-            <div
-              data-testid="live-matches-today-counter"
-              className="mt-3 font-mono text-2xl font-black text-white md:text-3xl"
-            >
-              {stats.matchesToday.toLocaleString()}
-            </div>
-            <div className="mt-1 flex items-center justify-between text-[11px] font-medium text-cyan-300/60">
-              <span>Completed today</span>
-              <span className="text-cyan-400 font-bold transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </div>
-          </Link>
-
-          <Link
             href={`${routes.rooms}?status=lobby`}
             className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-b from-indigo-950/20 to-black/30 p-4 transition-all hover:border-indigo-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] active:scale-[0.98]"
           >
@@ -181,8 +155,60 @@ export function HomeLivePulse() {
               {stats.waitingRooms}
             </div>
             <div className="mt-1 flex items-center justify-between text-[11px] font-medium text-indigo-300/60">
-              <span>Joinable lobbies</span>
+              <span>{t('home.liveWaitingRoomsSub')}</span>
               <span className="text-indigo-400 font-bold transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
+            </div>
+          </Link>
+
+          <Link
+            href={routes.games}
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-fuchsia-500/20 bg-gradient-to-b from-fuchsia-950/20 to-black/30 p-4 transition-all hover:border-fuchsia-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(217,70,239,0.15)] active:scale-[0.98]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-fuchsia-400">
+                {t('home.liveBadgeWaitingPlayers')}
+              </span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-fuchsia-500/10 text-fuchsia-400 text-xs">
+                🎯
+              </span>
+            </div>
+            <div
+              data-testid="live-waiting-players-counter"
+              className="mt-3 font-mono text-2xl font-black text-white md:text-3xl"
+            >
+              {stats.waitingPlayers}
+            </div>
+            <div className="mt-1 flex items-center justify-between text-[11px] font-medium text-fuchsia-300/60">
+              <span>{t('home.liveWaitingPlayersSub')}</span>
+              <span className="text-fuchsia-400 font-bold transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
+            </div>
+          </Link>
+
+          <Link
+            href={`${routes.rooms}?status=completed`}
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-950/20 to-black/30 p-4 transition-all hover:border-cyan-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] active:scale-[0.98] col-span-2 sm:col-span-1"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
+                {t('home.liveBadgeMatchesToday')}
+              </span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 text-xs">
+                🏆
+              </span>
+            </div>
+            <div
+              data-testid="live-matches-today-counter"
+              className="mt-3 font-mono text-2xl font-black text-white md:text-3xl"
+            >
+              {stats.matchesToday.toLocaleString()}
+            </div>
+            <div className="mt-1 flex items-center justify-between text-[11px] font-medium text-cyan-300/60">
+              <span>Completed today</span>
+              <span className="text-cyan-400 font-bold transition-transform group-hover:translate-x-0.5">
                 →
               </span>
             </div>

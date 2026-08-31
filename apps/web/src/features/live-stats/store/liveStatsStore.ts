@@ -12,10 +12,13 @@ export interface LiveRoomItem {
   id: string;
   gameId: string;
   name: string;
+  hostId: string;
   hostName: string;
   currentPlayers: number;
   maxPlayers: number;
   status: 'lobby' | 'in_progress';
+  hasPassword?: boolean;
+  visibility?: 'public' | 'unlisted' | 'private';
   createdAt: string;
 }
 
@@ -35,7 +38,10 @@ export interface LiveStatsData {
   totalSubscribers: number;
   platformSubscribers: Record<string, number>;
   activeGames: number;
+  activeGamesByGame?: Record<string, number>;
   waitingRooms: number;
+  waitingPlayers: number;
+  waitingQueues?: Record<string, number>;
   matchesToday: number;
   popularGames: LivePopularGame[];
   openRooms: LiveRoomItem[];
@@ -49,7 +55,10 @@ const DEFAULT_STATS: LiveStatsData = {
   totalSubscribers: 0,
   platformSubscribers: {},
   activeGames: 0,
+  activeGamesByGame: {},
   waitingRooms: 0,
+  waitingPlayers: 0,
+  waitingQueues: {},
   matchesToday: 0,
   popularGames: [],
   openRooms: [],

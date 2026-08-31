@@ -100,7 +100,7 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
         </button>
       </div>
 
-      <div className="my-3 grid grid-cols-4 gap-2 text-center">
+      <div className="my-3 grid grid-cols-5 gap-1.5 text-center">
         <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-2">
           <div className="font-mono text-sm font-extrabold text-emerald-400">
             {stats.onlineUsers}
@@ -124,19 +124,6 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
         </Link>
 
         <Link
-          href={`${routes.rooms}?status=completed`}
-          onClick={handleClose}
-          className="rounded-xl border border-cyan-500/20 bg-cyan-950/20 p-2 transition-all hover:border-cyan-500/40 hover:bg-cyan-900/30"
-        >
-          <div className="font-mono text-sm font-extrabold text-cyan-400">
-            {stats.matchesToday}
-          </div>
-          <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">
-            {t('home.liveBadgeMatchesToday')}
-          </div>
-        </Link>
-
-        <Link
           href={`${routes.rooms}?status=lobby`}
           onClick={handleClose}
           className="rounded-xl border border-indigo-500/20 bg-indigo-950/20 p-2 transition-all hover:border-indigo-500/40 hover:bg-indigo-900/30"
@@ -146,6 +133,32 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
           </div>
           <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">
             {t('home.liveBadgeWaitingRooms')}
+          </div>
+        </Link>
+
+        <Link
+          href={routes.games}
+          onClick={handleClose}
+          className="rounded-xl border border-fuchsia-500/20 bg-fuchsia-950/20 p-2 transition-all hover:border-fuchsia-500/40 hover:bg-fuchsia-900/30"
+        >
+          <div className="font-mono text-sm font-extrabold text-fuchsia-400">
+            {stats.waitingPlayers}
+          </div>
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">
+            {t('home.liveBadgeWaitingPlayers')}
+          </div>
+        </Link>
+
+        <Link
+          href={`${routes.rooms}?status=completed`}
+          onClick={handleClose}
+          className="rounded-xl border border-cyan-500/20 bg-cyan-950/20 p-2 transition-all hover:border-cyan-500/40 hover:bg-cyan-900/30"
+        >
+          <div className="font-mono text-sm font-extrabold text-cyan-400">
+            {stats.matchesToday}
+          </div>
+          <div className="text-[9px] font-semibold uppercase tracking-wider text-white/60">
+            {t('home.liveBadgeMatchesToday')}
           </div>
         </Link>
       </div>

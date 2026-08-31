@@ -16,6 +16,7 @@ import {
   OCI_CONNECTION,
   ATLAS_CONNECTION,
 } from '../../common/providers/mongo-connections.provider';
+import { GameRoomsMatchmakingService } from '../rooms/game-rooms.matchmaking.service';
 import type {
   LiveStatsResponse,
   LivePopularGame,
@@ -51,18 +52,23 @@ export class LiveStatsService {
     @Optional()
     @InjectModel(SocialRewardClaim.name)
     private readonly claimModel?: Model<SocialRewardClaimDocument>,
+    @Optional()
+    private readonly matchmakingService?: GameRoomsMatchmakingService,
   ) {}
 
   async getLiveStats(): Promise<LiveStatsResponse> {
     const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
     const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000;
     const oneDayAgoDate = new Date(oneDayAgo);
     const oneWeekAgoDate = new Date(oneWeekAgo);
+    const twoHoursAgoDate = new Date(twoHoursAgo);
 
     const publicHostFilter = { $not: /^anon_/ };
     const baseRoomFilter = {
       visibility: { $ne: 'private' },
       hostId: publicHostFilter,
+      updatedAt: { $gte: twoHoursAgoDate },
     };
 
     const [
@@ -76,6 +82,7 @@ export class LiveStatsService {
       gameWeekAggregation,
       roomDayAggregation,
       roomWeekAggregation,
+      inProgressByGameAgg,
       totalUsers,
       totalMatches,
       totalSubscribers,
@@ -145,6 +152,12 @@ export class LiveStatsService {
             },
           },
           { $group: { _id: '$gameId', matches: { $sum: 1 } } },
+        ])
+        .exec(),
+      this.roomModel
+        .aggregate<{ _id: string; count: number }>([
+          { $match: { ...baseRoomFilter, status: 'in_progress' } },
+          { $group: { _id: '$gameId', count: { $sum: 1 } } },
         ])
         .exec(),
       this.userModel
@@ -224,10 +237,13 @@ export class LiveStatsService {
       id: String(r._id),
       gameId: r.gameId,
       name: r.name || `${r.gameId} Arena`,
+      hostId: String(r.hostId),
       hostName: resolveDisplayName(r.hostId),
       currentPlayers: Array.isArray(r.participants) ? r.participants.length : 1,
       maxPlayers: r.maxPlayers || 2,
       status: r.status === 'in_progress' ? 'in_progress' : 'lobby',
+      hasPassword: Boolean(r.password),
+      visibility: r.visibility,
       createdAt: r.createdAt
         ? new Date(r.createdAt).toISOString()
         : new Date().toISOString(),
@@ -284,6 +300,23 @@ export class LiveStatsService {
       }
     }
 
+    let waitingPlayers = 0;
+    let waitingQueues: Record<string, number> = {};
+    if (this.matchmakingService) {
+      waitingQueues = this.matchmakingService.getQueueOverview();
+      waitingPlayers = Object.values(waitingQueues).reduce(
+        (sum, n) => sum + n,
+        0,
+      );
+    }
+
+    const activeGamesByGame: Record<string, number> = {};
+    for (const item of inProgressByGameAgg) {
+      if (item._id) {
+        activeGamesByGame[item._id] = item.count;
+      }
+    }
+
     return {
       onlineUsers,
       totalUsers: totalUsers ?? 0,
@@ -291,7 +324,10 @@ export class LiveStatsService {
       totalSubscribers: totalSubscribers ?? 0,
       platformSubscribers,
       activeGames,
+      activeGamesByGame,
       waitingRooms,
+      waitingPlayers,
+      waitingQueues,
       matchesToday,
       popularGames,
       openRooms,

@@ -2,7 +2,9 @@ import { expect } from '@playwright/test';
 import { test, navigateTo } from './fixtures/test-utils';
 
 test.describe('PWA Features', () => {
-  test('manifest file is accessible', async ({ request }) => {
+  test('manifest file is accessible and includes maskable icon', async ({
+    request,
+  }) => {
     const response = await request.get('/manifest.json');
     expect(response.ok()).toBe(true);
 
@@ -12,7 +14,13 @@ test.describe('PWA Features', () => {
     expect(manifest.display).toBe('standalone');
     expect(manifest.theme_color).toBe('#151718');
     expect(manifest.background_color).toBe('#151718');
-    expect(manifest.icons).toHaveLength(2);
+    expect(manifest.icons.length).toBeGreaterThanOrEqual(2);
+
+    const maskable = manifest.icons.find(
+      (icon: { purpose?: string }) => icon.purpose === 'maskable',
+    );
+    expect(maskable).toBeDefined();
+    expect(maskable.src).toBe('/icon-maskable-512x512.png');
   });
 
   test('PWA icons are accessible', async ({ request }) => {
@@ -23,9 +31,17 @@ test.describe('PWA Features', () => {
     const icon512 = await request.get('/icon-512x512.png');
     expect(icon512.ok()).toBe(true);
     expect(icon512.headers()['content-type']).toContain('image/png');
+
+    const maskableIcon = await request.get('/icon-maskable-512x512.png');
+    expect(maskableIcon.ok()).toBe(true);
+    expect(maskableIcon.headers()['content-type']).toContain('image/png');
+
+    const appleIcon = await request.get('/apple-touch-icon.png');
+    expect(appleIcon.ok()).toBe(true);
+    expect(appleIcon.headers()['content-type']).toContain('image/png');
   });
 
-  test('page has PWA meta tags', async ({ page }) => {
+  test('page has PWA meta tags and apple touch icon', async ({ page }) => {
     // Use the shared navigation helper so the test retries on
     // dev-server compile flakes (ChunkLoadError / hydration mismatch)
     // that show up when the full suite is run in parallel.
@@ -36,6 +52,12 @@ test.describe('PWA Features', () => {
 
     const themeColor = page.locator('meta[name="theme-color"]');
     await expect(themeColor).toHaveAttribute('content', '#151718');
+
+    const appleTouchIcon = page.locator('link[rel="apple-touch-icon"]');
+    await expect(appleTouchIcon).toHaveAttribute(
+      'href',
+      '/apple-touch-icon.png',
+    );
   });
 
   test('offline page is accessible', async ({ page }) => {

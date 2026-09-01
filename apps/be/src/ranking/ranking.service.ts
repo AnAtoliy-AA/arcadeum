@@ -163,6 +163,7 @@ export class RankingService {
       this.rankingModel.countDocuments(filter).exec(),
       this.rankingModel
         .find(filter)
+        .select('userId elo tier wins losses draws peakElo')
         .sort({ elo: -1, rankedGames: -1 })
         .skip(offset)
         .limit(limit)

@@ -21,8 +21,8 @@ export const MainGameArea = ({
 }: CommonProps) => (
   <div
     className={cx(
-      'flex flex-col items-stretch gap-1.5 w-full flex-1 min-h-0 min-w-0 p-1',
-      'max-[1150px]:gap-1.5 max-[1150px]:p-0.5',
+      'flex flex-col items-stretch gap-1 w-full flex-1 min-h-0 min-w-0 p-0.5',
+      'max-[1150px]:gap-1 max-[1150px]:p-0.5',
       'max-[800px]:gap-1 max-[800px]:p-0',
       className,
     )}
@@ -50,8 +50,8 @@ export const GameBoardWrapper = ({
 }: GameBoardWrapperProps) => (
   <div
     className={cx(
-      'flex flex-row items-stretch gap-3 flex-wrap w-full justify-center',
-      'max-[1150px]:flex-col max-[1150px]:gap-2.5',
+      'flex flex-row items-stretch gap-2.5 flex-wrap w-full justify-center',
+      'max-[1150px]:flex-col max-[1150px]:gap-2',
       'max-[800px]:flex-col max-[800px]:gap-2',
       '[@media(orientation:landscape)_and_(max-height:520px)]:flex-row [@media(orientation:landscape)_and_(max-height:520px)]:flex-nowrap [@media(orientation:landscape)_and_(max-height:520px)]:gap-2',
       className,
@@ -81,10 +81,10 @@ export const BoardContainer = ({
 }: BoardContainerProps) => (
   <div
     className={cx(
-      'flex flex-col items-stretch flex-1 max-w-[490px] w-full',
-      'max-[1150px]:flex-[0] max-[1150px]:max-w-[470px] max-[1150px]:self-center',
+      'flex flex-col items-stretch flex-1 max-w-[465px] w-full',
+      'max-[1150px]:flex-[0] max-[1150px]:max-w-[450px] max-[1150px]:self-center',
       'max-[800px]:flex-[0] max-[800px]:max-w-none',
-      '[@media(max-height:480px)]:max-w-[400px]',
+      '[@media(max-height:480px)]:max-w-[390px]',
       '[@media(orientation:landscape)_and_(max-height:520px)]:max-w-none',
       className,
     )}

@@ -169,11 +169,11 @@
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(calc(var(--sb-grid-size, 10) * 27px + 50px), 1fr)
+    minmax(calc(var(--sb-grid-size, 10) * 25px + 45px), 1fr)
   );
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 2px 4px 8px 4px;
+  padding: 2px 4px 6px 4px;
   justify-content: center;
   align-items: start;
   box-sizing: border-box;

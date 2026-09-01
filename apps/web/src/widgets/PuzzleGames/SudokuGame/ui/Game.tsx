@@ -204,7 +204,7 @@ function SudokuTable() {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-5 px-3">
-      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-sky-500/20 bg-slate-950/70 p-3 shadow-xl shadow-black/50 backdrop-blur-md sm:p-4">
+      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-3 shadow-xl backdrop-blur-md sm:p-4">
         <div className="flex items-center gap-2 sm:gap-4">
           <StatCard
             label={t('games.sudoku_v1.hud.mistakes')}
@@ -234,7 +234,7 @@ function SudokuTable() {
               size="sm"
               onClick={handleOpenModal}
               data-testid="sudoku-show-results-button"
-              className="border-amber-500/40 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60"
+              className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25"
             >
               🏆 {t('games.table.analytics.view') || 'Results'}
             </Button>
@@ -284,17 +284,17 @@ function SudokuTable() {
                 className={cx(
                   'flex flex-col items-center justify-center rounded-xl border py-2 font-mono transition-all',
                   isCompleted
-                    ? 'border-dashed border-slate-800 bg-slate-900/30 opacity-30 cursor-not-allowed'
+                    ? 'border-dashed border-[var(--borderColor)] bg-[var(--backgroundHover)] opacity-30 cursor-not-allowed'
                     : notesMode
-                      ? 'border-sky-500/40 bg-sky-950/40 text-sky-300 hover:bg-sky-500/20 active:scale-95'
-                      : 'border-slate-800 bg-slate-900/80 text-white hover:border-sky-500/40 hover:bg-slate-800 active:scale-95',
+                      ? 'border-sky-500/40 bg-sky-500/15 text-sky-600 dark:text-sky-300 hover:bg-sky-500/25 active:scale-95'
+                      : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-sky-500/50 hover:bg-[var(--glassBgHover)] active:scale-95',
                   'disabled:opacity-40 disabled:cursor-not-allowed',
                 )}
               >
                 <span className="text-base font-extrabold sm:text-lg">
                   {digit}
                 </span>
-                <span className="text-[10px] text-slate-400 font-medium">
+                <span className="text-[10px] text-[var(--textSecondary)] font-medium">
                   {remaining}
                 </span>
               </button>
@@ -311,8 +311,8 @@ function SudokuTable() {
             className={cx(
               'flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs sm:text-sm font-bold transition-all',
               notesMode
-                ? 'border-sky-400 bg-sky-500/25 text-sky-200 shadow-md shadow-sky-500/20 ring-1 ring-sky-400'
-                : 'border-slate-800 bg-slate-900/70 text-slate-300 hover:border-slate-700 hover:bg-slate-800',
+                ? 'border-sky-500 bg-sky-500/20 text-sky-700 dark:text-sky-200 shadow-md shadow-sky-500/20 ring-1 ring-sky-400'
+                : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)]',
             )}
           >
             <span>✎</span>
@@ -323,10 +323,8 @@ function SudokuTable() {
             type="button"
             onClick={erase}
             disabled={selected === null}
-            className={cx(
-              'flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-300 transition-all',
-              'hover:border-red-500/40 hover:bg-red-950/30 hover:text-red-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40',
-            )}
+            title={t('games.sudoku_v1.controls.erase')}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-2.5 text-xs sm:text-sm font-bold text-[var(--color)] transition-all hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <span>⌫</span>
             <span>{t('games.sudoku_v1.controls.erase')}</span>
@@ -372,11 +370,11 @@ function StatCard({
       className={cx(
         'flex flex-col items-center justify-center rounded-xl border px-3 py-1.5 backdrop-blur-sm sm:px-4 sm:py-2',
         highlight
-          ? 'border-red-500/30 bg-red-950/40 text-red-300'
-          : 'border-white/5 bg-black/40 text-white',
+          ? 'border-red-500/30 bg-red-500/15 text-red-600 dark:text-red-300'
+          : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)]',
       )}
     >
-      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
         {label}
       </span>
       <span className="font-mono text-base font-extrabold tabular-nums sm:text-lg">

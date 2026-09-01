@@ -19,7 +19,7 @@ export function PlayerCard({
         'flex min-w-0 flex-1 flex-col items-stretch gap-2 rounded-xl p-3.5 backdrop-blur-[12px] transition-all duration-300',
         isActive
           ? 'border border-[rgba(34,197,94,0.4)] bg-[rgba(34,197,94,0.08)]'
-          : 'border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)]',
+          : 'border border-[var(--glassBorder)] bg-[var(--glassBg)]',
         className,
       )}
     >
@@ -214,7 +214,7 @@ export function ModalContent({
   return (
     <div
       className={cx(
-        'flex flex-col items-center gap-5 rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(20,24,32,0.95)] p-7 backdrop-blur-[20px]',
+        'flex flex-col items-center gap-5 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-7 backdrop-blur-[20px]',
         className,
       )}
       style={{
@@ -227,6 +227,8 @@ export function ModalContent({
   );
 }
 
+export const PromotionModal = ModalContent;
+
 export function ModalTitle({
   className,
   children,
@@ -235,7 +237,9 @@ export function ModalTitle({
   children?: ReactNode;
 }) {
   return (
-    <span className={cx('text-[18px] font-bold text-[#f8fafc]', className)}>
+    <span
+      className={cx('text-[18px] font-bold text-[var(--color)]', className)}
+    >
       {children}
     </span>
   );
@@ -272,7 +276,7 @@ export function PromotionOption({
   return (
     <div
       className={cx(
-        'flex h-16 w-16 cursor-pointer flex-col items-center justify-center rounded-xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] transition-all duration-150 hover:scale-[1.08] hover:border-[rgba(167,139,250,0.5)] hover:bg-[rgba(255,255,255,0.12)]',
+        'flex h-16 w-16 cursor-pointer flex-col items-center justify-center rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] transition-all duration-150 hover:scale-[1.08] hover:border-indigo-400 hover:bg-[var(--glassBgHover)]',
         className,
       )}
       onClick={onClick}
@@ -317,7 +321,7 @@ export function CancelButton({
   return (
     <span
       className={cx(
-        'cursor-pointer rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.05)] px-5 py-2 text-[13px] font-semibold text-[rgba(148,163,184,0.8)] transition-colors duration-150 hover:bg-[rgba(255,255,255,0.1)]',
+        'cursor-pointer rounded-lg border border-[var(--glassBorder)] bg-[var(--glassBg)] px-5 py-2 text-[13px] font-semibold text-[var(--textSecondary)] transition-colors duration-150 hover:bg-[var(--glassBgHover)]',
         className,
       )}
       onClick={onClick}

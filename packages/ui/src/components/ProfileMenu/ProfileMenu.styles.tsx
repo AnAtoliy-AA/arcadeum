@@ -109,22 +109,20 @@ export const ProfileDropdownWrapper = ({
       ...style,
     }}
     className={cx(
-      'rounded-[20px] border border-[var(--glassBorder)] bg-[rgba(12,14,15,0.98)]',
+      'rounded-[20px] border border-[var(--glassBorderStrong)] bg-[var(--background)]',
       'z-[1000] overflow-hidden backdrop-blur-[32px]',
-      'shadow-[0_20px_50px_rgba(0,0,0,0.5)] print:hidden',
+      'shadow-[0_20px_50px_rgba(0,0,0,0.15)] print:hidden',
       className,
     )}
   >
-    {/* Top Glow Edge */}
     <div
       className="pointer-events-none absolute left-0 right-0 top-0 z-[2] h-[2px] opacity-50"
       style={{ background: 'linear-gradient(90deg, transparent, var(--primary), transparent)' }}
     />
-    {/* Glass Highlight Shine */}
     <div
       className="pointer-events-none absolute inset-0"
       style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%)',
+        background: 'linear-gradient(135deg, var(--glassBgHover) 0%, transparent 50%)',
       }}
     />
     <div
@@ -132,7 +130,7 @@ export const ProfileDropdownWrapper = ({
       className="max-h-[calc(100dvh-110px)] overflow-y-auto overflow-x-hidden py-4"
       style={{
         scrollbarWidth: 'thin',
-        scrollbarColor: 'rgba(255,255,255,0.15) transparent',
+        scrollbarColor: 'var(--glassBorder) transparent',
       }}
     >
       {children}
@@ -161,8 +159,8 @@ export const DropdownItem = ({
     onMouseEnter={onMouseEnter}
     onMouseLeave={onMouseLeave}
     className={cx(
-      'relative flex h-[54px] cursor-pointer items-center gap-4 px-5',
-      'transition-all duration-200 hover:bg-[rgba(255,255,255,0.05)] active:opacity-80',
+      'relative flex h-[54px] cursor-pointer items-center gap-4 px-5 text-[var(--color)]',
+      'transition-all duration-200 hover:bg-[var(--backgroundHover)] active:opacity-80',
       className,
     )}
   >

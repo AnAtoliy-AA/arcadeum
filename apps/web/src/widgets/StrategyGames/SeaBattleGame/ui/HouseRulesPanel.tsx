@@ -51,16 +51,9 @@ export function HouseRulesPanel({
               <Button
                 className={`rounded-[8px] font-semibold text-[13px] ${
                   active
-                    ? 'bg-[rgba(59,130,246,0.15)] border-[var(--color,#3b82f6)] hover:bg-[rgba(59,130,246,0.2)]'
-                    : 'bg-[transparent] border-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.05)]'
+                    ? 'bg-blue-500/20 border-blue-500/60 text-blue-500 hover:bg-blue-500/25'
+                    : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
                 } ${disabled ? 'opacity-40' : 'opacity-100'}`}
-                style={{
-                  color: disabled
-                    ? '#52525b'
-                    : active
-                      ? 'var(--color, #3b82f6)'
-                      : '#e2e8f0',
-                }}
                 key={gs}
                 variant="chip"
                 size="sm"
@@ -91,12 +84,9 @@ export function HouseRulesPanel({
               <Button
                 className={`rounded-[8px] font-semibold text-[13px] ${
                   active
-                    ? 'bg-[rgba(59,130,246,0.15)] border-[var(--color,#3b82f6)] hover:bg-[rgba(59,130,246,0.2)]'
-                    : 'bg-[transparent] border-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.05)]'
+                    ? 'bg-blue-500/20 border-blue-500/60 text-blue-500 hover:bg-blue-500/25'
+                    : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
                 }`}
-                style={{
-                  color: active ? 'var(--color, #3b82f6)' : '#e2e8f0',
-                }}
                 key={count}
                 variant="chip"
                 size="sm"

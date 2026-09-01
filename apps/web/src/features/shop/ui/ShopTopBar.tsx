@@ -59,12 +59,12 @@ function BalanceChip({
 }
 
 function NavLink({
-  color,
+  active,
   className,
   'data-testid': dataTestId,
   children,
 }: {
-  color?: string;
+  active?: boolean;
   className?: string;
   'data-testid'?: string;
   children?: React.ReactNode;
@@ -74,11 +74,11 @@ function NavLink({
       uiSize="sm"
       weight="700"
       tracking="sm"
-      color={color === '#f5f7ff' ? '#f5f7ff' : '#94a3b8'}
+      color={active ? 'var(--color)' : 'var(--textSecondary)'}
       data-testid={dataTestId}
       className={cx(
         'px-[10px] py-[6px] rounded-lg uppercase transition-colors',
-        'hover:text-[#f5f7ff] hover:bg-[rgba(255,255,255,0.04)]',
+        'hover:text-[var(--color)] hover:bg-[var(--backgroundHover)]',
         className,
       )}
     >
@@ -162,18 +162,12 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         data-testid="shop-top-bar-nav"
       >
         <Link href={routes.shop} style={{ textDecoration: 'none' }}>
-          <NavLink
-            color={isShop ? '#f5f7ff' : '#babfc7'}
-            data-testid="shop-nav-shop"
-          >
+          <NavLink active={isShop} data-testid="shop-nav-shop">
             {labels.nav.shop}
           </NavLink>
         </Link>
         <Link href={routes.shopInventory} style={{ textDecoration: 'none' }}>
-          <NavLink
-            color={isInventory ? '#f5f7ff' : '#babfc7'}
-            data-testid="shop-nav-inventory"
-          >
+          <NavLink active={isInventory} data-testid="shop-nav-inventory">
             {labels.nav.inventory}
           </NavLink>
         </Link>
@@ -181,7 +175,7 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
           <NavLink data-testid="shop-nav-wallet">{labels.nav.wallet}</NavLink>
         </Link>
         <Link href={routes.rewards} style={{ textDecoration: 'none' }}>
-          <NavLink color="#babfc7" data-testid="shop-nav-rewards">
+          <NavLink data-testid="shop-nav-rewards">
             <span className="flex items-center gap-1.5">
               <span>{labels.nav.rewards ?? 'Rewards'}</span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">

@@ -12,8 +12,10 @@ export function PostGameTrends({ data, loading, t }: PostGameTrendsProps) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 py-8">
-        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-        <span className="text-xs text-white/40">Loading trends...</span>
+        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[var(--glassBorder)] border-t-[var(--primary)]" />
+        <span className="text-xs text-[var(--textSecondary)]">
+          Loading trends...
+        </span>
       </div>
     );
   }
@@ -22,7 +24,7 @@ export function PostGameTrends({ data, loading, t }: PostGameTrendsProps) {
     return (
       <div className="flex flex-col items-center gap-2 py-6">
         <span className="text-3xl">📈</span>
-        <p className="text-center text-[13px] text-white/50">
+        <p className="text-center text-[13px] text-[var(--textSecondary)]">
           {t('games.table.analytics.trends.empty')}
         </p>
       </div>
@@ -37,22 +39,22 @@ export function PostGameTrends({ data, loading, t }: PostGameTrendsProps) {
   return (
     <div className="flex flex-col gap-3.5">
       <div className="grid grid-cols-2 gap-2 text-center">
-        <div className="rounded-xl border border-white/10 bg-black/30 p-2.5">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+        <div className="rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-2.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
             {t('games.table.analytics.trends.winRate')}
           </span>
           <div className="mt-1 flex items-baseline justify-center gap-1">
             <span className="font-mono text-xl font-bold text-emerald-400">
               {data.winRate}%
             </span>
-            <span className="text-[11px] text-white/40">
+            <span className="text-[11px] text-[var(--textSecondary)]">
               ({winCount}/{last10.length} L10)
             </span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-black/30 p-2.5">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+        <div className="rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-2.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
             {t('games.table.analytics.trends.currentStreak')}
           </span>
           <p
@@ -62,7 +64,7 @@ export function PostGameTrends({ data, loading, t }: PostGameTrendsProps) {
                 ? 'text-amber-400'
                 : isLosingStreak
                   ? 'text-rose-400'
-                  : 'text-white/60',
+                  : 'text-[var(--color)]',
             )}
           >
             {isWinningStreak && '🔥'}
@@ -81,9 +83,9 @@ export function PostGameTrends({ data, loading, t }: PostGameTrendsProps) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between text-[11px] font-medium text-white/60">
+        <div className="flex items-center justify-between text-[11px] font-medium text-[var(--color)]">
           <span>{t('games.table.analytics.trends.form')}</span>
-          <span className="text-[10px] text-white/40">
+          <span className="text-[10px] text-[var(--textSecondary)]">
             {t('games.table.analytics.trends.newest')} ➔
           </span>
         </div>

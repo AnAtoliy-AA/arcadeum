@@ -63,10 +63,10 @@ const PlayerItem = ({
   <div
     onClick={onClick}
     className={cx(
-      'flex flex-row items-center gap-3 p-3 rounded-[12px] cursor-pointer border transition-colors hover:bg-[rgba(255,255,255,0.1)]',
+      'flex flex-row items-center gap-3 p-3 rounded-[12px] cursor-pointer border transition-colors hover:bg-[var(--glassBgHover)]',
       selected
-        ? 'bg-[rgba(99,102,241,0.2)] border-[rgba(99,102,241,0.5)]'
-        : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)]',
+        ? 'bg-indigo-500/20 border-indigo-500/60'
+        : 'bg-[var(--glassBg)] border-[var(--glassBorder)]',
     )}
   >
     {children}
@@ -82,7 +82,7 @@ const CheckboxCircle = ({
 }) => (
   <div
     className={cx(
-      'w-[20px] h-[20px] rounded-[10px] border-2 border-[rgba(255,255,255,0.3)] flex items-center justify-center shrink-0',
+      'w-[20px] h-[20px] rounded-[10px] border-2 border-[var(--glassBorderStrong)] flex items-center justify-center shrink-0',
       selected && 'bg-[#6366f1] border-[#6366f1]',
     )}
   >
@@ -119,7 +119,7 @@ const MessageInput = ({
 }) => (
   <textarea
     className={cx(
-      'w-full p-3 mb-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-[12px] text-[var(--color)] min-h-[80px] text-[16px] outline-none transition-colors placeholder:text-[#8e9196] focus:border-[#6366f1] focus:bg-[rgba(255,255,255,0.08)]',
+      'w-full p-3 mb-4 bg-[var(--glassBg)] border border-[var(--glassBorder)] rounded-[12px] text-[var(--color)] min-h-[80px] text-[16px] outline-none transition-colors placeholder:text-[var(--textSecondary)] focus:border-indigo-500 focus:bg-[var(--glassBgHover)]',
     )}
     value={value}
     onChange={onChange}

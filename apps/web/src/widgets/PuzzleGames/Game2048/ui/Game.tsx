@@ -129,7 +129,7 @@ function Game2048Table() {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-5 px-3">
-      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 shadow-xl backdrop-blur-md sm:p-4">
+      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-3.5 shadow-xl backdrop-blur-md sm:p-4">
         <div className="grid grid-cols-3 gap-2 sm:gap-4">
           <StatCard
             label={t('games.game_2048_v1.hud.score')}
@@ -196,7 +196,7 @@ function Game2048Table() {
             ▶
           </Button>
         </div>
-        <p className="text-center text-xs text-slate-400">
+        <p className="text-center text-xs text-[var(--textSecondary)]">
           {t('games.game_2048_v1.board.controlsHint')}
         </p>
       </div>
@@ -249,12 +249,12 @@ function StatCard({
   return (
     <div
       data-testid={dataTestId}
-      className="flex flex-col items-center justify-center rounded-xl border border-white/5 bg-black/40 px-2.5 py-1.5 backdrop-blur-sm sm:px-3 sm:py-2"
+      className="flex flex-col items-center justify-center rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-2.5 py-1.5 backdrop-blur-sm sm:px-3 sm:py-2"
     >
-      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
         {label}
       </span>
-      <span className="font-mono text-base font-extrabold tabular-nums text-white sm:text-lg">
+      <span className="font-mono text-base font-extrabold tabular-nums text-[var(--color)] sm:text-lg">
         {value}
       </span>
     </div>

@@ -31,10 +31,11 @@ export const PlayerSection = ({
 }: PlayerSectionProps) => (
   <div
     className={cx(
-      'flex flex-col items-stretch relative gap-1.5 p-3 border-2 rounded-[12px] min-w-0 min-h-0 w-full overflow-visible',
+      'flex flex-col items-stretch relative gap-1 p-2.5 border-2 rounded-[12px] min-w-0 min-h-0 w-full overflow-visible',
       'max-[1150px]:p-2 max-[1150px]:gap-1',
       'max-[800px]:p-1 max-[800px]:gap-[2px] max-[800px]:rounded-[8px]',
       '[@media(max-height:480px)]:p-1 [@media(max-height:480px)]:gap-[1px]',
+      '[@media(orientation:landscape)_and_(max-height:520px)]:p-1 [@media(orientation:landscape)_and_(max-height:520px)]:gap-[1px]',
       isTargetable ? 'cursor-crosshair' : 'cursor-default',
       animated !== false && 'transition-all duration-300 ease-out',
       className,

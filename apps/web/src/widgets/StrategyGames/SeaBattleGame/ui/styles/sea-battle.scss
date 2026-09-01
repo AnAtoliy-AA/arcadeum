@@ -169,14 +169,27 @@
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
-    minmax(calc(var(--sb-grid-size, 10) * 30px + 70px), 1fr)
+    minmax(calc(var(--sb-grid-size, 10) * 27px + 50px), 1fr)
   );
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 2px 4px 16px 4px;
+  padding: 2px 4px 8px 4px;
   justify-content: center;
   align-items: start;
   box-sizing: border-box;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .sb-grids-container.sb-grids-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 2px 4px 4px 4px;
+  }
+
+  .sb-board-grid-layout.sb-board-grid-layout.sb-board-grid-layout {
+    padding: 4px;
+    gap: 1px;
+  }
 }
 
 .sb-grids-container>* {

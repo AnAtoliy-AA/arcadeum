@@ -20,6 +20,6 @@ export const fantasyVariantStyles: VariantStyleConfig = {
   },
   cards: {
     ...baseVariantStyles.cards,
-    getCardSpriteUrl: () => '/images/cards/fantasy_sprites.png',
+    getCardSpriteUrl: () => '/images/cards/fantasy_sprites.webp',
   },
 };

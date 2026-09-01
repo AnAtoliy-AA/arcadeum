@@ -16,7 +16,7 @@ export const highAltitudeHikeVariantStyles: Partial<VariantStyleConfig> = {
     glowEffect: `0 0 30px ${COLORS.primary}99`,
     borderEffect: `2px solid ${COLORS.primary}`,
     deckBorderColor: COLORS.primary,
-    getCardSpriteUrl: () => '/images/cards/high_altitude_hike_sprites.png',
+    getCardSpriteUrl: () => '/images/cards/high_altitude_hike_sprites.webp',
   },
   scene: {
     ...baseVariantStyles.scene,

@@ -20,6 +20,6 @@ export const zenVariantStyles: VariantStyleConfig = {
   },
   cards: {
     ...baseVariantStyles.cards,
-    getCardSpriteUrl: () => '/images/cards/zen_sprites.png',
+    getCardSpriteUrl: () => '/images/cards/zen_sprites.webp',
   },
 };

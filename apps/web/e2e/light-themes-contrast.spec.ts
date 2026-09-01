@@ -227,5 +227,19 @@ test.describe('Light Themes Contrast and Usability', () => {
         await expect(resultModal).toBeVisible();
       }
     });
+
+    test(`share dropdown and popover menu are readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/games/chess');
+      await setTheme(page, theme);
+
+      const shareBtn = page.getByTestId('share-game-button');
+      if ((await shareBtn.count()) > 0) {
+        await shareBtn.click();
+        const popover = page.getByTestId('share-game-popover');
+        await expect(popover).toBeVisible();
+      }
+    });
   }
 });

@@ -1,10 +1,36 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { CatDashBoard } from '../ui/Board';
 import { CatDashTurnBadge } from '../ui/TurnBadge';
 import { CatDashRulesModal } from '../ui/RulesModal';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
 import type { CatDashClientState } from '../types';
+
+vi.mock('@/shared/lib/useTranslation', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const map: Record<string, string> = {
+        'games.cat_dash_v1.rules.title': 'Cat Dash — Rules',
+        'games.cat_dash_v1.rules.objectiveTitle': 'Objective',
+        'games.cat_dash_v1.rules.objective':
+          'Score points by reaching the finish line.',
+        'games.cat_dash_v1.rules.howToPlayTitle': 'How to Play',
+        'games.cat_dash_v1.rules.howToPlay': 'Roll dice and move forward.',
+        'games.cat_dash_v1.rules.trackSpacesTitle': 'Track Spaces',
+        'games.cat_dash_v1.rules.trackSpaces':
+          'Different spaces have different effects.',
+        'games.cat_dash_v1.rules.abilitiesTitle': 'Abilities',
+        'games.cat_dash_v1.rules.abilities':
+          'Use power tokens for special abilities.',
+        'games.cat_dash_v1.rules.catsTitle': 'Cats',
+        'games.cat_dash_v1.rules.cats': 'Each cat has unique abilities.',
+        'games.cat_dash_v1.rules.trackTypesTitle': 'Track Types',
+        'games.cat_dash_v1.rules.trackTypes': 'Linear or branching tracks.',
+      };
+      return map[key] ?? key;
+    },
+  }),
+}));
 
 function renderWithTheme(ui: React.ReactNode) {
   return render(

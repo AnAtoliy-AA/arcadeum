@@ -21,7 +21,7 @@ describe('GameRulesModal', () => {
         rules={rules}
       />,
     );
-    expect(screen.queryByTestId('game-rules-modal')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('rules-modal')).not.toBeInTheDocument();
   });
 
   it('renders title, close button, rule items, and footer button when open', () => {
@@ -36,7 +36,7 @@ describe('GameRulesModal', () => {
       />,
     );
 
-    expect(screen.getByTestId('game-rules-modal')).toBeInTheDocument();
+    expect(screen.getByTestId('rules-modal')).toBeInTheDocument();
     expect(screen.getByText('Go Rules')).toBeInTheDocument();
     expect(screen.getByText('Standard Japanese Rules')).toBeInTheDocument();
     expect(screen.getByText('Objective')).toBeInTheDocument();

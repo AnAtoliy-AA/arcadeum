@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.27] - 2026-09-01
+
+### Fixed
+- wait for hydration before clicking language switcher buttons
+- update backgammon and glimworm tests to use mode instead of variant
+- update test files to match renamed fields
+
+### Refactored
+- standardize theme/mode naming across all games
+
+
 ## [1.27.26] - 2026-09-01
 
 ### Fixed

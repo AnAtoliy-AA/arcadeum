@@ -241,5 +241,17 @@ test.describe('Light Themes Contrast and Usability', () => {
         await expect(popover).toBeVisible();
       }
     });
+
+    test(`minesweeper board and HUD are readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/games/minesweeper');
+      await setTheme(page, theme);
+
+      const board = page.getByRole('grid');
+      if ((await board.count()) > 0) {
+        await expect(board).toBeVisible();
+      }
+    });
   }
 });

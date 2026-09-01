@@ -19,14 +19,14 @@ interface MinesweeperBoardProps {
 const LONG_PRESS_MS = 350;
 
 const NUMBER_COLOR_CLASSES: Record<number, string> = {
-  1: 'text-blue-400',
-  2: 'text-emerald-400',
-  3: 'text-red-400',
-  4: 'text-purple-400',
-  5: 'text-pink-400',
-  6: 'text-cyan-400',
-  7: 'text-amber-400',
-  8: 'text-slate-400',
+  1: 'text-blue-600 dark:text-blue-400',
+  2: 'text-emerald-600 dark:text-emerald-400',
+  3: 'text-red-600 dark:text-red-400',
+  4: 'text-purple-600 dark:text-purple-400',
+  5: 'text-pink-600 dark:text-pink-400',
+  6: 'text-cyan-600 dark:text-cyan-400',
+  7: 'text-amber-600 dark:text-amber-400',
+  8: 'text-slate-600 dark:text-slate-400',
 };
 
 export function MinesweeperBoard({
@@ -86,7 +86,7 @@ export function MinesweeperBoard({
 
   return (
     <div
-      className="w-full max-w-full overflow-x-auto rounded-2xl border-2 border-slate-800 bg-slate-950/90 p-3 sm:p-5 shadow-2xl shadow-black/80 select-none"
+      className="w-full max-w-full overflow-x-auto rounded-2xl border-2 border-[var(--glassBorderStrong)] bg-[var(--background)] p-3 sm:p-5 shadow-2xl select-none"
       role="grid"
       aria-label={t('games.minesweeper_v1.board.label')}
     >
@@ -138,9 +138,11 @@ function MineCell({
       className={cx(
         'flex aspect-square h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg font-mono text-sm sm:text-base font-extrabold transition-all',
         revealed
-          ? 'cursor-default border border-slate-800/80 bg-slate-900 shadow-inner'
-          : 'cursor-pointer border border-slate-700 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 shadow-sm hover:border-slate-500 hover:brightness-110 active:scale-95',
-        showMine && lost && 'border-red-600 bg-red-950/90 shadow-red-900/50',
+          ? 'cursor-default border border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] shadow-inner'
+          : 'cursor-pointer border border-[var(--glassBorderStrong)] bg-[var(--glassBg)] text-[var(--color)] shadow-sm hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)] active:scale-95',
+        showMine &&
+          lost &&
+          'border-red-500 bg-red-500/20 text-red-500 shadow-red-500/30',
       )}
       onClick={onReveal}
       onContextMenu={(event) => {
@@ -165,7 +167,7 @@ function MineCell({
         <span
           aria-hidden="true"
           className={cx(
-            NUMBER_COLOR_CLASSES[cell.adjacent] ?? 'text-slate-200',
+            NUMBER_COLOR_CLASSES[cell.adjacent] ?? 'text-[var(--color)]',
           )}
         >
           {cell.adjacent}

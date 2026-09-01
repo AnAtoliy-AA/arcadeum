@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.30] - 2026-09-01
+
+### Fixed
+- attach error listener to bullmq redis client instance (ARC-950) (ARC-950)
+- restore isOfflineDownloadSupported logic for unit test suite (ARC-950) (ARC-950)
+- resolve redis connection errors and e2e offline fetch warnings (ARC-950) (ARC-950)
+
+
 ## [1.27.29] - 2026-09-01
 
 ### Added

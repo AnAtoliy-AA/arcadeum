@@ -1,9 +1,9 @@
 import { memo } from 'react';
 import type { CatDashThemeTokens } from '../lib/theme';
-import type { CatDashVariant } from '../types';
+import type { CatDashTheme } from '../types';
 
 interface BoardBackgroundProps {
-  variant: CatDashVariant;
+  variant: CatDashTheme;
   tokens: CatDashThemeTokens;
   svgW: number;
   svgH: number;

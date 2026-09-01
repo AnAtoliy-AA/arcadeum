@@ -15,7 +15,7 @@ export const SEAT_START_OFFSETS = [0, 13, 26, 39] as const;
 /** Star cells are safe for every player (no captures allowed there). */
 export const STAR_CELLS: ReadonlySet<number> = new Set([8, 21, 34, 47]);
 
-export const PACHISI_VARIANT_IDS = [
+export const PACHISI_THEME_IDS = [
   'cyberpunk',
   'underwater',
   'crime',
@@ -29,7 +29,7 @@ export const PACHISI_VARIANT_IDS = [
   'steampunk',
   'zen',
 ] as const;
-export type PachisiVariant = (typeof PACHISI_VARIANT_IDS)[number];
+export type PachisiTheme = (typeof PACHISI_THEME_IDS)[number];
 
 export const SEAT_COLORS = ['red', 'green', 'yellow', 'blue'] as const;
 export type SeatColor = (typeof SEAT_COLORS)[number];
@@ -59,12 +59,13 @@ export interface MoveTokenPayload {
   tokenId: number;
 }
 
-export const PACHISI_RULE_VARIANTS = ['standard', 'quick'] as const;
-export type PachisiRuleVariant = (typeof PACHISI_RULE_VARIANTS)[number];
+export const PACHISI_MODES = ['standard', 'quick'] as const;
+export type PachisiMode = (typeof PACHISI_MODES)[number];
 
 export interface PachisiOptions {
-  variant: PachisiVariant;
-  ruleVariant?: PachisiRuleVariant;
+  theme: PachisiTheme;
+  variant?: PachisiTheme;
+  mode?: PachisiMode;
   aiDifficulty?: 'easy' | 'medium' | 'hard' | 'expert';
 }
 

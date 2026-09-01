@@ -25,10 +25,10 @@ export type SeatColor = (typeof SEAT_COLORS)[number];
 /** Star cells are safe for every player (no captures allowed there). */
 export const STAR_CELLS: ReadonlySet<number> = new Set([8, 21, 34, 47]);
 
-export const RULE_VARIANTS = ['standard', 'quick'] as const;
-export type RuleVariant = (typeof RULE_VARIANTS)[number];
+export const MODES = ['standard', 'quick'] as const;
+export type Mode = (typeof MODES)[number];
 
-export const TOKENS_BY_RULE_VARIANT: Record<RuleVariant, number> = {
+export const TOKENS_BY_MODE: Record<Mode, number> = {
   standard: 4,
   quick: 2,
 };
@@ -50,31 +50,15 @@ export const ACTION = {
 
 export type ActionType = (typeof ACTION)[keyof typeof ACTION];
 
-export const VARIANTS = [
-  'cyberpunk',
-  'underwater',
-  'crime',
-  'horror',
-  'adventure',
-  'high-altitude-hike',
-  'galaxy',
-  'fantasy',
-  'western',
-  'egypt',
-  'steampunk',
-  'zen',
-] as const;
-export type Variant = (typeof VARIANTS)[number];
-
 export interface PachisiOptions {
-  /** Visual theme id (shared themes); gameplay lives in ruleVariant. */
-  variant: Variant;
-  ruleVariant: RuleVariant;
+  /** Visual theme id (shared themes); gameplay lives in mode. */
+  theme: string;
+  mode: Mode;
   aiDifficulty?: AiDifficulty;
 }
 
 export const DEFAULT_OPTIONS: PachisiOptions = {
-  variant: 'adventure',
-  ruleVariant: 'standard',
+  theme: 'adventure',
+  mode: 'standard',
   aiDifficulty: 'medium',
 };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
-import { SEA_BATTLE_VARIANTS } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
+import { SEA_BATTLE_THEMES } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
 import {
   getDefaultShipCount,
   getShipCountOptions,
@@ -63,7 +63,7 @@ export default function SeaBattleCreationConfig({
     };
   }, []);
 
-  const pickerOptions = SEA_BATTLE_VARIANTS.map((variant) => ({
+  const pickerOptions = SEA_BATTLE_THEMES.map((variant) => ({
     id: variant.id,
     nameKey: variant.name,
     descriptionKey: variant.description,

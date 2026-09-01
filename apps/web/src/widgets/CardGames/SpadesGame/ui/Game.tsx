@@ -24,8 +24,8 @@ import { SpadesLobby } from './SpadesLobby';
 import { SpadesBoard } from './SpadesBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
-import { SPADES_VARIANTS } from '../lib/constants';
-import { resolveSpadesVariant } from '../lib/theme';
+import { SPADES_THEMES } from '../lib/constants';
+import { resolveSpadesTheme } from '../lib/theme';
 
 function SpadesGameImpl({
   roomId,
@@ -125,14 +125,13 @@ function SpadesGameImpl({
   });
 
   const options = useMemo(
-    () => ({ variant: resolveSpadesVariant(room?.gameOptions) }),
+    () => ({ variant: resolveSpadesTheme(room?.gameOptions) }),
     [room?.gameOptions],
   );
 
   const variantTokens = useMemo(
     () =>
-      SPADES_VARIANTS.find((v) => v.id === options.variant) ??
-      SPADES_VARIANTS[0],
+      SPADES_THEMES.find((v) => v.id === options.variant) ?? SPADES_THEMES[0],
     [options.variant],
   );
 

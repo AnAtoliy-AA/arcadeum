@@ -2,7 +2,7 @@ import { createLogger } from '../../lib/logger';
 import { BaseGameEngine } from '../../base/base-game-engine.abstract';
 import {
   ACTION,
-  CHECKERS_PER_VARIANT,
+  CHECKERS_PER_MODE,
   DEFAULT_OPTIONS,
   GAME_PHASE,
 } from './backgammon.constants';
@@ -73,7 +73,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
     const points = createInitialPoints(
       player0Id,
       player1Id,
-      options.ruleVariant,
+      options.mode,
     );
 
     const players: BackgammonPlayer[] = [
@@ -180,7 +180,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         newState.bar,
         newState.borneOff,
         dice,
-        newState.options.ruleVariant,
+        newState.options.mode,
       );
 
       newState.logs.push(
@@ -218,7 +218,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         newState.bar,
         newState.borneOff,
         newState.dice,
-        newState.options.ruleVariant,
+        newState.options.mode,
       ).filter((m) => m.from === p.from && m.to === p.to);
 
       matchedMoves.sort((a, b) => a.die - b.die);
@@ -273,7 +273,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       );
 
       const targetCheckers =
-        CHECKERS_PER_VARIANT[newState.options.ruleVariant] ?? 15;
+        CHECKERS_PER_MODE[newState.options.mode] ?? 15;
       if ((newState.borneOff[playerId] ?? 0) >= targetCheckers) {
         newState.phase = GAME_PHASE.GAME_OVER;
         newState.winnerId = playerId;
@@ -300,7 +300,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         newState.bar,
         newState.borneOff,
         newState.dice,
-        newState.options.ruleVariant,
+        newState.options.mode,
       );
 
       if (newState.dice.length === 0 || remainingLegalMoves.length === 0) {
@@ -370,7 +370,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         state.bar,
         state.borneOff,
         state.dice,
-        state.options.ruleVariant,
+        state.options.mode,
       );
       if (remainingLegalMoves.length === 0) {
         return [ACTION.PASS_TURN, ACTION.FORFEIT];

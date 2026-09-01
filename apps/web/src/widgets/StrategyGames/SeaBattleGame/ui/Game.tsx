@@ -21,7 +21,7 @@ import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult'
 
 import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import { SEA_BATTLE_VARIANTS } from '../lib/constants';
+import { SEA_BATTLE_THEMES } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
@@ -274,7 +274,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     room?.gameOptions?.cardVariant) as string | undefined;
 
   const currentVariant = useMemo(
-    () => SEA_BATTLE_VARIANTS.find((v) => v.id === cardVariant),
+    () => SEA_BATTLE_THEMES.find((v) => v.id === cardVariant),
     [cardVariant],
   );
 

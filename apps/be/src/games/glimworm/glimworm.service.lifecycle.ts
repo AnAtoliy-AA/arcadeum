@@ -14,7 +14,7 @@ import {
   type RandomFn,
   type TickContext,
 } from './glimworm.service.tick';
-import type { VariantStrategy } from './variants/variant.strategy';
+import type { ModeStrategy } from './variants/variant.strategy';
 import type {
   GlimwormDiscreteEvent,
   GlimwormSession,
@@ -80,7 +80,7 @@ export function resetWormsForLobby(session: GlimwormSession): void {
 export interface RunTickDeps {
   session: GlimwormSession;
   growthTargets: Map<WormId, number>;
-  strategy: VariantStrategy | undefined;
+  strategy: ModeStrategy | undefined;
   random: RandomFn;
   pickBotAngle: (session: GlimwormSession, worm: Worm) => number;
   emitEvents: (events: GlimwormDiscreteEvent[]) => void;

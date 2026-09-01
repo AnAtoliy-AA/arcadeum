@@ -447,7 +447,7 @@ export function buildSnapshotForViewer(
     tickNum: session.tickNum,
     serverTime,
     status: session.status,
-    variant: session.variant,
+    mode: session.mode,
     powerupsEnabled: session.powerupsEnabled,
     arena: session.arena,
     worms,

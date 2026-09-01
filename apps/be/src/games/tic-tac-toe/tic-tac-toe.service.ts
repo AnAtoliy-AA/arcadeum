@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, Optional, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  Optional,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
 import type Redis from 'ioredis';
@@ -10,7 +16,6 @@ import {
   MAX_PLAYERS_BY_BOARD_SIZE,
   MIN_PLAYERS,
   type BoardSize,
-  type Variant,
 } from '../engines/tic-tac-toe/tic-tac-toe.constants';
 import type {
   PlaceMarkPayload,
@@ -60,6 +65,7 @@ export class TicTacToeService extends BaseGameService<TicTacToeOptions> {
 
   protected resolveOptions(raw: unknown): TicTacToeOptions {
     const r = (raw ?? {}) as Partial<{
+      theme: string;
       variant: string;
       boardSize: number | string;
       teamMode: boolean;
@@ -83,7 +89,7 @@ export class TicTacToeService extends BaseGameService<TicTacToeOptions> {
       n === 1 || n === 2 || n === 3;
     const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
     return {
-      variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,
+      theme: ((r.theme ?? r.variant) as string) ?? DEFAULT_OPTIONS.theme,
       boardSize,
       teamMode: !!r.teamMode,
       expansionMargin: isMargin(r.expansionMargin)

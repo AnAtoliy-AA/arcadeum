@@ -1,7 +1,7 @@
 import type { GameTheme } from '@/features/games/lib/shared-themes';
-import type { TicTacToeTheme } from './theme';
+import type { TicTacToeThemeTokens } from './theme';
 
-export function sharedThemeToTicTacToe(theme: GameTheme): TicTacToeTheme {
+export function sharedThemeToTicTacToe(theme: GameTheme): TicTacToeThemeTokens {
   const rgb = (hex: string): string => {
     const clean = hex.replace('#', '');
     const value =

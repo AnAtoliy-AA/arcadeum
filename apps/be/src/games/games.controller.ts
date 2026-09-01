@@ -41,7 +41,7 @@ import {
   parseVisibilityFilters,
   parseParticipationFilter,
 } from './games.query-parsers';
-import { extractVariantFromOptions } from './game-options';
+import { extractThemeFromOptions } from './game-options';
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 
@@ -89,8 +89,8 @@ export class GamesController {
     }
 
     const role = await this.catalogService.resolveRole(user.userId);
-    const variant = extractVariantFromOptions(dto.gameOptions);
-    await this.catalogService.assertVisible(role, dto.gameId, variant);
+    const theme = extractThemeFromOptions(dto.gameOptions);
+    await this.catalogService.assertVisible(role, dto.gameId, theme);
 
     if (dto.gameOptions) {
       const ruleMap = await this.catalogService.getRulesForGame(dto.gameId);
@@ -179,7 +179,7 @@ export class GamesController {
       result.rooms,
       (r) => ({
         gameId: r.gameId,
-        variantId: extractVariantFromOptions(r.gameOptions),
+        variantId: extractThemeFromOptions(r.gameOptions),
       }),
     );
     return { ...result, rooms: filtered };

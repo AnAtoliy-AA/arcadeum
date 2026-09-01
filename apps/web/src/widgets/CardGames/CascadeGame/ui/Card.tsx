@@ -6,7 +6,7 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
-import type { CascadeCard, CascadeVariant } from '../types';
+import type { CascadeCard, CascadeTheme } from '../types';
 import styles from './CascadeGame.module.css';
 
 interface CardProps {
@@ -142,7 +142,7 @@ function renderSymbol(
 function describeCard(
   card: CascadeCard,
   faceDown: boolean,
-  variant: CascadeVariant,
+  variant: CascadeTheme,
   t: (key: TranslationKey) => string,
 ): string {
   if (faceDown) return t('games.cascade_v1.hiddenCard');
@@ -156,7 +156,7 @@ function describeCard(
 }
 
 function themedCardKey(
-  variant: CascadeVariant,
+  variant: CascadeTheme,
   kind: Exclude<CascadeCard['kind'], 'NUMBER'>,
 ): TranslationKey {
   return `games.cascade_v1.themedCards.${variant}.${kind}` as TranslationKey;

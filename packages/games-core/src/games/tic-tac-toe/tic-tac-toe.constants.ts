@@ -31,16 +31,6 @@ export type InfinityMargin = (typeof INFINITY_MARGIN_OPTIONS)[number];
 export const INFINITY_WIN_LENGTH_OPTIONS = [4, 5] as const;
 export type InfinityWinLength = (typeof INFINITY_WIN_LENGTH_OPTIONS)[number];
 
-export const VARIANTS = [
-  'classic',
-  'neon',
-  'paper',
-  'pixel',
-  'chalkboard',
-  'retro',
-] as const;
-export type Variant = (typeof VARIANTS)[number];
-
 export const GAME_PHASE = {
   LOBBY: 'lobby',
   PLAYING: 'playing',
@@ -59,7 +49,7 @@ export const TEAM_PRESETS = [
 export const INFINITY_MAX_BOARD_SIZE = 100;
 
 export const DEFAULT_OPTIONS = {
-  variant: 'classic' as Variant,
+  theme: 'adventure',
   boardSize: 3 as BoardSize,
   teamMode: false,
   expansionMargin: 3 as InfinityMargin,

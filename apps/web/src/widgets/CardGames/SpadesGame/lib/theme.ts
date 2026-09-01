@@ -1,5 +1,5 @@
-import type { SpadesVariant } from '../types';
-import { isSpadesVariant } from '../types';
+import type { SpadesTheme } from '../types';
+import { isSpadesTheme } from '../types';
 import {
   getThemeById,
   SHARED_THEMES,
@@ -7,7 +7,7 @@ import {
 import { sharedThemeToSpades } from './theme-adapter';
 
 export interface SpadesThemeTokens {
-  variant: SpadesVariant;
+  variant: SpadesTheme;
   emoji: string;
   background: string;
   surface: string;
@@ -22,17 +22,17 @@ export interface SpadesThemeTokens {
   bgImage?: string;
 }
 
-export const THEMES: Record<SpadesVariant, SpadesThemeTokens> =
+export const THEMES: Record<SpadesTheme, SpadesThemeTokens> =
   Object.fromEntries(
     SHARED_THEMES.filter((t) => t.id !== 'random').map((t) => [
-      t.id as SpadesVariant,
+      t.id as SpadesTheme,
       sharedThemeToSpades(t),
     ]),
-  ) as Record<SpadesVariant, SpadesThemeTokens>;
+  ) as Record<SpadesTheme, SpadesThemeTokens>;
 
 export function getTheme(variant?: string): SpadesThemeTokens {
   if (variant && variant in THEMES) {
-    return THEMES[variant as SpadesVariant];
+    return THEMES[variant as SpadesTheme];
   }
   if (variant) {
     const shared = getThemeById(variant);
@@ -48,8 +48,8 @@ export function getTheme(variant?: string): SpadesThemeTokens {
  * the shared theme id under `theme`; unknown or missing values (legacy
  * rooms, hand-edited options) fall back to cyberpunk.
  */
-export function resolveSpadesVariant(raw: unknown): SpadesVariant {
+export function resolveSpadesTheme(raw: unknown): SpadesTheme {
   const r = (raw ?? {}) as Partial<{ theme: string; variant: string }>;
   const candidate = r.theme ?? r.variant;
-  return isSpadesVariant(candidate) ? candidate : 'cyberpunk';
+  return isSpadesTheme(candidate) ? candidate : 'cyberpunk';
 }

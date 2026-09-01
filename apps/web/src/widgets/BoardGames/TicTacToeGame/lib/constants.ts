@@ -1,11 +1,11 @@
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
-import type { TicTacToeVariant } from '../types';
+import type { TicTacToeTheme } from '../types';
 
 export const INFINITY_MAX_BOARD_SIZE = 100;
 
-export interface TicTacToeVariantOption extends GameVariantOption {
-  id: TicTacToeVariant;
+export interface TicTacToeThemeOption extends GameVariantOption {
+  id: TicTacToeTheme;
   name: TranslationKey;
   description: TranslationKey;
   emoji: string;
@@ -15,9 +15,9 @@ export interface TicTacToeVariantOption extends GameVariantOption {
 
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 
-export const TIC_TAC_TOE_VARIANTS: ReadonlyArray<TicTacToeVariantOption> =
+export const TIC_TAC_TOE_THEMES: ReadonlyArray<TicTacToeThemeOption> =
   SHARED_THEMES.map((t) => ({
-    id: t.id as TicTacToeVariant,
+    id: t.id as TicTacToeTheme,
     name: t.nameKey as TranslationKey,
     description: t.descriptionKey as TranslationKey,
     emoji: t.emoji,

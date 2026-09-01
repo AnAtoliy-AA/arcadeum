@@ -1,4 +1,4 @@
-import type { ActiveColor, CardColor, CascadeVariant } from '../types';
+import type { ActiveColor, CardColor, CascadeTheme } from '../types';
 import {
   getThemeById,
   SHARED_THEMES,
@@ -14,7 +14,7 @@ export interface CardPalette {
 }
 
 export interface CascadeThemeTokens {
-  variant: CascadeVariant;
+  variant: CascadeTheme;
   emoji: string;
   background: string;
   surface: string;
@@ -34,17 +34,17 @@ export interface CascadeThemeTokens {
   bgImage?: string;
 }
 
-export const THEMES: Record<CascadeVariant, CascadeThemeTokens> =
+export const THEMES: Record<CascadeTheme, CascadeThemeTokens> =
   Object.fromEntries(
     SHARED_THEMES.filter((t) => t.id !== 'random').map((t) => [
-      t.id as CascadeVariant,
+      t.id as CascadeTheme,
       sharedThemeToCascade(t),
     ]),
-  ) as Record<CascadeVariant, CascadeThemeTokens>;
+  ) as Record<CascadeTheme, CascadeThemeTokens>;
 
 export function getTheme(variant?: string): CascadeThemeTokens {
   if (variant && variant in THEMES) {
-    return THEMES[variant as CascadeVariant];
+    return THEMES[variant as CascadeTheme];
   }
   if (variant) {
     const shared = getThemeById(variant);
@@ -56,7 +56,7 @@ export function getTheme(variant?: string): CascadeThemeTokens {
 }
 
 export function colorHex(
-  variant: CascadeVariant,
+  variant: CascadeTheme,
   color: CardColor | ActiveColor,
 ): string {
   return getTheme(variant).palette[color as CardColor] ?? '#ffffff';

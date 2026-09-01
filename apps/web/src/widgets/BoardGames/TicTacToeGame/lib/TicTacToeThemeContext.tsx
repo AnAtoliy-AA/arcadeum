@@ -1,7 +1,7 @@
 'use client';
 
 import { createGameThemeContext } from '@/features/games/lib/createGameThemeContext';
-import { getTicTacToeTheme, type TicTacToeTheme } from './theme';
+import { getTicTacToeTheme, type TicTacToeThemeTokens } from './theme';
 
 export const { Provider: TicTacToeThemeProvider, useTheme: useTicTacToeTheme } =
-  createGameThemeContext<TicTacToeTheme>(getTicTacToeTheme, 'cyberpunk');
+  createGameThemeContext<TicTacToeThemeTokens>(getTicTacToeTheme, 'cyberpunk');

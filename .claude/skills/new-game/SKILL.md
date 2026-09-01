@@ -17,6 +17,33 @@ Pick a short snake_case id with `_v1` suffix: `chess_v1`, `connect_four_v1`. Use
 - Landing route: `/games/chess`
 - Socket event prefix: `chess.session.*` (camelCase, matches existing pattern: `ticTacToe.session.*`, `seaBattle.session.*`)
 
+## Game Options Convention
+
+Every game uses two standard option fields — never conflate visual themes with gameplay rules:
+
+| Field | Purpose | Stored in | Examples |
+|---|---|---|---|
+| **`theme`** | Visual skin (colors, backgrounds, gradients) | `gameOptions.theme` | `cyberpunk`, `adventure`, `underwater` |
+| **`mode`** | Gameplay rule preset (changes engine behavior) | `gameOptions.mode` | `american`/`international` (checkers), `standard`/`hyper` (backgammon), `classic`/`pure`/`speed` (cascade) |
+
+**Rules:**
+- `theme` always maps to `SHARED_THEMES` (the 12 shared visual themes). Never create per-game visual theme lists.
+- `mode` is game-specific. Games without rule variants omit it (e.g. hearts, spades, critical).
+- The old `variant` field is deprecated. New games must use `theme` for visuals and `mode` for rules.
+- In `gameOptions`, always store `theme` (not `variant`). The backend `resolveOptions` reads `r.theme ?? r.variant` for backward compat.
+- The frontend `resolveOptions()` must output both `theme` and `variant` (as alias) for backward compat with existing room data.
+- `setOption()` calls from lobbies should write `{ theme: themeId, variant: themeId }` for full backward compat.
+
+**Options interface pattern:**
+```ts
+interface MyGameOptions {
+  theme: string;        // visual theme (required)
+  variant?: string;     // legacy alias (optional, for backward compat)
+  mode?: string;        // gameplay rule preset (optional, if game has modes)
+  // ... game-specific options
+}
+```
+
 ## Architecture (two halves)
 
 **Backend half** — engine (pure logic) + service (orchestration) + gateway (socket events) + bot.
@@ -33,7 +60,7 @@ Use `/brainstorming` to capture: player count, board/state shape, win condition,
 ### 2. Backend engine
 
 Create `apps/be/src/games/engines/<game>/`:
-- `<game>.constants.ts` — `MIN_PLAYERS`, `MAX_PLAYERS` (overall ceiling), variants array, defaults. **If the game has per-option player caps** (e.g. tic-tac-toe's 3×3=2 / 5×5=3 / 7×7=4 / 9×9=5), export a `MAX_PLAYERS_BY_<OPTION>` map. The service enforces the per-option cap at `startSession`; `MAX_PLAYERS` is the union ceiling so the room layer never grows past what any variant supports.
+- `<game>.constants.ts` — `MIN_PLAYERS`, `MAX_PLAYERS` (overall ceiling), `MODES` array (gameplay rule presets, or empty), defaults with `theme: 'adventure'`. **If the game has per-option player caps** (e.g. tic-tac-toe's 3×3=2 / 5×5=3 / 7×7=4 / 9×9=5), export a `MAX_PLAYERS_BY_<OPTION>` map. The service enforces the per-option cap at `startSession`; `MAX_PLAYERS` is the union ceiling so the room layer never grows past what any mode supports.
 - `<game>.types.ts` — `State`, `Options`, `Player`, `Team`, action payloads. State **must include** `logs: GameLogEntry[]`
 - `<game>.utils.ts` — pure helpers (e.g. win detection)
 - `<game>.validators.ts` — return `{ ok: true } | { ok: false, error: string }`
@@ -108,14 +135,14 @@ This entry **also drives `/admin/games` visibility** — without it, admins can'
 All games share unified visual themes (colors, backgrounds, gradients, emojis). Create `apps/web/src/widgets/<Name>Game/`:
 ```
 types/index.ts              ← props, state, options, log entry types
-lib/constants.ts            ← <NAME>_VARIANTS mapped directly from SHARED_THEMES
+lib/constants.ts            ← <NAME>_THEMES mapped directly from SHARED_THEMES
 lib/theme-adapter.ts        ← sharedThemeTo<Name>(theme: GameTheme): <Name>Theme
-lib/theme.ts                ← get<Name>Theme(variant?: string) dynamically calling getThemeById + adapter
+lib/theme.ts                ← get<Name>Theme(theme?: string) dynamically calling getThemeById + adapter
 lib/<Name>ThemeContext.tsx  ← createGameThemeContext<NameTheme>(get<Name>Theme, 'cyberpunk')
 hooks/useState.ts           ← Zustand selector → derived snapshot
 hooks/useActions.ts         ← gameSocket.emit wrappers — strings MUST match BE gateway
 hooks/index.ts              ← barrel re-export
-ui/Game.tsx                 ← root; default-export memoized; wraps shell in <NameThemeProvider variant={variant}>
+ui/Game.tsx                 ← root; default-export memoized; wraps shell in <NameThemeProvider theme={theme}>
 ui/Lobby.tsx                ← wraps shared ReusableGameLobby, supplies an optionsSlot
 ui/Board.tsx                ← in-game UI using use<Name>Theme() tokens
 ui/TurnBadge.tsx
@@ -138,7 +165,7 @@ if (!room) return null;
 // The container's `board` slot is sized for the in-game grid.
 if (isLobby) {
   return (
-    <ThemeProvider variant={options.variant}>
+    <ThemeProvider theme={options.theme}>
       <Lobby ...props />
     </ThemeProvider>
   );
@@ -151,11 +178,11 @@ const board = (
 );
 
 return (
-  <ThemeProvider variant={options.variant}>
+  <ThemeProvider theme={options.theme}>
     <GameWidgetContainer
       board={board}
       modals={modals}
-      variant={options.variant}
+      theme={options.theme}
       isMyTurn={myTurn}
       isGameOver={isGameOver}
       headerProps={{

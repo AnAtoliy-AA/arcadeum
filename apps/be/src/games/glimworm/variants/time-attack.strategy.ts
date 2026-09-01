@@ -4,9 +4,9 @@ import {
   GLIMWORM_TIME_ATTACK_DURATION_MS,
 } from '../glimworm.constants';
 import type { Food, GlimwormSession, Worm, WormId } from '../glimworm.types';
-import type { VariantStrategy } from './variant.strategy';
+import type { ModeStrategy } from './variant.strategy';
 
-export class TimeAttackStrategy implements VariantStrategy {
+export class TimeAttackStrategy implements ModeStrategy {
   initSession(s: GlimwormSession): void {
     Object.values(s.worms).forEach((w) => {
       w.livesLeft = Number.POSITIVE_INFINITY;

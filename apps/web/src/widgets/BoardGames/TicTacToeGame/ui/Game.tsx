@@ -27,11 +27,11 @@ import { TicTacToeBoard } from './TicTacToeBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
 import { WIN_LENGTHS } from '../types';
-import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
+import { TIC_TAC_TOE_THEMES } from '../lib/constants';
 import {
   type BoardSize,
   type TicTacToeOptions,
-  type TicTacToeVariant,
+  type TicTacToeTheme,
 } from '../types';
 
 function resolveOptions(raw: unknown): TicTacToeOptions {
@@ -48,7 +48,7 @@ function resolveOptions(raw: unknown): TicTacToeOptions {
   const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
     n === 1 || n === 2 || n === 3;
   const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
-  const theme = (r.theme ?? r.variant ?? 'adventure') as TicTacToeVariant;
+  const theme = (r.theme ?? r.variant ?? 'adventure') as TicTacToeTheme;
   return {
     variant: theme,
     theme,
@@ -161,8 +161,8 @@ function TicTacToeGameImpl({
 
   const variantTokens = useMemo(
     () =>
-      TIC_TAC_TOE_VARIANTS.find((v) => v.id === options.variant) ??
-      TIC_TAC_TOE_VARIANTS[0],
+      TIC_TAC_TOE_THEMES.find((v) => v.id === options.variant) ??
+      TIC_TAC_TOE_THEMES[0],
     [options.variant],
   );
 

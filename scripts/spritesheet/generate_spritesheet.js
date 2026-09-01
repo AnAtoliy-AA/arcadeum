@@ -90,7 +90,7 @@ async function generate() {
   for (const variant of variantsToProcess) {
     const outputPath = path.resolve(
       __dirname,
-      `../../apps/web/public/images/cards/${variant.replace(/-/g, '_')}_sprites.png`,
+      `../../apps/web/public/images/cards/${variant.replace(/-/g, '_')}_sprites.webp`,
     );
 
     console.log(`\n--- Generating ${variant} ---`);
@@ -103,7 +103,7 @@ async function generate() {
     );
 
     console.log(`Writing ${count} sprites to ${outputPath}...`);
-    await background.writeAsync(outputPath);
+    await background.writeAsync({ extname: '.webp', quality: 85 }, outputPath);
   }
 
   console.log('\nAll variants processed!');

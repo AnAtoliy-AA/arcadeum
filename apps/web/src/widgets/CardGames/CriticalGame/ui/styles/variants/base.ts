@@ -17,11 +17,11 @@ export const baseVariantStyles: VariantStyleConfig = {
     deckBorderColor: VARIANT_COLORS.default.primary,
     getCardSpriteUrl: (variant) => {
       if (variant === GAME_VARIANT.CRIME)
-        return '/images/cards/crime_sprites.png';
+        return '/images/cards/crime_sprites.webp';
       if (variant === GAME_VARIANT.HORROR)
-        return '/images/cards/horror_sprites.png';
+        return '/images/cards/horror_sprites.webp';
       if (variant === GAME_VARIANT.ADVENTURE)
-        return '/images/cards/adventure_sprites.png';
+        return '/images/cards/adventure_sprites.webp';
       return undefined;
     },
   },

@@ -20,6 +20,6 @@ export const westernVariantStyles: VariantStyleConfig = {
   },
   cards: {
     ...baseVariantStyles.cards,
-    getCardSpriteUrl: () => '/images/cards/western_sprites.png',
+    getCardSpriteUrl: () => '/images/cards/western_sprites.webp',
   },
 };

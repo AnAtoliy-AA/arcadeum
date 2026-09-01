@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.25] - 2026-09-01
+
+### Added
+- optimize sea battle desktop dimensions to prevent vertical scroll
+- resize sea battle fields for desktop and mobile landscape
+
+### Fixed
+- use real field with compact sizing in sea battle landing and previews (ARC-sea-battle-field-sizing)
+- expand sea battle boards when space allows (ARC-sea-battle-field-sizing)
+- rework sea battle field sizing and streamline room chrome (ARC-sea-battle-field-sizing)
+
+### Refactored
+- clean up sea-battle.scss redundant styles and specificity (ARC-sea-battle-field-sizing)
+
+
 ## [1.27.24] - 2026-09-01
 
 ### Fixed

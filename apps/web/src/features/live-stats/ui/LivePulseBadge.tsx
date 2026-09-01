@@ -1,51 +1,23 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useLiveStatsStore } from '../store/liveStatsStore';
-import { getGamesSocket, connectSocketsAnonymous } from '@/shared/lib/socket';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 export function LivePulseBadge() {
   const { t } = useTranslation();
-  const { stats, fetchLiveStats, togglePopover, isPopoverOpen, setLiveStats } =
+  const { stats, fetchLiveStats, togglePopover, isPopoverOpen } =
     useLiveStatsStore();
-  const socketConnectedRef = useRef(false);
 
   useEffect(() => {
-    const socket = getGamesSocket();
-    if (!socket.connected) {
-      const storedAnonId =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('arcadeum_anon_id')
-          : null;
-      connectSocketsAnonymous(storedAnonId || undefined);
-    }
     void fetchLiveStats();
-
-    if (!socketConnectedRef.current) {
-      socketConnectedRef.current = true;
-      const handleLiveStats = (data: Partial<typeof stats>) => {
-        setLiveStats(data);
-      };
-      const handleConnect = () => {
-        void fetchLiveStats(true);
-      };
-      socket.on('connect', handleConnect);
-      socket.on('games.live_stats', handleLiveStats);
-      socket.on('games.room.created', () => {
-        void fetchLiveStats();
-      });
-      socket.on('games.room.deleted', () => {
-        void fetchLiveStats();
-      });
-
-      return () => {
-        socket.off('connect', handleConnect);
-        socket.off('games.live_stats', handleLiveStats);
-        socketConnectedRef.current = false;
-      };
-    }
-  }, [fetchLiveStats, setLiveStats]);
+    const interval = setInterval(() => {
+      void fetchLiveStats();
+    }, 30_000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [fetchLiveStats]);
 
   const formattedOnline = stats.onlineUsers.toLocaleString();
 

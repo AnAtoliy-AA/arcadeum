@@ -204,7 +204,7 @@ function SudokuTable() {
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-5 px-3">
-      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-3 shadow-xl backdrop-blur-md sm:p-4">
+      <div className="relative z-10 flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-3 shadow-xl backdrop-blur-md sm:p-4">
         <div className="flex items-center gap-2 sm:gap-4">
           <StatCard
             label={t('games.sudoku_v1.hud.mistakes')}

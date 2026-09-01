@@ -175,5 +175,17 @@ test.describe('Light Themes Contrast and Usability', () => {
         await expect(roomCard).toBeVisible();
       }
     });
+
+    test(`online counter badge in header is readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/');
+      await setTheme(page, theme);
+
+      const onlineBadge = page.getByTestId('header-live-pulse-badge');
+      if ((await onlineBadge.count()) > 0) {
+        await expect(onlineBadge).toBeVisible();
+      }
+    });
   }
 });

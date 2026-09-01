@@ -81,8 +81,8 @@ export const BoardContainer = ({
 }: BoardContainerProps) => (
   <div
     className={cx(
-      'flex flex-col items-stretch flex-1 max-w-[465px] w-full',
-      'max-[1150px]:flex-[0] max-[1150px]:max-w-[450px] max-[1150px]:self-center',
+      'flex flex-col items-stretch flex-1 max-w-[490px] w-full',
+      'max-[1150px]:flex-[0] max-[1150px]:max-w-[470px] max-[1150px]:self-center',
       'max-[800px]:flex-[0] max-[800px]:max-w-none',
       '[@media(max-height:480px)]:max-w-[390px]',
       '[@media(orientation:landscape)_and_(max-height:520px)]:max-w-none',

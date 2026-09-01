@@ -272,27 +272,13 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
         {!isAuthenticated && <GuestTermsNotice />}
 
-        {/* ARC-926: spectator chrome — mode pill + compact reactions bar,
-            rendered above the game row so it never overlaps the board. */}
         {isSpectating && (
-          <>
-            <div className="flex w-full justify-center">
-              <span
-                role="status"
-                aria-live="polite"
-                data-testid="spectator-mode-pill"
-                className="rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 py-1 text-xs font-medium text-[var(--textSecondary)]"
-              >
-                {t('games.spectator.modeLabel')}
-              </span>
-            </div>
-            <div className="flex w-full justify-center">
-              <SpectatorReactionsBar
-                sendEmote={sendEmote}
-                labels={buildSpectatorReactionsLabels(t)}
-              />
-            </div>
-          </>
+          <div className="flex w-full justify-center my-0.5">
+            <SpectatorReactionsBar
+              sendEmote={sendEmote}
+              labels={buildSpectatorReactionsLabels(t)}
+            />
+          </div>
         )}
 
         <GameRow>

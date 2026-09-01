@@ -9,7 +9,7 @@ export function GuestTermsNotice() {
   return (
     <div
       data-testid="guest-terms-notice"
-      className="flex flex-row items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/60 border border-white/10 text-xs text-[var(--textSecondary)] text-center select-none"
+      className="flex flex-row items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/40 border border-white/5 text-[11px] text-[var(--textSecondary)] text-center select-none mx-auto max-w-fit shrink-0"
     >
       <span className="font-medium text-slate-300">
         {t('games.guestDisclaimer.playingAsGuest')}

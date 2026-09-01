@@ -350,7 +350,7 @@ export const GameContainer = forwardRef<unknown, GameContainerStylesProps>(
       <div
         ref={ref as React.Ref<HTMLDivElement>}
         className={cx(
-          'relative flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-x-hidden bg-[var(--background)] max-[1023px]:min-h-0 max-[1023px]:flex-1',
+          'relative flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-hidden bg-[var(--background)] max-[1023px]:min-h-0 max-[1023px]:flex-1',
           className,
         )}
         style={style}
@@ -362,7 +362,9 @@ export const GameContainer = forwardRef<unknown, GameContainerStylesProps>(
             style={{ backgroundImage: `url(${resolvedBgImage})` }}
           />
         )}
-        {children}
+        <div className="relative z-[1] flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-y-auto overflow-x-hidden modern-scrollbar">
+          {children}
+        </div>
       </div>
     );
   },

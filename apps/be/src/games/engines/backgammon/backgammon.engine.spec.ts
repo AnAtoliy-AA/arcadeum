@@ -323,7 +323,7 @@ describe('BackgammonEngine', () => {
 
   it('initializes hyper variant with 3 checkers per player', () => {
     const state = engine.initializeState([player1, player2], {
-      options: { ruleVariant: 'hyper' },
+      options: { mode: 'hyper' },
     });
     const count = (id: string): number =>
       state.points.reduce(
@@ -336,7 +336,7 @@ describe('BackgammonEngine', () => {
 
   it('initializes long nardy with 15 checkers on heads', () => {
     const state = engine.initializeState([player1, player2], {
-      options: { ruleVariant: 'long' },
+      options: { mode: 'long' },
     });
     expect(state.points[23]).toEqual({ playerId: player1, count: 15 });
     expect(state.points[11]).toEqual({ playerId: player2, count: 15 });
@@ -344,7 +344,7 @@ describe('BackgammonEngine', () => {
 
   it('initializes nackgammon with 2 checkers on point 23', () => {
     const state = engine.initializeState([player1, player2], {
-      options: { ruleVariant: 'nackgammon' },
+      options: { mode: 'nackgammon' },
     });
     expect(state.points[23]).toEqual({ playerId: player1, count: 2 });
     expect(state.points[22]).toEqual({ playerId: player1, count: 2 });
@@ -353,7 +353,7 @@ describe('BackgammonEngine', () => {
 
   it('initializes gulbara with 15 checkers on head and no hitting', () => {
     const state = engine.initializeState([player1, player2], {
-      options: { ruleVariant: 'gulbara' },
+      options: { mode: 'gulbara' },
     });
     expect(state.points[23]).toEqual({ playerId: player1, count: 15 });
     expect(state.points[11]).toEqual({ playerId: player2, count: 15 });

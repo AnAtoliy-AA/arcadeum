@@ -263,5 +263,31 @@ test.describe('Light Themes Contrast and Usability', () => {
       const heading = page.locator('h1');
       await expect(heading).toBeVisible();
     });
+
+    test(`help center FAQ and topics are readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/help');
+      await setTheme(page, theme);
+
+      const faq = page.locator('#faq');
+      await expect(faq).toBeVisible();
+    });
+
+    test(`privacy, terms, and cookies policies are readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/privacy');
+      await setTheme(page, theme);
+      await expect(page.getByTestId('privacy-page-wrapper')).toBeVisible();
+
+      await navigateTo(page, '/terms');
+      await setTheme(page, theme);
+      await expect(page.getByTestId('terms-page-wrapper')).toBeVisible();
+
+      await navigateTo(page, '/cookies');
+      await setTheme(page, theme);
+      await expect(page.getByTestId('cookies-page-wrapper')).toBeVisible();
+    });
   }
 });

@@ -79,7 +79,7 @@ test.describe('Light Themes Contrast and Usability', () => {
     test(`sudoku board and controls are visible and readable in ${theme} mode`, async ({
       page,
     }) => {
-      await navigateTo(page, '/games/sudoku/play');
+      await navigateTo(page, '/en/games/sudoku/play');
       await setTheme(page, theme);
 
       const sudokuBoard = page.getByRole('grid', { name: 'Sudoku' });

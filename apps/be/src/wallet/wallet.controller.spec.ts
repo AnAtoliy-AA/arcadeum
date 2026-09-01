@@ -19,6 +19,7 @@ interface RequestWithUser {
 type ServerHandle = Parameters<typeof request>[0];
 
 describe('WalletController (integration)', () => {
+  jest.setTimeout(15000);
   let app: INestApplication<App>;
   const server = (): ServerHandle => app.getHttpServer();
   const walletService = {

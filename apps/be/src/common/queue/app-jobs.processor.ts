@@ -1,5 +1,5 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { Logger } from '@nestjs/common';
+import { Logger, OnModuleInit } from '@nestjs/common';
 import type { Job } from 'bullmq';
 
 export interface AppJobData {
@@ -8,8 +8,16 @@ export interface AppJobData {
 }
 
 @Processor('app-jobs')
-export class AppJobsProcessor extends WorkerHost {
+export class AppJobsProcessor extends WorkerHost implements OnModuleInit {
   private readonly logger = new Logger(AppJobsProcessor.name);
+
+  onModuleInit(): void {
+    if (this.worker) {
+      this.worker.on('error', (err: Error) => {
+        this.logger.warn(`BullMQ worker connection error: ${err.message}`);
+      });
+    }
+  }
 
   process(job: Job<AppJobData, unknown, string>): Promise<unknown> {
     this.logger.log(`Processing job ${job.id} of type ${job.data.type}`);

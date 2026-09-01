@@ -301,7 +301,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
   return (
     <div ref={containerRef} className="relative inline-flex z-[100]">
       <Button
-        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+        className="!px-2 sm:!px-3"
         variant="glass"
         size="sm"
         onClick={handleTrigger}
@@ -313,7 +313,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
         data-testid="share-game-button"
       >
         🔗
-        <span className="max-[800px]:hidden">
+        <span className="hidden sm:inline">
           {' ' + t('games.common.share')}
         </span>
       </Button>

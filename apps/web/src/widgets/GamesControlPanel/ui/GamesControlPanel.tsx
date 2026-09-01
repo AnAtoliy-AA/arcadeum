@@ -141,9 +141,16 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
             aria-label="Spectating mode"
             data-testid="spectating-indicator"
           >
-            <span className="text-[13px]">👁️</span>
-            <span className="text-[10px] font-extrabold text-[#0284c7] uppercase tracking-wider hidden sm:inline">
-              {t('games.table.controlPanel.spectating') || 'Spectating'}
+            <span
+              role="status"
+              aria-live="polite"
+              data-testid="spectator-mode-pill"
+              className="flex items-center gap-1.5"
+            >
+              <span className="text-[13px]">👁️</span>
+              <span className="text-[10px] font-extrabold text-[#0284c7] uppercase tracking-wider hidden sm:inline">
+                {t('games.table.controlPanel.spectating') || 'Spectating'}
+              </span>
             </span>
           </div>
         )}

@@ -4,7 +4,6 @@ import type { SeaBattlePlayerState, SeaBattleTeam } from '../../types';
 import { CELL_STATE, colLabels, rowLabels } from '../../types';
 import { ShipsLeft } from '../ShipsLeft';
 import {
-  BadgeWrapper,
   BoardGrid,
   BoardWithLabels,
   ColLabels,
@@ -12,7 +11,6 @@ import {
   PlayerName,
   PlayerSection,
   PlayerSectionWrapper,
-  PlayerStats,
   RowLabels,
 } from '../styles';
 import { IdleBadge } from '@arcadeum/ui';
@@ -275,14 +273,73 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   // from the board border + team pill, and the avatar carries its own disc.
   // The md disc is ~72px, so a -36 offset centers it on the corner.
   const cornerAvatar = (
-    <div className="flex flex-row items-center justify-center shrink-0 relative sb-header-avatar">
+    <div className="flex flex-row items-center justify-center shrink-0">
       <InGameAvatar
         playerId={player.playerId}
         name={resolveDisplayName(player.playerId, isMe ? 'You' : 'Unknown')}
-        size="md"
+        size="icon"
         data-testid={`sb-corner-avatar-${player.playerId}`}
       />
     </div>
+  );
+
+  const targetBadge = isTeammate ? (
+    <BadgePill
+      icon="🤝"
+      label={t('games.sea_battle_v1.teamMode.teammateBadge' as TranslationKey)}
+      bg="rgba(34,197,94,0.15)"
+      border="rgba(34,197,94,0.5)"
+      color="#86efac"
+      ariaLabel={t(
+        'games.sea_battle_v1.teamMode.cannotAttackTeammate' as TranslationKey,
+      )}
+    />
+  ) : isCurrentTurn ? (
+    <BadgePill
+      icon="🎯"
+      label="ATTACKING"
+      bg="rgba(185,28,28,0.1)"
+      border="var(--dangerBorder)"
+      color="var(--danger)"
+    />
+  ) : isMyTurn ? (
+    <BadgePill
+      icon="🎯"
+      label={t(
+        'games.sea_battle_v1.table.players.targetBadge' as TranslationKey,
+      )}
+      bg="rgba(99,102,241,0.1)"
+      border="rgba(87,195,255,0.4)"
+      color="var(--info)"
+    />
+  ) : null;
+
+  const boardNode = (
+    <>
+      <div className="flex flex-col items-center justify-center relative w-full flex-1 min-h-0 min-w-0 my-0.5">
+        <BoardWithLabels>
+          <div />
+          <ColLabels gridSize={boardSize}>
+            {colLbls.map((label) => (
+              <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                {label}
+              </Label>
+            ))}
+          </ColLabels>
+          <RowLabels gridSize={boardSize}>
+            {rowLbls.map((label) => (
+              <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                {label}
+              </Label>
+            ))}
+          </RowLabels>
+          {boardGrid}
+        </BoardWithLabels>
+      </div>
+      <div className="w-full shrink-0 flex flex-row justify-end items-center mt-0.5">
+        <FieldStatus board={player.board} isMe={isMe} />
+      </div>
+    </>
   );
 
   if (isMe) {
@@ -290,33 +347,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     const showBadge = player.alive;
     return (
       <PlayerSectionWrapper>
-        <BadgeWrapper
-          className="px-1.5 top-[-4px] rounded-[8px]"
-          style={{ backgroundColor: theme.boardBackground }}
-        >
-          {showBadge && (
-            <BadgePill
-              icon={isCurrentTurn ? '🎯' : '🛡️'}
-              label={
-                isCurrentTurn
-                  ? t(
-                      'games.sea_battle_v1.table.players.yourTurnAttack' as TranslationKey,
-                    ).replace('🎯 ', '')
-                  : t(
-                      'games.sea_battle_v1.table.players.defendingBadge' as TranslationKey,
-                    )
-              }
-              bg={
-                isCurrentTurn ? 'rgba(239,68,68,0.25)' : 'rgba(251,191,36,0.2)'
-              }
-              border={
-                isCurrentTurn ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'
-              }
-              color={isCurrentTurn ? 'var(--danger)' : 'var(--warning)'}
-              className={isCurrentTurn ? 'sb-badge-danger-breathe' : undefined}
-            />
-          )}
-        </BadgeWrapper>
         <PlayerSection
           className={`sb-player-section-fit ${
             isDefending ? 'sb-section-danger-breathe' : ''
@@ -331,48 +361,64 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             borderWidth: team ? 2 : undefined,
           }}
         >
-          <PlayerName
-            data-testid="player-board-name"
-            color={theme.textColor}
-            style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
-          >
-            {cornerAvatar}
-            <span className="truncate">
-              {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
-            </span>
-            {team && <TeamPill team={team} />}
-            {idlePlayers.includes(player.playerId) && <IdleBadge />}
-          </PlayerName>
-          <PlayerStats>
-            <ShipsLeft ships={player.ships} isMe={true} shipCount={shipCount} />
-          </PlayerStats>
-          <div className="flex flex-col items-stretch relative w-full">
-            <BoardWithLabels>
-              <div />
-              <ColLabels gridSize={boardSize}>
-                {colLbls.map((label) => (
-                  <Label
-                    key={label}
-                    style={{ color: theme.textSecondaryColor }}
-                  >
-                    {label}
-                  </Label>
-                ))}
-              </ColLabels>
-              <RowLabels gridSize={boardSize}>
-                {rowLbls.map((label) => (
-                  <Label
-                    key={label}
-                    style={{ color: theme.textSecondaryColor }}
-                  >
-                    {label}
-                  </Label>
-                ))}
-              </RowLabels>
-              {boardGrid}
-            </BoardWithLabels>
-            <FieldStatus board={player.board} isMe={true} />
+          <div className="flex flex-row items-center justify-between w-full min-w-0 gap-1.5 px-1 py-0.5 shrink-0">
+            <div className="flex flex-row items-center gap-1.5 min-w-0 flex-1">
+              {cornerAvatar}
+              <PlayerName
+                data-testid="player-board-name"
+                color={theme.textColor}
+                style={{
+                  color: team?.color ?? getPlayerColor(player.playerId),
+                }}
+                className="flex-row items-center gap-1 min-w-0"
+              >
+                <span className="font-bold text-[13px] whitespace-nowrap">
+                  {resolveDisplayName(player.playerId, 'You')} (Your Fleet)
+                </span>
+                {team && <TeamPill team={team} />}
+                {idlePlayers.includes(player.playerId) && <IdleBadge />}
+              </PlayerName>
+            </div>
+            {showBadge && (
+              <div className="shrink-0 ml-1">
+                <BadgePill
+                  icon={isCurrentTurn ? '🎯' : '🛡️'}
+                  label={
+                    isCurrentTurn
+                      ? t(
+                          'games.sea_battle_v1.table.players.yourTurn' as TranslationKey,
+                        )
+                      : t(
+                          'games.sea_battle_v1.table.players.defendingBadge' as TranslationKey,
+                        )
+                  }
+                  bg={
+                    isCurrentTurn
+                      ? 'rgba(239,68,68,0.25)'
+                      : 'rgba(251,191,36,0.2)'
+                  }
+                  border={
+                    isCurrentTurn
+                      ? 'rgba(239,68,68,0.4)'
+                      : 'rgba(245,158,11,0.4)'
+                  }
+                  color={isCurrentTurn ? 'var(--danger)' : 'var(--warning)'}
+                  className={
+                    isCurrentTurn ? 'sb-badge-danger-breathe' : undefined
+                  }
+                />
+              </div>
+            )}
           </div>
+          <div className="w-full shrink-0">
+            <ShipsLeft
+              ships={player.ships}
+              isMe={true}
+              shipCount={shipCount}
+              layout="top"
+            />
+          </div>
+          {boardNode}
         </PlayerSection>
       </PlayerSectionWrapper>
     );
@@ -380,43 +426,6 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
 
   return (
     <PlayerSectionWrapper>
-      <BadgeWrapper
-        className="px-1.5 top-[-4px] rounded-[8px]"
-        style={{ backgroundColor: theme.boardBackground }}
-      >
-        {isTeammate ? (
-          <BadgePill
-            icon="🤝"
-            label={t(
-              'games.sea_battle_v1.teamMode.teammateBadge' as TranslationKey,
-            )}
-            bg="rgba(34,197,94,0.15)"
-            border="rgba(34,197,94,0.5)"
-            color="#86efac"
-            ariaLabel={t(
-              'games.sea_battle_v1.teamMode.cannotAttackTeammate' as TranslationKey,
-            )}
-          />
-        ) : isCurrentTurn ? (
-          <BadgePill
-            icon="🎯"
-            label="ATTACKING"
-            bg="rgba(185,28,28,0.1)"
-            border="var(--dangerBorder)"
-            color="var(--danger)"
-          />
-        ) : isMyTurn ? (
-          <BadgePill
-            icon="🎯"
-            label={t(
-              'games.sea_battle_v1.table.players.targetBadge' as TranslationKey,
-            )}
-            bg="rgba(99,102,241,0.1)"
-            border="rgba(87,195,255,0.4)"
-            color="var(--info)"
-          />
-        ) : null}
-      </BadgeWrapper>
       <PlayerSection
         className={`sb-player-section-fit ${
           isMyTurn && !team ? 'sb-breathe' : ''
@@ -432,46 +441,37 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
         }}
         isTargetable={isMyTurn}
       >
-        <PlayerName
-          data-testid="player-board-name"
-          color={theme.textColor}
-          style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
-        >
-          {cornerAvatar}
-          <span className="truncate">
-            {t(
-              'games.sea_battle_v1.table.players.opponentBadge' as TranslationKey,
-            )}
-            {' · '}
-            {resolveDisplayName(player.playerId, 'Unknown')}
-          </span>
-          {team && <TeamPill team={team} />}
-          {idlePlayers.includes(player.playerId) && <IdleBadge />}
-        </PlayerName>
-        <PlayerStats>
-          <ShipsLeft ships={player.ships} isMe={false} shipCount={shipCount} />
-        </PlayerStats>
-        <div className="flex flex-col items-stretch relative w-full">
-          <BoardWithLabels>
-            <div />
-            <ColLabels gridSize={boardSize}>
-              {colLbls.map((label) => (
-                <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                  {label}
-                </Label>
-              ))}
-            </ColLabels>
-            <RowLabels gridSize={boardSize}>
-              {rowLbls.map((label) => (
-                <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                  {label}
-                </Label>
-              ))}
-            </RowLabels>
-            {boardGrid}
-          </BoardWithLabels>
-          <FieldStatus board={player.board} isMe={false} />
+        <div className="flex flex-row items-center justify-between w-full min-w-0 gap-1.5 px-1 py-0.5 shrink-0">
+          <div className="flex flex-row items-center gap-1.5 min-w-0 flex-1">
+            {cornerAvatar}
+            <PlayerName
+              data-testid="player-board-name"
+              color={theme.textColor}
+              style={{ color: team?.color ?? getPlayerColor(player.playerId) }}
+              className="flex-row items-center gap-1 min-w-0"
+            >
+              <span className="font-bold text-[13px] whitespace-nowrap">
+                {t(
+                  'games.sea_battle_v1.table.players.opponentBadge' as TranslationKey,
+                )}
+                {' · '}
+                {resolveDisplayName(player.playerId, 'Unknown')}
+              </span>
+              {team && <TeamPill team={team} />}
+              {idlePlayers.includes(player.playerId) && <IdleBadge />}
+            </PlayerName>
+          </div>
+          {targetBadge && <div className="shrink-0 ml-1">{targetBadge}</div>}
         </div>
+        <div className="w-full shrink-0">
+          <ShipsLeft
+            ships={player.ships}
+            isMe={false}
+            shipCount={shipCount}
+            layout="top"
+          />
+        </div>
+        {boardNode}
       </PlayerSection>
     </PlayerSectionWrapper>
   );

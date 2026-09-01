@@ -44,3 +44,34 @@
     flex: 1 1 auto;
   }
 }
+
+.orb1 {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  top: -160px;
+  left: -80px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.45);
+  filter: blur(60px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.orb2 {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  top: -100px;
+  left: 70%;
+  border-radius: 50%;
+  background: rgba(244, 114, 182, 0.45);
+  filter: blur(60px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.statusDot {
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+}

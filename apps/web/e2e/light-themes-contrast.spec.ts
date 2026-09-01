@@ -289,5 +289,16 @@ test.describe('Light Themes Contrast and Usability', () => {
       await setTheme(page, theme);
       await expect(page.getByTestId('cookies-page-wrapper')).toBeVisible();
     });
+
+    test(`contact page hero and header stay correctly stacked on scroll in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/contact');
+      await setTheme(page, theme);
+      const header = page.locator('header.header-outer');
+      await expect(header).toBeVisible();
+      await page.evaluate(() => window.scrollTo(0, 300));
+      await expect(header).toBeVisible();
+    });
   }
 });

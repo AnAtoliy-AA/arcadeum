@@ -49,6 +49,13 @@ test.describe('Tutorial Overlay', () => {
     const tutorialOverlay = page.getByTestId('tutorial-overlay');
     await expect(tutorialOverlay).toBeHidden();
 
+    const moreOptionsBtn = page.getByTestId('more-options-button');
+    const isMobile = await moreOptionsBtn.isVisible();
+
+    if (isMobile) {
+      await moreOptionsBtn.click();
+    }
+
     const showTutorialBtn = page.getByTestId('show-tutorial-button');
     await expect(showTutorialBtn).toBeVisible();
     await showTutorialBtn.click();
@@ -61,6 +68,9 @@ test.describe('Tutorial Overlay', () => {
     await closeBtn.click();
     await expect(tutorialOverlay).toBeHidden();
 
+    if (isMobile) {
+      await moreOptionsBtn.click();
+    }
     await showTutorialBtn.click();
     await expect(tutorialOverlay).toBeVisible();
 

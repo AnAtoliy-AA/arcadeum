@@ -27,7 +27,6 @@ export type WarmResult = {
 
 export function isOfflineDownloadSupported(): boolean {
   if (typeof window === 'undefined') return false;
-  if (process.env.NEXT_PUBLIC_E2E === 'true') return false;
   if (!('caches' in window)) return false;
   if (Boolean(navigator.serviceWorker?.controller)) return true;
   return document.querySelector('link[rel="manifest"]') !== null;

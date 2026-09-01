@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppCacheModule } from './common/cache/app-cache.module';
+import { AppBullMqModule } from './common/queue/app-bullmq.module';
 import { ChatModule } from './chat/chat.module';
 import { AuthModule } from './auth/auth.module';
 import { GamesModule } from './games/games.module';
@@ -55,6 +56,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
       isGlobal: true,
     }),
     AppCacheModule,
+    AppBullMqModule,
     AuthModule,
     ChatModule,
     GamesModule,

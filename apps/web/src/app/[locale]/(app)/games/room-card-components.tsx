@@ -71,7 +71,7 @@ export function GameName({
     <span
       style={gradient ? { backgroundImage: gradient } : undefined}
       className={cx(
-        'text-[15px] font-bold text-[var(--color)] opacity-[0.9] line-clamp-1',
+        'text-[15px] font-bold text-[var(--color)] opacity-[0.9] truncate',
         gradient ? 'text-gradient' : undefined,
         className,
       )}

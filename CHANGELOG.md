@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.26] - 2026-09-01
+
+### Fixed
+- type check fixes for offline downloads hook and section test (ARC-optimize-theme-backgrounds)
+- prevent SSR hydration mismatch in offline downloads section (ARC-optimize-theme-backgrounds)
+
+### Improved
+- optimize theme background images and remove unused pngs (ARC-optimize-theme-backgrounds)
+
+
 ## [1.27.25] - 2026-09-01
 
 ### Added

@@ -168,9 +168,9 @@ export class AdminController {
         perCore,
       },
       ram: {
-        totalMB: +(totalMem / 1048576).toFixed(0) as unknown as number,
-        usedMB: +(usedMem / 1048576).toFixed(0) as unknown as number,
-        freeMB: +(freeMem / 1048576).toFixed(0) as unknown as number,
+        totalMB: +(totalMem / 1048576).toFixed(0),
+        usedMB: +(usedMem / 1048576).toFixed(0),
+        freeMB: +(freeMem / 1048576).toFixed(0),
         usagePercent: +((usedMem / totalMem) * 100).toFixed(1),
       },
       process: {
@@ -192,31 +192,30 @@ export class AdminController {
   async captureCpuProfile(
     @Body() dto: CpuProfileDto,
   ): Promise<CpuProfileResponse> {
-    const durationMs = Math.min(Math.max(dto?.durationMs ?? 30_000, 1_000), 60_000);
+    const durationMs = Math.min(
+      Math.max(dto?.durationMs ?? 30_000, 1_000),
+      60_000,
+    );
     const profile = await new Promise<Record<string, unknown>>(
       (resolve, reject) => {
         const session = new Session();
         session.connect();
         session.post('Profiler.enable', () => {
-          session.post(
-            'Profiler.start',
-            { samplingInterval: 1000 },
-            () => {
-              setTimeout(() => {
-                session.post(
-                  'Profiler.stop',
-                  (
-                    err: Error | null,
-                    data: { profile: Record<string, unknown> },
-                  ) => {
-                    session.disconnect();
-                    if (err) return reject(err);
-                    resolve(data.profile);
-                  },
-                );
-              }, durationMs);
-            },
-          );
+          session.post('Profiler.start', { samplingInterval: 1000 }, () => {
+            setTimeout(() => {
+              session.post(
+                'Profiler.stop',
+                (
+                  err: Error | null,
+                  data: { profile: Record<string, unknown> },
+                ) => {
+                  session.disconnect();
+                  if (err) return reject(err);
+                  resolve(data.profile);
+                },
+              );
+            }, durationMs);
+          });
         });
       },
     );

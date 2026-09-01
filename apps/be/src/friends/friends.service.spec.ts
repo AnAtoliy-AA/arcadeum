@@ -324,6 +324,7 @@ describe('FriendsService', () => {
   describe('getFriends', () => {
     it('returns friends with online status', async () => {
       friendshipModel.find.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([
           {
             requesterId: new Types.ObjectId(userId),
@@ -332,6 +333,7 @@ describe('FriendsService', () => {
         ]),
       });
       userModel.find.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([
           {
             _id: new Types.ObjectId(targetId),
@@ -353,6 +355,7 @@ describe('FriendsService', () => {
 
     it('returns empty array when no friends', async () => {
       friendshipModel.find.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([]),
       });
 
@@ -365,6 +368,7 @@ describe('FriendsService', () => {
   describe('getPendingRequests', () => {
     it('returns incoming and outgoing requests', async () => {
       const incomingQuery = {
+        select: jest.fn().mockReturnThis(),
         sort: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([
           {
@@ -377,6 +381,7 @@ describe('FriendsService', () => {
         ]),
       };
       const outgoingQuery = {
+        select: jest.fn().mockReturnThis(),
         sort: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([]),
       };
@@ -384,6 +389,7 @@ describe('FriendsService', () => {
         .mockReturnValueOnce(incomingQuery)
         .mockReturnValueOnce(outgoingQuery);
       userModel.find.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([
           {
             _id: new Types.ObjectId(targetId),
@@ -405,6 +411,7 @@ describe('FriendsService', () => {
   describe('getOnlineFriendIds', () => {
     it('returns only online friend IDs', async () => {
       friendshipModel.find.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([
           {
             requesterId: new Types.ObjectId(userId),
@@ -421,6 +428,7 @@ describe('FriendsService', () => {
 
     it('returns empty when no friends online', async () => {
       friendshipModel.find.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([
           {
             requesterId: new Types.ObjectId(userId),
@@ -438,6 +446,7 @@ describe('FriendsService', () => {
   describe('getFriendIds', () => {
     it('returns all friend IDs', async () => {
       friendshipModel.find.mockReturnValue({
+        select: jest.fn().mockReturnThis(),
         lean: jest.fn().mockResolvedValue([
           {
             requesterId: new Types.ObjectId(userId),

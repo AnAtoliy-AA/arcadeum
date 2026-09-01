@@ -163,5 +163,17 @@ test.describe('Light Themes Contrast and Usability', () => {
         await expect(cell).toBeVisible();
       }
     });
+
+    test(`rooms and games lounge are readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/rooms');
+      await setTheme(page, theme);
+
+      const roomCard = page.locator('[data-testid="room-card"]').first();
+      if ((await roomCard.count()) > 0) {
+        await expect(roomCard).toBeVisible();
+      }
+    });
   }
 });

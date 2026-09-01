@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import type { ComponentProps, CSSProperties, ReactNode } from 'react';
 import { Button, type GameVariant } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
@@ -41,7 +42,7 @@ export function Modal({ open, onOpenChange, children, className }: ModalProps) {
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div className={cx('fixed inset-0 z-[9999]', className)}>
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -53,7 +54,8 @@ export function Modal({ open, onOpenChange, children, className }: ModalProps) {
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -101,7 +103,7 @@ export const ModalFrame = ({
     aria-label={ariaLabel}
     data-testid={dataTestId}
     className={cx(
-      'relative w-full max-w-[600px] max-h-[calc(100vh-40px)] overflow-hidden',
+      'relative w-full max-w-[600px] h-full max-h-[calc(100vh-40px)] overflow-hidden',
       variant === 'cyberpunk' ? 'rounded-[4px]' : 'rounded-[24px]',
       FRAME_VARIANT_CLASSES[variant],
       className,
@@ -134,6 +136,8 @@ export const ScrollArea = ({
 
 export const ModalContent = ({
   children,
+  header,
+  footer,
   variant,
   maxWidth,
   className,
@@ -147,18 +151,21 @@ export const ModalContent = ({
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
+  header?: ReactNode;
+  footer?: ReactNode;
   id?: string;
   'aria-label'?: string;
   'data-testid'?: string;
 }) => {
   const resolvedVariant = resolveModalVariant(variant);
+  const hasSticky = header || footer;
 
   return (
     <ModalFrame
       id={id}
       aria-label={ariaLabel}
       data-testid={dataTestId}
-      className={cx('m-auto', className)}
+      className={cx('m-auto', hasSticky ? 'flex flex-col' : '', className)}
       style={maxWidth ? { maxWidth, ...style } : style}
       variant={resolvedVariant}
     >
@@ -177,7 +184,15 @@ export const ModalContent = ({
       {resolvedVariant === 'underwater' && (
         <div className="absolute inset-[4px] border border-[rgba(34,_211,_238,_0.2)] rounded-[20px] pointer-events-none" />
       )}
-      <ScrollArea>{children}</ScrollArea>
+      {hasSticky ? (
+        <>
+          {header}
+          <ScrollArea className="flex-1">{children}</ScrollArea>
+          {footer}
+        </>
+      ) : (
+        <ScrollArea>{children}</ScrollArea>
+      )}
     </ModalFrame>
   );
 };

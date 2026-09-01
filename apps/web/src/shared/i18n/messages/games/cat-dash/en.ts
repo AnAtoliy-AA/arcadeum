@@ -122,14 +122,20 @@ export const enMessages = {
     },
     rules: {
       title: 'Cat Dash Rules',
+      objectiveTitle: 'Objective',
       objective: 'Be the first cat to reach the finish line (space 20).',
+      howToPlayTitle: 'How to Play',
       howToPlay:
         'On your turn, click "Roll Dice" to move. You roll a standard 6-sided die.',
+      trackSpacesTitle: 'Track Spaces',
       trackSpaces:
         '🟢 Normal — no effect. 🔴 Obstacle — skip your next turn. 🟡 Bonus — roll again immediately. 🔵 Fork — choose a path.',
+      abilitiesTitle: 'Abilities',
       abilities:
         'Each cat has 2 unique abilities. Use power tokens (3 per game) to activate them.',
+      catsTitle: 'Cats',
       cats: "🐱 Neon Cat (Cyber): Digital Dash + Neon Shield. 🐱 Whiskers (Village): Extra Life + Purr Power. 🐱 Stardust (Space): Warp Jump + Star Shield. 🐱 Felix (Nature): Nature's Path + Wild Charge.",
+      trackTypesTitle: 'Track Types',
       trackTypes:
         'Linear — straightforward race. Circular — shortcuts and obstacles. Multiple Paths — forks with risk/reward.',
     },

@@ -126,15 +126,21 @@ export const frMessages = {
     },
     rules: {
       title: 'Règles de Cat Dash',
+      objectiveTitle: 'Objectif',
       objective:
         "Soyez le premier chat à atteindre la ligne d'arrivée (espace 20).",
+      howToPlayTitle: 'Comment Jouer',
       howToPlay:
         'À votre tour, cliquez sur "Lancer les Dés". Dé à 6 faces standard.',
+      trackSpacesTitle: 'Cases de Piste',
       trackSpaces:
         '🟢 Normal. 🔴 Obstacle — passez tour. 🟡 Bonus — relancez. 🔵 Fourche — choisissez le chemin.',
+      abilitiesTitle: 'Capacités',
       abilities:
         'Chaque chat a 2 capacités. Utilisez les jetons de pouvoir (3 par partie).',
+      catsTitle: 'Chats',
       cats: '🐱 Chat Néon: Dash Numérique + Bouclier Néon. 🐱 Moustaches: Vie Extra + Pouvoir de Ronronnement. 🐱 Poussière Stellaire: Saut Warp + Bouclier Stellaire. 🐱 Félix: Sentier de la Nature + Charge Sauvage.',
+      trackTypesTitle: 'Types de Piste',
       trackTypes:
         'Linéaire — course directe. Circulaire — raccourcis et obstacles. Plusieurs chemins — fourches.',
     },

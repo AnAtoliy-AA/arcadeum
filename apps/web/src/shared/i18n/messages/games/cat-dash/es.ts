@@ -123,14 +123,20 @@ export const esMessages = {
     },
     rules: {
       title: 'Reglas de Cat Dash',
+      objectiveTitle: 'Objetivo',
       objective: 'Sé el primer gato en llegar a la meta (espacio 20).',
+      howToPlayTitle: 'Cómo Jugar',
       howToPlay:
         'En tu turno, haz clic en "Lanzar Dados". Dado estándar de 6 caras.',
+      trackSpacesTitle: 'Casillas de la Pista',
       trackSpaces:
         '🟢 Normal. 🔴 Obstáculo — pierde turno. 🟡 Bonusa — lanza de nuevo. 🔵 Bifurcación — elige camino.',
+      abilitiesTitle: 'Habilidades',
       abilities:
         'Cada gato tiene 2 habilidades. Usa tokens de poder (3 por partida).',
+      catsTitle: 'Gatos',
       cats: '🐱 Gato Neón: Dash Digital + Escudo Neón. 🐱bigotes: Vida Extra + Poder de Ronroneo. 🐱 Polvo Estelar: Salto Warp + Escudo Estelar. 🐱 Felix: Camino de la Naturaleza + Carga Salvaje.',
+      trackTypesTitle: 'Tipos de Pista',
       trackTypes:
         'Lineal — carrera directa. Circular — atajos y obstáculos. Múltiples caminos — bifurcaciones.',
     },

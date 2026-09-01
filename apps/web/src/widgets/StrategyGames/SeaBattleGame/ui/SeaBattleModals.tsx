@@ -75,7 +75,6 @@ export function SeaBattleModals({
           setShowRules(false);
           onShowRulesClose?.();
         }}
-        t={t}
       />
       <GameEndModals
         gameEnd={gameEnd}

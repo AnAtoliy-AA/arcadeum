@@ -79,7 +79,7 @@ test.describe('Light Themes Contrast and Usability', () => {
     test(`sudoku board and controls are visible and readable in ${theme} mode`, async ({
       page,
     }) => {
-      await navigateTo(page, '/games/sudoku');
+      await navigateTo(page, '/games/sudoku/play');
       await setTheme(page, theme);
 
       const sudokuBoard = page.getByRole('grid', { name: 'Sudoku' });
@@ -206,10 +206,10 @@ test.describe('Light Themes Contrast and Usability', () => {
       await navigateTo(page, '/games/chess');
       await setTheme(page, theme);
 
-      const rulesButton = page.getByTestId('game-rules-button');
+      const rulesButton = page.getByTestId('view-rules-button');
       if ((await rulesButton.count()) > 0) {
         await rulesButton.click();
-        const modal = page.getByTestId('game-rules-modal');
+        const modal = page.getByTestId('rules-modal');
         await expect(modal).toBeVisible();
         const closeBtn = page.getByTestId('modal-close-button');
         await expect(closeBtn).toBeVisible();

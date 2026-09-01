@@ -56,19 +56,15 @@ describe('PachisiEngine', () => {
 
   it('supports the quick variant with 2 tokens', () => {
     const state = engine.initializeState([player1, player2], {
-      options: { ruleVariant: 'quick' },
+      options: { mode: 'quick' },
     });
     expect(state.tokens[player1]).toHaveLength(2);
-    expect(state.options.ruleVariant).toBe('quick');
+    expect(state.options.mode).toBe('quick');
   });
 
-  it('rejects invalid config ruleVariant', () => {
-    expect(engine.validateConfig({ options: { ruleVariant: 'bogus' } })).toBe(
-      false,
-    );
-    expect(engine.validateConfig({ options: { ruleVariant: 'quick' } })).toBe(
-      true,
-    );
+  it('rejects invalid config mode', () => {
+    expect(engine.validateConfig({ options: { mode: 'bogus' } })).toBe(false);
+    expect(engine.validateConfig({ options: { mode: 'quick' } })).toBe(true);
   });
 
   it('rolls a die and transitions to MOVE when legal moves exist', () => {
@@ -262,7 +258,7 @@ describe('PachisiEngine', () => {
 
   it('finishes exactly on 56 and wins the game', () => {
     const state = engine.initializeState([player1, player2], {
-      options: { ruleVariant: 'quick' },
+      options: { mode: 'quick' },
     });
     state.currentTurnIndex = 0;
     // quick mode: tokens [0, 1]; put both near the end.

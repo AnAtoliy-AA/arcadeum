@@ -18,8 +18,8 @@ export interface GoPlayer {
 }
 
 export interface GoOptions {
-  variant: string;
-  theme?: string;
+  theme: string;
+  variant?: string;
   boardSize: number;
   aiDifficulty?: string;
 }
@@ -62,7 +62,10 @@ export interface GoClientState {
 export type GoGameProps = BaseGameWidgetProps;
 
 /** Star points (hoshi) per board size — must match BE go.constants.ts. */
-export const STAR_POINTS: Record<number, ReadonlyArray<readonly [number, number]>> = {
+export const STAR_POINTS: Record<
+  number,
+  ReadonlyArray<readonly [number, number]>
+> = {
   9: [
     [2, 2],
     [2, 6],

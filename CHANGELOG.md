@@ -7,6 +7,97 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.30] - 2026-09-01
+
+### Fixed
+- attach error listener to bullmq redis client instance (ARC-950) (ARC-950)
+- restore isOfflineDownloadSupported logic for unit test suite (ARC-950) (ARC-950)
+- resolve redis connection errors and e2e offline fetch warnings (ARC-950) (ARC-950)
+
+
+## [1.27.29] - 2026-09-01
+
+### Added
+- rework pwa icons and load screen (ARC-946) (ARC-946)
+- integrate BullMQ async job processing and SocketDeltaService (ARC-950) (ARC-950)
+
+### Fixed
+- update transformIgnorePatterns in jest-e2e.json for bullmq (ARC-950) (ARC-950)
+- make setLocale synchronous and reliable across route changes (ARC-706) (ARC-706)
+
+### Improved
+- add Redis ZSET leaderboards, background task queue, and virtualized list hook (ARC-950) (ARC-950)
+- add select projections to clan member lookups (ARC-950) (ARC-950)
+- add select projections to ranking and seasons queries (ARC-950) (ARC-950)
+- optimize web package imports and backend query projections (ARC-950) (ARC-950)
+
+
+## [1.27.28] - 2026-09-01
+
+### Improved
+- resolve socket console errors and optimize hero lcp
+
+
+## [1.27.27] - 2026-09-01
+
+### Fixed
+- wait for hydration before clicking language switcher buttons
+- update backgammon and glimworm tests to use mode instead of variant
+- update test files to match renamed fields
+
+### Refactored
+- standardize theme/mode naming across all games
+
+
+## [1.27.26] - 2026-09-01
+
+### Fixed
+- type check fixes for offline downloads hook and section test (ARC-optimize-theme-backgrounds)
+- prevent SSR hydration mismatch in offline downloads section (ARC-optimize-theme-backgrounds)
+
+### Improved
+- optimize theme background images and remove unused pngs (ARC-optimize-theme-backgrounds)
+
+
+## [1.27.25] - 2026-09-01
+
+### Added
+- optimize sea battle desktop dimensions to prevent vertical scroll
+- resize sea battle fields for desktop and mobile landscape
+
+### Fixed
+- use real field with compact sizing in sea battle landing and previews (ARC-sea-battle-field-sizing)
+- expand sea battle boards when space allows (ARC-sea-battle-field-sizing)
+- rework sea battle field sizing and streamline room chrome (ARC-sea-battle-field-sizing)
+
+### Refactored
+- clean up sea-battle.scss redundant styles and specificity (ARC-sea-battle-field-sizing)
+
+
+## [1.27.24] - 2026-09-01
+
+### Fixed
+- resolve gradient title clipping in game widget header
+
+
+## [1.27.23] - 2026-09-01
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.27.22] - 2026-09-01
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.27.21] - 2026-09-01
+
+### Changed
+- Internal improvements and maintenance
+
+
 ## [1.27.20] - 2026-08-31
 
 ### Fixed

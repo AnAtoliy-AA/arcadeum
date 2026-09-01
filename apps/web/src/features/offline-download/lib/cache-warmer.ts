@@ -28,12 +28,7 @@ export type WarmResult = {
 export function isOfflineDownloadSupported(): boolean {
   if (typeof window === 'undefined') return false;
   if (!('caches' in window)) return false;
-  // Active SW controller means everything is ready.
   if (Boolean(navigator.serviceWorker?.controller)) return true;
-  // Fallback: caches API is available AND a PWA manifest is present, meaning
-  // the SW may still be installing or waiting to claim.  The section should
-  // render so users can discover the feature; downloads are gated on the
-  // actual SW controller check inside each download action.
   return document.querySelector('link[rel="manifest"]') !== null;
 }
 
@@ -223,9 +218,12 @@ export async function purgeCachedUrls(urls: string[]): Promise<void> {
 /** Current deployment id published by `scripts/generate-build-id.mjs`. */
 export async function fetchCurrentBuildId(): Promise<string | null> {
   try {
-    const response = await fetch('/build-id.json', { cache: 'no-store' });
-    if (!response.ok) return null;
-    const data: unknown = await response.json();
+    const response = await fetch('/build-id.json', {
+      cache: 'no-store',
+      mode: 'same-origin',
+    }).catch(() => null);
+    if (!response || !response.ok) return null;
+    const data: unknown = await response.json().catch(() => null);
     if (
       data !== null &&
       typeof data === 'object' &&
@@ -240,7 +238,6 @@ export async function fetchCurrentBuildId(): Promise<string | null> {
   }
 }
 
-/** Best-effort device storage numbers for the UI. */
 export async function readStorageEstimate(): Promise<{
   usageBytes: number | null;
   quotaBytes: number | null;
@@ -261,15 +258,14 @@ export type GameSizesManifest = {
   totalBytes: number;
 };
 
-/**
- * Fetches the build-time game sizes manifest (`public/game-sizes.json`).
- * Returns null when offline or the file is missing (dev/E2E).
- */
 export async function fetchGameSizes(): Promise<GameSizesManifest | null> {
   try {
-    const response = await fetch('/game-sizes.json', { cache: 'no-store' });
-    if (!response.ok) return null;
-    const data: unknown = await response.json();
+    const response = await fetch('/game-sizes.json', {
+      cache: 'no-store',
+      mode: 'same-origin',
+    }).catch(() => null);
+    if (!response || !response.ok) return null;
+    const data: unknown = await response.json().catch(() => null);
     if (
       data !== null &&
       typeof data === 'object' &&

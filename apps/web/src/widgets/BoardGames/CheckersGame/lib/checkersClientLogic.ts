@@ -1,5 +1,5 @@
-import type { Board, MoveStep, Piece, RuleVariant } from '../types';
-import { RULE_VARIANT_CONFIGS } from '../types';
+import type { Board, MoveStep, Piece, Mode } from '../types';
+import { MODE_CONFIGS } from '../types';
 
 type PlayerColor = 'light' | 'dark';
 
@@ -224,6 +224,6 @@ export function getPlayerColor(
   return players.find((p) => p.playerId === playerId)?.color ?? null;
 }
 
-export function getRuleVariantConfig(ruleVariant: RuleVariant) {
-  return RULE_VARIANT_CONFIGS[ruleVariant];
+export function getModeConfig(mode: Mode) {
+  return MODE_CONFIGS[mode];
 }

@@ -1,10 +1,10 @@
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
-import type { SpadesVariant } from '../types';
+import type { SpadesTheme } from '../types';
 
-export interface SpadesVariantOption extends GameVariantOption {
-  id: SpadesVariant;
+export interface SpadesThemeOption extends GameVariantOption {
+  id: SpadesTheme;
   name: TranslationKey;
   description: TranslationKey;
   emoji: string;
@@ -12,9 +12,9 @@ export interface SpadesVariantOption extends GameVariantOption {
   lightGradient: string;
 }
 
-export const SPADES_VARIANTS: ReadonlyArray<SpadesVariantOption> =
+export const SPADES_THEMES: ReadonlyArray<SpadesThemeOption> =
   SHARED_THEMES.map((t) => ({
-    id: t.id as SpadesVariant,
+    id: t.id as SpadesTheme,
     name: t.nameKey as TranslationKey,
     description: t.descriptionKey as TranslationKey,
     emoji: t.emoji,

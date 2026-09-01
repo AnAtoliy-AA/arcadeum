@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, Optional, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  Optional,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
 import type Redis from 'ioredis';
@@ -11,7 +17,6 @@ import {
   MIN_PLAYERS,
   MODES,
   type Mode,
-  type Variant,
 } from '../engines/cascade/cascade.constants';
 import type {
   CascadeOptions,
@@ -68,6 +73,7 @@ export class CascadeService extends BaseGameService<CascadeOptions> {
 
   protected resolveOptions(raw: unknown): CascadeOptions {
     const r = (raw ?? {}) as Partial<{
+      theme: string;
       variant: string;
       mode: string;
       stackingEnabled: boolean;
@@ -78,7 +84,7 @@ export class CascadeService extends BaseGameService<CascadeOptions> {
       typeof m === 'string' && (MODES as ReadonlyArray<string>).includes(m);
     const mode: Mode = isValidMode(r.mode) ? r.mode : DEFAULT_OPTIONS.mode;
     return {
-      variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,
+      theme: r.theme ?? r.variant ?? DEFAULT_OPTIONS.theme,
       mode,
       stackingEnabled: mode !== 'pure',
       lastCardCallEnabled:

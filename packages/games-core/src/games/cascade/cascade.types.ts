@@ -10,7 +10,6 @@ import type {
   GamePhase,
   Mode,
   PendingAction,
-  Variant,
 } from './cascade.constants';
 import type { AiDifficulty } from '../../lib/ai-difficulty';
 
@@ -24,7 +23,7 @@ export interface CascadeCard {
 }
 
 export interface CascadeOptions {
-  variant: Variant;
+  theme: string;
   /**
    * Gameplay mode — selects rule preset. `stackingEnabled` is derived from
    * mode at engine-init time (classic/speed: ON, pure: OFF), but is also

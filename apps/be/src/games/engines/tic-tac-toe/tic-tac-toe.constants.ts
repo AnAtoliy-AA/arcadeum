@@ -7,7 +7,6 @@ export {
   MAX_PLAYERS_BY_BOARD_SIZE,
   INFINITY_MARGIN_OPTIONS,
   INFINITY_WIN_LENGTH_OPTIONS,
-  VARIANTS,
   GAME_PHASE,
   PLAYER_SYMBOLS,
   TEAM_PRESETS,
@@ -18,6 +17,5 @@ export type {
   BoardSize,
   InfinityMargin,
   InfinityWinLength,
-  Variant,
   GamePhase,
 } from '@arcadeum/games-core/games/tic-tac-toe/tic-tac-toe.constants';

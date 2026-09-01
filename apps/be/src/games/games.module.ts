@@ -28,6 +28,7 @@ import { CriticalGateway } from './critical.gateway';
 import { CriticalActionsGateway } from './critical-actions.gateway';
 import { TexasHoldemGateway } from './texas-holdem.gateway';
 import { SeaBattleGateway } from './sea-battle.gateway';
+import { SocketDeltaService } from './common/socket-delta.service';
 // Game handlers — plain services, not gateways (single-namespace architecture)
 import { GameEnginesModule } from './engines/engines.module';
 import { AiVsAiService } from './ai-vs-ai/ai-vs-ai.service';
@@ -277,6 +278,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     SpadesGateway,
     GoGateway,
     PachisiGateway,
+    SocketDeltaService,
     {
       provide: GAME_GATEWAYS,
       useFactory: (...handlers: GameMessageHandler[]) => handlers,
@@ -317,6 +319,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameHistoryStatsService,
     GameRoomsMatchmakingService,
     AntiCollusionService,
+    SocketDeltaService,
   ],
 })
 export class GamesModule {}

@@ -6,16 +6,24 @@
 import { expect } from '@playwright/test';
 import { test } from './fixtures/test-utils';
 
+/** Wait for React hydration so setLocaleRef is populated (not the noop). */
+async function waitForHydration(page: import('@playwright/test').Page) {
+  await page.waitForFunction(
+    () =>
+      document.documentElement.getAttribute('data-app-ready') === 'true',
+    { timeout: 15000 },
+  );
+}
+
 test.describe('Language switcher — URL swaps locale + slug', () => {
   test('switching EN → FR on /en/settings lands on /fr/parametres', async ({
     page,
   }) => {
     await page.goto('/en/settings', { waitUntil: 'domcontentloaded' });
+    await waitForHydration(page);
 
     const frButton = page.getByTestId('lang-btn-fr').first();
     if (!(await frButton.isVisible())) {
-      // Some layouts hide the inline language buttons on smaller breakpoints.
-      // Skip rather than fail in those configurations.
       test.skip(true, 'Inline language switcher not visible at this viewport.');
     }
 
@@ -26,6 +34,7 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
 
   test('switching EN → RU on /en/games lands on /ru/igry', async ({ page }) => {
     await page.goto('/en/games', { waitUntil: 'domcontentloaded' });
+    await waitForHydration(page);
 
     const ruButton = page.getByTestId('lang-btn-ru').first();
     if (!(await ruButton.isVisible())) {
@@ -41,6 +50,7 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
     page,
   }) => {
     await page.goto('/en/settings', { waitUntil: 'domcontentloaded' });
+    await waitForHydration(page);
 
     const esButton = page.getByTestId('lang-btn-es').first();
     if (!(await esButton.isVisible())) {

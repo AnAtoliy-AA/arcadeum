@@ -2,7 +2,6 @@
 
 import {
   ReactNode,
-  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -25,9 +24,8 @@ import {
   LanguageContextValue,
 } from '@/shared/i18n/LanguageContext';
 
-import { SearchParamsSyncer } from './SearchParamsSyncer';
-
-type SetLocaleFn = (next: Locale) => void;
+import { usePathname, useRouter } from 'next/navigation';
+import { swapLocaleInPath } from './locale-utils';
 
 const emptySubscribe = () => () => {};
 const getClientSnapshot = () => true;
@@ -98,11 +96,28 @@ export function LanguageProvider({
 }) {
   const messages = useLazyMessages(locale, initialMessages);
   const isReady = useIsHydrated();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const setLocaleRef = useRef<SetLocaleFn>(() => {});
   const setLocale = useCallback(
-    (next: Locale) => setLocaleRef.current(next),
-    [],
+    (next: Locale) => {
+      if (next === locale) return;
+      const currentPath =
+        pathname ||
+        (typeof window !== 'undefined'
+          ? window.location.pathname
+          : `/${locale}`);
+      const nextPath = swapLocaleInPath(currentPath, next);
+      const query = typeof window !== 'undefined' ? window.location.search : '';
+      const cookieOptions = 'path=/; max-age=31536000; SameSite=Lax';
+      if (typeof document !== 'undefined') {
+        document.cookie = `app-language=${next}; ${cookieOptions}`;
+      }
+      const target = query ? `${nextPath}${query}` : nextPath;
+      router.replace(target);
+      router.refresh();
+    },
+    [locale, pathname, router],
   );
 
   const value = useMemo<LanguageContextValue>(
@@ -112,9 +127,6 @@ export function LanguageProvider({
 
   return (
     <LanguageContext.Provider value={value}>
-      <Suspense>
-        <SearchParamsSyncer locale={locale} setLocaleRef={setLocaleRef} />
-      </Suspense>
       {children}
     </LanguageContext.Provider>
   );

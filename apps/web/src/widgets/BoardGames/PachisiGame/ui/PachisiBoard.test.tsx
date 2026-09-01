@@ -6,7 +6,7 @@ import type { PachisiClientState } from '../types';
 
 const mockState: PachisiClientState = {
   phase: 'roll',
-  options: { variant: 'adventure', aiDifficulty: 'medium' },
+  options: { theme: 'adventure', aiDifficulty: 'medium' },
   seats: { p1: 0, p2: 2 },
   tokens: {
     p1: [

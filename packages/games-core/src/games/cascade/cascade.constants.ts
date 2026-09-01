@@ -19,20 +19,8 @@ export const CARD_KINDS = [
 ] as const;
 export type CardKind = (typeof CARD_KINDS)[number];
 
-export const VARIANTS = [
-  'cosmic',
-  'arcane',
-  'cyberpunk',
-  'elemental',
-  'classic',
-  'neon',
-  'tropical',
-  'steampunk',
-] as const;
-export type Variant = (typeof VARIANTS)[number];
-
 /**
- * Gameplay modes — distinct from the visual `variant`. The visual theme is
+ * Gameplay modes — distinct from the visual theme. The visual theme is
  * pure presentation; the mode changes engine behavior.
  *
  * - classic: full ruleset (stacking enabled, no clock).
@@ -60,7 +48,7 @@ export const PENDING = {
 export type PendingAction = (typeof PENDING)[keyof typeof PENDING];
 
 export const DEFAULT_OPTIONS = {
-  variant: 'cosmic' as Variant,
+  theme: 'adventure',
   mode: 'classic' as Mode,
   stackingEnabled: true,
   /**

@@ -11,7 +11,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { CASCADE_VARIANT_IDS, type CascadeVariant } from '../types';
+import { CASCADE_THEME_IDS, type CascadeTheme } from '../types';
 
 interface RulesModalProps {
   open: boolean;
@@ -22,7 +22,7 @@ interface RulesModalProps {
    * renders cleanly outside a CascadeThemeProvider (e.g. on the create page
    * before the user picks a theme).
    */
-  variant?: CascadeVariant;
+  variant?: CascadeTheme;
 }
 
 const THEMED_KINDS = [
@@ -39,8 +39,8 @@ export function RulesModal({
   variant = 'cyberpunk',
 }: RulesModalProps) {
   const { t } = useTranslation();
-  const activeVariant: CascadeVariant = (
-    CASCADE_VARIANT_IDS as ReadonlyArray<string>
+  const activeVariant: CascadeTheme = (
+    CASCADE_THEME_IDS as ReadonlyArray<string>
   ).includes(variant)
     ? variant
     : 'cyberpunk';

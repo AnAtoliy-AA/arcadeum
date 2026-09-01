@@ -18,8 +18,8 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import type { Board, CheckersGameProps, MoveStep, RuleVariant } from '../types';
-import { RULE_VARIANT_CONFIGS } from '../types';
+import type { Board, CheckersGameProps, MoveStep, Mode } from '../types';
+import { MODE_CONFIGS } from '../types';
 import { useCheckersState } from '../hooks/useCheckersState';
 import { useCheckersActions } from '../hooks/useCheckersActions';
 import { CheckersThemeProvider } from '../lib/CheckersThemeContext';
@@ -32,7 +32,7 @@ import { CheckersLobby } from './CheckersLobby';
 import { CheckersBoard } from './CheckersBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
-import { CHECKERS_VARIANTS } from '../lib/constants';
+import { CHECKERS_THEMES } from '../lib/constants';
 
 function CheckersGameImpl({
   roomId,
@@ -133,20 +133,19 @@ function CheckersGameImpl({
     [room?.gameOptions],
   );
 
-  const ruleVariant = useMemo(
+  const mode = useMemo(
     () =>
-      ((room?.gameOptions as Record<string, string>)?.ruleVariant ??
-        'american') as RuleVariant,
+      ((room?.gameOptions as Record<string, string>)?.mode ??
+        'american') as Mode,
     [room?.gameOptions],
   );
 
-  const ruleConfig = RULE_VARIANT_CONFIGS[ruleVariant];
+  const ruleConfig = MODE_CONFIGS[mode];
   const backwardCaptures = ruleConfig.backwardCapturesForMen;
   const flyingKings = ruleConfig.flyingKings;
 
   const variantTokens = useMemo(
-    () =>
-      CHECKERS_VARIANTS.find((v) => v.id === variant) ?? CHECKERS_VARIANTS[0],
+    () => CHECKERS_THEMES.find((v) => v.id === variant) ?? CHECKERS_THEMES[0],
     [variant],
   );
 

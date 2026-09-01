@@ -128,7 +128,7 @@ describe('GlimwormGateway', () => {
         fillWithBots: false,
       });
       expect(service.start).toHaveBeenCalledWith('r1', 'u1', {
-        variant: 'battle_royale',
+        mode: 'battle_royale',
         powerupsEnabled: true,
         fillWithBots: false,
       });

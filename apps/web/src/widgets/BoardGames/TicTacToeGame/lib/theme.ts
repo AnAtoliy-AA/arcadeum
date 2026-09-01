@@ -4,7 +4,7 @@ import {
 } from '@/features/games/lib/shared-themes';
 import { sharedThemeToTicTacToe } from './theme-adapter';
 
-export interface TicTacToeTheme {
+export interface TicTacToeThemeTokens {
   background: string;
   boardBackground: string;
   gridLine: string;
@@ -23,7 +23,7 @@ export interface TicTacToeTheme {
 
 const DEFAULT_THEME = sharedThemeToTicTacToe(SHARED_THEMES[0]);
 
-export function getTicTacToeTheme(variant?: string): TicTacToeTheme {
+export function getTicTacToeTheme(variant?: string): TicTacToeThemeTokens {
   if (!variant) return DEFAULT_THEME;
   const shared = getThemeById(variant);
   if (shared) return sharedThemeToTicTacToe(shared);

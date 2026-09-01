@@ -8,14 +8,7 @@ import {
 
 function resolveSocketUrl(): string {
   const apiUrl = resolveApiUrl('');
-
-  try {
-    const url = new URL(apiUrl);
-    url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
-    return url.toString().replace(/\/$/, '');
-  } catch {
-    return apiUrl.replace(/\/$/, '');
-  }
+  return apiUrl.replace(/\/$/, '');
 }
 
 const SOCKET_BASE_URL = resolveSocketUrl();
@@ -29,10 +22,6 @@ const SOCKET_OPTIONS = {
   autoConnect: false,
 };
 
-/**
- * Single shared Socket.IO Manager — all namespace sockets multiplex over
- * one TCP connection instead of creating separate engines per namespace.
- */
 let _manager: Manager | null = null;
 
 function getManager(): Manager {
@@ -41,11 +30,13 @@ function getManager(): Manager {
       ...SOCKET_OPTIONS,
       multiplex: true,
     }).io as Manager;
+    _manager.on('error', () => {});
+    _manager.on('reconnect_error', () => {});
+    _manager.on('reconnect_failed', () => {});
   }
   return _manager;
 }
 
-// Lazy socket instances — created on first access to avoid heavy init at module load
 let _gamesSocket: AuthenticatedSocket | null = null;
 let _chatsSocket: AuthenticatedSocket | null = null;
 let _leaderboardsSocket: AuthenticatedSocket | null = null;
@@ -57,7 +48,7 @@ let _notificationsSocket: AuthenticatedSocket | null = null;
 export function getGamesSocket(): AuthenticatedSocket {
   if (!_gamesSocket) {
     _gamesSocket = getManager().socket('/games') as AuthenticatedSocket;
-    guardEmit(_gamesSocket);
+    guardSocket(_gamesSocket);
     setupEncryptionKeyHandler(_gamesSocket);
   }
   return _gamesSocket;
@@ -66,7 +57,7 @@ export function getGamesSocket(): AuthenticatedSocket {
 export function getChatsSocket(): AuthenticatedSocket {
   if (!_chatsSocket) {
     _chatsSocket = getManager().socket('/') as AuthenticatedSocket;
-    guardEmit(_chatsSocket);
+    guardSocket(_chatsSocket);
   }
   return _chatsSocket;
 }
@@ -76,7 +67,7 @@ export function getLeaderboardsSocket(): AuthenticatedSocket {
     _leaderboardsSocket = getManager().socket(
       '/leaderboards',
     ) as AuthenticatedSocket;
-    guardEmit(_leaderboardsSocket);
+    guardSocket(_leaderboardsSocket);
   }
   return _leaderboardsSocket;
 }
@@ -84,7 +75,7 @@ export function getLeaderboardsSocket(): AuthenticatedSocket {
 export function getFriendsSock(): AuthenticatedSocket {
   if (!_friendsSock) {
     _friendsSock = getManager().socket('/friends') as AuthenticatedSocket;
-    guardEmit(_friendsSock);
+    guardSocket(_friendsSock);
   }
   return _friendsSock;
 }
@@ -92,7 +83,7 @@ export function getFriendsSock(): AuthenticatedSocket {
 function getWalletSock(): AuthenticatedSocket {
   if (!_walletSock) {
     _walletSock = getManager().socket('/wallet') as AuthenticatedSocket;
-    guardEmit(_walletSock);
+    guardSocket(_walletSock);
   }
   return _walletSock;
 }
@@ -100,7 +91,7 @@ function getWalletSock(): AuthenticatedSocket {
 export function getClansSock(): AuthenticatedSocket {
   if (!_clansSock) {
     _clansSock = getManager().socket('/clans') as AuthenticatedSocket;
-    guardEmit(_clansSock);
+    guardSocket(_clansSock);
   }
   return _clansSock;
 }
@@ -110,9 +101,15 @@ export function getNotificationsSocket(): AuthenticatedSocket {
     _notificationsSocket = getManager().socket(
       '/notifications',
     ) as AuthenticatedSocket;
-    guardEmit(_notificationsSocket);
+    guardSocket(_notificationsSocket);
   }
   return _notificationsSocket;
+}
+
+function guardSocket(socket: AuthenticatedSocket): void {
+  guardEmit(socket);
+  socket.on('connect_error', () => {});
+  socket.on('error', () => {});
 }
 
 // Guard against emit() calls on a socket whose transport was never

@@ -10,18 +10,16 @@ export {
   SEAT_START_OFFSETS,
   SEAT_COLORS,
   STAR_CELLS,
-  RULE_VARIANTS,
-  TOKENS_BY_RULE_VARIANT,
+  MODES,
+  TOKENS_BY_MODE,
   GAME_PHASE,
   ACTION,
-  VARIANTS,
   DEFAULT_OPTIONS,
 } from '@arcadeum/games-core/games/pachisi/pachisi.constants';
 export type {
   PachisiOptions,
   SeatColor,
-  RuleVariant,
+  Mode,
   GamePhase,
   ActionType,
-  Variant,
 } from '@arcadeum/games-core/games/pachisi/pachisi.constants';

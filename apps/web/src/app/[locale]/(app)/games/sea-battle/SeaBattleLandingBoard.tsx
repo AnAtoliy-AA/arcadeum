@@ -26,7 +26,7 @@ export function SeaBattleLandingBoard({
       testId="sea-battle-landing-board"
       render={(themeId) => (
         <SeaBattleThemeProvider variant={themeId}>
-          <SeaBattleThemePreview selectedVariant={themeId} cellSize={20} />
+          <SeaBattleThemePreview selectedVariant={themeId} />
         </SeaBattleThemeProvider>
       )}
     />

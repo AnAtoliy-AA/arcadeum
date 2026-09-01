@@ -1,13 +1,22 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 
 import { useLanguage } from '@/shared/i18n/context';
 import {
   deletableUrlsFor,
   useOfflineDownloadsStore,
 } from '../store/offline-download.store';
-import type { GameDownloadStatus } from '../store/offline-download.store';
+import type {
+  GameDownloadStatus,
+  DownloadedGameInfo,
+} from '../store/offline-download.store';
 import {
   DOWNLOADABLE_GAMES,
   downloadableGameName,
@@ -25,16 +34,17 @@ import {
 } from '../lib/cache-warmer';
 import type { GameSizesManifest } from '../lib/cache-warmer';
 
-/**
- * Feature facade for the offline-downloads UI: game list with per-game
- * status, download/remove actions and the deploy auto-refresh loop.
- *
- * Auto-refresh: shipping a new build invalidates previously cached hashed
- * chunks. On mount we compare `/build-id.json` against the build id stamped
- * on each downloaded game and silently re-warm the stale ones while online.
- * A module flag guards against multiple mounted sections racing.
- */
 let autoRefreshStarted = false;
+
+function subscribeToServiceWorker(callback: () => void) {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return () => {};
+  }
+  navigator.serviceWorker.addEventListener('controllerchange', callback);
+  return () => {
+    navigator.serviceWorker.removeEventListener('controllerchange', callback);
+  };
+}
 
 export function useOfflineDownloads() {
   const { locale } = useLanguage();
@@ -53,8 +63,16 @@ export function useOfflineDownloads() {
     (s) => s.setRefreshInProgress,
   );
 
-  const supported = useMemo(() => isOfflineDownloadSupported(), []);
-  const swReady = useMemo(() => isSWActive(), []);
+  const supported = useSyncExternalStore(
+    subscribeToServiceWorker,
+    () => isOfflineDownloadSupported(),
+    () => false,
+  );
+  const swReady = useSyncExternalStore(
+    subscribeToServiceWorker,
+    () => isSWActive(),
+    () => false,
+  );
 
   // Build-time manifest sizes (fetched once on mount).
   const [manifestSizes, setManifestSizes] = useState<GameSizesManifest | null>(
@@ -167,7 +185,7 @@ export function useOfflineDownloads() {
         name: downloadableGameName(game),
         routeUrl: offlineRouteUrl(game, locale),
         status: statusOf(game.slug, downloads, busySlugs, errorSlugs),
-        info: downloads[game.slug] ?? null,
+        info: (downloads[game.slug] ?? null) as DownloadedGameInfo | null,
         manifestBytes: manifestSizes?.games[game.slug] ?? null,
       })),
     [busySlugs, downloads, errorSlugs, locale, manifestSizes],

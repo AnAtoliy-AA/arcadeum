@@ -21,7 +21,7 @@ describe('GlimwormService — tick mutation phases', () => {
     service.markReady('r1', 'u1', true);
     service.markReady('r1', 'u2', true);
     service.start('r1', 'u1', {
-      variant: 'battle_royale',
+      mode: 'battle_royale',
       powerupsEnabled: false,
     });
     const session = store.get('r1') as GlimwormSession;

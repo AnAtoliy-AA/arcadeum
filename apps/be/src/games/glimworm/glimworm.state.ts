@@ -1,10 +1,10 @@
 import { GLIMWORM_ARENA } from './glimworm.constants';
-import type { GlimwormSession, GlimwormVariant } from './glimworm.types';
+import type { GlimwormSession, GlimwormMode } from './glimworm.types';
 
 export interface CreateSessionInput {
   roomId: string;
   hostUserId: string;
-  variant: GlimwormVariant;
+  mode: GlimwormMode;
   powerupsEnabled: boolean;
 }
 
@@ -15,7 +15,7 @@ export class GlimwormStateStore {
     const session: GlimwormSession = {
       roomId: input.roomId,
       hostUserId: input.hostUserId,
-      variant: input.variant,
+      mode: input.mode,
       powerupsEnabled: input.powerupsEnabled,
       status: 'lobby',
       startedAt: null,

@@ -5,36 +5,15 @@ import { SeaBattleThemePreview } from '@/widgets/StrategyGames/SeaBattleGame/ui/
 
 interface Props {
   themeId: string;
-  cellSize: number;
+  cellSize?: number;
   background?: string;
   padding?: number;
 }
 
-// Client-only wrapper around the real client-rendered Sea Battle board.
-// Consumers `dynamic({ ssr: false })` import this so the heavy client-rendered
-// atomic styles never appear in the SSR HTML — that mismatch is what
-// triggers React hydration errors when the component is rendered eagerly
-// from a 'use client' parent.
-export default function SeaBattleRealPreview({
-  themeId,
-  cellSize,
-  background,
-  padding = 6,
-}: Props) {
+export default function SeaBattleRealPreview({ themeId, cellSize }: Props) {
   return (
     <SeaBattleThemeProvider variant={themeId}>
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-start',
-          background,
-          padding,
-          overflow: 'hidden',
-        }}
-      >
+      <div className="w-full h-full flex items-start justify-start overflow-hidden p-1.5">
         <SeaBattleThemePreview selectedVariant={themeId} cellSize={cellSize} />
       </div>
     </SeaBattleThemeProvider>

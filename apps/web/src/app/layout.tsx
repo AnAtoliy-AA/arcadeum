@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.png',
-    apple: '/icon-192x192.png',
+    apple: '/apple-touch-icon.png',
   },
   twitter: {
     card: 'summary_large_image',

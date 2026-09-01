@@ -1,9 +1,9 @@
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
-import type { CatDashVariant } from '../types';
+import type { CatDashTheme } from '../types';
 
-export interface CatDashVariantOption extends GameVariantOption {
-  id: CatDashVariant;
+export interface CatDashThemeOption extends GameVariantOption {
+  id: CatDashTheme;
   name: TranslationKey;
   description: TranslationKey;
   emoji: string;
@@ -13,9 +13,9 @@ export interface CatDashVariantOption extends GameVariantOption {
 
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 
-export const CAT_DASH_VARIANTS: ReadonlyArray<CatDashVariantOption> =
+export const CAT_DASH_THEMES: ReadonlyArray<CatDashThemeOption> =
   SHARED_THEMES.map((t) => ({
-    id: t.id as CatDashVariant,
+    id: t.id as CatDashTheme,
     name: t.nameKey as TranslationKey,
     description: t.descriptionKey as TranslationKey,
     emoji: t.emoji,

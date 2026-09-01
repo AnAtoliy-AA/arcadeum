@@ -409,7 +409,19 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@arcadeum/ui', '@arcadeum/games-core'],
   experimental: {
     inlineCss: true,
-    optimizePackageImports: ['lucide-react', '@arcadeum/ui', 'recharts'],
+    optimizePackageImports: [
+      'lucide-react',
+      '@arcadeum/ui',
+      'recharts',
+      '@dnd-kit/core',
+      '@dnd-kit/sortable',
+      '@dnd-kit/utilities',
+      'pixi.js',
+      'pixi-filters',
+      'qrcode.react',
+      'posthog-js',
+      'zustand',
+    ],
   },
   // Needed so Turbopack accepts the PWA plugin's webpack config in Next 16.
   turbopack: {

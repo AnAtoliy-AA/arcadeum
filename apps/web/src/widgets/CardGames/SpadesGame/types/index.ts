@@ -5,7 +5,7 @@ export type SpadesGameProps = BaseGameWidgetProps;
 export const MIN_PLAYERS = 4;
 export const MAX_PLAYERS = 4;
 
-export const SPADES_VARIANT_IDS = [
+export const SPADES_THEME_IDS = [
   'cyberpunk',
   'underwater',
   'crime',
@@ -19,13 +19,13 @@ export const SPADES_VARIANT_IDS = [
   'steampunk',
   'zen',
 ] as const;
-export type SpadesVariant = (typeof SPADES_VARIANT_IDS)[number];
+export type SpadesTheme = (typeof SPADES_THEME_IDS)[number];
 
 /** Type guard for untrusted variant strings (room gameOptions). */
-export function isSpadesVariant(value: unknown): value is SpadesVariant {
+export function isSpadesTheme(value: unknown): value is SpadesTheme {
   return (
     typeof value === 'string' &&
-    (SPADES_VARIANT_IDS as readonly string[]).includes(value)
+    (SPADES_THEME_IDS as readonly string[]).includes(value)
   );
 }
 

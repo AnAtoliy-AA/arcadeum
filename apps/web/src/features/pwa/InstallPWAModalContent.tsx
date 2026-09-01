@@ -8,10 +8,10 @@ import {
   ModalTitle,
   ModalBody,
   ModalFooter,
+  Button,
 } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { usePWAOptional } from './context';
-import { Button } from '@arcadeum/ui';
 import {
   PWAFeaturesList,
   PWAFeatureItem,
@@ -37,13 +37,7 @@ export function InstallPWAModalContent() {
           <ModalTitle>{t('pwa.install.title')}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginBottom: 20,
-            }}
-          >
+          <div className="mb-5 flex justify-center">
             <Avatar
               src="/icon-192x192.png"
               name="Arcadeum"
@@ -51,16 +45,7 @@ export function InstallPWAModalContent() {
               alt="Arcadeum app icon"
             />
           </div>
-          <p
-            style={{
-              textAlign: 'center',
-              color: 'var(--color)',
-              opacity: 0.7,
-              fontSize: '1rem',
-              lineHeight: '32px',
-              margin: 0,
-            }}
-          >
+          <p className="m-0 text-center text-base leading-8 text-[var(--color)] opacity-70">
             {t('pwa.install.description')}
           </p>
 
@@ -77,16 +62,7 @@ export function InstallPWAModalContent() {
 
           {!isPromptAvailable && (
             <PWAManualInstructions>
-              <p
-                style={{
-                  textAlign: 'left',
-                  color: 'var(--color)',
-                  opacity: 0.7,
-                  fontSize: '0.85rem',
-                  lineHeight: '22px',
-                  margin: 0,
-                }}
-              >
+              <p className="m-0 text-left text-[0.85rem] leading-[22px] text-[var(--color)] opacity-70">
                 <strong>{t('pwa.install.manual.title')}:</strong>
                 <br />
                 {isIos

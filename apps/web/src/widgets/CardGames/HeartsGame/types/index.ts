@@ -5,7 +5,7 @@ export type HeartsGameProps = BaseGameWidgetProps;
 export const MIN_PLAYERS = 4;
 export const MAX_PLAYERS = 4;
 
-export const HEARTS_VARIANT_IDS = [
+export const HEARTS_THEME_IDS = [
   'cyberpunk',
   'underwater',
   'crime',
@@ -19,13 +19,13 @@ export const HEARTS_VARIANT_IDS = [
   'steampunk',
   'zen',
 ] as const;
-export type HeartsVariant = (typeof HEARTS_VARIANT_IDS)[number];
+export type HeartsTheme = (typeof HEARTS_THEME_IDS)[number];
 
 /** Type guard for untrusted variant strings (room gameOptions). */
-export function isHeartsVariant(value: unknown): value is HeartsVariant {
+export function isHeartsTheme(value: unknown): value is HeartsTheme {
   return (
     typeof value === 'string' &&
-    (HEARTS_VARIANT_IDS as readonly string[]).includes(value)
+    (HEARTS_THEME_IDS as readonly string[]).includes(value)
   );
 }
 

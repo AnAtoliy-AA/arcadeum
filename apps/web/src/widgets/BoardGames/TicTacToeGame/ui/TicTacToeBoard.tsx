@@ -8,9 +8,9 @@ import type {
   CellValue,
   TicTacToePlayer,
   TicTacToeTeam,
-  TicTacToeTheme,
   WinLineCell,
 } from '../types';
+import type { TicTacToeThemeTokens } from '../lib/theme';
 import './styles/animations.scss';
 
 const CELL_PX = 40;
@@ -48,7 +48,7 @@ interface CellRendererProps {
   maxBoardSize: number;
   rows: number;
   cols: number;
-  theme: TicTacToeTheme;
+  theme: TicTacToeThemeTokens;
   cellStyle: React.CSSProperties;
   playerCursor?: string;
   cellFocusProps: Record<string, unknown>;

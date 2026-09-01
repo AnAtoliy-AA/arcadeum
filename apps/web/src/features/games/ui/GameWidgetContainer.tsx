@@ -114,12 +114,12 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
           </VariantIconBadge>
 
           <div className="flex flex-col items-stretch gap-0 min-w-0 flex-1 relative">
-            <GameTitle numberOfLines={1}>
+            <GameTitle>
               {headerProps.titleGradient ? (
                 <span
                   className="text-gradient"
                   style={{
-                    background: headerProps.titleGradient,
+                    backgroundImage: headerProps.titleGradient,
                   }}
                 >
                   {headerProps.title}

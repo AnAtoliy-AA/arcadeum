@@ -11,13 +11,13 @@ import type { GameRoomSummary } from '@/shared/types/games';
 import { BoardSizeSelector } from './BoardSizeSelector';
 import { TicTacToeTeamPanel } from './TicTacToeTeamPanel';
 import { RulesModal } from './RulesModal';
-import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
+import { TIC_TAC_TOE_THEMES } from '../lib/constants';
 import {
   BOARD_SIZES,
   MAX_PLAYERS_BY_BOARD_SIZE,
   type BoardSize,
   type TicTacToeOptions,
-  type TicTacToeVariant,
+  type TicTacToeTheme,
   type InfinityMargin,
   type InfinityWinLength,
   WIN_LENGTHS,
@@ -64,7 +64,7 @@ function resolveOptions(raw: unknown): TicTacToeOptions {
   const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
     n === 1 || n === 2 || n === 3;
   const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
-  const theme = (r.theme ?? r.variant ?? 'adventure') as TicTacToeVariant;
+  const theme = (r.theme ?? r.variant ?? 'adventure') as TicTacToeTheme;
   return {
     variant: theme,
     theme,
@@ -100,7 +100,7 @@ export function TicTacToeLobby({
   const lobbyTheme = useMemo(
     () =>
       getLobbyTheme(
-        TIC_TAC_TOE_VARIANTS,
+        TIC_TAC_TOE_THEMES,
         variant,
         TIC_TAC_TOE_LOBBY_THEME.fallbackLightGradient,
         TIC_TAC_TOE_LOBBY_THEME.buttonGradient,
@@ -108,7 +108,7 @@ export function TicTacToeLobby({
     [variant],
   );
   const variantName = useMemo(() => {
-    const found = TIC_TAC_TOE_VARIANTS.find((v) => v.id === variant);
+    const found = TIC_TAC_TOE_THEMES.find((v) => v.id === variant);
     return found ? t(found.name) : undefined;
   }, [variant, t]);
 

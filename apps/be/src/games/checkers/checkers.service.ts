@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, Optional, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  Optional,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
 import type Redis from 'ioredis';
@@ -51,17 +57,17 @@ export class CheckersService extends BaseGameService<CheckersOptions> {
 
   protected resolveOptions(raw: unknown): CheckersOptions {
     const r = (raw ?? {}) as Partial<{
+      theme: string;
       variant: string;
-      ruleVariant: string;
+      mode: string;
       forcedCaptures: boolean;
       backwardCaptures: boolean;
       botDifficulty: string;
       aiDifficulty: string;
     }>;
     return {
-      variant: (r.variant as CheckersOptions['variant']) ?? 'classic',
-      ruleVariant:
-        (r.ruleVariant as CheckersOptions['ruleVariant']) ?? 'american',
+      theme: ((r.theme ?? r.variant) as string) ?? 'adventure',
+      mode: (r.mode as CheckersOptions['mode']) ?? 'american',
       forcedCaptures: r.forcedCaptures !== false,
       backwardCaptures: r.backwardCaptures === true,
       botDifficulty: isAiDifficulty(r.botDifficulty)

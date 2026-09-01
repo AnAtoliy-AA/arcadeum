@@ -14,11 +14,11 @@ import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RulesModal } from './RulesModal';
-import { BACKGAMMON_VARIANTS } from '../lib/constants';
+import { BACKGAMMON_THEMES } from '../lib/constants';
 import type {
   BackgammonOptions,
-  BackgammonRuleVariant,
-  BackgammonVariant,
+  BackgammonMode,
+  BackgammonTheme,
 } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
@@ -28,8 +28,8 @@ const BACKGAMMON_LOBBY_THEME = {
   buttonGradient: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
 };
 
-const RULE_VARIANT_OPTIONS: Array<{
-  id: BackgammonRuleVariant;
+const MODE_OPTIONS: Array<{
+  id: BackgammonMode;
   nameKey: TranslationKey;
   descriptionKey: TranslationKey;
   emoji: string;
@@ -107,12 +107,13 @@ function resolveOptions(raw: unknown): BackgammonOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
-    ruleVariant: string;
+    mode: string;
     aiDifficulty: string;
   }>;
   return {
-    variant: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonVariant,
-    ruleVariant: (r.ruleVariant ?? 'standard') as BackgammonRuleVariant,
+    theme: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonTheme,
+    variant: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonTheme,
+    mode: (r.mode ?? 'standard') as BackgammonMode,
     aiDifficulty: (r.aiDifficulty ?? 'medium') as
       'easy' | 'medium' | 'hard' | 'expert',
   };
@@ -140,12 +141,12 @@ export function BackgammonLobby({
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
 
   const variant = options.variant;
-  const ruleVariant = options.ruleVariant ?? 'standard';
+  const mode = options.mode ?? 'standard';
 
   const lobbyTheme = useMemo(
     () =>
       getLobbyTheme(
-        BACKGAMMON_VARIANTS,
+        BACKGAMMON_THEMES,
         variant,
         BACKGAMMON_LOBBY_THEME.fallbackLightGradient,
         BACKGAMMON_LOBBY_THEME.buttonGradient,
@@ -154,13 +155,13 @@ export function BackgammonLobby({
   );
 
   const variantName = useMemo(() => {
-    const found = BACKGAMMON_VARIANTS.find((v) => v.id === variant);
+    const found = BACKGAMMON_THEMES.find((v) => v.id === variant);
     return found ? t(found.nameKey as TranslationKey) : undefined;
   }, [variant, t]);
 
-  const ruleVariantOptions = useMemo(
+  const modeOptions = useMemo(
     () =>
-      RULE_VARIANT_OPTIONS.map((rv) => ({
+      MODE_OPTIONS.map((rv) => ({
         id: rv.id,
         label: t(rv.nameKey),
         emoji: rv.emoji,
@@ -168,9 +169,8 @@ export function BackgammonLobby({
     [t],
   );
 
-  const activeRuleVariantMeta =
-    RULE_VARIANT_OPTIONS.find((rv) => rv.id === ruleVariant) ??
-    RULE_VARIANT_OPTIONS[0];
+  const activeModeMeta =
+    MODE_OPTIONS.find((rv) => rv.id === mode) ?? MODE_OPTIONS[0];
 
   const optionsSlot = (
     <div className="flex flex-col gap-4">
@@ -185,15 +185,15 @@ export function BackgammonLobby({
       </LobbyOptionSection>
       <LobbyOptionSection title={t('games.backgammon_v1.lobby.ruleVariant')}>
         <LobbyChipGroup
-          options={ruleVariantOptions}
-          value={ruleVariant}
-          onChange={(v) => setOption({ ruleVariant: v })}
+          options={modeOptions}
+          value={mode}
+          onChange={(v) => setOption({ mode: v })}
           disabled={!isHost}
           accentColor="#a855f7"
           testIdPrefix="backgammon-rule-variant"
         />
         <span className="text-[14px] opacity-60">
-          {t(activeRuleVariantMeta.descriptionKey)}
+          {t(activeModeMeta.descriptionKey)}
         </span>
       </LobbyOptionSection>
     </div>

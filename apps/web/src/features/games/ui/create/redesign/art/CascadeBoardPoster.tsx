@@ -2,7 +2,7 @@ import {
   getTheme,
   type CascadeThemeTokens,
 } from '@/widgets/CardGames/CascadeGame/lib/theme';
-import type { CascadeVariant } from '@/widgets/CardGames/CascadeGame/types';
+import type { CascadeTheme } from '@/widgets/CardGames/CascadeGame/types';
 import type { CascadeThemeMeta } from '../data/themes';
 
 interface Props {
@@ -28,7 +28,7 @@ export function CascadeBoardPoster({ theme, size = 'sm' }: Props) {
   const w = big ? 400 : 240;
   const h = big ? 320 : 135;
 
-  const tokens = getTheme(theme.id as CascadeVariant);
+  const tokens = getTheme(theme.id as CascadeTheme);
 
   const cardW = big ? 84 : 48;
   const cardH = big ? 120 : 70;

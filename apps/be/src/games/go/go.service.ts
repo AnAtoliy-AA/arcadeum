@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, Optional, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  Optional,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
 import type Redis from 'ioredis';
@@ -56,6 +62,7 @@ export class GoService extends BaseGameService<GoOptions> {
 
   protected resolveOptions(raw: unknown): GoOptions {
     const r = (raw ?? {}) as Partial<{
+      theme: string;
       variant: string;
       boardSize: number;
       aiDifficulty: string;
@@ -66,7 +73,7 @@ export class GoService extends BaseGameService<GoOptions> {
       ? (Number(r.boardSize) as GoOptions['boardSize'])
       : DEFAULT_BOARD_SIZE;
     return {
-      variant: r.variant ?? DEFAULT_OPTIONS.variant,
+      theme: r.theme ?? r.variant ?? DEFAULT_OPTIONS.theme,
       boardSize,
       aiDifficulty: isAiDifficulty(r.aiDifficulty)
         ? r.aiDifficulty

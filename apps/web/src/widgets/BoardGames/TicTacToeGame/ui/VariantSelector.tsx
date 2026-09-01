@@ -1,6 +1,6 @@
 'use client';
 
-import { TIC_TAC_TOE_VARIANTS } from '../lib/constants';
+import { TIC_TAC_TOE_THEMES } from '../lib/constants';
 import { GameVariantSelector } from '@/features/games/ui/GameVariantSelector';
 
 interface VariantSelectorProps {
@@ -23,7 +23,7 @@ export function VariantSelector({
       roomId={roomId}
       hostId={hostId}
       currentVariant={currentVariant}
-      variants={TIC_TAC_TOE_VARIANTS}
+      variants={TIC_TAC_TOE_THEMES}
       optionKey="variant"
       disabled={disabled}
       onVariantChange={onVariantChange}

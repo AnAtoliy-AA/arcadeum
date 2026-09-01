@@ -1,9 +1,9 @@
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
-import type { CheckersVariant } from '../types';
+import type { CheckersTheme } from '../types';
 
-export interface CheckersVariantOption extends GameVariantOption {
-  id: CheckersVariant;
+export interface CheckersThemeOption extends GameVariantOption {
+  id: CheckersTheme;
   name: TranslationKey;
   description: TranslationKey;
   emoji: string;
@@ -13,9 +13,9 @@ export interface CheckersVariantOption extends GameVariantOption {
 
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 
-export const CHECKERS_VARIANTS: ReadonlyArray<CheckersVariantOption> =
+export const CHECKERS_THEMES: ReadonlyArray<CheckersThemeOption> =
   SHARED_THEMES.map((t) => ({
-    id: t.id as CheckersVariant,
+    id: t.id as CheckersTheme,
     name: t.nameKey as TranslationKey,
     description: t.descriptionKey as TranslationKey,
     emoji: t.emoji,

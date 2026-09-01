@@ -18,6 +18,8 @@ import { AuthModule } from '../auth/auth.module';
 import { GamesModule } from '../games/games.module';
 import { FriendsModule } from '../friends/friends.module';
 
+import { RedisZsetLeaderboardService } from './services/redis-zset-leaderboard.service';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -38,7 +40,8 @@ import { FriendsModule } from '../friends/friends.module';
     LeaderboardsCaptureService,
     LeaderboardsGateway,
     LeaderboardsCacheService,
+    RedisZsetLeaderboardService,
   ],
-  exports: [LeaderboardsService],
+  exports: [LeaderboardsService, RedisZsetLeaderboardService],
 })
 export class LeaderboardsModule {}

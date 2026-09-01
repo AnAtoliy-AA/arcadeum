@@ -7,12 +7,11 @@ import type {
   GamePhase,
   InfinityMargin,
   InfinityWinLength,
-  Variant,
 } from './tic-tac-toe.constants';
 import type { AiDifficulty } from '../../lib/ai-difficulty';
 
 export interface TicTacToeOptions {
-  variant: Variant;
+  theme: string;
   boardSize: BoardSize;
   teamMode: boolean;
   expansionMargin: InfinityMargin;

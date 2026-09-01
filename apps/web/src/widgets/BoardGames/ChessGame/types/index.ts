@@ -153,5 +153,5 @@ export const TIME_CONTROLS: TimeControl[] = [
   { type: 'classical', initialSeconds: 1800, incrementSeconds: 0 },
 ];
 
-export const CHESS_VARIANT_IDS = ['standard', 'chess960'] as const;
-export type ChessVariant = (typeof CHESS_VARIANT_IDS)[number];
+export const CHESS_THEME_IDS = ['standard', 'chess960'] as const;
+export type ChessTheme = (typeof CHESS_THEME_IDS)[number];

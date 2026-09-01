@@ -1,9 +1,9 @@
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
-import type { CascadeMode, CascadeVariant } from '../types';
+import type { CascadeMode, CascadeTheme } from '../types';
 
-export interface CascadeVariantOption extends GameVariantOption {
-  id: CascadeVariant;
+export interface CascadeThemeOption extends GameVariantOption {
+  id: CascadeTheme;
   name: TranslationKey;
   description: TranslationKey;
   emoji: string;
@@ -13,9 +13,9 @@ export interface CascadeVariantOption extends GameVariantOption {
 
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 
-export const CASCADE_VARIANTS: ReadonlyArray<CascadeVariantOption> =
+export const CASCADE_THEMES: ReadonlyArray<CascadeThemeOption> =
   SHARED_THEMES.map((t) => ({
-    id: t.id as CascadeVariant,
+    id: t.id as CascadeTheme,
     name: t.nameKey as TranslationKey,
     description: t.descriptionKey as TranslationKey,
     emoji: t.emoji,

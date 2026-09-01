@@ -5,7 +5,7 @@ import type { BackgammonClientState } from '../types';
 
 const mockState: BackgammonClientState = {
   phase: 'roll',
-  options: { variant: 'cyberpunk', aiDifficulty: 'medium' },
+  options: { theme: 'cyberpunk', aiDifficulty: 'medium' },
   points: Array.from({ length: 24 }, (_, i) => {
     if (i === 23) return { playerId: 'p1', count: 2 };
     if (i === 0) return { playerId: 'p2', count: 2 };

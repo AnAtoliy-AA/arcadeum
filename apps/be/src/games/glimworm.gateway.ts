@@ -12,13 +12,13 @@ import {
 } from './games.gateway.utils';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import { GlimwormService } from './glimworm/glimworm.service';
-import type { GlimwormVariant } from './glimworm/glimworm.types';
+import type { GlimwormMode } from './glimworm/glimworm.types';
 import { GameVisibilityService } from '../admin/game-visibility/game-visibility.service';
 import { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 
 const GLIMWORM_GAME_ID = 'glimworm_v1';
 
-const VALID_VARIANTS: ReadonlySet<GlimwormVariant> = new Set([
+const VALID_MODES: ReadonlySet<GlimwormMode> = new Set([
   'battle_royale',
   'time_attack',
   'lives_heats',
@@ -140,13 +140,13 @@ export class GlimwormGateway implements GameMessageHandler {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
     try {
-      const variantRaw =
+      const modeRaw =
         typeof payload.variant === 'string' ? payload.variant : '';
-      if (!VALID_VARIANTS.has(variantRaw as GlimwormVariant)) {
-        throw new Error(`Invalid variant: ${variantRaw}`);
+      if (!VALID_MODES.has(modeRaw as GlimwormMode)) {
+        throw new Error(`Invalid mode: ${modeRaw}`);
       }
-      const variant = variantRaw as GlimwormVariant;
-      await this.assertCanSee(userId, variant);
+      const mode = modeRaw as GlimwormMode;
+      await this.assertCanSee(userId, mode);
       const powerupsEnabled = payload.powerupsEnabled === true;
       const fillWithBots = payload.fillWithBots === true;
       const botCount =
@@ -155,14 +155,14 @@ export class GlimwormGateway implements GameMessageHandler {
           ? payload.botCount
           : undefined;
       this.glimwormService.start(roomId, userId, {
-        variant,
+        mode,
         powerupsEnabled,
         fillWithBots,
         botCount,
       });
       client.emit(
         'glimworm.start.ack',
-        maybeEncrypt({ roomId, userId, variant, powerupsEnabled }),
+        maybeEncrypt({ roomId, userId, variant: mode, powerupsEnabled }),
       );
     } catch (error) {
       this.handleException({

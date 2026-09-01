@@ -38,19 +38,29 @@ describe('EventsService', () => {
   };
 
   const mockQuery = {
+    select: jest.fn().mockReturnThis(),
     sort: jest.fn().mockReturnThis(),
     limit: jest.fn().mockReturnThis(),
     lean: jest.fn().mockReturnThis(),
     exec: jest.fn().mockResolvedValue([mockLeanEvent]),
   };
 
+  const mockFindOneQuery = {
+    select: jest.fn().mockReturnThis(),
+    sort: jest.fn().mockReturnThis(),
+    lean: jest.fn().mockReturnThis(),
+    exec: jest.fn().mockResolvedValue(mockLeanEvent),
+  };
+
   const mockFindByIdQuery = {
+    select: jest.fn().mockReturnThis(),
     lean: jest.fn().mockReturnThis(),
     exec: jest.fn().mockResolvedValue(mockLeanEvent),
   };
 
   const mockEventModel = {
     find: jest.fn().mockReturnValue(mockQuery),
+    findOne: jest.fn().mockReturnValue(mockFindOneQuery),
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
     create: jest.fn(),

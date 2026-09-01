@@ -11,7 +11,7 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!.*uuid)"
+    "node_modules/(?!.*(@nestjs/bullmq|@nestjs/bull-shared|bullmq|uuid))"
   ],
   "moduleNameMapper": {
     "^@arcadeum/games-core(.*)$": "<rootDir>/../../../packages/games-core/src$1"

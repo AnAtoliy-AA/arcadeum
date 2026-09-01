@@ -191,6 +191,7 @@ export class FriendsService {
 
     const users = (await this.userModel
       .find({ _id: { $in: friendIds } })
+      .select('username displayName equippedAvatarId')
       .lean()) as unknown as LeanUser[];
 
     const userMap = new Map(users.map((u) => [u._id.toString(), u]));
@@ -223,10 +224,12 @@ export class FriendsService {
     const [incoming, outgoing] = await Promise.all([
       this.friendshipModel
         .find({ addresseeId: new Types.ObjectId(userId), status: 'pending' })
+        .select('requesterId addresseeId status createdAt')
         .sort({ createdAt: -1 })
         .lean<LeanFriendship[]>(),
       this.friendshipModel
         .find({ requesterId: new Types.ObjectId(userId), status: 'pending' })
+        .select('requesterId addresseeId status createdAt')
         .sort({ createdAt: -1 })
         .lean<LeanFriendship[]>(),
     ]);
@@ -239,6 +242,7 @@ export class FriendsService {
     const users = allUserIds.length
       ? ((await this.userModel
           .find({ _id: { $in: allUserIds } })
+          .select('username displayName equippedAvatarId')
           .lean()) as unknown as LeanUser[])
       : [];
 
@@ -275,6 +279,7 @@ export class FriendsService {
           { addresseeId: new Types.ObjectId(userId) },
         ],
       })
+      .select('requesterId addresseeId')
       .lean();
 
     return friendships
@@ -295,6 +300,7 @@ export class FriendsService {
           { addresseeId: new Types.ObjectId(userId) },
         ],
       })
+      .select('requesterId addresseeId')
       .lean();
 
     return friendships.map((f) =>

@@ -8,6 +8,7 @@ const meta: Meta<typeof PageLoading> = {
     layout: {
       control: 'select',
       options: [
+        'splash',
         'standard',
         'stats',
         'grid',
@@ -25,6 +26,13 @@ const meta: Meta<typeof PageLoading> = {
 
 export default meta;
 type Story = StoryObj<typeof PageLoading>;
+
+export const Splash: Story = {
+  args: {
+    layout: 'splash',
+    message: 'Loading Arcadeum arena...',
+  },
+};
 
 export const Standard: Story = {
   args: {

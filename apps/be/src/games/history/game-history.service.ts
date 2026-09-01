@@ -104,6 +104,7 @@ export class GameHistoryService {
     const skip = page * limit;
     const hiddenEntries = await this.historyHiddenModel!.find({ userId })
       .select('roomId')
+      .lean()
       .exec();
     const hiddenRoomIds = hiddenEntries.map((h) => h.roomId);
     const orFilters: FilterQuery<GameRoom>[] = [

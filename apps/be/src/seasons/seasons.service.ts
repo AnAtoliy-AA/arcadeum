@@ -98,6 +98,7 @@ export class SeasonsService implements OnModuleInit {
   async listSeasons(limit = 10): Promise<SeasonView[]> {
     const docs = await this.seasonModel
       .find()
+      .select('seasonId number status theme startsAt endsAt champions')
       .sort({ endsAt: -1 })
       .limit(Math.min(50, Math.max(1, limit)))
       .lean<LeanSeason[]>()

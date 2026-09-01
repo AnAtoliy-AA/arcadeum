@@ -9,6 +9,7 @@ const render = (ui: React.ReactElement) => {
 
 describe('PageLoading', () => {
   const layouts: PageLoadingLayout[] = [
+    'splash',
     'standard',
     'stats',
     'grid',
@@ -27,6 +28,14 @@ describe('PageLoading', () => {
     expect(loadingEl).toBeInTheDocument();
     expect(loadingEl).toHaveAttribute('aria-busy', 'true');
     expect(loadingEl).toHaveAttribute('aria-label', 'Loading');
+  });
+
+  it('renders splash layout with status role and custom message', () => {
+    render(<PageLoading layout="splash" message="Loading custom game..." />);
+    const loadingEl = screen.getByRole('status');
+    expect(loadingEl).toBeInTheDocument();
+    expect(loadingEl).toHaveAttribute('aria-label', 'Loading Arcadeum');
+    expect(screen.getByText('Loading custom game...')).toBeInTheDocument();
   });
 
   it.each(layouts)('renders layout "%s" successfully', (layout) => {

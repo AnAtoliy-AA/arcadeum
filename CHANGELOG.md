@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.32] - 2026-09-01
+
+### Fixed
+- self-contained install app widget and mobile control panel layout
+
+
 ## [1.27.31] - 2026-09-01
 
 ### Improved

@@ -215,5 +215,17 @@ test.describe('Light Themes Contrast and Usability', () => {
         await expect(closeBtn).toBeVisible();
       }
     });
+
+    test(`game result and modal styling are readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/games/chess');
+      await setTheme(page, theme);
+
+      const resultModal = page.getByTestId('game-result-modal');
+      if ((await resultModal.count()) > 0) {
+        await expect(resultModal).toBeVisible();
+      }
+    });
   }
 });

@@ -7,118 +7,138 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.32] - 2026-09-01
+
+### Fixed
+
+- self-contained install app widget and mobile control panel layout
+
+## [1.27.31] - 2026-09-01
+
+### Improved
+
+- optimize static assets and bundle size
+
 ## [1.27.30] - 2026-09-01
 
 ### Fixed
+
 - attach error listener to bullmq redis client instance (ARC-950) (ARC-950)
 - restore isOfflineDownloadSupported logic for unit test suite (ARC-950) (ARC-950)
 - resolve redis connection errors and e2e offline fetch warnings (ARC-950) (ARC-950)
 
-
 ## [1.27.29] - 2026-09-01
 
 ### Added
+
 - rework pwa icons and load screen (ARC-946) (ARC-946)
 - integrate BullMQ async job processing and SocketDeltaService (ARC-950) (ARC-950)
 
 ### Fixed
+
 - update transformIgnorePatterns in jest-e2e.json for bullmq (ARC-950) (ARC-950)
 - make setLocale synchronous and reliable across route changes (ARC-706) (ARC-706)
 
 ### Improved
+
 - add Redis ZSET leaderboards, background task queue, and virtualized list hook (ARC-950) (ARC-950)
 - add select projections to clan member lookups (ARC-950) (ARC-950)
 - add select projections to ranking and seasons queries (ARC-950) (ARC-950)
 - optimize web package imports and backend query projections (ARC-950) (ARC-950)
 
-
 ## [1.27.28] - 2026-09-01
 
 ### Improved
-- resolve socket console errors and optimize hero lcp
 
+- resolve socket console errors and optimize hero lcp
 
 ## [1.27.27] - 2026-09-01
 
 ### Fixed
+
 - wait for hydration before clicking language switcher buttons
 - update backgammon and glimworm tests to use mode instead of variant
 - update test files to match renamed fields
 
 ### Refactored
-- standardize theme/mode naming across all games
 
+- standardize theme/mode naming across all games
 
 ## [1.27.26] - 2026-09-01
 
 ### Fixed
+
 - type check fixes for offline downloads hook and section test (ARC-optimize-theme-backgrounds)
 - prevent SSR hydration mismatch in offline downloads section (ARC-optimize-theme-backgrounds)
 
 ### Improved
-- optimize theme background images and remove unused pngs (ARC-optimize-theme-backgrounds)
 
+- optimize theme background images and remove unused pngs (ARC-optimize-theme-backgrounds)
 
 ## [1.27.25] - 2026-09-01
 
 ### Added
+
 - optimize sea battle desktop dimensions to prevent vertical scroll
 - resize sea battle fields for desktop and mobile landscape
 
 ### Fixed
+
 - use real field with compact sizing in sea battle landing and previews (ARC-sea-battle-field-sizing)
 - expand sea battle boards when space allows (ARC-sea-battle-field-sizing)
 - rework sea battle field sizing and streamline room chrome (ARC-sea-battle-field-sizing)
 
 ### Refactored
-- clean up sea-battle.scss redundant styles and specificity (ARC-sea-battle-field-sizing)
 
+- clean up sea-battle.scss redundant styles and specificity (ARC-sea-battle-field-sizing)
 
 ## [1.27.24] - 2026-09-01
 
 ### Fixed
-- resolve gradient title clipping in game widget header
 
+- resolve gradient title clipping in game widget header
 
 ## [1.27.23] - 2026-09-01
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.27.22] - 2026-09-01
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.27.21] - 2026-09-01
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.27.20] - 2026-08-31
 
 ### Fixed
+
 - add R2 CDN URL to connect-src CSP for music catalog fetch
 - warn when NEXT_PUBLIC_CDN_URL is missing for music catalog
 - rewrite /offline/{game} to locale-prefixed path to fix 404s
 
 ### Improved
+
 - additional free optimizations across web, BE, and mobile
 - free performance optimizations across web, BE, and mobile
-
 
 ## [1.27.19] - 2026-08-31
 
 ### Added
-- link create room button to games page and allow own anon rooms in list (ARC-713) (ARC-713)
 
+- link create room button to games page and allow own anon rooms in list (ARC-713) (ARC-713)
 
 ## [1.27.18] - 2026-08-31
 
 ### Fixed
+
 - remove unused SocketIOServer import
 - complete AI vs AI sessions when no watchers, remove lastActiveAt
 - track player lastActiveAt, bot waits 15min after last human action
@@ -126,16 +146,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add Redis distributed lock to bot watchdog for cluster mode
 - enable Redis offline queue for cluster mode compatibility
 
-
 ## [1.27.17] - 2026-08-31
 
 ### Added
-- wire notifications socket and ensure multiplexed connection (ARC-712) (ARC-712)
 
+- wire notifications socket and ensure multiplexed connection (ARC-712) (ARC-712)
 
 ## [1.27.16] - 2026-08-31
 
 ### Added
+
 - rework rooms filters UI with responsive mobile ergonomics (ARC-711) (ARC-711)
 - show in-progress matches for current game on landing (ARC-711) (ARC-711)
 - show active public lobbies and own lobby indicator in game landing (ARC-711) (ARC-711)
@@ -145,6 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rework matchmaking queue with players ahead display and opponent discovery (ARC-711) (ARC-711)
 
 ### Fixed
+
 - resolve eslint union type in be and restore checkbox role on categories in web (ARC-711) (ARC-711)
 - allow string and all in ListRoomsFilters status type (ARC-711) (ARC-711)
 - support multi-status and in_progress query filtering on backend and frontend (ARC-711) (ARC-711)
@@ -154,91 +175,98 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - filter stale lobby rooms in live stats and link game-specific lobbies (ARC-711) (ARC-711)
 
 ### Refactored
-- redesign rooms filters with segmented tabs and modern glassmorphism (ARC-711) (ARC-711)
 
+- redesign rooms filters with segmented tabs and modern glassmorphism (ARC-711) (ARC-711)
 
 ## [1.27.15] - 2026-08-31
 
 ### Added
+
 - consolidate socket connections and add CPU profiling
 - add server CPU/RAM monitoring to admin dashboard
 
 ### Fixed
+
 - validate CpuProfileDto with class-validator
 - extract ServerResourcesCard to fix lint errors
 - stabilize PM2 — auto-tune cluster mode, V8 heap, and ready signal
 
-
 ## [1.27.14] - 2026-08-31
 
 ### Added
-- replace hardcoded user and subscriber counts with live real numbers (ARC-710) (ARC-710)
 
+- replace hardcoded user and subscriber counts with live real numbers (ARC-710) (ARC-710)
 
 ## [1.27.13] - 2026-08-31
 
 ### Added
+
 - add support link to footer resources and update support page link (ARC-709) (ARC-709)
 - add social networks rewards callout to support page (ARC-709) (ARC-709)
 - enhance discoverability across header, community, post-game, and wallet (ARC-709) (ARC-709)
 - implement gem rewards for social network subscriptions (ARC-709) (ARC-709)
 
 ### Fixed
+
 - restore language switcher to header and update e2e tests (ARC-709) (ARC-709)
 
 ### Refactored
-- streamline header to 1-row layout and integrate rewards into shop (ARC-709) (ARC-709)
 
+- streamline header to 1-row layout and integrate rewards into shop (ARC-709) (ARC-709)
 
 ## [1.27.12] - 2026-08-31
 
 ### Added
-- update positioning to board, card and mini-games with SEO/AEO/GEO schemas (ARC-708) (ARC-708)
 
+- update positioning to board, card and mini-games with SEO/AEO/GEO schemas (ARC-708) (ARC-708)
 
 ## [1.27.11] - 2026-08-31
 
 ### Fixed
+
 - use absolute locale-prefixed path for offline badge links
 - include public manifests in build artifact to fix e2e 404s
 
 ### Refactored
-- isolate search params and modularize language provider
 
+- isolate search params and modularize language provider
 
 ## [1.27.10] - 2026-08-31
 
 ### Fixed
+
 - prevent duplicate language buttons in dom and use first locator (ARC-939) (ARC-939)
 - dismiss tutorial on click and prevent blocking in shorts (ARC-939) (ARC-939)
-
 
 ## [1.27.9] - 2026-08-31
 
 ### Fixed
+
 - restore use client to game landing preview components (ARC-939) (ARC-939)
 
 ### Improved
+
 - remove redundant use client directives from presentational components (ARC-939) (ARC-939)
 - enable perMessageDeflate compression on games gateway (ARC-939) (ARC-939)
 - optimize bundle size, response caching, and preconnect (ARC-939) (ARC-939)
 
-
 ## [1.27.8] - 2026-08-30
 
 ### Added
+
 - implement offline service worker caching and offline status indicator (ARC-900)
 - implement weekly social leagues and standings card (ARC-933)
 - implement quest objectives and battle pass progression system (ARC-932)
 - implement asynchronous turn-based matches engine and active match drawer (ARC-931)
 
 ### Fixed
+
 - update e2e tests for post metrics and get activity endpoints (ARC-931)
 - update e2e test assertions and be test memory allocation (ARC-931)
 
 ### Documentation
-- update changelog with tier 2 retention and performance features (ARC-931)
 
+- update changelog with tier 2 retention and performance features (ARC-931)
 
 ## [1.27.7] - 2026-08-29
 

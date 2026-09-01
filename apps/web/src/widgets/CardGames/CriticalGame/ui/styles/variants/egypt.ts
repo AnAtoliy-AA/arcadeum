@@ -20,6 +20,6 @@ export const egyptVariantStyles: VariantStyleConfig = {
   },
   cards: {
     ...baseVariantStyles.cards,
-    getCardSpriteUrl: () => '/images/cards/egypt_sprites.png',
+    getCardSpriteUrl: () => '/images/cards/egypt_sprites.webp',
   },
 };

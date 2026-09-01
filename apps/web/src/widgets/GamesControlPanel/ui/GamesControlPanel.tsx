@@ -157,7 +157,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         )}
 
         <Button
-          className="w-8 h-8 !p-0 shrink-0 sm:w-9 sm:h-9"
+          className="w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0"
           variant="glass"
           size="sm"
           data-testid="fullscreen-button"
@@ -178,7 +178,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
         <Button
           className={cx(
-            'w-8 h-8 !p-0 shrink-0 sm:w-9 sm:h-9',
+            'w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0',
             soundEnabled &&
               '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
           )}
@@ -191,15 +191,15 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           data-testid="sound-toggle-button"
         >
           {soundEnabled ? (
-            <VolumeOnIcon size={16} />
+            <VolumeOnIcon size={14} />
           ) : (
-            <VolumeOffIcon size={16} />
+            <VolumeOffIcon size={14} />
           )}
         </Button>
 
         <Button
           className={cx(
-            'w-8 h-8 !p-0 shrink-0 sm:w-9 sm:h-9',
+            'w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0',
             isChatVisible &&
               '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
           )}
@@ -229,7 +229,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
       <div className="flex flex-row items-center gap-1 sm:gap-2 ml-auto shrink-0">
         {effectiveIsGameOver && effectiveOnRematch && (
           <Button
-            className="active:scale-[0.95] text-xs font-semibold px-2 sm:px-3"
+            className="active:scale-[0.95] text-[10px] sm:text-xs font-semibold px-2 sm:px-3"
             variant="primary"
             size="sm"
             onClick={effectiveOnRematch}
@@ -265,7 +265,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         />
 
         <Button
-          className="!px-2 sm:!px-2.5"
+          className="!px-2 sm:px-3"
           variant="glass"
           size="sm"
           onClick={handleExitRoom}
@@ -288,7 +288,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
         {snapshot.userId && (
           <Button
-            className="!px-2 sm:!px-2.5"
+            className="!px-2 sm:px-3"
             variant="danger"
             size="sm"
             onClick={handleLeaveGame}

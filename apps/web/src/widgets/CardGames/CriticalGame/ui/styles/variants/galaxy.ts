@@ -20,6 +20,6 @@ export const galaxyVariantStyles: VariantStyleConfig = {
   },
   cards: {
     ...baseVariantStyles.cards,
-    getCardSpriteUrl: () => '/images/cards/galaxy_sprites.png',
+    getCardSpriteUrl: () => '/images/cards/galaxy_sprites.webp',
   },
 };

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.29] - 2026-09-01
+
+### Added
+- rework pwa icons and load screen (ARC-946) (ARC-946)
+- integrate BullMQ async job processing and SocketDeltaService (ARC-950) (ARC-950)
+
+### Fixed
+- update transformIgnorePatterns in jest-e2e.json for bullmq (ARC-950) (ARC-950)
+- make setLocale synchronous and reliable across route changes (ARC-706) (ARC-706)
+
+### Improved
+- add Redis ZSET leaderboards, background task queue, and virtualized list hook (ARC-950) (ARC-950)
+- add select projections to clan member lookups (ARC-950) (ARC-950)
+- add select projections to ranking and seasons queries (ARC-950) (ARC-950)
+- optimize web package imports and backend query projections (ARC-950) (ARC-950)
+
+
 ## [1.27.28] - 2026-09-01
 
 ### Improved

@@ -106,7 +106,7 @@ test.describe('Light Themes Contrast and Usability', () => {
       if ((await downloadSection.count()) > 0) {
         await expect(downloadSection).toBeVisible();
         const appStoreBtn = downloadSection
-          .locator('.download-btn-static')
+          .getByTestId('download-btn-static')
           .first();
         await expect(appStoreBtn).toBeVisible();
       }

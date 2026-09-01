@@ -30,3 +30,33 @@ describe('GameWidgetContainer a11y', () => {
     expect(region.textContent).toBe('Your turn');
   });
 });
+
+describe('GameWidgetContainer header', () => {
+  it('renders title with gradient when titleGradient is provided', () => {
+    render(
+      <WidgetFullscreenContext.Provider value={false}>
+        <GameWidgetContainer
+          board={<div>board</div>}
+          showChatPopup={false}
+          loading={false}
+          headerProps={{
+            variantEmoji: '🕵️',
+            title: 'Critical Match',
+            subtitle: 'Quick Match',
+            titleGradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+          }}
+        />
+      </WidgetFullscreenContext.Provider>,
+    );
+
+    const titleElement = screen.getByText('Critical Match');
+    expect(titleElement).toBeInTheDocument();
+    expect(titleElement).toHaveClass('text-gradient');
+    expect(titleElement).toHaveStyle({
+      backgroundImage: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+    });
+
+    const subtitleElement = screen.getByText('Quick Match');
+    expect(subtitleElement).toBeInTheDocument();
+  });
+});

@@ -212,12 +212,10 @@ export const VariantIconBadge = ({
 );
 
 export const GameTitle = ({
-  numberOfLines,
   className,
   'data-testid': dataTestId,
   children,
 }: {
-  numberOfLines?: number;
   className?: string;
   'data-testid'?: string;
   children?: ReactNode;
@@ -225,8 +223,7 @@ export const GameTitle = ({
   <span
     data-testid={dataTestId}
     className={cx(
-      'text-[16px] font-extrabold tracking-[-0.3px] max-[800px]:text-[13px]',
-      numberOfLines ? 'line-clamp-1' : 'truncate',
+      'text-[16px] font-extrabold tracking-[-0.3px] max-[800px]:text-[13px] truncate',
       className,
     )}
   >

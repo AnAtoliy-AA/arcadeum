@@ -199,5 +199,21 @@ test.describe('Light Themes Contrast and Usability', () => {
         await expect(filters).toBeVisible();
       }
     });
+
+    test(`game rules modal and close button are readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/games/chess');
+      await setTheme(page, theme);
+
+      const rulesButton = page.getByTestId('game-rules-button');
+      if ((await rulesButton.count()) > 0) {
+        await rulesButton.click();
+        const modal = page.getByTestId('game-rules-modal');
+        await expect(modal).toBeVisible();
+        const closeBtn = page.getByTestId('modal-close-button');
+        await expect(closeBtn).toBeVisible();
+      }
+    });
   }
 });

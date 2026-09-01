@@ -53,7 +53,7 @@ export const GameRulesModal = memo(function GameRulesModal({
       >
         <ModalHeader variant={variant}>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xl shadow-inner">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-xl shadow-inner">
               {icon}
             </div>
             <div className="flex flex-col">
@@ -81,7 +81,7 @@ export const GameRulesModal = memo(function GameRulesModal({
           {rules.map((rule, idx) => (
             <div
               key={rule.title}
-              className="group relative flex gap-3.5 rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition-all hover:border-white/20 hover:bg-white/[0.06]"
+              className="group relative flex gap-3.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3.5 transition-all hover:border-[var(--glassBorderStrong)] hover:bg-[var(--glassBgHover)]"
             >
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[var(--primary)]/30 bg-[var(--primary)]/15 text-xs font-bold text-[var(--primary)]">
                 {rule.badge || idx + 1}
@@ -98,7 +98,7 @@ export const GameRulesModal = memo(function GameRulesModal({
           ))}
         </div>
 
-        <ModalActions className="justify-end pt-2 border-t border-[var(--borderColor)]">
+        <ModalActions className="justify-end pt-2 border-t border-[var(--glassBorder)]">
           <Button
             variant="primary"
             size="sm"

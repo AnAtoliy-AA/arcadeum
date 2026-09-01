@@ -79,17 +79,16 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
                   >
                     <span className="text-[20px]">{section.icon}</span>
                   </div>
-                  <span className="font-bold text-[18px] text-[#f1f5f9]">
+                  <span className="font-bold text-[18px] text-[var(--color)]">
                     {section.header}
                   </span>
                 </div>
-                <span className="text-[18px] leading-[27px] text-[#94a3b8]">
+                <span className="text-[16px] leading-[26px] text-[var(--textSecondary)]">
                   {section.text}
                 </span>
               </div>
             ))}
 
-            {/* Fleet section */}
             <div className="flex flex-col items-stretch gap-3">
               <div className="flex flex-row items-center gap-3">
                 <div
@@ -101,7 +100,7 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
                 >
                   <span className="text-[20px]">🚢</span>
                 </div>
-                <span className="font-bold text-[18px] text-[#f1f5f9]">
+                <span className="font-bold text-[18px] text-[var(--color)]">
                   {t(
                     'games.sea_battle_v1.rules.headers.ships' as TranslationKey,
                   )}
@@ -110,11 +109,11 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
               <div className="flex flex-row items-stretch flex-wrap gap-3">
                 {ships.map((ship, idx) => (
                   <div
-                    className="flex flex-col items-stretch bg-[rgba(255,255,255,0.03)] border border-[rgba(56,189,248,0.1)] rounded-[16px] p-3 gap-2 basis-[45%] grow"
+                    className="flex flex-col items-stretch bg-[var(--backgroundHover)] border border-[var(--glassBorder)] rounded-[16px] p-3 gap-2 basis-[45%] grow"
                     key={idx}
                   >
                     <div className="flex flex-row justify-between items-center">
-                      <span className="font-bold text-[#f8fafc]">
+                      <span className="font-bold text-[var(--color)]">
                         {ship?.name}
                       </span>
                       <div className="flex flex-row items-stretch bg-[rgba(56,189,248,0.1)] px-2 py-2 rounded-[8px]">
@@ -126,7 +125,7 @@ export function RulesModal({ isOpen, onClose, t }: RulesModalProps) {
                         </span>
                       </div>
                     </div>
-                    <span className="text-[14px] text-[#64748b] leading-[20px]">
+                    <span className="text-[14px] text-[var(--textSecondary)] leading-[20px]">
                       {ship?.description}
                     </span>
                   </div>

@@ -70,8 +70,7 @@ export const Modal = memo(function Modal({ open, onClose, children }: ModalProps
 
   return (
     <div
-      className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
-      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose?.();
       }}
@@ -93,7 +92,7 @@ export const ModalContent = memo(function ModalContent({ maxWidth = 600, childre
   return (
     <div
       data-testid={dataTestId}
-      className="w-[95%] rounded-[20px] border border-[var(--borderColor)] bg-[var(--background)] p-0 shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+      className="w-[95%] rounded-[20px] border border-[var(--glassBorderStrong)] bg-[var(--background)] text-[var(--color)] p-0 shadow-2xl"
       style={{ maxWidth }}
     >
       {children}
@@ -105,7 +104,7 @@ export const ModalHeader = memo(function ModalHeader({ children, onClose, 'data-
   return (
     <div
       data-testid={dataTestId}
-      className="flex items-center justify-between gap-4 border-b border-[var(--borderColor)] p-5"
+      className="flex items-center justify-between gap-4 border-b border-[var(--glassBorder)] p-5"
     >
       {children}
       {onClose && (
@@ -115,6 +114,7 @@ export const ModalHeader = memo(function ModalHeader({ children, onClose, 'data-
           onClick={onClose}
           aria-label="Close modal"
           data-testid="modal-close-button"
+          className="text-[var(--color)] hover:text-[var(--primary)] hover:bg-[var(--backgroundHover)]"
         >
           <CloseIcon size={20} />
         </Button>
@@ -143,7 +143,7 @@ export const ModalFooter = memo(function ModalFooter({ children, 'data-testid': 
   return (
     <div
       data-testid={dataTestId}
-      className="flex items-center justify-end gap-3 border-t border-[var(--borderColor)] p-5"
+      className="flex items-center justify-end gap-3 border-t border-[var(--glassBorder)] p-5"
     >
       {children}
     </div>

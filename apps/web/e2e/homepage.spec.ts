@@ -102,7 +102,7 @@ test.describe('Home Page', () => {
   });
 
   test('should have modernized support developers button', async ({ page }) => {
-    const supportButton = page.getByRole('link', {
+    const supportButton = page.getByTestId('hero-section').getByRole('link', {
       name: /support (the )?developers/i,
     });
     await expect(supportButton).toBeVisible();

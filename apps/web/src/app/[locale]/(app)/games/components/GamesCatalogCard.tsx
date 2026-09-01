@@ -1,12 +1,12 @@
-'use client';
-
 import Link from 'next/link';
 import { GamesCatalogRealPreview } from './art/GamesCatalogRealPreview';
 import { GameSymbol } from '@/app/[locale]/home/components/featured-games/gameMeta';
 import type { CatalogGameItem } from '../GamesCatalogClient';
+import type { Locale } from '@/shared/i18n';
 
 interface GamesCatalogCardProps {
   game: CatalogGameItem;
+  locale: Locale;
   playLabel?: string;
   demoBadgeLabel?: string;
   unavailableLabel?: string;
@@ -16,6 +16,7 @@ interface GamesCatalogCardProps {
 
 export function GamesCatalogCard({
   game,
+  locale,
   demoBadgeLabel = 'Demo',
   unavailableLabel = 'Disabled',
   offlineBadgeLabel,
@@ -103,7 +104,7 @@ export function GamesCatalogCard({
         </span>
         {game.offlineSlug && offlineBadgeLabel ? (
           <Link
-            href={`../offline/${game.offlineSlug}`}
+            href={`/${locale}/offline/${game.offlineSlug}`}
             data-testid={`games-catalog-offline-${game.id}`}
             className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/40 hover:bg-[var(--primary)]/25 transition-colors"
           >

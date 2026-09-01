@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import {
-  ReusableGameLobby,
   type GameLobbyTheme,
+  ReusableGameLobby,
   IconButton,
-  LobbyOptionSection,
-  GameThemePicker,
-} from '@/features/games/ui';
+} from '@/features/games/ui/ReusableGameLobby';
+import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { Typography } from '@arcadeum/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CARD_VARIANTS, RANDOM_VARIANT } from '../lib/constants';

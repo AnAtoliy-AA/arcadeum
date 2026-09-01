@@ -53,6 +53,7 @@ const CATEGORIES: Array<{
 ];
 
 export function GamesCatalogClient({
+  locale,
   games,
   roomsHref,
   allLabel = 'All Games',
@@ -154,6 +155,7 @@ export function GamesCatalogClient({
             <GamesCatalogCard
               key={game.id}
               game={game}
+              locale={locale}
               playLabel={playLabel}
               offlineBadgeLabel={offlineBadgeLabel}
               demoBadgeLabel={demoBadgeLabel}

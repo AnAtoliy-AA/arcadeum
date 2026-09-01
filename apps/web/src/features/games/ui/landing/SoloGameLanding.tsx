@@ -1,14 +1,9 @@
 import Link from 'next/link';
 import { Container, GlassCard } from '@arcadeum/ui';
+import { GameLandingLiveStats } from './GameLandingLiveStats';
 
-/**
- * Copy for a solo (single-player) game landing page. Mirrors the shared
- * `solitaire_v1.landing` i18n shape — every solo game maps its translated
- * messages into this structure.
- */
 export interface SoloLandingCopy {
   name: string;
-  /** Small uppercase pill above the title, e.g. "Single-player · No signup". */
   tagline: string;
   heroSubtitle: string;
   ctaPlayLabel: string;
@@ -23,9 +18,7 @@ export interface SoloGameLandingProps {
   playHref: string;
   gamesHref: string;
   homeHref: string;
-  /** Full Tailwind classes for the ambient top glow gradient. */
   accentGlowClass?: string;
-  /** Tailwind text/bg accent classes for the numbered step circles. */
   accentTextClass?: string;
 }
 
@@ -67,6 +60,9 @@ export function SoloGameLanding({
           <p className="max-w-2xl text-base leading-relaxed text-[var(--foreground)] opacity-80 sm:text-lg">
             {copy.heroSubtitle}
           </p>
+
+          <GameLandingLiveStats />
+
           <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
             {playButton}
             <Link

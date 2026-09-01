@@ -1,6 +1,7 @@
-import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional, forwardRef } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
+import type Redis from 'ioredis';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GamesRealtimeService } from '../games.realtime.service';
@@ -35,6 +36,7 @@ export class TicTacToeService extends BaseGameService<TicTacToeOptions> {
     @Inject(forwardRef(() => TicTacToeBotService))
     botService: TicTacToeBotService,
     @InjectConnection() mongoConnection: Connection,
+    @Optional() @Inject('REDIS_CLIENT') redis?: Redis | null,
   ) {
     super(
       roomsService,
@@ -42,6 +44,8 @@ export class TicTacToeService extends BaseGameService<TicTacToeOptions> {
       realtimeService,
       botService,
       mongoConnection,
+      undefined,
+      redis,
     );
   }
 

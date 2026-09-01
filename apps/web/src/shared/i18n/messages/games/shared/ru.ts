@@ -32,6 +32,10 @@ export const ruMessages = {
       },
       aiVsAiLabel: 'Режим',
       aiVsAi: 'ИИ против ИИ',
+      clearAll: 'Очистить всё',
+      moreFilters: 'Ещё фильтры',
+      hideFilters: 'Скрыть фильтры',
+      activeFiltersCount: '{{count}} активных',
     },
   },
   aiVsAi: {
@@ -50,6 +54,7 @@ export const ruMessages = {
       completeTitle: 'Обучение завершено!',
       completeBody:
         'Отлично — теперь вы знаете основы игры {{game}}. Удачи за столом!',
+      close: 'Закрыть',
     },
   },
   rooms: {
@@ -123,6 +128,15 @@ export const ruMessages = {
     },
     actions: {
       backToHome: 'На главную',
+    },
+    postGame: {
+      whatNext: 'Что дальше?',
+      challengeFriend: 'Вызвать друга',
+      shareResult: 'Поделиться результатом',
+      playAnother: 'Сыграть ещё',
+      linkCopied: 'Ссылка скопирована!',
+      rewardsPrompt: 'Нужно больше гемов? Подпишитесь на соцсети!',
+      rewardsClaim: 'Забрать',
     },
     deleteRoom: {
       button: 'Удалить зал',
@@ -534,6 +548,21 @@ export const ruMessages = {
     cancel: 'Отменить поиск',
     estimatedWait: 'Ожидание: ~{{seconds}} с',
     queuePosition: 'Позиция в очереди: {{position}} из {{total}}',
+    playersAheadSingle: '1 игрок перед вами',
+    playersAheadMultiple: '{{count}} игроков перед вами',
+    nextInLine: 'Вы следующий в очереди! Следующий матч ваш.',
+    playersInQueue: '{{count}} в поиске этой игры',
+    activeQueuesTitle: 'Активные игроки в других играх',
+    switchGame: 'Перейти в {{game}}',
+    playAiNow: 'Сыграть с ИИ сейчас',
+    minimize: 'Свернуть',
+    expand: 'Развернуть',
+    modeCasual: 'Обычный',
+    modeRanked: 'Рейтинговый',
+    noRoomsSuggestTitle: 'Нет открытых комнат',
+    noRoomsSuggestSubtitle:
+      'Создайте свою комнату и ждите подключения игроков!',
+    createRoomAction: 'Создать комнату',
   },
   ranking: {
     ratingUpdated: 'Рейтинг обновлён',

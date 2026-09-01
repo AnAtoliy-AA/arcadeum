@@ -12,7 +12,7 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
   }) => {
     await page.goto('/en/settings', { waitUntil: 'domcontentloaded' });
 
-    const frButton = page.getByTestId('lang-btn-fr');
+    const frButton = page.getByTestId('lang-btn-fr').first();
     if (!(await frButton.isVisible())) {
       // Some layouts hide the inline language buttons on smaller breakpoints.
       // Skip rather than fail in those configurations.
@@ -20,7 +20,6 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
     }
 
     await frButton.click();
-    await page.waitForURL(/\/fr\/parametres\b/, { timeout: 5000 });
     await expect(page).toHaveURL(/\/fr\/parametres\b/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   });
@@ -28,13 +27,12 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
   test('switching EN → RU on /en/games lands on /ru/igry', async ({ page }) => {
     await page.goto('/en/games', { waitUntil: 'domcontentloaded' });
 
-    const ruButton = page.getByTestId('lang-btn-ru');
+    const ruButton = page.getByTestId('lang-btn-ru').first();
     if (!(await ruButton.isVisible())) {
       test.skip(true, 'Inline language switcher not visible at this viewport.');
     }
 
     await ruButton.click();
-    await page.waitForURL(/\/ru\/igry\b/, { timeout: 5000 });
     await expect(page).toHaveURL(/\/ru\/igry\b/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
   });
@@ -44,12 +42,12 @@ test.describe('Language switcher — URL swaps locale + slug', () => {
   }) => {
     await page.goto('/en/settings', { waitUntil: 'domcontentloaded' });
 
-    const esButton = page.getByTestId('lang-btn-es');
+    const esButton = page.getByTestId('lang-btn-es').first();
     if (!(await esButton.isVisible())) {
       test.skip(true, 'Inline language switcher not visible at this viewport.');
     }
     await esButton.click();
-    await page.waitForURL(/\/es\/ajustes\b/, { timeout: 5000 });
+    await expect(page).toHaveURL(/\/es\/ajustes\b/);
 
     // The switcher writes an app-language cookie that the proxy reads.
     // Wait for it to land so the subsequent navigation can't race it.

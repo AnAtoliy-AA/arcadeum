@@ -1,6 +1,6 @@
 'use client';
 
-import { InGameAvatar } from '@/features/games/ui';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { useTicTacToeTheme } from '../lib/TicTacToeThemeContext';
 import type { TicTacToePlayer, TicTacToeTeam } from '../types';
 

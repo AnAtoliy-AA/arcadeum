@@ -7,7 +7,7 @@ import type { ButtonProps } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { useMatchmaking } from '@/features/games/ui';
+import { useMatchmaking } from './MatchmakingQueue';
 import { trackSocialQuickplayStarted } from '@/shared/analytics/funnel';
 
 type Mode = 'ai' | 'human';

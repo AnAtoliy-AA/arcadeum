@@ -1,6 +1,6 @@
 'use client';
 
-import { InGameAvatar } from '@/features/games/ui';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { useBackgammonTheme } from '../lib/BackgammonThemeContext';
 import type { BackgammonPlayer } from '../types';
 

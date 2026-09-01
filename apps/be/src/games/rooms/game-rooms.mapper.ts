@@ -23,6 +23,54 @@ export class GameRoomsMapper {
       declinedIds,
     );
 
+    return this.buildSummary(room, userMap, viewerId);
+  }
+
+  async prepareRoomSummaryBatch(
+    rooms: GameRoom[],
+    viewerId?: string,
+  ): Promise<GameRoomSummary[]> {
+    const allUserIds = new Set<string>();
+    const roomRematchData: Array<{
+      room: GameRoom;
+      invitedIds: string[];
+      declinedIds: string[];
+    }> = [];
+
+    for (const room of rooms) {
+      const { invitedIds, declinedIds } = this.getRematchLists(room);
+      allUserIds.add(room.hostId);
+      for (const p of room.participants) allUserIds.add(p.userId);
+      for (const id of invitedIds) allUserIds.add(id);
+      for (const id of declinedIds) allUserIds.add(id);
+      roomRematchData.push({ room, invitedIds, declinedIds });
+    }
+
+    const validUserIds = Array.from(allUserIds).filter((id) =>
+      Types.ObjectId.isValid(id),
+    );
+
+    const users = await this.userModel
+      .find({ _id: { $in: validUserIds } })
+      .select('username email role')
+      .lean()
+      .exec();
+
+    const userMap = new Map(
+      users.map((u) => [u._id.toString(), u as unknown as User]),
+    );
+
+    return roomRematchData.map(({ room }) =>
+      this.buildSummary(room, userMap, viewerId),
+    );
+  }
+
+  private buildSummary(
+    room: GameRoom,
+    userMap: Map<string, User>,
+    viewerId?: string,
+  ): GameRoomSummary {
+    const { invitedIds, declinedIds } = this.getRematchLists(room);
     const host = userMap.get(room.hostId);
 
     // Deduplicate participants to ensure unique members list
@@ -113,6 +161,7 @@ export class GameRoomsMapper {
     room: GameRoom,
     invitedIds: string[],
     declinedIds: string[],
+    includeCosmetics = true,
   ): Promise<Map<string, User>> {
     const userIds = [
       room.hostId,
@@ -126,11 +175,13 @@ export class GameRoomsMapper {
       Types.ObjectId.isValid(id),
     );
 
+    const selectFields = includeCosmetics
+      ? 'username email role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId equippedBackgroundId'
+      : 'username email role';
+
     const users = await this.userModel
       .find({ _id: { $in: validUserIds } })
-      .select(
-        'username email role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId equippedBackgroundId',
-      )
+      .select(selectFields)
       .lean()
       .exec();
 

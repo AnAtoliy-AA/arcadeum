@@ -1,3 +1,7 @@
+import { appConfig } from '../../../../config/app-config';
+
+const APP = appConfig.appName;
+
 export const esMessages = {
   sea_battle_v1: {
     name: 'Batalla Naval',
@@ -252,21 +256,20 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: 'Batalla Naval — Juega Online Gratis con Amigos | Arcadeum',
-        description:
-          'Juega Batalla Naval online gratis. Combate naval clásico para 2–4 jugadores, con bots de IA, modo equipos y más de 10 temas. Sin descargas ni registros — crea una sala y comparte el enlace.',
-        ogTitle: 'Batalla Naval Online — Multijugador Gratis',
+        title: `Batalla Naval Online Gratis (Hundir la Flota) — Jugar con Amigos o Bot | ${APP}`,
+        description: `Juega a Batalla Naval (Hundir la Flota) online gratis sin registro en ${APP}. Modos para 2–4 jugadores: reta a tus amigos por enlace o compite contra la IA. Mejores tácticas y más de 10 temas visuales.`,
+        ogTitle:
+          'Batalla Naval Online Gratis (Hundir la Flota) — Multijugador con Amigos o IA',
         ogDescription:
-          'Coloca tu flota, dispara a las cuadrículas enemigas y hunde todos sus barcos. Juega en el navegador con amigos o contra la IA.',
+          'Coloca tu flota en la cuadrícula 10×10, dispara a las coordenadas enemigas y hunde todos los barcos. Juega gratis en el navegador sin descargas.',
         keywords:
-          'batalla naval, batalla naval online, jugar batalla naval, batallas navales multijugador, batalla naval gratis',
+          'batalla naval, batalla naval online, jugar batalla naval, hundir la flota online, batalla naval gratis, jugar batalla naval con amigos, batalla naval multijugador',
       },
       hero: {
         title: 'Batalla Naval',
         tagline:
           'Juega al clásico Batalla Naval online — gratis y multijugador',
-        intro:
-          'Batalla Naval es el atemporal juego de combate naval en el que dos o más almirantes colocan sus flotas en secreto sobre una cuadrícula 10×10 y se intercambian salvas hasta que sólo queda una flota a flote. En Arcadeum puedes jugar a Batalla Naval directamente en el navegador — sin descargas ni registros — con amigos, desconocidos o contra bots de IA.',
+        intro: `Batalla Naval es el atemporal juego de combate naval en el que dos o más almirantes colocan sus flotas en secreto sobre una cuadrícula 10×10 y se intercambian salvas hasta que sólo queda una flota a flote. En ${APP} puedes jugar a Batalla Naval directamente en el navegador — sin descargas ni registros — con amigos, desconocidos o contra bots de IA.`,
         ctaPlay: 'Crear una sala de Batalla Naval',
         ctaRooms: 'Ver salas abiertas',
         ctaQuickplay: 'Jugar contra IA ahora',
@@ -282,7 +285,7 @@ export const esMessages = {
         ],
       },
       sections: {
-        highlightsKicker: 'Por qué Arcadeum',
+        highlightsKicker: `Por qué ${APP}`,
         howToKicker: 'Cuatro pasos · ~20 minutos',
         themesKicker: 'Elige tu flota',
         themesTitle: '10+ temas, un solo juego',
@@ -316,7 +319,7 @@ export const esMessages = {
           },
           memory: {
             title: 'Recuerda los fallos, no solo los impactos',
-            body: 'Los fallos también informan. Marca mentalmente las zonas muertas y, a mitad de partida, habrás reducido a la mitad el espacio de búsqueda. La mayoría de los temas de Arcadeum ya marcan los fallos por ti.',
+            body: `Los fallos también informan. Marca mentalmente las zonas muertas y, a mitad de partida, habrás reducido a la mitad el espacio de búsqueda. La mayoría de los temas de ${APP} ya marcan los fallos por ti.`,
           },
         },
       },
@@ -325,7 +328,7 @@ export const esMessages = {
         paragraphs: [
           'La Batalla Naval, conocida internacionalmente como Battleship, es uno de los juegos de estrategia sobre cuadrícula más antiguos que aún se juegan. Mucho antes de los tableros de plástico, las reglas se dibujaban en hojas a cuadros: dos rivales, dos rejillas secretas de 10×10 y la emoción de cantar coordenadas una a una.',
           'A mediados del siglo XX la partida saltó del papel al plástico y se convirtió en clásico de las noches en familia, antes de pasar a las pantallas — versiones electrónicas de bolsillo, adaptaciones de PC y, ahora, multijugador nativo en el navegador.',
-          'Arcadeum conserva la rejilla original de 10×10 y la flota de cinco barcos, pero añade lo que la versión en papel nunca tuvo: emparejamiento instantáneo, oponentes con IA, modo en equipos, diez temas visuales y enlaces de lobby que puedes compartir. Tanto si buscas una partida rápida contra el ordenador como una más larga contra otra persona, las reglas son las mismas que llevan un siglo discutiendo los almirantes.',
+          `${APP} conserva la rejilla original de 10×10 y la flota de cinco barcos, pero añade lo que la versión en papel nunca tuvo: emparejamiento instantáneo, oponentes con IA, modo en equipos, diez temas visuales y enlaces de lobby que puedes compartir. Tanto si buscas una partida rápida contra el ordenador como una más larga contra otra persona, las reglas son las mismas que llevan un siglo discutiendo los almirantes.`,
         ],
       },
       board: {
@@ -334,7 +337,7 @@ export const esMessages = {
         cycleAriaLabel: 'Cambiar vista previa de tema, actualmente {{variant}}',
       },
       highlights: {
-        title: 'Por qué jugar a Batalla Naval en Arcadeum',
+        title: `Por qué jugar a Batalla Naval en ${APP}`,
         players: {
           title: '2 a 4 jugadores',
           body: 'Duelos cara a cara o batalla campal con hasta cuatro almirantes por sala.',
@@ -378,13 +381,28 @@ export const esMessages = {
         items: {
           free: {
             question: '¿Batalla Naval es gratis?',
-            answer:
-              'Sí. Batalla Naval en Arcadeum es totalmente gratis y se juega en el navegador sin descargas.',
+            answer: `Sí. Batalla Naval en ${APP} es totalmente gratis y se juega en el navegador sin descargas.`,
           },
           players: {
             question: '¿Cuántos jugadores puede tener una partida?',
             answer:
               'De dos a cuatro jugadores por sala. El modo equipos permite hasta cuatro equipos de dos o más jugadores.',
+          },
+          friends: {
+            question: '¿Cómo jugar a Batalla Naval online con amigos?',
+            answer:
+              'Haz clic en «Crear sala», elige la configuración y comparte el enlace directo con tu amigo para jugar al instante sin registro.',
+          },
+          shipsCount: {
+            question: '¿Cuántos barcos y casillas hay en Batalla Naval?',
+            answer:
+              'El juego utiliza una cuadrícula de 10×10 (100 casillas). La flota está compuesta por barcos de 1 a 4 casillas (acorazados, cruceros, destructores y submarinos) que no pueden tocarse.',
+          },
+          bestPlacement: {
+            question:
+              '¿Cuál es la mejor colocación de barcos en Batalla Naval?',
+            answer:
+              'La táctica más eficaz consiste en alinear los barcos grandes a lo largo de los bordes exteriores del tablero y dispersar los submarinos de 1 casilla en el centro.',
           },
           ai: {
             question: '¿Puedo jugar contra la computadora?',

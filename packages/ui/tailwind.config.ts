@@ -39,6 +39,13 @@ export default {
           '0%': { transform: 'translateX(-100%)' },
           '60%, 100%': { transform: 'translateX(280%)' },
         },
+        'arcadeum-shimmer': {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
+      },
+      animation: {
+        shimmer: 'arcadeum-shimmer 2s ease-in-out infinite',
       },
     },
   },

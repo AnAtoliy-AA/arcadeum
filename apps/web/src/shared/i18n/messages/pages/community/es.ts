@@ -5,9 +5,9 @@ export const communityEs = {
     'Comparte estrategias, participa en eventos comunitarios y conecta con jugadores en todos nuestros canales sociales y de la comunidad.',
   badge: 'Ecosistema Global',
   stats: {
-    players: '10K+',
+    players: '',
     playersLabel: 'Jugadores Activos',
-    discordMembers: '5K+',
+    discordMembers: '',
     discordLabel: 'Miembros en Discord',
     githubStars: 'Open Source',
     githubLabel: 'Impulsado por la comunidad',
@@ -75,5 +75,12 @@ export const communityEs = {
         'Conéctate con Arcadeum profesionalmente, lee actualizaciones de la empresa y explora oportunidades.',
     },
   },
+  rewardsBanner: {
+    title: 'Gana gemas gratis uniéndote a nuestros canales',
+    description:
+      'Suscríbete o sigue cualquier canal oficial para reclamar gemas al instante',
+    cta: 'Reclamar recompensas',
+  },
+  rewardBadge: '+1 💎',
   comingSoon: '¡La comunidad llegará pronto!',
 };

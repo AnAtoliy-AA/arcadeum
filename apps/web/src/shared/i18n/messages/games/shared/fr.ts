@@ -32,7 +32,11 @@ export const frMessages = {
         not_joined: 'Non rejoint',
       },
       aiVsAiLabel: 'Mode',
-      aiVsAi: 'IA contre IA',
+      aiVsAi: 'IA vs IA',
+      clearAll: 'Tout effacer',
+      moreFilters: 'Plus de filtres',
+      hideFilters: 'Moins de filtres',
+      activeFiltersCount: '{{count}} actifs',
     },
   },
   aiVsAi: {
@@ -51,6 +55,7 @@ export const frMessages = {
       completeTitle: 'Tutoriel terminé !',
       completeBody:
         'Bravo — vous connaissez maintenant les bases de {{game}}. Bonne chance à la table !',
+      close: 'Fermer',
     },
   },
   rooms: {
@@ -124,6 +129,15 @@ export const frMessages = {
     },
     actions: {
       backToHome: "Retour à l'Accueil",
+    },
+    postGame: {
+      whatNext: 'Et maintenant ?',
+      challengeFriend: 'Défier un Ami',
+      shareResult: 'Partager le Résultat',
+      playAnother: 'Rejouer',
+      linkCopied: 'Lien copié !',
+      rewardsPrompt: 'Besoin de plus de gemmes ? Abonnez-vous à nos réseaux !',
+      rewardsClaim: 'Réclamer',
     },
     deleteRoom: {
       button: 'Supprimer la salle',
@@ -544,6 +558,22 @@ export const frMessages = {
     cancel: 'Annuler la recherche',
     estimatedWait: 'Attente estimée : ~{{seconds}}s',
     queuePosition: 'Position dans la file : {{position}} sur {{total}}',
+    playersAheadSingle: '1 joueur devant vous',
+    playersAheadMultiple: '{{count}} joueurs devant vous',
+    nextInLine:
+      'Vous êtes le prochain dans la file ! Le prochain match est à vous.',
+    playersInQueue: '{{count}} en recherche dans ce jeu',
+    activeQueuesTitle: 'Joueurs actifs dans d’autres jeux',
+    switchGame: 'Passer à {{game}}',
+    playAiNow: 'Jouer contre l’IA maintenant',
+    minimize: 'Réduire',
+    expand: 'Agrandir',
+    modeCasual: 'Amical',
+    modeRanked: 'Classé',
+    noRoomsSuggestTitle: 'Aucun salon ouvert',
+    noRoomsSuggestSubtitle:
+      'Créez votre propre salon et attendez que des joueurs vous rejoignent !',
+    createRoomAction: 'Créer un salon',
   },
   ranking: {
     ratingUpdated: 'Classement mis à jour',

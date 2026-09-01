@@ -1,9 +1,9 @@
 export const es = {
-  kicker: 'Juegos de mesa gratis en línea',
+  kicker: 'Juegos de mesa y minijuegos gratis',
   tagline:
-    '{{appName}} es tu plataforma para jugar gratis a juegos de mesa en línea con amigos o solo contra la IA — Batalla Naval, estrategia, cartas y más.',
+    '{{appName}} es tu plataforma para jugar gratis a juegos de mesa, cartas y minijuegos en línea con amigos o solo contra la IA.',
   description:
-    'Disfruta de una amplia variedad de juegos de mesa gratis en línea. Desafía a bots inteligentes, crea salas en tiempo real, reúne a tus amigos y deja que {{appName}} automatice reglas, puntuaciones y turnos para que te concentres en la diversión.',
+    'Disfruta de una amplia variedad de juegos de mesa, cartas y minijuegos en línea. Desafía a bots inteligentes, crea salas en tiempo real, reúne a tus amigos y deja que {{appName}} automatice reglas, puntuaciones y turnos para que te concentres en la diversión.',
   primaryCtaLabel: 'Comenzar',
   playWithBotsLabel: 'Jugar contra la IA',
   defaultRoomName: 'Partida de {{name}} #{{number}}',
@@ -19,7 +19,8 @@ export const es = {
   downloadsAndroidLabel: 'Descargar para Android',
   // Games section
   gamesTitle: 'Juegos Destacados',
-  gamesSubtitle: 'Explora nuestra creciente biblioteca de experiencias de mesa',
+  gamesSubtitle:
+    'Explora nuestra creciente biblioteca de juegos de mesa, cartas y minijuegos',
   gamePlayButton: 'Jugar Ahora',
   gameTryDemo: 'Probar demo',
   gameRulesButton: 'Reglas del Juego',
@@ -34,7 +35,7 @@ export const es = {
   demoBadgeLabel: 'Versión demo',
   featuresTitle: '¿Por qué {{appName}}?',
   featuresSubtitle:
-    'Todo lo que necesitas para jugar juegos de mesa online con amigos',
+    'Todo lo que necesitas para jugar juegos de mesa, cartas y minijuegos online con amigos',
   featureBotsTitle: 'Jugar contra la IA',
   featureBotsDescription:
     'Practica solo o desafía a bots inteligentes en dificultad fácil, media o difícil cuando tus amigos no estén conectados.',
@@ -84,6 +85,37 @@ export const es = {
   stepPlayTitle: 'Juega Juntos',
   stepPlayDescription:
     'Disfruta de juegos de mesa mientras {{appName}} maneja reglas, turnos y puntuación automáticamente.',
+  // Live stats & activity
+  liveTitle: 'Actividad en Vivo de la Plataforma',
+  liveSubtitle:
+    'Partidas en tiempo real, jugadores activos y salas abiertas ahora mismo',
+  liveBadgeOnline: 'En línea ahora',
+  liveBadgeActiveGames: 'Partidas activas',
+  liveBadgeWaitingRooms: 'Salas abiertas',
+  liveBadgeWaitingPlayers: 'Buscando partida',
+  liveWaitingRoomsSub: 'Salas esperando jugadores',
+  liveWaitingRoomsWithMine: '{{count}} salas abiertas (+{{mine}} tuya)',
+  liveWaitingRoomsOnlyMine: 'Tu sala está esperando jugadores',
+  liveWaitingPlayersSub: 'Jugadores en cola',
+  liveWaitingPlayersForGame: '{{count}} buscando en este juego',
+  liveBadgeMatchesToday: 'Partidas hoy',
+  liveOpenLobbiesTitle: 'Salas Abiertas',
+  liveOpenLobbiesSubtitle:
+    'Únete directamente a una sala abierta o sé espectador de partidas en curso',
+  liveJoinAction: 'Unirse a la sala',
+  liveSpectateAction: 'Espectar',
+  liveQuickPlayAction: 'Juego rápido',
+  liveNoOpenRooms:
+    'No hay salas abiertas en este momento. ¡Crea una o juega una partida rápida vs IA o jugadores!',
+  liveRecentActivityTitle: 'Pulso de la Comunidad',
+  liveActivityWon: 'ganó una partida en',
+  liveActivityStreak: 'está en racha de victorias en',
+  liveActivityCreated: 'creó una nueva sala de',
+  livePopularGamesTitle: 'Juegos Populares',
+  livePlayersCount: '{{count}} jugadores',
+  liveMatchesCount: '{{count}} partidas',
+  liveViewAllRooms: 'Ver todas las salas',
+  liveViewAllGames: 'Explorar catálogo',
   // Coming soon labels
   comingSoon: 'Próximamente',
   mobileComingSoonDescription:
@@ -102,6 +134,7 @@ export const es = {
   footerRewards: 'Recompensas',
   footerToken: 'Token',
   footerResourcesTitle: 'Recursos',
+  footerSupport: 'Apoyar el proyecto',
   footerHelpCenter: 'Centro de ayuda',
   footerRoadmap: 'Hoja de ruta',
   footerChangelog: 'Registro de cambios',

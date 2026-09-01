@@ -12,8 +12,15 @@ export const shopFr = {
       shop: 'Boutique',
       inventory: 'Inventaire',
       wallet: 'Portefeuille',
+      rewards: 'Récompenses',
     },
     topUp: 'Recharger',
+  },
+  freeRewardsBanner: {
+    title: 'Récompenses et quêtes gratuites',
+    subtitle:
+      'Abonnez-vous à nos réseaux officiels pour gagner des gemmes gratuites !',
+    cta: 'Réclamer des gemmes',
   },
   signIn: {
     title: 'Connectez-vous pour acheter et équiper',

@@ -133,7 +133,27 @@ export default async function BlogPostRoute({ params }: PageProps) {
     ],
   });
 
-  const jsonLdNodes: Record<string, unknown>[] = [postJsonLd, breadcrumbJsonLd];
+  const faqJsonLd =
+    post.faq && post.faq.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: post.faq.map((item) => ({
+            '@type': 'Question',
+            name: item.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: item.answer,
+            },
+          })),
+        }
+      : undefined;
+
+  const jsonLdNodes: Record<string, unknown>[] = [
+    postJsonLd,
+    breadcrumbJsonLd,
+    ...(faqJsonLd ? [faqJsonLd] : []),
+  ];
 
   return (
     <>

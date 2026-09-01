@@ -2,6 +2,8 @@ import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import HomeHero from './components/HomeHero';
 import { NoscriptFallback } from './components/NoscriptFallback';
 import { ServerGamesNav } from './components/ServerGamesNav';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { buildHomeFaqJsonLd } from '@/shared/seo/homeFaqJsonLd';
 import type { Locale } from '@/shared/i18n';
 
 import dynamic from 'next/dynamic';
@@ -16,6 +18,10 @@ const EventBanner = dynamic(() =>
   import('@/features/events').then((m) => m.EventBanner),
 );
 
+const ActivityBanner = dynamic(() =>
+  import('@/features/activity/ui/ActivityBanner').then((m) => m.ActivityBanner),
+);
+
 // Single concatenated bundle of hero + presentation + section styles.
 // The originals each became a separate render-blocking chunk under the
 // Lighthouse simulator's per-chunk model (~303ms penalty each). Bundling
@@ -23,6 +29,9 @@ const EventBanner = dynamic(() =>
 // See docs/superpowers/specs/2026-05-06-home-perf-phase-2-diagnostic-results.md
 import './components/styles/home-bundle.scss';
 
+const HomeLivePulse = dynamic(() =>
+  import('./components/HomeLivePulse').then((m) => m.HomeLivePulse),
+);
 const HomeGames = dynamic(() => import('./components/HomeGames'));
 const HomeHowItWorks = dynamic(() => import('./components/HomeHowItWorks'));
 const HomeFeatures = dynamic(() => import('./components/HomeFeatures'));
@@ -35,11 +44,17 @@ const InstallAppCta = dynamic(() =>
 export default function HomePage({ locale }: { locale: Locale }) {
   return (
     <PageLayout data-testid="page-layout">
-      {/* Server-rendered navigation for AI agents */}
+      <JsonLd
+        id={`json-ld-home-faq-${locale}`}
+        data={buildHomeFaqJsonLd(locale)}
+      />
       <ServerGamesNav />
       <HomeHero locale={locale} />
+      {/* Live activity social proof (roadmap 7D) */}
+      <ActivityBanner className="mx-auto -mt-4 max-w-[600px]" />
       <EventBanner locale={locale} />
       <DailyRewardChip />
+      <HomeLivePulse />
       <HomeGames />
       <HomeHowItWorks />
       <HomeFeatures />

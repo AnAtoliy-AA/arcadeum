@@ -1,5 +1,3 @@
-'use client';
-
 import DevelopersPageContent, {
   type DevelopersPageContentProps,
 } from './DevelopersPageContent';

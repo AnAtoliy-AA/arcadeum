@@ -5,7 +5,7 @@ import {
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
 import { RulesModal } from './RulesModal';
-import { GameEndModals } from '@/features/games/ui';
+import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import type { SeaBattleSnapshot } from '../types';

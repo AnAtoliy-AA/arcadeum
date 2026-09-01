@@ -191,8 +191,11 @@ export function TutorialOverlay({
         isCompleteStep ? t(TUTORIAL_UI_KEYS.completeTitle) : t(step!.titleKey)
       }
     >
-      {/* Click blocker — deliberate no-op so stray clicks never skip a step. */}
-      <div className="absolute inset-0" data-testid="tutorial-blocker" />
+      <div
+        className="absolute inset-0 cursor-pointer"
+        data-testid="tutorial-blocker"
+        onClick={() => handleClose(false)}
+      />
 
       {targetRect && (
         <div
@@ -209,8 +212,9 @@ export function TutorialOverlay({
       )}
       {!targetRect && (
         <div
-          className="absolute inset-0 bg-[rgba(0,_0,_0,_0.65)] transition-opacity duration-300"
+          className="absolute inset-0 bg-[rgba(0,_0,_0,_0.65)] transition-opacity duration-300 cursor-pointer"
           data-testid="tutorial-backdrop"
+          onClick={() => handleClose(false)}
         />
       )}
 
@@ -226,6 +230,16 @@ export function TutorialOverlay({
         style={cardStyle}
         data-testid="tutorial-card"
       >
+        <button
+          type="button"
+          className="absolute top-4 right-4 text-[var(--accent)] opacity-60 hover:opacity-100 transition-opacity p-1 rounded-full cursor-pointer"
+          onClick={() => handleClose(isCompleteStep)}
+          aria-label={t(TUTORIAL_UI_KEYS.close)}
+          data-testid="tutorial-close-button"
+        >
+          ✕
+        </button>
+
         <p className="sr-only" role="status" aria-live="polite">
           {t(TUTORIAL_UI_KEYS.stepOf, {
             current: index + 1,

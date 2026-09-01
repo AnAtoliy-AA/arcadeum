@@ -8,6 +8,7 @@ export interface WalletMessages {
     coins: string;
     gems: string;
     arcadeum: string;
+    earnFreeGems: string;
   };
   tokenInfo: {
     name: string;
@@ -65,6 +66,7 @@ export const en: WalletMessages = {
     coins: 'Coins',
     gems: 'Gems',
     arcadeum: 'ARCADEUM',
+    earnFreeGems: 'Earn free gems through community quests →',
   },
   tokenInfo: {
     name: 'ARCADEUM GAMES',
@@ -123,6 +125,7 @@ export const ru: DeepPartial<WalletMessages> = {
     coins: 'Монеты',
     gems: 'Гемы',
     arcadeum: 'ARCADEUM',
+    earnFreeGems: 'Получайте бесплатные гемы за квесты сообщества →',
   },
   tokenInfo: {
     name: 'ARCADEUM GAMES',
@@ -181,6 +184,7 @@ export const es: DeepPartial<WalletMessages> = {
     coins: 'Monedas',
     gems: 'Gemas',
     arcadeum: 'ARCADEUM',
+    earnFreeGems: 'Gana gemas gratis completando misiones comunitarias →',
   },
   tokenInfo: {
     name: 'ARCADEUM GAMES',
@@ -239,6 +243,8 @@ export const fr: DeepPartial<WalletMessages> = {
     coins: 'Pièces',
     gems: 'Gemmes',
     arcadeum: 'ARCADEUM',
+    earnFreeGems:
+      'Gagnez des gemmes gratuites avec les quêtes communautaires →',
   },
   tokenInfo: {
     name: 'ARCADEUM GAMES',
@@ -297,6 +303,7 @@ export const by: DeepPartial<WalletMessages> = {
     coins: 'Манеты',
     gems: 'Гемы',
     arcadeum: 'ARCADEUM',
+    earnFreeGems: 'Атрымлівайце бясплатныя гемы за квэсты супольнасці →',
   },
   tokenInfo: {
     name: 'ARCADEUM GAMES',

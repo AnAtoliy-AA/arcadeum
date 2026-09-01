@@ -18,6 +18,7 @@
 
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
+const fs = require('fs');
 const {
   readdir,
   unlink,
@@ -103,6 +104,49 @@ const CONFIG = {
   pollIntervalMs: 30 * 1000, // 30 seconds
   enableApproval: process.env.SHORTS_FACTORY_APPROVAL === 'true',
 };
+
+const FALLBACK_GAME_SLUGS = [
+  'critical_v1',
+  'sea_battle_v1',
+  'texas_holdem_v1',
+  'glimworm_v1',
+  'tic_tac_toe_v1',
+  'cascade_v1',
+  'chess_v1',
+  'checkers_v1',
+  'cat_dash_v1',
+  'backgammon_v1',
+  'hearts_v1',
+  'spades_v1',
+  'go_v1',
+  'pachisi_v1',
+];
+
+function loadBackendGameCatalogSlugs() {
+  try {
+    const catalogPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'apps',
+      'be',
+      'src',
+      'games',
+      'games.catalog.ts',
+    );
+    const content = fs.readFileSync(catalogPath, 'utf8');
+    const matches = Array.from(
+      content.matchAll(/gameId:\s*'([^']+)'/g),
+      (m) => m[1],
+    );
+    if (matches.length > 0) {
+      return Array.from(new Set(matches));
+    }
+  } catch {}
+  return FALLBACK_GAME_SLUGS;
+}
+
+const ALL_GAME_SLUGS = loadBackendGameCatalogSlugs();
 
 // ============================================================================
 // APPROVAL FLOW
@@ -1394,6 +1438,25 @@ async function captureBrowsing() {
       },
     });
     log('info', 'Browser context created with video recording');
+
+    await context.addInitScript(
+      ({ gameSlugs }) => {
+        try {
+          const completedMap = {};
+          (gameSlugs || []).forEach((slug) => {
+            completedMap[slug] = Date.now();
+          });
+          localStorage.setItem(
+            'arcadeum_tutorials_v1',
+            JSON.stringify({
+              state: { completedAt: completedMap, dismissedAt: completedMap },
+              version: 0,
+            }),
+          );
+        } catch {}
+      },
+      { gameSlugs: ALL_GAME_SLUGS },
+    );
 
     if (scenario.requiresAuth) {
       const injected = await injectBotAuth(context);

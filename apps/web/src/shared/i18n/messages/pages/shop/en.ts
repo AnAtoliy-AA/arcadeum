@@ -12,8 +12,15 @@ export const shopEn = {
       shop: 'Shop',
       inventory: 'Inventory',
       wallet: 'Wallet',
+      rewards: 'Rewards',
     },
     topUp: 'Top up',
+  },
+  freeRewardsBanner: {
+    title: 'Free Rewards & Quests',
+    subtitle:
+      'Subscribe to our official social networks to earn free gems and bonus coins!',
+    cta: 'Claim Free Gems',
   },
   signIn: {
     title: 'Sign in to buy & equip items',

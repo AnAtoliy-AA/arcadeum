@@ -3,13 +3,13 @@
 import { useMemo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
-  ReusableGameLobby,
   LobbyOptionSection,
   LobbyChipGroup,
-  GameThemePicker,
-  getLobbyTheme,
-} from '@/features/games/ui';
+} from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RulesModal } from './RulesModal';
 import { CHECKERS_VARIANTS } from '../lib/constants';

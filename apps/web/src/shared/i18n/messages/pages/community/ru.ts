@@ -5,9 +5,9 @@ export const communityRu = {
     'Делитесь стратегиями, участвуйте в общественных мероприятиях и поддерживайте связь через все наши социальные каналы.',
   badge: 'Глобальная экосистема',
   stats: {
-    players: '10K+',
+    players: '',
     playersLabel: 'Активных игроков',
-    discordMembers: '5K+',
+    discordMembers: '',
     discordLabel: 'Участников Discord',
     githubStars: 'Open Source',
     githubLabel: 'Открытый код',
@@ -75,5 +75,12 @@ export const communityRu = {
         'Связывайтесь с Arcadeum в профессиональной сфере, читайте новости компании и вакансии.',
     },
   },
+  rewardsBanner: {
+    title: 'Получайте бесплатные гемы за подписку на каналы',
+    description:
+      'Подпишитесь на любой официальный канал и заберите гемы мгновенно',
+    cta: 'Забрать награды',
+  },
+  rewardBadge: '+1 💎',
   comingSoon: 'Сообщество скоро появится!',
 };

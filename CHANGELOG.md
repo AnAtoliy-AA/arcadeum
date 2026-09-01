@@ -7,80 +7,308 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.20] - 2026-08-31
+
+### Fixed
+- add R2 CDN URL to connect-src CSP for music catalog fetch
+- warn when NEXT_PUBLIC_CDN_URL is missing for music catalog
+- rewrite /offline/{game} to locale-prefixed path to fix 404s
+
+### Improved
+- additional free optimizations across web, BE, and mobile
+- free performance optimizations across web, BE, and mobile
+
+
+## [1.27.19] - 2026-08-31
+
+### Added
+- link create room button to games page and allow own anon rooms in list (ARC-713) (ARC-713)
+
+
+## [1.27.18] - 2026-08-31
+
+### Fixed
+- remove unused SocketIOServer import
+- complete AI vs AI sessions when no watchers, remove lastActiveAt
+- track player lastActiveAt, bot waits 15min after last human action
+- add max age cutoff to bot watchdog and clean stale sessions
+- add Redis distributed lock to bot watchdog for cluster mode
+- enable Redis offline queue for cluster mode compatibility
+
+
+## [1.27.17] - 2026-08-31
+
+### Added
+- wire notifications socket and ensure multiplexed connection (ARC-712) (ARC-712)
+
+
+## [1.27.16] - 2026-08-31
+
+### Added
+- rework rooms filters UI with responsive mobile ergonomics (ARC-711) (ARC-711)
+- show in-progress matches for current game on landing (ARC-711) (ARC-711)
+- show active public lobbies and own lobby indicator in game landing (ARC-711) (ARC-711)
+- add live stats ticker with open lobbies and waiting queue players to game landings (ARC-711) (ARC-711)
+- display count of open lobbies and waiting queue players (ARC-711) (ARC-711)
+- suggest creating room when no active rooms exist in matchmaking queue (ARC-711) (ARC-711)
+- rework matchmaking queue with players ahead display and opponent discovery (ARC-711) (ARC-711)
+
+### Fixed
+- resolve eslint union type in be and restore checkbox role on categories in web (ARC-711) (ARC-711)
+- allow string and all in ListRoomsFilters status type (ARC-711) (ARC-711)
+- support multi-status and in_progress query filtering on backend and frontend (ARC-711) (ARC-711)
+- implement atomic clear filters and synchronized search (ARC-711) (ARC-711)
+- enable status multi-selection in rooms filters (ARC-711) (ARC-711)
+- reference correct room password field in live stats (ARC-711) (ARC-711)
+- filter stale lobby rooms in live stats and link game-specific lobbies (ARC-711) (ARC-711)
+
+### Refactored
+- redesign rooms filters with segmented tabs and modern glassmorphism (ARC-711) (ARC-711)
+
+
+## [1.27.15] - 2026-08-31
+
+### Added
+- consolidate socket connections and add CPU profiling
+- add server CPU/RAM monitoring to admin dashboard
+
+### Fixed
+- validate CpuProfileDto with class-validator
+- extract ServerResourcesCard to fix lint errors
+- stabilize PM2 — auto-tune cluster mode, V8 heap, and ready signal
+
+
+## [1.27.14] - 2026-08-31
+
+### Added
+- replace hardcoded user and subscriber counts with live real numbers (ARC-710) (ARC-710)
+
+
+## [1.27.13] - 2026-08-31
+
+### Added
+- add support link to footer resources and update support page link (ARC-709) (ARC-709)
+- add social networks rewards callout to support page (ARC-709) (ARC-709)
+- enhance discoverability across header, community, post-game, and wallet (ARC-709) (ARC-709)
+- implement gem rewards for social network subscriptions (ARC-709) (ARC-709)
+
+### Fixed
+- restore language switcher to header and update e2e tests (ARC-709) (ARC-709)
+
+### Refactored
+- streamline header to 1-row layout and integrate rewards into shop (ARC-709) (ARC-709)
+
+
+## [1.27.12] - 2026-08-31
+
+### Added
+- update positioning to board, card and mini-games with SEO/AEO/GEO schemas (ARC-708) (ARC-708)
+
+
+## [1.27.11] - 2026-08-31
+
+### Fixed
+- use absolute locale-prefixed path for offline badge links
+- include public manifests in build artifact to fix e2e 404s
+
+### Refactored
+- isolate search params and modularize language provider
+
+
+## [1.27.10] - 2026-08-31
+
+### Fixed
+- prevent duplicate language buttons in dom and use first locator (ARC-939) (ARC-939)
+- dismiss tutorial on click and prevent blocking in shorts (ARC-939) (ARC-939)
+
+
+## [1.27.9] - 2026-08-31
+
+### Fixed
+- restore use client to game landing preview components (ARC-939) (ARC-939)
+
+### Improved
+- remove redundant use client directives from presentational components (ARC-939) (ARC-939)
+- enable perMessageDeflate compression on games gateway (ARC-939) (ARC-939)
+- optimize bundle size, response caching, and preconnect (ARC-939) (ARC-939)
+
+
+## [1.27.8] - 2026-08-30
+
+### Added
+- implement offline service worker caching and offline status indicator (ARC-900)
+- implement weekly social leagues and standings card (ARC-933)
+- implement quest objectives and battle pass progression system (ARC-932)
+- implement asynchronous turn-based matches engine and active match drawer (ARC-931)
+
+### Fixed
+- update e2e tests for post metrics and get activity endpoints (ARC-931)
+- update e2e test assertions and be test memory allocation (ARC-931)
+
+### Documentation
+- update changelog with tier 2 retention and performance features (ARC-931)
+
+
+## [1.27.7] - 2026-08-29
+
+### Added
+
+- rework loading pages with modern skeleton layouts (ARC-897) (ARC-897)
+
+### Fixed
+
+- set web_access_token cookie on browser context in mockSession
+- revert web_access_token fallback in getServerAccessToken to fix Firefox hydration
+- remove Accept header check from admin proxy gate
+- refine admin proxy gate for e2e tests
+- add admin auth gate to proxy and generate e2e placeholder files
+- specify entryFile in nest-cli and remove duplicate userId index in clan member schema (ARC-897) (ARC-897)
+
+## [1.27.6] - 2026-08-29
+
+### Added
+
+- implement daily habit streak and viral score sharing (ARC-930)
+- implement smart re-engagement and winback engine (ARC-934)
+- implement instant room boot and zero-cls asset preloader (ARC-936)
+- implement web worker ai engine offloader and worker pool (ARC-935)
+- implement websocket state delta and compression engine (ARC-937)
+
+### Documentation
+
+- update tier 8 and tier 9 roadmap statuses to implemented (ARC-930) (ARC-930)
+
+## [1.27.5] - 2026-08-29
+
+### Added
+
+- add player retention loops and high-performance engine tracks (ARC-930) (ARC-930)
+
+## [1.27.4] - 2026-08-29
+
+### Added
+
+- dynamically use app name from env across sea battle landing and guides (ARC-945) (ARC-945)
+- optimize sea battle search ranking metadata and add strategy guide (ARC-945) (ARC-945)
+
+## [1.27.3] - 2026-08-29
+
+### Added
+
+- implement Tier 6 & 7 growth features
+
+### Fixed
+
+- restore 404 status and streamed json-ld ordering
+- use window.isPlaywright to gate socket exposure for E2E
+- parse Tier 6 & 7 headings from ROADMAP.md
+- remove webpack splitChunks that broke mobile LCP
+
+### Improved
+
+- lazy-load analytics and game play pages
+
+### Documentation
+
+- update roadmap with Tier 3-5 implementations and Tier 6/7 progress
+
+## [1.27.2] - 2026-08-27
+
+### Documentation
+
+- add 30-day growth acceleration strategy
+
+## [1.27.1] - 2026-08-27
+
+### Fixed
+
+- resolve Docker build, deploy lock race, and Android hermesc failures
+
+## [1.27.0] - 2026-08-27
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.26.63] - 2026-08-27
 
 ### Added
+
 - expand scenarios to 50, add gameplay auth injection
 
 ### Fixed
-- run gameplay scenarios anonymous, expand fallback tracks
 
+- run gameplay scenarios anonymous, expand fallback tracks
 
 ## [1.26.62] - 2026-08-27
 
 ### Fixed
-- handle View Transition AbortError when playing action cards
 
+- handle View Transition AbortError when playing action cards
 
 ## [1.26.61] - 2026-08-27
 
 ### Fixed
-- quote heredoc and fix metadata in release social poster
 
+- quote heredoc and fix metadata in release social poster
 
 ## [1.26.60] - 2026-08-27
 
 ### Fixed
+
 - make card text fully visible and add double-click to play
 - improve mobile playability with safe areas, tap handling, and responsive modals
-
 
 ## [1.26.59] - 2026-08-27
 
 ### Fixed
-- fix offline game downloads not working and missing sizes
 
+- fix offline game downloads not working and missing sizes
 
 ## [1.26.58] - 2026-08-26
 
 ### Added
+
 - rework features page with interactive views, filters, and full i18n
 
 ### Fixed
+
 - use data-testid selectors in e2e tests to avoid i18n and role mismatches
 - resolve FEATURES.md path across root and web app contexts
 
 ### Documentation
-- add comprehensive feature list covering user, SEO, and AI search features
 
+- add comprehensive feature list covering user, SEO, and AI search features
 
 ## [1.26.57] - 2026-08-26
 
 ### Fixed
-- adapt games catalog and picker cards for light theme
 
+- adapt games catalog and picker cards for light theme
 
 ## [1.26.56] - 2026-08-26
 
 ### Added
-- offline game downloads with sizes and install prompt
 
+- offline game downloads with sizes and install prompt
 
 ## [1.26.55] - 2026-08-26
 
 ### Fixed
-- register pachisi gateway and add compile-time registration guard
 
+- register pachisi gateway and add compile-time registration guard
 
 ## [1.26.54] - 2026-08-26
 
 ### Added
+
 - create GameRulesModal with close button and modern card layout (ARC-896) (ARC-896)
 - connect games control panel and game widgets via zustand for result screen toggling (ARC-896) (ARC-896)
 - modernize single-player games UI and unify win-loss modal (ARC-896) (ARC-896)
 - apply global color vision accessibility filters (ARC-896) (ARC-896)
 
 ### Fixed
+
 - increase control panel z-index to z-[100] above game header (ARC-896) (ARC-896)
 - fix share dropdown z-index and keep native share as menu option (ARC-896) (ARC-896)
 - fix translation keys in GameRulesModal, control panel, and Go gameOver (ARC-896) (ARC-896)
@@ -93,7 +321,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - expand draw celebration sparkle particles and slots across full screen width
 - span sparkle particles across full screen width on draw celebration
 - validate and self-heal anonymous id format in api-client
-
 
 ## [1.26.53] - 2026-08-26
 

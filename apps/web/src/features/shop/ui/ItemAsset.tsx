@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import { AVATAR_SPRITE_MAP, BADGE_SPRITE_MAP } from '@arcadeum/ui';
 import { nameColorRenderProps } from '../lib/nameColor';

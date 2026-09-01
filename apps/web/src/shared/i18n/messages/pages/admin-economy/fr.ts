@@ -106,6 +106,11 @@ export const adminEconomyFr = {
       description:
         'Nombre de gemmes attribuées à un nouvel utilisateur lors de son inscription.',
     },
+    social_reward_gems: {
+      name: 'Récompense abonnement réseaux : gemmes',
+      description:
+        'Nombre de gemmes attribuées par abonnement/suivi à chaque réseau social.',
+    },
   },
   table: {
     key: 'Paramètre',

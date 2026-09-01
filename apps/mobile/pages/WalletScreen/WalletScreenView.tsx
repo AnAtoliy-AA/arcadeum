@@ -215,6 +215,10 @@ export function WalletScreenView() {
           data={transactions}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
+          removeClippedSubviews={true}
+          windowSize={5}
+          maxToRenderPerBatch={10}
+          updateCellsBatchingPeriod={50}
           refreshControl={
             <RefreshControl
               refreshing={txLoading && transactions.length === 0}

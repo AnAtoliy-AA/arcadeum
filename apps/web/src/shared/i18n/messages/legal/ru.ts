@@ -291,7 +291,7 @@ export const ru: LegalMessages = {
         discord: {
           title: 'Discord',
           sub: 'Живой чат · {{count}} участников',
-          memberCount: '12,4 тыс.',
+          memberCount: '',
         },
         x: { title: '@_arcadeum_', sub: 'Личные сообщения открыты' },
         twitter: { title: '@_arcadeum_', sub: 'Личные сообщения открыты' },

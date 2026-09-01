@@ -60,18 +60,13 @@ export default function GamesPage({
   const router = useRouter();
   const pathname = usePathname();
 
-  // URL state management
-  const selectedStatuses = useMemo<GamesStatusFilter>(
-    () => {
-      const raw = searchParams ? searchParams.get('status') : null;
-      if (raw === null || raw === undefined) {
-        return ['lobby', 'in_progress'];
-      }
-      return parseStatusFilterFromUrl(raw);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pathname triggers re-parse when navigating
-    [searchParams, pathname],
-  );
+  const selectedStatuses = useMemo<GamesStatusFilter>(() => {
+    const raw = searchParams ? searchParams.get('status') : null;
+    if (raw === null || raw === undefined) {
+      return [];
+    }
+    return parseStatusFilterFromUrl(raw);
+  }, [searchParams]);
   const participationFilter =
     (searchParams?.get('participation') as GamesParticipationFilter) || 'all';
   const aiVsAiFilter = parseAiVsAiFilterFromUrl(
@@ -157,6 +152,24 @@ export default function GamesPage({
     [updateParams],
   );
 
+  const handleClearAll = useCallback(() => {
+    setSearchQuery('');
+    setCategoryFilter('');
+    const currentParams = new URLSearchParams(
+      searchParamsRef.current?.toString() || '',
+    );
+    currentParams.delete('search');
+    currentParams.delete('category');
+    currentParams.delete('status');
+    currentParams.delete('aiVsAi');
+    currentParams.delete('participation');
+    currentParams.delete('page');
+
+    router.push(`${pathname}?${currentParams.toString()}`, {
+      scroll: false,
+    });
+  }, [pathname, router]);
+
   // Sync deferred search query to URL - only if it actually changed from current URL
   useEffect(() => {
     const currentUrlSearch = searchParamsRef.current?.get('search') || '';
@@ -219,6 +232,7 @@ export default function GamesPage({
       deferredSearchQuery,
       gameId ?? null,
       snapshot.accessToken,
+      snapshot.userId,
     ],
     queryFn: async ({ pageParam = 0 }) => {
       return gamesApi.getRooms(
@@ -236,7 +250,7 @@ export default function GamesPage({
     },
     getNextPageParam: (lastPage, allPages) => {
       const totalPages = Math.ceil(lastPage.total / PAGE_SIZE);
-      const nextPage = allPages.length; // 0-based: length of 1 means index 1 is next
+      const nextPage = allPages.length;
       return nextPage < totalPages ? nextPage : undefined;
     },
     initialPageParam: 0,
@@ -307,6 +321,7 @@ export default function GamesPage({
           aiVsAiFilter={aiVsAiFilter}
           onAiVsAiChange={handleAiVsAiChange}
           canFilterParticipation={!!snapshot.accessToken || !!snapshot.userId}
+          onClearAll={handleClearAll}
         />
 
         <GlassCard className={'p-6'}>
@@ -318,10 +333,9 @@ export default function GamesPage({
           />
 
           <div
-            className={`${styles.roomsContainer}${
+            className={`mt-6 ${styles.roomsContainer}${
               viewMode === 'list' ? ` ${styles.listView}` : ''
             }`}
-            style={{ marginTop: '1.5rem' }}
           >
             {renderContent()}
           </div>

@@ -1,11 +1,10 @@
-import { useCallback } from 'react';
-import { GamesSearch } from '@/features/games';
+'use client';
+
+import { useState, useCallback, useId } from 'react';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
-import { FilterChips, FilterGroup, FilterLabel, Filters } from '../styles';
-import { FilterChip } from '@arcadeum/ui';
 import type {
   GamesParticipationFilter,
   GamesStatusFilter,
@@ -26,8 +25,8 @@ interface GamesFiltersProps {
   onCategoryChange: (category: GamesCategoryFilter) => void;
   aiVsAiFilter: GamesAiVsAiFilter;
   onAiVsAiChange: (filter: GamesAiVsAiFilter) => void;
-  /** Authenticated users and anonymous players with an anon id both qualify. */
   canFilterParticipation: boolean;
+  onClearAll?: () => void;
 }
 
 const STATUS_KEYS = {
@@ -37,12 +36,35 @@ const STATUS_KEYS = {
   completed: 'games.lounge.filters.status.completed',
 } as const;
 
+const STATUS_ICONS: Record<string, string> = {
+  all: '🌟',
+  lobby: '🎮',
+  in_progress: '⚔️',
+  completed: '🏆',
+};
+
+const CATEGORY_ICONS: Record<string, string> = {
+  all: '✨',
+  strategy: '⚔️',
+  card: '🃏',
+  board: '♟️',
+  action: '⚡',
+  puzzle: '🧩',
+};
+
 const PARTICIPATION_KEYS = {
   all: 'games.lounge.filters.participation.all',
   hosting: 'games.lounge.filters.participation.hosting',
   joined: 'games.lounge.filters.participation.joined',
   not_joined: 'games.lounge.filters.participation.not_joined',
 } as const;
+
+const PARTICIPATION_ICONS: Record<string, string> = {
+  all: '👥',
+  hosting: '👑',
+  joined: '🎮',
+  not_joined: '👀',
+};
 
 export function GamesFilters({
   searchQuery,
@@ -56,164 +78,317 @@ export function GamesFilters({
   aiVsAiFilter,
   onAiVsAiChange,
   canFilterParticipation,
+  onClearAll,
 }: GamesFiltersProps) {
   const { t } = useTranslation();
+  const searchInputId = useId();
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onSearch(e.target.value);
+  };
+
+  const handleSearchClear = () => {
+    onSearch('');
+  };
+
+  const isAllStatus =
+    statusFilter.length === 0 || statusFilter.length === STATUS_VALUES.length;
 
   const handleStatusToggle = useCallback(
     (value: (typeof ALL_STATUS_VALUES)[number]) => {
-      const allSelected =
-        statusFilter.length === 0 ||
-        statusFilter.length === STATUS_VALUES.length;
-
       if (value === 'all') {
         onStatusChange([]);
-      } else if (allSelected) {
-        onStatusChange(STATUS_VALUES.filter((s) => s !== value));
-      } else {
-        const next = statusFilter.includes(value)
-          ? statusFilter.filter((s) => s !== value)
-          : [...statusFilter, value];
+        return;
+      }
+
+      if (isAllStatus) {
+        onStatusChange([value]);
+        return;
+      }
+
+      if (statusFilter.includes(value)) {
+        const next = statusFilter.filter((s) => s !== value);
         onStatusChange(next);
+      } else {
+        const next = [...statusFilter, value];
+        if (next.length === STATUS_VALUES.length) {
+          onStatusChange([]);
+        } else {
+          onStatusChange(next);
+        }
       }
     },
-    [statusFilter, onStatusChange],
+    [isAllStatus, statusFilter, onStatusChange],
   );
 
-  return (
-    <Filters>
-      <GamesSearch
-        onSearch={onSearch}
-        initialValue={searchQuery}
-        placeholder={t('games.lounge.searchPlaceholder') || 'Search games...'}
-        buttonLabel={t('games.lounge.searchButton') || 'Search'}
-      />
-      <FilterGroup>
-        <FilterLabel>
-          {t('games.lounge.filters.categoryLabel') || 'Category'}
-        </FilterLabel>
-        <FilterChips>
-          <FilterChip
-            active={categoryFilter === ''}
-            onClick={() => onCategoryChange('')}
-            aria-label="Filter by category: All"
-            aria-pressed={categoryFilter === ''}
-          >
-            {t('games.lounge.filters.status.all') || 'All'}
-            {categoryFilter === '' ? ' ✓' : ''}
-          </FilterChip>
-          {GAME_CATEGORIES.map((cat) => {
-            const labelKey = getCategoryLabelKey(cat);
-            const label = labelKey ? t(labelKey as TranslationKey) : cat;
-            const isActive = categoryFilter === cat;
-            return (
-              <FilterChip
-                key={cat}
-                active={isActive}
-                onClick={() => onCategoryChange(isActive ? '' : cat)}
-                aria-label={`Filter by category: ${label}`}
-                aria-pressed={isActive}
-              >
-                {label || cat}
-                {isActive ? ' ✓' : ''}
-              </FilterChip>
-            );
-          })}
-        </FilterChips>
-      </FilterGroup>
+  const hasSearch = Boolean(searchQuery.trim());
+  const hasCategory = Boolean(categoryFilter);
+  const hasStatus = !isAllStatus;
+  const hasAi = aiVsAiFilter === 'ai_vs_ai';
+  const hasParticipation = participationFilter !== 'all';
 
-      <FilterGroup>
-        <FilterLabel>{t('games.lounge.filters.statusLabel')}</FilterLabel>
-        <FilterChips>
+  const activeCount =
+    (hasSearch ? 1 : 0) +
+    (hasCategory ? 1 : 0) +
+    (hasStatus ? 1 : 0) +
+    (hasAi ? 1 : 0) +
+    (hasParticipation ? 1 : 0);
+
+  const handleClearAll = useCallback(() => {
+    if (onClearAll) {
+      onClearAll();
+    } else {
+      onSearch('');
+      onCategoryChange('');
+      onStatusChange([]);
+      onAiVsAiChange('all');
+      onParticipationChange('all');
+    }
+  }, [
+    onClearAll,
+    onSearch,
+    onCategoryChange,
+    onStatusChange,
+    onAiVsAiChange,
+    onParticipationChange,
+  ]);
+
+  return (
+    <div
+      data-testid="games-filters-container"
+      className="box-border flex w-full max-w-full flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl sm:p-4 md:gap-4"
+    >
+      <div className="flex w-full items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none sm:pb-0">
+        <div className="inline-flex min-w-max items-center gap-1.5 rounded-xl border border-white/10 bg-black/30 p-1">
           {ALL_STATUS_VALUES.map((value) => {
             const label = t(STATUS_KEYS[value] as TranslationKey);
-            const allSelected =
-              statusFilter.length === 0 ||
-              statusFilter.length === STATUS_VALUES.length;
+            const icon = STATUS_ICONS[value] || '🎮';
             const isActive =
               value === 'all'
-                ? allSelected
-                : allSelected || statusFilter.includes(value);
+                ? isAllStatus
+                : !isAllStatus && statusFilter.includes(value);
+
             return (
-              <FilterChip
+              <button
                 key={value}
-                active={isActive}
+                type="button"
+                role="checkbox"
+                aria-checked={isActive}
+                aria-label={`Filter status: ${label || value}`}
                 onClick={() => handleStatusToggle(value)}
-                aria-label={`Filter by status: ${label || value}`}
-                aria-pressed={isActive}
+                className={`relative inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all select-none cursor-pointer ${
+                  isActive
+                    ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-500/25'
+                    : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-200'
+                }`}
               >
-                {label || value}
-                {isActive ? ' ✓' : ''}
-              </FilterChip>
+                <span>{icon}</span>
+                <span>{label || value}</span>
+                {isActive && value !== 'all' && (
+                  <span className="text-[10px] opacity-80">✓</span>
+                )}
+              </button>
             );
           })}
-        </FilterChips>
-      </FilterGroup>
+        </div>
 
-      <FilterGroup>
-        <FilterLabel>
-          {t('games.lounge.filters.aiVsAiLabel') || 'Mode'}
-        </FilterLabel>
-        <FilterChips>
-          {(['all', 'ai_vs_ai'] as const).map((value) => {
-            const label =
-              value === 'all'
-                ? t('games.lounge.filters.status.all') || 'All'
-                : t('games.lounge.filters.aiVsAi') || 'AI vs AI';
-            const isActive = aiVsAiFilter === value;
-            return (
-              <FilterChip
-                key={value}
-                active={isActive}
-                onClick={() => onAiVsAiChange(value)}
-                aria-label={`Filter by mode: ${label}`}
-                aria-pressed={isActive}
-              >
-                {label}
-                {isActive ? ' ✓' : ''}
-              </FilterChip>
-            );
-          })}
-        </FilterChips>
-      </FilterGroup>
-
-      <FilterGroup>
-        <div className="flex items-center gap-2">
-          <FilterLabel>
-            {t('games.lounge.filters.participationLabel')}
-          </FilterLabel>
-          {!canFilterParticipation && (
-            <span
-              className="mb-1 text-[12px] italic opacity-60"
-              style={{ color: 'var(--color)' }}
-            >
-              ({t('games.create.loginRequired').toLowerCase()})
+        {activeCount > 0 && (
+          <button
+            type="button"
+            onClick={handleClearAll}
+            data-testid="rooms-filter-clear-all"
+            className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-300 transition-colors hover:bg-rose-500/20 active:scale-95"
+          >
+            <span>✕</span>
+            <span className="hidden sm:inline">
+              {t('games.lounge.filters.clearAll')}
             </span>
+            <span className="rounded-full bg-rose-500/30 px-1.5 py-0.2 text-[10px] text-white">
+              {activeCount}
+            </span>
+          </button>
+        )}
+      </div>
+
+      <div className="flex w-full items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <button
+          type="button"
+          role="checkbox"
+          aria-checked={categoryFilter === ''}
+          onClick={() => onCategoryChange('')}
+          aria-label="Filter by category: All"
+          className={`inline-flex shrink-0 h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-all select-none cursor-pointer ${
+            categoryFilter === ''
+              ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300 shadow-sm'
+              : 'border-white/10 bg-white/[0.02] text-slate-400 hover:border-white/20 hover:text-slate-300'
+          }`}
+        >
+          <span>{CATEGORY_ICONS.all}</span>
+          <span>{t('games.lounge.filters.status.all') || 'All'}</span>
+        </button>
+
+        {GAME_CATEGORIES.map((cat) => {
+          const labelKey = getCategoryLabelKey(cat);
+          const label = labelKey ? t(labelKey as TranslationKey) : cat;
+          const icon = CATEGORY_ICONS[cat.toLowerCase()] || '🎲';
+          const isActive = categoryFilter === cat;
+
+          return (
+            <button
+              key={cat}
+              type="button"
+              role="checkbox"
+              aria-checked={isActive}
+              onClick={() => onCategoryChange(isActive ? '' : cat)}
+              aria-label={`Filter by category: ${label}`}
+              className={`inline-flex shrink-0 h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-all select-none cursor-pointer ${
+                isActive
+                  ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300 shadow-sm'
+                  : 'border-white/10 bg-white/[0.02] text-slate-400 hover:border-white/20 hover:text-slate-300'
+              }`}
+            >
+              <span>{icon}</span>
+              <span>{label || cat}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between pt-1 border-t border-white/5">
+        <div className="relative flex-1 max-w-full sm:max-w-md">
+          <label htmlFor={searchInputId} className="sr-only">
+            {t('games.lounge.searchPlaceholder') || 'Search games...'}
+          </label>
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <input
+            id={searchInputId}
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder={
+              t('games.lounge.searchPlaceholder') || 'Search games...'
+            }
+            className="w-full rounded-xl border border-white/10 bg-black/25 py-2 pl-9 pr-8 text-xs text-white placeholder-slate-500 transition-colors focus:border-indigo-500/60 focus:bg-black/40 focus:outline-none"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={handleSearchClear}
+              aria-label="Clear search input"
+              className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400 hover:text-white cursor-pointer"
+            >
+              <span className="text-xs">✕</span>
+            </button>
           )}
         </div>
-        <FilterChips>
+
+        <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none">
+          <button
+            type="button"
+            onClick={() =>
+              onAiVsAiChange(aiVsAiFilter === 'ai_vs_ai' ? 'all' : 'ai_vs_ai')
+            }
+            aria-label="Toggle AI vs AI mode"
+            aria-pressed={aiVsAiFilter === 'ai_vs_ai'}
+            className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all select-none cursor-pointer ${
+              aiVsAiFilter === 'ai_vs_ai'
+                ? 'border-indigo-500/50 bg-indigo-500/20 text-indigo-200'
+                : 'border-white/10 bg-white/[0.03] text-slate-400 hover:bg-white/[0.06] hover:text-slate-300'
+            }`}
+          >
+            <span>🤖</span>
+            <span>{t('games.lounge.filters.aiVsAi') || 'AI vs AI'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowAdvanced((prev) => !prev)}
+            data-testid="rooms-filter-toggle-advanced"
+            aria-expanded={showAdvanced}
+            aria-label="Toggle participation filters"
+            className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all select-none cursor-pointer ${
+              hasParticipation || showAdvanced
+                ? 'border-indigo-500/50 bg-indigo-500/15 text-indigo-300'
+                : 'border-white/10 bg-white/[0.03] text-slate-400 hover:bg-white/[0.06] hover:text-slate-300'
+            }`}
+          >
+            <span>👥</span>
+            <span>{t('games.lounge.filters.participationLabel')}</span>
+            {hasParticipation && (
+              <span className="rounded-full bg-indigo-500/40 px-1 text-[10px] text-white">
+                1
+              </span>
+            )}
+            <span
+              className={`transition-transform duration-200 ${
+                showAdvanced ? 'rotate-180' : ''
+              }`}
+            >
+              ▾
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {showAdvanced && (
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/5 animate-in fade-in duration-150">
+          <span className="text-xs text-slate-400 font-semibold mr-1">
+            {t('games.lounge.filters.participationLabel')}:
+          </span>
           {(
             Object.keys(PARTICIPATION_KEYS) as Array<
               keyof typeof PARTICIPATION_KEYS
             >
           ).map((value) => {
             const label = t(PARTICIPATION_KEYS[value] as TranslationKey);
+            const icon = PARTICIPATION_ICONS[value] || '👥';
             const isActive = participationFilter === value;
+            const isDisabled = value !== 'all' && !canFilterParticipation;
+
             return (
-              <FilterChip
+              <button
                 key={value}
-                active={isActive}
-                disabled={value !== 'all' && !canFilterParticipation}
+                type="button"
+                disabled={isDisabled}
                 onClick={() => onParticipationChange(value)}
                 aria-label={`Filter by participation: ${label || value}`}
                 aria-pressed={isActive}
+                className={`inline-flex h-7 items-center gap-1 rounded-md border px-2 text-[11px] font-medium transition-all select-none ${
+                  isDisabled
+                    ? 'opacity-40 cursor-not-allowed border-white/5 bg-transparent text-slate-600'
+                    : isActive
+                      ? 'border-indigo-500/40 bg-indigo-500/20 text-indigo-200 cursor-pointer'
+                      : 'border-white/10 bg-white/[0.02] text-slate-400 hover:bg-white/[0.05] hover:text-slate-200 cursor-pointer'
+                }`}
               >
-                {label || value}
-                {isActive ? ' ✓' : ''}
-              </FilterChip>
+                <span>{icon}</span>
+                <span>{label || value}</span>
+              </button>
             );
           })}
-        </FilterChips>
-      </FilterGroup>
-    </Filters>
+
+          {!canFilterParticipation && (
+            <span className="text-[11px] italic text-slate-500 ml-1">
+              ({t('games.create.loginRequired').toLowerCase()})
+            </span>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

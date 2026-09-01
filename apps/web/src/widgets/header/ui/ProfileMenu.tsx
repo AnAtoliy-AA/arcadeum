@@ -17,6 +17,7 @@ import {
   UserIcon,
   WalletIcon,
   SmartphoneIcon,
+  SupportIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { logoutSession } from '@/entities/session/api/authApi';
@@ -26,7 +27,9 @@ import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { usePWAOptional } from '@/features/pwa/context';
+import LanguagePills from './LanguagePills';
 import {
   ProfileMenuContainer,
   UserNameEllipsis,
@@ -35,12 +38,34 @@ import {
   DropdownButton,
 } from '@arcadeum/ui';
 
+const MusicIcon = ({ size = 18 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9 18V5l12-2v13" />
+    <circle cx="6" cy="18" r="3" />
+    <circle cx="18" cy="16" r="3" />
+  </svg>
+);
+
 export default function ProfileMenu() {
   const { snapshot, clearTokens } = useSessionTokens();
   const { t } = useTranslation();
   const routes = useRoutes();
   const pwa = usePWAOptional();
+  const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const toggleMusic = useCallback(() => {
+    setMusicEnabled(!musicEnabled);
+  }, [musicEnabled, setMusicEnabled]);
 
   const displayName =
     snapshot.displayName || snapshot.username || snapshot.email;
@@ -186,6 +211,20 @@ export default function ProfileMenu() {
         )}
 
         <DropdownLink
+          href={routes.rewards}
+          onClick={closeMenu}
+          data-testid="header-rewards-link"
+          icon={<GiftIcon size={18} />}
+        >
+          <span className="flex items-center justify-between w-full">
+            <span>{t('navigation.rewardsTab')}</span>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+              FREE GEMS
+            </span>
+          </span>
+        </DropdownLink>
+
+        <DropdownLink
           href={routes.wallet}
           onClick={closeMenu}
           data-testid="header-wallet-link"
@@ -289,12 +328,32 @@ export default function ProfileMenu() {
         </DropdownLink>
 
         <DropdownLink
-          href={routes.contact}
+          href={routes.support}
           onClick={closeMenu}
-          icon={<MailIcon size={18} />}
+          data-testid="header-support-link"
+          icon={<SupportIcon size={18} />}
         >
-          {t('legal.nav.contact')}
+          {t('common.actions.support')}
         </DropdownLink>
+
+        <DropdownButton
+          data-testid="header-music-toggle"
+          onClick={toggleMusic}
+          icon={<MusicIcon size={18} />}
+        >
+          <span className="flex items-center justify-between w-full">
+            <span>{t('navigation.musicTab')}</span>
+            <span className="text-xs text-slate-400 font-semibold uppercase">
+              {musicEnabled ? 'ON' : 'OFF'}
+            </span>
+          </span>
+        </DropdownButton>
+
+        <Divider spacing="sm" />
+
+        <div className="px-5 py-2">
+          <LanguagePills data-testid="profile-language-picker" />
+        </div>
 
         <Divider spacing="sm" />
         <DropdownButton

@@ -1,7 +1,8 @@
 'use client';
 
-import { type CSSProperties, type ReactNode } from 'react';
+import { type CSSProperties, type ReactNode, useEffect } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
+import { useLiveStatsStore } from '@/features/live-stats';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { Container } from '@arcadeum/ui/components/Container/Container';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
@@ -112,6 +113,12 @@ export default function ContactView({
   WORKING_HOURS,
 }: ContactViewProps) {
   const { messages } = useLanguage();
+  const { stats: liveStats, fetchLiveStats } = useLiveStatsStore();
+
+  useEffect(() => {
+    void fetchLiveStats();
+  }, [fetchLiveStats]);
+
   const t = (messages.legal?.contact as unknown as ContactMessages) || initialT;
   const sections = t?.sections;
   const hero = sections?.hero;
@@ -128,6 +135,12 @@ export default function ContactView({
 
   const faqItems = getFaqItems(t);
 
+  const discordCount = (
+    liveStats.platformSubscribers?.['discord'] ??
+    liveStats.totalSubscribers ??
+    0
+  ).toLocaleString();
+
   const social = appConfig.social;
   const channelDefs = [
     social.discord && {
@@ -135,7 +148,7 @@ export default function ContactView({
       icon: <DiscordIcon />,
       title: channels?.discord?.title ?? 'Discord',
       sub: formatMessage(channels?.discord?.sub, {
-        count: channels?.discord?.memberCount ?? '12.4k',
+        count: discordCount,
       }),
       gradient: 'linear-gradient(135deg,#5865f2 0%,#8b5cf6 100%)',
       href: social.discord,
@@ -235,7 +248,11 @@ export default function ContactView({
           <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-px bg-[var(--glassBorder)] border border-[var(--glassBorder)] rounded-[16px] overflow-hidden">
             <div className="bg-[var(--background)]">
               <StatTile
-                value={stats?.ticketsResolvedValue ?? '2,840'}
+                value={
+                  liveStats.totalMatches > 0
+                    ? liveStats.totalMatches.toLocaleString()
+                    : (stats?.ticketsResolvedValue ?? '0')
+                }
                 label={stats?.ticketsResolved ?? 'Tickets resolved this month'}
               />
             </div>

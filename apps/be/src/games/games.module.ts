@@ -2,7 +2,10 @@ import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import Redis from 'ioredis';
 import { GamesController } from './games.controller';
+import { LiveStatsController } from './live-stats/live-stats.controller';
+import { LiveStatsService } from './live-stats/live-stats.service';
 import { GamesCatalogService } from './games-catalog.service';
 import { GamesHistoryController } from './games.history.controller';
 import { GamesService } from './games.service';
@@ -104,6 +107,10 @@ import {
 import { GameReplayService } from './replays/game-replay.service';
 import { GameReplayController } from './replays/game-replay.controller';
 import { GameReplay, GameReplaySchema } from './schemas/game-replay.schema';
+import {
+  SocialRewardClaim,
+  SocialRewardClaimSchema,
+} from '../social-rewards/schemas/social-reward-claim.schema';
 import { AuthModule } from '../auth/auth.module';
 import { LeaderboardsModule } from '../leaderboards/leaderboards.module';
 import { RankingModule } from '../ranking/ranking.module';
@@ -142,6 +149,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     MongooseModule.forFeature([
       { name: PlayerStats.name, schema: PlayerStatsSchema },
       { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
+      { name: SocialRewardClaim.name, schema: SocialRewardClaimSchema },
     ]),
     // Atlas connection models (archive, history, stats) — only when Atlas is configured
     ...(resolveAtlasUri()
@@ -154,6 +162,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
               { name: PlayerStats.name, schema: PlayerStatsSchema },
               { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
               { name: User.name, schema: UserSchema },
+              { name: SocialRewardClaim.name, schema: SocialRewardClaimSchema },
             ],
             ATLAS_CONNECTION,
           ),
@@ -170,8 +179,14 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     DailyChallengesModule,
     AchievementsModule,
   ],
-  controllers: [GamesController, GamesHistoryController, GameReplayController],
+  controllers: [
+    GamesController,
+    GamesHistoryController,
+    GameReplayController,
+    LiveStatsController,
+  ],
   providers: [
+    LiveStatsService,
     // Core services
     GameRoomsService,
     GameRoomsMapper,
@@ -284,6 +299,19 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
       ],
     },
     AntiCollusionService,
+    {
+      provide: 'REDIS_CLIENT',
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const redisUrl = config.get<string>('REDIS_URL');
+        if (!redisUrl) return null;
+        return new Redis(redisUrl, {
+          maxRetriesPerRequest: 3,
+          enableOfflineQueue: true,
+          lazyConnect: true,
+        });
+      },
+    },
   ],
   exports: [
     GameHistoryStatsService,

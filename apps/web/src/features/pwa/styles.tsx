@@ -1,5 +1,3 @@
-'use client';
-
 import type { ReactNode } from 'react';
 
 export const PWAFeaturesList = ({ children }: { children?: ReactNode }) => (

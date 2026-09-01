@@ -294,7 +294,7 @@ export const fr: LegalMessages = {
         discord: {
           title: 'Discord',
           sub: 'Chat en direct · {{count}} membres',
-          memberCount: '12,4k',
+          memberCount: '',
         },
         x: { title: '@_arcadeum_', sub: 'Les DMs sont ouverts' },
         twitter: { title: '@_arcadeum_', sub: 'Les DMs sont ouverts' },

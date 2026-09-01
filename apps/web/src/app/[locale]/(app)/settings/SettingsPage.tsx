@@ -1,5 +1,3 @@
-'use client';
-
 import SettingsContent, { type SettingsContentProps } from './SettingsContent';
 
 export type SettingsPageProps = SettingsContentProps;

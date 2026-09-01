@@ -32,6 +32,10 @@ export const enMessages = {
       },
       aiVsAiLabel: 'Mode',
       aiVsAi: 'AI vs AI',
+      clearAll: 'Clear all',
+      moreFilters: 'More filters',
+      hideFilters: 'Fewer filters',
+      activeFiltersCount: '{{count}} active',
     },
   },
   aiVsAi: {
@@ -50,6 +54,7 @@ export const enMessages = {
       completeTitle: 'Tutorial complete!',
       completeBody:
         'Nice — you know the basics of {{game}} now. Good luck at the table!',
+      close: 'Close',
     },
   },
   rooms: {
@@ -123,6 +128,15 @@ export const enMessages = {
     },
     actions: {
       backToHome: 'Back to Home',
+    },
+    postGame: {
+      whatNext: 'What next?',
+      challengeFriend: 'Challenge a Friend',
+      shareResult: 'Share Result',
+      playAnother: 'Play Another Game',
+      linkCopied: 'Link copied!',
+      rewardsPrompt: 'Need more gems? Subscribe to socials!',
+      rewardsClaim: 'Claim',
     },
     deleteRoom: {
       button: 'Delete Room',
@@ -531,6 +545,21 @@ export const enMessages = {
     cancel: 'Cancel Matchmaking',
     estimatedWait: 'Estimated wait: ~{{seconds}}s',
     queuePosition: 'Position in queue: {{position}} of {{total}}',
+    playersAheadSingle: '1 player ahead of you',
+    playersAheadMultiple: '{{count}} players ahead of you',
+    nextInLine: 'You are next in line! Next match is yours.',
+    playersInQueue: '{{count}} searching in this game',
+    activeQueuesTitle: 'Active Players in Other Games',
+    switchGame: 'Switch to {{game}}',
+    playAiNow: 'Play vs AI now',
+    minimize: 'Minimize',
+    expand: 'Expand',
+    modeCasual: 'Casual',
+    modeRanked: 'Ranked',
+    noRoomsSuggestTitle: 'No active rooms found',
+    noRoomsSuggestSubtitle:
+      'Create your own room and wait for players to join you!',
+    createRoomAction: 'Create Room',
   },
   ranking: {
     ratingUpdated: 'Rating updated',

@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@arcadeum/ui';
 import {
-  ReusableGameLobby,
   type GameLobbyTheme,
+  ReusableGameLobby,
+} from '@/features/games/ui/ReusableGameLobby';
+import {
   LobbyOptionSection,
   LobbyChipGroup,
-  GameThemePicker,
-} from '@/features/games/ui';
+} from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import {
   useTranslation,
   type TranslationKey,

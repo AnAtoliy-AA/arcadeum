@@ -16,7 +16,7 @@ const { coins: COIN_COLOR, gems: GEM_COLOR } = CURRENCY_COLOR;
 export interface ShopTopBarLabels {
   eyebrow: string;
   title: string;
-  nav: { shop: string; inventory: string; wallet: string };
+  nav: { shop: string; inventory: string; wallet: string; rewards?: string };
   topUp: string;
 }
 
@@ -179,6 +179,16 @@ export function ShopTopBar({ balance, labels, onTopUp }: ShopTopBarProps) {
         </Link>
         <Link href={routes.wallet} style={{ textDecoration: 'none' }}>
           <NavLink data-testid="shop-nav-wallet">{labels.nav.wallet}</NavLink>
+        </Link>
+        <Link href={routes.rewards} style={{ textDecoration: 'none' }}>
+          <NavLink color="#babfc7" data-testid="shop-nav-rewards">
+            <span className="flex items-center gap-1.5">
+              <span>{labels.nav.rewards ?? 'Rewards'}</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                FREE
+              </span>
+            </span>
+          </NavLink>
         </Link>
       </div>
 

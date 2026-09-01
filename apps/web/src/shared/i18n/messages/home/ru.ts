@@ -1,9 +1,9 @@
 export const ru = {
-  kicker: 'Бесплатные настольные игры онлайн',
+  kicker: 'Бесплатные настольные и мини-игры онлайн',
   tagline:
-    '{{appName}} — платформа для бесплатной игры в настольные игры онлайн с друзьями или в одиночку против ИИ: Морской бой, стратегии, карты и больше.',
+    '{{appName}} — платформа для бесплатной игры в настольные игры, карты и мини-игры онлайн с друзьями или против ИИ.',
   description:
-    'Большой выбор бесплатных настольных игр онлайн. Бросайте вызов умным ботам, создавайте игровые комнаты в реальном времени, приглашайте друзей, а {{appName}} возьмет на себя правила, подсчет очков и очередность ходов, чтобы вы могли сосредоточиться на веселье.',
+    'Большой выбор бесплатных настольных, карточных игр и мини-игр онлайн. Бросайте вызов умным ботам, создавайте игровые комнаты в реальном времени, приглашайте друзей, а {{appName}} возьмет на себя правила, подсчет очков и ходы.',
   primaryCtaLabel: 'Начать',
   playWithBotsLabel: 'Игра против ИИ',
   defaultRoomName: 'Игра {{name}} #{{number}}',
@@ -18,7 +18,8 @@ export const ru = {
   downloadsAndroidLabel: 'Скачать для Android',
   // Games section
   gamesTitle: 'Популярные игры',
-  gamesSubtitle: 'Исследуйте нашу растущую библиотеку настольных развлечений',
+  gamesSubtitle:
+    'Исследуйте нашу растущую библиотеку настольных, карточных и мини-игр',
   gamePlayButton: 'Играть сейчас',
   gameTryDemo: 'Попробовать демо',
   gameRulesButton: 'Правила игры',
@@ -42,7 +43,8 @@ export const ru = {
 
   // Features section
   featuresTitle: 'Почему {{appName}}?',
-  featuresSubtitle: 'Все, что нужно для игры в настолки онлайн с друзьями',
+  featuresSubtitle:
+    'Все, что нужно для игры в настольные, карточные и мини-игры онлайн с друзьями',
   featureBotsTitle: 'Игра против ИИ',
   featureBotsDescription:
     'Тренируйтесь в одиночку или бросьте вызов умным ботам на легком, среднем или сложном уровнях сложности, когда друзья не в сети.',
@@ -83,6 +85,37 @@ export const ru = {
   stepPlayTitle: 'Играйте вместе',
   stepPlayDescription:
     'Наслаждайтесь настольными играми, пока {{appName}} автоматически управляет правилами, ходами и очками.',
+  // Live stats & activity
+  liveTitle: 'Активность на платформе в реальном времени',
+  liveSubtitle:
+    'Матчи в прямом эфире, активные игроки и открытые комнаты прямо сейчас',
+  liveBadgeOnline: 'Сейчас онлайн',
+  liveBadgeActiveGames: 'Идёт матчей',
+  liveBadgeWaitingRooms: 'Открытые комнаты',
+  liveBadgeWaitingPlayers: 'Ищут соперника',
+  liveWaitingRoomsSub: 'Комнаты ждут игроков',
+  liveWaitingRoomsWithMine: '{{count}} открытых комнат (+{{mine}} ваша)',
+  liveWaitingRoomsOnlyMine: 'Ваша комната ждёт игроков',
+  liveWaitingPlayersSub: 'Игроки ждут в очереди',
+  liveWaitingPlayersForGame: '{{count}} в поиске этой игры',
+  liveBadgeMatchesToday: 'Сыграно сегодня',
+  liveOpenLobbiesTitle: 'Открытые комнаты',
+  liveOpenLobbiesSubtitle:
+    'Присоединяйтесь к открытым играм или наблюдайте за текущими сражениями',
+  liveJoinAction: 'Войти в игру',
+  liveSpectateAction: 'Смотреть',
+  liveQuickPlayAction: 'Быстрая игра',
+  liveNoOpenRooms:
+    'Сейчас нет открытых комнат. Создайте свою или начните быстрый матч с ИИ или игроками!',
+  liveRecentActivityTitle: 'Пульс сообщества',
+  liveActivityWon: 'одержал победу в',
+  liveActivityStreak: 'на серии побед в',
+  liveActivityCreated: 'создал новую комнату для',
+  livePopularGamesTitle: 'Популярные игры',
+  livePlayersCount: '{{count}} игроков',
+  liveMatchesCount: '{{count}} матчей',
+  liveViewAllRooms: 'Все комнаты',
+  liveViewAllGames: 'Весь каталог',
   // Coming soon labels
   comingSoon: 'Скоро',
   // Footer
@@ -99,6 +132,7 @@ export const ru = {
   footerRewards: 'Награды',
   footerToken: 'Токен',
   footerResourcesTitle: 'Ресурсы',
+  footerSupport: 'Поддержать проект',
   footerHelpCenter: 'Центр помощи',
   footerRoadmap: 'Дорожная карта',
   footerChangelog: 'История изменений',

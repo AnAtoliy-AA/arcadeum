@@ -79,6 +79,12 @@ function isPrivatePath(locale: Locale, segmentsAfterLocale: string[]): boolean {
   return false;
 }
 
+function isAdminPath(locale: Locale, segmentsAfterLocale: string[]): boolean {
+  const [first] = segmentsAfterLocale;
+  if (!first) return false;
+  return LOCALE_SLUGS[locale].admin === first;
+}
+
 function isVercelFeedbackOrigin(origin: string | null): boolean {
   if (!origin) return false;
 
@@ -197,6 +203,15 @@ export function proxy(req: NextRequest) {
   if (feedbackPreflight) return feedbackPreflight;
 
   if (SKIP_PREFIXES.some((p) => pathname.startsWith(p))) {
+    // PWA offline game pages: rewrite /offline/{game} → /en/offline/{game}
+    // so the [locale] segment gets a valid locale instead of "offline".
+    if (pathname.startsWith('/offline/') && pathname !== '/offline') {
+      const game = pathname.slice('/offline/'.length);
+      const url = req.nextUrl.clone();
+      url.pathname = `/en/offline/${game}`;
+      url.search = search;
+      return NextResponse.rewrite(url);
+    }
     return NextResponse.next();
   }
   if (PUBLIC_FILE.test(pathname)) return NextResponse.next();
@@ -228,6 +243,13 @@ export function proxy(req: NextRequest) {
     const response = NextResponse.next();
     if (isPrivatePath(localeFromUrl, segments.slice(1))) {
       response.headers.set('x-robots-tag', 'noindex, nofollow');
+    }
+    if (
+      isAdminPath(localeFromUrl, segments.slice(1)) &&
+      !req.cookies.get('access_token')?.value &&
+      !req.cookies.get('web_access_token')?.value
+    ) {
+      return new Response(null, { status: 404 });
     }
     return response;
   }

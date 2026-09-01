@@ -1,3 +1,5 @@
+'use client';
+
 import './scrollbar.scss';
 import React, { createContext, useContext, forwardRef, memo } from 'react';
 import type { ReactNode } from 'react';

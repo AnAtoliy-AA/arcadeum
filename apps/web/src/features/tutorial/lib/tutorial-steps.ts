@@ -414,4 +414,5 @@ export const TUTORIAL_UI_KEYS = {
   stepOf: 'games.tutorial.ui.stepOf',
   completeTitle: 'games.tutorial.ui.completeTitle',
   completeBody: 'games.tutorial.ui.completeBody',
+  close: 'games.tutorial.ui.close',
 } satisfies Record<string, TranslationKey>;

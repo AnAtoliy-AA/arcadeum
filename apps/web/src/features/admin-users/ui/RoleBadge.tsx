@@ -1,4 +1,3 @@
-'use client';
 import type { UserRole } from '@/entities/session/model/types';
 import { ROLE_COLORS } from '../lib/roleColors';
 

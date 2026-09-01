@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import {
   useTranslation,
@@ -54,6 +55,7 @@ export interface ShopInventorySectionLabels {
 export interface ShopPageLabels {
   meta: { title: string; description: string };
   topBar: ShopTopBarLabels;
+  freeRewardsBanner?: { title: string; subtitle: string; cta: string };
   signIn: ShopSignInBannerLabels;
   hero: ShopPageHeroLabels;
   mannequin: ShopMannequinLabels;
@@ -229,6 +231,33 @@ export function ShopPageView({
                 onBuyClick={(item) => setPurchaseTarget(item)}
               />
             ) : null}
+
+            <div
+              data-testid="shop-free-rewards-banner"
+              className="rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-500/15 via-purple-500/10 to-amber-500/10 p-4.5 flex flex-col sm:flex-row items-center justify-between gap-4"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-400/20 text-xl border border-amber-400/30">
+                  💎
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-amber-300">
+                    {labels.freeRewardsBanner?.title ?? 'Free Rewards & Quests'}
+                  </span>
+                  <span className="text-xs text-slate-300">
+                    {labels.freeRewardsBanner?.subtitle ??
+                      'Subscribe to our official social networks to earn free gems and bonus coins!'}
+                  </span>
+                </div>
+              </div>
+              <Link
+                href="/rewards"
+                data-testid="shop-rewards-cta"
+                className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-amber-400 px-4 py-2 text-xs font-bold text-zinc-950 shadow-md shadow-amber-500/20 hover:bg-amber-300 no-underline transition-all active:scale-[0.98]"
+              >
+                {labels.freeRewardsBanner?.cta ?? 'Claim Free Gems'} →
+              </Link>
+            </div>
 
             <ShopRow
               id="row-legendary"

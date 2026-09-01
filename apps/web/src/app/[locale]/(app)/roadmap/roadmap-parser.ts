@@ -86,6 +86,38 @@ const TIER_META: Record<
       'linear-gradient(135deg, rgba(236,72,153,0.15), rgba(236,72,153,0.05))',
     icon: '✨',
   },
+  6: {
+    label: 'Growth & SEO',
+    effort: '2–5 days each',
+    color: '#14b8a6',
+    gradient:
+      'linear-gradient(135deg, rgba(20,184,166,0.15), rgba(20,184,166,0.05))',
+    icon: '📈',
+  },
+  7: {
+    label: 'Growth Acceleration',
+    effort: '1–5 days each',
+    color: '#06b6d4',
+    gradient:
+      'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05))',
+    icon: '🚀',
+  },
+  8: {
+    label: 'Retention & Habit Loops',
+    effort: '2–7 days each',
+    color: '#8b5cf6',
+    gradient:
+      'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05))',
+    icon: '🔁',
+  },
+  9: {
+    label: 'Performance & Latency',
+    effort: '2–5 days each',
+    color: '#f43f5e',
+    gradient:
+      'linear-gradient(135deg, rgba(244,63,94,0.15), rgba(244,63,94,0.05))',
+    icon: '⚡',
+  },
 };
 
 const PHASE_COLORS = [
@@ -98,6 +130,10 @@ const PHASE_COLORS = [
   '#ec4899',
   '#14b8a6',
   '#06b6d4',
+  '#8b5cf6',
+  '#0ea5e9',
+  '#d946ef',
+  '#f43f5e',
 ];
 
 function normalizeStatus(raw: string): FeatureStatus {
@@ -156,8 +192,8 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
 
-    // Check for Tier header: ### TIER 1 — ...
-    const tierMatch = line.match(/^###\s+TIER\s+(\d+)/i);
+    // Check for Tier header: ### TIER 1 — ... OR ## Tier 6 — ...
+    const tierMatch = line.match(/^#{2,3}\s+TIER\s+(\d+)/i);
     if (tierMatch) {
       if (currentFeature && currentTier) {
         currentTier.features.push(currentFeature);
@@ -187,9 +223,9 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
       continue;
     }
 
-    // Check for Feature header: #### 1A. Persistent Account-less Stat Tracking `ARC-871`
+    // Check for Feature header: #### 1A. Title `ARC-871` OR ### 6A. Title
     const featureMatch = line.match(
-      /^####\s+([0-9]+[A-Za-z]?\.)?\s*([^(^`]+)(?:`([^`]+)`)?/,
+      /^#{3,4}\s+([0-9]+[A-Za-z]?\.)?\s*([^(^`]+)(?:`([^`]+)`)?/,
     );
     if (featureMatch && currentTier) {
       if (currentFeature) {

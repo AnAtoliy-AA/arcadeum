@@ -8,8 +8,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { WebVitalsReporter } from '@/shared/seo/WebVitalsReporter';
 import { AnalyticsProvider } from '@/shared/analytics/AnalyticsProvider';
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/react';
+import { VercelAnalytics } from './VercelAnalytics';
 
 import BrowserRegistry from './BrowserRegistry';
 import {
@@ -59,11 +58,17 @@ export const metadata: Metadata = {
   keywords: [
     'board games',
     'online board games',
-    'play board games online',
-    'tabletop games',
-    'multiplayer board games',
+    'card games',
+    'online card games',
+    'mini games',
+    'online mini games',
     'free online board games',
-    'online board game platform',
+    'multiplayer browser games',
+    'browser games no download',
+    'play games with friends',
+    'chess online',
+    'sea battle',
+    'puzzle games',
     'arcadeum',
   ],
   verification: {
@@ -153,24 +158,24 @@ export default async function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        {process.env.NEXT_PUBLIC_CDN_URL && (
+        {process.env.NEXT_PUBLIC_CDN_URL ? (
           <>
             <link rel="preconnect" href={process.env.NEXT_PUBLIC_CDN_URL} />
             <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_CDN_URL} />
           </>
-        )}
-        {process.env.NEXT_PUBLIC_API_BASE_URL && (
-          <>
-            <link
-              rel="preconnect"
-              href={process.env.NEXT_PUBLIC_API_BASE_URL}
-            />
-            <link
-              rel="dns-prefetch"
-              href={process.env.NEXT_PUBLIC_API_BASE_URL}
-            />
-          </>
-        )}
+        ) : null}
+        <link
+          rel="preconnect"
+          href={
+            process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.arcadeum.games'
+          }
+        />
+        <link
+          rel="dns-prefetch"
+          href={
+            process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.arcadeum.games'
+          }
+        />
         <JsonLd data={jsonLd} />
       </head>
       <body className={FONT_CLASS}>
@@ -180,10 +185,7 @@ export default async function RootLayout({
         <WebVitalsReporter />
         <AnalyticsProvider />
         {process.env.NODE_ENV === 'production' && process.env.VERCEL && (
-          <>
-            <SpeedInsights />
-            <Analytics />
-          </>
+          <VercelAnalytics />
         )}
         <AppThemeProvider initialTheme={theme}>
           <BrowserRegistry>

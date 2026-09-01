@@ -6,13 +6,13 @@ const APP = appConfig.appName;
 
 export const fr: DeepPartial<SeoMessages> = {
   home: {
-    title: `${APP} — Jouez gratuitement à des jeux de société en ligne entre amis`,
-    description: `Jouez gratuitement à des jeux de société en ligne entre amis sur ${APP}. Bataille navale, stratégie, cartes — créez un salon, partagez le lien et jouez dans votre navigateur. Sans téléchargement, sans inscription.`,
+    title: `${APP} — Jeux de société, cartes et mini-jeux gratuits en ligne`,
+    description: `Jouez gratuitement à des jeux de société, jeux de cartes et mini-jeux en ligne entre amis sur ${APP}. Échecs, Bataille navale, Dames, Cascade, 2048 et plus — créez un salon et jouez directement dans votre navigateur. Sans téléchargement.`,
     badge: "Jouez avec des amis ou contre l'IA",
   },
   games: {
-    title: `Catalogue de Jeux de Société et Cartes Gratuits · ${APP}`,
-    description: `Découvrez tous les jeux en ligne multijoueurs gratuits sur ${APP}. Jouez aux échecs, bataille navale, dames, cascade et plus encore sans téléchargement.`,
+    title: `Jeux de Société, Cartes et Mini-Jeux Gratuits · ${APP}`,
+    description: `Découvrez notre sélection de jeux de société, jeux de cartes, puzzles et mini-jeux multijoueurs gratuits sur ${APP}. Jouez aux échecs, bataille navale, dames, cascade, 2048 et plus encore sans téléchargement.`,
   },
   rooms: {
     title: `Salons de Jeu en Direct · ${APP}`,
@@ -71,8 +71,8 @@ export const fr: DeepPartial<SeoMessages> = {
     description: `Jouez au Pique en ligne sur ${APP} — classique jeu de cartes en partenariat à 4 joueurs avec annonces, Nil, sacs et adversaires IA. Gratuit.`,
   },
   seaBattleLanding: {
-    title: `Bataille navale en ligne · Jouez gratuitement · ${APP}`,
-    description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre un bot, recherche d'adversaire humain ou partie privée entre amis.`,
+    title: `Bataille Navale en Ligne Gratuite (Touché-Coulé) · ${APP}`,
+    description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre l'IA, adversaire en ligne ou salon privé entre amis sans inscription.`,
   },
   goLanding: {
     title: `Go · Jeu de Plateau Multijoueur en Ligne Gratuit · ${APP}`,

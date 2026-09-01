@@ -1,5 +1,3 @@
-'use client';
-
 interface ScoreEntry {
   id: string;
   name: string;

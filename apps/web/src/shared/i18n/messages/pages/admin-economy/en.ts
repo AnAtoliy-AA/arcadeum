@@ -108,6 +108,11 @@ export const adminEconomyEn = {
       name: 'Signup reward — gems',
       description: 'Gems credited to new users upon registration.',
     },
+    social_reward_gems: {
+      name: 'Social subscription reward — gems',
+      description:
+        'Gems credited to users per social network subscription/follow.',
+    },
   },
   table: {
     key: 'Setting',

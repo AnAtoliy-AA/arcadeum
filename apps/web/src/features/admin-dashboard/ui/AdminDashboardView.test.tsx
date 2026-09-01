@@ -7,6 +7,7 @@ describe('AdminDashboardView', () => {
   const mockData: AdminDashboardData = {
     healthy: true,
     pingOk: true,
+    serverMetrics: null,
     dbHealth: {
       database: 'arcadeum_production',
       totalDocs: 15420,
@@ -104,6 +105,7 @@ describe('AdminDashboardView', () => {
       healthy: false,
       pingOk: false,
       dbHealth: null,
+      serverMetrics: null,
     };
 
     render(<AdminDashboardView data={degradedData} />);

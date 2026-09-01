@@ -12,7 +12,7 @@ import { GlimwormControlsHint } from './ui/GlimwormControlsHint';
 import { GlimwormResultOverlay } from './ui/GlimwormResultOverlay';
 import { useGlimwormStore } from './store/glimwormStore';
 import { gameSocket } from '@/shared/lib/socket';
-import { GameWidgetContainer } from '@/features/games/ui';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
 import { GlimwormThemeProvider } from './lib/GlimwormThemeContext';

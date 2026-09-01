@@ -1,3 +1,5 @@
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
 declare global {
@@ -32,6 +34,22 @@ function registerCleanupSignals(): void {
 }
 
 export default async function globalSetup(): Promise<void> {
+  // Generate placeholder offline-download manifests so the dev server
+  // doesn't log 404 noise for /game-sizes.json and /build-id.json on
+  // every page load.  The real files are produced by `postbuild` and
+  // gitignored; during e2e the dev server never runs `next build`.
+  const webRoot = process.cwd();
+  await Promise.all([
+    writeFile(
+      join(webRoot, 'public', 'build-id.json'),
+      JSON.stringify({ buildId: 'e2e-placeholder' }) + '\n',
+    ),
+    writeFile(
+      join(webRoot, 'public', 'game-sizes.json'),
+      JSON.stringify({ games: {}, totalBytes: 0 }) + '\n',
+    ),
+  ]);
+
   // Honor an external MONGODB_OCI_URI so a developer pointing at a local mongod —
   // or a CI service container — wins over the throwaway replset.
   if (process.env.MONGODB_OCI_URI) {

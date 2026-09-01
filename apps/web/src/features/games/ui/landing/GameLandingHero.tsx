@@ -7,6 +7,7 @@ import type { GameLandingHeroProps } from './types';
 import { useGameLandingTheme } from './GameLandingThemeContext';
 import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
 import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
+import { GameLandingLiveStats } from './GameLandingLiveStats';
 
 export function GameLandingHero({
   gameId,
@@ -85,6 +86,8 @@ export function GameLandingHero({
               </p>
             ) : null}
           </div>
+
+          <GameLandingLiveStats gameId={gameId} />
 
           <div className="box-border flex flex-wrap items-center gap-3 pt-2">
             <QuickplayCta

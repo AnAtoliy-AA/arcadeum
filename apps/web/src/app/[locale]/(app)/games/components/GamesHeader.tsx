@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { Header, HeaderControls, Title, ViewToggle } from '../styles';
 import { Button, CreateRoomLinkButton } from '@arcadeum/ui';
 import { InviteCodeModal } from './InviteCodeModal';
@@ -8,10 +9,7 @@ import type { GamesViewMode } from '../types';
 interface GamesHeaderProps {
   viewMode: GamesViewMode;
   onViewModeChange: (mode: GamesViewMode) => void;
-  // Override for the lounge title — used when the page is scoped to one
-  // game (e.g. "Sea Battle rooms" on /games/sea_battle_v1).
   title?: string;
-  // When set, the Create Room button pre-selects this game id.
   createRoomGameId?: string;
 }
 
@@ -22,11 +20,12 @@ export function GamesHeader({
   createRoomGameId,
 }: GamesHeaderProps) {
   const { t } = useTranslation();
+  const routes = useRoutes();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const createRoomHref = createRoomGameId
-    ? `/games/create?gameId=${encodeURIComponent(createRoomGameId)}`
-    : '/games/create';
+    ? `${routes.gameCreate}?gameId=${encodeURIComponent(createRoomGameId)}`
+    : routes.games;
 
   return (
     <Header>
@@ -41,7 +40,7 @@ export function GamesHeader({
             active={viewMode === 'grid'}
             onClick={() => onViewModeChange('grid')}
             title="Grid view"
-            style={{ borderRadius: 0 }}
+            className="rounded-none"
           >
             ▦
           </Button>
@@ -51,7 +50,7 @@ export function GamesHeader({
             active={viewMode === 'list'}
             onClick={() => onViewModeChange('list')}
             title="List view"
-            style={{ borderRadius: 0 }}
+            className="rounded-none"
           >
             ☰
           </Button>

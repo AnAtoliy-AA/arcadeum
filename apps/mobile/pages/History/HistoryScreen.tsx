@@ -343,6 +343,10 @@ export default function HistoryScreen() {
           contentContainerStyle={styles.listContent}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
+          removeClippedSubviews={true}
+          windowSize={5}
+          maxToRenderPerBatch={10}
+          updateCellsBatchingPeriod={50}
           ListHeaderComponent={
             <HistoryFilterSection
               searchQuery={searchQuery}

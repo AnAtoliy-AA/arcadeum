@@ -2,7 +2,8 @@
 
 import { memo, useCallback, useMemo } from 'react';
 import { Button } from '@arcadeum/ui';
-import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
   useGameChatSend,

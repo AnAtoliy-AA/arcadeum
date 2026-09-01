@@ -130,7 +130,7 @@ export class GameSessionsService {
     const sessions = await this.ociSessionModel
       .find({
         gameId,
-        status: 'active',
+        status: { $in: ['active', 'inactive'] },
         updatedAt: { $lt: new Date(Date.now() - staleThresholdMs) },
       })
       .limit(limit)

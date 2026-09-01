@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { PageLayout } from '@arcadeum/ui';
-import SudokuGame from '@/widgets/PuzzleGames/SudokuGame';
+import { SudokuGameClient } from './SudokuGameClient';
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -29,7 +29,7 @@ export default async function SudokuPlayRoute({ params }: PageProps) {
   return (
     <PageLayout>
       <div className="box-border min-h-screen py-6">
-        <SudokuGame />
+        <SudokuGameClient />
       </div>
     </PageLayout>
   );

@@ -4,7 +4,7 @@ import type { CriticalPlayerTableState, CriticalLogEntry } from '../../types';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { ChatBubble } from '../ChatBubble';
 import { SeaBattlePopup } from '@/widgets/StrategyGames/SeaBattleGame/ui/SeaBattlePopup';
-import { InGameAvatar } from '@/features/games/ui';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 
 interface OpponentTileProps {
   player: CriticalPlayerTableState;

@@ -1,391 +1,547 @@
 import { memo } from 'react';
+import type { ReactElement } from 'react';
+import { cx } from '../../utils/cx';
 
-/**
- * Localized version of PageLoading to resolve Turbopack module factory errors.
- * This component is used in dynamic loading states to ensure stable instantiation.
- */
+export type PageLoadingLayout =
+  | 'standard'
+  | 'stats'
+  | 'grid'
+  | 'room'
+  | 'auth'
+  | 'home'
+  | 'cards'
+  | 'table'
+  | 'chat'
+  | 'profile';
 
 export interface PageLoadingProps {
-  layout?: 'standard' | 'stats' | 'grid' | 'room' | 'auth' | 'home';
+  layout?: PageLoadingLayout;
+  className?: string;
+  'data-testid'?: string;
 }
 
-const s = {
-  page: {
-    minHeight: '100vh',
-    padding: '20px',
-    paddingTop: '32px',
-    backgroundColor: '#151718',
-    width: '100%',
-    fontFamily: 'inherit',
-  },
-  container: {
-    maxWidth: 1400,
-    width: '100%',
-    margin: '0 auto',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: 32,
-    paddingTop: 32,
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: 16,
-    width: '100%',
-  },
-  row: {
-    display: 'flex',
-    flexWrap: 'wrap' as const,
-    gap: 16,
-    width: '100%',
-  },
-  col: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: 16,
-    width: '100%',
-  },
-  glass: {
-    backgroundColor: 'rgba(15, 17, 18, 0.8)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    borderRadius: 24,
-    padding: 28,
-    position: 'relative' as const,
-    overflow: 'hidden' as const,
-  },
-  glassLine: {
-    position: 'absolute' as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 1,
-    pointerEvents: 'none' as const,
-    background:
-      'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%)',
-  },
-} as const;
-
-function Skel({
-  w = '100%',
-  h = 20,
-  round,
-  delay = 0,
-  style,
+function ShimmerBox({
+  className,
 }: {
-  w?: string | number;
-  h?: string | number;
-  round?: boolean;
-  delay?: number;
-  style?: React.CSSProperties;
+  className?: string;
 }) {
   return (
     <div
-      className="shimmer-surface"
-      style={{
-        width: w,
-        height: h,
-        borderRadius: round ? '50%' : 8,
-        backgroundColor: '#32353d',
-        opacity: 0.5,
-        animation: 'pl-pulse 1.8s ease-in-out infinite',
-        animationDelay: `${delay}s`,
-        flexShrink: 0,
-        ...style,
-      }}
+      className={cx(
+        'animate-shimmer rounded-lg bg-gradient-to-r from-[var(--borderColor)]/30 via-white/10 to-[var(--borderColor)]/30 bg-[length:200%_100%]',
+        className,
+      )}
     />
   );
 }
 
-function Glass({
+function GlassPanel({
   children,
-  style,
+  className,
 }: {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
+  children?: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div style={{ ...s.glass, ...style }}>
-      <div style={s.glassLine} />
+    <div
+      className={cx(
+        'relative flex flex-col overflow-hidden rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-6 backdrop-blur-md',
+        className,
+      )}
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--glassBorderHover)] to-transparent" />
       {children}
     </div>
   );
 }
 
-function GridLayout() {
+function HomeLayout(): ReactElement {
+  const cardIndices = [0, 1, 2, 3];
   return (
-    <div style={s.row}>
-      {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Glass
-          key={i}
-          style={{ width: 300, flexGrow: 1, height: 200, padding: 0 }}
-        >
-          <Skel
-            w="100%"
-            h="100%"
-            delay={0.2 + i * 0.05}
-            style={{ borderRadius: 0 }}
-          />
-        </Glass>
-      ))}
-    </div>
-  );
-}
-
-function StandardLayout() {
-  return (
-    <div style={{ ...s.col, maxWidth: 900 }}>
-      <Glass style={{ minHeight: 400 }}>
-        <div style={{ ...s.col, gap: 20 }}>
-          <Skel w="30%" h={24} delay={0.3} />
-          <div style={{ ...s.col, gap: 12 }}>
-            <Skel w="100%" h={16} delay={0.35} />
-            <Skel w="100%" h={16} delay={0.4} />
-            <Skel w="80%" h={16} delay={0.45} />
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-col items-center justify-between gap-12 py-10 lg:flex-row">
+        <div className="flex flex-1 flex-col gap-5">
+          <ShimmerBox className="h-7 w-44 rounded-full" />
+          <ShimmerBox className="h-14 w-4/5 rounded-2xl" />
+          <ShimmerBox className="h-6 w-full max-w-xl rounded-xl" />
+          <div className="flex flex-col gap-2">
+            <ShimmerBox className="h-4 w-5/6" />
+            <ShimmerBox className="h-4 w-3/4" />
           </div>
-          <Skel w="100%" h={200} delay={0.5} />
+          <div className="mt-4 flex flex-wrap gap-4">
+            <ShimmerBox className="h-12 w-36 rounded-xl" />
+            <ShimmerBox className="h-12 w-44 rounded-xl" />
+          </div>
         </div>
-      </Glass>
+        <div className="flex h-72 w-full flex-1 items-center justify-center lg:max-w-md">
+          <div className="relative flex h-64 w-60 items-center justify-center">
+            <ShimmerBox className="absolute h-56 w-44 -rotate-12 -translate-x-8 rounded-2xl opacity-40" />
+            <ShimmerBox className="absolute h-60 w-48 rotate-12 translate-x-8 rounded-2xl opacity-60" />
+            <ShimmerBox className="relative z-10 h-64 w-52 rounded-2xl shadow-2xl" />
+          </div>
+        </div>
+      </div>
+
+      <GlassPanel className="p-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <ShimmerBox className="h-3 w-3 rounded-full" />
+            <ShimmerBox className="h-5 w-32" />
+          </div>
+          <div className="flex items-center gap-6">
+            <ShimmerBox className="h-5 w-24" />
+            <ShimmerBox className="h-5 w-24" />
+            <ShimmerBox className="h-5 w-24" />
+          </div>
+        </div>
+      </GlassPanel>
+
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <ShimmerBox className="h-8 w-56 rounded-xl" />
+          <ShimmerBox className="h-5 w-24" />
+        </div>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {cardIndices.map((i) => (
+            <GlassPanel key={i} className="gap-4">
+              <ShimmerBox className="h-40 w-full rounded-2xl" />
+              <div className="flex items-center gap-3">
+                <ShimmerBox className="h-10 w-10 rounded-full" />
+                <div className="flex flex-1 flex-col gap-2">
+                  <ShimmerBox className="h-5 w-3/4" />
+                  <ShimmerBox className="h-3 w-1/2" />
+                </div>
+              </div>
+              <ShimmerBox className="mt-2 h-10 w-full rounded-xl" />
+            </GlassPanel>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
-function StatsLayout() {
+function GridLayout(): ReactElement {
+  const cardIndices = [0, 1, 2, 3, 4, 5];
+  const chipIndices = [0, 1, 2, 3, 4];
   return (
-    <div style={{ ...s.col, gap: 24 }}>
-      <div style={s.row}>
-        {[1, 2, 3].map((i) => (
-          <Glass key={i} style={{ flex: 1, minWidth: 200, height: 120 }}>
-            <div style={{ ...s.col, gap: 8 }}>
-              <Skel w="40%" h={12} delay={0.2 + i * 0.1} />
-              <Skel w="80%" h={32} delay={0.3 + i * 0.1} />
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <ShimmerBox className="h-11 w-full max-w-md rounded-2xl" />
+        <div className="flex flex-wrap gap-2">
+          {chipIndices.map((i) => (
+            <ShimmerBox key={i} className="h-9 w-20 rounded-full" />
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {cardIndices.map((i) => (
+          <GlassPanel key={i} className="gap-4">
+            <ShimmerBox className="h-44 w-full rounded-2xl" />
+            <div className="flex items-center justify-between">
+              <ShimmerBox className="h-6 w-36" />
+              <ShimmerBox className="h-6 w-16 rounded-full" />
             </div>
-          </Glass>
+            <div className="flex flex-col gap-2">
+              <ShimmerBox className="h-4 w-full" />
+              <ShimmerBox className="h-4 w-4/5" />
+            </div>
+            <div className="mt-2 flex items-center justify-between pt-2">
+              <div className="flex gap-2">
+                <ShimmerBox className="h-6 w-14 rounded-md" />
+                <ShimmerBox className="h-6 w-14 rounded-md" />
+              </div>
+              <ShimmerBox className="h-9 w-24 rounded-xl" />
+            </div>
+          </GlassPanel>
         ))}
       </div>
-      <Glass style={{ height: 400 }}>
-        <Skel w="100%" h="100%" delay={0.6} />
-      </Glass>
     </div>
   );
 }
 
-function RoomLayout() {
+function StandardLayout(): ReactElement {
   return (
-    <div style={{ ...s.row, height: 600, flexWrap: 'nowrap' }}>
-      <div style={{ flex: 2, height: '100%' }}>
-        <Glass
-          style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Skel w={120} h={120} round delay={0.3} />
-          <Skel w="40%" h={24} delay={0.4} style={{ marginTop: 16 }} />
-        </Glass>
-      </div>
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-          height: '100%',
-        }}
-      >
-        <Glass style={{ flex: 1 }}>
-          <Skel w="100%" h="100%" delay={0.5} />
-        </Glass>
-        <Glass style={{ flex: 1 }}>
-          <Skel w="100%" h="100%" delay={0.6} />
-        </Glass>
-      </div>
-    </div>
-  );
-}
-
-function AuthLayout() {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        width: '100%',
-        paddingTop: 40,
-      }}
-    >
-      <Glass
-        style={{
-          width: 450,
-          maxWidth: '100%',
-          padding: 32,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Skel w={80} h={80} round delay={0.2} style={{ marginBottom: 24 }} />
-        <Skel w="70%" h={40} delay={0.3} style={{ marginBottom: 16 }} />
-        <Skel w="50%" h={16} delay={0.4} style={{ marginBottom: 32 }} />
-        <div style={{ ...s.col, gap: 16, width: '100%' }}>
-          <Skel w="100%" h={48} delay={0.5} />
-          <Skel w="100%" h={48} delay={0.6} />
-          <Skel w="40%" h={16} delay={0.7} style={{ alignSelf: 'center' }} />
-        </div>
-      </Glass>
-    </div>
-  );
-}
-
-function HomeLayout() {
-  return (
-    <div style={{ ...s.col, gap: 0 }}>
-      {/* Hero section */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 48,
-          padding: '60px 0 80px',
-          flexWrap: 'wrap',
-        }}
-      >
-        {/* Hero text side */}
-        <div style={{ ...s.col, flex: 1, minWidth: 280, gap: 20 }}>
-          <Skel w={180} h={28} delay={0.1} style={{ borderRadius: 14 }} />
-          <Skel w="80%" h={64} delay={0.15} />
-          <Skel w="90%" h={20} delay={0.2} />
-          <div style={{ ...s.col, gap: 8 }}>
-            <Skel w="100%" h={16} delay={0.25} />
-            <Skel w="70%" h={16} delay={0.3} />
-          </div>
-          <div style={{ ...s.row, gap: 12, marginTop: 8 }}>
-            <Skel w={140} h={48} delay={0.35} style={{ borderRadius: 12 }} />
-            <Skel w={160} h={48} delay={0.4} style={{ borderRadius: 12 }} />
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+      <GlassPanel className="gap-6 p-8">
+        <div className="flex items-center gap-4">
+          <ShimmerBox className="h-12 w-12 rounded-2xl" />
+          <div className="flex flex-1 flex-col gap-2">
+            <ShimmerBox className="h-7 w-2/5" />
+            <ShimmerBox className="h-4 w-1/4" />
           </div>
         </div>
-        {/* Hero card stack side */}
-        <div
-          style={{
-            flex: 1,
-            minWidth: 250,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 320,
-          }}
-        >
-          {[0, 1, 2].map((i) => (
+        <div className="flex flex-col gap-3">
+          <ShimmerBox className="h-4 w-full" />
+          <ShimmerBox className="h-4 w-full" />
+          <ShimmerBox className="h-4 w-11/12" />
+          <ShimmerBox className="h-4 w-3/4" />
+        </div>
+        <ShimmerBox className="h-52 w-full rounded-2xl" />
+        <div className="flex flex-col gap-3">
+          <ShimmerBox className="h-4 w-full" />
+          <ShimmerBox className="h-4 w-4/5" />
+        </div>
+        <div className="flex justify-end gap-3 pt-4">
+          <ShimmerBox className="h-10 w-28 rounded-xl" />
+          <ShimmerBox className="h-10 w-36 rounded-xl" />
+        </div>
+      </GlassPanel>
+    </div>
+  );
+}
+
+function StatsLayout(): ReactElement {
+  const metricIndices = [0, 1, 2, 3];
+  const rowIndices = [0, 1, 2, 3, 4, 5];
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {metricIndices.map((i) => (
+          <GlassPanel key={i} className="gap-3">
+            <ShimmerBox className="h-4 w-24" />
+            <ShimmerBox className="h-9 w-32 rounded-lg" />
+            <ShimmerBox className="h-3 w-16" />
+          </GlassPanel>
+        ))}
+      </div>
+      <GlassPanel className="gap-6">
+        <div className="flex items-center justify-between border-b border-[var(--glassBorder)] pb-4">
+          <ShimmerBox className="h-6 w-40" />
+          <div className="flex gap-2">
+            <ShimmerBox className="h-8 w-20 rounded-lg" />
+            <ShimmerBox className="h-8 w-20 rounded-lg" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          {rowIndices.map((i) => (
             <div
               key={i}
-              style={{
-                position: i === 0 ? 'relative' : 'absolute',
-                width: 180,
-                height: 260,
-                borderRadius: 16,
-                backgroundColor: '#32353d',
-                opacity: 0.3 + i * 0.15,
-                transform: `rotate(${(i - 1) * 12}deg) translateX(${
-                  (i - 1) * 65
-                }px)`,
-                animation: 'pl-pulse 1.8s ease-in-out infinite',
-                animationDelay: `${0.3 + i * 0.1}s`,
-              }}
-            />
-          ))}
-        </div>
-      </div>
-      {/* Games slider section */}
-      <div style={{ ...s.col, gap: 24 }}>
-        <div style={{ ...s.col, gap: 8, alignItems: 'center' }}>
-          <Skel w={220} h={32} delay={0.5} />
-          <Skel w={340} h={18} delay={0.55} />
-        </div>
-        <div
-          style={{ ...s.row, gap: 24, flexWrap: 'nowrap', overflow: 'hidden' }}
-        >
-          {[1, 2, 3, 4].map((i) => (
-            <Glass
-              key={i}
-              style={{
-                minWidth: 340,
-                width: 340,
-                height: 320,
-                flexShrink: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 16,
-              }}
+              className="flex items-center justify-between rounded-xl bg-[var(--borderColor)]/10 p-3"
             >
-              <div
-                style={{
-                  ...s.row,
-                  gap: 12,
-                  alignItems: 'center',
-                  flexWrap: 'nowrap',
-                }}
-              >
-                <Skel w={48} h={48} round delay={0.6 + i * 0.05} />
-                <Skel w="60%" h={24} delay={0.65 + i * 0.05} />
+              <div className="flex items-center gap-3">
+                <ShimmerBox className="h-8 w-8 rounded-full" />
+                <ShimmerBox className="h-9 w-9 rounded-full" />
+                <ShimmerBox className="h-5 w-32" />
               </div>
-              <Skel w="100%" h={16} delay={0.7 + i * 0.05} />
-              <Skel w="80%" h={16} delay={0.75 + i * 0.05} />
-              <div style={{ ...s.row, gap: 8 }}>
-                <Skel
-                  w={60}
-                  h={24}
-                  delay={0.8 + i * 0.05}
-                  style={{ borderRadius: 12 }}
-                />
-                <Skel
-                  w={80}
-                  h={24}
-                  delay={0.85 + i * 0.05}
-                  style={{ borderRadius: 12 }}
-                />
+              <div className="flex items-center gap-6">
+                <ShimmerBox className="h-5 w-16" />
+                <ShimmerBox className="h-5 w-20" />
               </div>
-              <div style={{ marginTop: 'auto' }}>
-                <Skel
-                  w="100%"
-                  h={44}
-                  delay={0.9 + i * 0.05}
-                  style={{ borderRadius: 12 }}
-                />
-              </div>
-            </Glass>
+            </div>
           ))}
         </div>
+      </GlassPanel>
+    </div>
+  );
+}
+
+function RoomLayout(): ReactElement {
+  const playerIndices = [0, 1];
+  const messageIndices = [0, 1, 2, 3];
+  return (
+    <div className="flex flex-col gap-6 lg:h-[700px] lg:flex-row">
+      <div className="flex flex-1 flex-col gap-6">
+        <GlassPanel className="flex-row items-center justify-between p-4">
+          <div className="flex items-center gap-3">
+            <ShimmerBox className="h-9 w-9 rounded-xl" />
+            <ShimmerBox className="h-6 w-36" />
+            <ShimmerBox className="h-6 w-20 rounded-full" />
+          </div>
+          <ShimmerBox className="h-9 w-28 rounded-xl" />
+        </GlassPanel>
+
+        <GlassPanel className="flex flex-1 items-center justify-center">
+          <div className="flex flex-col items-center gap-6">
+            <div className="flex items-center gap-8">
+              {playerIndices.map((i) => (
+                <div key={i} className="flex flex-col items-center gap-2">
+                  <ShimmerBox className="h-16 w-16 rounded-full" />
+                  <ShimmerBox className="h-4 w-20" />
+                  <ShimmerBox className="h-3 w-12" />
+                </div>
+              ))}
+            </div>
+            <ShimmerBox className="h-64 w-64 rounded-2xl sm:h-80 sm:w-80" />
+          </div>
+        </GlassPanel>
+      </div>
+
+      <GlassPanel className="w-full gap-4 lg:w-80">
+        <div className="flex items-center justify-between border-b border-[var(--glassBorder)] pb-3">
+          <ShimmerBox className="h-5 w-24" />
+          <ShimmerBox className="h-5 w-12 rounded-full" />
+        </div>
+        <div className="flex flex-1 flex-col gap-3">
+          {messageIndices.map((i) => (
+            <div key={i} className="flex items-start gap-2">
+              <ShimmerBox className="h-7 w-7 rounded-full" />
+              <div className="flex flex-1 flex-col gap-1">
+                <ShimmerBox className="h-3 w-16" />
+                <ShimmerBox className="h-8 w-full rounded-xl" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <ShimmerBox className="h-10 w-full rounded-xl" />
+      </GlassPanel>
+    </div>
+  );
+}
+
+function AuthLayout(): ReactElement {
+  return (
+    <div className="mx-auto flex w-full max-w-md flex-col items-center pt-8">
+      <GlassPanel className="w-full items-center gap-6 p-8">
+        <ShimmerBox className="h-16 w-16 rounded-2xl" />
+        <div className="flex flex-col items-center gap-2">
+          <ShimmerBox className="h-8 w-44 rounded-xl" />
+          <ShimmerBox className="h-4 w-56" />
+        </div>
+        <div className="flex w-full flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <ShimmerBox className="h-3 w-16" />
+            <ShimmerBox className="h-11 w-full rounded-xl" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <ShimmerBox className="h-3 w-20" />
+            <ShimmerBox className="h-11 w-full rounded-xl" />
+          </div>
+          <ShimmerBox className="mt-2 h-12 w-full rounded-xl" />
+        </div>
+        <div className="flex w-full items-center gap-3">
+          <div className="h-px flex-1 bg-[var(--glassBorder)]" />
+          <ShimmerBox className="h-3 w-8" />
+          <div className="h-px flex-1 bg-[var(--glassBorder)]" />
+        </div>
+        <div className="grid w-full grid-cols-2 gap-3">
+          <ShimmerBox className="h-11 w-full rounded-xl" />
+          <ShimmerBox className="h-11 w-full rounded-xl" />
+        </div>
+      </GlassPanel>
+    </div>
+  );
+}
+
+function CardsLayout(): ReactElement {
+  const cardIndices = [0, 1, 2, 3, 4, 5, 6, 7];
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2">
+          <ShimmerBox className="h-9 w-24 rounded-xl" />
+          <ShimmerBox className="h-9 w-24 rounded-xl" />
+        </div>
+        <ShimmerBox className="h-9 w-36 rounded-xl" />
+      </div>
+      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+        {cardIndices.map((i) => (
+          <GlassPanel key={i} className="gap-3 p-4">
+            <ShimmerBox className="aspect-square w-full rounded-2xl" />
+            <ShimmerBox className="h-5 w-3/4" />
+            <div className="flex items-center justify-between">
+              <ShimmerBox className="h-5 w-16 rounded-full" />
+              <ShimmerBox className="h-5 w-12" />
+            </div>
+            <ShimmerBox className="mt-2 h-9 w-full rounded-xl" />
+          </GlassPanel>
+        ))}
       </div>
     </div>
   );
 }
 
-const layouts: Record<
-  NonNullable<PageLoadingProps['layout']>,
-  () => React.JSX.Element
-> = {
+function TableLayout(): ReactElement {
+  const rowIndices = [0, 1, 2, 3, 4, 5, 6, 7];
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <ShimmerBox className="h-10 w-full max-w-sm rounded-xl" />
+        <div className="flex gap-2">
+          <ShimmerBox className="h-10 w-28 rounded-xl" />
+          <ShimmerBox className="h-10 w-28 rounded-xl" />
+        </div>
+      </div>
+      <GlassPanel className="p-0">
+        <div className="flex items-center justify-between border-b border-[var(--glassBorder)] bg-[var(--borderColor)]/10 px-6 py-4">
+          <ShimmerBox className="h-4 w-28" />
+          <ShimmerBox className="h-4 w-24" />
+          <ShimmerBox className="h-4 w-20" />
+          <ShimmerBox className="h-4 w-16" />
+        </div>
+        <div className="flex flex-col divide-y divide-[var(--glassBorder)]">
+          {rowIndices.map((i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between px-6 py-4"
+            >
+              <div className="flex items-center gap-3">
+                <ShimmerBox className="h-9 w-9 rounded-full" />
+                <div className="flex flex-col gap-1">
+                  <ShimmerBox className="h-4 w-32" />
+                  <ShimmerBox className="h-3 w-20" />
+                </div>
+              </div>
+              <ShimmerBox className="h-4 w-24" />
+              <ShimmerBox className="h-6 w-20 rounded-full" />
+              <ShimmerBox className="h-8 w-20 rounded-lg" />
+            </div>
+          ))}
+        </div>
+      </GlassPanel>
+    </div>
+  );
+}
+
+function ChatLayout(): ReactElement {
+  const contactIndices = [0, 1, 2, 3, 4];
+  const messageIndices = [0, 1, 2, 3, 4];
+  return (
+    <div className="flex h-[640px] gap-6">
+      <GlassPanel className="hidden w-80 gap-4 p-4 md:flex">
+        <ShimmerBox className="h-10 w-full rounded-xl" />
+        <div className="flex flex-1 flex-col gap-2 overflow-hidden">
+          {contactIndices.map((i) => (
+            <div key={i} className="flex items-center gap-3 rounded-xl p-2">
+              <ShimmerBox className="h-11 w-11 rounded-full" />
+              <div className="flex flex-1 flex-col gap-2">
+                <ShimmerBox className="h-4 w-28" />
+                <ShimmerBox className="h-3 w-36" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </GlassPanel>
+      <GlassPanel className="flex-1 gap-4 p-4">
+        <div className="flex items-center justify-between border-b border-[var(--glassBorder)] pb-3">
+          <div className="flex items-center gap-3">
+            <ShimmerBox className="h-10 w-10 rounded-full" />
+            <div className="flex flex-col gap-1">
+              <ShimmerBox className="h-4 w-32" />
+              <ShimmerBox className="h-3 w-16" />
+            </div>
+          </div>
+          <ShimmerBox className="h-8 w-20 rounded-lg" />
+        </div>
+        <div className="flex flex-1 flex-col gap-4 overflow-hidden py-2">
+          {messageIndices.map((i) => (
+            <div
+              key={i}
+              className={cx(
+                'flex max-w-sm flex-col gap-1',
+                i % 2 === 0 ? 'self-start' : 'self-end',
+              )}
+            >
+              <ShimmerBox
+                className={cx(
+                  'h-12 w-64 rounded-2xl',
+                  i % 2 === 0 ? 'rounded-tl-sm' : 'rounded-tr-sm',
+                )}
+              />
+              <ShimmerBox className="h-2 w-12 self-end" />
+            </div>
+          ))}
+        </div>
+        <ShimmerBox className="h-12 w-full rounded-xl" />
+      </GlassPanel>
+    </div>
+  );
+}
+
+function ProfileLayout(): ReactElement {
+  const statIndices = [0, 1, 2];
+  const historyIndices = [0, 1, 2, 3];
+  return (
+    <div className="flex flex-col gap-8">
+      <GlassPanel className="gap-6 p-8">
+        <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
+          <ShimmerBox className="h-24 w-24 rounded-full" />
+          <div className="flex flex-1 flex-col items-center gap-3 sm:items-start">
+            <div className="flex items-center gap-3">
+              <ShimmerBox className="h-8 w-44" />
+              <ShimmerBox className="h-6 w-16 rounded-full" />
+            </div>
+            <ShimmerBox className="h-4 w-64" />
+            <ShimmerBox className="h-3 w-full max-w-md rounded-full" />
+          </div>
+          <ShimmerBox className="h-10 w-32 rounded-xl" />
+        </div>
+      </GlassPanel>
+
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+        {statIndices.map((i) => (
+          <GlassPanel key={i} className="gap-2">
+            <ShimmerBox className="h-4 w-24" />
+            <ShimmerBox className="h-8 w-20" />
+          </GlassPanel>
+        ))}
+      </div>
+
+      <GlassPanel className="gap-4">
+        <div className="flex items-center justify-between border-b border-[var(--glassBorder)] pb-3">
+          <ShimmerBox className="h-6 w-36" />
+          <ShimmerBox className="h-6 w-20 rounded-md" />
+        </div>
+        <div className="flex flex-col gap-3">
+          {historyIndices.map((i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between rounded-xl bg-[var(--borderColor)]/10 p-3"
+            >
+              <div className="flex items-center gap-3">
+                <ShimmerBox className="h-10 w-10 rounded-xl" />
+                <div className="flex flex-col gap-1">
+                  <ShimmerBox className="h-4 w-28" />
+                  <ShimmerBox className="h-3 w-16" />
+                </div>
+              </div>
+              <ShimmerBox className="h-6 w-16 rounded-full" />
+            </div>
+          ))}
+        </div>
+      </GlassPanel>
+    </div>
+  );
+}
+
+const layoutRenderers: Record<PageLoadingLayout, () => ReactElement> = {
+  home: HomeLayout,
   grid: GridLayout,
   standard: StandardLayout,
   stats: StatsLayout,
   room: RoomLayout,
   auth: AuthLayout,
-  home: HomeLayout,
+  cards: CardsLayout,
+  table: TableLayout,
+  chat: ChatLayout,
+  profile: ProfileLayout,
 };
 
 export const PageLoading = memo(function PageLoading({
   layout = 'standard',
+  className,
+  'data-testid': dataTestId = 'page-loading',
 }: PageLoadingProps) {
-  const Layout = layouts[layout];
+  const Renderer = layoutRenderers[layout] ?? layoutRenderers.standard;
   return (
-    <div style={s.page}>
-      <div style={s.container}>
-        <div style={s.header}>
-          <Skel w="60%" h={56} delay={0.1} />
-          <Skel w="40%" h={20} delay={0.2} />
-        </div>
-        <Layout />
+    <div
+      role="status"
+      aria-busy="true"
+      aria-label="Loading"
+      data-testid={dataTestId}
+      className={cx(
+        'min-h-screen w-full bg-[var(--background)] px-4 py-8 text-[var(--color)] sm:px-6 lg:px-8',
+        className,
+      )}
+    >
+      <div className="mx-auto flex max-w-7xl flex-col gap-8">
+        {layout !== 'home' && layout !== 'auth' && (
+          <div className="flex flex-col gap-3">
+            <ShimmerBox className="h-10 w-64 rounded-xl" />
+            <ShimmerBox className="h-4 w-96 max-w-full" />
+          </div>
+        )}
+        <Renderer />
       </div>
     </div>
   );

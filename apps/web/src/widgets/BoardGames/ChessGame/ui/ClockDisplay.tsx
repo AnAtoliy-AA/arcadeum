@@ -1,4 +1,3 @@
-'use client';
 import { ClockContainer, ClockFace, ClockTime, ClockLabel } from './styles';
 
 interface ClockDisplayProps {

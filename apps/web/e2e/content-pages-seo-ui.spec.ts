@@ -160,4 +160,26 @@ test.describe('Modernized Content Pages and Footer', () => {
     ).toBeVisible();
     await expect(page.getByText(/changes/i).first()).toBeVisible();
   });
+
+  test('sea battle strategic placement blog guide renders rich content, FAQ, and CTA', async ({
+    page,
+  }) => {
+    await page.goto('/en/blog/sea-battle-best-strategies-and-placements', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    await expect(page.locator('h1')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /The 10×10 Grid/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Winning Ship Placement Strategies/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Frequently Asked Questions/i }),
+    ).toBeVisible();
+
+    const jsonLd = page.locator('script[type="application/ld+json"]');
+    await expect(jsonLd.first()).toBeAttached();
+  });
 });

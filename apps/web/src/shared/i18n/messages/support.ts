@@ -3,11 +3,11 @@ import type { DeepPartial } from '../base-types';
 export const en = {
   title: 'Support the developers',
   tagline:
-    'Keep {{appName}} iterating quickly and accessible to the tabletop community.',
+    'Keep {{appName}} iterating quickly and accessible to the gaming community.',
   description:
     'Arcade labs, infrastructure, and community events are self-funded today. Your backing keeps the realtime servers online, unlocks more playtest nights, and helps us ship the next wave of prototypes.',
   thanks:
-    'Every contribution keeps {{appName}} evolving. Thank you for helping us build the future of remote tabletop play!',
+    'Every contribution keeps {{appName}} evolving. Thank you for helping us build the future of remote multiplayer play!',
   teamSectionTitle: 'Meet the core team',
   actionsSectionTitle: 'Ways to contribute',
   team: {
@@ -59,6 +59,12 @@ export const en = {
       title: 'Star on GitHub',
       description: 'Support the project by starring the repository on GitHub.',
       cta: 'View on GitHub',
+    },
+    socialRewards: {
+      title: 'Follow socials & get free rewards',
+      description:
+        'Subscribe to our official social networks (Discord, Telegram, X, GitHub) and earn free gems and rewards.',
+      cta: 'Claim rewards',
     },
   },
 };
@@ -124,6 +130,12 @@ export const es = {
       description: 'Apoya el proyecto dando una estrella en GitHub.',
       cta: 'Ver en GitHub',
     },
+    socialRewards: {
+      title: 'Síguenos y obtén recompensas gratis',
+      description:
+        'Suscríbete a nuestras redes sociales oficiales (Discord, Telegram, X, GitHub) y gana gemas gratis.',
+      cta: 'Reclamar recompensas',
+    },
   },
 };
 
@@ -187,6 +199,12 @@ export const fr = {
       title: 'Étoile sur GitHub',
       description: 'Soutenez le projet en mettant une étoile sur GitHub.',
       cta: 'Voir sur GitHub',
+    },
+    socialRewards: {
+      title: 'Suivez-nous et gagnez des récompenses gratuites',
+      description:
+        'Abonnez-vous à nos réseaux sociaux officiels (Discord, Telegram, X, GitHub) et gagnez des gemmes gratuites.',
+      cta: 'Réclamer les récompenses',
     },
   },
 };
@@ -252,6 +270,12 @@ export const ru = {
       description: 'Поддержите проект, поставив звезду на GitHub.',
       cta: 'Открыть на GitHub',
     },
+    socialRewards: {
+      title: 'Подпишитесь и получите награды',
+      description:
+        'Подпишитесь на наши официальные соцсети (Discord, Telegram, X, GitHub) и получите бесплатные гемы и награды.',
+      cta: 'Забрать награды',
+    },
   },
 };
 
@@ -315,6 +339,12 @@ export const by = {
       title: 'Зорка на GitHub',
       description: 'Падтрымайце праект, паставіўшы зорку на GitHub.',
       cta: 'Адкрыць на GitHub',
+    },
+    socialRewards: {
+      title: 'Падпішыцеся і атрымайце ўзнагароды',
+      description:
+        'Падпішыцеся на нашы афіцыйныя сацсеткі (Discord, Telegram, X, GitHub) і атрымайце бясплатныя гемы і ўзнагароды.',
+      cta: 'Забраць узнагароды',
     },
   },
 };

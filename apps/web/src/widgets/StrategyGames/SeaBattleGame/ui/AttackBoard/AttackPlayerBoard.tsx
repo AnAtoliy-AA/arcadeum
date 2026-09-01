@@ -23,7 +23,7 @@ import { AttackBoardCell } from './AttackBoardCell';
 import { BadgePill, TeamPill } from './Pills';
 import { FieldStatus } from './FieldStatus';
 import { getPlayerColor } from '@/shared/lib/playerColors';
-import { InGameAvatar } from '@/features/games/ui';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 
 interface AttackPlayerBoardProps {
   player: SeaBattlePlayerState;

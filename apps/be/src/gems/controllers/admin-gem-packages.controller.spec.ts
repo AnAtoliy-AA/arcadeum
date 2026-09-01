@@ -6,7 +6,6 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/mongoose';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 import { Types } from 'mongoose';
@@ -14,7 +13,6 @@ import { AdminGemPackagesController } from './admin-gem-packages.controller';
 import { GemPackagesService } from '../services/gem-packages.service';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
-import { User } from '../../auth/schemas/user.schema';
 import type { AuthenticatedUser } from '../../auth/jwt/jwt.strategy';
 import type { GemPackageAdmin } from '../interfaces/gem-package.interface';
 
@@ -41,7 +39,6 @@ const buildAdminPkg = (
 
 describe('AdminGemPackagesController', () => {
   let app: INestApplication<App>;
-  let userModel: { findById: jest.Mock };
   let service: {
     listAllForAdmin: jest.Mock;
     create: jest.Mock;
@@ -50,11 +47,6 @@ describe('AdminGemPackagesController', () => {
   };
 
   beforeAll(async () => {
-    userModel = {
-      findById: jest.fn().mockReturnValue({
-        select: () => ({ lean: () => Promise.resolve({ role: 'admin' }) }),
-      }),
-    };
     service = {
       listAllForAdmin: jest.fn(),
       create: jest.fn(),
@@ -64,11 +56,7 @@ describe('AdminGemPackagesController', () => {
 
     const moduleRef = await Test.createTestingModule({
       controllers: [AdminGemPackagesController],
-      providers: [
-        RolesGuard,
-        { provide: GemPackagesService, useValue: service },
-        { provide: getModelToken(User.name), useValue: userModel },
-      ],
+      providers: [{ provide: GemPackagesService, useValue: service }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({
@@ -82,6 +70,8 @@ describe('AdminGemPackagesController', () => {
           return true;
         },
       })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
       .compile();
 
     app = moduleRef.createNestApplication();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { gameFactory, type BaseGameWidgetProps } from '@/features/games';
-import { GameWidgetErrorBoundary } from '@/features/games/ui';
+import { GameWidgetErrorBoundary } from '@/features/games/ui/GameWidgetErrorBoundary';
 import { type GameType } from '@/features/games/hooks';
 import { ErrorContainer } from './styles';
 

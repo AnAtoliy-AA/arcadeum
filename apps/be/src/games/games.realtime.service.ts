@@ -18,6 +18,10 @@ export class GamesRealtimeService {
 
   private server: Server | null = null;
 
+  getSocketServer(): Server | null {
+    return this.server;
+  }
+
   private readonly userIdToSockets = new Map<string, Set<string>>();
 
   registerServer(server: Server): void {
@@ -42,6 +46,15 @@ export class GamesRealtimeService {
         this.userIdToSockets.delete(userId);
       }
     }
+  }
+
+  getConnectedUsersCount(): number {
+    return this.userIdToSockets.size;
+  }
+
+  getConnectedSocketsCount(): number {
+    if (!this.server) return 0;
+    return this.server.sockets?.sockets?.size ?? 0;
   }
 
   roomChannel(roomId: string): string {

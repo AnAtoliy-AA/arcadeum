@@ -11,8 +11,8 @@ export async function Header() {
   const token = await getServerAccessToken();
 
   return (
-    <HeaderLayout balanceChip={token ? <BalanceChip /> : null}>
-      <HeaderInteractive />
+    <HeaderLayout>
+      <HeaderInteractive balanceChip={token ? <BalanceChip /> : null} />
     </HeaderLayout>
   );
 }

@@ -253,5 +253,15 @@ test.describe('Light Themes Contrast and Usability', () => {
         await expect(board).toBeVisible();
       }
     });
+
+    test(`token page and stats are readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/token');
+      await setTheme(page, theme);
+
+      const heading = page.locator('h1');
+      await expect(heading).toBeVisible();
+    });
   }
 });

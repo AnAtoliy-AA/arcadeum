@@ -46,8 +46,10 @@ export default function HomeTokenInfo() {
       className="mx-auto max-w-[900px] px-4 py-16"
     >
       <div className="mb-10 flex w-full max-w-[1400px] flex-col items-center gap-3 px-4 text-center">
-        <h2 className="m-0 text-[32px] font-bold text-[#f4f4f5]">{title}</h2>
-        <p className="m-0 mt-2 max-w-[600px] text-[16px] text-[#a1a1aa]">
+        <h2 className="m-0 text-[32px] font-bold text-[var(--color)]">
+          {title}
+        </h2>
+        <p className="m-0 mt-2 max-w-[600px] text-[16px] text-[var(--textSecondary)]">
           {subtitle}
         </p>
       </div>
@@ -55,7 +57,7 @@ export default function HomeTokenInfo() {
       <div
         data-reveal
         data-reveal-delay="2"
-        className="flex flex-col items-center gap-5 rounded-2xl border border-[rgba(52,211,153,0.2)] bg-[rgba(52,211,153,0.05)] p-8 text-center"
+        className="flex flex-col items-center gap-5 rounded-2xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-8 text-center"
       >
         <div className="flex items-center gap-4">
           {metadata?.image ? (
@@ -73,16 +75,16 @@ export default function HomeTokenInfo() {
             </div>
           )}
           <div className="text-left">
-            <h3 className="m-0 text-[24px] font-bold text-[#f4f4f5]">
+            <h3 className="m-0 text-[24px] font-bold text-[var(--color)]">
               {displayName}
             </h3>
-            <span className="rounded-[4px] bg-[rgba(52,211,153,0.12)] px-2 py-0.5 text-[14px] font-semibold text-[#34d399]">
+            <span className="rounded-[4px] bg-[rgba(52,211,153,0.12)] px-2 py-0.5 text-[14px] font-semibold text-emerald-600 dark:text-[#34d399]">
               {displayTicker}
             </span>
           </div>
         </div>
 
-        <p className="m-0 max-w-[600px] text-[15px] leading-[1.7] text-[#a1a1aa]">
+        <p className="m-0 max-w-[600px] text-[15px] leading-[1.7] text-[var(--textSecondary)]">
           {displayDescription}
         </p>
 
@@ -95,7 +97,7 @@ export default function HomeTokenInfo() {
           </Link>
           <Link
             href="/token"
-            className="inline-flex items-center gap-[6px] rounded-lg border border-white/12 bg-white/[0.06] px-6 py-2.5 text-[14px] font-semibold text-[#e4e4e7] no-underline transition-[background] duration-150 hover:bg-white/10"
+            className="inline-flex items-center gap-[6px] rounded-lg border border-[var(--glassBorder)] bg-[var(--background)] px-6 py-2.5 text-[14px] font-semibold text-[var(--color)] no-underline transition-[background] duration-150 hover:bg-[var(--glassBgHover)]"
           >
             Learn More
           </Link>
@@ -104,7 +106,7 @@ export default function HomeTokenInfo() {
               href={metadata.pumpfunUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-[6px] rounded-lg border border-white/12 bg-white/[0.06] px-6 py-2.5 text-[14px] font-semibold text-[#e4e4e7] no-underline transition-[background] duration-150 hover:bg-white/10"
+              className="inline-flex items-center gap-[6px] rounded-lg border border-[var(--glassBorder)] bg-[var(--background)] px-6 py-2.5 text-[14px] font-semibold text-[var(--color)] no-underline transition-[background] duration-150 hover:bg-[var(--glassBgHover)]"
             >
               pump.fun ↗
             </a>

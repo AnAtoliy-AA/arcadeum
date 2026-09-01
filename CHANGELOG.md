@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.28] - 2026-09-01
+
+### Improved
+- resolve socket console errors and optimize hero lcp
+
+
 ## [1.27.27] - 2026-09-01
 
 ### Fixed

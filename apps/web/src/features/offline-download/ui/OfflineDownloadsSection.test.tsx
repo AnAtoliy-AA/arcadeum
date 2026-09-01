@@ -54,7 +54,12 @@ describe('OfflineDownloadsSection', () => {
       swReady: true,
       games: [
         {
-          game: { slug: 'chess', engine: 'chess', titleKey: 'games.chess.name' },
+          game: {
+            slug: 'chess',
+            route: 'games/chess/play',
+            kind: 'bot',
+            metadataKey: 'chess_v1',
+          },
           name: 'Chess',
           routeUrl: '/en/offline/chess',
           status: 'idle',

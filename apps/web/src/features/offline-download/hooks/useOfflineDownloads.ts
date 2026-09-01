@@ -13,7 +13,10 @@ import {
   deletableUrlsFor,
   useOfflineDownloadsStore,
 } from '../store/offline-download.store';
-import type { GameDownloadStatus } from '../store/offline-download.store';
+import type {
+  GameDownloadStatus,
+  DownloadedGameInfo,
+} from '../store/offline-download.store';
 import {
   DOWNLOADABLE_GAMES,
   downloadableGameName,
@@ -182,7 +185,7 @@ export function useOfflineDownloads() {
         name: downloadableGameName(game),
         routeUrl: offlineRouteUrl(game, locale),
         status: statusOf(game.slug, downloads, busySlugs, errorSlugs),
-        info: downloads[game.slug] ?? null,
+        info: (downloads[game.slug] ?? null) as DownloadedGameInfo | null,
         manifestBytes: manifestSizes?.games[game.slug] ?? null,
       })),
     [busySlugs, downloads, errorSlugs, locale, manifestSizes],

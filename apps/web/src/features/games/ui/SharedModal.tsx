@@ -80,9 +80,9 @@ const FRAME_VARIANT_CLASSES: Record<ModalVariant, string> = {
   default:
     'border border-[var(--glassBorderStrong)] bg-[var(--background)] text-[var(--color)] shadow-2xl',
   cyberpunk:
-    'border-2 border-[rgba(192,38,211,0.6)] bg-[rgba(20,0,30,0.95)] shadow-[0_20px_30px_rgba(192,38,211,0.2)]',
+    'border border-[var(--glassBorderStrong)] bg-[var(--background)] text-[var(--color)] shadow-2xl',
   underwater:
-    'border-2 border-[rgba(34,211,238,0.5)] bg-[rgba(8,51,68,0.85)] shadow-[0_20px_30px_rgba(34,211,238,0.2)]',
+    'border border-[var(--glassBorderStrong)] bg-[var(--background)] text-[var(--color)] shadow-2xl',
 };
 
 export const ModalFrame = ({

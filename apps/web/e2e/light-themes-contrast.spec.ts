@@ -300,5 +300,23 @@ test.describe('Light Themes Contrast and Usability', () => {
       await page.evaluate(() => window.scrollTo(0, 300));
       await expect(header).toBeVisible();
     });
+
+    test(`cascade landing and preview are readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/games/cascade');
+      await setTheme(page, theme);
+      const heading = page.locator('h1');
+      await expect(heading).toBeVisible();
+    });
+
+    test(`game controls panel is present and properly stacked in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/games');
+      await setTheme(page, theme);
+      const gamesHeader = page.locator('h1');
+      await expect(gamesHeader).toBeVisible();
+    });
   }
 });

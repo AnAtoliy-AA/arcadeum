@@ -13,8 +13,8 @@ import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { MIN_PLAYERS } from '../types';
-import { SPADES_VARIANTS } from '../lib/constants';
-import { resolveSpadesVariant } from '../lib/theme';
+import { SPADES_THEMES } from '../lib/constants';
+import { resolveSpadesTheme } from '../lib/theme';
 import { RulesModal } from './RulesModal';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
@@ -40,7 +40,7 @@ const SPADES_LOBBY_THEME = {
 };
 
 function resolveOptions(raw: unknown): {
-  variant: ReturnType<typeof resolveSpadesVariant>;
+  variant: ReturnType<typeof resolveSpadesTheme>;
   nilEnabled: boolean;
   targetScore: number;
 } {
@@ -49,7 +49,7 @@ function resolveOptions(raw: unknown): {
     targetScore: number;
   }>;
   return {
-    variant: resolveSpadesVariant(raw),
+    variant: resolveSpadesTheme(raw),
     nilEnabled: typeof r.nilEnabled === 'boolean' ? r.nilEnabled : true,
     targetScore: r.targetScore === 300 ? 300 : 500,
   };
@@ -79,8 +79,7 @@ export function SpadesLobby({
 
   const variantTokens = useMemo(
     () =>
-      SPADES_VARIANTS.find((v) => v.id === options.variant) ??
-      SPADES_VARIANTS[0],
+      SPADES_THEMES.find((v) => v.id === options.variant) ?? SPADES_THEMES[0],
     [options.variant],
   );
 
@@ -145,7 +144,7 @@ export function SpadesLobby({
       gameIcon="♠"
       variantName={t(variantTokens.name)}
       theme={getLobbyTheme(
-        SPADES_VARIANTS,
+        SPADES_THEMES,
         options.variant,
         SPADES_LOBBY_THEME.fallbackLightGradient,
         SPADES_LOBBY_THEME.buttonGradient,

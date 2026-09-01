@@ -6,7 +6,7 @@ export const TOTAL_POINTS = 24;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 2;
 
-export const BACKGAMMON_VARIANT_IDS = [
+export const BACKGAMMON_THEME_IDS = [
   'cyberpunk',
   'underwater',
   'crime',
@@ -20,7 +20,7 @@ export const BACKGAMMON_VARIANT_IDS = [
   'steampunk',
   'zen',
 ] as const;
-export type BackgammonVariant = (typeof BACKGAMMON_VARIANT_IDS)[number];
+export type BackgammonTheme = (typeof BACKGAMMON_THEME_IDS)[number];
 
 export const GAME_PHASE = {
   LOBBY: 'lobby',
@@ -51,7 +51,7 @@ export interface MoveCheckerPayload {
   to: number | 'off';
 }
 
-export const BACKGAMMON_RULE_VARIANTS = [
+export const BACKGAMMON_MODES = [
   'standard',
   'long',
   'hyper',
@@ -59,11 +59,12 @@ export const BACKGAMMON_RULE_VARIANTS = [
   'nackgammon',
   'gulbara',
 ] as const;
-export type BackgammonRuleVariant = (typeof BACKGAMMON_RULE_VARIANTS)[number];
+export type BackgammonMode = (typeof BACKGAMMON_MODES)[number];
 
 export interface BackgammonOptions {
-  variant: BackgammonVariant;
-  ruleVariant?: BackgammonRuleVariant;
+  theme: BackgammonTheme;
+  variant?: BackgammonTheme;
+  mode?: BackgammonMode;
   aiDifficulty?: 'easy' | 'medium' | 'hard' | 'expert';
 }
 

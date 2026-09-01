@@ -109,7 +109,7 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
     };
   } else if (form.gameId === 'checkers_v1') {
     options = {
-      variant: 'american',
+      mode: 'american',
     };
   } else if (form.gameId === 'cat_dash_v1') {
     options = {
@@ -117,7 +117,7 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
     };
   } else if (form.gameId === 'backgammon_v1') {
     options = {
-      variant: 'standard',
+      mode: 'standard',
     };
   } else if (form.gameId === 'hearts_v1') {
     options = {
@@ -135,7 +135,7 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
     };
   } else if (form.gameId === 'pachisi_v1') {
     options = {
-      ruleVariant: 'standard',
+      mode: 'standard',
     };
   } else {
     options = {};

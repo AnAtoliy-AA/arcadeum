@@ -10,3 +10,4 @@
 export * from './base/game-engine.interface';
 export * from './lib/logger';
 export * from './lib/random';
+export * from './lib/shared-theme-id';

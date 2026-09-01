@@ -12,9 +12,9 @@ import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RulesModal } from './RulesModal';
-import { CHECKERS_VARIANTS } from '../lib/constants';
-import type { CheckersOptions, CheckersVariant, RuleVariant } from '../types';
-import { RULE_VARIANT_CONFIGS } from '../types';
+import { CHECKERS_THEMES } from '../lib/constants';
+import type { CheckersOptions, CheckersTheme, Mode } from '../types';
+import { MODE_CONFIGS } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 
@@ -47,20 +47,21 @@ function resolveOptions(raw: unknown): CheckersOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
-    ruleVariant: string;
+    mode: string;
     forcedCaptures: boolean;
     backwardCaptures: boolean;
   }>;
   return {
-    variant: (r.theme ?? r.variant ?? 'adventure') as CheckersVariant,
-    ruleVariant: (r.ruleVariant ?? 'american') as RuleVariant,
+    theme: (r.theme ?? r.variant ?? 'adventure') as CheckersTheme,
+    variant: (r.theme ?? r.variant ?? 'adventure') as CheckersTheme,
+    mode: (r.mode ?? 'american') as Mode,
     forcedCaptures: r.forcedCaptures !== false,
     backwardCaptures: r.backwardCaptures === true,
   };
 }
 
-const RULE_VARIANT_OPTIONS: Array<{
-  id: RuleVariant;
+const MODE_OPTIONS: Array<{
+  id: Mode;
   nameKey: TranslationKey;
   descriptionKey: TranslationKey;
 }> = [
@@ -109,11 +110,11 @@ export function CheckersLobby({
     [room.gameOptions],
   );
   const variant = options.variant;
-  const ruleVariant = options.ruleVariant;
+  const mode = options.mode;
   const lobbyTheme = useMemo(
     () =>
       getLobbyTheme(
-        CHECKERS_VARIANTS,
+        CHECKERS_THEMES,
         variant,
         CHECKERS_LOBBY_THEME.fallbackLightGradient,
         CHECKERS_LOBBY_THEME.buttonGradient,
@@ -121,18 +122,18 @@ export function CheckersLobby({
     [variant],
   );
   const variantName = useMemo(() => {
-    const found = CHECKERS_VARIANTS.find((v) => v.id === variant);
+    const found = CHECKERS_THEMES.find((v) => v.id === variant);
     return found ? t(found.name) : undefined;
   }, [variant, t]);
 
-  const ruleVariantOptions = RULE_VARIANT_OPTIONS.map((rv) => ({
+  const modeOptions = MODE_OPTIONS.map((rv) => ({
     id: rv.id,
     label: t(rv.nameKey),
     emoji:
       rv.id === 'american' ? '🇺🇸' : rv.id === 'international' ? '🌍' : '🇷🇺',
   }));
 
-  const ruleConfig = RULE_VARIANT_CONFIGS[ruleVariant];
+  const ruleConfig = MODE_CONFIGS[mode];
 
   const optionsSlot = (
     <div className="flex flex-col items-stretch gap-4">
@@ -147,18 +148,15 @@ export function CheckersLobby({
       </LobbyOptionSection>
       <LobbyOptionSection title={t('games.checkers_v1.lobby.ruleVariant')}>
         <LobbyChipGroup
-          options={ruleVariantOptions}
-          value={ruleVariant}
-          onChange={(v) => setOption({ ruleVariant: v })}
+          options={modeOptions}
+          value={mode}
+          onChange={(v) => setOption({ mode: v })}
           disabled={!isHost}
           accentColor="#2563eb"
           testIdPrefix="checkers-rule-variant"
         />
         <span className="text-[14px] opacity-[0.6] -mt-1">
-          {t(
-            RULE_VARIANT_OPTIONS.find((rv) => rv.id === ruleVariant)!
-              .descriptionKey,
-          )}
+          {t(MODE_OPTIONS.find((rv) => rv.id === mode)!.descriptionKey)}
         </span>
       </LobbyOptionSection>
       <LobbyOptionSection title={t('games.checkers_v1.lobby.rules')}>

@@ -25,17 +25,18 @@ import { CascadeLobby } from './CascadeLobby';
 import { CascadeBoard } from './CascadeBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
-import { CASCADE_VARIANTS } from '../lib/constants';
+import { CASCADE_THEMES } from '../lib/constants';
 import {
   type ActiveColor,
   CASCADE_MODE_IDS,
   type CascadeMode,
   type CascadeOptions,
-  type CascadeVariant,
+  type CascadeTheme,
 } from '../types';
 
 function resolveOptions(raw: unknown): CascadeOptions {
   const r = (raw ?? {}) as Partial<{
+    theme: string;
     variant: string;
     mode: string;
     stackingEnabled: boolean;
@@ -48,7 +49,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
     ? (r.mode as CascadeMode)
     : 'classic';
   return {
-    variant: (r.variant ?? 'cosmic') as CascadeVariant,
+    theme: (r.theme ?? r.variant ?? 'cosmic') as CascadeTheme,
     mode,
     stackingEnabled: mode !== 'pure',
     lastCardCallEnabled:
@@ -147,8 +148,7 @@ function CascadeGameImpl({
 
   const variantTokens = useMemo(
     () =>
-      CASCADE_VARIANTS.find((v) => v.id === options.variant) ??
-      CASCADE_VARIANTS[0],
+      CASCADE_THEMES.find((v) => v.id === options.variant) ?? CASCADE_THEMES[0],
     [options.variant],
   );
 

@@ -1,7 +1,5 @@
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
-import type { TicTacToeTheme } from '../lib/theme';
 
-export type { TicTacToeTheme };
 export type TicTacToeGameProps = BaseGameWidgetProps;
 
 export const MIN_PLAYERS = 2;
@@ -34,7 +32,7 @@ export type InfinityMargin = (typeof INFINITY_MARGIN_OPTIONS)[number];
 export const INFINITY_WIN_LENGTH_OPTIONS = [4, 5] as const;
 export type InfinityWinLength = (typeof INFINITY_WIN_LENGTH_OPTIONS)[number];
 
-export const TIC_TAC_TOE_VARIANT_IDS = [
+export const TIC_TAC_TOE_THEME_IDS = [
   'cyberpunk',
   'underwater',
   'crime',
@@ -48,7 +46,7 @@ export const TIC_TAC_TOE_VARIANT_IDS = [
   'steampunk',
   'zen',
 ] as const;
-export type TicTacToeVariant = (typeof TIC_TAC_TOE_VARIANT_IDS)[number];
+export type TicTacToeTheme = (typeof TIC_TAC_TOE_THEME_IDS)[number];
 
 export const GAME_PHASE = {
   LOBBY: 'lobby',
@@ -80,8 +78,8 @@ export interface TicTacToeTeam {
 }
 
 export interface TicTacToeOptions {
-  variant: TicTacToeVariant;
-  theme?: string;
+  theme: TicTacToeTheme;
+  variant?: TicTacToeTheme;
   boardSize: BoardSize;
   teamMode: boolean;
   expansionMargin: InfinityMargin;

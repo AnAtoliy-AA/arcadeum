@@ -24,8 +24,8 @@ import { HeartsLobby } from './HeartsLobby';
 import { HeartsBoard } from './HeartsBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
-import { HEARTS_VARIANTS } from '../lib/constants';
-import { resolveHeartsVariant } from '../lib/theme';
+import { HEARTS_THEMES } from '../lib/constants';
+import { resolveHeartsTheme } from '../lib/theme';
 
 function HeartsGameImpl({
   roomId,
@@ -136,14 +136,13 @@ function HeartsGameImpl({
   });
 
   const options = useMemo(
-    () => ({ variant: resolveHeartsVariant(room?.gameOptions) }),
+    () => ({ variant: resolveHeartsTheme(room?.gameOptions) }),
     [room?.gameOptions],
   );
 
   const variantTokens = useMemo(
     () =>
-      HEARTS_VARIANTS.find((v) => v.id === options.variant) ??
-      HEARTS_VARIANTS[0],
+      HEARTS_THEMES.find((v) => v.id === options.variant) ?? HEARTS_THEMES[0],
     [options.variant],
   );
 

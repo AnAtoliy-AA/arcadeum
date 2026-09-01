@@ -42,10 +42,10 @@ export interface Arena {
   safeZone?: { center: Vec2; radius: number; shrinkRate: number };
 }
 
-export type GlimwormVariant = 'battle_royale' | 'time_attack' | 'lives_heats';
+export type GlimwormMode = 'battle_royale' | 'time_attack' | 'lives_heats';
 
 export interface GlimwormStartOptsRecord {
-  variant: GlimwormVariant;
+  mode: GlimwormMode;
   powerupsEnabled: boolean;
   fillWithBots?: boolean;
   botCount?: number;
@@ -54,7 +54,7 @@ export interface GlimwormStartOptsRecord {
 export interface GlimwormSession {
   roomId: string;
   hostUserId: string;
-  variant: GlimwormVariant;
+  mode: GlimwormMode;
   powerupsEnabled: boolean;
   status: 'lobby' | 'countdown' | 'playing' | 'ended';
   startedAt: number | null;
@@ -91,7 +91,7 @@ export interface GlimwormSnapshot {
   tickNum: number;
   serverTime: number;
   status: GlimwormSession['status'];
-  variant: GlimwormVariant;
+  mode: GlimwormMode;
   powerupsEnabled: boolean;
   arena: Arena;
   worms: GlimwormWormSnapshot[];

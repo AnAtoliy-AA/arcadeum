@@ -23,7 +23,7 @@ import { GoLobby } from './GoLobby';
 import { GoBoard } from './GoBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
-import { GO_KOMI, GO_VARIANTS, resolveGoOptions } from '../lib/constants';
+import { GO_KOMI, GO_THEMES, resolveGoOptions } from '../lib/constants';
 
 function GoGameImpl({
   roomId,
@@ -111,7 +111,7 @@ function GoGameImpl({
   );
 
   const variantTokens = useMemo(
-    () => GO_VARIANTS.find((v) => v.id === options.variant) ?? GO_VARIANTS[0],
+    () => GO_THEMES.find((v) => v.id === options.variant) ?? GO_THEMES[0],
     [options.variant],
   );
 

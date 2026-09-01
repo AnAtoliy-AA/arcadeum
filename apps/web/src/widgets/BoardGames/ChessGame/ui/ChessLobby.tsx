@@ -14,7 +14,7 @@ import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import type { BotDifficulty } from '@/features/games/ui/DifficultySelector';
-import type { ChessVariant, TimeControl } from '../types';
+import type { ChessTheme, TimeControl } from '../types';
 import { TIME_CONTROLS } from '../types';
 import { RulesModal } from './RulesModal';
 
@@ -78,7 +78,7 @@ export function ChessLobby({
     }>;
     return {
       theme: (raw.theme as string) || 'adventure',
-      variant: (raw.variant ?? 'standard') as ChessVariant,
+      variant: (raw.variant ?? 'standard') as ChessTheme,
       timeControl: (raw.timeControl ?? null) as TimeControl | null,
     };
   }, [room.gameOptions]);

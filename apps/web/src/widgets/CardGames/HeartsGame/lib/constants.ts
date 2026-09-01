@@ -1,9 +1,9 @@
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
-import type { HeartsVariant } from '../types';
+import type { HeartsTheme } from '../types';
 
-export interface HeartsVariantOption extends GameVariantOption {
-  id: HeartsVariant;
+export interface HeartsThemeOption extends GameVariantOption {
+  id: HeartsTheme;
   name: TranslationKey;
   description: TranslationKey;
   emoji: string;
@@ -13,9 +13,9 @@ export interface HeartsVariantOption extends GameVariantOption {
 
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 
-export const HEARTS_VARIANTS: ReadonlyArray<HeartsVariantOption> =
+export const HEARTS_THEMES: ReadonlyArray<HeartsThemeOption> =
   SHARED_THEMES.map((t) => ({
-    id: t.id as HeartsVariant,
+    id: t.id as HeartsTheme,
     name: t.nameKey as TranslationKey,
     description: t.descriptionKey as TranslationKey,
     emoji: t.emoji,

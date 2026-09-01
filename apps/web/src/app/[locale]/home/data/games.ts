@@ -41,18 +41,18 @@ export interface FeaturedGame {
 }
 
 import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
-import { SEA_BATTLE_VARIANTS } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
+import { SEA_BATTLE_THEMES } from '@/widgets/StrategyGames/SeaBattleGame/lib/constants';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
-import { TIC_TAC_TOE_VARIANTS } from '@/widgets/BoardGames/TicTacToeGame/lib/constants';
-import { CASCADE_VARIANTS } from '@/widgets/CardGames/CascadeGame/lib/constants';
-import { CHESS_VARIANTS } from '@/widgets/BoardGames/ChessGame/lib/constants';
-import { CHECKERS_VARIANTS } from '@/widgets/BoardGames/CheckersGame/lib/constants';
-import { CAT_DASH_VARIANTS } from '@/widgets/ActionGames/CatDashGame/lib/constants';
-import { BACKGAMMON_VARIANTS } from '@/widgets/BoardGames/BackgammonGame/lib/constants';
-import { HEARTS_VARIANTS } from '@/widgets/CardGames/HeartsGame/lib/constants';
-import { SPADES_VARIANTS } from '@/widgets/CardGames/SpadesGame/lib/constants';
-import { GO_VARIANTS } from '@/widgets/BoardGames/GoGame/lib/constants';
-import { PACHISI_VARIANTS } from '@/widgets/BoardGames/PachisiGame/lib/constants';
+import { TIC_TAC_TOE_THEMES } from '@/widgets/BoardGames/TicTacToeGame/lib/constants';
+import { CASCADE_THEMES } from '@/widgets/CardGames/CascadeGame/lib/constants';
+import { CHESS_THEMES } from '@/widgets/BoardGames/ChessGame/lib/constants';
+import { CHECKERS_THEMES } from '@/widgets/BoardGames/CheckersGame/lib/constants';
+import { CAT_DASH_THEMES } from '@/widgets/ActionGames/CatDashGame/lib/constants';
+import { BACKGAMMON_THEMES } from '@/widgets/BoardGames/BackgammonGame/lib/constants';
+import { HEARTS_THEMES } from '@/widgets/CardGames/HeartsGame/lib/constants';
+import { SPADES_THEMES } from '@/widgets/CardGames/SpadesGame/lib/constants';
+import { GO_THEMES } from '@/widgets/BoardGames/GoGame/lib/constants';
+import { PACHISI_THEMES } from '@/widgets/BoardGames/PachisiGame/lib/constants';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -97,7 +97,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'board',
     rulesPrefix: 'games.sea_battle_v1.rules',
     rulesKeys: ['objective', 'gameplay', 'placement', 'battle'],
-    variants: SEA_BATTLE_VARIANTS.map((v) => ({
+    variants: SEA_BATTLE_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),
@@ -141,7 +141,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'board',
     rulesPrefix: 'games.tic_tac_toe_v1.rules',
     rulesKeys: ['objective', 'steps', 'winLengths'],
-    variants: TIC_TAC_TOE_VARIANTS.map((v) => ({
+    variants: TIC_TAC_TOE_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),
@@ -162,7 +162,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'card',
     rulesPrefix: 'games.cascade_v1.rules',
     rulesKeys: ['objective', 'steps', 'actionCards', 'stacking'],
-    variants: CASCADE_VARIANTS.map((v) => ({
+    variants: CASCADE_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),
@@ -183,7 +183,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'board',
     rulesPrefix: 'games.chess_v1.rules',
     rulesKeys: ['objective', 'pieces', 'special'],
-    variants: CHESS_VARIANTS.map((v) => ({
+    variants: CHESS_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),
@@ -204,7 +204,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'board',
     rulesPrefix: 'games.checkers_v1.rules',
     rulesKeys: ['objective', 'steps', 'kingPromotion', 'forcedCaptures'],
-    variants: CHECKERS_VARIANTS.map((v) => ({
+    variants: CHECKERS_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),
@@ -225,7 +225,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'board',
     rulesPrefix: 'games.cat_dash_v1.rules',
     rulesKeys: ['objective', 'howToPlay', 'abilities'],
-    variants: CAT_DASH_VARIANTS.map((v) => ({
+    variants: CAT_DASH_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),
@@ -246,7 +246,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'board',
     rulesPrefix: 'games.backgammon_v1.rules',
     rulesKeys: ['objective', 'movement', 'hitting', 'bearingOff'],
-    variants: BACKGAMMON_VARIANTS.map((v) => ({
+    variants: BACKGAMMON_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.nameKey as TranslationKey,
     })),
@@ -267,7 +267,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'card',
     rulesPrefix: 'games.hearts_v1.rules',
     rulesKeys: ['objective', 'setup', 'passing', 'gameplay', 'scoring'],
-    variants: HEARTS_VARIANTS.map((v) => ({
+    variants: HEARTS_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),
@@ -288,7 +288,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'card',
     rulesPrefix: 'games.spades_v1.rules',
     rulesKeys: ['objective', 'setup', 'bidding', 'gameplay', 'scoring'],
-    variants: SPADES_VARIANTS.map((v) => ({
+    variants: SPADES_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),
@@ -315,7 +315,7 @@ export const featuredGames: FeaturedGame[] = [
       'passTitle',
       'scoringTitle',
     ],
-    variants: GO_VARIANTS.map((v) => ({
+    variants: GO_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.name as TranslationKey,
     })),
@@ -336,7 +336,7 @@ export const featuredGames: FeaturedGame[] = [
     type: 'board',
     rulesPrefix: 'games.pachisi_v1.rules',
     rulesKeys: ['objective', 'movement', 'capture', 'sixes'],
-    variants: PACHISI_VARIANTS.map((v) => ({
+    variants: PACHISI_THEMES.map((v) => ({
       id: v.id,
       nameKey: v.nameKey as TranslationKey,
     })),

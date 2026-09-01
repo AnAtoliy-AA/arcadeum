@@ -70,7 +70,7 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
   ): PachisiState {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
     const seats = assignSeats(playerIds);
-    const tokenCount = tokensPerVariant(options.ruleVariant);
+    const tokenCount = tokensPerVariant(options.mode);
 
     const players: PachisiPlayer[] = playerIds.map((playerId) => ({
       playerId,
@@ -212,12 +212,12 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       newState.logs.push(
         this.createLogEntry(
           'action',
-          `Moved token to position ${movedToken.progress}. (${finishedCount}/${tokensPerVariant(newState.options.ruleVariant)} home)`,
+          `Moved token to position ${movedToken.progress}. (${finishedCount}/${tokensPerVariant(newState.options.mode)} home)`,
           { senderId: context.userId },
         ),
       );
 
-      if (finishedCount >= tokensPerVariant(newState.options.ruleVariant)) {
+      if (finishedCount >= tokensPerVariant(newState.options.mode)) {
         newState.phase = GAME_PHASE.GAME_OVER;
         newState.winnerId = context.userId;
         newState.winnerIds = [context.userId];

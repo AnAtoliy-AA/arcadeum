@@ -4,9 +4,9 @@ import {
   GLIMWORM_RESPAWN_DELAY_MS,
 } from '../glimworm.constants';
 import type { GlimwormSession, Worm, WormId } from '../glimworm.types';
-import type { VariantStrategy } from './variant.strategy';
+import type { ModeStrategy } from './variant.strategy';
 
-export class LivesHeatsStrategy implements VariantStrategy {
+export class LivesHeatsStrategy implements ModeStrategy {
   initSession(s: GlimwormSession): void {
     Object.values(s.worms).forEach((w) => {
       w.livesLeft = GLIMWORM_LIVES_HEATS_LIVES;

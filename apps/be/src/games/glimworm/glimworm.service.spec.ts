@@ -106,7 +106,7 @@ describe('GlimwormService — lifecycle', () => {
       service.markReady('r1', 'u2', true);
       expect(() =>
         service.start('r1', 'u2', {
-          variant: 'battle_royale',
+          mode: 'battle_royale',
           powerupsEnabled: false,
         }),
       ).toThrow('Only host can start');
@@ -118,7 +118,7 @@ describe('GlimwormService — lifecycle', () => {
       // Only the host has joined — no guests, no bots.
       expect(() =>
         service.start('r1', 'u1', {
-          variant: 'battle_royale',
+          mode: 'battle_royale',
           powerupsEnabled: false,
         }),
       ).toThrow('Need at least 2 players');
@@ -130,7 +130,7 @@ describe('GlimwormService — lifecycle', () => {
       service.joinRoom('r1', 'u2');
       // Neither is explicitly marked ready.
       service.start('r1', 'u1', {
-        variant: 'battle_royale',
+        mode: 'battle_royale',
         powerupsEnabled: false,
       });
       const session = store.get('r1');
@@ -145,7 +145,7 @@ describe('GlimwormService — lifecycle', () => {
       service.markReady('r1', 'u1', true);
       service.markReady('r1', 'u2', true);
       service.start('r1', 'u1', {
-        variant: 'battle_royale',
+        mode: 'battle_royale',
         powerupsEnabled: true,
       });
       const session = store.get('r1') as GlimwormSession;
@@ -227,7 +227,7 @@ describe('GlimwormService — lifecycle', () => {
       service.markReady('r1', 'u1', true);
       service.markReady('r1', 'u2', true);
       service.start('r1', 'u1', {
-        variant: 'battle_royale',
+        mode: 'battle_royale',
         powerupsEnabled: false,
       });
       service.endSession('r1', 'u1');
@@ -248,7 +248,7 @@ describe('GlimwormService — lifecycle', () => {
       const session: GlimwormSession = {
         roomId: 'r',
         hostUserId: 'h',
-        variant: 'battle_royale',
+        mode: 'battle_royale',
         powerupsEnabled: false,
         status: 'lobby',
         startedAt: null,

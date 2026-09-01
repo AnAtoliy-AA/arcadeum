@@ -314,6 +314,34 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
     />
   ) : null;
 
+  const boardNode = (
+    <>
+      <div className="flex flex-col items-center justify-center relative w-full flex-1 min-h-0 min-w-0 my-0.5">
+        <BoardWithLabels>
+          <div />
+          <ColLabels gridSize={boardSize}>
+            {colLbls.map((label) => (
+              <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                {label}
+              </Label>
+            ))}
+          </ColLabels>
+          <RowLabels gridSize={boardSize}>
+            {rowLbls.map((label) => (
+              <Label key={label} style={{ color: theme.textSecondaryColor }}>
+                {label}
+              </Label>
+            ))}
+          </RowLabels>
+          {boardGrid}
+        </BoardWithLabels>
+      </div>
+      <div className="w-full shrink-0 flex flex-row justify-end items-center mt-0.5">
+        <FieldStatus board={player.board} isMe={isMe} />
+      </div>
+    </>
+  );
+
   if (isMe) {
     const isDefending = !isMyTurn && player.alive;
     const showBadge = player.alive;
@@ -390,35 +418,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               layout="top"
             />
           </div>
-          <div className="flex flex-col items-center justify-center relative w-full flex-1 min-h-0 min-w-0 my-0.5">
-            <BoardWithLabels>
-              <div />
-              <ColLabels gridSize={boardSize}>
-                {colLbls.map((label) => (
-                  <Label
-                    key={label}
-                    style={{ color: theme.textSecondaryColor }}
-                  >
-                    {label}
-                  </Label>
-                ))}
-              </ColLabels>
-              <RowLabels gridSize={boardSize}>
-                {rowLbls.map((label) => (
-                  <Label
-                    key={label}
-                    style={{ color: theme.textSecondaryColor }}
-                  >
-                    {label}
-                  </Label>
-                ))}
-              </RowLabels>
-              {boardGrid}
-            </BoardWithLabels>
-          </div>
-          <div className="w-full shrink-0 flex flex-row justify-end items-center mt-0.5">
-            <FieldStatus board={player.board} isMe={true} />
-          </div>
+          {boardNode}
         </PlayerSection>
       </PlayerSectionWrapper>
     );
@@ -471,29 +471,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
             layout="top"
           />
         </div>
-        <div className="flex flex-col items-center justify-center relative w-full flex-1 min-h-0 min-w-0 my-0.5">
-          <BoardWithLabels>
-            <div />
-            <ColLabels gridSize={boardSize}>
-              {colLbls.map((label) => (
-                <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                  {label}
-                </Label>
-              ))}
-            </ColLabels>
-            <RowLabels gridSize={boardSize}>
-              {rowLbls.map((label) => (
-                <Label key={label} style={{ color: theme.textSecondaryColor }}>
-                  {label}
-                </Label>
-              ))}
-            </RowLabels>
-            {boardGrid}
-          </BoardWithLabels>
-        </div>
-        <div className="w-full shrink-0 flex flex-row justify-end items-center mt-0.5">
-          <FieldStatus board={player.board} isMe={false} />
-        </div>
+        {boardNode}
       </PlayerSection>
     </PlayerSectionWrapper>
   );

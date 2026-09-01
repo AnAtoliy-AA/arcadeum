@@ -142,7 +142,7 @@
   padding: 4px;
   gap: 1.5px;
   width: 100%;
-  max-width: 480px;
+  max-width: 620px;
   margin: 0 auto;
   overflow: hidden;
   box-sizing: border-box;
@@ -160,12 +160,12 @@
 
 .sb-board-with-labels-layout.sb-board-with-labels-layout.sb-board-with-labels-layout {
   display: inline-grid;
-  grid-template-columns: 18px auto;
-  grid-template-rows: 18px auto;
+  grid-template-columns: 18px minmax(0, 1fr);
+  grid-template-rows: 18px minmax(0, 1fr);
   gap: 0;
   margin: 0 auto;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
+  max-width: 640px;
   align-items: stretch;
   justify-content: center;
 }
@@ -255,7 +255,7 @@
 
 .sb-player-section-fit {
   width: 100%;
-  max-width: 480px;
+  max-width: 680px;
   margin: 0 auto;
   box-sizing: border-box;
 }

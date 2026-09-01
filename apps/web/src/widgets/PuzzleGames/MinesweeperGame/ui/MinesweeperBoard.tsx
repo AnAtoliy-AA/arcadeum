@@ -86,7 +86,7 @@ export function MinesweeperBoard({
 
   return (
     <div
-      className="w-full max-w-full overflow-x-auto rounded-2xl border-2 border-[var(--glassBorderStrong)] bg-[var(--background)] p-3 sm:p-5 shadow-2xl select-none"
+      className="w-full max-w-full overflow-x-auto rounded-2xl border-2 border-[var(--glassBorderStrong)] bg-[var(--background)] p-2 sm:p-4 shadow-2xl select-none"
       role="grid"
       aria-label={t('games.minesweeper_v1.board.label')}
     >
@@ -100,6 +100,7 @@ export function MinesweeperBoard({
           <MineCell
             key={index}
             cell={cell}
+            isCompact={game.width > 16}
             lost={game.status === 'lost'}
             onReveal={() => handleCellClick(index)}
             onFlag={() => handleContextMenu(index)}
@@ -114,6 +115,7 @@ export function MinesweeperBoard({
 
 function MineCell({
   cell,
+  isCompact,
   lost,
   onReveal,
   onFlag,
@@ -121,6 +123,7 @@ function MineCell({
   onPressEnd,
 }: {
   cell: Cell;
+  isCompact?: boolean;
   lost: boolean;
   onReveal: () => void;
   onFlag: () => void;
@@ -136,7 +139,10 @@ function MineCell({
       type="button"
       role="gridcell"
       className={cx(
-        'flex aspect-square h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg font-mono text-sm sm:text-base font-extrabold transition-all',
+        'flex aspect-square items-center justify-center font-mono font-extrabold transition-all',
+        isCompact
+          ? 'h-6 w-6 min-w-[24px] sm:h-7 sm:w-7 sm:min-w-[28px] md:h-8 md:w-8 md:min-w-[32px] rounded-[6px] sm:rounded-lg text-xs sm:text-sm'
+          : 'h-8 w-8 sm:h-9 sm:w-9 rounded-lg text-sm sm:text-base',
         revealed
           ? 'cursor-default border border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] shadow-inner'
           : 'cursor-pointer border border-[var(--glassBorderStrong)] bg-[var(--glassBg)] text-[var(--color)] shadow-sm hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)] active:scale-95',
@@ -156,11 +162,25 @@ function MineCell({
       aria-label={cellAriaLabel(cell, t)}
     >
       {cell.state === 'flagged' ? (
-        <span aria-hidden="true" className="text-base sm:text-lg select-none">
+        <span
+          aria-hidden="true"
+          className={
+            isCompact
+              ? 'text-xs sm:text-base select-none'
+              : 'text-base sm:text-lg select-none'
+          }
+        >
           🚩
         </span>
       ) : showMine ? (
-        <span aria-hidden="true" className="text-base sm:text-lg select-none">
+        <span
+          aria-hidden="true"
+          className={
+            isCompact
+              ? 'text-xs sm:text-base select-none'
+              : 'text-base sm:text-lg select-none'
+          }
+        >
           💣
         </span>
       ) : revealed && cell.adjacent > 0 ? (

@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
 } from 'react';
 import { Button, LoadingState, Select } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
@@ -23,6 +24,12 @@ const DIFFICULTY_OPTIONS: Array<{ value: Difficulty }> = [
   { value: 'intermediate' },
   { value: 'expert' },
 ];
+
+const DIFFICULTY_MAX_WIDTH: Record<Difficulty, string> = {
+  beginner: 'max-w-md',
+  intermediate: 'max-w-2xl',
+  expert: 'max-w-5xl',
+};
 
 export default function MinesweeperGame() {
   useTrackSoloGameStarted('minesweeper_v1');
@@ -136,7 +143,12 @@ function MinesweeperTable() {
           : '😄';
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 px-2">
+    <div
+      className={cx(
+        'mx-auto flex w-full flex-col items-center gap-4 px-2 transition-all duration-300',
+        DIFFICULTY_MAX_WIDTH[game.difficulty] ?? 'max-w-2xl',
+      )}
+    >
       <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--glassBorderStrong)] bg-[var(--background)] p-3 shadow-xl backdrop-blur-md sm:p-4">
         <div className="flex items-center gap-3 rounded-xl border border-rose-500/40 bg-[var(--backgroundHover)] px-3 py-1.5 shadow-inner">
           <span className="font-mono text-xl font-black tracking-widest text-red-600 dark:text-red-400 tabular-nums drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]">

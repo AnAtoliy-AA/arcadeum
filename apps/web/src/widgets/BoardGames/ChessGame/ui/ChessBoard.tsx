@@ -189,12 +189,11 @@ function ChessCell({
         <span
           style={{
             position: 'absolute',
-            right: 3,
-            top: 2,
-            fontSize: 10,
-            fontWeight: 700,
-            opacity: 0.6,
-            color: isLight ? '#475569' : '#e2e8f0',
+            right: 4,
+            top: 3,
+            fontSize: 11,
+            fontWeight: 800,
+            color: isLight ? '#779952' : '#edeed1',
             lineHeight: 1,
             pointerEvents: 'none',
           }}
@@ -206,12 +205,11 @@ function ChessCell({
         <span
           style={{
             position: 'absolute',
-            left: 3,
-            bottom: 2,
-            fontSize: 10,
-            fontWeight: 700,
-            opacity: 0.6,
-            color: isLight ? '#475569' : '#e2e8f0',
+            left: 4,
+            bottom: 3,
+            fontSize: 11,
+            fontWeight: 800,
+            color: isLight ? '#779952' : '#edeed1',
             lineHeight: 1,
             pointerEvents: 'none',
           }}
@@ -225,10 +223,11 @@ function ChessCell({
           style={{
             fontSize: 'clamp(1.3rem, 11cqw, 3.4rem)',
             lineHeight: 1,
+            color: piece?.color === 'white' ? '#ffffff' : '#18181b',
             filter:
               piece?.color === 'white'
-                ? 'drop-shadow(0 3px 5px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 1px rgba(255, 255, 255, 0.8))'
-                : 'drop-shadow(0 3px 5px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))',
+                ? 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.95))'
+                : 'drop-shadow(0 1px 2px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.9))',
             userSelect: 'none',
             position: 'relative',
             zIndex: 2,

@@ -149,5 +149,19 @@ test.describe('Light Themes Contrast and Usability', () => {
         await expect(dropdown).toBeVisible();
       }
     });
+
+    test(`chess board is visible and readable in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/games/chess');
+      await setTheme(page, theme);
+
+      const board = page.locator('[role="grid"]');
+      if ((await board.count()) > 0) {
+        await expect(board).toBeVisible();
+        const cell = page.locator('[role="gridcell"]').first();
+        await expect(cell).toBeVisible();
+      }
+    });
   }
 });

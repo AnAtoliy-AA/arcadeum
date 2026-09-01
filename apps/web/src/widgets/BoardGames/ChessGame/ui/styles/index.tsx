@@ -60,7 +60,7 @@ export function PlayerName({
   return (
     <span
       className={cx(
-        'truncate text-[13px] font-bold text-[#f8fafc] whitespace-nowrap',
+        'truncate text-[13px] font-bold text-[var(--color)] whitespace-nowrap',
         className,
       )}
     >
@@ -77,7 +77,7 @@ export function PlayerRating({
   children?: ReactNode;
 }) {
   return (
-    <span className={cx('text-[11px] text-[rgba(148,163,184,0.8)]', className)}>
+    <span className={cx('text-[11px] text-[var(--textSecondary)]', className)}>
       {children}
     </span>
   );
@@ -93,7 +93,7 @@ export function EvalBarContainer({
   return (
     <div
       className={cx(
-        'relative h-full min-h-[200px] w-6 shrink-0 overflow-hidden rounded-md border border-[rgba(255,255,255,0.06)] bg-[rgba(0,0,0,0.3)]',
+        'relative h-full min-h-[200px] w-6 shrink-0 overflow-hidden rounded-md border border-[var(--glassBorder)] bg-[var(--glassBg)]',
         className,
       )}
     >
@@ -131,7 +131,7 @@ export function ClockFace({
         'flex flex-1 flex-col items-center rounded-lg px-3 py-2 transition-all duration-300',
         isActive
           ? 'border border-[rgba(59,130,246,0.5)] bg-[rgba(37,99,235,0.12)]'
-          : 'border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)]',
+          : 'border border-[var(--glassBorder)] bg-[var(--glassBg)]',
         className,
       )}
     >
@@ -154,7 +154,7 @@ export function ClockTime({
   return (
     <span
       className={cx(
-        'text-[18px] font-bold text-[#f8fafc]',
+        'text-[18px] font-bold text-[var(--color)]',
         isCritical ? 'text-[#ef4444]' : isLow ? 'text-[#eab308]' : '',
         className,
       )}
@@ -174,7 +174,7 @@ export function ClockLabel({
   return (
     <span
       className={cx(
-        'mt-0.5 text-[9px] font-semibold uppercase text-[rgba(148,163,184,0.6)]',
+        'mt-0.5 text-[9px] font-semibold uppercase text-[var(--textSecondary)]',
         className,
       )}
     >

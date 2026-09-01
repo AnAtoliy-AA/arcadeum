@@ -19,10 +19,9 @@ import { TIME_CONTROLS } from '../types';
 import { RulesModal } from './RulesModal';
 
 const LOBBY_THEME: GameLobbyTheme = {
-  titleGradient:
-    'linear-gradient(90deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%)',
+  titleGradient: 'linear-gradient(90deg, var(--color) 0%, var(--primary) 100%)',
   variantGradient:
-    'linear-gradient(90deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%)',
+    'linear-gradient(90deg, var(--color) 0%, var(--primary) 100%)',
   buttonGradient: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
 };
 

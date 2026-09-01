@@ -1,37 +1,46 @@
-import { extractVariantFromOptions } from './game-options';
+import { extractThemeFromOptions } from './game-options';
 
-describe('extractVariantFromOptions', () => {
+describe('extractThemeFromOptions', () => {
   it('returns undefined for missing options', () => {
-    expect(extractVariantFromOptions(undefined)).toBeUndefined();
+    expect(extractThemeFromOptions(undefined)).toBeUndefined();
   });
 
   it('returns undefined when options is not an object', () => {
     // The DTO types gameOptions as Record<string, unknown> | undefined,
     // but defensively guard against non-object runtime values.
     expect(
-      extractVariantFromOptions(null as unknown as undefined),
+      extractThemeFromOptions(null as unknown as undefined),
     ).toBeUndefined();
   });
 
-  it('reads opts.variant when present (Glimworm/Sea Battle convention)', () => {
-    expect(extractVariantFromOptions({ variant: 'time_attack' })).toBe(
+  it('reads opts.theme when present (canonical field)', () => {
+    expect(extractThemeFromOptions({ theme: 'cyberpunk' })).toBe('cyberpunk');
+  });
+
+  it('falls back to opts.variant when theme is missing (legacy)', () => {
+    expect(extractThemeFromOptions({ variant: 'time_attack' })).toBe(
       'time_attack',
     );
   });
 
-  it('falls back to opts.cardVariant when variant is missing (Critical convention)', () => {
-    expect(extractVariantFromOptions({ cardVariant: 'crime' })).toBe('crime');
+  it('falls back to opts.cardVariant when theme and variant are missing (Critical convention)', () => {
+    expect(extractThemeFromOptions({ cardVariant: 'crime' })).toBe('crime');
   });
 
-  it('prefers opts.variant when both keys are present', () => {
+  it('prefers opts.theme when multiple keys are present', () => {
     expect(
-      extractVariantFromOptions({ variant: 'classic', cardVariant: 'crime' }),
-    ).toBe('classic');
+      extractThemeFromOptions({
+        theme: 'adventure',
+        variant: 'classic',
+        cardVariant: 'crime',
+      }),
+    ).toBe('adventure');
   });
 
-  it('returns undefined when neither key is a string', () => {
-    expect(extractVariantFromOptions({})).toBeUndefined();
-    expect(extractVariantFromOptions({ variant: 42 })).toBeUndefined();
-    expect(extractVariantFromOptions({ cardVariant: null })).toBeUndefined();
+  it('returns undefined when no key is a string', () => {
+    expect(extractThemeFromOptions({})).toBeUndefined();
+    expect(extractThemeFromOptions({ theme: 42 })).toBeUndefined();
+    expect(extractThemeFromOptions({ variant: 42 })).toBeUndefined();
+    expect(extractThemeFromOptions({ cardVariant: null })).toBeUndefined();
   });
 });

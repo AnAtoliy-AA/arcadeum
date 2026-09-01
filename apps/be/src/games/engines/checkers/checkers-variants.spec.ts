@@ -32,11 +32,11 @@ describe('CheckersEngine — variants and edge cases', () => {
   describe('international variant (10x10)', () => {
     it('initializes 10x10 board with 20 pieces per player', () => {
       const state = engine.initializeState(['a', 'b'], {
-        options: { ruleVariant: 'international' },
+        options: { mode: 'international' },
       });
       expect(state.board).toHaveLength(10);
       expect(state.board[0]).toHaveLength(10);
-      expect(state.options.ruleVariant).toBe('international');
+      expect(state.options.mode).toBe('international');
 
       let darkCount = 0;
       let lightCount = 0;
@@ -53,7 +53,7 @@ describe('CheckersEngine — variants and edge cases', () => {
 
     it('allows man to capture backwards in international variant', () => {
       const state = engine.initializeState(['a', 'b'], {
-        options: { ruleVariant: 'international' },
+        options: { mode: 'international' },
       });
       clearBoard(state);
       state.board[5][4] = { playerId: 'a', type: 'man' };
@@ -67,7 +67,7 @@ describe('CheckersEngine — variants and edge cases', () => {
 
     it('allows flying king to slide and capture', () => {
       const state = engine.initializeState(['a', 'b'], {
-        options: { ruleVariant: 'international' },
+        options: { mode: 'international' },
       });
       clearBoard(state);
       state.board[0][0] = { playerId: 'a', type: 'king' };
@@ -83,11 +83,11 @@ describe('CheckersEngine — variants and edge cases', () => {
   describe('russian variant', () => {
     it('initializes 8x8 board with 8 pieces per player', () => {
       const state = engine.initializeState(['a', 'b'], {
-        options: { ruleVariant: 'russian' },
+        options: { mode: 'russian' },
       });
       expect(state.board).toHaveLength(8);
       expect(state.board[0]).toHaveLength(8);
-      expect(state.options.ruleVariant).toBe('russian');
+      expect(state.options.mode).toBe('russian');
 
       let darkCount = 0;
       let lightCount = 0;
@@ -104,7 +104,7 @@ describe('CheckersEngine — variants and edge cases', () => {
 
     it('allows flying king to slide in russian variant', () => {
       const state = engine.initializeState(['a', 'b'], {
-        options: { ruleVariant: 'russian', forcedCaptures: false },
+        options: { mode: 'russian', forcedCaptures: false },
       });
       clearBoard(state);
       state.board[3][3] = { playerId: 'a', type: 'king' };
@@ -117,7 +117,7 @@ describe('CheckersEngine — variants and edge cases', () => {
 
     it('does not allow man to capture backwards in russian variant', () => {
       const state = engine.initializeState(['a', 'b'], {
-        options: { ruleVariant: 'russian' },
+        options: { mode: 'russian' },
       });
       clearBoard(state);
       state.board[3][2] = { playerId: 'a', type: 'man' };
@@ -156,7 +156,7 @@ describe('CheckersEngine — variants and edge cases', () => {
   describe('king multi-jump', () => {
     it('allows flying king to execute multi-jump capture chain', () => {
       const state = engine.initializeState(['a', 'b'], {
-        options: { ruleVariant: 'international' },
+        options: { mode: 'international' },
       });
       clearBoard(state);
       state.board[0][0] = { playerId: 'a', type: 'king' };

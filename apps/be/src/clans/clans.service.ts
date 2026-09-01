@@ -320,9 +320,12 @@ export class ClansService {
   }
 
   async getUserClan(userId: string): Promise<ClanView | null> {
-    const member = await this.clanMemberModel.findOne({
-      userId: new Types.ObjectId(userId),
-    });
+    const member = await this.clanMemberModel
+      .findOne({
+        userId: new Types.ObjectId(userId),
+      })
+      .select('clanId')
+      .lean();
     if (!member) return null;
     return this.getClanById(String(member.clanId));
   }
@@ -347,6 +350,7 @@ export class ClansService {
     const userIds = members.map((m) => String(m.userId));
     const users = (await this.userModel
       .find({ _id: { $in: userIds } })
+      .select('username displayName equippedAvatarId')
       .lean()) as unknown as LeanUser[];
 
     const userMap = new Map(users.map((u) => [u._id.toString(), u]));

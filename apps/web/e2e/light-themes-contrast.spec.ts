@@ -187,5 +187,17 @@ test.describe('Light Themes Contrast and Usability', () => {
         await expect(onlineBadge).toBeVisible();
       }
     });
+
+    test(`rooms filters are readable and visible in ${theme} mode`, async ({
+      page,
+    }) => {
+      await navigateTo(page, '/rooms');
+      await setTheme(page, theme);
+
+      const filters = page.getByTestId('games-filters-container');
+      if ((await filters.count()) > 0) {
+        await expect(filters).toBeVisible();
+      }
+    });
   }
 });

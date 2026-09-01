@@ -157,10 +157,10 @@ export function GamesFilters({
   return (
     <div
       data-testid="games-filters-container"
-      className="box-border flex w-full max-w-full flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xl sm:p-4 md:gap-4"
+      className="box-border flex w-full max-w-full flex-col gap-3 rounded-2xl border border-[var(--glassBorderStrong)] bg-[var(--background)] p-3 shadow-md backdrop-blur-xl sm:p-4 md:gap-4"
     >
       <div className="flex w-full items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none sm:pb-0">
-        <div className="inline-flex min-w-max items-center gap-1.5 rounded-xl border border-white/10 bg-black/30 p-1">
+        <div className="inline-flex min-w-max items-center gap-1.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-1">
           {ALL_STATUS_VALUES.map((value) => {
             const label = t(STATUS_KEYS[value] as TranslationKey);
             const icon = STATUS_ICONS[value] || '🎮';
@@ -179,8 +179,8 @@ export function GamesFilters({
                 onClick={() => handleStatusToggle(value)}
                 className={`relative inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all select-none cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-500/25'
-                    : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-200'
+                    ? 'bg-[var(--primary)] text-white shadow-md'
+                    : 'text-[var(--textSecondary)] hover:bg-[var(--glassBgHover)] hover:text-[var(--color)]'
                 }`}
               >
                 <span>{icon}</span>
@@ -198,7 +198,7 @@ export function GamesFilters({
             type="button"
             onClick={handleClearAll}
             data-testid="rooms-filter-clear-all"
-            className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-300 transition-colors hover:bg-rose-500/20 active:scale-95"
+            className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-300 transition-colors hover:bg-rose-500/20 active:scale-95"
           >
             <span>✕</span>
             <span className="hidden sm:inline">
@@ -220,8 +220,8 @@ export function GamesFilters({
           aria-label="Filter by category: All"
           className={`inline-flex shrink-0 h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-all select-none cursor-pointer ${
             categoryFilter === ''
-              ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300 shadow-sm'
-              : 'border-white/10 bg-white/[0.02] text-slate-400 hover:border-white/20 hover:text-slate-300'
+              ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] font-bold shadow-sm'
+              : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:border-[var(--glassBorderStrong)] hover:text-[var(--color)]'
           }`}
         >
           <span>{CATEGORY_ICONS.all}</span>
@@ -244,8 +244,8 @@ export function GamesFilters({
               aria-label={`Filter by category: ${label}`}
               className={`inline-flex shrink-0 h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-all select-none cursor-pointer ${
                 isActive
-                  ? 'border-indigo-500/40 bg-indigo-500/15 text-indigo-300 shadow-sm'
-                  : 'border-white/10 bg-white/[0.02] text-slate-400 hover:border-white/20 hover:text-slate-300'
+                  ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] font-bold shadow-sm'
+                  : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:border-[var(--glassBorderStrong)] hover:text-[var(--color)]'
               }`}
             >
               <span>{icon}</span>
@@ -255,12 +255,12 @@ export function GamesFilters({
         })}
       </div>
 
-      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between pt-1 border-t border-white/5">
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between pt-1 border-t border-[var(--glassBorder)]">
         <div className="relative flex-1 max-w-full sm:max-w-md">
           <label htmlFor={searchInputId} className="sr-only">
             {t('games.lounge.searchPlaceholder') || 'Search games...'}
           </label>
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--textSecondary)]">
             <svg
               className="h-4 w-4"
               fill="none"
@@ -283,14 +283,14 @@ export function GamesFilters({
             placeholder={
               t('games.lounge.searchPlaceholder') || 'Search games...'
             }
-            className="w-full rounded-xl border border-white/10 bg-black/25 py-2 pl-9 pr-8 text-xs text-white placeholder-slate-500 transition-colors focus:border-indigo-500/60 focus:bg-black/40 focus:outline-none"
+            className="w-full rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] py-2 pl-9 pr-8 text-xs text-[var(--color)] placeholder-[var(--textSecondary)] transition-colors focus:border-[var(--primary)] focus:bg-[var(--background)] focus:outline-none"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={handleSearchClear}
               aria-label="Clear search input"
-              className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400 hover:text-white cursor-pointer"
+              className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-[var(--textSecondary)] hover:text-[var(--color)] cursor-pointer"
             >
               <span className="text-xs">✕</span>
             </button>
@@ -307,8 +307,8 @@ export function GamesFilters({
             aria-pressed={aiVsAiFilter === 'ai_vs_ai'}
             className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all select-none cursor-pointer ${
               aiVsAiFilter === 'ai_vs_ai'
-                ? 'border-indigo-500/50 bg-indigo-500/20 text-indigo-200'
-                : 'border-white/10 bg-white/[0.03] text-slate-400 hover:bg-white/[0.06] hover:text-slate-300'
+                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] font-bold'
+                : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:bg-[var(--glassBgHover)] hover:text-[var(--color)]'
             }`}
           >
             <span>🤖</span>
@@ -323,14 +323,14 @@ export function GamesFilters({
             aria-label="Toggle participation filters"
             className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all select-none cursor-pointer ${
               hasParticipation || showAdvanced
-                ? 'border-indigo-500/50 bg-indigo-500/15 text-indigo-300'
-                : 'border-white/10 bg-white/[0.03] text-slate-400 hover:bg-white/[0.06] hover:text-slate-300'
+                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] font-bold'
+                : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:bg-[var(--glassBgHover)] hover:text-[var(--color)]'
             }`}
           >
             <span>👥</span>
             <span>{t('games.lounge.filters.participationLabel')}</span>
             {hasParticipation && (
-              <span className="rounded-full bg-indigo-500/40 px-1 text-[10px] text-white">
+              <span className="rounded-full bg-[var(--primary)] px-1 text-[10px] text-white">
                 1
               </span>
             )}
@@ -346,8 +346,8 @@ export function GamesFilters({
       </div>
 
       {showAdvanced && (
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/5 animate-in fade-in duration-150">
-          <span className="text-xs text-slate-400 font-semibold mr-1">
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[var(--glassBorder)] animate-in fade-in duration-150">
+          <span className="text-xs text-[var(--textSecondary)] font-semibold mr-1">
             {t('games.lounge.filters.participationLabel')}:
           </span>
           {(
@@ -370,10 +370,10 @@ export function GamesFilters({
                 aria-pressed={isActive}
                 className={`inline-flex h-7 items-center gap-1 rounded-md border px-2 text-[11px] font-medium transition-all select-none ${
                   isDisabled
-                    ? 'opacity-40 cursor-not-allowed border-white/5 bg-transparent text-slate-600'
+                    ? 'opacity-40 cursor-not-allowed border-[var(--glassBorder)] bg-transparent text-[var(--textSecondary)]'
                     : isActive
-                      ? 'border-indigo-500/40 bg-indigo-500/20 text-indigo-200 cursor-pointer'
-                      : 'border-white/10 bg-white/[0.02] text-slate-400 hover:bg-white/[0.05] hover:text-slate-200 cursor-pointer'
+                      ? 'border-[var(--primary)] bg-[var(--primary)]/20 text-[var(--primary)] font-bold cursor-pointer'
+                      : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:bg-[var(--glassBgHover)] hover:text-[var(--color)] cursor-pointer'
                 }`}
               >
                 <span>{icon}</span>
@@ -383,7 +383,7 @@ export function GamesFilters({
           })}
 
           {!canFilterParticipation && (
-            <span className="text-[11px] italic text-slate-500 ml-1">
+            <span className="text-[11px] italic text-[var(--textSecondary)] opacity-75 ml-1">
               ({t('games.create.loginRequired').toLowerCase()})
             </span>
           )}

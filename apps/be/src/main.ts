@@ -4,6 +4,8 @@ import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import type { Request, Response, NextFunction } from 'express';
+import { initTracing, shutdownTracing } from './common/tracing/opentelemetry';
 import { AppModule } from './app.module';
 import { ArcadeumLogger } from './common/logger/arcadeum-logger.service';
 import { getAllowedOrigins } from './common/utils/cors.util';
@@ -12,7 +14,31 @@ import { CsrfGuard } from './common/guards/csrf.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
 import { CompressedIoAdapter } from './common/adapters/compressed-io.adapter';
 
+/**
+ * Maximum request body size: 1 MB. Prevents abuse via oversized payloads.
+ * Game state submissions should never exceed this.
+ */
+const MAX_REQUEST_BODY_BYTES = 1 * 1024 * 1024;
+
+/**
+ * Middleware that rejects requests with body sizes exceeding the limit.
+ */
+function bodySizeLimit(req: Request, res: Response, next: NextFunction): void {
+  const contentLength = Number.parseInt(req.headers['content-length'] ?? '0', 10);
+  if (contentLength > MAX_REQUEST_BODY_BYTES) {
+    res.status(413).json({
+      statusCode: 413,
+      message: 'Request body too large',
+      error: 'Payload Too Large',
+    });
+    return;
+  }
+  next();
+}
+
 async function bootstrap() {
+  initTracing();
+
   if (
     process.env.E2E === 'true' &&
     process.env.NODE_ENV === 'production' &&
@@ -53,6 +79,7 @@ async function bootstrap() {
 
   app.use(compression());
   app.use(cookieParser());
+  app.use(bodySizeLimit);
 
   // Trust proxy: required for correct client IP resolution behind reverse proxies (nginx, Cloudflare).
   // Without this, req.ip always returns 127.0.0.1, breaking per-IP rate limiting.
@@ -99,6 +126,7 @@ async function bootstrap() {
   const shutdown = async (signal: string) => {
     logger.log(`\n[Backend] ${signal} received — shutting down gracefully`);
     await app.close();
+    await shutdownTracing();
     process.exit(0);
   };
   process.on('SIGTERM', () => void shutdown('SIGTERM'));

@@ -298,61 +298,41 @@ export function ReusableGameLobby({
       />
 
       <LobbyContent>
-        {/* Mobile: sidebar first (players are the priority), then options */}
+        {/* Mobile: compact status bar */}
         <LobbyMobileSidebar
           room={room}
-          userId={userId}
-          isHost={isHost}
           minPlayers={minPlayers}
           maxPlayers={maxPlayers}
-          isFastMode={isFastMode}
-          showReorderControls={showReorderControls}
-          showInvitedPlayers={showInvitedPlayers}
-          members={members}
-          onReorderPlayers={onReorderPlayers}
-          onReinvite={onReinvite}
-          onDeleteRoom={isHost ? handleDeleteClick : undefined}
-          onKickPlayer={isHost ? onKickPlayer : undefined}
-          onLeaveRoom={!isHost ? onLeaveRoom : undefined}
-          deleteRoomLabel={deleteRoomLabel || deleteRoomTranslations.button}
-          extraPlayersCardSlot={extraPlayersCardSlot}
-          onRefresh={onRefresh}
-          optionsSlot={optionsSlot}
-          ruleComingSoon={ruleComingSoon}
-          enableBots={enableBots}
-          showDifficulty={showDifficulty}
-          botCount={botCount}
-          setBotCount={setBotCount}
-          difficulty={difficulty}
-          setDifficulty={setDifficulty}
-          labels={labels}
         />
 
-        {/* Desktop: center + sidebar */}
-        <CenterSection
-          style={slideInStyle as never}
-          className="max-[1023px]:hidden"
-        >
-          <GameIcon style={floatStyle as never}>{gameIcon}</GameIcon>
-          <LobbyTitle style={slideInDelayedStyle as never}>
-            {waitingLabel}
-          </LobbyTitle>
-          <LobbySubtitle>{subtitleText || defaultSubtitle}</LobbySubtitle>
+        {/* Center column: desktop header + settings (single instance) */}
+        <div className="flex flex-col flex-1 min-w-0 max-w-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:order-2">
+          <CenterSection
+            style={slideInStyle as never}
+            className="max-[1023px]:hidden"
+          >
+            <GameIcon style={floatStyle as never}>{gameIcon}</GameIcon>
+            <LobbyTitle style={slideInDelayedStyle as never}>
+              {waitingLabel}
+            </LobbyTitle>
+            <LobbySubtitle>{subtitleText || defaultSubtitle}</LobbySubtitle>
 
-          <ProgressWrapper>
-            <ProgressLabel>
-              <span>{playersLabel} in Lobby</span>
-              <span>
-                {room.playerCount} / {maxPlayers}
-              </span>
-            </ProgressLabel>
-            <ProgressBar>
-              <ProgressFill width={`${progress}%`} />
-            </ProgressBar>
-          </ProgressWrapper>
+            <ProgressWrapper>
+              <ProgressLabel>
+                <span>{playersLabel} in Lobby</span>
+                <span>
+                  {room.playerCount} / {maxPlayers}
+                </span>
+              </ProgressLabel>
+              <ProgressBar>
+                <ProgressFill width={`${progress}%`} />
+              </ProgressBar>
+            </ProgressWrapper>
+          </CenterSection>
 
+          {/* Settings: host controls, theme picker, house rules — single instance */}
           {isHost && room.status === 'lobby' && (
-            <HostControls>
+            <HostControls className="max-[1023px]:mx-3">
               <HostLabel>{hostControlsLabel}</HostLabel>
               {showHostBots && (
                 <BotCountSelector>
@@ -387,7 +367,10 @@ export function ReusableGameLobby({
                           key: 'medium',
                           label: difficultyMediumLabel || 'Medium',
                         },
-                        { key: 'hard', label: difficultyHardLabel || 'Hard' },
+                        {
+                          key: 'hard',
+                          label: difficultyHardLabel || 'Hard',
+                        },
                         {
                           key: 'expert',
                           label: difficultyExpertLabel || 'Expert',
@@ -424,37 +407,40 @@ export function ReusableGameLobby({
             </HostControls>
           )}
 
-          {optionsSlot}
+          {/* Theme picker + game rules — single instance */}
+          <div className="w-full">{optionsSlot}</div>
 
+          {/* Generic lobby rules — single instance */}
           {isHost && room.status === 'lobby' && (
-            <HouseRulesSection
-              room={room}
-              ruleComingSoon={ruleComingSoon}
-              onSetOption={setOption}
-            />
+            <div className="max-[1023px]:px-3">
+              <HouseRulesSection
+                room={room}
+                ruleComingSoon={ruleComingSoon}
+                onSetOption={setOption}
+              />
+            </div>
           )}
-        </CenterSection>
-
-        <div className="max-[1023px]:hidden">
-          <LobbySidebar
-            room={room}
-            isHost={isHost}
-            minPlayers={minPlayers}
-            isFastMode={isFastMode}
-            showReorderControls={showReorderControls}
-            showInvitedPlayers={showInvitedPlayers}
-            members={members}
-            onReorderPlayers={onReorderPlayers}
-            onReinvite={onReinvite}
-            onDeleteRoom={isHost ? handleDeleteClick : undefined}
-            onKickPlayer={isHost ? onKickPlayer : undefined}
-            onLeaveRoom={!isHost ? onLeaveRoom : undefined}
-            deleteRoomLabel={deleteRoomLabel || deleteRoomTranslations.button}
-            extraPlayersCardSlot={extraPlayersCardSlot}
-            onRefresh={onRefresh}
-            labels={labels}
-          />
         </div>
+
+        {/* Player sidebar — single instance */}
+        <LobbySidebar
+          room={room}
+          isHost={isHost}
+          minPlayers={minPlayers}
+          isFastMode={isFastMode}
+          showReorderControls={showReorderControls}
+          showInvitedPlayers={showInvitedPlayers}
+          members={members}
+          onReorderPlayers={onReorderPlayers}
+          onReinvite={onReinvite}
+          onDeleteRoom={isHost ? handleDeleteClick : undefined}
+          onKickPlayer={isHost ? onKickPlayer : undefined}
+          onLeaveRoom={!isHost ? onLeaveRoom : undefined}
+          deleteRoomLabel={deleteRoomLabel || deleteRoomTranslations.button}
+          extraPlayersCardSlot={extraPlayersCardSlot}
+          onRefresh={onRefresh}
+          labels={labels}
+        />
       </LobbyContent>
 
       {isHost && room.status === 'lobby' && (

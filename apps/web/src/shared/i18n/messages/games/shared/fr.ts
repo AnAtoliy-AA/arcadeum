@@ -187,6 +187,7 @@ export const frMessages = {
     submitCreating: 'Création...',
     comingSoon: 'Bientôt disponible',
     sectionHouseRules: 'Règles Maison',
+    sectionLobbySettings: 'Paramètres du Lobby',
     sectionGameConfig: 'Paramètres du Jeu',
     houseRuleActionCardCombos: "Combos de Cartes d'Action",
     houseRuleActionCardCombosHint: 'Toute paire',

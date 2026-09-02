@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import type { ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import {
@@ -50,17 +50,12 @@ const THEME_INDEX = new Map<string, GameTheme>(
   SHARED_THEMES.map((t) => [t.id, t]),
 );
 
-const INITIAL_MOBILE_COUNT = 8;
-
 /**
  * Shared Visual Theme Picker.
  *
- * Desktop: compact grid with short cards.
- * Mobile: horizontal scroll strip with circular thumbnails + active name below.
- *
- * Both layouts exist in the DOM, toggled by CSS `hidden`/`max-[800px]:flex`.
- * Only one is visible at a time in the browser. Tests use `.first()` to
- * avoid Playwright strict-mode errors from multiple matching elements.
+ * Single set of buttons with responsive CSS:
+ * - Desktop: compact grid with short cards.
+ * - Mobile: horizontal scroll strip with circular thumbnails.
  */
 export function GameThemePicker({
   selectedTheme = 'adventure',
@@ -76,7 +71,6 @@ export function GameThemePicker({
 }: GameThemePickerProps) {
   const { t } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [showAll, setShowAll] = useState(false);
 
   const pickerOptions: GameThemePickerOption[] = options ?? [
     ...SHARED_THEMES.map<GameThemePickerOption>((theme) => ({
@@ -92,11 +86,6 @@ export function GameThemePicker({
     ? pickerOptions.filter((o) => allowedThemes.includes(o.id))
     : pickerOptions;
 
-  const visibleMobile = showAll
-    ? visible
-    : visible.slice(0, INITIAL_MOBILE_COUNT);
-  const hasMore = visible.length > INITIAL_MOBILE_COUNT;
-
   const resolveName = (option: GameThemePickerOption): string => {
     if (option.nameKey) {
       if (option.nameKey.startsWith('games.')) {
@@ -107,9 +96,6 @@ export function GameThemePicker({
     return option.name ?? option.id;
   };
 
-  const selectedName = visible.find((o) => o.id === selectedTheme);
-  const activeName = selectedName ? resolveName(selectedName) : null;
-
   return (
     <div className={cx('flex flex-col gap-2 w-full min-w-0', className)}>
       {label ? (
@@ -118,24 +104,26 @@ export function GameThemePicker({
         </span>
       ) : null}
 
-      {/* Mobile: horizontal scroll strip */}
+      {/* Single responsive container — grid on desktop, snap scroll on mobile */}
       <div
         ref={scrollRef}
-        className="max-[800px]:flex hidden"
+        className={cx(
+          'w-full max-w-full min-w-0',
+          layout === 'grid'
+            ? 'grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-[800px]:flex max-[800px]:grid-cols-none max-[800px]:gap-2 max-[800px]:overflow-x-auto max-[800px]:snap-x max-[800px]:scroll-smooth'
+            : 'flex gap-2 overflow-x-auto pb-1 scroll-smooth',
+        )}
         style={
           {
-            gap: 10,
-            overflowX: 'auto',
             WebkitOverflowScrolling: 'touch',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            paddingBottom: 4,
           } as React.CSSProperties
         }
         role="radiogroup"
         aria-label={label ?? 'Theme'}
       >
-        {visibleMobile.map((option) => {
+        {visible.map((option) => {
           const theme = THEME_INDEX.get(option.id);
           const active = selectedTheme === option.id;
           const comingSoon = option.comingSoon || false;
@@ -157,103 +145,39 @@ export function GameThemePicker({
               data-testid={`theme-${option.id}`}
               onClick={() => onSelect(option.id)}
               className={cx(
-                'relative flex flex-col items-center gap-1 shrink-0 snap-center transition-all duration-200',
-                disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer',
-              )}
-            >
-              <div
-                className={cx(
-                  'w-11 h-11 rounded-full flex items-center justify-center text-xl transition-all duration-200 border-2',
-                  active
-                    ? 'border-[var(--primary)] ring-2 ring-[var(--primary)]/30 scale-110'
-                    : 'border-transparent',
-                )}
-                style={{
-                  background: option.gradient ?? theme?.gradient ?? '#1a1030',
-                }}
-              >
-                {renderThumbnail && theme ? (
-                  renderThumbnail(theme)
-                ) : (
-                  <span>{option.emoji ?? theme?.emoji ?? '🎲'}</span>
-                )}
-              </div>
-              {active && activeName ? (
-                <span className="text-[11px] font-semibold text-[var(--primary)] max-w-[56px] truncate text-center leading-tight">
-                  {activeName}
-                </span>
-              ) : null}
-              {comingSoon ? (
-                <span className="absolute -top-1 -right-1 rounded-full bg-[var(--foreground)]/90 px-1 py-px text-[7px] font-bold uppercase tracking-wide text-[var(--background)]">
-                  New
-                </span>
-              ) : null}
-            </button>
-          );
-        })}
-        {!showAll && hasMore ? (
-          <button
-            type="button"
-            onClick={() => setShowAll(true)}
-            className="flex flex-col items-center justify-center gap-1 shrink-0 snap-center w-11 h-11 rounded-full border border-dashed border-[var(--borderColor)] bg-[var(--glassBg)] cursor-pointer transition-all duration-200 hover:border-[var(--primary)]/50"
-            aria-label="Show all themes"
-          >
-            <span className="text-[14px] text-[var(--textSecondary)]">+</span>
-          </button>
-        ) : null}
-      </div>
-
-      {/* Desktop: compact grid */}
-      <div
-        className={cx(
-          'w-full max-w-full min-w-0',
-          layout === 'grid'
-            ? 'max-[800px]:hidden grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2'
-            : 'max-[800px]:hidden flex gap-2 overflow-x-auto pb-1 scroll-smooth',
-        )}
-        role="radiogroup"
-        aria-label={label ?? 'Theme'}
-      >
-        {visible.map((option) => {
-          const theme = THEME_INDEX.get(option.id);
-          const active = selectedTheme === option.id;
-          const comingSoon = option.comingSoon || false;
-          const disabled =
-            overallDisabled ||
-            option.disabled ||
-            comingSoon ||
-            (showComingSoon && !theme) ||
-            false;
-          return (
-            <button
-              key={option.id}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              aria-disabled={disabled || undefined}
-              disabled={disabled}
-              data-testid={`theme-${option.id}`}
-              onClick={() => onSelect(option.id)}
-              className={cx(
-                'relative flex flex-col items-center gap-1.5 rounded-xl border p-2 text-center transition-all duration-200',
+                'relative flex flex-col items-center gap-1.5 rounded-xl border p-2 text-center transition-all duration-200 min-w-0',
+                'max-[800px]:w-auto max-[800px]:min-w-[30%] max-[800px]:max-w-[33%] max-[800px]:snap-start max-[800px]:shrink-0 max-[800px]:rounded-2xl max-[800px]:border-0 max-[800px]:bg-transparent max-[800px]:p-2 max-[800px]:gap-1.5',
                 layout === 'scroll'
                   ? 'min-w-[90px] max-w-[100px] shrink-0'
-                  : 'w-full min-w-0',
+                  : '',
                 active
-                  ? 'border-[var(--primary)] bg-[var(--primary)]/8 ring-1 ring-[var(--primary)]/30'
-                  : 'border-[var(--borderColor)] bg-[var(--glassBg)] hover:border-[var(--primary)]/50',
+                  ? 'border-[var(--primary)] bg-[var(--primary)]/8 ring-1 ring-[var(--primary)]/30 max-[800px]:ring-0'
+                  : 'border-[var(--borderColor)] bg-[var(--glassBg)] hover:border-[var(--primary)]/50 max-[800px]:hover:bg-transparent',
                 disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer',
               )}
             >
               {comingSoon ? (
                 <span
                   data-testid="coming-soon-badge"
-                  className="absolute -top-1.5 -right-1.5 z-10 rounded-full bg-[var(--foreground)]/90 px-1.5 py-px text-[8px] font-bold uppercase tracking-wide text-[var(--background)]"
+                  className="absolute -top-1.5 -right-1.5 z-10 rounded-full bg-[var(--foreground)]/90 px-1.5 py-px text-[8px] font-bold uppercase tracking-wide text-[var(--background)] max-[800px]:-top-0.5 max-[800px]:-right-0.5 max-[800px]:px-1 max-[800px]:py-px max-[800px]:text-[7px]"
                 >
                   {t('games.create.comingSoon') || 'Soon'}
                 </span>
               ) : null}
-              <div className="flex h-10 w-full items-center justify-center overflow-hidden rounded-lg text-2xl">
+
+              {/* Thumbnail — larger on mobile */}
+              <div
+                className={cx(
+                  'flex h-10 w-full items-center justify-center overflow-hidden rounded-lg text-2xl transition-all duration-200 border-2',
+                  'max-[800px]:w-14 max-[800px]:h-14 max-[800px]:rounded-xl max-[800px]:border-0',
+                  active
+                    ? 'max-[800px]:ring-2 max-[800px]:ring-[var(--primary)]/40 max-[800px]:scale-105'
+                    : '',
+                )}
+                style={{
+                  background: option.gradient ?? theme?.gradient ?? '#1a1030',
+                }}
+              >
                 {renderThumbnail && theme ? (
                   renderThumbnail(theme)
                 ) : (
@@ -268,12 +192,22 @@ export function GameThemePicker({
                   </span>
                 )}
               </div>
-              <span className="text-[11px] font-medium text-[var(--foreground)] leading-tight truncate w-full">
+
+              {/* Name — always visible */}
+              <span
+                className={cx(
+                  'text-[11px] font-medium text-[var(--foreground)] leading-tight truncate w-full',
+                  'max-[800px]:text-[13px] max-[800px]:font-semibold max-[800px]:whitespace-nowrap max-[800px]:text-center max-[800px]:leading-tight max-[800px]:!overflow-visible',
+                  active && 'max-[800px]:text-[var(--primary)]',
+                )}
+              >
                 {resolveName(option)}
               </span>
+
+              {/* Active checkmark — desktop only */}
               {active ? (
                 <span
-                  className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--primary)] text-[9px] font-bold text-[var(--primaryForeground,white)]"
+                  className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--primary)] text-[9px] font-bold text-[var(--primaryForeground,white)] max-[800px]:hidden"
                   aria-hidden="true"
                 >
                   ✓

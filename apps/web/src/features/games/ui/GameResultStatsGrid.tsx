@@ -104,13 +104,15 @@ export function GameResultStatsGrid({
       {items.map((item) => (
         <div
           key={item.id}
-          className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-black/30 p-2.5 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:bg-black/40"
+          className="flex flex-col items-center justify-center rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-2.5 backdrop-blur-md transition-all duration-300 hover:border-[var(--glassBorderStrong)]"
         >
-          {item.icon && <div className="mb-1 text-white/70">{item.icon}</div>}
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          {item.icon && (
+            <div className="mb-1 text-[var(--textSecondary)]">{item.icon}</div>
+          )}
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
             {item.label}
           </span>
-          <span className="text-base font-bold tabular-nums text-white">
+          <span className="text-base font-bold tabular-nums text-[var(--color)]">
             {item.value}
           </span>
         </div>

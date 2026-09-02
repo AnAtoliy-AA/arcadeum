@@ -145,7 +145,9 @@ export const LobbyPlayerAvatarText = ({
   className?: string;
   children?: ReactNode;
 }) => (
-  <span className={cx('font-semibold text-[14px] text-[#f5f7ff]', className)}>
+  <span
+    className={cx('font-semibold text-[14px] text-[var(--color)]', className)}
+  >
     {children}
   </span>
 );

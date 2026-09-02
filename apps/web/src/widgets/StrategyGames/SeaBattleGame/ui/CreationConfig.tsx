@@ -169,7 +169,6 @@ export default function SeaBattleCreationConfig({
       <RulesModal
         isOpen={showRules}
         onClose={() => setShowRules(false)}
-        t={t}
       />
     </>
   );

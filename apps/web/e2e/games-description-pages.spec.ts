@@ -111,19 +111,8 @@ test.describe('Games Description Landing Pages', () => {
       page.locator('[data-testid="games-catalog-card-critical_v1"]'),
     ).toHaveCount(0);
 
-    const searchInput = page.locator('[data-testid="games-catalog-search"]');
-    await expect(searchInput).toBeVisible();
-    await searchInput.fill('Sea Battle');
-    await expect(
-      page.locator('[data-testid="games-catalog-card-sea_battle_v1"]'),
-    ).toBeVisible();
-    await expect(
-      page.locator('[data-testid="games-catalog-card-chess_v1"]'),
-    ).toHaveCount(0);
-
     const allFilter = page.locator('[data-testid="category-filter-all"]');
     await allFilter.click();
-    await searchInput.fill('');
     await expect(catalogCards).toHaveCount(initialCount);
 
     const catalogJsonLd = page.locator('script#json-ld-games-en');

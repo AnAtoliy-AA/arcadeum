@@ -37,8 +37,8 @@ export function PostGameHighlights({
 
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-      <div className="rounded-xl border border-white/10 bg-black/30 p-2.5">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+      <div className="rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-2.5">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
           {t('games.table.analytics.highlights.pace')}
         </span>
         <p className="mt-1 font-mono text-sm font-bold text-emerald-400">
@@ -50,22 +50,22 @@ export function PostGameHighlights({
         </p>
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-black/30 p-2.5">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+      <div className="rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-2.5">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
           {t('games.table.analytics.highlights.efficiency')}
         </span>
-        <p className="mt-1 text-sm font-bold text-indigo-300">
+        <p className="mt-1 text-sm font-bold text-indigo-400">
           {myMovesCount > 0
             ? `${myMovesCount} / ${totalMoves} actions`
             : t('games.table.analytics.highlights.dominant')}
         </p>
       </div>
 
-      <div className="col-span-2 rounded-xl border border-white/10 bg-black/30 p-2.5 sm:col-span-1">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+      <div className="col-span-2 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-2.5 sm:col-span-1">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
           {t('games.table.analytics.highlights.title')}
         </span>
-        <p className="mt-1 truncate text-sm font-bold text-amber-300">
+        <p className="mt-1 truncate text-sm font-bold text-amber-400">
           {stats?.accuracy
             ? `Accuracy: ${stats.accuracy}`
             : stats?.score !== undefined

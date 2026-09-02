@@ -88,7 +88,7 @@ export function PostGameSuggestions({
       className={cx('flex w-full flex-col gap-2', sm ? 'px-1' : 'px-2')}
       data-testid="post-game-suggestions"
     >
-      <p className="mb-1 text-center text-xs font-semibold uppercase tracking-widest text-slate-400">
+      <p className="mb-1 text-center text-xs font-semibold uppercase tracking-widest text-[var(--textSecondary)]">
         {t('games.common.postGame.whatNext')}
       </p>
 
@@ -131,7 +131,7 @@ export function PostGameSuggestions({
 
         <Link
           href={routes.rewards}
-          className="flex items-center justify-between rounded-xl border border-amber-400/30 bg-amber-400/10 px-3.5 py-2.5 text-xs text-amber-300 no-underline transition-all duration-200 hover:bg-amber-400/20"
+          className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 text-xs text-amber-600 dark:text-amber-300 no-underline transition-all duration-200 hover:bg-amber-500/20"
           data-testid="post-game-rewards-prompt"
         >
           <span className="font-semibold">

@@ -89,13 +89,7 @@ export default function PrivacyContent({
           data-testid="privacy-page-wrapper"
         >
           {/* Hero Header */}
-          <GlassCard
-            style={{
-              background:
-                'radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.6) 80%)',
-            }}
-            className="items-center text-center p-9"
-          >
+          <GlassCard className="items-center text-center p-9 border border-[var(--glassBorder)] bg-[var(--glassBg)]">
             <div className="flex flex-col gap-3 items-center max-w-[720px]">
               <Badge accent="#38BDF8">Data Protection & Trust</Badge>
 
@@ -113,7 +107,7 @@ export default function PrivacyContent({
                 <Typography
                   variant="caption"
                   alpha="medium"
-                  className="text-xs uppercase tracking-wider"
+                  className="text-xs uppercase tracking-wider text-[var(--textSecondary)]"
                 >
                   {t.lastUpdated}
                 </Typography>
@@ -123,7 +117,7 @@ export default function PrivacyContent({
                 variant="body"
                 uiSize="lg"
                 alpha="high"
-                className="mt-2 text-slate-300"
+                className="mt-2 text-[var(--textSecondary)]"
               >
                 Learn how {APP_NAME} collects, uses, and safeguards your
                 personal data with transparency and security.
@@ -133,21 +127,21 @@ export default function PrivacyContent({
               <div className="flex flex-wrap gap-3 justify-center mt-4">
                 <Link
                   href={routes.terms}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-indigo-400/40 hover:bg-white/10 text-xs font-semibold text-indigo-300 transition-all no-underline"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)] hover:border-[var(--glassBorderStrong)] text-xs font-semibold text-[var(--color)] transition-all no-underline"
                 >
                   <FileTextIcon size={14} />
                   Terms of Service
                 </Link>
                 <Link
                   href={routes.cookies}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-sky-400/40 hover:bg-white/10 text-xs font-semibold text-sky-300 transition-all no-underline"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)] hover:border-[var(--glassBorderStrong)] text-xs font-semibold text-[var(--color)] transition-all no-underline"
                 >
                   <FileTextIcon size={14} />
                   Cookie Policy
                 </Link>
                 <Link
                   href={routes.contact}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-emerald-400/40 hover:bg-white/10 text-xs font-semibold text-emerald-300 transition-all no-underline"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)] hover:border-[var(--glassBorderStrong)] text-xs font-semibold text-[var(--color)] transition-all no-underline"
                 >
                   <MailIcon size={14} />
                   {contactT?.title ?? 'Contact Privacy Team'}

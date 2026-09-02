@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import type { ComponentProps, CSSProperties, ReactNode } from 'react';
 import { Button, type GameVariant } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
@@ -41,16 +42,20 @@ export function Modal({ open, onOpenChange, children, className }: ModalProps) {
 
   if (!open) return null;
 
-  return (
-    <div className={cx('fixed inset-0 z-[1000]', className)}>
-      <div className="absolute inset-0 bg-black" aria-hidden />
+  return createPortal(
+    <div className={cx('fixed inset-0 z-[9999]', className)}>
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        aria-hidden
+      />
       <div
         ref={contentRef}
         className="relative z-[1] flex h-full items-center justify-center"
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -75,11 +80,11 @@ export type ModalFrameProps = {
 
 const FRAME_VARIANT_CLASSES: Record<ModalVariant, string> = {
   default:
-    'border border-[var(--borderColor)] bg-[var(--background)] shadow-[0_20px_60px_rgba(0,0,0,0.5)]',
+    'border border-[var(--glassBorderStrong)] bg-[var(--background)] text-[var(--color)] shadow-2xl',
   cyberpunk:
-    'border-2 border-[rgba(192,38,211,0.6)] bg-[rgba(20,0,30,0.95)] shadow-[0_20px_30px_rgba(192,38,211,0.2)]',
+    'border border-[var(--glassBorderStrong)] bg-[var(--background)] text-[var(--color)] shadow-2xl',
   underwater:
-    'border-2 border-[rgba(34,211,238,0.5)] bg-[rgba(8,51,68,0.85)] shadow-[0_20px_30px_rgba(34,211,238,0.2)]',
+    'border border-[var(--glassBorderStrong)] bg-[var(--background)] text-[var(--color)] shadow-2xl',
 };
 
 export const ModalFrame = ({
@@ -98,7 +103,7 @@ export const ModalFrame = ({
     aria-label={ariaLabel}
     data-testid={dataTestId}
     className={cx(
-      'relative w-full max-w-[600px] max-h-[calc(100vh-40px)] overflow-hidden',
+      'relative w-full max-w-[600px] h-full max-h-[calc(100vh-40px)] overflow-hidden',
       variant === 'cyberpunk' ? 'rounded-[4px]' : 'rounded-[24px]',
       FRAME_VARIANT_CLASSES[variant],
       className,
@@ -131,6 +136,8 @@ export const ScrollArea = ({
 
 export const ModalContent = ({
   children,
+  header,
+  footer,
   variant,
   maxWidth,
   className,
@@ -144,18 +151,21 @@ export const ModalContent = ({
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
+  header?: ReactNode;
+  footer?: ReactNode;
   id?: string;
   'aria-label'?: string;
   'data-testid'?: string;
 }) => {
   const resolvedVariant = resolveModalVariant(variant);
+  const hasSticky = header || footer;
 
   return (
     <ModalFrame
       id={id}
       aria-label={ariaLabel}
       data-testid={dataTestId}
-      className={cx('m-auto', className)}
+      className={cx('m-auto', hasSticky ? 'flex flex-col' : '', className)}
       style={maxWidth ? { maxWidth, ...style } : style}
       variant={resolvedVariant}
     >
@@ -174,7 +184,15 @@ export const ModalContent = ({
       {resolvedVariant === 'underwater' && (
         <div className="absolute inset-[4px] border border-[rgba(34,_211,_238,_0.2)] rounded-[20px] pointer-events-none" />
       )}
-      <ScrollArea>{children}</ScrollArea>
+      {hasSticky ? (
+        <>
+          {header}
+          <ScrollArea className="flex-1">{children}</ScrollArea>
+          {footer}
+        </>
+      ) : (
+        <ScrollArea>{children}</ScrollArea>
+      )}
     </ModalFrame>
   );
 };
@@ -190,7 +208,7 @@ export const ModalHeader = ({
 }) => (
   <div
     className={cx(
-      'flex flex-row items-center justify-between mb-4 pb-3 border-b-2 border-b-[var(--borderColor)]',
+      'flex flex-row items-center justify-between mb-4 pb-3 border-b border-b-[var(--glassBorder)]',
       variant === 'cyberpunk' && 'border-b-[rgba(6,182,212,0.3)]',
       className,
     )}
@@ -249,7 +267,10 @@ export const CloseButton = ({
   children,
 }: CloseButtonProps) => (
   <Button
-    className={cx('hover:rotate-[180deg] hover:scale-[1.1]', className)}
+    className={cx(
+      'text-[var(--color)] hover:rotate-[180deg] hover:scale-[1.1] hover:text-[var(--primary)]',
+      className,
+    )}
     variant="icon"
     size="sm"
     data-testid={dataTestId}

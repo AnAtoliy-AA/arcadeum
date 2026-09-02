@@ -153,7 +153,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
               <Typography
                 variant="body"
                 uiSize="lg"
-                className="text-slate-200 leading-relaxed"
+                className="text-[var(--textSecondary)] leading-relaxed"
               >
                 {help?.description ??
                   'Find answers to common questions, gameplay guides, and system troubleshooting.'}
@@ -168,16 +168,16 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                     help?.searchPlaceholder ??
                     'Search help guides, topics, and FAQs…'
                   }
-                  className="w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-5 py-3.5 pl-12 text-sm text-white placeholder-slate-400 outline-none backdrop-blur-md transition-all duration-200 focus:border-[var(--accent,#38bdf8)] focus:ring-2 focus:ring-[var(--accent,#38bdf8)]/20"
+                  className="w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--background)] px-5 py-3.5 pl-12 text-sm text-[var(--color)] placeholder-[var(--textSecondary)] outline-none backdrop-blur-md transition-all duration-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
                 />
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-slate-400">
+                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-[var(--textSecondary)]">
                   🔍
                 </span>
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-300 hover:text-white"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-[var(--backgroundHover)] px-2 py-0.5 text-xs text-[var(--textSecondary)] hover:text-[var(--color)]"
                   >
                     ✕
                   </button>
@@ -196,12 +196,12 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                 variant="label"
                 uiSize="sm"
                 weight="700"
-                className="text-white"
+                className="text-[var(--color)]"
               >
                 {status?.operational ?? 'All Systems Operational'}
               </Typography>
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-300">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--textSecondary)]">
               <span>{status?.gateway ?? 'WebSocket Gateway: 100% Online'}</span>
               <span>•</span>
               <span>{status?.cloud ?? 'Game Engine Cloud: Low Latency'}</span>
@@ -214,7 +214,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                 variant="heading"
                 uiSize="xl"
                 weight="800"
-                className="text-white"
+                className="text-[var(--color)]"
               >
                 Browse by Topic
               </Typography>
@@ -240,8 +240,8 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                         className={cx(
                           'flex h-full flex-col justify-between gap-4 p-6 transition-all duration-200 hover:-translate-y-1',
                           isSelected
-                            ? 'border-[var(--accent,#38bdf8)] bg-[var(--glassBg)] ring-2 ring-[var(--accent,#38bdf8)]/30'
-                            : 'hover:border-white/20',
+                            ? 'border-[var(--primary)] bg-[var(--backgroundHover)] ring-2 ring-[var(--primary)]/30'
+                            : 'hover:border-[var(--glassBorderStrong)]',
                         )}
                       >
                         <div className="flex flex-col gap-3">
@@ -250,19 +250,19 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                             variant="heading"
                             uiSize="md"
                             weight="700"
-                            className="text-white group-hover:text-[var(--accent,#38bdf8)] transition-colors"
+                            className="text-[var(--color)] group-hover:text-[var(--primary)] transition-colors"
                           >
                             {category?.title}
                           </Typography>
                           <Typography
                             variant="body"
                             uiSize="sm"
-                            className="text-slate-300 leading-relaxed"
+                            className="text-[var(--textSecondary)] leading-relaxed"
                           >
                             {category?.description}
                           </Typography>
                         </div>
-                        <span className="text-xs font-bold text-[var(--accent,#38bdf8)] group-hover:underline">
+                        <span className="text-xs font-bold text-[var(--primary)] group-hover:underline">
                           {isSelected
                             ? 'Selected Category ▾'
                             : 'Explore Guides →'}
@@ -282,7 +282,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                   variant="heading"
                   uiSize="xl"
                   weight="800"
-                  className="text-white"
+                  className="text-[var(--color)]"
                 >
                   {faq?.heading ?? 'Frequently Asked Questions'}
                 </Typography>
@@ -290,7 +290,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                   <button
                     type="button"
                     onClick={() => setSelectedCategory(null)}
-                    className="cursor-pointer border-0 bg-transparent text-xs font-bold text-[var(--accent,#38bdf8)] hover:underline"
+                    className="cursor-pointer border-0 bg-transparent text-xs font-bold text-[var(--primary)] hover:underline"
                   >
                     Show all FAQs
                   </button>
@@ -302,7 +302,7 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                   <Typography
                     variant="body"
                     uiSize="md"
-                    className="text-slate-300"
+                    className="text-[var(--textSecondary)]"
                   >
                     {selectedCategory
                       ? 'No articles found in this category.'
@@ -314,19 +314,22 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                   {filteredFaqItems.map((item, idx) => {
                     const isOpen = expandedFaqs[idx] ?? false;
                     return (
-                      <GlassCard key={idx} className="overflow-hidden p-0">
+                      <GlassCard
+                        key={idx}
+                        className="overflow-hidden p-0 border border-[var(--glassBorder)] bg-[var(--glassBg)]"
+                      >
                         <button
                           type="button"
                           onClick={() => toggleFaq(idx)}
                           aria-expanded={isOpen}
-                          className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent p-5 text-left text-white hover:bg-white/[0.04] transition-colors"
+                          className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent p-5 text-left text-[var(--color)] hover:bg-[var(--backgroundHover)] transition-colors"
                         >
-                          <span className="text-base font-bold text-white">
+                          <span className="text-base font-bold text-[var(--color)]">
                             {item?.question}
                           </span>
                           <span
                             className={cx(
-                              'text-lg text-[var(--accent,#38bdf8)] transition-transform duration-200',
+                              'text-lg text-[var(--primary)] transition-transform duration-200',
                               isOpen ? 'rotate-180' : 'rotate-0',
                             )}
                           >
@@ -334,11 +337,11 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                           </span>
                         </button>
                         {isOpen && (
-                          <div className="border-t border-[var(--glassBorder)] p-5 pt-3">
+                          <div className="border-t border-[var(--glassBorder)] p-5 pt-3 bg-[var(--background)]">
                             <Typography
                               variant="body"
                               uiSize="sm"
-                              className="text-slate-200 leading-relaxed"
+                              className="text-[var(--textSecondary)] leading-relaxed"
                             >
                               {item?.answer}
                             </Typography>
@@ -359,14 +362,14 @@ export default function HelpPageContent({ t: initialT }: HelpPageContentProps) {
                   variant="heading"
                   uiSize="lg"
                   weight="800"
-                  className="text-white"
+                  className="text-[var(--color)]"
                 >
                   {contact.title}
                 </Typography>
                 <Typography
                   variant="body"
                   uiSize="sm"
-                  className="text-slate-300 leading-relaxed"
+                  className="text-[var(--textSecondary)] leading-relaxed"
                 >
                   {contact.subtitle}
                 </Typography>

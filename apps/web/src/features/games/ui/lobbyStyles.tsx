@@ -160,7 +160,8 @@ export const RoomNameText = ({
   <span
     data-testid={dataTestId}
     className={cx(
-      'text-[20px] font-semibold text-[var(--color)] overflow-hidden truncate',
+      'text-[20px] font-bold overflow-hidden truncate',
+      'bg-gradient-to-r from-[var(--color)] via-[var(--primary)] to-[var(--color)] bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer',
       className,
     )}
   >

@@ -41,7 +41,7 @@ export function ReplayShareButton({ replayId, t }: ReplayShareButtonProps) {
         'flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold transition-colors duration-200',
         copied
           ? 'bg-[var(--success)] text-white'
-          : 'bg-[rgba(255,255,255,0.08)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,255,255,0.14)] hover:text-white',
+          : 'bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]',
       )}
     >
       {copied ? '✓' : '🔗'}

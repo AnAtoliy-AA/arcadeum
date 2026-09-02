@@ -391,7 +391,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             setShowRules(false);
             onShowRulesClose?.();
           }}
-          t={t}
         />
       </SeaBattleThemeProvider>
     );

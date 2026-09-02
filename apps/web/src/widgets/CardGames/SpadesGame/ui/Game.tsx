@@ -253,7 +253,11 @@ function SpadesGameImpl({
           backLabel: t('games.table.analytics.back'),
         }}
       />
-      <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
+      <RulesModal
+        open={showRulesOpen}
+        onClose={onShowRulesClose}
+        variant={visualTheme}
+      />
     </>
   );
 

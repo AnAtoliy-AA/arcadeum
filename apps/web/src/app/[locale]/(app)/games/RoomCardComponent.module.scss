@@ -123,7 +123,12 @@
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #fff 0%, #7ad7ff 50%, #fff 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color) 0%,
+    var(--primary) 50%,
+    var(--color) 100%
+  );
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -149,7 +154,7 @@
 }
 
 .avatarOverlap {
-  border: 2px solid #1a1d1e;
+  border: 2px solid var(--glassBorder);
   border-radius: 50%;
   margin-left: -8px;
   transition: transform 0.2s ease;
@@ -178,8 +183,13 @@
 
 .roomCard.completed .roomTitle {
   animation: none;
-  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 50%, #9ca3af 100%);
+  background: linear-gradient(
+    135deg,
+    var(--textSecondary) 0%,
+    var(--textSecondary) 100%
+  );
   -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
@@ -200,8 +210,6 @@
   box-shadow: none;
 }
 
-/* ─── List View ──────────────────────────────────────────────────────────── */
-
 .roomCard.listView {
   padding: 0.625rem 1rem;
   border-radius: 10px;
@@ -219,6 +227,17 @@
 .roomCard.listView .roomTitle {
   font-size: 1rem;
   max-width: 360px;
+  background: linear-gradient(
+    135deg,
+    var(--color) 0%,
+    var(--primary) 50%,
+    var(--color) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 6s linear infinite;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

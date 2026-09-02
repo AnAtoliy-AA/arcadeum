@@ -42,7 +42,7 @@ export function PostGameTimeline({
       {moveTimeline.length > 0 ? (
         <>
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-white/50">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
               {t('games.table.analytics.moves.title')}
             </span>
             <div className="flex gap-1">
@@ -52,8 +52,8 @@ export function PostGameTimeline({
                 className={cx(
                   'rounded-md px-2 py-0.5 text-[10px] font-semibold transition-all',
                   filter === 'all'
-                    ? 'bg-white/20 text-white'
-                    : 'text-white/40 hover:bg-white/5 hover:text-white/70',
+                    ? 'bg-[var(--backgroundHover)] text-[var(--color)]'
+                    : 'text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--color)]',
                 )}
               >
                 {t('games.table.analytics.moves.filterAll')}
@@ -66,8 +66,8 @@ export function PostGameTimeline({
                     className={cx(
                       'rounded-md px-2 py-0.5 text-[10px] font-semibold transition-all',
                       filter === 'mine'
-                        ? 'bg-indigo-500/30 text-indigo-300'
-                        : 'text-white/40 hover:bg-white/5 hover:text-white/70',
+                        ? 'bg-indigo-500/30 text-indigo-400'
+                        : 'text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--color)]',
                     )}
                   >
                     {t('games.table.analytics.moves.filterMine')}
@@ -78,8 +78,8 @@ export function PostGameTimeline({
                     className={cx(
                       'rounded-md px-2 py-0.5 text-[10px] font-semibold transition-all',
                       filter === 'opponent'
-                        ? 'bg-rose-500/30 text-rose-300'
-                        : 'text-white/40 hover:bg-white/5 hover:text-white/70',
+                        ? 'bg-rose-500/30 text-rose-400'
+                        : 'text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--color)]',
                     )}
                   >
                     {t('games.table.analytics.moves.filterOpponent')}
@@ -91,7 +91,7 @@ export function PostGameTimeline({
 
           <div className="flex max-h-[220px] flex-col gap-1.5 overflow-y-auto pr-1">
             {filteredMoves.length === 0 ? (
-              <div className="py-4 text-center text-xs text-white/40">
+              <div className="py-4 text-center text-xs text-[var(--textSecondary)]">
                 {t('games.table.analytics.moves.empty')}
               </div>
             ) : (
@@ -103,11 +103,11 @@ export function PostGameTimeline({
                     className={cx(
                       'flex items-center gap-2.5 rounded-xl border px-3 py-2 text-[12px] transition-colors',
                       isCurrent
-                        ? 'border-indigo-500/20 bg-indigo-950/20 text-white/90'
-                        : 'border-white/5 bg-black/20 text-white/60',
+                        ? 'border-indigo-500/20 bg-indigo-500/10 text-[var(--color)]'
+                        : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)]',
                     )}
                   >
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 font-mono text-[10px] font-bold text-white/70">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--backgroundHover)] font-mono text-[10px] font-bold text-[var(--color)]">
                       {entry.turn}
                     </span>
                     <span className="flex-1 truncate">{entry.description}</span>
@@ -130,7 +130,7 @@ export function PostGameTimeline({
       ) : (
         <div className="flex flex-col items-center gap-2 py-4">
           <span className="text-2xl">🎯</span>
-          <p className="text-center text-[13px] text-white/50">
+          <p className="text-center text-[13px] text-[var(--textSecondary)]">
             {t('games.table.analytics.moves.empty')}
           </p>
         </div>

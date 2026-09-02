@@ -96,26 +96,26 @@ export const violetLightTokens: ThemeTokens = {
   text: {
     primary: '#1e1b4b',
     secondary: '#2e1d6b',
-    muted: 'rgba(109,40,217,0.65)',
+    muted: 'rgba(76, 29, 149, 0.85)',
     accent: '#7c3aed',
     accentSoft: '#4f46e5',
-    onAccent: '#faf5ff',
+    onAccent: '#ffffff',
     notice: '#6d28d9',
   },
   surfaces: {
     hero: {
       background: 'rgba(255,255,255,0.92)',
-      border: 'rgba(167,139,250,0.3)',
+      border: 'rgba(167,139,250,0.35)',
       shadow: '0 28px 70px rgba(109,40,217,0.1)',
     },
     panel: {
       background: 'rgba(255,255,255,0.88)',
-      border: 'rgba(167,139,250,0.25)',
+      border: 'rgba(167,139,250,0.3)',
       shadow: '0 22px 60px rgba(109,40,217,0.1)',
     },
     card: {
       background: 'rgba(250,245,255,0.95)',
-      border: 'rgba(196,181,253,0.5)',
+      border: 'rgba(196,181,253,0.55)',
       shadow: '0 16px 40px rgba(109,40,217,0.08)',
     },
   },
@@ -154,8 +154,8 @@ export const violetLightTokens: ThemeTokens = {
     secondary: {
       background: 'rgba(109,40,217,0.08)',
       hoverBackground: 'rgba(109,40,217,0.14)',
-      border: 'rgba(109,40,217,0.2)',
-      hoverBorder: 'rgba(109,40,217,0.38)',
+      border: 'rgba(109,40,217,0.25)',
+      hoverBorder: 'rgba(109,40,217,0.45)',
       text: '#1e1b4b',
     },
   },
@@ -165,9 +165,9 @@ export const violetLightTokens: ThemeTokens = {
     border: 'rgba(196,181,253,0.45)',
   },
   glass: {
-    background: 'rgba(255, 255, 255, 0.72)',
-    border: 'rgba(167, 139, 250, 0.15)',
-    borderStrong: 'rgba(167, 139, 250, 0.4)',
+    background: 'rgba(255, 255, 255, 0.85)',
+    border: 'rgba(167, 139, 250, 0.35)',
+    borderStrong: 'rgba(124, 58, 237, 0.55)',
   },
   copyNotice: '#6d28d9',
 };

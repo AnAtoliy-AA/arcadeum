@@ -95,7 +95,7 @@ function SolitaireTable() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-4 px-2">
-      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-emerald-500/20 bg-slate-950/70 p-3 shadow-xl shadow-black/50 backdrop-blur-md sm:p-4">
+      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-3 shadow-xl backdrop-blur-md sm:p-4">
         <div className="flex items-center gap-2 sm:gap-4">
           <StatCard
             label={t('games.solitaire_v1.hud.score')}
@@ -118,7 +118,7 @@ function SolitaireTable() {
               size="sm"
               onClick={handleOpenModal}
               data-testid="solitaire-show-results-button"
-              className="border-amber-500/40 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60"
+              className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25"
             >
               🏆 {t('games.table.analytics.view') || 'Results'}
             </Button>
@@ -171,11 +171,11 @@ function SolitaireTable() {
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-white/5 bg-black/40 px-3 py-1.5 backdrop-blur-sm sm:px-4 sm:py-2">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+    <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 py-1.5 backdrop-blur-sm sm:px-4 sm:py-2">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
         {label}
       </span>
-      <span className="font-mono text-base font-extrabold tabular-nums text-white sm:text-lg">
+      <span className="font-mono text-base font-extrabold tabular-nums text-[var(--color)] sm:text-lg">
         {value}
       </span>
     </div>

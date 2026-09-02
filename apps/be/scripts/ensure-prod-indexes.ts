@@ -136,7 +136,14 @@ async function main() {
   await client.connect();
   console.log('Connected to MongoDB Atlas');
 
-  for (const { db, collection, index, name, expireAfterSeconds, partialFilterExpression } of INDEXES) {
+  for (const {
+    db,
+    collection,
+    index,
+    name,
+    expireAfterSeconds,
+    partialFilterExpression,
+  } of INDEXES) {
     const coll = client.db(db).collection(collection);
     try {
       const options: Record<string, unknown> = { name, background: true };

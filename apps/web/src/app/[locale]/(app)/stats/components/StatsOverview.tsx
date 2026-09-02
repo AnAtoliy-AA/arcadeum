@@ -6,8 +6,20 @@ import { Card, SkeletonText, ProgressCircle } from '@arcadeum/ui';
 export const statsOverviewCSS = `
   .stats-overview-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  @media (min-width: 640px) {
+    .stats-overview-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .stats-overview-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
   }
 `;
 
@@ -129,7 +141,7 @@ export function StatsOverview({
 
 function StatLabel({ children }: { children?: React.ReactNode }) {
   return (
-    <span className="text-[14px] leading-[18px] uppercase tracking-[1.2px] font-medium text-[rgba(236,239,238,0.45)]">
+    <span className="text-[11px] sm:text-[12px] lg:text-[14px] leading-[16px] sm:leading-[18px] uppercase tracking-[1px] sm:tracking-[1.2px] font-medium text-[var(--textSecondary)] mb-1">
       {children}
     </span>
   );
@@ -149,7 +161,7 @@ function StatValue({
   return (
     <span
       data-testid={dataTestId}
-      className={`text-[48px] font-extrabold leading-none tracking-[-0.5px] text-[var(--primaryGradientStart)] ${className ?? ''}`}
+      className={`text-[32px] sm:text-[40px] lg:text-[48px] font-extrabold leading-none tracking-[-0.5px] text-[var(--primaryGradientStart)] ${className ?? ''}`}
       style={color ? { color } : undefined}
     >
       {children}
@@ -167,7 +179,7 @@ function WinRateCardContent({ children }: { children?: React.ReactNode }) {
 
 function StreakSuffix({ children }: { children?: React.ReactNode }) {
   return (
-    <span className="text-[20px] font-semibold leading-[28px] ml-0.5 text-[var(--colorMuted, rgba(180,180,200,0.7))]">
+    <span className="text-[20px] font-semibold leading-[28px] ml-0.5 text-[var(--textSecondary)]">
       {children}
     </span>
   );

@@ -78,11 +78,9 @@ export function UndoButton({ disabled = false }: UndoButtonProps) {
         style={{
           padding: '8px 16px',
           borderRadius: 8,
-          border: '1px solid rgba(255,255,255,0.15)',
-          backgroundColor: waiting
-            ? 'rgba(255,255,255,0.06)'
-            : 'rgba(255,255,255,0.1)',
-          color: disabled ? 'rgba(255,255,255,0.35)' : '#fff',
+          border: '1px solid var(--glassBorder)',
+          backgroundColor: waiting ? 'var(--glassBgHover)' : 'var(--glassBg)',
+          color: disabled ? 'var(--textSecondary)' : 'var(--color)',
           fontSize: 14,
           fontWeight: 600,
           cursor: disabled || waiting ? 'not-allowed' : 'pointer',

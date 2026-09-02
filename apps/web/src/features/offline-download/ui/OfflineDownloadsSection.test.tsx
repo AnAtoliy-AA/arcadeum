@@ -12,7 +12,8 @@ vi.mock('@/shared/i18n/context', () => ({
         offlineDownloads: {
           title: 'Offline Games',
           description: 'Download games for offline play.',
-          installRequired: 'Install Arcadeum as an app to download games for offline play.',
+          installRequired:
+            'Install {{appName}} as an app to download games for offline play.',
           selectAll: 'Select all',
           remove: 'Remove',
         },
@@ -43,7 +44,7 @@ describe('OfflineDownloadsSection', () => {
     render(<OfflineDownloadsSection />);
     expect(
       screen.getByText(
-        'Install Arcadeum as an app to download games for offline play.',
+        'Install Arcadeum Games as an app to download games for offline play.',
       ),
     ).toBeDefined();
   });

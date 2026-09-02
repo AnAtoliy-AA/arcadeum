@@ -95,10 +95,5 @@ export function resolveMongoOptions(): MongooseModuleOptions {
     retryWrites: true,
     retryReads: true,
     autoIndex: process.env.NODE_ENV !== 'production',
-    // Log slow queries in non-production environments for performance tuning.
-    // In production, use APM tools instead to avoid log overhead.
-    ...(process.env.NODE_ENV !== 'production'
-      ? { profile: 1, slowms: 100 }
-      : {}),
   };
 }

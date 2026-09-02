@@ -7,7 +7,7 @@ import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
-import SeaBattleLanding from '../sea-battle/SeaBattleLanding';
+import BattleshipLanding from './BattleshipLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
 const SEA_BATTLE_SLUG = 'sea_battle_v1';
@@ -32,11 +32,14 @@ export async function generateMetadata({
   const messages = await getTranslations(locale);
   const t = messages.games?.sea_battle_v1?.landing?.meta;
 
+  const title = t?.title?.replace(/Sea Battle/g, 'Battleship') ?? 'Battleship';
+  const description = t?.description?.replace(/Sea Battle/g, 'Battleship');
+
   const base = await buildPageMetadata({
     locale,
     page: 'battleshipLanding',
-    title: t?.title,
-    description: t?.description,
+    title,
+    description,
   });
 
   return {
@@ -44,9 +47,9 @@ export async function generateMetadata({
     keywords: t?.keywords,
     openGraph: {
       ...base.openGraph,
-      title: t?.ogTitle ?? t?.title ?? base.openGraph?.title,
+      title: t?.ogTitle?.replace(/Sea Battle/g, 'Battleship') ?? title,
       description:
-        t?.ogDescription ?? t?.description ?? base.openGraph?.description,
+        t?.ogDescription?.replace(/Sea Battle/g, 'Battleship') ?? description,
       images: [
         {
           url: `${appConfig.siteUrl}/${locale}/games/battleship/opengraph-image`,
@@ -59,9 +62,9 @@ export async function generateMetadata({
     twitter: {
       ...base.twitter,
       card: 'summary_large_image',
-      title: t?.ogTitle ?? t?.title ?? base.twitter?.title,
+      title: t?.ogTitle?.replace(/Sea Battle/g, 'Battleship') ?? title,
       description:
-        t?.ogDescription ?? t?.description ?? base.twitter?.description,
+        t?.ogDescription?.replace(/Sea Battle/g, 'Battleship') ?? description,
       images: [
         `${appConfig.siteUrl}/${locale}/games/battleship/opengraph-image`,
       ],
@@ -150,7 +153,7 @@ export default async function BattleshipLandingRoute({ params }: PageProps) {
   return (
     <>
       <JsonLd id="json-ld-battleship" data={jsonLd} />
-      <SeaBattleLanding
+      <BattleshipLanding
         landing={landing}
         comingSoon={comingSoon}
         createRoomHref={`${routes.gameCreate}?gameId=${SEA_BATTLE_SLUG}`}
@@ -169,7 +172,7 @@ export default async function BattleshipLandingRoute({ params }: PageProps) {
       <RelatedArticles
         locale={locale}
         posts={relatedPosts}
-        gameName={landing?.hero?.title}
+        gameName="Battleship"
       />
     </>
   );

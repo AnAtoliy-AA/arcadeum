@@ -65,7 +65,7 @@ export function DesktopSecondaryControls({
           onClick={onShowTutorial}
           aria-label={t('games.tutorial.ui.button')}
           title={t('games.tutorial.ui.button')}
-          data-testid="show-tutorial-button"
+          data-testid="show-tutorial-button-desktop"
         >
           🎓
         </Button>

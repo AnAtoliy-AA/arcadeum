@@ -255,7 +255,7 @@ export const NavMobileLink = ({
     onClick={onClick}
     className={cx(
       'justify-start px-4 py-3 hover:bg-[var(--backgroundHover)] text-[var(--color)]',
-      isActive && 'bg-[var(--glassBgHover)] text-[var(--primary)]',
+      isActive && '!bg-[var(--glassBgHover)] !text-[var(--primary)]',
       className,
     )}
     data-testid={testId}

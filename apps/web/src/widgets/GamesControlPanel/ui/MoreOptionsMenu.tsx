@@ -93,7 +93,7 @@ export function MoreOptionsMenu({
             <button
               className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[var(--color)] hover:bg-[var(--backgroundHover)] transition-colors"
               role="menuitem"
-              data-testid="show-tutorial-button"
+              data-testid="show-tutorial-button-mobile"
               onClick={() => {
                 onShowTutorial();
                 setOpen(false);

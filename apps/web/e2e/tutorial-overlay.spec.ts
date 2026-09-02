@@ -56,7 +56,9 @@ test.describe('Tutorial Overlay', () => {
       await moreOptionsBtn.click();
     }
 
-    const showTutorialBtn = page.getByTestId('show-tutorial-button');
+    const showTutorialBtn = isMobile
+      ? page.getByTestId('show-tutorial-button-mobile')
+      : page.getByTestId('show-tutorial-button-desktop');
     await expect(showTutorialBtn).toBeVisible();
     await showTutorialBtn.click();
 

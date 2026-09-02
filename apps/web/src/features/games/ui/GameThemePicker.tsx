@@ -50,11 +50,17 @@ const THEME_INDEX = new Map<string, GameTheme>(
   SHARED_THEMES.map((t) => [t.id, t]),
 );
 
+const INITIAL_MOBILE_COUNT = 8;
+
 /**
  * Shared Visual Theme Picker.
  *
  * Desktop: compact grid with short cards.
  * Mobile: horizontal scroll strip with circular thumbnails + active name below.
+ *
+ * Both layouts exist in the DOM, toggled by CSS `hidden`/`max-[800px]:flex`.
+ * Only one is visible at a time in the browser. Tests use `.first()` to
+ * avoid Playwright strict-mode errors from multiple matching elements.
  */
 export function GameThemePicker({
   selectedTheme = 'adventure',
@@ -86,7 +92,6 @@ export function GameThemePicker({
     ? pickerOptions.filter((o) => allowedThemes.includes(o.id))
     : pickerOptions;
 
-  const INITIAL_MOBILE_COUNT = 8;
   const visibleMobile = showAll
     ? visible
     : visible.slice(0, INITIAL_MOBILE_COUNT);
@@ -248,11 +253,7 @@ export function GameThemePicker({
                   {t('games.create.comingSoon') || 'Soon'}
                 </span>
               ) : null}
-              <div
-                className={cx(
-                  'flex h-10 w-full items-center justify-center overflow-hidden rounded-lg text-2xl',
-                )}
-              >
+              <div className="flex h-10 w-full items-center justify-center overflow-hidden rounded-lg text-2xl">
                 {renderThumbnail && theme ? (
                   renderThumbnail(theme)
                 ) : (

@@ -44,7 +44,7 @@ describe('GameThemePicker', () => {
       />,
     );
     const cyberpunk = screen.getAllByTestId('theme-cyberpunk')[0];
-    expect(cyberpunk.getAttribute('aria-checked')).toBe('true');
+    expect(cyberpunk).toHaveAttribute('aria-checked', 'true');
     fireEvent.click(screen.getAllByTestId('theme-galaxy')[0]);
     expect(onSelect).toHaveBeenCalledWith('galaxy');
   });

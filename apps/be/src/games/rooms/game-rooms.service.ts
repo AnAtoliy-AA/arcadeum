@@ -142,7 +142,10 @@ export class GameRoomsService {
     // Cursor-based pagination: use _id as cursor for O(1) page lookups
     if (filters.cursor) {
       const existingIdFilter = (query._id as Record<string, unknown>) ?? {};
-      query._id = { ...existingIdFilter, $lt: new Types.ObjectId(filters.cursor) };
+      query._id = {
+        ...existingIdFilter,
+        $lt: new Types.ObjectId(filters.cursor),
+      };
     }
 
     const [rooms, total] = await Promise.all([
@@ -152,9 +155,9 @@ export class GameRoomsService {
         .limit(limit + 1)
         .lean()
         .exec(),
-      this.ociRoomModel.countDocuments(
-        GameRoomsQueryBuilder.buildListQuery(filters),
-      ).exec(),
+      this.ociRoomModel
+        .countDocuments(GameRoomsQueryBuilder.buildListQuery(filters))
+        .exec(),
     ]);
 
     const hasMore = rooms.length > limit;
@@ -171,9 +174,10 @@ export class GameRoomsService {
       page,
       limit,
       hasMore,
-      nextCursor: hasMore && rooms.length > 0
-        ? rooms[rooms.length - 1]._id.toString()
-        : undefined,
+      nextCursor:
+        hasMore && rooms.length > 0
+          ? rooms[rooms.length - 1]._id.toString()
+          : undefined,
     };
   }
 

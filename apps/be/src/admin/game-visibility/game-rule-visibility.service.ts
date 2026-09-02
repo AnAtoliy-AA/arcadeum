@@ -45,7 +45,10 @@ export class GameRuleVisibilityService {
       throw new BadRequestException('Invalid gameId');
     }
     const validGameId = assertValidGameId(gameId);
-    const rows = await this.model.find({ gameId: { $eq: validGameId } }).lean().exec();
+    const rows = await this.model
+      .find({ gameId: { $eq: validGameId } })
+      .lean()
+      .exec();
     const map = new Map<string, boolean>();
     for (const row of rows) {
       map.set(row.ruleId, row.enabled);

@@ -132,7 +132,10 @@ export class GameHistoryService {
     // Cursor-based pagination: use _id as cursor for O(1) page lookups
     // instead of skip(N) which scans and discards N documents.
     if (options.cursor) {
-      query._id = { $lt: new Types.ObjectId(options.cursor), $nin: hiddenRoomIds };
+      query._id = {
+        $lt: new Types.ObjectId(options.cursor),
+        $nin: hiddenRoomIds,
+      };
     } else {
       query._id = { $nin: hiddenRoomIds };
     }
@@ -140,7 +143,9 @@ export class GameHistoryService {
     const total = await this.gameRoomModel!.countDocuments({
       $or: orFilters,
       _id: { $nin: hiddenRoomIds },
-      ...(options.status && !options.grouped ? { status: { $eq: options.status.trim() } } : {}),
+      ...(options.status && !options.grouped
+        ? { status: { $eq: options.status.trim() } }
+        : {}),
     }).exec();
     const rooms = await this.gameRoomModel!.find(query)
       .select(
@@ -181,9 +186,10 @@ export class GameHistoryService {
       page,
       limit,
       hasMore,
-      nextCursor: hasMore && rooms.length > 0
-        ? rooms[rooms.length - 1]._id.toString()
-        : undefined,
+      nextCursor:
+        hasMore && rooms.length > 0
+          ? rooms[rooms.length - 1]._id.toString()
+          : undefined,
     };
   }
 

@@ -24,7 +24,10 @@ const MAX_REQUEST_BODY_BYTES = 1 * 1024 * 1024;
  * Middleware that rejects requests with body sizes exceeding the limit.
  */
 function bodySizeLimit(req: Request, res: Response, next: NextFunction): void {
-  const contentLength = Number.parseInt(req.headers['content-length'] ?? '0', 10);
+  const contentLength = Number.parseInt(
+    req.headers['content-length'] ?? '0',
+    10,
+  );
   if (contentLength > MAX_REQUEST_BODY_BYTES) {
     res.status(413).json({
       statusCode: 413,

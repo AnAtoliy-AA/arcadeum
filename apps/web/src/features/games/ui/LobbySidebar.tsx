@@ -51,6 +51,7 @@ interface LobbySidebarProps {
   isHost: boolean;
   minPlayers: number;
   isFastMode?: boolean;
+  className?: string;
   labels: {
     playersLabel?: string;
     invitedPlayersLabel?: string;
@@ -87,6 +88,7 @@ export function LobbySidebar({
   isHost,
   minPlayers,
   isFastMode,
+  className,
   showReorderControls,
   showInvitedPlayers,
   members,
@@ -186,7 +188,7 @@ export function LobbySidebar({
   };
 
   return (
-    <Sidebar>
+    <Sidebar className={className}>
       <LobbyCard>
         <CardHeader>
           <CardTitle>

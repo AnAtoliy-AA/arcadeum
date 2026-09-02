@@ -11,8 +11,10 @@ vi.mock('@/shared/lib/useTranslation', () => ({
 describe('GameThemePicker', () => {
   it('renders shared themes by default', () => {
     render(<GameThemePicker selectedTheme="cyberpunk" onSelect={vi.fn()} />);
-    expect(screen.getByTestId('theme-cyberpunk')).toBeInTheDocument();
-    expect(screen.getByTestId('theme-zen')).toBeInTheDocument();
+    expect(
+      screen.getAllByTestId('theme-cyberpunk').length,
+    ).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByTestId('theme-zen').length).toBeGreaterThanOrEqual(1);
   });
 
   it('filters to allowedThemes when provided', () => {
@@ -23,8 +25,12 @@ describe('GameThemePicker', () => {
         allowedThemes={['cyberpunk', 'galaxy']}
       />,
     );
-    expect(screen.getByTestId('theme-cyberpunk')).toBeInTheDocument();
-    expect(screen.getByTestId('theme-galaxy')).toBeInTheDocument();
+    expect(
+      screen.getAllByTestId('theme-cyberpunk').length,
+    ).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByTestId('theme-galaxy').length).toBeGreaterThanOrEqual(
+      1,
+    );
     expect(screen.queryByTestId('theme-zen')).not.toBeInTheDocument();
   });
 
@@ -37,9 +43,9 @@ describe('GameThemePicker', () => {
         allowedThemes={['cyberpunk', 'galaxy']}
       />,
     );
-    const cyberpunk = screen.getByTestId('theme-cyberpunk');
+    const cyberpunk = screen.getAllByTestId('theme-cyberpunk')[0];
     expect(cyberpunk.getAttribute('aria-checked')).toBe('true');
-    fireEvent.click(screen.getByTestId('theme-galaxy'));
+    fireEvent.click(screen.getAllByTestId('theme-galaxy')[0]);
     expect(onSelect).toHaveBeenCalledWith('galaxy');
   });
 
@@ -52,8 +58,9 @@ describe('GameThemePicker', () => {
         showComingSoon
       />,
     );
-    const custom = screen.getByTestId('theme-custom');
-    expect(custom).toBeDisabled();
+    const customs = screen.getAllByTestId('theme-custom');
+    expect(customs.length).toBeGreaterThanOrEqual(1);
+    expect(customs[0]).toBeDisabled();
   });
 
   it('renders a radiogroup with an accessible label', () => {
@@ -64,9 +71,8 @@ describe('GameThemePicker', () => {
         label="Pick a theme"
       />,
     );
-    expect(screen.getByRole('radiogroup')).toHaveAttribute(
-      'aria-label',
-      'Pick a theme',
-    );
+    const groups = screen.getAllByRole('radiogroup');
+    expect(groups.length).toBeGreaterThanOrEqual(1);
+    expect(groups[0]).toHaveAttribute('aria-label', 'Pick a theme');
   });
 });

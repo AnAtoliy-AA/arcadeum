@@ -18,8 +18,6 @@ import {
   ProgressLabel,
   ProgressBar,
   ProgressFill,
-  WaitingDots,
-  Dot,
   HostControls,
   HostLabel,
   RoomNameBadge,
@@ -44,6 +42,8 @@ import { LobbyStartButton } from './LobbyStartButton';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
 import { HouseRulesSection } from './HouseRulesSection';
+import { LobbyMobileHeader } from './LobbyMobileHeader';
+import { LobbyMobileSidebar } from './LobbyMobileSidebar';
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import { useRankingStore } from '@/features/ranking/store/rankingStore';
 import type { ReusableGameLobbyProps } from './ReusableGameLobby.types';
@@ -66,10 +66,6 @@ const slideInStyle: React.CSSProperties = {
 const slideInDelayedStyle: React.CSSProperties = {
   animation: 'slideIn 0.5s ease-out 0.15s both',
 };
-
-const dotPulseStyle = (delayMs: number): React.CSSProperties => ({
-  animation: `dotPulse 1.4s ease-in-out ${delayMs}ms infinite`,
-});
 
 // ============ Component ============
 
@@ -131,17 +127,12 @@ export function ReusableGameLobby({
   const myRating = useRankingStore((s) => s.ratings[room.gameId]);
   const loadMyRankings = useRankingStore((s) => s.loadMyRankings);
 
-  // Load the current user's ranked rating so ranked lobbies can show their
-  // tier badge without waiting for a result modal.
   useEffect(() => {
-    if (userId) {
-      void loadMyRankings(userId);
-    }
+    if (userId) void loadMyRankings(userId);
   }, [userId, loadMyRankings]);
 
   const isRanked = room.gameOptions?.ranked === true;
 
-  // Fetch catalog to determine which rules are excluded
   const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
     new Map(),
   );
@@ -152,9 +143,7 @@ export function ReusableGameLobby({
         const game = catalog.games.find((g) => g.gameId === room.gameId);
         if (!game) return;
         const map = new Map<string, boolean>();
-        for (const r of game.rules) {
-          map.set(r.ruleId, r.comingSoon);
-        }
+        for (const r of game.rules) map.set(r.ruleId, r.comingSoon);
         setRuleComingSoon(map);
         onRuleComingSoonChange?.(map);
       })
@@ -164,9 +153,6 @@ export function ReusableGameLobby({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
   const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 6;
-  // Preselect every seat a game requires to reach its minimum (e.g. 3 bots
-  // for a 4-player game like Hearts). The server pads up to minPlayers
-  // anyway, so defaulting to anything less would mislead the host.
   const [botCount, setBotCount] = useState(() =>
     Math.max(1, Math.min(minPlayers - 1, maxPlayers - 1)),
   );
@@ -180,9 +166,6 @@ export function ReusableGameLobby({
 
   useEffect(() => {
     saveStoredSettings({ aiDifficulty: difficulty });
-    // Persist the selected difficulty as a room option so it is visible to
-    // every player in the lobby (difficulty badge) and flows into the game
-    // engine via `room.gameOptions` at session start.
     if (enableBots && isHost && room.status === 'lobby') {
       setOption({ aiDifficulty: difficulty });
     }
@@ -192,7 +175,6 @@ export function ReusableGameLobby({
     const now = Date.now();
     if (now - cooldownRef.current < 1000) return;
     cooldownRef.current = now;
-
     if (enableBots && room.playerCount === 1) {
       onStartGame({ withBots: true, botCount, difficulty });
     } else {
@@ -213,32 +195,20 @@ export function ReusableGameLobby({
     [t],
   );
 
-  const handleDeleteClose = useCallback(() => {
-    setShowDeleteConfirm(false);
-  }, [setShowDeleteConfirm]);
-
+  const handleDeleteClose = useCallback(() => setShowDeleteConfirm(false), []);
   const handleDeleteConfirm = useCallback(() => {
     onDeleteRoom?.();
     setShowDeleteConfirm(false);
-  }, [onDeleteRoom, setShowDeleteConfirm]);
-
-  const handleDeleteClick = useCallback(() => {
-    setShowDeleteConfirm(true);
-  }, [setShowDeleteConfirm]);
+  }, [onDeleteRoom]);
+  const handleDeleteClick = useCallback(() => setShowDeleteConfirm(true), []);
 
   const defaultSubtitle = useMemo(() => {
-    if (room.status !== 'lobby') {
-      return 'Loading...';
-    }
-    if (enableBots && room.playerCount === 1) {
+    if (room.status !== 'lobby') return 'Loading...';
+    if (enableBots && room.playerCount === 1)
       return 'Single player mode available';
-    }
-    if (room.playerCount < minPlayers) {
+    if (room.playerCount < minPlayers)
       return `Need at least ${minPlayers} players`;
-    }
-    if (isHost) {
-      return "Click 'Start Game' when ready";
-    }
+    if (isHost) return "Click 'Start Game' when ready";
     return 'Waiting for host to start...';
   }, [room.status, enableBots, room.playerCount, minPlayers, isHost]);
 
@@ -246,6 +216,9 @@ export function ReusableGameLobby({
     (room.gameOptions?.theme as string | undefined) ??
     (room.gameOptions?.variant as string | undefined) ??
     'cyberpunk';
+
+  const showHostBots =
+    isHost && room.status === 'lobby' && enableBots && room.playerCount === 1;
 
   return (
     <GameContainer ref={containerRef} theme={visualTheme}>
@@ -261,14 +234,15 @@ export function ReusableGameLobby({
         cancelLabel={deleteRoomTranslations.cancelButton}
       />
 
-      <GameHeader>
+      {/* Desktop Header */}
+      <GameHeader className="max-[800px]:hidden">
         <GameInfo>
           <GameTitleText gradient={theme.titleGradient}>
             {gameName}
             {variantName && (
-              <VariantText gradient={theme.variantGradient}>
-                {` : ${variantName}`}
-              </VariantText>
+              <VariantText
+                gradient={theme.variantGradient}
+              >{` : ${variantName}`}</VariantText>
             )}
           </GameTitleText>
           <RoomNameBadge>
@@ -311,8 +285,54 @@ export function ReusableGameLobby({
         </HeaderActions>
       </GameHeader>
 
+      {/* Mobile Header */}
+      <LobbyMobileHeader
+        gameIcon={gameIcon}
+        gameName={gameName}
+        variantName={variantName}
+        roomName={room.name}
+        isFastMode={isFastMode}
+        isRanked={isRanked}
+        myRating={myRating}
+        headerActionsSlot={headerActionsSlot}
+      />
+
       <LobbyContent>
-        <CenterSection style={slideInStyle as never}>
+        {/* Mobile: sidebar first (players are the priority), then options */}
+        <LobbyMobileSidebar
+          room={room}
+          userId={userId}
+          isHost={isHost}
+          minPlayers={minPlayers}
+          maxPlayers={maxPlayers}
+          isFastMode={isFastMode}
+          showReorderControls={showReorderControls}
+          showInvitedPlayers={showInvitedPlayers}
+          members={members}
+          onReorderPlayers={onReorderPlayers}
+          onReinvite={onReinvite}
+          onDeleteRoom={isHost ? handleDeleteClick : undefined}
+          onKickPlayer={isHost ? onKickPlayer : undefined}
+          onLeaveRoom={!isHost ? onLeaveRoom : undefined}
+          deleteRoomLabel={deleteRoomLabel || deleteRoomTranslations.button}
+          extraPlayersCardSlot={extraPlayersCardSlot}
+          onRefresh={onRefresh}
+          optionsSlot={optionsSlot}
+          ruleComingSoon={ruleComingSoon}
+          enableBots={enableBots}
+          showDifficulty={showDifficulty}
+          botCount={botCount}
+          setBotCount={setBotCount}
+          difficulty={difficulty}
+          setDifficulty={setDifficulty}
+          labels={labels}
+        />
+
+        {/* Desktop: center + sidebar */}
+        <CenterSection
+          style={slideInStyle as never}
+          className="max-[1023px]:hidden"
+        >
           <GameIcon style={floatStyle as never}>{gameIcon}</GameIcon>
           <LobbyTitle style={slideInDelayedStyle as never}>
             {waitingLabel}
@@ -331,16 +351,10 @@ export function ReusableGameLobby({
             </ProgressBar>
           </ProgressWrapper>
 
-          <WaitingDots>
-            <Dot style={dotPulseStyle(0) as never} />
-            <Dot style={dotPulseStyle(200) as never} />
-            <Dot style={dotPulseStyle(400) as never} />
-          </WaitingDots>
-
           {isHost && room.status === 'lobby' && (
             <HostControls>
               <HostLabel>{hostControlsLabel}</HostLabel>
-              {enableBots && room.playerCount === 1 && (
+              {showHostBots && (
                 <BotCountSelector>
                   <BotCountLabel>{botCountLabel}</BotCountLabel>
                   <BotCountButtons>
@@ -360,7 +374,7 @@ export function ReusableGameLobby({
                   </BotCountButtons>
                 </BotCountSelector>
               )}
-              {enableBots && room.playerCount === 1 && showDifficulty && (
+              {showHostBots && showDifficulty && (
                 <BotCountSelector>
                   <BotCountLabel>
                     {difficultyLabel || 'AI Difficulty'}
@@ -438,6 +452,7 @@ export function ReusableGameLobby({
           extraPlayersCardSlot={extraPlayersCardSlot}
           onRefresh={onRefresh}
           labels={labels}
+          className="max-[1023px]:hidden"
         />
       </LobbyContent>
 

@@ -18,8 +18,13 @@ type AuthenticatedSocket = Socket & {
 };
 
 const SOCKET_OPTIONS = {
-  transports: ['polling', 'websocket'] as string[],
+  transports: ['websocket'] as string[],
   autoConnect: false,
+  reconnection: true,
+  reconnectionAttempts: 10,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 30000,
+  randomizationFactor: 0.5,
 };
 
 let _manager: Manager | null = null;

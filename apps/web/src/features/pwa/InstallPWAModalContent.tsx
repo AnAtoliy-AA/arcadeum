@@ -11,6 +11,7 @@ import {
   Button,
 } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { appConfig } from '@/shared/config/app-config';
 import { usePWAOptional } from './context';
 import {
   PWAFeaturesList,
@@ -34,19 +35,21 @@ export function InstallPWAModalContent() {
     <Modal open={isModalOpen} onClose={closeModal}>
       <ModalContent maxWidth="400px">
         <ModalHeader onClose={closeModal}>
-          <ModalTitle>{t('pwa.install.title')}</ModalTitle>
+          <ModalTitle>
+            {t('pwa.install.title', { appName: appConfig.appName })}
+          </ModalTitle>
         </ModalHeader>
         <ModalBody>
           <div className="mb-5 flex justify-center">
             <Avatar
               src="/icon-192x192.png"
-              name="Arcadeum"
+              name={appConfig.appName}
               size="xl"
-              alt="Arcadeum app icon"
+              alt={`${appConfig.appName} app icon`}
             />
           </div>
           <p className="m-0 text-center text-base leading-8 text-[var(--color)] opacity-70">
-            {t('pwa.install.description')}
+            {t('pwa.install.description', { appName: appConfig.appName })}
           </p>
 
           <PWAFeaturesList>

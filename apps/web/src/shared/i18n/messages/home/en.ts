@@ -10,7 +10,7 @@ export const en = {
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Play',
   supportCtaLabel: 'Support the developers',
-  downloadsTitle: 'Install Arcadeum',
+  downloadsTitle: 'Install {{appName}}',
   pwaDescription:
     'Install {{appName}} as a Web App on your device for the ultimate online gaming experience. Same performance, more convenience.',
   downloadsDescription: 'Grab the latest builds directly from the web app.',

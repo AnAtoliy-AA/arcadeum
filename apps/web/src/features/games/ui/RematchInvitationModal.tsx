@@ -44,7 +44,7 @@ const MessageText = ({
 }) => (
   <p
     className={cx(
-      'text-[16px] leading-[24px] text-center mb-6 text-[rgba(255,255,255,0.8)]',
+      'text-[16px] leading-[24px] text-center mb-6 text-[var(--color)] opacity-80',
       className,
     )}
   >
@@ -93,8 +93,8 @@ export function RematchInvitationModal({
         </MessageText>
 
         {message && message.trim().length > 0 ? (
-          <div className="flex flex-col items-stretch self-stretch -mb-5 p-3 rounded-xl border border-[rgba(255,_255,_255,_0.12)] bg-[rgba(255,_255,_255,_0.04)]">
-            <span className="text-[16px] leading-[20px] text-[rgba(255,_255,_255,_0.9)] italic">
+          <div className="flex flex-col items-stretch self-stretch -mb-5 p-3 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBgHover)]">
+            <span className="text-[16px] leading-[20px] text-[var(--color)] opacity-90 italic">
               “{message}”
             </span>
           </div>

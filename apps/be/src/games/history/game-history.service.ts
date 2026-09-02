@@ -5,7 +5,7 @@ import {
   Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, FilterQuery } from 'mongoose';
+import { Model, FilterQuery, Types } from 'mongoose';
 import { GameSession } from '../schemas/game-session.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 import { GameHistoryHidden } from '../schemas/game-history-hidden.schema';
@@ -83,6 +83,7 @@ export class GameHistoryService {
       search?: string;
       status?: string;
       grouped?: boolean;
+      cursor?: string;
     } = {},
   ): Promise<{
     entries: GameHistorySummary[] | GroupedHistorySummary[];
@@ -90,6 +91,7 @@ export class GameHistoryService {
     page: number;
     limit: number;
     hasMore: boolean;
+    nextCursor?: string;
   }> {
     if (!this.atlasReady)
       return { entries: [], total: 0, page: 0, limit: 20, hasMore: false };
@@ -101,7 +103,6 @@ export class GameHistoryService {
       throw new BadRequestException('Invalid status');
     const page = options.page || 0;
     const limit = options.limit || 20;
-    const skip = page * limit;
     const hiddenEntries = await this.historyHiddenModel!.find({ userId })
       .select('roomId')
       .lean()
@@ -127,16 +128,36 @@ export class GameHistoryService {
       }
       query.status = { $eq: normalizedStatus };
     }
-    const total = await this.gameRoomModel!.countDocuments(query).exec();
+
+    // Cursor-based pagination: use _id as cursor for O(1) page lookups
+    // instead of skip(N) which scans and discards N documents.
+    if (options.cursor) {
+      query._id = {
+        $lt: new Types.ObjectId(options.cursor),
+        $nin: hiddenRoomIds,
+      };
+    } else {
+      query._id = { $nin: hiddenRoomIds };
+    }
+
+    const total = await this.gameRoomModel!.countDocuments({
+      $or: orFilters,
+      _id: { $nin: hiddenRoomIds },
+      ...(options.status && !options.grouped
+        ? { status: { $eq: options.status.trim() } }
+        : {}),
+    }).exec();
     const rooms = await this.gameRoomModel!.find(query)
       .select(
         'hostId gameId name status visibility participants updatedAt gameOptions',
       )
-      .sort({ updatedAt: -1 })
-      .skip(skip)
-      .limit(limit)
+      .sort({ updatedAt: -1, _id: -1 })
+      .limit(limit + 1)
       .lean()
       .exec();
+
+    const hasMore = rooms.length > limit;
+    if (hasMore) rooms.pop();
 
     const roomIds = rooms.map((r) => r._id.toString());
     const sessions = await this.gameSessionModel!.find({
@@ -164,7 +185,11 @@ export class GameHistoryService {
       total,
       page,
       limit,
-      hasMore: skip + entries.length < total,
+      hasMore,
+      nextCursor:
+        hasMore && rooms.length > 0
+          ? rooms[rooms.length - 1]._id.toString()
+          : undefined,
     };
   }
 

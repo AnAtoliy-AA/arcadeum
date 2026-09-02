@@ -262,7 +262,7 @@ export default function StatsPage({
           ) : hasLocalStats ? (
             <>
               <LocalStatsBanner>
-                <span className="text-[14px] text-[rgba(236,239,238,0.6)]">
+                <span className="text-[14px] text-[var(--textSecondary)]">
                   {t('stats.localStatsNotice')}
                 </span>
               </LocalStatsBanner>
@@ -294,7 +294,7 @@ export default function StatsPage({
                 }}
                 loading={false}
               />
-              <div className="flex flex-col items-center gap-3 -mt-4">
+              <div className="flex flex-col items-center gap-3 my-4 sm:my-6">
                 <Button
                   variant="primary"
                   size="md"
@@ -305,7 +305,7 @@ export default function StatsPage({
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center gap-5 p-10">
+            <div className="flex flex-col items-center gap-4 sm:gap-5 p-6 sm:p-10">
               <EmptyState icon="📊" message={t('stats.noLocalStats')} />
               <Button
                 variant="primary"
@@ -343,7 +343,7 @@ export default function StatsPage({
 
 function Container({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-stretch gap-5 max-w-[1200px]">
+    <div className="flex flex-col items-stretch gap-3 sm:gap-4 lg:gap-5 max-w-[1200px]">
       {children}
     </div>
   );
@@ -362,7 +362,7 @@ function TabGroup({
     <div
       role={role}
       aria-label={ariaLabel}
-      className="flex flex-row items-stretch gap-3 flex-wrap"
+      className="flex flex-row items-stretch gap-2 sm:gap-3"
     >
       {children}
     </div>
@@ -385,9 +385,11 @@ const TabButton = ({
   'data-testid': dataTestId,
 }: TabButtonProps) => (
   <Button
-    className={'min-w-[120px] justify-center'}
+    className={
+      'min-w-[100px] sm:min-w-[120px] justify-center text-[13px] sm:text-[14px]'
+    }
     variant={isActive ? 'primary' : 'chip'}
-    size="md"
+    size="sm"
     active={isActive}
     onClick={onClick}
     aria-pressed={ariaPressed}
@@ -399,7 +401,7 @@ const TabButton = ({
 
 function FilterContainer({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="flex flex-row items-center gap-4 p-4 px-5 rounded-2xl border border-[var(--borderColor)] bg-[var(--background)]">
+    <div className="flex flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 px-4 sm:px-5 rounded-xl sm:rounded-2xl border border-[var(--borderColor)] bg-[var(--background)]">
       {children}
     </div>
   );
@@ -407,7 +409,7 @@ function FilterContainer({ children }: { children?: React.ReactNode }) {
 
 function FilterLabel({ children }: { children?: React.ReactNode }) {
   return (
-    <span className="text-[16px] leading-[20px] font-semibold tracking-[0.5px] select-none text-[var(--color)]">
+    <span className="text-[14px] sm:text-[16px] leading-[18px] sm:leading-[20px] font-semibold tracking-[0.5px] select-none text-[var(--color)] whitespace-nowrap">
       {children}
     </span>
   );
@@ -415,7 +417,7 @@ function FilterLabel({ children }: { children?: React.ReactNode }) {
 
 function LocalStatsBanner({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="flex flex-row items-center p-4 px-5 rounded-xl border border-[rgba(255,200,50,0.2)] bg-[rgba(255,200,50,0.08)]">
+    <div className="flex flex-row items-center p-3 sm:p-4 px-4 sm:px-5 rounded-lg sm:rounded-xl border border-[rgba(255,200,50,0.2)] bg-[rgba(255,200,50,0.08)]">
       {children}
     </div>
   );

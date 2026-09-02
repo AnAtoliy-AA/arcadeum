@@ -22,7 +22,7 @@ interface StatsHeaderProps {
 
 function Header({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="flex flex-row items-center justify-between mb-7">
+    <div className="flex flex-row items-center justify-between mb-4 sm:mb-5 lg:mb-7">
       {children}
     </div>
   );

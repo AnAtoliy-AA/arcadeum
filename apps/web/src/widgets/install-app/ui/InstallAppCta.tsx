@@ -11,7 +11,8 @@ export default function InstallAppCta() {
 
   const { appName } = appConfig;
 
-  const title = homeCopy.downloadsTitle ?? 'Install the App';
+  const title =
+    formatMessage(homeCopy.downloadsTitle, { appName }) ?? `Install ${appName}`;
   const rawDescription =
     (homeCopy as Record<string, string>).pwaDescription ??
     `Install ${appName} as a Web App on your device for the ultimate board game experience. Same performance, more convenience.`;

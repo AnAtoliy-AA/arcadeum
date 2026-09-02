@@ -105,9 +105,9 @@ export function HouseRulesSection({
           style={{
             padding: '6px 10px',
             borderRadius: 8,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: 'rgba(255,255,255,0.06)',
-            color: '#fff',
+            border: '1px solid var(--glassBorder)',
+            background: 'var(--glassBg)',
+            color: 'var(--color)',
             fontSize: 14,
             cursor: 'pointer',
             width: '100%',

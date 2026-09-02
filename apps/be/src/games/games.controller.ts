@@ -252,7 +252,7 @@ export class GamesController {
     return this.gamesService.syncPlayerStats(user.userId, dto.records);
   }
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(30000)
+  @CacheTTL(60000)
   @Get('leaderboard')
   async getLeaderboard(
     @Query('limit') limit?: string,

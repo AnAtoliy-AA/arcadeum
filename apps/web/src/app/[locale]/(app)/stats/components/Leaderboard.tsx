@@ -15,15 +15,15 @@ import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 export const leaderboardCSS = `
   .stats-leaderboard-header {
     display: grid;
-    grid-template-columns: 60px 2fr 80px 80px 80px 100px;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #32353d;
+    grid-template-columns: 50px 1fr 70px 70px 70px 90px;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--borderColor);
     font-weight: 600;
-    font-size: 0.85rem;
-    color: rgba(236,239,238,0.45);
+    font-size: 0.75rem;
+    color: var(--textSecondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    background: #151718;
+    background: var(--glassBg);
   }
   @media (max-width: 768px) {
     .stats-leaderboard-header { display: none; }
@@ -31,10 +31,10 @@ export const leaderboardCSS = `
 
   .stats-leaderboard-row {
     display: grid;
-    grid-template-columns: 60px 2fr 80px 80px 80px 100px;
-    padding: 1rem 1.5rem;
-    background: #151718;
-    border-bottom: 1px solid #32353d;
+    grid-template-columns: 50px 1fr 70px 70px 70px 90px;
+    padding: 0.75rem 1rem;
+    background: var(--glassBg);
+    border-bottom: 1px solid var(--borderColor);
     align-items: center;
     transition: all 0.2s ease;
   }
@@ -42,24 +42,28 @@ export const leaderboardCSS = `
     border-bottom: none;
   }
   .stats-leaderboard-row:hover {
-    background: rgba(21,23,24,0.87);
+    background: var(--glassBgHover);
   }
   .stats-leaderboard-row--current-user {
-    background: rgba(122,215,255,0.063);
-    border-left: 3px solid #7ad7ff;
+    background: var(--primaryTint);
+    border-left: 3px solid var(--primary);
   }
   .stats-leaderboard-row--current-user:hover {
-    background: rgba(122,215,255,0.082);
+    background: var(--primaryTintHover);
   }
   @media (max-width: 768px) {
     .stats-leaderboard-row {
-      grid-template-columns: 50px 1fr 60px;
+      grid-template-columns: 40px 1fr auto;
       gap: 0.5rem;
+      padding: 0.625rem 0.75rem;
     }
     .stats-leaderboard-row > *:nth-child(4),
     .stats-leaderboard-row > *:nth-child(5),
     .stats-leaderboard-row > *:nth-child(6) {
       display: none;
+    }
+    .stats-leaderboard-row > *:nth-child(3) {
+      justify-self: end;
     }
   }
 `;
@@ -244,7 +248,7 @@ export function Leaderboard({
           {loadingMore && (
             <LoadingMoreRow>
               <Spinner size="sm" />
-              <span className="text-[rgba(236,239,238,0.7)] text-[16px]">
+              <span className="text-[var(--textSecondary)] text-[16px]">
                 {t('stats.loadingMore')}
               </span>
             </LoadingMoreRow>
@@ -350,7 +354,7 @@ function LoadingMoreRow({ children }: { children?: React.ReactNode }) {
 
 function EndOfList({ children }: { children?: React.ReactNode }) {
   return (
-    <span className="text-[14px] leading-[18px] p-4 opacity-[0.7] text-[rgba(236,239,238,0.45)]">
+    <span className="text-[14px] leading-[18px] p-4 opacity-[0.7] text-[var(--textSecondary)]">
       {children}
     </span>
   );

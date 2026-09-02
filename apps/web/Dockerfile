@@ -1,4 +1,4 @@
-FROM node:22-alpine AS base
+FROM node:22-alpine3.20 AS base
 
 FROM base AS deps
 WORKDIR /app
@@ -6,7 +6,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY scripts/ scripts/
 COPY apps/web/package.json ./apps/web/
 COPY packages/ui/package.json ./packages/ui/
-RUN corepack enable && pnpm install --frozen-lockfile
+RUN corepack enable && --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile --ignore-scripts
 
 FROM base AS builder
 WORKDIR /app
@@ -29,5 +29,6 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ENV NODE_OPTIONS="--max-old-space-size=1024"
 
 CMD ["node", "apps/web/server.js"]

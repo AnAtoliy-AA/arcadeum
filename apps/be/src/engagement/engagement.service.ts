@@ -39,6 +39,7 @@ export class EngagementService {
       .find({ userId, isClaimed: false })
       .sort({ createdAt: -1 })
       .limit(10)
+      .lean()
       .exec();
   }
 

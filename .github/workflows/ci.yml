@@ -63,6 +63,37 @@ jobs:
           path: build-artifacts.tar
           retention-days: 1
 
+  test-backend:
+    name: Backend Tests
+    if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Backend Unit Tests
+        run: NODE_OPTIONS='--max-old-space-size=4096' pnpm exec turbo run test --filter be --log-order=stream -- --forceExit --detectOpenHandles --passWithNoTests
+
+      - name: Run Backend E2E Tests
+        run: NODE_OPTIONS='--max-old-space-size=4096' pnpm --filter be test:e2e
+
   docs-links:
     name: Documentation Links
     if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
@@ -117,37 +148,8 @@ jobs:
       - name: Run Web Unit Tests
         run: pnpm exec turbo run test --filter web --log-order=stream -- --passWithNoTests
 
-      - name: Run Backend & Mobile Unit Tests
-        run: pnpm exec turbo run test --filter be --filter mobile --log-order=stream -- --forceExit --detectOpenHandles --passWithNoTests
-
-  test-e2e-be:
-    name: Backend E2E Tests
-    if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
-    runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v7
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-          cache: 'pnpm'
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run Backend E2E Tests
-        run: pnpm --filter be test:e2e
-
+      - name: Run Mobile Unit Tests
+        run: pnpm exec turbo run test --filter mobile --log-order=stream -- --passWithNoTests
 
   web-e2e:
     name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/2)

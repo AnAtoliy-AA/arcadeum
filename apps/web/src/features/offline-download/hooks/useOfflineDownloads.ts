@@ -68,11 +68,25 @@ export function useOfflineDownloads() {
     () => isOfflineDownloadSupported(),
     () => false,
   );
-  const swReady = useSyncExternalStore(
+  const swReadyFromSW = useSyncExternalStore(
     subscribeToServiceWorker,
     () => isSWActive(),
     () => false,
   );
+  const [swReadyNoSW, setSwReadyNoSW] = useState(false);
+  const swReady = swReadyFromSW || swReadyNoSW;
+
+  useEffect(() => {
+    if (
+      swReadyFromSW ||
+      typeof window === 'undefined' ||
+      !('serviceWorker' in navigator)
+    )
+      return;
+    void navigator.serviceWorker.getRegistration().then((reg) => {
+      if (!reg) setSwReadyNoSW(true);
+    });
+  }, [swReadyFromSW]);
 
   // Build-time manifest sizes (fetched once on mount).
   const [manifestSizes, setManifestSizes] = useState<GameSizesManifest | null>(

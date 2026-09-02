@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppCacheModule } from './common/cache/app-cache.module';
+import { CacheWarmer } from './common/cache/cache-warmer.service';
 import { AppBullMqModule } from './common/queue/app-bullmq.module';
 import { ChatModule } from './chat/chat.module';
 import { AuthModule } from './auth/auth.module';
@@ -119,6 +120,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
   controllers: [AppController],
   providers: [
     AppService,
+    CacheWarmer,
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,

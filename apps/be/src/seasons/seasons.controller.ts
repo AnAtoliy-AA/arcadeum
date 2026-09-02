@@ -13,7 +13,7 @@ export class SeasonsController {
   constructor(private readonly seasons: SeasonsService) {}
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(60000)
+  @CacheTTL(300000)
   @Get('current')
   getCurrentSeason(): Promise<SeasonDetailView> {
     return this.seasons.getCurrentSeason();
@@ -35,7 +35,7 @@ export class SeasonsController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(60000)
+  @CacheTTL(300000)
   @Get()
   listSeasons(@Query() query: ListSeasonsQueryDto): Promise<SeasonView[]> {
     return this.seasons.listSeasons(query.limit);

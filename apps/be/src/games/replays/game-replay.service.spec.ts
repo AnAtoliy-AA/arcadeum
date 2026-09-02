@@ -280,21 +280,19 @@ describe('GameReplayService', () => {
       mockReplayModel.find.mockReturnValue({
         select: jest.fn().mockReturnValue({
           sort: jest.fn().mockReturnValue({
-            skip: jest.fn().mockReturnValue({
-              limit: jest.fn().mockReturnValue({
-                lean: jest.fn().mockReturnValue({
-                  exec: jest.fn().mockResolvedValue([
-                    {
-                      replayId: 'r1',
-                      roomId: 'room-1',
-                      gameId: 'chess_v1',
-                      players: [],
-                      totalMoves: 5,
-                      durationMs: 1000,
-                      createdAt: new Date(),
-                    },
-                  ]),
-                }),
+            limit: jest.fn().mockReturnValue({
+              lean: jest.fn().mockReturnValue({
+                exec: jest.fn().mockResolvedValue([
+                  {
+                    replayId: 'r1',
+                    roomId: 'room-1',
+                    gameId: 'chess_v1',
+                    players: [],
+                    totalMoves: 5,
+                    durationMs: 1000,
+                    createdAt: new Date(),
+                  },
+                ]),
               }),
             }),
           }),
@@ -305,7 +303,7 @@ describe('GameReplayService', () => {
 
       expect(result.total).toBe(5);
       expect(result.entries).toHaveLength(1);
-      expect(result.hasMore).toBe(true);
+      expect(result.hasMore).toBe(false);
     });
   });
 
@@ -317,11 +315,9 @@ describe('GameReplayService', () => {
       mockReplayModel.find.mockReturnValue({
         select: jest.fn().mockReturnValue({
           sort: jest.fn().mockReturnValue({
-            skip: jest.fn().mockReturnValue({
-              limit: jest.fn().mockReturnValue({
-                lean: jest.fn().mockReturnValue({
-                  exec: jest.fn().mockResolvedValue([]),
-                }),
+            limit: jest.fn().mockReturnValue({
+              lean: jest.fn().mockReturnValue({
+                exec: jest.fn().mockResolvedValue([]),
               }),
             }),
           }),

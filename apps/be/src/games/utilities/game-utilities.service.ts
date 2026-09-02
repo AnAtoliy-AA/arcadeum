@@ -88,6 +88,7 @@ export class GameUtilitiesService {
     const user = await this.userModel
       .findById(userId)
       .select('username email')
+      .lean()
       .exec();
 
     if (!user) {
@@ -119,7 +120,7 @@ export class GameUtilitiesService {
    * Get room participant user IDs
    */
   async getRoomParticipantIds(roomId: string): Promise<string[]> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel.findById(roomId).lean().exec();
 
     if (!room) {
       return [];
@@ -132,7 +133,7 @@ export class GameUtilitiesService {
    * Check if user is in room
    */
   async isUserInRoom(roomId: string, userId: string): Promise<boolean> {
-    const room = await this.gameRoomModel.findById(roomId).exec();
+    const room = await this.gameRoomModel.findById(roomId).lean().exec();
 
     if (!room) {
       return false;

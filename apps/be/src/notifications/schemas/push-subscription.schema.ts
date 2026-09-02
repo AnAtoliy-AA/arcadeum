@@ -35,3 +35,9 @@ export const PushSubscriptionSchema =
   SchemaFactory.createForClass(PushSubscription);
 
 PushSubscriptionSchema.index({ userId: 1, endpoint: 1 });
+
+// Auto-expire stale push subscriptions after 90 days of inactivity.
+PushSubscriptionSchema.index(
+  { lastUsedAt: 1 },
+  { expireAfterSeconds: 7776000 },
+);

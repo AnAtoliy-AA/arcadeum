@@ -136,20 +136,32 @@ export class GameRoomsService {
   ): Promise<ListRoomsResult> {
     const page = filters.page || 0;
     const limit = filters.limit || 10;
-    const skip = page * limit;
 
     const query = GameRoomsQueryBuilder.buildListQuery(filters);
+
+    // Cursor-based pagination: use _id as cursor for O(1) page lookups
+    if (filters.cursor) {
+      const existingIdFilter = (query._id as Record<string, unknown>) ?? {};
+      query._id = {
+        ...existingIdFilter,
+        $lt: new Types.ObjectId(filters.cursor),
+      };
+    }
 
     const [rooms, total] = await Promise.all([
       this.ociRoomModel
         .find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
+        .sort({ createdAt: -1, _id: -1 })
+        .limit(limit + 1)
         .lean()
         .exec(),
-      this.ociRoomModel.countDocuments(query).exec(),
+      this.ociRoomModel
+        .countDocuments(GameRoomsQueryBuilder.buildListQuery(filters))
+        .exec(),
     ]);
+
+    const hasMore = rooms.length > limit;
+    if (hasMore) rooms.pop();
 
     const summaries = await this.gameRoomsMapper.prepareRoomSummaryBatch(
       rooms as unknown as GameRoom[],
@@ -161,6 +173,11 @@ export class GameRoomsService {
       total,
       page,
       limit,
+      hasMore,
+      nextCursor:
+        hasMore && rooms.length > 0
+          ? rooms[rooms.length - 1]._id.toString()
+          : undefined,
     };
   }
 

@@ -15,21 +15,21 @@ export const gameBreakdownCSS = `
   .stats-breakdown-header {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1.5fr;
-    padding: 1rem 1.5rem;
-    background: #151718;
-    border-bottom: 1px solid #32353d;
+    padding: 0.75rem 1rem;
+    background: var(--glassBg);
+    border-bottom: 1px solid var(--borderColor);
     font-weight: 600;
-    font-size: 0.85rem;
-    color: rgba(236,239,238,0.45);
+    font-size: 0.75rem;
+    color: var(--textSecondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
   .stats-breakdown-row {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1.5fr;
-    padding: 1rem 1.5rem;
-    background: #151718;
-    border-bottom: 1px solid #32353d;
+    padding: 0.75rem 1rem;
+    background: var(--glassBg);
+    border-bottom: 1px solid var(--borderColor);
     align-items: center;
     transition: all 0.2s ease;
   }
@@ -37,7 +37,25 @@ export const gameBreakdownCSS = `
     border-bottom: none;
   }
   .stats-breakdown-row:hover {
-    background: rgba(21,23,24,0.87);
+    background: var(--glassBgHover);
+  }
+  @media (max-width: 640px) {
+    .stats-breakdown-header {
+      grid-template-columns: 1fr auto;
+      padding: 0.625rem 0.75rem;
+    }
+    .stats-breakdown-header > *:nth-child(2),
+    .stats-breakdown-header > *:nth-child(3) {
+      display: none;
+    }
+    .stats-breakdown-row {
+      grid-template-columns: 1fr auto;
+      padding: 0.625rem 0.75rem;
+    }
+    .stats-breakdown-row > *:nth-child(2),
+    .stats-breakdown-row > *:nth-child(3) {
+      display: none;
+    }
   }
 `;
 
@@ -80,7 +98,7 @@ function StatCell({ children }: { children?: React.ReactNode }) {
 
 function WinRateCell({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="flex flex-row items-center gap-3 min-w-[120px]">
+    <div className="flex flex-row items-center gap-2 min-w-[80px] sm:min-w-[120px]">
       {children}
     </div>
   );

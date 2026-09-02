@@ -35,7 +35,7 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
 
   return (
     <section
-      className="hero-section-container relative flex min-h-[90vh] w-full flex-col items-center"
+      className="hero-section-container relative flex min-h-[90vh] w-full flex-col items-center overflow-hidden"
       aria-labelledby="hero-heading"
       data-testid="hero-section"
     >
@@ -92,7 +92,7 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
         {/* Server-rendered multi-game hero cards — inlined vector art for instant LCP with 0 KB download latency */}
         <div
           data-testid="hero-visual"
-          className="relative z-[1] my-4 flex h-[400px] w-full max-w-[600px] items-center justify-center px-6 min-[1151px]:my-0 min-[1151px]:h-[540px]"
+          className="relative z-[1] my-4 flex h-[400px] w-full max-w-[600px] items-center justify-center max-[1150px]:px-2 px-6 min-[1151px]:my-0 min-[1151px]:h-[540px]"
         >
           <HeroCardStack playLabel={playLabel}>
             {HERO_GAMES.map((card, index) => {

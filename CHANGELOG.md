@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.35] - 2026-09-02
+
+### Fixed
+- fix light theme text visibility in install PWA button (ARC-fix-light-theme-and-mobile-stats)
+- use app name from env in install widget and translations (ARC-fix-light-theme-and-mobile-stats)
+- light theme, stats mobile, hero margins
+
+
 ## [1.27.34] - 2026-09-02
 
 ### Fixed

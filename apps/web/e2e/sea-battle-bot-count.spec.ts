@@ -132,7 +132,7 @@ test.describe('Sea Battle Bot Count Selection', () => {
       {},
     );
 
-    const botButton4 = page.getByTestId('bot-count-4');
+    const botButton4 = page.getByTestId('bot-count-4').first();
     await expect(botButton4).toBeVisible({});
     await page.evaluate(() => {
       const btn = document.querySelector(

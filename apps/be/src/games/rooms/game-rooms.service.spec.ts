@@ -17,7 +17,11 @@ describe('GameRoomsService notes & security', () => {
     ociRoomModel = {
       findOne: jest
         .fn()
-        .mockReturnValue({ exec: jest.fn().mockResolvedValue(null) }),
+        .mockReturnValue({
+          lean: jest.fn().mockReturnValue({
+            exec: jest.fn().mockResolvedValue(null),
+          }),
+        }),
       create: jest.fn().mockImplementation((doc: Record<string, unknown>) => ({
         _id: 'room-123',
         ...doc,

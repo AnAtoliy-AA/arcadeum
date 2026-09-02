@@ -60,6 +60,7 @@ export interface ListRoomsFilters {
   aiVsAi?: boolean;
   page?: number;
   limit?: number;
+  cursor?: string;
 }
 
 export interface ListRoomsResult {
@@ -67,6 +68,8 @@ export interface ListRoomsResult {
   total: number;
   page: number;
   limit: number;
+  hasMore: boolean;
+  nextCursor?: string;
 }
 
 export interface LeaveGameRoomResult {

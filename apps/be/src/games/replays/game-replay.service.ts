@@ -132,7 +132,8 @@ export class GameReplayService {
     userId: string,
     page = 0,
     limit = 20,
-  ): Promise<{ entries: ReplaySummary[]; total: number; hasMore: boolean }> {
+    cursor?: string,
+  ): Promise<{ entries: ReplaySummary[]; total: number; hasMore: boolean; nextCursor?: string }> {
     if (!userId || typeof userId !== 'string') {
       return { entries: [], total: 0, hasMore: false };
     }
@@ -141,29 +142,36 @@ export class GameReplayService {
       return { entries: [], total: 0, hasMore: false };
     }
 
-    const skip = page * limit;
-    const filter = { playerIds: safeUserId };
+    const filter: Record<string, unknown> = { playerIds: safeUserId };
+    if (cursor) {
+      filter._id = { $lt: new (await import('mongoose')).Types.ObjectId(cursor) };
+    }
 
     const [total, replays] = await Promise.all([
-      this.replayModel.countDocuments(filter).exec(),
+      this.replayModel.countDocuments({ playerIds: safeUserId }).exec(),
       this.replayModel
         .find(filter)
         .select(
           'replayId roomId gameId players result totalMoves durationMs createdAt',
         )
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
+        .sort({ createdAt: -1, _id: -1 })
+        .limit(limit + 1)
         .lean()
         .exec(),
     ]);
+
+    const hasMore = replays.length > limit;
+    if (hasMore) replays.pop();
 
     return {
       entries: (replays as unknown as GameReplay[]).map((r) =>
         this.toSummary(r),
       ),
       total,
-      hasMore: skip + replays.length < total,
+      hasMore,
+      nextCursor: hasMore && replays.length > 0
+        ? replays[replays.length - 1]._id.toString()
+        : undefined,
     };
   }
 
@@ -171,9 +179,9 @@ export class GameReplayService {
     gameId?: string,
     page = 0,
     limit = 20,
-  ): Promise<{ entries: ReplaySummary[]; total: number; hasMore: boolean }> {
-    const skip = page * limit;
-    const filter: { gameId?: string } = {};
+    cursor?: string,
+  ): Promise<{ entries: ReplaySummary[]; total: number; hasMore: boolean; nextCursor?: string }> {
+    const filter: Record<string, unknown> = {};
 
     if (gameId && typeof gameId === 'string') {
       try {
@@ -184,26 +192,36 @@ export class GameReplayService {
       }
     }
 
+    const countFilter = { ...filter };
+    if (cursor) {
+      filter._id = { $lt: new (await import('mongoose')).Types.ObjectId(cursor) };
+    }
+
     const [total, replays] = await Promise.all([
-      this.replayModel.countDocuments(filter).exec(),
+      this.replayModel.countDocuments(countFilter).exec(),
       this.replayModel
         .find(filter)
         .select(
           'replayId roomId gameId players result totalMoves durationMs createdAt',
         )
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
+        .sort({ createdAt: -1, _id: -1 })
+        .limit(limit + 1)
         .lean()
         .exec(),
     ]);
+
+    const hasMore = replays.length > limit;
+    if (hasMore) replays.pop();
 
     return {
       entries: (replays as unknown as GameReplay[]).map((r) =>
         this.toSummary(r),
       ),
       total,
-      hasMore: skip + replays.length < total,
+      hasMore,
+      nextCursor: hasMore && replays.length > 0
+        ? replays[replays.length - 1]._id.toString()
+        : undefined,
     };
   }
 

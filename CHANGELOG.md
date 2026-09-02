@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.39] - 2026-09-02
+
+### Fixed
+- unblock offline downloads when no service worker is registered
+
+
 ## [1.27.38] - 2026-09-02
 
 ### Added

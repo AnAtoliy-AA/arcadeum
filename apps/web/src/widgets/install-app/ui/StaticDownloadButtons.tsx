@@ -19,7 +19,7 @@ export const StaticDownloadButtons: React.FC<StaticDownloadButtonsProps> = ({
     <div className="flex flex-wrap items-center justify-center gap-4 w-full">
       <div
         data-testid="download-btn-static"
-        className="pointer-events-none flex min-w-[160px] cursor-not-allowed items-center rounded-[12px] border border-white/5 bg-white/5 px-4 py-2 text-white opacity-40 grayscale-[0.8] transition-transform duration-200"
+        className="pointer-events-none flex min-w-[160px] cursor-not-allowed items-center rounded-[12px] border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-2 text-[var(--color)] opacity-40 grayscale-[0.8] transition-transform duration-200"
       >
         <div className="mr-3 flex items-center justify-center">
           <AppleIcon size={24} />
@@ -34,7 +34,7 @@ export const StaticDownloadButtons: React.FC<StaticDownloadButtonsProps> = ({
         </div>
       </div>
 
-      <div className="pointer-events-none flex min-w-[160px] cursor-not-allowed items-center rounded-[12px] border border-white/5 bg-white/5 px-4 py-2 text-white opacity-40 grayscale-[0.8] transition-transform duration-200">
+      <div className="pointer-events-none flex min-w-[160px] cursor-not-allowed items-center rounded-[12px] border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-2 text-[var(--color)] opacity-40 grayscale-[0.8] transition-transform duration-200">
         <div className="mr-3 flex items-center justify-center">
           <AndroidIcon size={24} />
         </div>

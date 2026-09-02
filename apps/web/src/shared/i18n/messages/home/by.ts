@@ -10,7 +10,7 @@ export const by = {
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Гуляць',
   supportCtaLabel: 'Падрымаць распрацоўшчыкаў',
-  downloadsTitle: 'Усталяваць Arcadeum',
+  downloadsTitle: 'Усталяваць {{appName}}',
   pwaDescription:
     'Усталюйце {{appName}} як вэб-прыкладанне на сваю прыладу для лепшага гульнявога досведу. Тая ж прадукцыйнасць, больш зручнасці.',
   downloadsDescription: 'Загрузіце апошнія версіі прама з вэб-прыкладання.',

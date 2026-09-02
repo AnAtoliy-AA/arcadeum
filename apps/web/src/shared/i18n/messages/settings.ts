@@ -106,7 +106,7 @@ export const en = {
   aboutDescription: 'Application information and version details.',
   versionLabel: 'Version',
   pwaTitle: 'Install App',
-  pwaDescription: 'Install Arcadeum as a native app on your device.',
+  pwaDescription: 'Install {{appName}} as a native app on your device.',
   pwaInstallLabel: 'Install',
 };
 
@@ -199,7 +199,7 @@ export const es = {
   versionLabel: 'Versión',
   pwaTitle: 'Instalar App',
   pwaDescription:
-    'Instala Arcadeum como una aplicación nativa en tu dispositivo.',
+    'Instala {{appName}} como una aplicación nativa en tu dispositivo.',
   pwaInstallLabel: 'Instalar',
 };
 
@@ -292,7 +292,7 @@ export const fr = {
   versionLabel: 'Version',
   pwaTitle: "Installer l'application",
   pwaDescription:
-    "Installez Arcadeum en tant qu'application native sur votre appareil.",
+    "Installez {{appName}} en tant qu'application native sur votre appareil.",
   pwaInstallLabel: 'Installer',
 };
 
@@ -382,7 +382,7 @@ export const ru = {
   versionLabel: 'Версия',
   pwaTitle: 'Установить приложение',
   pwaDescription:
-    'Установите Arcadeum как нативное приложение на ваше устройство.',
+    'Установите {{appName}} как нативное приложение на ваше устройство.',
   pwaInstallLabel: 'Установить',
 };
 
@@ -471,7 +471,7 @@ export const by = {
   aboutDescription: 'Інфармацыя пра праграму і версію.',
   versionLabel: 'Версія',
   pwaTitle: 'Усталяваць праграму',
-  pwaDescription: 'Усталюйце Arcadeum як натыўную праграму на вашу прыладу.',
+  pwaDescription: 'Усталюйце {{appName}} як натыўную праграму на вашу прыладу.',
   pwaInstallLabel: 'Усталяваць',
 };
 

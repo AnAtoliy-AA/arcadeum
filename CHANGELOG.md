@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.37] - 2026-09-02
+
+### Fixed
+- redirect solo games to landing page from game picker
+
+
 ## [1.27.36] - 2026-09-02
 
 ### Added

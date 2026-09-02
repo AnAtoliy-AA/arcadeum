@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.34] - 2026-09-02
+
+### Fixed
+- resolve lint errors in worker, replay service, and cache warmer
+- remove invalid profile/slowms from MongoDB connection options
+- update test mocks for cursor pagination and lean queries
+
+### Improved
+- optimize Docker builds and add worker container
+- add TTL index on push subscriptions for auto-cleanup
+- add OpenTelemetry tracing and MongoDB slow-query logging
+- add request body size limit, readiness probe, and Redis health check
+- tune cache TTLs and add cache warmer service
+- optimize MongoDB queries with indexes, lean, and cursor pagination
+- optimize WebSocket transports and add exponential backoff
+
+### Documentation
+- add nginx reverse proxy configuration example
+
+
 ## [1.27.33] - 2026-09-02
 
 ### Added

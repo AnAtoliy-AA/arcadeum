@@ -670,6 +670,168 @@ const GAMES = [
       return true;
     },
   },
+  {
+    name: 'texas-holdem',
+    slug: 'texas_holdem_v1',
+    url: '/en/games/texas-holdem',
+    hookText: '🃏 ALL IN OR FOLD?',
+    actionPhrases: ['💰 RAISE!', '🃏 POCKET ACES!', '🔥 ALL IN!'],
+    captions: [
+      'High-stakes poker action — can you read the bluff? 🃏💰 Play free on arcadeum.games #poker #texasholdem #cardgames',
+      "Go all in or fold? Texas Hold'em with real opponents! ♠️🔥 arcadeum.games #pokergame #multiplayer #arcadeum",
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        '[data-testid="poker-table"], [data-testid="game-board-section"], [data-testid="poker-hand"]',
+        { timeout: 20000 },
+      );
+      await sleep(1000);
+    },
+    async makeMove(page) {
+      const callBtn = page.locator(
+        '[data-testid="poker-call-button"], button:has-text("Call"), button:has-text("Check")',
+      );
+      if ((await callBtn.count()) > 0 && (await callBtn.first().isEnabled())) {
+        await callBtn.first().click({ force: true });
+        return true;
+      }
+      const raiseBtn = page.locator(
+        '[data-testid="poker-raise-button"], button:has-text("Raise")',
+      );
+      if (
+        (await raiseBtn.count()) > 0 &&
+        (await raiseBtn.first().isEnabled())
+      ) {
+        await raiseBtn.first().click({ force: true });
+        return true;
+      }
+      const foldBtn = page.locator(
+        '[data-testid="poker-fold-button"], button:has-text("Fold")',
+      );
+      if ((await foldBtn.count()) > 0 && (await foldBtn.first().isEnabled())) {
+        await foldBtn.first().click({ force: true });
+        return true;
+      }
+      return false;
+    },
+    async isMyTurn(page) {
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
+    },
+  },
+  {
+    name: 'spades',
+    slug: 'spades_v1',
+    url: '/en/games/spades',
+    hookText: '♠️ BID \u0026 DOMINATE!',
+    actionPhrases: ['♠️ TRUMP CARD!', '🎯 TRICK WON!', '👑 NIL BID!'],
+    captions: [
+      'Team up and dominate in Spades! ♠️🏆 Play with friends on arcadeum.games #spades #cardgame #tricktaking',
+      'Can you nail the blind nil? Spades online! ♠️🔥 Free at arcadeum.games #spadesreels #strategy #arcadeum',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        '[data-testid="spades-board"], [data-testid="game-board-section"]',
+        { timeout: 20000 },
+      );
+      await sleep(500);
+    },
+    async makeMove(page) {
+      const playable = page.locator(
+        '[data-testid^="spades-card-"]:not([disabled])',
+      );
+      if ((await playable.count()) > 0) {
+        const count = await playable.count();
+        const idx = Math.floor(Math.random() * count);
+        await playable.nth(idx).click({ force: true });
+        return true;
+      }
+      const bidBtn = page.locator(
+        '[data-testid^="spades-bid-"], button:has-text("Bid")',
+      );
+      if ((await bidBtn.count()) > 0 && (await bidBtn.first().isEnabled())) {
+        await bidBtn.first().click({ force: true });
+        return true;
+      }
+      return false;
+    },
+    async isMyTurn(page) {
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
+    },
+  },
+  {
+    name: 'pachisi',
+    slug: 'pachisi_v1',
+    url: '/en/games/pachisi',
+    hookText: '🎲 ROYAL RACE!',
+    actionPhrases: ['🎲 LUCKY ROLL!', '🏃 TOKEN ADVANCE!', '👑 SAFE ZONE!'],
+    captions: [
+      'The ancient game of Pachisi — roll dice and race to the center! 🎲👑 arcadeum.games #pachisi #boardgame #strategy',
+      'Pachisi online — will your tokens make it home? 🎲🏆 Play free on arcadeum.games #boardgamereels #classic',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        '[data-testid="pachisi-board"], [data-testid="game-board-section"], [data-testid="dice-roll-button"]',
+        { timeout: 20000 },
+      );
+      await sleep(500);
+    },
+    async makeMove(page) {
+      const rollBtn = page.locator('[data-testid="dice-roll-button"]');
+      if ((await rollBtn.count()) > 0 && (await rollBtn.isEnabled())) {
+        await rollBtn.click({ force: true });
+        await sleep(800);
+      }
+      const movable = page.locator(
+        '[data-testid^="pachisi-token-"]:not([disabled])',
+      );
+      if ((await movable.count()) > 0) {
+        await movable.first().click({ force: true });
+        return true;
+      }
+      return false;
+    },
+    async isMyTurn(page) {
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
+    },
+  },
+  {
+    name: '2048',
+    slug: '2048_v1',
+    url: '/en/games/2048',
+    hookText: '🧩 MERGE TO WIN!',
+    actionPhrases: ['🔢 BIG MERGE!', '⚡ COMBO SLIDE!', '🏆 NEW HIGH SCORE!'],
+    captions: [
+      'Can you reach 2048? Swipe and merge! 🧩🔥 Play on arcadeum.games #2048 #puzzle #brainteaser',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        'canvas, [data-testid="game-board-section"], [data-testid="2048-grid"]',
+        { timeout: 20000 },
+      );
+      await sleep(500);
+    },
+    async makeMove(page) {
+      const directions = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+      await page.keyboard.press(randomElement(directions));
+      return true;
+    },
+    async isMyTurn() {
+      return true;
+    },
+  },
 ];
 
 const FALLBACK_GAME_SLUGS = [

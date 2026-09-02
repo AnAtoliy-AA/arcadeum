@@ -35,7 +35,7 @@ export class LeaderboardsController {
   ) {}
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(30000)
+  @CacheTTL(60000)
   @Get()
   @UseGuards(JwtOptionalAuthGuard)
   async getLeaderboard(@Query() query: GetLeaderboardDto, @Req() req: Request) {

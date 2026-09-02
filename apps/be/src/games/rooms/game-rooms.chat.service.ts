@@ -31,7 +31,7 @@ export class GameRoomsChatService {
     createdAt: string;
   } | null> {
     if (!Types.ObjectId.isValid(roomId)) return null;
-    const room = await this.ociRoomModel.findById(roomId).exec();
+    const room = await this.ociRoomModel.findById(roomId).lean().exec();
     if (!room) return null;
 
     const isParticipant =

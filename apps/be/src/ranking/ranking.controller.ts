@@ -29,7 +29,7 @@ export class RankingController {
   }
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(30000)
+  @CacheTTL(60000)
   @Get(':gameId')
   @UseGuards(JwtOptionalAuthGuard)
   async getRankings(

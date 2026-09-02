@@ -17,6 +17,12 @@ interface DbHealthResponse {
   };
 }
 
+interface ReadinessResponse {
+  ready: boolean;
+  mongo: boolean;
+  redis: boolean;
+}
+
 @Controller()
 export class AppController {
   private readonly logger = new Logger(AppController.name);
@@ -41,6 +47,22 @@ export class AppController {
     return { ok: true };
   }
 
+  /**
+   * Readiness probe — verifies MongoDB and Redis connectivity.
+   * Kubernetes/Docker should route traffic only when this returns 200.
+   */
+  @SkipThrottle({ default: true, auth: true, strict: true })
+  @Get('ready')
+  async readiness(): Promise<ReadinessResponse> {
+    const mongoOk = await this.isMongoConnected(this.ociConnection);
+    const redisOk = await this.isRedisConnected();
+    return {
+      ready: mongoOk && redisOk,
+      mongo: mongoOk,
+      redis: redisOk,
+    };
+  }
+
   @SkipThrottle({ default: true, auth: true, strict: true })
   @Get('health/db')
   async checkDbHealth(): Promise<DbHealthResponse> {
@@ -53,6 +75,42 @@ export class AppController {
       ok: oci === 'connected',
       mongo: { oci, atlas },
     };
+  }
+
+  private async isMongoConnected(connection: Connection): Promise<boolean> {
+    try {
+      if (
+        connection.readyState !== ConnectionStates.connected ||
+        !connection.db
+      ) {
+        return false;
+      }
+      await connection.db.admin().command({ ping: 1 });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private async isRedisConnected(): Promise<boolean> {
+    try {
+      if (!process.env.REDIS_URL) return true;
+      /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+      const Redis: any = (await import('ioredis')).default;
+      const client = new Redis(process.env.REDIS_URL, {
+        maxRetriesPerRequest: 1,
+        connectTimeout: 2000,
+        lazyConnect: true,
+      });
+      await client.connect();
+      const pong: unknown = await client.ping();
+      await client.quit();
+      /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+      return pong === 'PONG';
+    } catch {
+      // Redis may not be configured (local dev) — treat as healthy
+      return !process.env.REDIS_URL;
+    }
   }
 
   private async pingConnection(

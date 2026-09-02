@@ -130,10 +130,15 @@ export class GameReplayService {
 
   async listReplaysForUser(
     userId: string,
-    page = 0,
+    _page = 0,
     limit = 20,
     cursor?: string,
-  ): Promise<{ entries: ReplaySummary[]; total: number; hasMore: boolean; nextCursor?: string }> {
+  ): Promise<{
+    entries: ReplaySummary[];
+    total: number;
+    hasMore: boolean;
+    nextCursor?: string;
+  }> {
     if (!userId || typeof userId !== 'string') {
       return { entries: [], total: 0, hasMore: false };
     }
@@ -144,7 +149,9 @@ export class GameReplayService {
 
     const filter: Record<string, unknown> = { playerIds: safeUserId };
     if (cursor) {
-      filter._id = { $lt: new (await import('mongoose')).Types.ObjectId(cursor) };
+      filter._id = {
+        $lt: new (await import('mongoose')).Types.ObjectId(cursor),
+      };
     }
 
     const [total, replays] = await Promise.all([
@@ -169,18 +176,24 @@ export class GameReplayService {
       ),
       total,
       hasMore,
-      nextCursor: hasMore && replays.length > 0
-        ? replays[replays.length - 1]._id.toString()
-        : undefined,
+      nextCursor:
+        hasMore && replays.length > 0
+          ? replays[replays.length - 1]._id.toString()
+          : undefined,
     };
   }
 
   async listReplays(
     gameId?: string,
-    page = 0,
+    _page = 0,
     limit = 20,
     cursor?: string,
-  ): Promise<{ entries: ReplaySummary[]; total: number; hasMore: boolean; nextCursor?: string }> {
+  ): Promise<{
+    entries: ReplaySummary[];
+    total: number;
+    hasMore: boolean;
+    nextCursor?: string;
+  }> {
     const filter: Record<string, unknown> = {};
 
     if (gameId && typeof gameId === 'string') {
@@ -194,7 +207,9 @@ export class GameReplayService {
 
     const countFilter = { ...filter };
     if (cursor) {
-      filter._id = { $lt: new (await import('mongoose')).Types.ObjectId(cursor) };
+      filter._id = {
+        $lt: new (await import('mongoose')).Types.ObjectId(cursor),
+      };
     }
 
     const [total, replays] = await Promise.all([
@@ -219,9 +234,10 @@ export class GameReplayService {
       ),
       total,
       hasMore,
-      nextCursor: hasMore && replays.length > 0
-        ? replays[replays.length - 1]._id.toString()
-        : undefined,
+      nextCursor:
+        hasMore && replays.length > 0
+          ? replays[replays.length - 1]._id.toString()
+          : undefined,
     };
   }
 

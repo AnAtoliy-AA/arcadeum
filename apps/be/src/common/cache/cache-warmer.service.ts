@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import { Connection, ConnectionStates } from 'mongoose';
 import { OCI_CONNECTION } from '../providers/mongo-connections.provider';
 
 /**
@@ -23,7 +23,10 @@ export class CacheWarmer implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     try {
       // Warm the MongoDB connection pool by issuing a ping
-      if (this.ociConnection.readyState === 1 && this.ociConnection.db) {
+      if (
+        this.ociConnection.readyState === ConnectionStates.connected &&
+        this.ociConnection.db
+      ) {
         await this.ociConnection.db.admin().command({ ping: 1 });
         this.logger.log('MongoDB connection pool warmed');
       }

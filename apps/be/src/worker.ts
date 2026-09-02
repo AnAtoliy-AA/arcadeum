@@ -10,7 +10,6 @@
 
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { ArcadeumLogger } from './common/logger/arcadeum-logger.service';
 import { initTracing, shutdownTracing } from './common/tracing/opentelemetry';

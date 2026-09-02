@@ -62,12 +62,12 @@ test.describe('Bot Count Selection', () => {
       };
     });
 
-    await expect(page.getByText(/Number of bots/i).first()).toBeVisible({});
+    await expect(page.getByText(/Number of bots/i)).toBeVisible({});
 
     // Select 3 bots — use direct DOM click to avoid the sticky start
     // button (position: fixed; z-index: 150) intercepting the Playwright
     // click event at these coordinates.
-    const botButton3 = page.getByTestId('bot-count-3').first();
+    const botButton3 = page.getByTestId('bot-count-3');
     await expect(botButton3).toBeVisible({});
     await page.evaluate(() => {
       const btn = document.querySelector(

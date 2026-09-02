@@ -435,25 +435,26 @@ export function ReusableGameLobby({
           )}
         </CenterSection>
 
-        <LobbySidebar
-          room={room}
-          isHost={isHost}
-          minPlayers={minPlayers}
-          isFastMode={isFastMode}
-          showReorderControls={showReorderControls}
-          showInvitedPlayers={showInvitedPlayers}
-          members={members}
-          onReorderPlayers={onReorderPlayers}
-          onReinvite={onReinvite}
-          onDeleteRoom={isHost ? handleDeleteClick : undefined}
-          onKickPlayer={isHost ? onKickPlayer : undefined}
-          onLeaveRoom={!isHost ? onLeaveRoom : undefined}
-          deleteRoomLabel={deleteRoomLabel || deleteRoomTranslations.button}
-          extraPlayersCardSlot={extraPlayersCardSlot}
-          onRefresh={onRefresh}
-          labels={labels}
-          className="max-[1023px]:hidden"
-        />
+        <div className="max-[1023px]:hidden">
+          <LobbySidebar
+            room={room}
+            isHost={isHost}
+            minPlayers={minPlayers}
+            isFastMode={isFastMode}
+            showReorderControls={showReorderControls}
+            showInvitedPlayers={showInvitedPlayers}
+            members={members}
+            onReorderPlayers={onReorderPlayers}
+            onReinvite={onReinvite}
+            onDeleteRoom={isHost ? handleDeleteClick : undefined}
+            onKickPlayer={isHost ? onKickPlayer : undefined}
+            onLeaveRoom={!isHost ? onLeaveRoom : undefined}
+            deleteRoomLabel={deleteRoomLabel || deleteRoomTranslations.button}
+            extraPlayersCardSlot={extraPlayersCardSlot}
+            onRefresh={onRefresh}
+            labels={labels}
+          />
+        </div>
       </LobbyContent>
 
       {isHost && room.status === 'lobby' && (

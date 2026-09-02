@@ -42,7 +42,7 @@ test.describe('Backgammon Lobby Options', () => {
     await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
-    const cyberpunkChip = page.getByTestId('theme-cyberpunk').first();
+    const cyberpunkChip = page.getByTestId('theme-cyberpunk');
     await expect(cyberpunkChip).toBeVisible();
     await expect(cyberpunkChip).toHaveAttribute('aria-checked', 'true', {});
 
@@ -64,7 +64,7 @@ test.describe('Backgammon Lobby Options', () => {
     await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
-    await expect(page.getByTestId('theme-underwater').first()).toHaveAttribute(
+    await expect(page.getByTestId('theme-underwater')).toHaveAttribute(
       'aria-checked',
       'true',
       {},

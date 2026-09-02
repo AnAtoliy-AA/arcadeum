@@ -43,7 +43,7 @@ test.describe('Cat Dash Lobby Options', () => {
     await waitForRoomReady(page);
 
     // The shared GameThemePicker renders shared themes; default is active
-    const adventureChip = page.getByTestId('theme-adventure').first();
+    const adventureChip = page.getByTestId('theme-adventure');
     await expect(adventureChip).toBeVisible();
     await expect(adventureChip).toHaveAttribute('aria-checked', 'true', {});
     await expect(page.getByTestId('catdash-columns-10')).toBeVisible();
@@ -70,7 +70,7 @@ test.describe('Cat Dash Lobby Options', () => {
     await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
-    await expect(page.getByTestId('theme-cyberpunk').first()).toHaveAttribute(
+    await expect(page.getByTestId('theme-cyberpunk')).toHaveAttribute(
       'aria-checked',
       'true',
       {},

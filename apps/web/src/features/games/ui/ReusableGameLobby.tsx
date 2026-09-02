@@ -293,10 +293,7 @@ export function ReusableGameLobby({
 
         {/* Center column: desktop header + settings (single instance) */}
         <div className="flex flex-col flex-1 min-w-0 max-w-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:order-2">
-          <CenterSection
-            style={slideInStyle as never}
-            className="max-[1023px]:hidden"
-          >
+          <CenterSection style={slideInStyle as never}>
             <GameIcon style={floatStyle as never}>{gameIcon}</GameIcon>
             <LobbyTitle style={slideInDelayedStyle as never}>
               {waitingLabel}

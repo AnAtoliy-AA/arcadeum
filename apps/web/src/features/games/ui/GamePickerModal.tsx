@@ -26,7 +26,7 @@ interface GamePickerModalProps {
   onClose: () => void;
 }
 
-type GameCategoryKey = 'all' | 'board' | 'card' | 'casual';
+type GameCategoryKey = 'all' | 'board' | 'card' | 'casual' | 'puzzle';
 
 const CATEGORIES: Array<{
   key: GameCategoryKey;
@@ -36,14 +36,16 @@ const CATEGORIES: Array<{
   { key: 'all', label: 'All', icon: '🎮' },
   { key: 'board', label: 'Board', icon: '♟️' },
   { key: 'card', label: 'Cards', icon: '🃏' },
+  { key: 'puzzle', label: 'Puzzle', icon: '🧩' },
   { key: 'casual', label: 'Action', icon: '⚡' },
 ];
 
 function resolveCategory(
   type: string,
   genre: string,
-): 'board' | 'card' | 'casual' {
+): 'board' | 'card' | 'casual' | 'puzzle' {
   if (type === 'card') return 'card';
+  if (type === 'puzzle') return 'puzzle';
   if (
     genre.toLowerCase().includes('race') ||
     genre.toLowerCase().includes('arcade')
@@ -93,6 +95,7 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
         duration: g.duration,
         isPlayable: g.isPlayable && !isComingSoon,
         isDemo: g.isDemo,
+        landingHref: g.landingHref,
       };
     });
   }, [t, comingSoonIds]);
@@ -102,6 +105,7 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
       all: games.length,
       board: 0,
       card: 0,
+      puzzle: 0,
       casual: 0,
     };
     for (const g of games) {
@@ -130,6 +134,12 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
 
   const handleSelectGame = useCallback(
     async (gameId: string) => {
+      const game = games.find((g) => g.slug === gameId);
+      if (game?.players === '1' && game.landingHref) {
+        onClose();
+        router.push(game.landingHref);
+        return;
+      }
       setLoadingGame(gameId);
       try {
         const { room } = await gamesApi.quickplay(gameId, undefined, {
@@ -142,7 +152,7 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
         setLoadingGame(null);
       }
     },
-    [snapshot.accessToken, routes, router, onClose],
+    [snapshot.accessToken, routes, router, onClose, games],
   );
 
   return (

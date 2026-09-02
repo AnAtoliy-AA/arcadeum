@@ -90,10 +90,10 @@ export function PostGameAnalysis({
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-[16px] font-bold text-[rgba(255,255,255,0.9)]">
+        <h2 className="text-[16px] font-bold text-[var(--color)]">
           {t('games.chess_v1.analysis.title')}
         </h2>
-        <span className="rounded-md border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.04)] px-2 py-1 text-[11px] font-semibold text-[rgba(255,255,255,0.7)]">
+        <span className="rounded-md border border-[var(--glassBorder)] bg-[var(--glassBg)] px-2 py-1 text-[11px] font-semibold text-[var(--textSecondary)]">
           {t('games.chess_v1.analysis.summary.finalEval')}:{' '}
           <span
             className={finalEval >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}
@@ -119,7 +119,7 @@ export function PostGameAnalysis({
           <span
             key={item.label}
             className={cx(
-              'rounded-md border bg-[rgba(255,255,255,0.03)] px-2.5 py-1 text-[12px] font-semibold',
+              'rounded-md border border-[var(--glassBorder)] bg-[var(--glassBg)] px-2.5 py-1 text-[12px] font-semibold',
               item.color,
             )}
           >

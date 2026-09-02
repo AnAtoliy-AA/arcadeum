@@ -96,26 +96,26 @@ export const tealLightTokens: ThemeTokens = {
   text: {
     primary: '#042f2e',
     secondary: '#134e4a',
-    muted: 'rgba(15,118,110,0.65)',
+    muted: 'rgba(19, 78, 74, 0.85)',
     accent: '#0d9488',
     accentSoft: '#0891b2',
-    onAccent: '#f0fdfa',
+    onAccent: '#ffffff',
     notice: '#0d9488',
   },
   surfaces: {
     hero: {
       background: 'rgba(255,255,255,0.92)',
-      border: 'rgba(45,212,191,0.32)',
+      border: 'rgba(45,212,191,0.35)',
       shadow: '0 28px 70px rgba(13,148,136,0.1)',
     },
     panel: {
       background: 'rgba(255,255,255,0.88)',
-      border: 'rgba(45,212,191,0.26)',
+      border: 'rgba(45,212,191,0.3)',
       shadow: '0 22px 60px rgba(13,148,136,0.1)',
     },
     card: {
       background: 'rgba(240,253,250,0.95)',
-      border: 'rgba(94,234,212,0.45)',
+      border: 'rgba(94,234,212,0.55)',
       shadow: '0 16px 40px rgba(13,148,136,0.08)',
     },
   },
@@ -147,15 +147,15 @@ export const tealLightTokens: ThemeTokens = {
     primary: {
       gradientStart: '#0f766e',
       gradientEnd: '#0d9488',
-      text: '#fff',
+      text: '#ffffff',
       shadow: '0 12px 30px rgba(13,148,136,0.3)',
       hoverShadow: '0 16px 36px rgba(13,148,136,0.4)',
     },
     secondary: {
       background: 'rgba(13,148,136,0.08)',
       hoverBackground: 'rgba(13,148,136,0.14)',
-      border: 'rgba(13,148,136,0.2)',
-      hoverBorder: 'rgba(13,148,136,0.38)',
+      border: 'rgba(13,148,136,0.25)',
+      hoverBorder: 'rgba(13,148,136,0.45)',
       text: '#042f2e',
     },
   },
@@ -165,9 +165,9 @@ export const tealLightTokens: ThemeTokens = {
     border: 'rgba(94,234,212,0.4)',
   },
   glass: {
-    background: 'rgba(255, 255, 255, 0.72)',
-    border: 'rgba(45, 212, 191, 0.15)',
-    borderStrong: 'rgba(45, 212, 191, 0.4)',
+    background: 'rgba(255, 255, 255, 0.85)',
+    border: 'rgba(45, 212, 191, 0.35)',
+    borderStrong: 'rgba(15, 118, 110, 0.55)',
   },
   copyNotice: '#0d9488',
 };

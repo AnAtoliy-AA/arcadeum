@@ -77,9 +77,9 @@ function SlotTile({
       data-active={dataActive}
       data-previewing={dataPreviewing}
       className={cx(
-        'flex flex-row items-center gap-[10px] p-[10px] rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] cursor-pointer min-h-[62px] transition-colors hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
-        active && 'border-[rgba(96,165,250,0.6)] bg-[rgba(96,165,250,0.08)]',
-        previewing && 'border-[rgba(34,197,94,0.6)] bg-[rgba(16,185,129,0.10)]',
+        'flex flex-row items-center gap-[10px] p-[10px] rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] cursor-pointer min-h-[62px] transition-colors hover:border-[var(--glassBorderHover)] hover:bg-[var(--glassBgHover)]',
+        active && 'border-blue-400/60 bg-blue-500/10',
+        previewing && 'border-emerald-500/60 bg-emerald-500/10',
         className,
       )}
     >
@@ -125,7 +125,7 @@ export function ShopSlotRing({
               data-previewing={isPreviewing ? 'true' : 'false'}
               className="w-[48%] max-[800px]:w-full"
             >
-              <div className="flex flex-col w-[40px] h-[40px] rounded-lg items-center justify-center bg-[rgba(0,0,0,0.30)] border border-[rgba(255,255,255,0.10)] overflow-hidden">
+              <div className="flex flex-col w-[40px] h-[40px] rounded-lg items-center justify-center bg-[var(--backgroundHover)] border border-[var(--glassBorder)] overflow-hidden">
                 {item ? (
                   <ItemAsset item={item} size={32} />
                 ) : (
@@ -138,7 +138,7 @@ export function ShopSlotRing({
                 <Typography
                   uiSize="xs"
                   variant="label"
-                  color="#94a3b8"
+                  color="var(--textSecondary)"
                   tracking="sm"
                   className="uppercase"
                 >
@@ -147,7 +147,7 @@ export function ShopSlotRing({
                 <Typography
                   uiSize="xs"
                   weight="700"
-                  color="#f5f7ff"
+                  color="var(--color)"
                   className="line-clamp-1"
                 >
                   {itemName}

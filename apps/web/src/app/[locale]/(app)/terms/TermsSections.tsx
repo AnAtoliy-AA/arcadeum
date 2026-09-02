@@ -37,13 +37,17 @@ export function TermsSectionGroup1({
       {/* Section 1: Agreement */}
       <GlassCard
         id="section-agreement"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+        className="p-7 bg-[var(--glassBg)] border-[var(--glassBorder)] rounded-2xl flex flex-col gap-4"
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-500 dark:text-indigo-400 shrink-0">
             <FileTextIcon size={20} />
           </div>
-          <Typography variant="heading" uiSize="md" className="font-bold">
+          <Typography
+            variant="heading"
+            uiSize="md"
+            className="font-bold text-[var(--color)]"
+          >
             {s?.agreement?.title ?? '1. Agreement to Terms'}
           </Typography>
         </div>
@@ -51,7 +55,7 @@ export function TermsSectionGroup1({
           variant="body"
           uiSize="md"
           alpha="high"
-          className="text-slate-300 leading-relaxed"
+          className="text-[var(--textSecondary)] leading-relaxed"
         >
           {formatMessage(s?.agreement?.content, { appName: APP_NAME })}
         </Typography>
@@ -60,29 +64,33 @@ export function TermsSectionGroup1({
       {/* Section 2: Company Info */}
       <GlassCard
         id="section-companyInfo"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+        className="p-7 bg-[var(--glassBg)] border-[var(--glassBorder)] rounded-2xl flex flex-col gap-4"
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-500 dark:text-indigo-400 shrink-0">
             <ShieldIcon size={20} />
           </div>
-          <Typography variant="heading" uiSize="md" className="font-bold">
+          <Typography
+            variant="heading"
+            uiSize="md"
+            className="font-bold text-[var(--color)]"
+          >
             {s?.companyInfo?.title ?? '2. Company Information'}
           </Typography>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/5 border border-white/10 rounded-xl p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[var(--backgroundHover)] border border-[var(--glassBorder)] rounded-xl p-4">
           <div>
             <Typography
               variant="caption"
               alpha="medium"
-              className="text-xs uppercase"
+              className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.companyName ?? 'Platform'}
             </Typography>
             <Typography
               variant="body"
               uiSize="md"
-              className="font-bold text-white"
+              className="font-bold text-[var(--color)]"
             >
               {APP_NAME}
             </Typography>
@@ -91,14 +99,14 @@ export function TermsSectionGroup1({
             <Typography
               variant="caption"
               alpha="medium"
-              className="text-xs uppercase"
+              className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.legalName ?? 'Legal Entity'}
             </Typography>
             <Typography
               variant="body"
               uiSize="md"
-              className="font-bold text-white"
+              className="font-bold text-[var(--color)]"
             >
               {LEGAL_NAME}
             </Typography>
@@ -107,14 +115,14 @@ export function TermsSectionGroup1({
             <Typography
               variant="caption"
               alpha="medium"
-              className="text-xs uppercase"
+              className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.idCode ?? 'ID Code'}
             </Typography>
             <Typography
               variant="body"
               uiSize="md"
-              className="font-bold text-white font-mono text-sm"
+              className="font-bold text-[var(--color)] font-mono text-sm"
             >
               {ID_CODE}
             </Typography>
@@ -123,14 +131,14 @@ export function TermsSectionGroup1({
             <Typography
               variant="caption"
               alpha="medium"
-              className="text-xs uppercase"
+              className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.contactEmail ?? 'Support Email'}
             </Typography>
             <Typography
               variant="body"
               uiSize="md"
-              className="font-bold text-indigo-300"
+              className="font-bold text-indigo-600 dark:text-indigo-300"
             >
               {SUPPORT_EMAIL}
             </Typography>
@@ -139,14 +147,14 @@ export function TermsSectionGroup1({
             <Typography
               variant="caption"
               alpha="medium"
-              className="text-xs uppercase"
+              className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.workingHours ?? 'Working Hours'}
             </Typography>
             <Typography
               variant="body"
               uiSize="md"
-              className="font-semibold text-slate-300"
+              className="font-semibold text-[var(--textSecondary)]"
             >
               {WORKING_HOURS}
             </Typography>
@@ -157,21 +165,25 @@ export function TermsSectionGroup1({
       {/* Section 3: Services */}
       <GlassCard
         id="section-services"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+        className="p-7 bg-[var(--glassBg)] border-[var(--glassBorder)] rounded-2xl flex flex-col gap-4"
       >
-        <Typography variant="heading" uiSize="md" className="font-bold">
+        <Typography
+          variant="heading"
+          uiSize="md"
+          className="font-bold text-[var(--color)]"
+        >
           {s?.services?.title ?? '3. Platform Services'}
         </Typography>
         <Typography
           variant="body"
           uiSize="md"
           alpha="high"
-          className="text-slate-300 leading-relaxed"
+          className="text-[var(--textSecondary)] leading-relaxed"
         >
           {formatMessage(s?.services?.intro, { appName: APP_NAME })}
         </Typography>
         {s?.services?.items && (
-          <ul className="flex flex-col gap-2 pl-4 list-disc text-slate-300 text-sm">
+          <ul className="flex flex-col gap-2 pl-4 list-disc text-[var(--textSecondary)] text-sm">
             {s.services.items.map((item, index) => (
               <li key={index} className="leading-relaxed">
                 {item}
@@ -184,21 +196,25 @@ export function TermsSectionGroup1({
       {/* Section 4: Accounts */}
       <GlassCard
         id="section-accounts"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+        className="p-7 bg-[var(--glassBg)] border-[var(--glassBorder)] rounded-2xl flex flex-col gap-4"
       >
-        <Typography variant="heading" uiSize="md" className="font-bold">
+        <Typography
+          variant="heading"
+          uiSize="md"
+          className="font-bold text-[var(--color)]"
+        >
           {s?.accounts?.title ?? '4. User Accounts'}
         </Typography>
         <Typography
           variant="body"
           uiSize="md"
           alpha="high"
-          className="text-slate-300 leading-relaxed"
+          className="text-[var(--textSecondary)] leading-relaxed"
         >
           {formatMessage(s?.accounts?.intro, { appName: APP_NAME })}
         </Typography>
         {s?.accounts?.items && (
-          <ul className="flex flex-col gap-2 pl-4 list-disc text-slate-300 text-sm">
+          <ul className="flex flex-col gap-2 pl-4 list-disc text-[var(--textSecondary)] text-sm">
             {s.accounts.items.map((item, index) => (
               <li key={index} className="leading-relaxed">
                 {item}
@@ -220,16 +236,20 @@ export function TermsSectionGroup2({ t, contactT }: SectionProps) {
       {/* Section 5: Delivery */}
       <GlassCard
         id="section-delivery"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+        className="p-7 bg-[var(--glassBg)] border-[var(--glassBorder)] rounded-2xl flex flex-col gap-4"
       >
-        <Typography variant="heading" uiSize="md" className="font-bold">
+        <Typography
+          variant="heading"
+          uiSize="md"
+          className="font-bold text-[var(--color)]"
+        >
           {s?.delivery?.title ?? '5. Digital Delivery'}
         </Typography>
         <Typography
           variant="body"
           uiSize="md"
           alpha="high"
-          className="text-slate-300 leading-relaxed"
+          className="text-[var(--textSecondary)] leading-relaxed"
         >
           {formatMessage(s?.delivery?.content, { appName: APP_NAME })}
         </Typography>
@@ -238,16 +258,20 @@ export function TermsSectionGroup2({ t, contactT }: SectionProps) {
       {/* Section 6: Payment */}
       <GlassCard
         id="section-payment"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+        className="p-7 bg-[var(--glassBg)] border-[var(--glassBorder)] rounded-2xl flex flex-col gap-4"
       >
-        <Typography variant="heading" uiSize="md" className="font-bold">
+        <Typography
+          variant="heading"
+          uiSize="md"
+          className="font-bold text-[var(--color)]"
+        >
           {s?.payment?.title ?? '6. Payments & Currency'}
         </Typography>
         <Typography
           variant="body"
           uiSize="md"
           alpha="high"
-          className="text-slate-300 leading-relaxed"
+          className="text-[var(--textSecondary)] leading-relaxed"
         >
           {s?.payment?.content}
         </Typography>
@@ -256,12 +280,12 @@ export function TermsSectionGroup2({ t, contactT }: SectionProps) {
       {/* Section 7: Refund Policy */}
       <GlassCard
         id="section-refund"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+        className="p-7 bg-[var(--glassBg)] border-[var(--glassBorder)] rounded-2xl flex flex-col gap-4"
       >
         <Typography
           variant="heading"
           uiSize="md"
-          className="font-bold text-amber-300"
+          className="font-bold text-amber-600 dark:text-amber-300"
         >
           {s?.refund?.title ?? '7. Refund Policy'}
         </Typography>
@@ -269,43 +293,47 @@ export function TermsSectionGroup2({ t, contactT }: SectionProps) {
           variant="body"
           uiSize="md"
           alpha="high"
-          className="text-slate-300 leading-relaxed"
+          className="text-[var(--textSecondary)] leading-relaxed"
         >
           {s?.refund?.intro}
         </Typography>
-        <ul className="flex flex-col gap-3 pl-4 list-disc text-slate-300 text-sm">
+        <ul className="flex flex-col gap-3 pl-4 list-disc text-[var(--textSecondary)] text-sm">
           {s?.refund?.items?.virtualCurrency && (
             <li>
-              <strong className="text-white">Virtual Items & Coins:</strong>{' '}
+              <strong className="text-[var(--color)]">
+                Virtual Items & Coins:
+              </strong>{' '}
               {s.refund.items.virtualCurrency}
             </li>
           )}
           {s?.refund?.items?.subscriptions && (
             <li>
-              <strong className="text-white">Subscriptions:</strong>{' '}
+              <strong className="text-[var(--color)]">Subscriptions:</strong>{' '}
               {s.refund.items.subscriptions}
             </li>
           )}
           {s?.refund?.items?.technicalIssues && (
             <li>
-              <strong className="text-white">Technical Issues:</strong>{' '}
+              <strong className="text-[var(--color)]">Technical Issues:</strong>{' '}
               {s.refund.items.technicalIssues}
             </li>
           )}
           {s?.refund?.items?.processingTime && (
             <li>
-              <strong className="text-white">Processing Window:</strong>{' '}
+              <strong className="text-[var(--color)]">
+                Processing Window:
+              </strong>{' '}
               {s.refund.items.processingTime}
             </li>
           )}
         </ul>
-        <div className="mt-2 pt-4 border-t border-white/10 flex items-center gap-2 text-sm text-slate-300">
+        <div className="mt-2 pt-4 border-t border-[var(--glassBorder)] flex items-center gap-2 text-sm text-[var(--textSecondary)]">
           <SupportIcon size={16} />
           <span>
             {s?.refund?.contact}{' '}
             <Link
               href={routes.contact}
-              className="text-indigo-400 font-bold underline hover:text-indigo-300"
+              className="text-indigo-600 dark:text-indigo-400 font-bold underline hover:opacity-80"
             >
               {contactT?.title ?? 'Contact Support'}
             </Link>
@@ -316,21 +344,25 @@ export function TermsSectionGroup2({ t, contactT }: SectionProps) {
       {/* Section 8: Acceptable Use */}
       <GlassCard
         id="section-acceptableUse"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+        className="p-7 bg-[var(--glassBg)] border-[var(--glassBorder)] rounded-2xl flex flex-col gap-4"
       >
-        <Typography variant="heading" uiSize="md" className="font-bold">
+        <Typography
+          variant="heading"
+          uiSize="md"
+          className="font-bold text-[var(--color)]"
+        >
           {s?.acceptableUse?.title ?? '8. Acceptable Use Policy'}
         </Typography>
         <Typography
           variant="body"
           uiSize="md"
           alpha="high"
-          className="text-slate-300 leading-relaxed"
+          className="text-[var(--textSecondary)] leading-relaxed"
         >
           {s?.acceptableUse?.intro}
         </Typography>
         {s?.acceptableUse?.items && (
-          <ul className="flex flex-col gap-2 pl-4 list-disc text-slate-300 text-sm">
+          <ul className="flex flex-col gap-2 pl-4 list-disc text-[var(--textSecondary)] text-sm">
             {s.acceptableUse.items.map((item, index) => (
               <li key={index} className="leading-relaxed">
                 {item}
@@ -343,151 +375,5 @@ export function TermsSectionGroup2({ t, contactT }: SectionProps) {
   );
 }
 
-export function TermsSectionGroup3({ t, SUPPORT_EMAIL }: SectionProps) {
-  const s = t?.sections;
-  return (
-    <>
-      {/* Section 9: Intellectual Property */}
-      <GlassCard
-        id="section-intellectualProperty"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
-      >
-        <Typography variant="heading" uiSize="md" className="font-bold">
-          {s?.intellectualProperty?.title ?? '9. Intellectual Property'}
-        </Typography>
-        <Typography
-          variant="body"
-          uiSize="md"
-          alpha="high"
-          className="text-slate-300 leading-relaxed"
-        >
-          {formatMessage(s?.intellectualProperty?.content, {
-            appName: APP_NAME,
-          })}
-        </Typography>
-      </GlassCard>
-
-      {/* Section 10: Liability */}
-      <GlassCard
-        id="section-liability"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
-      >
-        <Typography variant="heading" uiSize="md" className="font-bold">
-          {s?.liability?.title ?? '10. Limitation of Liability'}
-        </Typography>
-        <Typography
-          variant="body"
-          uiSize="md"
-          alpha="high"
-          className="text-slate-300 leading-relaxed"
-        >
-          {formatMessage(s?.liability?.content, { appName: APP_NAME })}
-        </Typography>
-      </GlassCard>
-
-      {/* Section 11: Crypto Disclaimers */}
-      {s?.crypto && (
-        <GlassCard
-          id="section-crypto"
-          className="p-7 bg-slate-900/60 border-indigo-500/30 rounded-2xl flex flex-col gap-4"
-        >
-          <Typography
-            variant="heading"
-            uiSize="md"
-            className="font-bold text-indigo-300"
-          >
-            {s.crypto.title}
-          </Typography>
-          <Typography
-            variant="body"
-            uiSize="md"
-            alpha="high"
-            className="text-slate-300 leading-relaxed"
-          >
-            {s.crypto.content}
-          </Typography>
-        </GlassCard>
-      )}
-
-      {s?.taxes && (
-        <GlassCard
-          id="section-taxes"
-          className="p-7 bg-slate-900/60 border-amber-500/30 rounded-2xl flex flex-col gap-4"
-        >
-          <Typography
-            variant="heading"
-            uiSize="md"
-            className="font-bold text-amber-300"
-          >
-            {s.taxes.title}
-          </Typography>
-          <Typography
-            variant="body"
-            uiSize="md"
-            alpha="high"
-            className="text-slate-300 leading-relaxed"
-          >
-            {s.taxes.content}
-          </Typography>
-          {s.taxes.items && (
-            <ul className="flex flex-col gap-2 pl-4 list-disc text-slate-300 text-sm">
-              {s.taxes.items.map((item, index) => (
-                <li key={index} className="leading-relaxed">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          )}
-          {s.taxes.important && (
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 mt-2">
-              <SupportIcon size={18} />
-              <Typography
-                variant="body"
-                uiSize="sm"
-                className="font-semibold leading-relaxed"
-              >
-                {s.taxes.important}
-              </Typography>
-            </div>
-          )}
-        </GlassCard>
-      )}
-
-      {/* Governing Law */}
-      <GlassCard
-        id="section-governingLaw"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
-      >
-        <Typography variant="heading" uiSize="md" className="font-bold">
-          {s?.governingLaw?.title ?? 'Governing Law'}
-        </Typography>
-        <Typography
-          variant="body"
-          uiSize="md"
-          alpha="high"
-          className="text-slate-300 leading-relaxed"
-        >
-          {s?.governingLaw?.content}
-        </Typography>
-      </GlassCard>
-
-      {/* Contact Section */}
-      <GlassCard
-        id="section-contact"
-        className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
-      >
-        <Typography variant="heading" uiSize="md" className="font-bold">
-          {s?.contact?.title ?? 'Contact Us'}
-        </Typography>
-        <Typography
-          variant="body"
-          uiSize="md"
-          alpha="high"
-          className="text-slate-300 leading-relaxed"
-        >
-          {formatMessage(s?.contact?.content, { email: SUPPORT_EMAIL })}
-        </Typography>
-      </GlassCard>
-    </>
-  );
-}
+export { TermsSectionGroup3 } from './TermsSectionGroup3';
+export type { SectionProps };

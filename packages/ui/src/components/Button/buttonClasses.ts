@@ -7,6 +7,8 @@
  */
 import type { ButtonShape, ButtonVariant, GameVariant } from './types';
 import { cx } from '../../utils/cx';
+import { gameButtonVariants } from './gameButtonVariants';
+export { gameButtonVariants };
 
 export const buttonBase = [
   'relative',
@@ -241,16 +243,16 @@ export const buttonVariants: Record<string, string> = {
 
   chip: [
     'border',
-    'border-[rgba(255,255,255,0.1)]',
+    'border-[var(--glassBorder)]',
     'h-[28px]',
     'px-3',
     'rounded-[16px]',
     'text-[var(--color)]',
-    'shadow-[0_2px_1px_rgba(0,0,0,0.3)]',
-    'bg-[rgba(255,255,255,0.05)]',
+    'shadow-[0_2px_1px_rgba(0,0,0,0.15)]',
+    'bg-[var(--glassBg)]',
     'hover:bg-[var(--glassBgHover)]',
     'hover:border-[var(--glassBorderHover)]',
-    'hover:shadow-[0_5px_8px_rgba(0,0,0,0.3)]',
+    'hover:shadow-[0_5px_8px_rgba(0,0,0,0.2)]',
     'active:shadow-none',
   ].join(' '),
 
@@ -302,86 +304,7 @@ export const buttonVariants: Record<string, string> = {
   ].join(' '),
 };
 
-/**
- * Game-skin variants — token colours are minted per-game via CSS vars.
- * NOTE: written as full string literals on purpose — Tailwind's scanner only
- * emits CSS for classes that appear verbatim in source files, so these must
- * never be assembled from template literals.
- */
-export const gameButtonVariants: Record<string, string> = {
-  cyberpunk: [
-    'border',
-    'border-[var(--cyberpunkPrimary)]',
-    'bg-[var(--cyberpunkBg)]',
-    'bg-[linear-gradient(160deg,var(--cyberpunkBg)_0%,var(--cyberpunkBgEnd)_100%)]',
-    'text-[var(--cyberpunkAccent)]',
-    'shadow-[0_4px_2px_var(--cyberpunkPrimary)]',
-    'border-t-[rgba(255,255,255,0.15)]',
-    'hover:border-[var(--cyberpunkSecondary)]',
-    'hover:shadow-[0_10px_22px_var(--cyberpunkPrimary)]',
-    'active:shadow-[0_1px_6px_var(--cyberpunkPrimary)]',
-  ].join(' '),
-  underwater: [
-    'border',
-    'border-[var(--underwaterPrimary)]',
-    'bg-[var(--underwaterBg)]',
-    'bg-[linear-gradient(160deg,var(--underwaterBg)_0%,var(--underwaterBgEnd)_100%)]',
-    'text-[var(--underwaterPrimary)]',
-    'shadow-[0_4px_2px_var(--underwaterPrimary)]',
-    'border-t-[rgba(255,255,255,0.12)]',
-    'hover:border-[var(--underwaterAccent)]',
-    'hover:shadow-[0_10px_22px_var(--underwaterPrimary)]',
-    'active:shadow-[0_1px_6px_var(--underwaterPrimary)]',
-  ].join(' '),
-  crime: [
-    'border',
-    'border-[var(--crimePrimary)]',
-    'bg-[var(--crimeBg)]',
-    'bg-[linear-gradient(160deg,var(--crimeBg)_0%,var(--crimeBgEnd)_100%)]',
-    'text-[var(--crimeAccent)]',
-    'shadow-[0_4px_2px_var(--crimePrimary)]',
-    'border-t-[rgba(255,255,255,0.12)]',
-    'hover:border-[var(--crimeSecondary)]',
-    'hover:shadow-[0_10px_22px_var(--crimePrimary)]',
-    'active:shadow-[0_1px_6px_var(--crimePrimary)]',
-  ].join(' '),
-  horror: [
-    'border',
-    'border-[var(--horrorPrimary)]',
-    'bg-[var(--horrorBg)]',
-    'bg-[linear-gradient(160deg,var(--horrorBg)_0%,var(--horrorBgEnd)_100%)]',
-    'text-[var(--horrorAccent)]',
-    'shadow-[0_4px_2px_var(--horrorPrimary)]',
-    'border-t-[rgba(255,255,255,0.1)]',
-    'hover:border-[var(--horrorSecondary)]',
-    'hover:shadow-[0_10px_22px_var(--horrorPrimary)]',
-    'active:shadow-[0_1px_6px_var(--horrorPrimary)]',
-  ].join(' '),
-  adventure: [
-    'border',
-    'border-[var(--adventurePrimary)]',
-    'bg-[var(--adventureBg)]',
-    'bg-[linear-gradient(160deg,var(--adventureBg)_0%,var(--adventureBgEnd)_100%)]',
-    'text-[var(--adventureAccent)]',
-    'shadow-[0_4px_2px_var(--adventurePrimary)]',
-    'border-t-[rgba(255,255,255,0.14)]',
-    'hover:border-[var(--adventureSecondary)]',
-    'hover:shadow-[0_10px_22px_var(--adventurePrimary)]',
-    'active:shadow-[0_1px_6px_var(--adventurePrimary)]',
-  ].join(' '),
-  'high-altitude-hike': [
-    'border',
-    'border-[var(--hikePrimary)]',
-    'bg-[var(--hikeBg)]',
-    'bg-[linear-gradient(160deg,var(--hikeBg)_0%,var(--hikeBgEnd)_100%)]',
-    'text-[var(--hikeSecondary)]',
-    'shadow-[0_4px_2px_var(--hikePrimary)]',
-    'border-t-[rgba(255,255,255,0.14)]',
-    'hover:border-[var(--hikeSecondary)]',
-    'hover:shadow-[0_10px_22px_var(--hikePrimary)]',
-    'active:shadow-[0_1px_6px_var(--hikePrimary)]',
-  ].join(' '),
-};
+
 
 export const buttonFlags = {
   fullWidth: 'w-full',

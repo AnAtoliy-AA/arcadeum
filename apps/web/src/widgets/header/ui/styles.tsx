@@ -179,7 +179,7 @@ export const MobileUserCard = ({
 }) => (
   <div
     className={cx(
-      'flex flex-wrap items-center gap-3 rounded-[16px] border border-[var(--glassBorder)] bg-[rgba(255,255,255,0.04)] p-3',
+      'flex flex-wrap items-center gap-3 rounded-[16px] border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3',
       className,
     )}
     data-testid={testId}
@@ -205,7 +205,7 @@ export const MobileSectionLabel = ({
 }) => (
   <div
     className={cx(
-      'px-4 pb-1 pt-3 text-[12px] font-bold leading-[16px] tracking-[3px] opacity-80',
+      'px-4 pb-1 pt-3 text-[12px] font-bold leading-[16px] tracking-[3px] text-[var(--textSecondary)]',
       className,
     )}
   >
@@ -254,8 +254,8 @@ export const NavMobileLink = ({
     icon={icon}
     onClick={onClick}
     className={cx(
-      'justify-start px-4 py-3 hover:bg-[rgba(255,255,255,0.05)]',
-      isActive && '!bg-[rgba(255,255,255,0.08)] !text-[var(--primary)]',
+      'justify-start px-4 py-3 hover:bg-[var(--backgroundHover)] text-[var(--color)]',
+      isActive && '!bg-[var(--glassBgHover)] !text-[var(--primary)]',
       className,
     )}
     data-testid={testId}

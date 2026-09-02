@@ -11,26 +11,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-}
-
-/* Soft felt vignette + subtle light sweep layered over the theme gradient. */
-.table::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      120% 80% at 50% 0%,
-      rgba(255, 255, 255, 0.08) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      140% 120% at 50% 120%,
-      rgba(0, 0, 0, 0.45) 0%,
-      transparent 60%
-    );
-  pointer-events: none;
-  z-index: 0;
+  background: transparent;
 }
 
 /* Glowing accent ring pooled behind the centre piles. */
@@ -593,17 +574,34 @@
   animation: cascade-pulse 1s ease-in-out infinite;
 }
 
+.drawText {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--cascade-card-text, #f8fafc);
+  opacity: 0.95;
+}
+
 /* Small uppercase caption beneath each pile. */
 .pileLabel {
   position: absolute;
   left: 50%;
-  bottom: -20px;
+  bottom: -24px;
   transform: translateX(-50%);
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--color, #f8fafc);
+  background: var(--glassBg, rgba(15, 23, 42, 0.8));
+  border: 1px solid var(--glassBorder, rgba(255, 255, 255, 0.2));
+  backdrop-filter: blur(8px);
+  border-radius: 9999px;
+  padding: 2px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
 }
 
 .discard {

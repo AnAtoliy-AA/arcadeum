@@ -7,6 +7,7 @@
   --foreground: #ecefee;
   --muted-foreground: #9ba1a6;
   --glassBg: rgba(15, 17, 18, 0.72);
+  --glassBgHover: rgba(255, 255, 255, 0.12);
   --backgroundRadialStart: rgba(56, 189, 248, 0.15); /* Light blue fallback */
   --backgroundRadialEnd: rgba(15, 17, 18, 1);
 
@@ -25,6 +26,7 @@
   --foreground: #0f172a;
   --muted-foreground: rgba(71, 85, 105, 0.85);
   --glassBg: rgba(255, 255, 255, 0.8);
+  --glassBgHover: rgba(241, 245, 249, 0.95);
 }
 
 [data-theme='dark'] {

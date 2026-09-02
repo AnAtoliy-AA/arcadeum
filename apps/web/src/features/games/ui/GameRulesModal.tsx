@@ -49,39 +49,53 @@ export const GameRulesModal = memo(function GameRulesModal({
       <ModalContent
         maxWidth={560}
         variant={variant}
-        data-testid="game-rules-modal"
+        data-testid="rules-modal"
+        header={
+          <ModalHeader variant={variant} className="p-5 pb-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-xl shadow-inner">
+                {icon}
+              </div>
+              <div className="flex flex-col">
+                <ModalTitle variant={variant} className="text-xl">
+                  {title}
+                </ModalTitle>
+                {subtitle ? (
+                  <span className="text-xs text-[var(--textSecondary)]">
+                    {subtitle}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+            <CloseButton
+              onClick={onClose}
+              aria-label="Close modal"
+              title="Close"
+              data-testid="modal-close-button"
+            >
+              <CloseIcon size={20} />
+            </CloseButton>
+          </ModalHeader>
+        }
+        footer={
+          <ModalActions className="shrink-0 justify-end p-5 pt-3 border-t border-[var(--glassBorder)]">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onClose}
+              data-testid="rules-modal-got-it-button"
+              className="px-6 text-xs font-semibold"
+            >
+              {t('common.actions.close' as TranslationKey) || 'Close'}
+            </Button>
+          </ModalActions>
+        }
       >
-        <ModalHeader variant={variant}>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-xl shadow-inner">
-              {icon}
-            </div>
-            <div className="flex flex-col">
-              <ModalTitle variant={variant} className="text-xl">
-                {title}
-              </ModalTitle>
-              {subtitle ? (
-                <span className="text-xs text-[var(--textSecondary)]">
-                  {subtitle}
-                </span>
-              ) : null}
-            </div>
-          </div>
-          <CloseButton
-            onClick={onClose}
-            aria-label="Close modal"
-            title="Close"
-            data-testid="modal-close-button"
-          >
-            <CloseIcon size={20} />
-          </CloseButton>
-        </ModalHeader>
-
         <div className="flex flex-col gap-3 py-2">
           {rules.map((rule, idx) => (
             <div
               key={rule.title}
-              className="group relative flex gap-3.5 rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition-all hover:border-white/20 hover:bg-white/[0.06]"
+              className="group relative flex gap-3.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3.5 transition-all hover:border-[var(--glassBorderStrong)] hover:bg-[var(--glassBgHover)]"
             >
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[var(--primary)]/30 bg-[var(--primary)]/15 text-xs font-bold text-[var(--primary)]">
                 {rule.badge || idx + 1}
@@ -97,18 +111,6 @@ export const GameRulesModal = memo(function GameRulesModal({
             </div>
           ))}
         </div>
-
-        <ModalActions className="justify-end pt-2 border-t border-[var(--borderColor)]">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={onClose}
-            data-testid="rules-modal-got-it-button"
-            className="px-6 text-xs font-semibold"
-          >
-            {t('common.actions.close' as TranslationKey) || 'Close'}
-          </Button>
-        </ModalActions>
       </ModalContent>
     </Modal>
   );

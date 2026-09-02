@@ -42,7 +42,7 @@ export function DifficultySelector({
               className={`overflow-hidden rounded-[8px] font-semibold ${
                 isActive
                   ? 'bg-[rgba(99,102,241,0.2)] border-[rgba(99,102,241,0.5)] text-[#6366f1] hover:bg-[rgba(99,102,241,0.25)]'
-                  : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-[var(--color)] hover:bg-[rgba(255,255,255,0.1)]'
+                  : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
               }`}
               key={diff}
               variant="chip"

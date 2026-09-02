@@ -64,10 +64,9 @@ function RowHost({
   return (
     <div
       className={cx(
-        'w-full px-4 py-4 rounded-3xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.015)]',
-        active && 'border-[rgba(96,165,250,0.45)] bg-[rgba(96,165,250,0.06)]',
-        highlight &&
-          'border-[rgba(250,204,21,0.30)] bg-[rgba(250,204,21,0.04)]',
+        'w-full px-4 py-4 rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)]',
+        active && 'border-blue-400/50 bg-blue-500/10',
+        highlight && 'border-amber-400/50 bg-amber-500/10',
         className,
       )}
     >
@@ -117,6 +116,11 @@ export function ShopRow({
   const activeSlot = useShopPreviewStore((s) => s.activeSlot);
   const [expanded, setExpanded] = useState(false);
 
+  const isActive = useMemo(
+    () => Boolean(sectionKey && activeSlot === sectionKey),
+    [sectionKey, activeSlot],
+  );
+
   const ownedIds = useMemo(
     () =>
       new Set(
@@ -141,12 +145,10 @@ export function ShopRow({
 
   if (items.length === 0) return null;
 
-  const isActive = Boolean(sectionKey && activeSlot === sectionKey);
-
   const toggleExpanded = () => {
     setExpanded((prev) => {
       const next = !prev;
-      track('shop.row.viewAll', {
+      track('shop.row.toggle_expanded', {
         rowId: id,
         section: sectionKey ?? null,
         expanded: next,
@@ -175,7 +177,7 @@ export function ShopRow({
             <Typography
               uiSize="xs"
               variant="heading"
-              color="#94a3b8"
+              color="var(--textSecondary)"
               tracking="lg"
               className="uppercase"
             >
@@ -186,8 +188,8 @@ export function ShopRow({
             uiSize="xs"
             weight="700"
             tracking="md"
-            color="#94a3b8"
-            className="uppercase cursor-pointer hover:text-[#f5f7ff]"
+            color="var(--textSecondary)"
+            className="uppercase cursor-pointer hover:text-[var(--color)]"
             onClick={toggleExpanded}
             role="button"
             tabIndex={0}
@@ -198,8 +200,7 @@ export function ShopRow({
                 toggleExpanded();
               }
             }}
-            data-testid={`shop-row-${id}-toggle`}
-            data-expanded={expanded ? 'true' : 'false'}
+            data-testid={`shop-row-toggle-${id}`}
           >
             {expandLabel}
           </Typography>

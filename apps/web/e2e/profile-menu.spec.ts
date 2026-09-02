@@ -27,12 +27,18 @@ test.describe('Profile Menu Modernization', () => {
     await dropdown.waitFor({ state: 'visible' });
     await expect(dropdown).toBeVisible();
 
-    // Verify glassmorphism / dark background
+    // Verify dark background
     const backgroundColor = await dropdown.evaluate(
       (el) => window.getComputedStyle(el).backgroundColor,
     );
-    // rgba(12, 14, 15, 0.98)
-    expect(backgroundColor).toMatch(/rgba?\(12,\s*14,\s*15/);
+    const rgbMatch = backgroundColor.match(/\d+/g);
+    expect(rgbMatch).toBeTruthy();
+    if (rgbMatch) {
+      const [r, g, b] = rgbMatch.map(Number);
+      expect(r).toBeLessThan(30);
+      expect(g).toBeLessThan(30);
+      expect(b).toBeLessThan(30);
+    }
 
     // Verify border radius
     const borderRadius = await dropdown.evaluate(

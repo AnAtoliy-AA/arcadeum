@@ -1,6 +1,6 @@
 'use client';
 
-import { type CSSProperties, type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { useLanguage } from '@/shared/i18n/context';
 import { useLiveStatsStore } from '@/features/live-stats';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
@@ -10,6 +10,7 @@ import { appConfig } from '@/shared/config/app-config';
 import { ActivityTicker } from '@arcadeum/ui/components/ActivityTicker';
 import { ChannelTile } from '@arcadeum/ui/components/ChannelTile';
 import { StatTile } from '@arcadeum/ui/components/StatTile';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { formatMessage } from '@/shared/i18n';
 import type { ContactMessages } from '@/shared/i18n/messages/legal/types';
 import {
@@ -46,27 +47,6 @@ function HeroPill({
       {children}
     </span>
   );
-}
-
-/** Decorative glow orbs — size/position/color are dynamic. */
-function orbStyle(
-  size: number,
-  top: string,
-  left: string,
-  color: string,
-): CSSProperties {
-  return {
-    position: 'absolute',
-    width: size,
-    height: size,
-    top,
-    left,
-    borderRadius: '50%',
-    background: color,
-    filter: 'blur(60px)',
-    opacity: 0.55,
-    pointerEvents: 'none',
-  };
 }
 
 const tickerItems = [
@@ -181,18 +161,12 @@ export default function ContactView({
 
   return (
     <PageLayout>
-      <Container size="lg" style={{ maxWidth: 1120 }}>
+      <Container size="lg" className="max-w-[1120px]">
         <div className="flex flex-col items-stretch gap-8">
           <div className="relative overflow-hidden rounded-[24px] border border-[var(--glassBorder)] bg-[radial-gradient(80%_80%_at_50%_100%,rgba(56,189,248,0.18),transparent_70%),radial-gradient(60%_60%_at_0%_0%,rgba(3,105,161,0.22),transparent_65%),var(--background)] p-[clamp(28px,5vw,56px)_clamp(20px,3vw,32px)]">
-            <span
-              aria-hidden="true"
-              style={orbStyle(360, '-160px', '-80px', 'rgba(56,189,248,0.45)')}
-            />
-            <span
-              aria-hidden="true"
-              style={orbStyle(320, '-100px', '70%', 'rgba(244,114,182,0.45)')}
-            />
-            <div className="flex flex-col items-stretch gap-4 relative z-[100]">
+            <span aria-hidden="true" className={styles.orb1} />
+            <span aria-hidden="true" className={styles.orb2} />
+            <div className="flex flex-col items-stretch gap-4 relative z-10">
               <div className="flex flex-row flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold tracking-[1.2px] uppercase text-[var(--accent)] border border-[var(--glassBorder)] bg-[var(--glassBg)]">
                   <span
@@ -218,11 +192,10 @@ export default function ContactView({
                 <HeroPill>
                   <span
                     aria-hidden="true"
-                    className="h-[7px] w-[7px] rounded-full"
-                    style={{
-                      background: '#34d399',
-                      boxShadow: '0 0 8px #34d399',
-                    }}
+                    className={cx(
+                      'h-[7px] w-[7px] rounded-full',
+                      styles.statusDot,
+                    )}
                   />
                   {hero?.statusOk ?? 'All systems operational'}
                 </HeroPill>

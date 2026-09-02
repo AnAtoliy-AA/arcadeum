@@ -101,86 +101,8 @@ function ChessBoardPanelImpl({
   const coachVisible = coach.visible;
 
   return (
-    <div className="chess-layout">
-      <style>{`
-        .chess-layout {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          width: 100%;
-          max-width: 900px;
-          margin: 0 auto;
-          padding: 12px;
-        }
-        .chess-board-col {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        .chess-info-col {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-        .player-cards-container {
-          display: flex;
-          gap: 12px;
-          width: 100%;
-        }
-        .player-card-stat-box {
-          flex: 1;
-          padding: 10px 14px;
-          border-radius: 8px;
-          background-color: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          text-align: center;
-        }
-        .player-card-stat-value {
-          font-size: 18px;
-          font-weight: 700;
-          color: #f8fafc;
-        }
-        .player-card-stat-label {
-          font-size: 9px;
-          font-weight: 600;
-          color: rgba(148, 163, 184, 0.6);
-          text-transform: uppercase;
-          margin-top: 2px;
-        }
-        @media (max-width: 480px) {
-          .player-cards-container {
-            gap: 8px;
-          }
-          .player-card-stat-box {
-            padding: 4px 6px;
-          }
-          .player-card-stat-value {
-            font-size: 13px;
-          }
-          .player-card-stat-label {
-            font-size: 7px;
-          }
-        }
-        @media (min-width: 768px) {
-          .chess-layout {
-            flex-direction: row;
-            align-items: flex-start;
-          }
-          .chess-board-col {
-            flex: 0 0 auto;
-            width: min(70vmin, 560px);
-            position: sticky;
-            top: 12px;
-          }
-          .chess-info-col {
-            flex: 1;
-            min-width: 0;
-            max-width: 280px;
-          }
-        }
-      `}</style>
-
-      <div className="chess-board-col">
+    <div className="flex flex-col md:flex-row md:items-start gap-3 w-full max-w-[900px] mx-auto p-3">
+      <div className="flex flex-col gap-2 md:flex-none md:w-[min(70vmin,560px)] md:sticky md:top-3">
         <TurnBar
           currentTurnColor={snapshot.currentTurnColor}
           isCheck={snapshot.isCheck}
@@ -214,7 +136,7 @@ function ChessBoardPanelImpl({
         />
       </div>
 
-      <div className="chess-info-col">
+      <div className="flex flex-col gap-3 flex-1 min-w-0 md:max-w-[280px]">
         <PlayerCards
           whiteId={whitePlayer?.playerId ?? ''}
           blackId={blackPlayer?.playerId ?? ''}

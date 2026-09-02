@@ -32,15 +32,14 @@ export interface ShopItemCardProps {
 
 function cardSurfaceClasses(disabled?: boolean): string {
   return cx(
-    'flex flex-col gap-3 rounded-xl bg-[var(--background)] p-3 transition-[transform,background-color] duration-200 ease-out',
+    'flex flex-col gap-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)] p-3 transition-[transform,background-color] duration-200 ease-out',
     disabled
-      ? 'cursor-not-allowed opacity-60 hover:bg-[var(--background)] active:scale-100'
-      : 'cursor-pointer hover:bg-[var(--backgroundHover)] active:scale-[0.98]',
+      ? 'cursor-not-allowed opacity-60 hover:bg-[var(--glassBg)] active:scale-100'
+      : 'cursor-pointer hover:bg-[var(--glassBgHover)] active:scale-[0.98]',
   );
 }
 
 const PreviewSlotClasses = [
-  '',
   'relative',
   'flex',
   'aspect-square',
@@ -49,11 +48,10 @@ const PreviewSlotClasses = [
   'justify-center',
   'overflow-hidden',
   'rounded-lg',
-  'bg-[var(--backgroundFocus)]',
+  'bg-[var(--backgroundHover)]',
 ].join(' ');
 
 const RarityBadgeBaseClasses = [
-  '',
   'absolute',
   'left-2',
   'top-2',
@@ -70,11 +68,10 @@ const RarityBadgeToneClasses: Record<ShopRarity, string> = {
   common: 'bg-[rgba(120,120,120,0.85)] text-[#f5f7ff]',
   rare: 'bg-[rgba(59,130,246,0.85)] text-[#f5f7ff]',
   epic: 'bg-[rgba(168,85,247,0.85)] text-[#f5f7ff]',
-  legendary: 'bg-[rgba(250,204,21,0.85)] text-[#cbd5e1]',
+  legendary: 'bg-[rgba(250,204,21,0.85)] text-[#0f172a]',
 };
 
 const StateChipBaseClasses = [
-  '',
   'rounded-lg',
   'px-2',
   'py-1',
@@ -85,7 +82,7 @@ const StateChipBaseClasses = [
 ].join(' ');
 
 const StateChipToneClasses: Record<'neutral' | 'success', string> = {
-  neutral: 'bg-[rgba(255,255,255,0.08)] text-[#94a3b8]',
+  neutral: 'bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-[var(--textSecondary)]',
   success: 'bg-[rgba(16,185,129,0.18)] text-[#10b981]',
 };
 
@@ -192,7 +189,7 @@ export const ShopItemCard = memo(function ShopItemCard({
 
         <div className="flex flex-col gap-2">
           <span
-            className="line-clamp-1 text-[18px] font-bold"
+            className="line-clamp-1 text-[18px] font-bold text-[var(--color)]"
             data-testid={`shop-item-name-${itemId}`}
           >
             {name}

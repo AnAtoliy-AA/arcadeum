@@ -43,7 +43,13 @@ function PromotionModalImpl({
               key={pieceType}
               onClick={() => onSelect(pieceType)}
             >
-              <span className="text-[40px] leading-[16px]">
+              <span
+                className={`text-[40px] leading-[16px] select-none ${
+                  color === 'white'
+                    ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]'
+                    : 'text-slate-900 drop-shadow-[0_1px_2px_rgba(255,255,255,0.4)]'
+                }`}
+              >
                 {PIECE_SYMBOLS[pieceType][color]}
               </span>
             </PromotionOption>

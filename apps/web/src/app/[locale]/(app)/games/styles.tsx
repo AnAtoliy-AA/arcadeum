@@ -43,7 +43,7 @@ export const ViewToggle = ({
 }) => (
   <div
     className={cx(
-      'overflow-hidden rounded-[10px] border border-[var(--borderColor)] max-[768px]:hidden',
+      'overflow-hidden rounded-[10px] border border-[var(--glassBorderStrong)] max-[768px]:hidden',
       className,
     )}
   >
@@ -63,7 +63,7 @@ export const Filters = ({
   <div
     className={cx(
       'flex w-full max-w-full flex-col gap-4',
-      'rounded-2xl border border-[var(--borderColor)] bg-[var(--background)] p-4 sm:p-5',
+      'rounded-2xl border border-[var(--glassBorderStrong)] bg-[var(--background)] p-4 sm:p-5',
       'shadow-sm backdrop-blur-md',
       className,
     )}
@@ -98,7 +98,7 @@ export const FilterLabel = ({
 }) => (
   <span
     className={cx(
-      'select-none text-[12px] font-bold uppercase tracking-[1.2px] text-[var(--color)] opacity-75',
+      'select-none text-[12px] font-bold uppercase tracking-[1.2px] text-[var(--textSecondary)]',
       className,
     )}
   >

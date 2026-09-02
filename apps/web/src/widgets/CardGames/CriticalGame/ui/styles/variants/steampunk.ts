@@ -20,6 +20,6 @@ export const steampunkVariantStyles: VariantStyleConfig = {
   },
   cards: {
     ...baseVariantStyles.cards,
-    getCardSpriteUrl: () => '/images/cards/steampunk_sprites.png',
+    getCardSpriteUrl: () => '/images/cards/steampunk_sprites.webp',
   },
 };

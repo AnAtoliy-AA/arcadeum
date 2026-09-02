@@ -64,7 +64,7 @@ export function LobbyChipGroup({
             className={`rounded-[10px] font-medium text-[13px] ${
               isActive
                 ? undefined
-                : 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.10)] text-[#cbd5e1] hover:bg-[rgba(255,255,255,0.08)]'
+                : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
             } ${
               option.comingSoon
                 ? 'opacity-[0.4]'

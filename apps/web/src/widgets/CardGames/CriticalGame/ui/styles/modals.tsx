@@ -27,7 +27,7 @@ function Overlay({
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.8)] z-[1000] items-center justify-center',
+        'flex flex-col items-stretch fixed top-0 left-0 right-0 bottom-0 bg-black/70 backdrop-blur-sm z-[9999] items-center justify-center',
         className,
       )}
       onClick={onClick}
@@ -92,7 +92,7 @@ function ModalFrame({
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch bg-[var(--background)] border-2 border-[var(--borderColor)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[1001] max-[480px]:rounded-[16px] max-[480px]:max-h-[85vh] max-[480px]:mx-2',
+        'flex flex-col items-stretch bg-[var(--background)] text-[var(--color)] border-2 border-[var(--glassBorderStrong)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[10000] max-[480px]:rounded-[16px] max-[480px]:max-h-[85vh] max-[480px]:mx-2',
         MODAL_FRAME_VARIANT_CLASS[key],
         className,
       )}
@@ -230,7 +230,7 @@ export const CloseButton = ({
   'data-testid'?: string;
 }) => (
   <Button
-    className="hover:rotate-[90deg]"
+    className="text-[var(--color)] hover:rotate-[90deg] hover:text-[var(--primary)] hover:bg-[var(--backgroundHover)]"
     variant="icon"
     size="sm"
     gameVariant={variant as GameVariant}

@@ -57,7 +57,7 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
 
   return (
     <div
-      className="flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)]"
+      className="flex flex-col items-stretch gap-3 p-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)]"
       data-testid="shop-wallet-rail"
     >
       <div className="flex flex-row items-stretch gap-2">
@@ -89,20 +89,20 @@ export function WalletRail({ balance, nextGemPack, labels }: WalletRailProps) {
             <Typography
               uiSize="sm"
               weight="800"
-              color="#94a3b8"
+              color="var(--textSecondary)"
               tracking="lg"
               className="uppercase"
             >
               {labels.nextPack.replace('{label}', nextGemPack.label)}
             </Typography>
-            <Typography uiSize="xs" weight="700" color="#f5f7ff">
+            <Typography uiSize="xs" weight="700" color="var(--color)">
               {labels.ofTarget
                 .replace('{current}', fmt(gems))
                 .replace('{target}', fmt(nextGemPack.target))}
             </Typography>
           </div>
           <div
-            className="flex flex-col items-stretch h-[6px] rounded-xl bg-[rgba(255,255,255,0.06)] overflow-hidden"
+            className="flex flex-col items-stretch h-[6px] rounded-xl bg-[var(--backgroundHover)] overflow-hidden"
             data-testid="shop-wallet-progress"
             data-progress={pct}
           >

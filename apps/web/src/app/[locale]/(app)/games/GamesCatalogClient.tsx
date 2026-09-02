@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { FilterChip, Input } from '@arcadeum/ui';
+import { FilterChip } from '@arcadeum/ui';
 import type { Locale } from '@/shared/i18n';
 import { GamesCatalogCard } from './components/GamesCatalogCard';
 
@@ -60,7 +60,6 @@ export function GamesCatalogClient({
   boardLabel = 'Board Games',
   cardLabel = 'Card Games',
   casualLabel = 'Action & Casual',
-  searchPlaceholder = 'Search games by name, genre or rules...',
   unavailableLabel = 'Disabled',
   demoBadgeLabel = 'Demo',
   playLabel = 'Play Now',
@@ -70,7 +69,6 @@ export function GamesCatalogClient({
   const [selectedCategory, setSelectedCategory] = useState<
     'all' | 'board' | 'card' | 'casual' | 'puzzle'
   >('all');
-  const [searchQuery, setSearchQuery] = useState('');
 
   const categoryLabels: Record<string, string> = {
     all: allLabel,
@@ -97,56 +95,31 @@ export function GamesCatalogClient({
 
   const filteredGames = useMemo(() => {
     return games.filter((game) => {
-      const matchesCategory =
-        selectedCategory === 'all' || game.category === selectedCategory;
-      const query = searchQuery.trim().toLowerCase();
-      const matchesSearch =
-        query === '' ||
-        game.name.toLowerCase().includes(query) ||
-        game.genre.toLowerCase().includes(query) ||
-        (game.pace && game.pace.toLowerCase().includes(query)) ||
-        game.description.toLowerCase().includes(query);
-
-      return matchesCategory && matchesSearch;
+      return selectedCategory === 'all' || game.category === selectedCategory;
     });
-  }, [games, selectedCategory, searchQuery]);
+  }, [games, selectedCategory]);
 
   return (
     <div className="box-border flex flex-col gap-8">
-      <div className="box-border flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-md shadow-lg">
-        <div className="box-border flex flex-wrap items-center gap-2">
-          {CATEGORIES.map((cat) => {
-            const isSelected = selectedCategory === cat.key;
-            const count = categoryCounts[cat.key] ?? 0;
-            return (
-              <FilterChip
-                key={cat.key}
-                active={isSelected}
-                onClick={() => setSelectedCategory(cat.key)}
-                data-testid={`category-filter-${cat.key}`}
-              >
-                <span className="mr-1.5">{cat.icon}</span>
-                <span>{categoryLabels[cat.key] ?? cat.label}</span>
-                <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-current/10 opacity-80">
-                  {count}
-                </span>
-              </FilterChip>
-            );
-          })}
-        </div>
-
-        <div className="box-border relative flex-1 max-w-md">
-          <Input
-            size="sm"
-            type="search"
-            placeholder={searchPlaceholder}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            fullWidth
-            aria-label={searchPlaceholder}
-            data-testid="games-catalog-search"
-          />
-        </div>
+      <div className="box-border flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-md shadow-lg">
+        {CATEGORIES.map((cat) => {
+          const isSelected = selectedCategory === cat.key;
+          const count = categoryCounts[cat.key] ?? 0;
+          return (
+            <FilterChip
+              key={cat.key}
+              active={isSelected}
+              onClick={() => setSelectedCategory(cat.key)}
+              data-testid={`category-filter-${cat.key}`}
+            >
+              <span className="mr-1.5">{cat.icon}</span>
+              <span>{categoryLabels[cat.key] ?? cat.label}</span>
+              <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-current/10 opacity-80">
+                {count}
+              </span>
+            </FilterChip>
+          );
+        })}
       </div>
 
       {filteredGames.length > 0 ? (

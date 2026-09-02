@@ -81,7 +81,7 @@ function PanelFrame({
       data-testid={dataTestId}
       data-mode={dataMode}
       className={cx(
-        'flex flex-col items-stretch w-full gap-3 p-3 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]',
+        'flex flex-col items-stretch w-full gap-3 p-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)]',
         className,
       )}
     >
@@ -101,7 +101,7 @@ function Eyebrow({
     <Typography
       uiSize="xs"
       weight="800"
-      color="#94a3b8"
+      color="var(--textSecondary)"
       tracking="lg"
       className={cx('uppercase', className)}
     >
@@ -146,7 +146,6 @@ export function ShopActionPanel({
         ? actionLabels.selectedSlotEyebrow
         : actionLabels.loadoutEyebrow;
 
-  // — Previewing state: details only, no buttons. The card has the action.
   if (hoverItem) {
     const accent = RARITY_COLOR[hoverItem.rarity];
     const name = String(t(`pages.shop.${hoverItem.nameKey}` as TranslationKey));
@@ -162,10 +161,14 @@ export function ShopActionPanel({
       >
         <Eyebrow>{actionLabels.previewingEyebrow}</Eyebrow>
         <div className="flex flex-col items-stretch gap-4">
-          <Typography uiSize="xl" weight="800" color="#f5f7ff">
+          <Typography uiSize="xl" weight="800" color="var(--color)">
             {name}
           </Typography>
-          <Typography uiSize="sm" color="#94a3b8" className="line-clamp-4">
+          <Typography
+            uiSize="sm"
+            color="var(--textSecondary)"
+            className="line-clamp-4"
+          >
             {desc}
           </Typography>
         </div>
@@ -190,7 +193,6 @@ export function ShopActionPanel({
     );
   }
 
-  // — Selected slot state — still owns Sell because there's no per-card sell.
   if (activeSlot) {
     const slot = slotLabels[activeSlot];
     const equippedItem = preview[activeSlot] ?? null;
@@ -228,16 +230,16 @@ export function ShopActionPanel({
           </Typography>
         </div>
         <div className="flex flex-col items-stretch gap-4">
-          <Typography uiSize="xl" weight="800" color="#f5f7ff">
+          <Typography uiSize="xl" weight="800" color="var(--color)">
             {slot.label}
           </Typography>
-          <Typography uiSize="sm" color="#94a3b8">
+          <Typography uiSize="sm" color="var(--textSecondary)">
             {slot.desc}
           </Typography>
         </div>
-        <div className="flex flex-col items-stretch gap-4 p-2 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)]">
+        <div className="flex flex-col items-stretch gap-4 p-2 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)]">
           <Eyebrow>{actionLabels.equippedEyebrow}</Eyebrow>
-          <Typography uiSize="sm" weight="700" color="#f5f7ff">
+          <Typography uiSize="sm" weight="700" color="var(--color)">
             {equippedName}
           </Typography>
         </div>
@@ -250,11 +252,7 @@ export function ShopActionPanel({
                 refundCoins: refundForRow(equippedRow, gemToCoinRate),
               });
               setSellTarget(equippedRow);
-              startTransition(() => {
-                // hook into useTransition for parity with the rest of the
-                // panel's async-style affordances; the actual sell happens
-                // inside SellConfirmDialog
-              });
+              startTransition(() => {});
             }}
             disabled={isPending}
             data-testid="shop-action-sell"
@@ -278,7 +276,6 @@ export function ShopActionPanel({
     );
   }
 
-  // — Idle state.
   return (
     <PanelFrame
       data-testid="shop-action-panel"
@@ -289,10 +286,10 @@ export function ShopActionPanel({
     >
       <Eyebrow>{actionLabels.loadoutEyebrow}</Eyebrow>
       <div className="flex flex-col items-stretch gap-4">
-        <Typography uiSize="md" weight="800" color="#f5f7ff">
+        <Typography uiSize="md" weight="800" color="var(--color)">
           {actionLabels.idleTitle}
         </Typography>
-        <Typography uiSize="xs" color="#94a3b8">
+        <Typography uiSize="xs" color="var(--textSecondary)">
           {actionLabels.idleBody}
         </Typography>
       </div>

@@ -47,7 +47,7 @@ export function CardFrame({
       onPointerLeave={onPointerLeave}
       style={style}
       className={cx(
-        'relative flex flex-col items-stretch shrink-0 overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.04)]',
+        'relative flex flex-col items-stretch shrink-0 overflow-hidden rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] shadow-md transition-all duration-150 hover:-translate-y-0.5 hover:border-[var(--glassBorderHover)] hover:bg-[var(--glassBgHover)]',
         small ? 'w-[144px]' : 'w-[200px]',
         className,
       )}
@@ -72,7 +72,7 @@ export function ArtBox({
     <div
       style={style}
       className={cx(
-        'relative flex items-center justify-center',
+        'relative flex items-center justify-center bg-[var(--backgroundHover)]',
         small ? 'h-[96px]' : 'h-[140px]',
         className,
       )}
@@ -107,11 +107,11 @@ export function Chip({
 }
 
 const ACTION_INTENT_CLASS = {
-  buy: 'bg-[rgba(255,255,255,0.06)] border-[rgba(255,255,255,0.18)] hover:bg-[rgba(255,255,255,0.10)] hover:border-[rgba(255,255,255,0.30)]',
+  buy: 'bg-[var(--backgroundHover)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)] hover:border-[var(--glassBorderHover)]',
   equip:
-    'bg-[rgba(16,185,129,0.12)] border-[rgba(34,197,94,0.45)] hover:bg-[rgba(16,185,129,0.20)] hover:border-[rgba(34,197,94,0.70)]',
+    'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500/25 hover:border-emerald-500/60',
   unequip:
-    'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.14)] hover:bg-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.28)]',
+    'bg-[var(--backgroundHover)] border-[var(--glassBorder)] text-[var(--textSecondary)] hover:bg-[var(--glassBgHover)] hover:border-[var(--glassBorderHover)]',
 } as const;
 
 export function ActionButton({

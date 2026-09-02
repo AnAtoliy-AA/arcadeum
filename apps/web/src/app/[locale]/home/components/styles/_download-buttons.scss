@@ -1,5 +1,3 @@
-/* Static Download Button Styles */
-
 .download-buttons-container {
   display: flex;
   flex-wrap: wrap;
@@ -12,22 +10,24 @@
 .download-btn-static {
   display: flex;
   align-items: center;
-  background-color: var(--glass-background, rgba(0, 0, 0, 0.4));
-  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  background-color: var(--glassBg, rgba(0, 0, 0, 0.4));
+  border: 1px solid var(--glassBorder, rgba(255, 255, 255, 0.1));
   border-radius: var(--t-radius-4, 12px);
   padding: var(--t-space-2, 8px) var(--t-space-4, 16px);
-  color: white;
+  color: var(--color, #ecefee);
   text-decoration: none;
   transition:
     transform 0.2s ease,
-    background-color 0.2s ease;
+    background-color 0.2s ease,
+    border-color 0.2s ease;
   min-width: 160px;
   cursor: pointer;
 }
 
 .download-btn-static:hover {
   transform: translateY(-2px);
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--glassBgHover, rgba(255, 255, 255, 0.1));
+  border-color: var(--glassBorderHover, rgba(255, 255, 255, 0.2));
 }
 
 .download-btn-static:active {
@@ -39,6 +39,7 @@
   align-items: center;
   justify-content: center;
   margin-right: var(--t-space-3, 12px);
+  color: inherit;
 }
 
 .download-btn-text {
@@ -51,21 +52,23 @@
 .download-btn-small {
   font-size: 10px;
   text-transform: uppercase;
-  opacity: 0.8;
+  color: var(--textSecondary, rgba(180, 180, 200, 0.7));
+  font-weight: 700;
   line-height: 1.2;
 }
 
 .download-btn-large {
   font-size: 16px;
   font-weight: 600;
+  color: var(--color, #ecefee);
   line-height: 1.2;
 }
 
 .download-btn-static.disabled {
-  opacity: 0.4;
+  opacity: 0.65;
   cursor: not-allowed;
   pointer-events: none;
-  filter: grayscale(0.8);
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--glassBg);
+  border-color: var(--glassBorder);
+  color: var(--color);
 }

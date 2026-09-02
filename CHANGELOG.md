@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.33] - 2026-09-02
+
+### Added
+- add sticky header/footer scroll to shared modal
+
+### Fixed
+- fix failing e2e tests for nav active state and tutorial button
+- handle tutorial button in mobile MoreOptionsMenu for e2e tests
+- update download button selector to match refactored StaticDownloadButtons component
+- update GameRulesModal and CatDashRulesModal test assertions
+- rework games control panel for mobile — compact single row with overflow menu
+- import sea-battle SCSS in landing board to fix broken grid layout
+- add z-10 to HUD bar so difficulty dropdown renders above board
+- fix sudoku and profile-menu E2E test failures
+- standardize rules modal across card games and fix control panel z-index (ARC-951) (ARC-951)
+- remove unused search oval from games catalog filter bar (ARC-951) (ARC-951)
+- fix contact hero section overlapping app header on scroll (ARC-951) (ARC-951)
+- improve help FAQ and policies pages colors across light themes (ARC-951) (ARC-951)
+- improve token page and sparkline colors across light themes (ARC-951) (ARC-951)
+- adapt Minesweeper layout and cell sizing for large expert boards (ARC-951) (ARC-951)
+- improve Minesweeper game colors and contrast across light themes (ARC-951) (ARC-951)
+- improve share dropdown menu colors and contrast across light themes (ARC-951) (ARC-951)
+- improve win lose and draw screen colors and contrast across light themes (ARC-951) (ARC-951)
+- increase modal z-index and improve modal close button contrast across light themes (ARC-951) (ARC-951)
+- improve rooms filters contrast and visibility across light themes (ARC-951) (ARC-951)
+- improve online counter badge contrast and popover readability (ARC-951) (ARC-951)
+- improve room title visibility across light themes (ARC-951) (ARC-951)
+- improve chess contrast, piece visibility, and board readability (ARC-951) (ARC-951)
+- improve contrast and component visibility across light themes (ARC-951) (ARC-951)
+
+### Refactored
+- standardize CatDash and SeaBattle rules modals to use GameRulesModal
+
+
 ## [1.27.32] - 2026-09-01
 
 ### Fixed

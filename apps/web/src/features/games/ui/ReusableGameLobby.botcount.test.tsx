@@ -22,9 +22,6 @@ vi.mock('./LobbySidebar', () => ({
 vi.mock('./LobbyMobileSidebar', () => ({
   LobbyMobileSidebar: () => <div data-testid="mobile-sidebar" />,
 }));
-vi.mock('./LobbyMobileHeader', () => ({
-  LobbyMobileHeader: () => <div data-testid="mobile-header" />,
-}));
 vi.mock('./HouseRulesSection', () => ({
   HouseRulesSection: () => <div data-testid="rules" />,
 }));

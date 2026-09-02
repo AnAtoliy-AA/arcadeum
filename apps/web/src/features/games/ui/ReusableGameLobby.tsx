@@ -42,7 +42,6 @@ import { LobbyStartButton } from './LobbyStartButton';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
 import { HouseRulesSection } from './HouseRulesSection';
-import { LobbyMobileHeader } from './LobbyMobileHeader';
 import { LobbyMobileSidebar } from './LobbyMobileSidebar';
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import { useRankingStore } from '@/features/ranking/store/rankingStore';
@@ -234,8 +233,7 @@ export function ReusableGameLobby({
         cancelLabel={deleteRoomTranslations.cancelButton}
       />
 
-      {/* Desktop Header */}
-      <GameHeader className="max-[800px]:hidden">
+      <GameHeader>
         <GameInfo>
           <GameTitleText gradient={theme.titleGradient}>
             {gameName}
@@ -284,18 +282,6 @@ export function ReusableGameLobby({
           )}
         </HeaderActions>
       </GameHeader>
-
-      {/* Mobile Header */}
-      <LobbyMobileHeader
-        gameIcon={gameIcon}
-        gameName={gameName}
-        variantName={variantName}
-        roomName={room.name}
-        isFastMode={isFastMode}
-        isRanked={isRanked}
-        myRating={myRating}
-        headerActionsSlot={headerActionsSlot}
-      />
 
       <LobbyContent>
         {/* Mobile: compact status bar */}

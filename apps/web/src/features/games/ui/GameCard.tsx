@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import type { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   useTranslation,
@@ -18,69 +17,6 @@ interface GameCardProps {
   showDetails?: boolean;
   disabled?: boolean;
 }
-
-const Card = ({
-  disabled = false,
-  className,
-  children,
-  onClick,
-}: {
-  disabled?: boolean;
-  className?: string;
-  children?: ReactNode;
-  onClick?: () => void;
-}) => (
-  <SharedCard
-    className={cx(
-      'transition-all duration-300 ease-out',
-      disabled
-        ? 'opacity-60 cursor-not-allowed'
-        : 'cursor-pointer hover:-translate-y-[2px] hover:shadow-[0_0_25px_rgba(0,0,0,0.15)] hover:border-[var(--primary)] active:translate-y-0 active:scale-[0.98]',
-      className,
-    )}
-    onClick={onClick}
-  >
-    {children}
-  </SharedCard>
-);
-
-const CardGlow = ({ disabled = false }: { disabled?: boolean }) => (
-  <div
-    className={cx(
-      'absolute top-0 left-0 right-0 h-[3px]',
-      disabled
-        ? 'bg-[var(--outlineColor)]'
-        : 'bg-[linear-gradient(90deg,var(--primary),var(--secondary))]',
-    )}
-  />
-);
-
-const GameImage = ({
-  background,
-  children,
-}: {
-  background?: string;
-  children?: ReactNode;
-}) => (
-  <div
-    className={cx(
-      'w-[60px] h-[60px] rounded-[8px] bg-[var(--backgroundFocus)] border-2 border-[var(--borderColor)] mb-3 flex items-center justify-center',
-    )}
-    style={background ? { background } : undefined}
-  >
-    {children}
-  </div>
-);
-
-const MetaTag = ({ children }: { children?: ReactNode }) => (
-  <div
-    className={cx(
-      'flex flex-row items-center gap-1 bg-[var(--backgroundFocus)] px-2 py-1 rounded-[12px] border border-[var(--borderColor)]',
-    )}
-  >
-    {children}
-  </div>
-);
 
 function getStatusVariant(
   status: string,
@@ -112,27 +48,36 @@ export function GameCard({
   const handleClick = () => {
     if (disabled) return;
     onClick?.();
-    router.push(`/games/${game.slug}`);
+    const landingSlug = game.slug.replace(/_v\d+$/, '');
+    router.push(`/games/${landingSlug}`);
   };
 
   return (
-    <Card
-      className={`p-4 ${className}`}
+    <SharedCard
+      className={cx(
+        'p-4 transition-all duration-300 ease-out',
+        disabled
+          ? 'opacity-60 cursor-not-allowed'
+          : 'cursor-pointer hover:-translate-y-[2px] hover:shadow-[0_0_25px_rgba(0,0,0,0.15)] hover:border-[var(--primary)] active:translate-y-0 active:scale-[0.98]',
+        className,
+      )}
       onClick={handleClick}
-      disabled={disabled}
     >
-      <CardGlow disabled={disabled} />
-
-      <div className="flex flex-row items-stretch absolute">
+      <div className="flex flex-row items-start absolute top-2 left-2">
         <Badge variant={getStatusVariant(game.status)} size="sm">
           {game.status}
         </Badge>
       </div>
 
-      <GameImage
+      <div
+        className={cx(
+          'w-[60px] h-[60px] rounded-[8px] bg-[var(--backgroundFocus)] border-2 border-[var(--borderColor)] mb-3 flex items-center justify-center',
+        )}
         {...(game.thumbnail
           ? {
-              background: `url(${game.thumbnail}) center/cover`,
+              style: {
+                background: `url(${game.thumbnail}) center/cover`,
+              },
             }
           : {})}
       >
@@ -141,55 +86,49 @@ export function GameCard({
             {game.name.charAt(0)}
           </span>
         )}
-      </GameImage>
+      </div>
 
-      <span className="text-[20px] font-bold leading-[28px] text-[20px] font-semibold -mb-2">
+      <span className="text-[16px] font-bold leading-[24px]">
         {t(`games.${game.slug}.name` as TranslationKey) || game.name}
       </span>
 
       {showDetails && (
-        <div className="flex flex-col items-stretch gap-3">
-          <span className="text-[16px] text-[var(--textSecondary)] line-clamp-2">
+        <div className="flex flex-col items-stretch gap-3 mt-2">
+          <span className="text-[14px] text-[var(--textSecondary)] line-clamp-2">
             {t(`games.${game.slug}.description` as TranslationKey) ||
               game.description}
           </span>
 
-          <div className="flex flex-row items-stretch flex-wrap gap-2">
-            <MetaTag>
-              <span className="text-[12px]">
-                👥 {game.minPlayers}-{game.maxPlayers}
-              </span>
-            </MetaTag>
+          <div className="flex flex-row items-center flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1 bg-[var(--backgroundFocus)] px-2 py-1 rounded-[12px] border border-[var(--borderColor)] text-[12px]">
+              👥 {game.minPlayers}-{game.maxPlayers}
+            </span>
             {game.estimatedDuration && (
-              <MetaTag>
-                <span className="text-[12px]">
-                  ⏱️ {game.estimatedDuration}m
-                </span>
-              </MetaTag>
+              <span className="inline-flex items-center gap-1 bg-[var(--backgroundFocus)] px-2 py-1 rounded-[12px] border border-[var(--borderColor)] text-[12px]">
+                ⏱️ {game.estimatedDuration}m
+              </span>
             )}
             {game.complexity && (
-              <MetaTag>
-                <span className="text-[12px]">🧠 {game.complexity}/5</span>
-              </MetaTag>
+              <span className="inline-flex items-center gap-1 bg-[var(--backgroundFocus)] px-2 py-1 rounded-[12px] border border-[var(--borderColor)] text-[12px]">
+                🧠 {game.complexity}/5
+              </span>
             )}
           </div>
 
           {game.tags && game.tags.length > 0 && (
-            <div className="flex flex-row items-stretch flex-wrap gap-1">
+            <div className="flex flex-row items-center flex-wrap gap-1">
               {game.tags.map((tag) => (
-                <div
-                  className="flex flex-row items-stretch bg-[var(--backgroundHover)] px-2 py-1 rounded-[8px] border border-[var(--borderColor)]"
+                <span
+                  className="bg-[var(--backgroundHover)] px-2 py-1 rounded-[8px] border border-[var(--borderColor)] text-[12px] text-[var(--textSecondary)]"
                   key={tag}
                 >
-                  <span className="text-[48px] text-[var(--textSecondary)]">
-                    {tag}
-                  </span>
-                </div>
+                  {tag}
+                </span>
               ))}
             </div>
           )}
         </div>
       )}
-    </Card>
+    </SharedCard>
   );
 }

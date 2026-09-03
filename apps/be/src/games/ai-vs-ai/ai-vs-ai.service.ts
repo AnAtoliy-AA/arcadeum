@@ -161,8 +161,11 @@ export class AiVsAiService {
       theme: dto.theme || 'adventure',
     };
 
+    const category = this.engineRegistry.getMetadata(dto.gameId).category;
+
     const room = await this.gameRoomModel.create({
       gameId: dto.gameId,
+      category,
       name: AI_VS_AI_ROOM_NAME,
       hostId: botIds[0],
       visibility: 'public',

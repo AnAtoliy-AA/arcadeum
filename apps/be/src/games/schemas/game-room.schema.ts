@@ -32,6 +32,9 @@ export class GameRoom extends Document {
   @Prop({ required: true, trim: true })
   gameId: string;
 
+  @Prop({ trim: true, index: true })
+  category?: string;
+
   @Prop({ required: true, trim: true })
   name: string;
 

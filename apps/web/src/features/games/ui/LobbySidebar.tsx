@@ -191,7 +191,7 @@ export function LobbySidebar({
     <Sidebar className={className}>
       <LobbyCard>
         <CardHeader>
-          <CardTitle>
+          <CardTitle data-testid="player-count-heading">
             {playersLabel} ({room.playerCount}/{maxPlayers})
           </CardTitle>
           {onRefresh && (

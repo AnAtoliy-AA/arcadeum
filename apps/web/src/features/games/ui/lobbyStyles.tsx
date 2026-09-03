@@ -41,7 +41,7 @@ export const CenterSection = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center justify-center gap-5 flex-1 min-w-0 max-w-full min-h-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:justify-start max-[1023px]:gap-3 max-[800px]:flex-[0] max-[800px]:min-h-[unset] max-[800px]:justify-start',
+      'flex flex-col items-center justify-center gap-5 flex-1 min-w-0 max-w-full min-h-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:justify-start max-[1023px]:gap-3',
       className,
     )}
     style={style}
@@ -61,7 +61,7 @@ export const GameIcon = ({
 }) => (
   <span
     className={cx(
-      'text-[80px] leading-[96px] [filter:drop-shadow(0_8px_24px_rgba(99,102,241,0.3))] max-[800px]:hidden',
+      'text-[80px] leading-[96px] [filter:drop-shadow(0_8px_24px_rgba(99,102,241,0.3))] max-[800px]:text-[48px] max-[800px]:leading-[60px]',
       className,
     )}
     style={style}
@@ -81,7 +81,7 @@ export const LobbyTitle = ({
 }) => (
   <h2
     className={cx(
-      'text-[28px] max-[800px]:text-[20px] font-bold text-center max-[800px]:hidden',
+      'text-[28px] max-[800px]:text-[20px] font-bold text-center',
       className,
     )}
     style={style}
@@ -116,7 +116,7 @@ export const LobbySubtitle = ({
 }) => (
   <p
     className={cx(
-      'text-[16px] max-[800px]:text-[13px] text-[var(--textSecondary)] text-center max-w-[400px] max-[800px]:hidden',
+      'text-[16px] max-[800px]:text-[13px] text-[var(--textSecondary)] text-center max-w-[400px]',
       className,
     )}
   >
@@ -181,7 +181,7 @@ export const ProgressWrapper = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-stretch w-full max-w-[300px] max-[800px]:hidden',
+      'flex flex-col items-stretch w-full max-w-[300px]',
       className,
     )}
   >
@@ -296,12 +296,7 @@ export const WaitingDots = ({
   className?: string;
   children?: ReactNode;
 }) => (
-  <div
-    className={cx(
-      'flex flex-row items-stretch gap-2 max-[800px]:hidden',
-      className,
-    )}
-  >
+  <div className={cx('flex flex-row items-stretch gap-2', className)}>
     {children}
   </div>
 );

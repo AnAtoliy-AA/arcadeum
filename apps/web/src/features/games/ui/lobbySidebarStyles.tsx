@@ -65,12 +65,15 @@ export const CardHeader = ({
 
 export const CardTitle = ({
   className,
+  'data-testid': dataTestId,
   children,
 }: {
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
 }) => (
   <h3
+    data-testid={dataTestId}
     className={cx(
       'text-[11px] max-[800px]:text-[10px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]',
       className,

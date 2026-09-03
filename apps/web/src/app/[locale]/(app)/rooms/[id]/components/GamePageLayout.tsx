@@ -306,6 +306,9 @@ export function GamePageLayout(props: GamePageLayoutProps) {
               onDeleteMessage={handleDeleteMessage}
             />
           </ChatPanel>
+
+          {/* Mobile: spacer for fixed start button */}
+          <div className="h-0 shrink-0 max-[1150px]:h-[80px]" />
         </GameRow>
       </div>
     </>

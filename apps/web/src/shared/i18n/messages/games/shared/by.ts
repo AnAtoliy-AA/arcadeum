@@ -186,6 +186,7 @@ export const byMessages = {
     submitCreating: 'Стварэнне...',
     comingSoon: 'Хутка',
     sectionHouseRules: 'Хатнія правілы',
+    sectionLobbySettings: 'Налады лобі',
     sectionGameConfig: 'Налады гульні',
     houseRuleActionCardCombos: 'Комба карт дзеянняў',
     houseRuleActionCardCombosHint: 'Любыя пары',

@@ -44,7 +44,9 @@ describe('GameRoomsService notes & security', () => {
       mapper as unknown as GameRoomsMapper,
       {} as unknown as GameRoomsRematchService,
       {} as unknown as GameRoomsChatService,
-      {} as unknown as GameEngineRegistry,
+      {
+        getMetadata: jest.fn().mockReturnValue({ category: 'Card Game' }),
+      } as unknown as GameEngineRegistry,
     );
   });
 

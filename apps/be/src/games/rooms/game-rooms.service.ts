@@ -87,12 +87,15 @@ export class GameRoomsService {
 
     validateGameOptions(this.engineRegistry, dto.gameId, dto.gameOptions);
 
+    const category = this.engineRegistry.getMetadata(dto.gameId).category;
+
     const hashedPassword = dto.password
       ? await bcrypt.hash(dto.password, BCRYPT_SALT_ROUNDS)
       : undefined;
 
     const room = await this.ociRoomModel.create({
       gameId: dto.gameId,
+      category,
       name: dto.name,
       hostId: userId,
       visibility: dto.visibility,
@@ -163,8 +166,16 @@ export class GameRoomsService {
     const hasMore = rooms.length > limit;
     if (hasMore) rooms.pop();
 
+    const seen = new Set<string>();
+    const unique = rooms.filter((r) => {
+      const id = r._id.toString();
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+
     const summaries = await this.gameRoomsMapper.prepareRoomSummaryBatch(
-      rooms as unknown as GameRoom[],
+      unique as unknown as GameRoom[],
       viewerId,
     );
 

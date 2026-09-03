@@ -13,6 +13,15 @@ export class GameRoomsQueryBuilder {
       query.gameId = filters.gameId;
     }
 
+    if (filters.categories) {
+      const cats = filters.categories.split(',').filter(Boolean);
+      if (cats.length === 1) {
+        query.category = cats[0];
+      } else if (cats.length > 1) {
+        query.category = { $in: cats };
+      }
+    }
+
     if (filters.status && filters.status !== 'all') {
       if (filters.status.includes(',')) {
         const statuses = filters.status.split(',').filter(isValidStatus);

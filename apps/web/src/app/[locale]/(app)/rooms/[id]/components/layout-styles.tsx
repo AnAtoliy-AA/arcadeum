@@ -44,7 +44,7 @@ export function ChatPanel({
     <div
       data-testid={dataTestId}
       className={cx(
-        'w-[350px] min-w-[350px] h-full min-h-0 shrink-0 rounded-2xl overflow-hidden max-[1150px]:w-full max-[1150px]:min-w-0 max-[1150px]:min-h-0 max-[1150px]:h-auto max-[1150px]:mt-2 max-[1150px]:rounded-lg',
+        'w-[350px] min-w-[350px] h-full min-h-0 shrink-0 rounded-2xl overflow-hidden max-[1150px]:w-full max-[1150px]:min-w-0 max-[1150px]:min-h-0 max-[1150px]:max-h-[50vh] max-[1150px]:mt-2 max-[1150px]:rounded-lg',
         visible === false && 'hidden',
         className,
       )}

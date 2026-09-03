@@ -28,6 +28,10 @@ export const en = {
     title: `Sea Battle (Battleship) Online — Play Free with Friends or AI · ${APP}`,
     description: `Play Sea Battle (Battleship) online for free on ${APP}. Quickplay against a bot, find a human opponent, or invite friends to a private match on a 10×10 grid.`,
   },
+  battleshipLanding: {
+    title: `Battleship Online — Play Free with Friends or AI · ${APP}`,
+    description: `Play Battleship online for free on ${APP}. Quickplay against a bot, find a human opponent, or invite friends to a private match on a 10×10 grid.`,
+  },
   criticalLanding: {
     title: `Critical · Free Exploding Card Game Online · ${APP}`,
     description: `Play Critical online for free on ${APP} — a strategic card game where you draw, defuse, and survive the explosion. 2–5 players, AI bots, themed decks. No download, no signup.`,

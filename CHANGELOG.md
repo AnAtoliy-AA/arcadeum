@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.42] - 2026-09-03
+
+### Fixed
+- fix mobile lobby chat hidden by start button
+
+
+## [1.27.41] - 2026-09-03
+
+### Fixed
+- set category on quickplay/AI-vs-AI rooms and add solo games fallback (ARC-951) (ARC-951)
+
+
+## [1.27.40] - 2026-09-03
+
+### Added
+- rework lobby layout for mobile — compact header, scrollable themes, collapsible settings
+
+### Fixed
+- remove hidden duplicated lobby components on mobile
+- remove LobbyMobileSidebar, use LobbySidebar on all viewports
+- fix mobile e2e tests — show Players in Lobby on mobile, use clear() for webkit
+- fix mobile e2e tests — remove duplicate room-name-text, fix sea-battle room status
+- compact mobile theme picker, constrain lobby settings width
+- wrap desktop LobbySidebar in display-none div, remove .first() from E2E tests
+- add .first() to E2E lobby selectors that resolve to 2 elements (mobile+desktop)
+
+### Refactored
+- revert GameThemePicker to CSS-only hidden/flex, keep .first() in tests
+
+
+## [1.27.39] - 2026-09-02
+
+### Fixed
+- unblock offline downloads when no service worker is registered
+
+
+## [1.27.38] - 2026-09-02
+
+### Added
+- add battleship landing page
+
+### Refactored
+- use standalone BattleshipLanding instead of wrapper
+
+
+## [1.27.37] - 2026-09-02
+
+### Fixed
+- redirect solo games to landing page from game picker
+
+
 ## [1.27.36] - 2026-09-02
 
 ### Added

@@ -40,6 +40,8 @@ describe('BackgammonLobby', () => {
       />,
     );
 
-    expect(screen.getByText('Backgammon Room')).toBeDefined();
+    expect(
+      screen.getAllByText('Backgammon Room').length,
+    ).toBeGreaterThanOrEqual(1);
   });
 });

@@ -74,6 +74,10 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Batalla Naval Online Gratis (Hundir la Flota) · ${APP}`,
     description: `Juega a Batalla Naval online gratis en ${APP}. Partida rápida contra el bot, busca oponente o invita a tus amigos a una sala privada sin descargas.`,
   },
+  battleshipLanding: {
+    title: `Batalla Naval Online — Juega Gratis con Amigos o IA · ${APP}`,
+    description: `Juega a Batalla Naval online gratis en ${APP}. Partida rápida contra el bot, encuentra un oponente o invita a amigos a una sala privada en una cuadrícula 10×10.`,
+  },
   goLanding: {
     title: `Go · Juego de Tablero Multijugador Online Gratis · ${APP}`,
     description: `Juega al Go online en ${APP} — Baduk/Weiqi clásico en tableros de 9×9, 13×13 y 19×19 con capturas, regla de ko, puntuación por área e IA. Salas instantáneas gratis.`,

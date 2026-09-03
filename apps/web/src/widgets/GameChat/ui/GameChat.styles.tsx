@@ -35,7 +35,7 @@ export function Panel({
   return (
     <div
       className={cx(
-        'relative flex h-full w-full min-h-[360px] flex-col items-stretch overflow-hidden rounded-[18px] border border-[var(--glassBorderStrong)] bg-[var(--glassBg)]',
+        'relative flex h-full w-full min-h-[360px] max-[1150px]:min-h-0 flex-col items-stretch overflow-hidden rounded-[18px] border border-[var(--glassBorderStrong)] bg-[var(--glassBg)]',
         className,
       )}
       data-testid={testId}

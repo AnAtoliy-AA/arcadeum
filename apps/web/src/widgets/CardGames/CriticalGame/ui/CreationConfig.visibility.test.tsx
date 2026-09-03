@@ -51,8 +51,8 @@ describe('Critical CreationConfig — variant visibility filter', () => {
       expect(screen.queryByText(/games\.themes\.crime\.name/)).toBeNull();
     });
     expect(
-      screen.getByText(/games\.themes\.cyberpunk\.name/),
-    ).toBeInTheDocument();
+      screen.getAllByText(/games\.themes\.cyberpunk\.name/).length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('renders the full list when the catalog fetch fails (silent failure)', async () => {
@@ -93,15 +93,19 @@ describe('Critical CreationConfig — variant visibility filter', () => {
 
     // Wait for the catalog effect to settle and cyberpunk tile to appear
     await waitFor(() => {
-      expect(screen.getByTestId('theme-cyberpunk')).toBeInTheDocument();
+      expect(
+        screen.getAllByTestId('theme-cyberpunk').length,
+      ).toBeGreaterThanOrEqual(1);
     });
 
     // cyberpunk: interactive (not aria-disabled)
-    const cyberpunkTile = screen.getByTestId('theme-cyberpunk');
+    const cyberpunkTile = screen.getAllByTestId('theme-cyberpunk')[0];
     expect(cyberpunkTile).not.toHaveAttribute('aria-disabled', 'true');
 
     // crime: disabled with a coming-soon badge
-    const crimeTile = screen.getByTestId('theme-crime');
+    const crimeTile = screen
+      .getAllByTestId('theme-crime')
+      .find((el) => el.querySelector('[data-testid="coming-soon-badge"]'))!;
     expect(crimeTile).toHaveAttribute('aria-disabled', 'true');
     // The identity t() mock returns the key itself; the key used for the badge is games.create.comingSoon
     expect(

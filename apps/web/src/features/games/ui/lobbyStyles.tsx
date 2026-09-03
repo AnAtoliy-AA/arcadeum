@@ -22,7 +22,7 @@ export const LobbyContent = ({
 }) => (
   <div
     className={cx(
-      'flex flex-row items-start gap-5 flex-1 min-h-0 p-5 pb-[96px] overflow-y-auto overflow-x-hidden max-[1023px]:flex-col max-[1023px]:flex-1 max-[1023px]:min-h-0 max-[1023px]:overflow-y-visible max-[1023px]:overflow-x-hidden max-[1023px]:p-3 max-[1023px]:pb-[96px] max-[1023px]:gap-4 max-[1023px]:items-stretch',
+      'flex flex-row items-start gap-5 flex-1 min-h-0 p-5 pb-[96px] overflow-y-auto overflow-x-hidden max-[1023px]:flex-col max-[1023px]:flex-1 max-[1023px]:min-h-0 max-[1023px]:overflow-y-visible max-[1023px]:overflow-x-visible max-[1023px]:p-3 max-[1023px]:pb-[96px] max-[1023px]:gap-3 max-[1023px]:items-stretch',
       className,
     )}
   >
@@ -41,7 +41,7 @@ export const CenterSection = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center justify-center gap-5 flex-1 min-w-0 max-w-full min-h-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:justify-start max-[1023px]:gap-4 max-[800px]:flex-[0] max-[800px]:min-h-[unset] max-[800px]:justify-start',
+      'flex flex-col items-center justify-center gap-5 flex-1 min-w-0 max-w-full min-h-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:justify-start max-[1023px]:gap-3',
       className,
     )}
     style={style}
@@ -61,7 +61,7 @@ export const GameIcon = ({
 }) => (
   <span
     className={cx(
-      'text-[80px] leading-[96px] [filter:drop-shadow(0_8px_24px_rgba(99,102,241,0.3))] max-[800px]:text-[60px] max-[800px]:leading-[72px]',
+      'text-[80px] leading-[96px] [filter:drop-shadow(0_8px_24px_rgba(99,102,241,0.3))] max-[800px]:text-[48px] max-[800px]:leading-[60px]',
       className,
     )}
     style={style}
@@ -80,7 +80,10 @@ export const LobbyTitle = ({
   children?: ReactNode;
 }) => (
   <h2
-    className={cx('text-[32px] font-bold text-center', className)}
+    className={cx(
+      'text-[28px] max-[800px]:text-[20px] font-bold text-center',
+      className,
+    )}
     style={style}
   >
     {children}
@@ -113,7 +116,7 @@ export const LobbySubtitle = ({
 }) => (
   <p
     className={cx(
-      'text-[18px] text-[var(--textSecondary)] text-center max-w-[400px]',
+      'text-[16px] max-[800px]:text-[13px] text-[var(--textSecondary)] text-center max-w-[400px]',
       className,
     )}
   >
@@ -242,7 +245,7 @@ export const HostControls = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center gap-4 p-5 bg-[rgba(99,102,241,0.1)] border border-[rgba(99,102,241,0.2)] rounded-[16px]',
+      'flex flex-col items-center gap-3 p-4 max-[800px]:p-3 max-[800px]:gap-2.5 bg-[rgba(99,102,241,0.1)] border border-[rgba(99,102,241,0.2)] rounded-[16px]',
       className,
     )}
   >
@@ -276,7 +279,7 @@ export const LobbyStickyStart = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center py-3 px-5 overflow-hidden max-[800px]:fixed max-[800px]:left-0 max-[800px]:right-0 max-[800px]:bottom-0 max-[800px]:p-3 max-[800px]:px-5 max-[800px]:pb-[calc(env(safe-area-inset-bottom,0px)+12px)] max-[800px]:bg-[rgba(15,23,42,0.92)] max-[800px]:backdrop-blur-[16px] max-[800px]:border-t max-[800px]:border-[rgba(255,255,255,0.12)] max-[800px]:z-[150] max-[800px]:items-center max-[800px]:overflow-hidden',
+      'flex flex-col items-center py-3 px-5 overflow-hidden max-[800px]:fixed max-[800px]:left-0 max-[800px]:right-0 max-[800px]:bottom-0 max-[800px]:py-2.5 max-[800px]:px-4 max-[800px]:pb-[calc(env(safe-area-inset-bottom,0px)+10px)] max-[800px]:bg-[rgba(15,23,42,0.95)] max-[800px]:backdrop-blur-[16px] max-[800px]:border-t max-[800px]:border-[rgba(255,255,255,0.1)] max-[800px]:z-[150] max-[800px]:items-center max-[800px]:overflow-hidden',
       className,
     )}
   >
@@ -351,7 +354,7 @@ export const GameContainer = forwardRef<unknown, GameContainerStylesProps>(
       <div
         ref={ref as React.Ref<HTMLDivElement>}
         className={cx(
-          'relative flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-hidden bg-[var(--background)] max-[1023px]:min-h-0 max-[1023px]:flex-1',
+          'relative flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-y-auto bg-[var(--background)] max-[1023px]:min-h-0 max-[1023px]:flex-1',
           className,
         )}
         style={style}
@@ -363,7 +366,7 @@ export const GameContainer = forwardRef<unknown, GameContainerStylesProps>(
             style={{ backgroundImage: `url(${resolvedBgImage})` }}
           />
         )}
-        <div className="relative z-[1] flex flex-col items-stretch flex-1 min-h-0 w-full max-w-full overflow-y-auto overflow-x-hidden modern-scrollbar">
+        <div className="relative z-[1] flex flex-col items-stretch min-h-0 w-full max-w-full">
           {children}
         </div>
       </div>
@@ -386,7 +389,12 @@ export const BotCountSelector = ({
   className?: string;
   children?: ReactNode;
 }) => (
-  <div className={cx('flex flex-col items-center gap-2 mb-2', className)}>
+  <div
+    className={cx(
+      'flex flex-col items-center gap-1.5 mb-1.5 max-[800px]:mb-1',
+      className,
+    )}
+  >
     {children}
   </div>
 );

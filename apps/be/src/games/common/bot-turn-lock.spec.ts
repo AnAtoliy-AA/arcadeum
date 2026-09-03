@@ -12,8 +12,8 @@ describe('BotTurnLock', () => {
   it('tracks keys independently', async () => {
     const lock = new BotTurnLock();
     expect(await lock.tryAcquire('room:bot-a')).toBe(true);
-    expect(await lock.tryAcquire('room:bot-b')).resolves.toBe(true);
-    expect(await lock.tryAcquire('room:bot-a')).resolves.toBe(false);
+    expect(await lock.tryAcquire('room:bot-b')).toBe(true);
+    expect(await lock.tryAcquire('room:bot-a')).toBe(false);
   });
 
   it('overrides an expired lock so a hung chain cannot deadlock a room', async () => {

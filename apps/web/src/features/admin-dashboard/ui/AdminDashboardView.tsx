@@ -113,6 +113,14 @@ export function AdminDashboardView({ data, t }: AdminDashboardViewProps) {
         'Inspect MAU, DAU, engagement retention, playtime, and revenue telemetry',
     },
     {
+      id: 'monitoring',
+      href: '/admin/monitoring',
+      icon: <BarChartIcon size={20} />,
+      category: 'core',
+      title: 'Server Monitoring',
+      description: 'Real-time server health, connections, and memory metrics',
+    },
+    {
       id: 'users',
       href: '/admin/users',
       icon: <UserIcon size={20} />,

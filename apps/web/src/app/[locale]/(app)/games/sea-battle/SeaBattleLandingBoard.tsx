@@ -3,6 +3,7 @@
 import { SeaBattleThemeProvider } from '@/widgets/StrategyGames/SeaBattleGame/lib/SeaBattleThemeContext';
 import { SeaBattleThemePreview } from '@/widgets/StrategyGames/SeaBattleGame/ui/SeaBattleThemePreview';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
+import '@/widgets/StrategyGames/SeaBattleGame/ui/styles/sea-battle.scss';
 
 interface Props {
   themeNames?: Partial<Record<string, string>>;
@@ -26,7 +27,7 @@ export function SeaBattleLandingBoard({
       testId="sea-battle-landing-board"
       render={(themeId) => (
         <SeaBattleThemeProvider variant={themeId}>
-          <SeaBattleThemePreview selectedVariant={themeId} cellSize={20} />
+          <SeaBattleThemePreview selectedVariant={themeId} />
         </SeaBattleThemeProvider>
       )}
     />

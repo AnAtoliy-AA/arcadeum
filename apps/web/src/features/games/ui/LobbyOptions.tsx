@@ -15,13 +15,13 @@ export function LobbyOptionSection({
   hint,
 }: LobbyOptionSectionProps) {
   return (
-    <div className="flex flex-col items-stretch gap-2">
-      <span className="text-[14px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
+    <div className="flex flex-col items-stretch gap-1.5 w-full">
+      <span className="text-[13px] max-[800px]:text-[12px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
         {title}
       </span>
       {children}
       {hint && (
-        <span className="text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
+        <span className="text-[11px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
           {hint}
         </span>
       )}
@@ -64,7 +64,7 @@ export function LobbyChipGroup({
             className={`rounded-[10px] font-medium text-[13px] ${
               isActive
                 ? undefined
-                : 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.10)] text-[#cbd5e1] hover:bg-[rgba(255,255,255,0.08)]'
+                : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
             } ${
               option.comingSoon
                 ? 'opacity-[0.4]'

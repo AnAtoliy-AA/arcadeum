@@ -137,7 +137,6 @@ export function RulesAccess({ gameId, themeId }: Props) {
         <SeaBattleRulesModal
           isOpen={open}
           onClose={() => setOpen(false)}
-          t={t}
         />
       ) : null}
       {gameId === 'critical_v1' ? (

@@ -7,12 +7,14 @@ interface ShipsLeftProps {
   ships: Ship[];
   isMe: boolean;
   shipCount?: number;
+  layout?: 'top' | 'side';
 }
 
 export const ShipsLeft = memo(function ShipsLeft({
   ships,
   isMe,
   shipCount,
+  layout = 'top',
 }: ShipsLeftProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
@@ -55,8 +57,53 @@ export const ShipsLeft = memo(function ShipsLeft({
 
   const aliveCount = totalShips - sunkCount;
 
+  if (layout === 'side') {
+    return (
+      <div
+        className="flex flex-col items-center justify-between p-1 bg-[rgba(15,23,42,0.85)] rounded-[8px] border border-[rgba(255,255,255,0.15)] shadow-md shrink-0 w-[38px] h-full max-h-full overflow-hidden"
+        title={t('games.sea_battle_v1.table.state.shipsRemaining')}
+      >
+        <span
+          className="text-[10px] font-black shrink-0 px-1 py-0.5 rounded bg-[rgba(0,0,0,0.4)]"
+          style={{
+            color: aliveCount === 0 ? 'var(--error)' : 'var(--success)',
+          }}
+        >
+          {aliveCount}/{totalShips}
+        </span>
+        <div className="flex flex-col justify-around items-center w-full flex-1 gap-[2px] py-0.5">
+          {activeShips.map((config) => {
+            const isSunk = sunkSet.has(config.id);
+            return (
+              <div
+                key={config.id}
+                className="flex flex-row items-stretch gap-[1px] w-full h-[6px]"
+                style={{ opacity: isSunk ? 0.25 : 1 }}
+                title={`${config.name} (${config.size})`}
+              >
+                {Array.from({ length: config.size }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 h-full rounded-[1px] border border-[rgba(0,0,0,0.5)]"
+                    style={{
+                      backgroundColor: isSunk
+                        ? theme.hitColor
+                        : isMe
+                          ? theme.primaryColor
+                          : theme.textSecondaryColor,
+                    }}
+                  />
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col items-stretch gap-1.5 p-2.5 bg-[rgba(15,23,42,0.85)] rounded-[12px] w-full border border-[rgba(255,255,255,0.15)] shadow-md sb-ships-remaining-container overflow-hidden">
+    <div className="flex flex-col items-stretch gap-1 p-1.5 px-2.5 bg-[rgba(15,23,42,0.85)] rounded-[10px] w-full border border-[rgba(255,255,255,0.15)] shadow-md sb-ships-remaining-container overflow-hidden">
       <div className="flex flex-row justify-between items-center w-full min-w-0">
         <span className="text-[11px] sm:text-[12px] text-[rgba(255,255,255,0.9)] font-bold uppercase tracking-[0.5px] truncate">
           {t('games.sea_battle_v1.table.state.shipsRemaining')}

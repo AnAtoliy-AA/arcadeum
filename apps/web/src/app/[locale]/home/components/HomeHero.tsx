@@ -21,13 +21,13 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
   const gamesCopy = messages.games ?? {};
   const routes = buildRoutes(locale);
 
-  const kicker = homeCopy.kicker ?? 'Free online board games';
+  const kicker = homeCopy.kicker ?? 'Free online board & mini-games';
   const tagline =
     homeCopy.tagline?.replace('{{appName}}', appConfig.appName) ??
-    `${appConfig.appName} is the ultimate platform to play free board games online with friends or solo vs AI — Battleship, strategy, cards, and more.`;
+    `${appConfig.appName} is the ultimate platform to play free board games, card games, and multiplayer mini-games online with friends or solo vs AI.`;
   const description =
     homeCopy.description?.replace('{{appName}}', appConfig.appName) ??
-    `Enjoy a wide variety of free board games and tabletop experiences online. Challenge intelligent bots, create real-time game rooms, invite your friends, and let ${appConfig.appName} handle rules, scoring, and turns so you can focus on the fun.`;
+    `Enjoy a wide variety of free board games, card games, and quick mini-games online. Challenge intelligent bots, create real-time game rooms, invite your friends, and let ${appConfig.appName} handle rules, scoring, and turns so you can focus on the fun.`;
   const primaryLabel = homeCopy.primaryCtaLabel ?? 'Get started';
   const playWithBotsLabel = homeCopy.playWithBotsLabel ?? 'Play vs AI';
   const supportLabel = homeCopy.supportCtaLabel ?? 'Support the developers';
@@ -35,7 +35,7 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
 
   return (
     <section
-      className="hero-section-container relative flex min-h-[90vh] w-full flex-col items-center"
+      className="hero-section-container relative flex min-h-[90vh] w-full flex-col items-center overflow-hidden"
       aria-labelledby="hero-heading"
       data-testid="hero-section"
     >
@@ -92,7 +92,7 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
         {/* Server-rendered multi-game hero cards — inlined vector art for instant LCP with 0 KB download latency */}
         <div
           data-testid="hero-visual"
-          className="relative z-[1] my-4 flex h-[400px] w-full max-w-[600px] items-center justify-center px-6 min-[1151px]:my-0 min-[1151px]:h-[540px]"
+          className="relative z-[1] my-4 flex h-[400px] w-full max-w-[600px] items-center justify-center max-[1150px]:px-2 px-6 min-[1151px]:my-0 min-[1151px]:h-[540px]"
         >
           <HeroCardStack playLabel={playLabel}>
             {HERO_GAMES.map((card, index) => {

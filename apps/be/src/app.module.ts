@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppCacheModule } from './common/cache/app-cache.module';
+import { CacheWarmer } from './common/cache/cache-warmer.service';
+import { AppBullMqModule } from './common/queue/app-bullmq.module';
 import { ChatModule } from './chat/chat.module';
 import { AuthModule } from './auth/auth.module';
 import { GamesModule } from './games/games.module';
@@ -30,6 +32,9 @@ import { FriendsModule } from './friends/friends.module';
 import { ClansModule } from './clans/clans.module';
 import { EventsModule } from './events/events.module';
 import { SeasonsModule } from './seasons/seasons.module';
+import { EngagementModule } from './engagement/engagement.module';
+import { SocialRewardsModule } from './social-rewards/social-rewards.module';
+import { AsyncMatchModule } from './games/async-match/async-match.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import {
@@ -52,6 +57,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
       isGlobal: true,
     }),
     AppCacheModule,
+    AppBullMqModule,
     AuthModule,
     ChatModule,
     GamesModule,
@@ -85,6 +91,9 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     ClansModule,
     EventsModule,
     SeasonsModule,
+    EngagementModule,
+    SocialRewardsModule,
+    AsyncMatchModule,
     MongooseModule.forRoot(resolveMongoUri(), {
       ...resolveMongoOptions(),
       connectionName: OCI_CONNECTION,
@@ -111,6 +120,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
   controllers: [AppController],
   providers: [
     AppService,
+    CacheWarmer,
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,

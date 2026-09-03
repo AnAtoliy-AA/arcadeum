@@ -171,14 +171,26 @@ export class EventsService implements OnModuleInit {
   }
 
   async getFeaturedEvent(): Promise<GameNightEventView | null> {
-    const all = await this.getEvents({ limit: 50 });
-    const active = all.find((e) => e.status === 'active');
-    if (active) return active;
+    const active = await this.eventModel
+      .findOne({ status: 'active' })
+      .sort({ startTime: 1 })
+      .lean()
+      .exec();
+    if (active) return this.mapEventSummary(active as unknown as LeanEvent);
 
-    const upcoming = all.find((e) => e.status === 'upcoming');
-    if (upcoming) return upcoming;
+    const upcoming = await this.eventModel
+      .findOne({ status: 'upcoming' })
+      .sort({ startTime: 1 })
+      .lean()
+      .exec();
+    if (upcoming) return this.mapEventSummary(upcoming as unknown as LeanEvent);
 
-    return all[0] ?? null;
+    const first = await this.eventModel
+      .findOne()
+      .sort({ startTime: 1 })
+      .lean()
+      .exec();
+    return first ? this.mapEventSummary(first as unknown as LeanEvent) : null;
   }
 
   async getEventById(id: string): Promise<GameNightEventDetailView> {

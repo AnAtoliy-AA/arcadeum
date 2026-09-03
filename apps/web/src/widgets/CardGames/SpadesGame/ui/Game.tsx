@@ -1,7 +1,8 @@
 'use client';
 
 import { memo, useCallback, useMemo, useEffect } from 'react';
-import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -23,8 +24,8 @@ import { SpadesLobby } from './SpadesLobby';
 import { SpadesBoard } from './SpadesBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
-import { SPADES_VARIANTS } from '../lib/constants';
-import { resolveSpadesVariant } from '../lib/theme';
+import { SPADES_THEMES } from '../lib/constants';
+import { resolveSpadesTheme } from '../lib/theme';
 
 function SpadesGameImpl({
   roomId,
@@ -124,14 +125,13 @@ function SpadesGameImpl({
   });
 
   const options = useMemo(
-    () => ({ variant: resolveSpadesVariant(room?.gameOptions) }),
+    () => ({ variant: resolveSpadesTheme(room?.gameOptions) }),
     [room?.gameOptions],
   );
 
   const variantTokens = useMemo(
     () =>
-      SPADES_VARIANTS.find((v) => v.id === options.variant) ??
-      SPADES_VARIANTS[0],
+      SPADES_THEMES.find((v) => v.id === options.variant) ?? SPADES_THEMES[0],
     [options.variant],
   );
 
@@ -253,7 +253,11 @@ function SpadesGameImpl({
           backLabel: t('games.table.analytics.back'),
         }}
       />
-      <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
+      <RulesModal
+        open={showRulesOpen}
+        onClose={onShowRulesClose}
+        variant={visualTheme}
+      />
     </>
   );
 

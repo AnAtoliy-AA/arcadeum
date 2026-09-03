@@ -87,7 +87,7 @@ export function HeroCardStack({
   return (
     <div
       ref={stackRef}
-      className="hero-card-stack relative flex h-[400px] w-[380px] items-center justify-center [transform:scale(0.52)] [transform-style:preserve-3d] transition-transform duration-[250ms] ease-out motion-reduce:[transform:none] min-[481px]:[transform:scale(0.85)] min-[481px]:mb-10 min-[481px]:mt-[60px] min-[1151px]:mb-0 min-[1151px]:mt-0 min-[1151px]:[transform:perspective(600px)_rotateX(var(--tilt-y,0deg))_rotateY(var(--tilt-x,0deg))]"
+      className="hero-card-stack relative flex h-[400px] w-[280px] items-center justify-center [transform:scale(0.52)] [transform-style:preserve-3d] transition-transform duration-[250ms] ease-out motion-reduce:[transform:none] min-[481px]:w-[380px] min-[481px]:[transform:scale(0.85)] min-[481px]:mb-10 min-[481px]:mt-[60px] min-[1151px]:mb-0 min-[1151px]:mt-0 min-[1151px]:[transform:perspective(600px)_rotateX(var(--tilt-y,0deg))_rotateY(var(--tilt-x,0deg))]"
       data-testid="hero-card-stack"
       data-hovered={hoveredIndex ?? ''}
       onPointerMove={handlePointerMove}

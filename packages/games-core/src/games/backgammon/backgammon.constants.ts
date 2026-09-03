@@ -4,7 +4,7 @@ export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 2;
 export const TOTAL_POINTS = 24;
 
-export const RULE_VARIANTS = [
+export const MODES = [
   'standard',
   'long',
   'hyper',
@@ -12,9 +12,9 @@ export const RULE_VARIANTS = [
   'nackgammon',
   'gulbara',
 ] as const;
-export type RuleVariant = (typeof RULE_VARIANTS)[number];
+export type Mode = (typeof MODES)[number];
 
-export const CHECKERS_PER_VARIANT: Record<RuleVariant, number> = {
+export const CHECKERS_PER_MODE: Record<Mode, number> = {
   standard: 15,
   long: 15,
   hyper: 3,
@@ -42,17 +42,14 @@ export type ActionType = (typeof ACTION)[keyof typeof ACTION];
 
 export type PlayerColor = 'white' | 'black';
 
-export const VARIANTS = ['standard'] as const;
-export type Variant = (typeof VARIANTS)[number];
-
 export interface BackgammonOptions {
-  variant: Variant;
-  ruleVariant: RuleVariant;
+  theme: string;
+  mode: Mode;
   aiDifficulty?: AiDifficulty;
 }
 
 export const DEFAULT_OPTIONS: BackgammonOptions = {
-  variant: 'standard',
-  ruleVariant: 'standard',
+  theme: 'adventure',
+  mode: 'standard',
   aiDifficulty: 'medium',
 };

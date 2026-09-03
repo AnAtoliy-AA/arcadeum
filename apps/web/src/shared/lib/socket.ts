@@ -1,4 +1,4 @@
-import { io, type Socket } from 'socket.io-client';
+import { io, type Socket, type Manager } from 'socket.io-client';
 import { resolveApiUrl } from './api-base';
 import {
   maybeEncrypt,
@@ -8,14 +8,7 @@ import {
 
 function resolveSocketUrl(): string {
   const apiUrl = resolveApiUrl('');
-
-  try {
-    const url = new URL(apiUrl);
-    url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
-    return url.toString().replace(/\/$/, '');
-  } catch {
-    return apiUrl.replace(/\/$/, '');
-  }
+  return apiUrl.replace(/\/$/, '');
 }
 
 const SOCKET_BASE_URL = resolveSocketUrl();
@@ -25,25 +18,42 @@ type AuthenticatedSocket = Socket & {
 };
 
 const SOCKET_OPTIONS = {
-  transports: ['polling', 'websocket'],
+  transports: ['websocket'] as string[],
   autoConnect: false,
+  reconnection: true,
+  reconnectionAttempts: 10,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 30000,
+  randomizationFactor: 0.5,
 };
 
-// Lazy socket instances — created on first access to avoid heavy init at module load
+let _manager: Manager | null = null;
+
+function getManager(): Manager {
+  if (!_manager) {
+    _manager = io(SOCKET_BASE_URL, {
+      ...SOCKET_OPTIONS,
+      multiplex: true,
+    }).io as Manager;
+    _manager.on('error', () => {});
+    _manager.on('reconnect_error', () => {});
+    _manager.on('reconnect_failed', () => {});
+  }
+  return _manager;
+}
+
 let _gamesSocket: AuthenticatedSocket | null = null;
 let _chatsSocket: AuthenticatedSocket | null = null;
 let _leaderboardsSocket: AuthenticatedSocket | null = null;
 let _friendsSock: AuthenticatedSocket | null = null;
 let _walletSock: AuthenticatedSocket | null = null;
 let _clansSock: AuthenticatedSocket | null = null;
+let _notificationsSocket: AuthenticatedSocket | null = null;
 
 export function getGamesSocket(): AuthenticatedSocket {
   if (!_gamesSocket) {
-    _gamesSocket = io(
-      `${SOCKET_BASE_URL}/games`,
-      SOCKET_OPTIONS,
-    ) as AuthenticatedSocket;
-    guardEmit(_gamesSocket);
+    _gamesSocket = getManager().socket('/games') as AuthenticatedSocket;
+    guardSocket(_gamesSocket);
     setupEncryptionKeyHandler(_gamesSocket);
   }
   return _gamesSocket;
@@ -51,59 +61,60 @@ export function getGamesSocket(): AuthenticatedSocket {
 
 export function getChatsSocket(): AuthenticatedSocket {
   if (!_chatsSocket) {
-    _chatsSocket = io(SOCKET_BASE_URL, SOCKET_OPTIONS) as AuthenticatedSocket;
-    guardEmit(_chatsSocket);
+    _chatsSocket = getManager().socket('/') as AuthenticatedSocket;
+    guardSocket(_chatsSocket);
   }
   return _chatsSocket;
 }
 
 export function getLeaderboardsSocket(): AuthenticatedSocket {
   if (!_leaderboardsSocket) {
-    _leaderboardsSocket = io(
-      `${SOCKET_BASE_URL}/leaderboards`,
-      SOCKET_OPTIONS,
+    _leaderboardsSocket = getManager().socket(
+      '/leaderboards',
     ) as AuthenticatedSocket;
-    guardEmit(_leaderboardsSocket);
+    guardSocket(_leaderboardsSocket);
   }
   return _leaderboardsSocket;
 }
 
 export function getFriendsSock(): AuthenticatedSocket {
   if (!_friendsSock) {
-    _friendsSock = io(
-      `${SOCKET_BASE_URL}/friends`,
-      SOCKET_OPTIONS,
-    ) as AuthenticatedSocket;
-    guardEmit(_friendsSock);
+    _friendsSock = getManager().socket('/friends') as AuthenticatedSocket;
+    guardSocket(_friendsSock);
   }
   return _friendsSock;
 }
 
 function getWalletSock(): AuthenticatedSocket {
   if (!_walletSock) {
-    // forceNew: give /wallet its own Manager + engine connection. Without it
-    // the wallet namespace multiplexes over the shared engine, and a hard
-    // server-side kick on a bad wallet token tears down games/chats too
-    // (seen as "WebSocket is closed before the connection is established").
-    _walletSock = io(`${SOCKET_BASE_URL}/wallet`, {
-      transports: ['websocket'],
-      autoConnect: false,
-      forceNew: true,
-    }) as AuthenticatedSocket;
-    guardEmit(_walletSock);
+    _walletSock = getManager().socket('/wallet') as AuthenticatedSocket;
+    guardSocket(_walletSock);
   }
   return _walletSock;
 }
 
-function getClansSock(): AuthenticatedSocket {
+export function getClansSock(): AuthenticatedSocket {
   if (!_clansSock) {
-    _clansSock = io(
-      `${SOCKET_BASE_URL}/clans`,
-      SOCKET_OPTIONS,
-    ) as AuthenticatedSocket;
-    guardEmit(_clansSock);
+    _clansSock = getManager().socket('/clans') as AuthenticatedSocket;
+    guardSocket(_clansSock);
   }
   return _clansSock;
+}
+
+export function getNotificationsSocket(): AuthenticatedSocket {
+  if (!_notificationsSocket) {
+    _notificationsSocket = getManager().socket(
+      '/notifications',
+    ) as AuthenticatedSocket;
+    guardSocket(_notificationsSocket);
+  }
+  return _notificationsSocket;
+}
+
+function guardSocket(socket: AuthenticatedSocket): void {
+  guardEmit(socket);
+  socket.on('connect_error', () => {});
+  socket.on('error', () => {});
 }
 
 // Guard against emit() calls on a socket whose transport was never
@@ -134,6 +145,7 @@ function guardEmit(socket: Socket): void {
 }
 
 let currentAuthToken: string | null = null;
+let currentAnonId: string | null = null;
 
 /**
  * Message queue for messages waiting on encryption key
@@ -188,6 +200,8 @@ export function connectSockets(token: string | null | undefined): void {
     return;
   }
 
+  currentAnonId = null;
+
   if (currentAuthToken !== token) {
     currentAuthToken = token;
 
@@ -203,6 +217,7 @@ export function connectSockets(token: string | null | undefined): void {
   applyAuth(getChatsSocket(), token);
   applyAuth(getFriendsSock(), token);
   applyAuth(getClansSock(), token);
+  applyAuth(getNotificationsSocket(), token);
 
   if (!getGamesSocket().connected) {
     getGamesSocket().connect();
@@ -215,6 +230,9 @@ export function connectSockets(token: string | null | undefined): void {
   }
   if (!getClansSock().connected) {
     getClansSock().connect();
+  }
+  if (!getNotificationsSocket().connected) {
+    getNotificationsSocket().connect();
   }
 }
 
@@ -260,29 +278,42 @@ export function disconnectWalletSocket(): void {
  * Pass the anonymous userId so the backend sends the encryption key
  */
 export function connectSocketsAnonymous(userId?: string): void {
-  // Disconnect if currently authenticated
+  const targetAnonId = userId || null;
+
   if (currentAuthToken) {
     disconnectSockets();
   }
 
-  // Clear any auth
-  getGamesSocket().auth = {};
+  const gamesSock = getGamesSocket();
 
-  // Pass anonId so gateway recognizes the client and sends encryption key
-  if (userId) {
-    getGamesSocket().io.opts.query = {
-      ...(getGamesSocket().io.opts.query as Record<string, string>),
-      anonId: userId,
-    };
+  if (currentAnonId !== targetAnonId && gamesSock.connected) {
+    gamesSock.disconnect();
   }
 
-  if (!getGamesSocket().connected) {
-    getGamesSocket().connect();
+  currentAnonId = targetAnonId;
+  gamesSock.auth = {};
+
+  if (gamesSock.io?.opts) {
+    if (targetAnonId) {
+      gamesSock.io.opts.query = {
+        ...(gamesSock.io.opts.query as Record<string, string>),
+        anonId: targetAnonId,
+      };
+    } else if (gamesSock.io.opts.query) {
+      const query = { ...(gamesSock.io.opts.query as Record<string, string>) };
+      delete query.anonId;
+      gamesSock.io.opts.query = query;
+    }
+  }
+
+  if (!gamesSock.connected) {
+    gamesSock.connect();
   }
 }
 
 export function disconnectSockets(): void {
   currentAuthToken = null;
+  currentAnonId = null;
 
   if (_gamesSocket) {
     _gamesSocket.disconnect();
@@ -302,6 +333,9 @@ export function disconnectSockets(): void {
   if (_clansSock) {
     _clansSock.disconnect();
   }
+  if (_notificationsSocket) {
+    _notificationsSocket.disconnect();
+  }
 
   if (_gamesSocket) _gamesSocket.auth = {};
   if (_chatsSocket) _chatsSocket.auth = {};
@@ -309,6 +343,7 @@ export function disconnectSockets(): void {
   if (_friendsSock) _friendsSock.auth = {};
   if (_walletSock) _walletSock.auth = {};
   if (_clansSock) _clansSock.auth = {};
+  if (_notificationsSocket) _notificationsSocket.auth = {};
   resetEncryptionKey();
 }
 
@@ -335,6 +370,10 @@ export function getWalletSocketRef(): Socket {
 
 export function getClansSocketRef(): Socket {
   return getClansSock();
+}
+
+export function getNotificationSocketRef(): Socket {
+  return getNotificationsSocket();
 }
 
 // Backward-compatible exports — lazily delegate to actual socket instances
@@ -414,9 +453,18 @@ export const leaderboardSocket: Socket = createLazySocket(
 export const friendsSocket: Socket = createLazySocket(getFriendsSock);
 export const walletSocket: Socket = createLazySocket(getWalletSock);
 export const clansSocket: Socket = createLazySocket(getClansSock);
+export const notificationSocket: Socket = createLazySocket(
+  getNotificationsSocket,
+);
 
-// Expose sockets to window for E2E testing
-if (typeof window !== 'undefined') {
+// Expose sockets to window for E2E testing.
+// window.isPlaywright is set by Playwright's addInitScript() before any
+// page scripts run, so it's available at module-evaluation time even in
+// production builds where NEXT_PUBLIC_E2E isn't inlined.
+if (
+  typeof window !== 'undefined' &&
+  (window as unknown as { isPlaywright?: boolean }).isPlaywright
+) {
   const win = window as unknown as Record<string, unknown>;
   win.gameSocket = getGamesSocket();
   win.chatSocket = getChatsSocket();
@@ -439,4 +487,5 @@ export {
   useChatSocket,
   useLeaderboardSocket,
   useFriendsSocket,
+  useNotificationSocket,
 } from './socket-hooks';

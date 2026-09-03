@@ -5,14 +5,14 @@ import type {
 import type {
   GamePhase,
   PlayerColor,
-  RuleVariant,
-  Variant,
+  Mode,
 } from './checkers.constants';
 import type { AiDifficulty } from '../../lib/ai-difficulty';
 
 export interface CheckersOptions {
-  variant: Variant;
-  ruleVariant: RuleVariant;
+  theme: string;
+  variant?: string;
+  mode: Mode;
   forcedCaptures: boolean;
   backwardCaptures: boolean;
   botDifficulty?: AiDifficulty;

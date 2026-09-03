@@ -103,7 +103,7 @@ test.describe('Game Room Creation', () => {
   test('should show validation error for empty name', async ({ page }) => {
     const nameInput = page.getByLabel(/room name/i).first();
     await expect(nameInput).toBeVisible();
-    await nameInput.fill('');
+    await nameInput.clear();
     await expect(nameInput).toHaveValue('');
 
     const submitBtn = page.getByTestId('create-room-button').first();

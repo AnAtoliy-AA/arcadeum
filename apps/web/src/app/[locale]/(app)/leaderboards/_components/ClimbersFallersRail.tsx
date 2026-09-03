@@ -1,4 +1,3 @@
-'use client';
 import { DeltaChip } from '@arcadeum/ui';
 import type { ClimberFaller } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';

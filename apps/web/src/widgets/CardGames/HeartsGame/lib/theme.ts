@@ -1,5 +1,5 @@
-import type { HeartsVariant } from '../types';
-import { isHeartsVariant } from '../types';
+import type { HeartsTheme } from '../types';
+import { isHeartsTheme } from '../types';
 import {
   getThemeById,
   SHARED_THEMES,
@@ -7,7 +7,7 @@ import {
 import { sharedThemeToHearts } from './theme-adapter';
 
 export interface HeartsThemeTokens {
-  variant: HeartsVariant;
+  variant: HeartsTheme;
   emoji: string;
   background: string;
   surface: string;
@@ -22,17 +22,17 @@ export interface HeartsThemeTokens {
   bgImage?: string;
 }
 
-export const THEMES: Record<HeartsVariant, HeartsThemeTokens> =
+export const THEMES: Record<HeartsTheme, HeartsThemeTokens> =
   Object.fromEntries(
     SHARED_THEMES.filter((t) => t.id !== 'random').map((t) => [
-      t.id as HeartsVariant,
+      t.id as HeartsTheme,
       sharedThemeToHearts(t),
     ]),
-  ) as Record<HeartsVariant, HeartsThemeTokens>;
+  ) as Record<HeartsTheme, HeartsThemeTokens>;
 
 export function getTheme(variant?: string): HeartsThemeTokens {
   if (variant && variant in THEMES) {
-    return THEMES[variant as HeartsVariant];
+    return THEMES[variant as HeartsTheme];
   }
   if (variant) {
     const shared = getThemeById(variant);
@@ -48,8 +48,8 @@ export function getTheme(variant?: string): HeartsThemeTokens {
  * the shared theme id under `theme`; unknown or missing values (legacy
  * rooms, hand-edited options) fall back to cyberpunk.
  */
-export function resolveHeartsVariant(raw: unknown): HeartsVariant {
+export function resolveHeartsTheme(raw: unknown): HeartsTheme {
   const r = (raw ?? {}) as Partial<{ theme: string; variant: string }>;
   const candidate = r.theme ?? r.variant;
-  return isHeartsVariant(candidate) ? candidate : 'cyberpunk';
+  return isHeartsTheme(candidate) ? candidate : 'cyberpunk';
 }

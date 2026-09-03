@@ -2,26 +2,17 @@ export const BOARD_SIZE = 8;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 2;
 
-export const VARIANTS = [
-  'classic',
-  'neon',
-  'wood',
-  'marble',
-  'neon_glow',
-] as const;
-export type Variant = (typeof VARIANTS)[number];
+export const MODES = ['american', 'international', 'russian'] as const;
+export type Mode = (typeof MODES)[number];
 
-export const RULE_VARIANTS = ['american', 'international', 'russian'] as const;
-export type RuleVariant = (typeof RULE_VARIANTS)[number];
-
-export interface RuleVariantConfig {
+export interface ModeConfig {
   boardSize: number;
   piecesPerPlayer: number;
   flyingKings: boolean;
   backwardCapturesForMen: boolean;
 }
 
-export const RULE_VARIANT_CONFIGS: Record<RuleVariant, RuleVariantConfig> = {
+export const MODE_CONFIGS: Record<Mode, ModeConfig> = {
   american: {
     boardSize: 8,
     piecesPerPlayer: 12,
@@ -53,8 +44,8 @@ export const PLAYER_COLORS = ['light', 'dark'] as const;
 export type PlayerColor = (typeof PLAYER_COLORS)[number];
 
 export const DEFAULT_OPTIONS = {
-  variant: 'classic' as Variant,
-  ruleVariant: 'american' as RuleVariant,
+  theme: 'adventure',
+  mode: 'american' as Mode,
   forcedCaptures: true,
   backwardCaptures: false,
   botDifficulty: 'medium' as const,

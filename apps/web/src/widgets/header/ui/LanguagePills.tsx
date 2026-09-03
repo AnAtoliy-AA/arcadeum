@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { GlobeIcon } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
@@ -26,19 +25,15 @@ interface LanguagePillsProps {
 export default function LanguagePills({
   'data-testid': testId,
 }: LanguagePillsProps) {
-  const router = useRouter();
   const { locale: storeLocale, setLocale, initialLocale } = useLanguage();
   const mounted = useIsMounted();
   const locale = mounted ? storeLocale : initialLocale || DEFAULT_LOCALE;
 
   const handlePick = useCallback(
     (next: Locale) => {
-      if (next === locale) return;
-      document.cookie = `app-language=${next}; path=/; max-age=31536000; SameSite=Lax`;
       setLocale(next);
-      router.refresh();
     },
-    [locale, setLocale, router],
+    [setLocale],
   );
 
   return (

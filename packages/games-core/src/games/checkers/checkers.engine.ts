@@ -8,7 +8,7 @@ import type {
 import {
   DEFAULT_OPTIONS,
   GAME_PHASE,
-  RULE_VARIANT_CONFIGS,
+  MODE_CONFIGS,
 } from './checkers.constants';
 import type {
   CheckersState,
@@ -51,7 +51,7 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     config?: InitializeConfig,
   ): CheckersState {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
-    const ruleConfig = RULE_VARIANT_CONFIGS[options.ruleVariant];
+    const ruleConfig = MODE_CONFIGS[options.mode];
 
     const players = [
       {
@@ -74,7 +74,7 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       board: createInitialBoard(
         playerIds[1],
         playerIds[0],
-        options.ruleVariant,
+        options.mode,
       ),
       currentTurnIndex: 0,
       playerOrder: [...playerIds],
@@ -193,7 +193,7 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     const newBoard = applyMove(newState.board, payload.steps, playerColor);
     newState.board = newBoard;
 
-    const ruleConfig = RULE_VARIANT_CONFIGS[newState.options.ruleVariant];
+    const ruleConfig = MODE_CONFIGS[newState.options.mode];
     const backwardCaptures =
       newState.options.backwardCaptures || ruleConfig.backwardCapturesForMen;
     const flyingKings = ruleConfig.flyingKings;

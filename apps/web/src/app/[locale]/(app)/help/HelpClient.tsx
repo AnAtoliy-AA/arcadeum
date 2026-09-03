@@ -1,5 +1,3 @@
-'use client';
-
 import HelpPageContent, { type HelpPageContentProps } from './HelpPageContent';
 
 export default function HelpClient({ t }: HelpPageContentProps) {

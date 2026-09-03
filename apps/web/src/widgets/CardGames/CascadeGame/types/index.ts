@@ -5,7 +5,7 @@ export type CascadeGameProps = BaseGameWidgetProps;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 10;
 
-export const CASCADE_VARIANT_IDS = [
+export const CASCADE_THEME_IDS = [
   'cyberpunk',
   'underwater',
   'crime',
@@ -19,7 +19,7 @@ export const CASCADE_VARIANT_IDS = [
   'steampunk',
   'zen',
 ] as const;
-export type CascadeVariant = (typeof CASCADE_VARIANT_IDS)[number];
+export type CascadeTheme = (typeof CASCADE_THEME_IDS)[number];
 
 export const CASCADE_MODE_IDS = ['classic', 'pure', 'speed'] as const;
 export type CascadeMode = (typeof CASCADE_MODE_IDS)[number];
@@ -64,8 +64,8 @@ export interface CascadeCard {
 }
 
 export interface CascadeOptions {
-  variant: CascadeVariant;
-  theme?: string;
+  theme: CascadeTheme;
+  variant?: CascadeTheme;
   mode: CascadeMode;
   stackingEnabled: boolean;
   /**

@@ -4,7 +4,7 @@ import type { GoBoardSize, GoOptions } from '../types';
 
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 
-export interface GoVariantOption extends GameVariantOption {
+export interface GoThemeOption extends GameVariantOption {
   id: string;
   name: TranslationKey;
   description: TranslationKey;
@@ -13,7 +13,7 @@ export interface GoVariantOption extends GameVariantOption {
   lightGradient: string;
 }
 
-export const GO_VARIANTS: ReadonlyArray<GoVariantOption> = SHARED_THEMES.map(
+export const GO_THEMES: ReadonlyArray<GoThemeOption> = SHARED_THEMES.map(
   (t) => ({
     id: t.id,
     name: t.nameKey as TranslationKey,

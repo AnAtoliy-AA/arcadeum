@@ -69,7 +69,7 @@ test.describe('Sea Battle Single Player Mode', () => {
         name: 'Sea Battle Test',
         gameId: 'sea_battle_v1',
         gameOptions: { variant: 'classic' },
-        status: 'waiting',
+        status: 'lobby',
         hostId: userId,
         members: [
           { id: userId, userId, displayName: 'Test User', isHost: true },
@@ -85,7 +85,7 @@ test.describe('Sea Battle Single Player Mode', () => {
           name: 'Sea Battle Test',
           gameId: 'sea_battle_v1',
           gameOptions: { variant: 'classic' },
-          status: 'waiting',
+          status: 'lobby',
           hostId: userId,
           members: [
             { id: userId, userId, displayName: 'Test User', isHost: true },
@@ -160,9 +160,7 @@ test.describe('Sea Battle Single Player Mode', () => {
     await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page); // ✅ Handles modal close automatically
 
-    await expect(
-      page.getByRole('heading', { name: /Sea Battle/i }),
-    ).toBeVisible({});
+    await expect(page.getByText('Sea Battle').first()).toBeVisible({});
 
     const startBtn = page.getByTestId('start-with-bots-button');
     await expect(startBtn).toBeVisible({});

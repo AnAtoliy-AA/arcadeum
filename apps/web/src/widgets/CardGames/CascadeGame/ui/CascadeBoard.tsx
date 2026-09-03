@@ -118,7 +118,6 @@ export function CascadeBoard({
       className={`flex flex-col items-stretch w-full gap-3 p-0 pt-4 rounded-2xl ${`${styles.table} ${cardStyle === 'aurora' ? styles.aurora : ''}`}`}
       style={
         {
-          background: theme.background,
           minHeight: 540,
           '--cascade-text': theme.cardText,
           '--cascade-surface': theme.surface,
@@ -228,6 +227,9 @@ export function CascadeBoard({
             >
               <span className={styles.drawEmblem} aria-hidden="true">
                 {deckEmblem}
+              </span>
+              <span className={styles.drawText}>
+                {t('games.cascade_v1.board.draw')}
               </span>
               {snapshot.pendingDraw > 0 ? (
                 <span className={styles.drawPlus}>+{snapshot.pendingDraw}</span>

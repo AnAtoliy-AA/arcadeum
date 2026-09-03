@@ -9,8 +9,10 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  UseInterceptors,
   BadRequestException,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
@@ -39,7 +41,7 @@ import {
   parseVisibilityFilters,
   parseParticipationFilter,
 } from './games.query-parsers';
-import { extractVariantFromOptions } from './game-options';
+import { extractThemeFromOptions } from './game-options';
 import { CriticalService } from './critical/critical.service';
 import { TexasHoldemService } from './texas-holdem/texas-holdem.service';
 
@@ -53,6 +55,8 @@ export class GamesController {
     private readonly aiVsAiService: AiVsAiService,
   ) {}
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000)
   @UseGuards(JwtOptionalAuthGuard)
   @Get('catalog')
   async getCatalog(@Req() req: Request): Promise<CatalogResponse> {
@@ -85,8 +89,8 @@ export class GamesController {
     }
 
     const role = await this.catalogService.resolveRole(user.userId);
-    const variant = extractVariantFromOptions(dto.gameOptions);
-    await this.catalogService.assertVisible(role, dto.gameId, variant);
+    const theme = extractThemeFromOptions(dto.gameOptions);
+    await this.catalogService.assertVisible(role, dto.gameId, theme);
 
     if (dto.gameOptions) {
       const ruleMap = await this.catalogService.getRulesForGame(dto.gameId);
@@ -141,6 +145,7 @@ export class GamesController {
   async listRooms(
     @Req() req: Request,
     @Query('gameId') gameId?: string,
+    @Query('categories') categories?: string,
     @Query('status') statusParam?: string,
     @Query('visibility') visibilityParam?: string,
     @Query('participation') participationParam?: string,
@@ -160,6 +165,7 @@ export class GamesController {
     const result = await this.gamesService.listRooms({
       userId: user?.userId,
       gameId,
+      categories,
       search: search?.trim(),
       statuses: statusFilters.length ? statusFilters : undefined,
       visibility: visibilityFilters.length ? visibilityFilters : undefined,
@@ -175,7 +181,7 @@ export class GamesController {
       result.rooms,
       (r) => ({
         gameId: r.gameId,
-        variantId: extractVariantFromOptions(r.gameOptions),
+        variantId: extractThemeFromOptions(r.gameOptions),
       }),
     );
     return { ...result, rooms: filtered };
@@ -247,6 +253,8 @@ export class GamesController {
 
     return this.gamesService.syncPlayerStats(user.userId, dto.records);
   }
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(60000)
   @Get('leaderboard')
   async getLeaderboard(
     @Query('limit') limit?: string,

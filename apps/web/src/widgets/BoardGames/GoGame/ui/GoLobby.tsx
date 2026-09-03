@@ -3,20 +3,14 @@
 import { useMemo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import {
-  ReusableGameLobby,
-  LobbyOptionSection,
-  GameThemePicker,
-  getLobbyTheme,
-} from '@/features/games/ui';
+import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
+import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { RulesModal } from './RulesModal';
-import {
-  GO_VARIANTS,
-  GO_BOARD_SIZES,
-  resolveGoOptions,
-} from '../lib/constants';
+import { GO_THEMES, GO_BOARD_SIZES, resolveGoOptions } from '../lib/constants';
 
 const GO_LOBBY_THEME = {
   fallbackLightGradient:
@@ -64,7 +58,7 @@ export function GoLobby({
   const lobbyTheme = useMemo(
     () =>
       getLobbyTheme(
-        GO_VARIANTS,
+        GO_THEMES,
         variant,
         GO_LOBBY_THEME.fallbackLightGradient,
         GO_LOBBY_THEME.buttonGradient,
@@ -72,7 +66,7 @@ export function GoLobby({
     [variant],
   );
   const variantName = useMemo(() => {
-    const found = GO_VARIANTS.find((v) => v.id === variant);
+    const found = GO_THEMES.find((v) => v.id === variant);
     return found ? t(found.name) : undefined;
   }, [variant, t]);
 

@@ -9,7 +9,9 @@ import {
   Post,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { FriendsService } from './friends.service';
 import { SendFriendRequestDto } from './dto/send-friend-request.dto';
@@ -47,6 +49,8 @@ export class FriendsController {
     return this.friendsService.removeFriend(req.user.userId, id);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(10000)
   @Get()
   getFriends(@Req() req: RequestWithUser) {
     return this.friendsService.getFriends(req.user.userId);

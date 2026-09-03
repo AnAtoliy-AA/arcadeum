@@ -5,21 +5,17 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/lib/useTranslation';
+import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
-  ReusableGameLobby,
   LobbyOptionSection,
-  GameThemePicker,
   LobbyChipGroup,
-  getLobbyTheme,
-} from '@/features/games/ui';
+} from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RulesModal } from './RulesModal';
-import { PACHISI_VARIANTS } from '../lib/constants';
-import type {
-  PachisiOptions,
-  PachisiRuleVariant,
-  PachisiVariant,
-} from '../types';
+import { PACHISI_THEMES } from '../lib/constants';
+import type { PachisiOptions, PachisiMode, PachisiTheme } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 const PACHISI_LOBBY_THEME = {
@@ -28,8 +24,8 @@ const PACHISI_LOBBY_THEME = {
   buttonGradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
 };
 
-const RULE_VARIANT_OPTIONS: Array<{
-  id: PachisiRuleVariant;
+const MODE_OPTIONS: Array<{
+  id: PachisiMode;
   nameKey: TranslationKey;
   descriptionKey: TranslationKey;
   emoji: string;
@@ -74,12 +70,13 @@ function resolveOptions(raw: unknown): PachisiOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
-    ruleVariant: string;
+    mode: string;
     aiDifficulty: string;
   }>;
   return {
-    variant: (r.theme ?? r.variant ?? 'adventure') as PachisiVariant,
-    ruleVariant: (r.ruleVariant ?? 'standard') as PachisiRuleVariant,
+    theme: (r.theme ?? r.variant ?? 'adventure') as PachisiTheme,
+    variant: (r.theme ?? r.variant ?? 'adventure') as PachisiTheme,
+    mode: (r.mode ?? 'standard') as PachisiMode,
     aiDifficulty: (r.aiDifficulty ?? 'medium') as
       'easy' | 'medium' | 'hard' | 'expert',
   };
@@ -107,12 +104,12 @@ export function PachisiLobby({
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
 
   const variant = options.variant;
-  const ruleVariant = options.ruleVariant ?? 'standard';
+  const mode = options.mode ?? 'standard';
 
   const lobbyTheme = useMemo(
     () =>
       getLobbyTheme(
-        PACHISI_VARIANTS,
+        PACHISI_THEMES,
         variant,
         PACHISI_LOBBY_THEME.fallbackLightGradient,
         PACHISI_LOBBY_THEME.buttonGradient,
@@ -121,13 +118,13 @@ export function PachisiLobby({
   );
 
   const variantName = useMemo(() => {
-    const found = PACHISI_VARIANTS.find((v) => v.id === variant);
+    const found = PACHISI_THEMES.find((v) => v.id === variant);
     return found ? t(found.nameKey as TranslationKey) : undefined;
   }, [variant, t]);
 
-  const ruleVariantOptions = useMemo(
+  const modeOptions = useMemo(
     () =>
-      RULE_VARIANT_OPTIONS.map((rv) => ({
+      MODE_OPTIONS.map((rv) => ({
         id: rv.id,
         label: t(rv.nameKey),
         emoji: rv.emoji,
@@ -135,9 +132,8 @@ export function PachisiLobby({
     [t],
   );
 
-  const activeRuleVariantMeta =
-    RULE_VARIANT_OPTIONS.find((rv) => rv.id === ruleVariant) ??
-    RULE_VARIANT_OPTIONS[0];
+  const activeModeMeta =
+    MODE_OPTIONS.find((rv) => rv.id === mode) ?? MODE_OPTIONS[0];
 
   const optionsSlot = (
     <div className="flex flex-col gap-4">
@@ -152,15 +148,15 @@ export function PachisiLobby({
       </LobbyOptionSection>
       <LobbyOptionSection title={t('games.pachisi_v1.lobby.ruleVariant')}>
         <LobbyChipGroup
-          options={ruleVariantOptions}
-          value={ruleVariant}
-          onChange={(v) => setOption({ ruleVariant: v })}
+          options={modeOptions}
+          value={mode}
+          onChange={(v) => setOption({ mode: v })}
           disabled={!isHost}
           accentColor="#f59e0b"
           testIdPrefix="pachisi-rule-variant"
         />
         <span className="text-[14px] opacity-60">
-          {t(activeRuleVariantMeta.descriptionKey)}
+          {t(activeModeMeta.descriptionKey)}
         </span>
       </LobbyOptionSection>
     </div>

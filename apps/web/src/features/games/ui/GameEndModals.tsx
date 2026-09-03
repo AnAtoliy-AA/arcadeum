@@ -13,12 +13,16 @@ interface GameEndModalsProps {
   players: Array<{ playerId: string; displayName: string; alive: boolean }>;
   currentUserId: string | null;
   gameName?: string;
+  gameSlug?: string;
   cardVariant?: string;
   theme?: GameTheme | string;
   stats?: GameResultStats;
   analysis?: GameResultModalProps['analysis'];
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   onRematch?: () => void;
+  roomId?: string;
+  inviteCode?: string;
+  onPlayAnother?: () => void;
 }
 
 export function GameEndModals({
@@ -26,12 +30,16 @@ export function GameEndModals({
   players,
   currentUserId,
   gameName,
+  gameSlug,
   cardVariant,
   theme,
   stats,
   analysis,
   t,
   onRematch,
+  roomId,
+  inviteCode,
+  onPlayAnother,
 }: GameEndModalsProps) {
   const activeTheme = theme ?? cardVariant;
 
@@ -41,6 +49,7 @@ export function GameEndModals({
         isOpen={gameEnd.showResultModal}
         result={gameEnd.sharedResult}
         gameName={gameName}
+        gameSlug={gameSlug}
         onClose={gameEnd.dismissResult}
         onRematch={onRematch ?? gameEnd.handleResultRematchClick}
         rematchLoading={gameEnd.rematchLoading}
@@ -50,6 +59,9 @@ export function GameEndModals({
         theme={activeTheme}
         stats={stats}
         analysis={analysis}
+        roomId={roomId}
+        inviteCode={inviteCode}
+        onPlayAnother={onPlayAnother}
       />
 
       {players.length > 1 && (

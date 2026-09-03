@@ -15,6 +15,7 @@
 
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
+const fs = require('fs');
 const {
   readdir,
   unlink,
@@ -669,7 +670,210 @@ const GAMES = [
       return true;
     },
   },
+  {
+    name: 'texas-holdem',
+    slug: 'texas_holdem_v1',
+    url: '/en/games/texas-holdem',
+    hookText: '🃏 ALL IN OR FOLD?',
+    actionPhrases: ['💰 RAISE!', '🃏 POCKET ACES!', '🔥 ALL IN!'],
+    captions: [
+      'High-stakes poker action — can you read the bluff? 🃏💰 Play free on arcadeum.games #poker #texasholdem #cardgames',
+      "Go all in or fold? Texas Hold'em with real opponents! ♠️🔥 arcadeum.games #pokergame #multiplayer #arcadeum",
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        '[data-testid="poker-table"], [data-testid="game-board-section"], [data-testid="poker-hand"]',
+        { timeout: 20000 },
+      );
+      await sleep(1000);
+    },
+    async makeMove(page) {
+      const callBtn = page.locator(
+        '[data-testid="poker-call-button"], button:has-text("Call"), button:has-text("Check")',
+      );
+      if ((await callBtn.count()) > 0 && (await callBtn.first().isEnabled())) {
+        await callBtn.first().click({ force: true });
+        return true;
+      }
+      const raiseBtn = page.locator(
+        '[data-testid="poker-raise-button"], button:has-text("Raise")',
+      );
+      if (
+        (await raiseBtn.count()) > 0 &&
+        (await raiseBtn.first().isEnabled())
+      ) {
+        await raiseBtn.first().click({ force: true });
+        return true;
+      }
+      const foldBtn = page.locator(
+        '[data-testid="poker-fold-button"], button:has-text("Fold")',
+      );
+      if ((await foldBtn.count()) > 0 && (await foldBtn.first().isEnabled())) {
+        await foldBtn.first().click({ force: true });
+        return true;
+      }
+      return false;
+    },
+    async isMyTurn(page) {
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
+    },
+  },
+  {
+    name: 'spades',
+    slug: 'spades_v1',
+    url: '/en/games/spades',
+    hookText: '♠️ BID \u0026 DOMINATE!',
+    actionPhrases: ['♠️ TRUMP CARD!', '🎯 TRICK WON!', '👑 NIL BID!'],
+    captions: [
+      'Team up and dominate in Spades! ♠️🏆 Play with friends on arcadeum.games #spades #cardgame #tricktaking',
+      'Can you nail the blind nil? Spades online! ♠️🔥 Free at arcadeum.games #spadesreels #strategy #arcadeum',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        '[data-testid="spades-board"], [data-testid="game-board-section"]',
+        { timeout: 20000 },
+      );
+      await sleep(500);
+    },
+    async makeMove(page) {
+      const playable = page.locator(
+        '[data-testid^="spades-card-"]:not([disabled])',
+      );
+      if ((await playable.count()) > 0) {
+        const count = await playable.count();
+        const idx = Math.floor(Math.random() * count);
+        await playable.nth(idx).click({ force: true });
+        return true;
+      }
+      const bidBtn = page.locator(
+        '[data-testid^="spades-bid-"], button:has-text("Bid")',
+      );
+      if ((await bidBtn.count()) > 0 && (await bidBtn.first().isEnabled())) {
+        await bidBtn.first().click({ force: true });
+        return true;
+      }
+      return false;
+    },
+    async isMyTurn(page) {
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
+    },
+  },
+  {
+    name: 'pachisi',
+    slug: 'pachisi_v1',
+    url: '/en/games/pachisi',
+    hookText: '🎲 ROYAL RACE!',
+    actionPhrases: ['🎲 LUCKY ROLL!', '🏃 TOKEN ADVANCE!', '👑 SAFE ZONE!'],
+    captions: [
+      'The ancient game of Pachisi — roll dice and race to the center! 🎲👑 arcadeum.games #pachisi #boardgame #strategy',
+      'Pachisi online — will your tokens make it home? 🎲🏆 Play free on arcadeum.games #boardgamereels #classic',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        '[data-testid="pachisi-board"], [data-testid="game-board-section"], [data-testid="dice-roll-button"]',
+        { timeout: 20000 },
+      );
+      await sleep(500);
+    },
+    async makeMove(page) {
+      const rollBtn = page.locator('[data-testid="dice-roll-button"]');
+      if ((await rollBtn.count()) > 0 && (await rollBtn.isEnabled())) {
+        await rollBtn.click({ force: true });
+        await sleep(800);
+      }
+      const movable = page.locator(
+        '[data-testid^="pachisi-token-"]:not([disabled])',
+      );
+      if ((await movable.count()) > 0) {
+        await movable.first().click({ force: true });
+        return true;
+      }
+      return false;
+    },
+    async isMyTurn(page) {
+      const label = page.locator('[data-testid="turn-indicator-label"]');
+      if ((await label.count()) === 0) return false;
+      const text = await label.textContent();
+      return text && text.trim().length > 0;
+    },
+  },
+  {
+    name: '2048',
+    slug: '2048_v1',
+    url: '/en/games/2048',
+    hookText: '🧩 MERGE TO WIN!',
+    actionPhrases: ['🔢 BIG MERGE!', '⚡ COMBO SLIDE!', '🏆 NEW HIGH SCORE!'],
+    captions: [
+      'Can you reach 2048? Swipe and merge! 🧩🔥 Play on arcadeum.games #2048 #puzzle #brainteaser',
+    ],
+    moves: [],
+    async waitForGame(page) {
+      await page.waitForSelector(
+        'canvas, [data-testid="game-board-section"], [data-testid="2048-grid"]',
+        { timeout: 20000 },
+      );
+      await sleep(500);
+    },
+    async makeMove(page) {
+      const directions = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+      await page.keyboard.press(randomElement(directions));
+      return true;
+    },
+    async isMyTurn() {
+      return true;
+    },
+  },
 ];
+
+const FALLBACK_GAME_SLUGS = [
+  'critical_v1',
+  'sea_battle_v1',
+  'texas_holdem_v1',
+  'glimworm_v1',
+  'tic_tac_toe_v1',
+  'cascade_v1',
+  'chess_v1',
+  'checkers_v1',
+  'cat_dash_v1',
+  'backgammon_v1',
+  'hearts_v1',
+  'spades_v1',
+  'go_v1',
+  'pachisi_v1',
+];
+
+function loadBackendGameCatalogSlugs() {
+  try {
+    const catalogPath = path.join(
+      rootDir,
+      'apps',
+      'be',
+      'src',
+      'games',
+      'games.catalog.ts',
+    );
+    const content = fs.readFileSync(catalogPath, 'utf8');
+    const matches = Array.from(
+      content.matchAll(/gameId:\s*'([^']+)'/g),
+      (m) => m[1],
+    );
+    if (matches.length > 0) {
+      return Array.from(new Set(matches));
+    }
+  } catch {}
+  return FALLBACK_GAME_SLUGS;
+}
+
+const ALL_GAME_SLUGS = loadBackendGameCatalogSlugs();
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -1023,11 +1227,10 @@ async function recordSession(
     const context = await browser.newContext(contextOptions);
     const sessionStartTime = Date.now();
 
-    // Inject bot auth tokens so quickplay works as an authenticated user
-    if (CONFIG.botToken) {
-      await context.addInitScript(
-        ({ accessToken, refreshToken }) => {
-          try {
+    await context.addInitScript(
+      ({ accessToken, refreshToken, gameSlugs }) => {
+        try {
+          if (accessToken) {
             const session = {
               accessToken,
               refreshToken,
@@ -1038,10 +1241,28 @@ async function recordSession(
             if (refreshToken) {
               localStorage.setItem('arcadeum_refresh_token', refreshToken);
             }
-          } catch {}
-        },
-        { accessToken: CONFIG.botToken, refreshToken: CONFIG.botRefreshToken },
-      );
+          }
+          const completedMap = {};
+          (gameSlugs || []).forEach((slug) => {
+            completedMap[slug] = Date.now();
+          });
+          localStorage.setItem(
+            'arcadeum_tutorials_v1',
+            JSON.stringify({
+              state: { completedAt: completedMap, dismissedAt: completedMap },
+              version: 0,
+            }),
+          );
+        } catch {}
+      },
+      {
+        accessToken: CONFIG.botToken,
+        refreshToken: CONFIG.botRefreshToken,
+        gameSlugs: ALL_GAME_SLUGS,
+      },
+    );
+
+    if (CONFIG.botToken) {
       log('info', `${label}: bot auth tokens injected into browser context`);
     } else {
       log(
@@ -1055,7 +1276,33 @@ async function recordSession(
     const gameUrl = `${CONFIG.baseUrl}${game.url}`;
     await page.goto(gameUrl, { waitUntil: 'networkidle', timeout: 30000 });
 
-    // Step 1: Wait for and click "Play vs AI now" button
+    const dismissAnyOverlays = async () => {
+      try {
+        const dismissSelectors = [
+          '[data-testid="tutorial-close-button"]',
+          '[data-testid="tutorial-skip-button"]',
+          '[data-testid="tutorial-blocker"]',
+          '[data-testid="close-rules-button"]',
+          '[data-testid="close-modal"]',
+          '[data-testid="modal-close-button"]',
+          'button[aria-label*="Close"]',
+          'button:has-text("✕")',
+        ];
+        for (const sel of dismissSelectors) {
+          const loc = page.locator(sel);
+          if ((await loc.count()) > 0 && (await loc.first().isVisible())) {
+            await loc
+              .first()
+              .click({ force: true })
+              .catch(() => {});
+            await sleep(200);
+          }
+        }
+      } catch {}
+    };
+
+    await dismissAnyOverlays();
+
     log('info', `${label}: looking for Play vs AI button...`);
     const quickplayBtn = page
       .locator('[data-testid="quickplay-ai-button"]')
@@ -1064,24 +1311,12 @@ async function recordSession(
     await quickplayBtn.click({ force: true });
     log('info', `${label}: clicked Play vs AI`);
 
-    // Step 2: Wait for lobby, dismiss rules modal if present, then select random theme and click "Start Game"
     log('info', `${label}: looking for Start Game button...`);
-    try {
-      const closeRules = page
-        .locator(
-          'button[aria-label*="Close"], button:has-text("✕"), [data-testid="close-modal"], [data-testid="close-rules-button"]',
-        )
-        .first();
-      if ((await closeRules.count()) > 0 && (await closeRules.isVisible())) {
-        await closeRules.click({ force: true });
-        await sleep(400);
-      }
-    } catch {}
+    await dismissAnyOverlays();
 
     const startBtn = page.locator('[data-testid="start-with-bots-button"]');
     await startBtn.waitFor({ state: 'visible', timeout: 15000 });
 
-    // Select a random theme if available (Cascade has variant buttons)
     const themes = await page
       .locator('[data-testid^="cascade-variant-"]')
       .all();
@@ -1095,19 +1330,7 @@ async function recordSession(
       await sleep(500);
     }
 
-    // Dismiss any rules modal that might have opened after lobby mount
-    try {
-      const closeRules = page.locator(
-        'button[aria-label*="Close"], button:has-text("✕"), [data-testid="close-modal"], [data-testid="close-rules-button"]',
-      );
-      if ((await closeRules.count()) > 0) {
-        await closeRules
-          .first()
-          .click({ force: true })
-          .catch(() => {});
-        await sleep(300);
-      }
-    } catch {}
+    await dismissAnyOverlays();
 
     const gameplayStartOffsetMs = Date.now() - sessionStartTime;
     await startBtn

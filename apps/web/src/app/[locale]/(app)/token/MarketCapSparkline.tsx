@@ -1,15 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import {
-  ComposedChart,
-  Area,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from 'recharts';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import {
   type DataPoint,
   type TimeRange,
@@ -26,6 +17,30 @@ import {
   fetchOHLCV,
 } from './chartHelpers';
 import styles from './Sparkline.module.scss';
+
+const LazyComposedChart = lazy(() =>
+  import('recharts').then((m) => ({
+    default: m.ComposedChart,
+  })),
+);
+const LazyArea = lazy(() =>
+  import('recharts').then((m) => ({ default: m.Area })),
+);
+const LazyResponsiveContainer = lazy(() =>
+  import('recharts').then((m) => ({ default: m.ResponsiveContainer })),
+);
+const LazyTooltip = lazy(() =>
+  import('recharts').then((m) => ({ default: m.Tooltip })),
+);
+const LazyXAxis = lazy(() =>
+  import('recharts').then((m) => ({ default: m.XAxis })),
+);
+const LazyYAxis = lazy(() =>
+  import('recharts').then((m) => ({ default: m.YAxis })),
+);
+const LazyCartesianGrid = lazy(() =>
+  import('recharts').then((m) => ({ default: m.CartesianGrid })),
+);
 
 function ChartTooltip({
   active,
@@ -157,61 +172,69 @@ export default function MarketCapSparkline() {
             No price data available for this range yet.
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={240}>
-            <ComposedChart
-              data={data}
-              margin={{ top: 8, right: 8, left: 8, bottom: 4 }}
-            >
-              <defs>
-                <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.04)"
-                vertical={false}
-              />
-              <XAxis
-                dataKey="ts"
-                tickFormatter={(ts) => formatXTick(ts, selectedRange)}
-                tick={{ fontSize: 10, fill: '#52525b' }}
-                tickLine={false}
-                axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
-                interval="preserveStartEnd"
-                minTickGap={40}
-              />
-              <YAxis
-                yAxisId="price"
-                domain={[minVal - pricePadding, maxVal + pricePadding]}
-                tick={{ fontSize: 10, fill: '#52525b' }}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={formatPrice}
-                width={65}
-              />
-              <Tooltip
-                content={<ChartTooltip />}
-                wrapperStyle={{ pointerEvents: 'none' }}
-              />
-              <Area
-                yAxisId="price"
-                type="monotone"
-                dataKey="value"
-                stroke="#6366f1"
-                strokeWidth={2}
-                fill="url(#priceGradient)"
-                dot={false}
-                activeDot={{
-                  r: 4,
-                  fill: '#6366f1',
-                  stroke: '#fff',
-                  strokeWidth: 2,
-                }}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
+          <Suspense fallback={<div className={styles.loading} />}>
+            <LazyResponsiveContainer width="100%" height={240}>
+              <LazyComposedChart
+                data={data}
+                margin={{ top: 8, right: 8, left: 8, bottom: 4 }}
+              >
+                <defs>
+                  <linearGradient
+                    id="priceGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <LazyCartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="rgba(255,255,255,0.04)"
+                  vertical={false}
+                />
+                <LazyXAxis
+                  dataKey="ts"
+                  tickFormatter={(ts) => formatXTick(ts, selectedRange)}
+                  tick={{ fontSize: 10, fill: '#52525b' }}
+                  tickLine={false}
+                  axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+                  interval="preserveStartEnd"
+                  minTickGap={40}
+                />
+                <LazyYAxis
+                  yAxisId="price"
+                  domain={[minVal - pricePadding, maxVal + pricePadding]}
+                  tick={{ fontSize: 10, fill: '#52525b' }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={formatPrice}
+                  width={65}
+                />
+                <LazyTooltip
+                  content={<ChartTooltip />}
+                  wrapperStyle={{ pointerEvents: 'none' }}
+                />
+                <LazyArea
+                  yAxisId="price"
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#6366f1"
+                  strokeWidth={2}
+                  fill="url(#priceGradient)"
+                  dot={false}
+                  activeDot={{
+                    r: 4,
+                    fill: '#6366f1',
+                    stroke: '#fff',
+                    strokeWidth: 2,
+                  }}
+                />
+              </LazyComposedChart>
+            </LazyResponsiveContainer>
+          </Suspense>
         )}
       </div>
 

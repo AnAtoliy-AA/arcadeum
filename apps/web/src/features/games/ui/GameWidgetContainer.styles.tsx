@@ -1,3 +1,5 @@
+'use client';
+
 import './scrollbar.scss';
 import React, { createContext, useContext, forwardRef, memo } from 'react';
 import type { ReactNode } from 'react';
@@ -122,15 +124,14 @@ export const Container = memo(
         aria-label={ariaLabel}
         data-testid={dataTestId}
         className={cx(
-          'flex flex-col flex-1 w-full overflow-y-auto overflow-x-hidden bg-[var(--background)]',
-          'modern-scrollbar gap-5 px-1 pt-0 pb-0 min-h-0 h-auto min-w-0',
+          'flex flex-col flex-1 w-full overflow-hidden bg-[var(--background)] min-h-0 min-w-0',
           isFullscreen
-            ? 'fixed inset-0 w-screen h-screen max-w-screen max-h-screen rounded-none bg-[#151718] z-[1100] px-1 pt-0'
-            : 'relative rounded-[24px]',
-          'max-[800px]:px-2 max-[800px]:pt-0 max-[800px]:pb-0 max-[800px]:rounded-[16px]',
+            ? 'fixed inset-0 w-screen h-screen max-w-screen max-h-screen rounded-none bg-[var(--background)] z-[1100] p-0 m-0'
+            : 'relative rounded-[24px] h-full',
+          'max-[800px]:rounded-[16px]',
           isMyTurn
             ? 'border-2 border-[rgba(34,197,94,0.8)] shadow-[0_0_30px_rgba(34,197,94,0.4)]'
-            : 'border border-[var(--glassBorderStrong)] shadow-[0_0_0_1px_rgba(255,255,255,0.05)_inset,0_8px_24px_rgba(0,0,0,0.25)]',
+            : 'border border-[var(--glassBorderStrong)] shadow-[0_8px_24px_rgba(0,0,0,0.25)]',
           className,
         )}
         style={style}
@@ -149,7 +150,9 @@ export const Container = memo(
             style={{ background: glowBackground }}
           />
         )}
-        {children}
+        <div className="flex flex-col flex-1 w-full h-full min-h-0 min-w-0 overflow-y-auto overflow-x-hidden modern-scrollbar gap-5 px-1 pt-0 pb-0 max-[800px]:px-2 relative z-[1]">
+          {children}
+        </div>
       </div>
     );
   }),
@@ -201,7 +204,7 @@ export const VariantIconBadge = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center justify-center w-[30px] h-[30px] rounded-[8px] bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.12)] shrink-0 max-[800px]:w-6 max-[800px]:h-6',
+      'flex flex-col items-center justify-center w-[30px] h-[30px] rounded-[8px] bg-[var(--glassBgHover)] border border-[var(--glassBorder)] shrink-0 max-[800px]:w-6 max-[800px]:h-6',
       className,
     )}
   >
@@ -210,12 +213,10 @@ export const VariantIconBadge = ({
 );
 
 export const GameTitle = ({
-  numberOfLines,
   className,
   'data-testid': dataTestId,
   children,
 }: {
-  numberOfLines?: number;
   className?: string;
   'data-testid'?: string;
   children?: ReactNode;
@@ -223,8 +224,7 @@ export const GameTitle = ({
   <span
     data-testid={dataTestId}
     className={cx(
-      'text-[16px] font-extrabold tracking-[-0.3px] max-[800px]:text-[13px]',
-      numberOfLines ? 'line-clamp-1' : 'truncate',
+      'text-[16px] font-extrabold tracking-[-0.3px] max-[800px]:text-[13px] truncate',
       className,
     )}
   >
@@ -239,7 +239,7 @@ const TURN_PILL_CLASSES: Record<TurnStatusVariant, string> = {
   yourTurn: 'bg-[rgba(16,185,129,0.12)] border-[rgba(16,185,129,0.4)]',
   waiting: 'bg-[rgba(234,179,8,0.1)] border-[rgba(234,179,8,0.35)]',
   completed: 'bg-[rgba(148,163,184,0.1)] border-[rgba(148,163,184,0.25)]',
-  default: 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)]',
+  default: 'bg-[var(--glassBgHover)] border-[var(--glassBorder)]',
 };
 
 const TURN_TEXT_CLASSES: Record<TurnStatusVariant, string> = {
@@ -333,7 +333,7 @@ export const FullscreenButton = ({
   children?: ReactNode;
 }) => (
   <IconButton
-    className={cx('p-2 active:bg-[rgba(255,255,255,0.2)]', className)}
+    className={cx('p-2 active:bg-[var(--glassBgHover)]', className)}
     size="sm"
     onClick={onClick}
     title={title}

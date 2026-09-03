@@ -15,9 +15,11 @@ describe('GameRoomsService notes & security', () => {
 
   beforeEach(() => {
     ociRoomModel = {
-      findOne: jest
-        .fn()
-        .mockReturnValue({ exec: jest.fn().mockResolvedValue(null) }),
+      findOne: jest.fn().mockReturnValue({
+        lean: jest.fn().mockReturnValue({
+          exec: jest.fn().mockResolvedValue(null),
+        }),
+      }),
       create: jest.fn().mockImplementation((doc: Record<string, unknown>) => ({
         _id: 'room-123',
         ...doc,
@@ -42,7 +44,9 @@ describe('GameRoomsService notes & security', () => {
       mapper as unknown as GameRoomsMapper,
       {} as unknown as GameRoomsRematchService,
       {} as unknown as GameRoomsChatService,
-      {} as unknown as GameEngineRegistry,
+      {
+        getMetadata: jest.fn().mockReturnValue({ category: 'Card Game' }),
+      } as unknown as GameEngineRegistry,
     );
   });
 

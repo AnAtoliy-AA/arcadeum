@@ -5,9 +5,9 @@ import {
   GLIMWORM_TICK_HZ,
 } from '../glimworm.constants';
 import type { GlimwormSession, Worm, WormId } from '../glimworm.types';
-import type { VariantStrategy } from './variant.strategy';
+import type { ModeStrategy } from './variant.strategy';
 
-export class BattleRoyaleStrategy implements VariantStrategy {
+export class BattleRoyaleStrategy implements ModeStrategy {
   initSession(s: GlimwormSession): void {
     Object.values(s.worms).forEach((w) => {
       w.livesLeft = 1;

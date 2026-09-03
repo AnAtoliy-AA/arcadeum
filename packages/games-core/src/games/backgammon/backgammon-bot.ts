@@ -17,7 +17,7 @@ export class BackgammonBot {
       state.bar,
       state.borneOff,
       state.dice,
-      state.options.ruleVariant,
+      state.options.mode,
     );
 
     if (legalMoves.length === 0) return null;

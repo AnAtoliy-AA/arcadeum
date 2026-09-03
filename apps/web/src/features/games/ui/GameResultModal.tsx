@@ -12,6 +12,7 @@ import {
   GameResultStatsGrid,
   type GameResultStats,
 } from './GameResultStatsGrid';
+import { PostGameSuggestions } from './PostGameSuggestions';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import type { RatingDelta } from '@/features/ranking/model/types';
@@ -27,6 +28,8 @@ export interface GameResultModalProps {
   isOpen: boolean;
   result: GameResultKind | null;
   gameName?: string;
+  /** Game slug for routing (e.g. "chess", "sea-battle"). */
+  gameSlug?: string;
   onRematch?: () => void;
   rematchLabel?: string;
   secondaryAction?: {
@@ -46,28 +49,34 @@ export interface GameResultModalProps {
     viewLabel: string;
     backLabel: string;
   } | null;
+  /** Room ID for challenge/share CTAs (post-game viral loop, roadmap 7C). */
+  roomId?: string;
+  /** Invite code for the room. */
+  inviteCode?: string;
+  /** Callback to navigate to a new game. */
+  onPlayAnother?: () => void;
 }
 
 const TONE_BACKDROP_CLASSES: Record<GameResultKind, string> = {
   victory:
-    'bg-[radial-gradient(circle_at_center,rgba(255,215,0,0.15)_0%,rgba(5,7,15,0.95)_100%)]',
+    'bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.2)_0%,rgba(0,0,0,0.65)_100%)]',
   defeat:
-    'bg-[radial-gradient(circle_at_center,rgba(239,68,68,0.12)_0%,rgba(5,7,15,0.95)_100%)]',
-  draw: 'bg-[radial-gradient(circle_at_center,rgba(148,163,184,0.14)_0%,rgba(5,7,15,0.95)_100%)]',
+    'bg-[radial-gradient(circle_at_center,rgba(239,68,68,0.2)_0%,rgba(0,0,0,0.65)_100%)]',
+  draw: 'bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.2)_0%,rgba(0,0,0,0.65)_100%)]',
 };
 
 const TONE_TITLE_CLASSES: Record<GameResultKind, string> = {
   victory:
-    'bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 bg-clip-text text-transparent [filter:drop-shadow(0_0_24px_rgba(255,215,0,0.5))]',
+    'bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 bg-clip-text text-transparent drop-shadow-sm dark:from-amber-200 dark:via-yellow-400 dark:to-amber-300',
   defeat:
-    'bg-gradient-to-r from-red-400 via-rose-500 to-red-600 bg-clip-text text-transparent [filter:drop-shadow(0_0_24px_rgba(239,68,68,0.5))]',
-  draw: 'bg-gradient-to-r from-slate-200 via-slate-300 to-slate-400 bg-clip-text text-transparent [filter:drop-shadow(0_0_20px_rgba(148,163,184,0.4))]',
+    'bg-gradient-to-r from-red-600 via-rose-600 to-red-700 bg-clip-text text-transparent drop-shadow-sm dark:from-red-400 dark:via-rose-500 dark:to-red-600',
+  draw: 'bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 bg-clip-text text-transparent drop-shadow-sm dark:from-indigo-300 dark:via-purple-300 dark:to-indigo-400',
 };
 
 const TONE_CONTAINER_BORDER: Record<GameResultKind, string> = {
-  victory: 'border-amber-400/30 shadow-[0_20px_80px_rgba(255,215,0,0.15)]',
-  defeat: 'border-red-500/25 shadow-[0_20px_80px_rgba(239,68,68,0.12)]',
-  draw: 'border-slate-400/25 shadow-[0_20px_80px_rgba(148,163,184,0.1)]',
+  victory: 'border-amber-500/40 shadow-[0_20px_80px_rgba(245,158,11,0.2)]',
+  defeat: 'border-red-500/40 shadow-[0_20px_80px_rgba(239,68,68,0.2)]',
+  draw: 'border-indigo-500/40 shadow-[0_20px_80px_rgba(99,102,241,0.2)]',
 };
 
 function resolveTheme(
@@ -84,6 +93,7 @@ export function GameResultModal({
   isOpen,
   result,
   gameName,
+  gameSlug,
   onRematch,
   rematchLabel,
   secondaryAction,
@@ -95,6 +105,9 @@ export function GameResultModal({
   theme,
   stats,
   analysis,
+  roomId,
+  inviteCode,
+  onPlayAnother,
 }: GameResultModalProps) {
   const isClient = useSyncExternalStore(
     () => () => {},
@@ -148,7 +161,7 @@ export function GameResultModal({
   const modalNode = (
     <div
       data-testid="game-result-container"
-      className="fixed inset-0 z-[1200] overflow-hidden"
+      className="fixed inset-0 z-[9999] overflow-hidden"
     >
       <div
         className={cx(
@@ -165,7 +178,7 @@ export function GameResultModal({
           data-theme={resolvedTheme.id}
           data-tone={result}
           className={cx(
-            'animate-entrance relative flex max-h-[92dvh] w-[540px] max-w-[95%] flex-col items-center overflow-y-auto rounded-3xl border bg-slate-950/85 p-6 backdrop-blur-2xl transition-all sm:p-8',
+            'animate-entrance relative flex max-h-[92dvh] w-[540px] max-w-[95%] flex-col items-center overflow-y-auto rounded-3xl border bg-[var(--background)] text-[var(--color)] p-6 backdrop-blur-2xl shadow-2xl transition-all sm:p-8',
             TONE_CONTAINER_BORDER[result],
           )}
         >
@@ -179,12 +192,12 @@ export function GameResultModal({
             )}
 
             {gameName && (
-              <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+              <span className="text-xs font-bold uppercase tracking-widest text-[var(--textSecondary)]">
                 {gameName}
               </span>
             )}
 
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
               <span>{resolvedTheme.emoji}</span>
               <span>
                 {(() => {
@@ -215,7 +228,7 @@ export function GameResultModal({
             </h1>
           </div>
 
-          <p className="animate-fade-in-up-delay-2 mb-5 text-center text-base leading-relaxed text-slate-300 sm:text-lg">
+          <p className="animate-fade-in-up-delay-2 mb-5 text-center text-base leading-relaxed text-[var(--textSecondary)] sm:text-lg">
             {body}
           </p>
 
@@ -227,7 +240,7 @@ export function GameResultModal({
 
           {ratingDelta && (
             <div className="animate-fade-in-up-delay-3 mb-6 flex flex-col items-center gap-1">
-              <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[var(--textSecondary)]">
                 {t('games.ranking.ratingUpdated')}
               </span>
               <RatingBadge
@@ -243,7 +256,7 @@ export function GameResultModal({
             <div className="animate-fade-in-up-delay-4 mb-5 flex w-full flex-col gap-3">
               {showAnalysis ? (
                 <>
-                  <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
+                  <div className="rounded-2xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-4">
                     {analysis.content}
                   </div>
                   <Button
@@ -264,6 +277,19 @@ export function GameResultModal({
                   {analysis.viewLabel}
                 </Button>
               )}
+            </div>
+          )}
+
+          {/* Post-game viral loop CTAs (roadmap 7C) */}
+          {gameSlug && (
+            <div className="animate-fade-in-up-delay-4 mb-4 w-full">
+              <PostGameSuggestions
+                gameName={gameName ?? gameSlug}
+                gameSlug={gameSlug}
+                roomId={roomId}
+                inviteCode={inviteCode}
+                onPlayAnother={onPlayAnother}
+              />
             </div>
           )}
 

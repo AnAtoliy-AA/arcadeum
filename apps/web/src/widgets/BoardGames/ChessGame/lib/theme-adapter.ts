@@ -18,17 +18,17 @@ export function sharedThemeToChess(theme: GameTheme): ChessTheme {
 
   return {
     background: `linear-gradient(135deg, ${theme.colors.background} 0%, ${theme.colors.surface} 100%)`,
-    boardBackground: `rgba(${rgb(theme.colors.surface)}, 0.85)`,
-    lightSquare: `rgba(${rgb(theme.colors.text)}, 0.15)`,
-    darkSquare: `rgba(${rgb(theme.colors.primary)}, 0.35)`,
+    boardBackground: `rgba(${rgb(theme.colors.surface)}, 0.95)`,
+    lightSquare: '#edeed1',
+    darkSquare: '#779952',
     lightPieceColor: theme.colors.playerPalette[1] ?? theme.colors.text,
     darkPieceColor: theme.colors.playerPalette[0] ?? theme.colors.primary,
-    selectedSquare: `rgba(${rgb(theme.colors.glow)}, 0.55)`,
-    lastMoveSquare: `rgba(${rgb(theme.colors.highlight)}, 0.35)`,
-    validMoveDot: `rgba(34, 197, 94, 0.5)`,
-    checkSquare: `rgba(239, 68, 68, 0.55)`,
+    selectedSquare: `rgba(245, 158, 11, 0.65)`,
+    lastMoveSquare: `rgba(205, 210, 106, 0.8)`,
+    validMoveDot: `rgba(34, 197, 94, 0.7)`,
+    checkSquare: `rgba(239, 68, 68, 0.75)`,
     textColor: theme.colors.text,
-    borderRadius: '10px',
+    borderRadius: '12px',
     bgImage: theme.bgImage,
   };
 }

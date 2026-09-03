@@ -31,28 +31,15 @@ export function TurnBar({
   t: TranslateFn;
 }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '0 4px',
-      }}
-    >
-      <span
-        style={{
-          fontSize: 13,
-          fontWeight: 600,
-          color: 'rgba(248, 250, 252, 0.8)',
-        }}
-      >
+    <div className="flex justify-between items-center px-1">
+      <span className="text-xs font-semibold text-[var(--color)]">
         {KING_SYMBOLS[currentTurnColor]} {t('games.chess_v1.status.white')}{' '}
         {t('games.chess_v1.status.toMove')}
         {isCheck && !isCheckmate
           ? ` (${t('games.chess_v1.status.check').toLowerCase()})`
           : ''}
       </span>
-      <span style={{ fontSize: 12, color: 'rgba(148, 163, 184, 0.5)' }}>
+      <span className="text-xs text-[var(--textSecondary)]">
         {fullMoveNumber}.
       </span>
     </div>
@@ -79,7 +66,7 @@ export function PlayerCards({
   timeControl: { incrementSeconds: number } | null;
 }) {
   return (
-    <div className="player-cards-container">
+    <div className="flex gap-2 w-full">
       <PlayerCard
         playerId={whiteId}
         name={whiteName}
@@ -117,45 +104,34 @@ export function PlayerCard({
 }) {
   return (
     <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 6,
-        padding: 10,
-        borderRadius: 10,
-        backgroundColor: isActive
-          ? 'rgba(34, 197, 94, 0.08)'
-          : 'rgba(255, 255, 255, 0.04)',
-        border: isActive
-          ? '1px solid rgba(212, 175, 55, 0.6)'
-          : '1px solid rgba(255, 255, 255, 0.08)',
-        backdropFilter: 'blur(12px)',
-      }}
+      className={`flex-1 flex flex-col gap-1.5 p-2.5 rounded-xl border transition-colors backdrop-blur-md ${
+        isActive
+          ? 'bg-emerald-500/10 border-amber-500/60 shadow-sm'
+          : 'bg-[var(--glassBg)] border-[var(--glassBorder)]'
+      }`}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div className="flex items-center gap-2">
         <InGameAvatar playerId={playerId} name={name} size="sm" />
-        <div
-          style={{
-            fontSize: 12,
-            fontWeight: 700,
-            color: '#f8fafc',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
+        <div className="text-xs font-bold text-[var(--color)] whitespace-nowrap overflow-hidden text-ellipsis">
           {name}
         </div>
       </div>
-      <div style={{ display: 'flex', gap: 6 }}>
-        <div className="player-card-stat-box">
-          <div className="player-card-stat-value">{mainTime}</div>
-          <div className="player-card-stat-label">MAIN</div>
+      <div className="flex gap-1.5">
+        <div className="flex-1 p-2 rounded-lg bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-center">
+          <div className="text-base font-bold text-[var(--color)]">
+            {mainTime}
+          </div>
+          <div className="text-[9px] font-semibold text-[var(--textSecondary)] uppercase mt-0.5">
+            MAIN
+          </div>
         </div>
-        <div className="player-card-stat-box">
-          <div className="player-card-stat-value">{incrTime}</div>
-          <div className="player-card-stat-label">INCR</div>
+        <div className="flex-1 p-2 rounded-lg bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-center">
+          <div className="text-base font-bold text-[var(--color)]">
+            {incrTime}
+          </div>
+          <div className="text-[9px] font-semibold text-[var(--textSecondary)] uppercase mt-0.5">
+            INCR
+          </div>
         </div>
       </div>
     </div>
@@ -170,112 +146,40 @@ export function GameInfoPanel({
   t: TranslateFn;
 }) {
   return (
-    <div
-      style={{
-        padding: 12,
-        borderRadius: 10,
-        backgroundColor: 'rgba(15, 20, 30, 0.6)',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
-      }}
-    >
-      <div
-        style={{
-          fontSize: 10,
-          fontWeight: 600,
-          color: 'rgba(148, 163, 184, 0.5)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          marginBottom: 8,
-        }}
-      >
+    <div className="p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)] flex flex-col gap-2">
+      <div className="text-[10px] font-semibold text-[var(--textSecondary)] uppercase tracking-wider">
         GAME INFO
       </div>
-      <div style={{ marginBottom: 8 }}>
-        <div
-          style={{
-            fontSize: 9,
-            fontWeight: 600,
-            color: 'rgba(148, 163, 184, 0.4)',
-            textTransform: 'uppercase',
-            marginBottom: 4,
-          }}
-        >
+      <div>
+        <div className="text-[9px] font-semibold text-[var(--textSecondary)] uppercase mb-1">
           ENGINE EVAL
         </div>
-        <div
-          style={{
-            height: 4,
-            borderRadius: 2,
-            backgroundColor: 'rgba(255, 255, 255, 0.08)',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="h-1 rounded bg-[var(--backgroundHover)] overflow-hidden border border-[var(--glassBorder)]">
           <div
-            style={{
-              height: '100%',
-              width: '55%',
-              background: 'linear-gradient(90deg, #38bdf8, #a78bfa)',
-              borderRadius: 2,
-            }}
+            className="h-full bg-gradient-to-r from-sky-400 to-indigo-400 rounded"
+            style={{ width: '55%' }}
           />
         </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginTop: 3,
-          }}
-        >
-          <span style={{ fontSize: 9, color: 'rgba(148, 163, 184, 0.4)' }}>
-            +0.4
-          </span>
-          <span style={{ fontSize: 9, color: 'rgba(148, 163, 184, 0.4)' }}>
-            White
-          </span>
-          <span style={{ fontSize: 9, color: 'rgba(148, 163, 184, 0.4)' }}>
-            Black
-          </span>
+        <div className="flex justify-between mt-1 text-[9px] text-[var(--textSecondary)] font-medium">
+          <span>+0.4</span>
+          <span>White</span>
+          <span>Black</span>
         </div>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '6px 0',
-          borderTop: '1px solid rgba(255, 255, 255, 0.04)',
-        }}
-      >
-        <span style={{ fontSize: 11, color: 'rgba(148, 163, 184, 0.6)' }}>
+      <div className="flex justify-between items-center py-1.5 border-t border-[var(--glassBorder)]">
+        <span className="text-xs text-[var(--textSecondary)] font-medium">
           Turn
         </span>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: '#f8fafc',
-            padding: '3px 10px',
-            borderRadius: 10,
-            backgroundColor: 'rgba(255, 255, 255, 0.06)',
-          }}
-        >
+        <span className="text-xs font-semibold text-[var(--color)] px-2.5 py-0.5 rounded-lg bg-[var(--backgroundHover)] border border-[var(--glassBorder)]">
           {KING_SYMBOLS[snapshot.currentTurnColor]}{' '}
           {snapshot.currentTurnColor === 'white' ? 'White' : 'Black'}
         </span>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '6px 0',
-          borderTop: '1px solid rgba(255, 255, 255, 0.04)',
-        }}
-      >
-        <span style={{ fontSize: 11, color: 'rgba(148, 163, 184, 0.6)' }}>
+      <div className="flex justify-between items-center py-1.5 border-t border-[var(--glassBorder)]">
+        <span className="text-xs text-[var(--textSecondary)] font-medium">
           Move
         </span>
-        <span style={{ fontSize: 11, fontWeight: 700, color: '#f8fafc' }}>
+        <span className="text-xs font-bold text-[var(--color)]">
           #{snapshot.fullMoveNumber}
         </span>
       </div>
@@ -306,50 +210,22 @@ export function ActionsBar({
 }) {
   if (!currentUserId || isGameOver || isSpectator) return null;
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div
-        style={{
-          fontSize: 11,
-          fontWeight: 600,
-          color: 'rgba(148, 163, 184, 0.5)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-        }}
-      >
+    <div className="flex flex-col gap-2">
+      <div className="text-[11px] font-semibold text-[var(--textSecondary)] uppercase tracking-wider">
         ACTIONS
       </div>
-      <div style={{ display: 'flex', gap: 12 }}>
+      <div className="flex gap-3">
         <button
           type="button"
           onClick={onResign}
-          style={{
-            flex: 1,
-            padding: '8px 12px',
-            borderRadius: 6,
-            backgroundColor: 'rgba(220, 38, 38, 0.15)',
-            border: '1px solid rgba(220, 38, 38, 0.3)',
-            color: '#ef4444',
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
+          className="flex-1 py-2 px-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-500 text-xs font-semibold cursor-pointer hover:bg-red-500/25 transition-colors"
         >
           {t('games.chess_v1.actions.resign')}
         </button>
         <button
           type="button"
           onClick={hasDrawOffer && !isMyDrawOffer ? onAcceptDraw : onOfferDraw}
-          style={{
-            flex: 1,
-            padding: '8px 12px',
-            borderRadius: 6,
-            backgroundColor: 'rgba(163, 163, 38, 0.15)',
-            border: '1px solid rgba(163, 163, 38, 0.3)',
-            color: '#eab308',
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
+          className="flex-1 py-2 px-3 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-500 text-xs font-semibold cursor-pointer hover:bg-amber-500/25 transition-colors"
         >
           {hasDrawOffer && !isMyDrawOffer
             ? t('games.chess_v1.actions.acceptDraw')

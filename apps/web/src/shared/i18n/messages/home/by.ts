@@ -1,16 +1,16 @@
 export const by = {
-  kicker: 'Бясплатныя настольныя гульні анлайн',
+  kicker: 'Бясплатныя настольныя і міні-гульні анлайн',
   tagline:
-    '{{appName}} — платформа для бясплатнай гульні ў настольныя гульні анлайн з сябрамі або ў адзіночку супраць ІІ: Марскі бой, стратэгіі, карты і больш.',
+    '{{appName}} — платформа для бясплатнай гульні ў настольныя гульні, карты і міні-гульні анлайн з сябрамі або супраць ІІ.',
   description:
-    'Шырокі выбар бясплатных настольных гульняў анлайн. Кідайце выклік разумным ботам, стварайце гульнявыя пакоі ў рэальным часе, запрашайце сяброў, а {{appName}} возьме на сябе правілы, падлік ачкоў і чарговасць хадоў, каб вы маглі засяродзіцца на весялосці.',
+    'Шырокі выбар бясплатных настольных, картачных гульняў і міні-гульняў анлайн. Кідайце выклік разумным ботам, стварайце гульнявыя пакоі ў рэальным часе, запрашайце сяброў, а {{appName}} возьме на сябе правілы, падлік ачкоў і хады.',
   primaryCtaLabel: 'Пачаць',
   playWithBotsLabel: 'Гульня супраць ІІ',
   defaultRoomName: 'Гульня {{name}} #{{number}}',
   heroCardBrand: 'CRITICAL',
   heroCardPlayCta: 'Гуляць',
   supportCtaLabel: 'Падрымаць распрацоўшчыкаў',
-  downloadsTitle: 'Усталяваць Arcadeum',
+  downloadsTitle: 'Усталяваць {{appName}}',
   pwaDescription:
     'Усталюйце {{appName}} як вэб-прыкладанне на сваю прыладу для лепшага гульнявога досведу. Тая ж прадукцыйнасць, больш зручнасці.',
   downloadsDescription: 'Загрузіце апошнія версіі прама з вэб-прыкладання.',
@@ -18,7 +18,8 @@ export const by = {
   downloadsAndroidLabel: 'Спампаваць для Android',
   // Games section
   gamesTitle: 'Папулярныя гульні',
-  gamesSubtitle: 'Даследуйце нашу бібліятэку настольных забаў, якая расце',
+  gamesSubtitle:
+    'Даследуйце нашу бібліятэку настольных, картачных і міні-гульняў',
   gamePlayButton: 'Гуляць зараз',
   gameTryDemo: 'Паспрабаваць дэма',
   gameRulesButton: 'Правілы гульні',
@@ -42,7 +43,8 @@ export const by = {
 
   // Features section
   featuresTitle: 'Чаму {{appName}}?',
-  featuresSubtitle: 'Усё, што трэба для гульні ў настолкі онлайн з сябрамі',
+  featuresSubtitle:
+    'Усё, што трэба для гульні ў настольныя, картачныя і міні-гульні онлайн з сябрамі',
   featureBotsTitle: 'Гульня супраць ІІ',
   featureBotsDescription:
     'Трэніруйцеся ў адзіночку або кіньце выклік разумным ботам на лёгкім, сярэднім ці складаным узроўнях складанасці, калі сябры па-за сеткай.',
@@ -83,6 +85,37 @@ export const by = {
   stepPlayTitle: 'Гуляць разам',
   stepPlayDescription:
     'Атрымлівайце асалоду ад настольных гульняў, пакуль {{appName}} аўтаматычна кіруе правіламі, хадамі і ачкамі.',
+  // Live stats & activity
+  liveTitle: 'Актыўнасць на платформе ў рэальным часе',
+  liveSubtitle:
+    'Матчы ў прамым эфіры, актыўныя гульцы і адкрытыя пакоі прама зараз',
+  liveBadgeOnline: 'Зараз анлайн',
+  liveBadgeActiveGames: 'Ідуць матчы',
+  liveBadgeWaitingRooms: 'Адкрытыя пакоі',
+  liveBadgeWaitingPlayers: 'Шукаюць матч',
+  liveWaitingRoomsSub: 'Пакоі чакаюць гульцоў',
+  liveWaitingRoomsWithMine: '{{count}} адкрытых пакояў (+{{mine}} ваш)',
+  liveWaitingRoomsOnlyMine: 'Ваш пакой чакае гульцоў',
+  liveWaitingPlayersSub: 'Гульцы чакаюць у чарзе',
+  liveWaitingPlayersForGame: '{{count}} у пошуку гэтай гульні',
+  liveBadgeMatchesToday: 'Матчаў сёння',
+  liveOpenLobbiesTitle: 'Адкрытыя пакоі',
+  liveOpenLobbiesSubtitle:
+    'Далучайцеся да адкрытых пакояў або назірайце за бягучымі бітвамі',
+  liveJoinAction: 'Увайсці ў гульню',
+  liveSpectateAction: 'Глядзець',
+  liveQuickPlayAction: 'Хуткая гульня',
+  liveNoOpenRooms:
+    'Зараз няма адкрытых пакояў. Стварыце свой або пачніце хуткі матч з ІІ або гульцамі!',
+  liveRecentActivityTitle: 'Пульс супольнасці',
+  liveActivityWon: 'атрымаў перамогу ў',
+  liveActivityStreak: 'на серыі перамог у',
+  liveActivityCreated: 'стварыў новы пакой для',
+  livePopularGamesTitle: 'Папулярныя гульні',
+  livePlayersCount: '{{count}} гульцоў',
+  liveMatchesCount: '{{count}} матчаў',
+  liveViewAllRooms: 'Усе пакоі',
+  liveViewAllGames: 'Увесь каталог',
   // Coming soon labels
   comingSoon: 'Хутка',
   // Footer
@@ -99,6 +132,7 @@ export const by = {
   footerRewards: 'Узнагароды',
   footerToken: 'Токен',
   footerResourcesTitle: 'Рэсурсы',
+  footerSupport: 'Падтрымаць праект',
   footerHelpCenter: 'Цэнтр дапамогі',
   footerRoadmap: 'Дарожная карта',
   footerChangelog: 'Гісторыя зменаў',

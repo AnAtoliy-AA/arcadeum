@@ -3,18 +3,16 @@ export {
   MIN_PLAYERS,
   MAX_PLAYERS,
   TOTAL_POINTS,
-  RULE_VARIANTS,
-  CHECKERS_PER_VARIANT,
+  MODES,
+  CHECKERS_PER_MODE,
   GAME_PHASE,
   ACTION,
-  VARIANTS,
   DEFAULT_OPTIONS,
 } from '@arcadeum/games-core/games/backgammon/backgammon.constants';
 export type {
   BackgammonOptions,
-  RuleVariant,
+  Mode,
   GamePhase,
   ActionType,
   PlayerColor,
-  Variant,
 } from '@arcadeum/games-core/games/backgammon/backgammon.constants';

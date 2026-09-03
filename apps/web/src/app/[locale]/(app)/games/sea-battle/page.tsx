@@ -83,13 +83,17 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
   const comingSoon = await isGameComingSoon(SEA_BATTLE_SLUG);
   const messages = await getTranslations(locale);
   const landing = messages.games?.sea_battle_v1?.landing;
-
   const jsonLd: Record<string, unknown>[] = [
     {
       '@context': 'https://schema.org',
       '@type': 'VideoGame',
-      name: 'Sea Battle',
-      alternateName: ['Battleship', 'Sea Battle Online'],
+      name: landing?.hero?.title ?? 'Sea Battle',
+      alternateName: [
+        'Battleship',
+        'Sea Battle Online',
+        'Bataille Navale',
+        'Морской бой',
+      ],
       description: landing?.meta?.description,
       url: pageUrl,
       image: JSON_LD_IMAGE,

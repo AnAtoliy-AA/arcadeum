@@ -82,19 +82,35 @@ export function WalletBalanceSummary({
             borderRadius: '12px',
             background: 'rgba(167,139,250,0.08)',
             border: '1px solid rgba(167,139,250,0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
           }}
         >
-          <div
-            style={{ fontSize: '12px', color: '#a1a1aa', marginBottom: '6px' }}
-          >
-            💎 {t('wallet.balance.gems')}
+          <div>
+            <div
+              style={{
+                fontSize: '12px',
+                color: '#a1a1aa',
+                marginBottom: '6px',
+              }}
+            >
+              💎 {t('wallet.balance.gems')}
+            </div>
+            <div
+              style={{ fontSize: '28px', fontWeight: 700, color: '#a78bfa' }}
+              data-testid="balance-gems-value"
+            >
+              <AnimatedNumber value={gems} locale={locale} />
+            </div>
           </div>
-          <div
-            style={{ fontSize: '28px', fontWeight: 700, color: '#a78bfa' }}
-            data-testid="balance-gems-value"
+          <Link
+            href="/rewards"
+            data-testid="wallet-earn-free-gems-link"
+            className="mt-3 inline-flex text-xs font-semibold text-amber-400 hover:text-amber-300 no-underline"
           >
-            <AnimatedNumber value={gems} locale={locale} />
-          </div>
+            {t('wallet.balance.earnFreeGems')}
+          </Link>
         </div>
 
         <div

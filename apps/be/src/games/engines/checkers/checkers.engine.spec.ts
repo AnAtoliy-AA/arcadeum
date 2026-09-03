@@ -176,7 +176,7 @@ describe('CheckersEngine', () => {
     it('allows a multi-jump chain with promotion and continues as king in russian variant', () => {
       const state = engine.initializeState(['a', 'b'], {
         options: {
-          ruleVariant: 'russian',
+          mode: 'russian',
           forcedCaptures: true,
           variant: 'classic',
           backwardCaptures: false,
@@ -388,14 +388,12 @@ describe('CheckersEngine', () => {
       expect(engine.validateConfig({ forcedCaptures: 'yes' })).toBe(false);
     });
 
-    it('accepts ruleVariant in config', () => {
-      expect(engine.validateConfig({ ruleVariant: 'international' })).toBe(
-        true,
-      );
+    it('accepts mode in config', () => {
+      expect(engine.validateConfig({ mode: 'international' })).toBe(true);
     });
 
-    it('rejects invalid ruleVariant', () => {
-      expect(engine.validateConfig({ ruleVariant: 'invalid' })).toBe(false);
+    it('rejects invalid mode', () => {
+      expect(engine.validateConfig({ mode: 'invalid' })).toBe(false);
     });
 
     it('accepts backwardCaptures in config', () => {

@@ -45,38 +45,35 @@ export const FieldStatus = memo(function FieldStatus({
   const stats = useMemo(() => computeBoardStats(board), [board]);
 
   return (
-    <div className="flex flex-row justify-end items-center py-1 px-2 bg-[rgba(0,0,0,0.3)] rounded-2xl">
-      <div className="flex flex-row gap-3 items-center">
-        <div className="flex flex-row gap-1.5 items-center">
+    <div className="flex flex-row justify-end items-center py-0.5 px-1.5 bg-[rgba(0,0,0,0.3)] rounded-md text-[11px] shrink-0">
+      <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row gap-1 items-center">
           <div
-            className="flex flex-col items-stretch w-[6px] h-[6px] rounded-[2px]"
+            className="w-[5px] h-[5px] rounded-[1px]"
             style={{ backgroundColor: theme.hitColor }}
           />
           <span
-            className="text-[15px] font-bold"
+            className="text-[12px] font-bold"
             style={{ color: theme.hitColor }}
           >
             {stats.hitCells}
           </span>
         </div>
-        <span className="text-[13px] text-[rgba(255,255,255,0.3)]">·</span>
-        <div className="flex flex-row gap-1.5 items-center">
+        <span className="text-[11px] text-[rgba(255,255,255,0.3)]">·</span>
+        <div className="flex flex-row gap-1 items-center">
           <div
-            className="flex flex-col items-stretch w-[6px] h-[6px] rounded-[2px]"
+            className="w-[5px] h-[5px] rounded-[1px]"
             style={{ backgroundColor: theme.missColor }}
           />
           <span
-            className="text-[15px] font-bold"
+            className="text-[12px] font-bold"
             style={{ color: theme.missColor }}
           >
             {stats.missCells}
           </span>
         </div>
       </div>
-      <span
-        className="text-[13px] text-[rgba(255,255,255,0.5)] ml-2"
-        style={{ fontFamily: 'monospace' } as React.CSSProperties}
-      >
+      <span className="text-[11px] text-[rgba(255,255,255,0.5)] ml-1.5 font-mono">
         {stats.unexploredCells}/{stats.totalCells} (
         {Math.round((stats.unexploredCells / stats.totalCells) * 100)}%)
       </span>

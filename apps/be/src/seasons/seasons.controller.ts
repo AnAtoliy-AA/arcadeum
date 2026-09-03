@@ -1,4 +1,5 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { SeasonsService } from './seasons.service';
 import { ListSeasonsQueryDto, SeasonBoardQueryDto } from './dtos/seasons.dto';
 import type {
@@ -11,6 +12,8 @@ import type {
 export class SeasonsController {
   constructor(private readonly seasons: SeasonsService) {}
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000)
   @Get('current')
   getCurrentSeason(): Promise<SeasonDetailView> {
     return this.seasons.getCurrentSeason();
@@ -31,6 +34,8 @@ export class SeasonsController {
     return this.seasons.getLeaderboard(seasonId, query);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000)
   @Get()
   listSeasons(@Query() query: ListSeasonsQueryDto): Promise<SeasonView[]> {
     return this.seasons.listSeasons(query.limit);

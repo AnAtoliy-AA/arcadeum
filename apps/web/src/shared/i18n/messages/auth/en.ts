@@ -122,7 +122,7 @@ export const en = {
     featureProgressDetail: 'stats, friends, and unlocks all carry over.',
     proof:
       'Joined by {{count}} players this week — see who’s online in Browse Games.',
-    proofCount: '240,000+',
+    proofCount: '',
     footHome: '← Back home',
     footGames: 'Browse games',
     footHelp: 'Need help?',

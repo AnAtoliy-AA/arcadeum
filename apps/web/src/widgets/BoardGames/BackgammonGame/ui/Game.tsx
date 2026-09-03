@@ -1,7 +1,8 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
-import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -17,7 +18,7 @@ import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type {
   BackgammonGameProps,
   BackgammonOptions,
-  BackgammonVariant,
+  BackgammonTheme,
 } from '../types';
 import { useBackgammonState } from '../hooks/useBackgammonState';
 import { useBackgammonActions } from '../hooks/useBackgammonActions';
@@ -25,7 +26,7 @@ import { BackgammonThemeProvider } from '../lib/BackgammonThemeContext';
 import { BackgammonLobby } from './BackgammonLobby';
 import { BackgammonBoard } from './BackgammonBoard';
 import { RulesModal } from './RulesModal';
-import { BACKGAMMON_VARIANTS } from '../lib/constants';
+import { BACKGAMMON_THEMES } from '../lib/constants';
 
 function resolveOptions(raw: unknown): BackgammonOptions {
   const r = (raw ?? {}) as Partial<{
@@ -34,7 +35,8 @@ function resolveOptions(raw: unknown): BackgammonOptions {
     aiDifficulty: string;
   }>;
   return {
-    variant: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonVariant,
+    theme: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonTheme,
+    variant: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonTheme,
     aiDifficulty: (r.aiDifficulty ?? 'medium') as
       'easy' | 'medium' | 'hard' | 'expert',
   };
@@ -137,8 +139,8 @@ function BackgammonGameImpl({
   );
 
   const variantTokens = useMemo(() => {
-    const found = BACKGAMMON_VARIANTS.find((v) => v.id === options.variant);
-    return found ?? BACKGAMMON_VARIANTS[0];
+    const found = BACKGAMMON_THEMES.find((v) => v.id === options.variant);
+    return found ?? BACKGAMMON_THEMES[0];
   }, [options.variant]);
 
   const players = useMemo(

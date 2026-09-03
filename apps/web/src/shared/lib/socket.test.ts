@@ -3,38 +3,40 @@ import { io, type Socket } from 'socket.io-client';
 import * as encryption from './socket-encryption';
 import { renderHook, waitFor } from '@testing-library/react';
 
-const { mockSocket, rawEmit } = vi.hoisted(() => {
+const { mockSocket, rawEmit, mockManager } = vi.hoisted(() => {
   const rawEmit = vi.fn();
-  return {
-    mockSocket: {
-      connected: false,
-      connect: vi.fn().mockImplementation(function (this: {
-        connected: boolean;
-      }) {
-        this.connected = true;
-        return this;
-      }),
-      disconnect: vi.fn().mockImplementation(function (this: {
-        connected: boolean;
-      }) {
-        this.connected = false;
-        return this;
-      }),
+  const mockSocket = {
+    connected: false,
+    connect: vi.fn().mockImplementation(function (this: {
+      connected: boolean;
+    }) {
+      this.connected = true;
+      return this;
+    }),
+    disconnect: vi.fn().mockImplementation(function (this: {
+      connected: boolean;
+    }) {
+      this.connected = false;
+      return this;
+    }),
+    on: vi.fn(),
+    off: vi.fn(),
+    emit: rawEmit,
+    auth: {},
+    io: {
       on: vi.fn(),
-      off: vi.fn(),
-      emit: rawEmit,
-      auth: {},
-      io: {
-        on: vi.fn(),
-      },
     },
-    rawEmit,
   };
+  const mockManager = {
+    socket: vi.fn(() => mockSocket),
+    on: vi.fn(),
+  };
+  return { mockSocket, rawEmit, mockManager };
 });
 
 vi.mock('socket.io-client', () => {
   return {
-    io: vi.fn(() => mockSocket),
+    io: vi.fn(() => ({ io: mockManager })),
   };
 });
 
@@ -50,9 +52,15 @@ import {
   useChatSocket,
   gameSocket,
   setOfflineGameRouter,
+  getGamesSocket,
+  getChatsSocket,
+  getLeaderboardsSocket,
+  getFriendsSock,
+  getClansSock,
+  getNotificationsSocket,
+  useNotificationSocket,
 } from './socket';
 
-// Trigger lazy socket initialization so encryption handlers are registered
 connectSockets('init-trigger');
 disconnectSockets();
 
@@ -149,20 +157,17 @@ describe('socket', () => {
     expect(mockSocket.auth).toEqual({});
   });
 
-  it('disconnects games + chat + leaderboards + friends + wallet sockets when connected', () => {
-    // Initialize all 5 lazy socket instances
+  it('disconnects games + chat + leaderboards + friends + wallet + clans + notifications sockets when connected', () => {
     connectSockets('init-all');
     connectLeaderboardSocket('init-all');
     connectWalletSocket('init-all');
-    // Reset mock state for clean assertions
     mockSocket.connected = true;
     (mockSocket.disconnect as unknown as Mock).mockClear();
 
     disconnectSockets();
 
-    expect(mockSocket.disconnect).toHaveBeenCalledTimes(6);
+    expect(mockSocket.disconnect).toHaveBeenCalledTimes(7);
 
-    // Restore default behavior
     (mockSocket.disconnect as unknown as Mock).mockImplementation(
       function (this: { connected: boolean }) {
         this.connected = false;
@@ -171,17 +176,19 @@ describe('socket', () => {
     );
   });
 
-  it('creates the wallet socket on its own manager so wallet failures cannot tear down games/chats', () => {
+  it('creates all namespace sockets from a single shared manager', () => {
+    connectLeaderboardSocket('init-all');
+    connectWalletSocket('init-all');
+
     const ioMock = vi.mocked(io);
-    const walletCall = ioMock.mock.calls.find((c: unknown[]) =>
-      String(c[0]).endsWith('/wallet'),
-    );
-    expect(walletCall).toBeDefined();
-    expect(walletCall![1]).toMatchObject({
-      forceNew: true,
-      transports: ['websocket'],
-      autoConnect: false,
-    });
+    expect(ioMock.mock.calls.length).toBeLessThanOrEqual(1);
+
+    expect(getGamesSocket()).toBeDefined();
+    expect(getChatsSocket()).toBeDefined();
+    expect(getLeaderboardsSocket()).toBeDefined();
+    expect(getFriendsSock()).toBeDefined();
+    expect(getClansSock()).toBeDefined();
+    expect(getNotificationsSocket()).toBeDefined();
   });
 
   it('ignores invalid payload structures', () => {
@@ -381,5 +388,23 @@ describe('socket hooks', () => {
     await waitFor(() => {
       expect(handler).toHaveBeenCalledWith('plain-message');
     });
+  });
+
+  it('useNotificationSocket sets up and tears down listener', () => {
+    const handler = vi.fn();
+    const { unmount } = renderHook(() =>
+      useNotificationSocket('notification:new', handler),
+    );
+
+    expect(mockSocket.on).toHaveBeenCalledWith(
+      'notification:new',
+      expect.any(Function),
+    );
+
+    unmount();
+    expect(mockSocket.off).toHaveBeenCalledWith(
+      'notification:new',
+      expect.any(Function),
+    );
   });
 });

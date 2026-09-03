@@ -1,5 +1,3 @@
-import { VARIANTS } from './backgammon.constants';
-
 export function validateBackgammonConfig(
   config: Record<string, unknown>,
 ): boolean {
@@ -10,10 +8,7 @@ export function validateBackgammonConfig(
   if (!options || typeof options !== 'object') {
     return true;
   }
-  if (
-    options.variant !== undefined &&
-    !VARIANTS.includes(options.variant as (typeof VARIANTS)[number])
-  ) {
+  if (options.theme !== undefined && typeof options.theme !== 'string') {
     return false;
   }
   return true;

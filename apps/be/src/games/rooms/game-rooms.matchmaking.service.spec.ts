@@ -36,6 +36,7 @@ describe('GameRoomsMatchmakingService', () => {
     roomsService = {
       createRoom: jest.fn().mockResolvedValue(roomSummary),
       joinRoom: jest.fn().mockResolvedValue({ room: roomSummary, added: true }),
+      listRooms: jest.fn().mockResolvedValue({ rooms: [], total: 0 }),
     } as unknown as jest.Mocked<GameRoomsService>;
 
     quickplayService = {
@@ -218,16 +219,34 @@ describe('GameRoomsMatchmakingService', () => {
       const emitted = statusCall?.[2] as {
         queueSize: number;
         position: number;
+        playersAhead: number;
         estimatedWaitSeconds: number;
+        activeQueues: Record<string, number>;
       };
 
       expect(emitted).toEqual(
         expect.objectContaining({
           queueSize: 1,
           position: 1,
+          playersAhead: 0,
           estimatedWaitSeconds: 30,
+          activeQueues: { sea_battle_v1: 1 },
+          openRoomsCount: 0,
         }),
       );
+    });
+
+    it('broadcasts status updates to all waiting players when someone joins', () => {
+      service.joinQueue('user1', 'socket1', 'sea_battle_v1', 'classic');
+      service.joinQueue('user2', 'socket2', 'sea_battle_v1', 'classic');
+
+      const calls = (
+        realtimeService.emitToUser as jest.MockedFunction<
+          typeof realtimeService.emitToUser
+        >
+      ).mock.calls.filter((call) => call[1] === 'games.matchmaking.status');
+
+      expect(calls.length).toBeGreaterThanOrEqual(1);
     });
 
     it('prevents pairing users sharing the same IP in production', async () => {

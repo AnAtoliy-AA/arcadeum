@@ -69,10 +69,8 @@ test.describe('Backgammon Lobby Options', () => {
       'true',
       {},
     );
-    await expect(page.getByTestId('theme-cyberpunk')).not.toHaveAttribute(
-      'aria-checked',
-      'true',
-      {},
-    );
+    await expect(
+      page.getByTestId('theme-cyberpunk').first(),
+    ).not.toHaveAttribute('aria-checked', 'true', {});
   });
 });

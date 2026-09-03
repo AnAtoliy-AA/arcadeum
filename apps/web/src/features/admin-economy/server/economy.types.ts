@@ -21,7 +21,8 @@ export type EconomyKey =
   | 'geo_block_enabled'
   | 'vpn_detection_enabled'
   | 'signup_reward_coins'
-  | 'signup_reward_gems';
+  | 'signup_reward_gems'
+  | 'social_reward_gems';
 
 export const BOOLEAN_ECONOMY_KEYS: ReadonlySet<EconomyKey> = new Set([
   'shop_allow_gems',

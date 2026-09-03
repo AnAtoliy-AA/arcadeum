@@ -75,10 +75,8 @@ test.describe('Cat Dash Lobby Options', () => {
       'true',
       {},
     );
-    await expect(page.getByTestId('theme-adventure')).not.toHaveAttribute(
-      'aria-checked',
-      'true',
-      {},
-    );
+    await expect(
+      page.getByTestId('theme-adventure').first(),
+    ).not.toHaveAttribute('aria-checked', 'true', {});
   });
 });

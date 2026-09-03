@@ -1,4 +1,4 @@
-import { RULE_VARIANTS, VARIANTS } from './pachisi.constants';
+import { MODES } from './pachisi.constants';
 
 export function validatePachisiConfig(
   config: Record<string, unknown>,
@@ -11,17 +11,14 @@ export function validatePachisiConfig(
     return true;
   }
   if (
-    options.ruleVariant !== undefined &&
-    !RULE_VARIANTS.includes(
-      options.ruleVariant as (typeof RULE_VARIANTS)[number],
+    options.mode !== undefined &&
+    !MODES.includes(
+      options.mode as (typeof MODES)[number],
     )
   ) {
     return false;
   }
-  if (
-    options.variant !== undefined &&
-    !VARIANTS.includes(options.variant as (typeof VARIANTS)[number])
-  ) {
+  if (options.theme !== undefined && typeof options.theme !== 'string') {
     return false;
   }
   return true;

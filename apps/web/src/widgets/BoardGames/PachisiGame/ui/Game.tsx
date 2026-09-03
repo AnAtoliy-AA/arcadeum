@@ -1,7 +1,8 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
-import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -14,18 +15,14 @@ import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import type {
-  PachisiGameProps,
-  PachisiOptions,
-  PachisiVariant,
-} from '../types';
+import type { PachisiGameProps, PachisiOptions, PachisiTheme } from '../types';
 import { usePachisiState } from '../hooks/usePachisiState';
 import { usePachisiActions } from '../hooks/usePachisiActions';
 import { PachisiThemeProvider } from '../lib/PachisiThemeContext';
 import { PachisiLobby } from './PachisiLobby';
 import { PachisiBoard } from './PachisiBoard';
 import { RulesModal } from './RulesModal';
-import { PACHISI_VARIANTS } from '../lib/constants';
+import { PACHISI_THEMES } from '../lib/constants';
 
 function resolveOptions(raw: unknown): PachisiOptions {
   const r = (raw ?? {}) as Partial<{
@@ -34,7 +31,8 @@ function resolveOptions(raw: unknown): PachisiOptions {
     aiDifficulty: string;
   }>;
   return {
-    variant: (r.theme ?? r.variant ?? 'adventure') as PachisiVariant,
+    theme: (r.theme ?? r.variant ?? 'adventure') as PachisiTheme,
+    variant: (r.theme ?? r.variant ?? 'adventure') as PachisiTheme,
     aiDifficulty: (r.aiDifficulty ?? 'medium') as
       'easy' | 'medium' | 'hard' | 'expert',
   };
@@ -137,8 +135,8 @@ function PachisiGameImpl({
   );
 
   const variantTokens = useMemo(() => {
-    const found = PACHISI_VARIANTS.find((v) => v.id === options.variant);
-    return found ?? PACHISI_VARIANTS[0];
+    const found = PACHISI_THEMES.find((v) => v.id === options.variant);
+    return found ?? PACHISI_THEMES[0];
   }, [options.variant]);
 
   const players = useMemo(

@@ -1,14 +1,14 @@
 import {
-  CHECKERS_PER_VARIANT,
+  CHECKERS_PER_MODE,
   TOTAL_POINTS,
-  type RuleVariant,
+  type Mode,
 } from './backgammon.constants';
 import type { BackgammonPoint, LegalMove, WinType } from './backgammon.types';
 
 export function createInitialPoints(
   player0Id: string,
   player1Id: string,
-  ruleVariant: RuleVariant = 'standard',
+  mode: Mode = 'standard',
 ): BackgammonPoint[] {
   const points: BackgammonPoint[] = Array.from(
     { length: TOTAL_POINTS },
@@ -18,7 +18,7 @@ export function createInitialPoints(
     }),
   );
 
-  if (ruleVariant === 'hyper') {
+  if (mode === 'hyper') {
     points[23] = { playerId: player0Id, count: 1 };
     points[22] = { playerId: player0Id, count: 1 };
     points[21] = { playerId: player0Id, count: 1 };
@@ -29,13 +29,13 @@ export function createInitialPoints(
     return points;
   }
 
-  if (ruleVariant === 'long' || ruleVariant === 'gulbara') {
+  if (mode === 'long' || mode === 'gulbara') {
     points[23] = { playerId: player0Id, count: 15 };
     points[11] = { playerId: player1Id, count: 15 };
     return points;
   }
 
-  if (ruleVariant === 'nackgammon') {
+  if (mode === 'nackgammon') {
     points[23] = { playerId: player0Id, count: 2 };
     points[22] = { playerId: player0Id, count: 2 };
     points[12] = { playerId: player0Id, count: 4 };
@@ -73,9 +73,9 @@ export function canPlayerBearOff(
   points: BackgammonPoint[],
   barCount: number,
   borneOffCount: number,
-  ruleVariant: RuleVariant = 'standard',
+  mode: Mode = 'standard',
 ): boolean {
-  const targetCheckers = CHECKERS_PER_VARIANT[ruleVariant] ?? 15;
+  const targetCheckers = CHECKERS_PER_MODE[mode] ?? 15;
   if (barCount > 0) return false;
   if (borneOffCount >= targetCheckers) return false;
 
@@ -122,13 +122,13 @@ export function isPointOpen(
   targetIndex: number,
   playerId: string,
   points: BackgammonPoint[],
-  ruleVariant: RuleVariant = 'standard',
+  mode: Mode = 'standard',
 ): boolean {
   const point = points[targetIndex];
   if (!point || point.count === 0 || point.playerId === playerId) {
     return true;
   }
-  if (ruleVariant === 'long' || ruleVariant === 'gulbara') {
+  if (mode === 'long' || mode === 'gulbara') {
     return false;
   }
   return point.count === 1;
@@ -175,20 +175,20 @@ export function getLegalMovesForDie(
   bar: Record<string, number>,
   borneOff: Record<string, number>,
   die: number,
-  ruleVariant: RuleVariant = 'standard',
+  mode: Mode = 'standard',
 ): LegalMove[] {
   const moves: LegalMove[] = [];
   const barCount = bar[playerId] ?? 0;
   const borneOffCount = borneOff[playerId] ?? 0;
   const isP0 = isPlayer0(playerId, playerOrder);
-  const isNoHitting = ruleVariant === 'long' || ruleVariant === 'gulbara';
+  const isNoHitting = mode === 'long' || mode === 'gulbara';
   const canBearOff = canPlayerBearOff(
     playerId,
     playerOrder,
     points,
     barCount,
     borneOffCount,
-    ruleVariant,
+    mode,
   );
 
   if (barCount > 0) {
@@ -197,7 +197,7 @@ export function getLegalMovesForDie(
     if (
       target >= 0 &&
       target < TOTAL_POINTS &&
-      isPointOpen(target, playerId, points, ruleVariant)
+      isPointOpen(target, playerId, points, mode)
     ) {
       const targetPoint = points[target];
       const isHit =
@@ -220,7 +220,7 @@ export function getLegalMovesForDie(
     if (isP0) {
       const to = from - die;
       if (to >= 0) {
-        if (isPointOpen(to, playerId, points, ruleVariant)) {
+        if (isPointOpen(to, playerId, points, mode)) {
           const targetPoint = points[to];
           const isHit =
             !isNoHitting &&
@@ -251,7 +251,7 @@ export function getLegalMovesForDie(
     } else {
       const to = from + die;
       if (to < TOTAL_POINTS) {
-        if (isPointOpen(to, playerId, points, ruleVariant)) {
+        if (isPointOpen(to, playerId, points, mode)) {
           const targetPoint = points[to];
           const isHit =
             !isNoHitting &&
@@ -292,7 +292,7 @@ export function getAllLegalMoves(
   bar: Record<string, number>,
   borneOff: Record<string, number>,
   dice: number[],
-  ruleVariant: RuleVariant = 'standard',
+  mode: Mode = 'standard',
 ): LegalMove[] {
   const uniqueDice = Array.from(new Set(dice));
   const allMoves: LegalMove[] = [];
@@ -305,7 +305,7 @@ export function getAllLegalMoves(
       bar,
       borneOff,
       die,
-      ruleVariant,
+      mode,
     );
     allMoves.push(...movesForDie);
   }

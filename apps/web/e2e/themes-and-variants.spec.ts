@@ -10,6 +10,11 @@ test.describe('Themes and Variants separation', () => {
       '[data-testid="sea-battle-landing-board"]',
     );
     await expect(boardButton).toBeVisible();
+    const box = await boardButton.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box?.width).toBeLessThanOrEqual(280);
+    const shipSwatch = page.locator('[data-testid="color-swatch-ship"]');
+    await expect(shipSwatch).toBeVisible();
     await boardButton.click();
     await expect(boardButton).toBeVisible();
   });

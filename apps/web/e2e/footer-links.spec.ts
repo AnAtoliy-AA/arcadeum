@@ -90,4 +90,23 @@ test.describe('Footer Links', () => {
 
     await expect(socialLinks.first()).toBeVisible({});
   });
+
+  test('should display support link in footer resources section', async ({
+    page,
+  }) => {
+    await scrollToFooter(page);
+    const footer = page.locator('footer').first();
+    const supportLink = footer.locator(`a[href="${routes.support}"]`);
+    if (!(await supportLink.isVisible())) {
+      const resourcesToggle = footer
+        .getByText('RESOURCES')
+        .or(footer.getByText('Resources'))
+        .or(footer.getByText('resources'))
+        .first();
+      if (await resourcesToggle.isVisible({}).catch(() => false)) {
+        await resourcesToggle.click({ force: true });
+      }
+    }
+    await expect(supportLink).toBeVisible();
+  });
 });

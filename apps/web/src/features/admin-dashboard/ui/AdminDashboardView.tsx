@@ -18,6 +18,7 @@ import {
   BarChartIcon,
 } from '@arcadeum/ui';
 import type { AdminDashboardData } from '../types';
+import { ServerResourcesCard } from './ServerResourcesCard';
 
 export interface AdminDashboardTranslations {
   title?: string;
@@ -58,6 +59,28 @@ export interface AdminDashboardTranslations {
   indexesCount?: string;
   liveStatus?: string;
   environment?: string;
+  serverResources?: {
+    title?: string;
+    subtitle?: string;
+    cpu?: string;
+    ram?: string;
+    perCore?: string;
+    processMemory?: string;
+    heapUsed?: string;
+    heapTotal?: string;
+    rss?: string;
+    external?: string;
+    systemInfo?: string;
+    uptime?: string;
+    loadAvg?: string;
+    nodeVersion?: string;
+    platform?: string;
+    model?: string;
+    cores?: string;
+    used?: string;
+    free?: string;
+    total?: string;
+  };
 }
 
 interface AdminDashboardViewProps {
@@ -283,6 +306,10 @@ export function AdminDashboardView({ data, t }: AdminDashboardViewProps) {
           />
         </GlassCard>
       </div>
+
+      {data.serverMetrics && (
+        <ServerResourcesCard metrics={data.serverMetrics} t={t} />
+      )}
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">

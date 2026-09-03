@@ -8,10 +8,11 @@ import {
   ModalTitle,
   ModalBody,
   ModalFooter,
+  Button,
 } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { appConfig } from '@/shared/config/app-config';
 import { usePWAOptional } from './context';
-import { Button } from '@arcadeum/ui';
 import {
   PWAFeaturesList,
   PWAFeatureItem,
@@ -34,34 +35,21 @@ export function InstallPWAModalContent() {
     <Modal open={isModalOpen} onClose={closeModal}>
       <ModalContent maxWidth="400px">
         <ModalHeader onClose={closeModal}>
-          <ModalTitle>{t('pwa.install.title')}</ModalTitle>
+          <ModalTitle>
+            {t('pwa.install.title', { appName: appConfig.appName })}
+          </ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginBottom: 20,
-            }}
-          >
+          <div className="mb-5 flex justify-center">
             <Avatar
               src="/icon-192x192.png"
-              name="Arcadeum"
+              name={appConfig.appName}
               size="xl"
-              alt="Arcadeum app icon"
+              alt={`${appConfig.appName} app icon`}
             />
           </div>
-          <p
-            style={{
-              textAlign: 'center',
-              color: 'var(--color)',
-              opacity: 0.7,
-              fontSize: '1rem',
-              lineHeight: '32px',
-              margin: 0,
-            }}
-          >
-            {t('pwa.install.description')}
+          <p className="m-0 text-center text-base leading-8 text-[var(--color)] opacity-70">
+            {t('pwa.install.description', { appName: appConfig.appName })}
           </p>
 
           <PWAFeaturesList>
@@ -77,16 +65,7 @@ export function InstallPWAModalContent() {
 
           {!isPromptAvailable && (
             <PWAManualInstructions>
-              <p
-                style={{
-                  textAlign: 'left',
-                  color: 'var(--color)',
-                  opacity: 0.7,
-                  fontSize: '0.85rem',
-                  lineHeight: '22px',
-                  margin: 0,
-                }}
-              >
+              <p className="m-0 text-left text-[0.85rem] leading-[22px] text-[var(--color)] opacity-70">
                 <strong>{t('pwa.install.manual.title')}:</strong>
                 <br />
                 {isIos

@@ -1,6 +1,6 @@
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 
-export const SEA_BATTLE_VARIANTS = SHARED_THEMES.map((theme) => ({
+export const SEA_BATTLE_THEMES = SHARED_THEMES.map((theme) => ({
   id: theme.id,
   name: theme.nameKey,
   description: theme.descriptionKey,
@@ -10,10 +10,10 @@ export const SEA_BATTLE_VARIANTS = SHARED_THEMES.map((theme) => ({
   lightGradient: `linear-gradient(90deg, #fff 0%, ${theme.colors.primary} 40%, ${theme.colors.accent} 80%, #fff 100%)`,
 }));
 
-export type SeaBattleVariant = (typeof SEA_BATTLE_VARIANTS)[number]['id'];
+export type SeaBattleTheme = (typeof SEA_BATTLE_THEMES)[number]['id'];
 
 export const DEFAULT_GAME_OPTIONS = {
-  variant: 'cyberpunk' as SeaBattleVariant,
+  variant: 'cyberpunk' as SeaBattleTheme,
   showTurnTimer: false,
   turnTimeLimit: 60,
 };

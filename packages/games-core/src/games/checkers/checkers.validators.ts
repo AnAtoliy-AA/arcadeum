@@ -1,4 +1,4 @@
-import { GAME_PHASE, RULE_VARIANT_CONFIGS } from './checkers.constants';
+import { GAME_PHASE, MODE_CONFIGS } from './checkers.constants';
 import type {
   Board,
   CheckersState,
@@ -77,7 +77,7 @@ export function validateMovePiece(
 
   const steps = payload.steps;
   const size = state.board.length;
-  const ruleConfig = RULE_VARIANT_CONFIGS[state.options.ruleVariant];
+  const ruleConfig = MODE_CONFIGS[state.options.mode];
   const backwardCaptures =
     state.options.backwardCaptures || ruleConfig.backwardCapturesForMen;
   const flyingKings = ruleConfig.flyingKings;

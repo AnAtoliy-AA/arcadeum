@@ -11,7 +11,9 @@ import {
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import type { Request } from 'express';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
@@ -32,6 +34,8 @@ export class LeaderboardsController {
     private readonly capture: LeaderboardsCaptureService,
   ) {}
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(60000)
   @Get()
   @UseGuards(JwtOptionalAuthGuard)
   async getLeaderboard(@Query() query: GetLeaderboardDto, @Req() req: Request) {

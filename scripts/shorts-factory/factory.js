@@ -18,6 +18,7 @@
 
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
+const fs = require('fs');
 const {
   readdir,
   unlink,
@@ -103,6 +104,49 @@ const CONFIG = {
   pollIntervalMs: 30 * 1000, // 30 seconds
   enableApproval: process.env.SHORTS_FACTORY_APPROVAL === 'true',
 };
+
+const FALLBACK_GAME_SLUGS = [
+  'critical_v1',
+  'sea_battle_v1',
+  'texas_holdem_v1',
+  'glimworm_v1',
+  'tic_tac_toe_v1',
+  'cascade_v1',
+  'chess_v1',
+  'checkers_v1',
+  'cat_dash_v1',
+  'backgammon_v1',
+  'hearts_v1',
+  'spades_v1',
+  'go_v1',
+  'pachisi_v1',
+];
+
+function loadBackendGameCatalogSlugs() {
+  try {
+    const catalogPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'apps',
+      'be',
+      'src',
+      'games',
+      'games.catalog.ts',
+    );
+    const content = fs.readFileSync(catalogPath, 'utf8');
+    const matches = Array.from(
+      content.matchAll(/gameId:\s*'([^']+)'/g),
+      (m) => m[1],
+    );
+    if (matches.length > 0) {
+      return Array.from(new Set(matches));
+    }
+  } catch {}
+  return FALLBACK_GAME_SLUGS;
+}
+
+const ALL_GAME_SLUGS = loadBackendGameCatalogSlugs();
 
 // ============================================================================
 // APPROVAL FLOW
@@ -492,9 +536,14 @@ const SCENARIOS = [
       {
         type: 'hover',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 1000,
+        wait: 1200,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 400, wait: 800 },
       { type: 'scroll', y: 300, wait: 600 },
     ],
@@ -512,6 +561,11 @@ const SCENARIOS = [
         wait: 1200,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 400, wait: 800 },
     ],
   },
@@ -528,7 +582,12 @@ const SCENARIOS = [
         wait: 1200,
       },
       { type: 'scroll', y: 400, wait: 800 },
-      { type: 'scroll', y: 300, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
     ],
   },
   {
@@ -544,6 +603,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -560,6 +624,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -576,6 +645,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -592,6 +666,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -608,6 +687,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -624,6 +708,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -640,6 +729,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -656,6 +750,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -672,6 +771,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-rules-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -688,15 +792,15 @@ const SCENARIOS = [
       {
         type: 'hover',
         selector: '[data-testid="games-catalog-card-sea_battle_v1"]',
-        wait: 1000,
+        wait: 1200,
       },
-      { type: 'scroll', y: 400, wait: 600 },
+      { type: 'scroll', y: 400, wait: 800 },
       {
         type: 'hover',
         selector: '[data-testid="games-catalog-card-chess_v1"]',
-        wait: 1000,
+        wait: 1200,
       },
-      { type: 'scroll', y: 400, wait: 600 },
+      { type: 'scroll', y: 400, wait: 800 },
     ],
   },
   {
@@ -716,7 +820,8 @@ const SCENARIOS = [
         selector: '[data-testid="category-filter-action"]',
         wait: 1500,
       },
-      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 200, wait: 600 },
     ],
   },
   {
@@ -726,6 +831,12 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/games/create', wait: 3000 },
       { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-type-selector"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
       {
         type: 'hover',
         selector: 'form button[type="submit"]',
@@ -745,6 +856,12 @@ const SCENARIOS = [
       { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
       { type: 'hover', selector: '[data-testid^="player-row-"]', wait: 1500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="leaderboard-tab-weekly"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -760,6 +877,12 @@ const SCENARIOS = [
         selector: '[data-testid="chat-message-bubble"]',
         wait: 1500,
       },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="community-online-count"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -770,7 +893,17 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/clans', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="clan-card-"]',
+        wait: 1500,
+      },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="create-clan-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -781,7 +914,18 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/friends', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
-      { type: 'scroll', y: 300, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="friend-card-"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="invite-friend-button"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
     ],
   },
   {
@@ -796,6 +940,12 @@ const SCENARIOS = [
         selector: '[data-testid^="tournament-card-"]',
         wait: 1500,
       },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="tournament-join-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -806,7 +956,17 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/events', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="event-card-"]',
+        wait: 1500,
+      },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="event-join-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -818,6 +978,12 @@ const SCENARIOS = [
       { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
       { type: 'hover', selector: '[data-testid^="player-row-"]', wait: 1500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="player-stats-card"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -833,6 +999,12 @@ const SCENARIOS = [
         selector: '[data-testid="referral-link-container"]',
         wait: 1500,
       },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="referral-stats-card"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -847,6 +1019,12 @@ const SCENARIOS = [
       { type: 'navigate', url: '/en/rewards', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
       { type: 'hover', selector: '[data-testid="daily-rewards"]', wait: 1500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="streak-bonus-card"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -862,7 +1040,13 @@ const SCENARIOS = [
         selector: '[data-testid^="shop-card-avatar-"]',
         wait: 1500,
       },
-      { type: 'scroll', y: 300, wait: 600 },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="shop-category-skins"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
     ],
   },
   {
@@ -876,6 +1060,12 @@ const SCENARIOS = [
         type: 'hover',
         selector: '[data-testid^="inventory-item-"]',
         wait: 1500,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="equip-item-button"]',
+        wait: 1200,
       },
       { type: 'scroll', y: 200, wait: 600 },
     ],
@@ -892,6 +1082,12 @@ const SCENARIOS = [
         selector: '[data-testid="balance-coins-value"]',
         wait: 1500,
       },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="transaction-history-row"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -907,6 +1103,12 @@ const SCENARIOS = [
         selector: '[data-testid="tokenomics-chart"]',
         wait: 1500,
       },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="token-utility-card"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -921,6 +1123,12 @@ const SCENARIOS = [
         type: 'hover',
         selector: '[data-testid^="battlepass-tier-"]',
         wait: 1500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="battlepass-progress-bar"]',
+        wait: 1200,
       },
       { type: 'scroll', y: 200, wait: 600 },
     ],
@@ -941,6 +1149,11 @@ const SCENARIOS = [
         wait: 1500,
       },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="hero-cta-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 400, wait: 600 },
     ],
   },
@@ -952,6 +1165,12 @@ const SCENARIOS = [
       { type: 'navigate', url: '/en/replays', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
       { type: 'hover', selector: '[data-testid="history-row"]', wait: 1500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="replay-play-button"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -963,6 +1182,12 @@ const SCENARIOS = [
       { type: 'navigate', url: '/en/history', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
       { type: 'hover', selector: '[data-testid="history-row"]', wait: 1500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="history-game-result"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -978,6 +1203,12 @@ const SCENARIOS = [
         selector: '[data-testid="stats-overview-card"]',
         wait: 1500,
       },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="stats-win-rate-chart"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -988,7 +1219,17 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/roadmap', wait: 2500 },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="roadmap-item-"]',
+        wait: 1500,
+      },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="roadmap-milestone-"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -1004,6 +1245,12 @@ const SCENARIOS = [
         selector: '[data-testid^="blog-post-card-"]',
         wait: 1500,
       },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="blog-featured-post"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -1014,6 +1261,11 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="games-catalog-card-"]',
+        wait: 1200,
+      },
       { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
     ],
@@ -1024,6 +1276,11 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="games-catalog-card-"]',
+        wait: 1200,
+      },
       { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
       { type: 'scroll', y: 200, wait: 800 },
     ],
@@ -1035,6 +1292,11 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/shop', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="shop-card-avatar-"]',
+        wait: 1200,
+      },
       { type: 'navigate', url: '/en/rewards', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
     ],
@@ -1046,6 +1308,11 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/community', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="chat-message-bubble"]',
+        wait: 1200,
+      },
       { type: 'navigate', url: '/en/tournaments', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
     ],
@@ -1058,6 +1325,12 @@ const SCENARIOS = [
       { type: 'navigate', url: '/en/developers', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
       { type: 'hover', selector: '[data-testid="developers-cta"]', wait: 1500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="developers-docs-link"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
     ],
   },
@@ -1068,7 +1341,17 @@ const SCENARIOS = [
     steps: [
       { type: 'navigate', url: '/en/changelog', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="changelog-entry-"]',
+        wait: 1500,
+      },
       { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="changelog-version-"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 300, wait: 600 },
     ],
   },
@@ -1080,7 +1363,186 @@ const SCENARIOS = [
       { type: 'navigate', url: '/en/settings', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
       { type: 'hover', selector: '[data-testid="settings-form"]', wait: 1500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="theme-selector"]',
+        wait: 1200,
+      },
       { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+
+  // ─── CLICK-THROUGH FLOWS ──────────────────────────────────────────────────
+
+  {
+    name: 'catalogToGameFlow',
+    caption:
+      'Browse 20+ games and jump into action in seconds! 🎮⚡ #gaming #web3gaming #arcadeum',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-chess_v1"]',
+        wait: 1200,
+      },
+      {
+        type: 'click',
+        selector: '[data-testid="games-catalog-card-chess_v1"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'catalogToSeaBattleFlow',
+    caption:
+      'Found Sea Battle in the catalog — time to sink some ships! ⚓🔥 #seabattle #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-sea_battle_v1"]',
+        wait: 1200,
+      },
+      {
+        type: 'click',
+        selector: '[data-testid="games-catalog-card-sea_battle_v1"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'leaderboardToProfileFlow',
+    caption:
+      'Spotted a top player on the leaderboard — checking out their profile! 🏆👤 #competitive #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid^="player-row-"]',
+        wait: 1200,
+      },
+      {
+        type: 'click',
+        selector: '[data-testid^="player-row-"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="player-stats-card"]',
+        wait: 1200,
+      },
+    ],
+  },
+
+  // ─── THEME SHOWCASE ───────────────────────────────────────────────────────
+
+  {
+    name: 'themeShowcaseCyberpunk',
+    caption:
+      'Cyberpunk vibes on Arcadeum — every game has themed skins! 🌆🎮 #cyberpunk #gaming #aesthetic',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess?theme=cyberpunk', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseUnderwater',
+    caption:
+      'Deep sea aesthetic meets competitive gaming 🌊🐠 Check out Underwater theme! #aesthetic #gaming',
+    steps: [
+      {
+        type: 'navigate',
+        url: '/en/games/sea-battle?theme=underwater',
+        wait: 3000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+
+  // ─── MISSING GAME LANDINGS ────────────────────────────────────────────────
+
+  {
+    name: 'texasHoldemLanding',
+    caption:
+      "Texas Hold'em poker with ranked matches — bluff your way to the top! 🃏♠️ #poker #texasholdem",
+    steps: [
+      { type: 'navigate', url: '/en/games/texas-holdem', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'pachisiLanding',
+    caption:
+      'Pachisi — the ancient royal board game goes online! 🎲👑 Play free on Arcadeum #pachisi #boardgame',
+    steps: [
+      { type: 'navigate', url: '/en/games/pachisi', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'goLanding',
+    caption:
+      'Go — the deepest strategy game ever made, now online! ⚫⚪ #go #baduk #strategy',
+    steps: [
+      { type: 'navigate', url: '/en/games/go', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
     ],
   },
 ];
@@ -1394,6 +1856,25 @@ async function captureBrowsing() {
       },
     });
     log('info', 'Browser context created with video recording');
+
+    await context.addInitScript(
+      ({ gameSlugs }) => {
+        try {
+          const completedMap = {};
+          (gameSlugs || []).forEach((slug) => {
+            completedMap[slug] = Date.now();
+          });
+          localStorage.setItem(
+            'arcadeum_tutorials_v1',
+            JSON.stringify({
+              state: { completedAt: completedMap, dismissedAt: completedMap },
+              version: 0,
+            }),
+          );
+        } catch {}
+      },
+      { gameSlugs: ALL_GAME_SLUGS },
+    );
 
     if (scenario.requiresAuth) {
       const injected = await injectBotAuth(context);

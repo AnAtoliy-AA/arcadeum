@@ -254,14 +254,18 @@ export class ClansService {
 
     if (data.name && data.name !== clan.name) {
       const sanitizedName = String(data.name);
-      const existing = await this.clanModel.findOne({ name: sanitizedName });
+      const existing = await this.clanModel
+        .findOne({ name: sanitizedName })
+        .lean();
       if (existing) throw new ConflictException('clans.nameTaken');
       clan.name = sanitizedName;
     }
 
     if (data.tag && data.tag !== clan.tag) {
       const sanitizedTag = String(data.tag);
-      const existing = await this.clanModel.findOne({ tag: sanitizedTag });
+      const existing = await this.clanModel
+        .findOne({ tag: sanitizedTag })
+        .lean();
       if (existing) throw new ConflictException('clans.tagTaken');
       clan.tag = sanitizedTag;
     }
@@ -320,9 +324,12 @@ export class ClansService {
   }
 
   async getUserClan(userId: string): Promise<ClanView | null> {
-    const member = await this.clanMemberModel.findOne({
-      userId: new Types.ObjectId(userId),
-    });
+    const member = await this.clanMemberModel
+      .findOne({
+        userId: new Types.ObjectId(userId),
+      })
+      .select('clanId')
+      .lean();
     if (!member) return null;
     return this.getClanById(String(member.clanId));
   }
@@ -347,6 +354,7 @@ export class ClansService {
     const userIds = members.map((m) => String(m.userId));
     const users = (await this.userModel
       .find({ _id: { $in: userIds } })
+      .select('username displayName equippedAvatarId')
       .lean()) as unknown as LeanUser[];
 
     const userMap = new Map(users.map((u) => [u._id.toString(), u]));

@@ -39,7 +39,7 @@ function findByType(blobs: Schema[], type: string): Schema | undefined {
 }
 
 test.describe('Locale JSON-LD — structured data per page', () => {
-  test('home page emits Organization + locale-tagged WebSite', async ({
+  test('home page emits Organization + locale-tagged WebSite and SoftwareApplication', async ({
     page,
   }) => {
     await page.goto('/fr', { waitUntil: 'domcontentloaded' });
@@ -48,12 +48,23 @@ test.describe('Locale JSON-LD — structured data per page', () => {
     const website = findByType(blobs, 'WebSite');
     expect(website).toBeDefined();
     expect(website?.inLanguage).toBe('fr-FR');
+    const softwareApp = findByType(blobs, 'SoftwareApplication');
+    expect(softwareApp).toBeDefined();
+    expect(softwareApp?.genre).toEqual(
+      expect.arrayContaining(['Board Game', 'Card Game', 'Mini Game']),
+    );
+    const faqPage = findByType(blobs, 'FAQPage');
+    expect(faqPage).toBeDefined();
   });
 
   test('games page emits CollectionPage with French inLanguage', async ({
     page,
   }) => {
     await page.goto('/fr/jeux', { waitUntil: 'domcontentloaded' });
+    // Route-level loading boundaries stream page content after the shell —
+    // wait for the route's JSON-LD block instead of assuming it exists at
+    // domcontentloaded (same pattern as the sea-battle test below).
+    await page.waitForSelector('#json-ld-games-fr', { state: 'attached' });
     const blobs = await collectJsonLd(page);
     const collection = findByType(blobs, 'CollectionPage');
     expect(collection).toBeDefined();
@@ -62,6 +73,7 @@ test.describe('Locale JSON-LD — structured data per page', () => {
 
   test('games page emits a BreadcrumbList', async ({ page }) => {
     await page.goto('/en/games', { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#json-ld-games-en', { state: 'attached' });
     const blobs = await collectJsonLd(page);
     expect(findByType(blobs, 'BreadcrumbList')).toBeDefined();
   });
@@ -70,6 +82,9 @@ test.describe('Locale JSON-LD — structured data per page', () => {
     page,
   }) => {
     await page.goto('/ru/nastroyki', { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#json-ld-breadcrumb-settings-ru', {
+      state: 'attached',
+    });
     const blobs = await collectJsonLd(page);
     const breadcrumb = findByType(blobs, 'BreadcrumbList');
     expect(breadcrumb).toBeDefined();
@@ -101,6 +116,9 @@ test.describe('Locale JSON-LD — structured data per page', () => {
 
   test('player profile page emits ProfilePage + Person', async ({ page }) => {
     await page.goto('/en/players/test-id', { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#json-ld-player-test-id-en', {
+      state: 'attached',
+    });
     const blobs = await collectJsonLd(page);
     expect(findByType(blobs, 'ProfilePage')).toBeDefined();
   });

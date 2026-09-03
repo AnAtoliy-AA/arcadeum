@@ -316,11 +316,7 @@ export default function SettingsContent({
           </Section>
 
           <Section title={languageTitle} description={languageDescription}>
-            <PillGroup
-              key={locale}
-              role="group"
-              aria-label={languageGroupLabel}
-            >
+            <PillGroup role="group" aria-label={languageGroupLabel}>
               {languageOptions.map((option) => (
                 <Button
                   key={option.code}
@@ -342,11 +338,7 @@ export default function SettingsContent({
             title={accessibilityTitle}
             description={accessibilityDescription}
           >
-            <PillGroup
-              key={visionMode}
-              role="group"
-              aria-label={accessibilityTitle}
-            >
+            <PillGroup role="group" aria-label={accessibilityTitle}>
               {visionOptions.map((option) => (
                 <Button
                   key={option.code}

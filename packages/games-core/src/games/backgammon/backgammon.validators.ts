@@ -57,7 +57,7 @@ export function validateMoveChecker(
     state.bar,
     state.borneOff,
     state.dice,
-    state.options.ruleVariant,
+    state.options.mode,
   );
 
   const matched = legalMoves.some((m) => m.from === p.from && m.to === p.to);
@@ -88,7 +88,7 @@ export function validatePassTurn(
     state.bar,
     state.borneOff,
     state.dice,
-    state.options.ruleVariant,
+    state.options.mode,
   );
   if (legalMoves.length > 0) {
     return { ok: false, error: 'Cannot pass while legal moves are available' };

@@ -7,12 +7,12 @@ export interface Slide {
 export const slides: Slide[] = [
   {
     id: 'intro',
-    title: 'Arcadeum: The Future of Board Games',
+    title: 'Arcadeum: The Future of Multiplayer Gaming',
     image: '/slides/slideHome-0000.webp',
   },
   {
     id: 'ecosystem',
-    title: 'A Holistic Ecosystem for Digital Tabletop Gaming',
+    title: 'A Holistic Ecosystem for Digital Multiplayer Gaming',
     image: '/slides/slideHome-0001.webp',
   },
   {
@@ -27,7 +27,7 @@ export const slides: Slide[] = [
   },
   {
     id: 'library',
-    title: 'A Growing Library of Tabletop Experiences',
+    title: 'A Growing Library of Board, Card & Mini-Games',
     image: '/slides/slideHome-0004.webp',
   },
   {

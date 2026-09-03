@@ -6,7 +6,7 @@ export const BOARD_SIZE = 8;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 2;
 
-export const CHECKERS_VARIANT_IDS = [
+export const CHECKERS_THEME_IDS = [
   'cyberpunk',
   'underwater',
   'crime',
@@ -20,23 +20,19 @@ export const CHECKERS_VARIANT_IDS = [
   'steampunk',
   'zen',
 ] as const;
-export type CheckersVariant = (typeof CHECKERS_VARIANT_IDS)[number];
+export type CheckersTheme = (typeof CHECKERS_THEME_IDS)[number];
 
-export const RULE_VARIANT_IDS = [
-  'american',
-  'international',
-  'russian',
-] as const;
-export type RuleVariant = (typeof RULE_VARIANT_IDS)[number];
+export const MODE_IDS = ['american', 'international', 'russian'] as const;
+export type Mode = (typeof MODE_IDS)[number];
 
-export interface RuleVariantConfig {
+export interface ModeConfig {
   boardSize: number;
   piecesPerPlayer: number;
   flyingKings: boolean;
   backwardCapturesForMen: boolean;
 }
 
-export const RULE_VARIANT_CONFIGS: Record<RuleVariant, RuleVariantConfig> = {
+export const MODE_CONFIGS: Record<Mode, ModeConfig> = {
   american: {
     boardSize: 8,
     piecesPerPlayer: 12,
@@ -91,8 +87,9 @@ export interface MoveStep {
 }
 
 export interface CheckersOptions {
-  variant: CheckersVariant;
-  ruleVariant: RuleVariant;
+  theme: CheckersTheme;
+  variant?: CheckersTheme;
+  mode: Mode;
   forcedCaptures: boolean;
   backwardCaptures: boolean;
 }

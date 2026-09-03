@@ -10,7 +10,9 @@ import {
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { ClansService } from './clans.service';
 import { CreateClanDto } from './dto/create-clan.dto';
@@ -38,6 +40,8 @@ export class ClansController {
     return this.clansService.getUserClan(req.user.userId);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
   @Get('popular')
   getPopularClans(@Query('limit') limit?: string) {
     return this.clansService.getPopularClans(limit ? parseInt(limit, 10) : 20);
@@ -56,11 +60,15 @@ export class ClansController {
     return this.clansService.getClanByInviteCode(code);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
   @Get(':id')
   getClan(@Param('id') id: string) {
     return this.clansService.getClanById(id);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
   @Get(':id/members')
   getClanMembers(@Param('id') id: string) {
     return this.clansService.getClanMembers(id);

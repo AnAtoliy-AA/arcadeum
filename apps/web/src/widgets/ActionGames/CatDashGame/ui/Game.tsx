@@ -1,7 +1,8 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
-import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -25,8 +26,8 @@ import { CatDashBoard } from './Board';
 import { RealisticCat } from './RealisticCat';
 import { CatDashTurnBadge } from './TurnBadge';
 import { CatDashRulesModal } from './RulesModal';
-import { CAT_DASH_VARIANTS } from '../lib/constants';
-import type { CatDashOptions, CatDashVariant } from '../types';
+import { CAT_DASH_THEMES } from '../lib/constants';
+import type { CatDashOptions, CatDashTheme } from '../types';
 
 function resolveOptions(raw: unknown): CatDashOptions {
   const r = (raw ?? {}) as Partial<{
@@ -119,8 +120,7 @@ function CatDashGameImpl({
 
   const variantTokens = useMemo(
     () =>
-      CAT_DASH_VARIANTS.find((v) => v.id === options.theme) ??
-      CAT_DASH_VARIANTS[0],
+      CAT_DASH_THEMES.find((v) => v.id === options.theme) ?? CAT_DASH_THEMES[0],
     [options.theme],
   );
 
@@ -128,7 +128,7 @@ function CatDashGameImpl({
 
   if (isLobby) {
     return (
-      <CatDashThemeProvider variant={options.theme as CatDashVariant}>
+      <CatDashThemeProvider variant={options.theme as CatDashTheme}>
         <CatDashLobby
           room={room}
           userId={currentUserId ?? ''}
@@ -245,7 +245,7 @@ function CatDashGameImpl({
   );
 
   return (
-    <CatDashThemeProvider variant={options.theme as CatDashVariant}>
+    <CatDashThemeProvider variant={options.theme as CatDashTheme}>
       <GameWidgetContainer
         theme={options.theme}
         board={board}

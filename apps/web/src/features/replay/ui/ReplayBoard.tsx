@@ -170,13 +170,11 @@ function GenericReplayBoard({
   const playerOrder = state.playerOrder as string[] | undefined;
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-8 py-12">
+    <div className="flex flex-col items-center gap-4 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-8 py-12">
       <span className="text-[48px]">🎮</span>
-      <p className="text-[16px] font-semibold text-[rgba(255,255,255,0.8)]">
-        {gameId}
-      </p>
+      <p className="text-[16px] font-semibold text-[var(--color)]">{gameId}</p>
       {playerOrder && (
-        <p className="text-[13px] text-[rgba(255,255,255,0.4)]">
+        <p className="text-[13px] text-[var(--textSecondary)]">
           {playerOrder.length} players
         </p>
       )}
@@ -186,8 +184,8 @@ function GenericReplayBoard({
 
 function BoardPlaceholder({ label }: { label: string }) {
   return (
-    <div className="flex h-64 w-64 items-center justify-center rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)]">
-      <span className="text-[14px] text-[rgba(255,255,255,0.4)]">
+    <div className="flex h-64 w-64 items-center justify-center rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)]">
+      <span className="text-[14px] text-[var(--textSecondary)]">
         {label} Board
       </span>
     </div>

@@ -1,6 +1,13 @@
-import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  Optional,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
+import type Redis from 'ioredis';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GamesRealtimeService } from '../games.realtime.service';
@@ -8,11 +15,9 @@ import {
   DEFAULT_OPTIONS,
   MAX_PLAYERS,
   MIN_PLAYERS,
-  RULE_VARIANTS,
-  VARIANTS,
+  MODES,
   type PachisiOptions,
-  type RuleVariant,
-  type Variant,
+  type Mode,
 } from '../engines/pachisi/pachisi.constants';
 import { PachisiBotService } from './pachisi-bot.service';
 import { isAiDifficulty } from '../ai-difficulty';
@@ -33,6 +38,7 @@ export class PachisiService extends BaseGameService<PachisiOptions> {
     @Inject(forwardRef(() => PachisiBotService))
     botService: PachisiBotService,
     @InjectConnection() mongoConnection: Connection,
+    @Optional() @Inject('REDIS_CLIENT') redis?: Redis | null,
   ) {
     super(
       roomsService,
@@ -40,6 +46,8 @@ export class PachisiService extends BaseGameService<PachisiOptions> {
       realtimeService,
       botService,
       mongoConnection,
+      undefined,
+      redis,
     );
   }
 
@@ -57,17 +65,16 @@ export class PachisiService extends BaseGameService<PachisiOptions> {
 
   protected resolveOptions(raw: unknown): PachisiOptions {
     const r = (raw ?? {}) as Partial<{
+      theme: string;
       variant: string;
-      ruleVariant: string;
+      mode: string;
       aiDifficulty: string;
     }>;
     return {
-      variant: VARIANTS.includes(r.variant as Variant)
-        ? (r.variant as Variant)
-        : DEFAULT_OPTIONS.variant,
-      ruleVariant: RULE_VARIANTS.includes(r.ruleVariant as RuleVariant)
-        ? (r.ruleVariant as RuleVariant)
-        : DEFAULT_OPTIONS.ruleVariant,
+      theme: r.theme ?? r.variant ?? DEFAULT_OPTIONS.theme,
+      mode: MODES.includes(r.mode as Mode)
+        ? (r.mode as Mode)
+        : DEFAULT_OPTIONS.mode,
       aiDifficulty: isAiDifficulty(r.aiDifficulty)
         ? r.aiDifficulty
         : DEFAULT_OPTIONS.aiDifficulty,

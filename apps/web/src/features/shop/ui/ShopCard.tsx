@@ -246,13 +246,13 @@ export function ShopCard({
             </Chip>
           ) : owned ? (
             <Chip
-              backgroundColor="rgba(255,255,255,0.06)"
-              borderColor="rgba(255,255,255,0.18)"
+              backgroundColor="var(--glassBg)"
+              borderColor="var(--glassBorder)"
             >
               <Typography
                 uiSize="sm"
                 weight="700"
-                color="#94a3b8"
+                color="var(--textSecondary)"
                 tracking="md"
               >
                 {labels.owned}
@@ -266,7 +266,7 @@ export function ShopCard({
         <Typography
           uiSize={small ? 'xs' : 'sm'}
           weight="700"
-          color="#f5f7ff"
+          color="var(--color)"
           className="line-clamp-1"
         >
           {name}
@@ -308,7 +308,7 @@ export function ShopCard({
           <Typography
             uiSize="xs"
             weight="800"
-            color="#f5f7ff"
+            color="var(--color)"
             tracking="sm"
             className="uppercase"
           >

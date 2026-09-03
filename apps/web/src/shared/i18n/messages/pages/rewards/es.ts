@@ -142,4 +142,17 @@ export const rewardsEs: typeof rewardsEn = {
       'Entra a una sala de juego ahora y empieza a acumular monedas y recompensas.',
     button: 'Jugar Gratis Ahora',
   },
+  socialRewards: {
+    title: 'Recompensas de redes sociales',
+    subtitle:
+      'Suscríbete y sigue nuestros canales oficiales para conseguir gemas gratis.',
+    badge: 'RECOMPENSA EN GEMAS',
+    claim: 'Reclamar +{n} 💎',
+    claimed: 'Reclamado ✓',
+    followAndClaim: 'Suscribirse y reclamar +{n} 💎',
+    toastSuccess: '¡+{n} gema reclamada con éxito!',
+    errorAlreadyClaimed: '¡Ya reclamado!',
+    errorUnauthorized: 'Inicia sesión para reclamar recompensas.',
+    errorGeneric: 'Error al reclamar la recompensa. Inténtalo de nuevo.',
+  },
 };

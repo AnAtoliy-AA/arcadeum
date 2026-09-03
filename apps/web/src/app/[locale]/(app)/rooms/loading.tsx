@@ -1,3 +1,5 @@
-import GamesLoading from '../games/loading';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 
-export default GamesLoading;
+export default function RoomsLoading() {
+  return <PageLoading layout="grid" />;
+}

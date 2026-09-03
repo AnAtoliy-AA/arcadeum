@@ -61,13 +61,13 @@ export const STAR_POINTS: Record<
 };
 
 export interface GoOptions {
-  variant: string;
+  theme: string;
   boardSize: BoardSize;
   aiDifficulty?: AiDifficulty;
 }
 
 export const DEFAULT_OPTIONS: GoOptions = {
-  variant: 'adventure',
+  theme: 'adventure',
   boardSize: DEFAULT_BOARD_SIZE,
   aiDifficulty: 'medium',
 };

@@ -2,19 +2,19 @@
 
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
-  ReusableGameLobby,
   LobbyOptionSection,
   LobbyChipGroup,
   LobbyToggle,
-  GameThemePicker,
-  getLobbyTheme,
-} from '@/features/games/ui';
+} from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { MIN_PLAYERS } from '../types';
-import { HEARTS_VARIANTS } from '../lib/constants';
-import { resolveHeartsVariant } from '../lib/theme';
+import { HEARTS_THEMES } from '../lib/constants';
+import { resolveHeartsTheme } from '../lib/theme';
 import { RulesModal } from './RulesModal';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
@@ -40,7 +40,7 @@ const HEARTS_LOBBY_THEME = {
 };
 
 function resolveOptions(raw: unknown): {
-  variant: ReturnType<typeof resolveHeartsVariant>;
+  variant: ReturnType<typeof resolveHeartsTheme>;
   passingEnabled: boolean;
   targetScore: 50 | 100;
 } {
@@ -49,7 +49,7 @@ function resolveOptions(raw: unknown): {
     targetScore: number;
   }>;
   return {
-    variant: resolveHeartsVariant(raw),
+    variant: resolveHeartsTheme(raw),
     passingEnabled:
       typeof r.passingEnabled === 'boolean' ? r.passingEnabled : true,
     targetScore: r.targetScore === 50 ? 50 : 100,
@@ -80,8 +80,7 @@ export function HeartsLobby({
 
   const variantTokens = useMemo(
     () =>
-      HEARTS_VARIANTS.find((v) => v.id === options.variant) ??
-      HEARTS_VARIANTS[0],
+      HEARTS_THEMES.find((v) => v.id === options.variant) ?? HEARTS_THEMES[0],
     [options.variant],
   );
 
@@ -144,7 +143,7 @@ export function HeartsLobby({
       gameIcon="♥"
       variantName={t(variantTokens.name)}
       theme={getLobbyTheme(
-        HEARTS_VARIANTS,
+        HEARTS_THEMES,
         options.variant,
         HEARTS_LOBBY_THEME.fallbackLightGradient,
         HEARTS_LOBBY_THEME.buttonGradient,

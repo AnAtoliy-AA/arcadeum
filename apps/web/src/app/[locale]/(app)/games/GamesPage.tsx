@@ -12,6 +12,8 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useInfiniteQuery } from '@/shared/hooks/useInfiniteQuery';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi, GetRoomsResponse } from '@/features/games/api';
+import { gameMetadata } from '@/features/games/registry';
+import { GameCard } from '@/features/games/ui/GameCard';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import {
   gameSocket,
@@ -19,7 +21,6 @@ import {
   connectSocketsAnonymous,
 } from '@/shared/lib/socket';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
-import { gameMetadata } from '@/features/games/registry';
 import { GamesEmpty } from './components/GamesEmpty';
 import { GamesError } from './components/GamesError';
 import { GamesFilters } from './components/GamesFilters';
@@ -60,18 +61,13 @@ export default function GamesPage({
   const router = useRouter();
   const pathname = usePathname();
 
-  // URL state management
-  const selectedStatuses = useMemo<GamesStatusFilter>(
-    () => {
-      const raw = searchParams ? searchParams.get('status') : null;
-      if (raw === null || raw === undefined) {
-        return ['lobby', 'in_progress'];
-      }
-      return parseStatusFilterFromUrl(raw);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pathname triggers re-parse when navigating
-    [searchParams, pathname],
-  );
+  const selectedStatuses = useMemo<GamesStatusFilter>(() => {
+    const raw = searchParams ? searchParams.get('status') : null;
+    if (raw === null || raw === undefined) {
+      return [];
+    }
+    return parseStatusFilterFromUrl(raw);
+  }, [searchParams]);
   const participationFilter =
     (searchParams?.get('participation') as GamesParticipationFilter) || 'all';
   const aiVsAiFilter = parseAiVsAiFilterFromUrl(
@@ -157,6 +153,24 @@ export default function GamesPage({
     [updateParams],
   );
 
+  const handleClearAll = useCallback(() => {
+    setSearchQuery('');
+    setCategoryFilter('');
+    const currentParams = new URLSearchParams(
+      searchParamsRef.current?.toString() || '',
+    );
+    currentParams.delete('search');
+    currentParams.delete('category');
+    currentParams.delete('status');
+    currentParams.delete('aiVsAi');
+    currentParams.delete('participation');
+    currentParams.delete('page');
+
+    router.push(`${pathname}?${currentParams.toString()}`, {
+      scroll: false,
+    });
+  }, [pathname, router]);
+
   // Sync deferred search query to URL - only if it actually changed from current URL
   useEffect(() => {
     const currentUrlSearch = searchParamsRef.current?.get('search') || '';
@@ -217,8 +231,10 @@ export default function GamesPage({
       participationFilter,
       aiVsAiFilter,
       deferredSearchQuery,
+      categoryFilter || 'all',
       gameId ?? null,
       snapshot.accessToken,
+      snapshot.userId,
     ],
     queryFn: async ({ pageParam = 0 }) => {
       return gamesApi.getRooms(
@@ -230,13 +246,14 @@ export default function GamesPage({
           page: pageParam as number,
           limit: PAGE_SIZE,
           gameId,
+          categories: categoryFilter || undefined,
         },
         { token: snapshot.accessToken || undefined },
       );
     },
     getNextPageParam: (lastPage, allPages) => {
       const totalPages = Math.ceil(lastPage.total / PAGE_SIZE);
-      const nextPage = allPages.length; // 0-based: length of 1 means index 1 is next
+      const nextPage = allPages.length;
       return nextPage < totalPages ? nextPage : undefined;
     },
     initialPageParam: 0,
@@ -250,21 +267,30 @@ export default function GamesPage({
     useServerWakeUpProgress(isLoading);
 
   const rooms = useMemo(() => {
-    return data?.pages.flatMap((page) => page.rooms) || [];
+    const all = data?.pages.flatMap((page) => page.rooms) || [];
+    const seen = new Set<string>();
+    return all.filter((room) => {
+      if (seen.has(room.id)) return false;
+      seen.add(room.id);
+      return true;
+    });
   }, [data]);
 
   const sortedRooms = useMemo(() => {
-    const filtered = categoryFilter
-      ? rooms.filter((room) => {
-          const meta = gameMetadata[room.gameId as keyof typeof gameMetadata];
-          return meta?.category === categoryFilter;
-        })
-      : rooms;
-    return [...filtered].sort(
+    return [...rooms].sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
-  }, [rooms, categoryFilter]);
+  }, [rooms]);
+
+  const soloGames = useMemo(() => {
+    return Object.values(gameMetadata).filter(
+      (meta) =>
+        meta.minPlayers === 1 &&
+        meta.status !== 'coming_soon' &&
+        meta.status !== 'deprecated',
+    );
+  }, []);
 
   const error = queryError ? 'Failed to load rooms' : null;
 
@@ -278,6 +304,18 @@ export default function GamesPage({
     }
 
     if (sortedRooms.length === 0) {
+      if (categoryFilter === 'Puzzle' && soloGames.length > 0) {
+        return (
+          <>
+            <p className="text-sm text-[var(--textSecondary)] col-span-full">
+              These single-player games run in your browser — no room needed.
+            </p>
+            {soloGames.map((game) => (
+              <GameCard key={game.slug} game={game} showDetails />
+            ))}
+          </>
+        );
+      }
       return <GamesEmpty />;
     }
 
@@ -307,6 +345,7 @@ export default function GamesPage({
           aiVsAiFilter={aiVsAiFilter}
           onAiVsAiChange={handleAiVsAiChange}
           canFilterParticipation={!!snapshot.accessToken || !!snapshot.userId}
+          onClearAll={handleClearAll}
         />
 
         <GlassCard className={'p-6'}>
@@ -318,10 +357,9 @@ export default function GamesPage({
           />
 
           <div
-            className={`${styles.roomsContainer}${
+            className={`mt-6 ${styles.roomsContainer}${
               viewMode === 'list' ? ` ${styles.listView}` : ''
             }`}
-            style={{ marginTop: '1.5rem' }}
           >
             {renderContent()}
           </div>

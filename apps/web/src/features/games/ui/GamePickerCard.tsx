@@ -11,11 +11,12 @@ export interface GamePickerItem {
   description: string;
   genre: string;
   pace?: string;
-  category: 'all' | 'board' | 'card' | 'casual';
+  category: 'all' | 'board' | 'card' | 'casual' | 'puzzle';
   players: string;
   duration: string;
   isPlayable: boolean;
   isDemo?: boolean;
+  landingHref?: string;
 }
 
 interface GamePickerCardProps {
@@ -127,9 +128,15 @@ export function GamePickerCard({
           <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--color)]/5 text-[var(--color)] border border-[var(--borderColor)]">
             👥 {game.players}
           </span>
-          <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--color)]/5 text-[var(--color)] border border-[var(--borderColor)]">
-            🤖 AI Bot
-          </span>
+          {game.players === '1' ? (
+            <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--color)]/5 text-[var(--color)] border border-[var(--borderColor)]">
+              🧩 Solo
+            </span>
+          ) : (
+            <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--color)]/5 text-[var(--color)] border border-[var(--borderColor)]">
+              🤖 AI Bot
+            </span>
+          )}
           <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30 font-semibold">
             ⚡ Quick Play
           </span>

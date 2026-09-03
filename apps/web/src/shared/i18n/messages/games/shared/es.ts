@@ -31,8 +31,12 @@ export const esMessages = {
         joined: 'Unido',
         not_joined: 'No unido',
       },
-      aiVsAiLabel: 'Modalidad',
-      aiVsAi: 'IA contra IA',
+      aiVsAiLabel: 'Modo',
+      aiVsAi: 'IA vs IA',
+      clearAll: 'Limpiar todo',
+      moreFilters: 'Más filtros',
+      hideFilters: 'Menos filtros',
+      activeFiltersCount: '{{count}} activos',
     },
   },
   aiVsAi: {
@@ -51,6 +55,7 @@ export const esMessages = {
       completeTitle: '¡Tutorial completado!',
       completeBody:
         'Genial: ya conoces los fundamentos de {{game}}. ¡Buena suerte en la mesa!',
+      close: 'Cerrar',
     },
   },
   rooms: {
@@ -125,6 +130,15 @@ export const esMessages = {
     actions: {
       backToHome: 'Volver al Inicio',
     },
+    postGame: {
+      whatNext: '¿Qué sigue?',
+      challengeFriend: 'Desafiar a un Amigo',
+      shareResult: 'Compartir Resultado',
+      playAnother: 'Jugar Otra Partida',
+      linkCopied: '¡Enlace copiado!',
+      rewardsPrompt: '¿Necesitas más gemas? ¡Suscríbete a nuestras redes!',
+      rewardsClaim: 'Reclamar',
+    },
     deleteRoom: {
       button: 'Eliminar sala',
       confirmTitle: 'Eliminar sala',
@@ -173,6 +187,7 @@ export const esMessages = {
     submitCreating: 'Creando...',
     comingSoon: 'Próximamente',
     sectionHouseRules: 'Reglas de la Casa',
+    sectionLobbySettings: 'Configuración del Lobby',
     sectionGameConfig: 'Configuración del Juego',
     houseRuleActionCardCombos: 'Combos de Cartas de Acción',
     houseRuleActionCardCombosHint: 'Cualquier par',
@@ -541,6 +556,21 @@ export const esMessages = {
     cancel: 'Cancelar búsqueda',
     estimatedWait: 'Espera estimada: ~{{seconds}}s',
     queuePosition: 'Posición en la cola: {{position}} de {{total}}',
+    playersAheadSingle: '1 jugador por delante',
+    playersAheadMultiple: '{{count}} jugadores por delante',
+    nextInLine: '¡Eres el siguiente en la fila! El próximo partido es tuyo.',
+    playersInQueue: '{{count}} buscando en este juego',
+    activeQueuesTitle: 'Jugadores activos en otros juegos',
+    switchGame: 'Cambiar a {{game}}',
+    playAiNow: 'Jugar contra IA ahora',
+    minimize: 'Minimizar',
+    expand: 'Expandir',
+    modeCasual: 'Casual',
+    modeRanked: 'Clasificatorio',
+    noRoomsSuggestTitle: 'No hay salas abiertas',
+    noRoomsSuggestSubtitle:
+      '¡Crea tu propia sala y espera a que se unan jugadores!',
+    createRoomAction: 'Crear sala',
   },
   ranking: {
     ratingUpdated: 'Rating actualizado',

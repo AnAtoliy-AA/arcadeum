@@ -47,8 +47,8 @@ function TabButton({
       className={cx(
         'flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all',
         active
-          ? 'border border-white/20 bg-white/15 text-white shadow-[0_0_12px_rgba(255,255,255,0.12)]'
-          : 'border border-transparent text-white/40 hover:bg-white/5 hover:text-white/70',
+          ? 'border border-[var(--glassBorderStrong)] bg-[var(--backgroundHover)] text-[var(--color)] shadow-sm'
+          : 'border border-transparent text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--color)]',
       )}
     >
       <span>{icon}</span>
@@ -84,7 +84,7 @@ export function PostGameAnalytics({
 
   return (
     <div className="flex w-full flex-col gap-3.5">
-      <div className="flex flex-wrap gap-1.5 border-b border-white/10 pb-2.5">
+      <div className="flex flex-wrap gap-1.5 border-b border-[var(--glassBorder)] pb-2.5">
         <TabButton
           active={activeTab === 'moves'}
           onClick={() => handleTabChange('moves')}

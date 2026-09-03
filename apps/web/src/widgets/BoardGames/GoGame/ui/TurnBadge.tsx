@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { InGameAvatar } from '@/features/games/ui';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
@@ -60,7 +60,9 @@ function TurnBadgeImpl({
             'text-sm font-semibold',
             !isGameOver && myTurn ? 'text-[#0b2417]' : '',
           )}
-          style={!myTurn || isGameOver ? { color: 'var(--foreground)' } : undefined}
+          style={
+            !myTurn || isGameOver ? { color: 'var(--foreground)' } : undefined
+          }
         >
           {label}
         </span>

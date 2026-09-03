@@ -1,7 +1,8 @@
 'use client';
 
 import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
-import { GameWidgetContainer, GameEndModals } from '@/features/games/ui';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -23,8 +24,8 @@ import { HeartsLobby } from './HeartsLobby';
 import { HeartsBoard } from './HeartsBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
-import { HEARTS_VARIANTS } from '../lib/constants';
-import { resolveHeartsVariant } from '../lib/theme';
+import { HEARTS_THEMES } from '../lib/constants';
+import { resolveHeartsTheme } from '../lib/theme';
 
 function HeartsGameImpl({
   roomId,
@@ -135,14 +136,13 @@ function HeartsGameImpl({
   });
 
   const options = useMemo(
-    () => ({ variant: resolveHeartsVariant(room?.gameOptions) }),
+    () => ({ variant: resolveHeartsTheme(room?.gameOptions) }),
     [room?.gameOptions],
   );
 
   const variantTokens = useMemo(
     () =>
-      HEARTS_VARIANTS.find((v) => v.id === options.variant) ??
-      HEARTS_VARIANTS[0],
+      HEARTS_THEMES.find((v) => v.id === options.variant) ?? HEARTS_THEMES[0],
     [options.variant],
   );
 
@@ -271,7 +271,11 @@ function HeartsGameImpl({
           backLabel: t('games.table.analytics.back'),
         }}
       />
-      <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
+      <RulesModal
+        open={showRulesOpen}
+        onClose={onShowRulesClose}
+        variant={visualTheme}
+      />
     </>
   );
 

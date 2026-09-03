@@ -58,40 +58,17 @@ export function MoveList({ state, t: _t, onMoveHover }: MoveListProps) {
   }, [state]);
 
   return (
-    <div
-      style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <span
-          style={{
-            fontSize: 11,
-            color: 'rgba(148, 163, 184, 0.5)',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-          }}
-        >
+    <div className="flex flex-col gap-2 mt-1">
+      <div className="flex justify-between items-center">
+        <span className="text-[11px] text-[var(--textSecondary)] font-semibold uppercase tracking-wider">
           MOVES
         </span>
-        <div style={{ display: 'flex', gap: 12 }}>
+        <div className="flex gap-3">
           {pairs.length > 8 && (
             <button
               type="button"
               onClick={() => setExpanded(!expanded)}
-              style={{
-                fontSize: 11,
-                color: 'rgba(148, 163, 184, 0.5)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-              }}
+              className="text-[11px] text-[var(--textSecondary)] hover:text-[var(--color)] bg-transparent border-0 cursor-pointer p-0 transition-colors"
             >
               {expanded ? 'Show less' : `Show all (${pairs.length})`}
             </button>
@@ -99,81 +76,36 @@ export function MoveList({ state, t: _t, onMoveHover }: MoveListProps) {
           <button
             type="button"
             onClick={handleCopyPGN}
-            style={{
-              fontSize: 11,
-              color: copied ? '#22c55e' : 'rgba(148, 163, 184, 0.5)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
+            className={`text-[11px] bg-transparent border-0 cursor-pointer p-0 transition-colors ${
+              copied
+                ? 'text-emerald-500 font-semibold'
+                : 'text-[var(--textSecondary)] hover:text-[var(--color)]'
+            }`}
           >
             {copied ? 'Copied!' : 'Copy PGN'}
           </button>
         </div>
       </div>
-      <div
-        style={{
-          maxHeight: 240,
-          overflowY: 'auto',
-          padding: '8px 12px',
-          borderRadius: 10,
-          backgroundColor: 'rgba(15, 20, 30, 0.6)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
-          minHeight: 60,
-        }}
-      >
+      <div className="max-h-[240px] overflow-y-auto p-2.5 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)] min-h-[60px]">
         {pairs.length === 0 && (
-          <div
-            style={{
-              fontSize: 12,
-              color: 'rgba(148, 163, 184, 0.4)',
-              textAlign: 'center',
-              padding: '16px 0',
-            }}
-          >
+          <div className="text-xs text-[var(--textSecondary)] text-center py-4">
             No moves yet
           </div>
         )}
         {visiblePairs.map((pair) => (
           <div
             key={pair.num}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '4px 0',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
-            }}
+            className="flex items-center py-1 border-b border-[var(--glassBorder)] last:border-b-0"
           >
-            <span
-              style={{
-                width: 32,
-                fontSize: 12,
-                color: 'rgba(148, 163, 184, 0.4)',
-                textAlign: 'right',
-                paddingRight: 8,
-              }}
-            >
+            <span className="w-8 text-xs text-[var(--textSecondary)] text-right pr-2">
               {pair.num}.
             </span>
             <span
-              style={{
-                flex: 1,
-                fontSize: 13,
-                fontWeight: 500,
-                color:
-                  hoveredMove === pair.whiteIdx
-                    ? '#f8fafc'
-                    : 'rgba(248, 250, 252, 0.7)',
-                padding: '2px 8px',
-                borderRadius: 4,
-                backgroundColor:
-                  hoveredMove === pair.whiteIdx
-                    ? 'rgba(56, 189, 248, 0.15)'
-                    : 'transparent',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-              }}
+              className={`flex-1 text-xs font-medium px-2 py-0.5 rounded cursor-pointer transition-colors ${
+                hoveredMove === pair.whiteIdx
+                  ? 'bg-sky-500/20 text-[var(--color)] font-bold'
+                  : 'text-[var(--color)] hover:bg-[var(--backgroundHover)]'
+              }`}
               onMouseEnter={() => {
                 setHoveredMove(pair.whiteIdx);
                 onMoveHover?.(pair.whiteIdx);
@@ -186,23 +118,11 @@ export function MoveList({ state, t: _t, onMoveHover }: MoveListProps) {
               {pair.white}
             </span>
             <span
-              style={{
-                flex: 1,
-                fontSize: 13,
-                fontWeight: 500,
-                color:
-                  hoveredMove === pair.blackIdx
-                    ? '#f8fafc'
-                    : 'rgba(148, 163, 184, 0.6)',
-                padding: '2px 8px',
-                borderRadius: 4,
-                backgroundColor:
-                  hoveredMove === pair.blackIdx
-                    ? 'rgba(56, 189, 248, 0.15)'
-                    : 'transparent',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-              }}
+              className={`flex-1 text-xs font-medium px-2 py-0.5 rounded cursor-pointer transition-colors ${
+                hoveredMove === pair.blackIdx
+                  ? 'bg-sky-500/20 text-[var(--color)] font-bold'
+                  : 'text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--color)]'
+              }`}
               onMouseEnter={() => {
                 setHoveredMove(pair.blackIdx);
                 onMoveHover?.(pair.blackIdx);

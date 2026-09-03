@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { PageLayout } from '@arcadeum/ui';
-import MinesweeperGame from '@/widgets/PuzzleGames/MinesweeperGame';
+import { MinesweeperGameClient } from './MinesweeperGameClient';
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -29,7 +29,7 @@ export default async function MinesweeperPlayRoute({ params }: PageProps) {
   return (
     <PageLayout>
       <div className="box-border min-h-screen py-6">
-        <MinesweeperGame />
+        <MinesweeperGameClient />
       </div>
     </PageLayout>
   );

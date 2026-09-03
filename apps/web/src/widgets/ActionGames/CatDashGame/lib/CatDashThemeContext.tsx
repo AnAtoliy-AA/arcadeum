@@ -2,11 +2,11 @@
 
 import { createContext, useContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import type { CatDashVariant } from '../types';
+import type { CatDashTheme } from '../types';
 import { getTheme, type CatDashThemeTokens } from './theme';
 
 interface CatDashThemeContextValue {
-  variant: CatDashVariant;
+  variant: CatDashTheme;
   tokens: CatDashThemeTokens;
 }
 
@@ -18,7 +18,7 @@ export function CatDashThemeProvider({
   variant,
   children,
 }: {
-  variant: CatDashVariant;
+  variant: CatDashTheme;
   children: ReactNode;
 }) {
   const tokens = useMemo(() => getTheme(variant), [variant]);

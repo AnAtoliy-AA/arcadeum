@@ -43,7 +43,7 @@ export const ViewToggle = ({
 }) => (
   <div
     className={cx(
-      'overflow-hidden rounded-[10px] border border-[var(--borderColor)] max-[768px]:hidden',
+      'overflow-hidden rounded-[10px] border border-[var(--glassBorderStrong)] max-[768px]:hidden',
       className,
     )}
   >
@@ -62,9 +62,9 @@ export const Filters = ({
 }) => (
   <div
     className={cx(
-      'flex w-full max-w-full flex-wrap items-center gap-x-6 gap-y-5',
-      'rounded-[16px] border border-[var(--borderColor)] bg-[var(--background)] px-9 py-5',
-      'max-[768px]:px-3',
+      'flex w-full max-w-full flex-col gap-4',
+      'rounded-2xl border border-[var(--glassBorderStrong)] bg-[var(--background)] p-4 sm:p-5',
+      'shadow-sm backdrop-blur-md',
       className,
     )}
   >
@@ -81,7 +81,7 @@ export const FilterGroup = ({
 }) => (
   <div
     className={cx(
-      'flex max-w-full min-w-[150px] flex-col items-start gap-1 p-1',
+      'flex w-full max-w-full flex-col items-start gap-1.5',
       className,
     )}
   >
@@ -98,7 +98,7 @@ export const FilterLabel = ({
 }) => (
   <span
     className={cx(
-      'mb-1 select-none text-[14px] font-bold uppercase tracking-[1.5px] text-[var(--color)] opacity-80',
+      'select-none text-[12px] font-bold uppercase tracking-[1.2px] text-[var(--textSecondary)]',
       className,
     )}
   >
@@ -113,7 +113,13 @@ export const FilterChips = ({
   className?: string;
   children?: ReactNode;
 }) => (
-  <div className={cx('flex flex-wrap gap-[0.6rem] px-1 py-2', className)}>
+  <div
+    className={cx(
+      'flex w-full max-w-full items-center gap-2 overflow-x-auto py-1 scrollbar-none',
+      'flex-nowrap md:flex-wrap',
+      className,
+    )}
+  >
     {children}
   </div>
 );

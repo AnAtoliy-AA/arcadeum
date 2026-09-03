@@ -6,8 +6,6 @@
  * render on the home route:
  *   animations-pages   — PageLayout glass bg, StartButton glow, shop FX,
  *                        victory celebration FX
- *   download-buttons   — StaticDownloadButtons (InstallAppCta widget)
  */
 
-@use '_download-buttons' as *;
 @use '../../../../styles/animations-pages' as *;

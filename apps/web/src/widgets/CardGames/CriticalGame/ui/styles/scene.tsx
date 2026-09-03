@@ -1,5 +1,3 @@
-'use client';
-
 import type { CSSProperties, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';

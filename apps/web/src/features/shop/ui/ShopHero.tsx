@@ -56,7 +56,7 @@ function HeroFrame({
     <div
       style={style}
       className={cx(
-        'w-full px-5 py-5 rounded-3xl border border-[rgba(255,255,255,0.08)] overflow-hidden relative shrink-0 max-[800px]:min-h-[400px]',
+        'w-full px-5 py-5 rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)] overflow-hidden relative shrink-0 max-[800px]:min-h-[400px]',
         className,
       )}
     >
@@ -260,18 +260,16 @@ export function ShopHero({
               <Typography
                 uiSize="xl"
                 variant="heading"
-                color="#f5f7ff"
+                color="var(--color)"
                 className="max-w-[640px]"
-                style={{
-                  backgroundImage: `linear-gradient(135deg, ${accent}, #ffffff)`,
-                  WebkitBackgroundClip: 'text',
-                  backgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
               >
                 {itemName}
               </Typography>
-              <Typography uiSize="lg" color="#94a3b8" className="max-w-[640px]">
+              <Typography
+                uiSize="lg"
+                color="var(--textSecondary)"
+                className="max-w-[640px]"
+              >
                 {itemDesc} {labels.bodySuffix}
               </Typography>
             </div>
@@ -295,7 +293,7 @@ export function ShopHero({
                 <Typography
                   uiSize="md"
                   weight="800"
-                  color={action === 'buy' ? '#0a0a0a' : '#f5f7ff'}
+                  color={action === 'buy' ? '#0a0a0a' : 'var(--color)'}
                 >
                   {actionLabel}
                 </Typography>
@@ -308,12 +306,12 @@ export function ShopHero({
               </Button>
               <Link href="#shop-rail" style={{ textDecoration: 'none' }}>
                 <div
-                  className="flex flex-row items-center gap-6 px-3 py-2 rounded-xl border border-[rgba(255,255,255,0.14)] cursor-pointer hover:border-[rgba(255,255,255,0.32)] hover:bg-[rgba(255,255,255,0.04)]"
+                  className="flex flex-row items-center gap-6 px-3 py-2 rounded-xl border border-[var(--glassBorder)] cursor-pointer hover:border-[var(--glassBorderHover)] hover:bg-[var(--glassBgHover)]"
                   onMouseEnter={handleHoverOn}
                   onMouseLeave={handleHoverOff}
                   data-testid="shop-hero-tryon"
                 >
-                  <Typography uiSize="md" weight="700" color="#f5f7ff">
+                  <Typography uiSize="md" weight="700" color="var(--color)">
                     {labels.tryOn} →
                   </Typography>
                 </div>

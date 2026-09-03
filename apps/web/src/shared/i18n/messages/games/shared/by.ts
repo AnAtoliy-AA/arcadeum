@@ -31,7 +31,11 @@ export const byMessages = {
         not_joined: 'Не ўдзельнічаю',
       },
       aiVsAiLabel: 'Рэжым',
-      aiVsAi: 'ШІ супраць ШІ',
+      aiVsAi: 'ІІ супраць ІІ',
+      clearAll: 'Ачысціць усё',
+      moreFilters: 'Яшчэ фільтры',
+      hideFilters: 'Схаваць фільтры',
+      activeFiltersCount: '{{count}} актыўных',
     },
   },
   aiVsAi: {
@@ -50,6 +54,7 @@ export const byMessages = {
       completeTitle: 'Навучанне завершана!',
       completeBody:
         'Выдатна — цяпер вы ведаеце асновы гульні {{game}}. Поспеху за сталом!',
+      close: 'Закрыць',
     },
   },
   rooms: {
@@ -124,6 +129,15 @@ export const byMessages = {
     actions: {
       backToHome: 'На галоўную',
     },
+    postGame: {
+      whatNext: 'Што далей?',
+      challengeFriend: 'Выклікаць сябра',
+      shareResult: 'Падзяліцца вынікам',
+      playAnother: 'Згуляць яшчэ',
+      linkCopied: 'Спасылка скапіявана!',
+      rewardsPrompt: 'Патрэбна больш гемаў? Падпішыцеся на сацсеткі!',
+      rewardsClaim: 'Забраць',
+    },
     deleteRoom: {
       button: 'Выдаліць залу',
       confirmTitle: 'Выдаліць залу',
@@ -172,6 +186,7 @@ export const byMessages = {
     submitCreating: 'Стварэнне...',
     comingSoon: 'Хутка',
     sectionHouseRules: 'Хатнія правілы',
+    sectionLobbySettings: 'Налады лобі',
     sectionGameConfig: 'Налады гульні',
     houseRuleActionCardCombos: 'Комба карт дзеянняў',
     houseRuleActionCardCombosHint: 'Любыя пары',
@@ -534,6 +549,21 @@ export const byMessages = {
     cancel: 'Скасаваць пошук',
     estimatedWait: 'Чаканне: ~{{seconds}} с',
     queuePosition: 'Пазіцыя ў чарзе: {{position}} з {{total}}',
+    playersAheadSingle: '1 гулец перад вамі',
+    playersAheadMultiple: '{{count}} гульцоў перад вамі',
+    nextInLine: 'Вы наступны ў чарзе! Наступны матч ваш.',
+    playersInQueue: '{{count}} у пошуку гэтай гульні',
+    activeQueuesTitle: 'Актыўныя гульцы ў іншых гульнях',
+    switchGame: 'Перайсці ў {{game}}',
+    playAiNow: 'Згуляць з ШІ зараз',
+    minimize: 'Згарнуць',
+    expand: 'Разгарнуць',
+    modeCasual: 'Звычайны',
+    modeRanked: 'Рэйтынгавы',
+    noRoomsSuggestTitle: 'Няма адкрытых пакояў',
+    noRoomsSuggestSubtitle:
+      'Стварыце свой пакой і чакайце падключэння гульцоў!',
+    createRoomAction: 'Стварыць пакой',
   },
   ranking: {
     ratingUpdated: 'Рэйтынг абноўлены',

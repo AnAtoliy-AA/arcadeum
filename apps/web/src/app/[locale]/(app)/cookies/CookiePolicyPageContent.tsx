@@ -70,13 +70,7 @@ export default function CookiePolicyPageContent({
           data-testid="cookies-page-wrapper"
         >
           {/* Hero Header */}
-          <GlassCard
-            style={{
-              background:
-                'radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.6) 80%)',
-            }}
-            className="items-center text-center p-9"
-          >
+          <GlassCard className="items-center text-center p-9 border border-[var(--glassBorder)] bg-[var(--glassBg)]">
             <div className="flex flex-col gap-3 items-center max-w-[720px]">
               <Badge accent="#38BDF8">
                 {(t as { badge?: string } | undefined)?.badge ||
@@ -97,7 +91,7 @@ export default function CookiePolicyPageContent({
                 <Typography
                   variant="caption"
                   alpha="medium"
-                  className="text-xs uppercase tracking-wider text-sky-300 font-semibold"
+                  className="text-xs uppercase tracking-wider text-[var(--textSecondary)] font-semibold"
                 >
                   {t.lastUpdated}
                 </Typography>
@@ -107,7 +101,7 @@ export default function CookiePolicyPageContent({
                 variant="body"
                 uiSize="lg"
                 alpha="high"
-                className="mt-2 text-slate-300"
+                className="mt-2 text-[var(--textSecondary)]"
               >
                 Learn how {APP_NAME} uses cookies and web storage to enhance
                 your gaming experience, remember settings, and protect user
@@ -118,21 +112,21 @@ export default function CookiePolicyPageContent({
               <div className="flex flex-wrap gap-3 justify-center mt-4">
                 <Link
                   href={routes.terms}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-indigo-400/40 hover:bg-white/10 text-xs font-semibold text-indigo-300 transition-all no-underline"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)] hover:border-[var(--glassBorderStrong)] text-xs font-semibold text-[var(--color)] transition-all no-underline"
                 >
                   <FileTextIcon size={14} />
                   Terms of Service
                 </Link>
                 <Link
                   href={routes.privacy}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-sky-400/40 hover:bg-white/10 text-xs font-semibold text-sky-300 transition-all no-underline"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)] hover:border-[var(--glassBorderStrong)] text-xs font-semibold text-[var(--color)] transition-all no-underline"
                 >
                   <ShieldIcon size={14} />
                   Privacy Policy
                 </Link>
                 <Link
                   href={routes.contact}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-emerald-400/40 hover:bg-white/10 text-xs font-semibold text-emerald-300 transition-all no-underline"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)] hover:border-[var(--glassBorderStrong)] text-xs font-semibold text-[var(--color)] transition-all no-underline"
                 >
                   <MailIcon size={14} />
                   Contact Support
@@ -162,16 +156,16 @@ export default function CookiePolicyPageContent({
                   <GlassCard
                     key={key}
                     id={`section-${key}`}
-                    className="p-7 bg-slate-900/60 border-white/10 rounded-2xl flex flex-col gap-4"
+                    className="p-7 bg-[var(--glassBg)] border-[var(--glassBorder)] rounded-2xl flex flex-col gap-4"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-500 dark:text-sky-400 shrink-0">
                         <LockIcon size={20} />
                       </div>
                       <Typography
                         variant="heading"
                         uiSize="md"
-                        className="font-bold"
+                        className="font-bold text-[var(--color)]"
                       >
                         {sec.title}
                       </Typography>
@@ -182,7 +176,7 @@ export default function CookiePolicyPageContent({
                         variant="body"
                         uiSize="md"
                         alpha="high"
-                        className="text-slate-300 leading-relaxed"
+                        className="text-[var(--textSecondary)] leading-relaxed"
                       >
                         {sec.intro}
                       </Typography>
@@ -193,14 +187,14 @@ export default function CookiePolicyPageContent({
                         variant="body"
                         uiSize="md"
                         alpha="high"
-                        className="text-slate-300 leading-relaxed"
+                        className="text-[var(--textSecondary)] leading-relaxed"
                       >
                         {sec.content}
                       </Typography>
                     )}
 
                     {sec.items && sec.items.length > 0 && (
-                      <ul className="flex flex-col gap-2 pl-4 list-disc text-slate-300 text-sm mt-1">
+                      <ul className="flex flex-col gap-2 pl-4 list-disc text-[var(--textSecondary)] text-sm mt-1">
                         {sec.items.map((item, index) => (
                           <li key={index} className="leading-relaxed">
                             {item}

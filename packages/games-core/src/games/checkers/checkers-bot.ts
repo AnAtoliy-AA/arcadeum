@@ -4,7 +4,7 @@ import type {
   MovePayload,
   MoveStep,
 } from './checkers.types';
-import { RULE_VARIANT_CONFIGS } from './checkers.constants';
+import { MODE_CONFIGS } from './checkers.constants';
 import {
   findCaptures,
   findAllCapturesForPlayer,
@@ -41,7 +41,7 @@ export class CheckersBot {
     const playerColor = getPlayerColor(state, botId);
     if (!playerColor) return null;
 
-    const ruleConfig = RULE_VARIANT_CONFIGS[state.options.ruleVariant];
+    const ruleConfig = MODE_CONFIGS[state.options.mode];
     const backwardCaptures =
       state.options.backwardCaptures || ruleConfig.backwardCapturesForMen;
     const flyingKings = ruleConfig.flyingKings;

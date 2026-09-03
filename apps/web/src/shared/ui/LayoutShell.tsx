@@ -3,7 +3,11 @@
 import { type ReactNode, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { ConnectionBanner } from './ConnectionBanner';
+
+const ConnectionBanner = dynamic(
+  () => import('./ConnectionBanner').then((m) => m.ConnectionBanner),
+  { ssr: false },
+);
 
 const GameMusic = dynamic(
   () => import('@/widgets/GameMusic').then((m) => m.GameMusic),

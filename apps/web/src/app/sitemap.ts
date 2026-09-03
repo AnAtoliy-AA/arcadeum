@@ -79,7 +79,7 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   rewards: '2026-05-05',
   tournaments: '2026-05-15',
   wallet: '2026-05-05',
-  seaBattleLanding: '2026-05-18',
+  seaBattleLanding: '2026-08-29',
   criticalLanding: '2026-05-21',
   glimwormLanding: '2026-05-21',
   ticTacToeLanding: '2026-05-21',

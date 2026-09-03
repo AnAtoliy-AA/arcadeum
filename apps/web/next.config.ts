@@ -144,6 +144,13 @@ const cspConnectSrc = process.env.CSP_CONNECT_SRC
   ? (JSON.parse(process.env.CSP_CONNECT_SRC) as string[])
   : defaultConnectSrc;
 
+// Always include the CDN URL in connect-src so fetch() to tracks.json works,
+// even when CSP_CONNECT_SRC override is set.
+const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL || '';
+if (cdnUrl && !cspConnectSrc.includes(cdnUrl)) {
+  cspConnectSrc.push(cdnUrl);
+}
+
 const cspScriptSrc = [
   "'unsafe-inline'",
   'https://vercel.live',
@@ -341,7 +348,7 @@ const nextConfig: NextConfig = {
               key: 'Cache-Control',
               value: isDev
                 ? 'no-cache, no-store, must-revalidate'
-                : 'public, max-age=0, must-revalidate, stale-while-revalidate=59',
+                : 'public, s-maxage=60, stale-while-revalidate=300',
             },
           ],
         }));
@@ -402,7 +409,19 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@arcadeum/ui', '@arcadeum/games-core'],
   experimental: {
     inlineCss: true,
-    optimizePackageImports: ['lucide-react', '@arcadeum/ui'],
+    optimizePackageImports: [
+      'lucide-react',
+      '@arcadeum/ui',
+      'recharts',
+      '@dnd-kit/core',
+      '@dnd-kit/sortable',
+      '@dnd-kit/utilities',
+      'pixi.js',
+      'pixi-filters',
+      'qrcode.react',
+      'posthog-js',
+      'zustand',
+    ],
   },
   // Needed so Turbopack accepts the PWA plugin's webpack config in Next 16.
   turbopack: {

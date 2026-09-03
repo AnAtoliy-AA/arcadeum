@@ -1,5 +1,6 @@
 import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import type { Connection } from 'mongoose';
+import type Redis from 'ioredis';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import {
   GameSessionsService,
@@ -47,6 +48,7 @@ export abstract class BaseGameService<
     protected readonly botService: BotService,
     mongoConnection: Connection,
     preCheck?: PreCheckFn,
+    private readonly redis?: Redis | null,
   ) {
     this.mongoConnection = mongoConnection;
     this.preCheck = preCheck;
@@ -68,6 +70,8 @@ export abstract class BaseGameService<
         this.botService,
         this.mongoConnection,
         this.preCheck,
+        this.redis ?? undefined,
+        this.realtimeService.getSocketServer() ?? undefined,
       );
     }
     return this.watchdogInstance;

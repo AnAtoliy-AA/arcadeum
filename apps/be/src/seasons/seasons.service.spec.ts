@@ -24,11 +24,20 @@ function chain(resolvedValue: unknown) {
   return { exec: jest.fn().mockResolvedValue(resolvedValue) };
 }
 
+function createChainableQuery(val: unknown = []) {
+  const query: Record<string, jest.Mock> = {};
+  query.select = jest.fn().mockReturnValue(query);
+  query.sort = jest.fn().mockReturnValue(query);
+  query.skip = jest.fn().mockReturnValue(query);
+  query.limit = jest.fn().mockReturnValue(query);
+  query.lean = jest.fn().mockReturnValue(query);
+  query.exec = jest.fn().mockResolvedValue(val);
+  return query;
+}
+
 function makeModel(overrides: Partial<AnyModel> = {}): AnyModel {
   return {
-    findOne: jest.fn().mockReturnValue({
-      lean: jest.fn().mockReturnValue(chain(null)),
-    }),
+    findOne: jest.fn().mockImplementation(() => createChainableQuery(null)),
     findOneAndUpdate: jest
       .fn()
       .mockImplementation(
@@ -38,9 +47,7 @@ function makeModel(overrides: Partial<AnyModel> = {}): AnyModel {
             .mockReturnValue(chain(opts?.new ? makeLeanSeason() : null)),
         }),
       ),
-    find: jest.fn().mockReturnValue({
-      lean: jest.fn().mockReturnValue(chain([])),
-    }),
+    find: jest.fn().mockImplementation(() => createChainableQuery([])),
     updateOne: jest.fn().mockReturnValue(chain({})),
     aggregate: jest.fn().mockReturnValue(chain([{ entries: [], total: [] }])),
     ...overrides,
@@ -348,19 +355,16 @@ describe('SeasonsService', () => {
 
   describe('listSeasons', () => {
     it('clamps the requested limit', async () => {
-      const limit = jest.fn().mockReturnValue({
-        lean: jest.fn().mockReturnValue(chain([])),
-      });
-      const sort = jest.fn().mockReturnValue({ limit });
+      const query = createChainableQuery([]);
       const seasonModel = makeModel({
-        find: jest.fn().mockReturnValue({ sort }),
+        find: jest.fn().mockReturnValue(query),
       });
       const service = buildService(seasonModel);
 
       await service.listSeasons(100_000);
 
-      expect(limit).toHaveBeenCalledWith(50);
-      expect(sort).toHaveBeenCalledWith({ endsAt: -1 });
+      expect(query.limit).toHaveBeenCalledWith(50);
+      expect(query.sort).toHaveBeenCalledWith({ endsAt: -1 });
     });
   });
 });

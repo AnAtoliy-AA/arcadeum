@@ -260,11 +260,35 @@ test.describe('Anonymous Play', () => {
       {},
     );
 
-    await expect(
-      newPage
-        .getByText('Waiting for host to start the game')
-        .or(newPage.getByText('Players in Lobby'))
-        .first(),
-    ).toBeVisible();
+    await expect(newPage.getByTestId('player-count-heading')).toBeVisible();
+  });
+
+  test('should display own created room for anonymous user in rooms list', async ({
+    page,
+  }) => {
+    await page.route('**/games/rooms*', async (route) => {
+      await handleRoute(route, {
+        rooms: [
+          {
+            id: MOCK_OBJECT_ID,
+            gameId: 'critical_v1',
+            name: 'Anon Created Room',
+            hostId: anonymousId,
+            visibility: 'public',
+            playerCount: 1,
+            maxPlayers: 4,
+            status: 'lobby',
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        total: 1,
+      });
+    });
+
+    await navigateTo(page, routes.rooms);
+
+    await expect(async () => {
+      await expect(page.getByText('Anon Created Room')).toBeVisible();
+    }).toPass({});
   });
 });

@@ -2,20 +2,20 @@
 
 import { useMemo, useCallback } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
-  ReusableGameLobby,
   LobbyOptionSection,
   LobbyChipGroup,
   LobbyToggle,
-  GameThemePicker,
-  getLobbyTheme,
-} from '@/features/games/ui';
+} from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { CASCADE_VARIANTS } from '../lib/constants';
+import { CASCADE_THEMES } from '../lib/constants';
 import {
   type CascadeMode,
   type CascadeOptions,
-  type CascadeVariant,
+  type CascadeTheme,
   MIN_PLAYERS,
 } from '../types';
 import { RulesModal } from './RulesModal';
@@ -54,7 +54,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
   const mode: CascadeMode = knownModes.includes(r.mode as CascadeMode)
     ? (r.mode as CascadeMode)
     : 'classic';
-  const theme = (r.theme ?? r.variant ?? 'adventure') as CascadeVariant;
+  const theme = (r.theme ?? r.variant ?? 'adventure') as CascadeTheme;
   return {
     variant: theme,
     theme,
@@ -95,8 +95,7 @@ export function CascadeLobby({
 
   const variantTokens = useMemo(
     () =>
-      CASCADE_VARIANTS.find((v) => v.id === options.variant) ??
-      CASCADE_VARIANTS[0],
+      CASCADE_THEMES.find((v) => v.id === options.variant) ?? CASCADE_THEMES[0],
     [options.variant],
   );
 
@@ -191,7 +190,7 @@ export function CascadeLobby({
       gameIcon={variantTokens.emoji}
       variantName={t(variantTokens.name)}
       theme={getLobbyTheme(
-        CASCADE_VARIANTS,
+        CASCADE_THEMES,
         options.variant,
         CASCADE_LOBBY_THEME.fallbackLightGradient,
         CASCADE_LOBBY_THEME.buttonGradient,

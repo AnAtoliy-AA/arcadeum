@@ -1,5 +1,3 @@
-'use client';
-
 import { GlassCard } from '@arcadeum/ui/components/GlassCard/GlassCard';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { GithubIcon } from './ContactView.icons';
@@ -122,11 +120,7 @@ export function ContactSidePanel({
         <div className="flex flex-row items-center gap-2 -mt-2">
           <span
             aria-hidden="true"
-            className="h-[9px] w-[9px] rounded-full shrink-0"
-            style={{
-              background: '#34d399',
-              boxShadow: '0 0 8px #34d399',
-            }}
+            className="h-[9px] w-[9px] rounded-full shrink-0 bg-emerald-400 shadow-[0_0_8px_#34d399]"
           />
           <Typography weight="700">
             {side?.statusTitle ?? 'All systems operational'}

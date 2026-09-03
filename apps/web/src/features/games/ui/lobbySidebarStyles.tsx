@@ -12,7 +12,7 @@ export const Sidebar = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-stretch gap-4 w-[300px] shrink-0 max-[1023px]:w-full max-[800px]:w-full',
+      'flex flex-col items-stretch gap-3 w-[300px] shrink-0 max-[1023px]:w-full max-[800px]:w-full',
       className,
     )}
   >
@@ -29,7 +29,7 @@ export const LobbyCard = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-stretch bg-[rgba(99,102,241,0.08)] rounded-[16px] p-5 relative overflow-hidden border border-[rgba(99,102,241,0.15)]',
+      'flex flex-col items-stretch bg-[rgba(99,102,241,0.08)] rounded-[16px] p-5 max-[800px]:p-3 relative overflow-hidden border border-[rgba(99,102,241,0.15)]',
       className,
     )}
   >
@@ -54,7 +54,10 @@ export const CardHeader = ({
   children?: ReactNode;
 }) => (
   <div
-    className={cx('flex flex-row items-center justify-between mb-4', className)}
+    className={cx(
+      'flex flex-row items-center justify-between mb-3 max-[800px]:mb-2',
+      className,
+    )}
   >
     {children}
   </div>
@@ -62,14 +65,17 @@ export const CardHeader = ({
 
 export const CardTitle = ({
   className,
+  'data-testid': dataTestId,
   children,
 }: {
   className?: string;
+  'data-testid'?: string;
   children?: ReactNode;
 }) => (
   <h3
+    data-testid={dataTestId}
     className={cx(
-      'text-[12px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]',
+      'text-[11px] max-[800px]:text-[10px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]',
       className,
     )}
   >
@@ -84,7 +90,12 @@ export const PlayerList = ({
   className?: string;
   children?: ReactNode;
 }) => (
-  <div className={cx('flex flex-col items-stretch gap-3', className)}>
+  <div
+    className={cx(
+      'flex flex-col items-stretch gap-2 max-[800px]:gap-1.5',
+      className,
+    )}
+  >
     {children}
   </div>
 );
@@ -103,7 +114,7 @@ export const PlayerItem = forwardRef<HTMLDivElement, PlayerItemProps>(
         ref={ref}
         style={style}
         className={cx(
-          'flex flex-row items-center gap-3 p-2 rounded-[10px]',
+          'flex flex-row items-center gap-2.5 p-2 max-[800px]:p-1.5 rounded-[10px]',
           isHost
             ? 'bg-[rgba(99,102,241,0.1)] border border-[rgba(99,102,241,0.3)]'
             : 'bg-[rgba(255,255,255,0.03)] border border-transparent',
@@ -129,7 +140,7 @@ export const LobbyPlayerAvatar = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[var(--background)] shrink-0',
+      'flex flex-col items-center justify-center w-9 h-9 max-[800px]:w-8 max-[800px]:h-8 rounded-[10px] bg-[var(--background)] shrink-0',
       className,
     )}
     style={backgroundColor ? { backgroundColor, ...style } : style}
@@ -145,7 +156,12 @@ export const LobbyPlayerAvatarText = ({
   className?: string;
   children?: ReactNode;
 }) => (
-  <span className={cx('font-semibold text-[14px] text-[#f5f7ff]', className)}>
+  <span
+    className={cx(
+      'font-semibold text-[13px] max-[800px]:text-[11px] text-[var(--color)]',
+      className,
+    )}
+  >
     {children}
   </span>
 );
@@ -173,7 +189,10 @@ export const LobbyPlayerName = ({
 }) => (
   <span
     title={title}
-    className={cx('text-[16px] font-medium text-[var(--color)]', className)}
+    className={cx(
+      'text-[14px] max-[800px]:text-[13px] font-medium text-[var(--color)] truncate',
+      className,
+    )}
   >
     {children}
   </span>
@@ -216,7 +235,7 @@ export const EmptySlot = ({
 }) => (
   <div
     className={cx(
-      'flex flex-row items-center gap-3 p-2 rounded-[10px] border border-dashed border-[rgba(99,102,241,0.2)] opacity-[0.5]',
+      'flex flex-row items-center gap-2.5 p-2 max-[800px]:p-1.5 rounded-[10px] border border-dashed border-[rgba(99,102,241,0.2)] opacity-[0.5]',
       className,
     )}
   >
@@ -233,7 +252,7 @@ export const EmptyAvatar = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center justify-center w-9 h-9 rounded-[10px] bg-[rgba(99,102,241,0.1)]',
+      'flex flex-col items-center justify-center w-9 h-9 max-[800px]:w-8 max-[800px]:h-8 rounded-[10px] bg-[rgba(99,102,241,0.1)]',
       className,
     )}
   >
@@ -258,7 +277,7 @@ export const InfoRow = ({
 }) => (
   <div
     className={cx(
-      'flex flex-row items-center justify-between py-2 border-b border-[rgba(99,102,241,0.1)]',
+      'flex flex-row items-center justify-between py-1.5 max-[800px]:py-1 border-b border-[rgba(99,102,241,0.1)]',
       className,
     )}
   >
@@ -273,7 +292,12 @@ export const InfoLabel = ({
   className?: string;
   children?: ReactNode;
 }) => (
-  <span className={cx('text-[14px] text-[var(--textSecondary)]', className)}>
+  <span
+    className={cx(
+      'text-[13px] max-[800px]:text-[12px] text-[var(--textSecondary)]',
+      className,
+    )}
+  >
     {children}
   </span>
 );
@@ -286,7 +310,10 @@ export const InfoValue = ({
   children?: ReactNode;
 }) => (
   <span
-    className={cx('text-[16px] font-medium text-[var(--color)]', className)}
+    className={cx(
+      'text-[14px] max-[800px]:text-[13px] font-medium text-[var(--color)]',
+      className,
+    )}
   >
     {children}
   </span>
@@ -312,7 +339,7 @@ export const StatusBadge = ({
 }) => (
   <span
     className={cx(
-      'text-[14px] px-3 py-1 rounded-[8px] font-medium',
+      'text-[13px] max-[800px]:text-[11px] px-2.5 max-[800px]:px-2 py-0.5 max-[800px]:py-px rounded-[8px] font-medium',
       STATUS_BADGE_CLASSES[status],
       className,
     )}

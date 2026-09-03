@@ -4,13 +4,13 @@ import React from 'react';
 import {
   ReusableGameLobby,
   IconButton,
-  LobbyOptionSection,
-  GameThemePicker,
-  getLobbyTheme,
-} from '@/features/games/ui';
+} from '@/features/games/ui/ReusableGameLobby';
+import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { MIN_PLAYERS, getDefaultShipCount } from '../types';
-import { SEA_BATTLE_VARIANTS } from '../lib/constants';
+import { SEA_BATTLE_THEMES } from '../lib/constants';
 import { TranslationKey } from '@/shared/lib/useTranslation';
 import { SeaBattleThemePreview } from './SeaBattleThemePreview';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
@@ -26,7 +26,7 @@ const SEA_BATTLE_LOBBY_THEME = {
 };
 
 const getVariantInfo = (variantId?: string) => {
-  const variant = SEA_BATTLE_VARIANTS.find((v) => v.id === variantId);
+  const variant = SEA_BATTLE_THEMES.find((v) => v.id === variantId);
   return {
     name: variant?.name,
     emoji: variant?.emoji,
@@ -217,7 +217,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   }, [roomVariant]);
 
   const theme = getLobbyTheme(
-    SEA_BATTLE_VARIANTS,
+    SEA_BATTLE_THEMES,
     selectedVariant,
     SEA_BATTLE_LOBBY_THEME.fallbackLightGradient,
     SEA_BATTLE_LOBBY_THEME.buttonGradient,
@@ -267,7 +267,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     <>
       {teamPanelSlot}
       {isHost && room.status === 'lobby' ? (
-        <div className="flex flex-col items-center gap-4 w-full min-w-0">
+        <div className="flex flex-col items-stretch gap-4 w-full min-w-0">
           {variantPicker}
           <SeaBattleThemeProvider variant={selectedVariant}>
             <SeaBattleThemePreview selectedVariant={selectedVariant} />

@@ -15,8 +15,8 @@ import './powerups/shield.powerup';
 import './powerups/ghost.powerup';
 import './powerups/shrink.powerup';
 import {
-  createVariantStrategy,
-  type VariantStrategy,
+  createModeStrategy,
+  type ModeStrategy,
 } from './variants/variant.strategy';
 import {
   buildSnapshotForViewer,
@@ -34,13 +34,13 @@ import type {
   GlimwormDiscreteEvent,
   GlimwormInputPayload,
   GlimwormSession,
-  GlimwormVariant,
+  GlimwormMode,
   Worm,
   WormId,
 } from './glimworm.types';
 
 export interface GlimwormStartOpts {
-  variant: GlimwormVariant;
+  mode: GlimwormMode;
   powerupsEnabled: boolean;
   fillWithBots?: boolean;
   /**
@@ -61,7 +61,7 @@ export class GlimwormService implements OnModuleDestroy {
   private readonly logger = new Logger(GlimwormService.name);
   private readonly tickIntervals = new Map<string, NodeJS.Timeout>();
   private readonly countdownTimers = new Map<string, NodeJS.Timeout>();
-  private readonly strategies = new Map<string, VariantStrategy>();
+  private readonly strategies = new Map<string, ModeStrategy>();
   private readonly growthTargets = new Map<string, Map<WormId, number>>();
   private readonly random: RandomFn;
   private readonly staleCleanupInterval: NodeJS.Timeout;
@@ -109,7 +109,7 @@ export class GlimwormService implements OnModuleDestroy {
       session = this.stateStore.create({
         roomId,
         hostUserId: userId,
-        variant: 'battle_royale',
+        mode: 'battle_royale',
         powerupsEnabled: true,
       });
     }
@@ -225,18 +225,18 @@ export class GlimwormService implements OnModuleDestroy {
       );
     }
 
-    session.variant = opts.variant;
+    session.mode = opts.mode;
     session.powerupsEnabled = opts.powerupsEnabled;
     // Snapshot the opts so rematch() can replay them.
     session.lastStartOpts = {
-      variant: opts.variant,
+      mode: opts.mode,
       powerupsEnabled: opts.powerupsEnabled,
       fillWithBots: opts.fillWithBots,
       botCount: opts.botCount,
     };
     seedWormSpawns(session, this.random);
 
-    const strategy = createVariantStrategy(opts.variant);
+    const strategy = createModeStrategy(opts.mode);
     session.startedAt = Date.now();
     strategy.initSession(session);
     this.strategies.set(roomId, strategy);
@@ -335,7 +335,7 @@ export class GlimwormService implements OnModuleDestroy {
     this.restart(roomId, hostUserId);
     if (opts) {
       this.start(roomId, hostUserId, {
-        variant: opts.variant,
+        mode: opts.mode,
         powerupsEnabled: opts.powerupsEnabled,
         fillWithBots: opts.fillWithBots,
         botCount: opts.botCount,

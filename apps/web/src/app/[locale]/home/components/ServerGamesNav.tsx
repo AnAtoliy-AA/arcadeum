@@ -7,7 +7,10 @@ const GAMES = [
   { id: 'tic_tac_toe_v1', name: 'Tic-Tac-Toe', href: '/games/tic-tac-toe' },
   { id: 'cascade_v1', name: 'Cascade', href: '/games/cascade' },
   { id: 'chess_v1', name: 'Chess', href: '/games/chess' },
-  { id: 'glimworm_v1', name: 'Glimworm', href: '/games' },
+  { id: 'checkers_v1', name: 'Checkers', href: '/games/checkers' },
+  { id: 'game_2048', name: '2048', href: '/games/2048' },
+  { id: 'solitaire', name: 'Solitaire', href: '/games/solitaire' },
+  { id: 'glimworm_v1', name: 'Glimworm', href: '/games/glimworm' },
 ];
 
 export function ServerGamesNav() {

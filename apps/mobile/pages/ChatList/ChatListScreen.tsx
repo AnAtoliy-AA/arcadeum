@@ -105,7 +105,7 @@ export default function ChatListScreen() {
             title,
           },
         });
-      } catch (error) {
+      } catch {
         // Error handling is done in the component
       } finally {
         setCreatingChatUserId(null);
@@ -225,6 +225,10 @@ export default function ChatListScreen() {
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
           keyboardShouldPersistTaps="handled"
+          removeClippedSubviews={true}
+          windowSize={5}
+          maxToRenderPerBatch={10}
+          updateCellsBatchingPeriod={50}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={refresh} />
           }

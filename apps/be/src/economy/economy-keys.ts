@@ -44,6 +44,7 @@ export const ECONOMY_KEYS_CONFIG = {
   vpn_detection_enabled: { env: 'VPN_DETECTION_ENABLED', default: 0 },
   signup_reward_coins: { env: 'SIGNUP_REWARD_COINS', default: 0 },
   signup_reward_gems: { env: 'SIGNUP_REWARD_GEMS', default: 0 },
+  social_reward_gems: { env: 'SOCIAL_REWARD_GEMS', default: 1 },
 } as const;
 
 export type EconomyKey = keyof typeof ECONOMY_KEYS_CONFIG;

@@ -3,10 +3,10 @@ import {
   MAIN_PATH_STEPS,
   SEAT_START_OFFSETS,
   STAR_CELLS,
-  TOKENS_BY_RULE_VARIANT,
+  TOKENS_BY_MODE,
   TRACK_LENGTH,
   YARD_PROGRESS,
-  type RuleVariant,
+  type Mode,
 } from './pachisi.constants';
 import type { LegalMove, PachisiState, PachisiToken } from './pachisi.types';
 
@@ -147,6 +147,6 @@ export function computeMoveOutcome(
   return { targetProgress, targetCell, captured };
 }
 
-export function tokensPerVariant(ruleVariant: RuleVariant): number {
-  return TOKENS_BY_RULE_VARIANT[ruleVariant] ?? 4;
+export function tokensPerVariant(mode: Mode): number {
+  return TOKENS_BY_MODE[mode] ?? 4;
 }

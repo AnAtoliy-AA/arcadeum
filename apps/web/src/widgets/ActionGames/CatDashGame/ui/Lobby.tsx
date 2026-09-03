@@ -2,15 +2,15 @@
 
 import { memo, useMemo } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
+import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
-  ReusableGameLobby,
   LobbyOptionSection,
   LobbyChipGroup,
-  GameThemePicker,
-  getLobbyTheme,
-} from '@/features/games/ui';
+} from '@/features/games/ui/LobbyOptions';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { CAT_DASH_VARIANTS } from '../lib/constants';
+import { CAT_DASH_THEMES } from '../lib/constants';
 import { CatDashRulesModal } from './RulesModal';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
@@ -66,7 +66,7 @@ export const CatDashLobby = memo(function CatDashLobby({
   const lobbyTheme = useMemo(
     () =>
       getLobbyTheme(
-        CAT_DASH_VARIANTS,
+        CAT_DASH_THEMES,
         options.theme,
         CAT_DASH_LOBBY_THEME.fallbackLightGradient,
         CAT_DASH_LOBBY_THEME.buttonGradient,

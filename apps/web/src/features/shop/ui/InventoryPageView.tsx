@@ -104,23 +104,23 @@ export function InventoryPageView({
 
           <div className="flex flex-col items-stretch flex-1 w-full gap-5 min-w-0">
             <div className="flex flex-col items-stretch gap-2">
-              <span className="text-[48px] tracking-[2px] uppercase text-[#94a3b8]">
+              <span className="text-[48px] tracking-[2px] uppercase text-[var(--textSecondary)]">
                 {labels.inventory.eyebrow.replace(
                   '{count}',
                   String(totalOwned),
                 )}
               </span>
-              <span className="text-[40px] font-black tracking-[-0.5px]">
+              <span className="text-[40px] font-black tracking-[-0.5px] text-[var(--color)]">
                 {labels.inventory.title}
               </span>
             </div>
 
             {totalOwned === 0 ? (
               <div
-                className="flex flex-col p-5 rounded-2xl border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] items-center"
+                className="flex flex-col p-5 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] items-center"
                 data-testid="inventory-empty"
               >
-                <span className="text-[18px] text-[#94a3b8] text-center">
+                <span className="text-[18px] text-[var(--textSecondary)] text-center">
                   {labels.inventory.empty}
                 </span>
               </div>

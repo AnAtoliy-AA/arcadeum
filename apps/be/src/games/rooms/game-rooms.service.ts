@@ -87,12 +87,15 @@ export class GameRoomsService {
 
     validateGameOptions(this.engineRegistry, dto.gameId, dto.gameOptions);
 
+    const category = this.engineRegistry.getMetadata(dto.gameId).category;
+
     const hashedPassword = dto.password
       ? await bcrypt.hash(dto.password, BCRYPT_SALT_ROUNDS)
       : undefined;
 
     const room = await this.ociRoomModel.create({
       gameId: dto.gameId,
+      category,
       name: dto.name,
       hostId: userId,
       visibility: dto.visibility,
@@ -136,28 +139,44 @@ export class GameRoomsService {
   ): Promise<ListRoomsResult> {
     const page = filters.page || 0;
     const limit = filters.limit || 10;
-    const skip = page * limit;
 
     const query = GameRoomsQueryBuilder.buildListQuery(filters);
+
+    // Cursor-based pagination: use _id as cursor for O(1) page lookups
+    if (filters.cursor) {
+      const existingIdFilter = (query._id as Record<string, unknown>) ?? {};
+      query._id = {
+        ...existingIdFilter,
+        $lt: new Types.ObjectId(filters.cursor),
+      };
+    }
 
     const [rooms, total] = await Promise.all([
       this.ociRoomModel
         .find(query)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
+        .sort({ createdAt: -1, _id: -1 })
+        .limit(limit + 1)
         .lean()
         .exec(),
-      this.ociRoomModel.countDocuments(query).exec(),
+      this.ociRoomModel
+        .countDocuments(GameRoomsQueryBuilder.buildListQuery(filters))
+        .exec(),
     ]);
 
-    const summaries = await Promise.all(
-      rooms.map((room) =>
-        this.gameRoomsMapper.prepareRoomSummary(
-          room as unknown as GameRoom,
-          viewerId,
-        ),
-      ),
+    const hasMore = rooms.length > limit;
+    if (hasMore) rooms.pop();
+
+    const seen = new Set<string>();
+    const unique = rooms.filter((r) => {
+      const id = r._id.toString();
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+
+    const summaries = await this.gameRoomsMapper.prepareRoomSummaryBatch(
+      unique as unknown as GameRoom[],
+      viewerId,
     );
 
     return {
@@ -165,6 +184,11 @@ export class GameRoomsService {
       total,
       page,
       limit,
+      hasMore,
+      nextCursor:
+        hasMore && rooms.length > 0
+          ? rooms[rooms.length - 1]._id.toString()
+          : undefined,
     };
   }
 

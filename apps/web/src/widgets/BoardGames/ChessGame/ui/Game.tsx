@@ -1,10 +1,8 @@
 'use client';
 
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  GameWidgetContainer,
-  RematchInvitationModal,
-} from '@/features/games/ui';
+import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { RematchInvitationModal } from '@/features/games/ui/RematchInvitationModal';
 import {
   useGameChatIntegration,
   useGameChatSend,

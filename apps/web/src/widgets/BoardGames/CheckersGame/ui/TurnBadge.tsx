@@ -1,6 +1,6 @@
 'use client';
 
-import { InGameAvatar } from '@/features/games/ui';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
 import type { CheckersPlayer } from '../types';
 

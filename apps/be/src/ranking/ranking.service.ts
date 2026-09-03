@@ -114,7 +114,35 @@ export class RankingService {
       o.tier = tierForRating(o.elo);
     });
 
-    await Promise.all(outcomes.map((o) => this.applyRating(o, gameId, season)));
+    const rankingOps = outcomes.map((o) => ({
+      updateOne: {
+        filter: { gameId, season, userId: o.userId },
+        update: {
+          $set: { elo: o.elo, tier: o.tier },
+          $inc: {
+            wins: o.score === 1 ? 1 : 0,
+            losses: o.score === 0 ? 1 : 0,
+            draws: o.score === 0.5 ? 1 : 0,
+            rankedGames: 1,
+          },
+          $max: { peakElo: o.elo },
+        },
+        upsert: true,
+      },
+    }));
+
+    const statsOps = outcomes.map((o) => ({
+      updateOne: {
+        filter: { userId: o.userId, gameId },
+        update: { $set: { elo: o.elo } },
+        upsert: true,
+      },
+    }));
+
+    await Promise.all([
+      this.rankingModel.bulkWrite(rankingOps),
+      this.statsModel.bulkWrite(statsOps),
+    ]);
 
     const deltas: Record<string, RankingDelta> = {};
     for (const o of outcomes) {
@@ -135,6 +163,7 @@ export class RankingService {
       this.rankingModel.countDocuments(filter).exec(),
       this.rankingModel
         .find(filter)
+        .select('userId elo tier wins losses draws peakElo')
         .sort({ elo: -1, rankedGames: -1 })
         .skip(offset)
         .limit(limit)
@@ -277,41 +306,5 @@ export class RankingService {
       return softResetRating(stats.elo, anchor, factor);
     }
     return STARTING_ELO;
-  }
-
-  private async applyRating(
-    outcome: RankedOutcome,
-    gameId: string,
-    season: string,
-  ): Promise<void> {
-    const isWin = outcome.score === 1;
-    const isLoss = outcome.score === 0;
-    const isDraw = outcome.score === 0.5;
-
-    await Promise.all([
-      this.rankingModel
-        .findOneAndUpdate(
-          { gameId, season, userId: outcome.userId },
-          {
-            $set: { elo: outcome.elo, tier: outcome.tier },
-            $inc: {
-              wins: isWin ? 1 : 0,
-              losses: isLoss ? 1 : 0,
-              draws: isDraw ? 1 : 0,
-              rankedGames: 1,
-            },
-            $max: { peakElo: outcome.elo },
-          },
-          { upsert: true },
-        )
-        .exec(),
-      this.statsModel
-        .updateOne(
-          { userId: outcome.userId, gameId },
-          { $set: { elo: outcome.elo } },
-          { upsert: true },
-        )
-        .exec(),
-    ]);
   }
 }

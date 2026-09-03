@@ -1,12 +1,12 @@
-import { RULE_VARIANT_CONFIGS, type RuleVariant } from './checkers.constants';
+import { MODE_CONFIGS, type Mode } from './checkers.constants';
 import type { Board, CheckersState, MoveStep, Piece } from './checkers.types';
 
 export function createInitialBoard(
   darkPlayerId?: string,
   lightPlayerId?: string,
-  ruleVariant: RuleVariant = 'american',
+  mode: Mode = 'american',
 ): Board {
-  const config = RULE_VARIANT_CONFIGS[ruleVariant];
+  const config = MODE_CONFIGS[mode];
   const size = config.boardSize;
   const darkId = darkPlayerId ?? 'dark';
   const lightId = lightPlayerId ?? 'light';

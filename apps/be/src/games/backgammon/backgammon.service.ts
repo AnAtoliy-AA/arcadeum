@@ -1,6 +1,13 @@
-import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  Optional,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import type { Connection } from 'mongoose';
+import type Redis from 'ioredis';
 import { GameRoomsService } from '../rooms/game-rooms.service';
 import { GameSessionsService } from '../sessions/game-sessions.service';
 import { GamesRealtimeService } from '../games.realtime.service';
@@ -9,8 +16,7 @@ import {
   MAX_PLAYERS,
   MIN_PLAYERS,
   type BackgammonOptions,
-  type RuleVariant,
-  type Variant,
+  type Mode,
 } from '../engines/backgammon/backgammon.constants';
 import type { MoveCheckerPayload } from '../engines/backgammon/backgammon.types';
 import { BackgammonBotService } from './backgammon-bot.service';
@@ -32,6 +38,7 @@ export class BackgammonService extends BaseGameService<BackgammonOptions> {
     @Inject(forwardRef(() => BackgammonBotService))
     botService: BackgammonBotService,
     @InjectConnection() mongoConnection: Connection,
+    @Optional() @Inject('REDIS_CLIENT') redis?: Redis | null,
   ) {
     super(
       roomsService,
@@ -39,6 +46,8 @@ export class BackgammonService extends BaseGameService<BackgammonOptions> {
       realtimeService,
       botService,
       mongoConnection,
+      undefined,
+      redis,
     );
   }
 
@@ -60,14 +69,14 @@ export class BackgammonService extends BaseGameService<BackgammonOptions> {
 
   protected resolveOptions(raw: unknown): BackgammonOptions {
     const r = (raw ?? {}) as Partial<{
+      theme: string;
       variant: string;
-      ruleVariant: string;
+      mode: string;
       aiDifficulty: string;
     }>;
     return {
-      variant: (r.variant as Variant) ?? DEFAULT_OPTIONS.variant,
-      ruleVariant:
-        (r.ruleVariant as RuleVariant) ?? DEFAULT_OPTIONS.ruleVariant,
+      theme: r.theme ?? r.variant ?? DEFAULT_OPTIONS.theme,
+      mode: (r.mode as Mode) ?? DEFAULT_OPTIONS.mode,
       aiDifficulty: isAiDifficulty(r.aiDifficulty)
         ? r.aiDifficulty
         : DEFAULT_OPTIONS.aiDifficulty,

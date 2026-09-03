@@ -54,7 +54,7 @@ const mockDisabledGame: CatalogGameItem = {
 
 describe('GamesCatalogCard', () => {
   it('renders game details correctly and links to landing page', () => {
-    render(<GamesCatalogCard game={mockGame} />);
+    render(<GamesCatalogCard game={mockGame} locale="en" />);
 
     expect(screen.getByText('Chess')).toBeInTheDocument();
     expect(
@@ -70,7 +70,7 @@ describe('GamesCatalogCard', () => {
   });
 
   it('renders Demo badge for demo games', () => {
-    render(<GamesCatalogCard game={mockDemoGame} />);
+    render(<GamesCatalogCard game={mockDemoGame} locale="en" />);
 
     expect(screen.getByText('Demo')).toBeInTheDocument();
     const cardLink = screen.getByTestId('games-catalog-card-glimworm_v1');
@@ -78,10 +78,27 @@ describe('GamesCatalogCard', () => {
   });
 
   it('renders disabled state when game is not playable', () => {
-    render(<GamesCatalogCard game={mockDisabledGame} />);
+    render(<GamesCatalogCard game={mockDisabledGame} locale="en" />);
 
     expect(screen.getByText('Disabled')).toBeInTheDocument();
     const cardLink = screen.getByTestId('games-catalog-card-future_game');
     expect(cardLink).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('offline badge links to absolute locale-prefixed path', () => {
+    const gameWithOffline: CatalogGameItem = {
+      ...mockGame,
+      offlineSlug: 'chess',
+    };
+    render(
+      <GamesCatalogCard
+        game={gameWithOffline}
+        locale="fr"
+        offlineBadgeLabel="Hors ligne"
+      />,
+    );
+
+    const offlineLink = screen.getByTestId('games-catalog-offline-chess_v1');
+    expect(offlineLink).toHaveAttribute('href', '/fr/offline/chess');
   });
 });

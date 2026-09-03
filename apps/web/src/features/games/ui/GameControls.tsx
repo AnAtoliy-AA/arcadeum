@@ -20,7 +20,7 @@ const CONTROLS_VARIANT_CLASSES: Record<
   string
 > = {
   primary: 'bg-[var(--background)] border-[var(--borderColor)]',
-  secondary: 'bg-[rgba(255,255,255,0.05)] border-[var(--borderColor)]',
+  secondary: 'bg-[var(--glassBgHover)] border-[var(--borderColor)]',
   minimal: 'bg-transparent border-transparent',
 };
 

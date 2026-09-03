@@ -5,9 +5,9 @@ export const communityEn = {
     'Share strategies, discuss your favorite games, participate in community events, and connect with players across all our social and community channels.',
   badge: 'Global Ecosystem',
   stats: {
-    players: '10K+',
+    players: '',
     playersLabel: 'Active Players',
-    discordMembers: '5K+',
+    discordMembers: '',
     discordLabel: 'Discord Gamers',
     githubStars: 'Open Source',
     githubLabel: 'Community Driven',
@@ -60,7 +60,7 @@ export const communityEn = {
       title: 'Threads',
       subtitle: 'Discussions & Musings',
       description:
-        'Join daily gaming discussions, dev thoughts, and tabletop trivia.',
+        'Join daily gaming discussions, dev thoughts, and gaming trivia.',
     },
     facebook: {
       title: 'Facebook',
@@ -75,5 +75,12 @@ export const communityEn = {
         'Connect with Arcadeum professionally, read company updates, and explore opportunities.',
     },
   },
+  rewardsBanner: {
+    title: 'Earn Free Gems by Joining Our Channels',
+    description:
+      'Subscribe or follow any official channel to claim gems instantly',
+    cta: 'Claim Rewards',
+  },
+  rewardBadge: '+1 💎',
   comingSoon: 'Community hub is coming soon. Stay tuned!',
 };

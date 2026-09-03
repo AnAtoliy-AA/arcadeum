@@ -49,8 +49,9 @@ export interface GameRoomSummary {
 
 export interface ListRoomsFilters {
   gameId?: string;
+  categories?: string;
   search?: string;
-  status?: GameRoomStatus;
+  status?: string;
   statuses?: GameRoomStatus[];
   visibility?:
     'public' | 'private' | 'friends' | ('public' | 'private' | 'friends')[];
@@ -60,6 +61,7 @@ export interface ListRoomsFilters {
   aiVsAi?: boolean;
   page?: number;
   limit?: number;
+  cursor?: string;
 }
 
 export interface ListRoomsResult {
@@ -67,6 +69,8 @@ export interface ListRoomsResult {
   total: number;
   page: number;
   limit: number;
+  hasMore: boolean;
+  nextCursor?: string;
 }
 
 export interface LeaveGameRoomResult {

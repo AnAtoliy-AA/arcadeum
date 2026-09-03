@@ -1,3 +1,7 @@
+import { appConfig } from '../../../../config/app-config';
+
+const APP = appConfig.appName;
+
 export const enMessages = {
   sea_battle_v1: {
     name: 'Sea Battle',
@@ -251,20 +255,19 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: 'Sea Battle — Play Online Free with Friends | Battleship Game',
-        description:
-          'Play Sea Battle (Battleship) online for free. Classic naval combat for 2–4 players, with AI bots, team mode, and 10+ themes. No download, no signup — just create a room and share the link.',
-        ogTitle: 'Sea Battle Online — Free Multiplayer Battleship',
+        title: `Sea Battle (Battleship) Online — Play Free with Friends or AI (2–4 Players) | ${APP}`,
+        description: `Play Sea Battle (Battleship) online for free on ${APP}! 2–4 players multiplayer: challenge friends with an invite link or practice against smart AI bots on a 10×10 grid. Best fleet setups, tactics & 10+ themes.`,
+        ogTitle:
+          'Sea Battle (Battleship) Online — Play Free with Friends or AI',
         ogDescription:
-          'Place your fleet, fire at enemy grids, sink every ship to win. Play in your browser with friends or AI.',
+          'Place your fleet on a 10×10 grid, fire at enemy coordinates and sink every ship. Play free in your browser with friends or AI bots.',
         keywords:
-          'sea battle, battleship, battleship online, sea battle online, play battleship, multiplayer battleship, naval combat game',
+          'sea battle online, battleship online, play battleship with friends, free battleship game, battleship strategy, how to play seabattle, games to invite friends online, naval combat game',
       },
       hero: {
         title: 'Sea Battle',
         tagline: 'Play the classic Battleship game online — free, multiplayer',
-        intro:
-          'Sea Battle is the timeless naval-combat game where two or more admirals secretly place fleets on a 10×10 grid and trade salvos until only one fleet is left afloat. On Arcadeum you can play Sea Battle right in your browser — no download, no signup wall — with friends, strangers, or AI bots.',
+        intro: `Sea Battle is the timeless naval-combat game where two or more admirals secretly place fleets on a 10×10 grid and trade salvos until only one fleet is left afloat. On ${APP} you can play Sea Battle right in your browser — no download, no signup wall — with friends, strangers, or AI bots.`,
         ctaPlay: 'Create a Sea Battle room',
         ctaRooms: 'Browse open rooms',
         ctaQuickplay: 'Play vs AI now',
@@ -284,7 +287,7 @@ export const enMessages = {
         subtitle: 'Spin up a room and share the link — your fleet awaits.',
       },
       sections: {
-        highlightsKicker: 'Why Arcadeum',
+        highlightsKicker: `Why ${APP}`,
         howToKicker: 'Four steps · ~20 minutes',
         themesKicker: 'Choose your fleet',
         themesTitle: '10+ themes, one game',
@@ -318,7 +321,7 @@ export const enMessages = {
           },
           memory: {
             title: 'Track misses, not just hits',
-            body: 'Misses are information. Mentally mark the dead zones and you cut the remaining search space in half by the mid-game. Most theme boards on Arcadeum already show miss markers for you.',
+            body: `Misses are information. Mentally mark the dead zones and you cut the remaining search space in half by the mid-game. Most theme boards on ${APP} already show miss markers for you.`,
           },
         },
       },
@@ -327,7 +330,7 @@ export const enMessages = {
         paragraphs: [
           'Sea Battle, known internationally as Battleship, is one of the oldest grid-based strategy games still played today. Players first sketched the rules on lined notebooks long before any plastic board existed — two opponents, two secret 10×10 grids, and the simple thrill of calling out coordinates one at a time.',
           'The game made the jump from paper to plastic in the mid-20th century, becoming a fixture of family game nights, and from there to screens — pocket electronic versions, computer game adaptations, and now browser-native multiplayer.',
-          'Arcadeum keeps the original 10×10 grid and the five-ship fleet intact, then adds what the paper version never had: instant matchmaking, AI opponents, team mode, ten visual themes, and shareable lobby links. Whether you are looking for a quick game vs the computer or a longer match against a human, the rules are the same ones admirals have been arguing over for a century.',
+          `${APP} keeps the original 10×10 grid and the five-ship fleet intact, then adds what the paper version never had: instant matchmaking, AI opponents, team mode, ten visual themes, and shareable lobby links. Whether you are looking for a quick game vs the computer or a longer match against a human, the rules are the same ones admirals have been arguing over for a century.`,
         ],
       },
       board: {
@@ -336,7 +339,7 @@ export const enMessages = {
         cycleAriaLabel: 'Cycle theme preview, currently {{variant}}',
       },
       highlights: {
-        title: 'Why play Sea Battle on Arcadeum',
+        title: `Why play Sea Battle on ${APP}`,
         players: {
           title: '2 to 4 players',
           body: 'Head-to-head duels or free-for-all with up to four admirals per room.',
@@ -380,13 +383,27 @@ export const enMessages = {
         items: {
           free: {
             question: 'Is Sea Battle free to play?',
-            answer:
-              'Yes. Sea Battle on Arcadeum is completely free to play in your browser, with no download required.',
+            answer: `Yes. Sea Battle on ${APP} is completely free to play in your browser, with no download required.`,
           },
           players: {
             question: 'How many players can play Sea Battle?',
             answer:
               'Sea Battle supports two to four players per room. Team mode allows up to four teams of two or more players each.',
+          },
+          friends: {
+            question: 'How do I play Sea Battle online with friends?',
+            answer:
+              'Click "Create Room", customize your settings, and copy the invite link to share with your friends. They can join immediately in any browser with no signup.',
+          },
+          shipsCount: {
+            question: 'How many ships and cells are in Battleship?',
+            answer:
+              'The standard board is a 10×10 grid (100 cells). The fleet features 5 to 10 ships spanning 1 to 4 cells each (battleship, cruisers, destroyers, and submarines). Ships cannot overlap or touch.',
+          },
+          bestPlacement: {
+            question: 'What is the best ship placement in Battleship?',
+            answer:
+              'The strongest layout hugs larger ships along the outer board perimeter while scattering smaller 1-cell submarines in the central zones, making them elusive against checkerboard parity search.',
           },
           ai: {
             question: 'Can I play Sea Battle against the computer?',

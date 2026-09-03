@@ -10,10 +10,15 @@ import {
 import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
+import dynamic from 'next/dynamic';
 import { routes } from '@/shared/config/routes';
-import { RoomQrModal } from './RoomQrModal';
 import { trackInviteShared } from '@/shared/analytics/funnel';
 import { cx } from '@arcadeum/ui/utils/cx';
+
+const RoomQrModal = dynamic(
+  () => import('./RoomQrModal').then((m) => m.RoomQrModal),
+  { ssr: false },
+);
 
 interface ShareGameMenuProps {
   roomId: string;
@@ -296,7 +301,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
   return (
     <div ref={containerRef} className="relative inline-flex z-[100]">
       <Button
-        className="max-[640px]:scale-[0.9] max-[640px]:px-2"
+        className="!px-2 sm:!px-3"
         variant="glass"
         size="sm"
         onClick={handleTrigger}
@@ -308,7 +313,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
         data-testid="share-game-button"
       >
         🔗
-        <span className="max-[800px]:hidden">
+        <span className="hidden sm:inline">
           {' ' + t('games.common.share')}
         </span>
       </Button>
@@ -316,7 +321,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
       {isOpen && (
         <div
           className={cx(
-            'flex flex-col items-stretch absolute right-0 min-w-[240px] bg-[#0c1322] border border-white/20 rounded-2xl p-2.5 gap-1 z-[1000] shadow-[0_24px_60px_rgba(0,0,0,0.95)]',
+            'flex flex-col items-stretch absolute right-0 min-w-[240px] bg-[var(--background)] border border-[var(--glassBorderStrong)] rounded-2xl p-2.5 gap-1 z-[1000] shadow-2xl backdrop-blur-xl',
             openPlacement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2',
           )}
           id="share-game-menu-popover"
@@ -326,7 +331,7 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
         >
           {channels.map((c) => (
             <div
-              className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-white/10 transition-colors"
+              className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--backgroundHover)] transition-colors text-[var(--color)]"
               onClick={() => handleChannelClick(c.key, c.href)}
               key={c.key}
               role="menuitem"
@@ -334,41 +339,41 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
               data-testid={`share-via-${c.key}`}
             >
               {c.icon}
-              <span className="text-sm font-semibold text-[#f8fafc]">
+              <span className="text-sm font-semibold text-[var(--color)]">
                 {c.label}
               </span>
             </div>
           ))}
           <div
-            className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-white/10 transition-colors"
+            className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--backgroundHover)] transition-colors text-[var(--color)]"
             onClick={handleCopy}
             role="menuitem"
             tabIndex={0}
             data-testid="share-via-copy"
           >
             <CopyLinkIcon />
-            <span className="text-sm font-semibold text-[#f8fafc]">
+            <span className="text-sm font-semibold text-[var(--color)]">
               {isCopied
                 ? t('games.common.shareVia.copied')
                 : t('games.common.shareVia.copyLink')}
             </span>
           </div>
-          <div className="mx-2 border-t border-white/15 my-1" />
+          <div className="mx-2 border-t border-[var(--glassBorder)] my-1" />
           <div
-            className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-white/10 transition-colors"
+            className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--backgroundHover)] transition-colors text-[var(--color)]"
             onClick={handleShowQr}
             role="menuitem"
             tabIndex={0}
             data-testid="share-via-qr"
           >
             <QrCodeIcon />
-            <span className="text-sm font-semibold text-[#f8fafc]">
+            <span className="text-sm font-semibold text-[var(--color)]">
               {t('games.common.roomQr.menu')}
             </span>
           </div>
           {hasNativeShare && (
             <div
-              className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-white/10 transition-colors text-[var(--primary)] font-semibold"
+              className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--backgroundHover)] transition-colors text-[var(--primary)] font-semibold"
               onClick={handleNativeShare}
               role="menuitem"
               tabIndex={0}

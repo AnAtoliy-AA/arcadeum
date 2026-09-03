@@ -1,5 +1,3 @@
-'use client';
-
 export type SpinnerSize = 'sm' | 'md' | 'lg' | 'small' | 'large' | 'tiny';
 
 const SIZE_MAP: Record<string, string> = {

@@ -1,19 +1,16 @@
-import { RULE_VARIANTS, VARIANTS } from './checkers.constants';
+import { MODES } from './checkers.constants';
 import { isAiDifficulty } from '../../lib/ai-difficulty';
 
 export function validateCheckersConfig(
   config: Record<string, unknown>,
 ): boolean {
   const variant = config.variant;
-  if (variant !== undefined) {
-    if (typeof variant !== 'string') return false;
-    if (!(VARIANTS as readonly string[]).includes(variant)) return false;
-  }
+  if (variant !== undefined && typeof variant !== 'string') return false;
 
-  const ruleVariant = config.ruleVariant;
-  if (ruleVariant !== undefined) {
-    if (typeof ruleVariant !== 'string') return false;
-    if (!(RULE_VARIANTS as readonly string[]).includes(ruleVariant))
+  const mode = config.mode;
+  if (mode !== undefined) {
+    if (typeof mode !== 'string') return false;
+    if (!(MODES as readonly string[]).includes(mode))
       return false;
   }
 

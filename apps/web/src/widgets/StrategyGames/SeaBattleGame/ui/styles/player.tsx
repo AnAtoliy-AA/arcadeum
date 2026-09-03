@@ -31,10 +31,11 @@ export const PlayerSection = ({
 }: PlayerSectionProps) => (
   <div
     className={cx(
-      'flex flex-col items-stretch relative gap-1.5 p-3 border-2 rounded-[12px] min-w-0 min-h-0 w-full overflow-visible',
-      'max-[1150px]:p-2 max-[1150px]:gap-1',
+      'flex flex-col items-stretch relative gap-1 p-2 border-2 rounded-[12px] min-w-0 min-h-0 w-full overflow-hidden box-border',
+      'max-[1150px]:p-1.5 max-[1150px]:gap-1',
       'max-[800px]:p-1 max-[800px]:gap-[2px] max-[800px]:rounded-[8px]',
       '[@media(max-height:480px)]:p-1 [@media(max-height:480px)]:gap-[1px]',
+      '[@media(orientation:landscape)_and_(max-height:520px)]:p-1 [@media(orientation:landscape)_and_(max-height:520px)]:gap-[1px]',
       isTargetable ? 'cursor-crosshair' : 'cursor-default',
       animated !== false && 'transition-all duration-300 ease-out',
       className,
@@ -65,9 +66,7 @@ export const PlayerSectionWrapper = ({
 }: CommonProps) => (
   <div
     className={cx(
-      'flex flex-col items-stretch relative overflow-visible pt-[8px] w-full min-w-0',
-      'max-[800px]:pt-[6px]',
-      '[@media(max-height:480px)]:pt-[4px]',
+      'flex flex-col items-stretch relative overflow-visible w-full min-w-0',
       className,
     )}
     style={style}
@@ -107,23 +106,29 @@ type PlayerNameProps = {
   className?: string;
   color?: string;
   style?: React.CSSProperties;
+  id?: string;
+  title?: string;
   'data-testid'?: string;
   children?: React.ReactNode;
 };
 
 export const PlayerName = ({
   className,
-  color,
   style,
+  id,
+  title,
+  color,
   'data-testid': testId,
   children,
 }: PlayerNameProps) => (
   <span
     data-testid={testId}
     className={cx(
-      'is_PlayerName m-0 flex flex-row items-center justify-center gap-1.5 text-[15px] font-semibold text-center max-[800px]:text-[13px] min-w-0',
+      'is_PlayerName m-0 flex flex-row items-center justify-start gap-1 text-[13px] font-semibold min-w-0 truncate',
       className,
     )}
+    id={id}
+    title={title}
     style={{
       ...(color ? { color } : {}),
       ...(style ?? {}),

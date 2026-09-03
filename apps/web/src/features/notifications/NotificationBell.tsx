@@ -1,11 +1,12 @@
 'use client';
 
-import { memo, useState } from 'react';
+import { memo, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Typography } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useNotificationSocket } from '@/shared/lib/socket';
 import { useNotificationsStore } from './notifications.store';
 import type { NotificationDto } from './notifications.types';
 
@@ -43,26 +44,47 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
   const initialize = useNotificationsStore((s) => s.initialize);
   const fetchUnreadCount = useNotificationsStore((s) => s.fetchUnreadCount);
   const loadInbox = useNotificationsStore((s) => s.loadInbox);
+  const onSocketEvent = useNotificationsStore((s) => s.onSocketEvent);
+  const onSocketUnreadCount = useNotificationsStore(
+    (s) => s.onSocketUnreadCount,
+  );
   const [open, setOpen] = useState(false);
-  const fetchedRef = useState(() => ({ current: false }))[0];
 
-  const ensureLoaded = () => {
-    if (!token || fetchedRef.current) return;
-    fetchedRef.current = true;
-    void fetchUnreadCount(token);
-  };
+  useEffect(() => {
+    if (token) {
+      void fetchUnreadCount(token);
+    }
+  }, [token, fetchUnreadCount]);
+
+  const handleNewNotification = useCallback(
+    (payload: unknown) => {
+      onSocketEvent('notification:new', payload as NotificationDto);
+    },
+    [onSocketEvent],
+  );
+
+  const handleUnreadCount = useCallback(
+    (payload: unknown) => {
+      const data = payload as { count?: number };
+      if (typeof data?.count === 'number') {
+        onSocketUnreadCount(data.count);
+      }
+    },
+    [onSocketUnreadCount],
+  );
+
+  useNotificationSocket('notification:new', handleNewNotification);
+  useNotificationSocket('notification:unread-count', handleUnreadCount);
 
   if (!token) return null;
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div className="relative">
       <Button
         variant="icon"
         size="md"
         aria-label={t('notifications.bell.aria') as string}
         data-testid={testId}
-        onMouseEnter={ensureLoaded}
-        onFocus={ensureLoaded}
         onClick={() => {
           setOpen((o) => {
             const next = !o;
@@ -78,24 +100,12 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
         <BellIcon size={20} />
         {unreadCount > 0 && (
           <span
-            style={{
-              position: 'absolute',
-              top: 2,
-              right: 2,
-              minWidth: 16,
-              height: 16,
-              padding: '0 4px',
-              borderRadius: 8,
-              backgroundColor: 'var(--error)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className="absolute top-0 right-0 min-w-4 h-4 px-1 rounded-full bg-[var(--error)] flex items-center justify-center pointer-events-none"
             role="status"
             aria-live="polite"
             data-testid="notification-bell-badge"
           >
-            <Typography className={'text-[10px] font-bold' + ' text-[#f5f7ff]'}>
+            <Typography className="text-[10px] font-bold text-[#f5f7ff]">
               {unreadCount > 99 ? '99+' : unreadCount}
             </Typography>
           </span>
@@ -123,34 +133,10 @@ const NotificationPopover = memo(function NotificationPopover({
   return (
     <div
       data-testid="notification-popover"
-      style={{
-        position: 'absolute',
-        top: '100%',
-        right: 0,
-        marginTop: 8,
-        width: 360,
-        maxHeight: 480,
-        backgroundColor: 'var(--background)',
-        borderColor: 'var(--borderColor)',
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderRadius: 12,
-        padding: 12,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
-        zIndex: 100,
-        boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
-      }}
+      className="absolute top-full right-0 mt-2 w-[360px] max-h-[480px] bg-[var(--background)] border border-[var(--borderColor)] rounded-xl p-3 flex flex-col gap-3 z-[100] shadow-[0_8px_20px_rgba(0,0,0,0.4)]"
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <Typography className={'text-[20px] font-bold'}>
+      <div className="flex justify-between items-center">
+        <Typography className="text-[20px] font-bold">
           {t('notifications.bell.title')}
         </Typography>
         <Button
@@ -166,14 +152,7 @@ const NotificationPopover = memo(function NotificationPopover({
           {t('notifications.bell.empty')}
         </Typography>
       ) : (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            overflow: 'scroll',
-          }}
-        >
+        <div className="flex flex-col gap-2 overflow-y-auto max-h-[380px]">
           {items.map((item) => (
             <NotificationRow
               key={item.id}
@@ -210,27 +189,14 @@ const NotificationRow = memo(function NotificationRow({
         if (!item.read) void markRead(item.id, token);
         onClick();
       }}
-      style={{ textDecoration: 'none', color: 'inherit' }}
+      className="no-underline text-inherit"
     >
       <div
         data-testid="notification-row"
         data-unread={item.read ? undefined : 'true'}
-        style={{
-          padding: 12,
-          borderRadius: 8,
-          backgroundColor: item.read ? 'transparent' : 'var(--backgroundHover)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = 'var(--backgroundPress)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = item.read
-            ? 'transparent'
-            : 'var(--backgroundHover)';
-        }}
+        className={`p-3 rounded-lg flex flex-col gap-1 transition-colors hover:bg-[var(--backgroundPress)] ${
+          item.read ? 'bg-transparent' : 'bg-[var(--backgroundHover)]'
+        }`}
       >
         <Typography weight={item.read ? '500' : '700'} uiSize="sm">
           {title}

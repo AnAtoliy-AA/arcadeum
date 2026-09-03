@@ -40,6 +40,7 @@ interface GetRoomsParams {
   page?: number;
   limit?: number;
   gameId?: string;
+  categories?: string;
   aiVsAi?: boolean;
 }
 

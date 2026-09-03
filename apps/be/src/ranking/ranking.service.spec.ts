@@ -17,37 +17,33 @@ type AnyModel = {
   countDocuments: jest.Mock;
   aggregate: jest.Mock;
   updateOne: jest.Mock;
+  bulkWrite: jest.Mock;
 };
 
 function chain(resolvedValue: unknown) {
   return { exec: jest.fn().mockResolvedValue(resolvedValue) };
 }
 
+function createChainableQuery(val: unknown = []) {
+  const query: Record<string, jest.Mock> = {};
+  query.select = jest.fn().mockReturnValue(query);
+  query.sort = jest.fn().mockReturnValue(query);
+  query.skip = jest.fn().mockReturnValue(query);
+  query.limit = jest.fn().mockReturnValue(query);
+  query.lean = jest.fn().mockReturnValue(query);
+  query.exec = jest.fn().mockResolvedValue(val);
+  return query;
+}
+
 function makeModel(overrides: Partial<AnyModel> = {}): AnyModel {
   return {
-    findOne: jest.fn().mockReturnValue({
-      select: jest.fn().mockReturnValue({
-        lean: jest.fn().mockReturnValue(chain(null)),
-      }),
-      sort: jest.fn().mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          lean: jest.fn().mockReturnValue(chain(null)),
-        }),
-      }),
-    }),
+    findOne: jest.fn().mockImplementation(() => createChainableQuery(null)),
     findOneAndUpdate: jest.fn().mockReturnValue(chain(null)),
-    find: jest.fn().mockReturnValue({
-      sort: jest.fn().mockReturnValue({
-        skip: jest.fn().mockReturnValue({
-          limit: jest.fn().mockReturnValue({
-            lean: jest.fn().mockReturnValue(chain([])),
-          }),
-        }),
-      }),
-    }),
+    find: jest.fn().mockImplementation(() => createChainableQuery([])),
     countDocuments: jest.fn().mockReturnValue(chain(0)),
     aggregate: jest.fn().mockReturnValue(chain([])),
     updateOne: jest.fn().mockReturnValue(chain({})),
+    bulkWrite: jest.fn().mockResolvedValue({}),
     ...overrides,
   };
 }
@@ -135,10 +131,32 @@ describe('RankingService', () => {
       expect(result.user2.delta).toBe(-16);
       expect(result.user2.tier).toBe('bronze');
 
-      // upserts a RankingEntry for each player
-      expect(rankingModel.findOneAndUpdate).toHaveBeenCalledTimes(2);
-      // mirrors elo into PlayerStats
-      expect(statsModel.updateOne).toHaveBeenCalledTimes(2);
+      // upserts a RankingEntry for each player via bulkWrite
+      expect(rankingModel.bulkWrite).toHaveBeenCalledTimes(1);
+      const rankingOps = (
+        rankingModel.bulkWrite.mock.calls as Array<
+          Array<
+            Array<{
+              updateOne: { filter: Record<string, unknown>; upsert: boolean };
+            }>
+          >
+        >
+      )[0][0];
+      expect(rankingOps).toHaveLength(2);
+      expect(rankingOps[0].updateOne.upsert).toBe(true);
+      // mirrors elo into PlayerStats via bulkWrite
+      expect(statsModel.bulkWrite).toHaveBeenCalledTimes(1);
+      const statsOps = (
+        statsModel.bulkWrite.mock.calls as Array<
+          Array<
+            Array<{
+              updateOne: { filter: Record<string, unknown>; upsert: boolean };
+            }>
+          >
+        >
+      )[0][0];
+      expect(statsOps).toHaveLength(2);
+      expect(statsOps[0].updateOne.upsert).toBe(true);
     });
 
     it('keeps both ratings unchanged on a draw between equals', async () => {
@@ -257,48 +275,36 @@ describe('RankingService', () => {
     it('returns decorated entries with rank and username', async () => {
       const rankingModel = makeModel({
         countDocuments: jest.fn().mockReturnValue(chain(2)),
-        find: jest.fn().mockReturnValue({
-          sort: jest.fn().mockReturnValue({
-            skip: jest.fn().mockReturnValue({
-              limit: jest.fn().mockReturnValue({
-                lean: jest.fn().mockReturnValue(
-                  chain([
-                    {
-                      userId: 'user1',
-                      elo: 1600,
-                      tier: 'platinum',
-                      wins: 10,
-                      losses: 2,
-                      draws: 0,
-                      peakElo: 1650,
-                    },
-                    {
-                      userId: 'user2',
-                      elo: 1500,
-                      tier: 'gold',
-                      wins: 8,
-                      losses: 4,
-                      draws: 1,
-                      peakElo: 1500,
-                    },
-                  ]),
-                ),
-              }),
-            }),
-          }),
-        }),
+        find: jest.fn().mockImplementation(() =>
+          createChainableQuery([
+            {
+              userId: 'user1',
+              elo: 1600,
+              tier: 'platinum',
+              wins: 10,
+              losses: 2,
+              draws: 1,
+              peakElo: 1650,
+            },
+            {
+              userId: 'user2',
+              elo: 1450,
+              tier: 'gold',
+              wins: 5,
+              losses: 5,
+              draws: 0,
+              peakElo: 1500,
+            },
+          ]),
+        ),
       });
       const userModel = makeModel({
-        find: jest.fn().mockReturnValue({
-          select: jest.fn().mockReturnValue({
-            lean: jest.fn().mockReturnValue(
-              chain([
-                { _id: 'user1', username: 'alice' },
-                { _id: 'user2', username: 'bob' },
-              ]),
-            ),
-          }),
-        }),
+        find: jest.fn().mockImplementation(() =>
+          createChainableQuery([
+            { _id: 'user1', username: 'alice' },
+            { _id: 'user2', username: 'bob' },
+          ]),
+        ),
       });
       const service = buildService(rankingModel, makeModel(), userModel);
 

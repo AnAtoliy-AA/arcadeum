@@ -43,6 +43,7 @@ test-results/
 /*.png
 /*.jpg
 /*.jpeg
+/*.mp4
 
 # Music files — hosted on Cloudflare R2 (2 local fallbacks kept)
 apps/web/public/music/*.mp3

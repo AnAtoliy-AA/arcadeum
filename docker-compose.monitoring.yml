@@ -2,8 +2,8 @@
 # Run alongside the main compose stack:
 #   docker compose -f docker-compose.monitoring.yml up -d
 #
-# Grafana: http://localhost:3001 (admin/07kEv5NaxS1XtTwjkq3iQA==)
-# Prometheus: http://localhost:9090
+# Grafana: http://<server-ip>:3001
+# Prometheus: http://<server-ip>:9090
 
 services:
   prometheus:
@@ -11,7 +11,7 @@ services:
     container_name: arcadeum-prometheus
     restart: unless-stopped
     ports:
-      - '127.0.0.1:9090:9090'
+      - '0.0.0.0:9090:9090'
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -23,17 +23,26 @@ services:
     container_name: arcadeum-grafana
     restart: unless-stopped
     ports:
-      - '127.0.0.1:3001:3000'
+      - '0.0.0.0:3001:3000'
+    env_file:
+      - ./monitoring/.env.monitoring
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-arcadeum}
       GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: 'Viewer'
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: '/var/lib/grafana/dashboards/arcadeum-be.json'
     volumes:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana
     networks:
       - arcadeum
+
+volumes:
+  prometheus-data:
+  grafana-data:
 
 networks:
   arcadeum:

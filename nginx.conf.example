@@ -3,6 +3,10 @@
 #
 # Usage: include this file in your server{} block, or use as a reference
 # for your existing proxy configuration.
+#
+# Horizontal scaling: The upstream block below supports multiple BE instances.
+# ip_hash ensures WebSocket connections are sticky (same client → same backend).
+# Add more servers to the upstream block as you scale out.
 
 # --- #56: Brotli compression for static assets ---
 # Requires: ngx_brotli module (install via package manager or compile)
@@ -44,8 +48,14 @@ server {
     ssl_certificate_key /etc/nginx/ssl/key.pem;
 
     # --- #55: Keep-alive between proxy and Node.js ---
+    # Horizontal scaling: ip_hash for sticky WebSocket sessions.
+    # Each BE instance runs PM2 cluster on a single port.
+    # Add more server entries as you deploy additional instances.
     upstream arcadeum_backend {
+        ip_hash;
         server 127.0.0.1:4000;
+        # server 152.70.47.29:4000;  # Instance 2 (if on different host)
+        # server 129.159.10.232:4000; # Instance 3 (reserve/worker)
         keepalive 64;
         keepalive_timeout 60s;
     }
@@ -78,6 +88,15 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_read_timeout 86400s;
         proxy_send_timeout 86400s;
+    }
+
+    # Health check endpoint for load balancer / monitoring
+    location /health {
+        proxy_pass http://arcadeum_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        access_log off;
     }
 
     location / {

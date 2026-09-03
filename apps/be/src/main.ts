@@ -118,6 +118,18 @@ async function bootstrap() {
     ],
   });
 
+  // Health check endpoint for load balancers and monitoring
+  const httpAdapter = app.getHttpAdapter();
+
+  httpAdapter.get('/health', (_req: Request, res: Response) => {
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      pid: process.pid,
+      uptime: process.uptime(),
+    });
+  });
+
   const port = process.env.PORT ?? process.env.BE_PORT ?? 4000;
   await app.listen(port, '0.0.0.0');
   logger.log(`[Backend] Listening on port ${port}`);

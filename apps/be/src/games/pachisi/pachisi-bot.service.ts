@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
+import type Redis from 'ioredis';
 import { PachisiService } from './pachisi.service';
 import type { PachisiService as IPachisiService } from './pachisi.service';
 import type { GameSessionSummary } from '../sessions/game-sessions.service';
@@ -14,13 +15,15 @@ const MOVE_DELAY_MS = { min: 400, max: 900 };
 export class PachisiBotService extends PachisiBot {
   private readonly logger = new Logger(PachisiBotService.name);
   /** TTL-based single-flight lock so a hung chain cannot deadlock a room. */
-  private readonly turnLock = new BotTurnLock();
+  private readonly turnLock: BotTurnLock;
 
   constructor(
     @Inject(forwardRef(() => PachisiService))
     private readonly pachisiService: IPachisiService,
+    @Inject('REDIS_CLIENT') private readonly redis: Redis | null,
   ) {
     super();
+    this.turnLock = new BotTurnLock(60_000, redis);
   }
 
   isBot(userId: string): boolean {
@@ -44,7 +47,7 @@ export class PachisiBotService extends PachisiBot {
     if (!currentTurnPlayerId || !this.isBot(currentTurnPlayerId)) return;
 
     const lockKey = `${session.roomId}:${currentTurnPlayerId}`;
-    if (!this.turnLock.tryAcquire(lockKey)) return;
+    if (!(await this.turnLock.tryAcquire(lockKey))) return;
 
     try {
       let currentSession = session;
@@ -100,7 +103,7 @@ export class PachisiBotService extends PachisiBot {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.error(`Bot ${currentTurnPlayerId} error: ${message}`);
     } finally {
-      this.turnLock.release(lockKey);
+      await this.turnLock.release(lockKey);
     }
   }
 

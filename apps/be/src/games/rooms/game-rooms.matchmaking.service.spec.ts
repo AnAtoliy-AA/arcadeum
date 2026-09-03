@@ -61,6 +61,7 @@ describe('GameRoomsMatchmakingService', () => {
         { provide: GameRoomsQuickplayService, useValue: quickplayService },
         { provide: GamesRealtimeService, useValue: realtimeService },
         { provide: ConfigService, useValue: config },
+        { provide: 'REDIS_CLIENT', useValue: null },
       ],
     }).compile();
 

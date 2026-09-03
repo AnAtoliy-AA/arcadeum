@@ -31,6 +31,18 @@ module.exports = {
       listen_timeout: 10000,
       kill_timeout: 5000,
       wait_ready: true,
+      // --- Horizontal Scaling ---
+      // When deploying multiple BE instances across machines:
+      // 1. Set REDIS_URL in .env to enable:
+      //    - Socket.IO adapter (cross-instance WebSocket broadcasts)
+      //    - Matchmaking queue (shared across instances)
+      //    - Room action locks (distributed mutex)
+      //    - Bot turn locks (distributed single-flight)
+      //    - Rate limiting (shared state)
+      //    - Application cache (shared)
+      // 2. Configure nginx upstream with multiple servers + ip_hash
+      // 3. Each instance gets its own PM2 cluster on its machine
+      // 4. All instances connect to the same Redis and MongoDB
     },
   ],
 };

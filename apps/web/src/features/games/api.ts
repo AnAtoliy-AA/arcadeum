@@ -307,4 +307,16 @@ export const gamesApi = {
       options,
     );
   },
+
+  invitePlayers: async (
+    roomId: string,
+    userIds: string[],
+    options?: ApiClientOptions,
+  ): Promise<void> => {
+    return apiClient.post<void>(
+      `/games/rooms/${roomId}/invitation/invite`,
+      { userIds },
+      options,
+    );
+  },
 };

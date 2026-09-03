@@ -200,9 +200,12 @@ export default function FriendsPageContent({
     }
   };
 
-  const handleInviteToGame = useCallback(() => {
-    router.push(routes.gameCreate);
-  }, [router, routes.gameCreate]);
+  const handleInviteToGame = useCallback(
+    (friendUserId: string) => {
+      router.push(`${routes.gameCreate}?inviteUser=${friendUserId}`);
+    },
+    [router, routes.gameCreate],
+  );
 
   const handleStartChat = useCallback(
     async (friend: Friend) => {
@@ -407,7 +410,7 @@ export default function FriendsPageContent({
                       <Button
                         variant="primary"
                         size="sm"
-                        onClick={handleInviteToGame}
+                        onClick={() => handleInviteToGame(friend.userId)}
                         data-testid={`invite-${friend.userId}`}
                       >
                         {tt.inviteToGame ?? 'Invite'}

@@ -324,10 +324,22 @@ export function GameCreateView() {
         { token: snapshot.accessToken || undefined },
       );
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       triggerRefresh(['games', 'rooms']);
       if (!data?.room?.id) return;
       trackSocialRoomCreated(form.gameId);
+
+      const inviteUserId = searchParams?.get('inviteUser');
+      if (inviteUserId && snapshot.accessToken) {
+        try {
+          await gamesApi.invitePlayers(data.room.id, [inviteUserId], {
+            token: snapshot.accessToken,
+          });
+        } catch {
+          // Non-critical — room is still created
+        }
+      }
+
       let roomUrl = routes.gameRoom(data.room.id);
       if (data.room.inviteCode) {
         roomUrl += `?inviteCode=${encodeURIComponent(data.room.inviteCode)}`;

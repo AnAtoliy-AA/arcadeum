@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.40] - 2026-09-03
+
+### Added
+- rework lobby layout for mobile — compact header, scrollable themes, collapsible settings
+
+### Fixed
+- remove hidden duplicated lobby components on mobile
+- remove LobbyMobileSidebar, use LobbySidebar on all viewports
+- fix mobile e2e tests — show Players in Lobby on mobile, use clear() for webkit
+- fix mobile e2e tests — remove duplicate room-name-text, fix sea-battle room status
+- compact mobile theme picker, constrain lobby settings width
+- wrap desktop LobbySidebar in display-none div, remove .first() from E2E tests
+- add .first() to E2E lobby selectors that resolve to 2 elements (mobile+desktop)
+
+### Refactored
+- revert GameThemePicker to CSS-only hidden/flex, keep .first() in tests
+
+
 ## [1.27.39] - 2026-09-02
 
 ### Fixed

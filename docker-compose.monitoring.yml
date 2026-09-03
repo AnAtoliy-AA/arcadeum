@@ -5,7 +5,7 @@
 # Access via SSH tunnel (ports are localhost-only for security):
 #   ssh -L 3001:127.0.0.1:3001 -L 9090:127.0.0.1:9090 user@oci-ip
 # Then open:
-#   Grafana: http://localhost:3001 (admin / FlOBWsmqZp/D1le679kzzA==)
+#   Grafana: http://localhost:3001 (credentials in .env.monitoring)
 #   Prometheus: http://localhost:9090
 
 services:

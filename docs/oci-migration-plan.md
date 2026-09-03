@@ -2,21 +2,21 @@
 
 ## Current Setup
 
-| Component          | Host                       | Latency     |
-| ------------------ | -------------------------- | ----------- |
-| Web (Next.js)      | Vercel                     | ~900ms TTFB |
-| Backend (NestJS)   | OCI Primary (152.70.47.29) | ~43ms       |
-| Database (MongoDB) | OCI Primary                | ~1ms        |
+| Component          | Host                         | Latency     |
+| ------------------ | ---------------------------- | ----------- |
+| Web (Next.js)      | Vercel                       | ~900ms TTFB |
+| Backend (NestJS)   | OCI Primary (YOUR_SERVER_IP) | ~43ms       |
+| Database (MongoDB) | OCI Primary                  | ~1ms        |
 
 **Problem**: Every SSR render makes 1-5 sequential fetch calls from Vercel → OCI, adding 200-500ms cross-region latency per call.
 
 ## Target Setup
 
-| Component          | Host                       | Expected Latency |
-| ------------------ | -------------------------- | ---------------- |
-| Web (Next.js)      | OCI Primary (152.70.47.29) | ~100-200ms TTFB  |
-| Backend (NestJS)   | OCI Primary (same machine) | ~5ms             |
-| Database (MongoDB) | OCI Primary (same machine) | ~1ms             |
+| Component          | Host                         | Expected Latency |
+| ------------------ | ---------------------------- | ---------------- |
+| Web (Next.js)      | OCI Primary (YOUR_SERVER_IP) | ~100-200ms TTFB  |
+| Backend (NestJS)   | OCI Primary (same machine)   | ~5ms             |
+| Database (MongoDB) | OCI Primary (same machine)   | ~1ms             |
 
 **Subdomain**: `fast.arcadeum.games` (keeps Vercel as fallback on apex)
 
@@ -139,11 +139,11 @@ module.exports = {
 
 | Record                | Type  | Value          | TTL |
 | --------------------- | ----- | -------------- | --- |
-| `fast.arcadeum.games` | A     | 152.70.47.29   | 300 |
+| `fast.arcadeum.games` | A     | YOUR_SERVER_IP | 300 |
 | `arcadeum.games`      | CNAME | vercel.app     | 300 |
 | `www.arcadeum.games`  | CNAME | arcadeum.games | 300 |
 
-Keep `api.arcadeum.games` → 152.70.47.29 (unchanged).
+Keep `api.arcadeum.games` → YOUR_SERVER_IP (unchanged).
 
 ### 7. CI/CD Workflow
 
@@ -249,7 +249,7 @@ To add BE instances on other machines:
        ip_hash;
        server be:4000;
        server be-2:4000;
-       server 152.70.47.29:4000;  # New instance
+        server YOUR_SERVER_IP:4000;  # New instance
        keepalive 64;
    }
    ```
@@ -262,7 +262,7 @@ To add BE instances on other machines:
 - [ ] Test locally with Docker
 - [ ] Deploy to OCI
 - [ ] Configure nginx for `fast.arcadeum.games`
-- [ ] Add DNS A record: `fast.arcadeum.games` → 152.70.47.29
+- [ ] Add DNS A record: `fast.arcadeum.games` → YOUR_SERVER_IP
 - [ ] Verify SSL on `fast.arcadeum.games`
 - [ ] CI/CD auto-deploy from main ✅ (updated deploy-oci.yml)
 - [ ] Disable Vercel auto-deploy ✅ (deploy-web.yml now manual only)

@@ -204,8 +204,8 @@ Triggered by `auto-fix-ci.yml` when CI fails on bot PRs:
 ### Server
 
 ```
-Host: 152.70.47.29
-SSH: ssh -i ~/.ssh/oci_arcadeum ubuntu@152.70.47.29
+Host: YOUR_SERVER_IP
+SSH: ssh -i ~/.ssh/oci_arcadeum ubuntu@YOUR_SERVER_IP
 Dir: /opt/arcadeum
 ```
 
@@ -304,6 +304,7 @@ The CI auto-fix loop is bounded by `CI_FIX_MAX_ATTEMPTS` (default: 3). Tracked p
 ## CI Polling
 
 After PR creation, the worker starts a background CI poller:
+
 - Checks `gh pr checks` every 30 seconds
 - Notifies "CI Passed ✅" when all checks pass
 - Stops polling on failure (webhook handles auto-fix) or after 15 minutes timeout
@@ -321,7 +322,7 @@ After PR creation, the worker starts a background CI poller:
 ### Logs (OCI)
 
 ```bash
-ssh oci_arcadeum@152.70.47.29
+ssh oci_arcadeum@YOUR_SERVER_IP
 
 # Task bot logs
 pm2 logs arcadeum-task-bot

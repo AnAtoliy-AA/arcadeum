@@ -42,7 +42,7 @@ import { LobbyStartButton } from './LobbyStartButton';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
 import { HouseRulesSection } from './HouseRulesSection';
-import { LobbyMobileSidebar } from './LobbyMobileSidebar';
+
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import { useRankingStore } from '@/features/ranking/store/rankingStore';
 import type { ReusableGameLobbyProps } from './ReusableGameLobby.types';
@@ -284,13 +284,6 @@ export function ReusableGameLobby({
       </GameHeader>
 
       <LobbyContent>
-        {/* Mobile: compact status bar */}
-        <LobbyMobileSidebar
-          room={room}
-          minPlayers={minPlayers}
-          maxPlayers={maxPlayers}
-        />
-
         {/* Center column: desktop header + settings (single instance) */}
         <div className="flex flex-col flex-1 min-w-0 max-w-full max-[1023px]:flex-[0] max-[1023px]:min-h-[unset] max-[1023px]:w-full max-[1023px]:order-2">
           <CenterSection style={slideInStyle as never}>

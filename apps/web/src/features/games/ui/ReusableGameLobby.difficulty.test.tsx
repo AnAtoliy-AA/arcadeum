@@ -21,9 +21,6 @@ vi.mock('@/shared/lib/settings-storage', () => ({
 vi.mock('./LobbySidebar', () => ({
   LobbySidebar: () => <div data-testid="sidebar" />,
 }));
-vi.mock('./LobbyMobileSidebar', () => ({
-  LobbyMobileSidebar: () => <div data-testid="mobile-sidebar" />,
-}));
 vi.mock('./HouseRulesSection', () => ({
   HouseRulesSection: () => <div data-testid="rules" />,
 }));

@@ -260,12 +260,7 @@ test.describe('Anonymous Play', () => {
       {},
     );
 
-    await expect(
-      newPage
-        .getByText('Waiting for host to start the game')
-        .or(newPage.getByText('Players in Lobby'))
-        .first(),
-    ).toBeVisible();
+    await expect(newPage.getByText('Players').first()).toBeVisible();
   });
 
   test('should display own created room for anonymous user in rooms list', async ({

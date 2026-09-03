@@ -40,7 +40,7 @@ export function HouseRulesSection({
   return (
     <div className="flex flex-col items-stretch gap-3 pt-2">
       <span className="text-[18px] font-semibold">
-        {t('games.create.sectionHouseRules') || 'House Rules'}
+        {t('games.create.sectionLobbySettings')}
       </span>
 
       <label style={labelStyle(!!ruleComingSoon.get('idle'))}>
@@ -87,7 +87,7 @@ export function HouseRulesSection({
         )}
       </label>
 
-      <div className="flex flex-col items-stretch gap-1">
+      <div className="flex flex-col items-stretch gap-1 max-w-[200px]">
         <span className="text-[16px] font-medium">
           {t('games.create.rules.firstPlayer.title')}
         </span>

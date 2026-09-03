@@ -185,6 +185,7 @@ export const ruMessages = {
     submitCreating: 'Создание...',
     comingSoon: 'Скоро',
     sectionHouseRules: 'Домашние правила',
+    sectionLobbySettings: 'Настройки лобби',
     sectionGameConfig: 'Настройки игры',
     houseRuleActionCardCombos: 'Комбо карт действий',
     houseRuleActionCardCombosHint: 'Любые пары',

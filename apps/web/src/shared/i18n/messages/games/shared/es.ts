@@ -187,6 +187,7 @@ export const esMessages = {
     submitCreating: 'Creando...',
     comingSoon: 'Próximamente',
     sectionHouseRules: 'Reglas de la Casa',
+    sectionLobbySettings: 'Configuración del Lobby',
     sectionGameConfig: 'Configuración del Juego',
     houseRuleActionCardCombos: 'Combos de Cartas de Acción',
     houseRuleActionCardCombosHint: 'Cualquier par',

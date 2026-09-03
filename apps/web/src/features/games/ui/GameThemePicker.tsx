@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import type { ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import {
@@ -52,8 +53,9 @@ const THEME_INDEX = new Map<string, GameTheme>(
 /**
  * Shared Visual Theme Picker.
  *
- * Renders the unified theme catalog (`SHARED_THEMES`) with colorful
- * gradients, emoji icons, active indicators, and disabled states.
+ * Single set of buttons with responsive CSS:
+ * - Desktop: compact grid with short cards.
+ * - Mobile: horizontal scroll strip with circular thumbnails.
  */
 export function GameThemePicker({
   selectedTheme = 'adventure',
@@ -68,6 +70,7 @@ export function GameThemePicker({
   layout = 'grid',
 }: GameThemePickerProps) {
   const { t } = useTranslation();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const pickerOptions: GameThemePickerOption[] = options ?? [
     ...SHARED_THEMES.map<GameThemePickerOption>((theme) => ({
@@ -93,36 +96,30 @@ export function GameThemePicker({
     return option.name ?? option.id;
   };
 
-  const resolveDescription = (
-    option: GameThemePickerOption,
-  ): string | undefined => {
-    if (option.descriptionKey) {
-      if (option.descriptionKey.startsWith('games.')) {
-        return (
-          t(option.descriptionKey as TranslationKey) || option.descriptionKey
-        );
-      }
-      return option.descriptionKey;
-    }
-    return option.description;
-  };
-
   return (
-    <div
-      className={cx('flex flex-col gap-3 w-full max-w-full min-w-0', className)}
-    >
+    <div className={cx('flex flex-col gap-2 w-full min-w-0', className)}>
       {label ? (
-        <span className="text-sm font-semibold text-[var(--foreground)]">
+        <span className="text-[13px] font-semibold text-[var(--foreground)]">
           {label}
         </span>
       ) : null}
+
+      {/* Single responsive container — grid on desktop, snap scroll on mobile */}
       <div
+        ref={scrollRef}
         className={cx(
-          'w-full max-w-full min-w-0 p-1',
+          'w-full max-w-full min-w-0',
           layout === 'grid'
-            ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3'
-            : 'flex gap-3 overflow-x-auto pb-2 scroll-smooth',
+            ? 'grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-[800px]:flex max-[800px]:grid-cols-none max-[800px]:gap-2 max-[800px]:overflow-x-auto max-[800px]:snap-x max-[800px]:scroll-smooth'
+            : 'flex gap-2 overflow-x-auto pb-1 scroll-smooth',
         )}
+        style={
+          {
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          } as React.CSSProperties
+        }
         role="radiogroup"
         aria-label={label ?? 'Theme'}
       >
@@ -142,30 +139,45 @@ export function GameThemePicker({
               type="button"
               role="radio"
               aria-checked={active}
+              aria-label={resolveName(option)}
               aria-disabled={disabled || undefined}
               disabled={disabled}
               data-testid={`theme-${option.id}`}
               onClick={() => onSelect(option.id)}
               className={cx(
-                'relative flex flex-col gap-2 rounded-2xl border p-3 text-left transition-all duration-200',
+                'relative flex flex-col items-center gap-1.5 rounded-xl border p-2 text-center transition-all duration-200 min-w-0',
+                'max-[800px]:w-auto max-[800px]:min-w-[30%] max-[800px]:max-w-[33%] max-[800px]:snap-start max-[800px]:shrink-0 max-[800px]:rounded-2xl max-[800px]:border-0 max-[800px]:bg-transparent max-[800px]:p-2 max-[800px]:gap-1.5',
                 layout === 'scroll'
-                  ? 'min-w-[120px] max-w-[140px] shrink-0'
-                  : 'w-full min-w-0',
+                  ? 'min-w-[90px] max-w-[100px] shrink-0'
+                  : '',
                 active
-                  ? 'border-[var(--primary)] bg-[var(--primary)]/10 ring-2 ring-[var(--primary)]/40'
-                  : 'border-[var(--borderColor)] bg-[var(--glassBg)] hover:border-[var(--primary)]/60',
-                disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+                  ? 'border-[var(--primary)] bg-[var(--primary)]/8 ring-1 ring-[var(--primary)]/30 max-[800px]:ring-0'
+                  : 'border-[var(--borderColor)] bg-[var(--glassBg)] hover:border-[var(--primary)]/50 max-[800px]:hover:bg-transparent',
+                disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer',
               )}
             >
               {comingSoon ? (
                 <span
                   data-testid="coming-soon-badge"
-                  className="absolute right-2 top-2 z-10 rounded-full bg-[var(--foreground)]/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--background)]"
+                  className="absolute -top-1.5 -right-1.5 z-10 rounded-full bg-[var(--foreground)]/90 px-1.5 py-px text-[8px] font-bold uppercase tracking-wide text-[var(--background)] max-[800px]:-top-0.5 max-[800px]:-right-0.5 max-[800px]:px-1 max-[800px]:py-px max-[800px]:text-[7px]"
                 >
-                  {t('games.create.comingSoon') || 'Coming Soon'}
+                  {t('games.create.comingSoon') || 'Soon'}
                 </span>
               ) : null}
-              <div className="flex h-16 w-full items-center justify-center overflow-hidden rounded-xl text-3xl">
+
+              {/* Thumbnail — larger on mobile */}
+              <div
+                className={cx(
+                  'flex h-10 w-full items-center justify-center overflow-hidden rounded-lg text-2xl transition-all duration-200 border-2',
+                  'max-[800px]:w-14 max-[800px]:h-14 max-[800px]:rounded-xl max-[800px]:border-0',
+                  active
+                    ? 'max-[800px]:ring-2 max-[800px]:ring-[var(--primary)]/40 max-[800px]:scale-105'
+                    : '',
+                )}
+                style={{
+                  background: option.gradient ?? theme?.gradient ?? '#1a1030',
+                }}
+              >
                 {renderThumbnail && theme ? (
                   renderThumbnail(theme)
                 ) : (
@@ -180,19 +192,22 @@ export function GameThemePicker({
                   </span>
                 )}
               </div>
-              <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-semibold text-[var(--foreground)]">
-                  {resolveName(option)}
-                </span>
-                {resolveDescription(option) ? (
-                  <span className="text-xs text-[var(--textSecondary)]">
-                    {resolveDescription(option)}
-                  </span>
-                ) : null}
-              </div>
+
+              {/* Name — always visible */}
+              <span
+                className={cx(
+                  'text-[11px] font-medium text-[var(--foreground)] leading-tight truncate w-full',
+                  'max-[800px]:text-[13px] max-[800px]:font-semibold max-[800px]:whitespace-nowrap max-[800px]:text-center max-[800px]:leading-tight max-[800px]:!overflow-visible',
+                  active && 'max-[800px]:text-[var(--primary)]',
+                )}
+              >
+                {resolveName(option)}
+              </span>
+
+              {/* Active checkmark — desktop only */}
               {active ? (
                 <span
-                  className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-bold text-[var(--primaryForeground,white)]"
+                  className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--primary)] text-[9px] font-bold text-[var(--primaryForeground,white)] max-[800px]:hidden"
                   aria-hidden="true"
                 >
                   ✓

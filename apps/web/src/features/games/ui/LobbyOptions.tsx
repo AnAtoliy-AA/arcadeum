@@ -15,13 +15,13 @@ export function LobbyOptionSection({
   hint,
 }: LobbyOptionSectionProps) {
   return (
-    <div className="flex flex-col items-stretch gap-2">
-      <span className="text-[14px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
+    <div className="flex flex-col items-stretch gap-1.5 w-full">
+      <span className="text-[13px] max-[800px]:text-[12px] font-semibold uppercase tracking-[0.5px] text-[var(--textSecondary)]">
         {title}
       </span>
       {children}
       {hint && (
-        <span className="text-[12px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
+        <span className="text-[11px] text-[rgba(180,180,200,0.7)] opacity-[0.7]">
           {hint}
         </span>
       )}

@@ -185,6 +185,7 @@ export const enMessages = {
     submitCreating: 'Creating...',
     comingSoon: 'Coming Soon',
     sectionHouseRules: 'House Rules',
+    sectionLobbySettings: 'Lobby Settings',
     sectionGameConfig: 'Game Settings',
     houseRuleActionCardCombos: 'Action Card Combos',
     houseRuleActionCardCombosHint: 'Any pairs',

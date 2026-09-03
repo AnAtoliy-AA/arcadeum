@@ -267,7 +267,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
     <>
       {teamPanelSlot}
       {isHost && room.status === 'lobby' ? (
-        <div className="flex flex-col items-center gap-4 w-full min-w-0">
+        <div className="flex flex-col items-stretch gap-4 w-full min-w-0">
           {variantPicker}
           <SeaBattleThemeProvider variant={selectedVariant}>
             <SeaBattleThemePreview selectedVariant={selectedVariant} />

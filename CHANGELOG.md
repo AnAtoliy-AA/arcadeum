@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.1] - 2026-09-03
+
+### Added
+- add monitoring dashboard with Grafana provisioning
+- add horizontal scaling with Redis, nginx load balancer, and multiple BE instances
+- add horizontal scaling with Redis-backed distributed state
+
+### Fixed
+- add git cleanup before fetch to prevent index errors
+- remove hardcoded IPs and Grafana password from repo
+- add monitoring stack to OCI deploy workflow
+- secure Grafana with localhost-only ports
+- bind ports to 0.0.0.0 and load env file for OCI
+- fix monitoring field names to match BE response
+- await all async joinQueue/leaveQueue calls in matchmaking tests
+- fix tests for async matchmaking and bot-turn-lock
+
+
 ## [1.28.0] - 2026-09-03
 
 ### Changed

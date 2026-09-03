@@ -134,13 +134,19 @@ jobs:
             docker compose build be be-2 worker tg-bot
             docker compose up -d --remove-orphans
 
+            echo "==> Starting monitoring stack..."
+            docker compose -f docker-compose.monitoring.yml up -d --remove-orphans
+
             echo "==> Waiting for health checks..."
             sleep 10
 
             echo "==> Container status:"
             docker compose ps
+            docker compose -f docker-compose.monitoring.yml ps
 
             echo "==> Prod deploy done (branch: $BRANCH)!"
+            echo "==> Grafana: http://$(hostname -I | awk '{print $1}'):3001"
+            echo "==> Prometheus: http://$(hostname -I | awk '{print $1}'):9090"
 
   deploy-be-reserve:
     name: Deploy Reserve Backend (Worker - Docker)

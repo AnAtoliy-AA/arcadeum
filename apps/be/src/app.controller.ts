@@ -1,4 +1,10 @@
-import { Controller, Get, Logger, Optional } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Logger,
+  Optional,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection, ConnectionStates } from 'mongoose';
@@ -49,18 +55,25 @@ export class AppController {
 
   /**
    * Readiness probe — verifies MongoDB and Redis connectivity.
-   * Kubernetes/Docker should route traffic only when this returns 200.
+   * Returns 503 when not ready so Docker/K8s healthchecks fail and
+   * remove the container from the load balancer pool.
    */
   @SkipThrottle({ default: true, auth: true, strict: true })
   @Get('ready')
   async readiness(): Promise<ReadinessResponse> {
     const mongoOk = await this.isMongoConnected(this.ociConnection);
     const redisOk = await this.isRedisConnected();
-    return {
-      ready: mongoOk && redisOk,
-      mongo: mongoOk,
-      redis: redisOk,
-    };
+    const ready = mongoOk && redisOk;
+
+    if (!ready) {
+      throw new ServiceUnavailableException({
+        ready: false,
+        mongo: mongoOk,
+        redis: redisOk,
+      });
+    }
+
+    return { ready, mongo: mongoOk, redis: redisOk };
   }
 
   @SkipThrottle({ default: true, auth: true, strict: true })

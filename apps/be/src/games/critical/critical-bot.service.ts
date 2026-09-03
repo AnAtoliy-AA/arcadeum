@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
+import type Redis from 'ioredis';
 import { CriticalService } from './critical.service';
 import type { CriticalService as ICriticalService } from './critical.service';
 import type {
@@ -17,13 +18,15 @@ import { BotTurnLock } from '../common/bot-turn-lock';
 @Injectable()
 export class CriticalBotService extends CriticalBot {
   private readonly logger = new Logger(CriticalBotService.name);
-  private readonly turnLock = new BotTurnLock();
+  private readonly turnLock: BotTurnLock;
 
   constructor(
     @Inject(forwardRef(() => CriticalService))
     private readonly criticalService: ICriticalService,
+    @Inject('REDIS_CLIENT') private readonly redis: Redis | null,
   ) {
     super();
+    this.turnLock = new BotTurnLock(60_000, redis);
   }
 
   /**
@@ -109,11 +112,11 @@ export class CriticalBotService extends CriticalBot {
     turn: () => Promise<void>,
   ): Promise<void> {
     const lockKey = `${roomId}:${botId}`;
-    if (!this.turnLock.tryAcquire(lockKey)) return;
+    if (!(await this.turnLock.tryAcquire(lockKey))) return;
     try {
       await turn();
     } finally {
-      this.turnLock.release(lockKey);
+      await this.turnLock.release(lockKey);
     }
   }
 

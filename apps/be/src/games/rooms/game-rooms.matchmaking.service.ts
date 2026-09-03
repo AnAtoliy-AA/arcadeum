@@ -1,8 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type Redis from 'ioredis';
 import { GameRoomsService } from './game-rooms.service';
 import { GameRoomsQuickplayService } from './game-rooms.quickplay.service';
 import { GamesRealtimeService } from '../games.realtime.service';
+import { RedisMatchmakingQueue } from './redis-matchmaking-queue';
 
 export interface QueueEntry {
   userId: string;
@@ -12,7 +14,7 @@ export interface QueueEntry {
   ranked?: boolean;
   ip?: string;
   timestamp: number;
-  timeoutId: NodeJS.Timeout;
+  timeoutId?: NodeJS.Timeout;
 }
 
 export interface MatchmakingStatus {
@@ -30,16 +32,26 @@ export interface MatchmakingStatus {
 const DEFAULT_TIMEOUT_MS = 30_000;
 const ESTIMATED_WAIT_WITH_PLAYERS_MS = 12_000;
 
+/**
+ * Matchmaking queue service with Redis backing for horizontal scaling.
+ *
+ * When Redis is available, the queue is stored in Redis sorted sets so all
+ * BE instances share a single queue. When Redis is unavailable (dev mode),
+ * falls back to the original in-memory implementation.
+ */
 @Injectable()
 export class GameRoomsMatchmakingService {
   private readonly logger = new Logger(GameRoomsMatchmakingService.name);
-  private readonly queue = new Map<string, Map<string, QueueEntry>>();
+  private readonly memoryQueue = new Map<string, Map<string, QueueEntry>>();
+  private readonly memoryTimeouts = new Map<string, NodeJS.Timeout>();
+  private readonly redisQueue = new RedisMatchmakingQueue();
 
   constructor(
     private readonly roomsService: GameRoomsService,
     private readonly quickplayService: GameRoomsQuickplayService,
     private readonly realtimeService: GamesRealtimeService,
     private readonly config: ConfigService,
+    @Inject('REDIS_CLIENT') private readonly redis: Redis | null,
   ) {}
 
   private get timeoutMs(): number {
@@ -54,8 +66,9 @@ export class GameRoomsMatchmakingService {
   }
 
   getQueueOverview(): Record<string, number> {
+    if (this.redis) return {};
     const overview: Record<string, number> = {};
-    for (const bucket of this.queue.values()) {
+    for (const bucket of this.memoryQueue.values()) {
       for (const entry of bucket.values()) {
         overview[entry.gameId] = (overview[entry.gameId] ?? 0) + 1;
       }
@@ -63,7 +76,12 @@ export class GameRoomsMatchmakingService {
     return overview;
   }
 
-  joinQueue(
+  async getQueueOverviewAsync(): Promise<Record<string, number>> {
+    if (!this.redis) return this.getQueueOverview();
+    return this.redisQueue.getQueueOverview(this.redis);
+  }
+
+  async joinQueue(
     userId: string,
     socketId: string,
     gameId: string,
@@ -71,19 +89,19 @@ export class GameRoomsMatchmakingService {
     ranked?: boolean,
     onSuccess?: (roomId: string) => void,
     ip?: string,
-  ): void {
+  ): Promise<void> {
     this.logger.log(
       `User ${userId} (socket ${socketId}) joining ${ranked ? 'ranked' : 'casual'} matchmaking queue for game ${gameId}${variant ? ` (${variant})` : ''}`,
     );
 
-    this.leaveQueue(userId);
+    await this.leaveQueue(userId);
 
-    const match = this.findMatch(gameId, variant, ranked, userId, ip);
+    const match = await this.findMatch(gameId, variant, ranked, userId, ip);
     if (match) {
       this.logger.log(
         `Match found between ${userId} and ${match.userId} for game ${gameId}`,
       );
-      this.leaveQueue(match.userId);
+      await this.leaveQueue(match.userId);
       void this.createMatchedRoom(
         userId,
         match.userId,
@@ -95,62 +113,100 @@ export class GameRoomsMatchmakingService {
       return;
     }
 
-    const timeoutId = setTimeout(() => {
-      void this.handleMatchmakingTimeout(
-        userId,
-        gameId,
-        variant,
-        ranked,
-        onSuccess,
-      );
-    }, this.timeoutMs);
-
-    const key = this.queueKey(gameId, variant, ranked);
-    let bucket = this.queue.get(key);
-    if (!bucket) {
-      bucket = new Map();
-      this.queue.set(key, bucket);
-    }
-    bucket.set(userId, {
+    const timestamp = Date.now();
+    const entry: QueueEntry = {
       userId,
       socketId,
       gameId,
       variant,
       ranked,
       ip,
-      timestamp: Date.now(),
-      timeoutId,
-    });
+      timestamp,
+    };
 
-    this.emitStatusesFor(gameId, variant, ranked);
+    if (this.redis) {
+      await this.redisQueue.enqueue(this.redis, entry);
+      const timeoutKey = `${userId}:${gameId}:${variant ?? ''}:${ranked ?? ''}`;
+      const timeoutId = setTimeout(() => {
+        void this.handleMatchmakingTimeout(
+          userId,
+          gameId,
+          variant,
+          ranked,
+          onSuccess,
+        );
+      }, this.timeoutMs);
+      this.memoryTimeouts.set(timeoutKey, timeoutId);
+    } else {
+      const timeoutId = setTimeout(() => {
+        void this.handleMatchmakingTimeout(
+          userId,
+          gameId,
+          variant,
+          ranked,
+          onSuccess,
+        );
+      }, this.timeoutMs);
+      entry.timeoutId = timeoutId;
+
+      const key = this.queueKey(gameId, variant, ranked);
+      let bucket = this.memoryQueue.get(key);
+      if (!bucket) {
+        bucket = new Map();
+        this.memoryQueue.set(key, bucket);
+      }
+      bucket.set(userId, entry);
+    }
+
+    await this.emitStatusesFor(gameId, variant, ranked);
   }
 
-  leaveQueue(userId: string): void {
-    const entry = this.findEntry(userId);
-    if (!entry) {
-      return;
-    }
-    clearTimeout(entry.timeoutId);
-    const key = this.queueKey(entry.gameId, entry.variant, entry.ranked);
-    const bucket = this.queue.get(key);
-    if (bucket) {
-      bucket.delete(userId);
-      if (bucket.size === 0) {
-        this.queue.delete(key);
+  async leaveQueue(userId: string): Promise<void> {
+    if (this.redis) {
+      await this.redisQueue.dequeue(this.redis, userId);
+    } else {
+      const entry = this.findEntryMemory(userId);
+      if (!entry) return;
+      if (entry.timeoutId) clearTimeout(entry.timeoutId);
+      const key = this.queueKey(entry.gameId, entry.variant, entry.ranked);
+      const bucket = this.memoryQueue.get(key);
+      if (bucket) {
+        bucket.delete(userId);
+        if (bucket.size === 0) this.memoryQueue.delete(key);
       }
     }
-    this.emitStatusesFor(entry.gameId, entry.variant, entry.ranked);
-    this.logger.log(`User ${userId} left matchmaking queue`);
   }
 
-  private findMatch(
+  private async findMatch(
+    gameId: string,
+    variant: string | undefined,
+    ranked: boolean | undefined,
+    excludeUserId: string,
+    ip?: string,
+  ): Promise<QueueEntry | null> {
+    if (this.redis) {
+      const isProd = this.config.get<string>('NODE_ENV') === 'production';
+      return this.redisQueue.findMatch(
+        this.redis,
+        gameId,
+        variant,
+        ranked,
+        excludeUserId,
+        ip,
+        isProd,
+      );
+    }
+    return this.findMatchMemory(gameId, variant, ranked, excludeUserId, ip);
+  }
+
+  private findMatchMemory(
     gameId: string,
     variant: string | undefined,
     ranked: boolean | undefined,
     excludeUserId: string,
     ip?: string,
   ): QueueEntry | null {
-    const bucket = this.queue.get(this.queueKey(gameId, variant, ranked));
+    const bucket = this.memoryQueue.get(this.queueKey(gameId, variant, ranked));
     if (!bucket) return null;
     const isProd = this.config.get<string>('NODE_ENV') === 'production';
     for (const entry of bucket.values()) {
@@ -161,8 +217,8 @@ export class GameRoomsMatchmakingService {
     return null;
   }
 
-  private findEntry(userId: string): QueueEntry | null {
-    for (const bucket of this.queue.values()) {
+  private findEntryMemory(userId: string): QueueEntry | null {
+    for (const bucket of this.memoryQueue.values()) {
       const entry = bucket.get(userId);
       if (entry) return entry;
     }
@@ -214,12 +270,14 @@ export class GameRoomsMatchmakingService {
     ranked?: boolean,
     onSuccess?: (roomId: string) => void,
   ): Promise<void> {
-    const entry = this.findEntry(userId);
+    const entry = this.redis
+      ? await this.redisQueue.findEntry(this.redis, userId)
+      : this.findEntryMemory(userId);
     if (!entry) return;
 
-    this.leaveQueue(userId);
+    await this.leaveQueue(userId);
 
-    const queuedOpponent = this.findMatch(
+    const queuedOpponent = await this.findMatch(
       gameId,
       variant,
       ranked,
@@ -230,7 +288,7 @@ export class GameRoomsMatchmakingService {
       this.logger.log(
         `Matchmaking timeout for user ${userId}; pairing with queued ${queuedOpponent.userId}`,
       );
-      this.leaveQueue(queuedOpponent.userId);
+      await this.leaveQueue(queuedOpponent.userId);
       void this.createMatchedRoom(
         userId,
         queuedOpponent.userId,
@@ -261,16 +319,24 @@ export class GameRoomsMatchmakingService {
     }
   }
 
-  private emitStatus(
+  private async emitStatus(
     userId: string,
     gameId: string,
     variant?: string,
     ranked?: boolean,
-  ): void {
-    const key = this.queueKey(gameId, variant, ranked);
-    const bucket = this.queue.get(key);
-    const queueSize = bucket?.size ?? 0;
-    const position = this.positionInBucket(bucket, userId);
+  ): Promise<void> {
+    const queueSize = this.redis
+      ? await this.redisQueue.getSize(this.redis, gameId, variant, ranked)
+      : this.getQueueSizeMemory(gameId, variant, ranked);
+    const position = this.redis
+      ? await this.redisQueue.getPosition(
+          this.redis,
+          userId,
+          gameId,
+          variant,
+          ranked,
+        )
+      : this.getPositionMemory(userId, gameId, variant, ranked);
     const playersAhead = Math.max(0, position - 1);
     this.realtimeService.emitToUser(userId, 'games.matchmaking.status', {
       gameId,
@@ -280,28 +346,53 @@ export class GameRoomsMatchmakingService {
       position,
       playersAhead,
       estimatedWaitSeconds: this.estimateWaitSeconds(queueSize, position),
-      activeQueues: this.getQueueOverview(),
+      activeQueues: await this.getQueueOverviewAsync(),
       openRoomsCount: 0,
     } satisfies MatchmakingStatus);
   }
 
-  private emitStatusesFor(
+  private async emitStatusesFor(
     gameId: string,
     variant?: string,
     ranked?: boolean,
-  ): void {
-    const key = this.queueKey(gameId, variant, ranked);
-    const bucket = this.queue.get(key);
-    if (!bucket) return;
-    for (const entry of bucket.values()) {
-      this.emitStatus(entry.userId, gameId, variant, entry.ranked);
+  ): Promise<void> {
+    if (this.redis) {
+      const userIds = await this.redisQueue.getUserIdsInQueue(
+        this.redis,
+        gameId,
+        variant,
+        ranked,
+      );
+      for (const userId of userIds) {
+        void this.emitStatus(userId, gameId, variant, ranked);
+      }
+    } else {
+      const key = this.queueKey(gameId, variant, ranked);
+      const bucket = this.memoryQueue.get(key);
+      if (!bucket) return;
+      for (const entry of bucket.values()) {
+        void this.emitStatus(entry.userId, gameId, variant, entry.ranked);
+      }
     }
   }
 
-  private positionInBucket(
-    bucket: Map<string, QueueEntry> | undefined,
-    userId: string,
+  private getQueueSizeMemory(
+    gameId: string,
+    variant?: string,
+    ranked?: boolean,
   ): number {
+    const key = this.queueKey(gameId, variant, ranked);
+    return this.memoryQueue.get(key)?.size ?? 0;
+  }
+
+  private getPositionMemory(
+    userId: string,
+    gameId: string,
+    variant?: string,
+    ranked?: boolean,
+  ): number {
+    const key = this.queueKey(gameId, variant, ranked);
+    const bucket = this.memoryQueue.get(key);
     if (!bucket) return 0;
     let index = 0;
     for (const queuedUserId of bucket.keys()) {

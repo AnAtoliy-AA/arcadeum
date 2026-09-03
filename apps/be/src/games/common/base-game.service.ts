@@ -14,6 +14,7 @@ import {
   type PreCheckFn,
 } from '../game-bot-watchdog';
 import { extractAiVsAiExtras } from './ai-vs-ai';
+import { DistributedRoomLock } from './distributed-room-lock';
 
 /**
  * Shared base class for every game service. Encapsulates the session
@@ -30,7 +31,7 @@ export abstract class BaseGameService<
   implements OnModuleInit, OnModuleDestroy
 {
   protected abstract readonly logger: Logger;
-  private readonly roomLocks = new Map<string, Promise<void>>();
+  private readonly roomLock: DistributedRoomLock;
   private watchdogInstance: GameBotWatchdog | null = null;
 
   abstract readonly gameId: string;
@@ -52,6 +53,7 @@ export abstract class BaseGameService<
   ) {
     this.mongoConnection = mongoConnection;
     this.preCheck = preCheck;
+    this.roomLock = new DistributedRoomLock(redis);
   }
 
   onModuleInit() {
@@ -219,15 +221,7 @@ export abstract class BaseGameService<
     action: string,
     payload: unknown,
   ): Promise<GameSessionSummary> {
-    const prev = this.roomLocks.get(roomId) ?? Promise.resolve();
-    let release: () => void;
-    const next = new Promise<void>((resolve) => {
-      release = resolve;
-    });
-    this.roomLocks.set(roomId, next);
-    await prev;
-
-    try {
+    return this.roomLock.runLocked(roomId, async () => {
       const session = await this.sessionsService.findSessionByRoom(roomId);
       if (!session) throw new Error('Session not found');
 
@@ -241,12 +235,7 @@ export abstract class BaseGameService<
       await this.afterSessionStep(updatedSession);
       await this.emitSessionUpdate(updatedSession);
       return updatedSession;
-    } finally {
-      release!();
-      if (this.roomLocks.get(roomId) === next) {
-        this.roomLocks.delete(roomId);
-      }
-    }
+    });
   }
 
   protected abstract resolveOptions(raw: unknown): TOptions;

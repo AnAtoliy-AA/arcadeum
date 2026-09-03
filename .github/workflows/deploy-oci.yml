@@ -68,7 +68,10 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            echo "==> Cleaning git state..."
             rm -f "$DEPLOY_DIR/.git/index.lock"
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
 
@@ -78,6 +81,7 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f "$DEPLOY_DIR/.git/index.lock"
+              git gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git reset --hard "origin/$BRANCH"
@@ -99,7 +103,7 @@ jobs:
             pm2 list arcadeum-web
 
   deploy-tg-bot:
-    name: Deploy TG Bot + Backend
+    name: Deploy TG Bot + Backend (Docker)
     needs: changes
     if: needs.changes.outputs.be-or-tg == 'true'
     runs-on: ubuntu-latest
@@ -116,7 +120,10 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            echo "==> Cleaning git state..."
             rm -f "$DEPLOY_DIR/.git/index.lock"
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
 
@@ -126,31 +133,31 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f "$DEPLOY_DIR/.git/index.lock"
+              git gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git reset --hard "origin/$BRANCH"
 
-            pnpm install --frozen-lockfile
+            echo "==> Building and deploying with Docker Compose..."
+            docker compose build be be-2 worker tg-bot
+            docker compose up -d --remove-orphans
 
-            pnpm --filter @arcadeum/games-core build && pnpm --filter be build
-            pnpm --filter tg-bot build
+            echo "==> Starting monitoring stack..."
+            docker compose -f docker-compose.monitoring.yml up -d --remove-orphans
 
-            if [ ! -f "$DEPLOY_DIR/apps/be/dist/src/main.js" ]; then
-              echo "ERROR: BE build did not produce dist/src/main.js"
-              exit 1
-            fi
+            echo "==> Waiting for health checks..."
+            sleep 10
 
-            pm2 delete arcadeum-be 2>/dev/null || true
-            pm2 start "$DEPLOY_DIR/apps/be/ecosystem.config.js"
-            pm2 save
-            pm2 restart arcadeum-tg-bot || \
-              (pm2 start "node bots/tg-bot/dist/src/main.js" --name arcadeum-tg-bot && pm2 save)
+            echo "==> Container status:"
+            docker compose ps
+            docker compose -f docker-compose.monitoring.yml ps
 
             echo "==> Prod deploy done (branch: $BRANCH)!"
-            pm2 list
+            echo "==> Grafana: http://$(hostname -I | awk '{print $1}'):3001"
+            echo "==> Prometheus: http://$(hostname -I | awk '{print $1}'):9090"
 
   deploy-be-reserve:
-    name: Deploy Reserve Backend (Worker)
+    name: Deploy Reserve Backend (Worker - Docker)
     needs: changes
     if: needs.changes.outputs.be-or-tg == 'true'
     runs-on: ubuntu-latest
@@ -167,7 +174,10 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            echo "==> Cleaning git state..."
             rm -f "$DEPLOY_DIR/.git/index.lock"
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
 
@@ -177,25 +187,22 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f "$DEPLOY_DIR/.git/index.lock"
+              git gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git reset --hard "origin/$BRANCH"
 
-            pnpm install --frozen-lockfile
-            pnpm --filter @arcadeum/games-core build && pnpm --filter be build
+            echo "==> Building and deploying worker with Docker Compose..."
+            docker compose build worker
+            docker compose up -d worker --remove-orphans
 
-            if [ ! -f "$DEPLOY_DIR/apps/be/dist/src/main.js" ]; then
-              echo "ERROR: BE build did not produce dist/src/main.js"
-              exit 1
-            fi
+            echo "==> Waiting for health check..."
+            sleep 5
 
-            pm2 restart arcadeum-be-reserve || \
-              pm2 start /opt/arcadeum/scripts/start-be-reserve.sh --name arcadeum-be-reserve
-
-            pm2 save
+            echo "==> Worker container status:"
+            docker compose ps worker
 
             echo "==> Reserve BE deploy done (branch: $BRANCH)!"
-            pm2 list
 
   deploy-task-bot:
     name: Deploy Task Bot
@@ -214,7 +221,10 @@ jobs:
             set -euo pipefail
             DEPLOY_DIR="/opt/arcadeum"
 
+            echo "==> Cleaning git state..."
             rm -f "$DEPLOY_DIR/.git/index.lock"
+            git -C "$DEPLOY_DIR" reset --hard HEAD 2>/dev/null || true
+            git -C "$DEPLOY_DIR" gc --prune=now 2>/dev/null || true
 
             cd "$DEPLOY_DIR/bots/task-bot"
 
@@ -226,6 +236,7 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f "$DEPLOY_DIR/.git/index.lock"
+              git -C "$DEPLOY_DIR" gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git -C "$DEPLOY_DIR" reset --hard "origin/$BRANCH"
@@ -259,7 +270,10 @@ jobs:
             set -e
             cd /opt/arcadeum
 
+            echo "==> Cleaning git state..."
             rm -f /opt/arcadeum/.git/index.lock
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
 
@@ -270,6 +284,7 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f /opt/arcadeum/.git/index.lock
+              git gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git reset --hard "origin/$BRANCH"

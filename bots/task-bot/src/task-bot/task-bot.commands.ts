@@ -43,7 +43,7 @@ export async function handleVersion(
       `📦 task-bot: <code>v${pkgVersion}</code>\n` +
       `🔀 commit: <code>${commit}</code>\n` +
       `🟢 node: <code>${nodeVersion}</code>\n\n` +
-      `Server: <code>152.70.47.29</code>`,
+      `Server: <code>${process.env.SERVER_IP ?? 'unknown'}</code>`,
     { parse_mode: 'HTML' },
   );
 }

@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "pnpm --filter @arcadeum/games-core build && rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "dev:next": "rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
+    "start": "next start",
     "build": "next build",
     "postbuild": "node scripts/fix-standalone-swc.mjs && node scripts/generate-build-id.mjs && node scripts/generate-game-sizes.mjs",
     "start": "node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next start",

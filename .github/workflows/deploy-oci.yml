@@ -68,7 +68,10 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            echo "==> Cleaning git state..."
             rm -f "$DEPLOY_DIR/.git/index.lock"
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
 
@@ -78,6 +81,7 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f "$DEPLOY_DIR/.git/index.lock"
+              git gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git reset --hard "origin/$BRANCH"
@@ -116,7 +120,10 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            echo "==> Cleaning git state..."
             rm -f "$DEPLOY_DIR/.git/index.lock"
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
 
@@ -126,6 +133,7 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f "$DEPLOY_DIR/.git/index.lock"
+              git gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git reset --hard "origin/$BRANCH"
@@ -166,7 +174,10 @@ jobs:
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
+            echo "==> Cleaning git state..."
             rm -f "$DEPLOY_DIR/.git/index.lock"
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
 
@@ -176,6 +187,7 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f "$DEPLOY_DIR/.git/index.lock"
+              git gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git reset --hard "origin/$BRANCH"
@@ -209,7 +221,10 @@ jobs:
             set -euo pipefail
             DEPLOY_DIR="/opt/arcadeum"
 
+            echo "==> Cleaning git state..."
             rm -f "$DEPLOY_DIR/.git/index.lock"
+            git -C "$DEPLOY_DIR" reset --hard HEAD 2>/dev/null || true
+            git -C "$DEPLOY_DIR" gc --prune=now 2>/dev/null || true
 
             cd "$DEPLOY_DIR/bots/task-bot"
 
@@ -221,6 +236,7 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f "$DEPLOY_DIR/.git/index.lock"
+              git -C "$DEPLOY_DIR" gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git -C "$DEPLOY_DIR" reset --hard "origin/$BRANCH"
@@ -254,7 +270,10 @@ jobs:
             set -e
             cd /opt/arcadeum
 
+            echo "==> Cleaning git state..."
             rm -f /opt/arcadeum/.git/index.lock
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
 
             BRANCH="${{ github.event.inputs.branch || 'main' }}"
 
@@ -265,6 +284,7 @@ jobs:
               fi
               echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
               rm -f /opt/arcadeum/.git/index.lock
+              git gc --prune=now 2>/dev/null || true
               sleep 5
             done
             git reset --hard "origin/$BRANCH"

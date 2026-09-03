@@ -21,11 +21,11 @@ export async function GET() {
   await requireAdmin();
 
   try {
-    const res = await beFetch('/health');
+    const res = await beFetch('/health/db');
 
     if (!res.ok) {
       return NextResponse.json(
-        { error: 'Backend health check failed' },
+        { error: 'DB health check failed' },
         { status: 502 },
       );
     }

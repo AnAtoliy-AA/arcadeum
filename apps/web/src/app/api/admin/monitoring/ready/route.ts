@@ -21,17 +21,9 @@ export async function GET() {
   await requireAdmin();
 
   try {
-    const res = await beFetch('/health');
-
-    if (!res.ok) {
-      return NextResponse.json(
-        { error: 'Backend health check failed' },
-        { status: 502 },
-      );
-    }
-
+    const res = await beFetch('/ready');
     const data = await res.json();
-    return NextResponse.json(data);
+    return NextResponse.json(data, { status: res.status });
   } catch {
     return NextResponse.json({ error: 'Backend unreachable' }, { status: 502 });
   }

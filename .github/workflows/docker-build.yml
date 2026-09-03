@@ -12,6 +12,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/be
+  WORKER_IMAGE_NAME: ${{ github.repository }}/be-worker
 
 permissions:
   contents: read
@@ -19,7 +20,7 @@ permissions:
 
 jobs:
   build-and-push:
-    name: Build & Push BE Image
+    name: Build & Push Docker Images
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -35,8 +36,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Extract metadata
-        id: meta
+      - name: Extract BE metadata
+        id: meta-be
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
@@ -44,23 +45,51 @@ jobs:
             type=sha,prefix=
             type=raw,value=latest
 
-      - name: Build and push
+      - name: Extract Worker metadata
+        id: meta-worker
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=
+            type=raw,value=latest
+
+      - name: Build and push BE image
         uses: docker/build-push-action@v7
         with:
           context: .
           file: apps/be/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ steps.meta-be.outputs.tags }}
+          labels: ${{ steps.meta-be.outputs.labels }}
+          cache-from: type=gha,scope=be
+          cache-to: type=gha,scope=be,mode=max
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
+      - name: Build and push Worker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: apps/be/Dockerfile.worker
+          push: true
+          tags: ${{ steps.meta-worker.outputs.tags }}
+          labels: ${{ steps.meta-worker.outputs.labels }}
+          cache-from: type=gha,scope=worker
+          cache-to: type=gha,scope=worker,mode=max
+
+      - name: Run Trivy vulnerability scanner (BE)
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           format: 'sarif'
           output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Run Trivy vulnerability scanner (Worker)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}:latest
+          format: 'sarif'
+          output: 'trivy-worker-results.sarif'
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results
@@ -68,3 +97,9 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+
+      - name: Upload Trivy Worker scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-worker-results.sarif'

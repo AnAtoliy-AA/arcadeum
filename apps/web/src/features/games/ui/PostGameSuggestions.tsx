@@ -4,11 +4,16 @@ import { useCallback, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { shareLink, buildChallengeShareText } from '@/shared/lib/share';
 import { trackInviteShared } from '@/shared/analytics/funnel';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
+import { sendFriendRequestByUserId } from '@/shared/api/friends';
 
 interface PostGameSuggestionsProps {
   /** Game display name (e.g. "Chess", "Sea Battle"). */
@@ -23,6 +28,8 @@ interface PostGameSuggestionsProps {
   onPlayAnother?: () => void;
   /** Callback when challenge link is shared. */
   onChallengeShared?: () => void;
+  /** Opponent's user ID for sending friend request. */
+  opponentUserId?: string;
 }
 
 export function PostGameSuggestions({
@@ -32,11 +39,15 @@ export function PostGameSuggestions({
   inviteCode,
   onPlayAnother,
   onChallengeShared,
+  opponentUserId,
 }: PostGameSuggestionsProps) {
   const { t } = useTranslation();
   const routes = useRoutes();
   const { sm } = useMediaQuery();
+  const { snapshot } = useSessionTokens();
   const [challengeCopied, setChallengeCopied] = useState(false);
+  const [friendRequestSent, setFriendRequestSent] = useState(false);
+  const [friendRequestLoading, setFriendRequestLoading] = useState(false);
 
   const handleChallengeFriend = useCallback(async () => {
     if (!roomId) return;
@@ -83,6 +94,19 @@ export function PostGameSuggestions({
     });
   }, [gameName, gameSlug, roomId]);
 
+  const handleAddFriend = useCallback(async () => {
+    if (!snapshot.accessToken || !opponentUserId) return;
+    setFriendRequestLoading(true);
+    try {
+      await sendFriendRequestByUserId(snapshot.accessToken, opponentUserId);
+      setFriendRequestSent(true);
+    } catch {
+      setFriendRequestSent(true);
+    } finally {
+      setFriendRequestLoading(false);
+    }
+  }, [snapshot.accessToken, opponentUserId]);
+
   return (
     <div
       className={cx('flex w-full flex-col gap-2', sm ? 'px-1' : 'px-2')}
@@ -106,6 +130,25 @@ export function PostGameSuggestions({
               : t('games.common.postGame.challengeFriend')}
           </Button>
         )}
+
+        {opponentUserId &&
+          snapshot.userId &&
+          opponentUserId !== snapshot.userId && (
+            <Button
+              variant={friendRequestSent ? 'glass' : 'secondary'}
+              size={sm ? 'md' : 'lg'}
+              onClick={handleAddFriend}
+              disabled={friendRequestLoading || friendRequestSent}
+              className="w-full"
+              data-testid="add-friend-post-game-button"
+            >
+              {friendRequestSent
+                ? t('games.common.postGame.friendAdded' as TranslationKey) ||
+                  'Friend Request Sent'
+                : t('games.common.postGame.addFriend' as TranslationKey) ||
+                  'Add Friend'}
+            </Button>
+          )}
 
         <Button
           variant="glass"

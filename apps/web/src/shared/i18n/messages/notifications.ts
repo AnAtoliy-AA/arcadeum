@@ -47,6 +47,14 @@ export const en = {
       label: 'New announcement',
       description: 'New patch notes, drops, and other site-wide announcements.',
     },
+    friend_request: {
+      label: 'Friend requests',
+      description: 'Notifies you when someone sends a friend request.',
+    },
+    friend_accepted: {
+      label: 'Friend request accepted',
+      description: 'Notifies you when someone accepts your friend request.',
+    },
   },
   daily_reward_ready: {
     title: 'Daily reward ready',
@@ -63,6 +71,14 @@ export const en = {
   announcement_new: {
     title: '{{title}}',
     body: '{{excerpt}}',
+  },
+  friend_request: {
+    title: 'New friend request',
+    body: '{{username}} wants to be your friend.',
+  },
+  friend_accepted: {
+    title: 'Friend request accepted',
+    body: '{{username}} accepted your friend request.',
   },
 };
 
@@ -106,6 +122,14 @@ export const ru: DeepPartial<NotificationsMessages> = {
       label: 'Новые анонсы',
       description: 'Патчноуты, релизы и другие общие объявления.',
     },
+    friend_request: {
+      label: 'Заявки в друзья',
+      description: 'Уведомляет, когда кто-то отправляет заявку в друзья.',
+    },
+    friend_accepted: {
+      label: 'Заявка в друзья принята',
+      description: 'Уведомляет, когда кто-то принимает вашу заявку в друзья.',
+    },
   },
   daily_reward_ready: {
     title: 'Награда дня готова',
@@ -122,6 +146,14 @@ export const ru: DeepPartial<NotificationsMessages> = {
   announcement_new: {
     title: '{{title}}',
     body: '{{excerpt}}',
+  },
+  friend_request: {
+    title: 'Новая заявка в друзья',
+    body: '{{username}} хочет добавить вас в друзья.',
+  },
+  friend_accepted: {
+    title: 'Заявка в друзья принята',
+    body: '{{username}} принял вашу заявку в друзья.',
   },
 };
 
@@ -164,6 +196,14 @@ export const es: DeepPartial<NotificationsMessages> = {
       label: 'Nuevo anuncio',
       description: 'Notas de parche, lanzamientos y otros anuncios generales.',
     },
+    friend_request: {
+      label: 'Solicitudes de amistad',
+      description: 'Te avisa cuando alguien envía una solicitud de amistad.',
+    },
+    friend_accepted: {
+      label: 'Solicitud de amistad aceptada',
+      description: 'Te avisa cuando alguien acepta tu solicitud de amistad.',
+    },
   },
   daily_reward_ready: {
     title: 'Recompensa diaria lista',
@@ -180,6 +220,14 @@ export const es: DeepPartial<NotificationsMessages> = {
   announcement_new: {
     title: '{{title}}',
     body: '{{excerpt}}',
+  },
+  friend_request: {
+    title: 'Nueva solicitud de amistad',
+    body: '{{username}} quiere ser tu amigo.',
+  },
+  friend_accepted: {
+    title: 'Solicitud de amistad aceptada',
+    body: '{{username}} aceptó tu solicitud de amistad.',
   },
 };
 
@@ -223,10 +271,18 @@ export const fr: DeepPartial<NotificationsMessages> = {
       description:
         'Notes de patch, nouveautés boutique et autres annonces générales.',
     },
+    friend_request: {
+      label: "Demandes d'ami",
+      description: "T'avertit quand quelqu'un envoie une demande d'ami.",
+    },
+    friend_accepted: {
+      label: "Demande d'ami acceptée",
+      description: "T'avertit quand quelqu'un accepte ta demande d'ami.",
+    },
   },
   daily_reward_ready: {
     title: 'Récompense quotidienne prête',
-    body: 'Ta série t’attend — récupère-la maintenant.',
+    body: 'Ta série t\u2019attend — récupère-la maintenant.',
   },
   tournament_starting_soon: {
     title: '{{name}} commence dans {{minutes}} min',
@@ -239,6 +295,14 @@ export const fr: DeepPartial<NotificationsMessages> = {
   announcement_new: {
     title: '{{title}}',
     body: '{{excerpt}}',
+  },
+  friend_request: {
+    title: "Nouvelle demande d'ami",
+    body: '{{username}} veut être ton ami.',
+  },
+  friend_accepted: {
+    title: "Demande d'ami acceptée",
+    body: "{{username}} a accepté ta demande d'ami.",
   },
 };
 
@@ -280,6 +344,14 @@ export const by: DeepPartial<NotificationsMessages> = {
       label: 'Новыя анонсы',
       description: 'Патчноўты, рэлізы і іншыя агульныя анонсы.',
     },
+    friend_request: {
+      label: 'Запыты ў сябры',
+      description: 'Паведамляе, калі хтосьці адпраўляе запыт у сябры.',
+    },
+    friend_accepted: {
+      label: 'Запыт у сябры прыняты',
+      description: 'Паведамляе, калі хтосьці прымае ваш запыт у сябры.',
+    },
   },
   daily_reward_ready: {
     title: 'Узнагарода дня гатовая',
@@ -296,5 +368,13 @@ export const by: DeepPartial<NotificationsMessages> = {
   announcement_new: {
     title: '{{title}}',
     body: '{{excerpt}}',
+  },
+  friend_request: {
+    title: 'Новы запыт у сябры',
+    body: '{{username}} хоча стаць вашым сябром.',
+  },
+  friend_accepted: {
+    title: 'Запыт у сябры прыняты',
+    body: '{{username}} прыняў ваш запыт у сябры.',
   },
 };

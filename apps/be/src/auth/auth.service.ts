@@ -38,6 +38,10 @@ import { InventoryService } from '../shop/services/inventory.service';
 import { SignupRewardService } from './services';
 import { ModuleRef } from '@nestjs/core';
 import { GeoLookupService } from '../common/geo/geo-lookup.service';
+import {
+  Friendship,
+  FriendshipDocument,
+} from '../friends/schemas/friendship.schema';
 
 export type {
   OAuthTokenResponse,
@@ -49,6 +53,8 @@ export type {
 export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Friendship.name)
+    private readonly friendshipModel: Model<FriendshipDocument>,
     private readonly jwt: JwtService,
     private readonly oauthClient: OAuthClientService,
     private readonly refreshTokenService: RefreshTokenService,
@@ -132,10 +138,19 @@ export class AuthService {
 
     if (data.referralCode) {
       try {
-        await this.referralService.trackReferral(
+        const referrerId = await this.referralService.trackReferral(
           data.referralCode,
           (created as UserDocument).id as string,
         );
+        if (referrerId) {
+          await this.friendshipModel.create({
+            requesterId: new Types.ObjectId(referrerId),
+            addresseeId: new Types.ObjectId(
+              (created as UserDocument).id as string,
+            ),
+            status: 'accepted',
+          });
+        }
       } catch {
         // Non-critical
       }

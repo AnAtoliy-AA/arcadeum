@@ -122,7 +122,7 @@ export default function ChatPage() {
               size="lg"
               onClick={() => router.push('/auth')}
             >
-              Log In
+              {t('chat.loginButton') || 'Log In'}
             </Button>
           </GlassCard>
         </Container>

@@ -8,6 +8,7 @@ import { FriendsGateway } from './friends.gateway';
 import { Friendship, FriendshipSchema } from './schemas/friendship.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
       { name: Friendship.name, schema: FriendshipSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    NotificationsModule,
   ],
   controllers: [FriendsController],
   providers: [FriendsService, FriendsGateway],

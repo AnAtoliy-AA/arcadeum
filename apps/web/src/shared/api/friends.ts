@@ -23,6 +23,13 @@ export interface PendingRequests {
   outgoing: FriendRequest[];
 }
 
+export interface UserSearchResult {
+  id: string;
+  username: string;
+  displayName: string;
+  email: string;
+}
+
 export async function getFriends(token: string): Promise<Friend[]> {
   return apiClient.get<Friend[]>('/friends', { token });
 }
@@ -48,6 +55,17 @@ export async function sendFriendRequest(
   );
 }
 
+export async function sendFriendRequestByUserId(
+  token: string,
+  userId: string,
+): Promise<{ id: string }> {
+  return apiClient.post<{ id: string }>(
+    '/friends/request-by-user-id',
+    { userId },
+    { token },
+  );
+}
+
 export async function acceptFriendRequest(
   token: string,
   friendshipId: string,
@@ -66,9 +84,28 @@ export async function declineFriendRequest(
   });
 }
 
+export async function cancelFriendRequest(
+  token: string,
+  friendshipId: string,
+): Promise<void> {
+  return apiClient.post<void>(`/friends/cancel/${friendshipId}`, undefined, {
+    token,
+  });
+}
+
 export async function removeFriend(
   token: string,
   friendId: string,
 ): Promise<void> {
   return apiClient.delete<void>(`/friends/${friendId}`, { token });
+}
+
+export async function searchUsers(
+  token: string,
+  query: string,
+): Promise<UserSearchResult[]> {
+  return apiClient.get<UserSearchResult[]>(
+    `/auth/users/search?q=${encodeURIComponent(query)}`,
+    { token },
+  );
 }

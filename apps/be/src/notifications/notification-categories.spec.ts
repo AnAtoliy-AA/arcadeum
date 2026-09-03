@@ -5,12 +5,14 @@ import {
 } from './notification-categories';
 
 describe('NotificationCategory', () => {
-  it('contains the four wave-1 categories in stable order', () => {
+  it('contains the wave-1 + friend categories in stable order', () => {
     expect(NOTIFICATION_CATEGORIES).toEqual([
       'daily_reward_ready',
       'tournament_starting_soon',
       'tournament_registration_opened',
       'announcement_new',
+      'friend_request',
+      'friend_accepted',
     ]);
   });
 

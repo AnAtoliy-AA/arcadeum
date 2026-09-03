@@ -11,21 +11,25 @@ export const en = {
     },
     send: 'Send',
     loginRequired: 'Login required to view messages',
+    loginButton: 'Log In',
     you: 'You',
   },
-  list: {
+  chatList: {
     search: {
       placeholder: 'Search users...',
       ariaLabel: 'Search for users to chat with',
     },
     empty: {
-      noChats: 'No chats yet. Start a conversation!',
-      unauthenticated: 'Sign in to start chatting',
+      noChats: 'No chats yet',
+      unauthenticated: 'Sign in to chat',
       loading: 'Loading...',
+      startConversation: 'Start a conversation by searching for a user above!',
     },
     messages: {
       directChat: 'Direct Chat',
     },
+    loading: 'Loading chats...',
+    loginButton: 'Log In',
   },
 };
 
@@ -42,21 +46,25 @@ export const es = {
     },
     send: 'Enviar',
     loginRequired: 'Inicia sesión para ver los mensajes',
+    loginButton: 'Iniciar sesión',
     you: 'Tú',
   },
-  list: {
+  chatList: {
     search: {
       placeholder: 'Buscar usuarios...',
       ariaLabel: 'Buscar usuarios para chatear',
     },
     empty: {
-      noChats: 'Aún no hay chats. ¡Inicia una conversación!',
+      noChats: 'Aún no hay chats',
       unauthenticated: 'Inicia sesión para chatear',
       loading: 'Cargando...',
+      startConversation: '¡Inicia una conversación buscando un usuario arriba!',
     },
     messages: {
       directChat: 'Chat Directo',
     },
+    loading: 'Cargando chats...',
+    loginButton: 'Iniciar sesión',
   },
 };
 
@@ -73,21 +81,26 @@ export const fr = {
     },
     send: 'Envoyer',
     loginRequired: 'Connexion requise pour voir les messages',
+    loginButton: 'Se connecter',
     you: 'Toi',
   },
-  list: {
+  chatList: {
     search: {
       placeholder: 'Rechercher des utilisateurs...',
       ariaLabel: 'Rechercher des utilisateurs avec qui discuter',
     },
     empty: {
-      noChats: 'Aucune discussion pour le moment. Lancez une conversation !',
+      noChats: 'Aucune discussion pour le moment',
       unauthenticated: 'Connectez-vous pour discuter',
       loading: 'Chargement...',
+      startConversation:
+        'Lancez une conversation en recherchant un utilisateur ci-dessus !',
     },
     messages: {
       directChat: 'Discussion Directe',
     },
+    loading: 'Chargement des discussions...',
+    loginButton: 'Se connecter',
   },
 };
 
@@ -104,21 +117,25 @@ export const ru = {
     },
     send: 'Отправить',
     loginRequired: 'Войдите, чтобы просмотреть сообщения',
+    loginButton: 'Войти',
     you: 'Вы',
   },
-  list: {
+  chatList: {
     search: {
       placeholder: 'Поиск пользователей...',
       ariaLabel: 'Поиск пользователей для чата',
     },
     empty: {
-      noChats: 'Чатов пока нет. Начните общение!',
+      noChats: 'Чатов пока нет',
       unauthenticated: 'Войдите, чтобы начать общаться',
       loading: 'Загрузка...',
+      startConversation: 'Начните общение, найдя пользователя выше!',
     },
     messages: {
       directChat: 'Личный чат',
     },
+    loading: 'Загрузка чатов...',
+    loginButton: 'Войти',
   },
 };
 
@@ -135,21 +152,25 @@ export const by = {
     },
     send: 'Адправіць',
     loginRequired: 'Увайдзіце, каб прагледзець паведамленні',
+    loginButton: 'Увайсці',
     you: 'Вы',
   },
-  list: {
+  chatList: {
     search: {
       placeholder: 'Пошук карыстальнікаў...',
       ariaLabel: 'Пошук карыстальнікаў для чата',
     },
     empty: {
-      noChats: 'Чатаў пакуль няма. Пачніце зносіны!',
+      noChats: 'Чатаў пакуль няма',
       unauthenticated: 'Увайдзіце, каб пачаць камунікаваць',
       loading: 'Загрузка...',
+      startConversation: 'Пачніце зносіны, знайшоўшы карыстальніка вышэй!',
     },
     messages: {
       directChat: 'Асабісты чат',
     },
+    loading: 'Загрузка чатаў...',
+    loginButton: 'Увайсці',
   },
 };
 
@@ -162,13 +183,13 @@ export const chatMessages = {
 } as const;
 
 export const chatListMessages = {
-  en: en.list,
-  es: es.list,
-  fr: fr.list,
-  ru: ru.list,
-  by: by.list,
+  en: en.chatList,
+  es: es.chatList,
+  fr: fr.chatList,
+  ru: ru.chatList,
+  by: by.chatList,
 } as const;
 
 /** Derived types for backward compatibility */
 export type ChatMessages = typeof en.chat;
-export type ChatListMessages = typeof en.list;
+export type ChatListMessages = typeof en.chatList;

@@ -103,6 +103,8 @@ describe('NotificationsService', () => {
         tournament_starting_soon: false,
         tournament_registration_opened: false,
         announcement_new: false,
+        friend_request: false,
+        friend_accepted: false,
       });
     });
 
@@ -142,6 +144,8 @@ describe('NotificationsService', () => {
         announcement_new: true,
         tournament_starting_soon: false,
         tournament_registration_opened: false,
+        friend_request: false,
+        friend_accepted: false,
       });
     });
 

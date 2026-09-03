@@ -11,7 +11,6 @@ import {
   ModalTitle,
   ModalBody,
   ModalFooter,
-  Input,
   Badge,
   Spinner,
   LinkButton,
@@ -23,34 +22,47 @@ import type { PageTranslations } from '@/shared/i18n/page-translations';
 import {
   getFriends,
   getPendingRequests,
-  sendFriendRequest,
   acceptFriendRequest,
   declineFriendRequest,
+  cancelFriendRequest,
   removeFriend,
   type Friend,
   type FriendRequest,
 } from '@/shared/api/friends';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
 import { UserIcon } from '@arcadeum/ui/components/Icons/index';
+import { chatApi } from '@/features/chat/api';
+import { AddFriendCard } from './AddFriendCard';
 
 type FriendsTranslations = {
   title?: string;
   emptyState?: string;
-  addFriend?: { placeholder?: string; button?: string; sending?: string };
+  addFriend?: {
+    label?: string;
+    placeholder?: string;
+    button?: string;
+    sending?: string;
+    noResults?: string;
+  };
   requests?: {
     incoming?: string;
     outgoing?: string;
     accept?: string;
     decline?: string;
+    cancel?: string;
     pending?: string;
     empty?: string;
   };
   online?: string;
   offline?: string;
   removeFriend?: string;
+  removeConfirm?: string;
   inviteToGame?: string;
+  chat?: string;
   loginPrompt?: string;
   loginButton?: string;
+  loading?: string;
+  cancel?: string;
 };
 
 export default function FriendsPageContent({
@@ -71,11 +83,10 @@ export default function FriendsPageContent({
     incoming: FriendRequest[];
     outgoing: FriendRequest[];
   }>({ incoming: [], outgoing: [] });
-  const [username, setUsername] = useState('');
-  const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [removeTarget, setRemoveTarget] = useState<Friend | null>(null);
   const [loading, setLoading] = useState(true);
+  const [actingId, setActingId] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!token) {
@@ -120,47 +131,98 @@ export default function FriendsPageContent({
     void loadData();
   });
 
+  useFriendsSocket('friend:declined', () => {
+    void loadData();
+  });
+
+  useFriendsSocket('friend:cancelled', () => {
+    void loadData();
+  });
+
   useFriendsSocket('presence:update', () => {
     void loadData();
   });
 
-  const handleSendRequest = async () => {
-    if (!token || !username.trim()) return;
-    setSending(true);
-    setError(null);
-    try {
-      await sendFriendRequest(token, username.trim());
-      setUsername('');
-      void loadData();
-    } catch {
-      setError('Could not send friend request');
-    } finally {
-      setSending(false);
-    }
-  };
-
   const handleAccept = async (id: string) => {
     if (!token) return;
-    await acceptFriendRequest(token, id);
-    void loadData();
+    setActingId(id);
+    setError(null);
+    try {
+      await acceptFriendRequest(token, id);
+      void loadData();
+    } catch {
+      setError('Could not accept friend request');
+    } finally {
+      setActingId(null);
+    }
   };
 
   const handleDecline = async (id: string) => {
     if (!token) return;
-    await declineFriendRequest(token, id);
-    void loadData();
+    setActingId(id);
+    setError(null);
+    try {
+      await declineFriendRequest(token, id);
+      void loadData();
+    } catch {
+      setError('Could not decline friend request');
+    } finally {
+      setActingId(null);
+    }
+  };
+
+  const handleCancel = async (id: string) => {
+    if (!token) return;
+    setActingId(id);
+    setError(null);
+    try {
+      await cancelFriendRequest(token, id);
+      void loadData();
+    } catch {
+      setError('Could not cancel friend request');
+    } finally {
+      setActingId(null);
+    }
   };
 
   const handleRemove = async (id: string) => {
     if (!token) return;
-    await removeFriend(token, id);
-    setRemoveTarget(null);
-    void loadData();
+    setActingId(id);
+    setError(null);
+    try {
+      await removeFriend(token, id);
+      setRemoveTarget(null);
+      void loadData();
+    } catch {
+      setError('Could not remove friend');
+    } finally {
+      setActingId(null);
+    }
   };
 
   const handleInviteToGame = useCallback(() => {
     router.push(routes.gameCreate);
   }, [router, routes.gameCreate]);
+
+  const handleStartChat = useCallback(
+    async (friend: Friend) => {
+      if (!token || !snapshot.userId) return;
+      try {
+        const response = await chatApi.createChat(
+          { users: [snapshot.userId, friend.userId] },
+          { token },
+        );
+        router.push(
+          `/chat?chatId=${response.chatId}&receiverIds=${friend.userId}&title=${encodeURIComponent(friend.displayName || friend.username)}`,
+        );
+      } catch {
+        router.push(
+          `/chat?receiverIds=${friend.userId}&title=${encodeURIComponent(friend.displayName || friend.username)}`,
+        );
+      }
+    },
+    [token, snapshot.userId, router],
+  );
 
   const hasAnyContent =
     friends.length > 0 ||
@@ -168,7 +230,7 @@ export default function FriendsPageContent({
     pending.outgoing.length > 0;
 
   return (
-    <div className="overflow-auto p-4 max-w-[640px] w-full">
+    <div className="p-4 max-w-[640px] w-full">
       <div className="flex flex-col items-stretch gap-5">
         <div className="flex flex-row justify-between items-center">
           <span className="text-[28px] font-extrabold">
@@ -181,37 +243,7 @@ export default function FriendsPageContent({
           )}
         </div>
 
-        <Card variant="elevated">
-          <div className="flex flex-col items-stretch gap-3">
-            <span className="text-[16px] font-semibold text-[#94a3b8]">
-              Add Friend
-            </span>
-            <div className="flex flex-row gap-2 items-center">
-              <Input
-                className={'flex-1'}
-                size="md"
-                placeholder={tt.addFriend?.placeholder ?? 'Enter username'}
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSendRequest();
-                }}
-                data-testid="add-friend-input"
-              />
-              <Button
-                variant="primary"
-                onClick={handleSendRequest}
-                disabled={sending || !username.trim()}
-                icon={<UserIcon size={16} />}
-                data-testid="add-friend-button"
-              >
-                {sending
-                  ? (tt.addFriend?.sending ?? 'Sending…')
-                  : (tt.addFriend?.button ?? 'Add Friend')}
-              </Button>
-            </div>
-          </div>
-        </Card>
+        <AddFriendCard tt={tt.addFriend} onSent={() => void loadData()} />
 
         {error && (
           <Card variant="error">
@@ -223,7 +255,7 @@ export default function FriendsPageContent({
           <div className="flex flex-col items-center p-8 gap-3">
             <Spinner size="md" />
             <span className="text-[#6b7280] text-[16px]">
-              Loading friends...
+              {tt.loading ?? 'Loading friends...'}
             </span>
           </div>
         ) : !token ? (
@@ -270,6 +302,7 @@ export default function FriendsPageContent({
                         variant="primary"
                         size="sm"
                         onClick={() => handleAccept(req.id)}
+                        disabled={actingId === req.id}
                         data-testid={`accept-${req.id}`}
                       >
                         {tt.requests?.accept ?? 'Accept'}
@@ -278,6 +311,7 @@ export default function FriendsPageContent({
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDecline(req.id)}
+                        disabled={actingId === req.id}
                         data-testid={`decline-${req.id}`}
                       >
                         {tt.requests?.decline ?? 'Decline'}
@@ -313,6 +347,15 @@ export default function FriendsPageContent({
                       <Badge variant="warning" size="sm">
                         {tt.requests?.pending ?? 'Pending'}
                       </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCancel(req.id)}
+                        disabled={actingId === req.id}
+                        data-testid={`cancel-${req.id}`}
+                      >
+                        {tt.requests?.cancel ?? 'Cancel'}
+                      </Button>
                     </div>
                   </Card>
                 ))}
@@ -357,6 +400,14 @@ export default function FriendsPageContent({
                         {tt.inviteToGame ?? 'Invite'}
                       </Button>
                       <Button
+                        variant="glass"
+                        size="sm"
+                        onClick={() => handleStartChat(friend)}
+                        data-testid={`chat-${friend.userId}`}
+                      >
+                        {tt.chat ?? 'Chat'}
+                      </Button>
+                      <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setRemoveTarget(friend)}
@@ -380,17 +431,20 @@ export default function FriendsPageContent({
           </ModalHeader>
           <ModalBody>
             <span className="text-[16px]">
-              Remove {removeTarget?.displayName ?? removeTarget?.username} from
-              your friends?
+              {(tt.removeConfirm ?? 'Remove {name} from your friends?').replace(
+                '{name}',
+                removeTarget?.displayName ?? removeTarget?.username ?? '',
+              )}
             </span>
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" onClick={() => setRemoveTarget(null)}>
-              Cancel
+              {tt.cancel ?? 'Cancel'}
             </Button>
             <Button
               variant="primary"
               onClick={() => removeTarget && handleRemove(removeTarget.userId)}
+              disabled={actingId === removeTarget?.userId}
               data-testid="confirm-remove-friend"
             >
               {tt.removeFriend ?? 'Remove'}

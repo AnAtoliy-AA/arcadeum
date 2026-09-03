@@ -49,6 +49,7 @@ export interface GameRoomSummary {
 
 export interface ListRoomsFilters {
   gameId?: string;
+  categories?: string;
   search?: string;
   status?: string;
   statuses?: GameRoomStatus[];

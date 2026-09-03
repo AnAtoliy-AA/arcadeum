@@ -12,6 +12,8 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useInfiniteQuery } from '@/shared/hooks/useInfiniteQuery';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi, GetRoomsResponse } from '@/features/games/api';
+import { gameMetadata } from '@/features/games/registry';
+import { GameCard } from '@/features/games/ui/GameCard';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import {
   gameSocket,
@@ -19,7 +21,6 @@ import {
   connectSocketsAnonymous,
 } from '@/shared/lib/socket';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
-import { gameMetadata } from '@/features/games/registry';
 import { GamesEmpty } from './components/GamesEmpty';
 import { GamesError } from './components/GamesError';
 import { GamesFilters } from './components/GamesFilters';
@@ -230,6 +231,7 @@ export default function GamesPage({
       participationFilter,
       aiVsAiFilter,
       deferredSearchQuery,
+      categoryFilter || 'all',
       gameId ?? null,
       snapshot.accessToken,
       snapshot.userId,
@@ -244,6 +246,7 @@ export default function GamesPage({
           page: pageParam as number,
           limit: PAGE_SIZE,
           gameId,
+          categories: categoryFilter || undefined,
         },
         { token: snapshot.accessToken || undefined },
       );
@@ -264,21 +267,30 @@ export default function GamesPage({
     useServerWakeUpProgress(isLoading);
 
   const rooms = useMemo(() => {
-    return data?.pages.flatMap((page) => page.rooms) || [];
+    const all = data?.pages.flatMap((page) => page.rooms) || [];
+    const seen = new Set<string>();
+    return all.filter((room) => {
+      if (seen.has(room.id)) return false;
+      seen.add(room.id);
+      return true;
+    });
   }, [data]);
 
   const sortedRooms = useMemo(() => {
-    const filtered = categoryFilter
-      ? rooms.filter((room) => {
-          const meta = gameMetadata[room.gameId as keyof typeof gameMetadata];
-          return meta?.category === categoryFilter;
-        })
-      : rooms;
-    return [...filtered].sort(
+    return [...rooms].sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
-  }, [rooms, categoryFilter]);
+  }, [rooms]);
+
+  const soloGames = useMemo(() => {
+    return Object.values(gameMetadata).filter(
+      (meta) =>
+        meta.minPlayers === 1 &&
+        meta.status !== 'coming_soon' &&
+        meta.status !== 'deprecated',
+    );
+  }, []);
 
   const error = queryError ? 'Failed to load rooms' : null;
 
@@ -292,6 +304,18 @@ export default function GamesPage({
     }
 
     if (sortedRooms.length === 0) {
+      if (categoryFilter === 'Puzzle' && soloGames.length > 0) {
+        return (
+          <>
+            <p className="text-sm text-[var(--textSecondary)] col-span-full">
+              These single-player games run in your browser — no room needed.
+            </p>
+            {soloGames.map((game) => (
+              <GameCard key={game.slug} game={game} showDetails />
+            ))}
+          </>
+        );
+      }
       return <GamesEmpty />;
     }
 

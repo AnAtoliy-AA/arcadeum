@@ -145,6 +145,7 @@ export class GamesController {
   async listRooms(
     @Req() req: Request,
     @Query('gameId') gameId?: string,
+    @Query('categories') categories?: string,
     @Query('status') statusParam?: string,
     @Query('visibility') visibilityParam?: string,
     @Query('participation') participationParam?: string,
@@ -164,6 +165,7 @@ export class GamesController {
     const result = await this.gamesService.listRooms({
       userId: user?.userId,
       gameId,
+      categories,
       search: search?.trim(),
       statuses: statusFilters.length ? statusFilters : undefined,
       visibility: visibilityFilters.length ? visibilityFilters : undefined,

@@ -74,6 +74,10 @@ async function RoomsDataFetcher({
 
   const gameId =
     typeof searchParams.gameId === 'string' ? searchParams.gameId : undefined;
+  const categories =
+    typeof searchParams.category === 'string'
+      ? searchParams.category
+      : undefined;
   const status =
     typeof searchParams.status === 'string' ? searchParams.status : 'all';
   const participation =
@@ -95,6 +99,7 @@ async function RoomsDataFetcher({
         page,
         limit: 12,
         gameId,
+        categories,
       },
       {
         token: accessToken || undefined,

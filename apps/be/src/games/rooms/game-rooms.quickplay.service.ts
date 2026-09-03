@@ -69,8 +69,11 @@ export class GameRoomsQuickplayService {
       ...(variant ? { variant } : {}),
       theme: effectiveTheme,
     };
+    const category = this.engineRegistry.getMetadata(gameId).category;
+
     const room = await this.gameRoomModel.create({
       gameId,
+      category,
       name: 'Quick Match',
       hostId: userId,
       visibility: 'public',

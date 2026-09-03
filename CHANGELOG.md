@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.42] - 2026-09-03
+
+### Fixed
+- fix mobile lobby chat hidden by start button
+
+
 ## [1.27.41] - 2026-09-03
 
 ### Fixed

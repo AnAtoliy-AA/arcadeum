@@ -71,6 +71,13 @@ export class FriendsController {
     return this.friendsService.getFriends(req.user.userId);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(10000)
+  @Get('user/:userId')
+  getUserFriends(@Param('userId') userId: string) {
+    return this.friendsService.getFriends(userId);
+  }
+
   @Get('pending')
   getPendingRequests(@Req() req: RequestWithUser) {
     return this.friendsService.getPendingRequests(req.user.userId);

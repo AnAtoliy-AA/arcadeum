@@ -295,9 +295,13 @@ export default function FriendsPageContent({
                         equippedBadgeId={null}
                         size="sm"
                       />
-                      <span className="flex-1 text-[16px] font-medium">
+                      <button
+                        type="button"
+                        className="flex-1 text-left text-[16px] font-medium hover:underline cursor-pointer"
+                        onClick={() => router.push(routes.profile(req.userId))}
+                      >
                         {req.displayName ?? req.username}
-                      </span>
+                      </button>
                       <Button
                         variant="primary"
                         size="sm"
@@ -341,9 +345,13 @@ export default function FriendsPageContent({
                         equippedBadgeId={null}
                         size="sm"
                       />
-                      <span className="flex-1 text-[16px] font-medium">
+                      <button
+                        type="button"
+                        className="flex-1 text-left text-[16px] font-medium hover:underline cursor-pointer"
+                        onClick={() => router.push(routes.profile(req.userId))}
+                      >
                         {req.displayName ?? req.username}
-                      </span>
+                      </button>
                       <Badge variant="warning" size="sm">
                         {tt.requests?.pending ?? 'Pending'}
                       </Badge>
@@ -376,8 +384,13 @@ export default function FriendsPageContent({
                         equippedBadgeId={null}
                         size="sm"
                       />
-                      <div className="flex flex-col items-stretch flex-1 gap-1">
-                        <span className="text-[16px] font-semibold">
+                      <div
+                        className="flex flex-col items-stretch flex-1 gap-1 cursor-pointer"
+                        onClick={() =>
+                          router.push(routes.profile(friend.userId))
+                        }
+                      >
+                        <span className="text-[16px] font-semibold hover:underline">
                           {friend.displayName ?? friend.username}
                         </span>
                         <div className="flex flex-row items-center gap-2">

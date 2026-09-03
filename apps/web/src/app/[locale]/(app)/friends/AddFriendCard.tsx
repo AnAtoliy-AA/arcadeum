@@ -33,15 +33,10 @@ export function AddFriendCard({ tt, onSent }: AddFriendCardProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const debouncedQuery = useDebounce(username, 300);
-  const lastQueryRef = useRef('');
-  const searchLoadingRef = useRef(false);
 
   useEffect(() => {
     if (!token || !debouncedQuery.trim()) return;
-    if (debouncedQuery === lastQueryRef.current) return;
-    lastQueryRef.current = debouncedQuery;
     let cancelled = false;
-    searchLoadingRef.current = true;
     searchUsers(token, debouncedQuery)
       .then((results) => {
         if (!cancelled)
@@ -49,9 +44,6 @@ export function AddFriendCard({ tt, onSent }: AddFriendCardProps) {
       })
       .catch(() => {
         if (!cancelled) setSearchResults([]);
-      })
-      .finally(() => {
-        if (!cancelled) searchLoadingRef.current = false;
       });
     return () => {
       cancelled = true;

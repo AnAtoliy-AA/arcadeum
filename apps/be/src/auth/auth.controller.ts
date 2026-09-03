@@ -307,6 +307,12 @@ export class AuthController {
     });
   }
 
+  @Get('users/:id')
+  @Throttle({ default: { limit: 60, ttl: 60_000 } })
+  async getUserPublicProfile(@Param('id') id: string) {
+    return this.authService.getPublicProfile(id);
+  }
+
   @Post('block/:userId')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)

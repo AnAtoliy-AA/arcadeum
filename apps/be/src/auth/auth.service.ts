@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  NotFoundException,
   Inject,
   forwardRef,
 } from '@nestjs/common';
@@ -385,6 +386,42 @@ export class AuthService {
     }
     const ensured = await ensureUserUsername(doc, this.userModel);
     return buildAuthUserProfile(ensured);
+  }
+
+  async getPublicProfile(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new NotFoundException('User not found');
+    }
+    const doc = await this.userModel
+      .findById(userId)
+      .select(
+        'username displayName role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId countryCode createdAt',
+      )
+      .lean();
+    if (!doc) {
+      throw new NotFoundException('User not found');
+    }
+    return {
+      id: String(doc._id),
+      username: doc.username,
+      displayName: (doc as { displayName?: string }).displayName ?? null,
+      role: doc.role ?? 'free',
+      equippedAvatarId:
+        (doc as { equippedAvatarId?: string | null }).equippedAvatarId ?? null,
+      equippedBadgeId:
+        (doc as { equippedBadgeId?: string | null }).equippedBadgeId ?? null,
+      equippedNameColorId:
+        (doc as { equippedNameColorId?: string | null }).equippedNameColorId ??
+        null,
+      equippedFrameId:
+        (doc as { equippedFrameId?: string | null }).equippedFrameId ?? null,
+      equippedAuraId:
+        (doc as { equippedAuraId?: string | null }).equippedAuraId ?? null,
+      equippedBannerId:
+        (doc as { equippedBannerId?: string | null }).equippedBannerId ?? null,
+      countryCode: (doc as { countryCode?: string | null }).countryCode ?? null,
+      createdAt: (doc as { createdAt?: Date }).createdAt?.toISOString() ?? null,
+    };
   }
 
   async blockUser(userId: string, blockedUserId: string): Promise<void> {

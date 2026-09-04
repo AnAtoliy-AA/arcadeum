@@ -45,14 +45,14 @@ export class SoloScoresController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Get('best')
   async getPersonalBests(
     @Req() req: Request,
     @Query('gameId') gameId?: string,
   ) {
     const user = req.user as AuthenticatedUser | undefined;
-    if (!user) throw new UnauthorizedException();
+    if (!user) return [];
     return this.soloScoresService.getPersonalBests(user.userId, gameId);
   }
 

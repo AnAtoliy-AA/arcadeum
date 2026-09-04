@@ -214,26 +214,34 @@ export function connectSockets(token: string | null | undefined): void {
   }
 
   currentAnonId = null;
+  const gamesSock = getGamesSocket();
+
+  // Clear the anonId query param from the Manager so reconnections use JWT auth
+  if (gamesSock.io?.opts?.query) {
+    const query = { ...(gamesSock.io.opts.query as Record<string, string>) };
+    delete query.anonId;
+    gamesSock.io.opts.query = query;
+  }
 
   if (currentAuthToken !== token) {
     currentAuthToken = token;
 
-    if (getGamesSocket().connected) {
-      getGamesSocket().disconnect();
+    if (gamesSock.connected) {
+      gamesSock.disconnect();
     }
     if (getChatsSocket().connected) {
       getChatsSocket().disconnect();
     }
   }
 
-  applyAuth(getGamesSocket(), token);
+  applyAuth(gamesSock, token);
   applyAuth(getChatsSocket(), token);
   applyAuth(getFriendsSock(), token);
   applyAuth(getClansSock(), token);
   applyAuth(getNotificationsSocket(), token);
 
-  if (!getGamesSocket().connected && isNotConnecting(getGamesSocket())) {
-    getGamesSocket().connect();
+  if (!gamesSock.connected && isNotConnecting(gamesSock)) {
+    gamesSock.connect();
   }
   if (!getChatsSocket().connected && isNotConnecting(getChatsSocket())) {
     getChatsSocket().connect();
@@ -295,20 +303,12 @@ export function disconnectWalletSocket(): void {
  */
 export function connectSocketsAnonymous(userId?: string): void {
   const targetAnonId = userId || null;
-
-  if (currentAuthToken) {
-    disconnectSockets();
-  }
-
+  if (currentAuthToken) disconnectSockets();
   const gamesSock = getGamesSocket();
-
-  if (currentAnonId !== targetAnonId && gamesSock.connected) {
-    gamesSock.disconnect();
-  }
-
   currentAnonId = targetAnonId;
   gamesSock.auth = {};
 
+  // Apply anonId to Manager's query params and force a fresh transport
   if (gamesSock.io?.opts) {
     if (targetAnonId) {
       gamesSock.io.opts.query = {
@@ -321,10 +321,10 @@ export function connectSocketsAnonymous(userId?: string): void {
       gamesSock.io.opts.query = query;
     }
   }
-
-  if (!gamesSock.connected) {
-    gamesSock.connect();
+  if (gamesSock.connected || gamesSock.io?._readyState === 'opening') {
+    gamesSock.disconnect();
   }
+  gamesSock.connect();
 }
 
 export function disconnectSockets(): void {

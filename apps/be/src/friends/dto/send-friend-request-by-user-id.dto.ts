@@ -1,7 +1,7 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsMongoId, IsNotEmpty } from 'class-validator';
 
 export class SendFriendRequestByUserIdDto {
-  @IsString()
+  @IsMongoId()
   @IsNotEmpty()
   userId!: string;
 }

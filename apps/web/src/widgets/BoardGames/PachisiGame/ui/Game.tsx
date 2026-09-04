@@ -68,7 +68,7 @@ function PachisiGameImpl({
     initialSession,
   });
 
-  const { startSession, rollDice, moveToken } = usePachisiActions({
+  const { startSession, rollDice, moveToken, passTurn } = usePachisiActions({
     roomId,
     userId: currentUserId,
   });
@@ -191,6 +191,7 @@ function PachisiGameImpl({
           currentUserId={currentUserId}
           myTurn={myTurn}
           onMove={moveToken}
+          onPassTurn={passTurn}
           onRoll={rollDice}
           snapshot={snapshot}
         />

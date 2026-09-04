@@ -160,6 +160,7 @@ export const byMessages = {
       tokensHome: 'Дома',
       captured: 'Захоплена!',
       noLegalMoves: 'Няма дапушчальных хадоў для гэтага кідка',
+      passTurn: 'Прапусціць ход',
       tapToken: 'Націсніце на падсветленую фішку, каб зрабіць ход',
       moveTokenAria: 'Хадзіць фішкай {{id}}',
       dieValue: 'Кубік: {{value}}',

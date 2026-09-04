@@ -48,11 +48,17 @@ export function usePachisiActions(options: UsePachisiActionsOptions) {
     [roomId, userId, onActionStart],
   );
 
+  const passTurn = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('pass');
+    gameSocket.emit('pachisi.session.pass', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
   const forfeit = useCallback(() => {
     if (!userId) return;
     onActionStart?.('forfeit');
     gameSocket.emit('pachisi.session.forfeit', { roomId, userId });
   }, [roomId, userId, onActionStart]);
 
-  return { startSession, rollDice, moveToken, forfeit };
+  return { startSession, rollDice, moveToken, passTurn, forfeit };
 }

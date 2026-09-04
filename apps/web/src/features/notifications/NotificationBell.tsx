@@ -4,7 +4,10 @@ import { memo, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Typography } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useNotificationSocket } from '@/shared/lib/socket';
 import { useNotificationsStore } from './notifications.store';
@@ -181,8 +184,17 @@ const NotificationRow = memo(function NotificationRow({
   const t: T = rawT as unknown as T;
   const markRead = useNotificationsStore((s) => s.markRead);
   const deleteNotification = useNotificationsStore((s) => s.deleteNotification);
-  const title = t(item.titleKey, item.i18nParams as Record<string, string>);
-  const body = t(item.bodyKey, item.i18nParams as Record<string, string>);
+
+  const gameId = item.i18nParams?.gameId;
+  const resolvedGameId = gameId
+    ? t(`games.${gameId}.name` as TranslationKey) || String(gameId)
+    : undefined;
+  const params = {
+    ...item.i18nParams,
+    ...(resolvedGameId && { gameId: resolvedGameId }),
+  };
+  const title = t(item.titleKey, params as Record<string, string>);
+  const body = t(item.bodyKey, params as Record<string, string>);
 
   const handleDelete = useCallback(
     (e: React.MouseEvent) => {

@@ -27,6 +27,7 @@ import { BackgammonLobby } from './BackgammonLobby';
 import { BackgammonBoard } from './BackgammonBoard';
 import { RulesModal } from './RulesModal';
 import { BACKGAMMON_THEMES } from '../lib/constants';
+import { getThemeById } from '@/features/games/lib/shared-themes';
 
 function resolveOptions(raw: unknown): BackgammonOptions {
   const r = (raw ?? {}) as Partial<{
@@ -146,6 +147,11 @@ function BackgammonGameImpl({
     return found ?? BACKGAMMON_THEMES[0];
   }, [options.variant]);
 
+  const sharedTheme = useMemo(
+    () => (options.variant ? getThemeById(options.variant) : undefined),
+    [options.variant],
+  );
+
   const players = useMemo(
     () =>
       snapshot?.players.map((p) => ({
@@ -192,7 +198,7 @@ function BackgammonGameImpl({
   }
 
   const board = (
-    <div className="box-border flex w-full flex-col items-stretch p-1 sm:p-2">
+    <div className="box-border flex w-full flex-1 flex-col items-center justify-center p-1 sm:p-2 min-h-0 min-w-0">
       {snapshot ? (
         <BackgammonBoard
           currentUserId={currentUserId}
@@ -245,6 +251,7 @@ function BackgammonGameImpl({
   return (
     <BackgammonThemeProvider variant={options.variant}>
       <GameWidgetContainer
+        bgImage={sharedTheme?.bgImage}
         board={board}
         headerProps={{
           variantEmoji: variantTokens.emoji,

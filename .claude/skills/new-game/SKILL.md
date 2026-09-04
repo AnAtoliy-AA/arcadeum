@@ -33,6 +33,7 @@ Every game uses two standard option fields — never conflate visual themes with
 - In `gameOptions`, always store `theme` (not `variant`). The backend `resolveOptions` reads `r.theme ?? r.variant` for backward compat.
 - The frontend `resolveOptions()` must output both `theme` and `variant` (as alias) for backward compat with existing room data.
 - `setOption()` calls from lobbies should write `{ theme: themeId, variant: themeId }` for full backward compat.
+- **No hardcoded theme CSS/SCSS**: Never write per-theme CSS selectors (e.g. `[data-theme="cyberpunk"]`). Instead, map `theme.colors.*` in `lib/theme-adapter.ts` to game-specific tokens, mint scoped CSS custom properties at the container level (e.g. `boardVars(theme)` as in `BackgammonBoard` or `HeartsBoard`), and let stylesheets strictly consume `var(--...)`. This guarantees that adding a new theme to `SHARED_THEMES` requires zero game CSS edits.
 
 **Options interface pattern:**
 ```ts
@@ -43,6 +44,13 @@ interface MyGameOptions {
   // ... game-specific options
 }
 ```
+
+## Two-Player Board Orientation Rule
+
+In all two-player games (Chess, Checkers, Backgammon, etc.), the local player's side/pieces/home board must ALWAYS be placed at the bottom.
+- When `currentUserId` matches Player 0 (White/First): the default perspective is shown (Player 0 at bottom).
+- When `currentUserId` matches Player 1 (Black/Second): dynamically invert/flip the board coordinates/perspective so Player 1's side is at the bottom.
+- Spectators default to Player 0's perspective.
 
 ## Architecture (two halves)
 

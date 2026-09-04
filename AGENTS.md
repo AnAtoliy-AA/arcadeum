@@ -37,6 +37,8 @@
 - **Separate Themes from Modes** — visual themes (`cyberpunk`, `underwater`, `zen`, etc.) are skins/palettes/backgrounds. Game modes (`standard`, `chess960`, `battle_royale`, `speed`) are gameplay rules. Never conflate them.
 - **Theme Adapter Pattern** — every game widget must implement `lib/theme-adapter.ts` (`sharedThemeTo<Game>(theme: GameTheme): <Game>Theme`), `lib/theme.ts` (`get<Game>Theme(variant?: string)`), and `lib/<Game>ThemeContext.tsx` (`createGameThemeContext`).
 - **Adding New Themes** — when adding a new theme to `SHARED_THEMES` (with background image and palette tokens), it MUST automatically propagate to all games without altering individual game engines.
+- **No Hardcoded Theme CSS in Games** — never write hardcoded per-theme CSS/SCSS selectors (e.g. `[data-theme='cyberpunk'] { ... }`). Instead, map `theme.colors.*` in `lib/theme-adapter.ts` to game-specific tokens, mint scoped CSS custom properties on the root board container via a `boardVars(theme)` helper (as in `BackgammonBoard` and `HeartsBoard`), and have stylesheets strictly consume `var(--...)`. Any new theme added to `SHARED_THEMES` must immediately work with zero CSS modifications.
+- **Two-Player Board Orientation** — in all two-player games (Chess, Checkers, Backgammon, etc.), the current local player's side/home board/pieces must ALWAYS be oriented at the bottom. The view must dynamically flip or invert coordinates based on `currentUserId` so the player always plays upwards from their perspective.
 
 ### i18n
 

@@ -1,7 +1,7 @@
 'use client';
 
+import { cx } from '@arcadeum/ui/utils/cx';
 import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
-import { useBackgammonTheme } from '../lib/BackgammonThemeContext';
 import type { BackgammonPlayer } from '../types';
 
 interface TurnBadgeProps {
@@ -17,7 +17,6 @@ export function TurnBadge({
   myTurn,
   resolveName,
 }: TurnBadgeProps) {
-  const theme = useBackgammonTheme();
   if (!currentTurnUserId) return null;
 
   const player = players.find((p) => p.playerId === currentTurnUserId);
@@ -26,11 +25,12 @@ export function TurnBadge({
 
   return (
     <div
-      className={`flex flex-row py-2 px-3 rounded-full self-center items-center gap-2 border ${
+      className={cx(
+        'flex flex-row py-2 px-3 rounded-full self-center items-center gap-2 border',
         myTurn
           ? 'bg-emerald-500 text-white border-transparent'
-          : 'bg-[var(--backgroundHover)] border-[var(--borderColor)]'
-      }`}
+          : 'bg-[var(--backgroundHover)] border-[var(--borderColor)]',
+      )}
       data-testid="backgammon-turn-badge"
     >
       <InGameAvatar
@@ -40,8 +40,10 @@ export function TurnBadge({
         size="sm"
       />
       <span
-        className="font-bold text-sm"
-        style={{ color: myTurn ? '#ffffff' : theme.textColor }}
+        className={cx(
+          'font-bold text-sm',
+          myTurn ? 'text-white' : 'text-[var(--color)]',
+        )}
       >
         {myTurn ? 'Your turn' : `${display}'s turn`}
       </span>

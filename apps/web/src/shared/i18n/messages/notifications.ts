@@ -84,6 +84,10 @@ export const en = {
     title: 'Friend request accepted',
     body: '{{username}} accepted your friend request.',
   },
+  game_invitation: {
+    title: 'Game invitation',
+    body: '{{hostName}} invited you to play {{gameId}}.',
+  },
 };
 
 export type NotificationsMessages = DeepPartial<typeof en>;
@@ -163,6 +167,10 @@ export const ru: DeepPartial<NotificationsMessages> = {
     title: 'Заявка в друзья принята',
     body: '{{username}} принял вашу заявку в друзья.',
   },
+  game_invitation: {
+    title: 'Приглашение в игру',
+    body: '{{hostName}} пригласил вас в игру {{gameId}}.',
+  },
 };
 
 export const es: DeepPartial<NotificationsMessages> = {
@@ -240,6 +248,10 @@ export const es: DeepPartial<NotificationsMessages> = {
   friend_accepted: {
     title: 'Solicitud de amistad aceptada',
     body: '{{username}} aceptó tu solicitud de amistad.',
+  },
+  game_invitation: {
+    title: 'Invitación a jugar',
+    body: '{{hostName}} te invitó a jugar {{gameId}}.',
   },
 };
 
@@ -320,6 +332,10 @@ export const fr: DeepPartial<NotificationsMessages> = {
     title: "Demande d'ami acceptée",
     body: "{{username}} a accepté ta demande d'ami.",
   },
+  game_invitation: {
+    title: 'Invitation à jouer',
+    body: '{{hostName}} vous a invité à jouer à {{gameId}}.',
+  },
 };
 
 export const by: DeepPartial<NotificationsMessages> = {
@@ -396,5 +412,9 @@ export const by: DeepPartial<NotificationsMessages> = {
   friend_accepted: {
     title: 'Запыт у сябры прыняты',
     body: '{{username}} прыняў ваш запыт у сябры.',
+  },
+  game_invitation: {
+    title: 'Запрашэнне ў гульню',
+    body: '{{hostName}} запрасіў вас пагуляць у {{gameId}}.',
   },
 };

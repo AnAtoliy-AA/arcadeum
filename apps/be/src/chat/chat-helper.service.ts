@@ -90,7 +90,9 @@ export class ChatHelperService {
     }
 
     const plainMessages = messageDocs.map((doc) =>
-      doc.toObject<MessageDocumentObject>(),
+      typeof doc.toObject === 'function'
+        ? doc.toObject<MessageDocumentObject>()
+        : (doc as unknown as MessageDocumentObject),
     );
 
     // Collect every distinct sender id. We need a User lookup either way to

@@ -131,8 +131,9 @@ export class FriendsService {
     requesterId: string,
     targetUserId: string,
   ): Promise<{ id: string }> {
+    const targetObjectId = new Types.ObjectId(targetUserId);
     const target = (await this.userModel
-      .findById(targetUserId)
+      .findById(targetObjectId)
       .lean()) as LeanUser | null;
     if (!target) throw new NotFoundException('friends.userNotFound');
 
@@ -156,7 +157,7 @@ export class FriendsService {
 
     const [requester, targetUser] = (await Promise.all([
       this.userModel.findById(requesterId).lean(),
-      this.userModel.findById(targetUserId).lean(),
+      this.userModel.findById(targetObjectId).lean(),
     ])) as [LeanUser | null, LeanUser | null];
 
     if (
@@ -168,7 +169,7 @@ export class FriendsService {
 
     const friendship = await this.friendshipModel.create({
       requesterId: new Types.ObjectId(requesterId),
-      addresseeId: new Types.ObjectId(targetUserId),
+      addresseeId: targetObjectId,
       status: 'pending',
     });
 

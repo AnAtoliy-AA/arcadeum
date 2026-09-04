@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.7] - 2026-09-04
+
+### Added
+- modernize styles, implement shared themes, and constrain board sizing (ARC-910) (ARC-910)
+
+
 ## [1.28.6] - 2026-09-04
 
 ### Added

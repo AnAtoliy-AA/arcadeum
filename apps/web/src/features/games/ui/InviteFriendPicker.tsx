@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getFriends, type Friend } from '@/shared/api/friends';
 import { gamesApi } from '@/features/games/api';
-import { Button, Spinner } from '@arcadeum/ui';
+import { Button, Spinner, Input } from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
 
 interface InviteFriendPickerProps {
@@ -19,9 +19,11 @@ export function InviteFriendPicker({
   const { snapshot } = useSessionTokens();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
-  const [invitingId, setInvitingId] = useState<string | null>(null);
+  const [inviting, setInviting] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [invited, setInvited] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (!snapshot.accessToken) return;
@@ -39,24 +41,63 @@ export function InviteFriendPicker({
     };
   }, [snapshot.accessToken]);
 
-  const handleInvite = useCallback(
-    async (friend: Friend) => {
-      if (!snapshot.accessToken) return;
-      setInvitingId(friend.userId);
-      try {
-        await gamesApi.invitePlayers(roomId, [friend.userId], {
-          token: snapshot.accessToken,
-        });
-        setInvited((prev) => new Set(prev).add(friend.userId));
-        onInvited?.();
-      } catch {
-        // Non-critical
-      } finally {
-        setInvitingId(null);
+  const filteredFriends = useMemo(() => {
+    if (!searchQuery.trim()) return friends;
+    const q = searchQuery.toLowerCase();
+    return friends.filter(
+      (f) =>
+        f.displayName?.toLowerCase().includes(q) ||
+        f.username?.toLowerCase().includes(q),
+    );
+  }, [friends, searchQuery]);
+
+  const toggleSelect = useCallback((userId: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(userId)) {
+        next.delete(userId);
+      } else {
+        next.add(userId);
       }
-    },
-    [snapshot.accessToken, roomId, onInvited],
-  );
+      return next;
+    });
+  }, []);
+
+  const toggleAll = useCallback(() => {
+    setSelected((prev) => {
+      const available = filteredFriends.filter((f) => !invited.has(f.userId));
+      if (prev.size === available.length) {
+        return new Set();
+      }
+      return new Set(available.map((f) => f.userId));
+    });
+  }, [filteredFriends, invited]);
+
+  const handleInvite = useCallback(async () => {
+    if (!snapshot.accessToken || selected.size === 0) return;
+    setInviting(true);
+    try {
+      await gamesApi.invitePlayers(roomId, Array.from(selected), {
+        token: snapshot.accessToken,
+      });
+      setInvited((prev) => {
+        const next = new Set(prev);
+        for (const id of selected) next.add(id);
+        return next;
+      });
+      setSelected(new Set());
+      onInvited?.();
+    } catch {
+      // Non-critical
+    } finally {
+      setInviting(false);
+    }
+  }, [snapshot.accessToken, roomId, selected, onInvited]);
+
+  const availableCount = filteredFriends.filter(
+    (f) => !invited.has(f.userId),
+  ).length;
+  const allSelected = availableCount > 0 && selected.size === availableCount;
 
   if (!open) {
     return (
@@ -81,11 +122,16 @@ export function InviteFriendPicker({
         <button
           type="button"
           className="text-[12px] text-[var(--textSecondary)] hover:text-[var(--color)]"
-          onClick={() => setOpen(false)}
+          onClick={() => {
+            setOpen(false);
+            setSearchQuery('');
+            setSelected(new Set());
+          }}
         >
           Close
         </button>
       </div>
+
       {loading ? (
         <div className="flex justify-center p-2">
           <Spinner size="sm" />
@@ -95,37 +141,102 @@ export function InviteFriendPicker({
           No friends to invite
         </span>
       ) : (
-        <div className="flex flex-col gap-1 max-h-[200px] overflow-auto">
-          {friends.map((friend) => (
+        <>
+          <Input
+            size="sm"
+            type="search"
+            placeholder="Search friends..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+            aria-label="Search friends"
+            data-testid="invite-friend-search"
+          />
+
+          {filteredFriends.length > 0 && (
             <button
-              key={friend.userId}
               type="button"
-              className="flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--glassBg)] transition-colors text-left disabled:opacity-50"
-              onClick={() => handleInvite(friend)}
-              disabled={
-                invitingId === friend.userId || invited.has(friend.userId)
-              }
-              data-testid={`invite-friend-${friend.userId}`}
+              className="flex items-center gap-2 px-2 py-1 text-[12px] text-[var(--textSecondary)] hover:text-[var(--color)] transition-colors"
+              onClick={toggleAll}
+              data-testid="invite-select-all"
             >
-              <EquippedPlayerAvatar
-                name={friend.displayName || friend.username}
-                equippedAvatarId={friend.equippedAvatarId}
-                equippedBadgeId={null}
-                size="sm"
-              />
-              <span className="text-[13px] flex-1 truncate">
-                {friend.displayName || friend.username}
+              <span
+                className={`w-4 h-4 rounded border flex items-center justify-center text-[10px] ${
+                  allSelected
+                    ? 'bg-[var(--primary)] border-[var(--primary)] text-white'
+                    : 'border-[var(--borderColor)]'
+                }`}
+              >
+                {allSelected ? '✓' : ''}
               </span>
-              {invited.has(friend.userId) ? (
-                <span className="text-[11px] text-[var(--success)]">
-                  ✓ Sent
-                </span>
-              ) : invitingId === friend.userId ? (
-                <Spinner size="sm" />
-              ) : null}
+              {allSelected ? 'Deselect all' : 'Select all'}
             </button>
-          ))}
-        </div>
+          )}
+
+          <div className="flex flex-col gap-1 max-h-[200px] overflow-auto">
+            {filteredFriends.length === 0 ? (
+              <span className="text-[12px] text-[var(--textSecondary)] p-2 text-center">
+                No friends found
+              </span>
+            ) : (
+              filteredFriends.map((friend) => {
+                const isInvited = invited.has(friend.userId);
+                const isSelected = selected.has(friend.userId);
+                return (
+                  <button
+                    key={friend.userId}
+                    type="button"
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--glassBg)] transition-colors text-left disabled:opacity-50"
+                    onClick={() => !isInvited && toggleSelect(friend.userId)}
+                    disabled={isInvited}
+                    data-testid={`invite-friend-${friend.userId}`}
+                  >
+                    <span
+                      className={`w-4 h-4 rounded border flex items-center justify-center text-[10px] shrink-0 ${
+                        isSelected
+                          ? 'bg-[var(--primary)] border-[var(--primary)] text-white'
+                          : 'border-[var(--borderColor)]'
+                      }`}
+                    >
+                      {isSelected ? '✓' : ''}
+                    </span>
+                    <EquippedPlayerAvatar
+                      name={friend.displayName || friend.username}
+                      equippedAvatarId={friend.equippedAvatarId}
+                      equippedBadgeId={null}
+                      size="sm"
+                    />
+                    <span className="text-[13px] flex-1 truncate">
+                      {friend.displayName || friend.username}
+                    </span>
+                    {isInvited && (
+                      <span className="text-[11px] text-[var(--success)]">
+                        ✓ Sent
+                      </span>
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
+
+          {selected.size > 0 && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleInvite}
+              disabled={inviting}
+              className="w-full"
+              data-testid="invite-selected-button"
+            >
+              {inviting ? (
+                <Spinner size="sm" />
+              ) : (
+                `Invite ${selected.size} friend${selected.size > 1 ? 's' : ''}`
+              )}
+            </Button>
+          )}
+        </>
       )}
     </div>
   );

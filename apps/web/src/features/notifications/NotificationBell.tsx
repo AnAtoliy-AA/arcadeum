@@ -52,9 +52,10 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
 
   useEffect(() => {
     if (token) {
+      void initialize(token);
       void fetchUnreadCount(token);
     }
-  }, [token, fetchUnreadCount]);
+  }, [token, initialize, fetchUnreadCount]);
 
   const handleNewNotification = useCallback(
     (payload: unknown) => {
@@ -179,8 +180,18 @@ const NotificationRow = memo(function NotificationRow({
   const { t: rawT } = useTranslation();
   const t: T = rawT as unknown as T;
   const markRead = useNotificationsStore((s) => s.markRead);
+  const deleteNotification = useNotificationsStore((s) => s.deleteNotification);
   const title = t(item.titleKey, item.i18nParams as Record<string, string>);
   const body = t(item.bodyKey, item.i18nParams as Record<string, string>);
+
+  const handleDelete = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      void deleteNotification(item.id, token);
+    },
+    [item.id, token, deleteNotification],
+  );
 
   return (
     <Link
@@ -194,13 +205,36 @@ const NotificationRow = memo(function NotificationRow({
       <div
         data-testid="notification-row"
         data-unread={item.read ? undefined : 'true'}
-        className={`p-3 rounded-lg flex flex-col gap-1 transition-colors hover:bg-[var(--backgroundPress)] ${
+        className={`p-3 rounded-lg flex flex-col gap-1 transition-colors hover:bg-[var(--backgroundPress)] group ${
           item.read ? 'bg-transparent' : 'bg-[var(--backgroundHover)]'
         }`}
       >
-        <Typography weight={item.read ? '500' : '700'} uiSize="sm">
-          {title}
-        </Typography>
+        <div className="flex items-start justify-between gap-2">
+          <Typography weight={item.read ? '500' : '700'} uiSize="sm">
+            {title}
+          </Typography>
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 p-1 rounded hover:bg-[var(--backgroundPress)] text-[var(--foreground)] hover:text-[var(--error)]"
+            aria-label="Delete notification"
+            data-testid="delete-notification-button"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        </div>
         <Typography className="line-clamp-2 text-secondary">{body}</Typography>
       </div>
     </Link>

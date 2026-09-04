@@ -32,11 +32,14 @@ function resolveOptions(raw: unknown): BackgammonOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
+    mode: string;
     aiDifficulty: string;
   }>;
   return {
     theme: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonTheme,
     variant: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonTheme,
+    mode: (r.mode ?? 'standard') as
+      'standard' | 'long' | 'hyper' | 'tavla' | 'nackgammon' | 'gulbara',
     aiDifficulty: (r.aiDifficulty ?? 'medium') as
       'easy' | 'medium' | 'hard' | 'expert',
   };
@@ -231,7 +234,11 @@ function BackgammonGameImpl({
           backLabel: t('games.table.analytics.back'),
         }}
       />
-      <RulesModal onClose={onShowRulesClose} open={showRulesOpen} />
+      <RulesModal
+        mode={options.mode}
+        onClose={onShowRulesClose}
+        open={showRulesOpen}
+      />
     </>
   );
 

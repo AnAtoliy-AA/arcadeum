@@ -1,0 +1,65 @@
+.backgammon-board {
+  background-color: var(--bg-frame);
+  border-color: var(--border-frame);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.12), inset 0 -2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.backgammon-point-svg-dark {
+  fill: var(--point-dark);
+}
+
+.backgammon-point-svg-light {
+  fill: var(--point-light);
+}
+
+.backgammon-point-svg-selected {
+  fill: var(--point-selected);
+  filter: drop-shadow(0 0 6px var(--point-selected));
+}
+
+.backgammon-checker-p0 {
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, var(--checker-p0-bg) 65%, var(--checker-p0-border) 100%);
+  border-color: var(--checker-p0-border);
+  color: var(--checker-p0-text);
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.9), inset 0 -1.5px 3px rgba(0, 0, 0, 0.3), 0 3px 6px rgba(0, 0, 0, 0.45);
+}
+
+.backgammon-checker-p1 {
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.25) 0%, var(--checker-p1-bg) 65%, var(--checker-p1-border) 100%);
+  border-color: var(--checker-p1-border);
+  color: var(--checker-p1-text);
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.3), inset 0 -1.5px 3px rgba(0, 0, 0, 0.65), 0 3px 6px rgba(0, 0, 0, 0.55);
+}
+
+.backgammon-checker-ring-p0 {
+  border-color: var(--checker-p0-inner);
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.15);
+}
+
+.backgammon-checker-ring-p1 {
+  border-color: var(--checker-p1-inner);
+  box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.backgammon-bar-area {
+  background-color: var(--bar-bg);
+  border-color: var(--bar-border);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.65);
+}
+
+.backgammon-bear-off-area {
+  background-color: var(--bear-off-bg);
+  border-color: var(--bear-off-border);
+  box-shadow: inset 2px 0 10px rgba(0, 0, 0, 0.65);
+}
+
+.backgammon-hud-panel {
+  background-color: var(--hud-bg);
+  border-color: var(--hud-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.backgammon-felt {
+  background-color: var(--bg-felt);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.55);
+}

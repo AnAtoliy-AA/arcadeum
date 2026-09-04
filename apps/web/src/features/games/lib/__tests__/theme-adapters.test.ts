@@ -7,6 +7,7 @@ import { sharedThemeToTicTacToe } from '@/widgets/BoardGames/TicTacToeGame/lib/t
 import { sharedThemeToCatDash } from '@/widgets/ActionGames/CatDashGame/lib/theme-adapter';
 import { sharedThemeToChess } from '@/widgets/BoardGames/ChessGame/lib/theme-adapter';
 import { sharedThemeToGlimworm } from '@/widgets/ActionGames/GlimwormGame/lib/theme-adapter';
+import { sharedThemeToBackgammon } from '@/widgets/BoardGames/BackgammonGame/lib/theme-adapter';
 
 describe('theme-adapters', () => {
   const cyberpunk = SHARED_THEMES.find((t) => t.id === 'cyberpunk')!;
@@ -63,5 +64,14 @@ describe('theme-adapters', () => {
     expect(glimwormTheme.snakeBodyColor).toBe(
       underwater.colors.playerPalette[1],
     );
+  });
+
+  it('Backgammon theme adapter converts visual properties', () => {
+    const backgammonTheme = sharedThemeToBackgammon(cyberpunk);
+    expect(backgammonTheme.bgImage).toBe(cyberpunk.bgImage);
+    expect(backgammonTheme.whitePiece).toBe(cyberpunk.colors.playerPalette[1]);
+    expect(backgammonTheme.blackPiece).toBe(cyberpunk.colors.playerPalette[0]);
+    expect(backgammonTheme.frameBackground).toBe(cyberpunk.colors.surface);
+    expect(backgammonTheme.boardBackground).toBe(cyberpunk.colors.background);
   });
 });

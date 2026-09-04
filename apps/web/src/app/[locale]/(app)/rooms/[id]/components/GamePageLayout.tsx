@@ -1,7 +1,13 @@
 'use client';
 
 import '@/features/games/ui/scrollbar.scss';
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, {
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
@@ -73,6 +79,12 @@ export function GamePageLayout(props: GamePageLayoutProps) {
 
   const teamMode = !!(room.gameOptions as { teamMode?: boolean } | undefined)
     ?.teamMode;
+
+  const opponentUserId = useMemo(() => {
+    if (!userId || !room.members) return undefined;
+    const opponent = room.members.find((m: { id: string }) => m.id !== userId);
+    return opponent?.id;
+  }, [userId, room.members]);
 
   const { t } = useTranslation();
   const gameContainerRef = useRef<HTMLDivElement>(null);
@@ -268,6 +280,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           isGameOver={isGameOver}
           onRematch={onRematch ?? undefined}
           rematchLoading={rematchLoading}
+          opponentUserId={opponentUserId}
         />
 
         {!isAuthenticated && <GuestTermsNotice />}

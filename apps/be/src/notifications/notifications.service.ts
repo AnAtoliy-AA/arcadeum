@@ -215,4 +215,24 @@ export class NotificationsService {
         .exec();
     }
   }
+
+  async deleteNotifications(
+    userId: string,
+    options: { ids?: string[]; all?: boolean },
+  ): Promise<void> {
+    if (options.all) {
+      await this.notificationModel
+        .deleteMany({ userId: new Types.ObjectId(userId) })
+        .exec();
+      return;
+    }
+    if (options.ids && options.ids.length > 0) {
+      await this.notificationModel
+        .deleteMany({
+          userId: new Types.ObjectId(userId),
+          _id: { $in: options.ids.map((id) => new Types.ObjectId(id)) },
+        })
+        .exec();
+    }
+  }
 }

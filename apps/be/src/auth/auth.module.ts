@@ -13,6 +13,10 @@ import {
   PasswordResetToken,
   PasswordResetTokenSchema,
 } from './schemas/password-reset-token.schema';
+import {
+  Friendship,
+  FriendshipSchema,
+} from '../friends/schemas/friendship.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -49,6 +53,7 @@ import { GeoModule } from '../common/geo/geo.module';
       { name: User.name, schema: UserSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },
       { name: PasswordResetToken.name, schema: PasswordResetTokenSchema },
+      { name: Friendship.name, schema: FriendshipSchema },
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({

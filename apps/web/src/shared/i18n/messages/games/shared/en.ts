@@ -137,6 +137,8 @@ export const enMessages = {
       linkCopied: 'Link copied!',
       rewardsPrompt: 'Need more gems? Subscribe to socials!',
       rewardsClaim: 'Claim',
+      addFriend: 'Add Friend',
+      friendAdded: 'Friend Request Sent',
     },
     deleteRoom: {
       button: 'Delete Room',
@@ -537,6 +539,7 @@ export const enMessages = {
   },
   gamePicker: {
     title: 'Pick a game to play vs AI',
+    inviteTitle: 'Pick a game to invite a friend',
     starting: 'Starting...',
     allCategory: 'All',
   },

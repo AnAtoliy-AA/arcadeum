@@ -137,6 +137,8 @@ export const ruMessages = {
       linkCopied: 'Ссылка скопирована!',
       rewardsPrompt: 'Нужно больше гемов? Подпишитесь на соцсети!',
       rewardsClaim: 'Забрать',
+      addFriend: 'Добавить друга',
+      friendAdded: 'Заявка отправлена',
     },
     deleteRoom: {
       button: 'Удалить зал',
@@ -540,6 +542,7 @@ export const ruMessages = {
   },
   gamePicker: {
     title: 'Выберите игру против ИИ',
+    inviteTitle: 'Выберите игру, чтобы пригласить друга',
     starting: 'Запуск...',
     allCategory: 'Все',
   },

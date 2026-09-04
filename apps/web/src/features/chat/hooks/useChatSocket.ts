@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { chatSocket } from '@/shared/lib/socket';
+import { chatSocket, getChatsSocket } from '@/shared/lib/socket';
 import { maybeEncrypt, maybeDecrypt } from '@/shared/lib/socket-encryption';
 import { useChatStore } from '../store/chatStore';
 import { ChatMessage } from '../api';
@@ -15,6 +15,13 @@ export const useChatSocket = ({ chatId, receiverIds }: UseChatSocketProps) => {
   const addMessage = useChatStore((s) => s.addMessage);
   const setMessages = useChatStore((s) => s.setMessages);
   const [isConnected, setIsConnected] = useState(chatSocket.connected);
+
+  useEffect(() => {
+    if (!snapshot.accessToken) return;
+    const s = getChatsSocket();
+    s.auth = { token: snapshot.accessToken };
+    if (!s.connected) s.connect();
+  }, [snapshot.accessToken]);
 
   useEffect(() => {
     const onConnect = () => setIsConnected(true);

@@ -13,11 +13,11 @@ export class Friendship {
 
   @Prop({
     type: String,
-    enum: ['pending', 'accepted', 'declined'],
+    enum: ['pending', 'accepted'],
     default: 'pending',
     required: true,
   })
-  status!: 'pending' | 'accepted' | 'declined';
+  status!: 'pending' | 'accepted';
 }
 
 export const FriendshipSchema = SchemaFactory.createForClass(Friendship);

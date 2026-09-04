@@ -42,6 +42,9 @@ export function GameEndModals({
   onPlayAnother,
 }: GameEndModalsProps) {
   const activeTheme = theme ?? cardVariant;
+  const opponentUserId = players.find(
+    (p) => p.playerId !== currentUserId,
+  )?.playerId;
 
   return (
     <>
@@ -62,6 +65,7 @@ export function GameEndModals({
         roomId={roomId}
         inviteCode={inviteCode}
         onPlayAnother={onPlayAnother}
+        opponentUserId={opponentUserId}
       />
 
       {players.length > 1 && (

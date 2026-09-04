@@ -149,4 +149,18 @@ export class NotificationsController {
       all: body.all,
     });
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('delete')
+  @HttpCode(204)
+  async deleteNotifications(
+    @Req() req: Request,
+    @Body() body: MarkReadDto,
+  ): Promise<void> {
+    const user = requireUser(req);
+    await this.service.deleteNotifications(user.userId, {
+      ids: body.ids,
+      all: body.all,
+    });
+  }
 }

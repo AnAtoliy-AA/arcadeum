@@ -138,6 +138,8 @@ export const esMessages = {
       linkCopied: '¡Enlace copiado!',
       rewardsPrompt: '¿Necesitas más gemas? ¡Suscríbete a nuestras redes!',
       rewardsClaim: 'Reclamar',
+      addFriend: 'Agregar amigo',
+      friendAdded: 'Solicitud enviada',
     },
     deleteRoom: {
       button: 'Eliminar sala',
@@ -547,6 +549,7 @@ export const esMessages = {
   },
   gamePicker: {
     title: 'Elige un juego para jugar contra la IA',
+    inviteTitle: 'Elige un juego para invitar a un amigo',
     starting: 'Iniciando...',
     allCategory: 'Todos',
   },

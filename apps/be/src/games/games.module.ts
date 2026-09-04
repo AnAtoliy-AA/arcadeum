@@ -55,6 +55,7 @@ import { GamePostMatchService } from './game-post-match.service';
 import { PlayerStatsService } from './player-stats.service';
 import { DailyChallengesModule } from '../daily-challenges/daily-challenges.module';
 import { AchievementsModule } from '../achievements/achievements.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import {
   OCI_CONNECTION,
   ATLAS_CONNECTION,
@@ -179,6 +180,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameRuleVisibilityModule,
     DailyChallengesModule,
     AchievementsModule,
+    NotificationsModule,
   ],
   controllers: [
     GamesController,

@@ -138,6 +138,8 @@ export const frMessages = {
       linkCopied: 'Lien copié !',
       rewardsPrompt: 'Besoin de plus de gemmes ? Abonnez-vous à nos réseaux !',
       rewardsClaim: 'Réclamer',
+      addFriend: 'Ajouter un ami',
+      friendAdded: 'Demande envoyée',
     },
     deleteRoom: {
       button: 'Supprimer la salle',
@@ -550,6 +552,7 @@ export const frMessages = {
   },
   gamePicker: {
     title: "Choisissez un jeu contre l'IA",
+    inviteTitle: 'Choisissez un jeu pour inviter un ami',
     starting: 'Démarrage...',
     allCategory: 'Tous',
   },

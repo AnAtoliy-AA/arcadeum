@@ -55,6 +55,8 @@ export interface GameResultModalProps {
   inviteCode?: string;
   /** Callback to navigate to a new game. */
   onPlayAnother?: () => void;
+  /** Opponent's user ID for sending friend request. */
+  opponentUserId?: string;
 }
 
 const TONE_BACKDROP_CLASSES: Record<GameResultKind, string> = {
@@ -108,6 +110,7 @@ export function GameResultModal({
   roomId,
   inviteCode,
   onPlayAnother,
+  opponentUserId,
 }: GameResultModalProps) {
   const isClient = useSyncExternalStore(
     () => () => {},
@@ -289,6 +292,7 @@ export function GameResultModal({
                 roomId={roomId}
                 inviteCode={inviteCode}
                 onPlayAnother={onPlayAnother}
+                opponentUserId={opponentUserId}
               />
             </div>
           )}

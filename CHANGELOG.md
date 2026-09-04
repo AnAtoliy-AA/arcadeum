@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.8] - 2026-09-04
+
+### Added
+- rework styles, shared themes, leaderboards, rules, and fullscreen (ARC-941) (ARC-941)
+
+### Fixed
+- refine fullscreen mode layout and extract stats helper (ARC-941) (ARC-941)
+
+
 ## [1.28.7] - 2026-09-04
 
 ### Added

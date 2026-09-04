@@ -9,6 +9,7 @@ import {
   SoloGameContainer,
   StatCard,
   formatDuration,
+  useSoloTimer,
 } from '@/features/games/ui/SoloGameContainer';
 import { Game2048ThemeProvider } from '../lib/Game2048ThemeContext';
 import { useGame2048Store } from '../store/game2048Store';
@@ -37,6 +38,8 @@ function Game2048Table() {
   const newGame = useGame2048Store((state) => state.newGame);
 
   const isRunning = finishedAt === null;
+
+  const timer = useSoloTimer(isRunning, startedAt);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -106,7 +109,7 @@ function Game2048Table() {
         />
         <StatCard
           label={t('games.game_2048_v1.hud.time')}
-          value={formatDuration(finished?.durationMs ?? 0)}
+          value={timer.formatted}
           dataTestId="game-2048-timer"
         />
       </div>

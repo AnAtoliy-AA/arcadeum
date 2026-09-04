@@ -3,7 +3,6 @@
 import {
   type ReactNode,
   useCallback,
-  useEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -21,93 +20,12 @@ import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { SoloLeaderboardPanel } from './solo-leaderboard/SoloLeaderboardPanel';
+import { formatDuration, useSoloTimer, StatCard } from './SoloGameStats';
+
+export { formatDuration, useSoloTimer, StatCard };
 
 function subscribeNoop(): () => void {
   return () => undefined;
-}
-
-export function formatDuration(durationMs: number): string {
-  const totalSeconds = Math.floor(durationMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
-export function useSoloTimer(
-  isRunning: boolean,
-  startedAt: number,
-): { elapsedMs: number; formatted: string } {
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const hiddenAtRef = useRef<number | null>(null);
-  const pausedMsRef = useRef(0);
-
-  useEffect(() => {
-    if (!isRunning) return undefined;
-
-    const tick = () => {
-      const hiddenBonus = hiddenAtRef.current
-        ? Date.now() - hiddenAtRef.current
-        : 0;
-      const elapsed =
-        Date.now() - startedAt - pausedMsRef.current - hiddenBonus;
-      setElapsedMs(Math.max(0, elapsed));
-    };
-    tick();
-    const interval = setInterval(tick, 1000);
-
-    const handleVisibility = () => {
-      if (document.hidden) {
-        hiddenAtRef.current = Date.now();
-      } else if (hiddenAtRef.current !== null) {
-        pausedMsRef.current += Date.now() - hiddenAtRef.current;
-        hiddenAtRef.current = null;
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, [isRunning, startedAt]);
-
-  return { elapsedMs, formatted: formatDuration(elapsedMs) };
-}
-
-export function StatCard({
-  label,
-  value,
-  icon,
-  highlight = false,
-  dataTestId,
-}: {
-  label: string;
-  value: string | number;
-  icon?: string;
-  highlight?: boolean;
-  dataTestId?: string;
-}) {
-  return (
-    <div
-      data-testid={dataTestId}
-      className={cx(
-        'flex flex-col items-center justify-center rounded-xl border px-2.5 py-1.5 transition-all backdrop-blur-md sm:px-4 sm:py-2.5',
-        highlight
-          ? 'border-rose-500/40 bg-rose-500/15 text-rose-500 shadow-sm shadow-rose-500/20'
-          : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] shadow-sm hover:border-[var(--glassBorderStrong)]',
-      )}
-    >
-      <div className="flex items-center gap-1">
-        {icon && <span className="text-xs opacity-80">{icon}</span>}
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
-          {label}
-        </span>
-      </div>
-      <span className="font-mono text-base font-black tabular-nums sm:text-xl">
-        {value}
-      </span>
-    </div>
-  );
 }
 
 export interface SoloGameContainerProps {
@@ -171,7 +89,6 @@ export function SoloGameContainer({
     enableKeyboard: true,
   });
   const [showRules, setShowRules] = useState(false);
-
   const { themeId, setThemeId, theme } = useSoloTheme(gameId);
   const [showThemePicker, setShowThemePicker] = useState(false);
 
@@ -243,7 +160,7 @@ export function SoloGameContainer({
               className="flex items-center gap-1 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-2.5 py-1.5 text-xs font-semibold text-[var(--color)] transition-all hover:border-[var(--glassBorderStrong)]"
             >
               <span>📖</span>
-              <span className="hidden md:inline">Rules</span>
+              <span className="hidden sm:inline">Rules</span>
             </button>
           )}
 
@@ -255,12 +172,12 @@ export function SoloGameContainer({
             className={cx(
               'flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-semibold transition-all',
               isFullscreen
-                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)]'
+                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] shadow-sm hover:bg-[var(--primary)]/25'
                 : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] hover:border-[var(--glassBorderStrong)]',
             )}
           >
             <span>{isFullscreen ? '✕' : '⛶'}</span>
-            <span className="hidden md:inline">
+            <span className="font-semibold">
               {isFullscreen ? 'Exit' : 'Full'}
             </span>
           </button>
@@ -310,10 +227,11 @@ export function SoloGameContainer({
   return (
     <div
       ref={containerRef}
+      data-testid="solo-game-container"
       className={cx(
         'relative w-full transition-all duration-200',
         isFullscreen &&
-          'fixed inset-0 z-50 overflow-y-auto bg-[var(--background)] p-4 sm:p-6',
+          'fixed inset-0 z-[1000] h-screen w-screen overflow-y-auto overflow-x-hidden bg-[var(--background)] p-3 sm:p-6 flex flex-col items-center',
       )}
     >
       <div
@@ -324,7 +242,15 @@ export function SoloGameContainer({
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--background)]/60 to-[var(--background)]" />
       </div>
 
-      {layout === 'stacked' ? (
+      {isFullscreen ? (
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-4 sm:gap-6 pb-8">
+          <div className="w-full">{hudCard}</div>
+          {controls && (
+            <div className="flex w-full justify-center">{controls}</div>
+          )}
+          <div className="flex w-full justify-center">{children}</div>
+        </div>
+      ) : layout === 'stacked' ? (
         <div
           className={cx(
             'mx-auto flex w-full flex-col items-center gap-5 px-3 sm:px-4',
@@ -333,9 +259,9 @@ export function SoloGameContainer({
         >
           <div className="w-full">{hudCard}</div>
           {controls && (
-            <div className="w-full flex justify-center">{controls}</div>
+            <div className="flex w-full justify-center">{controls}</div>
           )}
-          <div className="w-full flex justify-center">{children}</div>
+          <div className="flex w-full justify-center">{children}</div>
           <div className="w-full max-w-3xl">
             <SoloLeaderboardPanel
               gameId={gameId}

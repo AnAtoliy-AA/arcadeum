@@ -10,6 +10,12 @@ import type { GameRoomSummary, GameInitialData } from '@/shared/types/games';
  */
 let cleanupListeners: (() => void) | null = null;
 
+/**
+ * Tracks the userId from the previous connect() call so joinRoom can detect
+ * anonymous → authenticated transitions and clean up stale participant entries.
+ */
+let previousUserId: string | null = null;
+
 export interface GameState {
   room: GameRoomSummary | null;
   session: unknown | null;
@@ -86,6 +92,9 @@ export const useGameStore = create<GameState>((set, get) => ({
           : initialData?.session || null,
       accessToken,
     });
+
+    // Save current userId for the next connect() call to detect anon→auth transitions
+    previousUserId = userId;
 
     // Define handlers
     const handleJoined = (payload: {
@@ -291,12 +300,23 @@ export const useGameStore = create<GameState>((set, get) => ({
       if (!get().room) set({ loading: true, error: null });
       gameSocket.emit('games.room.watch', { roomId, inviteCode });
     } else if (userId) {
+      // If transitioning from anonymous to authenticated, send the previous
+      // anonId so the backend can remove the stale anonymous participant.
+      const prevAnonId =
+        previousUserId &&
+        previousUserId !== userId &&
+        (previousUserId.startsWith('anon_') ||
+          previousUserId.startsWith('guest_'))
+          ? previousUserId
+          : undefined;
+
       if (!get().room) set({ loading: true, error: null });
       gameSocket.emit('games.room.join', {
         roomId,
         userId,
         inviteCode,
         password,
+        prevAnonId,
       });
     } else {
       set({ loading: false, error: null });
@@ -307,6 +327,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (roomId && userId) {
       gameSocket.emit('games.room.leave', { roomId, userId });
     }
+    previousUserId = null;
     set({
       room: null,
       session: null,

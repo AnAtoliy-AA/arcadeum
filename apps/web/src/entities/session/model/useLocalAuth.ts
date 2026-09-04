@@ -332,7 +332,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
     setState((current) => ({
       ...current,
       accessToken: snapshot.accessToken,
-      email: snapshot.email ?? current.email,
+      email: snapshot.email,
       username: snapshot.username,
       displayName: snapshot.displayName,
     }));

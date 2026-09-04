@@ -86,7 +86,9 @@ export const useChatSocket = ({ chatId, receiverIds }: UseChatSocketProps) => {
 
       const optimisticMessage: ChatMessage = {
         id: tempId,
-        senderUsername: snapshot.displayName || snapshot.username || 'You',
+        senderUsername: snapshot.accessToken
+          ? snapshot.displayName || snapshot.username || 'You'
+          : 'You',
         timestamp: new Date().toISOString(),
         ...messagePayload,
       };

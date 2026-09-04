@@ -178,7 +178,9 @@ export function GameCreateView() {
   }, [snapshot.accessToken]);
 
   const defaultRoomName = useMemo(() => {
-    const playerName = snapshot.displayName || snapshot.username || 'Anonymous';
+    const playerName = snapshot.accessToken
+      ? snapshot.displayName || snapshot.username || 'Anonymous'
+      : 'Anonymous';
     const template =
       messages.home?.defaultRoomName ?? "{{name}}'s game #{{number}}";
     const formatted = formatMessage(template, {
@@ -190,6 +192,7 @@ export function GameCreateView() {
     }
     return `${formatted || `${playerName}'s game`} #${hostRoomNumber}`;
   }, [
+    snapshot.accessToken,
     snapshot.displayName,
     snapshot.username,
     hostRoomNumber,

@@ -231,6 +231,7 @@ export const useSessionStore = create<SessionState>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => {
         const s = state as SessionState;
+        const hasToken = !!s.snapshot.accessToken;
         return {
           snapshot: {
             ...s.snapshot,
@@ -238,6 +239,16 @@ export const useSessionStore = create<SessionState>()(
             refreshToken: null,
             accessTokenExpiresAt: null,
             refreshTokenExpiresAt: null,
+            // Clear profile fields when logged out to prevent stale display
+            ...(hasToken
+              ? {}
+              : {
+                  userId: null,
+                  email: null,
+                  username: null,
+                  displayName: null,
+                  role: null,
+                }),
           },
           mode: s.mode,
         };

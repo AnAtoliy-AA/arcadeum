@@ -68,25 +68,11 @@ export function useOfflineDownloads() {
     () => isOfflineDownloadSupported(),
     () => false,
   );
-  const swReadyFromSW = useSyncExternalStore(
+  const swReady = useSyncExternalStore(
     subscribeToServiceWorker,
     () => isSWActive(),
     () => false,
   );
-  const [swReadyNoSW, setSwReadyNoSW] = useState(false);
-  const swReady = swReadyFromSW || swReadyNoSW;
-
-  useEffect(() => {
-    if (
-      swReadyFromSW ||
-      typeof window === 'undefined' ||
-      !('serviceWorker' in navigator)
-    )
-      return;
-    void navigator.serviceWorker.getRegistration().then((reg) => {
-      if (!reg) setSwReadyNoSW(true);
-    });
-  }, [swReadyFromSW]);
 
   // Build-time manifest sizes (fetched once on mount).
   const [manifestSizes, setManifestSizes] = useState<GameSizesManifest | null>(
@@ -99,6 +85,13 @@ export function useOfflineDownloads() {
 
   const downloadOne = useCallback(
     async (game: DownloadableGame): Promise<boolean> => {
+      if (!isSWActive()) {
+        console.warn(
+          `[offline-download] service worker not active, cannot download ${game.slug}`,
+        );
+        setError(game.slug, true);
+        return false;
+      }
       setBusy(game.slug, true);
       setError(game.slug, false);
       try {
@@ -113,7 +106,11 @@ export function useOfflineDownloads() {
           buildId,
         });
         return true;
-      } catch {
+      } catch (err) {
+        console.error(
+          `[offline-download] failed to download ${game.slug}:`,
+          err,
+        );
         setError(game.slug, true);
         return false;
       } finally {

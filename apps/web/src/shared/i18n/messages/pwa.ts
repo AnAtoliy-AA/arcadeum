@@ -61,6 +61,8 @@ export const en = {
     swLoading:
       'Waiting for the app to fully load — downloads will be available shortly…',
     sizesAvailableAfterDownload: 'Sizes shown after download',
+    hideList: 'Hide list',
+    showList: 'Show list',
   },
 };
 
@@ -125,6 +127,8 @@ export const es = {
     swLoading:
       'Esperando a que la aplicación cargue completamente — las descargas estarán disponibles pronto…',
     sizesAvailableAfterDownload: 'Tamaños mostrados tras la descarga',
+    hideList: 'Ocultar lista',
+    showList: 'Mostrar lista',
   },
 };
 
@@ -190,6 +194,8 @@ export const fr = {
     swLoading:
       "En attente du chargement complet de l'application — les téléchargements seront bientôt disponibles…",
     sizesAvailableAfterDownload: 'Tailles affichées après téléchargement',
+    hideList: 'Masquer la liste',
+    showList: 'Afficher la liste',
   },
 };
 
@@ -252,8 +258,10 @@ export const ru = {
     installRequired:
       'Установите {{appName}} как приложение, чтобы скачивать игры для офлайн-игры.',
     swLoading:
-      'Ожидание полной загрузки приложения — скачивание будет доступно shortly…',
+      'Ожидание полной загрузки приложения — скачивание будет доступно вскоре…',
     sizesAvailableAfterDownload: 'Размеры отображаются после загрузки',
+    hideList: 'Скрыть список',
+    showList: 'Показать список',
   },
 };
 
@@ -318,6 +326,8 @@ export const by = {
     swLoading:
       'Чаканне поўнай загрузкі прыкладання — спампоўка будзе даступна неўзабаве…',
     sizesAvailableAfterDownload: 'Памеры паказваюцца пасля спампоўкі',
+    hideList: 'Схаваць спіс',
+    showList: 'Паказаць спіс',
   },
 };
 

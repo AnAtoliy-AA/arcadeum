@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Section } from '@arcadeum/ui/components/Section/Section';
 import { Spinner } from '@arcadeum/ui/components/Spinner/Spinner';
 import { Button } from '@arcadeum/ui/components/Button/Button';
@@ -38,6 +39,7 @@ export function OfflineDownloadsSection() {
     toggle,
     retry,
   } = useOfflineDownloads();
+  const [expanded, setExpanded] = useState(true);
 
   const dl = messages.pwa?.offlineDownloads;
   const allSelected = games.every((g) => g.info !== null);
@@ -90,17 +92,36 @@ export function OfflineDownloadsSection() {
         )}
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={allSelected ? handleRemoveAll : handleSelectAll}
-            disabled={refreshInProgress || !swReady}
-            data-testid="offline-downloads-select-all"
-          >
-            {allSelected
-              ? (dl?.remove ?? 'Remove')
-              : (dl?.selectAll ?? 'Select all')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={allSelected ? handleRemoveAll : handleSelectAll}
+              disabled={refreshInProgress || !swReady}
+              data-testid="offline-downloads-select-all"
+            >
+              {allSelected
+                ? (dl?.remove ?? 'Remove')
+                : (dl?.selectAll ?? 'Select all')}
+            </Button>
+
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-[13px] text-[var(--textSecondary)] transition-colors hover:bg-[var(--borderColor)]/30"
+              aria-expanded={expanded}
+              data-testid="offline-downloads-toggle"
+            >
+              <span>
+                {expanded
+                  ? (dl?.hideList ?? 'Hide list')
+                  : (dl?.showList ?? 'Show list')}
+              </span>
+              <ChevronIcon
+                className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+              />
+            </button>
+          </div>
 
           <span className="text-[13px] text-[var(--textSecondary)]">
             {downloadedCount > 0
@@ -119,21 +140,28 @@ export function OfflineDownloadsSection() {
           </div>
         )}
 
-        {games.map(({ game, name, status, info, manifestBytes }) => (
-          <GameDownloadRow
-            key={game.slug}
-            slug={game.slug}
-            name={name}
-            status={status}
-            sizeBytes={info?.sizeBytes ?? 0}
-            manifestBytes={manifestBytes}
-            onToggle={() => toggle(game.slug)}
-            onRetry={() => retry(game.slug)}
-            strings={dl}
-            busy={busySlugs.includes(game.slug)}
-            disabled={!swReady}
-          />
-        ))}
+        <div
+          className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+        >
+          <div className="flex flex-col gap-3 overflow-hidden">
+            {games.map(({ game, name, status, info, manifestBytes }) => (
+              <GameDownloadRow
+                key={game.slug}
+                slug={game.slug}
+                name={name}
+                status={status}
+                isDownloaded={info !== null}
+                sizeBytes={info?.sizeBytes ?? 0}
+                manifestBytes={manifestBytes}
+                onToggle={() => toggle(game.slug)}
+                onRetry={() => retry(game.slug)}
+                strings={dl}
+                busy={busySlugs.includes(game.slug)}
+                disabled={!swReady}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </Section>
   );
@@ -152,6 +180,7 @@ interface GameDownloadRowProps {
   slug: string;
   name: string;
   status: GameDownloadStatus;
+  isDownloaded: boolean;
   sizeBytes: number;
   manifestBytes: number | null;
   onToggle: () => void;
@@ -165,6 +194,7 @@ function GameDownloadRow({
   slug,
   name,
   status,
+  isDownloaded,
   sizeBytes,
   manifestBytes,
   onToggle,
@@ -173,7 +203,6 @@ function GameDownloadRow({
   disabled,
   strings: dl,
 }: GameDownloadRowProps) {
-  const isDownloaded = sizeBytes > 0;
   const checked = status !== 'error' && isDownloaded;
   // Show manifest size before download, measured size after.
   const displaySize = isDownloaded ? sizeBytes : manifestBytes;
@@ -264,5 +293,23 @@ function GameDownloadRow({
         </div>
       </div>
     </div>
+  );
+}
+
+function ChevronIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }

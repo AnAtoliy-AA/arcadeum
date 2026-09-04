@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.2] - 2026-09-04
+
+### Added
+- move socket connection to app root for all-page coverage
+
+
 ## [1.28.1] - 2026-09-03
 
 ### Added

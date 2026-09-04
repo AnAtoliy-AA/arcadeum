@@ -3,138 +3,51 @@
 import {
   type ReactNode,
   useCallback,
-  useEffect,
   useRef,
   useState,
   useSyncExternalStore,
 } from 'react';
 import { LoadingState } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
+import { GameRulesModal } from '@/features/games/ui/GameRulesModal';
+import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
+import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { SoloLeaderboardPanel } from './solo-leaderboard/SoloLeaderboardPanel';
+import { formatDuration, useSoloTimer, StatCard } from './SoloGameStats';
 
-/* ───────────────────────── helpers ───────────────────────── */
+export { formatDuration, useSoloTimer, StatCard };
 
 function subscribeNoop(): () => void {
   return () => undefined;
 }
-
-export function formatDuration(durationMs: number): string {
-  const totalSeconds = Math.floor(durationMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
-/* ───────────────────────── timer hook ───────────────────────── */
-
-export function useSoloTimer(
-  isRunning: boolean,
-  startedAt: number,
-): { elapsedMs: number; formatted: string } {
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const hiddenAtRef = useRef<number | null>(null);
-  const pausedMsRef = useRef(0);
-
-  useEffect(() => {
-    if (!isRunning) return undefined;
-
-    const tick = () => {
-      const hiddenBonus = hiddenAtRef.current
-        ? Date.now() - hiddenAtRef.current
-        : 0;
-      const elapsed =
-        Date.now() - startedAt - pausedMsRef.current - hiddenBonus;
-      setElapsedMs(Math.max(0, elapsed));
-    };
-    tick();
-    const interval = setInterval(tick, 1000);
-
-    const handleVisibility = () => {
-      if (document.hidden) {
-        hiddenAtRef.current = Date.now();
-      } else if (hiddenAtRef.current !== null) {
-        pausedMsRef.current += Date.now() - hiddenAtRef.current;
-        hiddenAtRef.current = null;
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, [isRunning, startedAt]);
-
-  return { elapsedMs, formatted: formatDuration(elapsedMs) };
-}
-
-/* ───────────────────── stat card ───────────────────── */
-
-export function StatCard({
-  label,
-  value,
-  highlight = false,
-  dataTestId,
-}: {
-  label: string;
-  value: string | number;
-  highlight?: boolean;
-  dataTestId?: string;
-}) {
-  return (
-    <div
-      data-testid={dataTestId}
-      className={cx(
-        'flex flex-col items-center justify-center rounded-xl border px-2.5 py-1.5 backdrop-blur-sm sm:px-3 sm:py-2',
-        highlight
-          ? 'border-red-500/30 bg-red-500/15 text-red-600 dark:text-red-300'
-          : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)]',
-      )}
-    >
-      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
-        {label}
-      </span>
-      <span className="font-mono text-base font-extrabold tabular-nums sm:text-lg">
-        {value}
-      </span>
-    </div>
-  );
-}
-
-/* ───────────────────── container props ───────────────────── */
 
 export interface SoloGameContainerProps {
   gameId: string;
   difficulty: string;
   sortBy?: 'score' | 'durationMs';
   order?: 'asc' | 'desc';
+  layout?: 'split' | 'stacked';
   maxWidthClassName?: string;
-
-  /** Whether the game is currently in progress. */
   isRunning: boolean;
-  /** Timestamp (ms) when the game started. */
   startedAt: number;
-  /** Timestamp (ms) when the game ended, or null. */
   finishedAt: number | null;
-  /** Call to start a new game. */
   onNewGame: () => void;
-
-  /** Content rendered inside the HUD bar (stat cards, buttons, etc). */
   hud: ReactNode;
-  /** The game board. */
+  actions?: ReactNode;
   children: ReactNode;
-  /** Optional extra controls between HUD and board. */
   controls?: ReactNode;
-
-  /** Result modal props (omit isOpen/onClose — managed internally). */
   modal: {
     result: 'victory' | 'defeat' | null;
     gameName: string;
     rematchLabel: string;
-    theme: string;
+    theme?: string;
     stats: GameResultStats | null;
     messages: { title: string; message: string };
     secondaryAction?: {
@@ -142,25 +55,23 @@ export interface SoloGameContainerProps {
       onClick: () => void;
       testId: string;
     };
-  }
-
-  /** Loading message key shown during SSR. */
+  };
   loadingMessage: TranslationKey;
 }
-
-/* ───────────────────── container ───────────────────── */
 
 export function SoloGameContainer({
   gameId,
   difficulty,
   sortBy = 'score',
   order = 'desc',
-  maxWidthClassName = 'max-w-lg',
+  layout = 'split',
+  maxWidthClassName,
   isRunning,
   startedAt,
   finishedAt,
   onNewGame,
   hud,
+  actions,
   children,
   controls,
   modal,
@@ -172,6 +83,14 @@ export function SoloGameContainer({
     () => true,
     () => false,
   );
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef, {
+    enableKeyboard: true,
+  });
+  const [showRules, setShowRules] = useState(false);
+  const { themeId, setThemeId, theme } = useSoloTheme(gameId);
+  const [showThemePicker, setShowThemePicker] = useState(false);
 
   useSoloTimer(isRunning, startedAt);
 
@@ -186,33 +105,206 @@ export function SoloGameContainer({
     return <LoadingState message={t(loadingMessage)} />;
   }
 
-  return (
-    <div
-      className={cx(
-        'mx-auto flex w-full flex-col items-center gap-4 px-2 sm:gap-5 sm:px-3',
-        maxWidthClassName,
-      )}
-    >
-      {/* HUD */}
-      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-3 shadow-xl backdrop-blur-md sm:p-4">
-        {hud}
+  const themeName =
+    t(theme.nameKey as TranslationKey) ||
+    theme.id.charAt(0).toUpperCase() + theme.id.slice(1).replace(/-/g, ' ');
+
+  const rules = [
+    {
+      badge: '🎯',
+      title: 'Objective',
+      body: t(`games.${gameId}.rules.objective` as TranslationKey) || '',
+    },
+    {
+      badge: '🎮',
+      title: 'How to Play',
+      body: t(`games.${gameId}.rules.gameplay` as TranslationKey) || '',
+    },
+    {
+      badge: '🏆',
+      title: 'Scoring',
+      body: t(`games.${gameId}.rules.scoring` as TranslationKey) || '',
+    },
+  ].filter((r) => Boolean(r.body));
+
+  const rulesIcon =
+    modal.gameName === '2048'
+      ? '🔢'
+      : modal.gameName === 'Minesweeper'
+        ? '💣'
+        : modal.gameName === 'Solitaire'
+          ? '🃏'
+          : '🧩';
+
+  const hudCard = (
+    <div className="flex w-full flex-col gap-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-3 shadow-xl backdrop-blur-xl sm:p-4">
+      <div className="flex w-full items-center justify-between gap-2 sm:gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-black uppercase tracking-wider text-[var(--color)] sm:text-base">
+            {modal.gameName}
+          </span>
+          {difficulty && difficulty !== 'default' && (
+            <span className="rounded-md border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
+              {difficulty}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {rules.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowRules(true)}
+              aria-label="Game rules"
+              data-testid="solo-rules-button"
+              className="flex items-center gap-1 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-2.5 py-1.5 text-xs font-semibold text-[var(--color)] transition-all hover:border-[var(--glassBorderStrong)]"
+            >
+              <span>📖</span>
+              <span className="hidden sm:inline">Rules</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            data-testid="solo-fullscreen-button"
+            className={cx(
+              'flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-semibold transition-all',
+              isFullscreen
+                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] shadow-sm hover:bg-[var(--primary)]/25'
+                : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] hover:border-[var(--glassBorderStrong)]',
+            )}
+          >
+            <span>{isFullscreen ? '✕' : '⛶'}</span>
+            <span className="font-semibold">
+              {isFullscreen ? 'Exit' : 'Full'}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowThemePicker(!showThemePicker)}
+            aria-label="Theme selector"
+            data-testid="solo-theme-toggle-button"
+            className={cx(
+              'flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap',
+              showThemePicker
+                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] shadow-sm'
+                : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] hover:border-[var(--glassBorderStrong)]',
+            )}
+          >
+            <span className="text-sm leading-none">{theme.emoji}</span>
+            <span className="hidden sm:inline font-medium">{themeName}</span>
+            <span className="text-[10px] text-[var(--textSecondary)]">🎨</span>
+          </button>
+          {actions}
+        </div>
       </div>
 
-      {/* Optional controls row */}
-      {controls}
+      {showThemePicker && (
+        <div
+          data-testid="solo-theme-picker-drawer"
+          className="border-t border-[var(--glassBorder)] pt-3"
+        >
+          <GameThemePicker
+            selectedTheme={themeId}
+            onSelect={(newId) => {
+              setThemeId(newId);
+              setShowThemePicker(false);
+            }}
+            layout="scroll"
+          />
+        </div>
+      )}
 
-      {/* Board */}
-      {children}
+      <div className="w-full border-t border-[var(--glassBorder)] pt-3">
+        {hud}
+      </div>
+    </div>
+  );
 
-      {/* Leaderboard */}
-      <SoloLeaderboardPanel
-        gameId={gameId}
-        difficulty={difficulty}
-        sortBy={sortBy}
-        order={order}
+  return (
+    <div
+      ref={containerRef}
+      data-testid="solo-game-container"
+      className={cx(
+        'relative w-full transition-all duration-200',
+        isFullscreen &&
+          'fixed inset-0 z-[1000] h-screen w-screen overflow-y-auto overflow-x-hidden bg-[var(--background)] p-3 sm:p-6 flex flex-col items-center',
+      )}
+    >
+      <div
+        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+        aria-hidden="true"
+      >
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-[var(--primary)]/20 via-[var(--primary)]/5 to-transparent blur-3xl opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--background)]/60 to-[var(--background)]" />
+      </div>
+
+      {isFullscreen ? (
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-4 sm:gap-6 pb-8">
+          <div className="w-full">{hudCard}</div>
+          {controls && (
+            <div className="flex w-full justify-center">{controls}</div>
+          )}
+          <div className="flex w-full justify-center">{children}</div>
+        </div>
+      ) : layout === 'stacked' ? (
+        <div
+          className={cx(
+            'mx-auto flex w-full flex-col items-center gap-5 px-3 sm:px-4',
+            maxWidthClassName ?? 'max-w-5xl xl:max-w-6xl',
+          )}
+        >
+          <div className="w-full">{hudCard}</div>
+          {controls && (
+            <div className="flex w-full justify-center">{controls}</div>
+          )}
+          <div className="flex w-full justify-center">{children}</div>
+          <div className="w-full max-w-3xl">
+            <SoloLeaderboardPanel
+              gameId={gameId}
+              difficulty={difficulty}
+              sortBy={sortBy}
+              order={order}
+              defaultExpanded={true}
+            />
+          </div>
+        </div>
+      ) : (
+        <div
+          className={cx(
+            'mx-auto grid w-full grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px] gap-6 lg:gap-8 items-start px-3 sm:px-4',
+            maxWidthClassName ?? 'max-w-5xl xl:max-w-6xl',
+          )}
+        >
+          <div className="flex w-full flex-col items-center gap-4 sm:gap-5">
+            {hudCard}
+            {controls}
+            {children}
+          </div>
+          <div className="flex w-full flex-col gap-4">
+            <SoloLeaderboardPanel
+              gameId={gameId}
+              difficulty={difficulty}
+              sortBy={sortBy}
+              order={order}
+              defaultExpanded={true}
+            />
+          </div>
+        </div>
+      )}
+
+      <GameRulesModal
+        open={showRules}
+        onClose={() => setShowRules(false)}
+        title={`${modal.gameName} Rules`}
+        icon={rulesIcon}
+        variant={themeId}
+        rules={rules}
       />
 
-      {/* Result modal */}
       <GameResultModal
         isOpen={finishedAt !== null && !isDismissed}
         result={modal.result}
@@ -223,7 +315,7 @@ export function SoloGameContainer({
         onClose={handleCloseModal}
         t={t}
         messages={modal.messages}
-        theme={modal.theme}
+        theme={modal.theme ?? themeId}
         stats={modal.stats}
       />
     </div>

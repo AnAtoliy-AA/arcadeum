@@ -12,6 +12,7 @@ import {
   StatCard,
   formatDuration,
 } from '@/features/games/ui/SoloGameContainer';
+import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { SudokuThemeProvider } from '../lib/SudokuThemeContext';
 import { useSudokuStore } from '../store/sudokuStore';
 import type { Difficulty } from '../types';
@@ -27,8 +28,9 @@ const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 export default function SudokuGame() {
   useTrackSoloGameStarted('sudoku_v1');
+  const { themeId } = useSoloTheme('sudoku_v1');
   return (
-    <SudokuThemeProvider>
+    <SudokuThemeProvider variant={themeId}>
       <SudokuTable />
     </SudokuThemeProvider>
   );
@@ -36,6 +38,7 @@ export default function SudokuGame() {
 
 function SudokuTable() {
   const { t } = useTranslation();
+  const { themeId } = useSoloTheme('sudoku_v1');
   const game = useSudokuStore((state) => state.game);
   const finished = useSudokuStore((state) => state.finished);
   const startedAt = useSudokuStore((state) => state.startedAt);
@@ -51,7 +54,15 @@ function SudokuTable() {
 
   const digitCounts = useMemo(() => {
     const counts: Record<number, number> = {
-      1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0,
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+      6: 0,
+      7: 0,
+      8: 0,
+      9: 0,
     };
     for (const cell of game.cells) {
       if (cell >= 1 && cell <= 9) {
@@ -148,50 +159,58 @@ function SudokuTable() {
   }, [finished, game.difficulty, t]);
 
   const hud = (
-    <>
-      <div className="flex items-center gap-2 sm:gap-4">
-        <StatCard
-          label={t('games.sudoku_v1.hud.mistakes')}
-          value={game.mistakes}
-          highlight={game.mistakes > 0}
-        />
-        <StatCard
-          label={t('games.sudoku_v1.hud.time')}
-          value={formatDuration(finished?.durationMs ?? 0)}
-        />
-      </div>
+    <div className="grid w-full grid-cols-3 gap-2 sm:gap-3">
+      <StatCard
+        label={t('games.sudoku_v1.hud.difficulty')}
+        value={game.difficulty.toUpperCase()}
+        icon="🧩"
+      />
+      <StatCard
+        label={t('games.sudoku_v1.hud.mistakes')}
+        value={game.mistakes}
+        icon="⚠️"
+        highlight={game.mistakes > 0}
+      />
+      <StatCard
+        label={t('games.sudoku_v1.hud.time')}
+        value={formatDuration(finished?.durationMs ?? 0)}
+        icon="⏱️"
+      />
+    </div>
+  );
 
-      <div className="flex items-center gap-2">
-        <Select
-          id="sudoku-difficulty"
-          size="sm"
-          value={game.difficulty}
-          onValueChange={(value) => changeDifficulty(value as Difficulty)}
-          options={DIFFICULTY_OPTIONS.map(({ value }) => ({
-            value,
-            label: t(`games.sudoku_v1.difficulty.${value}` as TranslationKey),
-          }))}
-        />
-        {finished && (
-          <Button
-            variant="secondary"
-            size="sm"
-            data-testid="sudoku-show-results-button"
-            className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25"
-          >
-            🏆 {t('games.table.analytics.view') || 'Results'}
-          </Button>
-        )}
+  const actions = (
+    <div className="flex items-center gap-2">
+      <Select
+        id="sudoku-difficulty"
+        size="sm"
+        value={game.difficulty}
+        onValueChange={(value) => changeDifficulty(value as Difficulty)}
+        options={DIFFICULTY_OPTIONS.map(({ value }) => ({
+          value,
+          label: t(`games.sudoku_v1.difficulty.${value}` as TranslationKey),
+        }))}
+      />
+      {finished && (
         <Button
           variant="secondary"
           size="sm"
-          onClick={newGame}
-          data-testid="sudoku-new-game-button"
+          data-testid="sudoku-show-results-button"
+          className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25"
         >
-          {t('games.sudoku_v1.hud.newGame')}
+          🏆 {t('games.table.analytics.view') || 'Results'}
         </Button>
-      </div>
-    </>
+      )}
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={newGame}
+        data-testid="sudoku-new-game-button"
+        className="whitespace-nowrap px-3.5 font-semibold"
+      >
+        {t('games.sudoku_v1.hud.newGame')}
+      </Button>
+    </div>
   );
 
   return (
@@ -205,12 +224,13 @@ function SudokuTable() {
       finishedAt={finishedAt}
       onNewGame={newGame}
       hud={hud}
+      actions={actions}
       loadingMessage="games.sudoku_v1.board.loading"
       modal={{
         result: 'victory',
         gameName: 'Sudoku',
         rematchLabel: t('games.sudoku_v1.result.playAgain'),
-        theme: 'cyberpunk',
+        theme: themeId,
         stats,
         messages: {
           title: t('games.sudoku_v1.result.wonTitle'),
@@ -259,8 +279,8 @@ function SudokuTable() {
                   isCompleted
                     ? 'border-dashed border-[var(--borderColor)] bg-[var(--backgroundHover)] opacity-30 cursor-not-allowed'
                     : notesMode
-                      ? 'border-sky-500/40 bg-sky-500/15 text-sky-600 dark:text-sky-300 hover:bg-sky-500/25 active:scale-95'
-                      : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-sky-500/50 hover:bg-[var(--glassBgHover)] active:scale-95',
+                      ? 'border-[var(--primary)]/40 bg-[var(--primary)]/15 text-[var(--primary)] hover:bg-[var(--primary)]/25 active:scale-95'
+                      : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-[var(--primary)]/50 hover:bg-[var(--glassBgHover)] active:scale-95',
                   'disabled:opacity-40 disabled:cursor-not-allowed',
                 )}
               >
@@ -284,7 +304,7 @@ function SudokuTable() {
             className={cx(
               'flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-xs sm:text-sm font-bold transition-all',
               notesMode
-                ? 'border-sky-500 bg-sky-500/20 text-sky-700 dark:text-sky-200 shadow-md shadow-sky-500/20 ring-1 ring-sky-400'
+                ? 'border-[var(--primary)] bg-[var(--primary)]/20 text-[var(--primary)] shadow-md shadow-[var(--primary)]/20 ring-1 ring-[var(--primary)]'
                 : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)]',
             )}
           >

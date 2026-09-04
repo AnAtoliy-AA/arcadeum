@@ -1,6 +1,9 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { useSudokuTheme } from '../lib/SudokuThemeContext';
+import type { SudokuTheme } from '../lib/theme';
 import { colOf, findConflicts, isGiven, rowOf } from '../types';
 import type { SudokuState } from '../types';
 
@@ -11,12 +14,29 @@ interface SudokuBoardProps {
   onSelect: (index: number | null) => void;
 }
 
+function boardVars(theme: SudokuTheme): CSSProperties {
+  return {
+    '--sdk-board-bg': theme.boardBackground,
+    '--sdk-board-border': theme.boardBorder,
+    '--sdk-line-thin': theme.lineThin,
+    '--sdk-line-thick': theme.lineThick,
+    '--sdk-selected': theme.selectedCell,
+    '--sdk-peer': theme.peerCell,
+    '--sdk-same': theme.sameNumberCell,
+    '--sdk-conflict': theme.conflictColor,
+    '--sdk-given': theme.givenColor,
+    '--sdk-player-val': theme.playerValueColor,
+    '--sdk-note': theme.noteColor,
+  } as CSSProperties;
+}
+
 export function SudokuBoard({
   game,
   selected,
   notesMode,
   onSelect,
 }: SudokuBoardProps) {
+  const theme = useSudokuTheme();
   const conflicts = new Set(
     Array.from({ length: 81 }, (_, i) => i).flatMap((i) =>
       findConflicts(game.cells, i),
@@ -28,7 +48,8 @@ export function SudokuBoard({
     <div
       role="grid"
       aria-label="Sudoku"
-      className="mx-auto grid aspect-square w-full max-w-[28rem] grid-cols-9 rounded-2xl border-2 border-sky-500/30 bg-slate-950/90 p-1 shadow-2xl shadow-black/70 select-none"
+      style={boardVars(theme)}
+      className="mx-auto grid aspect-square w-full max-w-[28rem] grid-cols-9 rounded-2xl border-2 border-[var(--sdk-board-border)] bg-[var(--sdk-board-bg)] p-1 shadow-2xl backdrop-blur-xl select-none transition-colors duration-300"
     >
       {game.cells.map((value, index) => {
         const row = rowOf(index);
@@ -55,20 +76,20 @@ export function SudokuBoard({
             className={cx(
               'relative flex items-center justify-center font-mono transition-colors',
               col % 3 === 2 && col !== 8
-                ? 'border-r-2 border-r-sky-500/40'
-                : 'border-r border-r-slate-800/80',
+                ? 'border-r-2 border-r-[var(--sdk-line-thick)]'
+                : 'border-r border-r-[var(--sdk-line-thin)]',
               row % 3 === 2 && row !== 8
-                ? 'border-b-2 border-b-sky-500/40'
-                : 'border-b border-b-slate-800/80',
+                ? 'border-b-2 border-b-[var(--sdk-line-thick)]'
+                : 'border-b border-b-[var(--sdk-line-thin)]',
               isSelected
-                ? 'z-10 bg-sky-500/30 ring-2 ring-sky-400 ring-inset'
+                ? 'z-10 bg-[var(--sdk-selected)] ring-2 ring-[var(--primary)] ring-inset'
                 : isSameNumber
-                  ? 'bg-sky-400/20 text-sky-200'
+                  ? 'bg-[var(--sdk-same)] text-[var(--sdk-player-val)]'
                   : isPeer
-                    ? 'bg-sky-950/30'
-                    : 'bg-transparent hover:bg-slate-800/40',
+                    ? 'bg-[var(--sdk-peer)]'
+                    : 'bg-transparent hover:bg-[var(--backgroundHover)]',
               hasConflict &&
-                'bg-red-950/70 text-red-400 ring-1 ring-red-500/50',
+                'bg-rose-950/70 text-rose-400 ring-1 ring-rose-500/50',
             )}
           >
             {value !== 0 ? (
@@ -76,9 +97,9 @@ export function SudokuBoard({
                 className={cx(
                   'text-lg sm:text-xl tabular-nums',
                   given
-                    ? 'font-bold text-slate-100'
-                    : 'font-extrabold text-sky-400',
-                  hasConflict && 'text-red-400',
+                    ? 'font-bold text-[var(--sdk-given)]'
+                    : 'font-extrabold text-[var(--sdk-player-val)]',
+                  hasConflict && '!text-rose-400',
                 )}
               >
                 {value}
@@ -89,7 +110,7 @@ export function SudokuBoard({
             {notesMode && isSelected && (
               <span
                 aria-hidden="true"
-                className="absolute right-0.5 top-0 text-[9px] leading-none text-sky-300 opacity-80"
+                className="absolute right-0.5 top-0 text-[9px] leading-none text-[var(--primary)] opacity-80"
               >
                 ✎
               </span>
@@ -117,7 +138,7 @@ function NotesGrid({ notes }: { notes: number[] }) {
           className={cx(
             'flex items-center justify-center font-mono text-[9px] leading-none sm:text-[10px]',
             notes.includes(digit)
-              ? 'text-sky-300/90 font-medium'
+              ? 'text-[var(--sdk-note)] font-medium'
               : 'text-transparent',
           )}
         >

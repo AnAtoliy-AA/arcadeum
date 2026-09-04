@@ -10,6 +10,7 @@ import {
   StatCard,
   formatDuration,
 } from '@/features/games/ui/SoloGameContainer';
+import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { SolitaireThemeProvider } from '../lib/SolitaireThemeContext';
 import { useSolitaireStore } from '../store/solitaireStore';
 import type { MoveSource } from '../types';
@@ -17,8 +18,9 @@ import { SolitaireBoard } from './SolitaireBoard';
 
 export default function SolitaireGame() {
   useTrackSoloGameStarted('solitaire_v1');
+  const { themeId } = useSoloTheme('solitaire_v1');
   return (
-    <SolitaireThemeProvider>
+    <SolitaireThemeProvider variant={themeId}>
       <SolitaireTable />
     </SolitaireThemeProvider>
   );
@@ -26,6 +28,7 @@ export default function SolitaireGame() {
 
 function SolitaireTable() {
   const { t } = useTranslation();
+  const { themeId } = useSoloTheme('solitaire_v1');
   const game = useSolitaireStore((state) => state.game);
   const finished = useSolitaireStore((state) => state.finished);
   const startedAt = useSolitaireStore((state) => state.startedAt);
@@ -47,43 +50,47 @@ function SolitaireTable() {
   }, [finished]);
 
   const hud = (
-    <>
-      <div className="flex items-center gap-2 sm:gap-4">
-        <StatCard
-          label={t('games.solitaire_v1.hud.score')}
-          value={game.score}
-        />
-        <StatCard
-          label={t('games.solitaire_v1.hud.moves')}
-          value={game.moves}
-        />
-        <StatCard
-          label={t('games.solitaire_v1.hud.time')}
-          value={formatDuration(finished?.durationMs ?? 0)}
-        />
-      </div>
+    <div className="grid w-full grid-cols-3 gap-2 sm:gap-3">
+      <StatCard
+        label={t('games.solitaire_v1.hud.score')}
+        value={game.score}
+        icon="🎯"
+      />
+      <StatCard
+        label={t('games.solitaire_v1.hud.moves')}
+        value={game.moves}
+        icon="🔄"
+      />
+      <StatCard
+        label={t('games.solitaire_v1.hud.time')}
+        value={formatDuration(finished?.durationMs ?? 0)}
+        icon="⏱️"
+      />
+    </div>
+  );
 
-      <div className="flex items-center gap-2">
-        {finished !== null && (
-          <Button
-            variant="secondary"
-            size="sm"
-            data-testid="solitaire-show-results-button"
-            className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25"
-          >
-            🏆 {t('games.table.analytics.view') || 'Results'}
-          </Button>
-        )}
+  const actions = (
+    <div className="flex items-center gap-2">
+      {finished !== null && (
         <Button
           variant="secondary"
           size="sm"
-          onClick={newGame}
-          data-testid="solitaire-new-game-button"
+          data-testid="solitaire-show-results-button"
+          className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25"
         >
-          {t('games.solitaire_v1.hud.newGame')}
+          🏆 {t('games.table.analytics.view') || 'Results'}
         </Button>
-      </div>
-    </>
+      )}
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={newGame}
+        data-testid="solitaire-new-game-button"
+        className="whitespace-nowrap px-3.5 font-semibold"
+      >
+        {t('games.solitaire_v1.hud.newGame')}
+      </Button>
+    </div>
   );
 
   return (
@@ -92,18 +99,20 @@ function SolitaireTable() {
       difficulty="default"
       sortBy="score"
       order="desc"
-      maxWidthClassName="max-w-4xl"
+      layout="stacked"
+      maxWidthClassName="max-w-5xl"
       isRunning={isRunning}
       startedAt={startedAt}
       finishedAt={finishedAt}
       onNewGame={newGame}
       hud={hud}
+      actions={actions}
       loadingMessage="games.solitaire_v1.board.loading"
       modal={{
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,
         gameName: 'Solitaire',
         rematchLabel: t('games.solitaire_v1.result.playAgain'),
-        theme: 'casino',
+        theme: themeId,
         stats,
         messages: {
           title: t(

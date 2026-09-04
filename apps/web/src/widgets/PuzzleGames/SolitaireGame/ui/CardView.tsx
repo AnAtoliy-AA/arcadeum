@@ -30,11 +30,11 @@ export function CardView({
     const faceDownContent = (
       <div
         className={cx(
-          'relative h-full w-full rounded-xl border border-indigo-400/40 bg-gradient-to-br from-indigo-800 via-indigo-900 to-slate-950 shadow-md',
+          'relative h-full w-full rounded-xl border border-[var(--sol-card-back-border,rgba(255,255,255,0.2))] bg-[var(--sol-card-back,linear-gradient(135deg,#4338ca_0%,#1e1b4b_100%))] shadow-md transition-transform',
           className,
         )}
       >
-        <div className="absolute inset-1 rounded-lg border border-dashed border-indigo-400/30" />
+        <div className="absolute inset-1 rounded-lg border border-dashed border-white/20" />
       </div>
     );
 
@@ -65,7 +65,7 @@ export function CardView({
         isRed ? 'text-rose-600' : 'text-slate-900',
         onClick && 'hover:-translate-y-0.5 hover:shadow-lg',
         selected &&
-          '-translate-y-2 ring-2 ring-amber-400 shadow-lg shadow-amber-400/30',
+          '-translate-y-2 ring-2 ring-[var(--sol-selected-ring,#f59e0b)] shadow-lg shadow-amber-400/30',
         className,
       )}
     >

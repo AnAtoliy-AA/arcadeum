@@ -3,6 +3,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
+import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { move, newGame } from '../lib/engine';
 import type { Direction } from '../types';
 
@@ -40,18 +42,34 @@ function finishIfOver(
   if (status === 'playing') return null;
 
   const finishedAt = Date.now();
+  const durationMs = finishedAt - startedAt;
+  const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
+  const sessionId = `g2048_${userId}_${finishedAt}`;
+
   void useLocalStatsStore.getState().recordGameResult({
     gameId: GAME_2048_ID,
     result: status === 'won' ? 'won' : 'lost',
     timestamp: finishedAt,
   });
+
+  useSoloScoreStore.getState().addScore({
+    gameId: GAME_2048_ID,
+    difficulty: 'default',
+    score,
+    moves,
+    durationMs,
+    result: status === 'won' ? 'won' : 'lost',
+    sessionId,
+    timestamp: finishedAt,
+  });
+
   return {
     finishedAt,
     finished: {
       won: status === 'won',
       score,
       moves,
-      durationMs: finishedAt - startedAt,
+      durationMs,
     },
   };
 }
@@ -94,7 +112,12 @@ export const useGame2048Store = create<Game2048StoreState>()(
           moves: next.moves,
           best,
           ...(next.status !== 'playing'
-            ? finishIfOver(next.status, next.score, next.moves, current.startedAt)
+            ? finishIfOver(
+                next.status,
+                next.score,
+                next.moves,
+                current.startedAt,
+              )
             : null),
         }));
       },

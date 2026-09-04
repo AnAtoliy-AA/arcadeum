@@ -164,6 +164,7 @@ export const frMessages = {
       tokensHome: 'Rentrés',
       captured: 'Capturé !',
       noLegalMoves: 'Aucun coup possible avec ce lancer',
+      passTurn: 'Passer le tour',
       tapToken: 'Touchez un pion surligné pour le déplacer',
       moveTokenAria: 'Déplacer le pion {{id}}',
       dieValue: 'Dé : {{value}}',

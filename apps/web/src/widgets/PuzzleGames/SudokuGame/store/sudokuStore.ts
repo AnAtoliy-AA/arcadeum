@@ -3,6 +3,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
+import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { newGame, setCellValue, toggleNote } from '../lib/engine';
 import type { Difficulty, SudokuState } from '../types';
 
@@ -32,16 +34,32 @@ function finishIfOver(
   if (game.status !== 'won') return null;
 
   const finishedAt = Date.now();
+  const durationMs = finishedAt - startedAt;
+  const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
+  const sessionId = `sudoku_${userId}_${finishedAt}`;
+
   void useLocalStatsStore.getState().recordGameResult({
     gameId: SUDOKU_GAME_ID,
     result: 'won',
     timestamp: finishedAt,
   });
+
+  useSoloScoreStore.getState().addScore({
+    gameId: SUDOKU_GAME_ID,
+    difficulty: game.difficulty,
+    score: durationMs,
+    moves: 0,
+    durationMs,
+    result: 'won',
+    sessionId,
+    timestamp: finishedAt,
+  });
+
   return {
     finishedAt,
     finished: {
       mistakes: game.mistakes,
-      durationMs: finishedAt - startedAt,
+      durationMs,
     },
   };
 }

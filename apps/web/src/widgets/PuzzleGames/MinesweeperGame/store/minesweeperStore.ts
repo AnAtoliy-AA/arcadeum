@@ -3,11 +3,10 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
+import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { newGame, revealCell, toggleFlag } from '../lib/engine';
-import type {
-  Difficulty,
-  MinesweeperState,
-} from '../types';
+import type { Difficulty, MinesweeperState } from '../types';
 
 export const MINESWEEPER_GAME_ID = 'minesweeper_v1';
 
@@ -37,11 +36,27 @@ function finishIfOver(
   if (game.status === 'playing') return null;
 
   const finishedAt = Date.now();
+  const durationMs = startedAt === null ? 0 : finishedAt - startedAt;
+  const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
+  const sessionId = `ms_${userId}_${finishedAt}`;
+
   void useLocalStatsStore.getState().recordGameResult({
     gameId: MINESWEEPER_GAME_ID,
     result: game.status === 'won' ? 'won' : 'lost',
     timestamp: finishedAt,
   });
+
+  useSoloScoreStore.getState().addScore({
+    gameId: MINESWEEPER_GAME_ID,
+    difficulty: game.difficulty,
+    score: durationMs,
+    moves: 0,
+    durationMs,
+    result: game.status === 'won' ? 'won' : 'lost',
+    sessionId,
+    timestamp: finishedAt,
+  });
+
   return {
     finishedAt,
     finished: {

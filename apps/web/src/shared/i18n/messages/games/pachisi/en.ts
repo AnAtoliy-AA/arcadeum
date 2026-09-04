@@ -160,6 +160,7 @@ export const enMessages = {
       tokensHome: 'Home',
       captured: 'Captured!',
       noLegalMoves: 'No legal moves with this roll',
+      passTurn: 'Pass Turn',
       tapToken: 'Tap a highlighted token to move it',
       moveTokenAria: 'Move token {{id}}',
       dieValue: 'Die showing {{value}}',

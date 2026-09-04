@@ -54,6 +54,7 @@ describe('Game2048 UI', () => {
         moves: 950,
         durationMs: 120000,
       },
+      finishedAt: Date.now(),
     });
 
     render(<Game2048 />);
@@ -73,6 +74,7 @@ describe('Game2048 UI', () => {
         moves: 120,
         durationMs: 45000,
       },
+      finishedAt: Date.now(),
     });
 
     render(<Game2048 />);

@@ -26,6 +26,7 @@ interface PachisiBoardProps {
   myTurn: boolean;
   onRoll: () => void;
   onMove: (tokenId: number) => void;
+  onPassTurn?: () => void;
 }
 
 interface PlacedToken {
@@ -40,12 +41,14 @@ export function PachisiBoard({
   myTurn,
   onRoll,
   onMove,
+  onPassTurn,
 }: PachisiBoardProps) {
   const { t } = useTranslation();
   const theme = usePachisiTheme();
 
   const canRoll = myTurn && snapshot.phase === 'roll';
   const canMove = myTurn && snapshot.phase === 'move';
+  const isGameOver = snapshot.phase === 'game_over';
 
   const movable = useMemo(
     () =>
@@ -217,18 +220,55 @@ export function PachisiBoard({
         </div>
       </div>
 
-      {/* Hint */}
+      {/* Status hint */}
+      {canRoll && (
+        <div
+          className="text-center text-[12px] font-bold text-emerald-300"
+          data-testid="pachisi-roll-hint"
+        >
+          {t('games.pachisi_v1.game.yourTurnToRoll')}
+        </div>
+      )}
       {canMove && movable.size > 0 && (
-        <div className="text-center text-[11px] font-bold text-emerald-300">
-          {t('games.pachisi_v1.game.tapToken')}
+        <div
+          className="text-center text-[12px] font-bold text-emerald-300"
+          data-testid="pachisi-move-hint"
+        >
+          {t('games.pachisi_v1.game.yourTurnToMove')}
+          <span className="mt-0.5 block text-[11px] text-emerald-200/80">
+            {t('games.pachisi_v1.game.tapToken')}
+          </span>
         </div>
       )}
       {canMove && movable.size === 0 && (
         <div
-          className="text-center text-[11px] font-bold text-amber-300"
+          className="flex flex-col items-center gap-1.5"
           data-testid="pachisi-no-moves"
         >
-          {t('games.pachisi_v1.game.noLegalMoves')}
+          <div className="text-center text-[12px] font-bold text-amber-300">
+            {t('games.pachisi_v1.game.noLegalMoves')}
+          </div>
+          {onPassTurn && (
+            <button
+              aria-label={t('games.pachisi_v1.game.passTurn')}
+              className="rounded-lg border border-amber-500/40 bg-amber-950/50 px-3 py-1 text-[11px] font-semibold text-amber-300 transition-colors hover:bg-amber-900/60 active:scale-95"
+              data-testid="pachisi-pass-button"
+              onClick={onPassTurn}
+              type="button"
+            >
+              {t('games.pachisi_v1.game.passTurn')}
+            </button>
+          )}
+        </div>
+      )}
+      {!myTurn && !isGameOver && (
+        <div
+          className="text-center text-[12px] font-semibold text-white/50"
+          data-testid="pachisi-waiting"
+        >
+          {snapshot.phase === 'roll'
+            ? t('games.pachisi_v1.game.waitingForOpponentRoll')
+            : t('games.pachisi_v1.game.waitingForOpponentMove')}
         </div>
       )}
 

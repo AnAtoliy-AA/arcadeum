@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.6] - 2026-09-04
+
+### Added
+- improve Pachisi board UX with contextual hints and pass turn (ARC-886) (ARC-886)
+
+
+## [1.28.5] - 2026-09-04
+
+### Added
+- add solo game leaderboard with offline sync
+
+### Fixed
+- sanitize query params, remove Math.random from session IDs
+- make solo-scores /best endpoint optional-auth
+- use live timer in HUD after continue playing
+
+
 ## [1.28.4] - 2026-09-04
 
 ### Fixed

@@ -162,6 +162,7 @@ export const ruMessages = {
       tokensHome: 'Дома',
       captured: 'Захвачена!',
       noLegalMoves: 'Нет допустимых ходов для этого броска',
+      passTurn: 'Пропустить ход',
       tapToken: 'Нажмите на подсвеченную фишку, чтобы сделать ход',
       moveTokenAria: 'Ходить фишкой {{id}}',
       dieValue: 'Кубик: {{value}}',

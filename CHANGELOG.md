@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.6] - 2026-09-04
+
+### Added
+- improve Pachisi board UX with contextual hints and pass turn (ARC-886) (ARC-886)
+
+
 ## [1.28.5] - 2026-09-04
 
 ### Added

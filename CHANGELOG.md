@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.9] - 2026-09-04
+
+### Fixed
+- force disconnect before reconnect to ensure anonId query param reaches backend
+- clean up auth flow — stale displayName, anon participant leak, identity-less sockets
+
+
 ## [1.28.8] - 2026-09-04
 
 ### Added

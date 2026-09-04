@@ -116,6 +116,14 @@ export class FriendsGateway
     this.server.to(friendId).emit('friend:removed', { userId: removedUserId });
   }
 
+  emitFriendDeclined(requesterId: string, friendshipId: string): void {
+    this.server.to(requesterId).emit('friend:declined', { friendshipId });
+  }
+
+  emitFriendCancelled(addresseeId: string, friendshipId: string): void {
+    this.server.to(addresseeId).emit('friend:cancelled', { friendshipId });
+  }
+
   broadcastPresence(userId: string, online: boolean): void {
     this.server.to('presence').emit('presence:update', { userId, online });
   }

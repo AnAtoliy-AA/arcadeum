@@ -53,3 +53,4 @@ apps/web/public/music/*.mp3
 .aider*
 output/
 raw_captures/
+.env.monitoring

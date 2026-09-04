@@ -15,6 +15,7 @@ import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { FriendsService } from './friends.service';
 import { SendFriendRequestDto } from './dto/send-friend-request.dto';
+import { SendFriendRequestByUserIdDto } from './dto/send-friend-request-by-user-id.dto';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
 interface RequestWithUser {
@@ -31,6 +32,14 @@ export class FriendsController {
     return this.friendsService.sendRequest(req.user.userId, dto.username);
   }
 
+  @Post('request-by-user-id')
+  sendRequestByUserId(
+    @Req() req: RequestWithUser,
+    @Body() dto: SendFriendRequestByUserIdDto,
+  ) {
+    return this.friendsService.sendRequestByUserId(req.user.userId, dto.userId);
+  }
+
   @Post('accept/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   acceptRequest(@Req() req: RequestWithUser, @Param('id') id: string) {
@@ -41,6 +50,12 @@ export class FriendsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   declineRequest(@Req() req: RequestWithUser, @Param('id') id: string) {
     return this.friendsService.declineRequest(req.user.userId, id);
+  }
+
+  @Post('cancel/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  cancelRequest(@Req() req: RequestWithUser, @Param('id') id: string) {
+    return this.friendsService.cancelRequest(req.user.userId, id);
   }
 
   @Delete(':id')
@@ -54,6 +69,13 @@ export class FriendsController {
   @Get()
   getFriends(@Req() req: RequestWithUser) {
     return this.friendsService.getFriends(req.user.userId);
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(10000)
+  @Get('user/:userId')
+  getUserFriends(@Param('userId') userId: string) {
+    return this.friendsService.getFriends(userId);
   }
 
   @Get('pending')

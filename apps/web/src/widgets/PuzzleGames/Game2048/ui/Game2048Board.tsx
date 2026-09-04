@@ -1,7 +1,9 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, type CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { useGame2048Theme } from '../lib/Game2048ThemeContext';
+import type { Game2048Theme } from '../lib/theme';
 import type { Direction } from '../types';
 
 interface Game2048BoardProps {
@@ -27,7 +29,7 @@ const TILE_STYLE_MAP: Record<number, string> = {
 
 function getTileClasses(value: number): string {
   if (value === 0) {
-    return 'bg-slate-900/60 border border-white/5';
+    return 'bg-[var(--g2048-empty-cell)] border border-white/5';
   }
   return (
     TILE_STYLE_MAP[value] ??
@@ -35,7 +37,17 @@ function getTileClasses(value: number): string {
   );
 }
 
+function boardVars(theme: Game2048Theme): CSSProperties {
+  return {
+    '--g2048-board-bg': theme.boardBackground,
+    '--g2048-board-border': theme.boardBorder,
+    '--g2048-empty-cell': theme.emptyCell,
+    '--g2048-glow': theme.glow,
+  } as CSSProperties;
+}
+
 export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
+  const theme = useGame2048Theme();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const handleTouchStart = (event: React.TouchEvent) => {
@@ -64,7 +76,8 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
   return (
     <div
       data-testid="game-2048-board"
-      className="mx-auto aspect-square w-full max-w-[26rem] touch-none rounded-3xl border border-amber-500/20 bg-slate-950/75 p-3 shadow-2xl shadow-black/60 backdrop-blur-xl sm:p-4"
+      style={boardVars(theme)}
+      className="mx-auto aspect-square w-full max-w-[min(100vw-2rem,28rem)] touch-none rounded-3xl border border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-3 shadow-2xl shadow-black/60 backdrop-blur-xl transition-colors duration-300 sm:p-4"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >

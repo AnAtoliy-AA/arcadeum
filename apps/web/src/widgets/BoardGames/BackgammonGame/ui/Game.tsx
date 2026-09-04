@@ -27,16 +27,20 @@ import { BackgammonLobby } from './BackgammonLobby';
 import { BackgammonBoard } from './BackgammonBoard';
 import { RulesModal } from './RulesModal';
 import { BACKGAMMON_THEMES } from '../lib/constants';
+import { getThemeById } from '@/features/games/lib/shared-themes';
 
 function resolveOptions(raw: unknown): BackgammonOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
+    mode: string;
     aiDifficulty: string;
   }>;
   return {
     theme: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonTheme,
     variant: (r.theme ?? r.variant ?? 'cyberpunk') as BackgammonTheme,
+    mode: (r.mode ?? 'standard') as
+      'standard' | 'long' | 'hyper' | 'tavla' | 'nackgammon' | 'gulbara',
     aiDifficulty: (r.aiDifficulty ?? 'medium') as
       'easy' | 'medium' | 'hard' | 'expert',
   };
@@ -143,6 +147,11 @@ function BackgammonGameImpl({
     return found ?? BACKGAMMON_THEMES[0];
   }, [options.variant]);
 
+  const sharedTheme = useMemo(
+    () => (options.variant ? getThemeById(options.variant) : undefined),
+    [options.variant],
+  );
+
   const players = useMemo(
     () =>
       snapshot?.players.map((p) => ({
@@ -189,7 +198,7 @@ function BackgammonGameImpl({
   }
 
   const board = (
-    <div className="box-border flex w-full flex-col items-stretch p-1 sm:p-2">
+    <div className="box-border flex w-full flex-1 flex-col items-center justify-center p-1 sm:p-2 min-h-0 min-w-0">
       {snapshot ? (
         <BackgammonBoard
           currentUserId={currentUserId}
@@ -231,13 +240,18 @@ function BackgammonGameImpl({
           backLabel: t('games.table.analytics.back'),
         }}
       />
-      <RulesModal onClose={onShowRulesClose} open={showRulesOpen} />
+      <RulesModal
+        mode={options.mode}
+        onClose={onShowRulesClose}
+        open={showRulesOpen}
+      />
     </>
   );
 
   return (
     <BackgammonThemeProvider variant={options.variant}>
       <GameWidgetContainer
+        bgImage={sharedTheme?.bgImage}
         board={board}
         headerProps={{
           variantEmoji: variantTokens.emoji,

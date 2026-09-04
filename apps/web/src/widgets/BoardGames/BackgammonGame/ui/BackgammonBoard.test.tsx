@@ -41,7 +41,7 @@ const mockState: BackgammonClientState = {
 };
 
 describe('BackgammonBoard', () => {
-  it('renders board and all 24 points', () => {
+  it('renders board and all 24 points with theme attribute', () => {
     render(
       <BackgammonBoard
         currentUserId="p1"
@@ -52,7 +52,10 @@ describe('BackgammonBoard', () => {
       />,
     );
 
-    expect(screen.getByTestId('backgammon-board')).toBeInTheDocument();
+    const board = screen.getByTestId('backgammon-board');
+    expect(board).toBeInTheDocument();
+    expect(board).toHaveAttribute('data-theme', 'cyberpunk');
+    expect(board).toHaveClass('backgammon-board');
     expect(screen.getByTestId('point-0')).toBeInTheDocument();
     expect(screen.getByTestId('point-23')).toBeInTheDocument();
   });
@@ -117,7 +120,6 @@ describe('BackgammonBoard', () => {
       />,
     );
 
-    // Navigate to point 23 (top-right corner of the nav grid) and select it.
     const grid = screen
       .getByTestId('point-12')
       .closest('[tabindex="0"]') as HTMLElement;
@@ -126,10 +128,8 @@ describe('BackgammonBoard', () => {
     }
     fireEvent.keyDown(grid, { key: 'Enter' });
 
-    // Selected point 23 offers a legal target at point 20 (23 - 3).
     expect(screen.getByTestId('point-20').textContent).toContain('+3');
 
-    // Escape clears the selection.
     fireEvent.keyDown(grid, { key: 'Escape' });
     expect(screen.getByTestId('point-20').textContent).not.toContain('+3');
   });

@@ -10,6 +10,7 @@ import { FriendsService } from './friends.service';
 import { Friendship } from './schemas/friendship.schema';
 import { User } from '../auth/schemas/user.schema';
 import { FriendsGateway } from './friends.gateway';
+import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
 
 describe('FriendsService', () => {
   const userId = '64a000000000000000000001';
@@ -23,8 +24,11 @@ describe('FriendsService', () => {
     emitFriendRequest: jest.Mock;
     emitFriendAccepted: jest.Mock;
     emitFriendRemoved: jest.Mock;
+    emitFriendDeclined: jest.Mock;
+    emitFriendCancelled: jest.Mock;
     isUserOnline: jest.Mock;
   };
+  let dispatcher: { dispatch: jest.Mock };
 
   beforeEach(async () => {
     friendshipModel = {
@@ -43,7 +47,12 @@ describe('FriendsService', () => {
       emitFriendRequest: jest.fn(),
       emitFriendAccepted: jest.fn(),
       emitFriendRemoved: jest.fn(),
+      emitFriendDeclined: jest.fn(),
+      emitFriendCancelled: jest.fn(),
       isUserOnline: jest.fn().mockReturnValue(false),
+    };
+    dispatcher = {
+      dispatch: jest.fn().mockResolvedValue(undefined),
     };
 
     const module = await Test.createTestingModule({
@@ -52,6 +61,7 @@ describe('FriendsService', () => {
         { provide: getModelToken(Friendship.name), useValue: friendshipModel },
         { provide: getModelToken(User.name), useValue: userModel },
         { provide: FriendsGateway, useValue: gateway },
+        { provide: NotificationDispatcher, useValue: dispatcher },
       ],
     }).compile();
 

@@ -26,6 +26,7 @@ import { ShareGameMenu } from './ShareGameMenu';
 import { MoveControls } from './MoveControls';
 import { MoreOptionsMenu } from './MoreOptionsMenu';
 import { DesktopSecondaryControls } from './DesktopSecondaryControls';
+import { sendFriendRequestByUserId } from '@/shared/api/friends';
 
 interface GamesControlPanelProps {
   roomId?: string;
@@ -45,6 +46,7 @@ interface GamesControlPanelProps {
   isGameOver?: boolean;
   onRematch?: () => void;
   rematchLoading?: boolean;
+  opponentUserId?: string;
 }
 
 export function GamesControlPanel(props: GamesControlPanelProps) {
@@ -67,12 +69,15 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
     isGameOver,
     onRematch,
     rematchLoading,
+    opponentUserId,
   } = props;
 
   const { snapshot } = useSessionTokens();
   const { soundEnabled, setSoundEnabled } = useSoundSetting();
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [friendRequestSent, setFriendRequestSent] = useState(false);
+  const [friendRequestLoading, setFriendRequestLoading] = useState(false);
 
   const rematchStoreIsGameOver = useGameRematchStore((s) => s.isGameOver);
   const rematchStoreOnRematch = useGameRematchStore((s) => s.onRematch);
@@ -122,6 +127,20 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   const handleMove = (direction: 'up' | 'down' | 'left' | 'right') => {
     onMovePlayer?.(direction);
   };
+
+  const handleSendFriendRequest = useCallback(async () => {
+    if (!snapshot.accessToken || !opponentUserId) return;
+    setFriendRequestLoading(true);
+    try {
+      await sendFriendRequestByUserId(snapshot.accessToken, opponentUserId);
+      setFriendRequestSent(true);
+    } catch {
+      // Already friends or request pending — show sent state anyway
+      setFriendRequestSent(true);
+    } finally {
+      setFriendRequestLoading(false);
+    }
+  }, [snapshot.accessToken, opponentUserId]);
 
   const handleCenterView = () => {
     onCenterView?.();
@@ -249,6 +268,30 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
         )}
 
         {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
+
+        {opponentUserId &&
+          snapshot.userId &&
+          opponentUserId !== snapshot.userId && (
+            <Button
+              className="active:scale-[0.95] text-[10px] sm:text-xs font-semibold px-2 sm:px-3"
+              variant={friendRequestSent ? 'glass' : 'secondary'}
+              size="sm"
+              onClick={handleSendFriendRequest}
+              disabled={friendRequestLoading || friendRequestSent}
+              data-testid="add-friend-button"
+            >
+              {friendRequestSent ? '✓' : '👤+'}
+              <span className="hidden sm:inline">
+                {' ' +
+                  (friendRequestSent
+                    ? t(
+                        'games.common.postGame.friendAdded' as TranslationKey,
+                      ) || 'Sent'
+                    : t('games.common.postGame.addFriend' as TranslationKey) ||
+                      'Add Friend')}
+              </span>
+            </Button>
+          )}
 
         <MoreOptionsMenu
           musicEnabled={musicEnabled}

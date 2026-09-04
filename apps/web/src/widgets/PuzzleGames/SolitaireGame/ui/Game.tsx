@@ -1,17 +1,16 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useSyncExternalStore,
-} from 'react';
-import { Button, LoadingState } from '@arcadeum/ui';
+import { useMemo, useState } from 'react';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
+import {
+  SoloGameContainer,
+  StatCard,
+  formatDuration,
+} from '@/features/games/ui/SoloGameContainer';
+import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { SolitaireThemeProvider } from '../lib/SolitaireThemeContext';
 import { useSolitaireStore } from '../store/solitaireStore';
 import type { MoveSource } from '../types';
@@ -19,66 +18,27 @@ import { SolitaireBoard } from './SolitaireBoard';
 
 export default function SolitaireGame() {
   useTrackSoloGameStarted('solitaire_v1');
+  const { themeId } = useSoloTheme('solitaire_v1');
   return (
-    <SolitaireThemeProvider>
+    <SolitaireThemeProvider variant={themeId}>
       <SolitaireTable />
     </SolitaireThemeProvider>
   );
 }
 
-function subscribeNoop(): () => void {
-  return () => undefined;
-}
-
-function formatDuration(durationMs: number): string {
-  const totalSeconds = Math.floor(durationMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
 function SolitaireTable() {
   const { t } = useTranslation();
+  const { themeId } = useSoloTheme('solitaire_v1');
   const game = useSolitaireStore((state) => state.game);
   const finished = useSolitaireStore((state) => state.finished);
   const startedAt = useSolitaireStore((state) => state.startedAt);
+  const finishedAt = useSolitaireStore((state) => state.finishedAt);
   const draw = useSolitaireStore((state) => state.draw);
   const move = useSolitaireStore((state) => state.move);
   const newGame = useSolitaireStore((state) => state.newGame);
 
   const [selection, setSelection] = useState<MoveSource | null>(null);
-
-  const mounted = useSyncExternalStore(
-    subscribeNoop,
-    () => true,
-    () => false,
-  );
-
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const isRunning = mounted && finished === null;
-  useEffect(() => {
-    if (!isRunning) return undefined;
-    const interval = setInterval(
-      () => setElapsedMs(Date.now() - startedAt),
-      1000,
-    );
-    return () => clearInterval(interval);
-  }, [isRunning, startedAt]);
-
-  const [isDismissed, setIsDismissed] = useState(false);
-
-  const handleCloseModal = useCallback(() => {
-    setIsDismissed(true);
-  }, []);
-
-  const handleNewGame = useCallback(() => {
-    setIsDismissed(false);
-    newGame();
-  }, [newGame]);
-
-  const handleOpenModal = useCallback(() => {
-    setIsDismissed(false);
-  }, []);
+  const isRunning = finishedAt === null;
 
   const stats: GameResultStats | null = useMemo(() => {
     if (!finished) return null;
@@ -89,68 +49,72 @@ function SolitaireTable() {
     };
   }, [finished]);
 
-  if (!mounted) {
-    return <LoadingState message={t('games.solitaire_v1.board.loading')} />;
-  }
+  const hud = (
+    <div className="grid w-full grid-cols-3 gap-2 sm:gap-3">
+      <StatCard
+        label={t('games.solitaire_v1.hud.score')}
+        value={game.score}
+        icon="🎯"
+      />
+      <StatCard
+        label={t('games.solitaire_v1.hud.moves')}
+        value={game.moves}
+        icon="🔄"
+      />
+      <StatCard
+        label={t('games.solitaire_v1.hud.time')}
+        value={formatDuration(finished?.durationMs ?? 0)}
+        icon="⏱️"
+      />
+    </div>
+  );
+
+  const actions = (
+    <div className="flex items-center gap-2">
+      {finished !== null && (
+        <Button
+          variant="secondary"
+          size="sm"
+          data-testid="solitaire-show-results-button"
+          className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25"
+        >
+          🏆 {t('games.table.analytics.view') || 'Results'}
+        </Button>
+      )}
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={newGame}
+        data-testid="solitaire-new-game-button"
+        className="whitespace-nowrap px-3.5 font-semibold"
+      >
+        {t('games.solitaire_v1.hud.newGame')}
+      </Button>
+    </div>
+  );
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-4 px-2">
-      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-3 shadow-xl backdrop-blur-md sm:p-4">
-        <div className="flex items-center gap-2 sm:gap-4">
-          <StatCard
-            label={t('games.solitaire_v1.hud.score')}
-            value={game.score}
-          />
-          <StatCard
-            label={t('games.solitaire_v1.hud.moves')}
-            value={game.moves}
-          />
-          <StatCard
-            label={t('games.solitaire_v1.hud.time')}
-            value={formatDuration(elapsedMs)}
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          {finished !== null && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleOpenModal}
-              data-testid="solitaire-show-results-button"
-              className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25"
-            >
-              🏆 {t('games.table.analytics.view') || 'Results'}
-            </Button>
-          )}
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleNewGame}
-            data-testid="solitaire-new-game-button"
-          >
-            {t('games.solitaire_v1.hud.newGame')}
-          </Button>
-        </div>
-      </div>
-
-      <SolitaireBoard
-        game={game}
-        selection={selection}
-        onSelect={setSelection}
-        onDraw={draw}
-        onMove={move}
-      />
-
-      <GameResultModal
-        isOpen={finished !== null && !isDismissed}
-        result={finished ? (finished.won ? 'victory' : 'defeat') : null}
-        gameName="Solitaire"
-        onRematch={handleNewGame}
-        rematchLabel={t('games.solitaire_v1.result.playAgain')}
-        onClose={handleCloseModal}
-        t={t}
-        messages={{
+    <SoloGameContainer
+      gameId="solitaire_v1"
+      difficulty="default"
+      sortBy="score"
+      order="desc"
+      layout="stacked"
+      maxWidthClassName="max-w-5xl"
+      isRunning={isRunning}
+      startedAt={startedAt}
+      finishedAt={finishedAt}
+      onNewGame={newGame}
+      hud={hud}
+      actions={actions}
+      loadingMessage="games.solitaire_v1.board.loading"
+      modal={{
+        result: finished ? (finished.won ? 'victory' : 'defeat') : null,
+        gameName: 'Solitaire',
+        rematchLabel: t('games.solitaire_v1.result.playAgain'),
+        theme: themeId,
+        stats,
+        messages: {
           title: t(
             finished?.won
               ? 'games.solitaire_v1.result.wonTitle'
@@ -161,23 +125,16 @@ function SolitaireTable() {
               ? 'games.solitaire_v1.result.wonBody'
               : 'games.solitaire_v1.result.lostBody',
           ),
-        }}
-        theme="casino"
-        stats={stats}
+        },
+      }}
+    >
+      <SolitaireBoard
+        game={game}
+        selection={selection}
+        onSelect={setSelection}
+        onDraw={draw}
+        onMove={move}
       />
-    </div>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 py-1.5 backdrop-blur-sm sm:px-4 sm:py-2">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
-        {label}
-      </span>
-      <span className="font-mono text-base font-extrabold tabular-nums text-[var(--color)] sm:text-lg">
-        {value}
-      </span>
-    </div>
+    </SoloGameContainer>
   );
 }

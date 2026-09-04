@@ -228,7 +228,7 @@ export function BackgammonLobby({
         userId={userId}
         variantName={variantName}
       />
-      <RulesModal onClose={onShowRulesClose} open={showRulesOpen} />
+      <RulesModal mode={mode} onClose={onShowRulesClose} open={showRulesOpen} />
     </>
   );
 }

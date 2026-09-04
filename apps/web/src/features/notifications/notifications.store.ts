@@ -31,6 +31,8 @@ type Actions = {
   loadInbox(token: string): Promise<void>;
   markAllRead(token: string): Promise<void>;
   markRead(id: string, token: string): Promise<void>;
+  deleteNotification(id: string, token: string): Promise<void>;
+  deleteAllNotifications(token: string): Promise<void>;
   onSocketEvent(event: 'notification:new', payload: NotificationDto): void;
   onSocketUnreadCount(count: number): void;
   resetForLogout(): void;
@@ -144,6 +146,24 @@ export const useNotificationsStore = create<State & Actions>((set, get) => ({
           : state.unreadCount,
       };
     });
+  },
+
+  async deleteNotification(id, token) {
+    await notificationsApi.deleteNotifications({ ids: [id] }, token);
+    set((state) => {
+      const wasUnread = state.items.find((i) => i.id === id && !i.read);
+      return {
+        items: state.items.filter((i) => i.id !== id),
+        unreadCount: wasUnread
+          ? Math.max(0, state.unreadCount - 1)
+          : state.unreadCount,
+      };
+    });
+  },
+
+  async deleteAllNotifications(token) {
+    await notificationsApi.deleteNotifications({ all: true }, token);
+    set({ items: [], unreadCount: 0 });
   },
 
   onSocketEvent(event, payload) {

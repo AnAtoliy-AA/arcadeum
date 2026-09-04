@@ -1,18 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
+import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
 import { User } from '../auth/schemas/user.schema';
 import { HistoryRematchDto } from './dtos/history-rematch.dto';
 
 @Injectable()
 export class GamesRematchService {
+  private readonly logger = new Logger(GamesRematchService.name);
+
   constructor(
     private readonly roomsService: GameRoomsService,
     private readonly historyService: GameHistoryService,
     private readonly realtimeService: GamesRealtimeService,
+    private readonly dispatcher: NotificationDispatcher,
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
@@ -98,25 +102,48 @@ export class GamesRematchService {
 
     // Get host name from room
     const hostName = room.host?.displayName || 'Unknown Host';
+    const gameId = room.gameId || 'game';
 
     // Get previous room ID from game options to broadcast invite to
     const gameOptions = room.gameOptions || {};
     const previousRoomId = gameOptions.rematchPreviousRoomId as string;
 
-    if (previousRoomId) {
-      // Filter out users who have blocked the host
-      const filteredUserIds = await this.filterBlockedUsers(hostId, userIds);
+    // Filter out users who have blocked the host
+    const filteredUserIds = await this.filterBlockedUsers(hostId, userIds);
 
-      if (filteredUserIds.length > 0) {
-        this.realtimeService.emitRematchInvited(
-          previousRoomId,
-          room.id,
-          hostId,
-          hostName,
-          filteredUserIds,
-          gameOptions.rematchMessage as string | undefined,
-        );
-      }
+    if (previousRoomId && filteredUserIds.length > 0) {
+      this.realtimeService.emitRematchInvited(
+        previousRoomId,
+        room.id,
+        hostId,
+        hostName,
+        filteredUserIds,
+        gameOptions.rematchMessage as string | undefined,
+      );
+    }
+
+    // Dispatch notification to each invited user
+    for (const invitedUserId of filteredUserIds) {
+      this.dispatcher
+        .dispatch({
+          userId: invitedUserId,
+          category: 'game_invitation',
+          titleKey: 'notifications.game_invitation.title',
+          bodyKey: 'notifications.game_invitation.body',
+          i18nParams: { hostName, gameId },
+          url: `/rooms/${encodeURIComponent(room.id)}`,
+          data: {
+            roomId: room.id,
+            hostId,
+            gameId,
+          },
+          skipCategoryCheck: true,
+        })
+        .catch((err) => {
+          this.logger.warn(
+            `Failed to dispatch game_invitation to ${invitedUserId}: ${err}`,
+          );
+        });
     }
 
     // Also broadcast update to the current room so host sees updated status

@@ -61,6 +61,7 @@ describe('GameRoomsMatchmakingService', () => {
         { provide: GameRoomsQuickplayService, useValue: quickplayService },
         { provide: GamesRealtimeService, useValue: realtimeService },
         { provide: ConfigService, useValue: config },
+        { provide: 'REDIS_CLIENT', useValue: null },
       ],
     }).compile();
 
@@ -72,8 +73,8 @@ describe('GameRoomsMatchmakingService', () => {
   });
 
   describe('joinQueue', () => {
-    it('adds a user to the queue and emits status when no match exists', () => {
-      service.joinQueue('user1', 'socket1', 'sea_battle_v1');
+    it('adds a user to the queue and emits status when no match exists', async () => {
+      await service.joinQueue('user1', 'socket1', 'sea_battle_v1');
 
       expect(roomsService.createRoom).not.toHaveBeenCalled();
       expect(realtimeService.emitToUser).toHaveBeenCalledWith(
@@ -88,8 +89,8 @@ describe('GameRoomsMatchmakingService', () => {
     });
 
     it('pairs two users in the same game immediately', async () => {
-      service.joinQueue('user1', 'socket1', 'sea_battle_v1');
-      service.joinQueue('user2', 'socket2', 'sea_battle_v1');
+      await service.joinQueue('user1', 'socket1', 'sea_battle_v1');
+      await service.joinQueue('user2', 'socket2', 'sea_battle_v1');
 
       await flushMicrotasks();
 
@@ -112,17 +113,17 @@ describe('GameRoomsMatchmakingService', () => {
       );
     });
 
-    it('does not pair users across different variants', () => {
-      service.joinQueue('user1', 'socket1', 'sea_battle_v1', 'classic');
-      service.joinQueue('user2', 'socket2', 'sea_battle_v1', 'blitz');
+    it('does not pair users across different variants', async () => {
+      await service.joinQueue('user1', 'socket1', 'sea_battle_v1', 'classic');
+      await service.joinQueue('user2', 'socket2', 'sea_battle_v1', 'blitz');
 
       expect(roomsService.createRoom).not.toHaveBeenCalled();
       expect(roomsService.joinRoom).not.toHaveBeenCalled();
     });
 
-    it('replaces an existing queue entry when the same user re-joins', () => {
-      service.joinQueue('user1', 'socket1', 'sea_battle_v1');
-      service.joinQueue('user1', 'socket2', 'sea_battle_v1');
+    it('replaces an existing queue entry when the same user re-joins', async () => {
+      await service.joinQueue('user1', 'socket1', 'sea_battle_v1');
+      await service.joinQueue('user1', 'socket2', 'sea_battle_v1');
 
       expect(realtimeService.emitToUser).toHaveBeenLastCalledWith(
         'user1',
@@ -134,8 +135,8 @@ describe('GameRoomsMatchmakingService', () => {
 
   describe('leaveQueue', () => {
     it('removes a user from the queue so a later timeout does not fire', async () => {
-      service.joinQueue('user1', 'socket1', 'sea_battle_v1');
-      service.leaveQueue('user1');
+      await service.joinQueue('user1', 'socket1', 'sea_battle_v1');
+      await service.leaveQueue('user1');
 
       await jest.advanceTimersByTimeAsync(30_000);
 
@@ -143,8 +144,8 @@ describe('GameRoomsMatchmakingService', () => {
       expect(realtimeService.emitMatchmakingSuccess).not.toHaveBeenCalled();
     });
 
-    it('is a no-op for users not in the queue', () => {
-      service.leaveQueue('ghost');
+    it('is a no-op for users not in the queue', async () => {
+      await service.leaveQueue('ghost');
 
       expect(realtimeService.emitToUser).not.toHaveBeenCalled();
     });
@@ -152,7 +153,7 @@ describe('GameRoomsMatchmakingService', () => {
 
   describe('timeout handling', () => {
     it('falls back to a bot room when no opponent is queued', async () => {
-      service.joinQueue('user1', 'socket1', 'sea_battle_v1');
+      await service.joinQueue('user1', 'socket1', 'sea_battle_v1');
 
       await jest.advanceTimersByTimeAsync(30_000);
 
@@ -168,8 +169,8 @@ describe('GameRoomsMatchmakingService', () => {
     });
 
     it('does not create a bot room when the user left before the timeout', async () => {
-      service.joinQueue('user1', 'socket1', 'sea_battle_v1');
-      service.leaveQueue('user1');
+      await service.joinQueue('user1', 'socket1', 'sea_battle_v1');
+      await service.leaveQueue('user1');
 
       await jest.advanceTimersByTimeAsync(30_000);
 
@@ -190,11 +191,12 @@ describe('GameRoomsMatchmakingService', () => {
           { provide: GameRoomsQuickplayService, useValue: quickplayService },
           { provide: GamesRealtimeService, useValue: realtimeService },
           { provide: ConfigService, useValue: config },
+          { provide: 'REDIS_CLIENT', useValue: null },
         ],
       }).compile();
 
       const customService = customModule.get(GameRoomsMatchmakingService);
-      customService.joinQueue('user1', 'socket1', 'sea_battle_v1');
+      await customService.joinQueue('user1', 'socket1', 'sea_battle_v1');
 
       await jest.advanceTimersByTimeAsync(9_999);
       expect(quickplayService.createQuickplayRoom).not.toHaveBeenCalled();
@@ -205,8 +207,8 @@ describe('GameRoomsMatchmakingService', () => {
   });
 
   describe('status estimation', () => {
-    it('reports a lone player position and the configured timeout as the wait', () => {
-      service.joinQueue('user1', 'socket1', 'sea_battle_v1');
+    it('reports a lone player position and the configured timeout as the wait', async () => {
+      await service.joinQueue('user1', 'socket1', 'sea_battle_v1');
 
       const calls = (
         realtimeService.emitToUser as jest.MockedFunction<
@@ -236,9 +238,9 @@ describe('GameRoomsMatchmakingService', () => {
       );
     });
 
-    it('broadcasts status updates to all waiting players when someone joins', () => {
-      service.joinQueue('user1', 'socket1', 'sea_battle_v1', 'classic');
-      service.joinQueue('user2', 'socket2', 'sea_battle_v1', 'classic');
+    it('broadcasts status updates to all waiting players when someone joins', async () => {
+      await service.joinQueue('user1', 'socket1', 'sea_battle_v1', 'classic');
+      await service.joinQueue('user2', 'socket2', 'sea_battle_v1', 'classic');
 
       const calls = (
         realtimeService.emitToUser as jest.MockedFunction<
@@ -264,11 +266,12 @@ describe('GameRoomsMatchmakingService', () => {
           { provide: GameRoomsQuickplayService, useValue: quickplayService },
           { provide: GamesRealtimeService, useValue: realtimeService },
           { provide: ConfigService, useValue: prodConfig },
+          { provide: 'REDIS_CLIENT', useValue: null },
         ],
       }).compile();
 
       const prodService = prodModule.get(GameRoomsMatchmakingService);
-      prodService.joinQueue(
+      await prodService.joinQueue(
         'user1',
         'socket1',
         'sea_battle_v1',
@@ -277,7 +280,7 @@ describe('GameRoomsMatchmakingService', () => {
         undefined,
         '192.168.1.100',
       );
-      prodService.joinQueue(
+      await prodService.joinQueue(
         'user2',
         'socket2',
         'sea_battle_v1',

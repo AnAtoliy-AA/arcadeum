@@ -52,6 +52,7 @@ interface MobileMenuProps {
     onClick?: (e: React.MouseEvent) => void;
     icon?: React.ReactNode;
   }>;
+  pendingFriendCount?: number;
 }
 
 type IconComponent = ComponentType<{ size?: number }>;
@@ -74,7 +75,10 @@ function iconForHref(href: string): IconComponent | undefined {
   return last ? NAV_ICON_BY_SLUG[last] : undefined;
 }
 
-export default function MobileMenu({ navItems }: MobileMenuProps) {
+export default function MobileMenu({
+  navItems,
+  pendingFriendCount,
+}: MobileMenuProps) {
   const pathname = usePathname();
   // clearTokens and snapshot.role are MobileMenu-specific — not in useHeaderAuth
   const { snapshot, clearTokens } = useSessionTokens();
@@ -89,6 +93,11 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
   const handleLogout = useCallback(async () => {
     await logoutSession().catch(() => {});
     await clearTokens();
+    try {
+      sessionStorage.removeItem('web_auth_email');
+    } catch {
+      // ignore
+    }
     window.location.replace(routes.home);
   }, [clearTokens, routes.home]);
 
@@ -191,6 +200,13 @@ export default function MobileMenu({ navItems }: MobileMenuProps) {
               onClick={item.onClick}
             >
               {item.label}
+              {pendingFriendCount &&
+                pendingFriendCount > 0 &&
+                item.href.endsWith('/friends') && (
+                  <span className="ml-auto inline-flex items-center justify-center rounded-full bg-[var(--danger)] px-1.5 py-0.5 text-[10px] font-bold text-white min-w-[18px]">
+                    {pendingFriendCount}
+                  </span>
+                )}
             </NavMobileLink>
           );
         })}

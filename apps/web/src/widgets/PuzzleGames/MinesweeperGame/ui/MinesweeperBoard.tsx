@@ -1,9 +1,11 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, type CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { useMinesweeperTheme } from '../lib/MinesweeperThemeContext';
+import type { MinesweeperTheme } from '../lib/theme';
 import type { Cell, MinesweeperState } from '../types';
 
 type Translate = (key: TranslationKey) => string;
@@ -29,6 +31,22 @@ const NUMBER_COLOR_CLASSES: Record<number, string> = {
   8: 'text-slate-600 dark:text-slate-400',
 };
 
+const GRID_COLS_BY_WIDTH: Record<number, string> = {
+  9: 'grid-cols-9',
+  16: 'grid-cols-16',
+  30: 'grid-cols-[repeat(30,minmax(0,1fr))]',
+};
+
+function boardVars(theme: MinesweeperTheme): CSSProperties {
+  return {
+    '--ms-board-bg': theme.boardBackground,
+    '--ms-board-border': theme.boardBorder,
+    '--ms-cell-hidden-border': theme.cellHiddenBorder,
+    '--ms-cell-revealed-border': theme.cellRevealedBorder,
+    '--ms-flag-color': theme.flagColor,
+  } as CSSProperties;
+}
+
 export function MinesweeperBoard({
   game,
   flagMode,
@@ -37,6 +55,7 @@ export function MinesweeperBoard({
   onPressingChange,
 }: MinesweeperBoardProps) {
   const { t } = useTranslation();
+  const theme = useMinesweeperTheme();
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suppressClick = useRef(false);
 
@@ -84,18 +103,16 @@ export function MinesweeperBoard({
     onFlag(index);
   };
 
+  const gridColsClass = GRID_COLS_BY_WIDTH[game.width] ?? 'grid-cols-9';
+
   return (
     <div
-      className="w-full max-w-full overflow-x-auto rounded-2xl border-2 border-[var(--glassBorderStrong)] bg-[var(--background)] p-2 sm:p-4 shadow-2xl select-none"
+      style={boardVars(theme)}
+      className="w-full max-w-full overflow-x-auto rounded-2xl border-2 border-[var(--ms-board-border)] bg-[var(--ms-board-bg)] p-2 sm:p-4 shadow-2xl backdrop-blur-xl select-none transition-colors duration-300"
       role="grid"
       aria-label={t('games.minesweeper_v1.board.label')}
     >
-      <div
-        className="mx-auto grid w-max gap-1 p-1"
-        style={{
-          gridTemplateColumns: `repeat(${game.width}, minmax(0, 1fr))`,
-        }}
-      >
+      <div className={cx('mx-auto grid w-max gap-1 p-1', gridColsClass)}>
         {game.cells.map((cell, index) => (
           <MineCell
             key={index}
@@ -144,8 +161,8 @@ function MineCell({
           ? 'h-6 w-6 min-w-[24px] sm:h-7 sm:w-7 sm:min-w-[28px] md:h-8 md:w-8 md:min-w-[32px] rounded-[6px] sm:rounded-lg text-xs sm:text-sm'
           : 'h-8 w-8 sm:h-9 sm:w-9 rounded-lg text-sm sm:text-base',
         revealed
-          ? 'cursor-default border border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] shadow-inner'
-          : 'cursor-pointer border border-[var(--glassBorderStrong)] bg-[var(--glassBg)] text-[var(--color)] shadow-sm hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)] active:scale-95',
+          ? 'cursor-default border border-[var(--ms-cell-revealed-border)] bg-[var(--backgroundHover)] text-[var(--color)] shadow-inner'
+          : 'cursor-pointer border border-[var(--ms-cell-hidden-border)] bg-[var(--glassBg)] text-[var(--color)] shadow-sm hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)] active:scale-95',
         showMine &&
           lost &&
           'border-red-500 bg-red-500/20 text-red-500 shadow-red-500/30',

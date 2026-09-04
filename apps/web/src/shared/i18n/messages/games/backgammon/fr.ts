@@ -183,7 +183,7 @@ export const frMessages = {
       title: 'Règles du Backgammon',
       objectiveTitle: 'Objectif',
       objective:
-        'Le but est d’amener vos 15 pions dans votre jan intérieur puis de les sortir du plateau.',
+        "Le but est d'amener vos 15 pions dans votre jan intérieur puis de les sortir du plateau.",
       movementTitle: 'Déplacement et Dés',
       movement:
         'Les joueurs lancent à tour de rôle deux dés et déplacent leurs pions en conséquence.',
@@ -193,6 +193,92 @@ export const frMessages = {
       bearingOffTitle: 'Sortie des Pions',
       bearingOff:
         'Quand tous les pions sont dans votre jan intérieur, vous pouvez les sortir.',
+      modes: {
+        standard: {
+          objectiveTitle: 'Objectif',
+          objective:
+            'Amenez vos 15 pions dans votre jan intérieur et sortez-les avant votre adversaire.',
+          movementTitle: 'Déplacement et Dés',
+          movement:
+            'Lancez deux dés et déplacez vos pions according aux valeurs obtenues. Un double (ex. 4-4) donne quatre mouvements au lieu de deux.',
+          hittingTitle: 'Capture et Barre',
+          hitting:
+            "Atterrissez sur une flèche avec un pion isolé adverse pour l'envoyer à la barre. Les pions sur la barre doivent rentrer dans le jan adverse avant tout autre mouvement.",
+          bearingOffTitle: 'Sortie des Pions',
+          bearingOff:
+            'Quand les 15 pions sont dans votre jan intérieur, sortez-les avec le numéro exact ou supérieur. Si aucun pion ne reste plus loin, le dépassement est autorisé.',
+        },
+        long: {
+          objectiveTitle: 'Objectif',
+          objective:
+            "Conduisez vos 15 pions de la tête à votre jan intérieur et sortez-les. Tous commencent sur une seule flèche — la course est d'endurance.",
+          movementTitle: 'Déplacement et Dés',
+          movement:
+            "Lancez deux dés et déplacez vos pions. Un double donne quatre mouvements. Les flèches occupées par l'adversaire sont complètement bloquées — vous ne pouvez ni y atterrir ni les franchir.",
+          hittingTitle: 'Pas de Capture',
+          hitting:
+            'Les captures ne sont pas autorisées. Les flèches adverses sont toujours bloquées. Vous devez contourner les piles — la position est décisive.',
+          bearingOffTitle: 'Sortie des Pions',
+          bearingOff:
+            "Quand les 15 pions sont dans votre jan intérieur, sortez-les avec le numéro exact ou supérieur. L'interdiction des captures rend l'arrivée au jan le principal défi.",
+        },
+        hyper: {
+          objectiveTitle: 'Objectif',
+          objective:
+            'Avec seulement 3 pions chacun, sortez-les tous avant votre adversaire. Chaque mouvement compte.',
+          movementTitle: 'Déplacement et Dés',
+          movement:
+            'Lancez deux dés et déplacez vos pions. Un double donne quatre mouvements. Avec si peu de pions, les parties sont rapides et tactiques.',
+          hittingTitle: 'Capture et Barre',
+          hitting:
+            "Les captures sont autorisées. Atterrissez sur un pion isolé adverse pour l'envoyer à la barre. Une seule capture peut décider de la partie.",
+          bearingOffTitle: 'Sortie des Pions',
+          bearingOff:
+            'Quand les 3 pions sont dans votre jan intérieur, sortez-les. Avec si peu de pions, la sortie est rapide et chaque pip compte.',
+        },
+        tavla: {
+          objectiveTitle: 'Objectif',
+          objective:
+            'Amenez vos 15 pions dans votre jan intérieur et sortez-les. Le Tavla suit les règles classiques avec la tradition turque.',
+          movementTitle: 'Déplacement et Dés',
+          movement:
+            'Lancez deux dés et déplacez vos pions. Un double donne quatre mouvements. Le Tavla privilégie un jeu rapide et agressif.',
+          hittingTitle: 'Capture et Barre',
+          hitting:
+            "Atterrissez sur un pion isolé adverse (blot) pour l'envoyer à la barre. Les pions sur la barre doivent rentrer avant les autres mouvements.",
+          bearingOffTitle: 'Sortie des Pions',
+          bearingOff:
+            'Quand les 15 pions sont dans votre jan intérieur, sortez-les avec le numéro exact ou supérieur.',
+        },
+        nackgammon: {
+          objectiveTitle: 'Objectif',
+          objective:
+            'Amenez vos 15 pions dans votre jan intérieur et sortez-les. La position de départ modifiée crée des ouvertures stratégiques plus profondes.',
+          movementTitle: 'Déplacement et Dés',
+          movement:
+            'Lancez deux dés et déplacez vos pions. Un double donne quatre mouvements. Les 2 pions sur la flèche 23 réduisent les lancers initial désordonnés.',
+          hittingTitle: 'Capture et Barre',
+          hitting:
+            "Les captures sont autorisées. L'ouverture modifiée crée des décisions complexes entre capturer et construire des ancres.",
+          bearingOffTitle: 'Sortie des Pions',
+          bearingOff:
+            'Quand les 15 pions sont dans votre jan intérieur, sortez-les avec le numéro exact ou supérieur.',
+        },
+        gulbara: {
+          objectiveTitle: 'Objectif',
+          objective:
+            'Conduisez vos 15 pions de la tête à votre jan intérieur et sortez-les. Pas de capture — stratégie de course pure.',
+          movementTitle: 'Déplacement et Dés',
+          movement:
+            'Lancez deux dés et déplacez vos pions. Les flèches adverses sont bloquées. Avec un double, tous les doubles supérieurs suivants sont joués.',
+          hittingTitle: 'Pas de Capture',
+          hitting:
+            'Les captures ne sont pas autorisées. Les flèches adverses sont infranchissables. La position et le timing sont tout.',
+          bearingOffTitle: 'Sortie des Pions',
+          bearingOff:
+            'Quand les 15 pions sont dans votre jan intérieur, sortez-les avec le numéro exact ou supérieur.',
+        },
+      },
     },
   },
 };

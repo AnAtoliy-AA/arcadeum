@@ -47,6 +47,16 @@ export class PachisiGateway extends BaseGameGateway<PachisiOptions> {
           );
         },
       ),
+      'pachisi.session.pass': this.wrapHandler(
+        'pass turn',
+        async (client, _payload, roomId, userId) => {
+          await this.gameService.passTurn(userId, roomId);
+          client.emit(
+            'pachisi.session.passed',
+            maybeEncrypt({ roomId, userId }),
+          );
+        },
+      ),
     };
   }
 }

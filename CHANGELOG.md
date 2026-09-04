@@ -7,6 +7,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.10] - 2026-09-04
+
+### Fixed
+- fix download flow — SW guard, collapsible list, i18n
+
+
+## [1.28.9] - 2026-09-04
+
+### Fixed
+- force disconnect before reconnect to ensure anonId query param reaches backend
+- clean up auth flow — stale displayName, anon participant leak, identity-less sockets
+
+
+## [1.28.8] - 2026-09-04
+
+### Added
+- rework styles, shared themes, leaderboards, rules, and fullscreen (ARC-941) (ARC-941)
+
+### Fixed
+- refine fullscreen mode layout and extract stats helper (ARC-941) (ARC-941)
+
+
+## [1.28.7] - 2026-09-04
+
+### Added
+- modernize styles, implement shared themes, and constrain board sizing (ARC-910) (ARC-910)
+
+
+## [1.28.6] - 2026-09-04
+
+### Added
+- improve Pachisi board UX with contextual hints and pass turn (ARC-886) (ARC-886)
+
+
+## [1.28.5] - 2026-09-04
+
+### Added
+- add solo game leaderboard with offline sync
+
+### Fixed
+- sanitize query params, remove Math.random from session IDs
+- make solo-scores /best endpoint optional-auth
+- use live timer in HUD after continue playing
+
+
+## [1.28.4] - 2026-09-04
+
+### Fixed
+- fix long/gulbara P1 direction and add variant-specific rules
+
+
+## [1.28.3] - 2026-09-04
+
+### Added
+- improve InviteFriendPicker with multi-select and search
+- add delete notifications and load inbox on mount
+- add game_invitation notification for room invites
+- add invite-to-game flow from friends list and game lobby
+- add user profile page with friends list and clickable names
+- enhance friends system with search, notifications, in-game requests, chat integration, and real-time sync
+
+### Fixed
+- handle plain objects in chat messages and sanitize friend request input
+- add @IsMongoId validation to SendFriendRequestByUserIdDto
+- resolve gameId to translated name on frontend
+- add missing game_invitation title/body keys to all locale notification bundles
+- make modal title customizable via prop, add i18n keys
+- fix invite-to-game flow to go through games listing page
+
+### Refactored
+- replace redirect flow with game picker modal for invites
+
+
+## [1.28.2] - 2026-09-04
+
+### Added
+- move socket connection to app root for all-page coverage
+
+
+## [1.28.1] - 2026-09-03
+
+### Added
+- add monitoring dashboard with Grafana provisioning
+- add horizontal scaling with Redis, nginx load balancer, and multiple BE instances
+- add horizontal scaling with Redis-backed distributed state
+
+### Fixed
+- add git cleanup before fetch to prevent index errors
+- remove hardcoded IPs and Grafana password from repo
+- add monitoring stack to OCI deploy workflow
+- secure Grafana with localhost-only ports
+- bind ports to 0.0.0.0 and load env file for OCI
+- fix monitoring field names to match BE response
+- await all async joinQueue/leaveQueue calls in matchmaking tests
+- fix tests for async matchmaking and bot-turn-lock
+
+
+## [1.28.0] - 2026-09-03
+
+### Changed
+- Internal improvements and maintenance
+
+
 ## [1.27.42] - 2026-09-03
 
 ### Fixed

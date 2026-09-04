@@ -61,6 +61,7 @@ describe('SudokuGame UI', () => {
         mistakes: 0,
         durationMs: 45000,
       },
+      finishedAt: Date.now(),
     });
 
     render(<SudokuGame />);

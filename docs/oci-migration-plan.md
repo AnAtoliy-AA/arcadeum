@@ -2,21 +2,21 @@
 
 ## Current Setup
 
-| Component          | Host                       | Latency     |
-| ------------------ | -------------------------- | ----------- |
-| Web (Next.js)      | Vercel                     | ~900ms TTFB |
-| Backend (NestJS)   | OCI Primary (152.70.47.29) | ~43ms       |
-| Database (MongoDB) | OCI Primary                | ~1ms        |
+| Component          | Host                         | Latency     |
+| ------------------ | ---------------------------- | ----------- |
+| Web (Next.js)      | Vercel                       | ~900ms TTFB |
+| Backend (NestJS)   | OCI Primary (YOUR_SERVER_IP) | ~43ms       |
+| Database (MongoDB) | OCI Primary                  | ~1ms        |
 
 **Problem**: Every SSR render makes 1-5 sequential fetch calls from Vercel → OCI, adding 200-500ms cross-region latency per call.
 
 ## Target Setup
 
-| Component          | Host                       | Expected Latency |
-| ------------------ | -------------------------- | ---------------- |
-| Web (Next.js)      | OCI Primary (152.70.47.29) | ~100-200ms TTFB  |
-| Backend (NestJS)   | OCI Primary (same machine) | ~5ms             |
-| Database (MongoDB) | OCI Primary (same machine) | ~1ms             |
+| Component          | Host                         | Expected Latency |
+| ------------------ | ---------------------------- | ---------------- |
+| Web (Next.js)      | OCI Primary (YOUR_SERVER_IP) | ~100-200ms TTFB  |
+| Backend (NestJS)   | OCI Primary (same machine)   | ~5ms             |
+| Database (MongoDB) | OCI Primary (same machine)   | ~1ms             |
 
 **Subdomain**: `fast.arcadeum.games` (keeps Vercel as fallback on apex)
 
@@ -139,11 +139,11 @@ module.exports = {
 
 | Record                | Type  | Value          | TTL |
 | --------------------- | ----- | -------------- | --- |
-| `fast.arcadeum.games` | A     | 152.70.47.29   | 300 |
+| `fast.arcadeum.games` | A     | YOUR_SERVER_IP | 300 |
 | `arcadeum.games`      | CNAME | vercel.app     | 300 |
 | `www.arcadeum.games`  | CNAME | arcadeum.games | 300 |
 
-Keep `api.arcadeum.games` → 152.70.47.29 (unchanged).
+Keep `api.arcadeum.games` → YOUR_SERVER_IP (unchanged).
 
 ### 7. CI/CD Workflow
 
@@ -206,6 +206,55 @@ Since OCI is single-region, static assets (images, fonts, JS bundles) will be sl
 | Cold start       | 250ms-2s         | ~0ms (PM2)     | **100%**    |
 | API calls (shop) | 5 sequential     | 5 parallel     | **80%**     |
 
+## Horizontal Scaling
+
+The Docker Compose setup now includes:
+
+1. **Redis** — Shared state for rate limiting, caching, WebSocket broadcasts, and matchmaking queues
+2. **Nginx** — Reverse proxy/load balancer across multiple BE instances
+3. **Multiple BE instances** — 2+ backend containers behind nginx with `ip_hash` for sticky WebSocket sessions
+
+### RPS Capacity (After Scaling)
+
+| Metric               | Before               | After                                      |
+| -------------------- | -------------------- | ------------------------------------------ |
+| BE instances         | 1 (3 PM2 workers)    | 2+ containers (each with 3 PM2 workers)    |
+| Rate limiting        | In-memory per worker | Redis-backed (shared across all instances) |
+| WebSocket broadcasts | Single instance only | Cross-instance via Redis adapter           |
+| Load balancing       | None                 | Nginx with ip_hash for sticky sessions     |
+| Estimated RPS        | ~200-500             | ~1000-2000+                                |
+
+### Scaling Commands
+
+```bash
+# Scale to 3 BE instances
+docker compose up -d --scale be=3
+
+# Scale to 4 BE instances
+docker compose up -d --scale be=4
+
+# Check running instances
+docker compose ps
+```
+
+### Adding External Instances
+
+To add BE instances on other machines:
+
+1. Deploy the BE container on the new machine
+2. Set `REDIS_URL` to point to the primary Redis instance
+3. Add the new instance to `nginx.conf` upstream block:
+   ```nginx
+   upstream arcadeum_backend {
+       ip_hash;
+       server be:4000;
+       server be-2:4000;
+        server YOUR_SERVER_IP:4000;  # New instance
+       keepalive 64;
+   }
+   ```
+4. Reload nginx: `docker exec arcadeum-nginx nginx -s reload`
+
 ## Timeline
 
 - [ ] Update next.config.ts (standalone output)
@@ -213,7 +262,7 @@ Since OCI is single-region, static assets (images, fonts, JS bundles) will be sl
 - [ ] Test locally with Docker
 - [ ] Deploy to OCI
 - [ ] Configure nginx for `fast.arcadeum.games`
-- [ ] Add DNS A record: `fast.arcadeum.games` → 152.70.47.29
+- [ ] Add DNS A record: `fast.arcadeum.games` → YOUR_SERVER_IP
 - [ ] Verify SSL on `fast.arcadeum.games`
 - [ ] CI/CD auto-deploy from main ✅ (updated deploy-oci.yml)
 - [ ] Disable Vercel auto-deploy ✅ (deploy-web.yml now manual only)

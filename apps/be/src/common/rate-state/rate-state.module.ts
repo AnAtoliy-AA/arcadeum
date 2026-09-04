@@ -25,6 +25,7 @@ import { RedisRateStateStore } from './redis-rate-state.store';
             redis.on('error', (err: Error) => {
               logger.error(`Redis connection error: ${err.message}`);
             });
+            void redis.connect();
             logger.log('Using Redis-backed rate state store');
             return new RedisRateStateStore(redis);
           } catch (err) {

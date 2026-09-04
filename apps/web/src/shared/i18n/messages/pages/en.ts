@@ -39,6 +39,7 @@ export const en = {
     nav: {
       dashboard: 'Dashboard',
       statistics: 'Statistics',
+      monitoring: 'Monitoring',
       users: 'Users',
       payments: 'Payments',
       announcements: 'Announcements',
@@ -166,6 +167,18 @@ export const en = {
         free: 'Free',
         total: 'Total',
       },
+    },
+    monitoring: {
+      title: 'Monitoring',
+      loading: 'Loading metrics...',
+      enableHint: 'Enable METRICS_ENABLED=true in .env to see metrics',
+      status: 'Status',
+      uptime: 'Uptime',
+      connections: 'Connections',
+      memory: 'Memory (RSS)',
+      details: 'Server Details',
+      heap: 'Heap Total',
+      lastCheck: 'Last Check',
     },
     error: {
       title: 'Something went wrong',

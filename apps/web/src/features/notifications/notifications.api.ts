@@ -82,4 +82,15 @@ export const notificationsApi = {
       token,
     });
   },
+
+  deleteNotifications(
+    body: { ids?: string[]; all?: boolean },
+    token: string,
+  ): Promise<void> {
+    return apiClient.fetch<void>(`${BASE}/delete`, {
+      method: 'POST',
+      data: body as unknown as Record<string, unknown>,
+      token,
+    });
+  },
 };

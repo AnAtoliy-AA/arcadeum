@@ -175,7 +175,7 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
           <div className="flex flex-col justify-center items-center gap-4 p-12">
             <Spinner size="lg" aria-label="Loading" />
             <span className="text-[rgba(236,239,238,0.45)]">
-              Loading chats...
+              {t('chatList.loading') || 'Loading chats...'}
             </span>
           </div>
         ) : displayChats.length === 0 ? (
@@ -188,7 +188,8 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                   : snapshot.accessToken
                     ? (t('chatList.empty.noChats') || 'No chats yet') +
                       '\n' +
-                      'Start a conversation by searching for a user above!'
+                      (t('chatList.empty.startConversation') ||
+                        'Start a conversation by searching for a user above!')
                     : t('chatList.empty.unauthenticated') || 'Sign in to chat'
               }
             />
@@ -198,7 +199,7 @@ export default function ChatListPage({ initialData }: ChatListPageProps) {
                 size="lg"
                 onClick={() => router.push('/auth')}
               >
-                Log In
+                {t('chatList.loginButton') || 'Log In'}
               </Button>
             )}
           </div>

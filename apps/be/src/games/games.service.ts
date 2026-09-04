@@ -128,8 +128,8 @@ export class GamesService {
     return { room, session };
   }
 
-  async joinRoom(dto: JoinGameRoomDto, userId: string) {
-    const result = await this.roomsService.joinRoom(dto, userId);
+  async joinRoom(dto: JoinGameRoomDto, userId: string, prevAnonId?: string) {
+    const result = await this.roomsService.joinRoom(dto, userId, prevAnonId);
     const room = result.room;
 
     // Broadcast join event if new player

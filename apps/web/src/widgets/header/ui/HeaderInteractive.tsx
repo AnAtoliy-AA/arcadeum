@@ -1,10 +1,13 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { usePendingFriendRequestCount } from '@/shared/hooks/usePendingFriendRequestCount';
+import { getNotificationsSocket } from '@/shared/lib/socket';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { LinkButton } from '@arcadeum/ui/components/Button/LinkButton';
 import {
@@ -73,6 +76,15 @@ export function HeaderInteractive({
   const routes = useRoutes();
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
     useMobileMenu();
+  const pendingFriendCount = usePendingFriendRequestCount();
+  const { snapshot } = useSessionTokens();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const s = getNotificationsSocket();
+    s.auth = { token: snapshot.accessToken };
+    if (!s.connected) s.connect();
+  }, [isAuthenticated, snapshot.accessToken]);
 
   const navItems = useMemo(
     () => [
@@ -91,6 +103,7 @@ export function HeaderInteractive({
   const mobileNavItems = useMemo(
     () => [
       ...navItems,
+      { href: routes.friends, label: t('navigation.friendsTab') },
       { href: routes.chats, label: t('navigation.chatsTab') },
       { href: routes.history, label: t('navigation.historyTab') },
       { href: routes.stats, label: t('navigation.statsTab') },
@@ -213,7 +226,12 @@ export function HeaderInteractive({
         )}
       </div>
 
-      {isMobileMenuOpen && <MobileMenu navItems={mobileNavItems} />}
+      {isMobileMenuOpen && (
+        <MobileMenu
+          navItems={mobileNavItems}
+          pendingFriendCount={pendingFriendCount}
+        />
+      )}
     </>
   );
 }

@@ -164,6 +164,7 @@ export const esMessages = {
       tokensHome: 'En Casa',
       captured: '¡Capturada!',
       noLegalMoves: 'Sin movimientos legales con esta tirada',
+      passTurn: 'Pasar turno',
       tapToken: 'Toca una ficha resaltada para moverla',
       moveTokenAria: 'Mover ficha {{id}}',
       dieValue: 'Dado: {{value}}',

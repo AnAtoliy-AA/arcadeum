@@ -29,6 +29,7 @@ import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBad
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { usePWAOptional } from '@/features/pwa/context';
+import { usePendingFriendRequestCount } from '@/shared/hooks/usePendingFriendRequestCount';
 import LanguagePills from './LanguagePills';
 import {
   ProfileMenuContainer,
@@ -62,6 +63,7 @@ export default function ProfileMenu() {
   const pwa = usePWAOptional();
   const { musicEnabled, setMusicEnabled } = useMusicSetting();
   const [isOpen, setIsOpen] = React.useState(false);
+  const pendingCount = usePendingFriendRequestCount();
 
   const toggleMusic = useCallback(() => {
     setMusicEnabled(!musicEnabled);
@@ -90,6 +92,11 @@ export default function ProfileMenu() {
   const handleLogout = useCallback(async () => {
     await logoutSession().catch(() => {});
     await clearTokens();
+    try {
+      sessionStorage.removeItem('web_auth_email');
+    } catch {
+      // ignore
+    }
     window.location.replace(routes.home);
   }, [clearTokens, routes.home]);
 
@@ -240,6 +247,11 @@ export default function ProfileMenu() {
           icon={<UserIcon size={18} />}
         >
           {t('navigation.friendsTab')}
+          {pendingCount > 0 && (
+            <span className="ml-auto inline-flex items-center justify-center rounded-full bg-[var(--danger)] px-1.5 py-0.5 text-[10px] font-bold text-white min-w-[18px]">
+              {pendingCount}
+            </span>
+          )}
         </DropdownLink>
 
         <DropdownLink

@@ -31,7 +31,7 @@ export function createInitialPoints(
 
   if (mode === 'long' || mode === 'gulbara') {
     points[23] = { playerId: player0Id, count: 15 };
-    points[11] = { playerId: player1Id, count: 15 };
+    points[0] = { playerId: player1Id, count: 15 };
     return points;
   }
 

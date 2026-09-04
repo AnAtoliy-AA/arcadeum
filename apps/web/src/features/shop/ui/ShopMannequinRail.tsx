@@ -93,8 +93,10 @@ export function ShopMannequinRail({
   const activeSlot = useShopPreviewStore((s) => s.activeSlot);
   const setActiveSlot = useShopPreviewStore((s) => s.setActiveSlot);
 
-  const displayName = useSessionStore(
-    (s) => s.snapshot.displayName ?? s.snapshot.username ?? 'Player',
+  const displayName = useSessionStore((s) =>
+    s.snapshot.accessToken
+      ? (s.snapshot.displayName ?? s.snapshot.username ?? 'Player')
+      : 'Player',
   );
 
   // BE has no user-level field yet. When it surfaces in the session snapshot

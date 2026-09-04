@@ -25,8 +25,6 @@ ENV NODE_OPTIONS="--dns-result-order=ipv4first --max-old-space-size=1024"
 
 COPY --from=builder /out ./
 
-EXPOSE 4001
-
 USER node
 
 ENTRYPOINT ["dumb-init", "--"]

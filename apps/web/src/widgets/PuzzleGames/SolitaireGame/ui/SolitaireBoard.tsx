@@ -1,9 +1,11 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { getSourceCards, isValidMove } from '../lib/engine';
+import { useSolitaireTheme } from '../lib/SolitaireThemeContext';
+import type { SolitaireTheme } from '../lib/theme';
 import type {
   Card,
   MoveSource,
@@ -31,6 +33,18 @@ const SUIT_GLYPHS: Record<Suit, string> = {
 const FACEDOWN_FAN_OFFSET = 12;
 const FACEUP_FAN_OFFSET = 26;
 
+function boardVars(theme: SolitaireTheme): CSSProperties {
+  return {
+    '--sol-table-bg': theme.tableBackground,
+    '--sol-table-border': theme.tableBorder,
+    '--sol-empty-slot': theme.emptySlot,
+    '--sol-empty-slot-border': theme.emptySlotBorder,
+    '--sol-selected-ring': theme.selectedRing,
+    '--sol-card-back': theme.cardBack,
+    '--sol-card-back-border': theme.cardBackBorder,
+  } as CSSProperties;
+}
+
 export function SolitaireBoard({
   game,
   selection,
@@ -39,6 +53,7 @@ export function SolitaireBoard({
   onMove,
 }: SolitaireBoardProps) {
   const { t } = useTranslation();
+  const theme = useSolitaireTheme();
 
   const selectedCards = useMemo(
     () => (selection ? getSourceCards(game, selection) : []),
@@ -114,7 +129,10 @@ export function SolitaireBoard({
   };
 
   return (
-    <div className="w-full rounded-3xl border-2 border-emerald-800/60 bg-emerald-950/80 p-3 sm:p-6 shadow-2xl shadow-black/80 select-none">
+    <div
+      style={boardVars(theme)}
+      className="w-full rounded-3xl border-2 border-[var(--sol-table-border)] bg-[var(--sol-table-bg)] p-3 sm:p-6 shadow-2xl backdrop-blur-xl select-none transition-colors duration-300"
+    >
       <div className="flex items-start justify-between gap-2 sm:gap-4">
         <div className="flex gap-2 sm:gap-3">
           <button
@@ -128,8 +146,8 @@ export function SolitaireBoard({
             className={cx(
               'relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 transition-all',
               game.stock.length > 0
-                ? 'cursor-pointer border-indigo-400/40'
-                : 'cursor-pointer border-dashed border-emerald-700/50 bg-emerald-900/30 hover:border-emerald-500',
+                ? 'cursor-pointer border-[var(--sol-card-back-border)]'
+                : 'cursor-pointer border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] hover:border-[var(--primary)]',
             )}
           >
             {game.stock.length > 0 ? (
@@ -144,7 +162,7 @@ export function SolitaireBoard({
             ) : (
               game.waste.length > 0 && (
                 <span
-                  className="absolute inset-0 flex items-center justify-center text-2xl text-emerald-400/60"
+                  className="absolute inset-0 flex items-center justify-center text-2xl text-[var(--textSecondary)] opacity-60"
                   aria-hidden="true"
                 >
                   ↻
@@ -153,7 +171,7 @@ export function SolitaireBoard({
             )}
           </button>
 
-          <div className="relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 border-dashed border-emerald-700/40 bg-emerald-900/20">
+          <div className="relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)]">
             {game.waste.length > 0 && (
               <div className="absolute inset-0">
                 <CardView
@@ -178,7 +196,7 @@ export function SolitaireBoard({
                 type="button"
                 onClick={() => tryMove({ kind: 'foundation', foundationIndex })}
                 aria-label={`${t('games.solitaire_v1.board.foundation')} ${SUIT_GLYPHS[suit]}`}
-                className="relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 border-dashed border-emerald-600/50 bg-emerald-900/30 transition-colors hover:border-emerald-400/80"
+                className="relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] transition-colors hover:border-[var(--primary)]"
               >
                 {pile.length > 0 ? (
                   <div className="pointer-events-none absolute inset-0">
@@ -186,7 +204,7 @@ export function SolitaireBoard({
                   </div>
                 ) : (
                   <span
-                    className="flex h-full w-full items-center justify-center text-2xl text-emerald-400/30"
+                    className="flex h-full w-full items-center justify-center text-2xl text-[var(--textSecondary)] opacity-40"
                     aria-hidden="true"
                   >
                     {SUIT_GLYPHS[suit]}
@@ -206,7 +224,7 @@ export function SolitaireBoard({
                 type="button"
                 aria-label={`${t('games.solitaire_v1.board.pile')} ${pileIndex + 1}`}
                 onClick={() => tryMove({ kind: 'tableau', pileIndex })}
-                className="h-20 w-full cursor-pointer rounded-xl border-2 border-dashed border-emerald-700/40 bg-emerald-900/20 hover:border-emerald-500/60"
+                className="h-20 w-full cursor-pointer rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] hover:border-[var(--primary)]"
               />
             ) : (
               <ul className="m-0 flex list-none flex-col p-0">
@@ -220,11 +238,11 @@ export function SolitaireBoard({
                   return (
                     <li
                       key={card.id}
-                      className="w-full relative"
-                      style={{
-                        marginTop: pullUp > 0 ? -pullUp : undefined,
-                        zIndex: cardIndex,
-                      }}
+                      className={cx(
+                        'w-full relative',
+                        pullUp === FACEDOWN_FAN_OFFSET && '-mt-3 sm:-mt-3.5',
+                        pullUp === FACEUP_FAN_OFFSET && '-mt-6 sm:-mt-7',
+                      )}
                     >
                       <div className="aspect-[68/96] w-full">
                         <CardView
@@ -257,7 +275,7 @@ export function SolitaireBoard({
 
       {selectedCards.length > 0 && (
         <p
-          className="mt-4 text-center text-xs text-emerald-300 font-semibold"
+          className="mt-4 text-center text-xs text-[var(--primary)] font-semibold"
           role="status"
         >
           {t('games.solitaire_v1.board.selectedHint')}

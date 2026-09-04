@@ -228,6 +228,7 @@ export class GameRoomsService {
   async joinRoom(
     dto: JoinGameRoomDto,
     userId: string,
+    prevAnonId?: string,
   ): Promise<JoinGameRoomResult> {
     validateRoomId(dto.roomId);
     const room = await this.ociRoomModel
@@ -254,6 +255,11 @@ export class GameRoomsService {
       throw new BadRequestException('Cannot join - game already started');
     }
 
+    // Remove stale anon participant on anonymous→authenticated transition
+    if (prevAnonId) {
+      const idx = room.participants.findIndex((p) => p.userId === prevAnonId);
+      if (idx !== -1) room.participants.splice(idx, 1);
+    }
     validateInviteCode(room, dto.inviteCode);
     await validatePassword(room, dto.password);
     validateMaxPlayers(room);

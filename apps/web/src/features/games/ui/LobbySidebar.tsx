@@ -45,6 +45,7 @@ import {
 import { SortablePlayerItem, AVATAR_COLORS } from './SortablePlayerItem';
 import { ConfirmationModal } from './ConfirmationModal';
 import { InGameAvatar } from './InGameAvatar';
+import { InviteFriendPicker } from './InviteFriendPicker';
 
 interface LobbySidebarProps {
   room: GameRoomSummary;
@@ -407,6 +408,10 @@ export function LobbySidebar({
             </InfoValue>
           </InfoRow>
         ) : null}
+
+        {isHost && room.status === 'lobby' && (
+          <InviteFriendPicker roomId={room.id} />
+        )}
       </LobbyCard>
 
       {isHost && onDeleteRoom && (

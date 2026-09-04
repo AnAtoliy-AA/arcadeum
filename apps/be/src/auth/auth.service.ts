@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  NotFoundException,
   Inject,
   forwardRef,
 } from '@nestjs/common';
@@ -38,6 +39,10 @@ import { InventoryService } from '../shop/services/inventory.service';
 import { SignupRewardService } from './services';
 import { ModuleRef } from '@nestjs/core';
 import { GeoLookupService } from '../common/geo/geo-lookup.service';
+import {
+  Friendship,
+  FriendshipDocument,
+} from '../friends/schemas/friendship.schema';
 
 export type {
   OAuthTokenResponse,
@@ -49,6 +54,8 @@ export type {
 export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Friendship.name)
+    private readonly friendshipModel: Model<FriendshipDocument>,
     private readonly jwt: JwtService,
     private readonly oauthClient: OAuthClientService,
     private readonly refreshTokenService: RefreshTokenService,
@@ -132,10 +139,19 @@ export class AuthService {
 
     if (data.referralCode) {
       try {
-        await this.referralService.trackReferral(
+        const referrerId = await this.referralService.trackReferral(
           data.referralCode,
           (created as UserDocument).id as string,
         );
+        if (referrerId) {
+          await this.friendshipModel.create({
+            requesterId: new Types.ObjectId(referrerId),
+            addresseeId: new Types.ObjectId(
+              (created as UserDocument).id as string,
+            ),
+            status: 'accepted',
+          });
+        }
       } catch {
         // Non-critical
       }
@@ -370,6 +386,42 @@ export class AuthService {
     }
     const ensured = await ensureUserUsername(doc, this.userModel);
     return buildAuthUserProfile(ensured);
+  }
+
+  async getPublicProfile(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new NotFoundException('User not found');
+    }
+    const doc = await this.userModel
+      .findById(userId)
+      .select(
+        'username displayName role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId countryCode createdAt',
+      )
+      .lean();
+    if (!doc) {
+      throw new NotFoundException('User not found');
+    }
+    return {
+      id: String(doc._id),
+      username: doc.username,
+      displayName: (doc as { displayName?: string }).displayName ?? null,
+      role: doc.role ?? 'free',
+      equippedAvatarId:
+        (doc as { equippedAvatarId?: string | null }).equippedAvatarId ?? null,
+      equippedBadgeId:
+        (doc as { equippedBadgeId?: string | null }).equippedBadgeId ?? null,
+      equippedNameColorId:
+        (doc as { equippedNameColorId?: string | null }).equippedNameColorId ??
+        null,
+      equippedFrameId:
+        (doc as { equippedFrameId?: string | null }).equippedFrameId ?? null,
+      equippedAuraId:
+        (doc as { equippedAuraId?: string | null }).equippedAuraId ?? null,
+      equippedBannerId:
+        (doc as { equippedBannerId?: string | null }).equippedBannerId ?? null,
+      countryCode: (doc as { countryCode?: string | null }).countryCode ?? null,
+      createdAt: (doc as { createdAt?: Date }).createdAt?.toISOString() ?? null,
+    };
   }
 
   async blockUser(userId: string, blockedUserId: string): Promise<void> {

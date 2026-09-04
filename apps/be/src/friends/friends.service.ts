@@ -11,6 +11,7 @@ import { Model, Types } from 'mongoose';
 import { Friendship, FriendshipDocument } from './schemas/friendship.schema';
 import { User, UserDocument } from '../auth/schemas/user.schema';
 import { FriendsGateway } from './friends.gateway';
+import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
 
 export interface FriendView {
   id: string;
@@ -50,6 +51,7 @@ export class FriendsService {
     private readonly userModel: Model<UserDocument>,
     @Inject(FriendsGateway)
     private readonly gateway: FriendsGateway,
+    private readonly dispatcher: NotificationDispatcher,
   ) {}
 
   async sendRequest(
@@ -109,6 +111,92 @@ export class FriendsService {
       displayName: requesterDoc?.displayName ?? null,
     });
 
+    this.dispatcher
+      .dispatch({
+        userId: targetId,
+        category: 'friend_request',
+        titleKey: 'notifications.friend_request.title',
+        bodyKey: 'notifications.friend_request.body',
+        i18nParams: { username: requesterDoc?.username ?? '' },
+        url: '/friends',
+        data: { friendshipId: String(friendship._id), requesterId },
+        skipCategoryCheck: true,
+      })
+      .catch(() => {});
+
+    return { id: String(friendship._id) };
+  }
+
+  async sendRequestByUserId(
+    requesterId: string,
+    targetUserId: string,
+  ): Promise<{ id: string }> {
+    const targetObjectId = new Types.ObjectId(targetUserId);
+    const target = (await this.userModel
+      .findById(targetObjectId)
+      .lean()) as LeanUser | null;
+    if (!target) throw new NotFoundException('friends.userNotFound');
+
+    if (targetUserId === requesterId) {
+      throw new BadRequestException('friends.cannotFriendSelf');
+    }
+
+    if (target.isBlocked) {
+      throw new BadRequestException('friends.userNotFound');
+    }
+
+    const existing = await this.findExisting(requesterId, targetUserId);
+    if (existing) {
+      if (existing.status === 'accepted') {
+        throw new ConflictException('friends.alreadyFriends');
+      }
+      if (existing.status === 'pending') {
+        throw new ConflictException('friends.requestAlreadyPending');
+      }
+    }
+
+    const [requester, targetUser] = (await Promise.all([
+      this.userModel.findById(requesterId).lean(),
+      this.userModel.findById(targetObjectId).lean(),
+    ])) as [LeanUser | null, LeanUser | null];
+
+    if (
+      requester?.blockedUsers?.includes(targetUserId) ||
+      targetUser?.blockedUsers?.includes(requesterId)
+    ) {
+      throw new BadRequestException('friends.userNotFound');
+    }
+
+    const friendship = await this.friendshipModel.create({
+      requesterId: new Types.ObjectId(requesterId),
+      addresseeId: targetObjectId,
+      status: 'pending',
+    });
+
+    const requesterDoc = (await this.userModel
+      .findById(requesterId, { username: 1, displayName: 1 })
+      .lean()) as { username: string; displayName?: string } | null;
+
+    this.gateway.emitFriendRequest(targetUserId, {
+      friendshipId: String(friendship._id),
+      requesterId,
+      username: requesterDoc?.username ?? '',
+      displayName: requesterDoc?.displayName ?? null,
+    });
+
+    this.dispatcher
+      .dispatch({
+        userId: targetUserId,
+        category: 'friend_request',
+        titleKey: 'notifications.friend_request.title',
+        bodyKey: 'notifications.friend_request.body',
+        i18nParams: { username: requesterDoc?.username ?? '' },
+        url: '/friends',
+        data: { friendshipId: String(friendship._id), requesterId },
+        skipCategoryCheck: true,
+      })
+      .catch(() => {});
+
     return { id: String(friendship._id) };
   }
 
@@ -137,6 +225,19 @@ export class FriendsService {
       username: addresseeDoc?.username ?? '',
       displayName: addresseeDoc?.displayName ?? null,
     });
+
+    this.dispatcher
+      .dispatch({
+        userId: String(friendship.requesterId),
+        category: 'friend_accepted',
+        titleKey: 'notifications.friend_accepted.title',
+        bodyKey: 'notifications.friend_accepted.body',
+        i18nParams: { username: addresseeDoc?.username ?? '' },
+        url: '/friends',
+        data: { friendshipId: String(friendship._id), acceptedBy: userId },
+        skipCategoryCheck: true,
+      })
+      .catch(() => {});
   }
 
   async declineRequest(userId: string, friendshipId: string): Promise<void> {
@@ -152,6 +253,31 @@ export class FriendsService {
     }
 
     await this.friendshipModel.deleteOne({ _id: friendship._id });
+
+    this.gateway.emitFriendDeclined(
+      String(friendship.requesterId),
+      String(friendship._id),
+    );
+  }
+
+  async cancelRequest(userId: string, friendshipId: string): Promise<void> {
+    const friendship = await this.friendshipModel.findById(friendshipId);
+    if (!friendship) throw new NotFoundException('friends.requestNotFound');
+
+    if (String(friendship.requesterId) !== userId) {
+      throw new BadRequestException('friends.notRequester');
+    }
+
+    if (friendship.status !== 'pending') {
+      throw new BadRequestException('friends.requestNotPending');
+    }
+
+    await this.friendshipModel.deleteOne({ _id: friendship._id });
+
+    this.gateway.emitFriendCancelled(
+      String(friendship.addresseeId),
+      String(friendship._id),
+    );
   }
 
   async removeFriend(userId: string, friendId: string): Promise<void> {

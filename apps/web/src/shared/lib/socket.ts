@@ -194,6 +194,10 @@ function applyAuth(socketInstance: AuthenticatedSocket, token: string): void {
   socketInstance.auth = { token };
 }
 
+function isNotConnecting(socket: AuthenticatedSocket): boolean {
+  return socket.io?._readyState !== 'opening';
+}
+
 export function connectSockets(token: string | null | undefined): void {
   if (!token) {
     disconnectSockets();
@@ -219,19 +223,22 @@ export function connectSockets(token: string | null | undefined): void {
   applyAuth(getClansSock(), token);
   applyAuth(getNotificationsSocket(), token);
 
-  if (!getGamesSocket().connected) {
+  if (!getGamesSocket().connected && isNotConnecting(getGamesSocket())) {
     getGamesSocket().connect();
   }
-  if (!getChatsSocket().connected) {
+  if (!getChatsSocket().connected && isNotConnecting(getChatsSocket())) {
     getChatsSocket().connect();
   }
-  if (!getFriendsSock().connected) {
+  if (!getFriendsSock().connected && isNotConnecting(getFriendsSock())) {
     getFriendsSock().connect();
   }
-  if (!getClansSock().connected) {
+  if (!getClansSock().connected && isNotConnecting(getClansSock())) {
     getClansSock().connect();
   }
-  if (!getNotificationsSocket().connected) {
+  if (
+    !getNotificationsSocket().connected &&
+    isNotConnecting(getNotificationsSocket())
+  ) {
     getNotificationsSocket().connect();
   }
 }

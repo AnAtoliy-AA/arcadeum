@@ -194,6 +194,92 @@ export const esMessages = {
       bearingOffTitle: 'Sacar Fichas',
       bearingOff:
         'Cuando todas las fichas están en casa, puedes sacarlas del tablero con los dados adecuados.',
+      modes: {
+        standard: {
+          objectiveTitle: 'Objetivo',
+          objective:
+            'Mueve las 15 fichas a tu tablero interno y sácalas antes que tu oponente.',
+          movementTitle: 'Movimiento y Dados',
+          movement:
+            'Tira dos dados y mueve tus fichas la cantidad lanzada. Al sacar dobles (ej. 4-4) obtienes cuatro movimientos en lugar de dos.',
+          hittingTitle: 'Comer y Barra',
+          hitting:
+            'Al caer en un punto con una sola ficha rival (blot), esta va a la barra. Las fichas en la barra deben reingresar al tablero interno del oponente antes de otros movimientos.',
+          bearingOffTitle: 'Sacar Fichas',
+          bearingOff:
+            'Cuando las 15 fichas están en tu tablero interno, sácalas con el número exacto o mayor. Si no quedan fichas más atrás, se permite el exceso.',
+        },
+        long: {
+          objectiveTitle: 'Objetivo',
+          objective:
+            'Conduce las 15 fichas desde la cabeza hasta tu tablero interno y sácalas. Todas empiezan en un solo punto — la carrera es de resistencia.',
+          movementTitle: 'Movimiento y Dados',
+          movement:
+            'Tira dos dados y mueve tus fichas. Con dobles son cuatro movimientos. Los puntos ocupados por el oponente están completamente bloqueados — no puedes pasar ni quedarte.',
+          hittingTitle: 'Sin Capturas',
+          hitting:
+            'Las capturas no están permitidas. Los puntos del oponente siempre están bloqueados. Debes esquivar sus pilas — la posición lo decide todo.',
+          bearingOffTitle: 'Sacar Fichas',
+          bearingOff:
+            'Cuando las 15 fichas están en tu tablero interno, sácalas con el número exacto o mayor. La prohibición de capturas hace que llegar a casa sea el mayor desafío.',
+        },
+        hyper: {
+          objectiveTitle: 'Objetivo',
+          objective:
+            'Solo 3 fichas por jugador — saca las tres antes que tu oponente. Cada movimiento cuenta.',
+          movementTitle: 'Movimiento y Dados',
+          movement:
+            'Tira dos dados y mueve tus fichas. Con dobles son cuatro movimientos. Con tan pocas fichas, las partidas son rápidas y tácticas.',
+          hittingTitle: 'Comer y Barra',
+          hitting:
+            'Las capturas están permitidas. Al caer en una ficha rival sola, va a la barra. Una sola captura puede decidir la partida.',
+          bearingOffTitle: 'Sacar Fichas',
+          bearingOff:
+            'Cuando las 3 fichas están en tu tablero interno, sácalas. Con tan pocas fichas, la salida es rápida y cada pip cuenta.',
+        },
+        tavla: {
+          objectiveTitle: 'Objetivo',
+          objective:
+            'Mueve las 15 fichas a tu tablero interno y sácalas. Tavla sigue las reglas clásicas con tradición turca.',
+          movementTitle: 'Movimiento y Dados',
+          movement:
+            'Tira dos dados y mueve tus fichas. Con dobles son cuatro movimientos. Tavla enfatiza el juego rápido y agresivo.',
+          hittingTitle: 'Comer y Barra',
+          hitting:
+            'Al caer en una ficha rival sola (blot), va a la barra. Las fichas en la barra deben reingresar antes de otros movimientos.',
+          bearingOffTitle: 'Sacar Fichas',
+          bearingOff:
+            'Cuando las 15 fichas están en tu tablero interno, sácalas con el número exacto o mayor.',
+        },
+        nackgammon: {
+          objectiveTitle: 'Objetivo',
+          objective:
+            'Mueve las 15 fichas a tu tablero interno y sácalas. La posición inicial modificada crea aperturas estratégicas más profundas.',
+          movementTitle: 'Movimiento y Dados',
+          movement:
+            'Tira dos dados y mueve tus fichas. Con dobles son cuatro movimientos. Las 2 fichas en el punto 23 reducen los lanzamientos iniciales desordenados.',
+          hittingTitle: 'Comer y Barra',
+          hitting:
+            'Las capturas están permitidas. La apertura modificada crea decisiones complejas sobre cuándo comer y cuándo construir anclajes.',
+          bearingOffTitle: 'Sacar Fichas',
+          bearingOff:
+            'Cuando las 15 fichas están en tu tablero interno, sácalas con el número exacto o mayor.',
+        },
+        gulbara: {
+          objectiveTitle: 'Objetivo',
+          objective:
+            'Conduce las 15 fichas desde la cabeza hasta tu tablero interno y sácalas. Sin capturas — estrategia pura de carrera.',
+          movementTitle: 'Movimiento y Dados',
+          movement:
+            'Tira dos dados y mueve tus fichas. Los puntos del oponente están bloqueados. Al sacar dobles, se juegan todos los dobles superiores posteriores.',
+          hittingTitle: 'Sin Capturas',
+          hitting:
+            'Las capturas no están permitidas. Los puntos del oponente son infranqueables. La posición y el timing lo son todo.',
+          bearingOffTitle: 'Sacar Fichas',
+          bearingOff:
+            'Cuando las 15 fichas están en tu tablero interno, sácalas con el número exacto o mayor.',
+        },
+      },
     },
   },
 };

@@ -192,6 +192,92 @@ export const enMessages = {
       bearingOffTitle: 'Bearing Off',
       bearingOff:
         'Once all 15 checkers are inside your home board, you can bear them off by rolling the exact point number or higher if no checkers remain further back.',
+      modes: {
+        standard: {
+          objectiveTitle: 'Objective',
+          objective:
+            'The objective is to move all 15 checkers into your home board and bear them off before your opponent.',
+          movementTitle: 'Movement & Dice',
+          movement:
+            'Roll two dice and move your checkers forward the rolled amounts. Rolling doubles (e.g. 4-4) gives you four moves instead of two.',
+          hittingTitle: 'Hitting & Bar',
+          hitting:
+            "Land on a point with a single opponent checker (blot) to send it to the bar. Checkers on the bar must re-enter into the opponent's home board before any other moves.",
+          bearingOffTitle: 'Bearing Off',
+          bearingOff:
+            'Once all 15 checkers are in your home board, bear them off by rolling the exact point number or higher. If no checkers remain further back, overshoot rolls are allowed.',
+        },
+        long: {
+          objectiveTitle: 'Objective',
+          objective:
+            'Move all 15 checkers from the head to your home board and bear them off. All checkers start on a single point — the race is a marathon.',
+          movementTitle: 'Movement & Dice',
+          movement:
+            'Roll two dice and move your checkers forward the rolled amounts. Doubles give four moves. Points occupied by your opponent are completely blocked — you cannot land on or pass them.',
+          hittingTitle: 'No Hitting',
+          hitting:
+            "Hitting is not allowed in Long Nardy. Opponent points are always blocked. You must navigate around your opponent's stacks, making positioning critical.",
+          bearingOffTitle: 'Bearing Off',
+          bearingOff:
+            'Once all 15 checkers are in your home board, bear them off by rolling the exact point number or higher. The no-hitting rule makes reaching the home board the main challenge.',
+        },
+        hyper: {
+          objectiveTitle: 'Objective',
+          objective:
+            'With only 3 checkers each, race to bear off all three before your opponent. Every move counts — there is no room for error.',
+          movementTitle: 'Movement & Dice',
+          movement:
+            'Roll two dice and move your checkers. Doubles give four moves. With only 3 checkers on the board, games are fast and tactical.',
+          hittingTitle: 'Hitting & Bar',
+          hitting:
+            'Hitting is allowed. Land on a single opponent checker to send it to the bar. With so few checkers, a single hit can decide the game.',
+          bearingOffTitle: 'Bearing Off',
+          bearingOff:
+            'Once all 3 checkers are in your home board, bear them off. With only 3 checkers, bearing off happens quickly and every pip matters.',
+        },
+        tavla: {
+          objectiveTitle: 'Objective',
+          objective:
+            'Move all 15 checkers into your home board and bear them off. Tavla follows standard backgammon rules with Turkish tradition.',
+          movementTitle: 'Movement & Dice',
+          movement:
+            'Roll two dice and move your checkers forward. Doubles give four moves. Tavla emphasizes fast, aggressive play.',
+          hittingTitle: 'Hitting & Bar',
+          hitting:
+            'Land on a single opponent checker (blot) to send it to the bar. Checkers on the bar must re-enter before other moves.',
+          bearingOffTitle: 'Bearing Off',
+          bearingOff:
+            'Once all 15 checkers are in your home board, bear them off by rolling the exact point number or higher.',
+        },
+        nackgammon: {
+          objectiveTitle: 'Objective',
+          objective:
+            'Move all 15 checkers into your home board and bear them off. The modified starting position creates deeper strategic openings.',
+          movementTitle: 'Movement & Dice',
+          movement:
+            'Roll two dice and move your checkers forward. Doubles give four moves. The starting position with 2 checkers on point 23 reduces early runaway rolls.',
+          hittingTitle: 'Hitting & Bar',
+          hitting:
+            'Hitting is allowed. The modified opening creates more complex early-game decisions about when to hit and when to build anchors.',
+          bearingOffTitle: 'Bearing Off',
+          bearingOff:
+            'Once all 15 checkers are in your home board, bear them off by rolling the exact point number or higher.',
+        },
+        gulbara: {
+          objectiveTitle: 'Objective',
+          objective:
+            'Move all 15 checkers from the head to your home board and bear them off. No hitting — pure racing strategy.',
+          movementTitle: 'Movement & Dice',
+          movement:
+            'Roll two dice and move your checkers forward. Opponent points are completely blocked. When you roll doubles, all subsequent higher doubles are also played.',
+          hittingTitle: 'No Hitting',
+          hitting:
+            'Hitting is not allowed. Points occupied by your opponent are impassable. Positioning and timing are everything.',
+          bearingOffTitle: 'Bearing Off',
+          bearingOff:
+            'Once all 15 checkers are in your home board, bear them off by rolling the exact point number or higher.',
+        },
+      },
     },
   },
 };

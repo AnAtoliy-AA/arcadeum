@@ -55,6 +55,10 @@ export const en = {
       label: 'Friend request accepted',
       description: 'Notifies you when someone accepts your friend request.',
     },
+    game_invitation: {
+      label: 'Game invitations',
+      description: 'Notifies you when someone invites you to a game room.',
+    },
   },
   daily_reward_ready: {
     title: 'Daily reward ready',
@@ -130,6 +134,10 @@ export const ru: DeepPartial<NotificationsMessages> = {
       label: 'Заявка в друзья принята',
       description: 'Уведомляет, когда кто-то принимает вашу заявку в друзья.',
     },
+    game_invitation: {
+      label: 'Приглашения в игру',
+      description: 'Уведомляет, когда кто-то приглашает вас в игровую комнату.',
+    },
   },
   daily_reward_ready: {
     title: 'Награда дня готова',
@@ -203,6 +211,10 @@ export const es: DeepPartial<NotificationsMessages> = {
     friend_accepted: {
       label: 'Solicitud de amistad aceptada',
       description: 'Te avisa cuando alguien acepta tu solicitud de amistad.',
+    },
+    game_invitation: {
+      label: 'Invitaciones a jugar',
+      description: 'Te avisa cuando alguien te invita a una sala de juego.',
     },
   },
   daily_reward_ready: {
@@ -279,6 +291,10 @@ export const fr: DeepPartial<NotificationsMessages> = {
       label: "Demande d'ami acceptée",
       description: "T'avertit quand quelqu'un accepte ta demande d'ami.",
     },
+    game_invitation: {
+      label: 'Invitations à jouer',
+      description: "T'avertit quand quelqu'un t'invite dans une salle de jeu.",
+    },
   },
   daily_reward_ready: {
     title: 'Récompense quotidienne prête',
@@ -351,6 +367,10 @@ export const by: DeepPartial<NotificationsMessages> = {
     friend_accepted: {
       label: 'Запыт у сябры прыняты',
       description: 'Паведамляе, калі хтосьці прымае ваш запыт у сябры.',
+    },
+    game_invitation: {
+      label: 'Запрашэнні ў гульню',
+      description: 'Паведамляе, калі хтосьці запрашае вас у ігравы пакой.',
     },
   },
   daily_reward_ready: {

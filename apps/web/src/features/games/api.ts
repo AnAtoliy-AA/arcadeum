@@ -319,4 +319,15 @@ export const gamesApi = {
       options,
     );
   },
+
+  declineInvitation: async (
+    roomId: string,
+    options?: ApiClientOptions,
+  ): Promise<void> => {
+    return apiClient.post<void>(
+      `/games/rooms/${roomId}/invitation/decline`,
+      undefined,
+      options,
+    );
+  },
 };

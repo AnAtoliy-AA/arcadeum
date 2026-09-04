@@ -26,6 +26,7 @@ export type NotificationBundle = {
     announcement_new: { title: string; body: string };
     friend_request: { title: string; body: string };
     friend_accepted: { title: string; body: string };
+    game_invitation: { title: string; body: string };
   };
 };
 
@@ -54,6 +55,10 @@ const en: NotificationBundle = {
     friend_accepted: {
       title: 'Friend request accepted',
       body: '{{username}} accepted your friend request.',
+    },
+    game_invitation: {
+      title: 'Game invitation',
+      body: '{{hostName}} invited you to play {{gameId}}.',
     },
   },
 };
@@ -84,6 +89,10 @@ const ru: NotificationBundle = {
       title: 'Заявка в друзья принята',
       body: '{{username}} принял вашу заявку в друзья.',
     },
+    game_invitation: {
+      title: 'Приглашение в игру',
+      body: '{{hostName}} пригласил вас в игру {{gameId}}.',
+    },
   },
 };
 
@@ -112,6 +121,10 @@ const es: NotificationBundle = {
     friend_accepted: {
       title: 'Solicitud de amistad aceptada',
       body: '{{username}} aceptó tu solicitud de amistad.',
+    },
+    game_invitation: {
+      title: 'Invitación a jugar',
+      body: '{{hostName}} te invitó a jugar {{gameId}}.',
     },
   },
 };
@@ -142,6 +155,10 @@ const fr: NotificationBundle = {
       title: "Demande d'ami acceptée",
       body: "{{username}} a accepté votre demande d'ami.",
     },
+    game_invitation: {
+      title: 'Invitation à jouer',
+      body: '{{hostName}} vous a invité à jouer à {{gameId}}.',
+    },
   },
 };
 
@@ -170,6 +187,10 @@ const by: NotificationBundle = {
     friend_accepted: {
       title: 'Запыт у сябры прыняты',
       body: '{{username}} прыняў ваш запыт у сябры.',
+    },
+    game_invitation: {
+      title: 'Запрашэнне ў гульню',
+      body: '{{hostName}} запрасіў вас пагуляць у {{gameId}}.',
     },
   },
 };

@@ -105,6 +105,7 @@ describe('NotificationsService', () => {
         announcement_new: false,
         friend_request: false,
         friend_accepted: false,
+        game_invitation: false,
       });
     });
 
@@ -146,6 +147,7 @@ describe('NotificationsService', () => {
         tournament_registration_opened: false,
         friend_request: false,
         friend_accepted: false,
+        game_invitation: false,
       });
     });
 

@@ -37,6 +37,7 @@ describe('notifications store', () => {
       announcement_new: false,
       friend_request: false,
       friend_accepted: false,
+      game_invitation: false,
     });
     vi.mocked(notificationsApi.unreadCount).mockResolvedValue({ count: 4 });
 
@@ -127,6 +128,7 @@ describe('notifications store', () => {
       announcement_new: false,
       friend_request: false,
       friend_accepted: false,
+      game_invitation: false,
     });
     await useNotificationsStore
       .getState()

@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
 import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 import {
   applyMove,
   deal,
@@ -42,7 +43,8 @@ function finishIfOver(
 
   const finishedAt = Date.now();
   const durationMs = finishedAt - startedAt;
-  const sessionId = `sol_${finishedAt}_${Math.random().toString(36).slice(2, 8)}`;
+  const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
+  const sessionId = `sol_${userId}_${finishedAt}`;
   const won = outcome.won;
 
   void useLocalStatsStore.getState().recordGameResult({

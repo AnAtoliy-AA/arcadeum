@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
 import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { move, newGame } from '../lib/engine';
 import type { Direction } from '../types';
 
@@ -42,7 +43,8 @@ function finishIfOver(
 
   const finishedAt = Date.now();
   const durationMs = finishedAt - startedAt;
-  const sessionId = `g2048_${finishedAt}_${Math.random().toString(36).slice(2, 8)}`;
+  const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
+  const sessionId = `g2048_${userId}_${finishedAt}`;
 
   void useLocalStatsStore.getState().recordGameResult({
     gameId: GAME_2048_ID,

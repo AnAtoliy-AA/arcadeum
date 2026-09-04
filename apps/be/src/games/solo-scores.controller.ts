@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -17,6 +18,14 @@ import { type AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { SoloScoresService } from './solo-scores.service';
 import { SyncSoloScoresDto } from './dtos/sync-solo-scores.dto';
 
+function sanitizeString(value: unknown, name: string): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== 'string') {
+    throw new BadRequestException(`${name} must be a string`);
+  }
+  return value;
+}
+
 @Controller('games/solo-scores')
 export class SoloScoresController {
   constructor(private readonly soloScoresService: SoloScoresService) {}
@@ -26,18 +35,23 @@ export class SoloScoresController {
   @UseGuards(JwtOptionalAuthGuard)
   @Get('leaderboard')
   async getLeaderboard(
-    @Query('gameId') gameId: string,
-    @Query('difficulty') difficulty: string,
+    @Query('gameId') gameId: unknown,
+    @Query('difficulty') difficulty: unknown,
     @Query('sortBy') sortBy?: 'score' | 'durationMs',
     @Query('order') order?: 'asc' | 'desc',
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
+    const safeGameId = sanitizeString(gameId, 'gameId');
+    const safeDifficulty = sanitizeString(difficulty, 'difficulty');
+    if (!safeGameId || !safeDifficulty) {
+      throw new BadRequestException('gameId and difficulty are required');
+    }
     const limitNum = limit ? parseInt(limit, 10) : 20;
     const offsetNum = offset ? parseInt(offset, 10) : 0;
     return this.soloScoresService.getLeaderboard(
-      gameId,
-      difficulty,
+      safeGameId,
+      safeDifficulty,
       sortBy,
       order,
       limitNum,
@@ -49,11 +63,12 @@ export class SoloScoresController {
   @Get('best')
   async getPersonalBests(
     @Req() req: Request,
-    @Query('gameId') gameId?: string,
+    @Query('gameId') gameId?: unknown,
   ) {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) return [];
-    return this.soloScoresService.getPersonalBests(user.userId, gameId);
+    const safeGameId = sanitizeString(gameId, 'gameId');
+    return this.soloScoresService.getPersonalBests(user.userId, safeGameId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -68,8 +83,8 @@ export class SoloScoresController {
   @Get('recent')
   async getRecentGames(
     @Req() req: Request,
-    @Query('gameId') gameId?: string,
-    @Query('difficulty') difficulty?: string,
+    @Query('gameId') gameId?: unknown,
+    @Query('difficulty') difficulty?: unknown,
     @Query('limit') limit?: string,
   ) {
     const user = req.user as AuthenticatedUser | undefined;
@@ -77,8 +92,8 @@ export class SoloScoresController {
     const limitNum = limit ? parseInt(limit, 10) : 20;
     return this.soloScoresService.getRecentGames(
       user.userId,
-      gameId,
-      difficulty,
+      sanitizeString(gameId, 'gameId'),
+      sanitizeString(difficulty, 'difficulty'),
       limitNum,
     );
   }

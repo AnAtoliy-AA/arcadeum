@@ -55,6 +55,15 @@ export function getGamesSocket(): AuthenticatedSocket {
     _gamesSocket = getManager().socket('/games') as AuthenticatedSocket;
     guardSocket(_gamesSocket);
     setupEncryptionKeyHandler(_gamesSocket);
+    // Re-apply anonId on reconnect — query params can be lost during transport upgrade
+    _gamesSocket.io?.on('reconnect_attempt', () => {
+      if (currentAnonId && _gamesSocket?.io?.opts) {
+        _gamesSocket.io.opts.query = {
+          ...(_gamesSocket.io.opts.query as Record<string, string>),
+          anonId: currentAnonId,
+        };
+      }
+    });
   }
   return _gamesSocket;
 }
@@ -322,35 +331,20 @@ export function disconnectSockets(): void {
   currentAuthToken = null;
   currentAnonId = null;
 
-  if (_gamesSocket) {
-    _gamesSocket.disconnect();
+  for (const sock of [
+    _gamesSocket,
+    _chatsSocket,
+    _leaderboardsSocket,
+    _friendsSock,
+    _walletSock,
+    _clansSock,
+    _notificationsSocket,
+  ]) {
+    if (sock) {
+      sock.disconnect();
+      sock.auth = {};
+    }
   }
-  if (_chatsSocket) {
-    _chatsSocket.disconnect();
-  }
-  if (_leaderboardsSocket) {
-    _leaderboardsSocket.disconnect();
-  }
-  if (_friendsSock) {
-    _friendsSock.disconnect();
-  }
-  if (_walletSock) {
-    _walletSock.disconnect();
-  }
-  if (_clansSock) {
-    _clansSock.disconnect();
-  }
-  if (_notificationsSocket) {
-    _notificationsSocket.disconnect();
-  }
-
-  if (_gamesSocket) _gamesSocket.auth = {};
-  if (_chatsSocket) _chatsSocket.auth = {};
-  if (_leaderboardsSocket) _leaderboardsSocket.auth = {};
-  if (_friendsSock) _friendsSock.auth = {};
-  if (_walletSock) _walletSock.auth = {};
-  if (_clansSock) _clansSock.auth = {};
-  if (_notificationsSocket) _notificationsSocket.auth = {};
   resetEncryptionKey();
 }
 

@@ -187,7 +187,7 @@ export class GamesGateway {
 
     for (const room of client.rooms) {
       if (room.startsWith('game-room:')) {
-        const data = { userId, idle: true };
+        const data = { userId: activeUserId, idle: true };
         this.server.to(room).emit('games.player.idle_changed', data);
         const roomId = room.replace('game-room:', '');
         const specChannel = this.realtime.spectatorChannel(roomId);

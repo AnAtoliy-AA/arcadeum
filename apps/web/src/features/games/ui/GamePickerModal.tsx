@@ -155,7 +155,7 @@ export function GamePickerModal({
           const { room } = await gamesApi.createRoom(
             {
               gameId,
-              name: `${snapshot.displayName || snapshot.username || 'Player'}'s game`,
+              name: `${snapshot.accessToken ? snapshot.displayName || snapshot.username || 'Player' : 'Player'}'s game`,
               visibility: 'public',
             },
             { token: snapshot.accessToken || undefined },

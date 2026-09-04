@@ -12,7 +12,12 @@ export async function handleJoinRoom(
   client: Socket,
   realtime: GamesRealtimeService,
   gamesService: GamesService,
-  payload: { roomId?: string; userId?: string; inviteCode?: string },
+  payload: {
+    roomId?: string;
+    userId?: string;
+    inviteCode?: string;
+    prevAnonId?: string;
+  },
   validateUserId: (client: Socket, userId: string) => void,
 ): Promise<void> {
   const roomId =
@@ -31,11 +36,16 @@ export async function handleJoinRoom(
     typeof payload?.inviteCode === 'string'
       ? payload.inviteCode.trim()
       : undefined;
+  const prevAnonId =
+    typeof payload?.prevAnonId === 'string'
+      ? payload.prevAnonId.trim()
+      : undefined;
   logger.log(`User ${userId} joining room ${roomId}`);
   try {
     const { room, session } = await gamesService.joinRoom(
       { roomId, inviteCode },
       userId,
+      prevAnonId,
     );
 
     logger.log(

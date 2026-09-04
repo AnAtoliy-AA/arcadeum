@@ -8,6 +8,7 @@ import { useGameLandingTheme } from './GameLandingThemeContext';
 import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
 import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 import { GameLandingLiveStats } from './GameLandingLiveStats';
+import { useGameInviteStore } from '@/features/games/store/gameInviteStore';
 
 export function GameLandingHero({
   gameId,
@@ -32,12 +33,19 @@ export function GameLandingHero({
   comingSoon = false,
 }: GameLandingHeroProps) {
   const { theme } = useGameLandingTheme();
+  const inviteUserId = useGameInviteStore((s) => s.inviteUserId);
 
-  const createHref = createRoomHref
+  let createHref = createRoomHref
     ? createRoomHref.includes('?')
       ? `${createRoomHref}&theme=${encodeURIComponent(theme)}`
       : `${createRoomHref}?theme=${encodeURIComponent(theme)}`
     : undefined;
+
+  if (createHref && inviteUserId) {
+    createHref += createHref.includes('?')
+      ? `&inviteUser=${encodeURIComponent(inviteUserId)}`
+      : `?inviteUser=${encodeURIComponent(inviteUserId)}`;
+  }
 
   return (
     <header className="box-border relative w-full pt-6 pb-12 overflow-hidden">

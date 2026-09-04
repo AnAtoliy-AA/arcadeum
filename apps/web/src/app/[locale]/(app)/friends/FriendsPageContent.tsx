@@ -18,6 +18,7 @@ import {
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { connectFriendsSocket, useFriendsSocket } from '@/shared/lib/socket';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { useGameInviteStore } from '@/features/games/store/gameInviteStore';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import {
   getFriends,
@@ -202,9 +203,10 @@ export default function FriendsPageContent({
 
   const handleInviteToGame = useCallback(
     (friendUserId: string) => {
-      router.push(`${routes.gameCreate}?inviteUser=${friendUserId}`);
+      useGameInviteStore.getState().setInviteUser(friendUserId);
+      router.push(routes.games);
     },
-    [router, routes.gameCreate],
+    [router, routes.games],
   );
 
   const handleStartChat = useCallback(

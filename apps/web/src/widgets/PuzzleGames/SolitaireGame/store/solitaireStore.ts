@@ -3,6 +3,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
+import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
 import {
   applyMove,
   deal,
@@ -10,11 +11,7 @@ import {
   evaluateOutcome,
   isValidMove,
 } from '../lib/engine';
-import type {
-  MoveSource,
-  MoveTarget,
-  SolitaireState,
-} from '../types';
+import type { MoveSource, MoveTarget, SolitaireState } from '../types';
 
 export const SOLITAIRE_GAME_ID = 'solitaire_v1';
 
@@ -44,18 +41,34 @@ function finishIfOver(
   if (!outcome.won && !outcome.stuck) return null;
 
   const finishedAt = Date.now();
+  const durationMs = finishedAt - startedAt;
+  const sessionId = `sol_${finishedAt}_${Math.random().toString(36).slice(2, 8)}`;
+  const won = outcome.won;
+
   void useLocalStatsStore.getState().recordGameResult({
     gameId: SOLITAIRE_GAME_ID,
-    result: outcome.won ? 'won' : 'lost',
+    result: won ? 'won' : 'lost',
     timestamp: finishedAt,
   });
+
+  useSoloScoreStore.getState().addScore({
+    gameId: SOLITAIRE_GAME_ID,
+    difficulty: 'default',
+    score: won ? game.score : 0,
+    moves: game.moves,
+    durationMs,
+    result: won ? 'won' : 'lost',
+    sessionId,
+    timestamp: finishedAt,
+  });
+
   return {
     finishedAt,
     finished: {
-      won: outcome.won,
-      score: outcome.won ? game.score : 0,
+      won,
+      score: won ? game.score : 0,
       moves: game.moves,
-      durationMs: finishedAt - startedAt,
+      durationMs,
     },
   };
 }

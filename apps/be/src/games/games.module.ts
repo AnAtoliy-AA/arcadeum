@@ -53,6 +53,9 @@ import { GamesRematchService } from './games.rematch.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
 import { PlayerStatsService } from './player-stats.service';
+import { SoloScore, SoloScoreSchema } from './schemas/solo-score.schema';
+import { SoloScoresService } from './solo-scores.service';
+import { SoloScoresController } from './solo-scores.controller';
 import { DailyChallengesModule } from '../daily-challenges/daily-challenges.module';
 import { AchievementsModule } from '../achievements/achievements.module';
 import { NotificationsModule } from '../notifications/notifications.module';
@@ -144,6 +147,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
         { name: User.name, schema: UserSchema },
         { name: PlayerStats.name, schema: PlayerStatsSchema },
         { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
+        { name: SoloScore.name, schema: SoloScoreSchema },
       ],
       OCI_CONNECTION,
     ),
@@ -187,6 +191,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GamesHistoryController,
     GameReplayController,
     LiveStatsController,
+    SoloScoresController,
   ],
   providers: [
     LiveStatsService,
@@ -262,6 +267,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GamePostMatchService,
     GameReplayService,
     PlayerStatsService,
+    SoloScoresService,
     // Gateways
     GamesGateway,
     CriticalGateway,

@@ -65,6 +65,7 @@ describe('SolitaireGame UI', () => {
         moves: 85,
         durationMs: 180000,
       },
+      finishedAt: Date.now(),
     });
 
     render(<SolitaireGame />);
@@ -83,6 +84,7 @@ describe('SolitaireGame UI', () => {
         moves: 30,
         durationMs: 60000,
       },
+      finishedAt: Date.now(),
     });
 
     render(<SolitaireGame />);

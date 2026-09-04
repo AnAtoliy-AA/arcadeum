@@ -69,6 +69,7 @@ describe('MinesweeperGame UI', () => {
         won: true,
         durationSeconds: 35,
       },
+      finishedAt: Date.now(),
     });
 
     render(<MinesweeperGame />);
@@ -85,6 +86,7 @@ describe('MinesweeperGame UI', () => {
         won: false,
         durationSeconds: 12,
       },
+      finishedAt: Date.now(),
     });
 
     render(<MinesweeperGame />);

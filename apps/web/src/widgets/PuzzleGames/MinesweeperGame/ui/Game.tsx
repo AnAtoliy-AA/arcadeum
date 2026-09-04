@@ -1,19 +1,15 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useSyncExternalStore,
-} from 'react';
-import { Button, LoadingState, Select } from '@arcadeum/ui';
-import { cx } from '@arcadeum/ui/utils/cx';
+import { useMemo, useState } from 'react';
+import { Button, Select } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
-import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
+import {
+  SoloGameContainer,
+  formatDuration,
+} from '@/features/games/ui/SoloGameContainer';
 import { MinesweeperThemeProvider } from '../lib/MinesweeperThemeContext';
 import { useMinesweeperStore } from '../store/minesweeperStore';
 import type { Difficulty } from '../types';
@@ -31,6 +27,11 @@ const DIFFICULTY_MAX_WIDTH: Record<Difficulty, string> = {
   expert: 'max-w-5xl',
 };
 
+function formatDigits(num: number): string {
+  const clamped = Math.max(0, Math.min(999, num));
+  return String(clamped).padStart(3, '0');
+}
+
 export default function MinesweeperGame() {
   useTrackSoloGameStarted('minesweeper_v1');
   return (
@@ -38,20 +39,6 @@ export default function MinesweeperGame() {
       <MinesweeperTable />
     </MinesweeperThemeProvider>
   );
-}
-
-function subscribeNoop(): () => void {
-  return () => undefined;
-}
-
-function formatDigits(num: number): string {
-  const clamped = Math.max(0, Math.min(999, num));
-  return String(clamped).padStart(3, '0');
-}
-
-function formatDuration(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  return `${String(minutes).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 function MinesweeperTable() {
@@ -67,48 +54,28 @@ function MinesweeperTable() {
   );
   const newGame = useMinesweeperStore((state) => state.newGame);
 
-  const mounted = useSyncExternalStore(
-    subscribeNoop,
-    () => true,
-    () => false,
-  );
-
   const [flagMode, setFlagMode] = useState(false);
   const [isPressing, setIsPressing] = useState(false);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
-  const isRunning = mounted && startedAt !== null && finishedAt === null;
-  useEffect(() => {
-    if (!isRunning || startedAt === null) return undefined;
-    const tick = () =>
-      setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
-    tick();
-    const interval = setInterval(tick, 1000);
-    return () => clearInterval(interval);
-  }, [isRunning, startedAt]);
-
-  const [isDismissed, setIsDismissed] = useState(false);
+  const isRunning = startedAt !== null && finishedAt === null;
   const isGameOver = game.status === 'won' || game.status === 'lost';
+  const minesLeft = Math.max(game.mineCount - game.flagCount, 0);
 
-  const handleCloseModal = useCallback(() => {
-    setIsDismissed(true);
-  }, []);
-
-  const handleNewGame = useCallback(() => {
-    setIsDismissed(false);
-    newGame();
-  }, [newGame]);
-
-  const handleOpenModal = useCallback(() => {
-    setIsDismissed(false);
-  }, []);
+  const faceIcon =
+    game.status === 'won'
+      ? '😎'
+      : game.status === 'lost'
+        ? '😵'
+        : isPressing
+          ? '😮'
+          : '😄';
 
   const stats: GameResultStats | null = useMemo(() => {
     if (!finished) return null;
     return {
       duration:
         finished.durationSeconds !== null
-          ? formatDuration(finished.durationSeconds)
+          ? formatDuration(finished.durationSeconds * 1000)
           : undefined,
       customStats: [
         {
@@ -127,123 +94,108 @@ function MinesweeperTable() {
     };
   }, [finished, game.difficulty, game.mineCount, t]);
 
-  if (!mounted) {
-    return <LoadingState message={t('games.minesweeper_v1.board.loading')} />;
-  }
-
-  const minesLeft = Math.max(game.mineCount - game.flagCount, 0);
-
-  const faceIcon =
-    game.status === 'won'
-      ? '😎'
-      : game.status === 'lost'
-        ? '😵'
-        : isPressing
-          ? '😮'
-          : '😄';
-
-  return (
-    <div
-      className={cx(
-        'mx-auto flex w-full flex-col items-center gap-4 px-2 transition-all duration-300',
-        DIFFICULTY_MAX_WIDTH[game.difficulty] ?? 'max-w-2xl',
-      )}
-    >
-      <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--glassBorderStrong)] bg-[var(--background)] p-3 shadow-xl backdrop-blur-md sm:p-4">
-        <div className="flex items-center gap-3 rounded-xl border border-rose-500/40 bg-[var(--backgroundHover)] px-3 py-1.5 shadow-inner">
-          <span className="font-mono text-xl font-black tracking-widest text-red-600 dark:text-red-400 tabular-nums drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]">
-            {formatDigits(minesLeft)}
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={newGame}
-          aria-label={t('games.minesweeper_v1.hud.newGame')}
-          className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-amber-400/60 bg-gradient-to-b from-amber-300 to-amber-500 text-2xl shadow-lg transition-transform active:scale-90"
-        >
-          {faceIcon}
-        </button>
-
-        <div className="flex items-center gap-3 rounded-xl border border-rose-500/40 bg-[var(--backgroundHover)] px-3 py-1.5 shadow-inner">
-          <span className="font-mono text-xl font-black tracking-widest text-red-600 dark:text-red-400 tabular-nums drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]">
-            {formatDigits(elapsedSeconds)}
-          </span>
-        </div>
+  const hud = (
+    <>
+      <div className="flex items-center gap-3 rounded-xl border border-rose-500/40 bg-[var(--backgroundHover)] px-3 py-1.5 shadow-inner">
+        <span className="font-mono text-xl font-black tracking-widest text-red-600 dark:text-red-400 tabular-nums drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]">
+          {formatDigits(minesLeft)}
+        </span>
       </div>
 
-      <div className="flex w-full flex-wrap items-center justify-between gap-3 px-1">
-        <div className="flex items-center gap-2">
-          <label
-            className="text-xs font-semibold whitespace-nowrap text-[var(--textSecondary)]"
-            htmlFor="minesweeper-difficulty"
-          >
-            {t('games.minesweeper_v1.hud.difficulty')}
-          </label>
-          <Select
-            id="minesweeper-difficulty"
-            size="sm"
-            value={game.difficulty}
-            onValueChange={(value) => changeDifficulty(value as Difficulty)}
-            options={DIFFICULTY_OPTIONS.map(({ value }) => ({
-              value,
-              label: t(
-                `games.minesweeper_v1.difficulty.${value}` as TranslationKey,
-              ),
-            }))}
-          />
-        </div>
+      <button
+        type="button"
+        onClick={newGame}
+        aria-label={t('games.minesweeper_v1.hud.newGame')}
+        className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-amber-400/60 bg-gradient-to-b from-amber-300 to-amber-500 text-2xl shadow-lg transition-transform active:scale-90"
+      >
+        {faceIcon}
+      </button>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {isGameOver && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleOpenModal}
-              data-testid="minesweeper-show-results-button"
-              className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25 whitespace-nowrap px-3"
-            >
-              🏆 {t('games.table.analytics.view') || 'Results'}
-            </Button>
-          )}
-          <Button
-            variant={flagMode ? 'primary' : 'outline'}
-            size="sm"
-            onClick={() => setFlagMode((mode) => !mode)}
-            aria-pressed={flagMode}
-            title={t('games.minesweeper_v1.hud.flagModeHint')}
-            className="whitespace-nowrap px-3"
-          >
-            🚩 {t('games.minesweeper_v1.hud.flagMode')}
-          </Button>
+      <div className="flex items-center gap-3 rounded-xl border border-rose-500/40 bg-[var(--backgroundHover)] px-3 py-1.5 shadow-inner">
+        <span className="font-mono text-xl font-black tracking-widest text-red-600 dark:text-red-400 tabular-nums drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]">
+          {formatDigits(Math.floor((finished?.durationSeconds ?? 0) || 0))}
+        </span>
+      </div>
+    </>
+  );
+
+  const controls = (
+    <div className="flex w-full flex-wrap items-center justify-between gap-3 px-1">
+      <div className="flex items-center gap-2">
+        <label
+          className="text-xs font-semibold whitespace-nowrap text-[var(--textSecondary)]"
+          htmlFor="minesweeper-difficulty"
+        >
+          {t('games.minesweeper_v1.hud.difficulty')}
+        </label>
+        <Select
+          id="minesweeper-difficulty"
+          size="sm"
+          value={game.difficulty}
+          onValueChange={(value) => changeDifficulty(value as Difficulty)}
+          options={DIFFICULTY_OPTIONS.map(({ value }) => ({
+            value,
+            label: t(
+              `games.minesweeper_v1.difficulty.${value}` as TranslationKey,
+            ),
+          }))}
+        />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        {isGameOver && (
           <Button
             variant="secondary"
             size="sm"
-            onClick={handleNewGame}
-            className="whitespace-nowrap px-3"
+            data-testid="minesweeper-show-results-button"
+            className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25 whitespace-nowrap px-3"
           >
-            {t('games.minesweeper_v1.hud.newGame')}
+            🏆 {t('games.table.analytics.view') || 'Results'}
           </Button>
-        </div>
+        )}
+        <Button
+          variant={flagMode ? 'primary' : 'outline'}
+          size="sm"
+          onClick={() => setFlagMode((mode) => !mode)}
+          aria-pressed={flagMode}
+          title={t('games.minesweeper_v1.hud.flagModeHint')}
+          className="whitespace-nowrap px-3"
+        >
+          🚩 {t('games.minesweeper_v1.hud.flagMode')}
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={newGame}
+          className="whitespace-nowrap px-3"
+        >
+          {t('games.minesweeper_v1.hud.newGame')}
+        </Button>
       </div>
+    </div>
+  );
 
-      <MinesweeperBoard
-        game={game}
-        flagMode={flagMode}
-        onReveal={reveal}
-        onFlag={flag}
-        onPressingChange={setIsPressing}
-      />
-
-      <GameResultModal
-        isOpen={finished !== null && !isDismissed}
-        result={finished ? (finished.won ? 'victory' : 'defeat') : null}
-        gameName="Minesweeper"
-        onRematch={handleNewGame}
-        rematchLabel={t('games.minesweeper_v1.result.playAgain')}
-        onClose={handleCloseModal}
-        t={t}
-        messages={{
+  return (
+    <SoloGameContainer
+      gameId="minesweeper_v1"
+      difficulty={game.difficulty}
+      sortBy="durationMs"
+      order="asc"
+      maxWidthClassName={DIFFICULTY_MAX_WIDTH[game.difficulty] ?? 'max-w-2xl'}
+      isRunning={isRunning}
+      startedAt={startedAt ?? 0}
+      finishedAt={finishedAt}
+      onNewGame={newGame}
+      hud={hud}
+      controls={controls}
+      loadingMessage="games.minesweeper_v1.board.loading"
+      modal={{
+        result: finished ? (finished.won ? 'victory' : 'defeat') : null,
+        gameName: 'Minesweeper',
+        rematchLabel: t('games.minesweeper_v1.result.playAgain'),
+        theme: 'arcade',
+        stats,
+        messages: {
           title: t(
             finished?.won
               ? 'games.minesweeper_v1.result.wonTitle'
@@ -254,10 +206,16 @@ function MinesweeperTable() {
               ? 'games.minesweeper_v1.result.wonBody'
               : 'games.minesweeper_v1.result.lostBody',
           ),
-        }}
-        theme="arcade"
-        stats={stats}
+        },
+      }}
+    >
+      <MinesweeperBoard
+        game={game}
+        flagMode={flagMode}
+        onReveal={reveal}
+        onFlag={flag}
+        onPressingChange={setIsPressing}
       />
-    </div>
+    </SoloGameContainer>
   );
 }

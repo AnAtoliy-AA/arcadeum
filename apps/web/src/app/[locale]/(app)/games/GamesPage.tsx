@@ -15,11 +15,7 @@ import { gamesApi, GetRoomsResponse } from '@/features/games/api';
 import { gameMetadata } from '@/features/games/registry';
 import { GameCard } from '@/features/games/ui/GameCard';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
-import {
-  gameSocket,
-  connectSockets,
-  connectSocketsAnonymous,
-} from '@/shared/lib/socket';
+import { gameSocket } from '@/shared/lib/socket';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { GamesEmpty } from './components/GamesEmpty';
 import { GamesError } from './components/GamesError';
@@ -180,15 +176,6 @@ export default function GamesPage({
   }, [deferredSearchQuery, updateParams]);
 
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
-
-  useEffect(() => {
-    if (snapshot.accessToken) {
-      connectSockets(snapshot.accessToken);
-    } else if (snapshot.userId) {
-      // Anonymous user - connect socket without auth
-      connectSocketsAnonymous(snapshot.userId);
-    }
-  }, [snapshot.accessToken, snapshot.userId]);
 
   useEffect(() => {
     const handleRoomUpdate = () => {

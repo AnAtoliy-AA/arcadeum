@@ -11,6 +11,7 @@ import {
   formatDuration,
   useSoloTimer,
 } from '@/features/games/ui/SoloGameContainer';
+import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { Game2048ThemeProvider } from '../lib/Game2048ThemeContext';
 import { useGame2048Store } from '../store/game2048Store';
 import type { Direction } from '../types';
@@ -18,8 +19,9 @@ import { Game2048Board } from './Game2048Board';
 
 export default function Game2048() {
   useTrackSoloGameStarted('game_2048_v1');
+  const { themeId } = useSoloTheme('game_2048_v1');
   return (
-    <Game2048ThemeProvider>
+    <Game2048ThemeProvider variant={themeId}>
       <Game2048Table />
     </Game2048ThemeProvider>
   );
@@ -27,6 +29,7 @@ export default function Game2048() {
 
 function Game2048Table() {
   const { t } = useTranslation();
+  const { themeId } = useSoloTheme('game_2048_v1');
   const grid = useGame2048Store((state) => state.grid);
   const score = useGame2048Store((state) => state.score);
   const best = useGame2048Store((state) => state.best);
@@ -95,33 +98,38 @@ function Game2048Table() {
   );
 
   const hud = (
-    <>
-      <div className="grid grid-cols-3 gap-2 sm:gap-4">
-        <StatCard
-          label={t('games.game_2048_v1.hud.score')}
-          value={score}
-          dataTestId="game-2048-score"
-        />
-        <StatCard
-          label={t('games.game_2048_v1.hud.best')}
-          value={best}
-          dataTestId="game-2048-best"
-        />
-        <StatCard
-          label={t('games.game_2048_v1.hud.time')}
-          value={timer.formatted}
-          dataTestId="game-2048-timer"
-        />
-      </div>
-      <Button
-        variant="secondary"
-        size="sm"
-        onClick={newGame}
-        data-testid="game-2048-new-game-button"
-      >
-        {t('games.game_2048_v1.hud.newGame')}
-      </Button>
-    </>
+    <div className="grid w-full grid-cols-3 gap-2 sm:gap-3">
+      <StatCard
+        label={t('games.game_2048_v1.hud.score')}
+        value={score}
+        icon="🎯"
+        dataTestId="game-2048-score"
+      />
+      <StatCard
+        label={t('games.game_2048_v1.hud.best')}
+        value={best}
+        icon="🏆"
+        dataTestId="game-2048-best"
+      />
+      <StatCard
+        label={t('games.game_2048_v1.hud.time')}
+        value={timer.formatted}
+        icon="⏱️"
+        dataTestId="game-2048-timer"
+      />
+    </div>
+  );
+
+  const actions = (
+    <Button
+      variant="secondary"
+      size="sm"
+      onClick={newGame}
+      data-testid="game-2048-new-game-button"
+      className="whitespace-nowrap px-3.5 font-semibold"
+    >
+      {t('games.game_2048_v1.hud.newGame')}
+    </Button>
   );
 
   return (
@@ -135,12 +143,13 @@ function Game2048Table() {
       finishedAt={finishedAt}
       onNewGame={newGame}
       hud={hud}
+      actions={actions}
       loadingMessage="games.game_2048_v1.board.loading"
       modal={{
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,
         gameName: '2048',
         rematchLabel: t('games.game_2048_v1.result.playAgain'),
-        theme: 'zen',
+        theme: themeId,
         stats,
         messages: {
           title: t(
@@ -166,45 +175,81 @@ function Game2048Table() {
       <Game2048Board grid={grid} onMove={handleMove} />
 
       <div className="flex flex-col items-center gap-3">
-        <div className="flex items-center gap-2 sm:hidden">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleMove('up')}
-            data-testid="pad-up"
-          >
-            ▲
-          </Button>
+        <div className="flex flex-col items-center gap-1 sm:hidden select-none">
+          <div className="relative flex h-28 w-28 items-center justify-center">
+            <button
+              type="button"
+              onClick={() => handleMove('up')}
+              data-testid="pad-up"
+              aria-label="Move Up"
+              className="absolute top-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+            >
+              ▲
+            </button>
+            <button
+              type="button"
+              onClick={() => handleMove('left')}
+              data-testid="pad-left"
+              aria-label="Move Left"
+              className="absolute left-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+            >
+              ◀
+            </button>
+            <button
+              type="button"
+              onClick={() => handleMove('down')}
+              data-testid="pad-down"
+              aria-label="Move Down"
+              className="absolute bottom-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+            >
+              ▼
+            </button>
+            <button
+              type="button"
+              onClick={() => handleMove('right')}
+              data-testid="pad-right"
+              aria-label="Move Right"
+              className="absolute right-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+            >
+              ▶
+            </button>
+            <div className="h-5 w-5 rounded-full bg-[var(--backgroundHover)]" />
+          </div>
+          <p className="text-center text-xs text-[var(--textSecondary)]">
+            {t('games.game_2048_v1.board.controlsHint')}
+          </p>
         </div>
-        <div className="flex items-center gap-2 sm:hidden">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleMove('left')}
-            data-testid="pad-left"
-          >
-            ◀
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleMove('down')}
-            data-testid="pad-down"
-          >
-            ▼
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleMove('right')}
-            data-testid="pad-right"
-          >
-            ▶
-          </Button>
+
+        <div className="hidden sm:flex items-center gap-3 text-xs text-[var(--textSecondary)]">
+          <div className="flex items-center gap-1">
+            <kbd className="rounded border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--color)] shadow-sm">
+              W
+            </kbd>
+            <kbd className="rounded border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--color)] shadow-sm">
+              A
+            </kbd>
+            <kbd className="rounded border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--color)] shadow-sm">
+              S
+            </kbd>
+            <kbd className="rounded border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--color)] shadow-sm">
+              D
+            </kbd>
+            <span className="px-1 text-[var(--textSecondary)]">or</span>
+            <kbd className="rounded border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--color)] shadow-sm">
+              ↑
+            </kbd>
+            <kbd className="rounded border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--color)] shadow-sm">
+              ←
+            </kbd>
+            <kbd className="rounded border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--color)] shadow-sm">
+              ↓
+            </kbd>
+            <kbd className="rounded border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-1.5 py-0.5 font-mono text-[11px] font-semibold text-[var(--color)] shadow-sm">
+              →
+            </kbd>
+          </div>
+          <span>to slide</span>
         </div>
-        <p className="text-center text-xs text-[var(--textSecondary)]">
-          {t('games.game_2048_v1.board.controlsHint')}
-        </p>
       </div>
     </SoloGameContainer>
   );

@@ -10,6 +10,7 @@ import {
   SoloGameContainer,
   formatDuration,
 } from '@/features/games/ui/SoloGameContainer';
+import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { MinesweeperThemeProvider } from '../lib/MinesweeperThemeContext';
 import { useMinesweeperStore } from '../store/minesweeperStore';
 import type { Difficulty } from '../types';
@@ -34,8 +35,9 @@ function formatDigits(num: number): string {
 
 export default function MinesweeperGame() {
   useTrackSoloGameStarted('minesweeper_v1');
+  const { themeId } = useSoloTheme('minesweeper_v1');
   return (
-    <MinesweeperThemeProvider>
+    <MinesweeperThemeProvider variant={themeId}>
       <MinesweeperTable />
     </MinesweeperThemeProvider>
   );
@@ -43,6 +45,7 @@ export default function MinesweeperGame() {
 
 function MinesweeperTable() {
   const { t } = useTranslation();
+  const { themeId } = useSoloTheme('minesweeper_v1');
   const game = useMinesweeperStore((state) => state.game);
   const finished = useMinesweeperStore((state) => state.finished);
   const startedAt = useMinesweeperStore((state) => state.startedAt);
@@ -193,7 +196,7 @@ function MinesweeperTable() {
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,
         gameName: 'Minesweeper',
         rematchLabel: t('games.minesweeper_v1.result.playAgain'),
-        theme: 'arcade',
+        theme: themeId,
         stats,
         messages: {
           title: t(

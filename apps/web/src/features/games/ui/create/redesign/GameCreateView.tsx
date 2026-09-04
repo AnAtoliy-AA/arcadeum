@@ -10,7 +10,6 @@ import { useLanguage, formatMessage } from '@/shared/i18n/context';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { gamesApi, type CatalogResponse } from '@/features/games/api';
 import { trackSocialRoomCreated } from '@/shared/analytics/funnel';
-import { useGameInviteStore } from '@/features/games/store/gameInviteStore';
 import {
   buildComingSoonMaps,
   isCreateBlocked,
@@ -330,9 +329,7 @@ export function GameCreateView() {
       if (!data?.room?.id) return;
       trackSocialRoomCreated(form.gameId);
 
-      const inviteUserId =
-        searchParams?.get('inviteUser') ??
-        useGameInviteStore.getState().consumeInviteUser();
+      const inviteUserId = searchParams?.get('inviteUser');
 
       if (inviteUserId && snapshot.accessToken) {
         try {

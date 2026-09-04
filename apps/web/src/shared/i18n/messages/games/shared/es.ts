@@ -138,6 +138,8 @@ export const esMessages = {
       linkCopied: '¡Enlace copiado!',
       rewardsPrompt: '¿Necesitas más gemas? ¡Suscríbete a nuestras redes!',
       rewardsClaim: 'Reclamar',
+      addFriend: 'Agregar amigo',
+      friendAdded: 'Solicitud enviada',
     },
     deleteRoom: {
       button: 'Eliminar sala',

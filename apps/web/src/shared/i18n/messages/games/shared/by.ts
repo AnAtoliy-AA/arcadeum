@@ -137,6 +137,8 @@ export const byMessages = {
       linkCopied: 'Спасылка скапіявана!',
       rewardsPrompt: 'Патрэбна больш гемаў? Падпішыцеся на сацсеткі!',
       rewardsClaim: 'Забраць',
+      addFriend: 'Дадаць сябра',
+      friendAdded: 'Запыт адпраўлены',
     },
     deleteRoom: {
       button: 'Выдаліць залу',

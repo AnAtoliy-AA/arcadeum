@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Button,
@@ -18,7 +18,6 @@ import {
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { connectFriendsSocket, useFriendsSocket } from '@/shared/lib/socket';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { useGameInviteStore } from '@/features/games/store/gameInviteStore';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import {
   getFriends,
@@ -34,6 +33,12 @@ import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAva
 import { UserIcon } from '@arcadeum/ui/components/Icons/index';
 import { chatApi } from '@/features/chat/api';
 import { AddFriendCard } from './AddFriendCard';
+
+const GamePickerModal = lazy(() =>
+  import('@/features/games/ui/GamePickerModal').then((m) => ({
+    default: m.GamePickerModal,
+  })),
+);
 
 type FriendsTranslations = {
   title?: string;
@@ -201,13 +206,11 @@ export default function FriendsPageContent({
     }
   };
 
-  const handleInviteToGame = useCallback(
-    (friendUserId: string) => {
-      useGameInviteStore.getState().setInviteUser(friendUserId);
-      router.push(routes.games);
-    },
-    [router, routes.games],
-  );
+  const [inviteUserId, setInviteUserId] = useState<string | null>(null);
+
+  const handleInviteToGame = useCallback((friendUserId: string) => {
+    setInviteUserId(friendUserId);
+  }, []);
 
   const handleStartChat = useCallback(
     async (friend: Friend) => {
@@ -470,6 +473,14 @@ export default function FriendsPageContent({
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <Suspense fallback={null}>
+        <GamePickerModal
+          open={!!inviteUserId}
+          onClose={() => setInviteUserId(null)}
+          inviteUserId={inviteUserId ?? undefined}
+        />
+      </Suspense>
     </div>
   );
 }

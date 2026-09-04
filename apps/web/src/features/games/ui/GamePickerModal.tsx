@@ -24,6 +24,7 @@ import { GamePickerCard, type GamePickerItem } from './GamePickerCard';
 interface GamePickerModalProps {
   open: boolean;
   onClose: () => void;
+  inviteUserId?: string;
 }
 
 type GameCategoryKey = 'all' | 'board' | 'card' | 'casual' | 'puzzle';
@@ -55,7 +56,11 @@ function resolveCategory(
   return 'board';
 }
 
-export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
+export function GamePickerModal({
+  open,
+  onClose,
+  inviteUserId,
+}: GamePickerModalProps) {
   const router = useRouter();
   const routes = useRoutes();
   const { snapshot } = useSessionTokens();
@@ -142,17 +147,44 @@ export function GamePickerModal({ open, onClose }: GamePickerModalProps) {
       }
       setLoadingGame(gameId);
       try {
-        const { room } = await gamesApi.quickplay(gameId, undefined, {
-          token: snapshot.accessToken || undefined,
-        });
-        onClose();
-        router.push(routes.gameRoom(room.id));
+        if (inviteUserId) {
+          const { room } = await gamesApi.createRoom(
+            {
+              gameId,
+              name: `${snapshot.displayName || snapshot.username || 'Player'}'s game`,
+              visibility: 'public',
+            },
+            { token: snapshot.accessToken || undefined },
+          );
+          if (room?.id && snapshot.accessToken) {
+            await gamesApi.invitePlayers(room.id, [inviteUserId], {
+              token: snapshot.accessToken,
+            });
+          }
+          onClose();
+          router.push(routes.gameRoom(room.id));
+        } else {
+          const { room } = await gamesApi.quickplay(gameId, undefined, {
+            token: snapshot.accessToken || undefined,
+          });
+          onClose();
+          router.push(routes.gameRoom(room.id));
+        }
       } catch (err) {
-        console.warn(`Quickplay failed for ${gameId}:`, err);
+        console.warn(`Game creation failed for ${gameId}:`, err);
         setLoadingGame(null);
       }
     },
-    [snapshot.accessToken, routes, router, onClose, games],
+    [
+      snapshot.accessToken,
+      snapshot.displayName,
+      snapshot.username,
+      routes,
+      router,
+      onClose,
+      games,
+      inviteUserId,
+    ],
   );
 
   return (

@@ -137,6 +137,8 @@ export const enMessages = {
       linkCopied: 'Link copied!',
       rewardsPrompt: 'Need more gems? Subscribe to socials!',
       rewardsClaim: 'Claim',
+      addFriend: 'Add Friend',
+      friendAdded: 'Friend Request Sent',
     },
     deleteRoom: {
       button: 'Delete Room',

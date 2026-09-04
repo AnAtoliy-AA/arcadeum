@@ -22,6 +22,7 @@ export const friendsEs = {
   removeFriend: 'Eliminar amigo',
   removeConfirm: '¿Eliminar {name} de tus amigos?',
   inviteToGame: 'Invitar a jugar',
+  inviteGameTitle: 'Elige un juego para invitar a un amigo',
   chat: 'Chat',
   loginPrompt: 'Inicia sesión para gestionar tu lista de amigos.',
   loginButton: 'Iniciar sesión',

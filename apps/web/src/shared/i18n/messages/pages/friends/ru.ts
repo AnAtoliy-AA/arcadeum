@@ -22,6 +22,7 @@ export const friendsRu = {
   removeFriend: 'Удалить из друзей',
   removeConfirm: 'Удалить {name} из друзей?',
   inviteToGame: 'Пригласить в игру',
+  inviteGameTitle: 'Выберите игру, чтобы пригласить друга',
   chat: 'Чат',
   loginPrompt: 'Войдите, чтобы управлять списком друзей.',
   loginButton: 'Войти',

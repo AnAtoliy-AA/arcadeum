@@ -22,6 +22,7 @@ export const friendsBy = {
   removeFriend: 'Выдаліць сябра',
   removeConfirm: 'Выдаліць {name} з сяброў?',
   inviteToGame: 'Запрасіць у гульню',
+  inviteGameTitle: 'Выбярыце гульню, каб запрасіць сябра',
   chat: 'Чат',
   loginPrompt: 'Увайдзіце, каб кіраваць спісам сяброў.',
   loginButton: 'Увайсці',

@@ -64,6 +64,7 @@ type FriendsTranslations = {
   removeFriend?: string;
   removeConfirm?: string;
   inviteToGame?: string;
+  inviteGameTitle?: string;
   chat?: string;
   loginPrompt?: string;
   loginButton?: string;
@@ -479,6 +480,7 @@ export default function FriendsPageContent({
           open={!!inviteUserId}
           onClose={() => setInviteUserId(null)}
           inviteUserId={inviteUserId ?? undefined}
+          title={tt.inviteGameTitle ?? 'Pick a game to invite a friend'}
         />
       </Suspense>
     </div>

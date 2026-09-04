@@ -539,6 +539,7 @@ export const enMessages = {
   },
   gamePicker: {
     title: 'Pick a game to play vs AI',
+    inviteTitle: 'Pick a game to invite a friend',
     starting: 'Starting...',
     allCategory: 'All',
   },

@@ -542,6 +542,7 @@ export const byMessages = {
   },
   gamePicker: {
     title: 'Выбярыце гульню супраць ІІ',
+    inviteTitle: 'Выбярыце гульню, каб запрасіць сябра',
     starting: 'Запуск...',
     allCategory: 'Усе',
   },

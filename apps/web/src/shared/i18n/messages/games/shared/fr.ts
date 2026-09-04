@@ -552,6 +552,7 @@ export const frMessages = {
   },
   gamePicker: {
     title: "Choisissez un jeu contre l'IA",
+    inviteTitle: 'Choisissez un jeu pour inviter un ami',
     starting: 'Démarrage...',
     allCategory: 'Tous',
   },

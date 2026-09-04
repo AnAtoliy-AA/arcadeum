@@ -549,6 +549,7 @@ export const esMessages = {
   },
   gamePicker: {
     title: 'Elige un juego para jugar contra la IA',
+    inviteTitle: 'Elige un juego para invitar a un amigo',
     starting: 'Iniciando...',
     allCategory: 'Todos',
   },

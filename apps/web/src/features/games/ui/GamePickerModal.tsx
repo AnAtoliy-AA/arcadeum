@@ -25,6 +25,7 @@ interface GamePickerModalProps {
   open: boolean;
   onClose: () => void;
   inviteUserId?: string;
+  title?: string;
 }
 
 type GameCategoryKey = 'all' | 'board' | 'card' | 'casual' | 'puzzle';
@@ -60,6 +61,7 @@ export function GamePickerModal({
   open,
   onClose,
   inviteUserId,
+  title,
 }: GamePickerModalProps) {
   const router = useRouter();
   const routes = useRoutes();
@@ -86,24 +88,26 @@ export function GamePickerModal({
   }, [open]);
 
   const games: GamePickerItem[] = useMemo(() => {
-    return featuredGames.map((g) => {
-      const isComingSoon = comingSoonIds?.has(g.id) ?? false;
-      return {
-        id: g.id,
-        slug: g.id,
-        name: t(g.nameKey as TranslationKey),
-        description: t(g.descriptionKey as TranslationKey),
-        genre: g.genre,
-        pace: g.pace,
-        category: resolveCategory(g.type, g.genre),
-        players: g.players,
-        duration: g.duration,
-        isPlayable: g.isPlayable && !isComingSoon,
-        isDemo: g.isDemo,
-        landingHref: g.landingHref,
-      };
-    });
-  }, [t, comingSoonIds]);
+    return featuredGames
+      .filter((g) => !inviteUserId || g.players !== '1')
+      .map((g) => {
+        const isComingSoon = comingSoonIds?.has(g.id) ?? false;
+        return {
+          id: g.id,
+          slug: g.id,
+          name: t(g.nameKey as TranslationKey),
+          description: t(g.descriptionKey as TranslationKey),
+          genre: g.genre,
+          pace: g.pace,
+          category: resolveCategory(g.type, g.genre),
+          players: g.players,
+          duration: g.duration,
+          isPlayable: g.isPlayable && !isComingSoon,
+          isDemo: g.isDemo,
+          landingHref: g.landingHref,
+        };
+      });
+  }, [t, comingSoonIds, inviteUserId]);
 
   const categoryCounts = useMemo(() => {
     const counts: Record<GameCategoryKey, number> = {
@@ -192,7 +196,7 @@ export function GamePickerModal({
       <ModalContent maxWidth={960} data-testid="game-picker-modal">
         <ModalHeader onClose={onClose}>
           <ModalTitle data-testid="game-picker-title">
-            {t('games.gamePicker.title')}
+            {title || t('games.gamePicker.title')}
           </ModalTitle>
         </ModalHeader>
         <ModalBody data-testid="game-picker-body">

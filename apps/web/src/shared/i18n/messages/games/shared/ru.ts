@@ -542,6 +542,7 @@ export const ruMessages = {
   },
   gamePicker: {
     title: 'Выберите игру против ИИ',
+    inviteTitle: 'Выберите игру, чтобы пригласить друга',
     starting: 'Запуск...',
     allCategory: 'Все',
   },

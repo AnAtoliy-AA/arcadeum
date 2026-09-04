@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.3] - 2026-09-04
+
+### Added
+- improve InviteFriendPicker with multi-select and search
+- add delete notifications and load inbox on mount
+- add game_invitation notification for room invites
+- add invite-to-game flow from friends list and game lobby
+- add user profile page with friends list and clickable names
+- enhance friends system with search, notifications, in-game requests, chat integration, and real-time sync
+
+### Fixed
+- handle plain objects in chat messages and sanitize friend request input
+- add @IsMongoId validation to SendFriendRequestByUserIdDto
+- resolve gameId to translated name on frontend
+- add missing game_invitation title/body keys to all locale notification bundles
+- make modal title customizable via prop, add i18n keys
+- fix invite-to-game flow to go through games listing page
+
+### Refactored
+- replace redirect flow with game picker modal for invites
+
+
 ## [1.28.2] - 2026-09-04
 
 ### Added

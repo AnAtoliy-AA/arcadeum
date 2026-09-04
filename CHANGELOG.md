@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.4] - 2026-09-04
+
+### Fixed
+- fix long/gulbara P1 direction and add variant-specific rules
+
+
 ## [1.28.3] - 2026-09-04
 
 ### Added

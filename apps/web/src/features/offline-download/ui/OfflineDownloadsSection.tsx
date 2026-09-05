@@ -39,7 +39,7 @@ export function OfflineDownloadsSection() {
     toggle,
     retry,
   } = useOfflineDownloads();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   const dl = messages.pwa?.offlineDownloads;
   const allSelected = games.every((g) => g.info !== null);
@@ -58,6 +58,8 @@ export function OfflineDownloadsSection() {
       }
     }
   };
+
+  if (process.env.NODE_ENV === 'development') return null;
 
   if (!supported) {
     return (
@@ -143,7 +145,7 @@ export function OfflineDownloadsSection() {
         <div
           className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
         >
-          <div className="flex flex-col gap-3 overflow-hidden">
+          <div className="flex max-h-80 flex-col gap-3 overflow-y-auto overflow-hidden">
             {games.map(({ game, name, status, info, manifestBytes }) => (
               <GameDownloadRow
                 key={game.slug}

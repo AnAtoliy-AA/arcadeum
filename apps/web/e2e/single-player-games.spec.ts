@@ -141,7 +141,8 @@ test.describe('Single Player Puzzle Games', () => {
     const exitBtn = page.getByTestId('solo-fullscreen-button');
     await exitBtn.click();
     await expect(container).not.toHaveAttribute('data-fullscreen', 'true');
-    await expect(bgImage).not.toBeVisible();
+    await expect(bgImage).toBeVisible();
+    await expect(bgImage).toHaveClass(/opacity-40/);
   });
 
   test('Solo game supports manual pause, overlay display, keyboard shortcut, and auto-pause toggle', async ({

@@ -157,10 +157,10 @@ describe('AuthFormPanel', () => {
     expect(start).toHaveBeenCalledWith('google');
   });
 
-  it('renders Apple and Discord OAuth buttons in a disabled state', () => {
+  it('renders Apple and Discord OAuth buttons in an enabled state', () => {
     renderPanel(makeAuth());
-    expect(screen.getByTestId('auth-oauth-apple')).toBeDisabled();
-    expect(screen.getByTestId('auth-oauth-discord')).toBeDisabled();
+    expect(screen.getByTestId('auth-oauth-apple')).not.toBeDisabled();
+    expect(screen.getByTestId('auth-oauth-discord')).not.toBeDisabled();
   });
 
   it('disables the submit button while the form is empty', () => {

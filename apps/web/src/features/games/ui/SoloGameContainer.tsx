@@ -344,23 +344,24 @@ export function SoloGameContainer({
             : 'relative',
         )}
       >
-        {isFullscreen && (
+        {resolvedBgImage && (
           <div
             className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
             aria-hidden="true"
           >
-            {resolvedBgImage && (
-              <Image
-                src={resolvedBgImage}
-                alt=""
-                fill
-                priority
-                sizes="100vw"
-                aria-hidden="true"
-                data-testid="solo-theme-bg-image"
-                className="object-cover object-center opacity-25 transition-opacity duration-300"
-              />
-            )}
+            <Image
+              src={resolvedBgImage}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              aria-hidden="true"
+              data-testid="solo-theme-bg-image"
+              className={cx(
+                'object-cover object-center transition-opacity duration-300',
+                isFullscreen ? 'opacity-25' : 'opacity-15',
+              )}
+            />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,var(--tw-gradient-stops))] from-[var(--primary)]/15 via-transparent to-transparent pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--background)]/60 to-[var(--background)]" />
           </div>

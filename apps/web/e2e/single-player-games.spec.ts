@@ -97,7 +97,7 @@ test.describe('Single Player Puzzle Games', () => {
     await expect(timerCard).toBeVisible();
 
     const bgImage = page.getByTestId('solo-theme-bg-image');
-    await expect(bgImage).not.toBeVisible();
+    await expect(bgImage).toBeVisible();
 
     const facedownFan = page.locator('[data-fan="facedown"]');
     await expect(facedownFan.first()).toBeVisible();

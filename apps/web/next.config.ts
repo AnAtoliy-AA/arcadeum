@@ -40,9 +40,12 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 const withPWA = withPWAInit({
   dest: 'public',
+  // Disable in local dev and during E2E test builds (E2E_PROD is a
+  // server-only flag set by the test:e2e:local script). Never use
+  // NEXT_PUBLIC_E2E here — it leaks to the client bundle and
+  // inadvertently disables PWA on staging deployments.
   disable:
-    process.env.NODE_ENV === 'development' ||
-    process.env.NEXT_PUBLIC_E2E === 'true',
+    process.env.NODE_ENV === 'development' || process.env.E2E_PROD === 'true',
   register: true,
   fallbacks: {
     document: '/offline',

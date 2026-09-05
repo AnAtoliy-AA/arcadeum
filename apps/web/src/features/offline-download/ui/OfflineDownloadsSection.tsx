@@ -44,19 +44,19 @@ export function OfflineDownloadsSection() {
   const dl = messages.pwa?.offlineDownloads;
   const allSelected = games.every((g) => g.info !== null);
 
-  const handleSelectAll = () => {
-    games.forEach((g) => {
+  const handleSelectAll = async () => {
+    for (const g of games) {
       if (!g.info && !busySlugs.includes(g.game.slug)) {
-        void toggle(g.game.slug);
+        await toggle(g.game.slug);
       }
-    });
+    }
   };
-  const handleRemoveAll = () => {
-    games.forEach((g) => {
+  const handleRemoveAll = async () => {
+    for (const g of games) {
       if (g.info && !busySlugs.includes(g.game.slug)) {
-        void toggle(g.game.slug);
+        await toggle(g.game.slug);
       }
-    });
+    }
   };
 
   if (!supported) {

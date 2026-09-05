@@ -11,15 +11,35 @@ export function formatDuration(durationMs: number): string {
 export function useSoloTimer(
   isRunning: boolean,
   startedAt: number,
+  isPaused: boolean = false,
 ): { elapsedMs: number; formatted: string } {
   const [elapsedMs, setElapsedMs] = useState(0);
   const hiddenAtRef = useRef<number | null>(null);
+  const pausedAtRef = useRef<number | null>(null);
   const pausedMsRef = useRef(0);
+
+  useEffect(() => {
+    pausedMsRef.current = 0;
+    pausedAtRef.current = null;
+    hiddenAtRef.current = null;
+  }, [startedAt]);
+
+  useEffect(() => {
+    if (isPaused) {
+      if (pausedAtRef.current === null) {
+        pausedAtRef.current = Date.now();
+      }
+    } else if (pausedAtRef.current !== null) {
+      pausedMsRef.current += Date.now() - pausedAtRef.current;
+      pausedAtRef.current = null;
+    }
+  }, [isPaused]);
 
   useEffect(() => {
     if (!isRunning) return undefined;
 
     const tick = () => {
+      if (isPaused) return;
       const hiddenBonus = hiddenAtRef.current
         ? Date.now() - hiddenAtRef.current
         : 0;
@@ -44,7 +64,7 @@ export function useSoloTimer(
       clearInterval(interval);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
-  }, [isRunning, startedAt]);
+  }, [isRunning, startedAt, isPaused]);
 
   return { elapsedMs, formatted: formatDuration(elapsedMs) };
 }
@@ -66,19 +86,21 @@ export function StatCard({
     <div
       data-testid={dataTestId}
       className={cx(
-        'flex flex-col items-center justify-center rounded-xl border px-2.5 py-1.5 transition-all backdrop-blur-md sm:px-4 sm:py-2.5',
+        'flex items-center gap-1 rounded-md border px-1.5 sm:px-2 py-0.5 text-xs transition-colors shadow-xs select-none',
         highlight
-          ? 'border-rose-500/40 bg-rose-500/15 text-rose-500 shadow-sm shadow-rose-500/20'
-          : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] shadow-sm hover:border-[var(--glassBorderStrong)]',
+          ? 'border-rose-500/40 bg-rose-500/15 text-rose-500'
+          : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] hover:border-[var(--glassBorderStrong)]',
       )}
     >
-      <div className="flex items-center gap-1">
-        {icon && <span className="text-xs opacity-80">{icon}</span>}
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
-          {label}
+      {icon && (
+        <span className="text-[11px] leading-none opacity-80 select-none">
+          {icon}
         </span>
-      </div>
-      <span className="font-mono text-base font-black tabular-nums sm:text-xl">
+      )}
+      <span className="hidden sm:inline text-[9px] font-bold uppercase tracking-wider text-[var(--textSecondary)] select-none">
+        {label}
+      </span>
+      <span className="font-mono text-xs font-black tabular-nums text-[var(--color)]">
         {value}
       </span>
     </div>

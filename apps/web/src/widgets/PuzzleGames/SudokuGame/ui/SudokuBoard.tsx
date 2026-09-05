@@ -49,7 +49,7 @@ export function SudokuBoard({
       role="grid"
       aria-label="Sudoku"
       style={boardVars(theme)}
-      className="mx-auto grid aspect-square w-full max-w-[28rem] grid-cols-9 rounded-2xl border-2 border-[var(--sdk-board-border)] bg-[var(--sdk-board-bg)] p-1 shadow-2xl backdrop-blur-xl select-none transition-colors duration-300"
+      className="mx-auto grid aspect-square w-full max-w-[min(100vw-1rem,min(48vh,24.5rem))] sm:max-w-[min(100vw-2rem,min(50vh,25.5rem))] grid-cols-9 rounded-2xl border-2 border-[var(--sdk-board-border)] bg-[var(--sdk-board-bg)] p-1 shadow-xl select-none transition-colors duration-200"
     >
       {game.cells.map((value, index) => {
         const row = rowOf(index);
@@ -96,10 +96,11 @@ export function SudokuBoard({
               <span
                 className={cx(
                   'text-lg sm:text-xl tabular-nums',
-                  given
-                    ? 'font-bold text-[var(--sdk-given)]'
-                    : 'font-extrabold text-[var(--sdk-player-val)]',
-                  hasConflict && '!text-rose-400',
+                  hasConflict
+                    ? 'font-extrabold text-rose-400'
+                    : given
+                      ? 'font-bold text-[var(--sdk-given)]'
+                      : 'font-extrabold text-[var(--sdk-player-val)]',
                 )}
               >
                 {value}

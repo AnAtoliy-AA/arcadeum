@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, type CSSProperties } from 'react';
+import Image from 'next/image';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { getSourceCards, isValidMove } from '../lib/engine';
@@ -29,9 +30,6 @@ const SUIT_GLYPHS: Record<Suit, string> = {
   diamonds: '♦',
   clubs: '♣',
 };
-
-const FACEDOWN_FAN_OFFSET = 12;
-const FACEUP_FAN_OFFSET = 26;
 
 function boardVars(theme: SolitaireTheme): CSSProperties {
   return {
@@ -131,127 +129,144 @@ export function SolitaireBoard({
   return (
     <div
       style={boardVars(theme)}
-      className="w-full rounded-3xl border-2 border-[var(--sol-table-border)] bg-[var(--sol-table-bg)] p-3 sm:p-6 shadow-2xl backdrop-blur-xl select-none transition-colors duration-300"
+      className="relative w-full rounded-2xl sm:rounded-3xl border border-[var(--sol-table-border)] bg-[var(--sol-table-bg)] p-1.5 sm:p-4 shadow-xl select-none transition-colors duration-200 overflow-hidden"
     >
-      <div className="flex items-start justify-between gap-2 sm:gap-4">
-        <div className="flex gap-2 sm:gap-3">
-          <button
-            type="button"
-            onClick={onDraw}
-            aria-label={
-              game.stock.length > 0
-                ? t('games.solitaire_v1.board.draw')
-                : t('games.solitaire_v1.board.recycle')
-            }
-            className={cx(
-              'relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 transition-all',
-              game.stock.length > 0
-                ? 'cursor-pointer border-[var(--sol-card-back-border)]'
-                : 'cursor-pointer border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] hover:border-[var(--primary)]',
-            )}
-          >
-            {game.stock.length > 0 ? (
-              <div className="absolute inset-0">
-                <CardView
-                  card={{
-                    ...game.stock[game.stock.length - 1],
-                    faceUp: false,
-                  }}
-                />
-              </div>
-            ) : (
-              game.waste.length > 0 && (
+      {theme.bgImage && (
+        <Image
+          src={theme.bgImage}
+          alt=""
+          fill
+          priority
+          sizes="(max-width: 1024px) 100vw, 880px"
+          aria-hidden="true"
+          className="pointer-events-none object-cover object-center opacity-10"
+        />
+      )}
+      <div className="grid grid-cols-7 gap-1.5 sm:gap-3 items-start">
+        <button
+          type="button"
+          onClick={onDraw}
+          aria-label={
+            game.stock.length > 0
+              ? t('games.solitaire_v1.board.draw')
+              : t('games.solitaire_v1.board.recycle')
+          }
+          className={cx(
+            'relative aspect-[68/96] w-full rounded-xl border-2 transition-all block',
+            game.stock.length > 0
+              ? 'cursor-pointer border-[var(--sol-card-back-border)] shadow-md hover:-translate-y-0.5'
+              : 'cursor-pointer border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] hover:border-[var(--primary)]',
+          )}
+        >
+          {game.stock.length > 0 ? (
+            <div className="absolute inset-0">
+              <CardView
+                card={{
+                  ...game.stock[game.stock.length - 1],
+                  faceUp: false,
+                }}
+              />
+            </div>
+          ) : (
+            game.waste.length > 0 && (
+              <span
+                className="absolute inset-0 flex items-center justify-center text-xl sm:text-2xl text-[var(--textSecondary)] opacity-60 transition-transform hover:rotate-45"
+                aria-hidden="true"
+              >
+                ↻
+              </span>
+            )
+          )}
+        </button>
+
+        <div className="relative aspect-[68/96] w-full rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)]">
+          {game.waste.length > 0 && (
+            <div className="absolute inset-0">
+              <CardView
+                card={game.waste[game.waste.length - 1]}
+                selected={isSameSelection(selection, { kind: 'waste' })}
+                onClick={() => toggleSelect({ kind: 'waste' })}
+                onDoubleClick={() =>
+                  tryAutoFoundation(game.waste[game.waste.length - 1])
+                }
+              />
+            </div>
+          )}
+        </div>
+
+        <div
+          className="aspect-[68/96] w-full pointer-events-none"
+          aria-hidden="true"
+        />
+
+        {game.foundations.map((pile, foundationIndex) => {
+          const suit = foundationSuitOf(foundationIndex);
+          return (
+            <button
+              key={suit}
+              type="button"
+              onClick={() => tryMove({ kind: 'foundation', foundationIndex })}
+              aria-label={`${t('games.solitaire_v1.board.foundation')} ${SUIT_GLYPHS[suit]}`}
+              className="relative aspect-[68/96] w-full rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] transition-colors hover:border-[var(--primary)] block"
+            >
+              {pile.length > 0 ? (
+                <div className="pointer-events-none absolute inset-0">
+                  <CardView card={pile[pile.length - 1]} />
+                </div>
+              ) : (
                 <span
-                  className="absolute inset-0 flex items-center justify-center text-2xl text-[var(--textSecondary)] opacity-60"
+                  className="flex h-full w-full items-center justify-center text-lg sm:text-2xl text-[var(--textSecondary)] opacity-40 select-none"
                   aria-hidden="true"
                 >
-                  ↻
+                  {SUIT_GLYPHS[suit]}
                 </span>
-              )
-            )}
-          </button>
-
-          <div className="relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)]">
-            {game.waste.length > 0 && (
-              <div className="absolute inset-0">
-                <CardView
-                  card={game.waste[game.waste.length - 1]}
-                  selected={isSameSelection(selection, { kind: 'waste' })}
-                  onClick={() => toggleSelect({ kind: 'waste' })}
-                  onDoubleClick={() =>
-                    tryAutoFoundation(game.waste[game.waste.length - 1])
-                  }
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex gap-2 sm:gap-3">
-          {game.foundations.map((pile, foundationIndex) => {
-            const suit = foundationSuitOf(foundationIndex);
-            return (
-              <button
-                key={suit}
-                type="button"
-                onClick={() => tryMove({ kind: 'foundation', foundationIndex })}
-                aria-label={`${t('games.solitaire_v1.board.foundation')} ${SUIT_GLYPHS[suit]}`}
-                className="relative h-20 w-14 sm:h-28 sm:w-20 rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] transition-colors hover:border-[var(--primary)]"
-              >
-                {pile.length > 0 ? (
-                  <div className="pointer-events-none absolute inset-0">
-                    <CardView card={pile[pile.length - 1]} />
-                  </div>
-                ) : (
-                  <span
-                    className="flex h-full w-full items-center justify-center text-2xl text-[var(--textSecondary)] opacity-40"
-                    aria-hidden="true"
-                  >
-                    {SUIT_GLYPHS[suit]}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="mt-6 grid grid-cols-7 gap-1.5 sm:gap-3">
+      <div className="mt-3 sm:mt-4 grid grid-cols-7 gap-1.5 sm:gap-3 items-start">
         {game.tableau.map((pile, pileIndex) => (
-          <div key={pileIndex} className="relative min-h-24 sm:min-h-32">
+          <div key={pileIndex} className="relative">
             {pile.length === 0 ? (
               <button
                 type="button"
                 aria-label={`${t('games.solitaire_v1.board.pile')} ${pileIndex + 1}`}
                 onClick={() => tryMove({ kind: 'tableau', pileIndex })}
-                className="h-20 w-full cursor-pointer rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] hover:border-[var(--primary)]"
+                className="aspect-[68/96] w-full cursor-pointer rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] hover:border-[var(--primary)] block"
               />
             ) : (
               <ul className="m-0 flex list-none flex-col p-0">
                 {pile.map((card, cardIndex) => {
                   const previous = pile[cardIndex - 1];
-                  const pullUp = previous
-                    ? previous.faceUp
-                      ? FACEUP_FAN_OFFSET
-                      : FACEDOWN_FAN_OFFSET
-                    : 0;
+                  const isSelected =
+                    selection?.kind === 'tableau' &&
+                    selection.pileIndex === pileIndex &&
+                    cardIndex >= selection.cardIndex;
                   return (
                     <li
                       key={card.id}
+                      data-fan={
+                        cardIndex > 0
+                          ? previous?.faceUp
+                            ? 'faceup'
+                            : 'facedown'
+                          : undefined
+                      }
                       className={cx(
                         'w-full relative',
-                        pullUp === FACEDOWN_FAN_OFFSET && '-mt-3 sm:-mt-3.5',
-                        pullUp === FACEUP_FAN_OFFSET && '-mt-6 sm:-mt-7',
+                        cardIndex > 0 &&
+                          (previous?.faceUp
+                            ? 'mt-[calc(-141.18%+1.5rem)] sm:mt-[calc(-141.18%+1.625rem)]'
+                            : 'mt-[calc(-141.18%+0.75rem)] sm:mt-[calc(-141.18%+0.875rem)]'),
+                        isSelected ? 'z-20' : 'z-0',
                       )}
                     >
                       <div className="aspect-[68/96] w-full">
                         <CardView
                           card={card}
-                          selected={
-                            selection?.kind === 'tableau' &&
-                            selection.pileIndex === pileIndex &&
-                            cardIndex >= selection.cardIndex
-                          }
+                          selected={isSelected}
                           onClick={
                             card.faceUp
                               ? () => handleTableauClick(pileIndex, cardIndex)
@@ -275,7 +290,7 @@ export function SolitaireBoard({
 
       {selectedCards.length > 0 && (
         <p
-          className="mt-4 text-center text-xs text-[var(--primary)] font-semibold"
+          className="mt-2.5 text-center text-xs text-[var(--primary)] font-semibold"
           role="status"
         >
           {t('games.solitaire_v1.board.selectedHint')}

@@ -77,14 +77,14 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
     <div
       data-testid="game-2048-board"
       style={boardVars(theme)}
-      className="mx-auto aspect-square w-full max-w-[min(100vw-2rem,28rem)] touch-none rounded-3xl border border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-3 shadow-2xl shadow-black/60 backdrop-blur-xl transition-colors duration-300 sm:p-4"
+      className="mx-auto aspect-square w-full max-w-[min(100vw-1rem,min(50vh,25.5rem))] sm:max-w-[min(100vw-2rem,min(52vh,26.5rem))] touch-none rounded-2xl sm:rounded-3xl border border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-2 sm:p-3 shadow-xl shadow-black/40 select-none transition-colors duration-200"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       <div
         role="grid"
         aria-label="2048 board"
-        className="grid h-full w-full grid-cols-4 grid-rows-4 gap-2.5 sm:gap-3"
+        className="grid h-full w-full grid-cols-4 grid-rows-4 gap-2 sm:gap-2.5"
       >
         {grid.map((value, index) => (
           <div

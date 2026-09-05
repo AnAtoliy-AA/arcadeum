@@ -38,9 +38,11 @@ function finishIfOver(
   score: number,
   moves: number,
   startedAt: number,
+  hasEverWon: boolean = false,
 ): Pick<Game2048StoreState, 'finishedAt' | 'finished'> | null {
   if (status === 'playing') return null;
 
+  const won = status === 'won' || hasEverWon;
   const finishedAt = Date.now();
   const durationMs = finishedAt - startedAt;
   const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
@@ -48,7 +50,7 @@ function finishIfOver(
 
   void useLocalStatsStore.getState().recordGameResult({
     gameId: GAME_2048_ID,
-    result: status === 'won' ? 'won' : 'lost',
+    result: won ? 'won' : 'lost',
     timestamp: finishedAt,
   });
 
@@ -58,7 +60,7 @@ function finishIfOver(
     score,
     moves,
     durationMs,
-    result: status === 'won' ? 'won' : 'lost',
+    result: won ? 'won' : 'lost',
     sessionId,
     timestamp: finishedAt,
   });
@@ -66,7 +68,7 @@ function finishIfOver(
   return {
     finishedAt,
     finished: {
-      won: status === 'won',
+      won,
       score,
       moves,
       durationMs,
@@ -91,41 +93,51 @@ export const useGame2048Store = create<Game2048StoreState>()(
         const state = get();
         if (state.status === 'lost') return;
 
+        const effectiveKeepPlaying =
+          state.status === 'won' ? true : state.keepPlayingFlag;
+
         const next = move(
           {
             grid: state.grid,
             score: state.score,
             status: state.status,
-            keepPlaying: state.keepPlayingFlag,
+            keepPlaying: effectiveKeepPlaying,
             moves: state.moves,
           },
           direction,
         );
         if (next.grid === state.grid) return;
 
+        const isNewlyFinished =
+          (state.status === 'playing' &&
+            (next.status === 'won' || next.status === 'lost')) ||
+          (state.status === 'won' && next.status === 'lost');
+
         const best = Math.max(state.best, next.score);
         set((current) => ({
           grid: next.grid,
           score: next.score,
           status: next.status,
-          keepPlayingFlag: next.keepPlaying,
+          keepPlayingFlag: next.keepPlaying || effectiveKeepPlaying,
           moves: next.moves,
           best,
-          ...(next.status !== 'playing'
+          ...(isNewlyFinished
             ? finishIfOver(
                 next.status,
                 next.score,
                 next.moves,
                 current.startedAt,
+                state.status === 'won' || state.keepPlayingFlag,
               )
-            : null),
+            : state.status === 'won' && next.status !== 'lost'
+              ? { finished: null, finishedAt: null }
+              : null),
         }));
       },
 
       continuePlaying: () =>
         set((state) => {
-          if (state.status !== 'won' || state.keepPlayingFlag) return state;
-          // Resume play — clear the dialog but remember the win.
+          if (state.status === 'lost') return state;
           return { keepPlayingFlag: true, finished: null, finishedAt: null };
         }),
 

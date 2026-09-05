@@ -4,6 +4,7 @@ import { useCallback, useRef, type CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { useSoloFullscreen } from '@/features/games/ui/SoloGameContainer';
 import { useMinesweeperTheme } from '../lib/MinesweeperThemeContext';
 import type { MinesweeperTheme } from '../lib/theme';
 import type { Cell, MinesweeperState } from '../types';
@@ -33,7 +34,8 @@ const NUMBER_COLOR_CLASSES: Record<number, string> = {
 
 const GRID_COLS_BY_WIDTH: Record<number, string> = {
   9: 'grid-cols-9',
-  16: 'grid-cols-16',
+  16: 'grid-cols-[repeat(16,minmax(0,1fr))]',
+  22: 'grid-cols-[repeat(22,minmax(0,1fr))]',
   30: 'grid-cols-[repeat(30,minmax(0,1fr))]',
 };
 
@@ -56,6 +58,7 @@ export function MinesweeperBoard({
 }: MinesweeperBoardProps) {
   const { t } = useTranslation();
   const theme = useMinesweeperTheme();
+  const isFullscreen = useSoloFullscreen();
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suppressClick = useRef(false);
 
@@ -108,16 +111,21 @@ export function MinesweeperBoard({
   return (
     <div
       style={boardVars(theme)}
-      className="w-full max-w-full overflow-x-auto rounded-2xl border-2 border-[var(--ms-board-border)] bg-[var(--ms-board-bg)] p-2 sm:p-4 shadow-2xl backdrop-blur-xl select-none transition-colors duration-300"
+      className={cx(
+        'w-full max-w-full overflow-x-auto rounded-2xl border border-[var(--glassBorder)] bg-[var(--ms-board-bg)] shadow-xl select-none transition-colors duration-200',
+        isFullscreen ? 'p-2 sm:p-3' : 'p-1.5 sm:p-4',
+      )}
       role="grid"
       aria-label={t('games.minesweeper_v1.board.label')}
     >
       <div className={cx('mx-auto grid w-max gap-1 p-1', gridColsClass)}>
         {game.cells.map((cell, index) => (
           <MineCell
-            key={index}
+            key={`${game.difficulty}-${index}`}
             cell={cell}
+            isBeginner={game.width <= 9}
             isCompact={game.width > 16}
+            isFullscreen={isFullscreen}
             lost={game.status === 'lost'}
             onReveal={() => handleCellClick(index)}
             onFlag={() => handleContextMenu(index)}
@@ -132,7 +140,9 @@ export function MinesweeperBoard({
 
 function MineCell({
   cell,
+  isBeginner,
   isCompact,
+  isFullscreen,
   lost,
   onReveal,
   onFlag,
@@ -140,7 +150,9 @@ function MineCell({
   onPressEnd,
 }: {
   cell: Cell;
+  isBeginner?: boolean;
   isCompact?: boolean;
+  isFullscreen?: boolean;
   lost: boolean;
   onReveal: () => void;
   onFlag: () => void;
@@ -156,13 +168,21 @@ function MineCell({
       type="button"
       role="gridcell"
       className={cx(
-        'flex aspect-square items-center justify-center font-mono font-extrabold transition-all',
-        isCompact
-          ? 'h-6 w-6 min-w-[24px] sm:h-7 sm:w-7 sm:min-w-[28px] md:h-8 md:w-8 md:min-w-[32px] rounded-[6px] sm:rounded-lg text-xs sm:text-sm'
-          : 'h-8 w-8 sm:h-9 sm:w-9 rounded-lg text-sm sm:text-base',
+        'flex aspect-square items-center justify-center font-mono font-extrabold transition-colors',
+        isBeginner
+          ? isFullscreen
+            ? 'h-9 w-9 min-w-[36px] sm:h-10.5 sm:w-10.5 sm:min-w-[42px] lg:h-12 lg:w-12 lg:min-w-[48px] rounded-xl text-base sm:text-lg lg:text-xl'
+            : 'h-8 w-8 min-w-[32px] sm:h-9.5 sm:w-9.5 sm:min-w-[38px] md:h-11 md:w-11 md:min-w-[44px] rounded-xl text-sm sm:text-base md:text-lg'
+          : isCompact
+            ? isFullscreen
+              ? 'h-6.5 w-6.5 min-w-[24px] sm:h-7.5 sm:w-7.5 sm:min-w-[28px] lg:h-8 lg:w-8 lg:min-w-[32px] rounded-md text-xs sm:text-sm'
+              : 'h-5.5 w-5.5 min-w-[22px] sm:h-6.5 sm:w-6.5 sm:min-w-[26px] md:h-7 md:w-7 md:min-w-[28px] rounded-md text-xs sm:text-sm'
+            : isFullscreen
+              ? 'h-7.5 w-7.5 min-w-[28px] sm:h-8.5 sm:w-8.5 sm:min-w-[32px] lg:h-9.5 lg:w-9.5 rounded-lg text-xs sm:text-base'
+              : 'h-6.5 w-6.5 min-w-[24px] sm:h-7.5 sm:w-7.5 sm:min-w-[28px] md:h-8 md:w-8 md:min-w-[32px] rounded-lg text-xs sm:text-sm',
         revealed
-          ? 'cursor-default border border-[var(--ms-cell-revealed-border)] bg-[var(--backgroundHover)] text-[var(--color)] shadow-inner'
-          : 'cursor-pointer border border-[var(--ms-cell-hidden-border)] bg-[var(--glassBg)] text-[var(--color)] shadow-sm hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)] active:scale-95',
+          ? 'cursor-default border border-[var(--ms-cell-revealed-border)] bg-black/25 text-[var(--color)] shadow-inner'
+          : 'cursor-pointer border border-[var(--ms-cell-hidden-border)] bg-[var(--glassBg)] text-[var(--color)] shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)] active:scale-95',
         showMine &&
           lost &&
           'border-red-500 bg-red-500/20 text-red-500 shadow-red-500/30',
@@ -183,8 +203,12 @@ function MineCell({
           aria-hidden="true"
           className={
             isCompact
-              ? 'text-xs sm:text-base select-none'
-              : 'text-base sm:text-lg select-none'
+              ? isFullscreen
+                ? 'text-xs sm:text-lg select-none'
+                : 'text-xs sm:text-base select-none'
+              : isFullscreen
+                ? 'text-lg sm:text-2xl select-none'
+                : 'text-base sm:text-lg select-none'
           }
         >
           🚩
@@ -194,8 +218,12 @@ function MineCell({
           aria-hidden="true"
           className={
             isCompact
-              ? 'text-xs sm:text-base select-none'
-              : 'text-base sm:text-lg select-none'
+              ? isFullscreen
+                ? 'text-xs sm:text-lg select-none'
+                : 'text-xs sm:text-base select-none'
+              : isFullscreen
+                ? 'text-lg sm:text-2xl select-none'
+                : 'text-base sm:text-lg select-none'
           }
         >
           💣

@@ -44,6 +44,8 @@ function boardVars(theme: MinesweeperTheme): CSSProperties {
     '--ms-board-bg': theme.boardBackground,
     '--ms-board-border': theme.boardBorder,
     '--ms-cell-hidden-border': theme.cellHiddenBorder,
+    '--ms-cell-hidden-hover': theme.cellHiddenHover,
+    '--ms-cell-revealed': theme.cellRevealed,
     '--ms-cell-revealed-border': theme.cellRevealedBorder,
     '--ms-flag-color': theme.flagColor,
   } as CSSProperties;
@@ -113,7 +115,7 @@ export function MinesweeperBoard({
       <div
         style={boardVars(theme)}
         className={cx(
-          'w-max max-w-full rounded-2xl border border-white/20 bg-black/25 backdrop-blur-[2px] shadow-2xl select-none transition-colors duration-200',
+          'w-max max-w-full rounded-2xl border-2 border-[var(--ms-board-border)] bg-black/25 backdrop-blur-[2px] shadow-2xl select-none transition-colors duration-200',
           isFullscreen ? 'p-2 sm:p-3' : 'p-1.5 sm:p-2.5',
         )}
         role="grid"
@@ -183,8 +185,8 @@ function MineCell({
               ? 'h-8 w-8 min-w-[32px] sm:h-9.5 sm:w-9.5 sm:min-w-[38px] md:h-11 md:w-11 md:min-w-[44px] lg:h-12 lg:w-12 lg:min-w-[48px] rounded-lg text-sm sm:text-lg'
               : 'h-6.5 w-6.5 min-w-[24px] sm:h-7.5 sm:w-7.5 sm:min-w-[28px] md:h-8 md:w-8 md:min-w-[32px] rounded-lg text-xs sm:text-sm',
         revealed
-          ? 'cursor-default border border-[var(--ms-cell-revealed-border)] bg-black/45 text-[var(--color)] shadow-inner'
-          : 'cursor-pointer border border-white/20 bg-white/10 text-[var(--color)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:border-[var(--primary)] hover:bg-white/20 active:scale-95 backdrop-blur-[1px]',
+          ? 'cursor-default border border-[var(--ms-cell-revealed-border)] bg-[var(--ms-cell-revealed)] text-[var(--color)] shadow-inner'
+          : 'cursor-pointer border border-[var(--ms-cell-hidden-border)] bg-white/10 text-[var(--color)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:border-[var(--ms-flag-color)] hover:bg-[var(--ms-cell-hidden-hover)] active:scale-95 backdrop-blur-[1px]',
         showMine &&
           lost &&
           'border-red-500 bg-red-500/20 text-red-500 shadow-red-500/30',
@@ -203,15 +205,16 @@ function MineCell({
       {cell.state === 'flagged' ? (
         <span
           aria-hidden="true"
-          className={
+          className={cx(
+            'select-none drop-shadow-[0_0_6px_var(--ms-flag-color)]',
             isCompact
               ? isFullscreen
-                ? 'text-xs sm:text-lg select-none'
-                : 'text-xs sm:text-base select-none'
+                ? 'text-xs sm:text-lg'
+                : 'text-xs sm:text-base'
               : isFullscreen
-                ? 'text-lg sm:text-2xl select-none'
-                : 'text-base sm:text-lg select-none'
-          }
+                ? 'text-lg sm:text-2xl'
+                : 'text-base sm:text-lg',
+          )}
         >
           🚩
         </span>

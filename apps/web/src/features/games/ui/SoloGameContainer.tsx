@@ -206,7 +206,7 @@ export function SoloGameContainer({
     <div
       data-testid="solo-hud-card"
       className={cx(
-        'relative z-10 flex w-full flex-col rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] shadow-md backdrop-blur-md transition-colors duration-200',
+        'relative z-10 flex w-full flex-col rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] shadow-md backdrop-blur-[2px] transition-colors duration-200',
         isFullscreen
           ? 'gap-1 p-1.5 sm:px-2.5 sm:py-1.5'
           : 'gap-1.5 p-2 sm:px-3 sm:py-2',

@@ -6,8 +6,10 @@
  */
 import { Module } from '@nestjs/common';
 import { ChessStockfishService } from './chess-stockfish.service';
+import { EconomyModule } from '../../../economy/economy.module';
 
 @Module({
+  imports: [EconomyModule],
   providers: [ChessStockfishService],
   exports: [ChessStockfishService],
 })

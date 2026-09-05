@@ -24,6 +24,7 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
   const [result, setResult] = useState<PuzzleSolveResult | null>(null);
   const [loading, setLoading] = useState(false);
   const startTimeRef = useRef<number>(0);
+  const loadedRef = useRef(false);
 
   const loadPuzzle = useCallback(async () => {
     setLoading(true);
@@ -49,8 +50,11 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
     }
   }, [mode, theme, rating]);
 
+  // Load initial puzzle on mount (avoid sync setState in effect)
   useEffect(() => {
-    loadPuzzle();
+    if (loadedRef.current) return;
+    loadedRef.current = true;
+    void loadPuzzle();
   }, [loadPuzzle]);
 
   const makeMove = useCallback(

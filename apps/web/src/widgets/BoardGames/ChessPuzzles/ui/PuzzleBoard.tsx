@@ -3,7 +3,7 @@
 import { memo, useMemo, useCallback, useState } from 'react';
 import { ChessBoard } from '@/widgets/BoardGames/ChessGame/ui/ChessBoard';
 import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
-import { parseFen } from '@/features/analysis/lib/fen';
+import { parseFenPiecePlacement } from '@/features/analysis/lib/fen';
 import type { BoardPosition, File, Rank } from '@/widgets/BoardGames/ChessGame/types';
 import { FILES } from '@/widgets/BoardGames/ChessGame/types';
 
@@ -30,7 +30,7 @@ function PuzzleBoardImpl({ puzzle, phase, onMove }: PuzzleBoardProps) {
   const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(null);
 
   const board = useMemo(() => {
-    const parsed = parseFen(puzzle.fen);
+    const parsed = parseFenPiecePlacement(puzzle.fen);
     return parsed.board;
   }, [puzzle.fen]);
 

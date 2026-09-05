@@ -10,12 +10,14 @@ export interface AdminDataTableColumn<T> {
   className?: string;
 }
 
+export type AdminDataTableColumns<T> = AdminDataTableColumn<T> | AdminDataTableColumn<T>[];
+
 export interface AdminDataTableProps<T> {
   items: T[];
   total: number;
   isLoading: boolean;
   isError?: boolean;
-  columns: AdminDataTableColumn<T>;
+  columns: AdminDataTableColumn<T>[];
   keyExtractor: (item: T) => string;
   selectable?: boolean;
   selectedIds?: Set<string>;

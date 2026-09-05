@@ -58,8 +58,8 @@ export default function ReferralDashboard() {
       <DashboardContainer data-testid="referral-dashboard">
         <ErrorState
           title={t('referrals.error.title')}
-          message={error?.message || t('referrals.error.message')}
-          retryLabel={t('referrals.error.retry')}
+          message={error?.message || t('referrals.error')}
+          retryLabel={t('referrals.retry')}
           onRetry={refetch}
         />
       </DashboardContainer>

@@ -8,9 +8,11 @@ const DEFAULT_COIN_REWARDS = {
   tier3Bonus: 500,
 } as const;
 
+type CoinRewards = typeof DEFAULT_COIN_REWARDS;
+
 // Cache for the rewards config
 let cachedConfig: {
-  data: typeof DEFAULT_COIN_REWARDS;
+  data: CoinRewards;
   timestamp: number;
 } | null = null;
 
@@ -19,9 +21,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 /**
  * Fetches coin rewards from the backend, with caching and fallback to defaults.
  */
-export async function getReferralCoinRewards(): Promise<
-  typeof DEFAULT_COIN_REWARDS
-> {
+export async function getReferralCoinRewards(): Promise<CoinRewards> {
   const now = Date.now();
 
   // Return cached config if still valid
@@ -31,7 +31,7 @@ export async function getReferralCoinRewards(): Promise<
 
   try {
     const config = await fetchReferralRewardsConfig();
-    const rewards = {
+    const rewards: CoinRewards = {
       perFriend: config.perFriend,
       tier1Bonus: config.tier1Bonus,
       tier2Bonus: config.tier2Bonus,

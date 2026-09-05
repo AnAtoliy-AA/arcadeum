@@ -27,8 +27,8 @@ export default async function SudokuPlayRoute({ params }: PageProps) {
   resolveLocale(rawLocale);
 
   return (
-    <PageLayout className="min-h-0 flex-1">
-      <div className="box-border flex-1 py-1 sm:py-1.5 flex flex-col justify-center">
+    <PageLayout>
+      <div className="box-border min-h-screen py-2 sm:py-3">
         <SudokuGameClient />
       </div>
     </PageLayout>

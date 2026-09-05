@@ -75,8 +75,12 @@ export class MagicLinkService {
    * Verify a magic link token and return auth tokens.
    */
   async verifyMagicLink(token: string): Promise<AuthTokensResponse> {
+    if (typeof token !== 'string' || token.trim().length === 0) {
+      throw new UnauthorizedException('Invalid or expired magic link');
+    }
+    const normalizedToken = token.trim();
     const magicLink = await this.magicLinkModel.findOne({
-      token,
+      token: { $eq: normalizedToken },
       used: false,
       expiresAt: { $gt: new Date() },
     });

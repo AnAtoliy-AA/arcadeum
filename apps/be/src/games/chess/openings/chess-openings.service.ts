@@ -38,12 +38,13 @@ export class ChessOpeningsService {
 
     for (const o of openings) {
       try {
+        const safeMoves = o.moves.map(sanitize);
         await this.openingModel.findOneAndUpdate(
-          { moves: o.moves },
+          { moves: safeMoves },
           {
             $set: {
-              moves: o.moves,
-              fen: o.fen,
+              moves: safeMoves,
+              fen: sanitize(o.fen),
               white: o.white ?? 0,
               draws: o.draws ?? 0,
               black: o.black ?? 0,

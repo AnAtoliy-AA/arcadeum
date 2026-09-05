@@ -13,19 +13,6 @@ interface PuzzleBoardProps {
   onMove: (moveUci: string) => void;
 }
 
-function uciToFromTo(uci: string): { from: BoardPosition; to: BoardPosition } | null {
-  if (uci.length < 4) return null;
-  const fromFile = uci[0] as File;
-  const fromRank = parseInt(uci[1], 10) as Rank;
-  const toFile = uci[2] as File;
-  const toRank = parseInt(uci[3], 10) as Rank;
-  if (!FILES.includes(fromFile) || !FILES.includes(toFile)) return null;
-  return {
-    from: { file: fromFile, rank: fromRank },
-    to: { file: toFile, rank: toRank },
-  };
-}
-
 function PuzzleBoardImpl({ puzzle, phase, onMove }: PuzzleBoardProps) {
   const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(null);
 
@@ -40,10 +27,8 @@ function PuzzleBoardImpl({ puzzle, phase, onMove }: PuzzleBoardProps) {
   }, [puzzle.fen]);
 
   const legalMoves = useMemo(() => {
-    // For puzzles, we need to determine legal moves from the solution
-    // This is simplified — in production, use the chess engine
     return [];
-  }, [puzzle]);
+  }, []);
 
   const handleSquareClick = useCallback(
     (file: File, rank: Rank) => {

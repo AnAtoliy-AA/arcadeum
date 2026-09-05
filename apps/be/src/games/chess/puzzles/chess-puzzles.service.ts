@@ -7,6 +7,16 @@ import {
   type ChessPuzzleUserDocument,
 } from './chess-puzzle-user.schema';
 
+/** Strip MongoDB operator prefixes from user-supplied strings (CodeQL fix). */
+function sanitize(str: string): string {
+  return str.replace(/[$.]/g, '_');
+}
+
+/** Clamp a number to a safe range. */
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
 @Injectable()
 export class ChessPuzzlesService {
   private readonly logger = new Logger(ChessPuzzlesService.name);
@@ -34,17 +44,18 @@ export class ChessPuzzlesService {
 
     for (const p of puzzles) {
       try {
+        const safeId = sanitize(p.puzzleId);
         await this.puzzleModel.findOneAndUpdate(
-          { puzzleId: p.puzzleId },
+          { puzzleId: safeId },
           {
             $set: {
-              puzzleId: p.puzzleId,
+              puzzleId: safeId,
               fen: p.fen,
               moves: p.moves,
-              rating: p.rating,
-              ratingDeviation: p.ratingDeviation ?? 0,
-              themes: p.themes ?? [],
-              openingTags: p.openingTags ?? [],
+              rating: clamp(p.rating, 0, 4000),
+              ratingDeviation: clamp(p.ratingDeviation ?? 0, 0, 500),
+              themes: (p.themes ?? []).map(sanitize),
+              openingTags: (p.openingTags ?? []).map(sanitize),
             },
           },
           { upsert: true },
@@ -78,7 +89,7 @@ export class ChessPuzzlesService {
     rating?: number,
     theme?: string,
   ): Promise<ChessPuzzleDocument | null> {
-    const targetRating = rating ?? 1200;
+    const targetRating = clamp(rating ?? 1200, 100, 4000);
     const minRating = targetRating - 200;
     const maxRating = targetRating + 200;
 
@@ -87,12 +98,13 @@ export class ChessPuzzlesService {
     };
 
     if (theme) {
-      query.themes = theme;
+      query.themes = sanitize(theme);
     }
 
     if (userId) {
+      const safeUserId = sanitize(userId);
       const solved = await this.puzzleUserModel
-        .find({ userId, solved: true })
+        .find({ userId: safeUserId, solved: true })
         .select('puzzleId')
         .exec();
       const solvedIds = solved.map((s) => s.puzzleId);
@@ -118,7 +130,12 @@ export class ChessPuzzlesService {
     ratingChange: number;
     puzzle: ChessPuzzleDocument | null;
   }> {
-    const puzzle = await this.puzzleModel.findOne({ puzzleId }).exec();
+    const safeUserId = sanitize(userId);
+    const safePuzzleId = sanitize(puzzleId);
+
+    const puzzle = await this.puzzleModel
+      .findOne({ puzzleId: safePuzzleId })
+      .exec();
     if (!puzzle) {
       return { solved: false, ratingChange: 0, puzzle: null };
     }
@@ -129,19 +146,19 @@ export class ChessPuzzlesService {
       playerMoves.every((m, i) => m === expectedMoves[i]);
 
     await this.puzzleUserModel.findOneAndUpdate(
-      { userId, puzzleId },
+      { userId: safeUserId, puzzleId: safePuzzleId },
       {
         $set: {
           solved,
           attemptedAt: new Date(),
-          timeMs,
+          timeMs: clamp(timeMs, 0, 600_000),
         },
       },
       { upsert: true },
     );
 
     await this.puzzleModel.findOneAndUpdate(
-      { puzzleId },
+      { puzzleId: safePuzzleId },
       {
         $inc: { plays: 1, ...(solved ? { solutions: 1 } : {}) },
       },
@@ -160,16 +177,18 @@ export class ChessPuzzlesService {
     streak: number;
     rating: number;
   }> {
+    const safeUserId = sanitize(userId);
+
     const totalAttempted = await this.puzzleUserModel.countDocuments({
-      userId,
+      userId: safeUserId,
     });
     const totalSolved = await this.puzzleUserModel.countDocuments({
-      userId,
+      userId: safeUserId,
       solved: true,
     });
 
     const recent = await this.puzzleUserModel
-      .find({ userId })
+      .find({ userId: safeUserId })
       .sort({ attemptedAt: -1 })
       .limit(50)
       .exec();
@@ -181,7 +200,7 @@ export class ChessPuzzlesService {
     }
 
     const solvedPuzzles = await this.puzzleUserModel
-      .find({ userId, solved: true })
+      .find({ userId: safeUserId, solved: true })
       .select('puzzleId')
       .exec();
     const solvedIds = solvedPuzzles.map((s) => s.puzzleId);
@@ -205,7 +224,9 @@ export class ChessPuzzlesService {
     theme: string,
     count: number = 10,
   ): Promise<ChessPuzzleDocument[]> {
-    return this.puzzleModel.find({ themes: theme }).limit(count).exec();
+    const safeTheme = sanitize(theme);
+    const safeCount = clamp(count, 1, 100);
+    return this.puzzleModel.find({ themes: safeTheme }).limit(safeCount).exec();
   }
 
   async getThemes(): Promise<Array<{ theme: string; count: number }>> {

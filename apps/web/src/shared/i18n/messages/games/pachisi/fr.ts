@@ -168,6 +168,8 @@ export const frMessages = {
       tapToken: 'Touchez un pion surligné pour le déplacer',
       moveTokenAria: 'Déplacer le pion {{id}}',
       dieValue: 'Dé : {{value}}',
+      extraRoll: 'Un 6 obtenu ! Relancez !',
+      lastRoll: 'Dernier lancer : {{value}}',
     },
     tutorial: {
       s1: {

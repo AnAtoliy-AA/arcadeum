@@ -196,6 +196,7 @@ export const OFFLINE_GAMES: Record<string, OfflineGameEntry> = {
         action: 'move_token',
         mapPayload: (p) => ({ tokenId: p.tokenId }),
       },
+      pass: { action: 'pass_turn' },
       forfeit: { action: 'forfeit' },
     },
     async botDecide(state, _engine, botId) {

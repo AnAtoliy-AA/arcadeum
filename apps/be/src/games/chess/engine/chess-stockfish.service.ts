@@ -403,6 +403,11 @@ export class ChessStockfishService implements OnModuleDestroy {
       }
 
       const lines: EngineEval[] = [];
+      // Clamp timeout to prevent resource exhaustion (CodeQL fix)
+      const safeTimeoutMs = Math.max(
+        1,
+        Math.min(timeoutMs, MAX_TIME_MS + 10000),
+      );
 
       const timeout = setTimeout(() => {
         instance.process.stdin?.write('stop\n');
@@ -413,7 +418,7 @@ export class ChessStockfishService implements OnModuleDestroy {
         } else {
           reject(new Error('Stockfish analysis timeout'));
         }
-      }, timeoutMs);
+      }, safeTimeoutMs);
 
       instance.busy = true;
       instance.pending = {

@@ -6,6 +6,7 @@ export interface PublicUserProfile {
   username: string;
   displayName: string | null;
   role: string;
+  xp: number;
   equippedAvatarId: string | null;
   equippedBadgeId: string | null;
   equippedNameColorId: string | null;

@@ -1121,13 +1121,13 @@ const SCENARIOS = [
       { type: 'scroll', y: 300, wait: 800 },
       {
         type: 'hover',
-        selector: '[data-testid^="battlepass-tier-"]',
+        selector: '[data-testid^="battle-pass-tier-"]',
         wait: 1500,
       },
       { type: 'scroll', y: 300, wait: 800 },
       {
         type: 'hover',
-        selector: '[data-testid="battlepass-progress-bar"]',
+        selector: '[data-testid="battle-pass-rail"]',
         wait: 1200,
       },
       { type: 'scroll', y: 200, wait: 600 },

@@ -395,7 +395,7 @@ export class AuthService {
     const doc = await this.userModel
       .findById(userId)
       .select(
-        'username displayName role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId countryCode createdAt',
+        'username displayName role xp equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId countryCode createdAt',
       )
       .lean();
     if (!doc) {
@@ -406,6 +406,7 @@ export class AuthService {
       username: doc.username,
       displayName: (doc as { displayName?: string }).displayName ?? null,
       role: doc.role ?? 'free',
+      xp: (doc as { xp?: number }).xp ?? 0,
       equippedAvatarId:
         (doc as { equippedAvatarId?: string | null }).equippedAvatarId ?? null,
       equippedBadgeId:

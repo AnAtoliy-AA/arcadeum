@@ -49,11 +49,10 @@ import {
 } from '../shop/schemas/user-inventory-item.schema';
 import { AuthModule } from '../auth/auth.module';
 import { User, UserSchema } from '../auth/schemas/user.schema';
-import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
 
 // Real Mongo + real WalletService/InventoryService — proves a claim actually
 // credits the wallet and grants the cosmetic, and that it's idempotent. XP is
-// stubbed (the stats source) so all tiers are unlocked deterministically.
+// stored on the user document so we set it directly for testing.
 describe('BattlePassService (integration)', () => {
   let moduleRef: TestingModule;
   let service: BattlePassService;
@@ -78,24 +77,7 @@ describe('BattlePassService (integration)', () => {
         WalletModule,
         ShopModule,
       ],
-      providers: [
-        BattlePassService,
-        {
-          // Stub the XP source so every tier is unlocked.
-          provide: GameHistoryStatsService,
-          useValue: {
-            getPlayerStats: jest.fn(() =>
-              Promise.resolve({
-                totalGames: 500,
-                wins: 400,
-                losses: 100,
-                winRate: 80,
-                byGameType: [],
-              }),
-            ),
-          },
-        },
-      ],
+      providers: [BattlePassService],
     })
       .overrideProvider(WalletGateway)
       .useValue({ emitBalance: jest.fn(), emitAfterCommit: jest.fn() })
@@ -128,7 +110,7 @@ describe('BattlePassService (integration)', () => {
     ]);
   });
 
-  const createPremiumUser = async () => {
+  const createPremiumUser = async (xp = 50000) => {
     const uid = new Types.ObjectId().toHexString();
     const doc = await userModel.create({
       email: `bp-${uid}@test.com`,
@@ -136,6 +118,7 @@ describe('BattlePassService (integration)', () => {
       username: `bp_${uid}`,
       usernameNormalized: `bp_${uid}`,
       role: 'premium',
+      xp,
       coins: 0,
       gems: 0,
       blockedUsers: [],

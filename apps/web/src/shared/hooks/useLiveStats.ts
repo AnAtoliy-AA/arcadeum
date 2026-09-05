@@ -20,7 +20,7 @@ interface UseLiveStatsResult {
   stats: LiveStats | null;
   isLoading: boolean;
   error: Error | null;
-  refresh: () => Promise<void>;
+  refresh: () => void;
 }
 
 /**
@@ -38,14 +38,11 @@ export function useLiveStats(
   const mountedRef = useRef(true);
 
   const fetchStats = useCallback(async () => {
-    if (!enabled) return;
-
-    setIsLoading(true);
-    setError(null);
+    if (!enabled || !mountedRef.current) return;
 
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-      const response = await fetch(`${baseUrl}/live-stats`, {
+      const response = await fetch(`${baseUrl}/games/live-info`, {
         credentials: 'include',
       });
 
@@ -62,6 +59,7 @@ export function useLiveStats(
           activeGames: data.activeGames ?? 0,
           waitingRooms: data.waitingRooms ?? 0,
         });
+        setError(null);
       }
     } catch (err) {
       if (mountedRef.current) {
@@ -74,11 +72,20 @@ export function useLiveStats(
     }
   }, [enabled]);
 
-  // Initial fetch
+  const refresh = useCallback(() => {
+    setIsLoading(true);
+    void fetchStats();
+  }, [fetchStats]);
+
+  // Initial fetch - uses setTimeout to avoid calling setState synchronously
   useEffect(() => {
-    if (enabled) {
+    if (!enabled) return;
+
+    const timer = setTimeout(() => {
       void fetchStats();
-    }
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [enabled, fetchStats]);
 
   // Set up polling
@@ -108,6 +115,6 @@ export function useLiveStats(
     stats,
     isLoading,
     error,
-    refresh: fetchStats,
+    refresh,
   };
 }

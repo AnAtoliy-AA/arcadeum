@@ -112,51 +112,6 @@ function clearOAuthSessionState() {
 // Module-level guard to prevent multiple hook instances from handling the same code simultaneously
 const handledCodes = new Set<string>();
 
-function base64UrlEncode(arrayBuffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(arrayBuffer);
-  // Use Array.from instead of byte-by-byte string concatenation
-  const binary = Array.from(bytes, (byte) => String.fromCharCode(byte)).join(
-    '',
-  );
-  return btoa(binary)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-}
-
-function generateRandomString(length: number): string {
-  const charset =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-  const randomValues = new Uint8Array(length);
-  if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
-    window.crypto.getRandomValues(randomValues);
-  } else if (
-    typeof globalThis !== 'undefined' &&
-    globalThis.crypto?.getRandomValues
-  ) {
-    globalThis.crypto.getRandomValues(randomValues);
-  } else {
-    throw new Error(
-      'Cryptographically secure random number generation is not available',
-    );
-  }
-  let result = '';
-  for (let i = 0; i < length; i += 1) {
-    result += charset[randomValues[i] % charset.length];
-  }
-  return result;
-}
-
-async function createCodeChallenge(verifier: string): Promise<string> {
-  if (typeof window === 'undefined' || !window.crypto?.subtle) {
-    throw new Error('PKCE requires window.crypto.subtle support');
-  }
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  const digest = await window.crypto.subtle.digest('SHA-256', data);
-  return base64UrlEncode(digest);
-}
-
 async function applySessionResponse(
   session: SessionTokensValue,
   response: LoginResponse,

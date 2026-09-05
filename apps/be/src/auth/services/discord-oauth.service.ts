@@ -5,6 +5,7 @@
 import {
   Injectable,
   InternalServerErrorException,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -12,6 +13,7 @@ import type { DiscordUserProfile } from '../lib/types';
 
 @Injectable()
 export class DiscordOAuthService {
+  private readonly logger = new Logger(DiscordOAuthService.name);
   private readonly clientId: string;
   private readonly clientSecret: string;
 
@@ -20,7 +22,7 @@ export class DiscordOAuthService {
     this.clientSecret = this.config.get<string>('DISCORD_CLIENT_SECRET') ?? '';
 
     if (!this.clientId || !this.clientSecret) {
-      console.warn('Discord OAuth credentials not configured');
+      this.logger.warn('Discord OAuth credentials not configured');
     }
   }
 

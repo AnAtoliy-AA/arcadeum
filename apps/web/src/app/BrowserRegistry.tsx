@@ -22,7 +22,8 @@ export default function BrowserRegistry({ children }: BrowserRegistryProps) {
     if (
       typeof window === 'undefined' ||
       !('serviceWorker' in navigator) ||
-      process.env.NODE_ENV !== 'production'
+      process.env.NODE_ENV !== 'production' ||
+      process.env.NEXT_PUBLIC_E2E === 'true'
     ) {
       return;
     }

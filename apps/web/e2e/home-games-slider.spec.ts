@@ -75,7 +75,7 @@ test.describe('Home Page Games Grid Refinement', () => {
 
     await expect(
       page.locator('[role="dialog"][data-state="open"]'),
-    ).toBeVisible({});
+    ).toBeVisible();
     await expect(
       page.getByRole('heading', { name: /Objective/i }),
     ).toBeVisible();

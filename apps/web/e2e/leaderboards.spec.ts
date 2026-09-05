@@ -101,10 +101,11 @@ test.describe('Leaderboards page', () => {
     const all = page.getByTestId('mode-tab-all');
     await all.focus();
     await page.keyboard.press('ArrowRight');
-    await expect(page.getByTestId('mode-tab-critical_v1')).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect
+      .poll(async () =>
+        page.getByTestId('mode-tab-critical_v1').getAttribute('aria-selected'),
+      )
+      .toBe('true');
   });
 
   test('live chip appears on at least one row', async ({ page }) => {

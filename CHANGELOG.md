@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.16] - 2026-09-05
+
+### Added
+- improve gameplay stories, add mock auth, fix hearts typo
+
+### Fixed
+- auto-login bot user instead of requiring pre-set tokens
+
+
 ## [1.28.15] - 2026-09-05
 
 ### Added

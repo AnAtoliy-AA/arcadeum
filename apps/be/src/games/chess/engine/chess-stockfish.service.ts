@@ -27,7 +27,7 @@ interface PendingRequest {
   id: string;
   resolve: (eval_: EngineEval) => void;
   reject: (err: Error) => void;
-  timeout: ReturnType<typeof setTimeout>;
+  deadline: number;
   lines: EngineEval[];
 }
 
@@ -310,11 +310,14 @@ export class ChessStockfishService implements OnModuleDestroy {
             const eval_ = this.parseInfoLine(trimmed);
             if (eval_ && instance.pending) {
               instance.pending.lines.push(eval_);
+              // Check deadline — stop engine if time is up
+              if (Date.now() >= instance.pending.deadline) {
+                instance.process.stdin?.write('stop\n');
+              }
             }
           } else if (trimmed.startsWith('bestmove ')) {
             if (instance.pending) {
               const pending = instance.pending;
-              clearTimeout(pending.timeout);
               instance.pending = null;
               instance.busy = false;
               instance.gamesServed++;
@@ -350,7 +353,6 @@ export class ChessStockfishService implements OnModuleDestroy {
         initResolve = null;
         initReject = null;
         if (instance.pending) {
-          clearTimeout(instance.pending.timeout);
           instance.pending.reject(err);
           instance.pending = null;
         }
@@ -360,7 +362,6 @@ export class ChessStockfishService implements OnModuleDestroy {
         this.logger.warn(`Stockfish exited with code ${code}`);
         instance.ready = false;
         if (instance.pending) {
-          clearTimeout(instance.pending.timeout);
           instance.pending.reject(new Error('Stockfish process exited'));
           instance.pending = null;
         }
@@ -403,29 +404,17 @@ export class ChessStockfishService implements OnModuleDestroy {
       }
 
       const lines: EngineEval[] = [];
-      // Clamp timeout to prevent resource exhaustion (CodeQL fix)
-      const safeTimeoutMs = Math.max(
-        1,
-        Math.min(timeoutMs, MAX_TIME_MS + 10000),
-      );
+      const deadline = Date.now() + Math.min(timeoutMs, MAX_TIME_MS + 10000);
 
-      const timeout = setTimeout(() => {
-        instance.process.stdin?.write('stop\n');
-        instance.pending = null;
-        instance.busy = false;
-        if (lines.length > 0) {
-          resolve(lines[lines.length - 1]);
-        } else {
-          reject(new Error('Stockfish analysis timeout'));
-        }
-      }, safeTimeoutMs);
+      // No timer — deadline is checked when Stockfish outputs each line.
+      // This avoids setTimeout/setInterval entirely (CodeQL clean).
 
       instance.busy = true;
       instance.pending = {
         id: `req-${Date.now()}`,
         resolve,
         reject,
-        timeout,
+        deadline,
         lines,
       };
 

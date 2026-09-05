@@ -7,7 +7,6 @@ import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   LoadingState,
   EmptyState,
-  ErrorState,
   CosmeticBadge,
 } from '@arcadeum/ui';
 import { ReferralShareCard } from '@/features/referrals/ui/ReferralShareCard';
@@ -56,12 +55,7 @@ export default function ReferralDashboard() {
   } else if (error || !data) {
     content = (
       <DashboardContainer data-testid="referral-dashboard">
-        <ErrorState
-          title={t('referrals.error.title')}
-          message={error?.message || t('referrals.error')}
-          retryLabel={t('referrals.retry')}
-          onRetry={refetch}
-        />
+        <EmptyState message={error?.message || t('referrals.error')} icon="⚠️" />
       </DashboardContainer>
     );
   } else {

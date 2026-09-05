@@ -6,7 +6,7 @@ const DEFAULT_COIN_REWARDS = {
   tier1Bonus: 100,
   tier2Bonus: 200,
   tier3Bonus: 500,
-} as const;
+};
 
 type CoinRewards = typeof DEFAULT_COIN_REWARDS;
 

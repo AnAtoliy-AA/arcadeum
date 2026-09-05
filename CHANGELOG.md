@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.18] - 2026-09-05
+
+### Added
+- fix Pachisi styles, fullscreen mode, and dice move retention (ARC-886) (ARC-886)
+
+### Fixed
+- ensure Pachisi tokens are clickable and die number is visible (ARC-886) (ARC-886)
+
+
 ## [1.28.17] - 2026-09-05
 
 ### Added

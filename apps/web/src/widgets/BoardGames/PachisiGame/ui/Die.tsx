@@ -1,45 +1,54 @@
 'use client';
 
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { usePachisiTheme } from '../lib/PachisiThemeContext';
 
-const PIPS: Record<number, Array<[number, number]>> = {
-  1: [[2, 2]],
+const DOT_COORDS: Record<number, Array<[number, number]>> = {
+  1: [[50, 50]],
   2: [
-    [1, 1],
-    [3, 3],
+    [28, 28],
+    [72, 72],
   ],
   3: [
-    [1, 1],
-    [2, 2],
-    [3, 3],
+    [28, 28],
+    [50, 50],
+    [72, 72],
   ],
   4: [
-    [1, 1],
-    [1, 3],
-    [3, 1],
-    [3, 3],
+    [28, 28],
+    [72, 28],
+    [28, 72],
+    [72, 72],
   ],
   5: [
-    [1, 1],
-    [1, 3],
-    [2, 2],
-    [3, 1],
-    [3, 3],
+    [28, 28],
+    [72, 28],
+    [50, 50],
+    [28, 72],
+    [72, 72],
   ],
   6: [
-    [1, 1],
-    [1, 3],
-    [2, 1],
-    [2, 3],
-    [3, 1],
-    [3, 3],
+    [28, 28],
+    [72, 28],
+    [28, 50],
+    [72, 50],
+    [28, 72],
+    [72, 72],
   ],
 };
 
-export function Die({ value }: { value: number | null }) {
+interface DieProps {
+  value: number | null;
+  isRolling?: boolean;
+  className?: string;
+}
+
+export function Die({ value, isRolling, className }: DieProps) {
   const { t } = useTranslation();
-  const theme = usePachisiTheme();
+
+  if (value == null && !isRolling) return null;
+
+  const dots = value && DOT_COORDS[value] ? DOT_COORDS[value] : DOT_COORDS[1];
+
   return (
     <div
       aria-label={
@@ -47,22 +56,22 @@ export function Die({ value }: { value: number | null }) {
           ? t('games.pachisi_v1.game.dieValue', { value })
           : undefined
       }
-      className="relative h-9 w-9 shrink-0 rounded-lg border shadow-md"
+      className={`pachisi-die relative h-9 w-9 shrink-0 rounded-lg border shadow-md transition-transform duration-200 ${
+        isRolling ? 'animate-spin' : ''
+      } ${className ?? ''}`}
       data-testid="pachisi-die"
-      style={{ background: theme.diceFace, borderColor: theme.diceBorder }}
     >
-      {(value ? PIPS[value] : []).map(([r, c]) => (
-        <span
-          key={`${r}-${c}`}
-          className="absolute h-1.5 w-1.5 rounded-full"
-          style={{
-            background: theme.diceDot,
-            left: `${(c - 0.5) * 25}%`,
-            top: `${(r - 0.5) * 25}%`,
-            transform: 'translate(-50%, -50%)',
-          }}
-        />
-      ))}
+      <svg className="h-full w-full p-1" viewBox="0 0 100 100">
+        {dots.map(([cxCoord, cyCoord], idx) => (
+          <circle
+            className="pachisi-die-dot"
+            cx={cxCoord}
+            cy={cyCoord}
+            key={`dot-${idx}-${cxCoord}-${cyCoord}`}
+            r={8.5}
+          />
+        ))}
+      </svg>
     </div>
   );
 }

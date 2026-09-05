@@ -164,6 +164,8 @@ export const byMessages = {
       tapToken: 'Націсніце на падсветленую фішку, каб зрабіць ход',
       moveTokenAria: 'Хадзіць фішкай {{id}}',
       dieValue: 'Кубік: {{value}}',
+      extraRoll: 'Выпала 6! Кідайце яшчэ раз!',
+      lastRoll: 'Мінулы кідок: {{value}}',
     },
     tutorial: {
       s1: {

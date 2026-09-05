@@ -168,6 +168,8 @@ export const esMessages = {
       tapToken: 'Toca una ficha resaltada para moverla',
       moveTokenAria: 'Mover ficha {{id}}',
       dieValue: 'Dado: {{value}}',
+      extraRoll: '¡Sacaste un 6! ¡Tira de nuevo!',
+      lastRoll: 'Última tirada: {{value}}',
     },
     tutorial: {
       s1: {

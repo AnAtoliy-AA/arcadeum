@@ -59,6 +59,8 @@ function PachisiGameImpl({
     currentTurnUserId,
     myTurn,
     isGameOver,
+    actionBusy,
+    setActionBusy,
     startBusy,
     setStartBusy,
     session,
@@ -71,6 +73,7 @@ function PachisiGameImpl({
   const { startSession, rollDice, moveToken, passTurn } = usePachisiActions({
     roomId,
     userId: currentUserId,
+    onActionStart: (action) => setActionBusy(action),
   });
 
   const resolveDisplayNameBound = useCallback(
@@ -185,9 +188,10 @@ function PachisiGameImpl({
   }
 
   const board = (
-    <div className="box-border flex w-full flex-col items-stretch p-1 sm:p-2">
+    <div className="box-border flex w-full flex-1 flex-col items-center justify-center p-1 sm:p-2 min-h-0">
       {snapshot ? (
         <PachisiBoard
+          actionBusy={Boolean(actionBusy)}
           currentUserId={currentUserId}
           myTurn={myTurn}
           onMove={moveToken}

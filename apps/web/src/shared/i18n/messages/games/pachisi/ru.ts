@@ -166,6 +166,8 @@ export const ruMessages = {
       tapToken: 'Нажмите на подсвеченную фишку, чтобы сделать ход',
       moveTokenAria: 'Ходить фишкой {{id}}',
       dieValue: 'Кубик: {{value}}',
+      extraRoll: 'Выпала 6! Бросайте ещё раз!',
+      lastRoll: 'Прошлый бросок: {{value}}',
     },
     tutorial: {
       s1: {

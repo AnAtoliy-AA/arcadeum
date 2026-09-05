@@ -212,4 +212,23 @@ describe('PachisiBoard', () => {
     fireEvent.click(laneToken);
     expect(handleMove).toHaveBeenCalledWith(0);
   });
+
+  it('renders extra roll badge when consecutiveSixes > 0 on my roll turn', () => {
+    const extraRollState: PachisiClientState = {
+      ...mockState,
+      phase: 'roll',
+      die: null,
+      consecutiveSixes: 1,
+    };
+    renderBoard(extraRollState);
+    expect(screen.getByTestId('pachisi-extra-roll-badge')).toBeInTheDocument();
+    expect(screen.getByTestId('pachisi-roll-button')).toBeInTheDocument();
+  });
+
+  it('renders board with pachisi-board class and does not render empty die on initial roll phase', () => {
+    renderBoard(mockState);
+    const board = screen.getByTestId('pachisi-board');
+    expect(board.classList.contains('pachisi-board')).toBe(true);
+    expect(screen.queryByTestId('pachisi-die')).toBeNull();
+  });
 });

@@ -27,9 +27,9 @@ const DIFFICULTY_OPTIONS: Array<{ value: Difficulty }> = [
 ];
 
 const DIFFICULTY_MAX_WIDTH: Record<Difficulty, string> = {
-  beginner: 'max-w-xl',
-  intermediate: 'max-w-3xl',
-  expert: 'max-w-5xl',
+  beginner: 'max-w-4xl xl:max-w-5xl',
+  intermediate: 'max-w-5xl xl:max-w-6xl',
+  expert: 'max-w-6xl xl:max-w-7xl 2xl:max-w-[1500px]',
 };
 
 function formatDigits(num: number): string {
@@ -202,9 +202,8 @@ function MinesweeperTable() {
       difficulty={game.difficulty}
       sortBy="durationMs"
       order="asc"
-      layout="stacked"
       leaderboardDefaultExpanded={true}
-      maxWidthClassName={DIFFICULTY_MAX_WIDTH[game.difficulty] ?? 'max-w-3xl'}
+      maxWidthClassName={DIFFICULTY_MAX_WIDTH[game.difficulty] ?? 'max-w-5xl'}
       pause={pause}
       isRunning={isRunning}
       startedAt={startedAt ?? 0}

@@ -326,7 +326,7 @@ export function SoloGameContainer({
           'relative flex flex-col w-full items-center justify-center transition-opacity duration-200 min-h-0',
           isFullscreen && 'h-full flex-1 justify-center',
           resolvedPause.isPaused &&
-            'pointer-events-none select-none blur-sm opacity-25',
+            'pointer-events-none select-none opacity-35',
         )}
       >
         {children}
@@ -420,18 +420,18 @@ export function SoloGameContainer({
           <div
             className={cx(
               'mx-auto w-full items-start px-1.5 sm:px-4',
-              maxWidthClassName ?? 'max-w-4xl xl:max-w-5xl',
+              maxWidthClassName ?? 'max-w-4xl xl:max-w-6xl 2xl:max-w-7xl',
               showLeaderboard
-                ? 'grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px] gap-4 lg:gap-8'
-                : 'flex flex-col items-center gap-4',
+                ? 'grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px] gap-3 lg:gap-6'
+                : 'flex flex-col items-center gap-3',
             )}
           >
-            <div className="flex w-full flex-col items-center gap-3 sm:gap-4">
+            <div className="flex w-full flex-col items-center gap-1.5 sm:gap-2">
               {hudCard}
               {gameField}
             </div>
             {showLeaderboard && (
-              <div className="flex w-full flex-col gap-4">
+              <div className="flex w-full flex-col gap-3 lg:sticky lg:top-3">
                 <SoloLeaderboardPanel
                   gameId={gameId}
                   difficulty={difficulty}

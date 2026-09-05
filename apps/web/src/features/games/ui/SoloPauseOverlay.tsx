@@ -9,7 +9,7 @@ export function SoloPauseOverlay({ pause }: { pause: SoloPauseState }) {
   return (
     <div
       data-testid="solo-pause-overlay"
-      className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border border-[var(--glassBorder)] bg-[var(--background)]/85 p-6 backdrop-blur-xl shadow-2xl animate-in fade-in duration-200"
+      className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border border-[var(--glassBorder)] bg-black/60 p-4 sm:p-6 backdrop-blur-sm shadow-2xl animate-in fade-in duration-200"
     >
       <div className="flex flex-col items-center gap-4 max-w-sm text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[var(--warning)]/30 bg-[var(--warning)]/15 text-3xl text-[var(--warning)] shadow-lg shadow-[var(--warning)]/20">

@@ -115,7 +115,7 @@ export function MinesweeperBoard({
       <div
         style={boardVars(theme)}
         className={cx(
-          'w-max max-w-full rounded-2xl border-2 border-[var(--ms-board-border)] bg-black/25 backdrop-blur-[2px] shadow-2xl select-none transition-colors duration-200',
+          'w-max max-w-full rounded-2xl border-2 border-[var(--ms-board-border)] bg-black/20 shadow-2xl select-none transition-colors duration-200',
           isFullscreen ? 'p-2 sm:p-3' : 'p-1.5 sm:p-2.5',
         )}
         role="grid"
@@ -186,7 +186,7 @@ function MineCell({
               : 'h-6.5 w-6.5 min-w-[24px] sm:h-7.5 sm:w-7.5 sm:min-w-[28px] md:h-8 md:w-8 md:min-w-[32px] rounded-lg text-xs sm:text-sm',
         revealed
           ? 'cursor-default border border-[var(--ms-cell-revealed-border)] bg-[var(--ms-cell-revealed)] text-[var(--color)] shadow-inner'
-          : 'cursor-pointer border border-[var(--ms-cell-hidden-border)] bg-white/10 text-[var(--color)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:border-[var(--ms-flag-color)] hover:bg-[var(--ms-cell-hidden-hover)] active:scale-95 backdrop-blur-[1px]',
+          : 'cursor-pointer border border-[var(--ms-cell-hidden-border)] bg-white/10 text-[var(--color)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:border-[var(--ms-flag-color)] hover:bg-[var(--ms-cell-hidden-hover)] active:scale-95',
         showMine &&
           lost &&
           'border-red-500 bg-red-500/20 text-red-500 shadow-red-500/30',

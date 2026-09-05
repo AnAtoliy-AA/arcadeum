@@ -101,9 +101,8 @@ function SolitaireTable() {
       difficulty="default"
       sortBy="score"
       order="desc"
-      layout="stacked"
-      maxWidthClassName="max-w-3xl lg:max-w-[760px]"
-      leaderboardDefaultExpanded={false}
+      maxWidthClassName="max-w-5xl xl:max-w-6xl 2xl:max-w-7xl"
+      leaderboardDefaultExpanded={true}
       pause={pause}
       isRunning={isRunning}
       startedAt={startedAt}

@@ -128,7 +128,7 @@ export function SolitaireBoard({
   return (
     <div
       style={boardVars(theme)}
-      className="relative w-full rounded-2xl sm:rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)]/70 backdrop-blur-md p-1.5 sm:p-4 shadow-xl select-none transition-colors duration-200 overflow-hidden"
+      className="relative w-full rounded-2xl sm:rounded-3xl border border-white/15 bg-black/20 backdrop-blur-[2px] p-1.5 sm:p-4 shadow-2xl select-none transition-colors duration-200 overflow-hidden"
     >
       <div className="grid grid-cols-7 gap-1.5 sm:gap-3 items-start">
         <button

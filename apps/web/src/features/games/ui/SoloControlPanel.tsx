@@ -104,11 +104,10 @@ export function SoloControlPanel({
         </button>
 
         {controls}
-
-        {actions}
       </div>
 
       <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        {actions}
         <div className="flex items-center rounded-lg border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-0.5 h-7.5 shadow-xs">
           <button
             type="button"

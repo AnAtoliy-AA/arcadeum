@@ -52,7 +52,7 @@ export function SudokuBoard({
       aria-label="Sudoku"
       style={boardVars(theme)}
       className={cx(
-        'mx-auto grid aspect-square w-full grid-cols-9 rounded-2xl border-2 border-[var(--glassBorder)] bg-[var(--glassBg)]/70 backdrop-blur-md p-1 sm:p-1.5 shadow-xl select-none transition-all duration-200',
+        'mx-auto grid aspect-square w-full grid-cols-9 rounded-2xl border-2 border-white/20 bg-black/25 backdrop-blur-[2px] p-1 sm:p-1.5 shadow-2xl select-none transition-all duration-200',
         isFullscreen
           ? 'max-w-[min(94vw,min(calc(100vh-14rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(48vh,24.5rem))] sm:max-w-[min(100vw-2rem,min(50vh,25.5rem))]',
@@ -94,7 +94,7 @@ export function SudokuBoard({
                   ? 'bg-[var(--sdk-same)] text-[var(--sdk-player-val)]'
                   : isPeer
                     ? 'bg-[var(--sdk-peer)]'
-                    : 'bg-transparent hover:bg-[var(--backgroundHover)]',
+                    : 'bg-white/[0.04] hover:bg-white/10',
               hasConflict &&
                 'bg-rose-950/70 text-rose-400 ring-1 ring-rose-500/50',
             )}

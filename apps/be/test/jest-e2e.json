@@ -7,7 +7,6 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
-  "forceExit": true,
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },

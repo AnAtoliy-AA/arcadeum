@@ -3,6 +3,7 @@ import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
 import type { GameMessageHandlerFn } from './game-message-handler.interface';
 import { ChessService } from './chess/chess.service';
+import { ChessStockfishService } from './chess/engine/chess-stockfish.service';
 import type { ChessOptions } from './engines/chess/chess.types';
 import {
   BaseGameGateway,
@@ -17,7 +18,10 @@ export class ChessGateway extends BaseGameGateway<ChessOptions> {
   protected readonly logger = new Logger(ChessGateway.name);
   protected readonly eventPrefix = 'chess';
 
-  constructor(protected readonly gameService: ChessService) {
+  constructor(
+    protected readonly gameService: ChessService,
+    private readonly stockfishService: ChessStockfishService,
+  ) {
     super();
   }
 
@@ -109,6 +113,45 @@ export class ChessGateway extends BaseGameGateway<ChessOptions> {
             'chess.session.draw_accepted',
             maybeEncrypt({ roomId, userId }),
           );
+        },
+      ),
+      'chess.session.analyze': this.wrapHandler(
+        'analyze',
+        async (client, payload, roomId) => {
+          if (!this.stockfishService.isReady()) {
+            client.emit('chess.session.analyze_error', {
+              roomId,
+              error: 'Engine not ready',
+            });
+            return;
+          }
+          const fen = payload?.fen as string;
+          if (!fen) {
+            client.emit('chess.session.analyze_error', {
+              roomId,
+              error: 'fen is required',
+            });
+            return;
+          }
+          try {
+            const depth = (payload?.depth as number) ?? 18;
+            const timeMs = (payload?.timeMs as number) ?? 3000;
+            const eval_ = await this.stockfishService.analyzePosition({
+              fen,
+              depth,
+              timeMs,
+            });
+            client.emit(
+              'chess.session.analyzed',
+              maybeEncrypt({ roomId, eval: eval_ }),
+            );
+          } catch (err) {
+            this.logger.error(`Stockfish analysis failed: ${err}`);
+            client.emit('chess.session.analyze_error', {
+              roomId,
+              error: `Analysis failed: ${err}`,
+            });
+          }
         },
       ),
     };

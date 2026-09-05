@@ -84,6 +84,9 @@ import { CascadeBotService } from './cascade/cascade-bot.service';
 import { ChessGateway } from './chess.gateway';
 import { ChessService } from './chess/chess.service';
 import { ChessBotService } from './engines/chess/chess-bot.service';
+import { ChessStockfishModule } from './chess/engine/chess-stockfish.module';
+import { ChessStockfishController } from './chess/engine/chess-stockfish.controller';
+import { ChessStockfishService } from './chess/engine/chess-stockfish.service';
 import { CheckersGateway } from './checkers.gateway';
 import { CheckersService } from './checkers/checkers.service';
 import { CheckersBotService } from './checkers/checkers-bot.service';
@@ -187,6 +190,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     AchievementsModule,
     NotificationsModule,
     BattlePassModule,
+    ChessStockfishModule,
   ],
   controllers: [
     GamesController,
@@ -194,6 +198,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameReplayController,
     LiveStatsController,
     SoloScoresController,
+    ChessStockfishController,
   ],
   providers: [
     LiveStatsService,
@@ -235,6 +240,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Chess
     ChessService,
     ChessBotService,
+    ChessStockfishService,
     // Checkers
     CheckersService,
     CheckersBotService,

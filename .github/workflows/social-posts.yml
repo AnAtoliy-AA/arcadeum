@@ -1,5 +1,7 @@
 name: Social Posts
 
+permissions: read-all
+
 on:
   push:
     branches: [main, develop]
@@ -12,8 +14,7 @@ on:
         required: false
         type: string
 
-permissions:
-  contents: read
+permissions: read-all
 
 jobs:
   daily-post:

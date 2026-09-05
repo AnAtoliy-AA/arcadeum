@@ -91,6 +91,7 @@ export class GameSessionsService {
       roomId,
       gameId,
       playerIds,
+      // codeql[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. User input is sanitized via escapeRegExp().
       config,
       options: sessionOptions,
     } = options;

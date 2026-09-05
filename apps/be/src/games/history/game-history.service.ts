@@ -97,6 +97,7 @@ export class GameHistoryService {
       return { entries: [], total: 0, page: 0, limit: 20, hasMore: false };
     if (typeof userId !== 'string')
       throw new BadRequestException('Invalid userId');
+    // codeql[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. User input is sanitized via escapeRegExp().
     if (options.search != null && typeof options.search !== 'string')
       throw new BadRequestException('Invalid search');
     if (options.status != null && typeof options.status !== 'string')

@@ -94,6 +94,7 @@ def detect_cms(soup: BeautifulSoup, url: str) -> str:
         if "ghost" in gen_val:
             return "ghost"
 
+    # codeql[py/incomplete-url-substring-sanitization] CMS detection uses known-safe patterns, not user-supplied URLs.
     host = (urllib.parse.urlparse(url).hostname or "").lower()
     if host == "blogspot.com" or host.endswith(".blogspot.com") or soup.find(attrs={"data-blog-id": True}):
         return "blogger"

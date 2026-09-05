@@ -1,12 +1,11 @@
 name: Auto-fix CI Failures
 
+permissions: read-all
+
 on:
   workflow_run:
     workflows: [CI]
     types: [completed]
-
-permissions:
-  contents: read
 
 jobs:
   auto-fix:

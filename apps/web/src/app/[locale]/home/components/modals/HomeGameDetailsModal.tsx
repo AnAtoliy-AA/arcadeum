@@ -144,7 +144,7 @@ export function HomeGameDetailsModal({
   if (!isOpen || !game) return null;
 
   return (
-    <Modal key={isOpen ? gameId : undefined} open={isOpen} onClose={onClose}>
+    <Modal key={gameId} open={isOpen} onClose={onClose}>
       <ModalContent maxWidth="800px">
         <div className="relative overflow-hidden rounded-3xl border border-border-color bg-[rgba(21,23,24,0.8)] backdrop-blur-[20px]">
           <div

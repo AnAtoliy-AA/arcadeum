@@ -46,11 +46,6 @@ export class PaymentsService {
       throw new BadRequestException('payments.invalidAmount');
     }
 
-    let currency = (dto.currency ?? 'USD').trim().toUpperCase();
-    // PayPal does not support GEL, fallback to USD or throw error
-    if (currency === 'GEL') {
-      currency = 'USD';
-    }
     const description = dto.description?.trim() ?? 'Support contribution';
 
     // Redirect targets are ALWAYS server-configured. Client-supplied URLs

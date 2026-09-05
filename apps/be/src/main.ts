@@ -53,8 +53,10 @@ async function bootstrap() {
     );
   }
 
-  // Validate environment variables at startup
-  validateEnv();
+  // Validate environment variables at startup (skip in E2E/test mode)
+  if (process.env.E2E !== 'true' && process.env.NODE_ENV !== 'test') {
+    validateEnv();
+  }
 
   const logger = new ArcadeumLogger();
   logger.setLogLevels(['error', 'warn', 'log']);

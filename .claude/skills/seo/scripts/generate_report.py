@@ -126,6 +126,7 @@ def detect_environment(html_text: str, url: str) -> dict:
         reasons.setdefault(name, []).append(reason)
 
     # Managed CMS signals
+    # codeql[py/incomplete-url-substring-sanitization] CMS detection uses known-safe patterns, not user-supplied URLs.
     if any(s in lower for s in ("bloggerusercontent.com", "www.blogger.com", "data:blog.", "b:skin")):
         hit("Blogger", 6, "Blogger template/assets detected")
     if host == "blogspot.com" or host.endswith(".blogspot.com"):

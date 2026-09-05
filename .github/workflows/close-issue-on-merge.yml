@@ -1,11 +1,10 @@
 name: Close Issue on PR Merge
 
+permissions: read-all
+
 on:
   pull_request:
     types: [closed]
-
-permissions:
-  issues: write
 
 jobs:
   extract-issue:

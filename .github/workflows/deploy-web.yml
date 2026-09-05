@@ -1,12 +1,12 @@
 name: Deploy Web to Vercel
 
+permissions: read-all
+
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-
-permissions: {}
 
 jobs:
   deploy:

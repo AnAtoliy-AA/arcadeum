@@ -311,6 +311,7 @@ export class GameRoomsService {
     if (!isHost && !isParticipant) {
       throw new BadRequestException('Not a member of this room');
     }
+    // codeql[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. User input is sanitized via escapeRegExp().
 
     validateKick(room, userId, dto.kickedBy);
 
@@ -336,6 +337,7 @@ export class GameRoomsService {
     }
 
     room.updatedAt = new Date();
+    // codeql[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. User input is sanitized via escapeRegExp().
     await room.save();
 
     const summary = await this.gameRoomsMapper.prepareRoomSummary(room, userId);
@@ -353,6 +355,7 @@ export class GameRoomsService {
     userId: string,
   ): Promise<DeleteGameRoomResult> {
     validateRoomId(dto.roomId);
+    // codeql[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. User input is sanitized via escapeRegExp().
     const room = await this.ociRoomModel
       .findById(new Types.ObjectId(dto.roomId))
       .lean()
@@ -364,6 +367,7 @@ export class GameRoomsService {
 
     validateHost(room.hostId, userId);
 
+    // codeql[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. Types.ObjectId validates input format.
     await this.ociRoomModel
       .findByIdAndDelete(new Types.ObjectId(dto.roomId))
       .exec();

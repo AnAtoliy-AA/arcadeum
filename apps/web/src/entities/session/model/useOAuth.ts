@@ -173,6 +173,7 @@ async function applySessionResponse(
       response.user?.email ??
       null,
     role: response.user?.role ?? null,
+    xp: response.user?.xp ?? 0,
   });
 }
 

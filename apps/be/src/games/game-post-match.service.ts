@@ -6,6 +6,7 @@ import { EconomySettingsService } from '../economy/economy-settings.service';
 import type { GameSessionSummary } from './sessions/game-sessions.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { PlayerStatsService } from './player-stats.service';
+import { BattlePassService } from '../battle-pass/battle-pass.service';
 
 @Injectable()
 export class GamePostMatchService {
@@ -18,6 +19,7 @@ export class GamePostMatchService {
     private readonly wallet: WalletService,
     private readonly economy: EconomySettingsService,
     private readonly playerStats: PlayerStatsService,
+    private readonly battlePass: BattlePassService,
   ) {}
 
   async onGameCompleted(
@@ -61,6 +63,14 @@ export class GamePostMatchService {
     } catch (err) {
       this.logger.warn(
         `Player stats recording failed: ${(err as Error).message}`,
+      );
+    }
+
+    try {
+      await this.battlePass.awardGameXp(playerIds, winners);
+    } catch (err) {
+      this.logger.warn(
+        `Battle pass XP award failed: ${(err as Error).message}`,
       );
     }
   }

@@ -47,6 +47,8 @@ export interface AuthUserProfile {
   displayName: string;
   createdAt?: Date;
   role: UserRole;
+  /** Total XP earned across all seasons. */
+  xp: number;
   /** Currently-equipped avatar item id, or null. */
   equippedAvatarId?: string | null;
   /** Currently-equipped badge item id, or null. */

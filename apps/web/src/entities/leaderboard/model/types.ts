@@ -113,6 +113,8 @@ export type PlayerProfile = {
     rating: number;
   }>;
   squad?: Squad;
+  /** Total XP earned across all seasons. */
+  xp: number;
   /** Equipped cosmetic ids from the shop; resolved via the catalog map. */
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;

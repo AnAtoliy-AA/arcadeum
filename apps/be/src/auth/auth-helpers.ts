@@ -111,6 +111,7 @@ export function buildAuthUserProfile(user: UserDocument): AuthUserProfile {
     username: user.username,
     displayName: resolveDisplayName(user),
     role: user.role ?? 'free',
+    xp: user.xp ?? 0,
     equippedAvatarId: user.equippedAvatarId ?? null,
     equippedBadgeId: user.equippedBadgeId ?? null,
     equippedNameColorId: user.equippedNameColorId ?? null,

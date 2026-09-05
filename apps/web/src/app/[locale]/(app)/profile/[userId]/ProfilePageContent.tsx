@@ -161,6 +161,9 @@ export default function ProfilePageContent() {
                   <Badge variant="info" size="sm">
                     {profile.role}
                   </Badge>
+                  <Badge variant="neutral" size="sm">
+                    XP: {profile.xp?.toLocaleString() ?? '0'}
+                  </Badge>
                   {profile.countryCode && (
                     <Badge variant="neutral" size="sm">
                       {profile.countryCode}

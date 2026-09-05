@@ -104,6 +104,8 @@ export type PlayerProfileDto = {
     rating: number;
   }>;
   squad?: SquadDto;
+  /** Total XP earned across all seasons. */
+  xp: number;
   /** Currently equipped cosmetics. Resolved client-side via the shop catalog. */
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;

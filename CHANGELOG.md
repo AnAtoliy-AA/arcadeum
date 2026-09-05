@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.15] - 2026-09-05
+
+### Added
+- add XP tracking, profile visibility, and UI fixes
+
+
 ## [1.28.14] - 2026-09-05
 
 ### Fixed

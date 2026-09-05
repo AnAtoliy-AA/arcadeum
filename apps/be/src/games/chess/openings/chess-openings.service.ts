@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { OCI_CONNECTION } from '../../../common/providers/mongo-connections.provider';
 import {
   ChessOpening,
   type ChessOpeningDocument,
@@ -15,7 +16,7 @@ export class ChessOpeningsService {
   private readonly logger = new Logger(ChessOpeningsService.name);
 
   constructor(
-    @InjectModel(ChessOpening.name)
+    @InjectModel(ChessOpening.name, OCI_CONNECTION)
     private readonly openingModel: Model<ChessOpeningDocument>,
   ) {}
 

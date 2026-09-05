@@ -52,7 +52,7 @@ export function SudokuBoard({
       aria-label="Sudoku"
       style={boardVars(theme)}
       className={cx(
-        'mx-auto grid aspect-square w-full grid-cols-9 rounded-2xl border-2 border-[var(--sdk-board-border)] bg-[var(--sdk-board-bg)] p-1 sm:p-1.5 shadow-xl select-none transition-all duration-200',
+        'mx-auto grid aspect-square w-full grid-cols-9 rounded-2xl border-2 border-[var(--glassBorder)] bg-[var(--glassBg)]/70 backdrop-blur-md p-1 sm:p-1.5 shadow-xl select-none transition-all duration-200',
         isFullscreen
           ? 'max-w-[min(94vw,min(calc(100vh-14rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(48vh,24.5rem))] sm:max-w-[min(100vw-2rem,min(50vh,25.5rem))]',

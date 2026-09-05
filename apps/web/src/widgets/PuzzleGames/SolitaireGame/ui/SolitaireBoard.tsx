@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, type CSSProperties } from 'react';
-import Image from 'next/image';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { getSourceCards, isValidMove } from '../lib/engine';
@@ -129,19 +128,8 @@ export function SolitaireBoard({
   return (
     <div
       style={boardVars(theme)}
-      className="relative w-full rounded-2xl sm:rounded-3xl border border-[var(--sol-table-border)] bg-[var(--sol-table-bg)] p-1.5 sm:p-4 shadow-xl select-none transition-colors duration-200 overflow-hidden"
+      className="relative w-full rounded-2xl sm:rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)]/70 backdrop-blur-md p-1.5 sm:p-4 shadow-xl select-none transition-colors duration-200 overflow-hidden"
     >
-      {theme.bgImage && (
-        <Image
-          src={theme.bgImage}
-          alt=""
-          fill
-          priority
-          sizes="(max-width: 1024px) 100vw, 880px"
-          aria-hidden="true"
-          className="pointer-events-none object-cover object-center opacity-10"
-        />
-      )}
       <div className="grid grid-cols-7 gap-1.5 sm:gap-3 items-start">
         <button
           type="button"

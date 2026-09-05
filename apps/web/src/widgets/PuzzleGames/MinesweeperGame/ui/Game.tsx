@@ -27,8 +27,8 @@ const DIFFICULTY_OPTIONS: Array<{ value: Difficulty }> = [
 ];
 
 const DIFFICULTY_MAX_WIDTH: Record<Difficulty, string> = {
-  beginner: 'max-w-5xl',
-  intermediate: 'max-w-5xl',
+  beginner: 'max-w-xl',
+  intermediate: 'max-w-3xl',
   expert: 'max-w-5xl',
 };
 

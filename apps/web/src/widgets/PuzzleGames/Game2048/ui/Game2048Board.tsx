@@ -80,7 +80,7 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
       data-testid="game-2048-board"
       style={boardVars(theme)}
       className={cx(
-        'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-2 sm:p-3 shadow-xl shadow-black/40 select-none transition-all duration-200',
+        'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border border-[var(--glassBorder)] bg-[var(--glassBg)]/70 backdrop-blur-md p-2 sm:p-3 shadow-xl shadow-black/40 select-none transition-all duration-200',
         isFullscreen
           ? 'max-w-[min(94vw,min(calc(100vh-12rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(50vh,25.5rem))] sm:max-w-[min(100vw-2rem,min(52vh,26.5rem))]',

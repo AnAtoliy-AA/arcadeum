@@ -109,30 +109,32 @@ export function MinesweeperBoard({
   const gridColsClass = GRID_COLS_BY_WIDTH[game.width] ?? 'grid-cols-9';
 
   return (
-    <div
-      style={boardVars(theme)}
-      className={cx(
-        'w-full max-w-full overflow-x-auto rounded-2xl border border-[var(--glassBorder)] bg-[var(--ms-board-bg)] shadow-xl select-none transition-colors duration-200',
-        isFullscreen ? 'p-2 sm:p-3' : 'p-1.5 sm:p-4',
-      )}
-      role="grid"
-      aria-label={t('games.minesweeper_v1.board.label')}
-    >
-      <div className={cx('mx-auto grid w-max gap-1 p-1', gridColsClass)}>
-        {game.cells.map((cell, index) => (
-          <MineCell
-            key={`${game.difficulty}-${index}`}
-            cell={cell}
-            isBeginner={game.width <= 9}
-            isCompact={game.width > 16}
-            isFullscreen={isFullscreen}
-            lost={game.status === 'lost'}
-            onReveal={() => handleCellClick(index)}
-            onFlag={() => handleContextMenu(index)}
-            onPressStart={() => startPress(index)}
-            onPressEnd={endPress}
-          />
-        ))}
+    <div className="flex w-full justify-center overflow-x-auto p-1">
+      <div
+        style={boardVars(theme)}
+        className={cx(
+          'w-max max-w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)]/70 backdrop-blur-md shadow-xl select-none transition-colors duration-200',
+          isFullscreen ? 'p-2 sm:p-3' : 'p-1.5 sm:p-2.5',
+        )}
+        role="grid"
+        aria-label={t('games.minesweeper_v1.board.label')}
+      >
+        <div className={cx('grid w-max gap-1 p-0.5', gridColsClass)}>
+          {game.cells.map((cell, index) => (
+            <MineCell
+              key={`${game.difficulty}-${index}`}
+              cell={cell}
+              isBeginner={game.width <= 9}
+              isCompact={game.width > 16}
+              isFullscreen={isFullscreen}
+              lost={game.status === 'lost'}
+              onReveal={() => handleCellClick(index)}
+              onFlag={() => handleContextMenu(index)}
+              onPressStart={() => startPress(index)}
+              onPressEnd={endPress}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

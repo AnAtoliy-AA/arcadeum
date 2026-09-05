@@ -1,6 +1,6 @@
 {
   "name": "@arcadeum/games-core",
-  "version": "1.28.20",
+  "version": "1.28.21",
   "private": true,
   "description": "Framework-agnostic game engines and bot cores shared by the NestJS backend and the web offline mode (ARC-900)",
   "main": "dist/index.js",

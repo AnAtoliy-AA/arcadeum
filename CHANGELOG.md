@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.21] - 2026-09-05
+
+### Added
+- puzzle system with daily/rated/themed modes (Phase 2) (#1370)
+
+
 ## [1.28.20] - 2026-09-05
 
 ### Fixed

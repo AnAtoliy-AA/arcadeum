@@ -171,14 +171,14 @@ function MineCell({
         'flex aspect-square items-center justify-center font-mono font-extrabold transition-colors',
         isBeginner
           ? isFullscreen
-            ? 'h-9 w-9 min-w-[36px] sm:h-10.5 sm:w-10.5 sm:min-w-[42px] lg:h-12 lg:w-12 lg:min-w-[48px] rounded-xl text-base sm:text-lg lg:text-xl'
+            ? 'h-10 w-10 min-w-[40px] sm:h-12 sm:w-12 sm:min-w-[48px] md:h-14 md:w-14 md:min-w-[56px] lg:h-16 lg:w-16 lg:min-w-[64px] rounded-xl text-base sm:text-lg lg:text-2xl'
             : 'h-8 w-8 min-w-[32px] sm:h-9.5 sm:w-9.5 sm:min-w-[38px] md:h-11 md:w-11 md:min-w-[44px] rounded-xl text-sm sm:text-base md:text-lg'
           : isCompact
             ? isFullscreen
-              ? 'h-6.5 w-6.5 min-w-[24px] sm:h-7.5 sm:w-7.5 sm:min-w-[28px] lg:h-8 lg:w-8 lg:min-w-[32px] rounded-md text-xs sm:text-sm'
+              ? 'h-6.5 w-6.5 min-w-[26px] sm:h-7.5 sm:w-7.5 sm:min-w-[30px] md:h-8.5 md:w-8.5 md:min-w-[34px] lg:h-9.5 lg:w-9.5 lg:min-w-[38px] rounded-md text-xs sm:text-base'
               : 'h-5.5 w-5.5 min-w-[22px] sm:h-6.5 sm:w-6.5 sm:min-w-[26px] md:h-7 md:w-7 md:min-w-[28px] rounded-md text-xs sm:text-sm'
             : isFullscreen
-              ? 'h-7.5 w-7.5 min-w-[28px] sm:h-8.5 sm:w-8.5 sm:min-w-[32px] lg:h-9.5 lg:w-9.5 rounded-lg text-xs sm:text-base'
+              ? 'h-8 w-8 min-w-[32px] sm:h-9.5 sm:w-9.5 sm:min-w-[38px] md:h-11 md:w-11 md:min-w-[44px] lg:h-12 lg:w-12 lg:min-w-[48px] rounded-lg text-sm sm:text-lg'
               : 'h-6.5 w-6.5 min-w-[24px] sm:h-7.5 sm:w-7.5 sm:min-w-[28px] md:h-8 md:w-8 md:min-w-[32px] rounded-lg text-xs sm:text-sm',
         revealed
           ? 'cursor-default border border-[var(--ms-cell-revealed-border)] bg-black/25 text-[var(--color)] shadow-inner'

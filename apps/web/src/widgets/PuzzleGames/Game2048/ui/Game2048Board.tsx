@@ -2,6 +2,7 @@
 
 import { useRef, type CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { useSoloFullscreen } from '@/features/games/ui/SoloGameContainer';
 import { useGame2048Theme } from '../lib/Game2048ThemeContext';
 import type { Game2048Theme } from '../lib/theme';
 import type { Direction } from '../types';
@@ -48,6 +49,7 @@ function boardVars(theme: Game2048Theme): CSSProperties {
 
 export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
   const theme = useGame2048Theme();
+  const isFullscreen = useSoloFullscreen();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const handleTouchStart = (event: React.TouchEvent) => {
@@ -77,7 +79,12 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
     <div
       data-testid="game-2048-board"
       style={boardVars(theme)}
-      className="mx-auto aspect-square w-full max-w-[min(100vw-1rem,min(50vh,25.5rem))] sm:max-w-[min(100vw-2rem,min(52vh,26.5rem))] touch-none rounded-2xl sm:rounded-3xl border border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-2 sm:p-3 shadow-xl shadow-black/40 select-none transition-colors duration-200"
+      className={cx(
+        'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-2 sm:p-3 shadow-xl shadow-black/40 select-none transition-all duration-200',
+        isFullscreen
+          ? 'max-w-[min(94vw,min(calc(100vh-12rem),40rem))]'
+          : 'max-w-[min(100vw-1rem,min(50vh,25.5rem))] sm:max-w-[min(100vw-2rem,min(52vh,26.5rem))]',
+      )}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -95,6 +102,7 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
             className={cx(
               'flex select-none items-center justify-center rounded-2xl font-black transition-all duration-150',
               getTileClasses(value),
+              isFullscreen && 'md:text-4xl',
             )}
           >
             {value !== 0 && value}

@@ -316,11 +316,15 @@ export function SoloGameContainer({
   const gameField = (
     <div
       data-testid="solo-game-field"
-      className="relative flex w-full flex-col items-center justify-start min-h-0 pt-2 pb-1"
+      className={cx(
+        'relative flex w-full flex-col items-center justify-start min-h-0 pt-2 pb-1',
+        isFullscreen && 'h-full flex-1 justify-center',
+      )}
     >
       <div
         className={cx(
           'relative flex flex-col w-full items-center justify-center transition-opacity duration-200 min-h-0',
+          isFullscreen && 'h-full flex-1 justify-center',
           resolvedPause.isPaused &&
             'pointer-events-none select-none blur-sm opacity-25',
         )}
@@ -368,12 +372,12 @@ export function SoloGameContainer({
         )}
 
         {isFullscreen ? (
-          <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center gap-2 pb-2 flex-1 justify-between min-h-0">
-            <div className="w-full max-w-4xl min-[1400px]:max-w-5xl">
+          <div className="mx-auto flex w-full max-w-[1680px] flex-col items-center gap-2 pb-2 flex-1 justify-between min-h-0 h-full">
+            <div className="w-full max-w-5xl 2xl:max-w-6xl shrink-0">
               {hudCard}
             </div>
-            <div className="flex w-full flex-1 flex-col items-center justify-center gap-3 min-[1400px]:flex-row min-[1400px]:items-center min-[1400px]:gap-6 min-h-0">
-              <div className="flex flex-1 w-full justify-center min-h-0">
+            <div className="flex w-full flex-1 flex-col items-center justify-center gap-3 min-[1400px]:flex-row min-[1400px]:items-center min-[1400px]:gap-6 min-h-0 h-full">
+              <div className="flex flex-1 w-full h-full justify-center items-center min-h-0">
                 {gameField}
               </div>
               {showLeaderboard && (

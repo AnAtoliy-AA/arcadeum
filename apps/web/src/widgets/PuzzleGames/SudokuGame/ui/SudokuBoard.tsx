@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { useSoloFullscreen } from '@/features/games/ui/SoloGameContainer';
 import { useSudokuTheme } from '../lib/SudokuThemeContext';
 import type { SudokuTheme } from '../lib/theme';
 import { colOf, findConflicts, isGiven, rowOf } from '../types';
@@ -37,6 +38,7 @@ export function SudokuBoard({
   onSelect,
 }: SudokuBoardProps) {
   const theme = useSudokuTheme();
+  const isFullscreen = useSoloFullscreen();
   const conflicts = new Set(
     Array.from({ length: 81 }, (_, i) => i).flatMap((i) =>
       findConflicts(game.cells, i),
@@ -49,7 +51,12 @@ export function SudokuBoard({
       role="grid"
       aria-label="Sudoku"
       style={boardVars(theme)}
-      className="mx-auto grid aspect-square w-full max-w-[min(100vw-1rem,min(48vh,24.5rem))] sm:max-w-[min(100vw-2rem,min(50vh,25.5rem))] grid-cols-9 rounded-2xl border-2 border-[var(--sdk-board-border)] bg-[var(--sdk-board-bg)] p-1 shadow-xl select-none transition-colors duration-200"
+      className={cx(
+        'mx-auto grid aspect-square w-full grid-cols-9 rounded-2xl border-2 border-[var(--sdk-board-border)] bg-[var(--sdk-board-bg)] p-1 sm:p-1.5 shadow-xl select-none transition-all duration-200',
+        isFullscreen
+          ? 'max-w-[min(94vw,min(calc(100vh-14rem),40rem))]'
+          : 'max-w-[min(100vw-1rem,min(48vh,24.5rem))] sm:max-w-[min(100vw-2rem,min(50vh,25.5rem))]',
+      )}
     >
       {game.cells.map((value, index) => {
         const row = rowOf(index);
@@ -96,6 +103,7 @@ export function SudokuBoard({
               <span
                 className={cx(
                   'text-lg sm:text-xl tabular-nums',
+                  isFullscreen && 'md:text-2xl lg:text-3xl',
                   hasConflict
                     ? 'font-extrabold text-rose-400'
                     : given

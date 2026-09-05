@@ -152,8 +152,17 @@ export default function LeaderboardsPageContent({
     if (!data?.self) return;
     const target = document.querySelector<HTMLElement>('[data-self="true"]');
     if (!target) {
-      // Self row isn't on the current page yet — TODO(ARC-588-self-page):
-      // compute which page contains data.self.rank and load it.
+      // Self row isn't on the current page — compute which page contains
+      // data.self.rank and load it, then scroll to the row.
+      const selfRank = data.self.rank;
+      if (selfRank > 0) {
+        const targetPage = Math.ceil(selfRank / PAGE_SIZE);
+        if (targetPage !== page) {
+          // Load the correct page and reset accumulated rows
+          setPage(targetPage);
+          setAccumulated([]);
+        }
+      }
       return;
     }
     const top =

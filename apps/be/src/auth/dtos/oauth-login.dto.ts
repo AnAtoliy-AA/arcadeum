@@ -1,9 +1,11 @@
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
+export type OAuthProvider = 'google' | 'apple' | 'discord';
+
 export class OAuthLoginDto {
   @IsString()
-  @IsIn(['google'])
-  provider!: 'google';
+  @IsIn(['google', 'apple', 'discord'])
+  provider!: OAuthProvider;
 
   @IsOptional()
   @IsString()
@@ -12,4 +14,8 @@ export class OAuthLoginDto {
   @IsOptional()
   @IsString()
   idToken?: string;
+
+  @IsOptional()
+  @IsString()
+  authorizationCode?: string;
 }

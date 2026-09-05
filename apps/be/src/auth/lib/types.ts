@@ -79,6 +79,35 @@ export interface GoogleUserProfile {
 }
 
 /**
+ * Apple-specific user profile from OAuth.
+ */
+export interface AppleUserProfile {
+  sub: string;
+  email: string;
+  emailVerified: boolean;
+  name?: string;
+  audience?: string;
+}
+
+/**
+ * Discord-specific user profile from OAuth.
+ */
+export interface DiscordUserProfile {
+  sub: string;
+  email: string;
+  emailVerified: boolean;
+  username?: string;
+  avatar?: string;
+  discriminator?: string;
+}
+
+/**
+ * Generic OAuth user profile.
+ */
+export type OAuthUserProfile =
+  GoogleUserProfile | AppleUserProfile | DiscordUserProfile;
+
+/**
  * Full auth response with tokens and user profile.
  */
 export interface AuthTokensResponse {

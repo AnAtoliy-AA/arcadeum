@@ -17,6 +17,7 @@ import {
   Friendship,
   FriendshipSchema,
 } from '../friends/schemas/friendship.schema';
+import { MagicLink, MagicLinkSchema } from './schemas/magic-link.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -25,9 +26,12 @@ import {
   OAuthClientService,
   RefreshTokenService,
   GoogleOAuthService,
+  AppleOAuthService,
+  DiscordOAuthService,
   PasswordResetService,
   SignupRewardService,
   LoginLockoutService,
+  MagicLinkService,
 } from './services';
 import { UserRoleResolver } from './lib/user-role-resolver.service';
 import { AuthThrottlerGuard } from './lib/auth-throttler.guard';
@@ -54,6 +58,7 @@ import { GeoModule } from '../common/geo/geo.module';
       { name: RefreshToken.name, schema: RefreshTokenSchema },
       { name: PasswordResetToken.name, schema: PasswordResetTokenSchema },
       { name: Friendship.name, schema: FriendshipSchema },
+      { name: MagicLink.name, schema: MagicLinkSchema },
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
@@ -73,9 +78,12 @@ import { GeoModule } from '../common/geo/geo.module';
     OAuthClientService,
     RefreshTokenService,
     GoogleOAuthService,
+    AppleOAuthService,
+    DiscordOAuthService,
     PasswordResetService,
     SignupRewardService,
     LoginLockoutService,
+    MagicLinkService,
     UserRoleResolver,
     AuthThrottlerGuard,
   ],

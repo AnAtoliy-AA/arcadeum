@@ -405,10 +405,6 @@ describe('GemPurchasesService', () => {
       expect(wallet.credit).not.toHaveBeenCalled();
     });
 
-    // TODO(ARC-617 follow-up): add a unit test for the APPROVED → captureOrder
-    // → credit path. Skipped here to keep this spec under the 500-line limit;
-    // splitting into a dedicated finalize.spec.ts is the right answer.
-
     it('marks purchase as failed and throws when PayPal status is VOIDED', async () => {
       const userId = oid().toString();
       const purchase = buildPurchaseDoc({

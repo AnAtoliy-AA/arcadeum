@@ -31,6 +31,26 @@ export interface AppExpoConfig {
 }
 
 /**
+ * Expo manifest2 type (not fully typed in expo-constants).
+ */
+interface ExpoManifest2 {
+  id?: string;
+  createdAt?: string;
+  runtimeVersion?: string;
+  launchAsset?: {
+    url?: string;
+    hash?: string;
+  };
+  assets?: Array<{
+    path?: string;
+    hash?: string;
+    key?: string;
+  }>;
+  metadata?: Record<string, unknown>;
+  extra?: Record<string, unknown>;
+}
+
+/**
  * Access constants from expoConfig.extra in a type-safe way.
  */
 export const getAppExtra = (): AppExpoConfig => {
@@ -56,7 +76,8 @@ export const getManifest = () => {
 /**
  * Get manifest2.
  */
-export const getManifest2 = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (Constants as any).manifest2;
+export const getManifest2 = (): ExpoManifest2 | undefined => {
+  // manifest2 is not in the official expo-constants types yet
+  const constants = Constants as Record<string, unknown>;
+  return constants.manifest2 as ExpoManifest2 | undefined;
 };

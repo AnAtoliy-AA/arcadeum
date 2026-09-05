@@ -4,7 +4,12 @@ import React from 'react';
 import { useReferralStats } from '@/features/referrals/hooks/useReferralStats';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/lib/useTranslation';
-import { LoadingState, EmptyState, CosmeticBadge } from '@arcadeum/ui';
+import {
+  LoadingState,
+  EmptyState,
+  ErrorState,
+  CosmeticBadge,
+} from '@arcadeum/ui';
 import { ReferralShareCard } from '@/features/referrals/ui/ReferralShareCard';
 import { ReferralProgressCard } from '@/features/referrals/ui/ReferralProgressCard';
 import { ReferralRewardsCard } from '@/features/referrals/ui/ReferralRewardsCard';
@@ -32,7 +37,7 @@ export default function ReferralDashboard() {
   const { t } = useTranslation();
   const { snapshot, hydrated } = useSessionTokens();
   const isAuthenticated = !!snapshot.accessToken;
-  const { data, isLoading, error } = useReferralStats();
+  const { data, isLoading, error, refetch } = useReferralStats();
 
   let content: React.ReactNode;
 
@@ -51,7 +56,12 @@ export default function ReferralDashboard() {
   } else if (error || !data) {
     content = (
       <DashboardContainer data-testid="referral-dashboard">
-        <EmptyState message={t('referrals.error.title')} icon="⚠️" />
+        <ErrorState
+          title={t('referrals.error.title')}
+          message={error?.message || t('referrals.error.message')}
+          retryLabel={t('referrals.error.retry')}
+          onRetry={refetch}
+        />
       </DashboardContainer>
     );
   } else {

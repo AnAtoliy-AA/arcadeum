@@ -30,6 +30,12 @@ export class ReferralController {
     return this.referralService.getReferralStats(user.userId);
   }
 
+  @Get('rewards-config')
+  @UseGuards(JwtAuthGuard)
+  async getRewardsConfig() {
+    return this.referralService.getRewardsConfig();
+  }
+
   @Get('code')
   @UseGuards(JwtAuthGuard)
   async getCode(@Req() req: Request) {

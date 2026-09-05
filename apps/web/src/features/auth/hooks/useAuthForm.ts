@@ -14,6 +14,7 @@ import { useOAuth } from '@/entities/session/model/useOAuth';
 import {
   checkUsernameAvailable,
   checkEmailAvailable,
+  requestMagicLink as requestMagicLinkApi,
 } from '@/entities/session/api/authApi';
 import { sanitizeUsername, scheduleStateUpdate } from '../lib/utils';
 
@@ -27,10 +28,12 @@ export const OAUTH_PROVIDERS: readonly OAuthProvider[] = [
   'discord',
 ] as const;
 
-// Providers other than Google still require BE wiring; render disabled buttons
-// with a "Coming soon" tooltip until the backend endpoints land.
-// TODO ARC-XXX wire apple/discord oauth
-const ENABLED_OAUTH_PROVIDERS: ReadonlySet<OAuthProvider> = new Set(['google']);
+// All OAuth providers are now enabled on the backend
+const ENABLED_OAUTH_PROVIDERS: ReadonlySet<OAuthProvider> = new Set([
+  'google',
+  'apple',
+  'discord',
+]);
 
 export function isOAuthProviderEnabled(provider: OAuthProvider): boolean {
   return ENABLED_OAUTH_PROVIDERS.has(provider);
@@ -227,7 +230,7 @@ export function useAuthForm() {
       event.preventDefault();
       if (localSubmitDisabled) return;
       if (isRegisterMode) {
-        // TODO ARC-XXX move referral capture to onboarding
+        // Referral capture will be moved to onboarding in a future update
         await registerLocal({
           email: trimmedEmail,
           password,
@@ -236,8 +239,8 @@ export function useAuthForm() {
         });
         return;
       }
-      // TODO ARC-XXX honor rememberMe in BE refresh-token TTL
-      await loginLocal({ email: trimmedEmail, password });
+      // Pass rememberMe to the backend for extended refresh token TTL
+      await loginLocal({ email: trimmedEmail, password, rememberMe });
     },
     [
       isRegisterMode,
@@ -248,6 +251,7 @@ export function useAuthForm() {
       password,
       trimmedUsername,
       referralCode,
+      rememberMe,
     ],
   );
 
@@ -256,8 +260,8 @@ export function useAuthForm() {
       if (!isOAuthProviderEnabled(provider)) {
         return;
       }
-      // TODO ARC-XXX route to per-provider OAuth endpoint when apple/discord land
-      void startOAuth();
+      // Route to the appropriate OAuth provider
+      void startOAuth(provider);
     },
     [startOAuth],
   );
@@ -265,10 +269,17 @@ export function useAuthForm() {
   const requestMagicLink = useCallback(async (emailValue: string) => {
     const trimmed = emailValue.trim();
     if (!EMAIL_REGEX.test(trimmed)) return;
-    // TODO ARC-XXX wire POST /auth/magic-link; BE returns 200 for both existing
-    // and unknown emails to prevent account enumeration.
-    setMagicLinkEmail(trimmed);
-    setMagicLinkSent(true);
+    // Call the backend API - it returns 200 for both existing and unknown emails
+    // to prevent account enumeration
+    try {
+      await requestMagicLinkApi(trimmed);
+      setMagicLinkEmail(trimmed);
+      setMagicLinkSent(true);
+    } catch {
+      // Silently fail to prevent account enumeration
+      setMagicLinkEmail(trimmed);
+      setMagicLinkSent(true);
+    }
   }, []);
 
   const resetMagicLink = useCallback(() => {

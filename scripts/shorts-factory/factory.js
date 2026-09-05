@@ -77,7 +77,7 @@ const CONFIG = {
   pendingDir: path.join(__dirname, '..', '..', 'pending'),
 
   // Video settings
-  videoDuration: { min: 5, max: 10 }, // seconds (randomized)
+  videoDuration: { min: 15, max: 25 }, // seconds (randomized)
   fadeOutDuration: 2, // seconds
   fadeOutStartOffset: 2, // seconds before end to start fade
   musicVolume: 0.35, // 35% volume
@@ -370,7 +370,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       { type: 'scroll', y: 200, wait: 800 },
       {
@@ -391,7 +391,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       { type: 'scroll', y: 200, wait: 800 },
       {
@@ -412,7 +412,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -432,7 +432,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -452,7 +452,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -472,7 +472,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -492,7 +492,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -1394,9 +1394,14 @@ const SCENARIOS = [
       },
       { type: 'scroll', y: 300, wait: 800 },
       {
-        type: 'hover',
+        type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 1200,
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 1500,
       },
     ],
   },
@@ -1419,9 +1424,14 @@ const SCENARIOS = [
       },
       { type: 'scroll', y: 400, wait: 800 },
       {
-        type: 'hover',
+        type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 1200,
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 1500,
       },
     ],
   },
@@ -1543,6 +1553,139 @@ const SCENARIOS = [
       { type: 'scroll', y: 400, wait: 800 },
       { type: 'scroll', y: 400, wait: 800 },
       { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+
+  // ─── MULTI-PAGE STORY FLOWS ──────────────────────────────────────────────
+
+  {
+    name: 'leaderboardToChallengeFlow',
+    caption:
+      'Spotted a top player — checking their stats and sending a challenge! 🏆⚔️ #competitive #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid^="player-row-"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="player-stats-card"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'rewardClaimFlow',
+    caption:
+      'Daily rewards are LIVE — claim your free tokens and streak bonus! 💰🎁 #playtoearn #web3',
+    steps: [
+      { type: 'navigate', url: '/en/rewards', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="daily-rewards"]',
+        wait: 1500,
+      },
+      {
+        type: 'click',
+        selector: '[data-testid="daily-rewards"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="streak-bonus-card"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'shopEquipFlow',
+    caption:
+      'New avatar unlocked — equip it and show your style! 🛒🎨 #gaming #customization',
+    steps: [
+      { type: 'navigate', url: '/en/shop', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid^="shop-card-avatar-"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="equip-item-button"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'tournamentJoinFlow',
+    caption:
+      'Daily tournament is starting — join now and compete for prizes! 🏅🔥 #tournament #esports',
+    steps: [
+      { type: 'navigate', url: '/en/tournaments', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid^="tournament-card-"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="tournament-join-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseCyberpunkGameplay',
+    caption:
+      'Cyberpunk chess hits DIFFERENT 🌆♟️ Play with themed skins on Arcadeum! #cyberpunk #gaming #aesthetic',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess?theme=cyberpunk', wait: 3000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'multiGameSpeedRun',
+    caption:
+      'Speed-running every game on Arcadeum — which one is YOUR favorite? 🎮⚡ #gaming #speedrun',
+    steps: [
+      { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/chess', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/glimworm', wait: 2000 },
+      { type: 'scroll', y: 100, wait: 600 },
     ],
   },
 ];

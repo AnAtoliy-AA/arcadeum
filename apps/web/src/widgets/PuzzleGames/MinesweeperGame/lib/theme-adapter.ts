@@ -18,7 +18,16 @@ export interface MinesweeperTheme {
   /** Detonated mine color. */
   mineColor: string;
   /** Number glyph colors, indexed 1–8 (index 0 unused). */
-  numberColors: readonly [string, string, string, string, string, string, string, string];
+  numberColors: readonly [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+  ];
   textColor: string;
   borderRadius: string;
   bgImage?: string;
@@ -41,9 +50,9 @@ export function sharedThemeToMinesweeper(theme: GameTheme): MinesweeperTheme {
     boardBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.85)`,
     boardBorder: theme.colors.border,
     cellHidden: `linear-gradient(180deg, ${theme.colors.primary} 0%, ${theme.colors.glow} 100%)`,
-    cellHiddenBorder: `rgba(${hexToRgb(theme.colors.text)}, 0.25)`,
+    cellHiddenBorder: theme.colors.border,
     cellHiddenHover: `rgba(${hexToRgb(theme.colors.highlight)}, 0.35)`,
-    cellRevealed: `rgba(${hexToRgb(theme.colors.text)}, 0.08)`,
+    cellRevealed: 'rgba(0, 0, 0, 0.45)',
     cellRevealedBorder: `rgba(${hexToRgb(theme.colors.text)}, 0.15)`,
     flagColor: theme.colors.highlight,
     mineColor: '#ef4444',

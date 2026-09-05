@@ -94,4 +94,18 @@ describe('SolitaireGame UI', () => {
     expect(modal).toHaveAttribute('data-tone', 'defeat');
     expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
   });
+
+  it('renders and updates the active game timer', () => {
+    useSolitaireStore.setState({
+      startedAt: Date.now() - 5000,
+      finishedAt: null,
+      finished: null,
+    });
+
+    render(<SolitaireGame />);
+
+    const timerCard = screen.getByTestId('solitaire-timer');
+    expect(timerCard).toBeInTheDocument();
+    expect(timerCard).not.toHaveTextContent('00:00');
+  });
 });

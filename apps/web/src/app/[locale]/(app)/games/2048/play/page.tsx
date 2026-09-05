@@ -28,7 +28,7 @@ export default async function Game2048PlayRoute({ params }: PageProps) {
 
   return (
     <PageLayout>
-      <div className="box-border min-h-screen py-6">
+      <div className="box-border min-h-screen py-2 sm:py-3">
         <Game2048Client />
       </div>
     </PageLayout>

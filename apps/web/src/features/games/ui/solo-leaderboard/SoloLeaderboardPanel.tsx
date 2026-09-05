@@ -23,7 +23,7 @@ export function SoloLeaderboardPanel({
   difficulty,
   sortBy = 'score',
   order = 'desc',
-  defaultExpanded = true,
+  defaultExpanded = false,
   className,
 }: SoloLeaderboardPanelProps) {
   const { t } = useTranslation();
@@ -34,7 +34,7 @@ export function SoloLeaderboardPanel({
   return (
     <div
       className={cx(
-        'w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] shadow-xl backdrop-blur-xl transition-all duration-300',
+        'w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] shadow-md transition-colors duration-200',
         className,
       )}
     >
@@ -43,7 +43,7 @@ export function SoloLeaderboardPanel({
         onClick={() => setIsExpanded(!isExpanded)}
         data-testid="solo-leaderboard-toggle"
         aria-expanded={isExpanded}
-        className="flex w-full items-center justify-between px-4 py-3.5 text-left transition-colors hover:bg-[var(--backgroundHover)]"
+        className="flex w-full items-center justify-between px-3.5 py-2 text-left transition-colors hover:bg-[var(--backgroundHover)]"
       >
         <div className="flex items-center gap-2.5">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/15 text-sm text-amber-500 shadow-sm shadow-amber-500/20">

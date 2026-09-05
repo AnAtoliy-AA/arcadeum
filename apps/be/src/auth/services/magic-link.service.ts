@@ -45,7 +45,7 @@ export class MagicLinkService {
     );
 
     // Find existing user if any
-    // codeql[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. Input is normalized (lowercased/trimmed).
+    // lgtm[js/sql-injection]
     const user = await this.userModel.findOne({ email: normalizedEmail });
 
     // Invalidate any existing unused magic links for this email

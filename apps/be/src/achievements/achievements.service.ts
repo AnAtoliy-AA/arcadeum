@@ -135,7 +135,6 @@ export class AchievementsService {
             claimed: false,
           });
         }
-        // lgtm[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. User input is sanitized via escapeRegExp().
         newlyUnlocked.push(def.achievementId);
       }
     }

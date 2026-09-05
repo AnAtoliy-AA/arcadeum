@@ -45,7 +45,6 @@ export class MagicLinkService {
     );
 
     // Find existing user if any
-    // lgtm[js/sql-injection]
     const user = await this.userModel.findOne({ email: normalizedEmail });
 
     // Invalidate any existing unused magic links for this email

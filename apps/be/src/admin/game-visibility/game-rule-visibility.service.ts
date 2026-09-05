@@ -78,7 +78,6 @@ export class GameRuleVisibilityService {
       throw new BadRequestException('Invalid gameId or ruleId');
     }
     const validGameId = assertValidGameId(gameId);
-    // lgtm[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. User input is sanitized via escapeRegExp().
     const validRuleId = assertValidRuleId(validGameId, ruleId);
     await this.model.findOneAndUpdate(
       { gameId: { $eq: validGameId }, ruleId: { $eq: validRuleId } },

@@ -107,7 +107,6 @@ export class GameHistoryStatsService {
     const { entries: rawEntries, total } =
       await this.playerStats.getLeaderboard(limit, offset, gameId);
 
-    // lgtm[js/sql-injection] This is a MongoDB/Mongoose query, not SQL. User input is sanitized via escapeRegExp().
     const hasMore = offset + limit < total;
 
     const userIds = rawEntries

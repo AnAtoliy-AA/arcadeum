@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.14] - 2026-09-05
+
+### Fixed
+- revert PWA disable to NEXT_PUBLIC_E2E and guard SW registration in E2E
+- collapse offline games list, hide in dev, add scroll
+- offline game downloads stuck on staging
+
+
 ## [1.28.13] - 2026-09-05
 
 ### Changed

@@ -1,7 +1,7 @@
 {
   "name": "mobile",
   "main": "expo-router/entry",
-  "version": "1.28.13",
+  "version": "1.28.14",
   "scripts": {
     "postinstall": "sh scripts/fix-hermesc.sh",
     "dev": "node ./scripts/dev.js",

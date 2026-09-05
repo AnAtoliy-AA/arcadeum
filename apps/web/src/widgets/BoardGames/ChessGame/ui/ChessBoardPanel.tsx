@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback, useMemo } from 'react';
 import { ChessBoard } from './ChessBoard';
 import { MoveList } from './MoveList';
 import {
@@ -11,6 +11,7 @@ import {
 } from './ChessPanelComponents';
 import { CoachControls } from '@/features/coach/ui/CoachControls';
 import { LiveEvalDisplay } from './LiveEvalDisplay';
+import { OpeningExplorer } from '@/features/analysis/ui/OpeningExplorer';
 import type { UseChessCoachResult } from '../hooks/useChessCoach';
 import type { ChessClientState, BoardPosition, File, Rank } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
@@ -87,6 +88,11 @@ function ChessBoardPanelImpl({
   const handleMoveHover = useCallback((idx: number | null) => {
     setHoveredMoveIdx(idx);
   }, []);
+
+  const currentFen = useMemo(() => {
+    if (!snapshot?.positionHistory?.length) return null;
+    return snapshot.positionHistory[snapshot.positionHistory.length - 1];
+  }, [snapshot]);
 
   if (!snapshot) return null;
 
@@ -168,6 +174,10 @@ function ChessBoardPanelImpl({
           eval_={liveEval ?? null}
           analyzing={!!liveEvalAnalyzing}
         />
+
+        {currentFen && (
+          <OpeningExplorer fen={currentFen} />
+        )}
 
         <MoveList state={snapshot} t={t} onMoveHover={handleMoveHover} />
 

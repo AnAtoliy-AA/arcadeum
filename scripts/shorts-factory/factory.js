@@ -77,7 +77,7 @@ const CONFIG = {
   pendingDir: path.join(__dirname, '..', '..', 'pending'),
 
   // Video settings
-  videoDuration: { min: 5, max: 10 }, // seconds (randomized)
+  videoDuration: { min: 15, max: 25 }, // seconds (randomized)
   fadeOutDuration: 2, // seconds
   fadeOutStartOffset: 2, // seconds before end to start fade
   musicVolume: 0.35, // 35% volume
@@ -98,6 +98,9 @@ const CONFIG = {
   // Factory bot account for gameplay recording (optional)
   factoryBotToken: process.env.SHORTS_FACTORY_BOT_TOKEN || '',
   factoryBotRefreshToken: process.env.SHORTS_FACTORY_BOT_REFRESH_TOKEN || '',
+  factoryBotEmail: process.env.SHORTS_FACTORY_BOT_EMAIL || '',
+  factoryBotPassword: process.env.SHORTS_FACTORY_BOT_PASSWORD || '',
+  factoryBeUrl: process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
 
   // Approval settings
   approvalTimeoutMs: 3 * 60 * 60 * 1000, // 3 hours
@@ -323,11 +326,42 @@ const CAPTIONS = [
 
 /**
  * Injects bot auth tokens into the browser context so gameplay pages load
- * as an authenticated user. Requires SHORTS_FACTORY_BOT_TOKEN in env.
- * Returns true if tokens were injected, false if no token configured.
+ * as an authenticated user. Auto-logins if no token set in env.
+ * Returns true if tokens were injected, false if no auth available.
  */
-async function injectBotAuth(context) {
-  if (!CONFIG.factoryBotToken) {
+async function getFactoryBotTokens() {
+  if (CONFIG.factoryBotToken) {
+    log('info', 'Using existing SHORTS_FACTORY_BOT_TOKEN from env');
+    return { accessToken: CONFIG.factoryBotToken, refreshToken: CONFIG.factoryBotRefreshToken };
+  }
+
+  if (!CONFIG.factoryBotEmail || !CONFIG.factoryBotPassword) {
+    log('warn', 'No bot credentials configured (SHORTS_FACTORY_BOT_EMAIL/PASSWORD)');
+    return null;
+  }
+
+  log('info', `Auto-login as bot user: ${CONFIG.factoryBotEmail}`);
+  try {
+    const res = await axios.post(`${CONFIG.factoryBeUrl}/auth/login`, {
+      email: CONFIG.factoryBotEmail,
+      password: CONFIG.factoryBotPassword,
+    }, { timeout: 15000 });
+
+    const { accessToken, refreshToken } = res.data || {};
+    if (accessToken) {
+      log('info', 'Bot login successful');
+      return { accessToken, refreshToken: refreshToken || '' };
+    }
+    log('warn', 'Bot login returned no accessToken');
+    return null;
+  } catch (err) {
+    log('warn', 'Bot login failed', { error: err.message, status: err.response?.status });
+    return null;
+  }
+}
+
+async function injectBotAuth(context, tokens) {
+  if (!tokens?.accessToken) {
     return false;
   }
   await context.addInitScript(
@@ -346,8 +380,8 @@ async function injectBotAuth(context) {
       } catch {}
     },
     {
-      accessToken: CONFIG.factoryBotToken,
-      refreshToken: CONFIG.factoryBotRefreshToken,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken || '',
     },
   );
   return true;
@@ -370,7 +404,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       { type: 'scroll', y: 200, wait: 800 },
       {
@@ -391,7 +425,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       { type: 'scroll', y: 200, wait: 800 },
       {
@@ -412,7 +446,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -432,7 +466,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -452,7 +486,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -472,7 +506,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -492,7 +526,7 @@ const SCENARIOS = [
       {
         type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 6000,
+        wait: 3000,
       },
       {
         type: 'hover',
@@ -1394,9 +1428,14 @@ const SCENARIOS = [
       },
       { type: 'scroll', y: 300, wait: 800 },
       {
-        type: 'hover',
+        type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 1200,
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 1500,
       },
     ],
   },
@@ -1419,9 +1458,14 @@ const SCENARIOS = [
       },
       { type: 'scroll', y: 400, wait: 800 },
       {
-        type: 'hover',
+        type: 'click',
         selector: '[data-testid="quickplay-ai-button"]',
-        wait: 1200,
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 1500,
       },
     ],
   },
@@ -1543,6 +1587,139 @@ const SCENARIOS = [
       { type: 'scroll', y: 400, wait: 800 },
       { type: 'scroll', y: 400, wait: 800 },
       { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+
+  // ─── MULTI-PAGE STORY FLOWS ──────────────────────────────────────────────
+
+  {
+    name: 'leaderboardToChallengeFlow',
+    caption:
+      'Spotted a top player — checking their stats and sending a challenge! 🏆⚔️ #competitive #gaming',
+    steps: [
+      { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid^="player-row-"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="player-stats-card"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'rewardClaimFlow',
+    caption:
+      'Daily rewards are LIVE — claim your free tokens and streak bonus! 💰🎁 #playtoearn #web3',
+    steps: [
+      { type: 'navigate', url: '/en/rewards', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="daily-rewards"]',
+        wait: 1500,
+      },
+      {
+        type: 'click',
+        selector: '[data-testid="daily-rewards"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="streak-bonus-card"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'shopEquipFlow',
+    caption:
+      'New avatar unlocked — equip it and show your style! 🛒🎨 #gaming #customization',
+    steps: [
+      { type: 'navigate', url: '/en/shop', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid^="shop-card-avatar-"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="equip-item-button"]',
+        wait: 1200,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'tournamentJoinFlow',
+    caption:
+      'Daily tournament is starting — join now and compete for prizes! 🏅🔥 #tournament #esports',
+    steps: [
+      { type: 'navigate', url: '/en/tournaments', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid^="tournament-card-"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="tournament-join-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseCyberpunkGameplay',
+    caption:
+      'Cyberpunk chess hits DIFFERENT 🌆♟️ Play with themed skins on Arcadeum! #cyberpunk #gaming #aesthetic',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess?theme=cyberpunk', wait: 3000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2000,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'multiGameSpeedRun',
+    caption:
+      'Speed-running every game on Arcadeum — which one is YOUR favorite? 🎮⚡ #gaming #speedrun',
+    steps: [
+      { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/chess', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/glimworm', wait: 2000 },
+      { type: 'scroll', y: 100, wait: 600 },
     ],
   },
 ];
@@ -1840,12 +2017,6 @@ async function captureBrowsing() {
     }
     if (!scenario) {
       scenario = randomElement(SCENARIOS);
-      if (!CONFIG.factoryBotToken) {
-        log(
-          'info',
-          'No SHORTS_FACTORY_BOT_TOKEN set — gameplay will record as anonymous. Set it to enable authenticated gameplay.',
-        );
-      }
     }
 
     const context = await browser.newContext({
@@ -1877,7 +2048,8 @@ async function captureBrowsing() {
     );
 
     if (scenario.requiresAuth) {
-      const injected = await injectBotAuth(context);
+      const botTokens = await getFactoryBotTokens();
+      const injected = await injectBotAuth(context, botTokens);
       log(
         'info',
         injected

@@ -28,7 +28,7 @@ export default async function SudokuPlayRoute({ params }: PageProps) {
 
   return (
     <PageLayout>
-      <div className="box-border min-h-screen py-6">
+      <div className="box-border min-h-screen py-2 sm:py-3">
         <SudokuGameClient />
       </div>
     </PageLayout>

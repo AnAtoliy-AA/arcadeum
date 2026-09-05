@@ -28,7 +28,7 @@ export function sharedThemeToSudoku(theme: GameTheme): SudokuTheme {
     boardBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.85)`,
     boardBorder: theme.colors.border,
     lineThin: `rgba(${hexToRgb(theme.colors.text)}, 0.18)`,
-    lineThick: `rgba(${hexToRgb(theme.colors.text)}, 0.55)`,
+    lineThick: theme.colors.border,
     selectedCell: `rgba(${hexToRgb(theme.colors.highlight)}, 0.35)`,
     peerCell: `rgba(${hexToRgb(theme.colors.primary)}, 0.12)`,
     sameNumberCell: `rgba(${hexToRgb(theme.colors.glow)}, 0.3)`,

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import Game2048 from './Game';
 import { useGame2048Store } from '../store/game2048Store';
 
@@ -84,5 +84,43 @@ describe('Game2048 UI', () => {
     expect(modal).toHaveAttribute('data-tone', 'defeat');
     expect(screen.queryByTestId('keep-going-button')).not.toBeInTheDocument();
     expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
+  });
+
+  it('continues playing after win without re-triggering win modal on subsequent moves', () => {
+    useGame2048Store.setState({
+      status: 'won',
+      keepPlayingFlag: false,
+      grid: [2048, 2, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      finished: {
+        won: true,
+        score: 2048,
+        moves: 50,
+        durationMs: 30000,
+      },
+      finishedAt: Date.now(),
+    });
+
+    const { rerender } = render(<Game2048 />);
+
+    const keepGoingBtn = screen.getByTestId('keep-going-button');
+    expect(keepGoingBtn).toBeInTheDocument();
+    fireEvent.click(keepGoingBtn);
+
+    expect(useGame2048Store.getState().keepPlayingFlag).toBe(true);
+    expect(useGame2048Store.getState().finishedAt).toBeNull();
+    expect(useGame2048Store.getState().finished).toBeNull();
+
+    rerender(<Game2048 />);
+    expect(screen.queryByTestId('game-result-modal')).not.toBeInTheDocument();
+
+    act(() => {
+      useGame2048Store.getState().move('down');
+    });
+
+    expect(useGame2048Store.getState().finishedAt).toBeNull();
+    expect(useGame2048Store.getState().finished).toBeNull();
+
+    rerender(<Game2048 />);
+    expect(screen.queryByTestId('game-result-modal')).not.toBeInTheDocument();
   });
 });

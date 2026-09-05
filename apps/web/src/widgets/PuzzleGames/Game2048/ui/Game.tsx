@@ -1,15 +1,15 @@
 'use client';
 
 import { useCallback, useEffect, useMemo } from 'react';
-import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import {
   SoloGameContainer,
-  StatCard,
   formatDuration,
   useSoloTimer,
+  useSoloPause,
+  SoloActionButton,
 } from '@/features/games/ui/SoloGameContainer';
 import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { Game2048ThemeProvider } from '../lib/Game2048ThemeContext';
@@ -34,6 +34,8 @@ function Game2048Table() {
   const score = useGame2048Store((state) => state.score);
   const best = useGame2048Store((state) => state.best);
   const finished = useGame2048Store((state) => state.finished);
+  const status = useGame2048Store((state) => state.status);
+  const keepPlayingFlag = useGame2048Store((state) => state.keepPlayingFlag);
   const startedAt = useGame2048Store((state) => state.startedAt);
   const finishedAt = useGame2048Store((state) => state.finishedAt);
   const move = useGame2048Store((state) => state.move);
@@ -41,11 +43,12 @@ function Game2048Table() {
   const newGame = useGame2048Store((state) => state.newGame);
 
   const isRunning = finishedAt === null;
-
-  const timer = useSoloTimer(isRunning, startedAt);
+  const pause = useSoloPause(isRunning, finishedAt);
+  const timer = useSoloTimer(isRunning, startedAt, pause.isPaused);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (pause.isPaused) return;
       const keyMap: Record<string, Direction> = {
         ArrowUp: 'up',
         ArrowDown: 'down',
@@ -67,7 +70,7 @@ function Game2048Table() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [move]);
+  }, [move, pause.isPaused]);
 
   const maxTile = useMemo(() => Math.max(0, ...grid), [grid]);
 
@@ -93,43 +96,45 @@ function Game2048Table() {
   }, [finished, best, maxTile, t]);
 
   const handleMove = useCallback(
-    (direction: Direction) => move(direction),
-    [move],
+    (direction: Direction) => {
+      if (pause.isPaused) return;
+      move(direction);
+    },
+    [move, pause.isPaused],
   );
 
-  const hud = (
-    <div className="grid w-full grid-cols-3 gap-2 sm:gap-3">
-      <StatCard
-        label={t('games.game_2048_v1.hud.score')}
-        value={score}
-        icon="🎯"
-        dataTestId="game-2048-score"
-      />
-      <StatCard
-        label={t('games.game_2048_v1.hud.best')}
-        value={best}
-        icon="🏆"
-        dataTestId="game-2048-best"
-      />
-      <StatCard
-        label={t('games.game_2048_v1.hud.time')}
-        value={timer.formatted}
-        icon="⏱️"
-        dataTestId="game-2048-timer"
-      />
-    </div>
-  );
+  const statsItems = [
+    {
+      id: 'score',
+      label: t('games.game_2048_v1.hud.score'),
+      value: score,
+      icon: '🎯',
+      dataTestId: 'game-2048-score',
+    },
+    {
+      id: 'best',
+      label: t('games.game_2048_v1.hud.best'),
+      value: best,
+      icon: '🏆',
+      dataTestId: 'game-2048-best',
+    },
+    {
+      id: 'time',
+      label: t('games.game_2048_v1.hud.time'),
+      value: timer.formatted,
+      icon: '⏱️',
+      dataTestId: 'game-2048-timer',
+    },
+  ];
 
   const actions = (
-    <Button
-      variant="secondary"
-      size="sm"
+    <SoloActionButton
       onClick={newGame}
-      data-testid="game-2048-new-game-button"
-      className="whitespace-nowrap px-3.5 font-semibold"
+      dataTestId="game-2048-new-game-button"
+      icon="🔄"
     >
       {t('games.game_2048_v1.hud.newGame')}
-    </Button>
+    </SoloActionButton>
   );
 
   return (
@@ -138,11 +143,12 @@ function Game2048Table() {
       difficulty="default"
       sortBy="score"
       order="desc"
+      pause={pause}
       isRunning={isRunning}
       startedAt={startedAt}
       finishedAt={finishedAt}
       onNewGame={newGame}
-      hud={hud}
+      statsItems={statsItems}
       actions={actions}
       loadingMessage="games.game_2048_v1.board.loading"
       modal={{
@@ -163,13 +169,15 @@ function Game2048Table() {
               : 'games.game_2048_v1.result.lostBody',
           ),
         },
-        secondaryAction: finished?.won
-          ? {
-              label: t('games.game_2048_v1.result.keepGoing'),
-              onClick: continuePlaying,
-              testId: 'keep-going-button',
-            }
-          : undefined,
+        secondaryAction:
+          finished?.won && status !== 'lost' && !keepPlayingFlag
+            ? {
+                label: t('games.game_2048_v1.result.keepGoing'),
+                onClick: continuePlaying,
+                testId: 'keep-going-button',
+              }
+            : undefined,
+        onClose: status === 'won' ? continuePlaying : undefined,
       }}
     >
       <Game2048Board grid={grid} onMove={handleMove} />

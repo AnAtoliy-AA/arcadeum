@@ -149,10 +149,11 @@
 }
 
 .pachisi-die {
-  background: var(--pachisi-dice-face);
-  border-color: var(--pachisi-dice-border);
+  background: var(--pachisi-dice-face, #1e293b);
+  border-color: var(--pachisi-dice-border, rgba(255, 255, 255, 0.25));
+  color: var(--pachisi-dice-dot, #ffffff);
 }
 
 .pachisi-die-dot {
-  fill: var(--pachisi-dice-dot);
+  fill: var(--pachisi-dice-dot, currentColor);
 }

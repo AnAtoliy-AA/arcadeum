@@ -135,8 +135,7 @@ export function PachisiBoard({
           aria-label={t('games.pachisi_v1.game.moveTokenAria', {
             id: placed.token.id,
           })}
-          className={`pachisi-token pachisi-token-seat-${placed.seat} absolute h-[72%] w-[72%] animate-bounce rounded-full border-2 shadow-md ring-2 ring-white/90 transition-transform hover:scale-110 disabled:opacity-50 ${offsetClass} ${BOARD_CELL_FOCUS_CLASS}`}
-          disabled={actionBusy}
+          className={`pachisi-token pachisi-token-seat-${placed.seat} pointer-events-auto z-30 cursor-pointer absolute h-[72%] w-[72%] animate-bounce rounded-full border-2 shadow-md ring-2 ring-white/90 transition-transform hover:scale-110 ${offsetClass} ${BOARD_CELL_FOCUS_CLASS}`}
           onClick={() => onMove(placed.token.id)}
           type="button"
           {...shared}
@@ -168,7 +167,10 @@ export function PachisiBoard({
   );
 
   return (
-    <div className="box-border flex w-full flex-col items-center gap-3 select-none">
+    <div
+      className="box-border flex w-full flex-col items-center gap-3 select-none"
+      style={boardVars(theme)}
+    >
       <PachisiStatusStrip
         actionBusy={actionBusy}
         canMove={canMove}
@@ -191,7 +193,6 @@ export function PachisiBoard({
             : 'max-h-[calc(100dvh-170px)] max-w-[calc(100dvh-170px)]'
         } overflow-hidden rounded-2xl border-2 backdrop-blur-xl shrink-0 mx-auto`}
         data-testid="pachisi-board"
-        style={boardVars(theme)}
       >
         {[0, 1, 2, 3].map((seat) => {
           const owner = playerAtSeat(seat);
@@ -218,9 +219,8 @@ export function PachisiBoard({
                           aria-label={t('games.pachisi_v1.game.moveTokenAria', {
                             id: tok.id,
                           })}
-                          className={`pachisi-token pachisi-token-seat-${seat} aspect-square w-[62%] animate-bounce cursor-pointer rounded-full border shadow-md ring-2 ring-white/90 transition-transform hover:scale-110 disabled:opacity-50 ${BOARD_CELL_FOCUS_CLASS}`}
+                          className={`pachisi-token pachisi-token-seat-${seat} pointer-events-auto z-30 aspect-square w-[62%] animate-bounce cursor-pointer rounded-full border shadow-md ring-2 ring-white/90 transition-transform hover:scale-110 ${BOARD_CELL_FOCUS_CLASS}`}
                           data-testid={`yard-token-${seat}-${slot}`}
-                          disabled={actionBusy}
                           onClick={() => onMove(tok.id)}
                           type="button"
                         />
@@ -290,9 +290,8 @@ export function PachisiBoard({
                       aria-label={t('games.pachisi_v1.game.moveTokenAria', {
                         id: occupant.id,
                       })}
-                      className={`absolute inset-0 flex animate-bounce items-center justify-center rounded-md disabled:opacity-50 ${BOARD_CELL_FOCUS_CLASS}`}
+                      className={`pointer-events-auto z-30 cursor-pointer absolute inset-0 flex animate-bounce items-center justify-center rounded-md ${BOARD_CELL_FOCUS_CLASS}`}
                       data-testid={`lane-token-${seat}-${laneIdx}`}
-                      disabled={actionBusy}
                       onClick={() => onMove(occupant.id)}
                       type="button"
                     >

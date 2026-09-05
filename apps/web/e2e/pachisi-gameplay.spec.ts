@@ -208,8 +208,13 @@ test.describe('Pachisi Gameplay Styles, Fullscreen and Dice', () => {
     const die = page.getByTestId('pachisi-die');
     await expect(die).toBeVisible();
 
+    const dieNumber = page.getByTestId('pachisi-die-number');
+    await expect(dieNumber).toBeVisible();
+    await expect(dieNumber).toHaveText('6');
+
     const yardToken = page.getByTestId('yard-token-0-0');
     await expect(yardToken).toBeVisible();
     await expect(yardToken).toHaveClass(/animate-bounce/);
+    await yardToken.click({ force: true });
   });
 });

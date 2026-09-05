@@ -231,4 +231,41 @@ describe('PachisiBoard', () => {
     expect(board.classList.contains('pachisi-board')).toBe(true);
     expect(screen.queryByTestId('pachisi-die')).toBeNull();
   });
+
+  it('renders die and visible numeric number badge when die is rolled', () => {
+    const dieRolledState: PachisiClientState = {
+      ...mockState,
+      phase: 'move',
+      die: 5,
+    };
+    renderBoard(dieRolledState);
+    expect(screen.getByTestId('pachisi-die')).toBeInTheDocument();
+    const numberBadge = screen.getByTestId('pachisi-die-number');
+    expect(numberBadge).toBeInTheDocument();
+    expect(numberBadge).toHaveTextContent('5');
+  });
+
+  it('allows clicking movable token even if actionBusy is true', () => {
+    const handleMove = vi.fn();
+    const sixState: PachisiClientState = {
+      ...mockState,
+      phase: 'move',
+      die: 6,
+    };
+    render(
+      <PachisiBoard
+        actionBusy={true}
+        currentUserId="p1"
+        myTurn={true}
+        onMove={handleMove}
+        onRoll={vi.fn()}
+        snapshot={sixState}
+      />,
+    );
+    const yardToken = screen.getByTestId('yard-token-0-0');
+    expect(yardToken).toHaveClass('pointer-events-auto');
+    expect(yardToken).not.toBeDisabled();
+    fireEvent.click(yardToken);
+    expect(handleMove).toHaveBeenCalledWith(0);
+  });
 });

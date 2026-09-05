@@ -60,6 +60,11 @@ export function Die({ value, isRolling, className }: DieProps) {
         isRolling ? 'animate-spin' : ''
       } ${className ?? ''}`}
       data-testid="pachisi-die"
+      title={
+        value != null
+          ? t('games.pachisi_v1.game.dieValue', { value })
+          : undefined
+      }
     >
       <svg className="h-full w-full p-1" viewBox="0 0 100 100">
         {dots.map(([cxCoord, cyCoord], idx) => (
@@ -67,6 +72,7 @@ export function Die({ value, isRolling, className }: DieProps) {
             className="pachisi-die-dot"
             cx={cxCoord}
             cy={cyCoord}
+            fill="currentColor"
             key={`dot-${idx}-${cxCoord}-${cyCoord}`}
             r={8.5}
           />

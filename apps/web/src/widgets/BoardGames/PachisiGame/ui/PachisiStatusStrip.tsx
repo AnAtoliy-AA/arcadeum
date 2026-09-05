@@ -85,16 +85,32 @@ export function PachisiStatusStrip({
               🎲 {t('games.pachisi_v1.game.rollDice')}
             </button>
           ) : snapshot.die != null ? (
-            <Die
-              value={snapshot.die}
-              isRolling={actionBusy && snapshot.phase === 'roll'}
-            />
+            <div
+              className="flex items-center gap-1.5"
+              data-testid="pachisi-die-container"
+            >
+              <Die
+                value={snapshot.die}
+                isRolling={actionBusy && snapshot.phase === 'roll'}
+              />
+              <span
+                className="flex h-9 min-w-[32px] items-center justify-center rounded-lg border border-white/20 bg-white/15 px-2 text-base font-black text-white shadow-md backdrop-blur-sm"
+                data-testid="pachisi-die-number"
+              >
+                {snapshot.die}
+              </span>
+            </div>
           ) : lastDie != null && !isGameOver ? (
             <div className="flex items-center gap-1 opacity-70">
               <span className="text-[10px] font-semibold text-white/60">
                 {t('games.pachisi_v1.game.lastRoll', { value: lastDie })}
               </span>
-              <Die value={lastDie} className="opacity-80" />
+              <div className="flex items-center gap-1">
+                <Die value={lastDie} className="h-7 w-7 opacity-80" />
+                <span className="flex h-7 min-w-[24px] items-center justify-center rounded-md border border-white/15 bg-white/10 px-1 text-xs font-bold text-white">
+                  {lastDie}
+                </span>
+              </div>
             </div>
           ) : null}
         </div>

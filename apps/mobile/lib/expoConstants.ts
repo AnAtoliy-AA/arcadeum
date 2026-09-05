@@ -35,6 +35,7 @@ export interface AppExpoConfig {
  */
 interface ExpoManifest2 {
   id?: string;
+  name?: string;
   createdAt?: string;
   runtimeVersion?: string;
   launchAsset?: {

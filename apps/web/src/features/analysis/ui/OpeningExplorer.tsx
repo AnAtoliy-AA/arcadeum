@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 
 interface ExplorerMove {
@@ -19,11 +19,14 @@ interface OpeningExplorerProps {
 
 function OpeningExplorerImpl({ fen }: OpeningExplorerProps) {
   const [moves, setMoves] = useState<ExplorerMove[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle');
+  const lastFenRef = useRef('');
 
   useEffect(() => {
-    if (!fen) return;
-    setLoading(true);
+    if (!fen || fen === lastFenRef.current) return;
+    lastFenRef.current = fen;
+    setStatus('loading');
+    let cancelled = false;
     fetch(
       resolveApiUrl(
         `/chess/openings/explorer?fen=${encodeURIComponent(fen)}`,
@@ -31,13 +34,19 @@ function OpeningExplorerImpl({ fen }: OpeningExplorerProps) {
     )
       .then((r) => r.json())
       .then((data) => {
+        if (cancelled) return;
         if (Array.isArray(data)) setMoves(data);
+        setStatus('done');
       })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) setStatus('done');
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [fen]);
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <div className="p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)]">
         <div className="text-[10px] font-semibold text-[var(--textSecondary)] uppercase tracking-wider mb-2">

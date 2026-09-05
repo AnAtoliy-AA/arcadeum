@@ -14314,7 +14314,7 @@ snapshots:
       '@babel/types': 7.29.8
       '@jridgewell/remapping': 2.3.5
       convert-source-map: 2.0.0
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -15147,7 +15147,7 @@ snapshots:
       '@babel/parser': 7.29.8
       '@babel/template': 7.29.7
       '@babel/types': 7.29.8
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -15592,7 +15592,7 @@ snapshots:
   '@eslint/config-array@0.21.2':
     dependencies:
       '@eslint/object-schema': 2.1.7
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       minimatch: 3.1.5
     transitivePeerDependencies:
       - supports-color
@@ -15608,7 +15608,7 @@ snapshots:
   '@eslint/eslintrc@3.3.6':
     dependencies:
       ajv: 6.15.0
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       espree: 10.4.0
       globals: 14.0.0
       ignore: 5.3.2
@@ -19910,7 +19910,7 @@ snapshots:
 
   '@tokenizer/inflate@0.4.1':
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       token-types: 6.1.2
     transitivePeerDependencies:
       - supports-color
@@ -20319,7 +20319,7 @@ snapshots:
       '@typescript-eslint/types': 8.69.0
       '@typescript-eslint/typescript-estree': 8.69.0(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.69.0
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       eslint: 9.39.5(jiti@2.6.1)
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -20347,7 +20347,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.69.0(typescript@5.9.3)
       '@typescript-eslint/types': 8.69.0
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -20396,7 +20396,7 @@ snapshots:
       '@typescript-eslint/types': 8.69.0
       '@typescript-eslint/typescript-estree': 8.69.0(typescript@5.9.3)
       '@typescript-eslint/utils': 8.69.0(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3)
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       eslint: 9.39.5(jiti@2.6.1)
       ts-api-utils: 2.5.0(typescript@5.9.3)
       typescript: 5.9.3
@@ -20445,7 +20445,7 @@ snapshots:
       '@typescript-eslint/tsconfig-utils': 8.69.0(typescript@5.9.3)
       '@typescript-eslint/types': 8.69.0
       '@typescript-eslint/visitor-keys': 8.69.0
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       minimatch: 10.2.6
       semver: 7.8.5
       tinyglobby: 0.2.17
@@ -20957,7 +20957,7 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -21566,7 +21566,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       content-type: 2.1.0
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       http-errors: 2.0.1
       iconv-lite: 0.7.3
       on-finished: 2.4.1
@@ -22439,6 +22439,10 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
+  debug@4.4.3:
+    dependencies:
+      ms: 2.1.3
+
   debug@4.4.3(supports-color@8.1.1):
     dependencies:
       ms: 2.1.3
@@ -22782,7 +22786,7 @@ snapshots:
       base64id: 2.0.0
       cookie: 0.7.2
       cors: 2.8.6
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       engine.io-parser: 5.2.3
       ws: 8.21.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
@@ -22946,7 +22950,7 @@ snapshots:
 
   esbuild-register@3.6.0(esbuild@0.28.2):
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       esbuild: 0.28.2
     transitivePeerDependencies:
       - supports-color
@@ -23301,7 +23305,7 @@ snapshots:
       ajv: 6.15.0
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       escape-string-regexp: 4.0.0
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
@@ -23729,7 +23733,7 @@ snapshots:
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.2.2
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
@@ -23900,7 +23904,7 @@ snapshots:
 
   finalhandler@2.1.1:
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -23949,7 +23953,7 @@ snapshots:
 
   follow-redirects@1.16.0(debug@4.4.3):
     optionalDependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
 
   fontfaceobserver@2.3.0: {}
 
@@ -24429,14 +24433,14 @@ snapshots:
   https-proxy-agent@5.0.1:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
   https-proxy-agent@7.0.6:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -24553,7 +24557,7 @@ snapshots:
     dependencies:
       '@ioredis/commands': 1.10.0
       cluster-key-slot: 1.1.1
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       denque: 2.1.0
       redis-errors: 1.2.0
       redis-parser: 3.0.0
@@ -24772,7 +24776,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  isomorphic-ws@4.0.1(ws@7.5.13(bufferutil@4.1.0)):
+  isomorphic-ws@4.0.1(ws@7.5.13(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
     dependencies:
       ws: 7.5.13(bufferutil@4.1.0)(utf-8-validate@6.0.6)
 
@@ -24815,7 +24819,7 @@ snapshots:
   istanbul-lib-source-maps@5.0.6:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       istanbul-lib-coverage: 3.2.2
     transitivePeerDependencies:
       - supports-color
@@ -24857,7 +24861,7 @@ snapshots:
       delay: 5.0.0
       es6-promisify: 5.0.0
       eyes: 0.1.8
-      isomorphic-ws: 4.0.1(ws@7.5.13(bufferutil@4.1.0))
+      isomorphic-ws: 4.0.1(ws@7.5.13(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       json-stringify-safe: 5.0.1
       stream-json: 1.9.1
       uuid: 11.1.1
@@ -26664,7 +26668,7 @@ snapshots:
     dependencies:
       async-mutex: 0.5.0
       camelcase: 6.3.0
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       find-cache-dir: 3.3.2
       follow-redirects: 1.16.0(debug@4.4.3)
       https-proxy-agent: 7.0.6
@@ -26739,7 +26743,7 @@ snapshots:
 
   mquery@5.0.0:
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -26819,7 +26823,7 @@ snapshots:
 
   new-find-package-json@2.0.0:
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -28141,7 +28145,7 @@ snapshots:
 
   require-in-the-middle@8.0.1:
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       module-details-from-path: 1.0.4
     transitivePeerDependencies:
       - supports-color
@@ -28258,7 +28262,7 @@ snapshots:
 
   router@2.2.0:
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       depd: 2.0.0
       is-promise: 4.0.0
       parseurl: 1.3.3
@@ -28398,7 +28402,7 @@ snapshots:
 
   send@1.2.1:
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -28657,7 +28661,7 @@ snapshots:
 
   socket.io-adapter@2.5.8(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       ws: 8.21.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bufferutil
@@ -28678,7 +28682,7 @@ snapshots:
   socket.io-parser@4.2.7:
     dependencies:
       '@socket.io/component-emitter': 3.1.2
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -28687,7 +28691,7 @@ snapshots:
       accepts: 1.3.8
       base64id: 2.0.0
       cors: 2.8.6
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       engine.io: 6.6.9(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       socket.io-adapter: 2.5.8(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       socket.io-parser: 4.2.7
@@ -29057,7 +29061,7 @@ snapshots:
     dependencies:
       component-emitter: 1.3.1
       cookiejar: 2.1.4
-      debug: 4.4.3(supports-color@8.1.1)
+      debug: 4.4.3
       fast-safe-stringify: 2.1.1
       form-data: 4.0.6
       formidable: 3.5.4

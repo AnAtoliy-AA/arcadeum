@@ -25,6 +25,7 @@ import type {
   ChessState,
 } from '../engines/chess/chess.types';
 import { ChessBotService } from '../engines/chess/chess-bot.service';
+import { ChessStockfishService } from './engine/chess-stockfish.service';
 import { getLegalMoves } from '../engines/chess/chess.move-generator';
 import {
   AI_DIFFICULTIES,
@@ -46,12 +47,16 @@ export class ChessService extends BaseGameService<ChessOptions> {
 
   protected readonly botService: ChessBotService;
 
+  /** Stockfish 19 engine — injected optionally so games work without it. */
+  readonly stockfishService: ChessStockfishService | null;
+
   constructor(
     roomsService: GameRoomsService,
     sessionsService: GameSessionsService,
     realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => ChessBotService))
     botService: ChessBotService,
+    @Optional() stockfishService: ChessStockfishService | null,
     @InjectConnection() mongoConnection: Connection,
     @Optional() @Inject('REDIS_CLIENT') redis?: Redis | null,
   ) {
@@ -65,6 +70,7 @@ export class ChessService extends BaseGameService<ChessOptions> {
       redis,
     );
     this.botService = botService;
+    this.stockfishService = stockfishService;
   }
 
   override onModuleInit() {

@@ -19,6 +19,7 @@ import { FILES, type BoardPosition, type File, type PieceType } from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
 import { useChessCoach } from '../hooks/useChessCoach';
+import { useStockfishAnalysis } from '../hooks/useStockfishAnalysis';
 import { calculateOptimisticChessState } from '../lib/optimisticMove';
 import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
 import { ChessLobby } from './ChessLobby';
@@ -92,6 +93,22 @@ function ChessGameImpl({
   );
 
   const coach = useChessCoach({ room, currentUserId, displaySnapshot });
+
+  // Stockfish 19 live analysis (latest stable, released 2026-09-05)
+  const currentFen = useMemo(() => {
+    if (!displaySnapshot) return null;
+    const history = displaySnapshot.positionHistory;
+    return history && history.length > 0 ? history[history.length - 1] : null;
+  }, [displaySnapshot]);
+  const plyCount = displaySnapshot?.moveHistory?.length ?? 0;
+  const { eval: liveEval, analyzing: liveEvalAnalyzing } = useStockfishAnalysis(
+    {
+      roomId,
+      enabled: !isGameOver && !isLobby,
+      fen: currentFen,
+      ply: plyCount,
+    },
+  );
   const applyOptimisticMove = useCallback(
     (
       fromFile: File,
@@ -375,6 +392,8 @@ function ChessGameImpl({
       onOfferDraw={offerDraw}
       onResign={resign}
       onAcceptDraw={acceptDraw}
+      liveEval={liveEval}
+      liveEvalAnalyzing={liveEvalAnalyzing}
     />
   );
   const themeVariant =

@@ -10,6 +10,7 @@ import {
   ActionsBar,
 } from './ChessPanelComponents';
 import { CoachControls } from '@/features/coach/ui/CoachControls';
+import { LiveEvalDisplay } from './LiveEvalDisplay';
 import type { UseChessCoachResult } from '../hooks/useChessCoach';
 import type { ChessClientState, BoardPosition, File, Rank } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
@@ -45,6 +46,17 @@ interface ChessBoardPanelProps {
   onOfferDraw: () => void;
   onResign: () => void;
   onAcceptDraw: () => void;
+  liveEval?: {
+    cp: number | null;
+    mate: number | null;
+    pv: string[];
+    depth: number;
+    selDepth: number;
+    nodes: number;
+    nps: number;
+    timeMs: number;
+  } | null;
+  liveEvalAnalyzing?: boolean;
 }
 
 function ChessBoardPanelImpl({
@@ -68,6 +80,8 @@ function ChessBoardPanelImpl({
   onOfferDraw,
   onResign,
   onAcceptDraw,
+  liveEval,
+  liveEvalAnalyzing,
 }: ChessBoardPanelProps) {
   const [hoveredMoveIdx, setHoveredMoveIdx] = useState<number | null>(null);
   const handleMoveHover = useCallback((idx: number | null) => {
@@ -149,6 +163,11 @@ function ChessBoardPanelImpl({
         />
 
         <GameInfoPanel snapshot={snapshot} t={t} />
+
+        <LiveEvalDisplay
+          eval_={liveEval ?? null}
+          analyzing={!!liveEvalAnalyzing}
+        />
 
         <MoveList state={snapshot} t={t} onMoveHover={handleMoveHover} />
 

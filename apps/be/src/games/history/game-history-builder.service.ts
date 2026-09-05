@@ -59,7 +59,7 @@ export class GameHistoryBuilderService {
         const participants = this.getParticipantSummariesSync(room, userMap);
 
         // Get human-readable game name from the engine registry
-        let gameName = room.gameId;
+        let gameName: string;
         try {
           const engine = this.engineRegistry.getEngine(room.gameId);
           const metadata = engine.getMetadata();

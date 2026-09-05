@@ -100,7 +100,45 @@ const CONFIG = {
   // Bot account for authenticated gameplay recording
   botToken: process.env.SHORTS_FACTORY_BOT_TOKEN || '',
   botRefreshToken: process.env.SHORTS_FACTORY_BOT_REFRESH_TOKEN || '',
+  botEmail: process.env.SHORTS_FACTORY_BOT_EMAIL || '',
+  botPassword: process.env.SHORTS_FACTORY_BOT_PASSWORD || '',
+  beUrl: process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
 };
+
+// ============================================================================
+// BOT AUTH — auto-login if no token set
+// ============================================================================
+
+async function getBotTokens() {
+  if (CONFIG.botToken) {
+    log('info', 'Using existing SHORTS_FACTORY_BOT_TOKEN from env');
+    return { accessToken: CONFIG.botToken, refreshToken: CONFIG.botRefreshToken };
+  }
+
+  if (!CONFIG.botEmail || !CONFIG.botPassword) {
+    log('warn', 'No bot credentials configured (SHORTS_FACTORY_BOT_EMAIL/PASSWORD)');
+    return null;
+  }
+
+  log('info', `Auto-login as bot user: ${CONFIG.botEmail}`);
+  try {
+    const res = await axios.post(`${CONFIG.beUrl}/auth/login`, {
+      email: CONFIG.botEmail,
+      password: CONFIG.botPassword,
+    }, { timeout: 15000 });
+
+    const { accessToken, refreshToken } = res.data || {};
+    if (accessToken) {
+      log('info', 'Bot login successful');
+      return { accessToken, refreshToken: refreshToken || '' };
+    }
+    log('warn', 'Bot login returned no accessToken');
+    return null;
+  } catch (err) {
+    log('warn', 'Bot login failed', { error: err.message, status: err.response?.status });
+    return null;
+  }
+}
 
 // ============================================================================
 // GAME DEFINITIONS
@@ -1356,6 +1394,10 @@ async function recordSession(
     `Recording ${label} session (${viewport.width}x${viewport.height})...`,
   );
 
+  const botTokens = await getBotTokens();
+  const accessToken = botTokens?.accessToken || '';
+  const refreshToken = botTokens?.refreshToken || '';
+
   let browser = null;
 
   try {
@@ -1418,18 +1460,18 @@ async function recordSession(
         } catch {}
       },
       {
-        accessToken: CONFIG.botToken,
-        refreshToken: CONFIG.botRefreshToken,
+        accessToken,
+        refreshToken,
         gameSlugs: ALL_GAME_SLUGS,
       },
     );
 
-    if (CONFIG.botToken) {
+    if (accessToken) {
       log('info', `${label}: bot auth tokens injected into browser context`);
     } else {
       log(
         'warn',
-        `${label}: SHORTS_FACTORY_BOT_TOKEN not set — quickplay may fail if auth is required. Set it in .env to enable authenticated gameplay recording.`,
+        `${label}: No bot auth — quickplay may fail if auth is required. Set SHORTS_FACTORY_BOT_EMAIL/PASSWORD in .env.`,
       );
     }
 

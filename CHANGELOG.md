@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.19] - 2026-09-05
+
+### Added
+- Stockfish 19 engine integration (Phase 1) (#1366)
+
+
 ## [1.28.18] - 2026-09-05
 
 ### Added

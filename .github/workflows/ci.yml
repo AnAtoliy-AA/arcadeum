@@ -92,7 +92,7 @@ jobs:
         run: NODE_OPTIONS='--max-old-space-size=4096' pnpm exec turbo run test --filter be --log-order=stream -- --forceExit --detectOpenHandles --passWithNoTests
 
       - name: Run Backend E2E Tests
-        run: NODE_OPTIONS='--max-old-space-size=4096' pnpm --filter be test:e2e
+        run: NODE_OPTIONS='--max-old-space-size=4096' pnpm --filter be test:e2e --forceExit
 
   docs-links:
     name: Documentation Links

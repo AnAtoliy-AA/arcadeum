@@ -35,6 +35,7 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
   const [isPending, startTransition] = useTransition();
   const [claimed, setClaimed] = useState<number[]>(state.claimedTiers);
   const [pendingTier, setPendingTier] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const { season, xp, currentTier, isPremium } = state;
   const next = useMemo(
@@ -52,11 +53,18 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
 
   const handleClaim = (tier: number) => {
     setPendingTier(tier);
+    setError(null);
     startTransition(async () => {
       try {
         const res = await claimTierAction(tier);
         setClaimed(res.claimedTiers);
         router.refresh();
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to claim reward. Please try again.',
+        );
       } finally {
         setPendingTier(null);
       }
@@ -71,20 +79,29 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
             {t('battlePass.title' as TranslationKey)}
           </span>
           {isPremium ? (
-            <div className="px-10 py-4 rounded-[999px] bg-[rgba(251,191,36,0.15)] border border-[rgba(251,191,36,0.4)]">
-              <span className="text-[14px] font-extrabold text-[#fbbf24]">
+            <div className="px-3 py-1 rounded-full bg-[var(--goldAccent)]/15 border border-[var(--goldAccent)]/40">
+              <span className="text-[14px] font-extrabold text-[var(--goldAccent)]">
                 👑 {t('battlePass.premiumActive' as TranslationKey)}
               </span>
             </div>
           ) : null}
         </div>
-        <span className="text-[18px] opacity-[0.75]">
+        <span className="text-[18px] opacity-75">
           {t('battlePass.subtitle' as TranslationKey)}
         </span>
-        <span className="text-[16px] opacity-[0.6]">
+        <span className="text-[16px] opacity-60">
           {season.title} · {endsLabel}
         </span>
       </div>
+
+      {error ? (
+        <div className="flex flex-row items-center gap-2 p-3 rounded-xl bg-[var(--errorBg)] border border-[var(--errorBorder)]">
+          <span className="text-[14px] text-[var(--error)]">{error}</span>
+          <Button variant="ghost" size="sm" onClick={() => setError(null)}>
+            ✕
+          </Button>
+        </div>
+      ) : null}
 
       {/* XP progress to next tier */}
       <div
@@ -92,21 +109,21 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
         role="status"
         aria-live="polite"
       >
-        <span className="text-[14px] opacity-[0.7]">
+        <span className="text-[14px] opacity-70">
           {maxed
             ? t('battlePass.maxedOut' as TranslationKey)
             : t('battlePass.progress' as TranslationKey, { xp, next })}
         </span>
-        <div className="h-[10px] rounded-[999px] bg-[rgba(255,255,255,0.08)] overflow-hidden">
+        <div className="h-[10px] rounded-full bg-[var(--gridLine)] overflow-hidden">
           <div
-            className="h-full rounded-[999px]"
+            className="h-full rounded-full bg-[var(--accent)]"
             style={{ width: `${progressPct}%` }}
           />
         </div>
       </div>
 
       {!isPremium ? (
-        <span className="text-[14px] opacity-[0.6]">
+        <span className="text-[14px] opacity-60">
           🔒 {t('battlePass.unlockHint' as TranslationKey)}
         </span>
       ) : null}
@@ -123,11 +140,9 @@ export function BattlePassView({ state }: { state: BattlePassState }) {
 
           return (
             <div
-              className="flex flex-col items-stretch min-w-[160px] gap-3 p-3 rounded-3xl border bg-[rgba(15,23,42,0.55)]"
+              className="flex flex-col items-stretch min-w-[160px] gap-3 p-3 rounded-3xl border bg-[var(--glassBg)]"
               style={{
-                borderColor: unlocked
-                  ? 'rgba(56,189,248,0.4)'
-                  : 'rgba(255,255,255,0.08)',
+                borderColor: unlocked ? 'var(--accent)' : 'var(--glassBorder)',
                 opacity: unlocked ? 1 : 0.6,
               }}
               key={tierDef.tier}
@@ -192,17 +207,19 @@ function RewardNode({
       className="flex flex-col items-stretch gap-2 p-2 rounded-xl border"
       style={{
         backgroundColor: accent
-          ? 'rgba(251,191,36,0.08)'
-          : 'rgba(255,255,255,0.03)',
+          ? 'var(--goldAccent, #facc15)'
+          : 'var(--gridLine)',
         borderColor: accent
-          ? 'rgba(251,191,36,0.25)'
-          : 'rgba(255,255,255,0.06)',
+          ? 'var(--goldAccent, #facc15)'
+          : 'var(--glassBorder)',
         opacity: dimmed ? 0.45 : 1,
       }}
     >
       <span
-        className="text-[48px] uppercase tracking-[1px] opacity-[0.6]"
-        style={{ color: accent ? '#fbbf24' : '#babfc7' }}
+        className="text-[48px] uppercase tracking-[1px] opacity-60"
+        style={{
+          color: accent ? 'var(--goldAccent, #facc15)' : 'var(--textSecondary)',
+        }}
       >
         {label}
       </span>

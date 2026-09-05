@@ -91,6 +91,8 @@ function mergeSnapshot(
       response.user?.username ??
       response.user?.email ??
       null,
+    role: response.user?.role ?? null,
+    xp: response.user?.xp ?? 0,
   });
 }
 
@@ -271,6 +273,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
             profile.email ??
             baseSnapshot.displayName,
           role: profile.role ?? baseSnapshot.role,
+          xp: profile.xp ?? baseSnapshot.xp ?? 0,
         });
         applySnapshot(merged);
       } catch (profileError) {
@@ -296,6 +299,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
               profile.email ??
               refreshed.displayName,
             role: profile.role ?? refreshed.role,
+            xp: profile.xp ?? refreshed.xp ?? 0,
           });
           applySnapshot(merged);
         } catch (retryError) {

@@ -168,6 +168,7 @@ function Profile({
         <Stat label="Rating" value={formatNumber(player.rating, locale)} />
         <Stat label="Wins" value={String(player.wins)} />
         <Stat label="Winrate" value={`${Math.round(player.winrate * 100)}%`} />
+        <Stat label="XP" value={formatNumber(profile.xp ?? 0, locale)} />
         {player.elo ? (
           <Stat label="ELO" value={formatNumber(player.elo, locale)} />
         ) : null}

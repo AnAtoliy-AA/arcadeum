@@ -53,6 +53,9 @@ export class User {
   @Prop({ type: Number, default: 0, min: 0 })
   arcadeum!: number;
 
+  @Prop({ type: Number, default: 0, min: 0 })
+  xp!: number;
+
   @Prop({ type: String, default: null })
   equippedAvatarId?: string | null;
 

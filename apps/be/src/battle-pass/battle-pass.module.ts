@@ -9,7 +9,6 @@ import {
 } from './schemas/battle-pass-progress.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { AuthModule } from '../auth/auth.module';
-import { GamesModule } from '../games/games.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { ShopModule } from '../shop/shop.module';
 
@@ -20,7 +19,6 @@ import { ShopModule } from '../shop/shop.module';
       { name: User.name, schema: UserSchema },
     ]),
     AuthModule,
-    GamesModule,
     WalletModule,
     ShopModule,
   ],

@@ -2,6 +2,7 @@ export type BattlePassReward = {
   type: 'coins' | 'gems' | 'cosmetic';
   amount?: number;
   label: string;
+  itemId?: string;
 };
 
 export type BattlePassTier = {

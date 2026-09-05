@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.11] - 2026-09-05
+
+### Added
+- show real daily reward data and claim button on rewards page
+
+
 ## [1.28.10] - 2026-09-04
 
 ### Fixed

@@ -55,7 +55,7 @@ export default function ReferralDashboard() {
   } else if (error || !data) {
     content = (
       <DashboardContainer data-testid="referral-dashboard">
-        <EmptyState message={error?.message || t('referrals.error')} icon="⚠️" />
+        <EmptyState message={t('referrals.error.title')} icon="⚠️" />
       </DashboardContainer>
     );
   } else {

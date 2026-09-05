@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.17] - 2026-09-05
+
+### Added
+- reduce blur on hudCard to let background artwork stay crisp
+- enable desktop split layout for solitaire and minesweeper and soften blur effects
+- apply game theme color tokens to puzzle game boards and field items
+- enhance solo games UX and translucent field backgrounds
+- unify game boards with SoloGameContainer glassmorphic styling
+- expand game fields to maximize space in fullscreen mode
+- display theme background image as page backdrop in windowed mode
+- rework solo games UI with reusable components and improved UX
+
+### Fixed
+- restore footer and default layout on solo game play routes
+- prevent vertical scroll on solo play routes and constrain minesweeper cells
+- allow controls group to wrap properly within control panel bounds
+
+
 ## [1.28.16] - 2026-09-05
 
 ### Added

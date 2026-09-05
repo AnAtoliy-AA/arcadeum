@@ -5,7 +5,6 @@ import { ChessBoard } from '@/widgets/BoardGames/ChessGame/ui/ChessBoard';
 import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
 import { parseFenPiecePlacement } from '@/features/analysis/lib/fen';
 import type { BoardPosition, File, Rank } from '@/widgets/BoardGames/ChessGame/types';
-import { FILES } from '@/widgets/BoardGames/ChessGame/types';
 
 interface PuzzleBoardProps {
   puzzle: ChessPuzzle;
@@ -16,10 +15,7 @@ interface PuzzleBoardProps {
 function PuzzleBoardImpl({ puzzle, phase, onMove }: PuzzleBoardProps) {
   const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(null);
 
-  const board = useMemo(() => {
-    const parsed = parseFenPiecePlacement(puzzle.fen);
-    return parsed.board;
-  }, [puzzle.fen]);
+  const board = useMemo(() => parseFenPiecePlacement(puzzle.fen), [puzzle.fen]);
 
   const currentColor = useMemo(() => {
     const parts = puzzle.fen.split(' ');

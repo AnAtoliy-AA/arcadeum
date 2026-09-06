@@ -129,6 +129,17 @@ export const enMessages = {
       rating: 'Rating: {{rating}}',
       cancelled: 'Search cancelled',
     },
+    history: {
+      title: 'Game History',
+      rating: 'Rating',
+      peak: 'Peak',
+      winRate: 'Win Rate',
+      ratingTrend: 'Rating Trend',
+      results: 'Results',
+      topOpenings: 'Top Openings',
+      recentGames: 'Recent Games',
+      noGames: 'No games played yet',
+    },
     tutorial: {
       s1: {
         title: 'Checkmate the king',

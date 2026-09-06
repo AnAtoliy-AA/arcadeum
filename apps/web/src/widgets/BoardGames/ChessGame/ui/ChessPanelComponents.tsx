@@ -190,22 +190,32 @@ export function GameInfoPanel({
 export function ActionsBar({
   hasDrawOffer,
   isMyDrawOffer,
+  hasTakebackOffer,
+  isMyTakebackOffer,
   isGameOver,
   isSpectator,
   currentUserId,
   onResign,
   onOfferDraw,
   onAcceptDraw,
+  onOfferTakeback,
+  onAcceptTakeback,
+  onDeclineTakeback,
   t,
 }: {
   hasDrawOffer: boolean;
   isMyDrawOffer: boolean;
+  hasTakebackOffer: boolean;
+  isMyTakebackOffer: boolean;
   isGameOver: boolean;
   isSpectator: boolean;
   currentUserId: string | null;
   onResign: () => void;
   onOfferDraw: () => void;
   onAcceptDraw: () => void;
+  onOfferTakeback: () => void;
+  onAcceptTakeback: () => void;
+  onDeclineTakeback: () => void;
   t: TranslateFn;
 }) {
   if (!currentUserId || isGameOver || isSpectator) return null;
@@ -232,6 +242,33 @@ export function ActionsBar({
             : t('games.chess_v1.actions.draw')}
         </button>
       </div>
+      {hasTakebackOffer && !isMyTakebackOffer && (
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={onAcceptTakeback}
+            className="flex-1 py-2 px-3 rounded-lg bg-sky-500/15 border border-sky-500/30 text-sky-500 text-xs font-semibold cursor-pointer hover:bg-sky-500/25 transition-colors"
+          >
+            {t('games.chess_v1.actions.acceptTakeback')}
+          </button>
+          <button
+            type="button"
+            onClick={onDeclineTakeback}
+            className="flex-1 py-2 px-3 rounded-lg bg-zinc-500/15 border border-zinc-500/30 text-zinc-500 text-xs font-semibold cursor-pointer hover:bg-zinc-500/25 transition-colors"
+          >
+            {t('games.chess_v1.actions.declineTakeback')}
+          </button>
+        </div>
+      )}
+      {!hasTakebackOffer && (
+        <button
+          type="button"
+          onClick={onOfferTakeback}
+          className="w-full py-2 px-3 rounded-lg bg-sky-500/15 border border-sky-500/30 text-sky-500 text-xs font-semibold cursor-pointer hover:bg-sky-500/25 transition-colors"
+        >
+          {t('games.chess_v1.actions.takeback')}
+        </button>
+      )}
     </div>
   );
 }

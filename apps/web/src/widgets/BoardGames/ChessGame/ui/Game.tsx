@@ -53,8 +53,16 @@ function ChessGameImpl({
     setStartBusy,
     session,
   } = useChessState({ roomId, currentUserId, initialSession });
-  const { startSession, movePiece, resign, offerDraw, acceptDraw } =
-    useChessActions({ roomId, userId: currentUserId });
+  const {
+    startSession,
+    movePiece,
+    resign,
+    offerDraw,
+    acceptDraw,
+    offerTakeback,
+    acceptTakeback,
+    declineTakeback,
+  } = useChessActions({ roomId, userId: currentUserId });
   const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(
     null,
   );
@@ -392,6 +400,9 @@ function ChessGameImpl({
       onOfferDraw={offerDraw}
       onResign={resign}
       onAcceptDraw={acceptDraw}
+      onOfferTakeback={offerTakeback}
+      onAcceptTakeback={acceptTakeback}
+      onDeclineTakeback={declineTakeback}
       liveEval={liveEval}
       liveEvalAnalyzing={liveEvalAnalyzing}
     />

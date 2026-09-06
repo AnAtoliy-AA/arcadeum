@@ -94,6 +94,8 @@ export interface ChessState extends BaseGameState {
   isInsufficientMaterial: boolean;
   isDrawByAgreement: boolean;
   drawOfferedBy: string | null;
+  takebackOfferedBy: string | null;
+  takebackMoveIndex: number | null;
   clocks: Record<PieceColor, PlayerClock> | null;
   positionHistory: string[];
   legalMovesForCurrentPlayer: LegalMove[];

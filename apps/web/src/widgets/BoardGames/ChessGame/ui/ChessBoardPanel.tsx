@@ -47,6 +47,9 @@ interface ChessBoardPanelProps {
   onOfferDraw: () => void;
   onResign: () => void;
   onAcceptDraw: () => void;
+  onOfferTakeback: () => void;
+  onAcceptTakeback: () => void;
+  onDeclineTakeback: () => void;
   liveEval?: {
     cp: number | null;
     mate: number | null;
@@ -81,6 +84,9 @@ function ChessBoardPanelImpl({
   onOfferDraw,
   onResign,
   onAcceptDraw,
+  onOfferTakeback,
+  onAcceptTakeback,
+  onDeclineTakeback,
   liveEval,
   liveEvalAnalyzing,
 }: ChessBoardPanelProps) {
@@ -184,12 +190,17 @@ function ChessBoardPanelImpl({
         <ActionsBar
           hasDrawOffer={hasDrawOffer}
           isMyDrawOffer={isMyDrawOffer}
+          hasTakebackOffer={!!snapshot?.takebackOfferedBy}
+          isMyTakebackOffer={snapshot?.takebackOfferedBy === currentUserId}
           isGameOver={isGameOver}
           isSpectator={isSpectator}
           currentUserId={currentUserId}
           onResign={onResign}
           onOfferDraw={onOfferDraw}
           onAcceptDraw={onAcceptDraw}
+          onOfferTakeback={onOfferTakeback}
+          onAcceptTakeback={onAcceptTakeback}
+          onDeclineTakeback={onDeclineTakeback}
           t={t}
         />
 

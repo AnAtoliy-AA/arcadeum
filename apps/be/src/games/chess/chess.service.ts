@@ -138,6 +138,18 @@ export class ChessService extends BaseGameService<ChessOptions> {
     return this.runAction(userId, roomId, 'draw_accept', {});
   }
 
+  async takebackOffer(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'takeback_offer', {});
+  }
+
+  async takebackAccept(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'takeback_accept', {});
+  }
+
+  async takebackDecline(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'takeback_decline', {});
+  }
+
   protected override applyStartExtras(
     _userId: string,
     _roomId: string,

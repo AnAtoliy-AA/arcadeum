@@ -38,6 +38,9 @@ const ACTION = {
   FORFEIT: 'forfeit',
   DRAW_OFFER: 'draw_offer',
   DRAW_ACCEPT: 'draw_accept',
+  TAKEBACK_OFFER: 'takeback_offer',
+  TAKEBACK_ACCEPT: 'takeback_accept',
+  TAKEBACK_DECLINE: 'takeback_decline',
 } as const;
 export class ChessEngine extends BaseGameEngine<ChessState> {
   private readonly logger = createLogger('ChessEngine');
@@ -126,6 +129,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       isInsufficientMaterial: false,
       isDrawByAgreement: false,
       drawOfferedBy: null,
+      takebackOfferedBy: null,
+      takebackMoveIndex: null,
       clocks,
       positionHistory: [boardToFen(initialBoard)],
       currentTurnIndex: 0,
@@ -181,6 +186,32 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       );
     }
 
+    if (action === ACTION.TAKEBACK_OFFER) {
+      const player = state.players.find((p) => p.playerId === context.userId);
+      if (!player || player.color !== state.currentTurnColor) return false;
+      if (state.moveHistory.length < 2) return false;
+      if (state.takebackOfferedBy) return false;
+      return true;
+    }
+
+    if (action === ACTION.TAKEBACK_ACCEPT) {
+      const player = state.players.find((p) => p.playerId === context.userId);
+      if (!player) return false;
+      return (
+        state.takebackOfferedBy !== null &&
+        state.takebackOfferedBy !== context.userId
+      );
+    }
+
+    if (action === ACTION.TAKEBACK_DECLINE) {
+      const player = state.players.find((p) => p.playerId === context.userId);
+      if (!player) return false;
+      return (
+        state.takebackOfferedBy !== null &&
+        state.takebackOfferedBy !== context.userId
+      );
+    }
+
     return false;
   }
 
@@ -201,6 +232,15 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     }
     if (action === ACTION.DRAW_ACCEPT) {
       return this.executeDrawAccept(state, context);
+    }
+    if (action === ACTION.TAKEBACK_OFFER) {
+      return this.executeTakebackOffer(state, context);
+    }
+    if (action === ACTION.TAKEBACK_ACCEPT) {
+      return this.executeTakebackAccept(state, context);
+    }
+    if (action === ACTION.TAKEBACK_DECLINE) {
+      return this.executeTakebackDecline(state, context);
     }
     return this.errorResult(`Unknown action: ${action}`);
   }
@@ -471,6 +511,75 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     newState.logs = [
       ...state.logs,
       this.createLogEntry('system', 'Draw by agreement.', {
+        senderId: context.userId,
+      }),
+    ];
+    return this.successResult(newState);
+  }
+
+  private executeTakebackOffer(
+    state: ChessState,
+    context: GameActionContext,
+  ): GameActionResult<ChessState> {
+    const player = state.players.find((p) => p.playerId === context.userId);
+    if (!player) return this.errorResult('Player not found');
+    const newState = this.cloneState(state);
+    newState.takebackOfferedBy = context.userId;
+    newState.takebackMoveIndex = state.moveHistory.length - 2;
+    newState.logs = [
+      ...state.logs,
+      this.createLogEntry('system', `${player.color} offers a takeback.`, {
+        senderId: context.userId,
+      }),
+    ];
+    return this.successResult(newState);
+  }
+
+  private executeTakebackAccept(
+    state: ChessState,
+    context: GameActionContext,
+  ): GameActionResult<ChessState> {
+    if (!state.takebackOfferedBy || state.takebackMoveIndex === null) {
+      return this.errorResult('No takeback offer pending');
+    }
+    const newState = this.cloneState(state);
+    const revertToIndex = state.takebackMoveIndex;
+    newState.moveHistory = state.moveHistory.slice(0, revertToIndex);
+    newState.positionHistory = state.positionHistory.slice(0, revertToIndex + 1);
+    const lastFen = newState.positionHistory[newState.positionHistory.length - 1];
+    if (lastFen) {
+      const restored = parseFen(lastFen);
+      newState.board = restored;
+    }
+    newState.currentTurnColor = state.currentTurnColor === 'white' ? 'black' : 'white';
+    newState.takebackOfferedBy = null;
+    newState.takebackMoveIndex = null;
+    newState.isCheck = false;
+    newState.isCheckmate = false;
+    newState.isStalemate = false;
+    newState.logs = [
+      ...state.logs,
+      this.createLogEntry('system', 'Takeback accepted.', {
+        senderId: context.userId,
+      }),
+    ];
+    newState.legalMovesForCurrentPlayer = getLegalMoves(
+      newState,
+      newState.currentTurnColor,
+    ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion }));
+    return this.successResult(newState);
+  }
+
+  private executeTakebackDecline(
+    state: ChessState,
+    context: GameActionContext,
+  ): GameActionResult<ChessState> {
+    const newState = this.cloneState(state);
+    newState.takebackOfferedBy = null;
+    newState.takebackMoveIndex = null;
+    newState.logs = [
+      ...state.logs,
+      this.createLogEntry('system', 'Takeback declined.', {
         senderId: context.userId,
       }),
     ];

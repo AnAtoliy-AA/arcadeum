@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.24] - 2026-09-06
+
+### Fixed
+- remove base64 email storage and resolve dependabot alerts
+
+
 ## [1.28.23] - 2026-09-06
 
 ### Added

@@ -92,7 +92,7 @@ function LiveEvalDisplayImpl({ eval_, analyzing, perspective, onTogglePerspectiv
               </span>
             </div>
           )}
-          {isSpectator && onTogglePerspective && (
+          {onTogglePerspective && (
             <button
               type="button"
               onClick={onTogglePerspective}

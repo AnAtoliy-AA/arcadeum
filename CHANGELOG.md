@@ -7,6 +7,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.30] - 2026-09-06
+
+### Added
+- add perspective toggle to post-game analysis for spectators
+- post-game analysis eval from player's perspective
+- eval from player perspective, spectators can toggle White/Black view
+- use Stockfish 19 for post-game analysis instead of static evaluator
+- server-side Stockfish broadcast — one engine call per move, shared with all players and spectators
+- update landing page with all features and Stockfish 19
+- add game history dashboard with rating graph and stats
+- add Syzygy endgame tablebase service and API
+- add piece slide animations with CSS transitions
+- add sound effects system with Web Audio API
+- add Puzzle Rush with Survival and Timed modes
+- add game review report card with accuracy and eval graph
+- add Quick Play matchmaking button to lobby
+- add matchmaking queue backend and frontend hook
+- add PGN import parser and modal
+- add undo/takeback system with opponent acceptance
+- add daily/correspondence time controls
+- add bullet time controls (1+0, 2+1, 1+1)
+
+### Fixed
+- fix test failures - remove stale gameName assertion, update i18n snapshot
+- resolve all TypeScript and lint errors
+- resolve all CI errors - types, depths, lint
+- resolve all lint and TypeScript errors from CI
+- resolve lint errors - unused import and unawaited promises
+- remove unused useMemo import and barColor/evalWidth variables
+- resolve CI lint, build, and test failures
+- add missing perspective variable in LiveEvalDisplay
+- tighten classifyMove thresholds for better move classification variety
+- Stockfish shows raw eval, Game Info shows balance bar from player perspective
+- spectators can toggle perspective, players locked to their color
+- always show eval from one perspective — no toggle, player sees their color
+- treat mate=0 as no mate, show centipawn eval instead of M0
+- remove leftover isSpectator reference in LiveEvalDisplay
+- simplify eval perspective — always use toggle, works for players and spectators
+- use depth 18 for post-game analysis for more accurate classifications
+- store full FENs in positionHistory — Stockfish now gets accurate positions
+- eval always from player perspective — positive = I am winning
+- track castling rights across positions for accurate FEN reconstruction
+- correct eval perspective logic — positive always means 'I am winning'
+- correct eval flip logic for player perspective
+- pass myColor and isSpectator to result modal for perspective toggle
+- clamp extreme eval values in chart to ±500 for readability, show mate in tooltip
+- reconstruct full FENs on backend for accurate Stockfish post-game analysis
+- use apiClient for Stockfish analysis and generate full FENs from board-only history
+- redesign result modal UX — cleaner layout, prominent analysis, compact footer
+- move title/message/stats into scrollable area, smaller buttons in row
+- modal header/footer fixed, only analysis content scrolls
+- redesign eval bar — White/Black on sides, bar moves toward winner
+- replace hardcoded eval in GameInfoPanel with live Stockfish data
+- broadcast Stockfish eval to both player and spectator channels
+- use full FEN (not just board) for Stockfish analysis — Stockfish requires complete FEN
+- auto-restart crashed Stockfish instances and add command logging
+- remove @Optional from StockfishService injection — force injection to succeed or fail loudly
+- fix Stockfish binary path — __dirname in dist/ needs 4 levels up
+- remove duplicate ChessStockfishService from GamesModule providers
+- move stopTimer/startTimer before useEffect to fix hoisting error
+- decrypt Stockfish eval broadcasts, show bot personality names, log AI vs AI picks
+- lazy-init audio context, skip fetch for missing sound files
+- give AI vs AI sessions 60s before watchdog kills them
+- re-read session from DB in checkAndPlay to get fresh turn state
+- use correct variable names for bot personalities
+- fix AI vs AI deadlock and add bot personality selection
+- hide Opening Explorer when no data, add Stockfish safety timeout
+- stabilize Stockfish analysis dependency array
+- add userId to Stockfish analysis socket emit
+- pass animatingRef as prop to ChessCell
+
+
 ## [1.28.29] - 2026-09-06
 
 ### Fixed

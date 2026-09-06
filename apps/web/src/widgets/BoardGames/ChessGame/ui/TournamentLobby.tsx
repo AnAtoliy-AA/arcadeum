@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { GlassCard, Button, Typography } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/context';
 import { TournamentStandings } from './TournamentStandings';

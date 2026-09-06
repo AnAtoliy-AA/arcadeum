@@ -20,7 +20,7 @@ export class ChessClub {
   @Prop({ type: [String], default: [] })
   adminIds!: string[];
 
-  @Prop({ default: 'public', enum: ['public', 'private'] })
+  @Prop({ type: String, default: 'public', enum: ['public', 'private'] })
   visibility!: 'public' | 'private';
 
   @Prop({ default: 0 })

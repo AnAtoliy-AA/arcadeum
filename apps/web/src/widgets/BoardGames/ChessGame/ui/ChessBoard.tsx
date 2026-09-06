@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo, useCallback, useState } from 'react';
+import { memo, useMemo, useCallback, useState, useRef, useLayoutEffect } from 'react';
 import {
   FILES,
   PIECE_SYMBOLS,
@@ -71,6 +71,7 @@ interface ChessCellProps {
   ) => void;
   onHover: (square: string | null) => void;
   onDragOver: (square: string | null) => void;
+  animating: Map<string, { dx: number; dy: number }>;
 }
 
 function ChessCell({
@@ -95,6 +96,7 @@ function ChessCell({
   onPieceDrop,
   onHover,
   onDragOver,
+  animating,
 }: ChessCellProps) {
   const theme = useChessTheme();
   const square = `${file}-${rank}`;
@@ -233,6 +235,10 @@ function ChessCell({
             userSelect: 'none',
             position: 'relative',
             zIndex: 2,
+            transition: 'transform 0.2s ease-out',
+            transform: animating.get(square)
+              ? `translate(${animating.get(square)!.dx}%, ${animating.get(square)!.dy}%)`
+              : undefined,
           }}
         >
           {symbol}
@@ -262,6 +268,40 @@ function ChessBoardImpl({
 }: ChessBoardProps) {
   const [hoveredSquare, setHoveredSquare] = useState<string | null>(null);
   const [dragOverSquare, setDragOverSquare] = useState<string | null>(null);
+  const prevBoardRef = useRef<Board>(board);
+  const [animating, setAnimating] = useState<Map<string, { dx: number; dy: number }>>(new Map());
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: computing piece slide animation from board diff
+  useLayoutEffect(() => {
+    const prev = prevBoardRef.current;
+    if (prev === board) return;
+    const animations = new Map<string, { dx: number; dy: number }>();
+
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const piece = board[r]?.[c];
+        if (!piece) continue;
+        const prevPiece = prev[r]?.[c];
+        if (prevPiece && prevPiece.type === piece.type && prevPiece.color === piece.color) continue;
+
+        for (let pr = 0; pr < 8; pr++) {
+          for (let pc = 0; pc < 8; pc++) {
+            const pp = prev[pr]?.[pc];
+            if (!pp) continue;
+            if (pp.type !== piece.type || pp.color !== piece.color) continue;
+            if (pr === r && pc === c) continue;
+            const dx = (pc - c) * (100 / 8);
+            const dy = (pr - r) * (100 / 8);
+            animations.set(`${FILES[c]}${8 - r}`, { dx, dy });
+            break;
+          }
+        }
+      }
+    }
+
+    setAnimating(animations);
+    prevBoardRef.current = board;
+  }, [board]);
 
   const legalMoveSet = useMemo(() => {
     const s = new Set<string>();
@@ -457,6 +497,7 @@ function ChessBoardImpl({
                   onPieceDrop={onPieceDrop}
                   onHover={handleHover}
                   onDragOver={handleDragOver}
+                  animating={animating}
                 />
               );
             })}

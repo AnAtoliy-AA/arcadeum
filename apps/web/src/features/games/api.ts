@@ -244,6 +244,8 @@ export const gamesApi = {
       variant?: string;
       theme?: string;
       aiMoveDelayMs?: number;
+      botPersonalityWhite?: string;
+      botPersonalityBlack?: string;
     },
     options?: ApiClientOptions,
   ): Promise<CreateRoomResponse> => {
@@ -254,6 +256,8 @@ export const gamesApi = {
         variant: params?.variant,
         theme: params?.theme,
         aiMoveDelayMs: params?.aiMoveDelayMs,
+        botPersonalityWhite: params?.botPersonalityWhite,
+        botPersonalityBlack: params?.botPersonalityBlack,
       },
       options,
     );

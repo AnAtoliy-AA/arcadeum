@@ -251,21 +251,27 @@ const GAMES = [
     name: 'chess',
     slug: 'chess_v1',
     url: '/en/games/chess',
-    hookText: '♟️ TACTICAL CHECKMATE?',
+    hookText: '♟️ STOCKFISH 19 POWERED CHESS',
     hookColors: {
       gradient:
         'linear-gradient(135deg, rgba(30,30,30,0.95), rgba(212,175,55,0.95))',
       shadow: 'rgba(212,175,55,0.6)',
     },
     actionPhrases: [
+      '🧠 STOCKFISH 19 ANALYSIS!',
       '👑 SMART OPENING!',
       '⚔️ PIECE CAPTURE!',
       '⚡ TACTICAL STRIKE!',
+      '🎯 PUZZLE RUSH!',
+      '📊 GAME REVIEW!',
     ],
     captions: [
-      'Spot the winning move in 3 seconds! ♟️👑 Play online at arcadeum.games #chess #chessgame #checkmate #boardgames',
-      'Fast-paced multiplayer chess in your browser! 🏆 No install needed on arcadeum.games #chessreels #strategy #arcadeum',
-      'Chess but make it INSTANT ⚡♟️ Play vs AI or friends on arcadeum.games #chess #onlinechess #quickgame',
+      'Chess powered by Stockfish 19 — the strongest open-source engine ♟️🧠 Play free at arcadeum.games #chess #stockfish #chessengine #onlinechess',
+      'Bullet, blitz, rapid, or daily — every time control available ⚡⏱ Play vs AI or friends at arcadeum.games #chess #bulletchess #blitzchess',
+      '12 unique AI bot personalities rated 400–2800 🤖 Pick your opponent and improve your game at arcadeum.games #chess #aichess #chessbot',
+      'Puzzle Rush — solve as many tactics as you can in 3 minutes 🧩🔥 Sharpen your skills at arcadeum.games #puzzlerush #chesstactics #puzzles',
+      '6 chess variants: Standard, Chess960, Atomic, Crazyhouse, King of the Hill, Three-Check 🎲 Try them all at arcadeum.games #chess960 #variantchess',
+      'Real-time Stockfish 19 analysis + game review with accuracy scores 📊🎯 Improve fast at arcadeum.games #chessanalysis #gamereview #chessimprovement',
     ],
     moves: [
       { from: 'e2', to: 'e4' },

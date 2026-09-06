@@ -1,12 +1,22 @@
 import { ChessBotService } from './chess-bot.service';
 import { ChessEngine } from './chess.engine';
+import type { GameSessionSummary } from '../../sessions/game-sessions.service';
+
+function createMockChessService() {
+  return {
+    findSessionByRoom: jest.fn(),
+    completeSession: jest.fn(),
+  } as never;
+}
 
 describe('ChessBotService', () => {
   let bot: ChessBotService;
   let engine: ChessEngine;
+  let mockChessService: ReturnType<typeof createMockChessService>;
 
   beforeEach(() => {
-    bot = new ChessBotService();
+    mockChessService = createMockChessService();
+    bot = new ChessBotService(mockChessService);
     engine = new ChessEngine();
   });
 
@@ -74,7 +84,7 @@ describe('ChessBotService', () => {
       const fn = jest.fn();
       bot.setMoveFn(fn);
       const state = engine.initializeState(['bot-1', 'p2']);
-      await bot.checkAndPlay({
+      const session: GameSessionSummary = {
         id: 'session-1',
         roomId: 'room-1',
         gameId: 'chess_v1',
@@ -83,7 +93,11 @@ describe('ChessBotService', () => {
         playerIds: ['bot-1', 'p2'],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      });
+      };
+      (mockChessService.findSessionByRoom as jest.Mock).mockResolvedValue(
+        session,
+      );
+      await bot.checkAndPlay(session);
       expect(fn).not.toHaveBeenCalled();
     });
 
@@ -91,7 +105,7 @@ describe('ChessBotService', () => {
       const fn = jest.fn();
       bot.setMoveFn(fn);
       const state = engine.initializeState(['p1', 'bot-1']);
-      await bot.checkAndPlay({
+      const session: GameSessionSummary = {
         id: 'session-1',
         roomId: 'room-1',
         gameId: 'chess_v1',
@@ -100,7 +114,11 @@ describe('ChessBotService', () => {
         playerIds: ['p1', 'bot-1'],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      });
+      };
+      (mockChessService.findSessionByRoom as jest.Mock).mockResolvedValue(
+        session,
+      );
+      await bot.checkAndPlay(session);
       expect(fn).not.toHaveBeenCalled();
     });
 
@@ -113,7 +131,7 @@ describe('ChessBotService', () => {
       state.board[7][4] = { type: 'king', color: 'white' }; // e1
       state.board[0][4] = { type: 'king', color: 'black' }; // e8
       state.botDifficulty = 'easy';
-      await bot.checkAndPlay({
+      const session: GameSessionSummary = {
         id: 'session-1',
         roomId: 'room-1',
         gameId: 'chess_v1',
@@ -121,9 +139,14 @@ describe('ChessBotService', () => {
         status: 'active',
         state: state,
         options: { aiVsAi: true, aiMoveDelayMs: 5 },
+        playerIds: ['bot-1', 'bot-2'],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      });
+      };
+      (mockChessService.findSessionByRoom as jest.Mock).mockResolvedValue(
+        session,
+      );
+      await bot.checkAndPlay(session);
       expect(fn).toHaveBeenCalledTimes(1);
     });
   });

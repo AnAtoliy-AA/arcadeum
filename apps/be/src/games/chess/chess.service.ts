@@ -48,8 +48,8 @@ export class ChessService extends BaseGameService<ChessOptions> {
 
   protected readonly botService: ChessBotService;
 
-  /** Stockfish 19 engine — injected optionally so games work without it. */
-  readonly stockfishService: ChessStockfishService | null;
+  /** Stockfish 19 engine — always available after module init. */
+  readonly stockfishService: ChessStockfishService;
 
   /** Chess tournament service — injected optionally. */
   private readonly tournamentService: ChessTournamentService | null;
@@ -60,7 +60,7 @@ export class ChessService extends BaseGameService<ChessOptions> {
     realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => ChessBotService))
     botService: ChessBotService,
-    @Optional() stockfishService: ChessStockfishService | null,
+    stockfishService: ChessStockfishService,
     @Optional() tournamentService: ChessTournamentService | null,
     @InjectConnection() mongoConnection: Connection,
     @Optional() @Inject('REDIS_CLIENT') redis?: Redis | null,
@@ -138,6 +138,18 @@ export class ChessService extends BaseGameService<ChessOptions> {
     return this.runAction(userId, roomId, 'draw_accept', {});
   }
 
+  async takebackOffer(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'takeback_offer', {});
+  }
+
+  async takebackAccept(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'takeback_accept', {});
+  }
+
+  async takebackDecline(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'takeback_decline', {});
+  }
+
   protected override applyStartExtras(
     _userId: string,
     _roomId: string,
@@ -188,30 +200,82 @@ export class ChessService extends BaseGameService<ChessOptions> {
       `[Chess] emitSessionUpdate room=${session.roomId} moveCount=${moveCount}`,
     );
     await super.emitSessionUpdate(session);
+
+    // Broadcast Stockfish analysis after each move (fire-and-forget)
+    if (moveCount > 0) {
+      if (!this.stockfishService?.isReady()) {
+        this.logger.warn(
+          `[Chess] Stockfish not ready, skipping analysis for room ${session.roomId}`,
+        );
+      } else {
+        const state = session.state as ChessState | undefined;
+        if (state) {
+          // Generate full FEN (positionHistory only stores board part)
+          const { toFen } = await import('@arcadeum/games-core/games/chess/chess-fen');
+          const fullFen = toFen(state);
+          this.logger.log(
+            `[Chess] Analyzing fen for room ${session.roomId}: ${fullFen.substring(0, 50)}...`,
+          );
+          this.stockfishService
+            .analyzePosition({ fen: fullFen, depth: 12, timeMs: 1500 })
+            .then((eval_) => {
+              this.logger.log(
+                `[Chess] Eval for room ${session.roomId}: cp=${eval_.cp} mate=${eval_.mate} depth=${eval_.depth}`,
+              );
+              this.realtimeService.emitToRoom(
+                session.roomId,
+                'chess.session.analyzed',
+                {
+                  roomId: session.roomId,
+                  eval: eval_,
+                },
+              );
+              // Also broadcast to spectators
+              this.realtimeService.emitToSpectators(
+                session.roomId,
+                'chess.session.analyzed',
+                {
+                  roomId: session.roomId,
+                  eval: eval_,
+                },
+              );
+            })
+            .catch((err) => {
+              this.logger.error(
+                `[Chess] Stockfish analysis failed for room ${session.roomId}: ${err}`,
+              );
+            });
+        }
+      }
+    }
   }
 
   private async checkClockTimeout(session: GameSessionSummary) {
     const state = session.state as ChessState | undefined;
     if (!state || !state.clocks || this.isGameOver(state)) return;
 
+    const isDaily = state.timeControl?.type === 'daily';
     const currentClock = state.clocks[state.currentTurnColor];
     if (!currentClock) return;
 
-    const elapsed = Math.floor(
-      (Date.now() - currentClock.lastMoveTimestamp) / 1000,
-    );
-    const remaining = currentClock.remainingSeconds - elapsed;
+    const elapsedMs = Date.now() - currentClock.lastMoveTimestamp;
 
-    if (remaining <= 0) {
-      const loser = state.players.find(
-        (p) => p.color === state.currentTurnColor,
-      );
-      const winner = state.players.find(
-        (p) => p.color !== state.currentTurnColor,
-      );
-      if (loser && winner) {
-        await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
-      }
+    if (isDaily) {
+      const daysPerMove = state.timeControl?.daysPerMove ?? 1;
+      const elapsedDays = elapsedMs / (1000 * 60 * 60 * 24);
+      if (elapsedDays < daysPerMove) return;
+    } else {
+      const elapsed = Math.floor(elapsedMs / 1000);
+      const remaining = currentClock.remainingSeconds - elapsed;
+      if (remaining > 0) return;
+    }
+
+    const loser = state.players.find((p) => p.color === state.currentTurnColor);
+    const winner = state.players.find(
+      (p) => p.color !== state.currentTurnColor,
+    );
+    if (loser && winner) {
+      await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
     }
   }
 
@@ -245,18 +309,35 @@ export class ChessService extends BaseGameService<ChessOptions> {
     const rawTc = r.timeControl;
     let timeControl: ChessOptions['timeControl'] = null;
     if (rawTc && typeof rawTc === 'object') {
-      const validTypes: TimeControlType[] = ['blitz', 'rapid', 'classical'];
+      const validTypes: TimeControlType[] = [
+        'bullet',
+        'blitz',
+        'rapid',
+        'classical',
+        'daily',
+      ];
       const type = validTypes.includes(rawTc.type as TimeControlType)
         ? (rawTc.type as TimeControlType)
         : 'blitz';
-      const validIncs: TimeIncrement[] = [0, 3, 5, 10, 15, 30];
+      const validIncs: TimeIncrement[] = [0, 1, 3, 5, 10, 15, 30];
       const inc = validIncs.includes(rawTc.incrementSeconds as TimeIncrement)
         ? (rawTc.incrementSeconds as TimeIncrement)
         : 0;
+      const daysPerMove =
+        type === 'daily'
+          ? Math.max(
+              1,
+              Math.min(
+                14,
+                ((rawTc as Record<string, unknown>).daysPerMove as number) || 1,
+              ),
+            )
+          : undefined;
       timeControl = {
         type,
         initialSeconds: rawTc.initialSeconds,
         incrementSeconds: inc,
+        daysPerMove,
       };
     }
     const botDifficulty = isAiDifficulty(r.botDifficulty)

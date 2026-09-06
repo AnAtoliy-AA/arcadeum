@@ -7,17 +7,17 @@ export const enMessages = {
       'Challenge friends or bots to a game of chess with standard or Chess960 variants and optional time controls.',
     landing: {
       meta: {
-        title: 'Chess — multiplayer with standard & Chess960 variants',
+        title: 'Chess Online — Bullet, Blitz, Rapid, Daily & Chess960 | Arcadeum',
         description:
-          'Play multiplayer Chess online. Standard and Chess960 variants, optional time controls, bots from day one. Free, instant rooms, no install.',
+          'Play chess online with Stockfish 19 engine analysis, bullet/blitz/rapid/daily time controls, 6 variants, 12 AI personalities, Puzzle Rush, takeback, PGN import, endgame tablebases, auto-matchmaking, and game review — all free, no install.',
         keywords:
-          'chess, chess online, multiplayer chess, chess960, chess game, board games',
+          'chess online, chess game, multiplayer chess, chess960, bullet chess, blitz chess, rapid chess, daily chess, stockfish 19, chess puzzles, puzzle rush, chess analysis, endgame tablebase, syzygy, play chess free, online chess engine, AI chess bot, chess variants, atomic chess, crazyhouse, king of the hill, three-check chess, chess tournaments, chess clubs, online chess game, real-time chess',
         howToPlayTitle: 'How to play {{gameName}}',
       },
       hero: {
         title: 'Chess — the timeless strategy game',
         subtitle:
-          'Standard rules, Chess960 variant, and optional time controls. Play against friends or bots.',
+          'Powered by Stockfish 19. Bullet, blitz, rapid, daily, and Chess960. Play against friends, 12 AI personalities, or the entire community.',
         createRoom: 'Create a room',
         ctaQuickplay: 'Play vs AI now',
         ctaQuickplayError: "Couldn't start a game — try again",
@@ -26,30 +26,30 @@ export const enMessages = {
       },
       highlights: {
         players: {
-          title: '2 players',
-          body: 'Challenge a friend or play against a smart bot opponent.',
+          title: '2 players + 12 AI bots',
+          body: 'Challenge a friend or pick from 12 unique bot personalities rated 400–2800, each with distinct play styles and opening repertoires.',
         },
         variants: {
-          title: '2 variants',
-          body: 'Classic standard position and Chess960 randomized setup.',
+          title: '6 game variants',
+          body: 'Standard, Chess960, King of the Hill, Three-Check, Crazyhouse, and Atomic — each with unique win conditions.',
         },
         clock: {
-          title: 'Time controls',
-          body: 'Blitz, rapid, or classical. Or play without a clock.',
+          title: 'Every time control',
+          body: 'Bullet (1+0, 2+1), Blitz (3+0, 5+0, 5+3), Rapid (10+0, 15+10), Classical (30+0), and Daily correspondence (1–14 days per move).',
         },
       },
       steps: {
         create: {
           title: 'Create a room',
-          body: 'Pick a variant and time control. Public or invite-only.',
+          body: 'Pick a variant, time control, and visual theme. Public or invite-only.',
         },
         join: {
           title: 'Invite a friend or add a bot',
-          body: 'Share the link or click "Start with bots" for instant play.',
+          body: 'Share the link, use Quick Play matchmaking, or start with a bot for instant play.',
         },
         play: {
-          title: 'Play and chat',
-          body: 'Make your moves, check the clock, and chat through the game.',
+          title: 'Play, analyze, and improve',
+          body: 'Real-time Stockfish 19 analysis, takeback, PGN import, and post-game review with accuracy scores.',
         },
       },
       faq: {
@@ -61,12 +61,27 @@ export const enMessages = {
         clock: {
           question: 'How do time controls work?',
           answer:
-            'Each player has a clock. When it is your turn, your clock counts down. If your time runs out, you lose. Some controls add time after each move (increment).',
+            'Each player has a clock. When it is your turn, your clock counts down. If your time runs out, you lose. Some controls add time after each move (increment). Bullet games run 1–2 minutes, blitz 3–5 minutes, rapid 10–15 minutes.',
         },
         promotion: {
           question: 'How does pawn promotion work?',
           answer:
             'When a pawn reaches the opposite end of the board, you must promote it to a queen, rook, bishop, or knight.',
+        },
+        stockfish: {
+          question: 'What is Stockfish 19?',
+          answer:
+            'Stockfish 19 is the latest release of the world\'s strongest open-source chess engine. It uses the SFNNv16 neural network architecture and powers all live analysis, game review, and AI bot difficulty on Arcadeum.',
+        },
+        takeback: {
+          question: 'Can I undo a move?',
+          answer:
+            'Yes — use the Takeback button to request an undo. Your opponent must accept before the move is reverted. Available in both casual and rated games.',
+        },
+        puzzlerush: {
+          question: 'What is Puzzle Rush?',
+          answer:
+            'Puzzle Rush is a timed puzzle mode. In Survival, you get 3 lives and try to solve as many puzzles as possible. In Timed mode, you have 3 minutes to solve as many as you can.',
         },
       },
     },
@@ -90,9 +105,12 @@ export const enMessages = {
       atomicDesc: 'Captures explode surrounding pieces',
       noClock: 'No clock',
       unlimitedTime: 'Unlimited time',
+      bullet: 'Bullet',
       blitz: 'Blitz',
       rapid: 'Rapid',
       classical: 'Classical',
+      daily: 'Daily',
+      daysPerMove: '{{days}} day(s) per move',
       easy: 'Easy',
       medium: 'Medium',
       hard: 'Hard',
@@ -118,6 +136,24 @@ export const enMessages = {
     spectator: {
       viewers: 'viewers',
       joinGame: 'Join Game',
+    },
+    matchmaking: {
+      quickPlay: 'Quick Play',
+      searching: 'Searching... {{time}}',
+      position: '#{{position}} in queue',
+      rating: 'Rating: {{rating}}',
+      cancelled: 'Search cancelled',
+    },
+    history: {
+      title: 'Game History',
+      rating: 'Rating',
+      peak: 'Peak',
+      winRate: 'Win Rate',
+      ratingTrend: 'Rating Trend',
+      results: 'Results',
+      topOpenings: 'Top Openings',
+      recentGames: 'Recent Games',
+      noGames: 'No games played yet',
     },
     tutorial: {
       s1: {
@@ -187,6 +223,14 @@ export const enMessages = {
         blunder: 'Blunder',
       },
     },
+    review: {
+      title: 'Game Review',
+      accuracy: 'Accuracy',
+      grade: 'Grade',
+      moveBreakdown: 'Move Breakdown',
+      evaluation: 'Evaluation',
+      keyMoments: 'Key Moments',
+    },
     coach: {
       title: 'Coach hints',
       hint: 'Hint',
@@ -206,8 +250,13 @@ export const enMessages = {
       drawOffered: 'Draw Offered',
       acceptDraw: 'Accept Draw',
       declineDraw: 'Decline',
+      takeback: 'Takeback',
+      takebackOffered: 'Takeback Offered',
+      acceptTakeback: 'Accept Takeback',
+      declineTakeback: 'Decline',
       moveList: 'Move List',
       copyPGN: 'Copy PGN',
+      importPgn: 'Import PGN',
     },
     chat: {
       move: '{{name}} moved {{notation}}',
@@ -262,6 +311,20 @@ export const enMessages = {
       daily: 'Daily Puzzle',
       rated: 'Rated Puzzles',
       themed: 'Themed Puzzles',
+    },
+    puzzleRush: {
+      title: 'Puzzle Rush',
+      subtitle: 'Solve as many puzzles as you can',
+      survival: 'Survival Mode',
+      survivalDesc: '3 lives — one wrong and you lose a life',
+      timed: 'Timed Mode',
+      timedDesc: '3 minutes — solve as many as possible',
+      gameOver: 'Time\'s up!',
+      playAgain: 'Play Again',
+      endRun: 'End Run',
+      score: 'Score',
+      bestStreak: 'Best Streak',
+      time: 'Time',
     },
     tournament: {
       title: 'Chess Tournaments',

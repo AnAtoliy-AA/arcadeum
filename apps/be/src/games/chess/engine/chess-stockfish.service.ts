@@ -65,9 +65,11 @@ export class ChessStockfishService implements OnModuleDestroy {
     this.poolSize = parseInt(process.env.STOCKFISH_POOL_SIZE ?? '1', 10);
 
     // Binary location: Docker installs to /usr/local/bin, local dev uses bin/
+    // Note: __dirname in compiled code points to dist/, so go up to project root
     const dockerPath = '/usr/local/bin/stockfish';
     const localPath = path.join(
       __dirname,
+      '..',
       '..',
       '..',
       '..',
@@ -78,6 +80,7 @@ export class ChessStockfishService implements OnModuleDestroy {
   }
 
   async onModuleInit(): Promise<void> {
+    this.logger.log(`[Stockfish] onModuleInit called. Binary: ${this.binaryPath}`);
     if (!fs.existsSync(this.binaryPath)) {
       if (process.env.E2E === 'true') {
         this.logger.debug(
@@ -155,12 +158,15 @@ export class ChessStockfishService implements OnModuleDestroy {
       MAX_TIME_MS,
     );
 
+    // Position history now contains full FENs — use directly
+    const fullFens = request.positionHistory;
+
     const evals: (number | null)[] = [];
     const moves: EngineLine[] = [];
     let prevEval = 0;
 
-    for (let i = 0; i < request.positionHistory.length - 1; i++) {
-      const fen = request.positionHistory[i];
+    for (let i = 0; i < fullFens.length - 1; i++) {
+      const fen = fullFens[i];
       if (!fen) continue;
 
       const eval_ = await this.analyzePosition({
@@ -194,10 +200,14 @@ export class ChessStockfishService implements OnModuleDestroy {
         bestPv: eval_.pv,
       });
 
+      if (loss > 50) {
+        this.logger.log(`[Stockfish] Move ${i}: loss=${loss}cp eval=${currentEval} (prev=${prevEval}) quality=${this.classifyMove(loss, prevEval, currentEval, color)}`);
+      }
+
       prevEval = currentEval;
     }
 
-    const lastFen = request.positionHistory[request.positionHistory.length - 1];
+    const lastFen = fullFens[fullFens.length - 1];
     if (lastFen) {
       const finalEval = await this.analyzePosition({
         fen: lastFen,
@@ -371,6 +381,19 @@ export class ChessStockfishService implements OnModuleDestroy {
           instance.pending.reject(new Error('Stockfish process exited'));
           instance.pending = null;
         }
+        // Auto-restart crashed instance
+        setTimeout(() => {
+          this.logger.log(`Restarting Stockfish instance...`);
+          this.spawnInstance()
+            .then((newInstance) => {
+              const idx = this.instances.indexOf(instance);
+              if (idx !== -1) this.instances[idx] = newInstance;
+              this.logger.log(`Stockfish instance restarted successfully`);
+            })
+            .catch((err) => {
+              this.logger.error(`Failed to restart Stockfish: ${err}`);
+            });
+        }, 1000);
       });
 
       // Start UCI handshake
@@ -408,6 +431,8 @@ export class ChessStockfishService implements OnModuleDestroy {
         reject(new Error('No Stockfish instances available'));
         return;
       }
+
+      this.logger.log(`[Stockfish] Sending commands: ${commands.join(' | ')}`);
 
       const lines: EngineEval[] = [];
       const deadline = Date.now() + Math.min(timeoutMs, MAX_TIME_MS + 10000);
@@ -489,10 +514,10 @@ export class ChessStockfishService implements OnModuleDestroy {
     _color: 'white' | 'black',
   ): EngineLine['quality'] {
     if (loss === 0 && Math.abs(evalAfter) > 200) return 'brilliant';
-    if (loss <= 5 && Math.abs(evalAfter) > 100) return 'great';
-    if (loss <= 25) return 'good';
-    if (loss <= 100) return 'inaccuracy';
-    if (loss <= 300) return 'mistake';
+    if (loss <= 2 && Math.abs(evalAfter) > 100) return 'great';
+    if (loss <= 10) return 'good';
+    if (loss <= 30) return 'inaccuracy';
+    if (loss <= 100) return 'mistake';
     return 'blunder';
   }
 

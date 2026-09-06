@@ -26,4 +26,14 @@ export class CreateAiVsAiGameDto {
   @IsOptional()
   @IsIn(AI_VS_AI_DELAYS_MS)
   aiMoveDelayMs?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  botPersonalityWhite?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  botPersonalityBlack?: string;
 }

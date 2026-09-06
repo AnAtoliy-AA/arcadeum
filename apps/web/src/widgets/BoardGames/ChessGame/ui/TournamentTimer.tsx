@@ -23,7 +23,7 @@ function formatTimeRemaining(ms: number): string {
 }
 
 export function TournamentTimer({
-  tournamentId,
+  tournamentId: _tournamentId,
   status,
   scheduledAt,
 }: TournamentTimerProps) {

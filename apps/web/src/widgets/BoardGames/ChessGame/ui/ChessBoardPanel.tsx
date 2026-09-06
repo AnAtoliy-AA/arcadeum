@@ -47,6 +47,9 @@ interface ChessBoardPanelProps {
   onOfferDraw: () => void;
   onResign: () => void;
   onAcceptDraw: () => void;
+  onOfferTakeback: () => void;
+  onAcceptTakeback: () => void;
+  onDeclineTakeback: () => void;
   liveEval?: {
     cp: number | null;
     mate: number | null;
@@ -81,12 +84,19 @@ function ChessBoardPanelImpl({
   onOfferDraw,
   onResign,
   onAcceptDraw,
+  onOfferTakeback,
+  onAcceptTakeback,
+  onDeclineTakeback,
   liveEval,
   liveEvalAnalyzing,
 }: ChessBoardPanelProps) {
   const [hoveredMoveIdx, setHoveredMoveIdx] = useState<number | null>(null);
+  const [spectatorPerspective, setSpectatorPerspective] = useState<'white' | 'black'>('white');
   const handleMoveHover = useCallback((idx: number | null) => {
     setHoveredMoveIdx(idx);
+  }, []);
+  const togglePerspective = useCallback(() => {
+    setSpectatorPerspective((p) => (p === 'white' ? 'black' : 'white'));
   }, []);
 
   const currentFen = useMemo(() => {
@@ -168,11 +178,24 @@ function ChessBoardPanelImpl({
           timeControl={snapshot.timeControl}
         />
 
-        <GameInfoPanel snapshot={snapshot} t={t} />
+        <GameInfoPanel
+          snapshot={snapshot}
+          liveEval={liveEval}
+          analyzing={liveEvalAnalyzing}
+          myColor={myColor}
+          isSpectator={isSpectator}
+          spectatorPerspective={isSpectator ? spectatorPerspective : undefined}
+          onTogglePerspective={isSpectator ? togglePerspective : undefined}
+          t={t}
+        />
 
         <LiveEvalDisplay
           eval_={liveEval ?? null}
           analyzing={!!liveEvalAnalyzing}
+          myColor={myColor}
+          isSpectator={isSpectator}
+          spectatorPerspective={isSpectator ? spectatorPerspective : undefined}
+          onTogglePerspective={isSpectator ? togglePerspective : undefined}
         />
 
         {currentFen && (
@@ -184,12 +207,17 @@ function ChessBoardPanelImpl({
         <ActionsBar
           hasDrawOffer={hasDrawOffer}
           isMyDrawOffer={isMyDrawOffer}
+          hasTakebackOffer={!!snapshot?.takebackOfferedBy}
+          isMyTakebackOffer={snapshot?.takebackOfferedBy === currentUserId}
           isGameOver={isGameOver}
           isSpectator={isSpectator}
           currentUserId={currentUserId}
           onResign={onResign}
           onOfferDraw={onOfferDraw}
           onAcceptDraw={onAcceptDraw}
+          onOfferTakeback={onOfferTakeback}
+          onAcceptTakeback={onAcceptTakeback}
+          onDeclineTakeback={onDeclineTakeback}
           t={t}
         />
 

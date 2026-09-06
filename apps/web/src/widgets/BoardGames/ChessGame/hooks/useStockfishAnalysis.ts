@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
+import { maybeDecrypt } from '@/shared/lib/socket-encryption';
 
 interface EngineEval {
   cp: number | null;
@@ -17,78 +18,70 @@ interface EngineEval {
 interface UseStockfishAnalysisOptions {
   roomId: string;
   enabled: boolean;
-  fen: string | null;
-  ply: number;
 }
 
 /**
  * Hook for live Stockfish 19 engine analysis during a chess game.
  *
- * Subscribes to engine eval events via WebSocket and requests analysis
- * after each move. Uses Stockfish 19 (latest stable, released 2026-09-05)
- * running server-side via native binary (UCI protocol).
+ * Listens for analysis broadcasts from the server (one Stockfish call per
+ * move, shared with all players and spectators). No per-client requests.
  */
 export function useStockfishAnalysis({
   roomId,
   enabled,
-  fen,
-  ply,
 }: UseStockfishAnalysisOptions) {
   const [eval_, setEval] = useState<EngineEval | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
-  const lastPlyRef = useRef(-1);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (!enabled || !fen || ply === lastPlyRef.current) return;
-
-    lastPlyRef.current = ply;
-
-    // Debounce: wait 300ms after last move before requesting analysis
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      setAnalyzing(true);
-      gameSocket.emit('chess.session.analyze', {
-        roomId,
-        fen,
-        depth: 12,
-        timeMs: 1500,
-      });
-    }, 300);
-
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [fen, ply, roomId, enabled]);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
 
-    function onAnalyzed(data: { roomId: string; eval: EngineEval }) {
-      if (data.roomId === roomId) {
+    async function onAnalyzed(raw: unknown) {
+      const data = await maybeDecrypt<{ roomId: string; eval: EngineEval }>(raw);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Stockfish] Received eval:`, data);
+      }
+      if (data && data.roomId === roomId) {
         setEval(data.eval);
         setAnalyzing(false);
-      }
-    }
-
-    function onError(data: { roomId: string; error: string }) {
-      if (data.roomId === roomId) {
-        setAnalyzing(false);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
       }
     }
 
     gameSocket.on('chess.session.analyzed', onAnalyzed);
-    gameSocket.on('chess.session.analyze_error', onError);
 
     return () => {
       gameSocket.off('chess.session.analyzed', onAnalyzed);
-      gameSocket.off('chess.session.analyze_error', onError);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [roomId, enabled]);
+
+  // Set analyzing=true whenever we receive a session update (move happened)
+  // The server will broadcast the eval shortly after
+  useEffect(() => {
+    if (!enabled) return;
+
+    async function onSessionSnapshot(raw: unknown) {
+      const data = await maybeDecrypt<{ roomId?: string }>(raw);
+      if (data && data.roomId === roomId) {
+        setAnalyzing(true);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => setAnalyzing(false), 5000);
+      }
+    }
+
+    gameSocket.on('games.session.snapshot', onSessionSnapshot);
+
+    return () => {
+      gameSocket.off('games.session.snapshot', onSessionSnapshot);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [roomId, enabled]);
 
   const clearEval = useCallback(() => {
     setEval(null);
-    lastPlyRef.current = -1;
+    setAnalyzing(false);
   }, []);
 
   return { eval: eval_, analyzing, clearEval };

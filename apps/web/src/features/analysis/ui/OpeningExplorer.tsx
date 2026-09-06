@@ -60,16 +60,7 @@ function OpeningExplorerImpl({ fen }: OpeningExplorerProps) {
   }
 
   if (moves.length === 0) {
-    return (
-      <div className="p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)]">
-        <div className="text-[10px] font-semibold text-[var(--textSecondary)] uppercase tracking-wider mb-2">
-          Opening Explorer
-        </div>
-        <div className="text-xs text-[var(--textSecondary)]">
-          No data for this position
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

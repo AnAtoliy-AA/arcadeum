@@ -18,6 +18,8 @@ interface ChessGameResultModalProps {
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
   messages?: { title: string; message: string };
   snapshot: ChessClientState | null;
+  myColor?: 'white' | 'black' | null;
+  isSpectator?: boolean;
   theme?: GameTheme | string;
   stats?: GameResultStats;
 }
@@ -31,6 +33,8 @@ export function ChessGameResultModal({
   t,
   messages,
   snapshot,
+  myColor,
+  isSpectator,
   theme,
   stats,
 }: ChessGameResultModalProps) {
@@ -82,6 +86,8 @@ export function ChessGameResultModal({
                 <PostGameAnalysis
                   positionHistory={snapshot.positionHistory}
                   notations={snapshot.moveHistory.map((m) => m.notation)}
+                  myColor={myColor}
+                  isSpectator={isSpectator}
                   t={t}
                 />
               ),

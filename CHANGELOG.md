@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.33] - 2026-09-06
+
+### Fixed
+- update e2e test to expect no FAQPage on home page
+- security & seo audit fixes + file length compliance
+- add rel='me' to social links, fix lint warnings
+- fix orphan pages, locale-prefixed links, shorten og:description
+- improve Google Search SEO — H1 spacing, FAQPage schema, og:title, sitemap lastmod, video duration
+
+
 ## [1.28.32] - 2026-09-06
 
 ### Fixed

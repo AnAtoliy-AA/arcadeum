@@ -98,6 +98,27 @@ export const enMessages = {
       hard: 'Hard',
       botPersonality: 'Bot Personality',
     },
+    profile: {
+      notFound: 'Profile not found',
+      games: 'Games',
+      winRate: 'Win Rate',
+      puzzleRating: 'Puzzle Rating',
+      puzzlesSolved: 'Puzzles Solved',
+      ratings: 'Ratings',
+      style: 'Play Style',
+      noGames: 'No games played yet',
+      recentGames: 'Recent Games',
+      challenge: 'Challenge',
+    },
+    clubs: {
+      search: 'Search clubs...',
+      noClubs: 'No clubs found',
+      members: 'members',
+    },
+    spectator: {
+      viewers: 'viewers',
+      joinGame: 'Join Game',
+    },
     tutorial: {
       s1: {
         title: 'Checkmate the king',

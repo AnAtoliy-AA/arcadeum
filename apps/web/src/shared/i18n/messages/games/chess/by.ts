@@ -98,6 +98,27 @@ export const byMessages = {
       hard: 'Складаны',
       botPersonality: 'Асоба бота',
     },
+    profile: {
+      notFound: 'Профіль не знойдзены',
+      games: 'Гульні',
+      winRate: 'Працэнт перамог',
+      puzzleRating: 'Рэйтынг галаваломак',
+      puzzlesSolved: 'Вырашана галаваломак',
+      ratings: 'Рэйтынгі',
+      style: 'Стыль гульні',
+      noGames: 'Гульняў пакуль няма',
+      recentGames: 'Апошнія гульні',
+      challenge: 'Выклікаць',
+    },
+    clubs: {
+      search: 'Пошук клубаў...',
+      noClubs: 'Клубы не знойдзены',
+      members: 'удзельнікаў',
+    },
+    spectator: {
+      viewers: 'гледачоў',
+      joinGame: 'Далучыцца',
+    },
     tutorial: {
       s1: {
         title: 'Паставьце мат',

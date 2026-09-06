@@ -98,6 +98,27 @@ export const ruMessages = {
       hard: 'Сложный',
       botPersonality: 'Личность бота',
     },
+    profile: {
+      notFound: 'Профиль не найден',
+      games: 'Игры',
+      winRate: 'Процент побед',
+      puzzleRating: 'Рейтинг головоломок',
+      puzzlesSolved: 'Решено головоломок',
+      ratings: 'Рейтинги',
+      style: 'Стиль игры',
+      noGames: 'Игр пока нет',
+      recentGames: 'Последние игры',
+      challenge: 'Вызвать',
+    },
+    clubs: {
+      search: 'Поиск клубов...',
+      noClubs: 'Клубы не найдены',
+      members: 'участников',
+    },
+    spectator: {
+      viewers: 'зрителей',
+      joinGame: 'Присоединиться',
+    },
     tutorial: {
       s1: {
         title: 'Поставьте мат',

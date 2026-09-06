@@ -98,6 +98,27 @@ export const frMessages = {
       hard: 'Difficile',
       botPersonality: 'Personnalité du Bot',
     },
+    profile: {
+      notFound: 'Profil non trouvé',
+      games: 'Jeux',
+      winRate: 'Taux de victoire',
+      puzzleRating: 'Classement puzzles',
+      puzzlesSolved: 'Puzzles résolus',
+      ratings: 'Classements',
+      style: 'Style de jeu',
+      noGames: 'Pas encore de jeux',
+      recentGames: 'Jeux récents',
+      challenge: 'Défier',
+    },
+    clubs: {
+      search: 'Rechercher des clubs...',
+      noClubs: 'Aucun club trouvé',
+      members: 'membres',
+    },
+    spectator: {
+      viewers: 'spectateurs',
+      joinGame: 'Rejoindre',
+    },
     tutorial: {
       s1: {
         title: 'Matez le roi',

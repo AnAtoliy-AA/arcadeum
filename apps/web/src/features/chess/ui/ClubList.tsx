@@ -64,9 +64,9 @@ export function ClubList({ onClubSelect }: ClubListProps) {
       ) : (
         <div className="flex flex-col gap-2">
           {clubs.map((club) => (
-            <GlassCard
+            <div
               key={club._id}
-              className="cursor-pointer p-4 transition-colors hover:bg-[var(--glassBgHover)]"
+              className="cursor-pointer rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-4 transition-colors hover:bg-[var(--glassBgHover)]"
               onClick={() => onClubSelect?.(club._id)}
             >
               <div className="flex items-center justify-between">
@@ -84,7 +84,7 @@ export function ClubList({ onClubSelect }: ClubListProps) {
                   {club.memberCount} {t('games.chess_v1.clubs.members')}
                 </Typography>
               </div>
-            </GlassCard>
+            </div>
           ))}
         </div>
       )}

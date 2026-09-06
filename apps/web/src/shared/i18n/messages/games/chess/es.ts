@@ -98,6 +98,27 @@ export const esMessages = {
       hard: 'Difícil',
       botPersonality: 'Personalidad del Bot',
     },
+    profile: {
+      notFound: 'Perfil no encontrado',
+      games: 'Juegos',
+      winRate: 'Tasa de victoria',
+      puzzleRating: 'Clasificación de puzzles',
+      puzzlesSolved: 'Puzzles resueltos',
+      ratings: 'Clasificaciones',
+      style: 'Estilo de juego',
+      noGames: 'Aún no hay juegos',
+      recentGames: 'Juegos recientes',
+      challenge: 'Desafiar',
+    },
+    clubs: {
+      search: 'Buscar clubes...',
+      noClubs: 'No se encontraron clubes',
+      members: 'miembros',
+    },
+    spectator: {
+      viewers: 'espectadores',
+      joinGame: 'Unirse',
+    },
     tutorial: {
       s1: {
         title: 'Da mate al rey',

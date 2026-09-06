@@ -70,7 +70,7 @@ export function ChessTournamentLobby({
 
   return (
     <div className="flex flex-col gap-3">
-      <Typography variant="title" size="lg">
+      <Typography variant="heading" uiSize="lg">
         {t?.title ?? 'Chess Tournaments'}
       </Typography>
 
@@ -196,9 +196,8 @@ function TournamentCard({
   return (
     <GlassCard
       className="p-3 cursor-pointer hover:border-[var(--primary)] transition-colors"
-      onClick={() => onSelect(tournament.id)}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between" onClick={() => onSelect(tournament.id)}>
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <span className="font-bold text-[15px]">{tournament.name}</span>
@@ -239,7 +238,7 @@ function TournamentCard({
           {tournament.status !== 'completed' && (
             <Button
               size="sm"
-              variant={tournament.isRegistered ? 'outline' : 'default'}
+              variant={tournament.isRegistered ? 'outline' : 'primary'}
               onClick={(e) => {
                 e.stopPropagation();
                 if (tournament.isRegistered) {

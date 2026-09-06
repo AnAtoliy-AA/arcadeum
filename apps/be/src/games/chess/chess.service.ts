@@ -186,6 +186,65 @@ export class ChessService extends BaseGameService<ChessOptions> {
     await super.emitSessionUpdate(session);
   }
 
+  protected override async afterSessionStep(
+    session: GameSessionSummary,
+  ): Promise<GameSessionSummary> {
+    const result = await super.afterSessionStep(session);
+
+    // Report tournament result on game completion
+    if (session.status === 'completed' && this.tournamentService) {
+      await this.reportTournamentResult(session).catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.error(
+          `Tournament result reporting failed for room ${session.roomId}: ${message}`,
+        );
+      });
+    }
+
+    return result;
+  }
+
+  private async reportTournamentResult(
+    session: GameSessionSummary,
+  ): Promise<void> {
+    const state = session.state as ChessState | undefined;
+    if (!state?.players || state.players.length < 2) return;
+
+    // Check if this game is part of a tournament via room metadata
+    const room = await this.roomsService.getRoom(session.roomId, 'system');
+    const tournamentId = (room as unknown as Record<string, unknown>)
+      .tournamentId;
+    if (!tournamentId || typeof tournamentId !== 'string') return;
+
+    const white = state.players.find((p) => p.color === 'white');
+    const black = state.players.find((p) => p.color === 'black');
+    if (!white || !black) return;
+
+    let result: 'white' | 'black' | 'draw';
+    if (
+      state.isDrawByAgreement ||
+      state.isDrawByRepetition ||
+      state.isDrawByFiftyMoveRule ||
+      state.isInsufficientMaterial ||
+      state.isStalemate
+    ) {
+      result = 'draw';
+    } else if (state.winnerColor === 'white') {
+      result = 'white';
+    } else if (state.winnerColor === 'black') {
+      result = 'black';
+    } else {
+      return;
+    }
+
+    await this.tournamentService!.recordGameResult({
+      tournamentId,
+      whiteUserId: white.playerId,
+      blackUserId: black.playerId,
+      result,
+    });
+  }
+
   private async checkClockTimeout(session: GameSessionSummary) {
     const state = session.state as ChessState | undefined;
     if (!state || !state.clocks || this.isGameOver(state)) return;

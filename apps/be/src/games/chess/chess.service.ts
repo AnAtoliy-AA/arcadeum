@@ -26,6 +26,7 @@ import type {
 } from '../engines/chess/chess.types';
 import { ChessBotService } from '../engines/chess/chess-bot.service';
 import { ChessStockfishService } from './engine/chess-stockfish.service';
+import { ChessTournamentService } from './tournaments/chess-tournament.service';
 import { getLegalMoves } from '../engines/chess/chess.move-generator';
 import {
   AI_DIFFICULTIES,
@@ -50,6 +51,9 @@ export class ChessService extends BaseGameService<ChessOptions> {
   /** Stockfish 19 engine — injected optionally so games work without it. */
   readonly stockfishService: ChessStockfishService | null;
 
+  /** Chess tournament service — injected optionally. */
+  private readonly tournamentService: ChessTournamentService | null;
+
   constructor(
     roomsService: GameRoomsService,
     sessionsService: GameSessionsService,
@@ -57,6 +61,7 @@ export class ChessService extends BaseGameService<ChessOptions> {
     @Inject(forwardRef(() => ChessBotService))
     botService: ChessBotService,
     @Optional() stockfishService: ChessStockfishService | null,
+    @Optional() tournamentService: ChessTournamentService | null,
     @InjectConnection() mongoConnection: Connection,
     @Optional() @Inject('REDIS_CLIENT') redis?: Redis | null,
   ) {
@@ -71,6 +76,7 @@ export class ChessService extends BaseGameService<ChessOptions> {
     );
     this.botService = botService;
     this.stockfishService = stockfishService;
+    this.tournamentService = tournamentService;
   }
 
   override onModuleInit() {
@@ -148,6 +154,23 @@ export class ChessService extends BaseGameService<ChessOptions> {
       this.botService.setDifficulty(botDifficulty as AiDifficulty);
       options.botDifficulty = botDifficulty as AiDifficulty;
     }
+  }
+
+  protected override async afterSessionStep(
+    session: GameSessionSummary,
+  ): Promise<GameSessionSummary> {
+    const result = await super.afterSessionStep(session);
+
+    if (session.status === 'completed' && this.tournamentService) {
+      await this.reportTournamentResult(session).catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.error(
+          `Tournament result reporting failed for room ${session.roomId}: ${message}`,
+        );
+      });
+    }
+
+    return result;
   }
 
   protected override async emitSessionUpdate(
@@ -246,5 +269,45 @@ export class ChessService extends BaseGameService<ChessOptions> {
       state,
       state.currentTurnColor,
     ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion }));
+  }
+
+  private async reportTournamentResult(
+    session: GameSessionSummary,
+  ): Promise<void> {
+    const state = session.state as ChessState | undefined;
+    if (!state?.players || state.players.length < 2) return;
+
+    const room = await this.roomsService.getRoom(session.roomId, 'system');
+    const tournamentId = (room as unknown as Record<string, unknown>)
+      .tournamentId;
+    if (!tournamentId || typeof tournamentId !== 'string') return;
+
+    const white = state.players.find((p) => p.color === 'white');
+    const black = state.players.find((p) => p.color === 'black');
+    if (!white || !black) return;
+
+    let result: 'white' | 'black' | 'draw';
+    if (
+      state.isDrawByAgreement ||
+      state.isDrawByRepetition ||
+      state.isDrawByFiftyMoveRule ||
+      state.isInsufficientMaterial ||
+      state.isStalemate
+    ) {
+      result = 'draw';
+    } else if (state.winnerColor === 'white') {
+      result = 'white';
+    } else if (state.winnerColor === 'black') {
+      result = 'black';
+    } else {
+      return;
+    }
+
+    await this.tournamentService!.recordGameResult({
+      tournamentId,
+      whiteUserId: white.playerId,
+      blackUserId: black.playerId,
+      result,
+    });
   }
 }

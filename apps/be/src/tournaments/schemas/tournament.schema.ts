@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose';
 
 export type TournamentStatus =
   'scheduled' | 'registration_open' | 'live' | 'completed' | 'cancelled';
-export type TournamentGameType = 'critical_v1' | 'sea_battle_v1';
+export type TournamentGameType = 'critical_v1' | 'sea_battle_v1' | 'chess_v1';
 export type TournamentLocale = 'en' | 'ru' | 'es' | 'fr' | 'by';
 
 export const TOURNAMENT_STATUSES: readonly TournamentStatus[] = [
@@ -16,6 +16,7 @@ export const TOURNAMENT_STATUSES: readonly TournamentStatus[] = [
 export const TOURNAMENT_GAME_TYPES: readonly TournamentGameType[] = [
   'critical_v1',
   'sea_battle_v1',
+  'chess_v1',
 ] as const;
 export const TOURNAMENT_LOCALES: readonly TournamentLocale[] = [
   'en',
@@ -25,11 +26,14 @@ export const TOURNAMENT_LOCALES: readonly TournamentLocale[] = [
   'by',
 ] as const;
 
-export type TournamentBracketFormat = 'single_elimination' | 'round_robin';
+export type TournamentBracketFormat =
+  'single_elimination' | 'round_robin' | 'arena' | 'swiss';
 
 export const TOURNAMENT_BRACKET_FORMATS: readonly TournamentBracketFormat[] = [
   'single_elimination',
   'round_robin',
+  'arena',
+  'swiss',
 ] as const;
 
 @Schema({ _id: false })
@@ -178,6 +182,42 @@ export class Tournament {
   // tournament is in `registration_open` or `live`.
   @Prop({ type: TournamentBracketSchema, default: null })
   bracket?: TournamentBracket | null;
+
+  // Arena tournament: duration in minutes (15, 30, 60)
+  @Prop({ type: Number, default: null, min: 1, max: 240 })
+  arenaDurationMinutes?: number | null;
+
+  // Swiss tournament: number of rounds (5-7)
+  @Prop({ type: Number, default: null, min: 1, max: 20 })
+  swissRoundCount?: number | null;
+
+  // Chess tournament: time control per game
+  @Prop({ type: String, default: null, maxlength: 50 })
+  chessTimeControl?: string | null;
+
+  // Live standings for arena tournaments (points per player)
+  @Prop({
+    type: [
+      {
+        _id: false,
+        userId: { type: Types.ObjectId, ref: 'User', required: true },
+        points: { type: Number, default: 0 },
+        streak: { type: Number, default: 0 },
+        wins: { type: Number, default: 0 },
+        draws: { type: Number, default: 0 },
+        losses: { type: Number, default: 0 },
+      },
+    ],
+    default: [],
+  })
+  arenaStandings?: {
+    userId: Types.ObjectId;
+    points: number;
+    streak: number;
+    wins: number;
+    draws: number;
+    losses: number;
+  }[];
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   createdBy!: Types.ObjectId;

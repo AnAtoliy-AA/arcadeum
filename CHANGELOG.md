@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.31] - 2026-09-06
+
+### Added
+- opening classification, move candidates, PGN export, board flip, move confirmation, Elo ratings
+- wire Stockfish everywhere — tablebase, puzzles, anti-cheat, auth, bot, multi-PV
+
+### Fixed
+- fix lint errors in Game.tsx — hooks rules, unused var, max-lines
+- whitelist fields in updateProfile to prevent NoSQL injection, remove unused state
+- remove unused imports from stockfish service
+- split stockfish service under 500 lines, fix unused param
+
+
 ## [1.28.30] - 2026-09-06
 
 ### Added

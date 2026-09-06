@@ -91,4 +91,16 @@ export class ChessPuzzlesController {
   ) {
     return this.puzzlesService.importPuzzles(body.puzzles);
   }
+
+  @Post('hint')
+  @UseGuards(JwtAuthGuard)
+  async getHint(
+    @Body() body: { fen: string },
+    @Request() req: { user: { id: string } },
+  ) {
+    if (!body.fen) {
+      return { error: 'fen is required' };
+    }
+    return this.puzzlesService.getHint(body.fen, req.user.id);
+  }
 }

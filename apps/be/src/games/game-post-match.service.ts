@@ -7,6 +7,7 @@ import type { GameSessionSummary } from './sessions/game-sessions.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { PlayerStatsService } from './player-stats.service';
 import { BattlePassService } from '../battle-pass/battle-pass.service';
+import { ChessProfilesService } from './chess/profiles/chess-profiles.service';
 
 @Injectable()
 export class GamePostMatchService {
@@ -20,6 +21,7 @@ export class GamePostMatchService {
     private readonly economy: EconomySettingsService,
     private readonly playerStats: PlayerStatsService,
     private readonly battlePass: BattlePassService,
+    private readonly chessProfiles: ChessProfilesService,
   ) {}
 
   async onGameCompleted(
@@ -71,6 +73,91 @@ export class GamePostMatchService {
     } catch (err) {
       this.logger.warn(
         `Battle pass XP award failed: ${(err as Error).message}`,
+      );
+    }
+
+    if (gameId === 'chess_v1') {
+      try {
+        await this.updateChessElo(playerIds, winners);
+      } catch (err) {
+        this.logger.warn(`Chess Elo update failed: ${(err as Error).message}`);
+      }
+    }
+  }
+
+  private async updateChessElo(
+    playerIds: string[],
+    winners: string[],
+  ): Promise<void> {
+    const humanPlayers = playerIds.filter((id) => !id.startsWith('bot-'));
+    if (humanPlayers.length < 2) return;
+
+    const profiles = await Promise.all(
+      humanPlayers.map((id) => this.chessProfiles.getOrCreateProfile(id)),
+    );
+
+    const whiteId = humanPlayers[0];
+    const blackId = humanPlayers[1];
+    const whiteProfile = profiles[0];
+    const blackProfile = profiles[1];
+
+    const whiteStats = whiteProfile.perGameStats['chess_v1'] ?? {
+      elo: 1200,
+      games: 0,
+    };
+    const blackStats = blackProfile.perGameStats['chess_v1'] ?? {
+      elo: 1200,
+      games: 0,
+    };
+
+    const isDraw = winners.length === 0;
+    const whiteWon = winners.includes(whiteId);
+
+    const { winnerChange, loserChange } = this.chessProfiles.calculateEloChange(
+      whiteStats.elo,
+      blackStats.elo,
+      isDraw,
+      whiteStats.games,
+    );
+
+    if (isDraw) {
+      await this.chessProfiles.recordGameResult(
+        whiteId,
+        'chess_v1',
+        'draw',
+        winnerChange,
+      );
+      await this.chessProfiles.recordGameResult(
+        blackId,
+        'chess_v1',
+        'draw',
+        loserChange,
+      );
+    } else if (whiteWon) {
+      await this.chessProfiles.recordGameResult(
+        whiteId,
+        'chess_v1',
+        'won',
+        winnerChange,
+      );
+      await this.chessProfiles.recordGameResult(
+        blackId,
+        'chess_v1',
+        'lost',
+        loserChange,
+      );
+    } else {
+      await this.chessProfiles.recordGameResult(
+        whiteId,
+        'chess_v1',
+        'lost',
+        loserChange,
+      );
+      await this.chessProfiles.recordGameResult(
+        blackId,
+        'chess_v1',
+        'won',
+        winnerChange,
       );
     }
   }

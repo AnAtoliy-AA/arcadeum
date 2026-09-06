@@ -61,6 +61,11 @@ interface ChessBoardPanelProps {
     timeMs: number;
   } | null;
   liveEvalAnalyzing?: boolean;
+  onFlipBoard?: () => void;
+  onExportPgn?: () => void;
+  onToggleConfirmMoves?: () => void;
+  confirmMoves?: boolean;
+  moveCandidates?: Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> | null;
 }
 
 function ChessBoardPanelImpl({
@@ -89,6 +94,11 @@ function ChessBoardPanelImpl({
   onDeclineTakeback,
   liveEval,
   liveEvalAnalyzing,
+  onFlipBoard,
+  onExportPgn,
+  onToggleConfirmMoves,
+  confirmMoves,
+  moveCandidates,
 }: ChessBoardPanelProps) {
   const [hoveredMoveIdx, setHoveredMoveIdx] = useState<number | null>(null);
   const [spectatorPerspective, setSpectatorPerspective] = useState<'white' | 'black'>('white');
@@ -197,6 +207,51 @@ function ChessBoardPanelImpl({
           spectatorPerspective={isSpectator ? spectatorPerspective : undefined}
           onTogglePerspective={isSpectator ? togglePerspective : undefined}
         />
+
+        {moveCandidates && moveCandidates.length > 0 && (
+          <div className="bg-[var(--glassBg)] border border-[var(--glassBorder)] rounded-lg p-2">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)] mb-1">Move Candidates</div>
+            {moveCandidates.map((alt, i) => (
+              <div key={i} className="flex items-center justify-between text-xs py-0.5">
+                <span className="font-mono text-[var(--color)]">{alt.move}</span>
+                <span className="text-[var(--textSecondary)]">
+                  {alt.mate !== null ? `M${alt.mate}` : alt.cp !== null ? `${(alt.cp / 100).toFixed(1)}` : '—'}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex gap-1.5">
+          {onFlipBoard && (
+            <button
+              onClick={onFlipBoard}
+              className="flex-1 text-[10px] py-1.5 px-2 rounded bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)] transition-colors"
+            >
+              ↻ Flip
+            </button>
+          )}
+          {onExportPgn && (
+            <button
+              onClick={onExportPgn}
+              className="flex-1 text-[10px] py-1.5 px-2 rounded bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)] transition-colors"
+            >
+              ↓ PGN
+            </button>
+          )}
+          {onToggleConfirmMoves && (
+            <button
+              onClick={onToggleConfirmMoves}
+              className={`flex-1 text-[10px] py-1.5 px-2 rounded border transition-colors ${
+                confirmMoves
+                  ? 'bg-[var(--primary)]/15 border-[var(--primary)] text-[var(--primary)]'
+                  : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)]'
+              }`}
+            >
+              {confirmMoves ? '✓ Confirm' : 'Confirm'}
+            </button>
+          )}
+        </div>
 
         {currentFen && (
           <OpeningExplorer fen={currentFen} />

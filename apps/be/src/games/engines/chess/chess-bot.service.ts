@@ -73,22 +73,26 @@ export class ChessBotService extends ChessBot {
   }
 
   async checkAndPlay(session: GameSessionSummary): Promise<void> {
-    if (session.status !== 'active') {
-      this.logger.debug(`[Bot] Session ${session.roomId} not active, skipping`);
+    // Re-read session from DB to get the latest state (turn may have changed)
+    const freshSession = await this.chessService.findSessionByRoom(session.roomId);
+    if (!freshSession) return;
+
+    if (freshSession.status !== 'active') {
+      this.logger.debug(`[Bot] Session ${freshSession.roomId} not active, skipping`);
       return;
     }
-    const state = session.state as unknown as ChessState | undefined;
+    const state = freshSession.state as unknown as ChessState | undefined;
     if (!state) {
-      this.logger.debug(`[Bot] No state for ${session.roomId}, skipping`);
+      this.logger.debug(`[Bot] No state for ${freshSession.roomId}, skipping`);
       return;
     }
 
     const hasHuman = state.players.some((p) => !p.isBot);
-    if (!hasHuman && !isAiVsAiSession(session)) {
+    if (!hasHuman && !isAiVsAiSession(freshSession)) {
       this.logger.log(
-        `No humans in room ${session.roomId} — completing session`,
+        `No humans in room ${freshSession.roomId} — completing session`,
       );
-      await this.chessService.completeSession(session.id, session.roomId);
+      await this.chessService.completeSession(freshSession.id, freshSession.roomId);
       return;
     }
 
@@ -96,11 +100,11 @@ export class ChessBotService extends ChessBot {
       (p) => p.color === state.currentTurnColor,
     )?.playerId;
     if (!currentId || !this.isBot(currentId)) {
-      this.logger.debug(`[Bot] Current player ${currentId} is not a bot in ${session.roomId}`);
+      this.logger.debug(`[Bot] Current player ${currentId} is not a bot in ${freshSession.roomId}`);
       return;
     }
-    if (this.processing.has(session.roomId)) {
-      this.logger.debug(`[Bot] Already processing ${session.roomId}, skipping`);
+    if (this.processing.has(freshSession.roomId)) {
+      this.logger.debug(`[Bot] Already processing ${freshSession.roomId}, skipping`);
       return;
     }
     this.processing.add(session.roomId);

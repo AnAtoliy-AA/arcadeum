@@ -12,6 +12,7 @@
     "dev": "pnpm --filter @arcadeum/games-core build && rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "dev:next": "rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "start": "node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next start",
+    "start:standalone": "node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- sh -c 'mkdir -p .next/standalone/.next/static .next/standalone/public && cp -rn .next/static/* .next/standalone/.next/static/ 2>/dev/null; cp -rn public/* .next/standalone/public/ 2>/dev/null; node .next/standalone/server.js'",
     "build": "next build",
     "postbuild": "node scripts/fix-standalone-swc.mjs && node scripts/generate-build-id.mjs && node scripts/generate-game-sizes.mjs",
     "lint": "eslint",

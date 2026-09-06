@@ -186,7 +186,7 @@ export default defineConfig({
     {
       command:
         process.env.CI || process.env.E2E_PROD
-          ? 'NEXT_PUBLIC_E2E=true pnpm run start'
+          ? 'NEXT_PUBLIC_E2E=true pnpm run start:standalone'
           : 'NEXT_PUBLIC_E2E=true pnpm run dev:next',
       url: BASE_URL,
       reuseExistingServer: !process.env.CI,

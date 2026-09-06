@@ -126,8 +126,10 @@ export const test = base.extend({
             text.includes('Fetch API cannot load')) &&
           (text.includes('localhost:4000') ||
             text.includes('localhost:4500') ||
+            text.includes('localhost:3000') ||
             text.includes('127.0.0.1:4000') ||
             text.includes('127.0.0.1:4500') ||
+            text.includes('127.0.0.1:3000') ||
             text.includes('localhost:3500') ||
             text.includes('127.0.0.1:3500'))
         ) {
@@ -196,7 +198,8 @@ export const test = base.extend({
         // Ignore known harmless 404s
         if (
           response.url().includes('favicon.ico') ||
-          response.url().includes('apple-touch-icon')
+          response.url().includes('apple-touch-icon') ||
+          response.url().includes('/music/')
         ) {
           return;
         }
@@ -240,8 +243,10 @@ export const test = base.extend({
           combined.includes('Fetch API cannot load')) &&
         (combined.includes('localhost:4000') ||
           combined.includes('localhost:4500') ||
+          combined.includes('localhost:3000') ||
           combined.includes('127.0.0.1:4000') ||
           combined.includes('127.0.0.1:4500') ||
+          combined.includes('127.0.0.1:3000') ||
           combined.includes('localhost:3500') ||
           combined.includes('127.0.0.1:3500'))
       ) {

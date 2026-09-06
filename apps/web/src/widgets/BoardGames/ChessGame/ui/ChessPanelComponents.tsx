@@ -143,28 +143,47 @@ export function GameInfoPanel({
   snapshot,
   liveEval,
   analyzing,
+  myColor,
+  isSpectator,
+  spectatorPerspective,
+  onTogglePerspective,
   t: _t,
 }: {
   snapshot: ChessClientState;
   liveEval?: { cp: number | null; mate: number | null } | null;
   analyzing?: boolean;
+  myColor?: 'white' | 'black' | null;
+  isSpectator?: boolean;
+  spectatorPerspective?: 'white' | 'black';
+  onTogglePerspective?: () => void;
   t: TranslateFn;
 }) {
+  const perspective = isSpectator ? (spectatorPerspective ?? 'white') : (myColor ?? 'white');
+  const shouldFlip = perspective === 'black';
+
+  const displayEval = useMemo(() => {
+    if (!liveEval) return null;
+    return {
+      cp: liveEval.cp != null ? (shouldFlip ? -liveEval.cp : liveEval.cp) : null,
+      mate: liveEval.mate != null ? (shouldFlip ? -liveEval.mate : liveEval.mate) : null,
+    };
+  }, [liveEval, shouldFlip]);
+
   const evalLabel = useMemo(() => {
-    if (!liveEval) return analyzing ? '...' : '—';
-    if (liveEval.mate != null) return `M${Math.abs(liveEval.mate)}`;
-    if (liveEval.cp != null) {
-      const pawns = (liveEval.cp / 100).toFixed(1);
-      return liveEval.cp > 0 ? `+${pawns}` : pawns;
+    if (!displayEval) return analyzing ? '...' : '—';
+    if (displayEval.mate != null) return `M${Math.abs(displayEval.mate)}`;
+    if (displayEval.cp != null) {
+      const pawns = (displayEval.cp / 100).toFixed(1);
+      return displayEval.cp > 0 ? `+${pawns}` : pawns;
     }
     return '0.0';
-  }, [liveEval, analyzing]);
+  }, [displayEval, analyzing]);
 
   const evalWidth = useMemo(() => {
-    if (!liveEval || liveEval.cp == null) return 50;
-    const clamped = Math.max(-5, Math.min(5, liveEval.cp / 100));
+    if (!displayEval || displayEval.cp == null) return 50;
+    const clamped = Math.max(-5, Math.min(5, displayEval.cp / 100));
     return 50 + (clamped / 5) * 40;
-  }, [liveEval]);
+  }, [displayEval]);
 
   const barColor =
     evalWidth > 55
@@ -175,8 +194,19 @@ export function GameInfoPanel({
 
   return (
     <div className="p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)] flex flex-col gap-2">
-      <div className="text-[10px] font-semibold text-[var(--textSecondary)] uppercase tracking-wider">
-        GAME INFO
+      <div className="flex items-center justify-between">
+        <div className="text-[10px] font-semibold text-[var(--textSecondary)] uppercase tracking-wider">
+          GAME INFO
+        </div>
+        {isSpectator && onTogglePerspective && (
+          <button
+            type="button"
+            onClick={onTogglePerspective}
+            className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)] cursor-pointer transition-colors"
+          >
+            {perspective === 'white' ? '♔ White' : '♚ Black'}
+          </button>
+        )}
       </div>
       <div>
         <div className="flex items-center gap-2 mb-1">
@@ -191,7 +221,7 @@ export function GameInfoPanel({
         </div>
         <div className="flex justify-between text-[9px] text-[var(--textSecondary)] font-medium">
           <span className="font-bold text-[var(--color)] tabular-nums">{evalLabel}</span>
-          <span>{liveEval && liveEval.cp != null && liveEval.cp > 0 ? 'White' : liveEval && liveEval.cp != null && liveEval.cp < 0 ? 'Black' : ''}</span>
+          <span>{displayEval && displayEval.cp != null && displayEval.cp > 0 ? 'White' : displayEval && displayEval.cp != null && displayEval.cp < 0 ? 'Black' : ''}</span>
         </div>
       </div>
       <div className="flex justify-between items-center py-1.5 border-t border-[var(--glassBorder)]">

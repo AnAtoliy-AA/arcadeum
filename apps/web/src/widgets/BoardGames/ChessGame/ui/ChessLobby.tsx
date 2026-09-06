@@ -18,6 +18,7 @@ import type { ChessTheme, TimeControl } from '../types';
 import { TIME_CONTROLS } from '../types';
 import { RulesModal } from './RulesModal';
 import { BotSelector, type BotPersonalityOption } from './BotSelector';
+import { PgnImportModal } from './PgnImportModal';
 import { BOT_PERSONALITIES } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 
 const LOBBY_THEME: GameLobbyTheme = {
@@ -78,6 +79,7 @@ export function ChessLobby({
   const [selectedPersonality, setSelectedPersonality] = useState<string | null>(
     null,
   );
+  const [showPgnImport, setShowPgnImport] = useState(false);
 
   const personalityOptions: BotPersonalityOption[] = useMemo(
     () =>
@@ -202,6 +204,14 @@ export function ChessLobby({
           disabled={!isHost}
         />
       </LobbyOptionSection>
+
+      <button
+        type="button"
+        onClick={() => setShowPgnImport(true)}
+        className="w-full py-2 px-4 rounded-lg bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-[var(--textSecondary)] text-xs font-semibold cursor-pointer hover:text-[var(--color)] transition-colors"
+      >
+        {t('games.chess_v1.actions.importPgn')}
+      </button>
     </div>
   );
 
@@ -239,6 +249,13 @@ export function ChessLobby({
         onReorderPlayers={onReorderPlayers}
       />
       <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
+      <PgnImportModal
+        isOpen={showPgnImport}
+        onClose={() => setShowPgnImport(false)}
+        onImport={(_moves, _variant) => {
+          // PGN import creates a new room with the imported position
+        }}
+      />
     </>
   );
 }

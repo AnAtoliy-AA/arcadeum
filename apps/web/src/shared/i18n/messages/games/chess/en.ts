@@ -215,6 +215,7 @@ export const enMessages = {
       declineTakeback: 'Decline',
       moveList: 'Move List',
       copyPGN: 'Copy PGN',
+      importPgn: 'Import PGN',
     },
     chat: {
       move: '{{name}} moved {{notation}}',

@@ -7,6 +7,10 @@ import type {
 } from '@arcadeum/games-core/games/chess/chess.types';
 import type { GameSessionSummary } from '../../sessions/game-sessions.service';
 import { ChessBot } from '@arcadeum/games-core/games/chess/chess-bot';
+import {
+  getBotPersonality,
+  type BotPersonality,
+} from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../../common/ai-vs-ai';
 
 export interface ChessBotMovePayload {
@@ -49,6 +53,25 @@ export class ChessBotService extends ChessBot {
     return userId.startsWith('bot-');
   }
 
+  private computeMoveDelay(
+    personality: BotPersonality | null,
+    startTime: number,
+  ): number {
+    const elapsed = Date.now() - startTime;
+    if (!personality) {
+      return Math.max(300, Math.min(800, 1500 - elapsed));
+    }
+    switch (personality.timeManagement) {
+      case 'blitz':
+        return Math.max(200, Math.min(500, 800 - elapsed));
+      case 'thinker':
+        return Math.max(500, Math.min(2000, 3000 - elapsed));
+      case 'steady':
+      default:
+        return Math.max(300, Math.min(1000, 1500 - elapsed));
+    }
+  }
+
   async checkAndPlay(session: GameSessionSummary): Promise<void> {
     if (session.status !== 'active') return;
     const state = session.state as unknown as ChessState | undefined;
@@ -77,6 +100,11 @@ export class ChessBotService extends ChessBot {
         0, 0, 0, 0, 0, 0, 0, 0,
       ]);
 
+      const personality = state.botPersonality
+        ? (getBotPersonality(state.botPersonality) ?? null)
+        : null;
+      this.setPersonality(personality);
+
       const timeBudget = this.computeTimeBudget(state);
       const startTime = Date.now();
       const move = this.findBestMoveWithTimeBudget(
@@ -87,7 +115,7 @@ export class ChessBotService extends ChessBot {
       if (!move) return;
       const delay =
         getAiMoveDelayMs(session) ??
-        Math.max(300, Math.min(800, 1500 - Date.now() + startTime));
+        this.computeMoveDelay(personality, startTime);
       await new Promise((r) => setTimeout(r, delay));
 
       if (this.moveFn) {

@@ -200,6 +200,10 @@ export class ChessStockfishService implements OnModuleDestroy {
         bestPv: eval_.pv,
       });
 
+      if (loss > 50) {
+        this.logger.log(`[Stockfish] Move ${i}: loss=${loss}cp eval=${currentEval} (prev=${prevEval}) quality=${this.classifyMove(loss, prevEval, currentEval, color)}`);
+      }
+
       prevEval = currentEval;
     }
 

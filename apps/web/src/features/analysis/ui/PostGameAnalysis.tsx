@@ -44,11 +44,12 @@ export function PostGameAnalysis({
   const [spectatorPerspective, setSpectatorPerspective] = useState<'white' | 'black'>('white');
 
   const perspective = isSpectator ? spectatorPerspective : (myColor ?? 'white');
-  // Stockfish returns evals from White's perspective.
-  // For Black players: flip so positive = "I am winning".
-  // For White players: keep as-is (positive = "I am winning").
-  // For spectators: use selected perspective.
   const shouldFlip = perspective === 'black';
+
+  if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
+    console.log(`[Analysis] perspective=${perspective} shouldFlip=${shouldFlip} myColor=${myColor} isSpectator=${isSpectator}`);
+  }
 
   const flipEvals = useCallback((vals: (number | null)[]): (number | null)[] => {
     if (!shouldFlip) return vals;
@@ -76,8 +77,13 @@ export function PostGameAnalysis({
   // Flip evals for player's perspective
   const evals = useMemo(() => {
     const raw = stockfishResult?.evals ?? fallbackAnalysis.evals;
-    return flipEvals(raw);
-  }, [stockfishResult, fallbackAnalysis.evals, flipEvals]);
+    const flipped = flipEvals(raw);
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log(`[Analysis] evals before=${raw.slice(0, 5)} after=${flipped.slice(0, 5)} flip=${shouldFlip}`);
+    }
+    return flipped;
+  }, [stockfishResult, fallbackAnalysis.evals, flipEvals, shouldFlip]);
   const moves = useMemo(() => {
     const raw = stockfishResult?.moves ?? fallbackAnalysis.moves.map((m) => ({
       quality: m.quality as MoveQuality,

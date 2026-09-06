@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.29] - 2026-09-06
+
+### Fixed
+- update contact press email test to use appConfig.supportEmail
+
+### Documentation
+- restore Mermaid architecture diagrams for FE, BE, and whole app
+- update architecture docs to match current codebase and rebrand to Arcadeum Games
+
+
 ## [1.28.28] - 2026-09-06
 
 ### Fixed

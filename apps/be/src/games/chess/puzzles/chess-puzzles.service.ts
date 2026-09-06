@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { OCI_CONNECTION } from '../../../common/providers/mongo-connections.provider';
 import { ChessPuzzle, type ChessPuzzleDocument } from './chess-puzzle.schema';
 import {
   ChessPuzzleUser,
@@ -22,9 +23,9 @@ export class ChessPuzzlesService {
   private readonly logger = new Logger(ChessPuzzlesService.name);
 
   constructor(
-    @InjectModel(ChessPuzzle.name)
+    @InjectModel(ChessPuzzle.name, OCI_CONNECTION)
     private readonly puzzleModel: Model<ChessPuzzleDocument>,
-    @InjectModel(ChessPuzzleUser.name)
+    @InjectModel(ChessPuzzleUser.name, OCI_CONNECTION)
     private readonly puzzleUserModel: Model<ChessPuzzleUserDocument>,
   ) {}
 

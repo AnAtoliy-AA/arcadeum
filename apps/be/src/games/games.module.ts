@@ -87,6 +87,8 @@ import { ChessBotService } from './engines/chess/chess-bot.service';
 import { ChessStockfishModule } from './chess/engine/chess-stockfish.module';
 import { ChessStockfishController } from './chess/engine/chess-stockfish.controller';
 import { ChessStockfishService } from './chess/engine/chess-stockfish.service';
+import { ChessPuzzlesModule } from './chess/puzzles/chess-puzzles.module';
+import { ChessOpeningsModule } from './chess/openings/chess-openings.module';
 import { CheckersGateway } from './checkers.gateway';
 import { CheckersService } from './checkers/checkers.service';
 import { CheckersBotService } from './checkers/checkers-bot.service';
@@ -191,6 +193,8 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     NotificationsModule,
     BattlePassModule,
     ChessStockfishModule,
+    ChessPuzzlesModule,
+    ChessOpeningsModule,
   ],
   controllers: [
     GamesController,

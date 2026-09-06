@@ -88,7 +88,7 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
       const timer = setTimeout(() => setPuzzlePhase('player'), 500);
       return () => clearTimeout(timer);
     }
-  }, [phase, puzzle]);
+  }, [puzzlePhase, puzzle]);
 
   useEffect(() => {
     return () => stopTimer();

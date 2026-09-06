@@ -76,31 +76,34 @@ export function PostGameAnalysis({
   const moves = useMemo(() => {
     const raw = stockfishResult?.moves ?? fallbackAnalysis.moves.map((m) => ({
       quality: m.quality as MoveQuality,
-      move: m.notation,
+      notation: m.notation,
       evalAfter: m.evalAfter,
       mateAfter: null as number | null,
       loss: m.loss,
       bestMove: '',
       bestPv: [] as string[],
     }));
-    return raw.map((m) => ({
-      ...m,
-      evalAfter: flipEvals([m.evalAfter])[0],
+    return raw.map((m, i) => ({
+      ply: i,
+      moveNumber: Math.floor(i / 2) + 1,
+      color: (i % 2 === 0 ? 'white' : 'black') as 'white' | 'black',
+      notation: m.notation,
+      evalAfter: flipEvals([m.evalAfter])[0] ?? 0,
+      delta: i > 0 ? (flipEvals([m.evalAfter])[0] ?? 0) - (flipEvals([raw[i - 1]?.evalAfter ?? 0])[0] ?? 0) : 0,
+      loss: m.loss,
+      quality: m.quality,
     }));
   }, [stockfishResult, fallbackAnalysis.moves, flipEvals]);
-  const inaccuracies = stockfishResult?.moves.filter((m) => m.quality === 'inaccuracy') ?? fallbackAnalysis.inaccuracies;
-  const mistakes = stockfishResult?.moves.filter((m) => m.quality === 'mistake') ?? fallbackAnalysis.mistakes;
-  const blunders = stockfishResult?.moves.filter((m) => m.quality === 'blunder') ?? fallbackAnalysis.blunders;
+  const inaccuracies = moves.filter((m) => m.quality === 'inaccuracy');
+  const mistakes = moves.filter((m) => m.quality === 'mistake');
+  const blunders = moves.filter((m) => m.quality === 'blunder');
   const turningPoint = (() => {
-    if (stockfishResult) {
-      let max = -1;
-      let tpIdx = -1;
-      for (let i = 0; i < moves.length; i++) {
-        if (moves[i].loss > max) { max = moves[i].loss; tpIdx = i; }
-      }
-      return tpIdx >= 0 ? { ply: tpIdx, move: moves[tpIdx].move, loss: moves[tpIdx].loss } : null;
+    let max = -1;
+    let tp: typeof moves[0] | null = null;
+    for (const m of moves) {
+      if (m.loss > max) { max = m.loss; tp = m; }
     }
-    return fallbackAnalysis.turningPoint;
+    return tp;
   })();
   const finalEval = evals[evals.length - 1] ?? 0;
 
@@ -110,6 +113,8 @@ export function PostGameAnalysis({
       inaccuracy: t('games.chess_v1.analysis.quality.inaccuracy'),
       mistake: t('games.chess_v1.analysis.quality.mistake'),
       blunder: t('games.chess_v1.analysis.quality.blunder'),
+      brilliant: t('games.chess_v1.analysis.quality.good'),
+      great: t('games.chess_v1.analysis.quality.good'),
     }),
     [t],
   );
@@ -199,22 +204,13 @@ export function PostGameAnalysis({
         {turningPoint && (
           <span className="rounded-md border border-[rgba(245,158,11,0.4)] bg-[rgba(245,158,11,0.08)] px-2.5 py-1 text-[12px] font-semibold text-[#f59e0b]">
             {t('games.chess_v1.analysis.summary.turningPoint')}:{' '}
-            {turningPoint.move || `${Math.floor(turningPoint.ply / 2) + 1}.`}
+            {turningPoint.notation || `${Math.floor(turningPoint.ply / 2) + 1}.`}
           </span>
         )}
       </div>
 
       <MoveTimeline
-        moves={moves.map((m, i) => ({
-          ply: i,
-          moveNumber: Math.floor(i / 2) + 1,
-          color: (i % 2 === 0 ? 'white' : 'black') as 'white' | 'black',
-          notation: m.move,
-          evalAfter: m.evalAfter ?? 0,
-          delta: i > 0 ? (m.evalAfter ?? 0) - (moves[i - 1]?.evalAfter ?? 0) : 0,
-          loss: m.loss,
-          quality: m.quality,
-        }))}
+        moves={moves}
         qualityLabels={qualityLabels}
         unitLabel={unitLabel}
       />

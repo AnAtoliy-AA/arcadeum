@@ -23,6 +23,8 @@ import { useChessCoach } from '../hooks/useChessCoach';
 import { useStockfishAnalysis } from '../hooks/useStockfishAnalysis';
 import { calculateOptimisticChessState } from '../lib/optimisticMove';
 import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
+import { downloadPGN } from '../lib/pgn';
+import { findKingPosition } from '../lib/board-utils';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoardPanel } from './ChessBoardPanel';
 import { ChessGameResultModal } from './ChessGameResultModal';
@@ -205,39 +207,10 @@ function ChessGameImpl({
     toggle: toggleResult,
   } = useGameResultModal(session, result, resultMessages, isGameOver);
 
-  const isFlipped = myColor === 'black';
   const [flipped, setFlipped] = useState(myColor === 'black');
   const [confirmMoves, setConfirmMoves] = useState(false);
 
-
   const toggleFlip = useCallback(() => setFlipped((f) => !f), []);
-
-  const exportPgn = useCallback(() => {
-    if (!displaySnapshot) return;
-    const lines: string[] = [];
-    lines.push('[Event "Arcadeum Chess"]');
-    lines.push(`[Site "arcadeum.gg"]`);
-    lines.push(`[Date "${new Date().toISOString().slice(0, 10)}"]`);
-    lines.push(`[White "${displaySnapshot.players.find((p) => p.color === 'white')?.playerId ?? '?'}"]`);
-    lines.push(`[Black "${displaySnapshot.players.find((p) => p.color === 'black')?.playerId ?? '?'}"]`);
-    lines.push(`[Result "${displaySnapshot.winnerColor === 'white' ? '1-0' : displaySnapshot.winnerColor === 'black' ? '0-1' : '1/2-1/2'}"]`);
-    lines.push('');
-    let pgn = '';
-    for (let i = 0; i < displaySnapshot.moveHistory.length; i++) {
-      const m = displaySnapshot.moveHistory[i];
-      if (i % 2 === 0) pgn += `${Math.floor(i / 2) + 1}. `;
-      pgn += m.notation + ' ';
-    }
-    pgn += displaySnapshot.winnerColor === 'white' ? '1-0' : displaySnapshot.winnerColor === 'black' ? '0-1' : '1/2-1/2';
-    lines.push(pgn.trim());
-    const blob = new Blob([lines.join('\n')], { type: 'application/x-chess-pgn' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `chess-game-${Date.now()}.pgn`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [displaySnapshot]);
   const lastMove = useMemo(() => {
     if (!displaySnapshot?.moveHistory.length) return null;
     const last =
@@ -254,19 +227,7 @@ function ChessGameImpl({
       )
       .map((m) => m.to);
   }, [selectedSquare, displaySnapshot]);
-  const kingPosition = (() => {
-    if (!displaySnapshot) return null;
-    for (let row = 0; row < 8; row++)
-      for (let col = 0; col < 8; col++) {
-        const p = displaySnapshot.board[row]?.[col];
-        if (p?.type === 'king' && p.color === displaySnapshot.currentTurnColor)
-          return {
-            file: FILES[col],
-            rank: (8 - row) as import('../types').Rank,
-          };
-      }
-    return null;
-  })();
+  const kingPosition = displaySnapshot ? findKingPosition(displaySnapshot) : null;
 
   const handleSquareClick = useCallback(
     (file: File, rank: import('../types').Rank) => {
@@ -397,6 +358,11 @@ function ChessGameImpl({
     [displaySnapshot, isGameOver, currentUserId, resolveDisplayNameBound, t],
   );
 
+  const liveAlternatives = useMemo(() => {
+    if (!liveEval || !('alternatives' in liveEval)) return null;
+    return (liveEval as Record<string, unknown>).alternatives as Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> | null;
+  }, [liveEval]);
+
   if (!room) return null;
   if (isLobby)
     return (
@@ -422,11 +388,6 @@ function ChessGameImpl({
         onShowRulesClose={onShowRulesClose}
       />
     );
-
-  const liveAlternatives = useMemo(() => {
-    if (!liveEval || !('alternatives' in liveEval)) return null;
-    return (liveEval as Record<string, unknown>).alternatives as Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> | null;
-  }, [liveEval]);
 
   const board = (
     <ChessBoardPanel
@@ -456,7 +417,7 @@ function ChessGameImpl({
       liveEval={liveEval}
       liveEvalAnalyzing={liveEvalAnalyzing}
       onFlipBoard={toggleFlip}
-      onExportPgn={exportPgn}
+      onExportPgn={() => { if (displaySnapshot) downloadPGN(displaySnapshot); }}
       onToggleConfirmMoves={() => setConfirmMoves((c) => !c)}
       confirmMoves={confirmMoves}
       moveCandidates={liveAlternatives}

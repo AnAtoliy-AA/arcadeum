@@ -73,9 +73,15 @@ export class ChessBotService extends ChessBot {
   }
 
   async checkAndPlay(session: GameSessionSummary): Promise<void> {
-    if (session.status !== 'active') return;
+    if (session.status !== 'active') {
+      this.logger.debug(`[Bot] Session ${session.roomId} not active, skipping`);
+      return;
+    }
     const state = session.state as unknown as ChessState | undefined;
-    if (!state) return;
+    if (!state) {
+      this.logger.debug(`[Bot] No state for ${session.roomId}, skipping`);
+      return;
+    }
 
     const hasHuman = state.players.some((p) => !p.isBot);
     if (!hasHuman && !isAiVsAiSession(session)) {
@@ -89,8 +95,14 @@ export class ChessBotService extends ChessBot {
     const currentId = state.players.find(
       (p) => p.color === state.currentTurnColor,
     )?.playerId;
-    if (!currentId || !this.isBot(currentId)) return;
-    if (this.processing.has(session.roomId)) return;
+    if (!currentId || !this.isBot(currentId)) {
+      this.logger.debug(`[Bot] Current player ${currentId} is not a bot in ${session.roomId}`);
+      return;
+    }
+    if (this.processing.has(session.roomId)) {
+      this.logger.debug(`[Bot] Already processing ${session.roomId}, skipping`);
+      return;
+    }
     this.processing.add(session.roomId);
 
     try {
@@ -127,6 +139,7 @@ export class ChessBotService extends ChessBot {
       await new Promise((r) => setTimeout(r, delay));
 
       if (this.moveFn) {
+        this.logger.log(`[Bot] ${currentId} moving ${state.currentTurnColor} in ${session.roomId}: ${move.from.file}${move.from.rank}-${move.to.file}${move.to.rank}`);
         await this.moveFn(currentId, session.roomId, {
           fromFile: move.from.file,
           fromRank: move.from.rank,
@@ -134,6 +147,9 @@ export class ChessBotService extends ChessBot {
           toRank: move.to.rank,
           promotion: move.promotion ?? undefined,
         });
+        this.logger.log(`[Bot] ${currentId} move completed in ${session.roomId}`);
+      } else {
+        this.logger.warn(`[Bot] moveFn not set for ${session.roomId}`);
       }
     } catch (err) {
       this.logger.error(`Bot move failed for room ${session.roomId}: ${err}`);

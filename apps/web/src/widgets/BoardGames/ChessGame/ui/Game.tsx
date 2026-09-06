@@ -443,6 +443,8 @@ function ChessGameImpl({
         t={t}
         messages={resultMessages}
         snapshot={displaySnapshot}
+        myColor={myColor}
+        isSpectator={isSpectator}
         theme={themeVariant}
       />
       <RematchInvitationModal

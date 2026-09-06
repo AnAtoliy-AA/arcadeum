@@ -18,6 +18,7 @@ import type { ChessGameProps, ChessClientState } from '../types';
 import { FILES, type BoardPosition, type File, type PieceType } from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
+import { useChessSounds } from '../hooks/useChessSounds';
 import { useChessCoach } from '../hooks/useChessCoach';
 import { useStockfishAnalysis } from '../hooks/useStockfishAnalysis';
 import { calculateOptimisticChessState } from '../lib/optimisticMove';
@@ -53,6 +54,7 @@ function ChessGameImpl({
     setStartBusy,
     session,
   } = useChessState({ roomId, currentUserId, initialSession });
+  const { playSound } = useChessSounds();
   const {
     startSession,
     movePiece,
@@ -251,6 +253,8 @@ function ChessGameImpl({
               rank,
             );
             movePiece(selectedSquare.file, selectedSquare.rank, file, rank);
+            const capturedPiece = displaySnapshot?.board[8 - rank]?.[FILES.indexOf(file)];
+            playSound(capturedPiece ? 'capture' : 'move');
           }
           setSelectedSquare(null);
           return;

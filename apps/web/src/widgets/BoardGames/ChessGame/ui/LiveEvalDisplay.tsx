@@ -31,8 +31,9 @@ interface LiveEvalDisplayProps {
  * 2026-09-05, SFNNv16 architecture).
  */
 function LiveEvalDisplayImpl({ eval_, analyzing, myColor, isSpectator, spectatorPerspective, onTogglePerspective }: LiveEvalDisplayProps) {
-  // Always show RAW Stockfish eval (White's perspective) — the real engine value
+  // Stockfish panel: always RAW eval (White's perspective)
   const displayEval = eval_;
+  const perspective = isSpectator ? (spectatorPerspective ?? 'white') : (myColor ?? 'white');
 
   if (!displayEval && !analyzing) return null;
 

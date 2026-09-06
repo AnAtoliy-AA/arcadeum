@@ -143,18 +143,16 @@ export function GameInfoPanel({
   snapshot,
   liveEval,
   analyzing,
-  perspective,
-  onTogglePerspective,
+  myColor,
   t: _t,
 }: {
   snapshot: ChessClientState;
   liveEval?: { cp: number | null; mate: number | null } | null;
   analyzing?: boolean;
-  perspective: 'white' | 'black';
-  onTogglePerspective?: () => void;
+  myColor?: 'white' | 'black' | null;
   t: TranslateFn;
 }) {
-  const shouldFlip = perspective === 'black';
+  const shouldFlip = myColor === 'black';
 
   const displayEval = useMemo(() => {
     if (!liveEval) return null;
@@ -192,15 +190,6 @@ export function GameInfoPanel({
         <div className="text-[10px] font-semibold text-[var(--textSecondary)] uppercase tracking-wider">
           GAME INFO
         </div>
-        {onTogglePerspective && (
-          <button
-            type="button"
-            onClick={onTogglePerspective}
-            className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)] cursor-pointer transition-colors"
-          >
-            {perspective === 'white' ? '♔ White' : '♚ Black'}
-          </button>
-        )}
       </div>
       <div>
         <div className="flex items-center gap-2 mb-1">

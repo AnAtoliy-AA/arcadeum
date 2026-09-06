@@ -91,12 +91,8 @@ function ChessBoardPanelImpl({
   liveEvalAnalyzing,
 }: ChessBoardPanelProps) {
   const [hoveredMoveIdx, setHoveredMoveIdx] = useState<number | null>(null);
-  const [spectatorPerspective, setSpectatorPerspective] = useState<'white' | 'black'>('white');
   const handleMoveHover = useCallback((idx: number | null) => {
     setHoveredMoveIdx(idx);
-  }, []);
-  const togglePerspective = useCallback(() => {
-    setSpectatorPerspective((p) => (p === 'white' ? 'black' : 'white'));
   }, []);
 
   const currentFen = useMemo(() => {
@@ -182,16 +178,14 @@ function ChessBoardPanelImpl({
           snapshot={snapshot}
           liveEval={liveEval}
           analyzing={liveEvalAnalyzing}
-          perspective={spectatorPerspective}
-          onTogglePerspective={togglePerspective}
+          myColor={myColor}
           t={t}
         />
 
         <LiveEvalDisplay
           eval_={liveEval ?? null}
           analyzing={!!liveEvalAnalyzing}
-          perspective={spectatorPerspective}
-          onTogglePerspective={togglePerspective}
+          myColor={myColor}
         />
 
         {currentFen && (

@@ -222,9 +222,7 @@ export class ChessService extends BaseGameService<ChessOptions> {
       if (remaining > 0) return;
     }
 
-    const loser = state.players.find(
-      (p) => p.color === state.currentTurnColor,
-    );
+    const loser = state.players.find((p) => p.color === state.currentTurnColor);
     const winner = state.players.find(
       (p) => p.color !== state.currentTurnColor,
     );
@@ -263,7 +261,13 @@ export class ChessService extends BaseGameService<ChessOptions> {
     const rawTc = r.timeControl;
     let timeControl: ChessOptions['timeControl'] = null;
     if (rawTc && typeof rawTc === 'object') {
-      const validTypes: TimeControlType[] = ['bullet', 'blitz', 'rapid', 'classical', 'daily'];
+      const validTypes: TimeControlType[] = [
+        'bullet',
+        'blitz',
+        'rapid',
+        'classical',
+        'daily',
+      ];
       const type = validTypes.includes(rawTc.type as TimeControlType)
         ? (rawTc.type as TimeControlType)
         : 'blitz';
@@ -271,9 +275,16 @@ export class ChessService extends BaseGameService<ChessOptions> {
       const inc = validIncs.includes(rawTc.incrementSeconds as TimeIncrement)
         ? (rawTc.incrementSeconds as TimeIncrement)
         : 0;
-      const daysPerMove = type === 'daily'
-        ? Math.max(1, Math.min(14, (rawTc as Record<string, unknown>).daysPerMove as number || 1))
-        : undefined;
+      const daysPerMove =
+        type === 'daily'
+          ? Math.max(
+              1,
+              Math.min(
+                14,
+                ((rawTc as Record<string, unknown>).daysPerMove as number) || 1,
+              ),
+            )
+          : undefined;
       timeControl = {
         type,
         initialSeconds: rawTc.initialSeconds,

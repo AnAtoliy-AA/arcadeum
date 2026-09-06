@@ -18,7 +18,7 @@ export class TablebaseController {
   }
 
   @Get('check')
-  async isTablebase(@Query('fen') fen: string) {
+  isTablebase(@Query('fen') fen: string) {
     if (!fen) {
       return { error: 'fen is required' };
     }

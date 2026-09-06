@@ -1,5 +1,6 @@
 import type { File, Rank, MovePayload } from '../types';
-import { parseFen, INITIAL_BOARD_FEN } from '@arcadeum/games-core/games/chess/chess.board';
+import { parseFen } from '@arcadeum/games-core/games/chess/chess.board';
+import { INITIAL_BOARD_FEN } from '@arcadeum/games-core/games/chess/chess.constants';
 import { getLegalMoves } from '@arcadeum/games-core/games/chess/chess.move-generator';
 import type { ChessState, ChessPiece, Board } from '../types';
 import { FILES } from '../types';

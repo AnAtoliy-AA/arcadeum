@@ -80,7 +80,9 @@ export class ChessMatchmakingService {
     const queueKey = `${QUEUE_PREFIX}${timeControlType}`;
     await this.redis.zrem(queueKey, userId);
     await this.redis.del(`${QUEUE_PREFIX}user:${userId}`);
-    this.logger.log(`User ${userId} left matchmaking queue (${timeControlType})`);
+    this.logger.log(
+      `User ${userId} left matchmaking queue (${timeControlType})`,
+    );
   }
 
   async findMatch(
@@ -93,10 +95,14 @@ export class ChessMatchmakingService {
     const userData = await this.redis.get(`${QUEUE_PREFIX}user:${userId}`);
     if (!userData) return null;
 
-    const entry: MatchmakingEntry = JSON.parse(userData);
+    const entry = JSON.parse(userData) as MatchmakingEntry;
     const waitTime = Date.now() - entry.joinedAt;
-    const rangeExpansion = Math.floor(waitTime / EXPAND_INTERVAL_MS) * RATING_RANGE_EXPAND;
-    const maxRange = Math.min(RATING_RANGE_INITIAL + rangeExpansion, RATING_RANGE_MAX);
+    const rangeExpansion =
+      Math.floor(waitTime / EXPAND_INTERVAL_MS) * RATING_RANGE_EXPAND;
+    const maxRange = Math.min(
+      RATING_RANGE_INITIAL + rangeExpansion,
+      RATING_RANGE_MAX,
+    );
 
     const minRating = entry.rating - maxRange;
     const maxRating = entry.rating + maxRange;
@@ -110,7 +116,9 @@ export class ChessMatchmakingService {
     const opponentId = candidates.find((id) => id !== userId);
     if (!opponentId) return null;
 
-    const opponentData = await this.redis.get(`${QUEUE_PREFIX}user:${opponentId}`);
+    const opponentData = await this.redis.get(
+      `${QUEUE_PREFIX}user:${opponentId}`,
+    );
     if (!opponentData) return null;
 
     await this.redis.zrem(queueKey, userId);

@@ -419,7 +419,7 @@ const SCENARIOS = [
     name: 'chessGameplay',
     requiresAuth: true,
     caption:
-      'Play chess vs AI for real rewards on Arcadeum! ♟️👑 #chess #web3gaming #onlinechess',
+      'Chess powered by Stockfish 19 — bullet, blitz, rapid, daily + 6 variants ♟️🧠 Play free at arcadeum.games #chess #stockfish #chessengine #onlinechess',
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2000 },
       {
@@ -585,7 +585,7 @@ const SCENARIOS = [
   {
     name: 'chessLanding',
     caption:
-      'Play chess with real stakes vs. live opponents 👑♟️ Ranked matches on Arcadeum! #chess #gaming',
+      'Chess on Arcadeum — Stockfish 19, 12 AI bots, 6 variants, Puzzle Rush, game review 🧠♟️ Try free at arcadeum.games #chess #stockfish #chess960 #puzzlerush',
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },

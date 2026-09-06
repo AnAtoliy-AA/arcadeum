@@ -32,7 +32,7 @@ export class SyzygyTablebaseService {
       const response = await fetch(url);
       if (!response.ok) return null;
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         category: string;
         dtz: number | null;
         dtm: number | null;

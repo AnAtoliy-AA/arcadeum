@@ -87,9 +87,8 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
   }
 
   private async tryMatch(timeControlType: string) {
-    const queueSize = await this.matchmakingService.getQueueSize(
-      timeControlType,
-    );
+    const queueSize =
+      await this.matchmakingService.getQueueSize(timeControlType);
     if (queueSize < 2) return;
 
     const queueKey = `chess:matchmaking:${timeControlType}`;
@@ -117,22 +116,18 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
     const blackSocketId = this.userSockets.get(match.black);
 
     if (whiteSocketId) {
-      this.server
-        .to(whiteSocketId)
-        .emit('chess.matchmaking.matched', {
-          roomId: match.roomId,
-          color: 'white',
-          opponent: match.black,
-        });
+      this.server.to(whiteSocketId).emit('chess.matchmaking.matched', {
+        roomId: match.roomId,
+        color: 'white',
+        opponent: match.black,
+      });
     }
     if (blackSocketId) {
-      this.server
-        .to(blackSocketId)
-        .emit('chess.matchmaking.matched', {
-          roomId: match.roomId,
-          color: 'black',
-          opponent: match.white,
-        });
+      this.server.to(blackSocketId).emit('chess.matchmaking.matched', {
+        roomId: match.roomId,
+        color: 'black',
+        opponent: match.white,
+      });
     }
 
     this.logger.log(

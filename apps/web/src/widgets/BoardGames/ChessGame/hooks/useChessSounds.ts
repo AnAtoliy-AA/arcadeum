@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { chessSounds, type SoundType } from './sounds';
+import { chessSounds, type SoundType } from '../lib/sounds';
 
 const STORAGE_KEY = 'chess-sound-settings';
 

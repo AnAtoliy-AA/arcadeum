@@ -16,7 +16,6 @@ import { type SessionTokensValue } from '@/entities/session/model/useSessionToke
 import { type SessionTokensSnapshot } from './types';
 import { authConfig, resolveAuthRedirectUri } from '@/shared/config/auth';
 import { OAUTH } from '@/shared/config/constants';
-import { encryptSensitiveValue } from '@/entities/session/lib/encryptSensitive';
 import {
   redirectToAppleOAuth,
   redirectToDiscordOAuth,
@@ -298,18 +297,6 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
           providerAccessToken: tokenResponse.accessToken ?? null,
         }));
 
-        if (snapshot.email) {
-          if (typeof window !== 'undefined') {
-            try {
-              window.sessionStorage.setItem(
-                'web_auth_email',
-                encryptSensitiveValue(snapshot.email),
-              );
-            } catch {
-              // ignore
-            }
-          }
-        }
         // Navigate home without a hard page reload.
         // SessionRoleSync will recover the session from httpOnly
         // cookies if Zustand tokens aren't available yet.

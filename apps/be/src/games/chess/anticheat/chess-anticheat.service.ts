@@ -1,19 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type { CheatAnalysis, CheatFlag, CheatReason } from './chess-anticheat.types';
+import type {
+  CheatAnalysis,
+  CheatFlag,
+  CheatReason,
+} from './chess-anticheat.types';
 
 @Injectable()
 export class ChessAnticheatService {
   private readonly logger = new Logger(ChessAnticheatService.name);
   private readonly flags = new Map<string, CheatFlag[]>();
 
-  async analyzeGame(
+  analyzeGame(
     sessionId: string,
     userId: string,
     moveTimes: number[],
     engineMatchCount: number,
     totalMoves: number,
     playerRating: number,
-  ): Promise<CheatAnalysis> {
+  ): CheatAnalysis {
     const engineMatchRate = totalMoves > 0 ? engineMatchCount / totalMoves : 0;
     const avgMoveTime =
       moveTimes.length > 0
@@ -68,7 +72,12 @@ export class ChessAnticheatService {
     return analysis;
   }
 
-  flagUser(userId: string, reason: CheatReason, confidence: number, evidence: string[]): void {
+  flagUser(
+    userId: string,
+    reason: CheatReason,
+    confidence: number,
+    evidence: string[],
+  ): void {
     const existing = this.flags.get(userId) ?? [];
     existing.push({
       userId,

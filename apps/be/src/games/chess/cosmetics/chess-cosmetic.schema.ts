@@ -11,7 +11,10 @@ export class ChessCosmetic {
   @Prop({ required: true })
   id!: string;
 
-  @Prop({ required: true, enum: ['board', 'pieces', 'frame', 'emote', 'victory'] })
+  @Prop({
+    required: true,
+    enum: ['board', 'pieces', 'frame', 'emote', 'victory'],
+  })
   type!: CosmeticType;
 
   @Prop({ required: true })

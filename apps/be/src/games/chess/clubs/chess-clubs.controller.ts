@@ -20,7 +20,12 @@ export class ChessClubsController {
   @Post()
   create(
     @Req() req: { user: { userId: string } },
-    @Body() body: { name: string; description?: string; visibility?: 'public' | 'private' },
+    @Body()
+    body: {
+      name: string;
+      description?: string;
+      visibility?: 'public' | 'private';
+    },
   ) {
     return this.clubsService.createClub(
       body.name,

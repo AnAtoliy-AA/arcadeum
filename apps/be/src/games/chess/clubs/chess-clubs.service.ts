@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ChessClub, type ChessClubDocument } from './chess-club.schema';
@@ -65,7 +70,11 @@ export class ChessClubsService {
     return club;
   }
 
-  async addAdmin(clubId: string, ownerId: string, userId: string): Promise<ChessClubDocument> {
+  async addAdmin(
+    clubId: string,
+    ownerId: string,
+    userId: string,
+  ): Promise<ChessClubDocument> {
     const club = await this.getClub(clubId);
     if (club.ownerId !== ownerId && !club.adminIds.includes(ownerId)) {
       throw new ForbiddenException('Not authorized');

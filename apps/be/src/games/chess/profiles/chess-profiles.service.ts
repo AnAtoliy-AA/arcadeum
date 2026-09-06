@@ -59,11 +59,13 @@ export class ChessProfilesService {
     if (result === 'won') {
       stats.wins++;
       stats.winStreak++;
-      stats.currentStreak = stats.currentStreak > 0 ? stats.currentStreak + 1 : 1;
+      stats.currentStreak =
+        stats.currentStreak > 0 ? stats.currentStreak + 1 : 1;
     } else if (result === 'lost') {
       stats.losses++;
       stats.winStreak = 0;
-      stats.currentStreak = stats.currentStreak < 0 ? stats.currentStreak - 1 : -1;
+      stats.currentStreak =
+        stats.currentStreak < 0 ? stats.currentStreak - 1 : -1;
     } else {
       stats.draws++;
       stats.winStreak = 0;
@@ -94,6 +96,10 @@ export class ChessProfilesService {
   }
 
   async getStats(userId: string): Promise<Record<string, unknown> | null> {
-    return this.model.findOne({ userId }).select('perGameStats puzzleRating totalPuzzlesSolved').lean().exec();
+    return this.model
+      .findOne({ userId })
+      .select('perGameStats puzzleRating totalPuzzlesSolved')
+      .lean()
+      .exec();
   }
 }

@@ -271,7 +271,6 @@ function ChessBoardImpl({
   const prevBoardRef = useRef<Board>(board);
   const [animating, setAnimating] = useState<Map<string, { dx: number; dy: number }>>(new Map());
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: computing piece slide animation from board diff
   useLayoutEffect(() => {
     const prev = prevBoardRef.current;
     if (prev === board) return;

@@ -26,6 +26,7 @@ export type SocialLink = {
   icon: ReactNode;
   href: string;
   external?: boolean;
+  rel?: string;
 };
 
 export type FooterLinkItem = {
@@ -234,7 +235,10 @@ export const Footer = memo(function Footer({
                       key={link.id}
                       href={link.href}
                       target={link.external ? '_blank' : undefined}
-                      rel={link.external ? 'noopener noreferrer' : undefined}
+                      rel={
+                        link.rel ??
+                        (link.external ? 'noopener noreferrer' : undefined)
+                      }
                       aria-label={link.label}
                       data-testid={`footer-social-${link.id}`}
                     >

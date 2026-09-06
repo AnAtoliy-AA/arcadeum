@@ -190,6 +190,7 @@ export function GamePickerModal({
       onClose,
       games,
       inviteUserId,
+      locale,
     ],
   );
 

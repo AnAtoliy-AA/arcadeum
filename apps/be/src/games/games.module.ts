@@ -86,7 +86,6 @@ import { ChessService } from './chess/chess.service';
 import { ChessBotService } from './engines/chess/chess-bot.service';
 import { ChessStockfishModule } from './chess/engine/chess-stockfish.module';
 import { ChessStockfishController } from './chess/engine/chess-stockfish.controller';
-import { ChessStockfishService } from './chess/engine/chess-stockfish.service';
 import { ChessPuzzlesModule } from './chess/puzzles/chess-puzzles.module';
 import { ChessOpeningsModule } from './chess/openings/chess-openings.module';
 import { ChessTournamentModule } from './chess/tournaments/chess-tournament.module';
@@ -262,7 +261,6 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Chess
     ChessService,
     ChessBotService,
-    ChessStockfishService,
     // Checkers
     CheckersService,
     CheckersBotService,

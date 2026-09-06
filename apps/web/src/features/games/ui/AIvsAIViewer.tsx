@@ -14,6 +14,12 @@ import {
 } from '@/features/games/lib/aiVsAi';
 import { BOT_PERSONALITIES } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 
+function getPersonalityName(id?: string): string | null {
+  if (!id) return null;
+  const p = BOT_PERSONALITIES.find((bp) => bp.id === id);
+  return p ? `${p.name} (${p.rating})` : null;
+}
+
 interface Props {
   gameId: string;
   variant?: string;
@@ -67,6 +73,13 @@ export function AIvsAIViewer({
         },
         { token: snapshot.accessToken || undefined },
       );
+      // Show which bots were selected (server resolves random picks)
+      const opts = room.gameOptions as Record<string, unknown> | undefined;
+      const wName = getPersonalityName(opts?.botPersonalityWhite as string);
+      const bName = getPersonalityName(opts?.botPersonalityBlack as string);
+      if (wName || bName) {
+        console.log(`AI vs AI: ${wName ?? 'Random'} (white) vs ${bName ?? 'Random'} (black)`);
+      }
       router.push(`${routes.gameRoom(room.id)}?mode=watch`);
     } catch (err) {
       console.warn('AI vs AI create failed:', err);

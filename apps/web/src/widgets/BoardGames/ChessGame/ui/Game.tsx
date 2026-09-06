@@ -140,12 +140,30 @@ function ChessGameImpl({
     [snapshot],
   );
   const resolveDisplayNameBound = useCallback(
-    (id?: string | null) =>
-      resolveDisplayName(id, {
+    (id?: string | null) => {
+      const gameOpts = room?.gameOptions as Record<string, unknown> | undefined;
+      let botLabel: string | undefined;
+      if (id?.startsWith('bot-') && displaySnapshot?.players) {
+        const player = displaySnapshot.players.find((p) => p.playerId === id);
+        if (player) {
+          const perColorKey = player.color === 'white' ? 'botPersonalityWhite' : 'botPersonalityBlack';
+          const personalityId = (gameOpts?.[perColorKey] as string) ?? (gameOpts?.botPersonality as string);
+          if (personalityId) {
+            try {
+              const { getBotPersonality } = require('@arcadeum/games-core/games/chess/chess-bot-personalities');
+              const personality = getBotPersonality(personalityId);
+              if (personality) botLabel = personality.name;
+            } catch {}
+          }
+        }
+      }
+      return resolveDisplayName(id, {
         currentUserId,
         members: room?.members,
         playerOrder: displaySnapshot?.players.map((p) => p.playerId),
-      }),
+        botLabel,
+      });
+    },
     [currentUserId, room, displaySnapshot],
   );
   const sendChat = useGameChatSend(roomId, currentUserId, 'chess_v1');

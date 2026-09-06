@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { gameSocket } from '@/shared/lib/socket';
+import { maybeDecrypt } from '@/shared/lib/socket-encryption';
 
 interface EngineEval {
   cp: number | null;
@@ -36,8 +37,9 @@ export function useStockfishAnalysis({
   useEffect(() => {
     if (!enabled) return;
 
-    function onAnalyzed(data: { roomId: string; eval: EngineEval }) {
-      if (data.roomId === roomId) {
+    async function onAnalyzed(raw: unknown) {
+      const data = await maybeDecrypt<{ roomId: string; eval: EngineEval }>(raw);
+      if (data && data.roomId === roomId) {
         setEval(data.eval);
         setAnalyzing(false);
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -57,8 +59,9 @@ export function useStockfishAnalysis({
   useEffect(() => {
     if (!enabled) return;
 
-    function onSessionSnapshot(data: { roomId?: string }) {
-      if (data.roomId === roomId) {
+    async function onSessionSnapshot(raw: unknown) {
+      const data = await maybeDecrypt<{ roomId?: string }>(raw);
+      if (data && data.roomId === roomId) {
         setAnalyzing(true);
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => setAnalyzing(false), 5000);

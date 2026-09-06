@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.25] - 2026-09-06
+
+### Added
+- add tournament system (Phase 4)
+
+### Fixed
+- remove unused useEffect import from TournamentLobby
+- add OCI_CONNECTION to ChessTournamentService InjectModel
+
+
 ## [1.28.24] - 2026-09-06
 
 ### Fixed

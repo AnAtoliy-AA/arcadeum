@@ -119,4 +119,44 @@ export class ChessOpeningsService {
       .limit(Math.min(limit, 100))
       .exec();
   }
+
+  /**
+   * Classify the opening from a move sequence.
+   * Walks the move list and finds the deepest matching ECO entry.
+   * Returns the opening name, ECO code, and the move index where it diverged.
+   */
+  async classifyOpening(moves: string[]): Promise<{
+    opening: string;
+    eco: string;
+    family: string;
+    moveIndex: number;
+  } | null> {
+    if (moves.length === 0) return null;
+
+    let bestMatch: {
+      opening: string;
+      eco: string;
+      family: string;
+      moveIndex: number;
+    } | null = null;
+
+    for (let i = moves.length; i >= 1; i--) {
+      const prefix = moves.slice(0, i);
+      const safeMoves = prefix.map(sanitize);
+      const opening = await this.openingModel
+        .findOne({ moves: safeMoves })
+        .exec();
+      if (opening && opening.eco) {
+        bestMatch = {
+          opening: opening.opening,
+          eco: opening.eco,
+          family: opening.openingFamily,
+          moveIndex: i,
+        };
+        break;
+      }
+    }
+
+    return bestMatch;
+  }
 }

@@ -43,6 +43,13 @@ export interface EngineLine {
   bestMove: string;
   /** Principal variation of the best line. */
   bestPv: string[];
+  /** Alternative lines (2nd and 3rd best moves from multi-PV search). */
+  alternatives?: Array<{
+    move: string;
+    cp: number | null;
+    mate: number | null;
+    pv: string[];
+  }>;
 }
 
 /** Full game analysis result. */
@@ -63,6 +70,19 @@ export interface GameAnalysisResult {
     inaccuracy: number;
     mistake: number;
     blunder: number;
+  };
+  /** Tablebase result for the final position (if <= 7 pieces). */
+  tablebase?: {
+    category: string;
+    dtz: number | null;
+    dtm: number | null;
+  } | null;
+  /** Engine match counts per player for anti-cheat (best-move matches). */
+  antiCheat?: {
+    whiteEngineMatchCount: number;
+    blackEngineMatchCount: number;
+    whiteTotalMoves: number;
+    blackTotalMoves: number;
   };
 }
 
@@ -87,4 +107,16 @@ export interface LiveEvalResponse {
   roomId: string;
   ply: number;
   eval: EngineEval;
+}
+
+/** Hint for a puzzle position. */
+export interface PuzzleHint {
+  /** Best move for the position (UCI). */
+  bestMove: string;
+  /** Engine evaluation of the position. */
+  eval: EngineEval;
+  /** Principle variation line. */
+  pv: string[];
+  /** Alternative moves with their evaluations. */
+  alternatives: Array<{ move: string; cp: number | null; mate: number | null }>;
 }

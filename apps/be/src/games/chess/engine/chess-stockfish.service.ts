@@ -15,12 +15,18 @@ import { spawn, type ChildProcess } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 import { EconomySettingsService } from '../../../economy/economy-settings.service';
+import { SyzygyTablebaseService } from './syzygy.service';
+import {
+  analyzePositionMultiPV as analyzeMultiPV,
+  getPuzzleHint as getHint,
+  analyzeGame as runAnalyzeGame,
+} from './chess-stockfish.helpers';
 import type {
   EngineEval,
   GameAnalysisResult,
   AnalyzePositionRequest,
   AnalyzeGameRequest,
-  EngineLine,
+  PuzzleHint,
 } from './chess-stockfish.types';
 
 interface PendingRequest {
@@ -59,7 +65,10 @@ export class ChessStockfishService implements OnModuleDestroy {
   private readonly binaryPath: string;
   private initialized = false;
 
-  constructor(private readonly economy: EconomySettingsService) {
+  constructor(
+    private readonly economy: EconomySettingsService,
+    private readonly tablebase: SyzygyTablebaseService,
+  ) {
     // 1 instance per container — each handles ~20 analyses/min.
     // Scale via STOCKFISH_POOL_SIZE env var if needed later.
     this.poolSize = parseInt(process.env.STOCKFISH_POOL_SIZE ?? '1', 10);
@@ -80,7 +89,9 @@ export class ChessStockfishService implements OnModuleDestroy {
   }
 
   async onModuleInit(): Promise<void> {
-    this.logger.log(`[Stockfish] onModuleInit called. Binary: ${this.binaryPath}`);
+    this.logger.log(
+      `[Stockfish] onModuleInit called. Binary: ${this.binaryPath}`,
+    );
     if (!fs.existsSync(this.binaryPath)) {
       if (process.env.E2E === 'true') {
         this.logger.debug(
@@ -145,8 +156,47 @@ export class ChessStockfishService implements OnModuleDestroy {
   }
 
   /**
+   * Analyze a single position with multi-PV (returns all alternative lines).
+   */
+  async analyzePositionMultiPV(
+    fen: string,
+    depth: number = LIVE_DEPTH,
+    timeMs: number = LIVE_TIME_MS,
+    pvCount: number = 3,
+  ): Promise<
+    EngineEval & {
+      alternatives: Array<{
+        move: string;
+        cp: number | null;
+        mate: number | null;
+        pv: string[];
+      }>;
+    }
+  > {
+    return analyzeMultiPV(
+      () => this.findFreeInstance(),
+      fen,
+      depth,
+      timeMs,
+      pvCount,
+    );
+  }
+
+  /**
+   * Get a puzzle hint: best move + alternatives for the position.
+   */
+  async getPuzzleHint(fen: string): Promise<PuzzleHint | null> {
+    return getHint(
+      () => this.findFreeInstance(),
+      () => this.isReady(),
+      fen,
+    );
+  }
+
+  /**
    * Analyze a full game from position history.
    * Uses deeper analysis (depth 18, ~3s per position) for accurate results.
+   * Also probes tablebase for endgame positions and computes anti-cheat data.
    */
   async analyzeGame(request: AnalyzeGameRequest): Promise<GameAnalysisResult> {
     const deepEnabled =
@@ -158,88 +208,14 @@ export class ChessStockfishService implements OnModuleDestroy {
       MAX_TIME_MS,
     );
 
-    // Position history now contains full FENs — use directly
-    const fullFens = request.positionHistory;
-
-    const evals: (number | null)[] = [];
-    const moves: EngineLine[] = [];
-    let prevEval = 0;
-
-    for (let i = 0; i < fullFens.length - 1; i++) {
-      const fen = fullFens[i];
-      if (!fen) continue;
-
-      const eval_ = await this.analyzePosition({
-        fen,
-        depth,
-        timeMs: timeMsPerPly,
-      });
-
-      const currentEval =
-        eval_.mate !== null
-          ? eval_.mate > 0
-            ? 10000
-            : -10000
-          : (eval_.cp ?? 0);
-
-      evals.push(currentEval);
-
-      const moveNotation = request.notations?.[i] ?? '';
-      const delta = currentEval - prevEval;
-      const color = i % 2 === 0 ? 'white' : 'black';
-      const moverDelta = color === 'white' ? delta : -delta;
-      const loss = Math.max(0, -moverDelta);
-
-      moves.push({
-        quality: this.classifyMove(loss, prevEval, currentEval, color),
-        move: moveNotation,
-        evalAfter: currentEval,
-        mateAfter: eval_.mate,
-        loss,
-        bestMove: eval_.pv[0] ?? '',
-        bestPv: eval_.pv,
-      });
-
-      if (loss > 50) {
-        this.logger.log(`[Stockfish] Move ${i}: loss=${loss}cp eval=${currentEval} (prev=${prevEval}) quality=${this.classifyMove(loss, prevEval, currentEval, color)}`);
-      }
-
-      prevEval = currentEval;
-    }
-
-    const lastFen = fullFens[fullFens.length - 1];
-    if (lastFen) {
-      const finalEval = await this.analyzePosition({
-        fen: lastFen,
-        depth,
-        timeMs: timeMsPerPly,
-      });
-      evals.push(
-        finalEval.mate !== null
-          ? finalEval.mate > 0
-            ? 10000
-            : -10000
-          : (finalEval.cp ?? 0),
-      );
-    }
-
-    const whiteMoves = moves.filter((_, i) => i % 2 === 0);
-    const blackMoves = moves.filter((_, i) => i % 2 === 1);
-
-    return {
-      evals,
-      moves,
-      whiteAccuracy: this.calculateAccuracy(whiteMoves),
-      blackAccuracy: this.calculateAccuracy(blackMoves),
-      summary: {
-        brilliant: moves.filter((m) => m.quality === 'brilliant').length,
-        great: moves.filter((m) => m.quality === 'great').length,
-        good: moves.filter((m) => m.quality === 'good').length,
-        inaccuracy: moves.filter((m) => m.quality === 'inaccuracy').length,
-        mistake: moves.filter((m) => m.quality === 'mistake').length,
-        blunder: moves.filter((m) => m.quality === 'blunder').length,
-      },
-    };
+    return runAnalyzeGame(
+      request,
+      (req) => this.analyzePosition(req),
+      (fen, d, t, pv) => this.analyzePositionMultiPV(fen, d, t, pv),
+      (fen) => this.tablebase.probe(fen),
+      depth,
+      timeMsPerPly,
+    );
   }
 
   /**
@@ -505,43 +481,5 @@ export class ChessStockfishService implements OnModuleDestroy {
       nps: eval_.nps ?? 0,
       timeMs: eval_.timeMs ?? 0,
     };
-  }
-
-  private classifyMove(
-    loss: number,
-    _evalBefore: number,
-    evalAfter: number,
-    _color: 'white' | 'black',
-  ): EngineLine['quality'] {
-    if (loss === 0 && Math.abs(evalAfter) > 200) return 'brilliant';
-    if (loss <= 2 && Math.abs(evalAfter) > 100) return 'great';
-    if (loss <= 10) return 'good';
-    if (loss <= 30) return 'inaccuracy';
-    if (loss <= 100) return 'mistake';
-    return 'blunder';
-  }
-
-  private calculateAccuracy(moves: EngineLine[]): number {
-    if (moves.length === 0) return 100;
-    let totalScore = 0;
-    for (const move of moves) {
-      switch (move.quality) {
-        case 'brilliant':
-        case 'great':
-        case 'good':
-          totalScore += 100;
-          break;
-        case 'inaccuracy':
-          totalScore += 70;
-          break;
-        case 'mistake':
-          totalScore += 40;
-          break;
-        case 'blunder':
-          totalScore += 0;
-          break;
-      }
-    }
-    return Math.round(totalScore / moves.length);
   }
 }

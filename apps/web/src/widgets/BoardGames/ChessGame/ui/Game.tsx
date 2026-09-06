@@ -23,6 +23,8 @@ import { useChessCoach } from '../hooks/useChessCoach';
 import { useStockfishAnalysis } from '../hooks/useStockfishAnalysis';
 import { calculateOptimisticChessState } from '../lib/optimisticMove';
 import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
+import { downloadPGN } from '../lib/pgn';
+import { findKingPosition } from '../lib/board-utils';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoardPanel } from './ChessBoardPanel';
 import { ChessGameResultModal } from './ChessGameResultModal';
@@ -205,7 +207,10 @@ function ChessGameImpl({
     toggle: toggleResult,
   } = useGameResultModal(session, result, resultMessages, isGameOver);
 
-  const isFlipped = myColor === 'black';
+  const [flipped, setFlipped] = useState(myColor === 'black');
+  const [confirmMoves, setConfirmMoves] = useState(false);
+
+  const toggleFlip = useCallback(() => setFlipped((f) => !f), []);
   const lastMove = useMemo(() => {
     if (!displaySnapshot?.moveHistory.length) return null;
     const last =
@@ -222,19 +227,7 @@ function ChessGameImpl({
       )
       .map((m) => m.to);
   }, [selectedSquare, displaySnapshot]);
-  const kingPosition = (() => {
-    if (!displaySnapshot) return null;
-    for (let row = 0; row < 8; row++)
-      for (let col = 0; col < 8; col++) {
-        const p = displaySnapshot.board[row]?.[col];
-        if (p?.type === 'king' && p.color === displaySnapshot.currentTurnColor)
-          return {
-            file: FILES[col],
-            rank: (8 - row) as import('../types').Rank,
-          };
-      }
-    return null;
-  })();
+  const kingPosition = displaySnapshot ? findKingPosition(displaySnapshot) : null;
 
   const handleSquareClick = useCallback(
     (file: File, rank: import('../types').Rank) => {
@@ -365,6 +358,11 @@ function ChessGameImpl({
     [displaySnapshot, isGameOver, currentUserId, resolveDisplayNameBound, t],
   );
 
+  const liveAlternatives = useMemo(() => {
+    if (!liveEval || !('alternatives' in liveEval)) return null;
+    return (liveEval as Record<string, unknown>).alternatives as Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> | null;
+  }, [liveEval]);
+
   if (!room) return null;
   if (isLobby)
     return (
@@ -395,7 +393,7 @@ function ChessGameImpl({
     <ChessBoardPanel
       snapshot={displaySnapshot}
       myColor={myColor}
-      isFlipped={isFlipped}
+      isFlipped={flipped}
       displayMyTurn={displayMyTurn}
       isGameOver={isGameOver}
       isSpectator={isSpectator}
@@ -418,6 +416,11 @@ function ChessGameImpl({
       onDeclineTakeback={declineTakeback}
       liveEval={liveEval}
       liveEvalAnalyzing={liveEvalAnalyzing}
+      onFlipBoard={toggleFlip}
+      onExportPgn={() => { if (displaySnapshot) downloadPGN(displaySnapshot); }}
+      onToggleConfirmMoves={() => setConfirmMoves((c) => !c)}
+      confirmMoves={confirmMoves}
+      moveCandidates={liveAlternatives}
     />
   );
   const themeVariant =

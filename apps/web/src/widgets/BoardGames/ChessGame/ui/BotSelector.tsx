@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { GlassCard, Button, Typography } from '@arcadeum/ui';
+import { GlassCard, Typography } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 export interface BotPersonalityOption {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { GlassCard, Typography, Button } from '@arcadeum/ui';
+import { GlassCard, Typography } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
 interface PlayerProfileData {

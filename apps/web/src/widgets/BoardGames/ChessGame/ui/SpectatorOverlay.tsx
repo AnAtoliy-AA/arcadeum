@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { GlassCard, Typography, Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 
@@ -18,7 +17,6 @@ export function SpectatorOverlay({
   onJoinGame,
 }: SpectatorOverlayProps) {
   const { t } = useTranslation();
-  const [showChat, setShowChat] = useState(false);
 
   if (!isSpectating) return null;
 

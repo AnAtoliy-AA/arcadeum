@@ -93,7 +93,7 @@ export function BoardOverlay({
   const [dragStart, setDragStart] = useState<BoardPosition | null>(null);
   const [dragEnd, setDragEnd] = useState<BoardPosition | null>(null);
   const [boardRect, setBoardRect] = useState<DOMRect | null>(null);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped] = useState(false);
 
   useEffect(() => {
     const board = boardRef.current;

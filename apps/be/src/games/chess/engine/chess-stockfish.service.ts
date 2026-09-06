@@ -158,12 +158,15 @@ export class ChessStockfishService implements OnModuleDestroy {
       MAX_TIME_MS,
     );
 
+    // Reconstruct full FENs from board-only FENs
+    const fullFens = this.reconstructFullFenHistory(request.positionHistory);
+
     const evals: (number | null)[] = [];
     const moves: EngineLine[] = [];
     let prevEval = 0;
 
-    for (let i = 0; i < request.positionHistory.length - 1; i++) {
-      const fen = request.positionHistory[i];
+    for (let i = 0; i < fullFens.length - 1; i++) {
+      const fen = fullFens[i];
       if (!fen) continue;
 
       const eval_ = await this.analyzePosition({
@@ -200,7 +203,7 @@ export class ChessStockfishService implements OnModuleDestroy {
       prevEval = currentEval;
     }
 
-    const lastFen = request.positionHistory[request.positionHistory.length - 1];
+    const lastFen = fullFens[fullFens.length - 1];
     if (lastFen) {
       const finalEval = await this.analyzePosition({
         fen: lastFen,
@@ -536,5 +539,43 @@ export class ChessStockfishService implements OnModuleDestroy {
       }
     }
     return Math.round(totalScore / moves.length);
+  }
+
+  /**
+   * Reconstruct full FENs from board-only FENs.
+   * Tracks castling rights by checking if kings/rooks are on starting squares.
+   */
+  private reconstructFullFenHistory(boardFens: string[]): string[] {
+    return boardFens.map((fen, i) => {
+      if (fen.includes(' ')) return fen;
+      const turn = i % 2 === 0 ? 'w' : 'b';
+      const rows = fen.split('/');
+      const board = rows.map((row) => {
+        const cells: (string | null)[] = [];
+        for (const ch of row) {
+          if (ch >= '1' && ch <= '8') {
+            for (let j = 0; j < parseInt(ch); j++) cells.push(null);
+          } else {
+            cells.push(ch);
+          }
+        }
+        return cells;
+      });
+      const get = (r: number, c: number) => board[r]?.[c] ?? null;
+      const wk = get(7, 4) === 'K';
+      const bk = get(0, 4) === 'k';
+      const wrH = get(7, 7) === 'R';
+      const wrA = get(7, 0) === 'R';
+      const brH = get(0, 7) === 'r';
+      const brA = get(0, 0) === 'r';
+      let castling = '';
+      if (wk && wrH) castling += 'K';
+      if (wk && wrA) castling += 'Q';
+      if (bk && brH) castling += 'k';
+      if (bk && brA) castling += 'q';
+      if (!castling) castling = '-';
+      const moveNum = Math.floor(i / 2) + 1;
+      return `${fen} ${turn} ${castling} - 0 ${moveNum}`;
+    });
   }
 }

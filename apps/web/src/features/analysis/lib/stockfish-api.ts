@@ -32,32 +32,16 @@ export interface GameAnalysisResult {
 }
 
 /**
- * Generate full FENs from a sequence of board-only FENs by replaying moves.
- * The session positionHistory only stores board parts; Stockfish needs full FENs.
+ * Send board-only FENs to backend — server reconstructs full FENs.
  */
-function buildFullFenHistory(
-  boardFens: string[],
-  notations?: string[],
-): string[] {
-  // For now, append standard FEN suffixes based on move count.
-  // White moves on even indices, black on odd.
-  // This is approximate — a proper solution would replay moves from the engine state.
-  return boardFens.map((fen, i) => {
-    if (fen.includes(' ')) return fen; // Already full FEN
-    const turn = i % 2 === 0 ? 'b' : 'w'; // After white's move, it's black's turn
-    return `${fen} ${turn} KQkq - 0 ${Math.floor(i / 2) + 1}`;
-  });
-}
-
 export async function analyzeGameWithStockfish(
   positionHistory: string[],
   notations?: string[],
 ): Promise<GameAnalysisResult | null> {
   try {
-    const fullFens = buildFullFenHistory(positionHistory, notations);
     return await apiClient.post<GameAnalysisResult>(
       '/chess/engine/analyze-game',
-      { positionHistory: fullFens, notations, depth: 12, timeMsPerPly: 1500 },
+      { positionHistory, notations, depth: 12, timeMsPerPly: 1500 },
     );
   } catch {
     return null;

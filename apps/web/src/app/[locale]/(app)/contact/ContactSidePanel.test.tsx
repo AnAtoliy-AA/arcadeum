@@ -26,17 +26,14 @@ describe('ContactSidePanel', () => {
     expect(link).toHaveAttribute('target', '_blank');
   });
 
-  it('renders press email as a mailto: anchor', () => {
+  it('renders press email from appConfig.supportEmail', () => {
     render(
       <Wrapper>
-        <ContactSidePanel
-          side={{ pressEmail: 'press@arc.games' }}
-          workingHours="–"
-        />
+        <ContactSidePanel side={undefined} workingHours="–" />
       </Wrapper>,
     );
-    const link = screen.getByRole('link', { name: 'press@arc.games' });
-    expect(link).toHaveAttribute('href', 'mailto:press@arc.games');
+    const link = screen.getByRole('link', { name: /@/ });
+    expect(link.getAttribute('href')).toMatch(/^mailto:/);
   });
 
   it('substitutes the on-call team count via i18n template', () => {

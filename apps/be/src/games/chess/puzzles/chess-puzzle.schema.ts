@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema({ timestamps: false, _id: false })
 export class ChessPuzzle {
-  @Prop({ required: true, index: true })
+  @Prop({ required: true })
   puzzleId!: string;
 
   @Prop({ required: true })

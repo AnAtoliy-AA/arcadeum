@@ -79,10 +79,16 @@ export class ChessStockfishService implements OnModuleDestroy {
 
   async onModuleInit(): Promise<void> {
     if (!fs.existsSync(this.binaryPath)) {
-      this.logger.error(
-        `Stockfish 19 binary not found at ${this.binaryPath}. ` +
-          'Run: bash apps/be/bin/scripts/setup-stockfish.sh',
-      );
+      if (process.env.E2E === 'true') {
+        this.logger.debug(
+          `Stockfish 19 binary not found at ${this.binaryPath} (expected in E2E)`,
+        );
+      } else {
+        this.logger.error(
+          `Stockfish 19 binary not found at ${this.binaryPath}. ` +
+            'Run: bash apps/be/bin/scripts/setup-stockfish.sh',
+        );
+      }
       return;
     }
 

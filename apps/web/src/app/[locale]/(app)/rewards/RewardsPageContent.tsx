@@ -203,7 +203,7 @@ export default function RewardsPageContent({
 
               {!dailyRewardStatus && (
                 <div className="flex justify-center">
-                  <Link href="/auth/login">
+                  <Link href="/auth">
                     <Button variant="primary" size="md">
                       {dailyStreak?.claim ?? 'Claim Reward'}
                     </Button>

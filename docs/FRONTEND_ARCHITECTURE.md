@@ -1,8 +1,8 @@
-# Arcadeum Frontend Architecture
+# Arcadeum Games Frontend Architecture
 
 ## Overview
 
-The Arcadeum web frontend is a **Next.js 16+** application built with **App Router**, **React Server Components**, and **TypeScript**, designed for high performance, real-time multiplayer gaming, and seamless cross-platform experience. It communicates with the NestJS backend via WebSocket and REST APIs, and is optimized for SEO, PWA support, and accessibility.
+The Arcadeum Games web frontend is a **Next.js 16+** application built with **App Router**, **React Server Components**, and **TypeScript**, designed for high performance, real-time multiplayer gaming, and seamless cross-platform experience. It communicates with the NestJS backend via WebSocket and REST APIs, and is optimized for SEO, PWA support, and accessibility.
 
 This architecture follows **modular, feature-driven organization** with clear separation between UI components, business logic, state management, and API layers — making it scalable, testable, and maintainable.
 
@@ -14,10 +14,10 @@ This architecture follows **modular, feature-driven organization** with clear se
 | ---------------------------- | --------------------------------------------------------------------------------------------------------- |
 | **App Router (Next.js 16+)** | Uses modern React Server Components (RSC) and Client Components strategically for performance and SEO     |
 | **Feature-First Structure**  | Each feature (auth, chat, games) lives in its own folder with all related files grouped together          |
-| **State Management**         | Uses React Context + custom hooks for local state; Redux Toolkit only where needed (e.g., global session) |
-| **Type Safety**              | Full TypeScript coverage with interfaces, Zod validation, and generated types from backend DTOs           |
-| **Real-Time Communication**  | WebSocket connection managed centrally via `socket-encryption.ts` for secure, encrypted game events       |
-| **i18n & Localization**      | Type-safe translations using `next-intl` with hierarchical keys and fallbacks                             |
+| **State Management**         | Uses Zustand for global client state, React Context for scoped state, React Query for server state        |
+| **Type Safety**              | Full TypeScript coverage with interfaces and generated types from backend DTOs                            |
+| **Real-Time Communication**  | WebSocket connection managed centrally via `shared/lib/socket` with AES-GCM encryption                   |
+| **i18n & Localization**      | Type-safe translations using custom i18n system with hierarchical keys and fallbacks                      |
 | **PWA & Offline Support**    | Service worker, manifest, and idle detection for offline play and reconnect                               |
 | **Accessibility First**      | Semantic HTML, ARIA labels, keyboard navigation, and contrast compliance (WCAG 2.1)                       |
 | **Testing Strategy**         | Playwright for E2E, Vitest for unit, and Storybook for component isolation                                |
@@ -35,7 +35,7 @@ This architecture follows **modular, feature-driven organization** with clear se
 │              Next.js App Router (Layouts)       │
 │   - Root layout.tsx                             │
 │   - Global error handling                       │
-│   - Theme provider (CSS-in-JS)                  │
+│   - Theme provider (CSS variables)              │
 │   - i18n provider                               │
 │   - WebSocket client initialization             │
 └───────────────┬─────────────────────────────────┘
@@ -45,47 +45,73 @@ This architecture follows **modular, feature-driven organization** with clear se
 │   - auth/          → Login, OAuth, Session      │
 │   - chat/          → Real-time messaging        │
 │   - games/         → Game engine UI (Critical,  │
-│                    Sea Battle, Texas Hold’em)   │
+│                    Sea Battle, Hearts, etc.)    │
 │   - history/       → Game history viewer        │
-│   - payment/       → Stripe/Payment flow        │
+│   - payments/      → Payment processing         │
 │   - referrals/     → Referral dashboard         │
 │   - pwa/           → Offline, install prompts   │
-│   - rematch/       → Game rematch logic         │
+│   - shop/          → In-game shop               │
+│   - wallet/        → Virtual wallet             │
+│   - rankings/      → Player rankings            │
+│   - tournaments/   → Tournament system          │
+│   - achievements/  → Achievement tracking       │
+│   - friends/       → Friend list & online status│
+│   - clans/         → Clan/guild system          │
+│   - notifications/ → Push & in-app notifications│
+│   - admin/         → Admin panel                │
 │   - support/       → Help center, contact       │
 └───────────────┬─────────────────────────────────┘
                 │
 ┌───────────────▼─────────────────────────────────┐
 │           Shared Layer (src/shared)             │
 │   - api/           → Client-side API clients    │
-│   - lib/           → Utilities, socket-encryption │
-│   - hooks/         → Custom React hooks         │
-│   - types/         → Shared TypeScript interfaces │
-│   - ui/            → Reusable components (Buttons, │
-│                    Modals, Cards, etc.)         │
-│   - config/        → API endpoints, env vars    │
+│   - lib/           → Utilities, socket, auth    │
+│   - hooks/         → 32+ custom React hooks     │
+│   - types/         → Shared TypeScript interfaces│
+│   - config/        → Routes, themes, env vars   │
 │   - i18n/          → Translation keys & loader  │
+└───────────────┬─────────────────────────────────┘
+                │
+┌───────────────▼─────────────────────────────────┐
+│     Shared UI Library (@arcadeum/ui)            │
+│   - Button, Card, Modal, Input, TextArea        │
+│   - Avatar, PlayerAvatar, Badge, StatusBadge    │
+│   - LoadingState, ErrorState, EmptyState        │
+│   - Chat, Toggle, Typography, Progress          │
+│   - 63+ Tailwind CSS components                 │
 └───────────────┬─────────────────────────────────┘
                 │
 ┌───────────────▼─────────────────────────────────┐
 │            UI Widgets (src/widgets)             │
 │   - CriticalGame/          → Game UI component  │
 │   - SeaBattleGame/         → Game UI component  │
-│   - TexasHoldemGame/       → Game UI component  │
-│   - GamesControlPanel/     → Game controls      │
+│   - HeartsGame/            → Game UI component  │
+│   - GoGame/                → Game UI component  │
+│   - PachisiGame/           → Game UI component  │
+│   - SpadesGame/            → Game UI component  │
+│   - CascadeGame/           → Game UI component  │
+│   - SolitaireGame/         → Game UI component  │
+│   - MinesweeperGame/       → Game UI component  │
+│   - SudokuGame/            → Game UI component  │
+│   - Game2048/              → Game UI component  │
+│   - CatDashGame/           → Game UI component  │
+│   - GlimwormGame/          → Game UI component  │
 │   - header/                → App header         │
+│   - Footer/                → App footer         │
 └───────────────┬─────────────────────────────────┘
                 │
 ┌───────────────▼─────────────────────────────────┐
 │               Entities (src/entities)           │
 │   - session/         → User session state       │
 │   - support/         → Support ticket schema    │
+│   - leaderboard/     → Leaderboard data         │
 └───────────────┬─────────────────────────────────┘
                 │
 ┌───────────────▼─────────────────────────────────┐
 │             Data Layer (Backend API)            │
 │   - REST: /api/auth, /api/games, /api/payments  │
-│   - WebSocket: wss://api.arcadeum.com/ws        │
-│   - Encrypted via socket-encryption.ts          │
+│   - WebSocket: 7 named socket singletons        │
+│   - Encrypted via AES-GCM (runtime key exchange)│
 └─────────────────────────────────────────────────┘
 ```
 
@@ -96,113 +122,74 @@ This architecture follows **modular, feature-driven organization** with clear se
 ### 1. **Authentication (`src/features/auth`, `src/shared/api/auth`)**
 
 - Uses **OAuth2 (Google)** and **JWT** for login
-- Session state managed via `useSession()` hook
-- Redirects handled via `app/auth/` route with protected layouts
-- Token stored securely in `localStorage` (encrypted)
+- Session state managed via Zustand store with localStorage persistence
+- Anonymous user support with `anon_*` IDs for unauthenticated browsing
+- Token stored securely in localStorage + cookie for SSR
 
-### 2. **Real-Time Chat (`src/features/chat`, `src/shared/lib/socket-encryption.ts`)**
+### 2. **Real-Time Chat (`src/features/chat`, `src/shared/lib/socket`)**
 
-- WebSocket connection established on app load
-- Messages encrypted using AES-256 (shared key from auth token)
-- Messages dispatched via `useChat()` hook
-- UI rendered in `ChatSidebar` widget
+- WebSocket connection established on app load via shared socket infrastructure
+- 7 named socket singletons: games, chat, leaderboards, friends, wallet, clans, notifications
+- All sockets use a shared Manager with multiplexing
+- Auto-reconnect with exponential backoff
+- Messages encrypted using AES-GCM (keys fetched at runtime from server)
 
-### 3. **Games (`src/features/games`, `src/widgets/CriticalGame`, etc.)**
+### 3. **Games (`src/features/games`, `src/widgets/*Game`)**
 
-- Each game has its own **UI widget** (`CriticalGame`, `SeaBattleGame`)
+- Each game has its own **UI widget** (CriticalGame, SeaBattleGame, HeartsGame, etc.)
 - Game state managed by **React state + WebSocket events**
 - Game logic **client-side only** for responsiveness (server validates)
 - Uses `useGame()` hook to subscribe to game events
+- Lazy-loaded via **game registry pattern** (`gameLoaders`)
 - Supports **single-player vs bot** and **multiplayer**
+- 18+ games across board, card, action, and puzzle categories
 
-### 4. **Payment Flow (`src/features/payment`, `src/shared/api/payment`)**
+### 4. **Payment Flow (`src/features/payments`)**
 
-- Integrates with **Stripe** for subscriptions and credits
-- Uses Stripe Elements for secure form input
+- Integrates with payment processors for subscriptions and credits
 - Payment confirmation handled via webhook → backend → WebSocket → UI update
 
 ### 5. **Referrals (`src/features/referrals`)**
 
 - Displays referral code, stats, and badge rewards
-- Fetches data from `/api/referrals`
-- Uses `useReferrals()` hook for real-time updates
+- Real-time updates via socket
 
 ### 6. **PWA & Offline (`src/features/pwa`, `public/manifest.json`)**
 
 - Service worker caches static assets and game state
-- Detects offline status → shows “Reconnecting...” UI
-- Allows “Add to Home Screen” prompt
+- Detects offline status → shows "Reconnecting..." UI
+- Allows "Add to Home Screen" prompt
+- Custom push notification worker
 
-### 7. **Internationalization (`src/shared/i18n`, `next-intl`)**
+### 7. **Internationalization (`src/shared/i18n`)**
 
-- Uses **type-safe translation keys** (e.g., `common.login`)
-- Translations loaded per locale (`en`, `es`, `ru`, etc.)
+- Uses **type-safe translation keys** via custom i18n system
+- **5 locales**: en, ru, es, fr, by (Belarusian)
+- Server-side: `getTranslations(locale)` loads full bundle
+- Client-side: `useTranslation()` hook
+- SEO slugs translated per locale (e.g., `/fr/jeux` instead of `/fr/games`)
 - Automatic fallback to `en`
-- Keys validated at build time via `check_translation.js` script
+- Completeness test: `vitest run src/shared/i18n/messages/completeness.test.ts`
+
+### 8. **Theme System (`src/shared/config/theme`, `packages/ui/src/themeDefinitions`)**
+
+- **8 CSS-variable themes**: light, dark, neonLight, neonDark, violetLight, violetDark, tealLight, tealDark
+- Tokens minted on `<html>` by theme provider from `packages/ui/src/themeDefinitions.ts`
+- Use `var(--primary)`, `var(--glassBg)`, `bg-[var(--success)]`, etc.
+- **Game visual themes** separate from app themes (cyberpunk, underwater, zen, etc.)
+- Theme Adapter Pattern maps shared themes to game-specific tokens
 
 ---
 
 ## Data Flow
 
-```mermaid
-graph TD
-    %% ====== LAYERS ======
-    subgraph "1. User"
-        A[📱 Browser: Mobile/Desktop]
-    end
-
-    subgraph "2. Next.js App Router"
-        B[Layout.tsx\nTheme Provider\ni18n Provider\nWebSocket Client]
-    end
-
-    subgraph "3. Feature Modules"
-        C[Auth\nChat\nGames\nPayment\nReferrals\nPWA]
-    end
-
-    subgraph "4. Shared Layer"
-        D[API Clients\nSocket Encryption\nCustom Hooks\nUI Components\nTypes]
-    end
-
-    subgraph "5. Backend"
-        E[REST API\nWebSocket\nMongoDB]
-    end
-
-    %% ====== FLOWS ======
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-
-    %% === Game Flow ===
-    C --> F[Game Widget\nCriticalGame / SeaBattleGame]
-    F --> D
-
-    %% === Socket Flow ===
-    B --> G[socket-encryption.ts\nAES-256 Encrypted]
-    G --> E
-
-    %% === State Flow ===
-    C --> H[useSession\nuseChat\nuseGame]
-    H --> C
-
-    %% ====== STYLING ======
-    style A fill:#e6f7ff,stroke:#1890ff
-    style B fill:#e6ffe6,stroke:#52c41a
-    style C fill:#fff7e6,stroke:#fa8c16
-    style D fill:#f6ffed,stroke:#52c41a
-    style E fill:#f5f5f5,stroke:#d9d9d9
-
-    classDef layer fill:#f9f9f9,stroke:#ccc,stroke-width:1px;
-    class B,C,D layer
-
-    class A client
-    class E data
-
-    classDef client fill:#e6f7ff,stroke:#1890ff;
-    classDef data fill:#f5f5f5,stroke:#d9d9d9;
 ```
-
-> 💡 **Tip**: The `socket-encryption.ts` file ensures all WebSocket messages (game moves, chat, etc.) are encrypted using a key derived from the user’s JWT token — preventing man-in-the-middle attacks.
+User → Browser → Next.js App Router → Feature Modules → Shared Layer → Backend API
+                         │                                       │
+                         ├── Theme Provider (CSS vars)            │
+                         ├── i18n Provider                       │
+                         └── WebSocket Client ←→ AES-GCM ←→ Socket Server
+```
 
 ---
 
@@ -210,25 +197,29 @@ graph TD
 
 | Tool                  | Purpose                                                    |
 | --------------------- | ---------------------------------------------------------- |
-| **Next.js 14**        | App Router, Server Components, Static/SSR                  |
-| **TypeScript**        | Full type safety across frontend and shared types          |
-| **Vitest**            | Fast unit tests for hooks, utilities, and reducers         |
+| **Next.js 16**        | App Router, Server Components, Static/SSR, React Compiler  |
+| **React 19**          | Server Components, concurrent features                     |
+| **TypeScript 5.9**    | Full type safety across frontend and shared types          |
+| **Vitest 4**          | Fast unit tests for hooks, utilities, and reducers         |
 | **Playwright**        | End-to-end tests for critical flows (login, game, payment) |
-| **Storybook**         | Component-driven development for UI widgets                |
+| **Storybook 10**      | Component-driven development for UI widgets                |
 | **Prettier + ESLint** | Code formatting and linting                                |
 | **TurboRepo**         | Monorepo task orchestration (`pnpm dev`, `pnpm build`)     |
-| **Zod**               | Runtime validation for API responses                       |
-| **next-intl**         | Type-safe i18n with automatic key extraction               |
+| **PostHog**           | Product analytics                                          |
+| **Vercel Analytics**  | Performance and speed insights                             |
 
 ---
 
 ## Security Considerations
 
-- **WebSocket Encryption**: All real-time data encrypted via `socket-encryption.ts`
-- **CORS**: Only allows traffic from `https://arcadeum.vercel.app` and `http://localhost:3000`
-- **Content Security Policy (CSP)**: Applied via `next.config.js` to prevent XSS
+- **WebSocket Encryption**: All real-time data encrypted via AES-GCM with runtime key exchange
+- **CORS**: Configured for allowed origins
+- **Content Security Policy (CSP)**: Strict policy applied via headers
 - **Input Sanitization**: All user inputs sanitized on client and server
-- **Rate Limiting**: Implemented on backend, mirrored with client-side throttling
+- **Rate Limiting**: Implemented on backend, 3 tiers (default, auth, strict)
+- **Anonymous User Support**: `anon_*` IDs for unauthenticated browsing with optional auth
+- **CSRF Protection**: Global CSRF guard on all routes
+- **Helmet**: Security headers on backend responses
 
 ---
 
@@ -239,23 +230,15 @@ graph TD
 - **Server Components**: Used for data-fetching and static content
 - **Client Components**: Only for interactive UI (games, chat, forms)
 - **Bundle Analysis**: Run `pnpm --filter web build --analyse` to inspect bundle size
-- **Preloading**: Critical game assets preloaded on homepage
-
----
-
-## Future Enhancements
-
-- ✅ Migrate to **React Server Actions** for form submissions
-- ✅ Add **WebGPU** support for advanced game rendering
-- ✅ Implement **WebRTC** for peer-to-peer multiplayer
-- ✅ Add **dark/light mode auto-detection** based on OS
-- ✅ Integrate **Sentry** for frontend error tracking
-- ✅ Add **analytics** via Plausible or Google Analytics 4
+- **Lazy Loading**: Games loaded via registry pattern on demand
+- **React Compiler**: Enabled for automatic memoization
+- **PWA Caching**: Service worker with Workbox for offline support
 
 ---
 
 ## Documentation References
 
 - [Backend Architecture](../docs/BACKEND_ARCHITECTURE.md)
+- [Socket Architecture](../docs/SOCKET_ARCHITECTURE.md)
 - [Translation Type Safety](../docs/TRANSLATION_TYPE_SAFETY.md)
-- [Playwright E2E Tests](apps/web/README.md#testing-strategy)
+- [Games Feature Architecture](../apps/web/src/features/games/README.md)

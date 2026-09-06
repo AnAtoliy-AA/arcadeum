@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-We take all security vulnerabilities seriously. If you believe you've found a security vulnerability in Arcadeum, please report it to us immediately through our responsible disclosure process.
+We take all security vulnerabilities seriously. If you believe you've found a security vulnerability in Arcadeum Games, please report it to us immediately through our responsible disclosure process.
 
 To report a security vulnerability:
 1. Please do NOT create a public issue on GitHub
@@ -13,7 +13,7 @@ To report a security vulnerability:
 
 ## Security Practices
 
-Arcadeum follows industry-standard security practices across all platforms:
+Arcadeum Games follows industry-standard security practices across all platforms:
 
 ### Backend Security (NestJS)
 - All API endpoints are protected with JWT authentication using 256-bit secret keys
@@ -62,12 +62,12 @@ Arcadeum follows industry-standard security practices across all platforms:
 - **Data Protection**: All sensitive user data is encrypted at rest and in transit. No sensitive data is stored in plain text.
 - **Dependency Management**: All dependencies are scanned weekly using Snyk and npm audit. Vulnerable dependencies are patched within 72 hours of disclosure.
 - **Code Quality**: Code reviews are mandatory for all changes. Security reviews are performed for all features handling sensitive data.
-- **Compliance**: Arcadeum complies with GDPR, CCPA, and other relevant privacy regulations. We do not sell user data to third parties.
+- **Compliance**: Arcadeum Games complies with GDPR, CCPA, and other relevant privacy regulations. We do not sell user data to third parties.
 
 ## Supported Versions
 
 We provide security updates for:
-- The latest stable version of Arcadeum
+- The latest stable version of Arcadeum Games
 - The previous stable version (for a limited time)
 
 ## Response Timeline

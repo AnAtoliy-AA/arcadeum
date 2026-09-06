@@ -1,6 +1,6 @@
-# Arcadeum Web App
+# Arcadeum Games Web App
 
-The Next.js web application for the Arcadeum platform.
+The Next.js web application for the Arcadeum Games platform.
 
 **Live Deployment:** [https://arcadeum.vercel.app/](https://arcadeum.vercel.app/)
 
@@ -8,11 +8,9 @@ The Next.js web application for the Arcadeum platform.
 
 ### Prerequisites
 
-- Node.js v18+
+- Node.js v24+ (see `../../.nvmrc`)
 - pnpm
 - Git
-- MongoDB (for local development)
-- Expo CLI (for mobile integration testing)
 
 ### Installation
 
@@ -63,15 +61,16 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Tech Stack
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Language**: TypeScript (strict mode)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, React Compiler)
+- **Language**: TypeScript 5.9 (strict mode)
 - **Styling**: Tailwind CSS with CSS-variable theming (`@arcadeum/ui` design tokens)
-- **State Management**: Zustand for global state, React Context for scoped state
+- **State Management**: Zustand for global state, React Context for scoped state, React Query for server state
 - **Routing**: Next.js App Router with file-based routing
-- **API Client**: fetch-based client layer (`shared/lib/http`) with Socket.IO for real-time
+- **Real-time**: Socket.IO with AES-GCM encryption (7 named socket singletons)
 - **Testing**: Vitest for unit tests, Playwright for E2E tests
-- **Component Library**: Custom design system with Storybook
-- **Analytics**: Vercel Analytics and Speed Insights
+- **Component Library**: `@arcadeum/ui` (63+ Tailwind components) with Storybook 10
+- **Analytics**: PostHog, Vercel Analytics, and Speed Insights
+- **PWA**: `@ducanh2912/next-pwa` with Workbox caching
 - **Performance**: Next.js Image optimization, code splitting, lazy loading
 
 ## Architecture Documentation
@@ -84,31 +83,49 @@ For a comprehensive overview of the frontend architecture — including componen
 apps/web/
 ├── src/
 │   ├── app/                    # Next.js App Router pages
-│   │   ├── games/              # Game room pages
-│   │   ├── auth/               # Authentication pages
-│   │   ├── dashboard/          # User dashboard
+│   │   ├── [locale]/           # i18n dynamic segment
+│   │   │   └── (app)/          # Route group with 43+ app routes
+│   │   ├── api/                # Next.js API routes
 │   │   └── layout.tsx          # Root layout
-│   ├── features/               # Feature-based organization
-│   │   ├── games/              # Game-related logic
-│   │   │   ├── hooks/          # Custom hooks
-│   │   │   ├── ui/             # UI components
-│   │   │   └── registry.ts     # Game registry
-│   │   ├── auth/               # Authentication logic
-│   │   └── shared/             # Shared utilities
-│   ├── widgets/                # Reusable UI components
-│   │   └── games/              # Game-specific widgets
-│   ├── lib/                    # Utility functions
-│   │   ├── api/                # API clients
-│   │   ├── auth/               # Authentication utilities
-│   │   └── utils/              # General utilities
-│   ├── shared/                 # Shared code across apps
-│   │   └── i18n/               # Translation system
-│   ├── styles/                 # Global styles
-│   ├── types/                  # TypeScript types
-│   └── components/             # Reusable components
+│   ├── features/               # 50+ feature modules
+│   │   ├── auth/               # Authentication
+│   │   ├── games/              # Game logic (registry, hooks, adapters)
+│   │   ├── chat/               # Real-time chat
+│   │   ├── payments/           # Payment processing
+│   │   ├── wallet/             # Virtual wallet
+│   │   ├── shop/               # In-game shop
+│   │   ├── rankings/           # Player rankings
+│   │   ├── tournaments/        # Tournament system
+│   │   ├── achievements/       # Achievement tracking
+│   │   ├── friends/            # Friend list
+│   │   ├── clans/              # Clan system
+│   │   ├── notifications/      # Push & in-app notifications
+│   │   ├── admin/              # Admin panel
+│   │   ├── pwa/                # PWA features
+│   │   └── ...                 # Other features
+│   ├── widgets/                # 12+ widget groups
+│   │   ├── CriticalGame/       # Critical card game
+│   │   ├── SeaBattleGame/      # Sea Battle game
+│   │   ├── HeartsGame/         # Hearts card game
+│   │   ├── GoGame/             # Go board game
+│   │   ├── header/             # App header
+│   │   ├── Footer/             # App footer
+│   │   └── ...                 # Other game widgets
+│   ├── entities/               # Domain entities
+│   │   ├── session/            # Session management
+│   │   ├── leaderboard/        # Leaderboard data
+│   │   └── support/            # Support entity
+│   ├── shared/                 # Cross-cutting concerns
+│   │   ├── api/                # Client-side API modules
+│   │   ├── config/             # Routes, themes, locale config
+│   │   ├── hooks/              # 32+ custom React hooks
+│   │   ├── i18n/               # Translation system (5 locales)
+│   │   ├── lib/                # 55+ utility modules
+│   │   └── types/              # Shared TypeScript interfaces
+│   └── styles/                 # Global styles
 ├── public/                     # Static assets
 ├── .env.example                # Environment variables template
-└── next.config.js              # Next.js configuration
+└── next.config.ts              # Next.js configuration
 ```
 
 ## Environment Variables
@@ -257,15 +274,22 @@ pnpm --filter web storybook
 ### Authentication
 
 - JWT tokens with short expiration (15 minutes)
+- Anonymous user support (`anon_*` IDs) for unauthenticated browsing
+- Refresh token rotation with HttpOnly cookies
 - HTTPS enforcement
 - Secure cookie attributes
-- CSRF protection
+- CSRF protection (global guard)
 
 ### Input Validation
 
-- Server-side validation with Zod
 - Type-safe API responses
 - Sanitize user input
+
+### WebSocket Security
+
+- AES-GCM encryption for all game data
+- Runtime key exchange (keys not bundled)
+- 7 named socket singletons with shared Manager
 
 ### Dependencies
 
@@ -276,9 +300,10 @@ pnpm --filter web storybook
 ## Internationalization (i18n)
 
 - Type-safe translation system (see [Translation Type Safety](../../docs/TRANSLATION_TYPE_SAFETY.md))
-- Hierarchical key structure: `common.actions.login`
-- Fallback to English for missing translations
-- RTL support for right-to-left languages
+- **5 locales**: en, ru, es, fr, by (Belarusian)
+- Server-side: `getTranslations(locale)` | Client-side: `useTranslation()`
+- SEO slugs translated per locale (e.g., `/fr/jeux` instead of `/fr/games`)
+- Completeness test: `vitest run src/shared/i18n/messages/completeness.test.ts`
 
 ## Accessibility
 
@@ -316,4 +341,4 @@ For questions or issues with the web application:
 3. Create an issue with detailed description
 4. Include reproduction steps and screenshots
 
-Thank you for helping us build Arcadeum! 🎮
+Thank you for helping us build Arcadeum Games! 🎮

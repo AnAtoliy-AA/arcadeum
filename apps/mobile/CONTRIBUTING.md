@@ -1,4 +1,4 @@
-# Contributing to Arcadeum Mobile App
+# Contributing to Arcadeum Games Mobile App
 
 [General Contributing Guidelines](../../CONTRIBUTING.md) | [Web App Docs](../web/CONTRIBUTING.md) | [Backend Docs](../be/CONTRIBUTING.md)
 
@@ -24,9 +24,8 @@ This document provides comprehensive guidelines for developers who want to contr
 
 ### Prerequisites
 
-- Node.js 18+ (use [nvm](https://github.com/nvm-sh/nvm) for version management)
+- Node.js v24+ (use [nvm](https://github.com/nvm-sh/nvm) for version management, see `../../.nvmrc`)
 - pnpm (`npm install -g pnpm`)
-- Expo CLI (`npm install -g expo-cli`)
 - Android Studio (for Android development)
 - Xcode (for iOS development, macOS only)
 
@@ -55,12 +54,12 @@ cp .env.example .env
 
 | Layer            | Technology                                     |
 | ---------------- | ---------------------------------------------- |
-| Framework        | React Native 0.81.5 with Expo SDK 54           |
+| Framework        | React Native 0.86 with Expo SDK 57             |
 | Navigation       | Expo Router (file-based routing)               |
-| State Management | React Context API                              |
-| Styling          | Custom theme system + StyleSheet               |
-| Real-time        | Socket.io with optional AES-256-GCM encryption |
-| Authentication   | OAuth 2.0 (Google) + Local email/password      |
+| State Management | React Query (`@tanstack/react-query`)          |
+| Styling          | StyleSheet + custom theme system               |
+| Real-time        | Socket.IO with optional AES-256-GCM encryption |
+| Authentication   | OAuth 2.0 (Google)                             |
 
 ### Directory Structure
 
@@ -778,4 +777,4 @@ For questions about contributing:
 2. Review example implementations in the codebase
 3. Open an issue for specific questions
 
-Thank you for contributing to Arcadeum! 🎮
+Thank you for contributing to Arcadeum Games! 🎮

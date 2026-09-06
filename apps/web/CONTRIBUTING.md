@@ -1,4 +1,4 @@
-# Contributing to Arcadeum Web App
+# Contributing to Arcadeum Games Web App
 
 [General Contributing Guidelines](../../CONTRIBUTING.md) | [Mobile App Docs](../mobile/CONTRIBUTING.md) | [Backend Docs](../be/CONTRIBUTING.md)
 
@@ -24,7 +24,7 @@ This document provides comprehensive guidelines for developers who want to contr
 
 ### Prerequisites
 
-- Node.js v18+
+- Node.js v24+ (see `../../.nvmrc`)
 - pnpm
 
 ### First-Time Setup
@@ -51,7 +51,7 @@ cp .env.example .env.local
 
 | Layer            | Technology                                     |
 | ---------------- | ---------------------------------------------- |
-| Framework        | Next.js 16.1.7                                 |
+| Framework        | Next.js 16.3 (App Router, React Compiler) |
 | Language         | TypeScript                                     |
 | Styling          | Tailwind CSS + CSS Variables                   |
 | State Management | Zustand + React Context                        |
@@ -99,7 +99,7 @@ apps/web/
 
 ### Key Concepts
 
-#### 1. App Router (Next.js 13+)
+#### 1. App Router (Next.js 16)
 
 Pages are defined by file structure in `app/`:
 
@@ -694,4 +694,4 @@ For questions about contributing:
 2. Review example implementations in the codebase
 3. Open an issue for specific questions
 
-Thank you for contributing to Arcadeum! 🎮
+Thank you for contributing to Arcadeum Games! 🎮

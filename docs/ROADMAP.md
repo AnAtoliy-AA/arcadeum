@@ -1,4 +1,4 @@
-# Arcadeum Platform Expansion Plan
+# Arcadeum Games Platform Expansion Plan
 
 ## Current State Summary (Updated 2026-08-27)
 
@@ -38,7 +38,7 @@
 - **North-star metric:** Number of people who actually play a game
 - **Core loop:** "Want to play Battleship with your friend? Click this link" → Rematch → "Try another game" → "Come back tomorrow"
 - **Game tiering:** Sea Battle (Tier 1 acquisition), Tic-Tac-Toe/Chess (Tier 2), Checkers/Cascade/Critical/Cat Dash (Tier 3 retention)
-- **Key insight:** Don't make Arcadeum famous first. Make one game famous first.
+- **Key insight:** Don't make Arcadeum Games famous first. Make one game famous first.
 
 **Audit scores (2026-08-27):**
 
@@ -1067,12 +1067,12 @@ Not 1,000 registered accounts. Since the no-signup model is an advantage, measur
 | **Tier 2 — Acquisition**         | Tic-Tac-Toe, Chess                    | Secondary search terms             |
 | **Tier 3 — Retention/Discovery** | Checkers, Cascade, Critical, Cat Dash | Introduce after first game         |
 
-**Core insight:** Don't make Arcadeum famous first. Make one game famous first. If Sea Battle gets thousands of players, Arcadeum automatically gets thousands of opportunities to introduce those players to Chess, Checkers, Cascade, etc.
+**Core insight:** Don't make Arcadeum Games famous first. Make one game famous first. If Sea Battle gets thousands of players, Arcadeum Games automatically gets thousands of opportunities to introduce those players to Chess, Checkers, Cascade, etc.
 
 **The loop:**
 
 ```
-Search/Social → Sea Battle → Arcadeum → another game → returning user
+Search/Social → Sea Battle → Arcadeum Games → another game → returning user
 ```
 
 ---
@@ -1113,7 +1113,7 @@ Google / Reddit / TikTok / Discord
           ↓
   "Try another game"
           ↓
-      Arcadeum
+      Arcadeum Games
 ```
 
 **Files to modify:**
@@ -1151,7 +1151,7 @@ Don't give the visitor six decisions before they've played.
 **Marketing message:**
 
 - **Promote:** "Play Battleship online with your friends — free, no download."
-- **NOT:** "Arcadeum is a new gaming platform!" (that's weak)
+- **NOT:** "Arcadeum Games is a new gaming platform!" (that's weak)
 
 **Files to modify:**
 
@@ -1513,7 +1513,7 @@ Fix quality issues that destroy trust before driving traffic.
 
 **Goal:** Eventually reach **>1.0** (one player brings another player on average).
 
-**Why Arcadeum is suited for this:** Multiplayer naturally creates invitations. The product is the marketing.
+**Why Arcadeum Games is suited for this:** Multiplayer naturally creates invitations. The product is the marketing.
 
 ---
 
@@ -1526,7 +1526,7 @@ Fix quality issues that destroy trust before driving traffic.
 | ❌ Spend weeks on branding          | Brand is good enough to start acquiring users                       |
 | ❌ Spam Reddit                      | Will get ignored/removed; communities dislike low-effort self-promo |
 | ❌ Chase followers                  | 10,000 followers who don't play are worthless                       |
-| ❌ Make "Arcadeum" the main message | Make the **game** the marketing message                             |
+| ❌ Make "Arcadeum Games" the main message | Make the **game** the marketing message                             |
 
 ---
 
@@ -1661,7 +1661,7 @@ Foster community accountability and friendly rivalry through weekly division lad
 
 **Effort: Easy-Medium (2-4 days)**
 
-Intelligent, non-intrusive re-engagement hooks to bring lapsed visitors back to Arcadeum.
+Intelligent, non-intrusive re-engagement hooks to bring lapsed visitors back to Arcadeum Games.
 
 - Friendly rivalry triggers: "_Your friend Sam just beat your high score in Cascade! Can you beat it?_"
 - Streak expiration alerts: "_Your 7-day streak will expire in 3 hours! Complete today's daily puzzle._"

@@ -76,7 +76,7 @@ For answers to common questions about this code of conduct, see the FAQ at [http
 
 ## Reporting
 
-If you experience or witness unacceptable behavior, or have any other concerns, please contact the Arcadeum team at [security@arcadeum.com](mailto:security@arcadeum.com). All reports will be reviewed and investigated promptly and fairly.
+If you experience or witness unacceptable behavior, or have any other concerns, please contact the Arcadeum Games team at [security@arcadeum.com](mailto:security@arcadeum.com). All reports will be reviewed and investigated promptly and fairly.
 
 We value your participation and look forward to a thriving, inclusive community!
 

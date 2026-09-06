@@ -1,4 +1,4 @@
-# Arcadeum Monorepo
+# Arcadeum Games Monorepo
 
 ## Structure
 
@@ -104,7 +104,7 @@ PR titles are validated by CI (`branch-guard.yml`). The title must match the tar
 - `/commit` — create a commit following Conventional Commits with ARC-XXX scope
 - `/new-web-page` — add a Next.js App Router page (`page.tsx` + `*Client.tsx` + `*View.tsx` + i18n)
 - `/new-be-module` — add a NestJS module (controller, service, module, DTOs, Mongoose schema)
-- `/new-game` — add a complete multiplayer game end-to-end (BE engine/service/gateway/bot, web widget, landing, registries, i18n, tests, PR)
+- `/new-game` — add a complete multiplayer game end-to-end (BE engine/service/gateway/bot, web widget, landing, registries, i18n, tests, PR) for Arcadeum Games
 - `/new-mobile-screen` — add an Expo Router screen with i18n and RN styling (StyleSheet + useThemedStyles)
 - `/new-ui-component` — add a shared Tailwind component to `packages/ui` (`@arcadeum/ui`)
 - `/check-ui-components` — audit existing `@arcadeum/ui` components before implementing any UI; reuse or add to `packages/ui`

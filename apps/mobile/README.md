@@ -1,6 +1,6 @@
-# Welcome to Arcadeum Mobile App 👋
+# Welcome to Arcadeum Games Mobile App 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app) for the Arcadeum gaming platform.
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app) for the Arcadeum Games gaming platform.
 
 ## Architecture Overview
 
@@ -58,12 +58,11 @@ apps/mobile/
 
 ### Prerequisites
 
-- Node.js v18+
+- Node.js v24+ (see `../../.nvmrc`)
 - pnpm
 - Git
 - Xcode (for iOS development)
 - Android Studio (for Android development)
-- Expo CLI (`npm install -g expo-cli`)
 
 ### Installation
 
@@ -87,7 +86,7 @@ cp .env.example .env
 | Variable                            | Description                           | Example                                             |
 | ----------------------------------- | ------------------------------------- | --------------------------------------------------- |
 | `APP_SCHEME`                        | App deep link scheme (non-OAuth)      | `mobile`                                            |
-| `EXPO_PUBLIC_APP_NAME`              | Display name shown in Expo clients    | `Arcadeum`                                          |
+| `EXPO_PUBLIC_APP_NAME`              | Display name shown in Expo clients    | `Arcadeum Games`                                          |
 | `EXPO_PUBLIC_SUPPORT_URL`           | Support website URL                   | `https://arcadeum.com/support`                      |
 | `EXPO_PUBLIC_SUPPORT_COFFEE_URL`    | Coffee donation URL                   | `https://buymeacoffee.com/arcadeum`                 |
 | `EXPO_PUBLIC_SUPPORT_IBAN`          | Bank account for donations            | `DE44500105170648489890`                            |
@@ -183,11 +182,11 @@ app/
 
 ### State Management
 
-The app uses **Zustand** for state management:
+The app uses **React Query** (`@tanstack/react-query`) for server state and **React Context** for scoped state:
 
-- `auth.store.ts`: Authentication state (user, tokens, loading)
-- `game.store.ts`: Game state (current game, session, players)
-- `ui.store.ts`: UI state (modals, notifications, loading)
+- `SessionTokensProvider`: Authentication state (user, tokens, loading)
+- `SettingsProvider`: User preferences (theme, notifications)
+- React Query hooks for API data fetching with caching and refetching
 
 ### Internationalization (i18n)
 
@@ -262,13 +261,7 @@ eas build --platform android --profile development
 - Test business logic and hooks
 - Mock API calls with `jest.mock()`
 - Use `@testing-library/react-native` for component testing
-
-### E2E Tests (Detox)
-
-- Test user flows across multiple screens
-- Test authentication flows
-- Test game interactions
-- Run in headless mode for CI
+- Test runner: `jest-expo`
 
 ### Accessibility Tests
 
@@ -431,7 +424,7 @@ For questions or issues with the mobile application:
 3. Create an issue with detailed description
 4. Include reproduction steps and screenshots
 
-Thank you for helping us build Arcadeum! 🎮
+Thank you for helping us build Arcadeum Games! 🎮
 
 Tip: For Android dev on device/emulator, try:
 

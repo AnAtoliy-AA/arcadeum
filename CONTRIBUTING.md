@@ -1,8 +1,8 @@
-# Contributing to Arcadeum
+# Contributing to Arcadeum Games
 
 Thank you for your interest in contributing to Arcadeum! This document outlines the general guidelines and conventions for contributing to the entire project.
 
-Arcadeum is a monorepo containing several applications and services. For specific instructions on each part of the project, please refer to their respective contributing guides:
+Arcadeum Games is a monorepo containing several applications and services. For specific instructions on each part of the project, please refer to their respective contributing guides:
 
 - [Web Application](apps/web/CONTRIBUTING.md)
 - [Mobile Application](apps/mobile/CONTRIBUTING.md)
@@ -251,7 +251,7 @@ Add screenshots or screen recordings to demonstrate UI changes.
 
 ### Shared Code
 
-- Place reusable code in `apps/shared` or create a new package if needed
+- Place reusable code in `packages/` (e.g., `packages/ui`, `packages/games-core`)
 - Avoid circular dependencies between apps
 - Keep shared code minimal and focused
 
@@ -277,6 +277,7 @@ Add screenshots or screen recordings to demonstrate UI changes.
 - `apps/web`: Next.js web application
 - `apps/be`: NestJS API server
 - `apps/tg-bot`: Telegram bot
+- `packages/games-core`: Framework-agnostic game engines and bot cores
 - `packages/ui`: Shared UI component library (`@arcadeum/ui`)
 - `docs`: General project documentation
 - `scripts`: Maintenance and build scripts
@@ -451,4 +452,4 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 All contributions to Arcadeum are made under the [MIT License](LICENSE). By contributing, you agree that your contributions will be licensed under the same terms.
 
-Thank you for helping us build Arcadeum! 🎮
+Thank you for helping us build Arcadeum Games! 🎮

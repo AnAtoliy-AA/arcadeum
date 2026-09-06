@@ -1,6 +1,6 @@
-# Arcadeum
+# Arcadeum Games
 
-A monorepo for the Arcadeum gaming platform, featuring a mobile app, web application, and backend API.
+A monorepo for the Arcadeum Games gaming platform, featuring a mobile app, web application, and backend API.
 
 **Live Demo:** [https://arcadeum.games](https://arcadeum.games/)
 
@@ -29,18 +29,21 @@ Refer to the individual app READMEs for detailed setup and configuration instruc
 This Turborepo workspace is managed with `pnpm` and contains:
 
 - **`apps/mobile`**: Expo React Native app (iOS/Android)
-- **`apps/web`**: Next.js web application
-- **`apps/be`**: NestJS API server
-- **`packages/ui`**: Shared `@arcadeum/ui` component library (Tailwind + CSS-variable theming)
+- **`apps/web`**: Next.js 16 web application
+- **`apps/be`**: NestJS 11 API server
+- **`apps/tg-bot`**: Telegram bot (PumpFun monitoring)
+- **`packages/ui`**: Shared `@arcadeum/ui` component library (63+ Tailwind components)
+- **`packages/games-core`**: Framework-agnostic game engines and bot cores
 - **`docs`**: Comprehensive project documentation
 - **`scripts`**: Maintenance and build scripts
 
 ## Prerequisites
 
-- **Node.js**: v18+ recommended
-- **pnpm**: v9.15.0+ (Corepack enabled or installed globally — see `packageManager` in `package.json`)
+- **Node.js**: v24+ (see `.nvmrc`)
+- **pnpm**: v9.15.9+ (Corepack enabled or installed globally — see `packageManager` in `package.json`)
 - **Git**: For version control
 - **MongoDB**: For backend development (local or cloud)
+- **Redis**: Required for backend caching and BullMQ job queues
 - **Expo**: For mobile development — invoked via `npx expo` (no global install needed; the legacy `expo-cli` package is deprecated)
 
 ## Quick Start
@@ -284,6 +287,6 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 ## License
 
-All contributions to Arcadeum are made under the [MIT License](LICENSE). By contributing, you agree that your contributions will be licensed under the same terms.
+All contributions to Arcadeum Games are made under the [MIT License](LICENSE). By contributing, you agree that your contributions will be licensed under the same terms.
 
-Thank you for helping us build Arcadeum! 🎮
+Thank you for helping us build Arcadeum Games! 🎮

@@ -102,10 +102,10 @@ export function ContactSidePanel({
         </span>
         <Typography weight="700" className="mt-2">
           <a
-            href={`mailto:${side?.pressEmail ?? 'hello@arcadeum.games'}`}
+            href={`mailto:${appConfig.supportEmail}`}
             className="text-[var(--accent)] underline"
           >
-            {side?.pressEmail ?? 'hello@arcadeum.games'}
+            {appConfig.supportEmail}
           </a>
         </Typography>
         <Typography variant="caption" alpha="medium" className="mt-1">

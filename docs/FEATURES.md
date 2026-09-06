@@ -1,4 +1,4 @@
-# Arcadeum — Implemented Features
+# Arcadeum Games — Implemented Features
 
 Comprehensive list of all implemented features across the platform.
 

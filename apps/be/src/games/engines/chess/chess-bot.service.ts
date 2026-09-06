@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
+import { Inject, Injectable, Logger, forwardRef, Optional } from '@nestjs/common';
 import { ChessService } from '../../chess/chess.service';
 import type { ChessService as IChessService } from '../../chess/chess.service';
 import type {
@@ -12,6 +12,7 @@ import {
   type BotPersonality,
 } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../../common/ai-vs-ai';
+import { ChessStockfishService } from '../../chess/engine/chess-stockfish.service';
 
 export interface ChessBotMovePayload {
   fromFile: string;
@@ -36,6 +37,7 @@ export class ChessBotService extends ChessBot {
   constructor(
     @Inject(forwardRef(() => ChessService))
     private readonly chessService: IChessService,
+    @Optional() private readonly stockfishService: ChessStockfishService | null,
   ) {
     super();
   }
@@ -145,13 +147,33 @@ export class ChessBotService extends ChessBot {
         : null;
       this.setPersonality(personality);
 
-      const timeBudget = this.computeTimeBudget(state);
+      const isExpert = state.botDifficulty === 'expert';
+      let move: ChessMove | null = null;
       const startTime = Date.now();
-      const move = this.findBestMoveWithTimeBudget(
-        state,
-        timeBudget,
-        startTime,
-      );
+
+      if (isExpert && this.stockfishService?.isReady()) {
+        const { toFen } = await import('@arcadeum/games-core/games/chess/chess-fen');
+        const fen = toFen(state);
+        const sfResult = await this.stockfishService.getBestMove(fen, 20, 5000);
+        if (sfResult.bestMove) {
+          const fromStr = sfResult.bestMove.slice(0, 2);
+          const toStr = sfResult.bestMove.slice(2, 4);
+          const promoChar = sfResult.bestMove.slice(4);
+          move = {
+            from: { file: fromStr[0] as ChessMove['from']['file'], rank: parseInt(fromStr[1]) as ChessMove['from']['rank'] },
+            to: { file: toStr[0] as ChessMove['to']['file'], rank: parseInt(toStr[1]) as ChessMove['to']['rank'] },
+            piece: state.board[fromStr.charCodeAt(0) - 97]?.[8 - parseInt(fromStr[1])]?.type ?? 'pawn',
+            promotion: promoChar || undefined,
+          } as unknown as ChessMove;
+          this.logger.log(`[Bot] Stockfish best move for ${state.currentTurnColor}: ${sfResult.bestMove}`);
+        }
+      }
+
+      if (!move) {
+        const timeBudget = this.computeTimeBudget(state);
+        move = this.findBestMoveWithTimeBudget(state, timeBudget, startTime);
+      }
+
       if (!move) return;
       const delay =
         getAiMoveDelayMs(session) ??

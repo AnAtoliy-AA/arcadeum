@@ -7,9 +7,11 @@
 import { Module } from '@nestjs/common';
 import { ChessStockfishService } from './chess-stockfish.service';
 import { EconomyModule } from '../../../economy/economy.module';
+import { TablebaseModule } from './tablebase.module';
+import { ChessSubscriptionModule } from '../subscription/chess-subscription.module';
 
 @Module({
-  imports: [EconomyModule],
+  imports: [EconomyModule, TablebaseModule, ChessSubscriptionModule],
   providers: [ChessStockfishService],
   exports: [ChessStockfishService],
 })

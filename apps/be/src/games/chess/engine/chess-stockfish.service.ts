@@ -15,12 +15,14 @@ import { spawn, type ChildProcess } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 import { EconomySettingsService } from '../../../economy/economy-settings.service';
+import { SyzygyTablebaseService } from './syzygy.service';
 import type {
   EngineEval,
   GameAnalysisResult,
   AnalyzePositionRequest,
   AnalyzeGameRequest,
   EngineLine,
+  PuzzleHint,
 } from './chess-stockfish.types';
 
 interface PendingRequest {
@@ -59,7 +61,10 @@ export class ChessStockfishService implements OnModuleDestroy {
   private readonly binaryPath: string;
   private initialized = false;
 
-  constructor(private readonly economy: EconomySettingsService) {
+  constructor(
+    private readonly economy: EconomySettingsService,
+    private readonly tablebase: SyzygyTablebaseService,
+  ) {
     // 1 instance per container — each handles ~20 analyses/min.
     // Scale via STOCKFISH_POOL_SIZE env var if needed later.
     this.poolSize = parseInt(process.env.STOCKFISH_POOL_SIZE ?? '1', 10);
@@ -145,8 +150,89 @@ export class ChessStockfishService implements OnModuleDestroy {
   }
 
   /**
+   * Analyze a single position with multi-PV (returns all alternative lines).
+   */
+  async analyzePositionMultiPV(
+    fen: string,
+    depth: number = LIVE_DEPTH,
+    timeMs: number = LIVE_TIME_MS,
+    pvCount: number = 3,
+  ): Promise<EngineEval & { alternatives: Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> }> {
+    const instance = this.findFreeInstance();
+    if (!instance) {
+      return { cp: 0, mate: null, pv: [], depth: 0, selDepth: 0, nodes: 0, nps: 0, timeMs: 0, alternatives: [] };
+    }
+
+    const lines: EngineEval[] = [];
+    const deadline = Date.now() + Math.min(timeMs + 10000, MAX_TIME_MS + 10000);
+
+    await new Promise<EngineEval>((resolve, reject) => {
+      instance.busy = true;
+      instance.pending = {
+        id: `req-${Date.now()}`,
+        resolve,
+        reject,
+        deadline,
+        lines,
+      };
+
+      instance.process.stdin?.write('setoption name MultiPV value ' + pvCount + '\n');
+      instance.process.stdin?.write(`position fen ${fen}\n`);
+      instance.process.stdin?.write(`go depth ${depth} movetime ${timeMs}\n`);
+    });
+
+    instance.process.stdin?.write('setoption name MultiPV value 3\n');
+
+    const lastLine = lines[lines.length - 1] ?? { cp: 0, mate: null, pv: [], depth: 0, selDepth: 0, nodes: 0, nps: 0, timeMs: 0 };
+
+    const byDepth = new Map<number, EngineEval[]>();
+    for (const l of lines) {
+      const d = l.depth;
+      if (!byDepth.has(d)) byDepth.set(d, []);
+      byDepth.get(d)!.push(l);
+    }
+
+    const maxDepth = Math.max(...Array.from(byDepth.keys()), 0);
+    const topLines = byDepth.get(maxDepth) ?? [];
+
+    const alternatives = topLines.slice(1).map((l) => ({
+      move: l.pv[0] ?? '',
+      cp: l.cp,
+      mate: l.mate,
+      pv: l.pv,
+    }));
+
+    return { ...lastLine, alternatives };
+  }
+
+  /**
+   * Get a puzzle hint: best move + alternatives for the position.
+   */
+  async getPuzzleHint(fen: string): Promise<PuzzleHint | null> {
+    if (!this.isReady()) return null;
+
+    const result = await this.analyzePositionMultiPV(fen, 18, 3000, 3);
+    return {
+      bestMove: result.pv[0] ?? '',
+      eval: {
+        cp: result.cp,
+        mate: result.mate,
+        pv: result.pv,
+        depth: result.depth,
+        selDepth: result.selDepth,
+        nodes: result.nodes,
+        nps: result.nps,
+        timeMs: result.timeMs,
+      },
+      pv: result.pv,
+      alternatives: result.alternatives,
+    };
+  }
+
+  /**
    * Analyze a full game from position history.
    * Uses deeper analysis (depth 18, ~3s per position) for accurate results.
+   * Also probes tablebase for endgame positions and computes anti-cheat data.
    */
   async analyzeGame(request: AnalyzeGameRequest): Promise<GameAnalysisResult> {
     const deepEnabled =
@@ -158,29 +244,28 @@ export class ChessStockfishService implements OnModuleDestroy {
       MAX_TIME_MS,
     );
 
-    // Position history now contains full FENs — use directly
     const fullFens = request.positionHistory;
 
     const evals: (number | null)[] = [];
     const moves: EngineLine[] = [];
     let prevEval = 0;
+    let whiteEngineMatchCount = 0;
+    let blackEngineMatchCount = 0;
+    let whiteTotalMoves = 0;
+    let blackTotalMoves = 0;
 
     for (let i = 0; i < fullFens.length - 1; i++) {
       const fen = fullFens[i];
       if (!fen) continue;
 
-      const eval_ = await this.analyzePosition({
-        fen,
-        depth,
-        timeMs: timeMsPerPly,
-      });
+      const multiPVResult = await this.analyzePositionMultiPV(fen, depth, timeMsPerPly, 3);
 
       const currentEval =
-        eval_.mate !== null
-          ? eval_.mate > 0
+        multiPVResult.mate !== null
+          ? multiPVResult.mate > 0
             ? 10000
             : -10000
-          : (eval_.cp ?? 0);
+          : (multiPVResult.cp ?? 0);
 
       evals.push(currentEval);
 
@@ -190,19 +275,28 @@ export class ChessStockfishService implements OnModuleDestroy {
       const moverDelta = color === 'white' ? delta : -delta;
       const loss = Math.max(0, -moverDelta);
 
+      const bestMove = multiPVResult.pv[0] ?? '';
+      const playedMove = moveNotation;
+      const isEngineMove = bestMove && playedMove && bestMove === playedMove;
+
+      if (color === 'white') {
+        whiteTotalMoves++;
+        if (isEngineMove) whiteEngineMatchCount++;
+      } else {
+        blackTotalMoves++;
+        if (isEngineMove) blackEngineMatchCount++;
+      }
+
       moves.push({
         quality: this.classifyMove(loss, prevEval, currentEval, color),
         move: moveNotation,
         evalAfter: currentEval,
-        mateAfter: eval_.mate,
+        mateAfter: multiPVResult.mate,
         loss,
-        bestMove: eval_.pv[0] ?? '',
-        bestPv: eval_.pv,
+        bestMove,
+        bestPv: multiPVResult.pv,
+        alternatives: multiPVResult.alternatives,
       });
-
-      if (loss > 50) {
-        this.logger.log(`[Stockfish] Move ${i}: loss=${loss}cp eval=${currentEval} (prev=${prevEval}) quality=${this.classifyMove(loss, prevEval, currentEval, color)}`);
-      }
 
       prevEval = currentEval;
     }
@@ -223,6 +317,11 @@ export class ChessStockfishService implements OnModuleDestroy {
       );
     }
 
+    let tablebaseResult: GameAnalysisResult['tablebase'] = null;
+    if (lastFen) {
+      tablebaseResult = await this.tablebase.probe(lastFen);
+    }
+
     const whiteMoves = moves.filter((_, i) => i % 2 === 0);
     const blackMoves = moves.filter((_, i) => i % 2 === 1);
 
@@ -238,6 +337,13 @@ export class ChessStockfishService implements OnModuleDestroy {
         inaccuracy: moves.filter((m) => m.quality === 'inaccuracy').length,
         mistake: moves.filter((m) => m.quality === 'mistake').length,
         blunder: moves.filter((m) => m.quality === 'blunder').length,
+      },
+      tablebase: tablebaseResult,
+      antiCheat: {
+        whiteEngineMatchCount,
+        blackEngineMatchCount,
+        whiteTotalMoves,
+        blackTotalMoves,
       },
     };
   }

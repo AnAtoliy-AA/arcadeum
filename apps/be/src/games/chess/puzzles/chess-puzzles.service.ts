@@ -7,6 +7,7 @@ import {
   ChessPuzzleUser,
   type ChessPuzzleUserDocument,
 } from './chess-puzzle-user.schema';
+import { ChessStockfishService } from '../engine/chess-stockfish.service';
 
 /** Strip MongoDB operator prefixes from user-supplied strings (CodeQL fix). */
 function sanitize(str: string): string {
@@ -27,6 +28,7 @@ export class ChessPuzzlesService {
     private readonly puzzleModel: Model<ChessPuzzleDocument>,
     @InjectModel(ChessPuzzleUser.name, OCI_CONNECTION)
     private readonly puzzleUserModel: Model<ChessPuzzleUserDocument>,
+    private readonly stockfishService: ChessStockfishService,
   ) {}
 
   async importPuzzles(
@@ -237,5 +239,25 @@ export class ChessPuzzlesService {
       { $sort: { count: -1 } },
       { $project: { theme: '$_id', count: 1, _id: 0 } },
     ]);
+  }
+
+  async getHint(fen: string, userId: string): Promise<{
+    bestMove: string;
+    eval: { cp: number | null; mate: number | null; pv: string[] };
+    alternatives: Array<{ move: string; cp: number | null; mate: number | null }>;
+  } | null> {
+    if (!this.stockfishService.isReady()) {
+      this.logger.warn('Stockfish not ready for puzzle hint');
+      return null;
+    }
+
+    const hint = await this.stockfishService.getPuzzleHint(fen);
+    if (!hint) return null;
+
+    return {
+      bestMove: hint.bestMove,
+      eval: { cp: hint.eval.cp, mate: hint.eval.mate, pv: hint.pv },
+      alternatives: hint.alternatives,
+    };
   }
 }

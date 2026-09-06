@@ -8,6 +8,7 @@ import {
 import { ChessPuzzlesService } from './chess-puzzles.service';
 import { ChessPuzzlesController } from './chess-puzzles.controller';
 import { OCI_CONNECTION } from '../../../common/providers/mongo-connections.provider';
+import { ChessStockfishModule } from '../engine/chess-stockfish.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { OCI_CONNECTION } from '../../../common/providers/mongo-connections.prov
       ],
       OCI_CONNECTION,
     ),
+    ChessStockfishModule,
   ],
   controllers: [ChessPuzzlesController],
   providers: [ChessPuzzlesService],

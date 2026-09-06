@@ -14,6 +14,12 @@ export interface EngineLine {
   loss: number;
   bestMove: string;
   bestPv: string[];
+  alternatives?: Array<{
+    move: string;
+    cp: number | null;
+    mate: number | null;
+    pv: string[];
+  }>;
 }
 
 export interface GameAnalysisResult {
@@ -29,6 +35,23 @@ export interface GameAnalysisResult {
     mistake: number;
     blunder: number;
   };
+  tablebase?: {
+    category: string;
+    dtz: number | null;
+    dtm: number | null;
+  } | null;
+  antiCheat?: {
+    whiteEngineMatchCount: number;
+    blackEngineMatchCount: number;
+    whiteTotalMoves: number;
+    blackTotalMoves: number;
+  };
+}
+
+export interface PuzzleHint {
+  bestMove: string;
+  eval: { cp: number | null; mate: number | null; pv: string[] };
+  alternatives: Array<{ move: string; cp: number | null; mate: number | null }>;
 }
 
 export async function analyzeGameWithStockfish(
@@ -54,6 +77,17 @@ export async function analyzePositionWithStockfish(
     return await apiClient.post<{ cp: number | null; mate: number | null; pv: string[] }>(
       '/chess/engine/analyze',
       { fen, depth, timeMs },
+    );
+  } catch {
+    return null;
+  }
+}
+
+export async function getPuzzleHint(fen: string): Promise<PuzzleHint | null> {
+  try {
+    return await apiClient.post<PuzzleHint>(
+      '/chess/engine/puzzle-hint',
+      { fen },
     );
   } catch {
     return null;

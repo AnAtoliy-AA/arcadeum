@@ -96,6 +96,7 @@ import { ChessAnticheatModule } from './chess/anticheat/chess-anticheat.module';
 import { ChessSubscriptionModule } from './chess/subscription/chess-subscription.module';
 import { ChessCosmeticsModule } from './chess/cosmetics/chess-cosmetics.module';
 import { ChessBattlePassModule } from './chess/battlepass/chess-battlepass.module';
+import { ChessBroadcastModule } from './chess/broadcast/chess-broadcast.module';
 import { CheckersGateway } from './checkers.gateway';
 import { CheckersService } from './checkers/checkers.service';
 import { CheckersBotService } from './checkers/checkers-bot.service';
@@ -209,6 +210,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     ChessSubscriptionModule,
     ChessCosmeticsModule,
     ChessBattlePassModule,
+    ChessBroadcastModule,
   ],
   controllers: [
     GamesController,

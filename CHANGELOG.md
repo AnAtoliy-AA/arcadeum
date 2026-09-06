@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.23] - 2026-09-06
+
+### Added
+- implement comprehensive platform improvements
+
+### Fixed
+- update E2E test for enabled Apple/Discord OAuth buttons
+- add --forceExit to backend E2E tests to prevent Jest hanging
+- properly close Redis connections on module destroy
+- add forceExit to jest-e2e config to prevent Jest hanging
+- use Logger instead of console.warn in DiscordOAuthService
+- use $eq operator for magic-link token query (CodeQL)
+- remove ineffective lgtm comments, stay under 500 line limit
+- use correct CodeQL suppression format (lgtm)
+- resolve remaining CodeQL alerts
+- resolve all CI failures
+- resolve ESLint errors in useLiveStats and useOAuth
+- update auth test for enabled Apple/Discord buttons
+- use existing i18n keys for referrals error state
+- resolve remaining TypeScript errors
+- resolve TypeScript errors in web build
+- add name property to ExpoManifest2 type
+
+
 ## [1.28.22] - 2026-09-06
 
 ### Added

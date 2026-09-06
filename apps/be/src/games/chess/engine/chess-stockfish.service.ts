@@ -41,11 +41,11 @@ interface EngineInstance {
 }
 
 /** Live eval during games — fast, lightweight */
-const LIVE_DEPTH = 6;
+const LIVE_DEPTH = 12;
 const LIVE_TIME_MS = 1500;
 
 /** Post-game analysis — thorough, accurate */
-const ANALYSIS_DEPTH = 12;
+const ANALYSIS_DEPTH = 18;
 const ANALYSIS_TIME_MS = 3000;
 
 const MAX_DEPTH = 24;
@@ -128,7 +128,7 @@ export class ChessStockfishService implements OnModuleDestroy {
 
   /**
    * Analyze a single position.
-   * Used by gateway for live eval (depth 6, ~200ms).
+   * Used by gateway for live eval (depth 12, ~500ms).
    * Depth 24 only allowed when admin enables stockfish_deep_analysis.
    */
   async analyzePosition(request: AnalyzePositionRequest): Promise<EngineEval> {
@@ -146,7 +146,7 @@ export class ChessStockfishService implements OnModuleDestroy {
 
   /**
    * Analyze a full game from position history.
-   * Uses deeper analysis (depth 12, ~1.5s per position) for accurate results.
+   * Uses deeper analysis (depth 18, ~3s per position) for accurate results.
    */
   async analyzeGame(request: AnalyzeGameRequest): Promise<GameAnalysisResult> {
     const deepEnabled =

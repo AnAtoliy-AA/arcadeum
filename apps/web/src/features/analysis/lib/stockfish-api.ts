@@ -38,7 +38,7 @@ export async function analyzeGameWithStockfish(
   try {
     return await apiClient.post<GameAnalysisResult>(
       '/chess/engine/analyze-game',
-      { positionHistory, notations, depth: 12, timeMsPerPly: 1500 },
+      { positionHistory, notations, depth: 18, timeMsPerPly: 3000 },
     );
   } catch {
     return null;

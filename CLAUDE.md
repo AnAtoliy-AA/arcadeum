@@ -1,4 +1,4 @@
-# Arcadeum Monorepo
+# Arcadeum Games Monorepo
 
 ## Structure
 
@@ -9,7 +9,7 @@
 
 ## Package Manager & Build
 
-- **pnpm** (v9.15.0) with workspaces
+- **pnpm** (v9.15.9) with workspaces
 - **Turborepo** orchestrates builds across apps/packages
 - Run tasks from repo root: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm lint`
 

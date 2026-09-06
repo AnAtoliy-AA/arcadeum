@@ -27,47 +27,78 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository for the **Arcadeum** API Server.
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository for the **Arcadeum Games** API Server.
 
 ## Architecture Overview
 
-Arcadeum's backend follows a **modular, scalable game engine architecture** designed to support 200+ games with maximum code reuse and separation of concerns.
+Arcadeum Games' backend follows a **modular, scalable game engine architecture** designed to support 200+ games with maximum code reuse and separation of concerns.
+
+### Tech Stack
+
+| Layer          | Technology                                    |
+| -------------- | --------------------------------------------- |
+| Framework      | NestJS 11.2                                   |
+| Language       | TypeScript 5.9                                |
+| Database       | MongoDB 7 + Mongoose 8.24                     |
+| Cache          | Redis via `cache-manager-ioredis-yet`         |
+| Queue          | BullMQ 6.3 + `@nestjs/bullmq`                |
+| Validation     | class-validator + class-transformer           |
+| Authentication | Passport + JWT + Google OAuth                 |
+| Real-time      | Socket.IO 4.8 + compressed WebSocket adapter  |
+| Rate Limiting  | `@nestjs/throttler` (3 tiers)                |
+| Observability  | OpenTelemetry + Prometheus + Grafana          |
+| Node.js        | v24+ (see `../../.nvmrc`)                     |
 
 ### Core Components
 
 ```
 apps/be/
 ├── src/
-│   ├── games/                  # Game engine architecture
-│   │   ├── engines/            # Game-specific logic (isolated)
-│   │   │   ├── base/           # Core abstractions
-│   │   │   ├── registry/       # Engine registry
-│   │   │   ├── critical/       # Critical game engine
-│   │   │   ├── texas-holdem/   # Texas Hold'em engine
-│   │   │   └── engines.module.ts
+│   ├── games/                  # Game engine architecture (97 files)
+│   │   ├── engines/            # 15+ game-specific engines
 │   │   ├── schemas/            # MongoDB schemas
-│   │   ├── dtos/               # Data transfer objects
-│   │   ├── games.service.facade.ts  # Coordination service
-│   │   ├── games.gateway.ts    # WebSocket gateway
-│   │   ├── games.controller.ts # HTTP controller
-│   │   └── games.module.ts     # Main module
-│   ├── auth/                   # Authentication system
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   ├── guards/
-│   │   └── strategies/
-│   ├── users/                  # User management
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   └── schemas/
-│   ├── chat/                   # Chat functionality
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   └── schemas/
-│   ├── common/                 # Shared utilities
-│   │   ├── filters/
-│   │   ├── interceptors/
-│   │   └── guards/
+│   │   ├── rooms/              # Room management
+│   │   ├── sessions/           # Game session handling
+│   │   ├── history/            # Game history
+│   │   ├── replays/            # Replay system
+│   │   ├── live-stats/         # Live statistics
+│   │   └── async-match/        # Async/persistent games
+│   ├── auth/                   # JWT auth, Google OAuth, refresh tokens
+│   ├── wallet/                 # In-game wallet + Solana integration
+│   ├── economy/                # Virtual economy management
+│   ├── shop/                   # In-game shop
+│   ├── gems/                   # Premium currency
+│   ├── payments/               # Payment processing (TBC Bank, Solana Pay)
+│   ├── ranking/                # ELO-based ranking
+│   ├── leaderboards/           # Global & per-game leaderboards
+│   ├── tournaments/            # Tournament management
+│   ├── referrals/              # Referral system
+│   ├── achievements/           # Achievement tracking
+│   ├── battle-pass/            # Battle pass progression
+│   ├── daily-rewards/          # Daily login rewards
+│   ├── daily-challenges/       # Daily challenge system
+│   ├── friends/                # Friend list + online status
+│   ├── clans/                  # Clan/guild system
+│   ├── notifications/          # Push + in-app notifications
+│   ├── seasons/                # Seasonal content
+│   ├── events/                 # Time-limited events
+│   ├── engagement/             # Player engagement tracking
+│   ├── social-rewards/         # Social sharing rewards
+│   ├── announcements/          # Admin announcements
+│   ├── admin/                  # Admin panel endpoints
+│   ├── support/                # Support ticket system
+│   ├── bulk-rewards/           # Bulk reward distribution
+│   ├── chat/                   # Real-time chat
+│   ├── solana/                 # Solana blockchain integration
+│   ├── common/                 # Shared infrastructure
+│   │   ├── adapters/           # CompressedIoAdapter (WebSocket)
+│   │   ├── cache/              # Redis cache module + warmer
+│   │   ├── filters/            # HTTP + all-exception filters
+│   │   ├── guards/             # CSRF, IP block, geo-block, throttler
+│   │   ├── interceptors/       # Request ID, message code
+│   │   ├── queue/              # BullMQ job processing
+│   │   ├── tracing/            # OpenTelemetry setup
+│   │   └── utils/              # CORS, MongoDB URI, etc.
 │   └── main.ts                 # Entry point
 └── .env.example                # Environment variables template
 ```
@@ -76,18 +107,17 @@ apps/be/
 
 The backend uses a **pluggable game engine system** where each game is a self-contained engine:
 
-- **Separation of Concerns**: Game logic is completely isolated from infrastructure
-- **Consistent API**: All games use the same interface
+- **Shared Core**: `@arcadeum/games-core` package defines the `IGameEngine` interface
+- **Consistent API**: All games use the same interface (initialize, validate, execute, isGameOver, getWinners)
 - **Type-Safe**: Full TypeScript support with game-specific types
 - **Testable**: Each engine can be tested in isolation
-- **Reusable**: Common utilities in base engine class
-- **Centralized Registry**: Auto-discovery of all available games
+- **15+ Engines**: Chess, Checkers, Backgammon, Go, Tic-Tac-Toe, Pachisi, Critical, Cascade, Hearts, Spades, Sea Battle, Texas Hold'em, Glimworm, Cat Dash, and more
 
 See [Game Engine Architecture](./src/games/ARCHITECTURE.md) for detailed documentation.
 
 ### Backend Architecture
 
-For a comprehensive overview of the entire backend system — including authentication, chat, payments, game engine integration, data flow, security, and scalability — see the full [Backend Architecture Documentation](../../docs/BACKEND_ARCHITECTURE.md).
+For a comprehensive overview of the entire backend system — including all 27+ modules, authentication, chat, payments, game engine integration, data flow, security, and scalability — see the full [Backend Architecture Documentation](../../docs/BACKEND_ARCHITECTURE.md).
 
 ## Security & Hardening
 
@@ -131,10 +161,10 @@ Refer to SECURITY.md for more context and roadmap details.
 
 ### Prerequisites
 
-- Node.js v18+
+- Node.js v24+ (see `../../.nvmrc`)
 - pnpm
 - MongoDB (local or cloud)
-- Redis (required for rate limiting and caching)
+- Redis (required for caching, BullMQ queues, and rate limiting)
 
 ### Installation
 
@@ -265,27 +295,21 @@ TBC_API_BASE_URL=https://api.tbcbank.ge
 
 ### Logging Strategy
 
-- Use Winston for structured logging
+- Custom `ArcadeumLoggerService` for structured logging
 - Log levels: error, warn, info, verbose, debug
-- Include request IDs for traceability
+- Include request IDs for traceability via `RequestIdInterceptor`
 - Avoid logging sensitive information (tokens, passwords)
 
 ### Monitoring Tools
 
-- **Sentry**: Error tracking
-- **Prometheus**: Metrics collection
-- **Grafana**: Dashboard visualization
-- **New Relic**: Application performance monitoring
-- **Datadog**: Comprehensive monitoring
+- **OpenTelemetry**: Distributed tracing with MongoDB instrumentation
+- **Prometheus**: Metrics collection (exposed at `/metrics`)
+- **Grafana**: Dashboard visualization (see `monitoring/grafana/`)
 
 ### Health Checks
 
-Implement health check endpoints:
-
-- `/health` - Basic service health
-- `/health/db` - Database connection status
-- `/health/redis` - Redis connection status
-- `/health/external` - External service dependencies
+- `/health` — Basic service health check
+- `/metrics` — Prometheus metrics endpoint (proxied from OpenTelemetry)
 
 ## Performance Optimization
 
@@ -380,4 +404,4 @@ For questions or issues with the backend API:
 3. Create an issue with detailed description
 4. Include reproduction steps and error logs
 
-Thank you for helping us build Arcadeum! 🎮
+Thank you for helping us build Arcadeum Games! 🎮

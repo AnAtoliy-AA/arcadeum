@@ -13,7 +13,6 @@ import {
   type GameResultStats,
 } from './GameResultStatsGrid';
 import { PostGameSuggestions } from './PostGameSuggestions';
-import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import type { RatingDelta } from '@/features/ranking/model/types';
 import {
@@ -118,7 +117,6 @@ export function GameResultModal({
     () => false,
   );
 
-  const media = useMediaQuery();
   const { play } = useSound();
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [lastOpen, setLastOpen] = useState(isOpen);
@@ -181,30 +179,12 @@ export function GameResultModal({
           data-theme={resolvedTheme.id}
           data-tone={result}
           className={cx(
-            'animate-entrance relative flex max-h-[92dvh] w-[540px] max-w-[95%] flex-col rounded-3xl border bg-[var(--background)] text-[var(--color)] backdrop-blur-2xl shadow-2xl transition-all',
+            'animate-entrance relative flex max-h-[92dvh] w-[480px] max-w-[95%] flex-col rounded-2xl border bg-[var(--background)] text-[var(--color)] backdrop-blur-2xl shadow-2xl transition-all',
             TONE_CONTAINER_BORDER[result],
           )}
         >
-          {/* Fixed Header — close button + theme badge only */}
-          <div className="flex shrink-0 items-center justify-between px-5 pt-4 sm:px-6 sm:pt-5">
-            {gameName && (
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--textSecondary)]">
-                {gameName}
-              </span>
-            )}
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
-              <span>{resolvedTheme.emoji}</span>
-              <span>
-                {(() => {
-                  const rawTheme = t(
-                    `games.themes.${resolvedTheme.id}.name` as TranslationKey,
-                  );
-                  return rawTheme && !rawTheme.startsWith('games.themes.')
-                    ? rawTheme
-                    : resolvedTheme.id.replace(/-/g, ' ');
-                })()}
-              </span>
-            </div>
+          {/* Fixed Header — close only */}
+          <div className="flex shrink-0 justify-end px-4 pt-3">
             {onClose && (
               <CloseButton onClick={onClose} data-testid="modal-close-button">
                 <CloseIcon size={16} />
@@ -212,137 +192,127 @@ export function GameResultModal({
             )}
           </div>
 
-          {/* Scrollable Content — everything below scrolls */}
-          <div className="flex-1 overflow-y-auto px-5 sm:px-6" style={{ minHeight: 0 }}>
-            <div className="mb-2 flex flex-col items-center gap-1 pt-2">
-              <span className="animate-[float_3s_ease-in-out_infinite] text-5xl select-none">
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto px-5 pb-4" style={{ minHeight: 0 }}>
+            {/* Hero: emoji + title */}
+            <div className="mb-3 flex flex-col items-center gap-1">
+              <span className="text-6xl select-none" role="img" aria-label={result}>
                 {emoji}
               </span>
               <h1
                 data-testid="game-result-title"
                 className={cx(
-                  'text-center text-3xl font-black uppercase tracking-wider',
+                  'text-center text-4xl font-black uppercase tracking-tight',
                   TONE_TITLE_CLASSES[result],
-                  isVictory && 'animate-pulse',
                 )}
               >
                 {title}
               </h1>
+              <p className="text-center text-sm text-[var(--textSecondary)] max-w-[320px]">
+                {body}
+              </p>
             </div>
 
-            <p className="animate-fade-in-up-delay-2 mb-2 text-center text-sm leading-relaxed text-[var(--textSecondary)]">
-              {body}
-            </p>
-
+            {/* Quick stats row */}
             {stats && (
-              <div className="animate-fade-in-up-delay-3 mb-2 w-full">
+              <div className="mb-3 w-full rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3">
                 <GameResultStatsGrid stats={stats} t={t} />
               </div>
             )}
 
+            {/* Rating change */}
             {ratingDelta && (
-              <div className="animate-fade-in-up-delay-3 mb-2 flex flex-col items-center gap-1">
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--textSecondary)]">
+              <div className="mb-3 flex items-center justify-center gap-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
                   {t('games.ranking.ratingUpdated')}
                 </span>
                 <RatingBadge
                   elo={ratingDelta.elo}
                   tier={ratingDelta.tier}
                   delta={ratingDelta.delta}
-                  size="md"
+                  size="sm"
                 />
               </div>
             )}
 
+            {/* Analysis toggle */}
             {analysis && (
-              <div className="animate-fade-in-up-delay-4 mb-2 flex w-full flex-col gap-2">
+              <div className="mb-3 w-full">
                 {showAnalysis ? (
-                  <>
-                    <div className="rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3">
-                      {analysis.content}
+                  <div className="rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
+                        {t('games.chess_v1.analysis.title')}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowAnalysis(false)}
+                        className="text-[10px] text-[var(--primary)] hover:underline cursor-pointer bg-transparent border-0 p-0"
+                      >
+                        {analysis.backLabel}
+                      </button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowAnalysis(false)}
-                    >
-                      {analysis.backLabel}
-                    </Button>
-                  </>
+                    {analysis.content}
+                  </div>
                 ) : (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full"
+                  <button
+                    type="button"
                     onClick={() => setShowAnalysis(true)}
+                    className="w-full py-2.5 px-4 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-sm font-semibold text-[var(--color)] cursor-pointer hover:bg-[var(--color)]/5 transition-colors flex items-center justify-center gap-2"
                   >
+                    <span>📊</span>
                     {analysis.viewLabel}
-                  </Button>
+                  </button>
                 )}
               </div>
             )}
 
+            {/* Post-game suggestions */}
             {gameSlug && (
-              <div className="animate-fade-in-up-delay-4 mb-2 w-full">
-                <PostGameSuggestions
-                  gameName={gameName ?? gameSlug}
-                  gameSlug={gameSlug}
-                  roomId={roomId}
-                  inviteCode={inviteCode}
-                  onPlayAnother={onPlayAnother}
-                  opponentUserId={opponentUserId}
-                />
-              </div>
+              <PostGameSuggestions
+                gameName={gameName ?? gameSlug}
+                gameSlug={gameSlug}
+                roomId={roomId}
+                inviteCode={inviteCode}
+                onPlayAnother={onPlayAnother}
+                opponentUserId={opponentUserId}
+              />
             )}
           </div>
 
-          {/* Fixed Footer */}
-          <div className="flex-shrink-0 border-t border-[var(--glassBorder)] px-5 py-3 sm:px-6">
-            <div className="flex w-full gap-2">
-              {onClose && (
-                <Button
-                  variant="ghost"
-                  onClick={onClose}
-                  size="sm"
-                >
-                  {t('games.table.modals.common.close' as TranslationKey)}
-                </Button>
-              )}
+          {/* Fixed Footer — compact row */}
+          <div className="flex shrink-0 items-center gap-2 border-t border-[var(--glassBorder)] px-4 py-3">
+            <LinkButton href="/" variant="ghost" size="sm" className="flex-shrink-0">
+              {t('games.common.actions.backToHome')}
+            </LinkButton>
 
-              <LinkButton href="/" className="flex-1" variant="secondary" size="sm">
-                {t('games.common.actions.backToHome' as TranslationKey)}
-              </LinkButton>
+            <div className="flex-1" />
 
-              {secondaryAction && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={secondaryAction.onClick}
-                  data-testid={
-                    secondaryAction.testId ?? 'result-secondary-button'
-                  }
-                >
-                  {secondaryAction.label}
-                </Button>
-              )}
+            {onRematch && (
+              <Button
+                variant={isVictory ? 'primary' : 'secondary'}
+                size="sm"
+                onClick={onRematch}
+                disabled={rematchLoading}
+                data-testid="rematch-button"
+                showShimmer={isVictory}
+              >
+                {rematchLoading
+                  ? t('games.table.rematch.loading' as TranslationKey)
+                  : (rematchLabel ?? t('games.table.rematch.button' as TranslationKey))}
+              </Button>
+            )}
 
-              {onRematch && (
-                <Button
-                  variant={isVictory ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={onRematch}
-                  disabled={rematchLoading}
-                  data-testid="rematch-button"
-                  showShimmer={isVictory}
-                  className={isVictory ? 'active:scale-95' : undefined}
-                >
-                  {rematchLoading
-                    ? t('games.table.rematch.loading' as TranslationKey)
-                    : (rematchLabel ??
-                      t('games.table.rematch.button' as TranslationKey))}
-                </Button>
-              )}
-            </div>
+            {secondaryAction && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={secondaryAction.onClick}
+                data-testid={secondaryAction.testId ?? 'result-secondary-button'}
+              >
+                {secondaryAction.label}
+              </Button>
+            )}
           </div>
         </div>
       </div>

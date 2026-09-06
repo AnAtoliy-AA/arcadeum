@@ -41,6 +41,10 @@ export function PostGameAnalysis({
 }: PostGameAnalysisProps) {
   const [stockfishResult, setStockfishResult] = useState<GameAnalysisResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [spectatorPerspective, setSpectatorPerspective] = useState<'white' | 'black'>('white');
+
+  const perspective = isSpectator ? spectatorPerspective : (myColor ?? 'white');
+  const shouldFlip = perspective === 'black';
 
   useEffect(() => {
     let cancelled = false;
@@ -61,7 +65,6 @@ export function PostGameAnalysis({
   );
 
   // Flip evals for player's perspective (spectators see White's perspective)
-  const shouldFlip = !isSpectator && myColor === 'black';
   const evals = useMemo(() => {
     const raw = stockfishResult?.evals ?? fallbackAnalysis.evals;
     if (!shouldFlip) return raw;
@@ -147,16 +150,27 @@ export function PostGameAnalysis({
           {t('games.chess_v1.analysis.title')}
           {loading && <span className="ml-2 text-[10px] text-[var(--textSecondary)]">(Stockfish 19...)</span>}
         </h2>
-        <span className="rounded-md border border-[var(--glassBorder)] bg-[var(--glassBg)] px-2 py-1 text-[11px] font-semibold text-[var(--textSecondary)]">
-          {t('games.chess_v1.analysis.summary.finalEval')}:{' '}
-          <span
-            className={finalEval >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}
-          >
-            {finalEval > 0 ? '+' : ''}
-            {finalEval}
-            {unitLabel}
+        <div className="flex items-center gap-2">
+          {isSpectator && (
+            <button
+              type="button"
+              onClick={() => setSpectatorPerspective((p) => (p === 'white' ? 'black' : 'white'))}
+              className="text-[10px] px-2 py-1 rounded bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)] cursor-pointer transition-colors"
+            >
+              {perspective === 'white' ? '♔ White' : '♚ Black'}
+            </button>
+          )}
+          <span className="rounded-md border border-[var(--glassBorder)] bg-[var(--glassBg)] px-2 py-1 text-[11px] font-semibold text-[var(--textSecondary)]">
+            {t('games.chess_v1.analysis.summary.finalEval')}:{' '}
+            <span
+              className={finalEval >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}
+            >
+              {finalEval > 0 ? '+' : ''}
+              {finalEval}
+              {unitLabel}
+            </span>
           </span>
-        </span>
+        </div>
       </div>
 
       <EvalGraph

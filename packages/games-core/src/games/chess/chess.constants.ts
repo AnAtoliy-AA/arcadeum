@@ -35,7 +35,14 @@ export const PIECE_SYMBOLS: Record<PieceType, Record<PieceColor, string>> = {
   king: { white: '♔', black: '♚' },
 };
 
-export const CHESS_VARIANTS = ['standard', 'chess960'] as const;
+export const CHESS_VARIANTS = [
+  'standard',
+  'chess960',
+  'king_of_the_hill',
+  'three_check',
+  'crazyhouse',
+  'atomic',
+] as const;
 export type ChessVariant = (typeof CHESS_VARIANTS)[number];
 
 export const INITIAL_BOARD_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';

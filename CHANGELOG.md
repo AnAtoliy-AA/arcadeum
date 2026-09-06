@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.28] - 2026-09-06
+
+### Fixed
+- wait for __joinMatchmaking before patching in diagnostic test
+- suppress Redis/Stockfish noise in E2E CI
+- resolve e2e CI warnings and errors
+
+
 ## [1.28.27] - 2026-09-06
 
 ### Added

@@ -192,6 +192,20 @@ export function GameInfoPanel({
         ? 'bg-red-500'
         : 'bg-slate-400';
 
+  // Balance bar: fills from center toward winning side
+  const balancePercent = useMemo(() => {
+    if (!displayEval || displayEval.cp == null) return 50;
+    const clamped = Math.max(-500, Math.min(500, displayEval.cp));
+    return 50 + (clamped / 500) * 40;
+  }, [displayEval]);
+
+  const balanceColor =
+    balancePercent > 55
+      ? 'bg-emerald-500'
+      : balancePercent < 45
+        ? 'bg-red-500'
+        : 'bg-slate-400';
+
   return (
     <div className="p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)] flex flex-col gap-2">
       <div className="flex items-center justify-between">
@@ -209,19 +223,35 @@ export function GameInfoPanel({
         )}
       </div>
       <div>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-[9px] font-bold text-white">♔</span>
-          <div className="flex-1 h-1.5 rounded-full bg-[var(--backgroundHover)] overflow-hidden border border-[var(--glassBorder)]">
-            <div
-              className={`h-full ${barColor} rounded-full transition-all duration-500`}
-              style={{ width: `${evalWidth}%` }}
-            />
+        <div className="flex items-center gap-1 mb-1">
+          <span className="text-[9px] font-bold text-white w-3">♔</span>
+          <div className="flex-1 h-2 rounded-full bg-[var(--backgroundHover)] overflow-hidden border border-[var(--glassBorder)] relative">
+            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[var(--textSecondary)] opacity-30 z-10" />
+            {balancePercent >= 50 ? (
+              <div
+                className={`absolute top-0 bottom-0 left-1/2 ${balanceColor} rounded-r-full transition-all duration-500`}
+                style={{ width: `${(balancePercent - 50) * 2}%` }}
+              />
+            ) : (
+              <div
+                className={`absolute top-0 bottom-0 right-1/2 ${balanceColor} rounded-l-full transition-all duration-500`}
+                style={{ width: `${(50 - balancePercent) * 2}%` }}
+              />
+            )}
           </div>
-          <span className="text-[9px] font-bold text-zinc-400">♚</span>
+          <span className="text-[9px] font-bold text-zinc-400 w-3">♚</span>
         </div>
         <div className="flex justify-between text-[9px] text-[var(--textSecondary)] font-medium">
           <span className="font-bold text-[var(--color)] tabular-nums">{evalLabel}</span>
-          <span>{displayEval && displayEval.cp != null && displayEval.cp > 0 ? 'White' : displayEval && displayEval.cp != null && displayEval.cp < 0 ? 'Black' : ''}</span>
+          <span>
+            {displayEval && displayEval.cp != null
+              ? displayEval.cp > 0
+                ? 'White'
+                : displayEval.cp < 0
+                  ? 'Black'
+                  : ''
+              : ''}
+          </span>
         </div>
       </div>
       <div className="flex justify-between items-center py-1.5 border-t border-[var(--glassBorder)]">

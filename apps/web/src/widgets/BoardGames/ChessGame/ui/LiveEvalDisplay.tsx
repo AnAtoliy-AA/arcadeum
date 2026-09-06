@@ -31,19 +31,8 @@ interface LiveEvalDisplayProps {
  * 2026-09-05, SFNNv16 architecture).
  */
 function LiveEvalDisplayImpl({ eval_, analyzing, myColor, isSpectator, spectatorPerspective, onTogglePerspective }: LiveEvalDisplayProps) {
-  // Players: their own color. Spectators: toggle between White/Black.
-  const perspective = isSpectator ? (spectatorPerspective ?? 'white') : (myColor ?? 'white');
-  const shouldFlip = perspective === 'black';
-
-  // Flip eval for the selected perspective
-  const displayEval = useMemo(() => {
-    if (!eval_) return null;
-    return {
-      ...eval_,
-      cp: eval_.cp != null ? (shouldFlip ? -eval_.cp : eval_.cp) : null,
-      mate: eval_.mate != null ? (shouldFlip ? -eval_.mate : eval_.mate) : null,
-    };
-  }, [eval_, shouldFlip]);
+  // Always show RAW Stockfish eval (White's perspective) — the real engine value
+  const displayEval = eval_;
 
   if (!displayEval && !analyzing) return null;
 

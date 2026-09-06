@@ -174,7 +174,7 @@ function ChessBoardPanelImpl({
           timeControl={snapshot.timeControl}
         />
 
-        <GameInfoPanel snapshot={snapshot} t={t} />
+        <GameInfoPanel snapshot={snapshot} liveEval={liveEval} analyzing={liveEvalAnalyzing} t={t} />
 
         <LiveEvalDisplay
           eval_={liveEval ?? null}

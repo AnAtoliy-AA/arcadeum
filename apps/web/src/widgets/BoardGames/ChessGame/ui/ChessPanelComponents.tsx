@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import type { ChessClientState } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
@@ -140,11 +141,38 @@ export function PlayerCard({
 
 export function GameInfoPanel({
   snapshot,
+  liveEval,
+  analyzing,
   t: _t,
 }: {
   snapshot: ChessClientState;
+  liveEval?: { cp: number | null; mate: number | null } | null;
+  analyzing?: boolean;
   t: TranslateFn;
 }) {
+  const evalLabel = useMemo(() => {
+    if (!liveEval) return analyzing ? '...' : '—';
+    if (liveEval.mate != null) return `M${Math.abs(liveEval.mate)}`;
+    if (liveEval.cp != null) {
+      const pawns = (liveEval.cp / 100).toFixed(1);
+      return liveEval.cp > 0 ? `+${pawns}` : pawns;
+    }
+    return '0.0';
+  }, [liveEval, analyzing]);
+
+  const evalWidth = useMemo(() => {
+    if (!liveEval || liveEval.cp == null) return 50;
+    const clamped = Math.max(-5, Math.min(5, liveEval.cp / 100));
+    return 50 + (clamped / 5) * 40;
+  }, [liveEval]);
+
+  const barColor =
+    evalWidth > 55
+      ? 'bg-emerald-500'
+      : evalWidth < 45
+        ? 'bg-red-500'
+        : 'bg-slate-400';
+
   return (
     <div className="p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)] flex flex-col gap-2">
       <div className="text-[10px] font-semibold text-[var(--textSecondary)] uppercase tracking-wider">
@@ -156,12 +184,12 @@ export function GameInfoPanel({
         </div>
         <div className="h-1 rounded bg-[var(--backgroundHover)] overflow-hidden border border-[var(--glassBorder)]">
           <div
-            className="h-full bg-gradient-to-r from-sky-400 to-indigo-400 rounded"
-            style={{ width: '55%' }}
+            className={`h-full ${barColor} rounded transition-all duration-500`}
+            style={{ width: `${evalWidth}%` }}
           />
         </div>
         <div className="flex justify-between mt-1 text-[9px] text-[var(--textSecondary)] font-medium">
-          <span>+0.4</span>
+          <span className="font-bold text-[var(--color)]">{evalLabel}</span>
           <span>White</span>
           <span>Black</span>
         </div>

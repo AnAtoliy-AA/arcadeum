@@ -13,6 +13,8 @@ import {
 } from '../types';
 import { useChessTheme } from '../lib/ChessThemeContext';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
+import { BoardOverlay } from './BoardOverlay';
+import { useBoardDrawings } from '../hooks/useBoardDrawings';
 import './styles/animations.scss';
 
 interface ChessBoardProps {
@@ -355,6 +357,14 @@ function ChessBoardImpl({
     setDragOverSquare(square);
   }, []);
 
+  const {
+    arrows,
+    circles,
+    addArrow,
+    addCircle,
+    clearDrawings,
+  } = useBoardDrawings();
+
   return (
     <div
       role="grid"
@@ -380,22 +390,29 @@ function ChessBoardImpl({
           pointerEvents: 'none',
         }}
       />
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 1,
-          width: '100%',
-          aspectRatio: '1 / 1',
-          borderRadius: 14,
-          overflow: 'hidden',
-          backgroundColor: '#1c1917',
-          border: '3px solid #44403c',
-          boxShadow:
-            '0 12px 36px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
+      <BoardOverlay
+        arrows={arrows}
+        circles={circles}
+        onAddArrow={addArrow}
+        onAddCircle={addCircle}
+        onClear={clearDrawings}
       >
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            width: '100%',
+            aspectRatio: '1 / 1',
+            borderRadius: 14,
+            overflow: 'hidden',
+            backgroundColor: '#1c1917',
+            border: '3px solid #44403c',
+            boxShadow:
+              '0 12px 36px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
         {rows.ranks.map((rank) => (
           <div key={rank} role="row" style={{ display: 'flex', flex: 1 }}>
             {rows.files.map((file) => {
@@ -445,7 +462,8 @@ function ChessBoardImpl({
             })}
           </div>
         ))}
-      </div>
+        </div>
+      </BoardOverlay>
       <div style={{ display: 'flex', paddingLeft: 2, paddingRight: 2 }}>
         {rows.files.map((file) => (
           <div

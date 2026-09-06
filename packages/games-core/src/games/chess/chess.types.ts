@@ -48,6 +48,7 @@ export interface ChessOptions {
   variant: ChessVariant;
   timeControl: TimeControl | null;
   botDifficulty?: AiDifficulty;
+  botPersonality?: string;
 }
 
 export type TimeControlType = 'blitz' | 'rapid' | 'classical';
@@ -74,6 +75,7 @@ export interface ChessState extends BaseGameState {
   variant: ChessVariant;
   timeControl: TimeControl | null;
   botDifficulty?: AiDifficulty;
+  botPersonality?: string;
   board: Board;
   currentTurnColor: PieceColor;
   castlingRights: CastlingRights;
@@ -108,5 +110,6 @@ export interface ChessEngineConfig {
   timeControl?: TimeControl;
   variant?: ChessVariant;
   botDifficulty?: AiDifficulty;
+  botPersonality?: string;
   aiDifficulty?: AiDifficulty;
 }

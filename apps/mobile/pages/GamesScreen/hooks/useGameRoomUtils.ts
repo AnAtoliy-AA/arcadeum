@@ -5,7 +5,8 @@ import { type GameRoomSummary, type GameSessionSummary } from '../api/gamesApi';
 export type GameIntegrationId =
   | 'critical_v1'
   | 'exploding_kittens_v1'
-  | 'texas_holdem_v1';
+  | 'texas_holdem_v1'
+  | 'chess_v1';
 
 export interface RoomJoinedPayload {
   room?: GameRoomSummary;
@@ -40,6 +41,7 @@ const VALID_INTEGRATION_IDS: readonly GameIntegrationId[] = [
   'critical_v1',
   'exploding_kittens_v1',
   'texas_holdem_v1',
+  'chess_v1',
 ];
 
 function isValidIntegrationId(id: string): id is GameIntegrationId {

@@ -144,8 +144,9 @@ export class ChessService extends BaseGameService<ChessOptions> {
     options: ChessOptions,
     startExtras: unknown,
   ): void {
-    const { botDifficulty } = (startExtras ?? {}) as {
+    const { botDifficulty, botPersonality } = (startExtras ?? {}) as {
       botDifficulty?: string;
+      botPersonality?: string;
     };
     if (
       botDifficulty &&
@@ -153,6 +154,9 @@ export class ChessService extends BaseGameService<ChessOptions> {
     ) {
       this.botService.setDifficulty(botDifficulty as AiDifficulty);
       options.botDifficulty = botDifficulty as AiDifficulty;
+    }
+    if (botPersonality && typeof botPersonality === 'string') {
+      options.botPersonality = botPersonality;
     }
   }
 
@@ -232,6 +236,7 @@ export class ChessService extends BaseGameService<ChessOptions> {
         incrementSeconds: number;
       } | null;
       botDifficulty: string;
+      botPersonality: string;
       aiDifficulty: string;
     }>;
     const variant = CHESS_VARIANTS.includes(r.variant as ChessVariant)
@@ -259,7 +264,9 @@ export class ChessService extends BaseGameService<ChessOptions> {
       : isAiDifficulty(r.aiDifficulty)
         ? r.aiDifficulty
         : undefined;
-    return { variant, timeControl, botDifficulty };
+    const botPersonality =
+      typeof r.botPersonality === 'string' ? r.botPersonality : undefined;
+    return { variant, timeControl, botDifficulty, botPersonality };
   }
 
   private backfillLegalMoves(session: GameSessionSummary) {

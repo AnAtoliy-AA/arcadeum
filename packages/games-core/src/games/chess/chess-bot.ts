@@ -14,6 +14,9 @@ import {
   scoreMove,
 } from './chess-bot-utils';
 import type { AiDifficulty } from '../../lib/ai-difficulty';
+import type { BotPersonality } from './chess-bot-personalities';
+import { getOpeningMove } from './chess-bot-openings';
+import { toFen } from './chess-fen';
 
 const INFINITY = 999999;
 const TT_SIZE = 1 << 20;
@@ -79,9 +82,18 @@ export class ChessBot {
   protected killers: ChessMove[][] = [];
   protected history: number[][] = [];
   protected currentDifficulty: BotDifficulty = 'medium';
+  protected currentPersonality: BotPersonality | null = null;
 
   setDifficulty(d: BotDifficulty) {
     this.currentDifficulty = d;
+  }
+
+  setPersonality(p: BotPersonality | null) {
+    this.currentPersonality = p;
+  }
+
+  private get evalModifiers() {
+    return this.currentPersonality?.evaluationModifiers ?? null;
   }
 
   findBestMove(state: ChessState): ChessMove | null {
@@ -91,11 +103,30 @@ export class ChessBot {
         0, 0, 0, 0, 0, 0, 0, 0,
       ]);
     }
+
+    const personality = this.currentPersonality;
     const difficulty = state.botDifficulty ?? this.currentDifficulty;
     const cfg = DIFFICULTY[difficulty];
     const legalMoves = getLegalMoves(state, state.currentTurnColor);
     if (legalMoves.length === 0) return null;
     if (legalMoves.length === 1) return legalMoves[0];
+
+    if (personality) {
+      const fen = toFen(state);
+      const openingMove = getOpeningMove(
+        personality.id,
+        state.currentTurnColor,
+        fen,
+      );
+      if (openingMove) {
+        const match = legalMoves.find(
+          (m) =>
+            `${m.from.file}${m.from.rank}${m.to.file}${m.to.rank}` ===
+            openingMove,
+        );
+        if (match) return match;
+      }
+    }
 
     const ordered = this.orderMoves(state, legalMoves, null, 0);
     let bestScore = -INFINITY;
@@ -137,11 +168,29 @@ export class ChessBot {
     timeBudgetMs: number,
     startTime: number,
   ): ChessMove | null {
+    const personality = this.currentPersonality;
     const difficulty = state.botDifficulty ?? this.currentDifficulty;
     const cfg = DIFFICULTY[difficulty];
     const legalMoves = getLegalMoves(state, state.currentTurnColor);
     if (legalMoves.length === 0) return null;
     if (legalMoves.length === 1) return legalMoves[0];
+
+    if (personality) {
+      const fen = toFen(state);
+      const openingMove = getOpeningMove(
+        personality.id,
+        state.currentTurnColor,
+        fen,
+      );
+      if (openingMove) {
+        const match = legalMoves.find(
+          (m) =>
+            `${m.from.file}${m.from.rank}${m.to.file}${m.to.rank}` ===
+            openingMove,
+        );
+        if (match) return match;
+      }
+    }
 
     let bestMove: ChessMove = legalMoves[0];
     let bestScore = -INFINITY;
@@ -217,7 +266,7 @@ export class ChessBot {
         return ttEntry.score;
     }
 
-    if (depth === 0) return evaluate(state);
+    if (depth === 0) return evaluate(state, this.evalModifiers ?? undefined);
 
     const legalMoves = getLegalMoves(state, state.currentTurnColor);
     if (legalMoves.length === 0) {
@@ -340,7 +389,7 @@ export class ChessBot {
     depthLeft: number,
     ply: number,
   ): number {
-    const standPat = evaluate(state);
+    const standPat = evaluate(state, this.evalModifiers ?? undefined);
     if (depthLeft === 0) return standPat;
     if (standPat >= beta) return beta;
     if (standPat > alpha) alpha = standPat;

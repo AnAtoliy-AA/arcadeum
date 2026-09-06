@@ -44,7 +44,7 @@ export function PostGameAnalysis({
   const [spectatorPerspective, setSpectatorPerspective] = useState<'white' | 'black'>('white');
 
   const perspective = isSpectator ? spectatorPerspective : (myColor ?? 'white');
-  const shouldFlip = perspective === 'black';
+  const shouldFlip = !isSpectator && myColor === 'black';
 
   useEffect(() => {
     let cancelled = false;

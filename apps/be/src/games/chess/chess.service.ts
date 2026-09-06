@@ -200,6 +200,24 @@ export class ChessService extends BaseGameService<ChessOptions> {
       `[Chess] emitSessionUpdate room=${session.roomId} moveCount=${moveCount}`,
     );
     await super.emitSessionUpdate(session);
+
+    // Broadcast Stockfish analysis after each move (fire-and-forget)
+    if (moveCount > 0 && this.stockfishService?.isReady()) {
+      const state = session.state as ChessState | undefined;
+      const positionHistory = state?.positionHistory;
+      if (positionHistory && positionHistory.length > 0) {
+        const currentFen = positionHistory[positionHistory.length - 1];
+        this.stockfishService
+          .analyzePosition({ fen: currentFen, depth: 12, timeMs: 1500 })
+          .then((eval_) => {
+            this.realtimeService.emitToRoom(session.roomId, 'chess.session.analyzed', {
+              roomId: session.roomId,
+              eval: eval_,
+            });
+          })
+          .catch(() => {});
+      }
+    }
   }
 
   private async checkClockTimeout(session: GameSessionSummary) {

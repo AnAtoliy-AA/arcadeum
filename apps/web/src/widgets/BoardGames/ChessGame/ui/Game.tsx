@@ -110,14 +110,10 @@ function ChessGameImpl({
     const history = displaySnapshot.positionHistory;
     return history && history.length > 0 ? history[history.length - 1] : null;
   }, [displaySnapshot]);
-  const plyCount = displaySnapshot?.moveHistory?.length ?? 0;
   const { eval: liveEval, analyzing: liveEvalAnalyzing } = useStockfishAnalysis(
     {
       roomId,
-      userId: currentUserId ?? '',
       enabled: !isGameOver && !isLobby,
-      fen: currentFen,
-      ply: plyCount,
     },
   );
   const applyOptimisticMove = useCallback(

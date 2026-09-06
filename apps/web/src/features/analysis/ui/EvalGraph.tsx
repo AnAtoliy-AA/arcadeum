@@ -30,6 +30,7 @@ interface EvalGraphProps {
 interface EvalPoint {
   ply: number;
   value: number;
+  rawValue: number;
 }
 
 function formatEval(value: number): string {
@@ -59,8 +60,11 @@ function EvalTooltip({
       <div className="font-semibold text-[rgba(255,255,255,0.85)]">
         {moveNumber}. {side}
       </div>
-      <div className={point.value >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}>
-        {formatEval(point.value)} {unitLabel}
+      <div className={point.rawValue >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}>
+        {formatEval(point.rawValue)} {unitLabel}
+        {Math.abs(point.rawValue) >= 500 && (
+          <span className="text-[9px] opacity-60 ml-1">(mate)</span>
+        )}
       </div>
     </div>
   );
@@ -75,7 +79,12 @@ export function EvalGraph({
   ariaLabel,
 }: EvalGraphProps) {
   const data = useMemo<EvalPoint[]>(
-    () => evals.map((value, ply) => ({ ply, value })),
+    () =>
+      evals.map((value, ply) => ({
+        ply,
+        value: Math.max(-500, Math.min(500, value)),
+        rawValue: value,
+      })),
     [evals],
   );
 

@@ -11,6 +11,7 @@ import {
   Tournament,
   type TournamentDocument,
 } from '../../../tournaments/schemas/tournament.schema';
+import { OCI_CONNECTION } from '../../../common/providers/mongo-connections.provider';
 import {
   pairArenaPlayers,
   pairSwissPlayers,
@@ -59,7 +60,7 @@ export class ChessTournamentService {
   private readonly logger = new Logger(ChessTournamentService.name);
 
   constructor(
-    @InjectModel(Tournament.name)
+    @InjectModel(Tournament.name, OCI_CONNECTION)
     private readonly model: Model<TournamentDocument>,
   ) {}
 

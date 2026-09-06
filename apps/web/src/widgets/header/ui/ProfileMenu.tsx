@@ -92,11 +92,6 @@ export default function ProfileMenu() {
   const handleLogout = useCallback(async () => {
     await logoutSession().catch(() => {});
     await clearTokens();
-    try {
-      sessionStorage.removeItem('web_auth_email');
-    } catch {
-      // ignore
-    }
     window.location.replace(routes.home);
   }, [clearTokens, routes.home]);
 

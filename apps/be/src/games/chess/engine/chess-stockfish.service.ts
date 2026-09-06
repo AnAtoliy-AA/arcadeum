@@ -65,9 +65,11 @@ export class ChessStockfishService implements OnModuleDestroy {
     this.poolSize = parseInt(process.env.STOCKFISH_POOL_SIZE ?? '1', 10);
 
     // Binary location: Docker installs to /usr/local/bin, local dev uses bin/
+    // Note: __dirname in compiled code points to dist/, so go up to project root
     const dockerPath = '/usr/local/bin/stockfish';
     const localPath = path.join(
       __dirname,
+      '..',
       '..',
       '..',
       '..',

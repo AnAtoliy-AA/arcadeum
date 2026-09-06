@@ -48,8 +48,8 @@ export class ChessService extends BaseGameService<ChessOptions> {
 
   protected readonly botService: ChessBotService;
 
-  /** Stockfish 19 engine — injected optionally so games work without it. */
-  readonly stockfishService: ChessStockfishService | null;
+  /** Stockfish 19 engine — always available after module init. */
+  readonly stockfishService: ChessStockfishService;
 
   /** Chess tournament service — injected optionally. */
   private readonly tournamentService: ChessTournamentService | null;
@@ -60,7 +60,7 @@ export class ChessService extends BaseGameService<ChessOptions> {
     realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => ChessBotService))
     botService: ChessBotService,
-    @Optional() stockfishService: ChessStockfishService | null,
+    stockfishService: ChessStockfishService,
     @Optional() tournamentService: ChessTournamentService | null,
     @InjectConnection() mongoConnection: Connection,
     @Optional() @Inject('REDIS_CLIENT') redis?: Redis | null,

@@ -18,6 +18,9 @@ interface LiveEvalDisplayProps {
   eval_: EngineEval | null;
   analyzing: boolean;
   myColor?: 'white' | 'black' | null;
+  isSpectator?: boolean;
+  spectatorPerspective?: 'white' | 'black';
+  onTogglePerspective?: () => void;
 }
 
 /**
@@ -27,8 +30,10 @@ interface LiveEvalDisplayProps {
  * and analysis status. Engine: Stockfish 19 (latest stable, released
  * 2026-09-05, SFNNv16 architecture).
  */
-function LiveEvalDisplayImpl({ eval_, analyzing, myColor }: LiveEvalDisplayProps) {
-  const shouldFlip = myColor === 'black';
+function LiveEvalDisplayImpl({ eval_, analyzing, myColor, isSpectator, spectatorPerspective, onTogglePerspective }: LiveEvalDisplayProps) {
+  // Players: their own color. Spectators: toggle between White/Black.
+  const perspective = isSpectator ? (spectatorPerspective ?? 'white') : (myColor ?? 'white');
+  const shouldFlip = perspective === 'black';
 
   // Flip eval for the selected perspective
   const displayEval = useMemo(() => {
@@ -90,6 +95,15 @@ function LiveEvalDisplayImpl({ eval_, analyzing, myColor }: LiveEvalDisplayProps
                 Analyzing
               </span>
             </div>
+          )}
+          {isSpectator && onTogglePerspective && (
+            <button
+              type="button"
+              onClick={onTogglePerspective}
+              className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)] cursor-pointer transition-colors"
+            >
+              {perspective === 'white' ? '♔ White' : '♚ Black'}
+            </button>
           )}
         </div>
       </div>

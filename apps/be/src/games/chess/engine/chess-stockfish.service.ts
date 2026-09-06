@@ -78,6 +78,7 @@ export class ChessStockfishService implements OnModuleDestroy {
   }
 
   async onModuleInit(): Promise<void> {
+    this.logger.log(`[Stockfish] onModuleInit called. Binary: ${this.binaryPath}`);
     if (!fs.existsSync(this.binaryPath)) {
       if (process.env.E2E === 'true') {
         this.logger.debug(

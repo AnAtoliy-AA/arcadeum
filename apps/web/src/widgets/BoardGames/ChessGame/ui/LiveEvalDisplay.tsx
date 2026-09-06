@@ -44,10 +44,10 @@ function LiveEvalDisplayImpl({ eval_, analyzing, perspective, onTogglePerspectiv
   if (!displayEval && !analyzing) return null;
 
   const formatEval = (e: EngineEval): string => {
-    if (e.mate !== null) {
+    if (e.mate != null && e.mate !== 0) {
       return `M${Math.abs(e.mate)}`;
     }
-    if (e.cp !== null) {
+    if (e.cp != null) {
       const pawns = (e.cp / 100).toFixed(1);
       return e.cp > 0 ? `+${pawns}` : pawns;
     }

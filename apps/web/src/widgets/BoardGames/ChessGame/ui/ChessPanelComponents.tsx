@@ -165,7 +165,7 @@ export function GameInfoPanel({
 
   const evalLabel = useMemo(() => {
     if (!displayEval) return analyzing ? '...' : '—';
-    if (displayEval.mate != null) return `M${Math.abs(displayEval.mate)}`;
+    if (displayEval.mate != null && displayEval.mate !== 0) return `M${Math.abs(displayEval.mate)}`;
     if (displayEval.cp != null) {
       const pawns = (displayEval.cp / 100).toFixed(1);
       return displayEval.cp > 0 ? `+${pawns}` : pawns;

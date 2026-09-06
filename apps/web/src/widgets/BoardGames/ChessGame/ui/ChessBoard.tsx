@@ -71,6 +71,7 @@ interface ChessCellProps {
   ) => void;
   onHover: (square: string | null) => void;
   onDragOver: (square: string | null) => void;
+  animatingRef: React.RefObject<Map<string, { dx: number; dy: number }>>;
 }
 
 function ChessCell({
@@ -95,6 +96,7 @@ function ChessCell({
   onPieceDrop,
   onHover,
   onDragOver,
+  animatingRef,
 }: ChessCellProps) {
   const theme = useChessTheme();
   const square = `${file}-${rank}`;
@@ -494,6 +496,7 @@ function ChessBoardImpl({
                   onPieceDrop={onPieceDrop}
                   onHover={handleHover}
                   onDragOver={handleDragOver}
+                  animatingRef={animatingRef}
                 />
               );
             })}

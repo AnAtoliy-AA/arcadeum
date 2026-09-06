@@ -39,23 +39,12 @@ class ChessSoundManager {
 
   async loadAll(): Promise<void> {
     if (this.loaded) return;
-    const ctx = this.getContext();
-    const entries = Object.entries(SOUND_URLS) as [SoundType, string][];
-
-    await Promise.allSettled(
-      entries.map(async ([type, url]) => {
-        try {
-          const res = await fetch(url);
-          if (!res.ok) return;
-          const arrayBuffer = await res.arrayBuffer();
-          const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-          this.buffers.set(type, audioBuffer);
-        } catch {
-          // Silently skip if sound file not found
-        }
-      }),
-    );
-
+    if (typeof window === 'undefined') return;
+    try {
+      this.audioContext = new AudioContext();
+    } catch {
+      return;
+    }
     this.loaded = true;
   }
 

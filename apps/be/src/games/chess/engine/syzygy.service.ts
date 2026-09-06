@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-interface TablebaseResult {
+export interface TablebaseResult {
   category: 'win' | 'loss' | 'draw' | 'win-guaranteed' | 'maybe-win';
   dtz: number | null;
   dtm: number | null;

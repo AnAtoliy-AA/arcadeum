@@ -88,8 +88,6 @@ function parseAlgebraicNotation(
   let pieceType: string | null = null;
   let fromFile: File | null = null;
   let fromRank: Rank | null = null;
-  let toFile: File;
-  let toRank: Rank;
   let isCapture = false;
 
   let idx = 0;
@@ -113,8 +111,8 @@ function parseAlgebraicNotation(
 
   const destStr = moveStr.slice(idx);
   if (destStr.length < 2) return null;
-  toFile = destStr[0] as File;
-  toRank = Number(destStr[1]) as Rank;
+  const toFile = destStr[0] as File;
+  const toRank = Number(destStr[1]) as Rank;
 
   if (disambig.length === 1) {
     if (disambig >= 'a' && disambig <= 'h') {

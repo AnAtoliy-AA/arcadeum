@@ -29,6 +29,7 @@ import { ChessGameResultModal } from './ChessGameResultModal';
 import { PromotionModal } from './PromotionModal';
 import { RulesModal } from './RulesModal';
 import { ChessThemeProvider } from '../lib/ChessThemeContext';
+import { getBotPersonality } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 
 function ChessGameImpl({
   roomId,
@@ -149,11 +150,8 @@ function ChessGameImpl({
           const perColorKey = player.color === 'white' ? 'botPersonalityWhite' : 'botPersonalityBlack';
           const personalityId = (gameOpts?.[perColorKey] as string) ?? (gameOpts?.botPersonality as string);
           if (personalityId) {
-            try {
-              const { getBotPersonality } = require('@arcadeum/games-core/games/chess/chess-bot-personalities');
-              const personality = getBotPersonality(personalityId);
-              if (personality) botLabel = personality.name;
-            } catch {}
+            const personality = getBotPersonality(personalityId);
+            if (personality) botLabel = personality.name;
           }
         }
       }

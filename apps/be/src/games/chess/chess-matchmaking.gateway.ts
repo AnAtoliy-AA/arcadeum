@@ -55,7 +55,7 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
       position: result.position,
     });
 
-    this.tryMatch(timeControlType);
+    void this.tryMatch(timeControlType);
   }
 
   @SubscribeMessage('chess.matchmaking.leave')

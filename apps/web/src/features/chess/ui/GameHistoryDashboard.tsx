@@ -169,13 +169,6 @@ function WinLossDrawPie({
 }
 
 function RecentGameRow({ game }: { game: GameResult }) {
-  const resultColor =
-    game.result === 'win'
-      ? 'text-emerald-400'
-      : game.result === 'loss'
-        ? 'text-red-400'
-        : 'text-amber-400';
-
   const resultLabel =
     game.result === 'win' ? 'W' : game.result === 'loss' ? 'L' : 'D';
 

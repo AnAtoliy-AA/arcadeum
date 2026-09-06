@@ -31,12 +31,29 @@ export function useMatchmaking({
   });
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
+  const onMatchedRef = useRef(onMatched);
+  onMatchedRef.current = onMatched;
+
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const startTimer = useCallback(() => {
+    startTimeRef.current = Date.now();
+    timerRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+      setState((prev) => ({ ...prev, waitTime: elapsed }));
+    }, 1000);
+  }, []);
 
   useEffect(() => {
     const handleMatched = (data: { roomId: string; color: string; opponent: string }) => {
       stopTimer();
       setState((prev) => ({ ...prev, queued: false }));
-      onMatched(data);
+      onMatchedRef.current(data);
     };
 
     const handleJoined = (data: { queued: boolean; position: number }) => {
@@ -68,22 +85,7 @@ export function useMatchmaking({
       gameSocket.off('chess.matchmaking.left', handleLeft);
       stopTimer();
     };
-  }, [onMatched]);
-
-  const startTimer = useCallback(() => {
-    startTimeRef.current = Date.now();
-    timerRef.current = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
-      setState((prev) => ({ ...prev, waitTime: elapsed }));
-    }, 1000);
-  }, []);
-
-  const stopTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
+  }, [stopTimer]);
 
   const joinQueue = useCallback(() => {
     if (!userId) return;

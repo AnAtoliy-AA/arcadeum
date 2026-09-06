@@ -10,6 +10,13 @@ test('trace joinMatchmaking effect', async ({ page }) => {
   await mockSession(page);
   await navigateTo(page, '/en/games/sea-battle');
 
+  // Wait for the MatchmakingQueue component to mount and expose the hook
+  await page.waitForFunction(
+    () =>
+      typeof (window as Window & { __joinMatchmaking?: unknown })
+        .__joinMatchmaking === 'function',
+  );
+
   // Patch joinMatchmaking to add tracing
   await page.evaluate(() => {
     const original = (

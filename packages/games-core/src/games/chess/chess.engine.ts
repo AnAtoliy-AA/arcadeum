@@ -31,6 +31,7 @@ import {
 import { getLegalMoves, simulateMove } from './chess.move-generator';
 import { isInCheck } from './chess.attacks';
 import { updateCastlingRights } from './chess.castling';
+import { toFen } from './chess-fen';
 
 const ACTION = {
   MOVE: 'move',
@@ -132,7 +133,14 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       takebackOfferedBy: null,
       takebackMoveIndex: null,
       clocks,
-      positionHistory: [boardToFen(initialBoard)],
+      positionHistory: [toFen({
+        board: initialBoard,
+        currentTurnColor: 'white',
+        castlingRights: { ...INITIAL_CASTLING_RIGHTS },
+        enPassantTarget: null,
+        halfMoveClock: 0,
+        fullMoveNumber: 1,
+      } as ChessState)],
       currentTurnIndex: 0,
       logs: [
         this.createLogEntry('system', 'Chess game started. White moves first.'),
@@ -389,7 +397,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
 
     newState.positionHistory = [
       ...state.positionHistory,
-      boardToFen(newState.board),
+      toFen(newState),
     ];
 
     const opponentInCheck = isInCheck(

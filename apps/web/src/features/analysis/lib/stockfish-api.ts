@@ -31,9 +31,6 @@ export interface GameAnalysisResult {
   };
 }
 
-/**
- * Send board-only FENs to backend — server reconstructs full FENs.
- */
 export async function analyzeGameWithStockfish(
   positionHistory: string[],
   notations?: string[],

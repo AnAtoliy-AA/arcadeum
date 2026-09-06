@@ -158,8 +158,8 @@ export class ChessStockfishService implements OnModuleDestroy {
       MAX_TIME_MS,
     );
 
-    // Reconstruct full FENs from board-only FENs
-    const fullFens = this.reconstructFullFenHistory(request.positionHistory);
+    // Position history now contains full FENs — use directly
+    const fullFens = request.positionHistory;
 
     const evals: (number | null)[] = [];
     const moves: EngineLine[] = [];
@@ -539,56 +539,5 @@ export class ChessStockfishService implements OnModuleDestroy {
       }
     }
     return Math.round(totalScore / moves.length);
-  }
-
-  /**
-   * Reconstruct full FENs from board-only FENs.
-   * Tracks castling rights by observing piece movements between positions.
-   */
-  private reconstructFullFenHistory(boardFens: string[]): string[] {
-    // Initial castling rights
-    let castlingRights = { K: true, Q: true, k: true, q: true };
-
-    return boardFens.map((fen, i) => {
-      if (fen.includes(' ')) return fen;
-      const turn = i % 2 === 0 ? 'w' : 'b';
-      const rows = fen.split('/');
-      const board = rows.map((row) => {
-        const cells: (string | null)[] = [];
-        for (const ch of row) {
-          if (ch >= '1' && ch <= '8') {
-            for (let j = 0; j < parseInt(ch); j++) cells.push(null);
-          } else {
-            cells.push(ch);
-          }
-        }
-        return cells;
-      });
-
-      const get = (r: number, c: number) => board[r]?.[c] ?? null;
-
-      // Update castling rights based on piece presence
-      // If king is not on e1/e8, lose all castling rights for that color
-      if (get(7, 4) !== 'K') { castlingRights.K = false; castlingRights.Q = false; }
-      if (get(0, 4) !== 'k') { castlingRights.k = false; castlingRights.q = false; }
-      // If rook is not on h1, lose K castling
-      if (get(7, 7) !== 'R') castlingRights.K = false;
-      // If rook is not on a1, lose Q castling
-      if (get(7, 0) !== 'R') castlingRights.Q = false;
-      // If rook is not on h8, lose k castling
-      if (get(0, 7) !== 'r') castlingRights.k = false;
-      // If rook is not on a8, lose q castling
-      if (get(0, 0) !== 'r') castlingRights.q = false;
-
-      let castling = '';
-      if (castlingRights.K) castling += 'K';
-      if (castlingRights.Q) castling += 'Q';
-      if (castlingRights.k) castling += 'k';
-      if (castlingRights.q) castling += 'q';
-      if (!castling) castling = '-';
-
-      const moveNum = Math.floor(i / 2) + 1;
-      return `${fen} ${turn} ${castling} - 0 ${moveNum}`;
-    });
   }
 }

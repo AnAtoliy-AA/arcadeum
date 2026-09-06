@@ -20,15 +20,12 @@ import {
   analyzePositionMultiPV as analyzeMultiPV,
   getPuzzleHint as getHint,
   analyzeGame as runAnalyzeGame,
-  classifyMove as doClassifyMove,
-  calculateAccuracy as doCalculateAccuracy,
 } from './chess-stockfish.helpers';
 import type {
   EngineEval,
   GameAnalysisResult,
   AnalyzePositionRequest,
   AnalyzeGameRequest,
-  EngineLine,
   PuzzleHint,
 } from './chess-stockfish.types';
 
@@ -92,7 +89,9 @@ export class ChessStockfishService implements OnModuleDestroy {
   }
 
   async onModuleInit(): Promise<void> {
-    this.logger.log(`[Stockfish] onModuleInit called. Binary: ${this.binaryPath}`);
+    this.logger.log(
+      `[Stockfish] onModuleInit called. Binary: ${this.binaryPath}`,
+    );
     if (!fs.existsSync(this.binaryPath)) {
       if (process.env.E2E === 'true') {
         this.logger.debug(
@@ -164,7 +163,16 @@ export class ChessStockfishService implements OnModuleDestroy {
     depth: number = LIVE_DEPTH,
     timeMs: number = LIVE_TIME_MS,
     pvCount: number = 3,
-  ): Promise<EngineEval & { alternatives: Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> }> {
+  ): Promise<
+    EngineEval & {
+      alternatives: Array<{
+        move: string;
+        cp: number | null;
+        mate: number | null;
+        pv: string[];
+      }>;
+    }
+  > {
     return analyzeMultiPV(
       () => this.findFreeInstance(),
       fen,

@@ -32,8 +32,13 @@ export class ChessProfilesService {
     userId: string,
     updates: Partial<Pick<ChessProfile, 'bio' | 'country' | 'title'>>,
   ): Promise<ChessProfileDocument | null> {
+    const allowedFields = {
+      ...(updates.bio !== undefined && { bio: updates.bio }),
+      ...(updates.country !== undefined && { country: updates.country }),
+      ...(updates.title !== undefined && { title: updates.title }),
+    };
     return this.model
-      .findOneAndUpdate({ userId }, { $set: updates }, { new: true })
+      .findOneAndUpdate({ userId }, { $set: allowedFields }, { new: true })
       .exec();
   }
 

@@ -208,10 +208,7 @@ function ChessGameImpl({
   const isFlipped = myColor === 'black';
   const [flipped, setFlipped] = useState(myColor === 'black');
   const [confirmMoves, setConfirmMoves] = useState(false);
-  const [pendingMoveConfirm, setPendingMoveConfirm] = useState<{
-    from: BoardPosition;
-    to: BoardPosition;
-  } | null>(null);
+
 
   const toggleFlip = useCallback(() => setFlipped((f) => !f), []);
 

@@ -90,8 +90,7 @@ export class AiVsAiService {
           ...extras,
           botDifficulty: 'expert',
           // Pass per-color personalities from gameOptions
-          botPersonality:
-            (extras as Record<string, unknown>).botPersonalityWhite as string,
+          botPersonality: extras.botPersonalityWhite as string,
         }),
       checkers_v1: (hostId, roomId, extras) =>
         this.checkersService.startSession(hostId, roomId, false, 0, extras),
@@ -149,8 +148,10 @@ export class AiVsAiService {
     const aiMoveDelayMs = this.resolveDelay(dto.aiMoveDelayMs);
 
     // Resolve bot personalities — pick random if not specified
-    const whitePersonality = dto.botPersonalityWhite ?? this.randomPersonality();
-    const blackPersonality = dto.botPersonalityBlack ?? this.randomPersonality();
+    const whitePersonality =
+      dto.botPersonalityWhite ?? this.randomPersonality();
+    const blackPersonality =
+      dto.botPersonalityBlack ?? this.randomPersonality();
 
     const { minPlayers } = this.engineRegistry.getMetadata(dto.gameId);
     const seatCount = Math.max(2, minPlayers);

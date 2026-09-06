@@ -238,7 +238,9 @@ export abstract class BaseGameService<
 
     // Trigger bot turn AFTER releasing the lock to avoid deadlock
     if (updatedSession.status !== 'completed') {
-      this.logger.debug(`[Base] Triggering bot check for room ${updatedSession.roomId}`);
+      this.logger.debug(
+        `[Base] Triggering bot check for room ${updatedSession.roomId}`,
+      );
       this.botService.checkAndPlay(updatedSession).catch((err: unknown) => {
         const message = err instanceof Error ? err.message : String(err);
         this.logger.error(
@@ -246,7 +248,10 @@ export abstract class BaseGameService<
         );
       });
     } else {
-      await this.roomsService.updateRoomStatus(updatedSession.roomId, 'completed');
+      await this.roomsService.updateRoomStatus(
+        updatedSession.roomId,
+        'completed',
+      );
     }
 
     return updatedSession;

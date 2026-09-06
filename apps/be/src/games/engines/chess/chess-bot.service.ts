@@ -74,11 +74,15 @@ export class ChessBotService extends ChessBot {
 
   async checkAndPlay(session: GameSessionSummary): Promise<void> {
     // Re-read session from DB to get the latest state (turn may have changed)
-    const freshSession = await this.chessService.findSessionByRoom(session.roomId);
+    const freshSession = await this.chessService.findSessionByRoom(
+      session.roomId,
+    );
     if (!freshSession) return;
 
     if (freshSession.status !== 'active') {
-      this.logger.debug(`[Bot] Session ${freshSession.roomId} not active, skipping`);
+      this.logger.debug(
+        `[Bot] Session ${freshSession.roomId} not active, skipping`,
+      );
       return;
     }
     const state = freshSession.state as unknown as ChessState | undefined;
@@ -92,7 +96,10 @@ export class ChessBotService extends ChessBot {
       this.logger.log(
         `No humans in room ${freshSession.roomId} — completing session`,
       );
-      await this.chessService.completeSession(freshSession.id, freshSession.roomId);
+      await this.chessService.completeSession(
+        freshSession.id,
+        freshSession.roomId,
+      );
       return;
     }
 
@@ -100,11 +107,15 @@ export class ChessBotService extends ChessBot {
       (p) => p.color === state.currentTurnColor,
     )?.playerId;
     if (!currentId || !this.isBot(currentId)) {
-      this.logger.debug(`[Bot] Current player ${currentId} is not a bot in ${freshSession.roomId}`);
+      this.logger.debug(
+        `[Bot] Current player ${currentId} is not a bot in ${freshSession.roomId}`,
+      );
       return;
     }
     if (this.processing.has(freshSession.roomId)) {
-      this.logger.debug(`[Bot] Already processing ${freshSession.roomId}, skipping`);
+      this.logger.debug(
+        `[Bot] Already processing ${freshSession.roomId}, skipping`,
+      );
       return;
     }
     this.processing.add(session.roomId);
@@ -117,11 +128,16 @@ export class ChessBotService extends ChessBot {
       ]);
 
       const currentColor = state.currentTurnColor;
-      const options = (session as unknown as { options?: Record<string, unknown> }).options;
-      let personalityId = state.botPersonality as string | undefined;
+      const options = (
+        session as unknown as { options?: Record<string, unknown> }
+      ).options;
+      let personalityId = state.botPersonality;
       // AI vs AI: use per-color personalities if available
       if (options?.aiVsAi) {
-        const perColorKey = currentColor === 'white' ? 'botPersonalityWhite' : 'botPersonalityBlack';
+        const perColorKey =
+          currentColor === 'white'
+            ? 'botPersonalityWhite'
+            : 'botPersonalityBlack';
         personalityId = (options[perColorKey] as string) ?? personalityId;
       }
       const personality = personalityId
@@ -143,7 +159,9 @@ export class ChessBotService extends ChessBot {
       await new Promise((r) => setTimeout(r, delay));
 
       if (this.moveFn) {
-        this.logger.log(`[Bot] ${currentId} moving ${state.currentTurnColor} in ${session.roomId}: ${move.from.file}${move.from.rank}-${move.to.file}${move.to.rank}`);
+        this.logger.log(
+          `[Bot] ${currentId} moving ${state.currentTurnColor} in ${session.roomId}: ${move.from.file}${move.from.rank}-${move.to.file}${move.to.rank}`,
+        );
         await this.moveFn(currentId, session.roomId, {
           fromFile: move.from.file,
           fromRank: move.from.rank,
@@ -151,7 +169,9 @@ export class ChessBotService extends ChessBot {
           toRank: move.to.rank,
           promotion: move.promotion ?? undefined,
         });
-        this.logger.log(`[Bot] ${currentId} move completed in ${session.roomId}`);
+        this.logger.log(
+          `[Bot] ${currentId} move completed in ${session.roomId}`,
+        );
       } else {
         this.logger.warn(`[Bot] moveFn not set for ${session.roomId}`);
       }

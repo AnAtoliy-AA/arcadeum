@@ -27,7 +27,11 @@ export class ChessCosmetic {
   @Prop({ required: true })
   price!: number;
 
-  @Prop({ type: String, required: true, enum: ['common', 'rare', 'epic', 'legendary'] })
+  @Prop({
+    type: String,
+    required: true,
+    enum: ['common', 'rare', 'epic', 'legendary'],
+  })
   rarity!: CosmeticRarity;
 
   @Prop({ default: '' })

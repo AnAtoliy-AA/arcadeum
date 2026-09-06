@@ -204,24 +204,36 @@ export class ChessService extends BaseGameService<ChessOptions> {
     // Broadcast Stockfish analysis after each move (fire-and-forget)
     if (moveCount > 0) {
       if (!this.stockfishService?.isReady()) {
-        this.logger.warn(`[Chess] Stockfish not ready, skipping analysis for room ${session.roomId}`);
+        this.logger.warn(
+          `[Chess] Stockfish not ready, skipping analysis for room ${session.roomId}`,
+        );
       } else {
         const state = session.state as ChessState | undefined;
         const positionHistory = state?.positionHistory;
         if (positionHistory && positionHistory.length > 0) {
           const currentFen = positionHistory[positionHistory.length - 1];
-          this.logger.log(`[Chess] Analyzing fen for room ${session.roomId}: ${currentFen.substring(0, 40)}...`);
+          this.logger.log(
+            `[Chess] Analyzing fen for room ${session.roomId}: ${currentFen.substring(0, 40)}...`,
+          );
           this.stockfishService
             .analyzePosition({ fen: currentFen, depth: 12, timeMs: 1500 })
             .then((eval_) => {
-              this.logger.log(`[Chess] Eval for room ${session.roomId}: cp=${eval_.cp} mate=${eval_.mate} depth=${eval_.depth}`);
-              this.realtimeService.emitToRoom(session.roomId, 'chess.session.analyzed', {
-                roomId: session.roomId,
-                eval: eval_,
-              });
+              this.logger.log(
+                `[Chess] Eval for room ${session.roomId}: cp=${eval_.cp} mate=${eval_.mate} depth=${eval_.depth}`,
+              );
+              this.realtimeService.emitToRoom(
+                session.roomId,
+                'chess.session.analyzed',
+                {
+                  roomId: session.roomId,
+                  eval: eval_,
+                },
+              );
             })
             .catch((err) => {
-              this.logger.error(`[Chess] Stockfish analysis failed for room ${session.roomId}: ${err}`);
+              this.logger.error(
+                `[Chess] Stockfish analysis failed for room ${session.roomId}: ${err}`,
+              );
             });
         }
       }

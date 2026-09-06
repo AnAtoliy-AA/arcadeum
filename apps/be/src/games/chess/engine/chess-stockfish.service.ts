@@ -374,6 +374,19 @@ export class ChessStockfishService implements OnModuleDestroy {
           instance.pending.reject(new Error('Stockfish process exited'));
           instance.pending = null;
         }
+        // Auto-restart crashed instance
+        setTimeout(() => {
+          this.logger.log(`Restarting Stockfish instance...`);
+          this.spawnInstance()
+            .then((newInstance) => {
+              const idx = this.instances.indexOf(instance);
+              if (idx !== -1) this.instances[idx] = newInstance;
+              this.logger.log(`Stockfish instance restarted successfully`);
+            })
+            .catch((err) => {
+              this.logger.error(`Failed to restart Stockfish: ${err}`);
+            });
+        }, 1000);
       });
 
       // Start UCI handshake
@@ -411,6 +424,8 @@ export class ChessStockfishService implements OnModuleDestroy {
         reject(new Error('No Stockfish instances available'));
         return;
       }
+
+      this.logger.log(`[Stockfish] Sending commands: ${commands.join(' | ')}`);
 
       const lines: EngineEval[] = [];
       const deadline = Date.now() + Math.min(timeoutMs, MAX_TIME_MS + 10000);

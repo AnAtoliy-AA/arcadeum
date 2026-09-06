@@ -13,6 +13,7 @@ import { IpBlockGuard, IpBlockService } from './common/guards/ip-block.guard';
 import { CsrfGuard } from './common/guards/csrf.guard';
 import { RequestIdInterceptor } from './common/interceptors/request-id.interceptor';
 import { CompressedIoAdapter } from './common/adapters/compressed-io.adapter';
+import { validateEnv } from './common/config/env-validator';
 
 /**
  * Maximum request body size: 1 MB. Prevents abuse via oversized payloads.
@@ -50,6 +51,11 @@ async function bootstrap() {
     throw new Error(
       'E2E mode must not be enabled in production. Set E2E=false or remove it.',
     );
+  }
+
+  // Validate environment variables at startup (skip in E2E/test mode)
+  if (process.env.E2E !== 'true' && process.env.NODE_ENV !== 'test') {
+    validateEnv();
   }
 
   const logger = new ArcadeumLogger();

@@ -58,11 +58,22 @@ export class GameHistoryBuilderService {
       if (latestSession) {
         const participants = this.getParticipantSummariesSync(room, userMap);
 
+        // Get human-readable game name from the engine registry
+        let gameName: string;
+        try {
+          const engine = this.engineRegistry.getEngine(room.gameId);
+          const metadata = engine.getMetadata();
+          gameName = metadata.name || room.gameId;
+        } catch {
+          // Fallback to gameId if engine not found
+          gameName = room.gameId;
+        }
+
         history.push({
           id: latestSession._id.toString(),
           roomId,
           gameId: room.gameId,
-          gameName: room.gameId, // TODO: Get actual game name
+          gameName,
           roomName: room.name,
           startedAt: latestSession.createdAt.toISOString(),
           completedAt: latestSession.updatedAt.toISOString(),

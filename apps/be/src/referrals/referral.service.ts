@@ -277,6 +277,32 @@ export class ReferralService {
     };
   }
 
+  async getRewardsConfig() {
+    const [coinsPerReferral, tier1Bonus, tier2Bonus, tier3Bonus] =
+      await Promise.all([
+        this.economy.getNumber('referral_reward_coins_per'),
+        this.economy.getNumber('referral_tier_1_bonus_coins'),
+        this.economy.getNumber('referral_tier_2_bonus_coins'),
+        this.economy.getNumber('referral_tier_3_bonus_coins'),
+      ]);
+
+    return {
+      perFriend: coinsPerReferral,
+      tier1Bonus,
+      tier2Bonus,
+      tier3Bonus,
+      tiers: REWARD_TIERS.map((t) => ({
+        tier: t.tier,
+        requiredInvites: t.requiredInvites,
+        rewards: t.rewards.map((r) => ({
+          rewardId: r.rewardId,
+          rewardType: r.rewardType,
+          label: r.label,
+        })),
+      })),
+    };
+  }
+
   private async checkAndGrantRewards(userId: string): Promise<void> {
     const totalReferrals = await this.referralModel.countDocuments({
       referrerId: userId,

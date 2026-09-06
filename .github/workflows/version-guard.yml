@@ -1,5 +1,7 @@
 name: Version Guard
 
+permissions: read-all
+
 # Enforces the invariant that version bumps may ONLY be made on `develop`.
 # `staging` and `main` are pure consumers: they must carry develop's version,
 # never invent their own. An independent version bump on staging/main (e.g. a
@@ -11,9 +13,6 @@ name: Version Guard
 on:
   pull_request:
     branches: [main, staging]
-
-permissions:
-  contents: read
 
 jobs:
   check-version-source:

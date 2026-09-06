@@ -1,11 +1,10 @@
 name: Release
 
+permissions: read-all
+
 on:
   push:
     branches: [ main ]
-
-permissions:
-  contents: read
 
 env:
   NEXT_PUBLIC_E2E: 'true'

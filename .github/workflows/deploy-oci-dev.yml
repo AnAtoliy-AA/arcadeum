@@ -1,5 +1,7 @@
 name: Deploy to OCI (Dev)
 
+permissions: read-all
+
 on:
   push:
     branches: [staging]

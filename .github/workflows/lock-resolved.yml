@@ -1,12 +1,11 @@
 name: Lock Resolved Issues
 
+permissions: read-all
+
 on:
   pull_request:
     types: [closed]
   workflow_dispatch:
-
-permissions:
-  issues: write
 
 jobs:
   lock:

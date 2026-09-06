@@ -87,7 +87,7 @@ export function useDisplayNames({
   const formatLogMessage = useCallback(
     (message?: string | null) => {
       if (!message) {
-        return message || '';
+        return '';
       }
 
       // Handle seeTheFuture.reveal:cards:card1,cards:card2,cards:card3 format

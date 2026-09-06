@@ -30,18 +30,20 @@ import Redis from 'ioredis';
           }
         }
 
+        const host = config.get<string>('REDIS_HOST') || '127.0.0.1';
+        const port = Number(config.get<string>('REDIS_PORT') || 6379);
+
         const client = new Redis({
-          host: config.get<string>('REDIS_HOST') || '127.0.0.1',
-          port: Number(config.get<string>('REDIS_PORT') || 6379),
+          host,
+          port,
           maxRetriesPerRequest: null,
           enableOfflineQueue: false,
           lazyConnect: true,
-          retryStrategy: () => null,
+          connectTimeout: 2000,
+          retryStrategy: () => undefined,
           reconnectOnError: () => false,
         });
-        client.on('error', (err: Error) => {
-          logger.debug(`BullMQ local fallback offline: ${err.message}`);
-        });
+        client.on('error', () => {});
 
         return { connection: client };
       },

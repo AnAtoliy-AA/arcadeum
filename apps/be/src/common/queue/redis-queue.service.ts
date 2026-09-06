@@ -52,6 +52,10 @@ export class RedisQueueService implements OnModuleDestroy {
       clearInterval(this.pollInterval);
       this.pollInterval = null;
     }
+    if (this.redisClient) {
+      this.redisClient.disconnect();
+      this.redisClient = null;
+    }
   }
 
   registerWorker<T = Record<string, unknown>>(

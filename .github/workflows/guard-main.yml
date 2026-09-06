@@ -1,11 +1,11 @@
 name: Guard main branch
 
+permissions: read-all
+
 on:
   pull_request:
     branches:
       - main
-
-permissions: {}
 
 jobs:
   check-pr-title:

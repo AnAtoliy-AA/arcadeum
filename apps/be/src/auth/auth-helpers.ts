@@ -3,7 +3,27 @@ import * as crypto from 'crypto';
 import { Model } from 'mongoose';
 import { BCRYPT_SALT_ROUNDS } from '../common/constants/bcrypt';
 import type { User, UserDocument } from './schemas/user.schema';
-import type { GoogleUserProfile, AuthUserProfile } from './lib/types';
+import type {
+  GoogleUserProfile,
+  AppleUserProfile,
+  DiscordUserProfile,
+  AuthUserProfile,
+} from './lib/types';
+
+/**
+ * Extract common profile fields from any OAuth provider profile.
+ */
+function extractOAuthProfileFields(
+  profile: GoogleUserProfile | AppleUserProfile | DiscordUserProfile,
+): { sub: string; email: string; emailVerified: boolean; name?: string } {
+  return {
+    sub: profile.sub,
+    email: profile.email.toLowerCase(),
+    emailVerified: profile.emailVerified,
+    // Discord uses username instead of name
+    name: 'name' in profile ? profile.name : undefined,
+  };
+}
 
 export function sanitizeUsernameCandidate(source: string): string {
   const base = source.replace(/[^a-zA-Z0-9_-]/g, '');
@@ -43,16 +63,16 @@ export async function ensureUserUsername(
 }
 
 export async function getOrCreateOAuthUser(
-  profile: GoogleUserProfile,
+  profile: GoogleUserProfile | AppleUserProfile | DiscordUserProfile,
   userModel: Model<UserDocument>,
   grantStarterItems: (userId: string) => Promise<void>,
   grantSignupReward: (userId: string) => Promise<void>,
 ): Promise<UserDocument> {
-  const email = profile.email.toLowerCase();
+  const { email, name } = extractOAuthProfileFields(profile);
   const existing = await userModel.findOne({ email });
   if (existing) {
     const ensured = await ensureUserUsername(existing, userModel);
-    const preferredDisplay = profile.name?.trim();
+    const preferredDisplay = name?.trim();
     if (preferredDisplay && ensured.displayName !== preferredDisplay) {
       ensured.displayName = preferredDisplay;
       await ensured.save();
@@ -60,7 +80,7 @@ export async function getOrCreateOAuthUser(
     return ensured;
   }
 
-  const preferredName = profile.name?.trim() || email.split('@')[0] || 'user';
+  const preferredName = name?.trim() || email.split('@')[0] || 'user';
   const base = sanitizeUsernameCandidate(preferredName);
   let candidate = base;
   let normalized = candidate.toLowerCase();
@@ -82,7 +102,7 @@ export async function getOrCreateOAuthUser(
     passwordHash: placeholderPassword,
     username: candidate,
     usernameNormalized: normalized,
-    displayName: profile.name?.trim() || undefined,
+    displayName: name?.trim() || undefined,
   });
 
   await grantStarterItems((created as UserDocument).id as string);

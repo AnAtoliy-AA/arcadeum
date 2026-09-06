@@ -256,8 +256,9 @@ export const useSessionStore = create<SessionState>()(
           mode: s.mode,
         };
       },
-      onRehydrateStorage: () => () => {
-        if (typeof window === 'undefined') return;
+      onRehydrateStorage: () => {
+        if (typeof window === 'undefined') return () => {};
+
         const handleStorage = (e: StorageEvent) => {
           if (e.key !== 'web_session_tokens_v1') return;
           if (e.newValue) return;
@@ -266,7 +267,13 @@ export const useSessionStore = create<SessionState>()(
             current.clearTokens();
           }
         };
+
         window.addEventListener('storage', handleStorage);
+
+        // Return cleanup function to prevent memory leaks
+        return () => {
+          window.removeEventListener('storage', handleStorage);
+        };
       },
     },
   ),

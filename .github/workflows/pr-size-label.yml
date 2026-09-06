@@ -1,12 +1,10 @@
 name: PR Size Label
 
+permissions: read-all
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-
-permissions:
-  contents: read
-  pull-requests: write
 
 jobs:
   label:

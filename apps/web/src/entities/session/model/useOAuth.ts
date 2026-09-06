@@ -17,6 +17,11 @@ import { type SessionTokensSnapshot } from './types';
 import { authConfig, resolveAuthRedirectUri } from '@/shared/config/auth';
 import { OAUTH } from '@/shared/config/constants';
 import { encryptSensitiveValue } from '@/entities/session/lib/encryptSensitive';
+import {
+  redirectToAppleOAuth,
+  redirectToDiscordOAuth,
+  redirectToGoogleOAuth,
+} from './oauth-providers';
 
 interface OAuthDiscovery {
   authorization_endpoint?: string;
@@ -107,51 +112,6 @@ function clearOAuthSessionState() {
 // Module-level guard to prevent multiple hook instances from handling the same code simultaneously
 const handledCodes = new Set<string>();
 
-function base64UrlEncode(arrayBuffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(arrayBuffer);
-  // Use Array.from instead of byte-by-byte string concatenation
-  const binary = Array.from(bytes, (byte) => String.fromCharCode(byte)).join(
-    '',
-  );
-  return btoa(binary)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-}
-
-function generateRandomString(length: number): string {
-  const charset =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-  const randomValues = new Uint8Array(length);
-  if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
-    window.crypto.getRandomValues(randomValues);
-  } else if (
-    typeof globalThis !== 'undefined' &&
-    globalThis.crypto?.getRandomValues
-  ) {
-    globalThis.crypto.getRandomValues(randomValues);
-  } else {
-    throw new Error(
-      'Cryptographically secure random number generation is not available',
-    );
-  }
-  let result = '';
-  for (let i = 0; i < length; i += 1) {
-    result += charset[randomValues[i] % charset.length];
-  }
-  return result;
-}
-
-async function createCodeChallenge(verifier: string): Promise<string> {
-  if (typeof window === 'undefined' || !window.crypto?.subtle) {
-    throw new Error('PKCE requires window.crypto.subtle support');
-  }
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  const digest = await window.crypto.subtle.digest('SHA-256', data);
-  return base64UrlEncode(digest);
-}
-
 async function applySessionResponse(
   session: SessionTokensValue,
   response: LoginResponse,
@@ -178,7 +138,7 @@ async function applySessionResponse(
 }
 
 export type UseOAuthResult = OAuthState & {
-  startOAuth: () => Promise<void>;
+  startOAuth: (provider?: 'google' | 'apple' | 'discord') => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -200,66 +160,42 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
     mutationFn: loginOAuthSession,
   });
 
-  const startOAuth = useCallback(async () => {
-    if (!authConfig.clientId) {
-      setState((current) => ({
-        ...current,
-        error: 'OAuth client ID is not configured',
-      }));
-      return;
-    }
+  const startOAuth = useCallback(
+    async (provider: 'google' | 'apple' | 'discord' = 'google') => {
+      const setStateHelper = {
+        setError: (error: string) => {
+          setState((current) => ({ ...current, error }));
+        },
+        setLoading: (loading: boolean) => {
+          setState((current) => ({ ...current, loading }));
+        },
+        setRedirecting: (redirecting: boolean) => {
+          setState((current) => ({ ...current, isRedirecting: redirecting }));
+        },
+      };
 
-    const redirectUri = resolveAuthRedirectUri();
-    if (!redirectUri) {
-      setState((current) => ({
-        ...current,
-        error: 'Unable to resolve redirect URI',
-      }));
-      return;
-    }
+      if (provider === 'apple') {
+        return redirectToAppleOAuth(setStateHelper);
+      }
 
-    try {
-      setState((current) => ({
-        ...current,
-        loading: true,
-        isRedirecting: true,
-        error: null,
-      }));
+      if (provider === 'discord') {
+        return redirectToDiscordOAuth(setStateHelper);
+      }
 
-      // Replace queryClient.fetchQuery with simple cached fetch
-      const discovery = await getCachedDiscovery(authConfig.issuer);
+      // Default Google OAuth flow
+      if (!authConfig.clientId) {
+        setStateHelper.setError('OAuth client ID is not configured');
+        return;
+      }
 
-      const authEndpoint =
-        discovery.authorization_endpoint ??
-        `${authConfig.issuer.replace(/\/?$/, '')}/o/oauth2/v2/auth`;
-      const verifier = generateRandomString(OAUTH.VERIFIER_LENGTH);
-      const challenge = await createCodeChallenge(verifier);
-      const stateParam = generateRandomString(OAUTH.STATE_LENGTH);
-      storeSessionValue(CODE_VERIFIER_KEY, verifier);
-      storeSessionValue(STATE_KEY, stateParam);
-
-      const url = new URL(authEndpoint);
-      url.searchParams.set('client_id', authConfig.clientId);
-      url.searchParams.set('redirect_uri', redirectUri);
-      url.searchParams.set('response_type', 'code');
-      url.searchParams.set('scope', authConfig.scopes.join(' '));
-      url.searchParams.set('state', stateParam);
-      url.searchParams.set('code_challenge', challenge);
-      url.searchParams.set('code_challenge_method', 'S256');
-      url.searchParams.set('access_type', 'offline');
-      url.searchParams.set('prompt', 'consent');
-
-      window.location.assign(url.toString());
-    } catch (error) {
-      setState((current) => ({
-        ...current,
-        loading: false,
-        isRedirecting: false,
-        error: error instanceof Error ? error.message : String(error),
-      }));
-      clearOAuthSessionState();
-    }
-  }, []);
+      return redirectToGoogleOAuth({
+        ...setStateHelper,
+        clientId: authConfig.clientId,
+        issuer: authConfig.issuer,
+      });
+    },
+    [],
+  );
 
   const logout = useCallback(async () => {
     const providerToken = providerTokenRef.current;
@@ -338,8 +274,11 @@ export function useOAuth(session: SessionTokensValue): UseOAuthResult {
         });
         providerTokenRef.current = tokenResponse.accessToken ?? null;
 
+        // Determine provider from the issuer or state
+        const provider = 'google'; // Default to Google for now
+
         const sessionResponse = await loginSessionMutation({
-          provider: 'google',
+          provider,
           accessToken: tokenResponse.accessToken,
           idToken: tokenResponse.idToken,
         });

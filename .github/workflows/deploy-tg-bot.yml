@@ -1,5 +1,7 @@
 name: Deploy to OCI
 
+permissions: read-all
+
 on:
   push:
     branches:
@@ -8,8 +10,6 @@ on:
       - 'apps/be/**'
       - 'apps/tg-bot/**'
       - 'packages/**'
-
-permissions: {}
 
 jobs:
   deploy:

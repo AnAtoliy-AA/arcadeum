@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Arcadeum web frontend is a **Next.js 14+** application built with **App Router**, **React Server Components**, and **TypeScript**, designed for high performance, real-time multiplayer gaming, and seamless cross-platform experience. It communicates with the NestJS backend via WebSocket and REST APIs, and is optimized for SEO, PWA support, and accessibility.
+The Arcadeum web frontend is a **Next.js 16+** application built with **App Router**, **React Server Components**, and **TypeScript**, designed for high performance, real-time multiplayer gaming, and seamless cross-platform experience. It communicates with the NestJS backend via WebSocket and REST APIs, and is optimized for SEO, PWA support, and accessibility.
 
 This architecture follows **modular, feature-driven organization** with clear separation between UI components, business logic, state management, and API layers — making it scalable, testable, and maintainable.
 
@@ -12,7 +12,7 @@ This architecture follows **modular, feature-driven organization** with clear se
 
 | Principle                    | Description                                                                                               |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------- |
-| **App Router (Next.js 14+)** | Uses modern React Server Components (RSC) and Client Components strategically for performance and SEO     |
+| **App Router (Next.js 16+)** | Uses modern React Server Components (RSC) and Client Components strategically for performance and SEO     |
 | **Feature-First Structure**  | Each feature (auth, chat, games) lives in its own folder with all related files grouped together          |
 | **State Management**         | Uses React Context + custom hooks for local state; Redux Toolkit only where needed (e.g., global session) |
 | **Type Safety**              | Full TypeScript coverage with interfaces, Zod validation, and generated types from backend DTOs           |

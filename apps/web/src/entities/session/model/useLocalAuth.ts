@@ -33,7 +33,11 @@ export type UseLocalAuthResult = LocalAuthState & {
     username: string;
     referralCode?: string;
   }) => Promise<void>;
-  login: (params: { email: string; password: string }) => Promise<void>;
+  login: (params: {
+    email: string;
+    password: string;
+    rememberMe?: boolean;
+  }) => Promise<void>;
   toggleMode: () => void;
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
@@ -183,11 +187,23 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   );
 
   const login = useCallback(
-    async ({ email, password }: { email: string; password: string }) => {
+    async ({
+      email,
+      password,
+      rememberMe,
+    }: {
+      email: string;
+      password: string;
+      rememberMe?: boolean;
+    }) => {
       const trimmedEmail = email.trim();
       setState((current) => ({ ...current, loading: true, error: null }));
       try {
-        const response = await loginMutation({ email: trimmedEmail, password });
+        const response = await loginMutation({
+          email: trimmedEmail,
+          password,
+          rememberMe,
+        });
         const snapshot = await mergeSnapshot(
           session,
           response,

@@ -1,5 +1,7 @@
 name: Branch Guard
 
+permissions: read-all
+
 on:
   pull_request:
     branches: [main, staging]

@@ -221,21 +221,34 @@ export abstract class BaseGameService<
     action: string,
     payload: unknown,
   ): Promise<GameSessionSummary> {
-    return this.roomLock.runLocked(roomId, async () => {
+    const updatedSession = await this.roomLock.runLocked(roomId, async () => {
       const session = await this.sessionsService.findSessionByRoom(roomId);
       if (!session) throw new Error('Session not found');
 
-      const updatedSession = await this.sessionsService.executeAction({
+      const updated = await this.sessionsService.executeAction({
         sessionId: session.id,
         userId,
         action,
         payload,
       });
 
-      await this.afterSessionStep(updatedSession);
-      await this.emitSessionUpdate(updatedSession);
-      return updatedSession;
+      await this.emitSessionUpdate(updated);
+      return updated;
     });
+
+    // Trigger bot turn AFTER releasing the lock to avoid deadlock
+    if (updatedSession.status !== 'completed') {
+      this.botService.checkAndPlay(updatedSession).catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.error(
+          `Bot turn failed for room ${updatedSession.roomId}: ${message}`,
+        );
+      });
+    } else {
+      await this.roomsService.updateRoomStatus(updatedSession.roomId, 'completed');
+    }
+
+    return updatedSession;
   }
 
   protected abstract resolveOptions(raw: unknown): TOptions;

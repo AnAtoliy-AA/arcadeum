@@ -100,8 +100,16 @@ export class ChessBotService extends ChessBot {
         0, 0, 0, 0, 0, 0, 0, 0,
       ]);
 
-      const personality = state.botPersonality
-        ? (getBotPersonality(state.botPersonality) ?? null)
+      const currentColor = state.currentTurnColor;
+      const options = (session as unknown as { options?: Record<string, unknown> }).options;
+      let personalityId = state.botPersonality as string | undefined;
+      // AI vs AI: use per-color personalities if available
+      if (options?.aiVsAi) {
+        const perColorKey = currentColor === 'white' ? 'botPersonalityWhite' : 'botPersonalityBlack';
+        personalityId = (options[perColorKey] as string) ?? personalityId;
+      }
+      const personality = personalityId
+        ? (getBotPersonality(personalityId) ?? null)
         : null;
       this.setPersonality(personality);
 

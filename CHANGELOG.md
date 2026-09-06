@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.27] - 2026-09-06
+
+### Added
+- Phase 12 — Live Broadcasting (backend)
+- Phase 11 — Monetization & Cosmetics (backend)
+- Phase 10 — Mobile Optimization
+- Phase 9 — Chess Variants
+- Phase 8 — Anti-Cheat & Spectator Mode
+- Phase 7 — Social Features (frontend)
+- Phase 7 — Social Features (backend)
+- Phase 6 — Drawing Tools & Board Interactions
+- Phase 5 — Frontend BotSelector + ChessLobby
+- Phase 5 — Backend bot personality support
+- Phase 5 — Bot Personalities
+
+### Fixed
+- remove unused imports and variables for CodeQL
+- mock ResizeObserver in ChessBoard tests
+- add missing i18n keys and fix GlassCard onClick
+- remove unnecessary async from battle pass and subscription services
+
+
 ## [1.28.26] - 2026-09-06
 
 ### Added

@@ -197,6 +197,14 @@ export const enMessages = {
         blunder: 'Blunder',
       },
     },
+    review: {
+      title: 'Game Review',
+      accuracy: 'Accuracy',
+      grade: 'Grade',
+      moveBreakdown: 'Move Breakdown',
+      evaluation: 'Evaluation',
+      keyMoments: 'Key Moments',
+    },
     coach: {
       title: 'Coach hints',
       hint: 'Hint',

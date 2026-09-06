@@ -206,6 +206,41 @@ function ChessGameImpl({
   } = useGameResultModal(session, result, resultMessages, isGameOver);
 
   const isFlipped = myColor === 'black';
+  const [flipped, setFlipped] = useState(myColor === 'black');
+  const [confirmMoves, setConfirmMoves] = useState(false);
+  const [pendingMoveConfirm, setPendingMoveConfirm] = useState<{
+    from: BoardPosition;
+    to: BoardPosition;
+  } | null>(null);
+
+  const toggleFlip = useCallback(() => setFlipped((f) => !f), []);
+
+  const exportPgn = useCallback(() => {
+    if (!displaySnapshot) return;
+    const lines: string[] = [];
+    lines.push('[Event "Arcadeum Chess"]');
+    lines.push(`[Site "arcadeum.gg"]`);
+    lines.push(`[Date "${new Date().toISOString().slice(0, 10)}"]`);
+    lines.push(`[White "${displaySnapshot.players.find((p) => p.color === 'white')?.playerId ?? '?'}"]`);
+    lines.push(`[Black "${displaySnapshot.players.find((p) => p.color === 'black')?.playerId ?? '?'}"]`);
+    lines.push(`[Result "${displaySnapshot.winnerColor === 'white' ? '1-0' : displaySnapshot.winnerColor === 'black' ? '0-1' : '1/2-1/2'}"]`);
+    lines.push('');
+    let pgn = '';
+    for (let i = 0; i < displaySnapshot.moveHistory.length; i++) {
+      const m = displaySnapshot.moveHistory[i];
+      if (i % 2 === 0) pgn += `${Math.floor(i / 2) + 1}. `;
+      pgn += m.notation + ' ';
+    }
+    pgn += displaySnapshot.winnerColor === 'white' ? '1-0' : displaySnapshot.winnerColor === 'black' ? '0-1' : '1/2-1/2';
+    lines.push(pgn.trim());
+    const blob = new Blob([lines.join('\n')], { type: 'application/x-chess-pgn' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chess-game-${Date.now()}.pgn`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [displaySnapshot]);
   const lastMove = useMemo(() => {
     if (!displaySnapshot?.moveHistory.length) return null;
     const last =
@@ -391,11 +426,16 @@ function ChessGameImpl({
       />
     );
 
+  const liveAlternatives = useMemo(() => {
+    if (!liveEval || !('alternatives' in liveEval)) return null;
+    return (liveEval as Record<string, unknown>).alternatives as Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> | null;
+  }, [liveEval]);
+
   const board = (
     <ChessBoardPanel
       snapshot={displaySnapshot}
       myColor={myColor}
-      isFlipped={isFlipped}
+      isFlipped={flipped}
       displayMyTurn={displayMyTurn}
       isGameOver={isGameOver}
       isSpectator={isSpectator}
@@ -418,6 +458,11 @@ function ChessGameImpl({
       onDeclineTakeback={declineTakeback}
       liveEval={liveEval}
       liveEvalAnalyzing={liveEvalAnalyzing}
+      onFlipBoard={toggleFlip}
+      onExportPgn={exportPgn}
+      onToggleConfirmMoves={() => setConfirmMoves((c) => !c)}
+      confirmMoves={confirmMoves}
+      moveCandidates={liveAlternatives}
     />
   );
   const themeVariant =

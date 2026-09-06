@@ -93,3 +93,23 @@ export async function getPuzzleHint(fen: string): Promise<PuzzleHint | null> {
     return null;
   }
 }
+
+export interface OpeningClassification {
+  opening: string;
+  eco: string;
+  family: string;
+  moveIndex: number;
+}
+
+export async function classifyOpening(
+  moves: string[],
+): Promise<OpeningClassification | null> {
+  try {
+    return await apiClient.post<OpeningClassification>(
+      '/chess/openings/classify',
+      { moves },
+    );
+  } catch {
+    return null;
+  }
+}

@@ -217,27 +217,34 @@ export class ChessService extends BaseGameService<ChessOptions> {
             `[Chess] Analyzing fen for room ${session.roomId}: ${fullFen.substring(0, 50)}...`,
           );
           this.stockfishService
-            .analyzePosition({ fen: fullFen, depth: 12, timeMs: 1500 })
-            .then((eval_) => {
+            .analyzePositionMultiPV(fullFen, 12, 1500, 3)
+            .then((result) => {
               this.logger.log(
-                `[Chess] Eval for room ${session.roomId}: cp=${eval_.cp} mate=${eval_.mate} depth=${eval_.depth}`,
+                `[Chess] Eval for room ${session.roomId}: cp=${result.cp} mate=${result.mate} depth=${result.depth}`,
               );
+              const payload = {
+                roomId: session.roomId,
+                eval: {
+                  cp: result.cp,
+                  mate: result.mate,
+                  pv: result.pv,
+                  depth: result.depth,
+                  selDepth: result.selDepth,
+                  nodes: result.nodes,
+                  nps: result.nps,
+                  timeMs: result.timeMs,
+                },
+                alternatives: result.alternatives,
+              };
               this.realtimeService.emitToRoom(
                 session.roomId,
                 'chess.session.analyzed',
-                {
-                  roomId: session.roomId,
-                  eval: eval_,
-                },
+                payload,
               );
-              // Also broadcast to spectators
               this.realtimeService.emitToSpectators(
                 session.roomId,
                 'chess.session.analyzed',
-                {
-                  roomId: session.roomId,
-                  eval: eval_,
-                },
+                payload,
               );
             })
             .catch((err) => {

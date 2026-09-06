@@ -51,4 +51,14 @@ export class ChessOpeningsController {
   ) {
     return this.openingsService.importOpenings(body.openings);
   }
+
+  @Post('classify')
+  async classifyOpening(
+    @Body() body: { moves: string[] },
+  ) {
+    if (!body.moves || body.moves.length === 0) {
+      return { error: 'moves array is required' };
+    }
+    return this.openingsService.classifyOpening(body.moves);
+  }
 }

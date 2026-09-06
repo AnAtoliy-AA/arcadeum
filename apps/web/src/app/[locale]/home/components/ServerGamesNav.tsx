@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { buildRoutes } from '@/shared/config/routes';
+import type { Locale } from '@/shared/i18n';
 
 const GAMES = [
   { id: 'sea_battle_v1', name: 'Sea Battle', href: '/games/sea-battle' },
@@ -13,15 +14,15 @@ const GAMES = [
   { id: 'glimworm_v1', name: 'Glimworm', href: '/games/glimworm' },
 ];
 
-export function ServerGamesNav() {
-  const routes = buildRoutes('en');
+export function ServerGamesNav({ locale }: { locale: Locale }) {
+  const routes = buildRoutes(locale);
 
   return (
     <nav aria-label="Games navigation" className="sr-only">
       <ul>
         {GAMES.map((game) => (
           <li key={game.id}>
-            <Link href={game.href}>{game.name}</Link>
+            <Link href={`/${locale}${game.href}`}>{game.name}</Link>
           </li>
         ))}
         <li>

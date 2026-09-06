@@ -49,7 +49,7 @@ export default function HomePage({ locale }: { locale: Locale }) {
       {faqData.length > 0 && (
         <JsonLd id={`json-ld-home-faq-${locale}`} data={faqData} />
       )}
-      <ServerGamesNav />
+      <ServerGamesNav locale={locale} />
       <HomeHero locale={locale} />
       {/* Live activity social proof (roadmap 7D) */}
       <ActivityBanner className="mx-auto -mt-4 max-w-[600px]" />
@@ -63,7 +63,7 @@ export default function HomePage({ locale }: { locale: Locale }) {
       <HomePitchDeck />
       <InstallAppCta />
       {/* Server-rendered fallback for AI agents and disabled JavaScript */}
-      <NoscriptFallback />
+      <NoscriptFallback locale={locale} />
     </PageLayout>
   );
 }

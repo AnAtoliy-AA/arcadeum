@@ -5,7 +5,7 @@ const APP = appConfig.appName;
 export const en = {
   home: {
     title: `${APP} — Free Online Board & Card Games`,
-    description: `Play free online board games, card games, and multiplayer mini-games with friends on ${APP}. Chess, Battleship, Checkers, Cascade, 2048, and more — create a room, share the link, and play in your browser. No download, no signup.`,
+    description: `Play free online board games, card games, and multiplayer mini-games with friends on ${APP}. Chess, Battleship, Checkers, Cascade, 2048, and more — no download, no signup.`,
     badge: 'Play with Friends or AI',
   },
   games: {

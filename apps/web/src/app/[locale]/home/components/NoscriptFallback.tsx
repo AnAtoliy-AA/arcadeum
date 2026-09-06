@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { appConfig } from '@/shared/config/app-config';
+import type { Locale } from '@/shared/i18n';
 
 const GAMES = [
   {
@@ -110,7 +111,7 @@ const FEATURES = [
   },
 ];
 
-export function NoscriptFallback() {
+export function NoscriptFallback({ locale }: { locale: Locale }) {
   return (
     <noscript>
       <div className="mx-auto max-w-[1200px] p-8">
@@ -135,7 +136,7 @@ export function NoscriptFallback() {
                   </span>
                 </div>
                 <Link
-                  href={game.href}
+                  href={`/${locale}${game.href}`}
                   className="mt-4 inline-block rounded-lg bg-[#3b82f6] px-4 py-2 text-white no-underline"
                 >
                   Play {game.name}
@@ -172,7 +173,7 @@ export function NoscriptFallback() {
             with friends. No download required.
           </p>
           <Link
-            href="/en/games"
+            href={`/${locale}/games`}
             className="inline-block rounded-lg bg-[#3b82f6] px-6 py-3 font-bold text-white no-underline"
           >
             Browse All Games

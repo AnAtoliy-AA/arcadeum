@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   Modal,
   ModalContent,
@@ -64,6 +64,8 @@ export function GamePickerModal({
   title,
 }: GamePickerModalProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] ?? 'en';
   const routes = useRoutes();
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
@@ -146,7 +148,7 @@ export function GamePickerModal({
       const game = games.find((g) => g.slug === gameId);
       if (game?.players === '1' && game.landingHref) {
         onClose();
-        router.push(game.landingHref);
+        router.push(`/${locale}${game.landingHref}`);
         return;
       }
       setLoadingGame(gameId);

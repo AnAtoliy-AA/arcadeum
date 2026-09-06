@@ -230,6 +230,15 @@ export class ChessService extends BaseGameService<ChessOptions> {
                   eval: eval_,
                 },
               );
+              // Also broadcast to spectators
+              this.realtimeService.emitToSpectators(
+                session.roomId,
+                'chess.session.analyzed',
+                {
+                  roomId: session.roomId,
+                  eval: eval_,
+                },
+              );
             })
             .catch((err) => {
               this.logger.error(

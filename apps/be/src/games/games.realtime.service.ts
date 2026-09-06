@@ -333,6 +333,15 @@ export class GamesRealtimeService {
       .emit(event, maybeEncrypt(payload as Record<string, unknown>));
   }
 
+  emitToSpectators(roomId: string, event: string, payload: unknown): void {
+    if (!this.server) {
+      return;
+    }
+    this.server
+      .to(this.spectatorChannel(roomId))
+      .emit(event, maybeEncrypt(payload as Record<string, unknown>));
+  }
+
   /**
    * Broadcast an event to a specific client (by `userId`) within a room channel.
    * Returns false if no such client was found. Used for personalised snapshots.

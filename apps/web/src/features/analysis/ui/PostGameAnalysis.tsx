@@ -44,7 +44,9 @@ export function PostGameAnalysis({
   const [spectatorPerspective, setSpectatorPerspective] = useState<'white' | 'black'>('white');
 
   const perspective = isSpectator ? spectatorPerspective : (myColor ?? 'white');
-  const shouldFlip = !isSpectator && myColor === 'black';
+  // Stockfish evals are from White's perspective.
+  // Flip for Black so positive always = "I'm winning".
+  const shouldFlip = perspective === 'black';
 
   useEffect(() => {
     let cancelled = false;

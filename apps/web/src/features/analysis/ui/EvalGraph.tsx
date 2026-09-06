@@ -81,7 +81,6 @@ export function EvalGraph({
   const data = useMemo<EvalPoint[]>(
     () => {
       if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-console
         console.log(`[EvalGraph] received evals (first 10):`, evals.slice(0, 10));
       }
       return evals.map((value, ply) => ({

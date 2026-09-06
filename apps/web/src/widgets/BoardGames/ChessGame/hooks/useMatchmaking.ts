@@ -32,7 +32,10 @@ export function useMatchmaking({
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
   const onMatchedRef = useRef(onMatched);
-  onMatchedRef.current = onMatched;
+
+  useEffect(() => {
+    onMatchedRef.current = onMatched;
+  }, [onMatched]);
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) {

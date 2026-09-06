@@ -106,11 +106,6 @@ function ChessGameImpl({
   const coach = useChessCoach({ room, currentUserId, displaySnapshot });
 
   // Stockfish 19 live analysis (latest stable, released 2026-09-05)
-  const currentFen = useMemo(() => {
-    if (!displaySnapshot) return null;
-    const history = displaySnapshot.positionHistory;
-    return history && history.length > 0 ? history[history.length - 1] : null;
-  }, [displaySnapshot]);
   const { eval: liveEval, analyzing: liveEvalAnalyzing } = useStockfishAnalysis(
     {
       roomId,
@@ -289,6 +284,7 @@ function ChessGameImpl({
       isGameOver,
       movePiece,
       applyOptimisticMove,
+      playSound,
     ],
   );
 

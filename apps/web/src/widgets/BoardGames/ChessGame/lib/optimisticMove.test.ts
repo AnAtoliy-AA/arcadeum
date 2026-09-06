@@ -75,6 +75,8 @@ describe('calculateOptimisticChessState', () => {
     isInsufficientMaterial: false,
     isDrawByAgreement: false,
     drawOfferedBy: null,
+    takebackOfferedBy: null,
+    takebackMoveIndex: null,
     clocks: null,
     positionHistory: [],
     currentTurnIndex: 0,

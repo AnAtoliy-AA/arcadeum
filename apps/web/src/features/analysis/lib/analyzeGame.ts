@@ -11,7 +11,7 @@ import { parseFenPiecePlacement } from './fen';
  * <= 300 mistake, > 300 blunder.
  */
 
-export type MoveQuality = 'good' | 'inaccuracy' | 'mistake' | 'blunder';
+export type MoveQuality = 'good' | 'inaccuracy' | 'mistake' | 'blunder' | 'brilliant' | 'great';
 
 export interface AnalyzedMove {
   /** 0-indexed ply. Even = White's move, odd = Black's move. */

@@ -1,9 +1,23 @@
-import type { File, Rank, MovePayload } from '../types';
+import type { File, Rank, ChessPiece, Board } from '../types';
 import { parseFen } from '@arcadeum/games-core/games/chess/chess.board';
 import { INITIAL_BOARD_FEN } from '@arcadeum/games-core/games/chess/chess.constants';
 import { getLegalMoves } from '@arcadeum/games-core/games/chess/chess.move-generator';
-import type { ChessState, ChessPiece, Board } from '../types';
 import { FILES } from '../types';
+
+interface MovePayload {
+  fromFile: File;
+  fromRank: Rank;
+  toFile: File;
+  toRank: Rank;
+  promotion?: 'queen' | 'rook' | 'bishop' | 'knight';
+}
+
+interface ChessState {
+  board: Board;
+  currentTurnColor: 'white' | 'black';
+  castlingRights: { whiteKingSide: boolean; whiteQueenSide: boolean; blackKingSide: boolean; blackQueenSide: boolean };
+  enPassantTarget: { rank: Rank; file: File } | null;
+}
 
 interface PgnHeaders {
   Event?: string;

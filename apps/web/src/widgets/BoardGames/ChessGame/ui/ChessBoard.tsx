@@ -71,7 +71,7 @@ interface ChessCellProps {
   ) => void;
   onHover: (square: string | null) => void;
   onDragOver: (square: string | null) => void;
-  animatingRef: React.RefObject<Map<string, { dx: number; dy: number }>>;
+  animating: Map<string, { dx: number; dy: number }>;
 }
 
 function ChessCell({
@@ -96,7 +96,7 @@ function ChessCell({
   onPieceDrop,
   onHover,
   onDragOver,
-  animatingRef,
+  animating,
 }: ChessCellProps) {
   const theme = useChessTheme();
   const square = `${file}-${rank}`;
@@ -236,8 +236,8 @@ function ChessCell({
             position: 'relative',
             zIndex: 2,
             transition: 'transform 0.2s ease-out',
-            transform: animatingRef.current.get(square)
-              ? `translate(${animatingRef.current.get(square)!.dx}%, ${animatingRef.current.get(square)!.dy}%)`
+            transform: animating.get(square)
+              ? `translate(${animating.get(square)!.dx}%, ${animating.get(square)!.dy}%)`
               : undefined,
           }}
         >
@@ -269,7 +269,7 @@ function ChessBoardImpl({
   const [hoveredSquare, setHoveredSquare] = useState<string | null>(null);
   const [dragOverSquare, setDragOverSquare] = useState<string | null>(null);
   const prevBoardRef = useRef<Board>(board);
-  const animatingRef = useRef<Map<string, { dx: number; dy: number }>>(new Map());
+  const [animating, setAnimating] = useState<Map<string, { dx: number; dy: number }>>(new Map());
 
   useEffect(() => {
     const prev = prevBoardRef.current;
@@ -298,7 +298,7 @@ function ChessBoardImpl({
       }
     }
 
-    animatingRef.current = animations;
+    setAnimating(animations);
     prevBoardRef.current = curr;
   }, [board]);
 
@@ -496,7 +496,7 @@ function ChessBoardImpl({
                   onPieceDrop={onPieceDrop}
                   onHover={handleHover}
                   onDragOver={handleDragOver}
-                  animatingRef={animatingRef}
+                  animating={animating}
                 />
               );
             })}

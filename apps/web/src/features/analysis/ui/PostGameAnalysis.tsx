@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
@@ -46,11 +46,6 @@ export function PostGameAnalysis({
   const perspective = isSpectator ? spectatorPerspective : (myColor ?? 'white');
   const shouldFlip = perspective === 'black';
 
-  if (process.env.NODE_ENV === 'development') {
-    // eslint-disable-next-line no-console
-    console.log(`[Analysis] perspective=${perspective} shouldFlip=${shouldFlip} myColor=${myColor} isSpectator=${isSpectator}`);
-  }
-
   const flipEvals = useCallback((vals: (number | null)[]): (number | null)[] => {
     if (!shouldFlip) return vals;
     return vals.map((v) => (v != null ? -v : v));
@@ -58,7 +53,6 @@ export function PostGameAnalysis({
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     analyzeGameWithStockfish(positionHistory, notations).then((result) => {
       if (!cancelled) {
         setStockfishResult(result);
@@ -77,24 +71,17 @@ export function PostGameAnalysis({
   // Flip evals for player's perspective
   const evals = useMemo(() => {
     const raw = stockfishResult?.evals ?? fallbackAnalysis.evals;
-    const flipped = flipEvals(raw);
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log(`[Analysis] RAW evals (first 10):`, raw.slice(0, 10));
-      console.log(`[Analysis] FLIPPED evals (first 10):`, flipped.slice(0, 10));
-      console.log(`[Analysis] perspective=${perspective} shouldFlip=${shouldFlip}`);
-    }
-    return flipped;
-  }, [stockfishResult, fallbackAnalysis.evals, flipEvals, shouldFlip, perspective]);
+    return flipEvals(raw);
+  }, [stockfishResult, fallbackAnalysis.evals, flipEvals]);
   const moves = useMemo(() => {
     const raw = stockfishResult?.moves ?? fallbackAnalysis.moves.map((m) => ({
       quality: m.quality as MoveQuality,
       move: m.notation,
       evalAfter: m.evalAfter,
-      mateAfter: null,
+      mateAfter: null as number | null,
       loss: m.loss,
       bestMove: '',
-      bestPv: [],
+      bestPv: [] as string[],
     }));
     return raw.map((m) => ({
       ...m,
@@ -107,11 +94,11 @@ export function PostGameAnalysis({
   const turningPoint = (() => {
     if (stockfishResult) {
       let max = -1;
-      let tp: typeof moves[0] | null = null;
-      for (const m of moves) {
-        if (m.loss > max) { max = m.loss; tp = m; }
+      let tpIdx = -1;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].loss > max) { max = moves[i].loss; tpIdx = i; }
       }
-      return tp;
+      return tpIdx >= 0 ? { ply: tpIdx, move: moves[tpIdx].move, loss: moves[tpIdx].loss } : null;
     }
     return fallbackAnalysis.turningPoint;
   })();
@@ -212,8 +199,7 @@ export function PostGameAnalysis({
         {turningPoint && (
           <span className="rounded-md border border-[rgba(245,158,11,0.4)] bg-[rgba(245,158,11,0.08)] px-2.5 py-1 text-[12px] font-semibold text-[#f59e0b]">
             {t('games.chess_v1.analysis.summary.turningPoint')}:{' '}
-            {turningPoint.move ||
-              `${(turningPoint as { ply?: number }).ply != null ? Math.floor((turningPoint as { ply: number }).ply / 2) + 1 : ''}.`}
+            {turningPoint.move || `${Math.floor(turningPoint.ply / 2) + 1}.`}
           </span>
         )}
       </div>

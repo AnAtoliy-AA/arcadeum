@@ -84,7 +84,7 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
   );
 
   useEffect(() => {
-    if (phase === 'opponent' && puzzle) {
+    if (puzzlePhase === 'opponent' && puzzle) {
       const timer = setTimeout(() => setPuzzlePhase('player'), 500);
       return () => clearTimeout(timer);
     }

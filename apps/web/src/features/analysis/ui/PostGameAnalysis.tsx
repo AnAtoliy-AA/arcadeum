@@ -21,6 +21,8 @@ const EvalGraph = dynamic(
 interface PostGameAnalysisProps {
   positionHistory: string[];
   notations?: string[];
+  myColor?: 'white' | 'black' | null;
+  isSpectator?: boolean;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }
 
@@ -33,6 +35,8 @@ const SUMMARY_COLORS = {
 export function PostGameAnalysis({
   positionHistory,
   notations,
+  myColor,
+  isSpectator,
   t,
 }: PostGameAnalysisProps) {
   const [stockfishResult, setStockfishResult] = useState<GameAnalysisResult | null>(null);
@@ -56,16 +60,29 @@ export function PostGameAnalysis({
     [positionHistory, notations],
   );
 
-  const evals = stockfishResult?.evals ?? fallbackAnalysis.evals;
-  const moves = stockfishResult?.moves ?? fallbackAnalysis.moves.map((m, i) => ({
-    quality: m.quality as MoveQuality,
-    move: m.notation,
-    evalAfter: m.evalAfter,
-    mateAfter: null,
-    loss: m.loss,
-    bestMove: '',
-    bestPv: [],
-  }));
+  // Flip evals for player's perspective (spectators see White's perspective)
+  const shouldFlip = !isSpectator && myColor === 'black';
+  const evals = useMemo(() => {
+    const raw = stockfishResult?.evals ?? fallbackAnalysis.evals;
+    if (!shouldFlip) return raw;
+    return raw.map((v) => (v != null ? -v : v));
+  }, [stockfishResult, fallbackAnalysis.evals, shouldFlip]);
+  const moves = useMemo(() => {
+    const raw = stockfishResult?.moves ?? fallbackAnalysis.moves.map((m, i) => ({
+      quality: m.quality as MoveQuality,
+      move: m.notation,
+      evalAfter: m.evalAfter,
+      mateAfter: null,
+      loss: m.loss,
+      bestMove: '',
+      bestPv: [],
+    }));
+    if (!shouldFlip) return raw;
+    return raw.map((m) => ({
+      ...m,
+      evalAfter: m.evalAfter != null ? -m.evalAfter : m.evalAfter,
+    }));
+  }, [stockfishResult, fallbackAnalysis.moves, shouldFlip]);
   const inaccuracies = stockfishResult?.moves.filter((m) => m.quality === 'inaccuracy') ?? fallbackAnalysis.inaccuracies;
   const mistakes = stockfishResult?.moves.filter((m) => m.quality === 'mistake') ?? fallbackAnalysis.mistakes;
   const blunders = stockfishResult?.moves.filter((m) => m.quality === 'blunder') ?? fallbackAnalysis.blunders;

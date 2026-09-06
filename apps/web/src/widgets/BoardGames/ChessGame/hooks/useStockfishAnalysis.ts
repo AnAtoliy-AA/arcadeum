@@ -16,6 +16,7 @@ interface EngineEval {
 
 interface UseStockfishAnalysisOptions {
   roomId: string;
+  userId: string | null;
   enabled: boolean;
   fen: string | null;
   ply: number;
@@ -30,6 +31,7 @@ interface UseStockfishAnalysisOptions {
  */
 export function useStockfishAnalysis({
   roomId,
+  userId,
   enabled,
   fen,
   ply,
@@ -50,6 +52,7 @@ export function useStockfishAnalysis({
       setAnalyzing(true);
       gameSocket.emit('chess.session.analyze', {
         roomId,
+        userId,
         fen,
         depth: 12,
         timeMs: 1500,
@@ -59,7 +62,7 @@ export function useStockfishAnalysis({
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [fen, ply, roomId, enabled]);
+  }, [fen, ply, roomId, userId, enabled]);
 
   useEffect(() => {
     if (!enabled) return;

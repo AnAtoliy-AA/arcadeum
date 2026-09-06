@@ -114,6 +114,7 @@ function ChessGameImpl({
   const { eval: liveEval, analyzing: liveEvalAnalyzing } = useStockfishAnalysis(
     {
       roomId,
+      userId: currentUserId,
       enabled: !isGameOver && !isLobby,
       fen: currentFen,
       ply: plyCount,

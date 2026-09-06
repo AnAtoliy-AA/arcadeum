@@ -181,166 +181,174 @@ export function GameResultModal({
           data-theme={resolvedTheme.id}
           data-tone={result}
           className={cx(
-            'animate-entrance relative flex max-h-[92dvh] w-[540px] max-w-[95%] flex-col items-center overflow-y-auto rounded-3xl border bg-[var(--background)] text-[var(--color)] p-6 backdrop-blur-2xl shadow-2xl transition-all sm:p-8',
+            'animate-entrance relative flex max-h-[92dvh] w-[540px] max-w-[95%] flex-col rounded-3xl border bg-[var(--background)] text-[var(--color)] backdrop-blur-2xl shadow-2xl transition-all',
             TONE_CONTAINER_BORDER[result],
           )}
         >
-          <div className="relative mb-3 flex w-full flex-col items-center justify-center gap-1.5 pt-1">
-            {onClose && (
-              <div className="absolute right-0 top-0">
-                <CloseButton onClick={onClose} data-testid="modal-close-button">
-                  <CloseIcon size={18} />
-                </CloseButton>
+          {/* Fixed Header */}
+          <div className="flex-shrink-0 p-6 pb-0 sm:px-8 sm:pt-8">
+            <div className="relative mb-3 flex w-full flex-col items-center justify-center gap-1.5">
+              {onClose && (
+                <div className="absolute right-0 top-0">
+                  <CloseButton onClick={onClose} data-testid="modal-close-button">
+                    <CloseIcon size={18} />
+                  </CloseButton>
+                </div>
+              )}
+
+              {gameName && (
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--textSecondary)]">
+                  {gameName}
+                </span>
+              )}
+
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
+                <span>{resolvedTheme.emoji}</span>
+                <span>
+                  {(() => {
+                    const rawTheme = t(
+                      `games.themes.${resolvedTheme.id}.name` as TranslationKey,
+                    );
+                    return rawTheme && !rawTheme.startsWith('games.themes.')
+                      ? rawTheme
+                      : resolvedTheme.id.replace(/-/g, ' ');
+                  })()}
+                </span>
+              </div>
+            </div>
+
+            <div className="mb-4 flex flex-col items-center gap-1">
+              <span className="animate-[float_3s_ease-in-out_infinite] text-6xl select-none sm:text-7xl">
+                {emoji}
+              </span>
+              <h1
+                data-testid="game-result-title"
+                className={cx(
+                  'text-center text-4xl font-black uppercase tracking-wider sm:text-5xl',
+                  TONE_TITLE_CLASSES[result],
+                  isVictory && 'animate-pulse',
+                )}
+              >
+                {title}
+              </h1>
+            </div>
+
+            <p className="animate-fade-in-up-delay-2 mb-4 text-center text-base leading-relaxed text-[var(--textSecondary)] sm:text-lg">
+              {body}
+            </p>
+
+            {stats && (
+              <div className="animate-fade-in-up-delay-3 mb-4 w-full">
+                <GameResultStatsGrid stats={stats} t={t} />
               </div>
             )}
 
-            {gameName && (
-              <span className="text-xs font-bold uppercase tracking-widest text-[var(--textSecondary)]">
-                {gameName}
-              </span>
+            {ratingDelta && (
+              <div className="animate-fade-in-up-delay-3 mb-4 flex flex-col items-center gap-1">
+                <span className="text-xs font-semibold uppercase tracking-widest text-[var(--textSecondary)]">
+                  {t('games.ranking.ratingUpdated')}
+                </span>
+                <RatingBadge
+                  elo={ratingDelta.elo}
+                  tier={ratingDelta.tier}
+                  delta={ratingDelta.delta}
+                  size="md"
+                />
+              </div>
             )}
-
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
-              <span>{resolvedTheme.emoji}</span>
-              <span>
-                {(() => {
-                  const rawTheme = t(
-                    `games.themes.${resolvedTheme.id}.name` as TranslationKey,
-                  );
-                  return rawTheme && !rawTheme.startsWith('games.themes.')
-                    ? rawTheme
-                    : resolvedTheme.id.replace(/-/g, ' ');
-                })()}
-              </span>
-            </div>
           </div>
 
-          <div className="mb-4 flex flex-col items-center gap-1">
-            <span className="animate-[float_3s_ease-in-out_infinite] text-6xl select-none sm:text-7xl">
-              {emoji}
-            </span>
-            <h1
-              data-testid="game-result-title"
-              className={cx(
-                'text-center text-4xl font-black uppercase tracking-wider sm:text-5xl',
-                TONE_TITLE_CLASSES[result],
-                isVictory && 'animate-pulse',
-              )}
-            >
-              {title}
-            </h1>
-          </div>
-
-          <p className="animate-fade-in-up-delay-2 mb-5 text-center text-base leading-relaxed text-[var(--textSecondary)] sm:text-lg">
-            {body}
-          </p>
-
-          {stats && (
-            <div className="animate-fade-in-up-delay-3 mb-5 w-full">
-              <GameResultStatsGrid stats={stats} t={t} />
-            </div>
-          )}
-
-          {ratingDelta && (
-            <div className="animate-fade-in-up-delay-3 mb-6 flex flex-col items-center gap-1">
-              <span className="text-xs font-semibold uppercase tracking-widest text-[var(--textSecondary)]">
-                {t('games.ranking.ratingUpdated')}
-              </span>
-              <RatingBadge
-                elo={ratingDelta.elo}
-                tier={ratingDelta.tier}
-                delta={ratingDelta.delta}
-                size="md"
-              />
-            </div>
-          )}
-
-          {analysis && (
-            <div className="animate-fade-in-up-delay-4 mb-5 flex w-full flex-col gap-3">
-              {showAnalysis ? (
-                <>
-                  <div className="rounded-2xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-4">
-                    {analysis.content}
-                  </div>
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto px-6 sm:px-8" style={{ minHeight: 0 }}>
+            {analysis && (
+              <div className="animate-fade-in-up-delay-4 mb-4 flex w-full flex-col gap-3">
+                {showAnalysis ? (
+                  <>
+                    <div className="rounded-2xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-4">
+                      {analysis.content}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size={media.sm ? 'sm' : 'md'}
+                      onClick={() => setShowAnalysis(false)}
+                    >
+                      {analysis.backLabel}
+                    </Button>
+                  </>
+                ) : (
                   <Button
                     variant="ghost"
                     size={media.sm ? 'sm' : 'md'}
-                    onClick={() => setShowAnalysis(false)}
+                    className="w-full"
+                    onClick={() => setShowAnalysis(true)}
                   >
-                    {analysis.backLabel}
+                    {analysis.viewLabel}
                   </Button>
-                </>
-              ) : (
+                )}
+              </div>
+            )}
+
+            {gameSlug && (
+              <div className="animate-fade-in-up-delay-4 mb-4 w-full">
+                <PostGameSuggestions
+                  gameName={gameName ?? gameSlug}
+                  gameSlug={gameSlug}
+                  roomId={roomId}
+                  inviteCode={inviteCode}
+                  onPlayAnother={onPlayAnother}
+                  opponentUserId={opponentUserId}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Fixed Footer */}
+          <div className="flex-shrink-0 p-6 pt-0 sm:px-8 sm:pb-8">
+            <div className="animate-fade-in-up-delay-4 flex w-full flex-col gap-3">
+              {secondaryAction && (
+                <Button
+                  variant="secondary"
+                  size={media.sm ? 'md' : 'lg'}
+                  onClick={secondaryAction.onClick}
+                  data-testid={
+                    secondaryAction.testId ?? 'result-secondary-button'
+                  }
+                >
+                  {secondaryAction.label}
+                </Button>
+              )}
+
+              {onRematch && (
+                <Button
+                  variant={isVictory ? 'primary' : 'secondary'}
+                  size={media.sm ? 'md' : 'lg'}
+                  onClick={onRematch}
+                  disabled={rematchLoading}
+                  data-testid="rematch-button"
+                  showShimmer={isVictory}
+                  className={isVictory ? 'active:scale-95' : undefined}
+                >
+                  {rematchLoading
+                    ? t('games.table.rematch.loading' as TranslationKey)
+                    : (rematchLabel ??
+                      t('games.table.rematch.button' as TranslationKey))}
+                </Button>
+              )}
+
+              <LinkButton href="/" className="w-full" variant="secondary">
+                {t('games.common.actions.backToHome' as TranslationKey)}
+              </LinkButton>
+
+              {onClose && (
                 <Button
                   variant="ghost"
+                  onClick={onClose}
                   size={media.sm ? 'sm' : 'md'}
-                  className="w-full"
-                  onClick={() => setShowAnalysis(true)}
                 >
-                  {analysis.viewLabel}
+                  {t('games.table.modals.common.close' as TranslationKey)}
                 </Button>
               )}
             </div>
-          )}
-
-          {/* Post-game viral loop CTAs (roadmap 7C) */}
-          {gameSlug && (
-            <div className="animate-fade-in-up-delay-4 mb-4 w-full">
-              <PostGameSuggestions
-                gameName={gameName ?? gameSlug}
-                gameSlug={gameSlug}
-                roomId={roomId}
-                inviteCode={inviteCode}
-                onPlayAnother={onPlayAnother}
-                opponentUserId={opponentUserId}
-              />
-            </div>
-          )}
-
-          <div className="animate-fade-in-up-delay-4 flex w-full flex-col gap-3">
-            {secondaryAction && (
-              <Button
-                variant="secondary"
-                size={media.sm ? 'md' : 'lg'}
-                onClick={secondaryAction.onClick}
-                data-testid={
-                  secondaryAction.testId ?? 'result-secondary-button'
-                }
-              >
-                {secondaryAction.label}
-              </Button>
-            )}
-
-            {onRematch && (
-              <Button
-                variant={isVictory ? 'primary' : 'secondary'}
-                size={media.sm ? 'md' : 'lg'}
-                onClick={onRematch}
-                disabled={rematchLoading}
-                data-testid="rematch-button"
-                showShimmer={isVictory}
-                className={isVictory ? 'active:scale-95' : undefined}
-              >
-                {rematchLoading
-                  ? t('games.table.rematch.loading' as TranslationKey)
-                  : (rematchLabel ??
-                    t('games.table.rematch.button' as TranslationKey))}
-              </Button>
-            )}
-
-            <LinkButton href="/" className="w-full" variant="secondary">
-              {t('games.common.actions.backToHome' as TranslationKey)}
-            </LinkButton>
-
-            {onClose && (
-              <Button
-                variant="ghost"
-                onClick={onClose}
-                size={media.sm ? 'sm' : 'md'}
-              >
-                {t('games.table.modals.common.close' as TranslationKey)}
-              </Button>
-            )}
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useMatchmaking } from '../hooks/useMatchmaking';
 
@@ -18,14 +18,16 @@ export function MatchmakingButton({
 }: MatchmakingButtonProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname?.split('/')[1] ?? 'en';
   const [searching, setSearching] = useState(false);
 
   const handleMatched = useCallback(
     (data: { roomId: string; color: string; opponent: string }) => {
       setSearching(false);
-      router.push(`/games/chess/${data.roomId}`);
+      router.push(`/${locale}/games/chess/${data.roomId}`);
     },
-    [router],
+    [router, locale],
   );
 
   const { queued, waitTime, queueSize, joinQueue, leaveQueue } = useMatchmaking({

@@ -16,6 +16,7 @@ export function buildVideoObjectJsonLd({
   name,
   description,
   uploadDate,
+  duration,
 }: {
   locale: Locale;
   /** 11-char YouTube ID (no URL). */
@@ -24,6 +25,8 @@ export function buildVideoObjectJsonLd({
   description: string;
   /** ISO date the video was published. Required by Google for VideoObject rich results. */
   uploadDate: string;
+  /** ISO 8601 duration (e.g. "PT1M30S"). Optional but recommended for rich results. */
+  duration?: string;
 }): Record<string, unknown> {
   const watchUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
   const embedUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
@@ -43,6 +46,7 @@ export function buildVideoObjectJsonLd({
     contentUrl: watchUrl,
     embedUrl,
     uploadDate: normalizedDate,
+    ...(duration ? { duration } : {}),
   };
   return node;
 }

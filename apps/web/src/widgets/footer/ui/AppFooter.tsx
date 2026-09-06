@@ -76,7 +76,16 @@ export default function AppFooter() {
     ({ id, label, Icon }) => {
       const href = social?.[id as keyof typeof social];
       if (!href) return [];
-      return [{ id, label, icon: <Icon size={18} />, href, external: true }];
+      return [
+        {
+          id,
+          label,
+          icon: <Icon size={18} />,
+          href,
+          external: true,
+          rel: 'me noopener noreferrer',
+        },
+      ];
     },
   );
 

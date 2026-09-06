@@ -236,6 +236,77 @@ User → Browser → Next.js App Router → Feature Modules → Shared Layer →
 
 ---
 
+## Architecture Diagram
+
+```mermaid
+graph TD
+    %% ====== LAYERS ======
+    subgraph "1. User"
+        A[Browser: Mobile/Desktop]
+    end
+
+    subgraph "2. Next.js App Router"
+        B["Layout.tsx<br/>Theme Provider (CSS vars)<br/>i18n Provider<br/>WebSocket Client"]
+    end
+
+    subgraph "3. Feature Modules"
+        C[Auth · Chat · Games · Payments · Wallet · Shop]
+        D[Rankings · Tournaments · Achievements · Friends · Clans]
+        E[Notifications · Admin · PWA · Support]
+    end
+
+    subgraph "4. Shared Layer"
+        F[API Clients · Socket AES-GCM<br/>32+ Hooks · 55+ Utils · Types]
+    end
+
+    subgraph "5. @arcadeum/ui"
+        G[63+ Tailwind Components<br/>Button · Card · Modal · Avatar<br/>Badge · Chat · Typography]
+    end
+
+    subgraph "6. Widgets"
+        H[CriticalGame · SeaBattleGame · HeartsGame<br/>GoGame · PachisiGame · SolitaireGame<br/>MinesweeperGame · SudokuGame · Game2048<br/>CatDashGame · GlimwormGame · header · Footer]
+    end
+
+    subgraph "7. Backend"
+        I[REST API<br/>7 Socket Singletons<br/>MongoDB · Redis]
+    end
+
+    %% ====== FLOWS ======
+    A --> B
+    B --> C
+    B --> D
+    B --> E
+    C --> F
+    D --> F
+    E --> F
+    F --> G
+    F --> H
+    F --> I
+
+    %% === Socket Flow ===
+    B --> J["Socket Manager<br/>AES-GCM Encryption<br/>Runtime Key Exchange"]
+    J --> I
+
+    %% ====== STYLING ======
+    style A fill:#e6f7ff,stroke:#1890ff
+    style B fill:#e6ffe6,stroke:#52c41a
+    style C fill:#fff7e6,stroke:#fa8c16
+    style D fill:#fff7e6,stroke:#fa8c16
+    style E fill:#fff7e6,stroke:#fa8c16
+    style F fill:#f6ffed,stroke:#52c41a
+    style G fill:#f9f0ff,stroke:#722ed1
+    style H fill:#fff0f6,stroke:#eb2f96
+    style I fill:#f5f5f5,stroke:#d9d9d9
+    style J fill:#e6ffe6,stroke:#52c41a
+
+    classDef layer fill:#f9f9f9,stroke:#ccc,stroke-width:1px;
+    class B,C,D,E,F,G,H layer
+```
+
+> Render this diagram in any Markdown viewer that supports Mermaid (GitHub, VS Code with Mermaid plugin, or [Mermaid Live Editor](https://mermaid.live)).
+
+---
+
 ## Documentation References
 
 - [Backend Architecture](../docs/BACKEND_ARCHITECTURE.md)

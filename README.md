@@ -37,6 +37,93 @@ This Turborepo workspace is managed with `pnpm` and contains:
 - **`docs`**: Comprehensive project documentation
 - **`scripts`**: Maintenance and build scripts
 
+## Architecture Overview
+
+```mermaid
+graph TD
+    subgraph "apps/web — Next.js 16"
+        W1[App Router · RSC]
+        W2[50+ Feature Modules]
+        W3[18+ Game Widgets]
+        W4["@arcadeum/ui (63+ components)"]
+        W5[Zustand · React Query]
+        W6[Socket.IO AES-GCM]
+    end
+
+    subgraph "apps/be — NestJS 11"
+        B1[REST API · WebSocket Gateway]
+        B2[27+ Modules]
+        B3["15+ Game Engines<br/>(IGameEngine)"]
+        B4[JWT · OAuth · CSRF]
+        B5[Redis Cache · BullMQ]
+        B6[Dual MongoDB]
+    end
+
+    subgraph "apps/mobile — Expo 57"
+        M1[Expo Router]
+        M2[React Query]
+        M3[StyleSheet + Themes]
+        M4[Socket.IO AES-GCM]
+    end
+
+    subgraph "packages"
+        P1["@arcadeum/ui<br/>63+ Tailwind components"]
+        P2["@arcadeum/games-core<br/>Framework-agnostic engines"]
+    end
+
+    subgraph "Infrastructure"
+        I1[MongoDB 7]
+        I2[Redis 7]
+        I3[Nginx Load Balancer]
+        I4[Docker Compose]
+        I5[OpenTelemetry · Prometheus · Grafana]
+    end
+
+    W1 --> W2
+    W2 --> W3
+    W2 --> W4
+    W2 --> W5
+    W3 --> W6
+
+    B1 --> B2
+    B2 --> B3
+    B2 --> B4
+    B2 --> B5
+    B2 --> B6
+
+    M1 --> M2
+    M1 --> M3
+    M1 --> M4
+
+    W3 -.-> P2
+    B3 -.-> P2
+    W4 -.-> P1
+
+    W6 --> B1
+    M4 --> B1
+    W1 -->|REST| B1
+    M2 -->|REST| B1
+
+    B5 --> I2
+    B6 --> I1
+    B1 --> I3
+    I3 --> I4
+    B2 --> I5
+
+    style W1 fill:#e6f7ff,stroke:#1890ff
+    style B1 fill:#e6ffe6,stroke:#52c41a
+    style M1 fill:#fff7e6,stroke:#fa8c16
+    style P1 fill:#f9f0ff,stroke:#722ed1
+    style P2 fill:#f9f0ff,stroke:#722ed1
+    style I1 fill:#f5f5f5,stroke:#d9d9d9
+    style I2 fill:#f5f5f5,stroke:#d9d9d9
+    style I3 fill:#f5f5f5,stroke:#d9d9d9
+    style I4 fill:#f5f5f5,stroke:#d9d9d9
+    style I5 fill:#f5f5f5,stroke:#d9d9d9
+```
+
+> Render this diagram in any Markdown viewer that supports Mermaid (GitHub, VS Code with Mermaid plugin, or [Mermaid Live Editor](https://mermaid.live)).
+
 ## Prerequisites
 
 - **Node.js**: v24+ (see `.nvmrc`)

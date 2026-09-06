@@ -283,6 +283,106 @@ Client → HTTP/WebSocket → Controller → Service → Repository → MongoDB
 - **Render**: Alternative deployment target
 - **CI/CD**: 24 GitHub Actions workflows for automated testing and deployment
 
+---
+
+## Architecture Diagram
+
+```mermaid
+graph TD
+    %% ====== LAYERS ======
+    subgraph "1. Clients"
+        A[Web App · Mobile App · Telegram Bot]
+    end
+
+    subgraph "2. API Gateway"
+        B["REST / WebSocket<br/>CompressedIoAdapter<br/>Helmet · CORS · CSP"]
+    end
+
+    subgraph "3. Auth & Security"
+        C["JWT + OAuth (Google)<br/>Refresh Token Rotation<br/>CsrfGuard · IpBlockGuard<br/>GlobalThrottlerGuard"]
+    end
+
+    subgraph "4. Core Modules"
+        D[Games · Auth · Chat · Payments]
+        E[Wallet · Economy · Shop · Gems]
+        F[Ranking · Leaderboards · Tournaments]
+        G[Referrals · Achievements · Battle Pass]
+        H[Friends · Clans · Notifications]
+        I[Daily Rewards · Daily Challenges · Seasons]
+        J[Events · Engagement · Social Rewards]
+        K[Announcements · Admin · Support · Bulk Rewards]
+    end
+
+    subgraph "5. Game Engines"
+        L["IGameEngine Interface<br/>(@arcadeum/games-core)"]
+        M[Chess · Checkers · Backgammon · Go]
+        N[Critical · Cascade · Hearts · Spades]
+        O[Sea Battle · Tic-Tac-Toe · Pachisi]
+        P[Glimworm · Cat Dash · Texas Hold'em]
+    end
+
+    subgraph "6. Infrastructure"
+        Q["Redis Cache<br/>(cache-manager-ioredis-yet)"]
+        R["BullMQ Queues<br/>(Async Jobs)"]
+        S["Dual MongoDB<br/>(OCI Primary + Atlas)"]
+        T["OpenTelemetry<br/>Prometheus · Grafana"]
+    end
+
+    %% ====== FLOWS ======
+    A --> B
+    B --> C
+    B --> D
+    B --> E
+    B --> F
+    B --> G
+    B --> H
+    B --> I
+    B --> J
+    B --> K
+
+    D --> L
+    L --> M
+    L --> N
+    L --> O
+    L --> P
+
+    D --> Q
+    D --> R
+    D --> S
+    D --> T
+    E --> Q
+    E --> S
+    F --> Q
+    F --> S
+
+    %% ====== STYLING ======
+    style A fill:#e6f7ff,stroke:#1890ff
+    style B fill:#e6ffe6,stroke:#52c41a
+    style C fill:#fff0f6,stroke:#eb2f96
+    style D fill:#fff7e6,stroke:#fa8c16
+    style E fill:#fff7e6,stroke:#fa8c16
+    style F fill:#fff7e6,stroke:#fa8c16
+    style G fill:#fff7e6,stroke:#fa8c16
+    style H fill:#fff7e6,stroke:#fa8c16
+    style I fill:#fff7e6,stroke:#fa8c16
+    style J fill:#fff7e6,stroke:#fa8c16
+    style K fill:#fff7e6,stroke:#fa8c16
+    style L fill:#f9f0ff,stroke:#722ed1
+    style M fill:#f6ffed,stroke:#52c41a
+    style N fill:#f6ffed,stroke:#52c41a
+    style O fill:#f6ffed,stroke:#52c41a
+    style P fill:#f6ffed,stroke:#52c41a
+    style Q fill:#f5f5f5,stroke:#d9d9d9
+    style R fill:#f5f5f5,stroke:#d9d9d9
+    style S fill:#f5f5f5,stroke:#d9d9d9
+    style T fill:#f5f5f5,stroke:#d9d9d9
+
+    classDef module fill:#f9f9f9,stroke:#ccc,stroke-width:1px;
+    class D,E,F,G,H,I,J,K module
+```
+
+> Render this diagram in any Markdown viewer that supports Mermaid (GitHub, VS Code with Mermaid plugin, or [Mermaid Live Editor](https://mermaid.live)).
+
 ## Documentation References
 
 - [Games Architecture](../apps/be/src/games/ARCHITECTURE.md)

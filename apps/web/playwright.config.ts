@@ -193,6 +193,7 @@ export default defineConfig({
       timeout: 120 * 1000,
       env: {
         WEB_PORT: WEB_PORT,
+        PORT: WEB_PORT,
         BE_PORT: BE_PORT,
         NODE_ENV: process.env.E2E_PROD ? 'production' : 'development',
         E2E: 'true',

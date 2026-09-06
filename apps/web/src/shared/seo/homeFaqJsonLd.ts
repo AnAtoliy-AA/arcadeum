@@ -128,19 +128,12 @@ const FAQ_BY_LOCALE: Record<Locale, FaqItem[]> = {
   ],
 };
 
-export function buildHomeFaqJsonLd(locale: Locale): Record<string, unknown> {
-  const faqs = FAQ_BY_LOCALE[locale] ?? FAQ_BY_LOCALE.en;
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
-      name: faq.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: faq.answer,
-      },
-    })),
-  };
+/**
+ * FAQPage schema is restricted to government and healthcare authority
+ * sites only (Google, August 2023). Returning an empty array avoids the
+ * "unrecognized schema" warning in Search Console while the FAQ content
+ * remains available as visible HTML on the page for regular indexing.
+ */
+export function buildHomeFaqJsonLd(_locale: Locale): Record<string, unknown>[] {
+  return [];
 }

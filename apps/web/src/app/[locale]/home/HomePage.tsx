@@ -42,12 +42,13 @@ const InstallAppCta = dynamic(() =>
 );
 
 export default function HomePage({ locale }: { locale: Locale }) {
+  const faqData = buildHomeFaqJsonLd(locale);
+
   return (
     <PageLayout data-testid="page-layout">
-      <JsonLd
-        id={`json-ld-home-faq-${locale}`}
-        data={buildHomeFaqJsonLd(locale)}
-      />
+      {faqData.length > 0 && (
+        <JsonLd id={`json-ld-home-faq-${locale}`} data={faqData} />
+      )}
       <ServerGamesNav />
       <HomeHero locale={locale} />
       {/* Live activity social proof (roadmap 7D) */}

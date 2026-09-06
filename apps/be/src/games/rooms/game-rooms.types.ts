@@ -45,6 +45,7 @@ export interface GameRoomSummary {
     scope: string;
     createdAt: string;
   }>;
+  tournamentId?: string | null;
 }
 
 export interface ListRoomsFilters {

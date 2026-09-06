@@ -140,6 +140,9 @@ export class GameRoomsMapper {
         : undefined,
       members,
       chatLogs: room.chatLogs ?? [],
+      tournamentId:
+        (room as unknown as { tournamentId?: string | null }).tournamentId ??
+        null,
     };
 
     if (viewerId) {

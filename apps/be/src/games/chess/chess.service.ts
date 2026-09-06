@@ -209,14 +209,15 @@ export class ChessService extends BaseGameService<ChessOptions> {
         );
       } else {
         const state = session.state as ChessState | undefined;
-        const positionHistory = state?.positionHistory;
-        if (positionHistory && positionHistory.length > 0) {
-          const currentFen = positionHistory[positionHistory.length - 1];
+        if (state) {
+          // Generate full FEN (positionHistory only stores board part)
+          const { toFen } = await import('@arcadeum/games-core/games/chess/chess-fen');
+          const fullFen = toFen(state);
           this.logger.log(
-            `[Chess] Analyzing fen for room ${session.roomId}: ${currentFen.substring(0, 40)}...`,
+            `[Chess] Analyzing fen for room ${session.roomId}: ${fullFen.substring(0, 50)}...`,
           );
           this.stockfishService
-            .analyzePosition({ fen: currentFen, depth: 12, timeMs: 1500 })
+            .analyzePosition({ fen: fullFen, depth: 12, timeMs: 1500 })
             .then((eval_) => {
               this.logger.log(
                 `[Chess] Eval for room ${session.roomId}: cp=${eval_.cp} mate=${eval_.mate} depth=${eval_.depth}`,

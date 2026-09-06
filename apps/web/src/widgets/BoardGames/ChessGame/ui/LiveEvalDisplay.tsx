@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 
 interface EngineEval {

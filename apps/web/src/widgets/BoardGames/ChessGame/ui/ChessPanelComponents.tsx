@@ -179,19 +179,6 @@ export function GameInfoPanel({
     return '0.0';
   }, [displayEval, analyzing]);
 
-  const evalWidth = useMemo(() => {
-    if (!displayEval || displayEval.cp == null) return 50;
-    const clamped = Math.max(-5, Math.min(5, displayEval.cp / 100));
-    return 50 + (clamped / 5) * 40;
-  }, [displayEval]);
-
-  const barColor =
-    evalWidth > 55
-      ? 'bg-emerald-500'
-      : evalWidth < 45
-        ? 'bg-red-500'
-        : 'bg-slate-400';
-
   // Balance bar: fills from center toward winning side
   const balancePercent = useMemo(() => {
     if (!displayEval || displayEval.cp == null) return 50;

@@ -543,9 +543,12 @@ export class ChessStockfishService implements OnModuleDestroy {
 
   /**
    * Reconstruct full FENs from board-only FENs.
-   * Tracks castling rights by checking if kings/rooks are on starting squares.
+   * Tracks castling rights by observing piece movements between positions.
    */
   private reconstructFullFenHistory(boardFens: string[]): string[] {
+    // Initial castling rights
+    let castlingRights = { K: true, Q: true, k: true, q: true };
+
     return boardFens.map((fen, i) => {
       if (fen.includes(' ')) return fen;
       const turn = i % 2 === 0 ? 'w' : 'b';
@@ -561,19 +564,29 @@ export class ChessStockfishService implements OnModuleDestroy {
         }
         return cells;
       });
+
       const get = (r: number, c: number) => board[r]?.[c] ?? null;
-      const wk = get(7, 4) === 'K';
-      const bk = get(0, 4) === 'k';
-      const wrH = get(7, 7) === 'R';
-      const wrA = get(7, 0) === 'R';
-      const brH = get(0, 7) === 'r';
-      const brA = get(0, 0) === 'r';
+
+      // Update castling rights based on piece presence
+      // If king is not on e1/e8, lose all castling rights for that color
+      if (get(7, 4) !== 'K') { castlingRights.K = false; castlingRights.Q = false; }
+      if (get(0, 4) !== 'k') { castlingRights.k = false; castlingRights.q = false; }
+      // If rook is not on h1, lose K castling
+      if (get(7, 7) !== 'R') castlingRights.K = false;
+      // If rook is not on a1, lose Q castling
+      if (get(7, 0) !== 'R') castlingRights.Q = false;
+      // If rook is not on h8, lose k castling
+      if (get(0, 7) !== 'r') castlingRights.k = false;
+      // If rook is not on a8, lose q castling
+      if (get(0, 0) !== 'r') castlingRights.q = false;
+
       let castling = '';
-      if (wk && wrH) castling += 'K';
-      if (wk && wrA) castling += 'Q';
-      if (bk && brH) castling += 'k';
-      if (bk && brA) castling += 'q';
+      if (castlingRights.K) castling += 'K';
+      if (castlingRights.Q) castling += 'Q';
+      if (castlingRights.k) castling += 'k';
+      if (castlingRights.q) castling += 'q';
       if (!castling) castling = '-';
+
       const moveNum = Math.floor(i / 2) + 1;
       return `${fen} ${turn} ${castling} - 0 ${moveNum}`;
     });

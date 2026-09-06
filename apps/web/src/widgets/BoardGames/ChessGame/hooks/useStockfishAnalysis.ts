@@ -39,6 +39,10 @@ export function useStockfishAnalysis({
 
     async function onAnalyzed(raw: unknown) {
       const data = await maybeDecrypt<{ roomId: string; eval: EngineEval }>(raw);
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.log(`[Stockfish] Received eval:`, data);
+      }
       if (data && data.roomId === roomId) {
         setEval(data.eval);
         setAnalyzing(false);

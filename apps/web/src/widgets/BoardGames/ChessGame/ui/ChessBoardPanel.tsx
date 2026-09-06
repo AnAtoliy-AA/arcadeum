@@ -182,20 +182,16 @@ function ChessBoardPanelImpl({
           snapshot={snapshot}
           liveEval={liveEval}
           analyzing={liveEvalAnalyzing}
-          myColor={myColor}
-          isSpectator={isSpectator}
-          spectatorPerspective={isSpectator ? spectatorPerspective : undefined}
-          onTogglePerspective={isSpectator ? togglePerspective : undefined}
+          perspective={spectatorPerspective}
+          onTogglePerspective={togglePerspective}
           t={t}
         />
 
         <LiveEvalDisplay
           eval_={liveEval ?? null}
           analyzing={!!liveEvalAnalyzing}
-          myColor={myColor}
-          isSpectator={isSpectator}
-          spectatorPerspective={isSpectator ? spectatorPerspective : undefined}
-          onTogglePerspective={isSpectator ? togglePerspective : undefined}
+          perspective={spectatorPerspective}
+          onTogglePerspective={togglePerspective}
         />
 
         {currentFen && (

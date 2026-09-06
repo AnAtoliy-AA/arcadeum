@@ -17,9 +17,7 @@ interface EngineEval {
 interface LiveEvalDisplayProps {
   eval_: EngineEval | null;
   analyzing: boolean;
-  myColor?: 'white' | 'black' | null;
-  isSpectator?: boolean;
-  spectatorPerspective?: 'white' | 'black';
+  perspective: 'white' | 'black';
   onTogglePerspective?: () => void;
 }
 
@@ -30,9 +28,7 @@ interface LiveEvalDisplayProps {
  * and analysis status. Engine: Stockfish 19 (latest stable, released
  * 2026-09-05, SFNNv16 architecture).
  */
-function LiveEvalDisplayImpl({ eval_, analyzing, myColor, isSpectator, spectatorPerspective, onTogglePerspective }: LiveEvalDisplayProps) {
-  // Determine perspective: players see from their color, spectators use toggle
-  const perspective = isSpectator ? (spectatorPerspective ?? 'white') : (myColor ?? 'white');
+function LiveEvalDisplayImpl({ eval_, analyzing, perspective, onTogglePerspective }: LiveEvalDisplayProps) {
   const shouldFlip = perspective === 'black';
 
   // Flip eval for the selected perspective

@@ -143,30 +143,24 @@ export function GameInfoPanel({
   snapshot,
   liveEval,
   analyzing,
-  myColor,
-  isSpectator,
-  spectatorPerspective,
+  perspective,
   onTogglePerspective,
   t: _t,
 }: {
   snapshot: ChessClientState;
   liveEval?: { cp: number | null; mate: number | null } | null;
   analyzing?: boolean;
-  myColor?: 'white' | 'black' | null;
-  isSpectator?: boolean;
-  spectatorPerspective?: 'white' | 'black';
+  perspective: 'white' | 'black';
   onTogglePerspective?: () => void;
   t: TranslateFn;
 }) {
-  const perspective = isSpectator ? (spectatorPerspective ?? 'white') : (myColor ?? 'white');
   const shouldFlip = perspective === 'black';
 
   const displayEval = useMemo(() => {
     if (!liveEval) return null;
-    return {
-      cp: liveEval.cp != null ? (shouldFlip ? -liveEval.cp : liveEval.cp) : null,
-      mate: liveEval.mate != null ? (shouldFlip ? -liveEval.mate : liveEval.mate) : null,
-    };
+    const cp = liveEval.cp != null ? (shouldFlip ? -liveEval.cp : liveEval.cp) : null;
+    const mate = liveEval.mate != null ? (shouldFlip ? -liveEval.mate : liveEval.mate) : null;
+    return { cp, mate };
   }, [liveEval, shouldFlip]);
 
   const evalLabel = useMemo(() => {
@@ -198,7 +192,7 @@ export function GameInfoPanel({
         <div className="text-[10px] font-semibold text-[var(--textSecondary)] uppercase tracking-wider">
           GAME INFO
         </div>
-        {isSpectator && onTogglePerspective && (
+        {onTogglePerspective && (
           <button
             type="button"
             onClick={onTogglePerspective}

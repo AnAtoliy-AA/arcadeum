@@ -130,8 +130,8 @@ function readAppConfig(): WebAppConfig {
     appVersion,
     presentationVideoId,
     videoUploadDate,
-    seoTitle: `${appName} — Free Online Board Games, Card Games & Mini-Games`,
-    seoDescription: `Play free online board games, card games, and multiplayer mini-games on ${appName}. Battleship, Chess, Checkers, Solitaire, 2048, and more with friends or smart AI. Instant rooms, no downloads, no signup.`,
+    seoTitle: `${appName} — Free Online Board & Card Games`,
+    seoDescription: `Play free board games, card games, and mini-games with friends on ${appName}. Chess, Checkers, Solitaire, and more — no download, no signup.`,
     primaryCta: {
       href: primaryCtaHref,
       label: 'Get started',

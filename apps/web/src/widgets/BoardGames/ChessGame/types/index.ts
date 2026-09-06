@@ -78,6 +78,7 @@ export interface TimeControl {
   type: TimeControlType;
   initialSeconds: number;
   incrementSeconds: TimeIncrement;
+  daysPerMove?: number;
 }
 
 export interface PlayerClock {
@@ -154,6 +155,10 @@ export const TIME_CONTROLS: TimeControl[] = [
   { type: 'rapid', initialSeconds: 600, incrementSeconds: 0 },
   { type: 'rapid', initialSeconds: 900, incrementSeconds: 10 },
   { type: 'classical', initialSeconds: 1800, incrementSeconds: 0 },
+  { type: 'daily', initialSeconds: 0, incrementSeconds: 0, daysPerMove: 1 },
+  { type: 'daily', initialSeconds: 0, incrementSeconds: 0, daysPerMove: 3 },
+  { type: 'daily', initialSeconds: 0, incrementSeconds: 0, daysPerMove: 7 },
+  { type: 'daily', initialSeconds: 0, incrementSeconds: 0, daysPerMove: 14 },
 ];
 
 export const CHESS_THEME_IDS = ['standard', 'chess960'] as const;

@@ -194,24 +194,30 @@ export class ChessService extends BaseGameService<ChessOptions> {
     const state = session.state as ChessState | undefined;
     if (!state || !state.clocks || this.isGameOver(state)) return;
 
+    const isDaily = state.timeControl?.type === 'daily';
     const currentClock = state.clocks[state.currentTurnColor];
     if (!currentClock) return;
 
-    const elapsed = Math.floor(
-      (Date.now() - currentClock.lastMoveTimestamp) / 1000,
-    );
-    const remaining = currentClock.remainingSeconds - elapsed;
+    const elapsedMs = Date.now() - currentClock.lastMoveTimestamp;
 
-    if (remaining <= 0) {
-      const loser = state.players.find(
-        (p) => p.color === state.currentTurnColor,
-      );
-      const winner = state.players.find(
-        (p) => p.color !== state.currentTurnColor,
-      );
-      if (loser && winner) {
-        await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
-      }
+    if (isDaily) {
+      const daysPerMove = state.timeControl?.daysPerMove ?? 1;
+      const elapsedDays = elapsedMs / (1000 * 60 * 60 * 24);
+      if (elapsedDays < daysPerMove) return;
+    } else {
+      const elapsed = Math.floor(elapsedMs / 1000);
+      const remaining = currentClock.remainingSeconds - elapsed;
+      if (remaining > 0) return;
+    }
+
+    const loser = state.players.find(
+      (p) => p.color === state.currentTurnColor,
+    );
+    const winner = state.players.find(
+      (p) => p.color !== state.currentTurnColor,
+    );
+    if (loser && winner) {
+      await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
     }
   }
 
@@ -253,10 +259,14 @@ export class ChessService extends BaseGameService<ChessOptions> {
       const inc = validIncs.includes(rawTc.incrementSeconds as TimeIncrement)
         ? (rawTc.incrementSeconds as TimeIncrement)
         : 0;
+      const daysPerMove = type === 'daily'
+        ? Math.max(1, Math.min(14, (rawTc as Record<string, unknown>).daysPerMove as number || 1))
+        : undefined;
       timeControl = {
         type,
         initialSeconds: rawTc.initialSeconds,
         incrementSeconds: inc,
+        daysPerMove,
       };
     }
     const botDifficulty = isAiDifficulty(r.botDifficulty)

@@ -94,6 +94,8 @@ export const enMessages = {
       blitz: 'Blitz',
       rapid: 'Rapid',
       classical: 'Classical',
+      daily: 'Daily',
+      daysPerMove: '{{days}} day(s) per move',
       easy: 'Easy',
       medium: 'Medium',
       hard: 'Hard',

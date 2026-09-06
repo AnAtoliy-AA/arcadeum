@@ -58,6 +58,7 @@ export interface TimeControl {
   type: TimeControlType;
   initialSeconds: number;
   incrementSeconds: TimeIncrement;
+  daysPerMove?: number;
 }
 
 export interface PlayerClock {

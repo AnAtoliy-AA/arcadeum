@@ -79,11 +79,15 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     const clocks = timeControl
       ? ({
           white: {
-            remainingSeconds: timeControl.initialSeconds,
+            remainingSeconds: timeControl.type === 'daily'
+              ? (timeControl.daysPerMove ?? 1) * 86400
+              : timeControl.initialSeconds,
             lastMoveTimestamp: Date.now(),
           },
           black: {
-            remainingSeconds: timeControl.initialSeconds,
+            remainingSeconds: timeControl.type === 'daily'
+              ? (timeControl.daysPerMove ?? 1) * 86400
+              : timeControl.initialSeconds,
             lastMoveTimestamp: Date.now(),
           },
         } as const)

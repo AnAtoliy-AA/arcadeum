@@ -122,6 +122,13 @@ export const enMessages = {
       viewers: 'viewers',
       joinGame: 'Join Game',
     },
+    matchmaking: {
+      quickPlay: 'Quick Play',
+      searching: 'Searching... {{time}}',
+      position: '#{{position}} in queue',
+      rating: 'Rating: {{rating}}',
+      cancelled: 'Search cancelled',
+    },
     tutorial: {
       s1: {
         title: 'Checkmate the king',

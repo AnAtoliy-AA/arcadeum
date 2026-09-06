@@ -19,6 +19,7 @@ import { TIME_CONTROLS } from '../types';
 import { RulesModal } from './RulesModal';
 import { BotSelector, type BotPersonalityOption } from './BotSelector';
 import { PgnImportModal } from './PgnImportModal';
+import { MatchmakingButton } from './MatchmakingButton';
 import { BOT_PERSONALITIES } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 
 const LOBBY_THEME: GameLobbyTheme = {
@@ -212,6 +213,12 @@ export function ChessLobby({
       >
         {t('games.chess_v1.actions.importPgn')}
       </button>
+
+      <MatchmakingButton
+        userId={userId}
+        rating={1200}
+        timeControlType={options.timeControl?.type ?? 'blitz'}
+      />
     </div>
   );
 

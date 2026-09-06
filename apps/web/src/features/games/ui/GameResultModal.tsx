@@ -185,46 +185,43 @@ export function GameResultModal({
             TONE_CONTAINER_BORDER[result],
           )}
         >
-          {/* Fixed Header */}
-          <div className="flex-shrink-0 p-6 pb-0 sm:px-8 sm:pt-8">
-            <div className="relative mb-3 flex w-full flex-col items-center justify-center gap-1.5">
-              {onClose && (
-                <div className="absolute right-0 top-0">
-                  <CloseButton onClick={onClose} data-testid="modal-close-button">
-                    <CloseIcon size={18} />
-                  </CloseButton>
-                </div>
-              )}
-
-              {gameName && (
-                <span className="text-xs font-bold uppercase tracking-widest text-[var(--textSecondary)]">
-                  {gameName}
-                </span>
-              )}
-
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
-                <span>{resolvedTheme.emoji}</span>
-                <span>
-                  {(() => {
-                    const rawTheme = t(
-                      `games.themes.${resolvedTheme.id}.name` as TranslationKey,
-                    );
-                    return rawTheme && !rawTheme.startsWith('games.themes.')
-                      ? rawTheme
-                      : resolvedTheme.id.replace(/-/g, ' ');
-                  })()}
-                </span>
-              </div>
+          {/* Fixed Header — close button + theme badge only */}
+          <div className="flex shrink-0 items-center justify-between px-5 pt-4 sm:px-6 sm:pt-5">
+            {gameName && (
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--textSecondary)]">
+                {gameName}
+              </span>
+            )}
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
+              <span>{resolvedTheme.emoji}</span>
+              <span>
+                {(() => {
+                  const rawTheme = t(
+                    `games.themes.${resolvedTheme.id}.name` as TranslationKey,
+                  );
+                  return rawTheme && !rawTheme.startsWith('games.themes.')
+                    ? rawTheme
+                    : resolvedTheme.id.replace(/-/g, ' ');
+                })()}
+              </span>
             </div>
+            {onClose && (
+              <CloseButton onClick={onClose} data-testid="modal-close-button">
+                <CloseIcon size={16} />
+              </CloseButton>
+            )}
+          </div>
 
-            <div className="mb-4 flex flex-col items-center gap-1">
-              <span className="animate-[float_3s_ease-in-out_infinite] text-6xl select-none sm:text-7xl">
+          {/* Scrollable Content — everything below scrolls */}
+          <div className="flex-1 overflow-y-auto px-5 sm:px-6" style={{ minHeight: 0 }}>
+            <div className="mb-2 flex flex-col items-center gap-1 pt-2">
+              <span className="animate-[float_3s_ease-in-out_infinite] text-5xl select-none">
                 {emoji}
               </span>
               <h1
                 data-testid="game-result-title"
                 className={cx(
-                  'text-center text-4xl font-black uppercase tracking-wider sm:text-5xl',
+                  'text-center text-3xl font-black uppercase tracking-wider',
                   TONE_TITLE_CLASSES[result],
                   isVictory && 'animate-pulse',
                 )}
@@ -233,19 +230,19 @@ export function GameResultModal({
               </h1>
             </div>
 
-            <p className="animate-fade-in-up-delay-2 mb-4 text-center text-base leading-relaxed text-[var(--textSecondary)] sm:text-lg">
+            <p className="animate-fade-in-up-delay-2 mb-2 text-center text-sm leading-relaxed text-[var(--textSecondary)]">
               {body}
             </p>
 
             {stats && (
-              <div className="animate-fade-in-up-delay-3 mb-4 w-full">
+              <div className="animate-fade-in-up-delay-3 mb-2 w-full">
                 <GameResultStatsGrid stats={stats} t={t} />
               </div>
             )}
 
             {ratingDelta && (
-              <div className="animate-fade-in-up-delay-3 mb-4 flex flex-col items-center gap-1">
-                <span className="text-xs font-semibold uppercase tracking-widest text-[var(--textSecondary)]">
+              <div className="animate-fade-in-up-delay-3 mb-2 flex flex-col items-center gap-1">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--textSecondary)]">
                   {t('games.ranking.ratingUpdated')}
                 </span>
                 <RatingBadge
@@ -256,20 +253,17 @@ export function GameResultModal({
                 />
               </div>
             )}
-          </div>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto px-6 sm:px-8" style={{ minHeight: 0 }}>
             {analysis && (
-              <div className="animate-fade-in-up-delay-4 mb-4 flex w-full flex-col gap-3">
+              <div className="animate-fade-in-up-delay-4 mb-2 flex w-full flex-col gap-2">
                 {showAnalysis ? (
                   <>
-                    <div className="rounded-2xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-4">
+                    <div className="rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3">
                       {analysis.content}
                     </div>
                     <Button
                       variant="ghost"
-                      size={media.sm ? 'sm' : 'md'}
+                      size="sm"
                       onClick={() => setShowAnalysis(false)}
                     >
                       {analysis.backLabel}
@@ -278,7 +272,7 @@ export function GameResultModal({
                 ) : (
                   <Button
                     variant="ghost"
-                    size={media.sm ? 'sm' : 'md'}
+                    size="sm"
                     className="w-full"
                     onClick={() => setShowAnalysis(true)}
                   >
@@ -289,7 +283,7 @@ export function GameResultModal({
             )}
 
             {gameSlug && (
-              <div className="animate-fade-in-up-delay-4 mb-4 w-full">
+              <div className="animate-fade-in-up-delay-4 mb-2 w-full">
                 <PostGameSuggestions
                   gameName={gameName ?? gameSlug}
                   gameSlug={gameSlug}
@@ -303,12 +297,26 @@ export function GameResultModal({
           </div>
 
           {/* Fixed Footer */}
-          <div className="flex-shrink-0 p-6 pt-0 sm:px-8 sm:pb-8">
-            <div className="animate-fade-in-up-delay-4 flex w-full flex-col gap-3">
+          <div className="flex-shrink-0 border-t border-[var(--glassBorder)] px-5 py-3 sm:px-6">
+            <div className="flex w-full gap-2">
+              {onClose && (
+                <Button
+                  variant="ghost"
+                  onClick={onClose}
+                  size="sm"
+                >
+                  {t('games.table.modals.common.close' as TranslationKey)}
+                </Button>
+              )}
+
+              <LinkButton href="/" className="flex-1" variant="secondary" size="sm">
+                {t('games.common.actions.backToHome' as TranslationKey)}
+              </LinkButton>
+
               {secondaryAction && (
                 <Button
                   variant="secondary"
-                  size={media.sm ? 'md' : 'lg'}
+                  size="sm"
                   onClick={secondaryAction.onClick}
                   data-testid={
                     secondaryAction.testId ?? 'result-secondary-button'
@@ -321,7 +329,7 @@ export function GameResultModal({
               {onRematch && (
                 <Button
                   variant={isVictory ? 'primary' : 'secondary'}
-                  size={media.sm ? 'md' : 'lg'}
+                  size="sm"
                   onClick={onRematch}
                   disabled={rematchLoading}
                   data-testid="rematch-button"
@@ -332,20 +340,6 @@ export function GameResultModal({
                     ? t('games.table.rematch.loading' as TranslationKey)
                     : (rematchLabel ??
                       t('games.table.rematch.button' as TranslationKey))}
-                </Button>
-              )}
-
-              <LinkButton href="/" className="w-full" variant="secondary">
-                {t('games.common.actions.backToHome' as TranslationKey)}
-              </LinkButton>
-
-              {onClose && (
-                <Button
-                  variant="ghost"
-                  onClick={onClose}
-                  size={media.sm ? 'sm' : 'md'}
-                >
-                  {t('games.table.modals.common.close' as TranslationKey)}
                 </Button>
               )}
             </div>

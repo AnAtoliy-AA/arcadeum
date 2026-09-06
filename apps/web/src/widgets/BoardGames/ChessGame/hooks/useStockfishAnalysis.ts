@@ -57,6 +57,8 @@ export function useStockfishAnalysis({
         depth: 12,
         timeMs: 1500,
       });
+      // Safety: reset analyzing after 5s if no response
+      setTimeout(() => setAnalyzing(false), 5000);
     }, 300);
 
     return () => {

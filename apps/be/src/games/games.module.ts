@@ -92,6 +92,7 @@ import { ChessOpeningsModule } from './chess/openings/chess-openings.module';
 import { ChessTournamentModule } from './chess/tournaments/chess-tournament.module';
 import { ChessProfilesModule } from './chess/profiles/chess-profiles.module';
 import { ChessClubsModule } from './chess/clubs/chess-clubs.module';
+import { ChessAnticheatModule } from './chess/anticheat/chess-anticheat.module';
 import { CheckersGateway } from './checkers.gateway';
 import { CheckersService } from './checkers/checkers.service';
 import { CheckersBotService } from './checkers/checkers-bot.service';
@@ -201,6 +202,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     ChessTournamentModule,
     ChessProfilesModule,
     ChessClubsModule,
+    ChessAnticheatModule,
   ],
   controllers: [
     GamesController,

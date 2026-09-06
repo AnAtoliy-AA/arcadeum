@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.22] - 2026-09-06
+
+### Added
+- opening explorer with position database (Phase 3) (#1371)
+
+
 ## [1.28.21] - 2026-09-05
 
 ### Added

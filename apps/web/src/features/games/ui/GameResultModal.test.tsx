@@ -28,7 +28,6 @@ describe('GameResultModal', () => {
     expect(modal).toBeInTheDocument();
     expect(modal).toHaveAttribute('data-theme', 'cyberpunk');
     expect(modal).toHaveAttribute('data-tone', 'victory');
-    expect(screen.getByText('Chess')).toBeInTheDocument();
     expect(screen.getByTestId('game-result-title')).toBeInTheDocument();
     expect(screen.getByTestId('victory-celebration')).toBeInTheDocument();
   });

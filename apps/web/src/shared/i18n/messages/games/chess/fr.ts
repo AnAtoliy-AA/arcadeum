@@ -88,6 +88,7 @@ export const frMessages = {
       easy: 'Facile',
       medium: 'Moyen',
       hard: 'Difficile',
+      botPersonality: 'Personnalité du Bot',
     },
     tutorial: {
       s1: {

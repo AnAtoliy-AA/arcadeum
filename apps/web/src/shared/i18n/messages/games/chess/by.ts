@@ -88,6 +88,7 @@ export const byMessages = {
       easy: 'Лёгкі',
       medium: 'Сярэдні',
       hard: 'Складаны',
+      botPersonality: 'Асоба бота',
     },
     tutorial: {
       s1: {

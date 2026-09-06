@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   type GameLobbyTheme,
@@ -17,6 +17,8 @@ import type { BotDifficulty } from '@/features/games/ui/DifficultySelector';
 import type { ChessTheme, TimeControl } from '../types';
 import { TIME_CONTROLS } from '../types';
 import { RulesModal } from './RulesModal';
+import { BotSelector, type BotPersonalityOption } from './BotSelector';
+import { BOT_PERSONALITIES } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 
 const LOBBY_THEME: GameLobbyTheme = {
   titleGradient: 'linear-gradient(90deg, var(--color) 0%, var(--primary) 100%)',
@@ -42,6 +44,7 @@ interface ChessLobbyProps {
     withBots?: boolean;
     botCount?: number;
     botDifficulty?: BotDifficulty;
+    botPersonality?: string;
   }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onLeaveRoom?: () => void;
@@ -68,6 +71,21 @@ export function ChessLobby({
 }: ChessLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const [selectedPersonality, setSelectedPersonality] = useState<string | null>(
+    null,
+  );
+
+  const personalityOptions: BotPersonalityOption[] = useMemo(
+    () =>
+      BOT_PERSONALITIES.map((p) => ({
+        id: p.id,
+        name: p.name,
+        avatar: p.avatar,
+        rating: p.rating,
+        style: p.style,
+      })),
+    [],
+  );
 
   const options = useMemo(() => {
     const raw = (room.gameOptions ?? {}) as Partial<{
@@ -164,6 +182,15 @@ export function ChessLobby({
           testIdPrefix="chess-time"
         />
       </LobbyOptionSection>
+
+      <LobbyOptionSection title={t('games.chess_v1.lobby.botPersonality')}>
+        <BotSelector
+          personalities={personalityOptions}
+          selectedId={selectedPersonality}
+          onSelect={setSelectedPersonality}
+          disabled={!isHost}
+        />
+      </LobbyOptionSection>
     </div>
   );
 
@@ -175,7 +202,11 @@ export function ChessLobby({
         isHost={isHost}
         startBusy={startBusy}
         onStartGame={(opts) =>
-          onStartGame({ ...opts, botDifficulty: opts?.difficulty ?? 'medium' })
+          onStartGame({
+            ...opts,
+            botDifficulty: opts?.difficulty ?? 'medium',
+            botPersonality: selectedPersonality ?? undefined,
+          })
         }
         onLeaveRoom={onLeaveRoom}
         onDeleteRoom={onDeleteRoom}

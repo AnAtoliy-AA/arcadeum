@@ -88,6 +88,7 @@ export const ruMessages = {
       easy: 'Лёгкий',
       medium: 'Средний',
       hard: 'Сложный',
+      botPersonality: 'Личность бота',
     },
     tutorial: {
       s1: {

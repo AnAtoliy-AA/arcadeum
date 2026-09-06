@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { BoardPosition, File, Rank } from '../types';
+import type { BoardPosition, Rank } from '../types';
 
 export interface Arrow {
   from: BoardPosition;

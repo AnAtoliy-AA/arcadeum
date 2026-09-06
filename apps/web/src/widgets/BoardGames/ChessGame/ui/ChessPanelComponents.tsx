@@ -179,19 +179,19 @@ export function GameInfoPanel({
         GAME INFO
       </div>
       <div>
-        <div className="text-[9px] font-semibold text-[var(--textSecondary)] uppercase mb-1">
-          ENGINE EVAL
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-[9px] font-bold text-white">♔</span>
+          <div className="flex-1 h-1.5 rounded-full bg-[var(--backgroundHover)] overflow-hidden border border-[var(--glassBorder)]">
+            <div
+              className={`h-full ${barColor} rounded-full transition-all duration-500`}
+              style={{ width: `${evalWidth}%` }}
+            />
+          </div>
+          <span className="text-[9px] font-bold text-zinc-400">♚</span>
         </div>
-        <div className="h-1 rounded bg-[var(--backgroundHover)] overflow-hidden border border-[var(--glassBorder)]">
-          <div
-            className={`h-full ${barColor} rounded transition-all duration-500`}
-            style={{ width: `${evalWidth}%` }}
-          />
-        </div>
-        <div className="flex justify-between mt-1 text-[9px] text-[var(--textSecondary)] font-medium">
-          <span className="font-bold text-[var(--color)]">{evalLabel}</span>
-          <span>White</span>
-          <span>Black</span>
+        <div className="flex justify-between text-[9px] text-[var(--textSecondary)] font-medium">
+          <span className="font-bold text-[var(--color)] tabular-nums">{evalLabel}</span>
+          <span>{liveEval && liveEval.cp != null && liveEval.cp > 0 ? 'White' : liveEval && liveEval.cp != null && liveEval.cp < 0 ? 'Black' : ''}</span>
         </div>
       </div>
       <div className="flex justify-between items-center py-1.5 border-t border-[var(--glassBorder)]">

@@ -141,7 +141,9 @@ export class ChessProfilesService {
   async getLeaderboard(
     gameType: string,
     limit: number = 20,
-  ): Promise<Array<{ userId: string; elo: number; games: number; wins: number }>> {
+  ): Promise<
+    Array<{ userId: string; elo: number; games: number; wins: number }>
+  > {
     const results = await this.model
       .find({ [`perGameStats.${gameType}.games`]: { $gt: 0 } })
       .select(`userId perGameStats.${gameType}`)
@@ -150,7 +152,10 @@ export class ChessProfilesService {
 
     return results
       .map((doc) => {
-        const stats = (doc as Record<string, unknown>).perGameStats as Record<string, { elo: number; games: number; wins: number }>;
+        const stats = (doc as Record<string, unknown>).perGameStats as Record<
+          string,
+          { elo: number; games: number; wins: number }
+        >;
         const gameStats = stats?.[gameType];
         return {
           userId: (doc as Record<string, unknown>).userId as string,

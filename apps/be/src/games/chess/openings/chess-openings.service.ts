@@ -125,9 +125,7 @@ export class ChessOpeningsService {
    * Walks the move list and finds the deepest matching ECO entry.
    * Returns the opening name, ECO code, and the move index where it diverged.
    */
-  async classifyOpening(
-    moves: string[],
-  ): Promise<{
+  async classifyOpening(moves: string[]): Promise<{
     opening: string;
     eco: string;
     family: string;
@@ -135,12 +133,19 @@ export class ChessOpeningsService {
   } | null> {
     if (moves.length === 0) return null;
 
-    let bestMatch: { opening: string; eco: string; family: string; moveIndex: number } | null = null;
+    let bestMatch: {
+      opening: string;
+      eco: string;
+      family: string;
+      moveIndex: number;
+    } | null = null;
 
     for (let i = moves.length; i >= 1; i--) {
       const prefix = moves.slice(0, i);
       const safeMoves = prefix.map(sanitize);
-      const opening = await this.openingModel.findOne({ moves: safeMoves }).exec();
+      const opening = await this.openingModel
+        .findOne({ moves: safeMoves })
+        .exec();
       if (opening && opening.eco) {
         bestMatch = {
           opening: opening.opening,

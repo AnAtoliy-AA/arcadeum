@@ -211,7 +211,8 @@ export class ChessService extends BaseGameService<ChessOptions> {
         const state = session.state as ChessState | undefined;
         if (state) {
           // Generate full FEN (positionHistory only stores board part)
-          const { toFen } = await import('@arcadeum/games-core/games/chess/chess-fen');
+          const { toFen } =
+            await import('@arcadeum/games-core/games/chess/chess-fen');
           const fullFen = toFen(state);
           this.logger.log(
             `[Chess] Analyzing fen for room ${session.roomId}: ${fullFen.substring(0, 50)}...`,

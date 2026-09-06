@@ -33,10 +33,29 @@ export async function analyzePositionMultiPV(
   depth: number,
   timeMs: number,
   pvCount: number,
-): Promise<EngineEval & { alternatives: Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> }> {
+): Promise<
+  EngineEval & {
+    alternatives: Array<{
+      move: string;
+      cp: number | null;
+      mate: number | null;
+      pv: string[];
+    }>;
+  }
+> {
   const instance = findFreeInstance();
   if (!instance) {
-    return { cp: 0, mate: null, pv: [], depth: 0, selDepth: 0, nodes: 0, nps: 0, timeMs: 0, alternatives: [] };
+    return {
+      cp: 0,
+      mate: null,
+      pv: [],
+      depth: 0,
+      selDepth: 0,
+      nodes: 0,
+      nps: 0,
+      timeMs: 0,
+      alternatives: [],
+    };
   }
 
   const lines: EngineEval[] = [];
@@ -52,14 +71,25 @@ export async function analyzePositionMultiPV(
       lines,
     };
 
-    instance.process.stdin?.write('setoption name MultiPV value ' + pvCount + '\n');
+    instance.process.stdin?.write(
+      'setoption name MultiPV value ' + pvCount + '\n',
+    );
     instance.process.stdin?.write(`position fen ${fen}\n`);
     instance.process.stdin?.write(`go depth ${depth} movetime ${timeMs}\n`);
   });
 
   instance.process.stdin?.write('setoption name MultiPV value 3\n');
 
-  const lastLine = lines[lines.length - 1] ?? { cp: 0, mate: null, pv: [], depth: 0, selDepth: 0, nodes: 0, nps: 0, timeMs: 0 };
+  const lastLine = lines[lines.length - 1] ?? {
+    cp: 0,
+    mate: null,
+    pv: [],
+    depth: 0,
+    selDepth: 0,
+    nodes: 0,
+    nps: 0,
+    timeMs: 0,
+  };
 
   const byDepth = new Map<number, EngineEval[]>();
   for (const l of lines) {
@@ -91,7 +121,13 @@ export async function getPuzzleHint(
 ): Promise<PuzzleHint | null> {
   if (!isReady()) return null;
 
-  const result = await analyzePositionMultiPV(findFreeInstance, fen, 18, 3000, 3);
+  const result = await analyzePositionMultiPV(
+    findFreeInstance,
+    fen,
+    18,
+    3000,
+    3,
+  );
   return {
     bestMove: result.pv[0] ?? '',
     eval: {
@@ -152,9 +188,31 @@ export function calculateAccuracy(moves: EngineLine[]): number {
  */
 export async function analyzeGame(
   request: AnalyzeGameRequest,
-  analyzePosition: (req: { fen: string; depth: number; timeMs: number }) => Promise<EngineEval>,
-  analyzePositionMultiPV: (fen: string, depth: number, timeMs: number, pvCount: number) => Promise<EngineEval & { alternatives: Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> }>,
-  probeTablebase: (fen: string) => Promise<{ category: string; dtz: number | null; dtm: number | null } | null>,
+  analyzePosition: (req: {
+    fen: string;
+    depth: number;
+    timeMs: number;
+  }) => Promise<EngineEval>,
+  analyzePositionMultiPV: (
+    fen: string,
+    depth: number,
+    timeMs: number,
+    pvCount: number,
+  ) => Promise<
+    EngineEval & {
+      alternatives: Array<{
+        move: string;
+        cp: number | null;
+        mate: number | null;
+        pv: string[];
+      }>;
+    }
+  >,
+  probeTablebase: (fen: string) => Promise<{
+    category: string;
+    dtz: number | null;
+    dtm: number | null;
+  } | null>,
   depth: number,
   timeMsPerPly: number,
 ): Promise<GameAnalysisResult> {
@@ -172,7 +230,12 @@ export async function analyzeGame(
     const fen = fullFens[i];
     if (!fen) continue;
 
-    const multiPVResult = await analyzePositionMultiPV(fen, depth, timeMsPerPly, 3);
+    const multiPVResult = await analyzePositionMultiPV(
+      fen,
+      depth,
+      timeMsPerPly,
+      3,
+    );
 
     const currentEval =
       multiPVResult.mate !== null
@@ -217,7 +280,11 @@ export async function analyzeGame(
 
   const lastFen = fullFens[fullFens.length - 1];
   if (lastFen) {
-    const finalEval = await analyzePosition({ fen: lastFen, depth, timeMs: timeMsPerPly });
+    const finalEval = await analyzePosition({
+      fen: lastFen,
+      depth,
+      timeMs: timeMsPerPly,
+    });
     evals.push(
       finalEval.mate !== null
         ? finalEval.mate > 0

@@ -101,8 +101,14 @@ export class GamePostMatchService {
     const whiteProfile = profiles[0];
     const blackProfile = profiles[1];
 
-    const whiteStats = whiteProfile.perGameStats['chess_v1'] ?? { elo: 1200, games: 0 };
-    const blackStats = blackProfile.perGameStats['chess_v1'] ?? { elo: 1200, games: 0 };
+    const whiteStats = whiteProfile.perGameStats['chess_v1'] ?? {
+      elo: 1200,
+      games: 0,
+    };
+    const blackStats = blackProfile.perGameStats['chess_v1'] ?? {
+      elo: 1200,
+      games: 0,
+    };
 
     const isDraw = winners.length === 0;
     const whiteWon = winners.includes(whiteId);
@@ -115,14 +121,44 @@ export class GamePostMatchService {
     );
 
     if (isDraw) {
-      await this.chessProfiles.recordGameResult(whiteId, 'chess_v1', 'draw', winnerChange);
-      await this.chessProfiles.recordGameResult(blackId, 'chess_v1', 'draw', loserChange);
+      await this.chessProfiles.recordGameResult(
+        whiteId,
+        'chess_v1',
+        'draw',
+        winnerChange,
+      );
+      await this.chessProfiles.recordGameResult(
+        blackId,
+        'chess_v1',
+        'draw',
+        loserChange,
+      );
     } else if (whiteWon) {
-      await this.chessProfiles.recordGameResult(whiteId, 'chess_v1', 'won', winnerChange);
-      await this.chessProfiles.recordGameResult(blackId, 'chess_v1', 'lost', loserChange);
+      await this.chessProfiles.recordGameResult(
+        whiteId,
+        'chess_v1',
+        'won',
+        winnerChange,
+      );
+      await this.chessProfiles.recordGameResult(
+        blackId,
+        'chess_v1',
+        'lost',
+        loserChange,
+      );
     } else {
-      await this.chessProfiles.recordGameResult(whiteId, 'chess_v1', 'lost', loserChange);
-      await this.chessProfiles.recordGameResult(blackId, 'chess_v1', 'won', winnerChange);
+      await this.chessProfiles.recordGameResult(
+        whiteId,
+        'chess_v1',
+        'lost',
+        loserChange,
+      );
+      await this.chessProfiles.recordGameResult(
+        blackId,
+        'chess_v1',
+        'won',
+        winnerChange,
+      );
     }
   }
 

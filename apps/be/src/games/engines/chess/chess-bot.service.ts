@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, forwardRef, Optional } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  forwardRef,
+  Optional,
+} from '@nestjs/common';
 import { ChessService } from '../../chess/chess.service';
 import type { ChessService as IChessService } from '../../chess/chess.service';
 import type {
@@ -152,7 +158,8 @@ export class ChessBotService extends ChessBot {
       const startTime = Date.now();
 
       if (isExpert && this.stockfishService?.isReady()) {
-        const { toFen } = await import('@arcadeum/games-core/games/chess/chess-fen');
+        const { toFen } =
+          await import('@arcadeum/games-core/games/chess/chess-fen');
         const fen = toFen(state);
         const sfResult = await this.stockfishService.getBestMove(fen, 20, 5000);
         if (sfResult.bestMove) {
@@ -160,12 +167,23 @@ export class ChessBotService extends ChessBot {
           const toStr = sfResult.bestMove.slice(2, 4);
           const promoChar = sfResult.bestMove.slice(4);
           move = {
-            from: { file: fromStr[0] as ChessMove['from']['file'], rank: parseInt(fromStr[1]) as ChessMove['from']['rank'] },
-            to: { file: toStr[0] as ChessMove['to']['file'], rank: parseInt(toStr[1]) as ChessMove['to']['rank'] },
-            piece: state.board[fromStr.charCodeAt(0) - 97]?.[8 - parseInt(fromStr[1])]?.type ?? 'pawn',
+            from: {
+              file: fromStr[0] as ChessMove['from']['file'],
+              rank: parseInt(fromStr[1]) as ChessMove['from']['rank'],
+            },
+            to: {
+              file: toStr[0] as ChessMove['to']['file'],
+              rank: parseInt(toStr[1]) as ChessMove['to']['rank'],
+            },
+            piece:
+              state.board[fromStr.charCodeAt(0) - 97]?.[
+                8 - parseInt(fromStr[1])
+              ]?.type ?? 'pawn',
             promotion: promoChar || undefined,
           } as unknown as ChessMove;
-          this.logger.log(`[Bot] Stockfish best move for ${state.currentTurnColor}: ${sfResult.bestMove}`);
+          this.logger.log(
+            `[Bot] Stockfish best move for ${state.currentTurnColor}: ${sfResult.bestMove}`,
+          );
         }
       }
 

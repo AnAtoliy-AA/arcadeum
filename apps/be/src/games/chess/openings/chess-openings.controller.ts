@@ -53,9 +53,7 @@ export class ChessOpeningsController {
   }
 
   @Post('classify')
-  async classifyOpening(
-    @Body() body: { moves: string[] },
-  ) {
+  async classifyOpening(@Body() body: { moves: string[] }) {
     if (!body.moves || body.moves.length === 0) {
       return { error: 'moves array is required' };
     }

@@ -241,10 +241,17 @@ export class ChessPuzzlesService {
     ]);
   }
 
-  async getHint(fen: string, _userId: string): Promise<{
+  async getHint(
+    fen: string,
+    _userId: string,
+  ): Promise<{
     bestMove: string;
     eval: { cp: number | null; mate: number | null; pv: string[] };
-    alternatives: Array<{ move: string; cp: number | null; mate: number | null }>;
+    alternatives: Array<{
+      move: string;
+      cp: number | null;
+      mate: number | null;
+    }>;
   } | null> {
     if (!this.stockfishService.isReady()) {
       this.logger.warn('Stockfish not ready for puzzle hint');

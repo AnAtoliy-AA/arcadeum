@@ -44,7 +44,10 @@ export class ChessStockfishController {
 
     const tier = this.subscriptionService.getUserTier(req.user.id);
     if (!this.subscriptionService.canPerformAction(tier, 'gameReview')) {
-      return { error: 'Daily analysis limit reached. Upgrade to premium for unlimited analysis.' };
+      return {
+        error:
+          'Daily analysis limit reached. Upgrade to premium for unlimited analysis.',
+      };
     }
 
     return this.stockfishService.analyzePosition(body);
@@ -63,7 +66,10 @@ export class ChessStockfishController {
 
     const tier = this.subscriptionService.getUserTier(req.user.id);
     if (!this.subscriptionService.canPerformAction(tier, 'gameReview')) {
-      return { error: 'Daily game review limit reached. Upgrade to premium for unlimited reviews.' };
+      return {
+        error:
+          'Daily game review limit reached. Upgrade to premium for unlimited reviews.',
+      };
     }
 
     return this.stockfishService.analyzeGame(body);

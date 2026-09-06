@@ -514,10 +514,10 @@ export class ChessStockfishService implements OnModuleDestroy {
     _color: 'white' | 'black',
   ): EngineLine['quality'] {
     if (loss === 0 && Math.abs(evalAfter) > 200) return 'brilliant';
-    if (loss <= 5 && Math.abs(evalAfter) > 100) return 'great';
-    if (loss <= 25) return 'good';
-    if (loss <= 100) return 'inaccuracy';
-    if (loss <= 300) return 'mistake';
+    if (loss <= 2 && Math.abs(evalAfter) > 100) return 'great';
+    if (loss <= 10) return 'good';
+    if (loss <= 30) return 'inaccuracy';
+    if (loss <= 100) return 'mistake';
     return 'blunder';
   }
 

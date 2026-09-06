@@ -71,12 +71,13 @@ export function PostGameAnalysis({
   // Flip evals for player's perspective
   const evals = useMemo(() => {
     const raw = stockfishResult?.evals ?? fallbackAnalysis.evals;
-    return flipEvals(raw);
+    const flipped = flipEvals(raw);
+    return flipped.map((v) => v ?? 0);
   }, [stockfishResult, fallbackAnalysis.evals, flipEvals]);
   const moves = useMemo(() => {
     const raw = stockfishResult?.moves ?? fallbackAnalysis.moves.map((m) => ({
       quality: m.quality as MoveQuality,
-      notation: m.notation,
+      move: m.notation,
       evalAfter: m.evalAfter,
       mateAfter: null as number | null,
       loss: m.loss,
@@ -87,7 +88,7 @@ export function PostGameAnalysis({
       ply: i,
       moveNumber: Math.floor(i / 2) + 1,
       color: (i % 2 === 0 ? 'white' : 'black') as 'white' | 'black',
-      notation: m.notation,
+      notation: m.move,
       evalAfter: flipEvals([m.evalAfter])[0] ?? 0,
       delta: i > 0 ? (flipEvals([m.evalAfter])[0] ?? 0) - (flipEvals([raw[i - 1]?.evalAfter ?? 0])[0] ?? 0) : 0,
       loss: m.loss,

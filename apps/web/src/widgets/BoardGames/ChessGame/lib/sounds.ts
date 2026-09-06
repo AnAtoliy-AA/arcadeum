@@ -10,7 +10,6 @@ export type SoundType =
   | 'notification'
   | 'error';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _SOUND_URLS: Record<SoundType, string> = {
   move: '/sounds/chess/move.mp3',
   capture: '/sounds/chess/capture.mp3',

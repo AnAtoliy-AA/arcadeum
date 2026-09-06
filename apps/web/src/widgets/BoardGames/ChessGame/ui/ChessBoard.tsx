@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo, useCallback, useState, useRef, useEffect } from 'react';
+import { memo, useMemo, useCallback, useState, useRef, useLayoutEffect } from 'react';
 import {
   FILES,
   PIECE_SYMBOLS,
@@ -271,14 +271,15 @@ function ChessBoardImpl({
   const prevBoardRef = useRef<Board>(board);
   const [animating, setAnimating] = useState<Map<string, { dx: number; dy: number }>>(new Map());
 
-  useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: computing piece slide animation from board diff
+  useLayoutEffect(() => {
     const prev = prevBoardRef.current;
-    const curr = board;
+    if (prev === board) return;
     const animations = new Map<string, { dx: number; dy: number }>();
 
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
-        const piece = curr[r]?.[c];
+        const piece = board[r]?.[c];
         if (!piece) continue;
         const prevPiece = prev[r]?.[c];
         if (prevPiece && prevPiece.type === piece.type && prevPiece.color === piece.color) continue;
@@ -299,7 +300,7 @@ function ChessBoardImpl({
     }
 
     setAnimating(animations);
-    prevBoardRef.current = curr;
+    prevBoardRef.current = board;
   }, [board]);
 
   const legalMoveSet = useMemo(() => {

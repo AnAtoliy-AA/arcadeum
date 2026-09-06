@@ -9,6 +9,8 @@ const qualityLabels: Record<MoveQuality, string> = {
   inaccuracy: 'Inaccuracy',
   mistake: 'Mistake',
   blunder: 'Blunder',
+  brilliant: 'Brilliant',
+  great: 'Great',
 };
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';

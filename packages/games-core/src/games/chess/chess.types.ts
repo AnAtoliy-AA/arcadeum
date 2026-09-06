@@ -51,8 +51,8 @@ export interface ChessOptions {
   botPersonality?: string;
 }
 
-export type TimeControlType = 'blitz' | 'rapid' | 'classical';
-export type TimeIncrement = 0 | 3 | 5 | 10 | 15 | 30;
+export type TimeControlType = 'bullet' | 'blitz' | 'rapid' | 'classical' | 'daily';
+export type TimeIncrement = 0 | 1 | 3 | 5 | 10 | 15 | 30;
 
 export interface TimeControl {
   type: TimeControlType;

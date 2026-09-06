@@ -120,11 +120,13 @@ export function ChessLobby({
       id: `tc-${tc.initialSeconds}-${tc.incrementSeconds}`,
       label: formatTimeControl(tc),
       description:
-        tc.type === 'blitz'
-          ? t('games.chess_v1.lobby.blitz')
-          : tc.type === 'rapid'
-            ? t('games.chess_v1.lobby.rapid')
-            : t('games.chess_v1.lobby.classical'),
+        tc.type === 'bullet'
+          ? t('games.chess_v1.lobby.bullet')
+          : tc.type === 'blitz'
+            ? t('games.chess_v1.lobby.blitz')
+            : tc.type === 'rapid'
+              ? t('games.chess_v1.lobby.rapid')
+              : t('games.chess_v1.lobby.classical'),
     })),
     {
       id: 'no-clock',

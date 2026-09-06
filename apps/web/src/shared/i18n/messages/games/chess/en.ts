@@ -90,6 +90,7 @@ export const enMessages = {
       atomicDesc: 'Captures explode surrounding pieces',
       noClock: 'No clock',
       unlimitedTime: 'Unlimited time',
+      bullet: 'Bullet',
       blitz: 'Blitz',
       rapid: 'Rapid',
       classical: 'Classical',

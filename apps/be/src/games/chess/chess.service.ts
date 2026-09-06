@@ -245,11 +245,11 @@ export class ChessService extends BaseGameService<ChessOptions> {
     const rawTc = r.timeControl;
     let timeControl: ChessOptions['timeControl'] = null;
     if (rawTc && typeof rawTc === 'object') {
-      const validTypes: TimeControlType[] = ['blitz', 'rapid', 'classical'];
+      const validTypes: TimeControlType[] = ['bullet', 'blitz', 'rapid', 'classical', 'daily'];
       const type = validTypes.includes(rawTc.type as TimeControlType)
         ? (rawTc.type as TimeControlType)
         : 'blitz';
-      const validIncs: TimeIncrement[] = [0, 3, 5, 10, 15, 30];
+      const validIncs: TimeIncrement[] = [0, 1, 3, 5, 10, 15, 30];
       const inc = validIncs.includes(rawTc.incrementSeconds as TimeIncrement)
         ? (rawTc.incrementSeconds as TimeIncrement)
         : 0;

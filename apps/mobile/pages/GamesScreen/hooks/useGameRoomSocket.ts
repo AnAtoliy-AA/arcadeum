@@ -14,6 +14,7 @@ import type { TFunction } from '@/lib/i18n';
 import { type GameRoomSummary, type GameSessionSummary } from '../api/gamesApi';
 import { type CriticalRoomHandle } from '../gameIntegrations/Critical/CriticalRoom';
 import { type TexasHoldemRoomHandle } from '../gameIntegrations/TexasHoldem/TexasHoldemRoom';
+import { type ChessRoomHandle } from '../gameIntegrations/Chess/ChessRoom';
 import {
   normalizeWsMessageCode,
   shouldExposeRawWsMessage,
@@ -29,7 +30,7 @@ interface UseGameRoomSocketParams {
   setRoom: React.Dispatch<React.SetStateAction<GameRoomSummary | null>>;
   setSession: React.Dispatch<React.SetStateAction<GameSessionSummary | null>>;
   integrationRef: React.MutableRefObject<
-    CriticalRoomHandle | TexasHoldemRoomHandle | null
+    CriticalRoomHandle | TexasHoldemRoomHandle | ChessRoomHandle | null
   >;
 }
 

@@ -1,6 +1,5 @@
-import type { GameRoomSummary } from '@/shared/types/games';
-import type { GameSessionSummary } from '@/shared/types/gameSessions';
-import type { SessionTokensSnapshot } from '@/entities/session';
+import type { GameRoomSummary, GameSessionSummary } from '../../api/gamesApi';
+import type { SessionTokensSnapshot } from '@/stores/sessionTokens';
 
 export interface ChessRoomHandle {
   onSessionSnapshot: () => void;

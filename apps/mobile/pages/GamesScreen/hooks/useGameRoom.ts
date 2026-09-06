@@ -16,12 +16,13 @@ import {
 } from '../api/gamesApi';
 import { type CriticalRoomHandle } from '../gameIntegrations/Critical/CriticalRoom';
 import { type TexasHoldemRoomHandle } from '../gameIntegrations/TexasHoldem/TexasHoldemRoom';
+import { type ChessRoomHandle } from '../gameIntegrations/Chess/ChessRoom';
 import { resolveParam, resolveIntegrationId } from './useGameRoomUtils';
 import { useGameRoomSocket } from './useGameRoomSocket';
 
 export function useGameRoom(
   integrationRef: React.MutableRefObject<
-    CriticalRoomHandle | TexasHoldemRoomHandle | null
+    CriticalRoomHandle | TexasHoldemRoomHandle | ChessRoomHandle | null
   >,
 ) {
   const insets = useSafeAreaInsets();

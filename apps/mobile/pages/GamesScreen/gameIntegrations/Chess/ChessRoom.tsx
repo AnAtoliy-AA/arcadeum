@@ -1,7 +1,9 @@
 import React, { forwardRef, useImperativeHandle, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useThemedStyles } from '@/shared/lib/theme';
+import { useThemedStyles, type Palette } from '@/hooks/useThemedStyles';
 import type { ChessRoomProps, ChessRoomHandle, ChessBoardState, ChessFile, ChessRank, ChessPiece } from './ChessRoom.types';
+
+export type { ChessRoomHandle, ChessRoomProps } from './ChessRoom.types';
 
 const FILES: ChessFile[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const RANKS: ChessRank[] = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -26,13 +28,14 @@ function ChessBoardView({
   selectedSquare,
   onSquarePress,
   disabled,
+  palette,
 }: {
   board: (ChessPiece | null)[][];
   selectedSquare: { file: ChessFile; rank: ChessRank } | null;
   onSquarePress: (file: ChessFile, rank: ChessRank) => void;
   disabled: boolean;
+  palette: Palette;
 }) {
-  const { theme } = useThemedStyles();
 
   return (
     <View style={styles.boardContainer}>
@@ -52,10 +55,10 @@ function ChessBoardView({
                   styles.boardSquare,
                   {
                     backgroundColor: isSelected
-                      ? theme.selectedSquare
+                      ? palette.tint
                       : isLight
-                        ? theme.lightSquare
-                        : theme.darkSquare,
+                        ? '#E8E8D0'
+                        : '#779554',
                   },
                 ]}
                 onPress={() => onSquarePress(file, rank)}
@@ -66,7 +69,7 @@ function ChessBoardView({
                     {PIECE_SYMBOLS[`${piece.color}-${piece.type}`] ?? ''}
                   </Text>
                 )}
-                <Text style={[styles.coordinate, { color: isLight ? '#779952' : '#edeed1' }]}>
+                <Text style={[styles.coordinate, { color: isLight ? '#779554' : '#E8E8D0' }]}>
                   {file}
                 </Text>
               </TouchableOpacity>
@@ -90,7 +93,7 @@ export const ChessRoom = forwardRef<ChessRoomHandle, ChessRoomProps>(
     },
     ref,
   ) {
-    const { theme } = useThemedStyles();
+    const palette = useThemedStyles((p) => p);
     const [selectedSquare, setSelectedSquare] = useState<{ file: ChessFile; rank: ChessRank } | null>(null);
 
     const boardState: ChessBoardState = session?.state as unknown as ChessBoardState ?? {
@@ -118,27 +121,27 @@ export const ChessRoom = forwardRef<ChessRoomHandle, ChessRoomProps>(
 
     if (loading) {
       return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-          <Text style={[styles.loadingText, { color: theme.color }]}>Loading...</Text>
+        <View style={[styles.container, { backgroundColor: palette.background }]}>
+          <Text style={[styles.loadingText, { color: palette.text }]}>Loading...</Text>
         </View>
       );
     }
 
     if (error) {
       return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-          <Text style={[styles.errorText, { color: theme.error }]}>{error}</Text>
+        <View style={[styles.container, { backgroundColor: palette.background }]}>
+          <Text style={[styles.errorText, { color: palette.error }]}>{error}</Text>
         </View>
       );
     }
 
     return (
-      <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
+      <ScrollView style={[styles.container, { backgroundColor: palette.background }]}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.color }]}>
+          <Text style={[styles.title, { color: palette.text }]}>
             {room?.name ?? 'Chess'}
           </Text>
-          <Text style={[styles.turnIndicator, { color: theme.primary }]}>
+          <Text style={[styles.turnIndicator, { color: palette.tint }]}>
             {boardState.currentTurnColor === 'white' ? 'White' : 'Black'} to move
             {boardState.isCheck ? ' (Check!)' : ''}
           </Text>
@@ -149,11 +152,12 @@ export const ChessRoom = forwardRef<ChessRoomHandle, ChessRoomProps>(
           selectedSquare={selectedSquare}
           onSquarePress={handleSquarePress}
           disabled={false}
+          palette={palette}
         />
 
         <View style={styles.actions}>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: theme.error }]}
+            style={[styles.button, { backgroundColor: palette.error }]}
             onPress={onLeaveRoom}
           >
             <Text style={styles.buttonText}>Leave</Text>

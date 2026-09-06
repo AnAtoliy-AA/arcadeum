@@ -80,10 +80,12 @@ export function PostGameAnalysis({
     const flipped = flipEvals(raw);
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
-      console.log(`[Analysis] evals before=${raw.slice(0, 5)} after=${flipped.slice(0, 5)} flip=${shouldFlip}`);
+      console.log(`[Analysis] RAW evals (first 10):`, raw.slice(0, 10));
+      console.log(`[Analysis] FLIPPED evals (first 10):`, flipped.slice(0, 10));
+      console.log(`[Analysis] perspective=${perspective} shouldFlip=${shouldFlip}`);
     }
     return flipped;
-  }, [stockfishResult, fallbackAnalysis.evals, flipEvals, shouldFlip]);
+  }, [stockfishResult, fallbackAnalysis.evals, flipEvals, shouldFlip, perspective]);
   const moves = useMemo(() => {
     const raw = stockfishResult?.moves ?? fallbackAnalysis.moves.map((m) => ({
       quality: m.quality as MoveQuality,

@@ -79,12 +79,17 @@ export function EvalGraph({
   ariaLabel,
 }: EvalGraphProps) {
   const data = useMemo<EvalPoint[]>(
-    () =>
-      evals.map((value, ply) => ({
+    () => {
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.log(`[EvalGraph] received evals (first 10):`, evals.slice(0, 10));
+      }
+      return evals.map((value, ply) => ({
         ply,
         value: Math.max(-500, Math.min(500, value)),
         rawValue: value,
-      })),
+      }));
+    },
     [evals],
   );
 

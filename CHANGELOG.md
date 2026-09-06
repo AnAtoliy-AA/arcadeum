@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.26] - 2026-09-06
+
+### Added
+- automate TikTok integration review demo recording
+
+
 ## [1.28.25] - 2026-09-06
 
 ### Added

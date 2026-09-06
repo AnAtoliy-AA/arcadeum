@@ -165,8 +165,8 @@ export class AiVsAiService {
       aiMoveDelayMs,
       botDifficulty: 'expert',
       aiDifficulty: 'expert',
-      botPersonalityWhite,
-      botPersonalityBlack,
+      botPersonalityWhite: whitePersonality,
+      botPersonalityBlack: blackPersonality,
       ...(dto.variant ? { variant: dto.variant } : {}),
       theme: dto.theme || 'adventure',
     };

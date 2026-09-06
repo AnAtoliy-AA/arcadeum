@@ -49,13 +49,16 @@ const TIER_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
 @Injectable()
 export class ChessSubscriptionService {
   private readonly logger = new Logger(ChessSubscriptionService.name);
-  private readonly userUsage = new Map<string, { date: string; reviews: number; puzzles: number }>();
+  private readonly userUsage = new Map<
+    string,
+    { date: string; reviews: number; puzzles: number }
+  >();
 
   getTierLimits(tier: SubscriptionTier): SubscriptionLimits {
     return TIER_LIMITS[tier];
   }
 
-  async getUserTier(_userId: string): Promise<SubscriptionTier> {
+  getUserTier(_userId: string): SubscriptionTier {
     return 'free';
   }
 

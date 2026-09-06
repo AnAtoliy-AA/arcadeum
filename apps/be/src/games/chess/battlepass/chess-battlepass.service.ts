@@ -21,7 +21,7 @@ export interface BattlePassReward {
 export class ChessBattlePassService {
   private readonly logger = new Logger(ChessBattlePassService.name);
 
-  async getCurrentSeason(): Promise<BattlePassSeason> {
+  getCurrentSeason(): BattlePassSeason {
     return {
       id: 'season-1',
       name: 'Season 1',
@@ -32,11 +32,15 @@ export class ChessBattlePassService {
     };
   }
 
-  async getUserProgress(_userId: string): Promise<{ level: number; xp: number; xpToNext: number }> {
+  getUserProgress(_userId: string): {
+    level: number;
+    xp: number;
+    xpToNext: number;
+  } {
     return { level: 1, xp: 0, xpToNext: 100 };
   }
 
-  async addXp(_userId: string, amount: number): Promise<void> {
+  addXp(_userId: string, amount: number): void {
     this.logger.log(`Adding ${amount} XP to user`);
   }
 

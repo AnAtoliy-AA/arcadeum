@@ -98,6 +98,18 @@ export default function ChessLanding({
       title: 'Daily Correspondence',
       body: 'Play at your pace with 1–14 day per move time controls. Never miss a move with notifications.',
     },
+    {
+      key: 'analysisBoard',
+      icon: '🔬',
+      title: 'Analysis Board',
+      body: 'Set up any position, make moves freely, and analyze with Stockfish 19. Perfect for studying positions and exploring variations.',
+    },
+    {
+      key: 'boardEditor',
+      icon: '✏️',
+      title: 'Board Editor',
+      body: 'Create custom positions with drag-and-drop piece placement. 8 preset positions, FEN import/export, and castling rights configuration.',
+    },
   ];
 
   const steps = [
@@ -189,6 +201,8 @@ export default function ChessLanding({
           '12 AI Bots',
           'Bullet/Blitz/Rapid/Daily',
           'Puzzle Rush',
+          'Analysis Board',
+          'Board Editor',
           'Game Review',
           'Takeback',
           'PGN Import',

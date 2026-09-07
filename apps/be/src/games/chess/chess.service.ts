@@ -34,6 +34,7 @@ import {
   type AiDifficulty,
 } from '../ai-difficulty';
 import { BaseGameService } from '../common/base-game.service';
+import { getBotPersonality, type BotPersonality } from '../engines/chess';
 
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 2;
@@ -186,7 +187,80 @@ export class ChessService extends BaseGameService<ChessOptions> {
       });
     }
 
+    // Emit bot chat messages on game completion
+    if (session.status === 'completed') {
+      await this.emitBotChatOnGameOver(session).catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.error(
+          `Bot chat emit failed for room ${session.roomId}: ${message}`,
+        );
+      });
+    }
+
     return result;
+  }
+
+  private async emitBotChatOnGameOver(
+    session: GameSessionSummary,
+  ): Promise<void> {
+    const state = session.state as ChessState | undefined;
+    if (!state?.players) return;
+
+    const room = await this.roomsService.getRoom(session.roomId, 'system');
+    const gameOpts = (room as unknown as Record<string, unknown>)
+      .gameOptions as Record<string, unknown> | undefined;
+
+    for (const player of state.players) {
+      if (!player.isBot) continue;
+
+      const perColorKey =
+        player.color === 'white'
+          ? 'botPersonalityWhite'
+          : 'botPersonalityBlack';
+      const personalityId =
+        (gameOpts?.[perColorKey] as string) ??
+        (gameOpts?.botPersonality as string) ??
+        state.botPersonality;
+
+      if (!personalityId) continue;
+      const personality: BotPersonality | undefined =
+        getBotPersonality(personalityId);
+      if (!personality) continue;
+
+      const botWon = state.winnerColor === player.color;
+      const isDraw =
+        state.isStalemate ||
+        state.isDrawByRepetition ||
+        state.isDrawByFiftyMoveRule ||
+        state.isInsufficientMaterial ||
+        state.isDrawByAgreement;
+
+      let message: string | null = null;
+      if (botWon && personality.chatMessages.onWin.length > 0) {
+        message =
+          personality.chatMessages.onWin[
+            Math.floor(Math.random() * personality.chatMessages.onWin.length)
+          ];
+      } else if (
+        !botWon &&
+        !isDraw &&
+        personality.chatMessages.onLoss.length > 0
+      ) {
+        message =
+          personality.chatMessages.onLoss[
+            Math.floor(Math.random() * personality.chatMessages.onLoss.length)
+          ];
+      }
+
+      if (message) {
+        this.realtimeService.emitToRoom(session.roomId, 'game.chat', {
+          senderId: player.playerId,
+          senderName: personality.name,
+          message,
+          scope: 'all',
+        });
+      }
+    }
   }
 
   protected override async emitSessionUpdate(

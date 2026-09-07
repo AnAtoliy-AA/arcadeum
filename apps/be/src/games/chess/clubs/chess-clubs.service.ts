@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { escapeRegExp } from '../../../common/utils/escape-regexp';
 import { ChessClub, type ChessClubDocument } from './chess-club.schema';
 import { OCI_CONNECTION } from '../../../common/providers/mongo-connections.provider';
 
@@ -42,8 +43,13 @@ export class ChessClubsService {
   }
 
   async searchClubs(query: string, limit = 20): Promise<ChessClubDocument[]> {
+    const sanitized = escapeRegExp(query.trim());
+    if (!sanitized) return [];
     return this.model
-      .find({ name: { $regex: query, $options: 'i' }, visibility: 'public' })
+      .find({
+        name: { $regex: sanitized, $options: 'i' },
+        visibility: 'public',
+      })
       .limit(limit)
       .sort({ memberCount: -1 })
       .exec();

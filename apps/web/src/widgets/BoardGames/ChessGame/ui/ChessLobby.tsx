@@ -100,14 +100,36 @@ export function ChessLobby({
       variant: string;
       timeControl: TimeControl | null;
     }>;
+    const validVariants = [
+      'standard',
+      'chess960',
+      'king_of_the_hill',
+      'three_check',
+      'crazyhouse',
+      'atomic',
+    ];
+    const variant = validVariants.includes(raw.variant ?? '')
+      ? (raw.variant as ChessTheme)
+      : 'standard';
     return {
       theme: (raw.theme as string) || 'adventure',
-      variant: (raw.variant ?? 'standard') as ChessTheme,
+      variant,
       timeControl: (raw.timeControl ?? null) as TimeControl | null,
     };
   }, [room.gameOptions]);
 
-  const variantLabel = options.variant === 'chess960' ? 'Chess960' : 'Standard';
+  const variantLabel =
+    options.variant === 'chess960'
+      ? 'Chess960'
+      : options.variant === 'king_of_the_hill'
+        ? t('games.chess_v1.lobby.kingOfTheHill')
+        : options.variant === 'three_check'
+          ? t('games.chess_v1.lobby.threeCheck')
+          : options.variant === 'crazyhouse'
+            ? t('games.chess_v1.lobby.crazyhouse')
+            : options.variant === 'atomic'
+              ? t('games.chess_v1.lobby.atomic')
+              : t('games.chess_v1.lobby.standard');
 
   const variantOptions = [
     {
@@ -119,6 +141,26 @@ export function ChessLobby({
       id: 'chess960',
       label: t('games.chess_v1.lobby.chess960'),
       description: t('games.chess_v1.lobby.chess960Desc'),
+    },
+    {
+      id: 'king_of_the_hill',
+      label: t('games.chess_v1.lobby.kingOfTheHill'),
+      description: t('games.chess_v1.lobby.kingOfTheHillDesc'),
+    },
+    {
+      id: 'three_check',
+      label: t('games.chess_v1.lobby.threeCheck'),
+      description: t('games.chess_v1.lobby.threeCheckDesc'),
+    },
+    {
+      id: 'crazyhouse',
+      label: t('games.chess_v1.lobby.crazyhouse'),
+      description: t('games.chess_v1.lobby.crazyhouseDesc'),
+    },
+    {
+      id: 'atomic',
+      label: t('games.chess_v1.lobby.atomic'),
+      description: t('games.chess_v1.lobby.atomicDesc'),
     },
   ];
 

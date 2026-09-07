@@ -2,7 +2,6 @@
 
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
-import { RematchInvitationModal } from '@/features/games/ui/RematchInvitationModal';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -11,27 +10,31 @@ import {
   useGameResultModal,
   useGameResult,
 } from '@/features/games/hooks';
-import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { ChessGameProps, ChessClientState } from '../types';
-import { FILES, type BoardPosition, type File, type PieceType } from '../types';
+import {
+  FILES,
+  type File,
+  type Rank,
+  type BoardPosition,
+  type PieceType,
+} from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
 import { useChessSounds } from '../hooks/useChessSounds';
 import { useChessCoach } from '../hooks/useChessCoach';
 import { useStockfishAnalysis } from '../hooks/useStockfishAnalysis';
+import { useSquareClick } from '../hooks/useSquareClick';
 import { calculateOptimisticChessState } from '../lib/optimisticMove';
 import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
 import { downloadPGN } from '../lib/pgn';
 import { findKingPosition } from '../lib/board-utils';
+import { createDisplayNameResolver } from '../lib/displayNameResolver';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoardPanel } from './ChessBoardPanel';
-import { ChessGameResultModal } from './ChessGameResultModal';
-import { PromotionModal } from './PromotionModal';
-import { RulesModal } from './RulesModal';
+import { ChessGameModals } from './ChessGameModals';
 import { ChessThemeProvider } from '../lib/ChessThemeContext';
-import { getBotPersonality } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 
 function ChessGameImpl({
   roomId,
@@ -77,7 +80,6 @@ function ChessGameImpl({
   } | null>(null);
   const [optimisticState, setOptimisticState] =
     useState<ChessClientState | null>(null);
-
   // Clear stale optimistic state when server catches up
   useEffect(() => {
     if (
@@ -88,7 +90,6 @@ function ChessGameImpl({
       queueMicrotask(() => setOptimisticState(null));
     }
   }, [snapshot, optimisticState]);
-
   const displaySnapshot =
     optimisticState &&
     snapshot &&
@@ -106,8 +107,6 @@ function ChessGameImpl({
   );
 
   const coach = useChessCoach({ room, currentUserId, displaySnapshot });
-
-  // Stockfish 19 live analysis (latest stable, released 2026-09-05)
   const { eval: liveEval, analyzing: liveEvalAnalyzing } = useStockfishAnalysis(
     {
       roomId,
@@ -137,28 +136,8 @@ function ChessGameImpl({
     },
     [snapshot],
   );
-  const resolveDisplayNameBound = useCallback(
-    (id?: string | null) => {
-      const gameOpts = room?.gameOptions as Record<string, unknown> | undefined;
-      let botLabel: string | undefined;
-      if (id?.startsWith('bot-') && displaySnapshot?.players) {
-        const player = displaySnapshot.players.find((p) => p.playerId === id);
-        if (player) {
-          const perColorKey = player.color === 'white' ? 'botPersonalityWhite' : 'botPersonalityBlack';
-          const personalityId = (gameOpts?.[perColorKey] as string) ?? (gameOpts?.botPersonality as string);
-          if (personalityId) {
-            const personality = getBotPersonality(personalityId);
-            if (personality) botLabel = personality.name;
-          }
-        }
-      }
-      return resolveDisplayName(id, {
-        currentUserId,
-        members: room?.members,
-        playerOrder: displaySnapshot?.players.map((p) => p.playerId),
-        botLabel,
-      });
-    },
+  const resolveDisplayNameBound = useMemo(
+    () => createDisplayNameResolver(currentUserId, room, displaySnapshot),
     [currentUserId, room, displaySnapshot],
   );
   const sendChat = useGameChatSend(roomId, currentUserId, 'chess_v1');
@@ -206,10 +185,12 @@ function ChessGameImpl({
     dismiss,
     toggle: toggleResult,
   } = useGameResultModal(session, result, resultMessages, isGameOver);
-
   const [flipped, setFlipped] = useState(myColor === 'black');
   const [confirmMoves, setConfirmMoves] = useState(false);
-
+  const [pendingMove, setPendingMove] = useState<{
+    from: BoardPosition;
+    to: BoardPosition;
+  } | null>(null);
   const toggleFlip = useCallback(() => setFlipped((f) => !f), []);
   const lastMove = useMemo(() => {
     if (!displaySnapshot?.moveHistory.length) return null;
@@ -227,59 +208,25 @@ function ChessGameImpl({
       )
       .map((m) => m.to);
   }, [selectedSquare, displaySnapshot]);
-  const kingPosition = displaySnapshot ? findKingPosition(displaySnapshot) : null;
+  const kingPosition = displaySnapshot
+    ? findKingPosition(displaySnapshot)
+    : null;
 
-  const handleSquareClick = useCallback(
-    (file: File, rank: import('../types').Rank) => {
-      if (!displaySnapshot || !myColor || isGameOver) return;
-      const piece = displaySnapshot.board[8 - rank]?.[FILES.indexOf(file)];
-      if (selectedSquare) {
-        const isLegalTarget = legalMoves.some(
-          (m) => m.file === file && m.rank === rank,
-        );
-        if (isLegalTarget) {
-          const isPromotion =
-            piece === null &&
-            selectedSquare.rank === (myColor === 'white' ? 7 : 2) &&
-            displaySnapshot.board[8 - selectedSquare.rank]?.[
-              FILES.indexOf(selectedSquare.file)
-            ]?.type === 'pawn';
-          if (isPromotion)
-            setPendingPromotion({ from: selectedSquare, to: { file, rank } });
-          else {
-            applyOptimisticMove(
-              selectedSquare.file,
-              selectedSquare.rank,
-              file,
-              rank,
-            );
-            movePiece(selectedSquare.file, selectedSquare.rank, file, rank);
-            const capturedPiece = displaySnapshot?.board[8 - rank]?.[FILES.indexOf(file)];
-            playSound(capturedPiece ? 'capture' : 'move');
-          }
-          setSelectedSquare(null);
-          return;
-        }
-        if (piece?.color === myColor) {
-          setSelectedSquare({ file, rank });
-          return;
-        }
-        setSelectedSquare(null);
-        return;
-      }
-      if (piece?.color === myColor) setSelectedSquare({ file, rank });
-    },
-    [
-      displaySnapshot,
-      myColor,
-      selectedSquare,
-      legalMoves,
-      isGameOver,
-      movePiece,
-      applyOptimisticMove,
-      playSound,
-    ],
-  );
+  const handleSquareClick = useSquareClick({
+    displaySnapshot,
+    myColor,
+    selectedSquare,
+    legalMoves,
+    isGameOver,
+    movePiece,
+    applyOptimisticMove,
+    playSound,
+    confirmMoves,
+    pendingMove,
+    setPendingMove,
+    setSelectedSquare,
+    setPendingPromotion,
+  });
 
   const handlePromotionSelect = useCallback(
     (pieceType: PieceType) => {
@@ -302,14 +249,8 @@ function ChessGameImpl({
     },
     [pendingPromotion, movePiece, applyOptimisticMove],
   );
-
   const handlePieceDrop = useCallback(
-    (
-      fromFile: File,
-      fromRank: import('../types').Rank,
-      toFile: File,
-      toRank: import('../types').Rank,
-    ) => {
+    (fromFile: File, fromRank: Rank, toFile: File, toRank: Rank) => {
       if (!displayMyTurn || isGameOver || !myColor || !displaySnapshot) return;
       const piece =
         displaySnapshot.board[8 - fromRank]?.[FILES.indexOf(fromFile)];
@@ -341,11 +282,9 @@ function ChessGameImpl({
       movePiece,
     ],
   );
-
   const onRematchClick = useCallback(() => {
     void handleRematch([], undefined);
   }, [handleRematch]);
-
   const a11yAnnouncement = useMemo(
     () =>
       getChessA11yAnnouncement(
@@ -357,12 +296,15 @@ function ChessGameImpl({
       ),
     [displaySnapshot, isGameOver, currentUserId, resolveDisplayNameBound, t],
   );
-
   const liveAlternatives = useMemo(() => {
     if (!liveEval || !('alternatives' in liveEval)) return null;
-    return (liveEval as Record<string, unknown>).alternatives as Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> | null;
+    return (liveEval as Record<string, unknown>).alternatives as Array<{
+      move: string;
+      cp: number | null;
+      mate: number | null;
+      pv: string[];
+    }> | null;
   }, [liveEval]);
-
   if (!room) return null;
   if (isLobby)
     return (
@@ -388,7 +330,6 @@ function ChessGameImpl({
         onShowRulesClose={onShowRulesClose}
       />
     );
-
   const board = (
     <ChessBoardPanel
       snapshot={displaySnapshot}
@@ -406,7 +347,10 @@ function ChessGameImpl({
       resolveName={resolveDisplayNameBound}
       t={t}
       onSquareClick={handleSquareClick}
-      onDeselectSquare={() => setSelectedSquare(null)}
+      onDeselectSquare={() => {
+        setSelectedSquare(null);
+        setPendingMove(null);
+      }}
       onPieceDrop={handlePieceDrop}
       onOfferDraw={offerDraw}
       onResign={resign}
@@ -417,10 +361,16 @@ function ChessGameImpl({
       liveEval={liveEval}
       liveEvalAnalyzing={liveEvalAnalyzing}
       onFlipBoard={toggleFlip}
-      onExportPgn={() => { if (displaySnapshot) downloadPGN(displaySnapshot); }}
-      onToggleConfirmMoves={() => setConfirmMoves((c) => !c)}
+      onExportPgn={() => {
+        if (displaySnapshot) downloadPGN(displaySnapshot);
+      }}
+      onToggleConfirmMoves={() => {
+        setConfirmMoves((c) => !c);
+        setPendingMove(null);
+      }}
       confirmMoves={confirmMoves}
       moveCandidates={liveAlternatives}
+      pendingMove={pendingMove}
     />
   );
   const themeVariant =
@@ -430,36 +380,28 @@ function ChessGameImpl({
     'cyberpunk';
 
   const modals = (
-    <>
-      <ChessGameResultModal
-        isOpen={showResultModal}
-        result={sharedResult}
-        onClose={dismiss}
-        onRematch={result ? onRematchClick : undefined}
-        rematchLoading={rematchLoading}
-        t={t}
-        messages={resultMessages}
-        snapshot={displaySnapshot}
-        myColor={myColor}
-        isSpectator={isSpectator}
-        theme={themeVariant}
-      />
-      <RematchInvitationModal
-        isOpen={!!invitation}
-        senderName={invitation?.hostName || ''}
-        message={invitation?.message}
-        onAccept={handleAcceptInvitation}
-        onDecline={handleDeclineInvitation}
-        t={t}
-      />
-      <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
-      <PromotionModal
-        isOpen={!!pendingPromotion}
-        color={myColor ?? 'white'}
-        onSelect={handlePromotionSelect}
-        onCancel={() => setPendingPromotion(null)}
-      />
-    </>
+    <ChessGameModals
+      showResultModal={showResultModal}
+      sharedResult={sharedResult}
+      dismiss={dismiss}
+      onRematchClick={result ? onRematchClick : undefined}
+      rematchLoading={rematchLoading}
+      t={t}
+      resultMessages={resultMessages}
+      displaySnapshot={displaySnapshot}
+      myColor={myColor}
+      isSpectator={isSpectator}
+      themeVariant={themeVariant}
+      invitation={invitation}
+      handleAcceptInvitation={handleAcceptInvitation}
+      handleDeclineInvitation={handleDeclineInvitation}
+      showRulesOpen={showRulesOpen}
+      onShowRulesClose={onShowRulesClose}
+      pendingPromotion={pendingPromotion}
+      handlePromotionSelect={handlePromotionSelect}
+      setPendingPromotion={() => setPendingPromotion(null)}
+      myColorForPromo={myColor ?? 'white'}
+    />
   );
 
   return (

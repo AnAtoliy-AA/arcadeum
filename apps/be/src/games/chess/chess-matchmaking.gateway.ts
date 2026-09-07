@@ -8,10 +8,14 @@ import {
 } from '@nestjs/websockets';
 import type { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { corsOriginMatcher } from '../../common/utils/cors.util';
+import { verifySocketJwt } from '../../common/utils/socket-jwt.util';
 import { ChessMatchmakingService } from './chess-matchmaking.service';
 
 @WebSocketGateway({
-  cors: { origin: '*' },
+  cors: { origin: corsOriginMatcher },
   namespace: '/chess-matchmaking',
 })
 export class ChessMatchmakingGateway implements OnGatewayDisconnect {
@@ -23,7 +27,26 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
   private readonly userSockets = new Map<string, string>();
   private readonly socketUsers = new Map<string, string>();
 
-  constructor(private readonly matchmakingService: ChessMatchmakingService) {}
+  constructor(
+    private readonly matchmakingService: ChessMatchmakingService,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
+  ) {}
+
+  async handleConnection(client: Socket): Promise<void> {
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'ChessMatchmaking',
+    );
+    if (!authUserId) {
+      client.disconnect();
+      return;
+    }
+    (client.data as Record<string, unknown>).userId = authUserId;
+  }
 
   handleDisconnect(client: Socket) {
     const userId = this.socketUsers.get(client.id);
@@ -37,9 +60,16 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
   async handleJoin(
     @ConnectedSocket() client: Socket,
     @MessageBody()
-    data: { userId: string; rating: number; timeControlType: string },
+    data: { rating: number; timeControlType: string },
   ) {
-    const { userId, rating, timeControlType } = data;
+    const userId = (client.data as Record<string, unknown>).userId as
+      string | undefined;
+    if (!userId) {
+      client.emit('chess.matchmaking.error', { error: 'Unauthorized' });
+      return;
+    }
+
+    const { rating, timeControlType } = data;
 
     this.userSockets.set(userId, client.id);
     this.socketUsers.set(client.id, userId);
@@ -61,19 +91,25 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
   @SubscribeMessage('chess.matchmaking.leave')
   async handleLeave(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { userId: string; timeControlType: string },
+    @MessageBody() data: { timeControlType: string },
   ) {
-    await this.matchmakingService.leaveQueue(data.userId, data.timeControlType);
+    const userId = (client.data as Record<string, unknown>).userId as
+      string | undefined;
+    if (!userId) return;
+    await this.matchmakingService.leaveQueue(userId, data.timeControlType);
     client.emit('chess.matchmaking.left');
   }
 
   @SubscribeMessage('chess.matchmaking.status')
   async handleStatus(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { userId: string; timeControlType: string },
+    @MessageBody() data: { timeControlType: string },
   ) {
+    const userId = (client.data as Record<string, unknown>).userId as
+      string | undefined;
+    if (!userId) return;
     const position = await this.matchmakingService.getQueuePosition(
-      data.userId,
+      userId,
       data.timeControlType,
     );
     const queueSize = await this.matchmakingService.getQueueSize(

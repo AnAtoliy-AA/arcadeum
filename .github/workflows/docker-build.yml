@@ -79,7 +79,7 @@ jobs:
           cache-to: type=gha,scope=worker,mode=max
 
       - name: Run Trivy vulnerability scanner (BE)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           format: 'sarif'
@@ -87,7 +87,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Run Trivy vulnerability scanner (Worker)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}:latest
           format: 'sarif'

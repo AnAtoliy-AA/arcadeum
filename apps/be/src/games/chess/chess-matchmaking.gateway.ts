@@ -34,12 +34,18 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
   ) {}
 
   async handleConnection(client: Socket): Promise<void> {
-    const authUserId = await verifySocketJwt(client, this.jwt, this.config, this.logger, 'ChessMatchmaking');
+    const authUserId = await verifySocketJwt(
+      client,
+      this.jwt,
+      this.config,
+      this.logger,
+      'ChessMatchmaking',
+    );
     if (!authUserId) {
       client.disconnect();
       return;
     }
-    client.data.userId = authUserId;
+    (client.data as Record<string, unknown>).userId = authUserId;
   }
 
   handleDisconnect(client: Socket) {
@@ -56,7 +62,8 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
     @MessageBody()
     data: { rating: number; timeControlType: string },
   ) {
-    const userId = client.data.userId as string | undefined;
+    const userId = (client.data as Record<string, unknown>).userId as
+      string | undefined;
     if (!userId) {
       client.emit('chess.matchmaking.error', { error: 'Unauthorized' });
       return;
@@ -86,7 +93,8 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { timeControlType: string },
   ) {
-    const userId = client.data.userId as string | undefined;
+    const userId = (client.data as Record<string, unknown>).userId as
+      string | undefined;
     if (!userId) return;
     await this.matchmakingService.leaveQueue(userId, data.timeControlType);
     client.emit('chess.matchmaking.left');
@@ -97,7 +105,8 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { timeControlType: string },
   ) {
-    const userId = client.data.userId as string | undefined;
+    const userId = (client.data as Record<string, unknown>).userId as
+      string | undefined;
     if (!userId) return;
     const position = await this.matchmakingService.getQueuePosition(
       userId,

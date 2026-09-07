@@ -19,6 +19,7 @@ import { analyzePositionWithStockfish } from '@/features/analysis/lib/stockfish-
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { AnalysisBoardGrid } from './AnalysisBoardGrid';
 import { AnalysisSidebar } from './AnalysisSidebar';
+import { OpeningExplorer } from '@/features/analysis/ui/OpeningExplorer';
 
 const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -397,6 +398,13 @@ export function AnalysisBoard() {
         }}
         fenOutput={state ? boardToFen(state) : ''}
       />
+
+      {state && (
+        <div className="w-full max-w-[1100px] mx-auto">
+          <OpeningExplorer fen={boardToFen(state)} />
+        </div>
+      )}
+
       {pendingPromotion && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"

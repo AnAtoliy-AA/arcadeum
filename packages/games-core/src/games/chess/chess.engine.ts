@@ -32,6 +32,20 @@ import { getLegalMoves, simulateMove } from './chess.move-generator';
 import { isInCheck } from './chess.attacks';
 import { updateCastlingRights } from './chess.castling';
 import { toFen } from './chess-fen';
+import { checkKingOfTheHillWin } from './chess-variants/king-of-the-hill';
+import {
+  createThreeCheckState,
+  recordCheck,
+  checkThreeCheckWin,
+  type ThreeCheckState,
+} from './chess-variants/three-check';
+import { applyExplosion, isKingCaptured } from './chess-variants/atomic';
+import {
+  createCrazyhouseState,
+  recordCapture,
+  canDrop,
+  type CrazyhouseState,
+} from './chess-variants/crazyhouse';
 
 const ACTION = {
   MOVE: 'move',
@@ -109,7 +123,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
             return board;
           })()
         : parseFen(INITIAL_BOARD_FEN);
-    return {
+    const baseState: ChessState = {
       variant,
       timeControl,
       botDifficulty,
@@ -155,6 +169,14 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         'white',
       ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion })),
     };
+
+    if (variant === 'three_check') {
+      return createThreeCheckState(baseState);
+    }
+    if (variant === 'crazyhouse') {
+      return createCrazyhouseState(baseState);
+    }
+    return baseState;
   }
 
   validateAction(
@@ -453,6 +475,85 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         'isDrawByRepetition',
         'Draw by threefold repetition.',
       );
+    }
+
+    // --- Variant-specific win conditions ---
+
+    // King of the Hill: king reaching center squares wins immediately
+    if (newState.variant === 'king_of_the_hill' && !newState.winnerColor) {
+      const kothWinner = checkKingOfTheHillWin(newState);
+      if (kothWinner) {
+        newState.winnerColor = kothWinner;
+        newState.logs.push(
+          this.createLogEntry(
+            'system',
+            `${kothWinner} wins by King of the Hill!`,
+          ),
+        );
+      }
+    }
+
+    // Three-Check: track checks and declare winner at 3 checks
+    if (newState.variant === 'three_check' && !newState.winnerColor) {
+      const tcState = newState as ThreeCheckState;
+      if (!tcState.checkCount) {
+        tcState.checkCount = { white: 0, black: 0 };
+      }
+      if (opponentInCheck) {
+        const updated = recordCheck(tcState, newState.currentTurnColor);
+        tcState.checkCount = updated.checkCount;
+        const threeCheckWinner = checkThreeCheckWin(tcState);
+        if (threeCheckWinner) {
+          newState.winnerColor = threeCheckWinner;
+          newState.logs.push(
+            this.createLogEntry(
+              'system',
+              `${threeCheckWinner} wins by Three-Check!`,
+            ),
+          );
+        }
+      }
+    }
+
+    // Atomic: explosion on capture, king captured = loss
+    if (newState.variant === 'atomic' && !newState.winnerColor) {
+      if (move.captured) {
+        const capturedPos = move.to;
+        const exploded = applyExplosion(newState, capturedPos);
+        newState.board = exploded.board;
+
+        // Check if either king was captured in the explosion
+        if (isKingCaptured(newState, 'white')) {
+          newState.winnerColor = 'black';
+          newState.logs.push(
+            this.createLogEntry(
+              'system',
+              'Black wins! White king was destroyed in the explosion!',
+            ),
+          );
+        } else if (isKingCaptured(newState, 'black')) {
+          newState.winnerColor = 'white';
+          newState.logs.push(
+            this.createLogEntry(
+              'system',
+              'White wins! Black king was destroyed in the explosion!',
+            ),
+          );
+        }
+      }
+    }
+
+    // Crazyhouse: track captured pieces for drop rights
+    if (newState.variant === 'crazyhouse') {
+      const czState = newState as CrazyhouseState;
+      if (!czState.capturedPieces) {
+        czState.capturedPieces = { white: [], black: [] };
+      }
+      if (move.captured) {
+        const capturingColor = state.currentTurnColor;
+        const updated = recordCapture(czState, move.captured, capturingColor);
+        czState.capturedPieces = updated.capturedPieces;
+      }
     }
 
     newState.legalMovesForCurrentPlayer = getLegalMoves(

@@ -65,7 +65,13 @@ interface ChessBoardPanelProps {
   onExportPgn?: () => void;
   onToggleConfirmMoves?: () => void;
   confirmMoves?: boolean;
-  moveCandidates?: Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> | null;
+  moveCandidates?: Array<{
+    move: string;
+    cp: number | null;
+    mate: number | null;
+    pv: string[];
+  }> | null;
+  pendingMove?: { from: BoardPosition; to: BoardPosition } | null;
 }
 
 function ChessBoardPanelImpl({
@@ -99,9 +105,12 @@ function ChessBoardPanelImpl({
   onToggleConfirmMoves,
   confirmMoves,
   moveCandidates,
+  pendingMove,
 }: ChessBoardPanelProps) {
   const [hoveredMoveIdx, setHoveredMoveIdx] = useState<number | null>(null);
-  const [spectatorPerspective, setSpectatorPerspective] = useState<'white' | 'black'>('white');
+  const [spectatorPerspective, setSpectatorPerspective] = useState<
+    'white' | 'black'
+  >('white');
   const handleMoveHover = useCallback((idx: number | null) => {
     setHoveredMoveIdx(idx);
   }, []);
@@ -162,6 +171,7 @@ function ChessBoardPanelImpl({
           hintMove={
             coach.hint ? { from: coach.hint.from, to: coach.hint.to } : null
           }
+          pendingMove={pendingMove}
           isCheck={snapshot.isCheck}
           kingPosition={kingPosition}
           ariaLabel={t('games.chess_v1.status.boardLabel', {
@@ -210,12 +220,23 @@ function ChessBoardPanelImpl({
 
         {moveCandidates && moveCandidates.length > 0 && (
           <div className="bg-[var(--glassBg)] border border-[var(--glassBorder)] rounded-lg p-2">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)] mb-1">Move Candidates</div>
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)] mb-1">
+              Move Candidates
+            </div>
             {moveCandidates.map((alt, i) => (
-              <div key={i} className="flex items-center justify-between text-xs py-0.5">
-                <span className="font-mono text-[var(--color)]">{alt.move}</span>
+              <div
+                key={i}
+                className="flex items-center justify-between text-xs py-0.5"
+              >
+                <span className="font-mono text-[var(--color)]">
+                  {alt.move}
+                </span>
                 <span className="text-[var(--textSecondary)]">
-                  {alt.mate !== null ? `M${alt.mate}` : alt.cp !== null ? `${(alt.cp / 100).toFixed(1)}` : '—'}
+                  {alt.mate !== null
+                    ? `M${alt.mate}`
+                    : alt.cp !== null
+                      ? `${(alt.cp / 100).toFixed(1)}`
+                      : '—'}
                 </span>
               </div>
             ))}
@@ -253,9 +274,7 @@ function ChessBoardPanelImpl({
           )}
         </div>
 
-        {currentFen && (
-          <OpeningExplorer fen={currentFen} />
-        )}
+        {currentFen && <OpeningExplorer fen={currentFen} />}
 
         <MoveList state={snapshot} t={t} onMoveHover={handleMoveHover} />
 

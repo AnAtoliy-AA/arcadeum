@@ -99,6 +99,8 @@ export interface ChessState extends BaseGameState {
   clocks: Record<PieceColor, PlayerClock> | null;
   positionHistory: string[];
   legalMovesForCurrentPlayer: LegalMove[];
+  checkCount?: { white: number; black: number };
+  capturedPieces?: { white: PieceType[]; black: PieceType[] };
 }
 
 export interface MovePayload {

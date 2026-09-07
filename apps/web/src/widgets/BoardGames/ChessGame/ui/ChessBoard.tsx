@@ -32,6 +32,7 @@ interface ChessBoardProps {
   legalMoves: BoardPosition[];
   lastMove: { from: BoardPosition; to: BoardPosition } | null;
   hintMove?: { from: BoardPosition; to: BoardPosition } | null;
+  pendingMove?: { from: BoardPosition; to: BoardPosition } | null;
   isCheck: boolean;
   kingPosition: BoardPosition | null;
   ariaLabel?: string;
@@ -58,6 +59,7 @@ function ChessBoardImpl({
   legalMoves,
   lastMove,
   hintMove = null,
+  pendingMove = null,
   isCheck,
   kingPosition,
   ariaLabel,
@@ -132,6 +134,14 @@ function ChessBoardImpl({
     ]);
   }, [hintMove]);
 
+  const pendingMoveSet = useMemo(() => {
+    if (!pendingMove) return new Set<string>();
+    return new Set([
+      `${pendingMove.from.file}-${pendingMove.from.rank}`,
+      `${pendingMove.to.file}-${pendingMove.to.rank}`,
+    ]);
+  }, [pendingMove]);
+
   const isSelected = useCallback(
     (file: File, rank: Rank) =>
       selectedSquare?.file === file && selectedSquare?.rank === rank,
@@ -151,6 +161,11 @@ function ChessBoardImpl({
   const isHintMove = useCallback(
     (file: File, rank: Rank) => hintMoveSet.has(`${file}-${rank}`),
     [hintMoveSet],
+  );
+
+  const isPendingMove = useCallback(
+    (file: File, rank: Rank) => pendingMoveSet.has(`${file}-${rank}`),
+    [pendingMoveSet],
   );
 
   const isKingInCheck = useCallback(
@@ -265,6 +280,7 @@ function ChessBoardImpl({
                 const legalTarget = isLegalTarget(file, rank);
                 const lastMoved = isLastMove(file, rank);
                 const hintMoved = isHintMove(file, rank);
+                const pendingTarget = isPendingMove(file, rank);
                 const kingCheck = isKingInCheck(file, rank);
                 const hovered = hoveredSquare === `${file}-${rank}`;
                 const isMyPiece = piece?.color === myColor;
@@ -285,6 +301,7 @@ function ChessBoardImpl({
                     legalTarget={legalTarget}
                     lastMoved={lastMoved}
                     hintMoved={hintMoved}
+                    pendingTarget={pendingTarget}
                     kingCheck={kingCheck}
                     hovered={hovered}
                     isDragOver={isDragOver}

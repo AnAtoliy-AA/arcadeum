@@ -13,6 +13,7 @@ export interface ChessCellProps {
   legalTarget: boolean;
   lastMoved: boolean;
   hintMoved: boolean;
+  pendingTarget: boolean;
   kingCheck: boolean;
   hovered: boolean;
   isDragOver: boolean;
@@ -43,6 +44,7 @@ function ChessCell({
   legalTarget,
   lastMoved,
   hintMoved,
+  pendingTarget,
   kingCheck,
   hovered,
   isDragOver,
@@ -65,6 +67,7 @@ function ChessCell({
   let bgColor = isLight ? theme.lightSquare : theme.darkSquare;
   if (selected) bgColor = theme.selectedSquare;
   else if (kingCheck) bgColor = theme.checkSquare;
+  else if (pendingTarget) bgColor = 'rgba(251, 191, 36, 0.45)';
   else if (hintMoved) bgColor = 'rgba(16, 185, 129, 0.38)';
   else if (lastMoved) bgColor = theme.lastMoveSquare;
 

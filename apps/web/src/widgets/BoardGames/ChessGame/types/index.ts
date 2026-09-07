@@ -67,11 +67,18 @@ export interface ChessPlayer {
 }
 
 export interface ChessOptions {
-  variant: 'standard' | 'chess960';
+  variant:
+    | 'standard'
+    | 'chess960'
+    | 'king_of_the_hill'
+    | 'three_check'
+    | 'crazyhouse'
+    | 'atomic';
   timeControl: TimeControl | null;
 }
 
-export type TimeControlType = 'bullet' | 'blitz' | 'rapid' | 'classical' | 'daily';
+export type TimeControlType =
+  'bullet' | 'blitz' | 'rapid' | 'classical' | 'daily';
 export type TimeIncrement = 0 | 1 | 3 | 5 | 10 | 15 | 30;
 
 export interface TimeControl {
@@ -112,7 +119,13 @@ export interface LegalMove {
 
 export interface ChessClientState {
   phase: ChessPhase;
-  variant: 'standard' | 'chess960';
+  variant:
+    | 'standard'
+    | 'chess960'
+    | 'king_of_the_hill'
+    | 'three_check'
+    | 'crazyhouse'
+    | 'atomic';
   timeControl: TimeControl | null;
   board: Board;
   currentTurnColor: PieceColor;
@@ -163,5 +176,12 @@ export const TIME_CONTROLS: TimeControl[] = [
   { type: 'daily', initialSeconds: 0, incrementSeconds: 0, daysPerMove: 14 },
 ];
 
-export const CHESS_THEME_IDS = ['standard', 'chess960'] as const;
+export const CHESS_THEME_IDS = [
+  'standard',
+  'chess960',
+  'king_of_the_hill',
+  'three_check',
+  'crazyhouse',
+  'atomic',
+] as const;
 export type ChessTheme = (typeof CHESS_THEME_IDS)[number];

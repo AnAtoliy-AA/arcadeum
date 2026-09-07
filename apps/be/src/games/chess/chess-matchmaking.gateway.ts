@@ -9,6 +9,7 @@ import {
 import type { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { corsOriginMatcher } from '../../common/utils/cors.util';
 import { verifySocketJwt } from '../../common/utils/socket-jwt.util';
 import { ChessMatchmakingService } from './chess-matchmaking.service';
@@ -29,10 +30,11 @@ export class ChessMatchmakingGateway implements OnGatewayDisconnect {
   constructor(
     private readonly matchmakingService: ChessMatchmakingService,
     private readonly jwt: JwtService,
+    private readonly config: ConfigService,
   ) {}
 
   async handleConnection(client: Socket): Promise<void> {
-    const authUserId = await verifySocketJwt(client, this.jwt, this.logger);
+    const authUserId = await verifySocketJwt(client, this.jwt, this.config, this.logger, 'ChessMatchmaking');
     if (!authUserId) {
       client.disconnect();
       return;

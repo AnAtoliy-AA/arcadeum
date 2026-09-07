@@ -118,7 +118,7 @@ export class ChatGateway {
   ): Promise<void> {
     const authUserId = requireAuthUserId(client);
 
-    if (!this.rateLimiter.check(client.id)) {
+    if (!this.rateLimiter.isAllowed(client.id)) {
       client.emit('error', { message: 'Rate limit exceeded' });
       return;
     }

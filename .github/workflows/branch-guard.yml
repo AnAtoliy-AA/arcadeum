@@ -20,9 +20,6 @@ on:
         required: false
         default: ''
 
-permissions:
-  contents: read
-
 jobs:
   check-pr-title:
     # NOTE: no `name:` here on purpose. The required status check configured in

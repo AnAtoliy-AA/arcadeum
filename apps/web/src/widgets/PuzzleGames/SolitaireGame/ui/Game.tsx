@@ -1,14 +1,15 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import {
   SoloGameContainer,
-  StatCard,
   formatDuration,
+  useSoloTimer,
+  useSoloPause,
+  SoloActionButton,
 } from '@/features/games/ui/SoloGameContainer';
 import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { SolitaireThemeProvider } from '../lib/SolitaireThemeContext';
@@ -39,6 +40,8 @@ function SolitaireTable() {
 
   const [selection, setSelection] = useState<MoveSource | null>(null);
   const isRunning = finishedAt === null;
+  const pause = useSoloPause(isRunning, finishedAt);
+  const timer = useSoloTimer(isRunning, startedAt, pause.isPaused);
 
   const stats: GameResultStats | null = useMemo(() => {
     if (!finished) return null;
@@ -49,47 +52,46 @@ function SolitaireTable() {
     };
   }, [finished]);
 
-  const hud = (
-    <div className="grid w-full grid-cols-3 gap-2 sm:gap-3">
-      <StatCard
-        label={t('games.solitaire_v1.hud.score')}
-        value={game.score}
-        icon="🎯"
-      />
-      <StatCard
-        label={t('games.solitaire_v1.hud.moves')}
-        value={game.moves}
-        icon="🔄"
-      />
-      <StatCard
-        label={t('games.solitaire_v1.hud.time')}
-        value={formatDuration(finished?.durationMs ?? 0)}
-        icon="⏱️"
-      />
-    </div>
-  );
+  const statsItems = [
+    {
+      id: 'score',
+      label: t('games.solitaire_v1.hud.score'),
+      value: game.score,
+      icon: '🎯',
+    },
+    {
+      id: 'moves',
+      label: t('games.solitaire_v1.hud.moves'),
+      value: game.moves,
+      icon: '🔄',
+    },
+    {
+      id: 'time',
+      label: t('games.solitaire_v1.hud.time'),
+      value: finished ? formatDuration(finished.durationMs) : timer.formatted,
+      icon: '⏱️',
+      dataTestId: 'solitaire-timer',
+    },
+  ];
 
   const actions = (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1 sm:gap-1.5">
       {finished !== null && (
-        <Button
-          variant="secondary"
-          size="sm"
-          data-testid="solitaire-show-results-button"
-          className="border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300 hover:bg-amber-500/25"
+        <SoloActionButton
+          variant="results"
+          dataTestId="solitaire-show-results-button"
+          icon="🏆"
         >
-          🏆 {t('games.table.analytics.view') || 'Results'}
-        </Button>
+          {t('games.table.analytics.view') || 'Results'}
+        </SoloActionButton>
       )}
-      <Button
-        variant="secondary"
-        size="sm"
+      <SoloActionButton
         onClick={newGame}
-        data-testid="solitaire-new-game-button"
-        className="whitespace-nowrap px-3.5 font-semibold"
+        dataTestId="solitaire-new-game-button"
+        icon="🔄"
       >
         {t('games.solitaire_v1.hud.newGame')}
-      </Button>
+      </SoloActionButton>
     </div>
   );
 
@@ -99,13 +101,14 @@ function SolitaireTable() {
       difficulty="default"
       sortBy="score"
       order="desc"
-      layout="stacked"
-      maxWidthClassName="max-w-5xl"
+      maxWidthClassName="max-w-5xl xl:max-w-6xl 2xl:max-w-7xl"
+      leaderboardDefaultExpanded={true}
+      pause={pause}
       isRunning={isRunning}
       startedAt={startedAt}
       finishedAt={finishedAt}
       onNewGame={newGame}
-      hud={hud}
+      statsItems={statsItems}
       actions={actions}
       loadingMessage="games.solitaire_v1.board.loading"
       modal={{
@@ -131,9 +134,9 @@ function SolitaireTable() {
       <SolitaireBoard
         game={game}
         selection={selection}
-        onSelect={setSelection}
-        onDraw={draw}
-        onMove={move}
+        onSelect={pause.isPaused ? () => undefined : setSelection}
+        onDraw={pause.isPaused ? () => undefined : draw}
+        onMove={pause.isPaused ? () => undefined : move}
       />
     </SoloGameContainer>
   );

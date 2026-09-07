@@ -43,3 +43,12 @@ export {
   hashState,
   scoreMove,
 } from './chess-bot-utils';
+export type { BotPersonality, BotStyle, TimeManagement } from './chess-bot-personalities';
+export {
+  BOT_PERSONALITIES,
+  getBotPersonality,
+  getBotPersonalityByDifficulty,
+  getBotPersonalityIds,
+} from './chess-bot-personalities';
+export { getOpeningMove } from './chess-bot-openings';
+export { toFen } from './chess-fen';

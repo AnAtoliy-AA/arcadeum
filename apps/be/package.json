@@ -1,6 +1,6 @@
 {
   "name": "be",
-  "version": "1.28.10",
+  "version": "1.28.35",
   "description": "",
   "author": "",
   "private": true,
@@ -17,7 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage --forceExit --maxWorkers=2",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config ./test/jest-e2e.json --forceExit",
     "prune:test-data": "npx ts-node scripts/prune-test-data.ts"
   },
   "dependencies": {
@@ -52,7 +52,7 @@
     "helmet": "^8.3.0",
     "ioredis": "^5.11.1",
     "mongoose": "^8.24.4",
-    "nodemailer": "^9.0.6",
+    "nodemailer": "^9.1.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
@@ -61,7 +61,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.6",
+    "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^9.39.5",
     "@nestjs/cli": "^11.0.24",
     "@nestjs/schematics": "^11.1.0",

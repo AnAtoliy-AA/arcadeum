@@ -37,14 +37,16 @@ export function useFullscreen(
 
   useEffect(() => {
     const node = containerRef.current;
-    if (!node) return;
     if (isFullscreen) {
-      node.classList.add('is-fullscreen');
+      node?.classList.add('is-fullscreen');
+      document.body.classList.add('overflow-hidden');
     } else {
-      node.classList.remove('is-fullscreen');
+      node?.classList.remove('is-fullscreen');
+      document.body.classList.remove('overflow-hidden');
     }
     return () => {
-      node.classList.remove('is-fullscreen');
+      node?.classList.remove('is-fullscreen');
+      document.body.classList.remove('overflow-hidden');
     };
   }, [containerRef, isFullscreen]);
 

@@ -73,5 +73,32 @@ export function useChessActions(options: UseChessActionsOptions) {
     gameSocket.emit('chess.session.draw_accept', { roomId, userId });
   }, [roomId, userId, onActionStart]);
 
-  return { startSession, movePiece, resign, offerDraw, acceptDraw };
+  const offerTakeback = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('takeback_offer');
+    gameSocket.emit('chess.session.takeback_offer', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  const acceptTakeback = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('takeback_accept');
+    gameSocket.emit('chess.session.takeback_accept', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  const declineTakeback = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('takeback_decline');
+    gameSocket.emit('chess.session.takeback_decline', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  return {
+    startSession,
+    movePiece,
+    resign,
+    offerDraw,
+    acceptDraw,
+    offerTakeback,
+    acceptTakeback,
+    declineTakeback,
+  };
 }

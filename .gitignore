@@ -54,3 +54,4 @@ apps/web/public/music/*.mp3
 output/
 raw_captures/
 .env.monitoring
+apps/be/bin/stockfish

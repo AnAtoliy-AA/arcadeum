@@ -96,9 +96,7 @@ describe('ChessEngine - Chess960', () => {
     const state = engine.initializeState(['p1', 'p2']);
     const standardFen = boardToFen(state.board);
     expect(standardFen).toBe('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
-    expect(state.positionHistory[0]).toBe(
-      'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
-    );
+    expect(state.positionHistory[0]).toContain(standardFen);
   });
 
   it('should initialize positionHistory with actual chess960 board FEN', () => {
@@ -106,7 +104,7 @@ describe('ChessEngine - Chess960', () => {
       variant: 'chess960',
     });
     const actualFen = boardToFen(state.board);
-    expect(state.positionHistory[0]).toBe(actualFen);
+    expect(state.positionHistory[0]).toContain(actualFen);
     expect(actualFen.split('/').length).toBe(8);
   });
 

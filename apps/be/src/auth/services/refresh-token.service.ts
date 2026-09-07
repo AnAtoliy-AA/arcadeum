@@ -43,13 +43,16 @@ export class RefreshTokenService {
   async issueRefreshToken(
     userId: string,
     parentId: string | null,
+    rememberMe: boolean = false,
   ): Promise<IssuedRefreshToken> {
     const raw = crypto.randomUUID() + '.' + crypto.randomUUID();
     const tokenId = this.extractRefreshTokenId(raw);
     const hash = await bcrypt.hash(raw, BCRYPT_SALT_ROUNDS);
-    const ttlDays = Number(
+    const baseTtlDays = Number(
       this.config.get<string>('REFRESH_TOKEN_TTL_DAYS') || '7',
     );
+    // Extend TTL to 30 days when rememberMe is true
+    const ttlDays = rememberMe ? 30 : baseTtlDays;
     const expiresAt = new Date(Date.now() + ttlDays * 24 * 60 * 60 * 1000);
     const rotationParentId = parentId || 'root';
     const doc = await this.refreshModel.create({

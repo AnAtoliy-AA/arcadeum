@@ -53,8 +53,9 @@ test.describe('Locale JSON-LD — structured data per page', () => {
     expect(softwareApp?.genre).toEqual(
       expect.arrayContaining(['Board Game', 'Card Game', 'Mini Game']),
     );
-    const faqPage = findByType(blobs, 'FAQPage');
-    expect(faqPage).toBeDefined();
+    // FAQPage is restricted to government/healthcare authority sites (Aug 2023)
+    // — home page must not emit it.
+    expect(findByType(blobs, 'FAQPage')).toBeUndefined();
   });
 
   test('games page emits CollectionPage with French inLanguage', async ({

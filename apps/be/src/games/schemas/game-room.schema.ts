@@ -98,6 +98,9 @@ export class GameRoom extends Document {
   @Prop({ type: Boolean, default: false })
   rematchPending?: boolean;
 
+  @Prop({ type: String, trim: true, index: true, default: null })
+  tournamentId?: string | null;
+
   @Prop({
     type: [
       {

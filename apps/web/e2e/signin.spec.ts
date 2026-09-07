@@ -29,11 +29,11 @@ test.describe('Sign-in redesign (ARC-690)', () => {
     await expect(page.getByTestId('auth-username-input')).toBeVisible();
   });
 
-  test('Apple and Discord OAuth buttons are disabled placeholders', async ({
+  test('Apple and Discord OAuth buttons are enabled', async ({
     page,
   }) => {
-    await expect(page.getByTestId('auth-oauth-apple')).toBeDisabled();
-    await expect(page.getByTestId('auth-oauth-discord')).toBeDisabled();
+    await expect(page.getByTestId('auth-oauth-apple')).toBeEnabled();
+    await expect(page.getByTestId('auth-oauth-discord')).toBeEnabled();
     await expect(page.getByTestId('auth-oauth-google')).toBeEnabled();
   });
 

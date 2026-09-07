@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  forwardRef,
+  Optional,
+} from '@nestjs/common';
 import { ChessService } from '../../chess/chess.service';
 import type { ChessService as IChessService } from '../../chess/chess.service';
 import type {
@@ -7,7 +13,12 @@ import type {
 } from '@arcadeum/games-core/games/chess/chess.types';
 import type { GameSessionSummary } from '../../sessions/game-sessions.service';
 import { ChessBot } from '@arcadeum/games-core/games/chess/chess-bot';
+import {
+  getBotPersonality,
+  type BotPersonality,
+} from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 import { getAiMoveDelayMs, isAiVsAiSession } from '../../common/ai-vs-ai';
+import { ChessStockfishService } from '../../chess/engine/chess-stockfish.service';
 
 export interface ChessBotMovePayload {
   fromFile: string;
@@ -32,6 +43,7 @@ export class ChessBotService extends ChessBot {
   constructor(
     @Inject(forwardRef(() => ChessService))
     private readonly chessService: IChessService,
+    @Optional() private readonly stockfishService: ChessStockfishService | null,
   ) {
     super();
   }
@@ -49,25 +61,71 @@ export class ChessBotService extends ChessBot {
     return userId.startsWith('bot-');
   }
 
+  private computeMoveDelay(
+    personality: BotPersonality | null,
+    startTime: number,
+  ): number {
+    const elapsed = Date.now() - startTime;
+    if (!personality) {
+      return Math.max(300, Math.min(800, 1500 - elapsed));
+    }
+    switch (personality.timeManagement) {
+      case 'blitz':
+        return Math.max(200, Math.min(500, 800 - elapsed));
+      case 'thinker':
+        return Math.max(500, Math.min(2000, 3000 - elapsed));
+      case 'steady':
+      default:
+        return Math.max(300, Math.min(1000, 1500 - elapsed));
+    }
+  }
+
   async checkAndPlay(session: GameSessionSummary): Promise<void> {
-    if (session.status !== 'active') return;
-    const state = session.state as unknown as ChessState | undefined;
-    if (!state) return;
+    // Re-read session from DB to get the latest state (turn may have changed)
+    const freshSession = await this.chessService.findSessionByRoom(
+      session.roomId,
+    );
+    if (!freshSession) return;
+
+    if (freshSession.status !== 'active') {
+      this.logger.debug(
+        `[Bot] Session ${freshSession.roomId} not active, skipping`,
+      );
+      return;
+    }
+    const state = freshSession.state as unknown as ChessState | undefined;
+    if (!state) {
+      this.logger.debug(`[Bot] No state for ${freshSession.roomId}, skipping`);
+      return;
+    }
 
     const hasHuman = state.players.some((p) => !p.isBot);
-    if (!hasHuman && !isAiVsAiSession(session)) {
+    if (!hasHuman && !isAiVsAiSession(freshSession)) {
       this.logger.log(
-        `No humans in room ${session.roomId} — completing session`,
+        `No humans in room ${freshSession.roomId} — completing session`,
       );
-      await this.chessService.completeSession(session.id, session.roomId);
+      await this.chessService.completeSession(
+        freshSession.id,
+        freshSession.roomId,
+      );
       return;
     }
 
     const currentId = state.players.find(
       (p) => p.color === state.currentTurnColor,
     )?.playerId;
-    if (!currentId || !this.isBot(currentId)) return;
-    if (this.processing.has(session.roomId)) return;
+    if (!currentId || !this.isBot(currentId)) {
+      this.logger.debug(
+        `[Bot] Current player ${currentId} is not a bot in ${freshSession.roomId}`,
+      );
+      return;
+    }
+    if (this.processing.has(freshSession.roomId)) {
+      this.logger.debug(
+        `[Bot] Already processing ${freshSession.roomId}, skipping`,
+      );
+      return;
+    }
     this.processing.add(session.roomId);
 
     try {
@@ -77,20 +135,73 @@ export class ChessBotService extends ChessBot {
         0, 0, 0, 0, 0, 0, 0, 0,
       ]);
 
-      const timeBudget = this.computeTimeBudget(state);
+      const currentColor = state.currentTurnColor;
+      const options = (
+        session as unknown as { options?: Record<string, unknown> }
+      ).options;
+      let personalityId = state.botPersonality;
+      // AI vs AI: use per-color personalities if available
+      if (options?.aiVsAi) {
+        const perColorKey =
+          currentColor === 'white'
+            ? 'botPersonalityWhite'
+            : 'botPersonalityBlack';
+        personalityId = (options[perColorKey] as string) ?? personalityId;
+      }
+      const personality = personalityId
+        ? (getBotPersonality(personalityId) ?? null)
+        : null;
+      this.setPersonality(personality);
+
+      const isExpert = state.botDifficulty === 'expert';
+      let move: ChessMove | null = null;
       const startTime = Date.now();
-      const move = this.findBestMoveWithTimeBudget(
-        state,
-        timeBudget,
-        startTime,
-      );
+
+      if (isExpert && this.stockfishService?.isReady()) {
+        const { toFen } =
+          await import('@arcadeum/games-core/games/chess/chess-fen');
+        const fen = toFen(state);
+        const sfResult = await this.stockfishService.getBestMove(fen, 20, 5000);
+        if (sfResult.bestMove) {
+          const fromStr = sfResult.bestMove.slice(0, 2);
+          const toStr = sfResult.bestMove.slice(2, 4);
+          const promoChar = sfResult.bestMove.slice(4);
+          move = {
+            from: {
+              file: fromStr[0] as ChessMove['from']['file'],
+              rank: parseInt(fromStr[1]) as ChessMove['from']['rank'],
+            },
+            to: {
+              file: toStr[0] as ChessMove['to']['file'],
+              rank: parseInt(toStr[1]) as ChessMove['to']['rank'],
+            },
+            piece:
+              state.board[fromStr.charCodeAt(0) - 97]?.[
+                8 - parseInt(fromStr[1])
+              ]?.type ?? 'pawn',
+            promotion: promoChar || undefined,
+          } as unknown as ChessMove;
+          this.logger.log(
+            `[Bot] Stockfish best move for ${state.currentTurnColor}: ${sfResult.bestMove}`,
+          );
+        }
+      }
+
+      if (!move) {
+        const timeBudget = this.computeTimeBudget(state);
+        move = this.findBestMoveWithTimeBudget(state, timeBudget, startTime);
+      }
+
       if (!move) return;
       const delay =
         getAiMoveDelayMs(session) ??
-        Math.max(300, Math.min(800, 1500 - Date.now() + startTime));
+        this.computeMoveDelay(personality, startTime);
       await new Promise((r) => setTimeout(r, delay));
 
       if (this.moveFn) {
+        this.logger.log(
+          `[Bot] ${currentId} moving ${state.currentTurnColor} in ${session.roomId}: ${move.from.file}${move.from.rank}-${move.to.file}${move.to.rank}`,
+        );
         await this.moveFn(currentId, session.roomId, {
           fromFile: move.from.file,
           fromRank: move.from.rank,
@@ -98,6 +209,11 @@ export class ChessBotService extends ChessBot {
           toRank: move.to.rank,
           promotion: move.promotion ?? undefined,
         });
+        this.logger.log(
+          `[Bot] ${currentId} move completed in ${session.roomId}`,
+        );
+      } else {
+        this.logger.warn(`[Bot] moveFn not set for ${session.roomId}`);
       }
     } catch (err) {
       this.logger.error(`Bot move failed for room ${session.roomId}: ${err}`);

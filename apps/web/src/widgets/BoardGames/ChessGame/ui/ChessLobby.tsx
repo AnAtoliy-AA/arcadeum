@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/lib/useTranslation';
 import {
   type GameLobbyTheme,
@@ -17,6 +17,10 @@ import type { BotDifficulty } from '@/features/games/ui/DifficultySelector';
 import type { ChessTheme, TimeControl } from '../types';
 import { TIME_CONTROLS } from '../types';
 import { RulesModal } from './RulesModal';
+import { BotSelector, type BotPersonalityOption } from './BotSelector';
+import { PgnImportModal } from './PgnImportModal';
+import { MatchmakingButton } from './MatchmakingButton';
+import { BOT_PERSONALITIES } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 
 const LOBBY_THEME: GameLobbyTheme = {
   titleGradient: 'linear-gradient(90deg, var(--color) 0%, var(--primary) 100%)',
@@ -27,6 +31,10 @@ const LOBBY_THEME: GameLobbyTheme = {
 
 function formatTimeControl(tc: TimeControl | null): string {
   if (!tc) return 'No clock';
+  if (tc.type === 'daily') {
+    const days = tc.daysPerMove ?? 1;
+    return `${days}d`;
+  }
   const mins = Math.floor(tc.initialSeconds / 60);
   return tc.incrementSeconds > 0
     ? `${mins}+${tc.incrementSeconds}`
@@ -42,6 +50,7 @@ interface ChessLobbyProps {
     withBots?: boolean;
     botCount?: number;
     botDifficulty?: BotDifficulty;
+    botPersonality?: string;
   }) => void;
   onReorderPlayers?: (newOrder: string[]) => void;
   onLeaveRoom?: () => void;
@@ -68,6 +77,22 @@ export function ChessLobby({
 }: ChessLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const [selectedPersonality, setSelectedPersonality] = useState<string | null>(
+    null,
+  );
+  const [showPgnImport, setShowPgnImport] = useState(false);
+
+  const personalityOptions: BotPersonalityOption[] = useMemo(
+    () =>
+      BOT_PERSONALITIES.map((p) => ({
+        id: p.id,
+        name: p.name,
+        avatar: p.avatar,
+        rating: p.rating,
+        style: p.style,
+      })),
+    [],
+  );
 
   const options = useMemo(() => {
     const raw = (room.gameOptions ?? {}) as Partial<{
@@ -97,16 +122,19 @@ export function ChessLobby({
     },
   ];
 
+  const TIME_CONTROL_LABELS: Record<string, string> = {
+    bullet: t('games.chess_v1.lobby.bullet'),
+    blitz: t('games.chess_v1.lobby.blitz'),
+    rapid: t('games.chess_v1.lobby.rapid'),
+    daily: t('games.chess_v1.lobby.daily'),
+    classical: t('games.chess_v1.lobby.classical'),
+  };
+
   const timeControlOptions = [
     ...TIME_CONTROLS.map((tc) => ({
-      id: `tc-${tc.initialSeconds}-${tc.incrementSeconds}`,
+      id: `tc-${tc.initialSeconds}-${tc.incrementSeconds}-${tc.daysPerMove ?? 0}`,
       label: formatTimeControl(tc),
-      description:
-        tc.type === 'blitz'
-          ? t('games.chess_v1.lobby.blitz')
-          : tc.type === 'rapid'
-            ? t('games.chess_v1.lobby.rapid')
-            : t('games.chess_v1.lobby.classical'),
+      description: TIME_CONTROL_LABELS[tc.type] ?? tc.type,
     })),
     {
       id: 'no-clock',
@@ -117,18 +145,22 @@ export function ChessLobby({
 
   const getSelectedTimeControl = () => {
     if (options.timeControl === null) return 'no-clock';
-    return `tc-${options.timeControl.initialSeconds}-${options.timeControl.incrementSeconds}`;
+    return `tc-${options.timeControl.initialSeconds}-${options.timeControl.incrementSeconds}-${options.timeControl.daysPerMove ?? 0}`;
   };
 
   const handleTimeControlChange = (value: string) => {
     if (value === 'no-clock') {
       setOption({ timeControl: null });
     } else {
-      const [, initial, increment] = value.split('-');
+      const parts = value.split('-');
+      const initial = Number(parts[1]);
+      const increment = Number(parts[2]);
+      const daysPerMove = Number(parts[3]) || undefined;
       const tc = TIME_CONTROLS.find(
         (t) =>
-          t.initialSeconds === Number(initial) &&
-          t.incrementSeconds === Number(increment),
+          t.initialSeconds === initial &&
+          t.incrementSeconds === increment &&
+          (t.daysPerMove ?? 0) === (daysPerMove ?? 0),
       );
       if (tc) setOption({ timeControl: tc });
     }
@@ -164,6 +196,29 @@ export function ChessLobby({
           testIdPrefix="chess-time"
         />
       </LobbyOptionSection>
+
+      <LobbyOptionSection title={t('games.chess_v1.lobby.botPersonality')}>
+        <BotSelector
+          personalities={personalityOptions}
+          selectedId={selectedPersonality}
+          onSelect={setSelectedPersonality}
+          disabled={!isHost}
+        />
+      </LobbyOptionSection>
+
+      <button
+        type="button"
+        onClick={() => setShowPgnImport(true)}
+        className="w-full py-2 px-4 rounded-lg bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-[var(--textSecondary)] text-xs font-semibold cursor-pointer hover:text-[var(--color)] transition-colors"
+      >
+        {t('games.chess_v1.actions.importPgn')}
+      </button>
+
+      <MatchmakingButton
+        userId={userId}
+        rating={1200}
+        timeControlType={options.timeControl?.type ?? 'blitz'}
+      />
     </div>
   );
 
@@ -175,7 +230,11 @@ export function ChessLobby({
         isHost={isHost}
         startBusy={startBusy}
         onStartGame={(opts) =>
-          onStartGame({ ...opts, botDifficulty: opts?.difficulty ?? 'medium' })
+          onStartGame({
+            ...opts,
+            botDifficulty: opts?.difficulty ?? 'medium',
+            botPersonality: selectedPersonality ?? undefined,
+          })
         }
         onLeaveRoom={onLeaveRoom}
         onDeleteRoom={onDeleteRoom}
@@ -197,6 +256,13 @@ export function ChessLobby({
         onReorderPlayers={onReorderPlayers}
       />
       <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
+      <PgnImportModal
+        isOpen={showPgnImport}
+        onClose={() => setShowPgnImport(false)}
+        onImport={(_moves, _variant) => {
+          // PGN import creates a new room with the imported position
+        }}
+      />
     </>
   );
 }

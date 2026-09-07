@@ -1,4 +1,4 @@
-# Contributing to Arcadeum Backend API
+# Contributing to Arcadeum Games Backend API
 
 [General Contributing Guidelines](../../CONTRIBUTING.md) | [Web App Docs](../web/CONTRIBUTING.md) | [Mobile App Docs](../mobile/CONTRIBUTING.md)
 
@@ -22,9 +22,10 @@ This document provides guidelines for developers who want to contribute to the A
 
 ### Prerequisites
 
-- Node.js v18+
+- Node.js v24+ (see `../../.nvmrc`)
 - pnpm
 - MongoDB (running locally or via cloud)
+- Redis (required for caching and BullMQ queues)
 
 ### First-Time Setup
 
@@ -48,14 +49,18 @@ cp .env.example .env
 
 ### Tech Stack
 
-| Layer          | Technology             |
-| -------------- | ---------------------- |
-| Framework      | NestJS                 |
-| Language       | TypeScript             |
-| Database       | MongoDB + Mongoose     |
-| Validation     | class-validator        |
-| Authentication | Passport + JWT + OAuth |
-| Documentation  | Swagger (OpenAPI)      |
+| Layer          | Technology                                    |
+| -------------- | --------------------------------------------- |
+| Framework      | NestJS 11.2                                   |
+| Language       | TypeScript 5.9                                |
+| Database       | MongoDB 7 + Mongoose 8.24                     |
+| Cache          | Redis via `cache-manager-ioredis-yet`         |
+| Queue          | BullMQ 6.3 + `@nestjs/bullmq`                |
+| Validation     | class-validator + class-transformer           |
+| Authentication | Passport + JWT + Google OAuth                 |
+| Real-time      | Socket.IO 4.8 + compressed WebSocket adapter  |
+| Rate Limiting  | `@nestjs/throttler` (3 tiers)                |
+| Observability  | OpenTelemetry + Prometheus + Grafana          |
 
 ### Directory Structure
 

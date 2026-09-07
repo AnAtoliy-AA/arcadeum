@@ -126,8 +126,10 @@ export const test = base.extend({
             text.includes('Fetch API cannot load')) &&
           (text.includes('localhost:4000') ||
             text.includes('localhost:4500') ||
+            text.includes('localhost:3000') ||
             text.includes('127.0.0.1:4000') ||
             text.includes('127.0.0.1:4500') ||
+            text.includes('127.0.0.1:3000') ||
             text.includes('localhost:3500') ||
             text.includes('127.0.0.1:3500'))
         ) {
@@ -196,7 +198,8 @@ export const test = base.extend({
         // Ignore known harmless 404s
         if (
           response.url().includes('favicon.ico') ||
-          response.url().includes('apple-touch-icon')
+          response.url().includes('apple-touch-icon') ||
+          response.url().includes('/music/')
         ) {
           return;
         }
@@ -240,8 +243,10 @@ export const test = base.extend({
           combined.includes('Fetch API cannot load')) &&
         (combined.includes('localhost:4000') ||
           combined.includes('localhost:4500') ||
+          combined.includes('localhost:3000') ||
           combined.includes('127.0.0.1:4000') ||
           combined.includes('127.0.0.1:4500') ||
+          combined.includes('127.0.0.1:3000') ||
           combined.includes('localhost:3500') ||
           combined.includes('127.0.0.1:3500'))
       ) {
@@ -343,6 +348,108 @@ export const test = base.extend({
       } else {
         await route.continue();
       }
+    });
+
+    // Mock endpoints called on every authenticated page load to prevent 401 noise.
+    // These fire from header widgets (BalanceChip, NotificationBell, ProfileMenu)
+    // and session sync before test-specific mocks can be registered.
+    await page.route('**/wallet/balance', async (route) => {
+      await handleRoute(route, { coins: 1000, gems: 50 });
+    });
+
+    await page.route('**/friends/pending', async (route) => {
+      await handleRoute(route, { count: 0 });
+    });
+
+    await page.route('**/notifications/preferences', async (route) => {
+      const method = route.request().method();
+      if (method === 'GET') {
+        await handleRoute(route, {
+          gameInvites: true,
+          friendRequests: true,
+          chatMessages: false,
+          achievements: true,
+          dailyRewards: true,
+          tournaments: false,
+        });
+      } else if (method === 'PUT') {
+        await handleRoute(route, route.request().postDataJSON() || {});
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.route('**/notifications/unread-count', async (route) => {
+      await handleRoute(route, { count: 0 });
+    });
+
+    await page.route('**/notifications', async (route) => {
+      const url = route.request().url();
+      if (url.includes('/unread-count') || url.includes('/preferences')) {
+        await route.continue();
+        return;
+      }
+      const method = route.request().method();
+      if (method === 'GET') {
+        await handleRoute(route, []);
+      } else {
+        await handleRoute(route, null);
+      }
+    });
+
+    await page.route('**/shop/catalog', async (route) => {
+      await handleRoute(route, []);
+    });
+
+    await page.route('**/auth/refresh', async (route) => {
+      const method = route.request().method();
+      if (method === 'POST') {
+        await handleRoute(route, {
+          accessToken: 'test-access-token',
+          refreshToken: 'test-refresh-token',
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.route('**/games/live-info', async (route) => {
+      await handleRoute(route, { online: 0, playing: 0 });
+    });
+
+    await page.route('**/announcements/active', async (route) => {
+      await handleRoute(route, null);
+    });
+
+    await page.route('**/achievements/check', async (route) => {
+      await handleRoute(route, { newlyUnlocked: [] });
+    });
+
+    await page.route('**/friends', async (route) => {
+      const url = route.request().url();
+      if (url.includes('/pending')) {
+        await route.continue();
+        return;
+      }
+      const method = route.request().method();
+      if (method === 'GET') {
+        await handleRoute(route, []);
+      } else {
+        await handleRoute(route, null);
+      }
+    });
+
+    await page.route('**/rankings/me', async (route) => {
+      await handleRoute(route, {
+        rank: 42,
+        score: 1000,
+        userId: '507f191e810c19729de860ea',
+        displayName: 'Test User',
+      });
+    });
+
+    await page.route('**/games/stats', async (route) => {
+      await handleRoute(route, { totalGames: 0, wins: 0, losses: 0 });
     });
 
     // Mock favicon and icons to reduce 404 noise

@@ -8,12 +8,16 @@ import {
   TexasHoldemRoom,
   type TexasHoldemRoomHandle,
 } from './gameIntegrations/TexasHoldem/TexasHoldemRoom';
+import {
+  ChessRoom,
+  type ChessRoomHandle,
+} from './gameIntegrations/Chess/ChessRoom';
 import { useGameRoom } from './hooks/useGameRoom';
 import { UnsupportedGameView } from './components/GameRoom/UnsupportedGameView';
 
 export default function GameRoomScreen() {
   const integrationRef = useRef<
-    CriticalRoomHandle | TexasHoldemRoomHandle | null
+    CriticalRoomHandle | TexasHoldemRoomHandle | ChessRoomHandle | null
   >(null);
   const {
     room,
@@ -74,6 +78,33 @@ export default function GameRoomScreen() {
     return (
       <TexasHoldemRoom
         ref={integrationRef as React.Ref<TexasHoldemRoomHandle>}
+        room={room}
+        session={session}
+        fallbackName={fallbackName}
+        gameId={displayGameId}
+        tokens={tokens}
+        refreshTokens={refreshTokens}
+        insetsTop={insets.top}
+        fetchRoom={fetchRoom}
+        refreshing={refreshing}
+        loading={loading}
+        error={error}
+        isHost={isHost}
+        deleting={deleting}
+        leaving={leaving}
+        onDeleteRoom={handleDeleteRoom}
+        onLeaveRoom={handleLeaveRoom}
+        onViewGame={handleViewGame}
+        setRoom={setRoom}
+        setSession={setSession}
+      />
+    );
+  }
+
+  if (integrationId === 'chess_v1') {
+    return (
+      <ChessRoom
+        ref={integrationRef as React.Ref<ChessRoomHandle>}
         room={room}
         session={session}
         fallbackName={fallbackName}

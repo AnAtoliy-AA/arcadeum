@@ -1,7 +1,17 @@
 import Link from 'next/link';
 import { appConfig } from '@/shared/config/app-config';
+import type { Locale } from '@/shared/i18n';
 
 const GAMES = [
+  {
+    id: 'critical_v1',
+    name: 'Critical',
+    description:
+      'Strategic card game: draw, defuse, and survive the explosion.',
+    players: '3–5',
+    duration: '15 min',
+    href: '/games/critical',
+  },
   {
     id: 'sea_battle_v1',
     name: 'Sea Battle (Battleship)',
@@ -12,13 +22,13 @@ const GAMES = [
     href: '/games/sea-battle',
   },
   {
-    id: 'critical_v1',
-    name: 'Critical',
+    id: 'glimworm_v1',
+    name: 'Glimworm',
     description:
-      'Strategic card game: draw, defuse, and survive the explosion.',
-    players: '3–5',
-    duration: '15 min',
-    href: '/games/critical',
+      'Real-time glow-worm snake arena. Slither, survive, and eat the lights.',
+    players: '2–10',
+    duration: '90 sec',
+    href: '/games/glimworm',
   },
   {
     id: 'tic_tac_toe_v1',
@@ -55,22 +65,93 @@ const GAMES = [
     href: '/games/checkers',
   },
   {
-    id: 'game_2048',
+    id: 'cat_dash_v1',
+    name: 'Cat Dash',
+    description: 'Race cats with dice, unique abilities, and themed tracks.',
+    players: '2–6',
+    duration: '10 min',
+    href: '/games/cat-dash',
+  },
+  {
+    id: 'backgammon_v1',
+    name: 'Backgammon',
+    description:
+      'Classic 24-point board game with dice rolls, bearing off, and hitting blots.',
+    players: '2',
+    duration: '20 min',
+    href: '/games/backgammon',
+  },
+  {
+    id: 'hearts_v1',
+    name: 'Hearts',
+    description:
+      'Classic 4-player trick-taking card game with passing and Queen of Spades.',
+    players: '4',
+    duration: '30 min',
+    href: '/games/hearts',
+  },
+  {
+    id: 'spades_v1',
+    name: 'Spades',
+    description:
+      'Classic 4-player partnership trick-taking card game with bidding and nil bids.',
+    players: '4',
+    duration: '35 min',
+    href: '/games/spades',
+  },
+  {
+    id: 'go_v1',
+    name: 'Go',
+    description:
+      'Classic Baduk/Weiqi on 9×9, 13×13 and 19×19 boards with captures and area scoring.',
+    players: '2',
+    duration: '10–40 min',
+    href: '/games/go',
+  },
+  {
+    id: 'pachisi_v1',
+    name: 'Pachisi',
+    description:
+      'Roll a six to launch tokens, capture rivals, and race all four home.',
+    players: '2–4',
+    duration: '15 min',
+    href: '/games/pachisi',
+  },
+  {
+    id: 'solitaire_v1',
+    name: 'Solitaire',
+    description:
+      'The classic single-player Klondike card puzzle with scoring and timer.',
+    players: '1',
+    duration: '10 min',
+    href: '/games/solitaire',
+  },
+  {
+    id: 'minesweeper_v1',
+    name: 'Minesweeper',
+    description:
+      'Beginner to expert grids with flags, chording, timer, and saved progress.',
+    players: '1',
+    duration: '5 min',
+    href: '/games/minesweeper',
+  },
+  {
+    id: 'sudoku_v1',
+    name: 'Sudoku',
+    description:
+      'Easy, medium and hard puzzles with unique solutions and pencil marks.',
+    players: '1',
+    duration: '15 min',
+    href: '/games/sudoku',
+  },
+  {
+    id: 'game_2048_v1',
     name: '2048',
     description:
       'Slide and merge numbered tiles on a 4×4 grid to reach the 2048 tile.',
     players: '1',
     duration: '5 min',
     href: '/games/2048',
-  },
-  {
-    id: 'glimworm_v1',
-    name: 'Glimworm',
-    description:
-      'Real-time glow-worm snake arena. Slither, survive, and eat the lights.',
-    players: '2–10',
-    duration: '90 sec',
-    href: '/games/glimworm',
   },
 ];
 
@@ -110,7 +191,7 @@ const FEATURES = [
   },
 ];
 
-export function NoscriptFallback() {
+export function NoscriptFallback({ locale }: { locale: Locale }) {
   return (
     <noscript>
       <div className="mx-auto max-w-[1200px] p-8">
@@ -135,7 +216,7 @@ export function NoscriptFallback() {
                   </span>
                 </div>
                 <Link
-                  href={game.href}
+                  href={`/${locale}${game.href}`}
                   className="mt-4 inline-block rounded-lg bg-[#3b82f6] px-4 py-2 text-white no-underline"
                 >
                   Play {game.name}
@@ -172,7 +253,7 @@ export function NoscriptFallback() {
             with friends. No download required.
           </p>
           <Link
-            href="/en/games"
+            href={`/${locale}/games`}
             className="inline-block rounded-lg bg-[#3b82f6] px-6 py-3 font-bold text-white no-underline"
           >
             Browse All Games

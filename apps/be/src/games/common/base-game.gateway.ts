@@ -12,6 +12,7 @@ import {
 } from '../games.gateway.utils';
 import { maybeEncrypt } from '../../common/utils/socket-encryption.util';
 import type { BaseGameService } from './base-game.service';
+import { SocketRateLimiter } from './socket-rate-limiter';
 
 export abstract class BaseGameGateway<
   TOptions extends object = Record<string, unknown>,
@@ -19,6 +20,12 @@ export abstract class BaseGameGateway<
   protected abstract readonly logger: Logger;
   protected abstract readonly eventPrefix: string;
   protected abstract readonly gameService: BaseGameService<TOptions>;
+
+  /** Rate limiter for game actions - override in subclasses for custom limits */
+  protected readonly rateLimiter = new SocketRateLimiter({
+    maxRequests: 30,
+    windowMs: 10_000,
+  });
 
   get handlers(): Record<string, GameMessageHandlerFn> {
     return {
@@ -38,6 +45,9 @@ export abstract class BaseGameGateway<
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
+
+    if (!this.checkRateLimit(client, 'session.start')) return;
+
     try {
       const result = await this.gameService.startSession(
         userId,
@@ -66,6 +76,9 @@ export abstract class BaseGameGateway<
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
     validatePayloadUserId(client, userId);
+
+    if (!this.checkRateLimit(client, 'forfeit')) return;
+
     try {
       await this.gameService.forfeit(userId, roomId);
       client.emit(
@@ -94,6 +107,9 @@ export abstract class BaseGameGateway<
     return async (client: Socket, payload: Record<string, unknown>) => {
       const { roomId, userId } = extractRoomAndUser(payload);
       validatePayloadUserId(client, userId);
+
+      if (!this.checkRateLimit(client, actionName)) return;
+
       try {
         await handler(client, payload, roomId, userId);
       } catch (error) {
@@ -105,6 +121,40 @@ export abstract class BaseGameGateway<
         );
       }
     };
+  }
+
+  /**
+   * Check rate limit for a socket. Returns true if allowed, false if rate limited.
+   * Emits a rate_limit_exceeded event to the client if limited.
+   */
+  protected checkRateLimit(client: Socket, action: string): boolean {
+    if (this.rateLimiter.isAllowed(client.id)) {
+      return true;
+    }
+
+    const resetMs = this.rateLimiter.getResetMs(client.id);
+    const remaining = this.rateLimiter.getRemaining(client.id);
+
+    this.logger.warn(
+      `Rate limit exceeded for socket ${client.id} on ${action}. ` +
+        `Reset in ${resetMs}ms, remaining: ${remaining}`,
+    );
+
+    client.emit('rate_limit_exceeded', {
+      action,
+      resetMs,
+      remaining,
+      message: 'Too many requests. Please slow down.',
+    });
+
+    return false;
+  }
+
+  /**
+   * Called when a socket disconnects - clean up rate limit entries.
+   */
+  protected handleDisconnectCleanup(client: Socket): void {
+    this.rateLimiter.remove(client.id);
   }
 }
 

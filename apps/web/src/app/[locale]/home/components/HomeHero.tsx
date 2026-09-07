@@ -53,7 +53,7 @@ export default async function HomeHero({ locale }: { locale: Locale }) {
             id="hero-heading"
             className="relative m-0 block p-0 text-center text-[140px] font-black leading-[1.1] tracking-[-4px] text-color text-shadow-hero3d [perspective:1000px] [transform-style:preserve-3d] animate-hero-float-3d transition-transform duration-200 [transition-timing-function:cubic-bezier(0.175,0.885,0.32,1.275)] max-[1150px]:text-[clamp(48px,15vw,84px)] max-[1150px]:leading-none max-[1150px]:tracking-[-2px]"
           >
-            Arcadeum
+            Arcadeum{' '}
             <span className="hero-title-sub mr-[0.05em] block text-right text-[0.35em] font-black uppercase leading-none tracking-[0.12em] text-accent text-shadow-hero3dSub animate-sub-hue-shift [will-change:filter]">
               Games
             </span>

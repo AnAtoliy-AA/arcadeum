@@ -212,4 +212,60 @@ describe('PachisiBoard', () => {
     fireEvent.click(laneToken);
     expect(handleMove).toHaveBeenCalledWith(0);
   });
+
+  it('renders extra roll badge when consecutiveSixes > 0 on my roll turn', () => {
+    const extraRollState: PachisiClientState = {
+      ...mockState,
+      phase: 'roll',
+      die: null,
+      consecutiveSixes: 1,
+    };
+    renderBoard(extraRollState);
+    expect(screen.getByTestId('pachisi-extra-roll-badge')).toBeInTheDocument();
+    expect(screen.getByTestId('pachisi-roll-button')).toBeInTheDocument();
+  });
+
+  it('renders board with pachisi-board class and does not render empty die on initial roll phase', () => {
+    renderBoard(mockState);
+    const board = screen.getByTestId('pachisi-board');
+    expect(board.classList.contains('pachisi-board')).toBe(true);
+    expect(screen.queryByTestId('pachisi-die')).toBeNull();
+  });
+
+  it('renders die and visible numeric number badge when die is rolled', () => {
+    const dieRolledState: PachisiClientState = {
+      ...mockState,
+      phase: 'move',
+      die: 5,
+    };
+    renderBoard(dieRolledState);
+    expect(screen.getByTestId('pachisi-die')).toBeInTheDocument();
+    const numberBadge = screen.getByTestId('pachisi-die-number');
+    expect(numberBadge).toBeInTheDocument();
+    expect(numberBadge).toHaveTextContent('5');
+  });
+
+  it('allows clicking movable token even if actionBusy is true', () => {
+    const handleMove = vi.fn();
+    const sixState: PachisiClientState = {
+      ...mockState,
+      phase: 'move',
+      die: 6,
+    };
+    render(
+      <PachisiBoard
+        actionBusy={true}
+        currentUserId="p1"
+        myTurn={true}
+        onMove={handleMove}
+        onRoll={vi.fn()}
+        snapshot={sixState}
+      />,
+    );
+    const yardToken = screen.getByTestId('yard-token-0-0');
+    expect(yardToken).toHaveClass('pointer-events-auto');
+    expect(yardToken).not.toBeDisabled();
+    fireEvent.click(yardToken);
+    expect(handleMove).toHaveBeenCalledWith(0);
+  });
 });

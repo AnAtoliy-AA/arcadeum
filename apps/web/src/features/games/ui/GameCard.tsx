@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   useTranslation,
   type TranslationKey,
@@ -43,13 +43,15 @@ export function GameCard({
   disabled = false,
 }: GameCardProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { t } = useTranslation();
+  const locale = pathname?.split('/')[1] ?? 'en';
 
   const handleClick = () => {
     if (disabled) return;
     onClick?.();
     const landingSlug = game.slug.replace(/_v\d+$/, '');
-    router.push(`/games/${landingSlug}`);
+    router.push(`/${locale}/games/${landingSlug}`);
   };
 
   return (

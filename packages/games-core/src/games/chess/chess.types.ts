@@ -48,15 +48,17 @@ export interface ChessOptions {
   variant: ChessVariant;
   timeControl: TimeControl | null;
   botDifficulty?: AiDifficulty;
+  botPersonality?: string;
 }
 
-export type TimeControlType = 'blitz' | 'rapid' | 'classical';
-export type TimeIncrement = 0 | 3 | 5 | 10 | 15 | 30;
+export type TimeControlType = 'bullet' | 'blitz' | 'rapid' | 'classical' | 'daily';
+export type TimeIncrement = 0 | 1 | 3 | 5 | 10 | 15 | 30;
 
 export interface TimeControl {
   type: TimeControlType;
   initialSeconds: number;
   incrementSeconds: TimeIncrement;
+  daysPerMove?: number;
 }
 
 export interface PlayerClock {
@@ -74,6 +76,7 @@ export interface ChessState extends BaseGameState {
   variant: ChessVariant;
   timeControl: TimeControl | null;
   botDifficulty?: AiDifficulty;
+  botPersonality?: string;
   board: Board;
   currentTurnColor: PieceColor;
   castlingRights: CastlingRights;
@@ -91,6 +94,8 @@ export interface ChessState extends BaseGameState {
   isInsufficientMaterial: boolean;
   isDrawByAgreement: boolean;
   drawOfferedBy: string | null;
+  takebackOfferedBy: string | null;
+  takebackMoveIndex: number | null;
   clocks: Record<PieceColor, PlayerClock> | null;
   positionHistory: string[];
   legalMovesForCurrentPlayer: LegalMove[];
@@ -108,5 +113,6 @@ export interface ChessEngineConfig {
   timeControl?: TimeControl;
   variant?: ChessVariant;
   botDifficulty?: AiDifficulty;
+  botPersonality?: string;
   aiDifficulty?: AiDifficulty;
 }

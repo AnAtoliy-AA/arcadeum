@@ -232,6 +232,60 @@ export const gamesCatalog: GameCatalogueEntry[] = [
     isHidden: false, // Visible as unavailable
   },
   {
+    id: 'chess_v1',
+    name: 'Chess',
+    tagline: 'The classic strategy board game with variants and time controls.',
+    summary:
+      'Challenge friends or bots to a game of chess with standard or Chess960 variants and optional time controls.',
+    overview:
+      'Chess features a full rules engine with standard and Chess960 variants, optional time controls, and bot opponents with distinct personalities.',
+    status: 'In prototype',
+    players: '2 players',
+    duration: '10-60 min',
+    tags: ['Strategy', 'Classic', 'Board game'],
+    bestFor: ['Strategy enthusiasts', 'Competitive play', 'Learning'],
+    mechanics: ['Piece movement', 'Castling', 'En passant', 'Promotion'],
+    highlights: [
+      {
+        title: 'Multiple variants',
+        description: 'Standard, Chess960, King of the Hill, Three-Check, Crazyhouse, Atomic.',
+      },
+      {
+        title: 'Time controls',
+        description: 'Blitz, rapid, classical, or unlimited time.',
+      },
+      {
+        title: 'Bot personalities',
+        description: '13 distinct bot personalities with different play styles.',
+      },
+    ],
+    howToPlay: [
+      {
+        title: 'Set up the board',
+        detail: 'Each player starts with 16 pieces in standard formation.',
+      },
+      {
+        title: 'Take turns',
+        detail: 'White moves first. Click a piece to see legal moves, then click a destination.',
+      },
+      {
+        title: 'Check and checkmate',
+        detail: 'Put the king in check. If there is no escape, it is checkmate and you win.',
+      },
+    ],
+    comingSoon: [
+      {
+        title: 'Tournaments',
+        description: 'Arena and Swiss tournament formats.',
+      },
+      {
+        title: 'Live broadcasting',
+        description: 'Stream your games with real-time commentary.',
+      },
+    ],
+    isPlayable: true,
+  },
+  {
     id: 'coup',
     name: 'Coup',
     tagline: 'Bluffs, betrayals, and lightning-fast influence battles.',

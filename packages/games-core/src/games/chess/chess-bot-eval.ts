@@ -140,7 +140,23 @@ const PHASE_VALUES: Record<PieceType, number> = {
   king: 0,
 };
 
-export function evaluate(state: ChessState): number {
+export interface EvalModifiers {
+  attackWeight: number;
+  safetyWeight: number;
+  materialWeight: number;
+}
+
+const DEFAULT_MODIFIERS: EvalModifiers = {
+  attackWeight: 1.0,
+  safetyWeight: 1.0,
+  materialWeight: 1.0,
+};
+
+export function evaluate(
+  state: ChessState,
+  modifiers?: EvalModifiers,
+): number {
+  const m = modifiers ?? DEFAULT_MODIFIERS;
   if (state.isCheckmate)
     return state.currentTurnColor === 'white' ? -CHECKMATE : CHECKMATE;
   if (
@@ -159,7 +175,7 @@ export function evaluate(state: ChessState): number {
     for (let f = 0; f < 8; f++) {
       const piece = state.board[r][f];
       if (!piece) continue;
-      const val = PIECE_VALUES[piece.type] * 100;
+      const val = PIECE_VALUES[piece.type] * 100 * m.materialWeight;
       const pstRow = piece.color === 'white' ? r : 7 - r;
       const mg = val + MG_PST[piece.type][pstRow][f];
       const eg = val + EG_PST[piece.type][pstRow][f];
@@ -176,9 +192,12 @@ export function evaluate(state: ChessState): number {
 
   gamePhase = Math.min(gamePhase, 24);
   let score = (mgScore * gamePhase + egScore * (24 - gamePhase)) / 24;
-  score += evalKingSafety(state, 'white') - evalKingSafety(state, 'black');
   score +=
-    evalPawnStructure(state, 'white') - evalPawnStructure(state, 'black');
+    (evalKingSafety(state, 'white') - evalKingSafety(state, 'black')) *
+    m.safetyWeight;
+  score +=
+    (evalPawnStructure(state, 'white') - evalPawnStructure(state, 'black')) *
+    m.materialWeight;
 
   return state.currentTurnColor === 'white' ? score : -score;
 }

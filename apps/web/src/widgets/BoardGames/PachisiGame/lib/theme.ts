@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import {
   getThemeById,
   SHARED_THEMES,
@@ -13,7 +14,6 @@ export interface PachisiTheme {
   yardBackground: string;
   yardBorder: string;
   centerHome: string;
-  /** Per-seat token colors (red, green, yellow, blue order). */
   seatColors: [string, string, string, string];
   tokenBorder: string;
   movableRing: string;
@@ -33,4 +33,26 @@ export function getPachisiTheme(variant?: string): PachisiTheme {
   const shared = getThemeById(variant);
   if (shared) return sharedThemeToPachisi(shared);
   return DEFAULT_THEME;
+}
+
+export function boardVars(theme: PachisiTheme): CSSProperties {
+  return {
+    '--pachisi-board-bg': theme.boardBackground,
+    '--pachisi-yard-bg': theme.yardBackground,
+    '--pachisi-yard-border': theme.yardBorder,
+    '--pachisi-cell-bg': theme.cellBackground,
+    '--pachisi-cell-border': theme.cellBorder,
+    '--pachisi-lane-bg': theme.laneBackground,
+    '--pachisi-center-home': theme.centerHome,
+    '--pachisi-safe-star': theme.safeStar,
+    '--pachisi-token-border': theme.tokenBorder,
+    '--pachisi-movable-ring': theme.movableRing,
+    '--pachisi-dice-face': theme.diceFace,
+    '--pachisi-dice-dot': theme.diceDot,
+    '--pachisi-dice-border': theme.diceBorder,
+    '--pachisi-seat-0': theme.seatColors[0],
+    '--pachisi-seat-1': theme.seatColors[1],
+    '--pachisi-seat-2': theme.seatColors[2],
+    '--pachisi-seat-3': theme.seatColors[3],
+  } as CSSProperties;
 }

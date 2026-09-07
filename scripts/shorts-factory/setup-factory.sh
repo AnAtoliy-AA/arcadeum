@@ -57,6 +57,13 @@ POSTIZ_INSTAGRAM_INTEGRATION_ID=
 POSTIZ_TIKTOK_INTEGRATION_ID=
 TG_BOT_URL=http://localhost:4001
 SHORTS_FACTORY_APPROVAL=true
+
+# Bot user for authenticated gameplay recording (run setup-bot-user.js to create)
+SHORTS_FACTORY_BOT_EMAIL=arcadeum-factory-bot@test.com
+SHORTS_FACTORY_BOT_USERNAME=arcadeum_factory
+SHORTS_FACTORY_BOT_PASSWORD=CHANGE_ME
+SHORTS_FACTORY_BOT_TOKEN=
+SHORTS_FACTORY_BOT_REFRESH_TOKEN=
 ENVEOF
   echo "Created .env file — edit it and fill in POSTIZ_API_KEY and platform integration IDs"
   echo "Get API key from: https://postiz.arcadeum.games -> Settings -> API Keys"

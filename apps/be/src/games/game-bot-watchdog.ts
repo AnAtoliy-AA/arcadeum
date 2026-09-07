@@ -86,11 +86,13 @@ export class GameBotWatchdog {
 
       for (const session of staleSessions) {
         // AI vs AI: complete session if no one is watching
+        // (give extra time for spectators to join — 60s threshold)
         if (isAiVsAiSession(session) && this.io) {
           const sockets = await this.io
             .in(`game-room:${session.roomId}`)
             .fetchSockets();
-          if (sockets.length === 0) {
+          const staleMs = Date.now() - new Date(session.updatedAt).getTime();
+          if (sockets.length === 0 && staleMs > 60_000) {
             this.logger.log(
               `AI vs AI session ${session.id} completed — no watchers in room ${session.roomId}`,
             );

@@ -20,7 +20,17 @@ FROM node:24-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache dumb-init=1.2.5-r3
+RUN apk add --no-cache dumb-init=1.2.5-r3 curl
+
+# Stockfish 19 (latest stable, released 2026-09-05)
+# Download Linux x86-64 universal binary during build
+RUN curl -L -o /tmp/sf19.tar.gz \
+      "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-linux-x86-64-universal.tar.gz" \
+    && tar -xzf /tmp/sf19.tar.gz -C /tmp/ \
+    && find /tmp -name "stockfish" -type f -executable -exec cp {} /usr/local/bin/stockfish \; \
+    && chmod +x /usr/local/bin/stockfish \
+    && rm -rf /tmp/sf19.tar.gz /tmp/stockfish \
+    && stockfish <<< "uci" 2>/dev/null | head -1
 
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--dns-result-order=ipv4first --max-old-space-size=1536"

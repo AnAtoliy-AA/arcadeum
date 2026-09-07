@@ -25,6 +25,8 @@ import type {
   ChessState,
 } from '../engines/chess/chess.types';
 import { ChessBotService } from '../engines/chess/chess-bot.service';
+import { ChessStockfishService } from './engine/chess-stockfish.service';
+import { ChessTournamentService } from './tournaments/chess-tournament.service';
 import { getLegalMoves } from '../engines/chess/chess.move-generator';
 import {
   AI_DIFFICULTIES,
@@ -46,12 +48,20 @@ export class ChessService extends BaseGameService<ChessOptions> {
 
   protected readonly botService: ChessBotService;
 
+  /** Stockfish 19 engine — always available after module init. */
+  readonly stockfishService: ChessStockfishService;
+
+  /** Chess tournament service — injected optionally. */
+  private readonly tournamentService: ChessTournamentService | null;
+
   constructor(
     roomsService: GameRoomsService,
     sessionsService: GameSessionsService,
     realtimeService: GamesRealtimeService,
     @Inject(forwardRef(() => ChessBotService))
     botService: ChessBotService,
+    stockfishService: ChessStockfishService,
+    @Optional() tournamentService: ChessTournamentService | null,
     @InjectConnection() mongoConnection: Connection,
     @Optional() @Inject('REDIS_CLIENT') redis?: Redis | null,
   ) {
@@ -65,6 +75,8 @@ export class ChessService extends BaseGameService<ChessOptions> {
       redis,
     );
     this.botService = botService;
+    this.stockfishService = stockfishService;
+    this.tournamentService = tournamentService;
   }
 
   override onModuleInit() {
@@ -126,14 +138,27 @@ export class ChessService extends BaseGameService<ChessOptions> {
     return this.runAction(userId, roomId, 'draw_accept', {});
   }
 
+  async takebackOffer(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'takeback_offer', {});
+  }
+
+  async takebackAccept(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'takeback_accept', {});
+  }
+
+  async takebackDecline(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'takeback_decline', {});
+  }
+
   protected override applyStartExtras(
     _userId: string,
     _roomId: string,
     options: ChessOptions,
     startExtras: unknown,
   ): void {
-    const { botDifficulty } = (startExtras ?? {}) as {
+    const { botDifficulty, botPersonality } = (startExtras ?? {}) as {
       botDifficulty?: string;
+      botPersonality?: string;
     };
     if (
       botDifficulty &&
@@ -142,6 +167,26 @@ export class ChessService extends BaseGameService<ChessOptions> {
       this.botService.setDifficulty(botDifficulty as AiDifficulty);
       options.botDifficulty = botDifficulty as AiDifficulty;
     }
+    if (botPersonality && typeof botPersonality === 'string') {
+      options.botPersonality = botPersonality;
+    }
+  }
+
+  protected override async afterSessionStep(
+    session: GameSessionSummary,
+  ): Promise<GameSessionSummary> {
+    const result = await super.afterSessionStep(session);
+
+    if (session.status === 'completed' && this.tournamentService) {
+      await this.reportTournamentResult(session).catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : String(err);
+        this.logger.error(
+          `Tournament result reporting failed for room ${session.roomId}: ${message}`,
+        );
+      });
+    }
+
+    return result;
   }
 
   protected override async emitSessionUpdate(
@@ -155,30 +200,90 @@ export class ChessService extends BaseGameService<ChessOptions> {
       `[Chess] emitSessionUpdate room=${session.roomId} moveCount=${moveCount}`,
     );
     await super.emitSessionUpdate(session);
+
+    // Broadcast Stockfish analysis after each move (fire-and-forget)
+    if (moveCount > 0) {
+      if (!this.stockfishService?.isReady()) {
+        this.logger.warn(
+          `[Chess] Stockfish not ready, skipping analysis for room ${session.roomId}`,
+        );
+      } else {
+        const state = session.state as ChessState | undefined;
+        if (state) {
+          // Generate full FEN (positionHistory only stores board part)
+          const { toFen } =
+            await import('@arcadeum/games-core/games/chess/chess-fen');
+          const fullFen = toFen(state);
+          this.logger.log(
+            `[Chess] Analyzing fen for room ${session.roomId}: ${fullFen.substring(0, 50)}...`,
+          );
+          this.stockfishService
+            .analyzePositionMultiPV(fullFen, 12, 1500, 3)
+            .then((result) => {
+              this.logger.log(
+                `[Chess] Eval for room ${session.roomId}: cp=${result.cp} mate=${result.mate} depth=${result.depth}`,
+              );
+              const payload = {
+                roomId: session.roomId,
+                eval: {
+                  cp: result.cp,
+                  mate: result.mate,
+                  pv: result.pv,
+                  depth: result.depth,
+                  selDepth: result.selDepth,
+                  nodes: result.nodes,
+                  nps: result.nps,
+                  timeMs: result.timeMs,
+                },
+                alternatives: result.alternatives,
+              };
+              this.realtimeService.emitToRoom(
+                session.roomId,
+                'chess.session.analyzed',
+                payload,
+              );
+              this.realtimeService.emitToSpectators(
+                session.roomId,
+                'chess.session.analyzed',
+                payload,
+              );
+            })
+            .catch((err) => {
+              this.logger.error(
+                `[Chess] Stockfish analysis failed for room ${session.roomId}: ${err}`,
+              );
+            });
+        }
+      }
+    }
   }
 
   private async checkClockTimeout(session: GameSessionSummary) {
     const state = session.state as ChessState | undefined;
     if (!state || !state.clocks || this.isGameOver(state)) return;
 
+    const isDaily = state.timeControl?.type === 'daily';
     const currentClock = state.clocks[state.currentTurnColor];
     if (!currentClock) return;
 
-    const elapsed = Math.floor(
-      (Date.now() - currentClock.lastMoveTimestamp) / 1000,
-    );
-    const remaining = currentClock.remainingSeconds - elapsed;
+    const elapsedMs = Date.now() - currentClock.lastMoveTimestamp;
 
-    if (remaining <= 0) {
-      const loser = state.players.find(
-        (p) => p.color === state.currentTurnColor,
-      );
-      const winner = state.players.find(
-        (p) => p.color !== state.currentTurnColor,
-      );
-      if (loser && winner) {
-        await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
-      }
+    if (isDaily) {
+      const daysPerMove = state.timeControl?.daysPerMove ?? 1;
+      const elapsedDays = elapsedMs / (1000 * 60 * 60 * 24);
+      if (elapsedDays < daysPerMove) return;
+    } else {
+      const elapsed = Math.floor(elapsedMs / 1000);
+      const remaining = currentClock.remainingSeconds - elapsed;
+      if (remaining > 0) return;
+    }
+
+    const loser = state.players.find((p) => p.color === state.currentTurnColor);
+    const winner = state.players.find(
+      (p) => p.color !== state.currentTurnColor,
+    );
+    if (loser && winner) {
+      await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
     }
   }
 
@@ -203,6 +308,7 @@ export class ChessService extends BaseGameService<ChessOptions> {
         incrementSeconds: number;
       } | null;
       botDifficulty: string;
+      botPersonality: string;
       aiDifficulty: string;
     }>;
     const variant = CHESS_VARIANTS.includes(r.variant as ChessVariant)
@@ -211,18 +317,35 @@ export class ChessService extends BaseGameService<ChessOptions> {
     const rawTc = r.timeControl;
     let timeControl: ChessOptions['timeControl'] = null;
     if (rawTc && typeof rawTc === 'object') {
-      const validTypes: TimeControlType[] = ['blitz', 'rapid', 'classical'];
+      const validTypes: TimeControlType[] = [
+        'bullet',
+        'blitz',
+        'rapid',
+        'classical',
+        'daily',
+      ];
       const type = validTypes.includes(rawTc.type as TimeControlType)
         ? (rawTc.type as TimeControlType)
         : 'blitz';
-      const validIncs: TimeIncrement[] = [0, 3, 5, 10, 15, 30];
+      const validIncs: TimeIncrement[] = [0, 1, 3, 5, 10, 15, 30];
       const inc = validIncs.includes(rawTc.incrementSeconds as TimeIncrement)
         ? (rawTc.incrementSeconds as TimeIncrement)
         : 0;
+      const daysPerMove =
+        type === 'daily'
+          ? Math.max(
+              1,
+              Math.min(
+                14,
+                ((rawTc as Record<string, unknown>).daysPerMove as number) || 1,
+              ),
+            )
+          : undefined;
       timeControl = {
         type,
         initialSeconds: rawTc.initialSeconds,
         incrementSeconds: inc,
+        daysPerMove,
       };
     }
     const botDifficulty = isAiDifficulty(r.botDifficulty)
@@ -230,7 +353,9 @@ export class ChessService extends BaseGameService<ChessOptions> {
       : isAiDifficulty(r.aiDifficulty)
         ? r.aiDifficulty
         : undefined;
-    return { variant, timeControl, botDifficulty };
+    const botPersonality =
+      typeof r.botPersonality === 'string' ? r.botPersonality : undefined;
+    return { variant, timeControl, botDifficulty, botPersonality };
   }
 
   private backfillLegalMoves(session: GameSessionSummary) {
@@ -240,5 +365,45 @@ export class ChessService extends BaseGameService<ChessOptions> {
       state,
       state.currentTurnColor,
     ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion }));
+  }
+
+  private async reportTournamentResult(
+    session: GameSessionSummary,
+  ): Promise<void> {
+    const state = session.state as ChessState | undefined;
+    if (!state?.players || state.players.length < 2) return;
+
+    const room = await this.roomsService.getRoom(session.roomId, 'system');
+    const tournamentId = (room as unknown as Record<string, unknown>)
+      .tournamentId;
+    if (!tournamentId || typeof tournamentId !== 'string') return;
+
+    const white = state.players.find((p) => p.color === 'white');
+    const black = state.players.find((p) => p.color === 'black');
+    if (!white || !black) return;
+
+    let result: 'white' | 'black' | 'draw';
+    if (
+      state.isDrawByAgreement ||
+      state.isDrawByRepetition ||
+      state.isDrawByFiftyMoveRule ||
+      state.isInsufficientMaterial ||
+      state.isStalemate
+    ) {
+      result = 'draw';
+    } else if (state.winnerColor === 'white') {
+      result = 'white';
+    } else if (state.winnerColor === 'black') {
+      result = 'black';
+    } else {
+      return;
+    }
+
+    await this.tournamentService!.recordGameResult({
+      tournamentId,
+      whiteUserId: white.playerId,
+      blackUserId: black.playerId,
+      result,
+    });
   }
 }

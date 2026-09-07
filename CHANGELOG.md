@@ -7,6 +7,297 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.35] - 2026-09-07
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.28.34] - 2026-09-07
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.28.33] - 2026-09-06
+
+### Fixed
+- update e2e test to expect no FAQPage on home page
+- security & seo audit fixes + file length compliance
+- add rel='me' to social links, fix lint warnings
+- fix orphan pages, locale-prefixed links, shorten og:description
+- improve Google Search SEO — H1 spacing, FAQPage schema, og:title, sitemap lastmod, video duration
+
+
+## [1.28.32] - 2026-09-06
+
+### Fixed
+- fix chess integration imports and type errors breaking build
+
+
+## [1.28.31] - 2026-09-06
+
+### Added
+- opening classification, move candidates, PGN export, board flip, move confirmation, Elo ratings
+- wire Stockfish everywhere — tablebase, puzzles, anti-cheat, auth, bot, multi-PV
+
+### Fixed
+- fix lint errors in Game.tsx — hooks rules, unused var, max-lines
+- whitelist fields in updateProfile to prevent NoSQL injection, remove unused state
+- remove unused imports from stockfish service
+- split stockfish service under 500 lines, fix unused param
+
+
+## [1.28.30] - 2026-09-06
+
+### Added
+- add perspective toggle to post-game analysis for spectators
+- post-game analysis eval from player's perspective
+- eval from player perspective, spectators can toggle White/Black view
+- use Stockfish 19 for post-game analysis instead of static evaluator
+- server-side Stockfish broadcast — one engine call per move, shared with all players and spectators
+- update landing page with all features and Stockfish 19
+- add game history dashboard with rating graph and stats
+- add Syzygy endgame tablebase service and API
+- add piece slide animations with CSS transitions
+- add sound effects system with Web Audio API
+- add Puzzle Rush with Survival and Timed modes
+- add game review report card with accuracy and eval graph
+- add Quick Play matchmaking button to lobby
+- add matchmaking queue backend and frontend hook
+- add PGN import parser and modal
+- add undo/takeback system with opponent acceptance
+- add daily/correspondence time controls
+- add bullet time controls (1+0, 2+1, 1+1)
+
+### Fixed
+- fix test failures - remove stale gameName assertion, update i18n snapshot
+- resolve all TypeScript and lint errors
+- resolve all CI errors - types, depths, lint
+- resolve all lint and TypeScript errors from CI
+- resolve lint errors - unused import and unawaited promises
+- remove unused useMemo import and barColor/evalWidth variables
+- resolve CI lint, build, and test failures
+- add missing perspective variable in LiveEvalDisplay
+- tighten classifyMove thresholds for better move classification variety
+- Stockfish shows raw eval, Game Info shows balance bar from player perspective
+- spectators can toggle perspective, players locked to their color
+- always show eval from one perspective — no toggle, player sees their color
+- treat mate=0 as no mate, show centipawn eval instead of M0
+- remove leftover isSpectator reference in LiveEvalDisplay
+- simplify eval perspective — always use toggle, works for players and spectators
+- use depth 18 for post-game analysis for more accurate classifications
+- store full FENs in positionHistory — Stockfish now gets accurate positions
+- eval always from player perspective — positive = I am winning
+- track castling rights across positions for accurate FEN reconstruction
+- correct eval perspective logic — positive always means 'I am winning'
+- correct eval flip logic for player perspective
+- pass myColor and isSpectator to result modal for perspective toggle
+- clamp extreme eval values in chart to ±500 for readability, show mate in tooltip
+- reconstruct full FENs on backend for accurate Stockfish post-game analysis
+- use apiClient for Stockfish analysis and generate full FENs from board-only history
+- redesign result modal UX — cleaner layout, prominent analysis, compact footer
+- move title/message/stats into scrollable area, smaller buttons in row
+- modal header/footer fixed, only analysis content scrolls
+- redesign eval bar — White/Black on sides, bar moves toward winner
+- replace hardcoded eval in GameInfoPanel with live Stockfish data
+- broadcast Stockfish eval to both player and spectator channels
+- use full FEN (not just board) for Stockfish analysis — Stockfish requires complete FEN
+- auto-restart crashed Stockfish instances and add command logging
+- remove @Optional from StockfishService injection — force injection to succeed or fail loudly
+- fix Stockfish binary path — __dirname in dist/ needs 4 levels up
+- remove duplicate ChessStockfishService from GamesModule providers
+- move stopTimer/startTimer before useEffect to fix hoisting error
+- decrypt Stockfish eval broadcasts, show bot personality names, log AI vs AI picks
+- lazy-init audio context, skip fetch for missing sound files
+- give AI vs AI sessions 60s before watchdog kills them
+- re-read session from DB in checkAndPlay to get fresh turn state
+- use correct variable names for bot personalities
+- fix AI vs AI deadlock and add bot personality selection
+- hide Opening Explorer when no data, add Stockfish safety timeout
+- stabilize Stockfish analysis dependency array
+- add userId to Stockfish analysis socket emit
+- pass animatingRef as prop to ChessCell
+
+
+## [1.28.29] - 2026-09-06
+
+### Fixed
+- update contact press email test to use appConfig.supportEmail
+
+### Documentation
+- restore Mermaid architecture diagrams for FE, BE, and whole app
+- update architecture docs to match current codebase and rebrand to Arcadeum Games
+
+
+## [1.28.28] - 2026-09-06
+
+### Fixed
+- wait for __joinMatchmaking before patching in diagnostic test
+- suppress Redis/Stockfish noise in E2E CI
+- resolve e2e CI warnings and errors
+
+
+## [1.28.27] - 2026-09-06
+
+### Added
+- Phase 12 — Live Broadcasting (backend)
+- Phase 11 — Monetization & Cosmetics (backend)
+- Phase 10 — Mobile Optimization
+- Phase 9 — Chess Variants
+- Phase 8 — Anti-Cheat & Spectator Mode
+- Phase 7 — Social Features (frontend)
+- Phase 7 — Social Features (backend)
+- Phase 6 — Drawing Tools & Board Interactions
+- Phase 5 — Frontend BotSelector + ChessLobby
+- Phase 5 — Backend bot personality support
+- Phase 5 — Bot Personalities
+
+### Fixed
+- remove unused imports and variables for CodeQL
+- mock ResizeObserver in ChessBoard tests
+- add missing i18n keys and fix GlassCard onClick
+- remove unnecessary async from battle pass and subscription services
+
+
+## [1.28.26] - 2026-09-06
+
+### Added
+- automate TikTok integration review demo recording
+
+
+## [1.28.25] - 2026-09-06
+
+### Added
+- add tournament system (Phase 4)
+
+### Fixed
+- remove unused useEffect import from TournamentLobby
+- add OCI_CONNECTION to ChessTournamentService InjectModel
+
+
+## [1.28.24] - 2026-09-06
+
+### Fixed
+- remove base64 email storage and resolve dependabot alerts
+
+
+## [1.28.23] - 2026-09-06
+
+### Added
+- implement comprehensive platform improvements
+
+### Fixed
+- update E2E test for enabled Apple/Discord OAuth buttons
+- add --forceExit to backend E2E tests to prevent Jest hanging
+- properly close Redis connections on module destroy
+- add forceExit to jest-e2e config to prevent Jest hanging
+- use Logger instead of console.warn in DiscordOAuthService
+- use $eq operator for magic-link token query (CodeQL)
+- remove ineffective lgtm comments, stay under 500 line limit
+- use correct CodeQL suppression format (lgtm)
+- resolve remaining CodeQL alerts
+- resolve all CI failures
+- resolve ESLint errors in useLiveStats and useOAuth
+- update auth test for enabled Apple/Discord buttons
+- use existing i18n keys for referrals error state
+- resolve remaining TypeScript errors
+- resolve TypeScript errors in web build
+- add name property to ExpoManifest2 type
+
+
+## [1.28.22] - 2026-09-06
+
+### Added
+- opening explorer with position database (Phase 3) (#1371)
+
+
+## [1.28.21] - 2026-09-05
+
+### Added
+- puzzle system with daily/rated/themed modes (Phase 2) (#1370)
+
+
+## [1.28.20] - 2026-09-05
+
+### Fixed
+- eliminate setTimeout entirely for CodeQL compliance
+
+
+## [1.28.19] - 2026-09-05
+
+### Added
+- Stockfish 19 engine integration (Phase 1) (#1366)
+
+
+## [1.28.18] - 2026-09-05
+
+### Added
+- fix Pachisi styles, fullscreen mode, and dice move retention (ARC-886) (ARC-886)
+
+### Fixed
+- ensure Pachisi tokens are clickable and die number is visible (ARC-886) (ARC-886)
+
+
+## [1.28.17] - 2026-09-05
+
+### Added
+- reduce blur on hudCard to let background artwork stay crisp
+- enable desktop split layout for solitaire and minesweeper and soften blur effects
+- apply game theme color tokens to puzzle game boards and field items
+- enhance solo games UX and translucent field backgrounds
+- unify game boards with SoloGameContainer glassmorphic styling
+- expand game fields to maximize space in fullscreen mode
+- display theme background image as page backdrop in windowed mode
+- rework solo games UI with reusable components and improved UX
+
+### Fixed
+- restore footer and default layout on solo game play routes
+- prevent vertical scroll on solo play routes and constrain minesweeper cells
+- allow controls group to wrap properly within control panel bounds
+
+
+## [1.28.16] - 2026-09-05
+
+### Added
+- improve gameplay stories, add mock auth, fix hearts typo
+
+### Fixed
+- auto-login bot user instead of requiring pre-set tokens
+
+
+## [1.28.15] - 2026-09-05
+
+### Added
+- add XP tracking, profile visibility, and UI fixes
+
+
+## [1.28.14] - 2026-09-05
+
+### Fixed
+- revert PWA disable to NEXT_PUBLIC_E2E and guard SW registration in E2E
+- collapse offline games list, hide in dev, add scroll
+- offline game downloads stuck on staging
+
+
+## [1.28.13] - 2026-09-05
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.28.12] - 2026-09-05
+
+### Fixed
+- extract hermesc postinstall into standalone script
+
+
+## [1.28.11] - 2026-09-05
+
+### Added
+- show real daily reward data and claim button on rewards page
+
+
 ## [1.28.10] - 2026-09-04
 
 ### Fixed

@@ -1,8 +1,8 @@
 /**
  * Static definition of the current Battle Pass season. Seasons are not
- * admin-managed yet — the active one lives here. XP is derived read-only from a
- * player's match history (see {@link xpForStats}); progression is therefore a
- * reflection of real play rather than a separate write path.
+ * admin-managed yet — the active one lives here. XP is stored on the user
+ * document and incremented on game completion (10 per game + 40 bonus for
+ * wins). See {@link BattlePassService.awardGameXp} for the write path.
  */
 
 export type BattlePassReward = {

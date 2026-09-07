@@ -9,6 +9,7 @@ export type AuthUserProfile = {
   username: string;
   displayName: string;
   role: UserRole;
+  xp: number;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
@@ -102,6 +103,7 @@ export async function checkEmailAvailable(
 export async function loginLocal(params: {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }): Promise<LoginResponse> {
   const res = await fetch(api('/auth/login'), {
     method: 'POST',
@@ -127,15 +129,39 @@ export async function exchangeOAuthCode(params: {
 }
 
 export async function loginOAuthSession(params: {
-  provider: 'google';
+  provider: 'google' | 'apple' | 'discord';
   accessToken?: string;
   idToken?: string;
+  authorizationCode?: string;
 }): Promise<LoginResponse> {
   const res = await fetch(api('/auth/oauth/login'), {
     method: 'POST',
     headers: apiHeaders(),
     credentials: 'include',
     body: JSON.stringify(params),
+  });
+  return readJson<LoginResponse>(res);
+}
+
+export async function requestMagicLink(email: string): Promise<void> {
+  const res = await fetch(api('/auth/magic-link'), {
+    method: 'POST',
+    headers: apiHeaders(),
+    credentials: 'include',
+    body: JSON.stringify({ email }),
+  });
+  // Always returns 200 to prevent account enumeration
+  if (!res.ok) {
+    throw new Error(`Request failed (${res.status})`);
+  }
+}
+
+export async function verifyMagicLink(token: string): Promise<LoginResponse> {
+  const res = await fetch(api('/auth/magic-link/verify'), {
+    method: 'POST',
+    headers: apiHeaders(),
+    credentials: 'include',
+    body: JSON.stringify({ token }),
   });
   return readJson<LoginResponse>(res);
 }

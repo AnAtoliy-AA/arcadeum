@@ -43,6 +43,7 @@ export async function claimDailyRewardAction(): Promise<ClaimDailyRewardResult> 
   }
 
   revalidatePath('/wallet');
+  revalidatePath('/rewards');
   revalidatePath('/');
   return { ok: true, result: data };
 }

@@ -205,11 +205,6 @@ export default function SettingsContent({
       ]);
       await logoutSession().catch(() => {});
       useSessionStore.getState().clearTokens();
-      try {
-        sessionStorage.removeItem('web_auth_email');
-      } catch {
-        // ignore
-      }
       window.location.replace('/');
     } else {
       router.push('/auth');

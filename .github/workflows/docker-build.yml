@@ -1,5 +1,7 @@
 name: Docker Build & Push
 
+permissions: read-all
+
 on:
   push:
     branches: [main]
@@ -77,7 +79,7 @@ jobs:
           cache-to: type=gha,scope=worker,mode=max
 
       - name: Run Trivy vulnerability scanner (BE)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           format: 'sarif'
@@ -85,7 +87,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Run Trivy vulnerability scanner (Worker)
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.WORKER_IMAGE_NAME }}:latest
           format: 'sarif'
@@ -93,13 +95,13 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
 
       - name: Upload Trivy Worker scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-worker-results.sarif'

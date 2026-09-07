@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
 import { User } from '../auth/schemas/user.schema';
 import { WalletService } from '../wallet/wallet.service';
 import { InventoryService } from '../shop/services/inventory.service';
@@ -14,7 +13,6 @@ import {
   CURRENT_SEASON,
   currentTierForXp,
   isPremiumRole,
-  xpForStats,
   type BattlePassReward,
   type BattlePassTier,
 } from './battle-pass.constants';
@@ -29,17 +27,18 @@ export class BattlePassService {
     private readonly progressModel: Model<BattlePassProgressDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
-    private readonly stats: GameHistoryStatsService,
     private readonly wallet: WalletService,
     private readonly inventory: InventoryService,
   ) {}
 
   private async resolveXp(userId: string): Promise<number> {
     try {
-      const playerStats = await this.stats.getPlayerStats(userId);
-      return xpForStats(playerStats.totalGames, playerStats.wins);
+      const user = await this.userModel
+        .findById(userId)
+        .select('xp')
+        .lean<{ xp?: number } | null>();
+      return user?.xp ?? 0;
     } catch {
-      // No history yet (new player) — start at zero XP rather than failing.
       return 0;
     }
   }
@@ -117,6 +116,29 @@ export class BattlePassService {
         await this.inventory.grant(userId, reward.itemId, key);
       }
     }
+  }
+
+  /**
+   * Award XP to a player after a game. XP is persisted on the user document
+   * so it survives across sessions and seasons. The formula mirrors the
+   * original derivation: 10 XP per game played + 40 XP bonus for a win.
+   */
+  async awardGameXp(playerIds: string[], winners: string[]): Promise<void> {
+    const humanIds = playerIds.filter((id) => !id.startsWith('bot-'));
+    if (humanIds.length === 0) return;
+
+    const bulkOps = humanIds.map((userId) => {
+      const isWinner = winners.includes(userId);
+      const xpGain = 10 + (isWinner ? 40 : 0);
+      return {
+        updateOne: {
+          filter: { _id: userId },
+          update: { $inc: { xp: xpGain } },
+        },
+      };
+    });
+
+    await this.userModel.bulkWrite(bulkOps);
   }
 
   async claim(userId: string, tier: number): Promise<ClaimResultDto> {

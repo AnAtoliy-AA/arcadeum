@@ -1,5 +1,7 @@
 name: Deploy to OCI (Dev)
 
+permissions: read-all
+
 on:
   push:
     branches: [staging]
@@ -26,7 +28,7 @@ jobs:
       be-or-tg: ${{ steps.filter.outputs.be-or-tg }}
     steps:
       - uses: actions/checkout@v7
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |

@@ -234,9 +234,11 @@ export class LeaderboardsService {
     let equippedBannerId: string | null = null;
     let equippedGameSkinId: string | null = null;
     let equippedBackgroundId: string | null = null;
+    let xp = 0;
     if (Types.ObjectId.isValid(userId)) {
       const userDoc = await this.userModel
         .findById(userId, {
+          xp: 1,
           equippedAvatarId: 1,
           equippedBadgeId: 1,
           equippedNameColorId: 1,
@@ -247,6 +249,7 @@ export class LeaderboardsService {
           equippedBackgroundId: 1,
         })
         .lean<{
+          xp?: number | null;
           equippedAvatarId?: string | null;
           equippedBadgeId?: string | null;
           equippedNameColorId?: string | null;
@@ -257,6 +260,7 @@ export class LeaderboardsService {
           equippedBackgroundId?: string | null;
         } | null>();
       if (userDoc) {
+        xp = userDoc.xp ?? 0;
         equippedAvatarId = userDoc.equippedAvatarId ?? null;
         equippedBadgeId = userDoc.equippedBadgeId ?? null;
         equippedNameColorId = userDoc.equippedNameColorId ?? null;
@@ -272,6 +276,7 @@ export class LeaderboardsService {
       player: hydratePlayer(primary.entry),
       modeRanks,
       squad,
+      xp,
       equippedAvatarId,
       equippedBadgeId,
       equippedNameColorId,

@@ -19,12 +19,7 @@ import type {
   LocalAuthState,
   SessionTokensSnapshot,
 } from './types';
-import {
-  decryptSensitiveValue,
-  encryptSensitiveValue,
-} from '@/entities/session/lib/encryptSensitive';
 
-const EMAIL_STORAGE_KEY = 'web_auth_email';
 
 export type UseLocalAuthResult = LocalAuthState & {
   register: (params: {
@@ -33,42 +28,16 @@ export type UseLocalAuthResult = LocalAuthState & {
     username: string;
     referralCode?: string;
   }) => Promise<void>;
-  login: (params: { email: string; password: string }) => Promise<void>;
+  login: (params: {
+    email: string;
+    password: string;
+    rememberMe?: boolean;
+  }) => Promise<void>;
   toggleMode: () => void;
   logout: () => Promise<void>;
   checkSession: () => Promise<void>;
   setMode: (mode: LocalAuthMode) => void;
 };
-
-function readStoredEmail(): string | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  try {
-    const value = window.sessionStorage.getItem(EMAIL_STORAGE_KEY);
-    return value ? decryptSensitiveValue(value) : null;
-  } catch {
-    return null;
-  }
-}
-
-function persistEmail(value: string | null) {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  try {
-    if (value) {
-      window.sessionStorage.setItem(
-        EMAIL_STORAGE_KEY,
-        encryptSensitiveValue(value),
-      );
-    } else {
-      window.sessionStorage.removeItem(EMAIL_STORAGE_KEY);
-    }
-  } catch {
-    // ignore
-  }
-}
 
 function mergeSnapshot(
   session: SessionTokensValue,
@@ -91,6 +60,8 @@ function mergeSnapshot(
       response.user?.username ??
       response.user?.email ??
       null,
+    role: response.user?.role ?? null,
+    xp: response.user?.xp ?? 0,
   });
 }
 
@@ -159,7 +130,6 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
           username: username.trim(),
           referralCode,
         });
-        persistEmail(email.trim());
         setState((current) => ({
           ...current,
           loading: false,
@@ -181,18 +151,29 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   );
 
   const login = useCallback(
-    async ({ email, password }: { email: string; password: string }) => {
+    async ({
+      email,
+      password,
+      rememberMe,
+    }: {
+      email: string;
+      password: string;
+      rememberMe?: boolean;
+    }) => {
       const trimmedEmail = email.trim();
       setState((current) => ({ ...current, loading: true, error: null }));
       try {
-        const response = await loginMutation({ email: trimmedEmail, password });
+        const response = await loginMutation({
+          email: trimmedEmail,
+          password,
+          rememberMe,
+        });
         const snapshot = await mergeSnapshot(
           session,
           response,
           'local',
           trimmedEmail,
         );
-        persistEmail(trimmedEmail);
         applySnapshot(snapshot);
         // Force Server Components to re-render with the new cookie so the
         // header BalanceChip (and any other authed SSR data) shows immediately.
@@ -214,7 +195,6 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
   const logout = useCallback(async () => {
     await logoutSession().catch(() => {});
     await session.clearTokens();
-    persistEmail(null);
     hasCheckedOnceRef.current = false;
     setState((current) => ({
       ...current,
@@ -227,7 +207,6 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
 
   const checkSession = useCallback(async () => {
     setState((current) => ({ ...current, loading: true, error: null }));
-    const storedEmail = readStoredEmail();
     try {
       const baseSnapshot = session.hydrated
         ? session.snapshot
@@ -246,7 +225,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
           ...current,
           loading: false,
           accessToken: null,
-          email: storedEmail,
+          email: null,
           username: null,
           displayName: null,
         }));
@@ -263,7 +242,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
           refreshTokenExpiresAt: baseSnapshot.refreshTokenExpiresAt,
           tokenType: baseSnapshot.tokenType,
           userId: profile.id ?? baseSnapshot.userId,
-          email: profile.email ?? storedEmail ?? baseSnapshot.email,
+          email: profile.email ?? baseSnapshot.email,
           username: profile.username ?? baseSnapshot.username,
           displayName:
             profile.displayName ??
@@ -271,6 +250,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
             profile.email ??
             baseSnapshot.displayName,
           role: profile.role ?? baseSnapshot.role,
+          xp: profile.xp ?? baseSnapshot.xp ?? 0,
         });
         applySnapshot(merged);
       } catch (profileError) {
@@ -288,7 +268,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
             refreshTokenExpiresAt: refreshed.refreshTokenExpiresAt,
             tokenType: refreshed.tokenType,
             userId: profile.id ?? refreshed.userId,
-            email: profile.email ?? storedEmail ?? refreshed.email,
+            email: profile.email ?? refreshed.email,
             username: profile.username ?? refreshed.username,
             displayName:
               profile.displayName ??
@@ -296,6 +276,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
               profile.email ??
               refreshed.displayName,
             role: profile.role ?? refreshed.role,
+            xp: profile.xp ?? refreshed.xp ?? 0,
           });
           applySnapshot(merged);
         } catch (retryError) {
@@ -304,7 +285,7 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
             ...current,
             loading: false,
             accessToken: null,
-            email: storedEmail,
+            email: null,
             username: null,
             displayName: null,
             error:

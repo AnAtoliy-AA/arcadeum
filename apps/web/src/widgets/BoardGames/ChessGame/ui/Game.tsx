@@ -18,15 +18,20 @@ import type { ChessGameProps, ChessClientState } from '../types';
 import { FILES, type BoardPosition, type File, type PieceType } from '../types';
 import { useChessState } from '../hooks/useChessState';
 import { useChessActions } from '../hooks/useChessActions';
+import { useChessSounds } from '../hooks/useChessSounds';
 import { useChessCoach } from '../hooks/useChessCoach';
+import { useStockfishAnalysis } from '../hooks/useStockfishAnalysis';
 import { calculateOptimisticChessState } from '../lib/optimisticMove';
 import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
+import { downloadPGN } from '../lib/pgn';
+import { findKingPosition } from '../lib/board-utils';
 import { ChessLobby } from './ChessLobby';
 import { ChessBoardPanel } from './ChessBoardPanel';
 import { ChessGameResultModal } from './ChessGameResultModal';
 import { PromotionModal } from './PromotionModal';
 import { RulesModal } from './RulesModal';
 import { ChessThemeProvider } from '../lib/ChessThemeContext';
+import { getBotPersonality } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 
 function ChessGameImpl({
   roomId,
@@ -52,8 +57,17 @@ function ChessGameImpl({
     setStartBusy,
     session,
   } = useChessState({ roomId, currentUserId, initialSession });
-  const { startSession, movePiece, resign, offerDraw, acceptDraw } =
-    useChessActions({ roomId, userId: currentUserId });
+  const { playSound } = useChessSounds();
+  const {
+    startSession,
+    movePiece,
+    resign,
+    offerDraw,
+    acceptDraw,
+    offerTakeback,
+    acceptTakeback,
+    declineTakeback,
+  } = useChessActions({ roomId, userId: currentUserId });
   const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(
     null,
   );
@@ -92,6 +106,14 @@ function ChessGameImpl({
   );
 
   const coach = useChessCoach({ room, currentUserId, displaySnapshot });
+
+  // Stockfish 19 live analysis (latest stable, released 2026-09-05)
+  const { eval: liveEval, analyzing: liveEvalAnalyzing } = useStockfishAnalysis(
+    {
+      roomId,
+      enabled: !isGameOver && !isLobby,
+    },
+  );
   const applyOptimisticMove = useCallback(
     (
       fromFile: File,
@@ -116,12 +138,27 @@ function ChessGameImpl({
     [snapshot],
   );
   const resolveDisplayNameBound = useCallback(
-    (id?: string | null) =>
-      resolveDisplayName(id, {
+    (id?: string | null) => {
+      const gameOpts = room?.gameOptions as Record<string, unknown> | undefined;
+      let botLabel: string | undefined;
+      if (id?.startsWith('bot-') && displaySnapshot?.players) {
+        const player = displaySnapshot.players.find((p) => p.playerId === id);
+        if (player) {
+          const perColorKey = player.color === 'white' ? 'botPersonalityWhite' : 'botPersonalityBlack';
+          const personalityId = (gameOpts?.[perColorKey] as string) ?? (gameOpts?.botPersonality as string);
+          if (personalityId) {
+            const personality = getBotPersonality(personalityId);
+            if (personality) botLabel = personality.name;
+          }
+        }
+      }
+      return resolveDisplayName(id, {
         currentUserId,
         members: room?.members,
         playerOrder: displaySnapshot?.players.map((p) => p.playerId),
-      }),
+        botLabel,
+      });
+    },
     [currentUserId, room, displaySnapshot],
   );
   const sendChat = useGameChatSend(roomId, currentUserId, 'chess_v1');
@@ -170,7 +207,10 @@ function ChessGameImpl({
     toggle: toggleResult,
   } = useGameResultModal(session, result, resultMessages, isGameOver);
 
-  const isFlipped = myColor === 'black';
+  const [flipped, setFlipped] = useState(myColor === 'black');
+  const [confirmMoves, setConfirmMoves] = useState(false);
+
+  const toggleFlip = useCallback(() => setFlipped((f) => !f), []);
   const lastMove = useMemo(() => {
     if (!displaySnapshot?.moveHistory.length) return null;
     const last =
@@ -187,19 +227,7 @@ function ChessGameImpl({
       )
       .map((m) => m.to);
   }, [selectedSquare, displaySnapshot]);
-  const kingPosition = (() => {
-    if (!displaySnapshot) return null;
-    for (let row = 0; row < 8; row++)
-      for (let col = 0; col < 8; col++) {
-        const p = displaySnapshot.board[row]?.[col];
-        if (p?.type === 'king' && p.color === displaySnapshot.currentTurnColor)
-          return {
-            file: FILES[col],
-            rank: (8 - row) as import('../types').Rank,
-          };
-      }
-    return null;
-  })();
+  const kingPosition = displaySnapshot ? findKingPosition(displaySnapshot) : null;
 
   const handleSquareClick = useCallback(
     (file: File, rank: import('../types').Rank) => {
@@ -226,6 +254,8 @@ function ChessGameImpl({
               rank,
             );
             movePiece(selectedSquare.file, selectedSquare.rank, file, rank);
+            const capturedPiece = displaySnapshot?.board[8 - rank]?.[FILES.indexOf(file)];
+            playSound(capturedPiece ? 'capture' : 'move');
           }
           setSelectedSquare(null);
           return;
@@ -247,6 +277,7 @@ function ChessGameImpl({
       isGameOver,
       movePiece,
       applyOptimisticMove,
+      playSound,
     ],
   );
 
@@ -327,6 +358,11 @@ function ChessGameImpl({
     [displaySnapshot, isGameOver, currentUserId, resolveDisplayNameBound, t],
   );
 
+  const liveAlternatives = useMemo(() => {
+    if (!liveEval || !('alternatives' in liveEval)) return null;
+    return (liveEval as Record<string, unknown>).alternatives as Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> | null;
+  }, [liveEval]);
+
   if (!room) return null;
   if (isLobby)
     return (
@@ -357,7 +393,7 @@ function ChessGameImpl({
     <ChessBoardPanel
       snapshot={displaySnapshot}
       myColor={myColor}
-      isFlipped={isFlipped}
+      isFlipped={flipped}
       displayMyTurn={displayMyTurn}
       isGameOver={isGameOver}
       isSpectator={isSpectator}
@@ -375,6 +411,16 @@ function ChessGameImpl({
       onOfferDraw={offerDraw}
       onResign={resign}
       onAcceptDraw={acceptDraw}
+      onOfferTakeback={offerTakeback}
+      onAcceptTakeback={acceptTakeback}
+      onDeclineTakeback={declineTakeback}
+      liveEval={liveEval}
+      liveEvalAnalyzing={liveEvalAnalyzing}
+      onFlipBoard={toggleFlip}
+      onExportPgn={() => { if (displaySnapshot) downloadPGN(displaySnapshot); }}
+      onToggleConfirmMoves={() => setConfirmMoves((c) => !c)}
+      confirmMoves={confirmMoves}
+      moveCandidates={liveAlternatives}
     />
   );
   const themeVariant =
@@ -394,6 +440,8 @@ function ChessGameImpl({
         t={t}
         messages={resultMessages}
         snapshot={displaySnapshot}
+        myColor={myColor}
+        isSpectator={isSpectator}
         theme={themeVariant}
       />
       <RematchInvitationModal

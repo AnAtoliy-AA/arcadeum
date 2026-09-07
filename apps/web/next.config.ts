@@ -40,6 +40,10 @@ const bundleAnalyzer = withBundleAnalyzer({
 
 const withPWA = withPWAInit({
   dest: 'public',
+  // Disable in local dev and during E2E test builds. NEXT_PUBLIC_E2E is
+  // set by the Playwright CI config so PWA is off during tests. The flag
+  // is also a NEXT_PUBLIC_ var, so it leaks to the client bundle — but
+  // staging and production never set it, keeping PWA enabled there.
   disable:
     process.env.NODE_ENV === 'development' ||
     process.env.NEXT_PUBLIC_E2E === 'true',

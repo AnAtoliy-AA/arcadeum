@@ -1,8 +1,18 @@
 import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, beforeEach } from 'vitest';
 import { ChessBoard } from './ChessBoard';
 import type { Board, File, Rank, PieceColor } from '../types';
 import { FILES } from '../types';
+
+beforeEach(() => {
+  if (typeof globalThis.ResizeObserver === 'undefined') {
+    (globalThis as Record<string, unknown>).ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+  }
+});
 
 function createEmptyBoard(): Board {
   return Array.from({ length: 8 }, () => Array(8).fill(null));

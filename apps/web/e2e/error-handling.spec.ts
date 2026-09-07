@@ -14,7 +14,9 @@ test.describe('Error Handling', () => {
     // Title: Something went wrong!
 
     await expect(page.getByText(/something went wrong/i)).toBeVisible();
-    await expect(page.getByText('This is a test crash!')).toBeVisible();
+    await expect(
+      page.locator('#main-content').getByText('This is a test crash!'),
+    ).toBeVisible();
 
     // Check for the Try Again button
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();

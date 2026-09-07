@@ -1,0 +1,159 @@
+.pachisi-board {
+  display: grid;
+  grid-template-columns: repeat(15, minmax(0, 1fr));
+  grid-template-rows: repeat(15, minmax(0, 1fr));
+  background: var(--pachisi-board-bg);
+  border-color: var(--pachisi-yard-border);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+@for $i from 1 through 15 {
+  .pachisi-row-#{$i} {
+    grid-row-start: #{$i};
+  }
+  .pachisi-col-#{$i} {
+    grid-column-start: #{$i};
+  }
+}
+
+.pachisi-yard-area-0 {
+  grid-row: 1 / span 6;
+  grid-column: 1 / span 6;
+}
+
+.pachisi-yard-area-1 {
+  grid-row: 1 / span 6;
+  grid-column: 10 / span 6;
+}
+
+.pachisi-yard-area-2 {
+  grid-row: 10 / span 6;
+  grid-column: 10 / span 6;
+}
+
+.pachisi-yard-area-3 {
+  grid-row: 10 / span 6;
+  grid-column: 1 / span 6;
+}
+
+.pachisi-center-home-area {
+  grid-row: 7 / span 3;
+  grid-column: 7 / span 3;
+}
+
+.pachisi-yard {
+  background: var(--pachisi-yard-bg);
+  border-color: var(--pachisi-yard-border);
+}
+
+.pachisi-yard-seat-0 {
+  border-color: var(--pachisi-seat-0);
+}
+
+.pachisi-yard-seat-1 {
+  border-color: var(--pachisi-seat-1);
+}
+
+.pachisi-yard-seat-2 {
+  border-color: var(--pachisi-seat-2);
+}
+
+.pachisi-yard-seat-3 {
+  border-color: var(--pachisi-seat-3);
+}
+
+.pachisi-cell {
+  background: var(--pachisi-cell-bg);
+  border-color: var(--pachisi-cell-border);
+}
+
+.pachisi-cell-seat-0 {
+  background: color-mix(in srgb, var(--pachisi-seat-0) 40%, transparent);
+}
+
+.pachisi-cell-seat-1 {
+  background: color-mix(in srgb, var(--pachisi-seat-1) 40%, transparent);
+}
+
+.pachisi-cell-seat-2 {
+  background: color-mix(in srgb, var(--pachisi-seat-2) 40%, transparent);
+}
+
+.pachisi-cell-seat-3 {
+  background: color-mix(in srgb, var(--pachisi-seat-3) 40%, transparent);
+}
+
+.pachisi-cell-star {
+  color: var(--pachisi-safe-star);
+}
+
+.pachisi-lane-seat-0 {
+  background: color-mix(in srgb, var(--pachisi-seat-0) 35%, transparent);
+  border-color: var(--pachisi-cell-border);
+}
+
+.pachisi-lane-seat-1 {
+  background: color-mix(in srgb, var(--pachisi-seat-1) 35%, transparent);
+  border-color: var(--pachisi-cell-border);
+}
+
+.pachisi-lane-seat-2 {
+  background: color-mix(in srgb, var(--pachisi-seat-2) 35%, transparent);
+  border-color: var(--pachisi-cell-border);
+}
+
+.pachisi-lane-seat-3 {
+  background: color-mix(in srgb, var(--pachisi-seat-3) 35%, transparent);
+  border-color: var(--pachisi-cell-border);
+}
+
+.pachisi-center-home {
+  background: var(--pachisi-center-home);
+  border-color: var(--pachisi-cell-border);
+}
+
+.pachisi-token {
+  border-color: var(--pachisi-token-border);
+}
+
+.pachisi-token-seat-0 {
+  background: var(--pachisi-seat-0);
+}
+
+.pachisi-token-seat-1 {
+  background: var(--pachisi-seat-1);
+}
+
+.pachisi-token-seat-2 {
+  background: var(--pachisi-seat-2);
+}
+
+.pachisi-token-seat-3 {
+  background: var(--pachisi-seat-3);
+}
+
+.pachisi-score-pill-seat-0 {
+  background: color-mix(in srgb, var(--pachisi-seat-0) 20%, transparent);
+}
+
+.pachisi-score-pill-seat-1 {
+  background: color-mix(in srgb, var(--pachisi-seat-1) 20%, transparent);
+}
+
+.pachisi-score-pill-seat-2 {
+  background: color-mix(in srgb, var(--pachisi-seat-2) 20%, transparent);
+}
+
+.pachisi-score-pill-seat-3 {
+  background: color-mix(in srgb, var(--pachisi-seat-3) 20%, transparent);
+}
+
+.pachisi-die {
+  background: var(--pachisi-dice-face, #1e293b);
+  border-color: var(--pachisi-dice-border, rgba(255, 255, 255, 0.25));
+  color: var(--pachisi-dice-dot, #ffffff);
+}
+
+.pachisi-die-dot {
+  fill: var(--pachisi-dice-dot, currentColor);
+}

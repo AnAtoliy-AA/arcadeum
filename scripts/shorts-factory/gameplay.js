@@ -82,7 +82,7 @@ const CONFIG = {
   outputDir: path.join(__dirname, '..', '..', 'output'),
   pendingDir: path.join(__dirname, '..', '..', 'pending'),
   fullDuration: { min: 45000, max: 55000 },
-  shortDuration: { min: 10, max: 15 },
+  shortDuration: { min: 15, max: 25 },
   fadeOutDuration: 1.5,
   endCardDuration: 2.5,
   enableApproval: process.env.SHORTS_FACTORY_APPROVAL === 'true',
@@ -100,7 +100,45 @@ const CONFIG = {
   // Bot account for authenticated gameplay recording
   botToken: process.env.SHORTS_FACTORY_BOT_TOKEN || '',
   botRefreshToken: process.env.SHORTS_FACTORY_BOT_REFRESH_TOKEN || '',
+  botEmail: process.env.SHORTS_FACTORY_BOT_EMAIL || '',
+  botPassword: process.env.SHORTS_FACTORY_BOT_PASSWORD || '',
+  beUrl: process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
 };
+
+// ============================================================================
+// BOT AUTH — auto-login if no token set
+// ============================================================================
+
+async function getBotTokens() {
+  if (CONFIG.botToken) {
+    log('info', 'Using existing SHORTS_FACTORY_BOT_TOKEN from env');
+    return { accessToken: CONFIG.botToken, refreshToken: CONFIG.botRefreshToken };
+  }
+
+  if (!CONFIG.botEmail || !CONFIG.botPassword) {
+    log('warn', 'No bot credentials configured (SHORTS_FACTORY_BOT_EMAIL/PASSWORD)');
+    return null;
+  }
+
+  log('info', `Auto-login as bot user: ${CONFIG.botEmail}`);
+  try {
+    const res = await axios.post(`${CONFIG.beUrl}/auth/login`, {
+      email: CONFIG.botEmail,
+      password: CONFIG.botPassword,
+    }, { timeout: 15000 });
+
+    const { accessToken, refreshToken } = res.data || {};
+    if (accessToken) {
+      log('info', 'Bot login successful');
+      return { accessToken, refreshToken: refreshToken || '' };
+    }
+    log('warn', 'Bot login returned no accessToken');
+    return null;
+  } catch (err) {
+    log('warn', 'Bot login failed', { error: err.message, status: err.response?.status });
+    return null;
+  }
+}
 
 // ============================================================================
 // GAME DEFINITIONS
@@ -112,6 +150,11 @@ const GAMES = [
     slug: 'sea_battle_v1',
     url: '/en/games/sea-battle',
     hookText: '⚓ SINK ENEMY FLEET!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(0,124,240,0.95), rgba(0,223,216,0.95))',
+      shadow: 'rgba(0,124,240,0.6)',
+    },
     actionPhrases: [
       '💥 MISSILE LAUNCH!',
       '🎯 DIRECT HIT!',
@@ -120,6 +163,7 @@ const GAMES = [
     captions: [
       'Can you sink their entire fleet before yours goes down? ⚓💥 Play free on arcadeum.games #seabattle #battleship #gaming #shorts',
       'Master naval strategy and outplay bots & friends! 🚢🌊 No download required on arcadeum.games #seabattlegame #strategy #multiplayer',
+      'One wrong move and your fleet is GONE ⚓😱 Play Sea Battle on arcadeum.games #seabattle #naval #gaming',
     ],
     moves: [],
     async waitForGame(page) {
@@ -207,15 +251,27 @@ const GAMES = [
     name: 'chess',
     slug: 'chess_v1',
     url: '/en/games/chess',
-    hookText: '♟️ TACTICAL CHECKMATE?',
+    hookText: '♟️ STOCKFISH 19 POWERED CHESS',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(30,30,30,0.95), rgba(212,175,55,0.95))',
+      shadow: 'rgba(212,175,55,0.6)',
+    },
     actionPhrases: [
+      '🧠 STOCKFISH 19 ANALYSIS!',
       '👑 SMART OPENING!',
       '⚔️ PIECE CAPTURE!',
       '⚡ TACTICAL STRIKE!',
+      '🎯 PUZZLE RUSH!',
+      '📊 GAME REVIEW!',
     ],
     captions: [
-      'Spot the winning move in 3 seconds! ♟️👑 Play online at arcadeum.games #chess #chessgame #checkmate #boardgames',
-      'Fast-paced multiplayer chess in your browser! 🏆 No install needed on arcadeum.games #chessreels #strategy #arcadeum',
+      'Chess powered by Stockfish 19 — the strongest open-source engine ♟️🧠 Play free at arcadeum.games #chess #stockfish #chessengine #onlinechess',
+      'Bullet, blitz, rapid, or daily — every time control available ⚡⏱ Play vs AI or friends at arcadeum.games #chess #bulletchess #blitzchess',
+      '12 unique AI bot personalities rated 400–2800 🤖 Pick your opponent and improve your game at arcadeum.games #chess #aichess #chessbot',
+      'Puzzle Rush — solve as many tactics as you can in 3 minutes 🧩🔥 Sharpen your skills at arcadeum.games #puzzlerush #chesstactics #puzzles',
+      '6 chess variants: Standard, Chess960, Atomic, Crazyhouse, King of the Hill, Three-Check 🎲 Try them all at arcadeum.games #chess960 #variantchess',
+      'Real-time Stockfish 19 analysis + game review with accuracy scores 📊🎯 Improve fast at arcadeum.games #chessanalysis #gamereview #chessimprovement',
     ],
     moves: [
       { from: 'e2', to: 'e4' },
@@ -274,10 +330,16 @@ const GAMES = [
     slug: 'checkers_v1',
     url: '/en/games/checkers',
     hookText: '🔴 MASTER THE DIAGONALS!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(220,38,38,0.95), rgba(30,30,30,0.95))',
+      shadow: 'rgba(220,38,38,0.6)',
+    },
     actionPhrases: ['👑 KING ME!', '🎯 JUMP & CAPTURE!', '⚡ PERFECT MOVE!'],
     captions: [
       'Diagonal jumps and double captures! 🔴⚫ Can you win? Play on arcadeum.games #checkers #draughts #boardgames',
       'Outsmart your opponent in classic Checkers! 🏆 Free at arcadeum.games #boardgamereels #tactics #arcadeum',
+      'Checkers speed run — can you king ALL your pieces? 🔴⚫ arcadeum.games #checkers #boardgame #quickplay',
     ],
     moves: [],
     async waitForGame(page) {
@@ -334,9 +396,16 @@ const GAMES = [
     slug: 'tic_tac_toe_v1',
     url: '/en/games/tic-tac-toe',
     hookText: '❌ SPEED SHOWDOWN! ⭕',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(34,197,94,0.95), rgba(255,255,255,0.95))',
+      shadow: 'rgba(34,197,94,0.6)',
+    },
     actionPhrases: ['🔥 FAST MOVE!', '🎯 3 IN A ROW!', '⚡ PERFECT TRAP!'],
     captions: [
       'Classic Tic-Tac-Toe speed challenge! ❌⭕ Play free on arcadeum.games #tictactoe #speedgame #arcadeum',
+      'Think Tic-Tac-Toe is easy? Try it with REAL opponents ❌⭕ arcadeum.games #tictactoe #multiplayer #gaming',
+      'Win in under 5 seconds ⚡❌⭕ Play Tic-Tac-Toe now on arcadeum.games #speedgame #quickplay',
     ],
     moves: [
       { row: 1, col: 1 },
@@ -377,9 +446,16 @@ const GAMES = [
     slug: 'cascade_v1',
     url: '/en/games/cascade',
     hookText: '🃏 COLOR MATCH COMBOS!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(168,85,247,0.95), rgba(236,72,153,0.95))',
+      shadow: 'rgba(168,85,247,0.6)',
+    },
     actionPhrases: ['🌈 COLOR SWITCH!', '⚡ CARD COMBO!', '💥 POWER PLAY!'],
     captions: [
       'Fast multiplayer card matching mayhem! 🃏🌈 Free at arcadeum.games #cardgames #cascade #partygames',
+      'Cascade is DEEPER than you think 🎴🔥 Master the strategy on arcadeum.games #cardgame #strategy #gaming',
+      'Color combos that make your brain EXPLODE 🌈💥 Play Cascade free on arcadeum.games #cascade #cardgame',
     ],
     moves: [],
     _lastLabel: null,
@@ -462,9 +538,16 @@ const GAMES = [
     slug: 'critical_v1',
     url: '/en/games/critical',
     hookText: '⚡ ULTIMATE CARD BATTLE!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(249,115,22,0.95), rgba(239,68,68,0.95))',
+      shadow: 'rgba(249,115,22,0.6)',
+    },
     actionPhrases: ['💥 COMBO HIT!', '🛡️ SHIELD UP!', '⚡ CRITICAL STRIKE!'],
     captions: [
       'Stack your deck and unleash critical combos! ⚡🃏 Play on arcadeum.games #cardbattler #criticalgame #gaming',
+      'Critical hits feel SO satisfying ⚡🔥 Can you survive 10 rounds? arcadeum.games #critical #cardbattler',
+      'Build your deck. Destroy your opponent. ⚡🃏 Play Critical on arcadeum.games #cardgame #battle',
     ],
     moves: [],
     async waitForGame(page) {
@@ -507,9 +590,16 @@ const GAMES = [
     slug: 'backgammon_v1',
     url: '/en/games/backgammon',
     hookText: '🎲 ROLL FOR VICTORY!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(120,53,15,0.95), rgba(217,119,6,0.95))',
+      shadow: 'rgba(217,119,6,0.6)',
+    },
     actionPhrases: ['🎲 DOUBLE SIX!', '🏃 BEAR OFF!', '👑 BOARD DOMINATION!'],
     captions: [
       'Master the ancient art of Backgammon! 🎲🏆 Play online for free on arcadeum.games #backgammon #boardgame #tactics',
+      'Backgammon but make it INTENSE 🎲🔥 Roll your way to victory on arcadeum.games #backgammon #strategy #gaming',
+      'The OG dice game goes online 🎲♟️ Play Backgammon free on arcadeum.games #backgammon #boardgame',
     ],
     moves: [],
     async waitForGame(page) {
@@ -546,9 +636,16 @@ const GAMES = [
     slug: 'hearts_v1',
     url: '/en/games/hearts',
     hookText: '♥ SHOOT THE MOON!',
-    actionPhases: ['🃏 CARD PASSING!', '♠ QUEEN OF SPADES!', '🌙 MOON SHOT!'],
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(220,38,38,0.95), rgba(244,63,94,0.95))',
+      shadow: 'rgba(220,38,38,0.6)',
+    },
+    actionPhrases: ['🃏 CARD PASSING!', '♠ QUEEN OF SPADES!', '🌙 MOON SHOT!'],
     captions: [
       'Dodge Hearts and the Queen of Spades! ♥♠ Play Hearts free on arcadeum.games #hearts #cardgame #tricktaking',
+      'Can you Shoot the Moon without taking a single Heart? ♥🌙 arcadeum.games #hearts #cardgame #strategy',
+      'The Queen of Spades is coming for you ♠😱 Play Hearts on arcadeum.games #hearts #tricktaking',
     ],
     moves: [],
     async waitForGame(page) {
@@ -580,6 +677,11 @@ const GAMES = [
     slug: 'go_v1',
     url: '/en/games/go',
     hookText: '⚫⚪ SURROUND & CONQUER!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(30,30,30,0.95), rgba(255,255,255,0.95))',
+      shadow: 'rgba(100,100,100,0.6)',
+    },
     actionPhrases: [
       '⚫ STONE PLACED!',
       '⚪ GROUP CAPTURED!',
@@ -587,6 +689,8 @@ const GAMES = [
     ],
     captions: [
       'The ancient game of Go — simple rules, infinite depth! ⚫⚪ Play free on arcadeum.games #go #baduk #boardgame #strategy',
+      'Go is the DEEPEST strategy game ever made ⚫⚪ Play it free on arcadeum.games #go #baduk #strategy',
+      'Surround. Capture. Conquer. ⚫⚪ Play Go online at arcadeum.games #go #baduk #boardgame',
     ],
     moves: [],
     async waitForGame(page) {
@@ -621,9 +725,16 @@ const GAMES = [
     slug: 'glimworm_v1',
     url: '/en/games/glimworm',
     hookText: '🐍 NEON GLIMWORM!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(74,222,128,0.95), rgba(168,85,247,0.95))',
+      shadow: 'rgba(74,222,128,0.6)',
+    },
     actionPhrases: ['✨ GLOW BOOST!', '🌀 DRIFT TURN!', '💥 HIGH SCORE!'],
     captions: [
       'Glide, glow, and survive the neon grid! 🐍✨ Free at arcadeum.games #glimworm #arcade #indiegames',
+      'Snake went MULTIPLAYER and it goes HARD 🐍🔥 Play Glimworm on arcadeum.games #glimworm #snakegame',
+      'Neon vibes, addictive gameplay 🐍💜 Play Glimworm free on arcadeum.games #arcade #casualgame',
     ],
     moves: [],
     async waitForGame(page) {
@@ -647,6 +758,11 @@ const GAMES = [
     slug: 'cat_dash_v1',
     url: '/en/games/cat-dash',
     hookText: '🐱 RUN FAST, DODGE ALL!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(249,115,22,0.95), rgba(234,179,8,0.95))',
+      shadow: 'rgba(249,115,22,0.6)',
+    },
     actionPhrases: [
       '🐾 PURRFECT JUMP!',
       '⚡ SPEED BOOST!',
@@ -654,6 +770,8 @@ const GAMES = [
     ],
     captions: [
       'Dash, leap, and collect treats in Cat Dash! 🐱🏃 Free on arcadeum.games #catdash #runner #casualgames',
+      'This cat goes FAST 🐱💨 How far can you run? arcadeum.games #catdash #arcade #runner',
+      'Jump over everything. Collect everything. 🐱🐟 Play Cat Dash on arcadeum.games #catdash #runner',
     ],
     moves: [],
     async waitForGame(page) {
@@ -675,10 +793,16 @@ const GAMES = [
     slug: 'texas_holdem_v1',
     url: '/en/games/texas-holdem',
     hookText: '🃏 ALL IN OR FOLD?',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(22,101,52,0.95), rgba(217,119,6,0.95))',
+      shadow: 'rgba(22,101,52,0.6)',
+    },
     actionPhrases: ['💰 RAISE!', '🃏 POCKET ACES!', '🔥 ALL IN!'],
     captions: [
       'High-stakes poker action — can you read the bluff? 🃏💰 Play free on arcadeum.games #poker #texasholdem #cardgames',
       "Go all in or fold? Texas Hold'em with real opponents! ♠️🔥 arcadeum.games #pokergame #multiplayer #arcadeum",
+      "Your poker face vs the world 🃏😏 Play Texas Hold'em on arcadeum.games #poker #texasholdem",
     ],
     moves: [],
     async waitForGame(page) {
@@ -726,11 +850,17 @@ const GAMES = [
     name: 'spades',
     slug: 'spades_v1',
     url: '/en/games/spades',
-    hookText: '♠️ BID \u0026 DOMINATE!',
+    hookText: '♠️ BID & DOMINATE!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(30,30,30,0.95), rgba(59,130,246,0.95))',
+      shadow: 'rgba(59,130,246,0.6)',
+    },
     actionPhrases: ['♠️ TRUMP CARD!', '🎯 TRICK WON!', '👑 NIL BID!'],
     captions: [
       'Team up and dominate in Spades! ♠️🏆 Play with friends on arcadeum.games #spades #cardgame #tricktaking',
       'Can you nail the blind nil? Spades online! ♠️🔥 Free at arcadeum.games #spadesreels #strategy #arcadeum',
+      'Spades requires TRUST 🤝♠️ Play with friends on arcadeum.games #spades #multiplayer #cardgame',
     ],
     moves: [],
     async waitForGame(page) {
@@ -771,10 +901,16 @@ const GAMES = [
     slug: 'pachisi_v1',
     url: '/en/games/pachisi',
     hookText: '🎲 ROYAL RACE!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(217,119,6,0.95), rgba(168,85,247,0.95))',
+      shadow: 'rgba(217,119,6,0.6)',
+    },
     actionPhrases: ['🎲 LUCKY ROLL!', '🏃 TOKEN ADVANCE!', '👑 SAFE ZONE!'],
     captions: [
       'The ancient game of Pachisi — roll dice and race to the center! 🎲👑 arcadeum.games #pachisi #boardgame #strategy',
       'Pachisi online — will your tokens make it home? 🎲🏆 Play free on arcadeum.games #boardgamereels #classic',
+      "Roll the dice. Race home. Don't get captured! 🎲🏃 Play Pachisi on arcadeum.games #pachisi #boardgame",
     ],
     moves: [],
     async waitForGame(page) {
@@ -811,9 +947,16 @@ const GAMES = [
     slug: '2048_v1',
     url: '/en/games/2048',
     hookText: '🧩 MERGE TO WIN!',
+    hookColors: {
+      gradient:
+        'linear-gradient(135deg, rgba(20,184,166,0.95), rgba(249,115,22,0.95))',
+      shadow: 'rgba(20,184,166,0.6)',
+    },
     actionPhrases: ['🔢 BIG MERGE!', '⚡ COMBO SLIDE!', '🏆 NEW HIGH SCORE!'],
     captions: [
       'Can you reach 2048? Swipe and merge! 🧩🔥 Play on arcadeum.games #2048 #puzzle #brainteaser',
+      "2048 is ADDICTIVE — once you start you can't stop 🧩💯 Play free on arcadeum.games #2048 #puzzle #gaming",
+      'Merge tiles, chase the 2048! 🧩🏆 How high can you score? arcadeum.games #2048 #puzzle',
     ],
     moves: [],
     async waitForGame(page) {
@@ -954,13 +1097,21 @@ async function cleanOldOutput(maxAgeDays) {
 
 async function injectKineticHookOverlay(page, game) {
   try {
-    await page.evaluate((hookText) => {
-      const existing = document.getElementById('arcadeum-shorts-hook-overlay');
-      if (existing) existing.remove();
+    const colors = game.hookColors || {
+      gradient:
+        'linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(59, 130, 246, 0.95))',
+      shadow: 'rgba(139, 92, 246, 0.6)',
+    };
+    await page.evaluate(
+      ({ hookText, gradient, shadow }) => {
+        const existing = document.getElementById(
+          'arcadeum-shorts-hook-overlay',
+        );
+        if (existing) existing.remove();
 
-      const overlay = document.createElement('div');
-      overlay.id = 'arcadeum-shorts-hook-overlay';
-      overlay.style.cssText = `
+        const overlay = document.createElement('div');
+        overlay.id = 'arcadeum-shorts-hook-overlay';
+        overlay.style.cssText = `
         position: fixed;
         top: 20px;
         left: 50%;
@@ -974,11 +1125,11 @@ async function injectKineticHookOverlay(page, game) {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       `;
 
-      const badge = document.createElement('div');
-      badge.id = 'arcadeum-hook-badge';
-      badge.innerHTML = `
+        const badge = document.createElement('div');
+        badge.id = 'arcadeum-hook-badge';
+        badge.innerHTML = `
         <div style="
-          background: linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(59, 130, 246, 0.95));
+          background: ${gradient};
           color: #ffffff;
           font-size: 19px;
           font-weight: 900;
@@ -987,7 +1138,7 @@ async function injectKineticHookOverlay(page, game) {
           padding: 10px 22px;
           border-radius: 9999px;
           border: 2px solid rgba(255, 255, 255, 0.45);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(139, 92, 246, 0.6);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px ${shadow};
           display: flex;
           align-items: center;
           gap: 8px;
@@ -997,8 +1148,8 @@ async function injectKineticHookOverlay(page, game) {
         </div>
       `;
 
-      const style = document.createElement('style');
-      style.textContent = `
+        const style = document.createElement('style');
+        style.textContent = `
         @keyframes popInBounce {
           0% { transform: scale(0.4) translateY(-30px); opacity: 0; }
           70% { transform: scale(1.08) translateY(0); opacity: 1; }
@@ -1011,19 +1162,25 @@ async function injectKineticHookOverlay(page, game) {
         }
       `;
 
-      overlay.appendChild(style);
-      overlay.appendChild(badge);
-      document.body.appendChild(overlay);
+        overlay.appendChild(style);
+        overlay.appendChild(badge);
+        document.body.appendChild(overlay);
 
-      setTimeout(() => {
-        if (badge) {
-          badge.style.transition = 'all 0.5s ease';
-          badge.style.opacity = '0';
-          badge.style.transform = 'translateY(-20px) scale(0.8)';
-          setTimeout(() => badge.remove(), 500);
-        }
-      }, 3500);
-    }, game.hookText || '🎮 PLAY FREE ON ARCADEUM');
+        setTimeout(() => {
+          if (badge) {
+            badge.style.transition = 'all 0.5s ease';
+            badge.style.opacity = '0';
+            badge.style.transform = 'translateY(-20px) scale(0.8)';
+            setTimeout(() => badge.remove(), 500);
+          }
+        }, 3500);
+      },
+      {
+        hookText: game.hookText || '🎮 PLAY FREE ON ARCADEUM',
+        gradient: colors.gradient,
+        shadow: colors.shadow,
+      },
+    );
   } catch {}
 }
 
@@ -1056,6 +1213,55 @@ async function showActionBadge(page, phrase) {
         setTimeout(() => actionBadge.remove(), 400);
       }, 1500);
     }, phrase);
+  } catch {}
+}
+
+async function showMoveCounter(page, moveCount) {
+  try {
+    await page.evaluate((count) => {
+      let counter = document.getElementById('arcadeum-move-counter');
+      if (!counter) {
+        counter = document.createElement('div');
+        counter.id = 'arcadeum-move-counter';
+        counter.style.cssText = `
+          position: fixed;
+          bottom: 60px;
+          left: 16px;
+          z-index: 999999;
+          pointer-events: none;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background: rgba(0, 0, 0, 0.7);
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 700;
+          padding: 6px 14px;
+          border-radius: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(8px);
+          transition: all 0.3s ease;
+        `;
+        document.body.appendChild(counter);
+      }
+      counter.textContent = `MOVE ${count}`;
+      counter.style.opacity = '1';
+      counter.style.transform = 'scale(1.1)';
+      setTimeout(() => {
+        counter.style.transform = 'scale(1)';
+      }, 150);
+    }, moveCount);
+  } catch {}
+}
+
+async function removeMoveCounter(page) {
+  try {
+    await page.evaluate(() => {
+      const counter = document.getElementById('arcadeum-move-counter');
+      if (counter) {
+        counter.style.transition = 'all 0.3s ease';
+        counter.style.opacity = '0';
+        setTimeout(() => counter.remove(), 300);
+      }
+    });
   } catch {}
 }
 
@@ -1194,6 +1400,10 @@ async function recordSession(
     `Recording ${label} session (${viewport.width}x${viewport.height})...`,
   );
 
+  const botTokens = await getBotTokens();
+  const accessToken = botTokens?.accessToken || '';
+  const refreshToken = botTokens?.refreshToken || '';
+
   let browser = null;
 
   try {
@@ -1256,18 +1466,18 @@ async function recordSession(
         } catch {}
       },
       {
-        accessToken: CONFIG.botToken,
-        refreshToken: CONFIG.botRefreshToken,
+        accessToken,
+        refreshToken,
         gameSlugs: ALL_GAME_SLUGS,
       },
     );
 
-    if (CONFIG.botToken) {
+    if (accessToken) {
       log('info', `${label}: bot auth tokens injected into browser context`);
     } else {
       log(
         'warn',
-        `${label}: SHORTS_FACTORY_BOT_TOKEN not set — quickplay may fail if auth is required. Set it in .env to enable authenticated gameplay recording.`,
+        `${label}: No bot auth — quickplay may fail if auth is required. Set SHORTS_FACTORY_BOT_EMAIL/PASSWORD in .env.`,
       );
     }
 
@@ -1377,6 +1587,10 @@ async function recordSession(
           moveCount++;
           log('info', `${label}: move ${moveCount}`);
 
+          if (isMobile) {
+            await showMoveCounter(page, moveCount);
+          }
+
           if (
             isMobile &&
             game.actionPhrases &&
@@ -1394,6 +1608,10 @@ async function recordSession(
       } else {
         await sleep(400);
       }
+    }
+
+    if (isMobile) {
+      await removeMoveCounter(page);
     }
 
     const finalDuration = Date.now() - sessionStartTime;

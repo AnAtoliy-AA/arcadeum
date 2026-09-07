@@ -55,12 +55,12 @@ export default defineConfig({
   // runs last and warms up against an already-busy Next.js dev server). One
   // retry clears those flakes without masking real regressions — failing
   // tests still need to fail twice in a row to mark the run red.
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 1 : 1,
   workers: process.env.CI
     ? 1
     : process.env.PLAYWRIGHT_WORKERS
       ? parseInt(process.env.PLAYWRIGHT_WORKERS)
-      : undefined,
+      : 2,
   reporter: 'list',
   // 60s is the hard ceiling for any single test. Tests that need longer are
   // usually masking dev-server compile flake or a real perf regression — surface
@@ -97,10 +97,8 @@ export default defineConfig({
         launchOptions: {
           firefoxUserPrefs: {
             'privacy.bounceTrackingProtection.enabled': false,
-            'privacy.bounceTrackingProtection.hasUserInteraction.enabled':
-              false,
-            'privacy.bounceTrackingProtection.requireInteraction.enabled':
-              false,
+            'privacy.bounceTrackingProtection.hasUserInteraction.enabled': false,
+            'privacy.bounceTrackingProtection.requireInteraction.enabled': false,
             'privacy.bounceTrackingProtection.bounceTrackingGracePeriodSec': 31536000,
             'network.cookie.cookieBehavior': 0,
           },

@@ -3,6 +3,7 @@ import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
 import type { GameMessageHandlerFn } from './game-message-handler.interface';
 import { ChessService } from './chess/chess.service';
+import { ChessStockfishService } from './chess/engine/chess-stockfish.service';
 import type { ChessOptions } from './engines/chess/chess.types';
 import {
   BaseGameGateway,
@@ -17,7 +18,10 @@ export class ChessGateway extends BaseGameGateway<ChessOptions> {
   protected readonly logger = new Logger(ChessGateway.name);
   protected readonly eventPrefix = 'chess';
 
-  constructor(protected readonly gameService: ChessService) {
+  constructor(
+    protected readonly gameService: ChessService,
+    private readonly stockfishService: ChessStockfishService,
+  ) {
     super();
   }
 
@@ -47,7 +51,7 @@ export class ChessGateway extends BaseGameGateway<ChessOptions> {
   }
 
   protected getGameHandlers(): Record<string, GameMessageHandlerFn> {
-    return {
+    const handlers = {
       'chess.session.move': this.wrapHandler(
         'move',
         async (client, payload, roomId, userId) => {
@@ -112,5 +116,6 @@ export class ChessGateway extends BaseGameGateway<ChessOptions> {
         },
       ),
     };
+    return handlers;
   }
 }

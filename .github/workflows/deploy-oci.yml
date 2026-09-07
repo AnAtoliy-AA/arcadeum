@@ -1,5 +1,7 @@
 name: Deploy to OCI (Prod)
 
+permissions: read-all
+
 on:
   push:
     branches: [main]
@@ -32,7 +34,7 @@ jobs:
       shorts-factory: ${{ steps.filter.outputs.shorts-factory }}
     steps:
       - uses: actions/checkout@v7
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |

@@ -47,6 +47,8 @@ export interface AuthUserProfile {
   displayName: string;
   createdAt?: Date;
   role: UserRole;
+  /** Total XP earned across all seasons. */
+  xp: number;
   /** Currently-equipped avatar item id, or null. */
   equippedAvatarId?: string | null;
   /** Currently-equipped badge item id, or null. */
@@ -75,6 +77,35 @@ export interface GoogleUserProfile {
   name?: string;
   audience?: string;
 }
+
+/**
+ * Apple-specific user profile from OAuth.
+ */
+export interface AppleUserProfile {
+  sub: string;
+  email: string;
+  emailVerified: boolean;
+  name?: string;
+  audience?: string;
+}
+
+/**
+ * Discord-specific user profile from OAuth.
+ */
+export interface DiscordUserProfile {
+  sub: string;
+  email: string;
+  emailVerified: boolean;
+  username?: string;
+  avatar?: string;
+  discriminator?: string;
+}
+
+/**
+ * Generic OAuth user profile.
+ */
+export type OAuthUserProfile =
+  GoogleUserProfile | AppleUserProfile | DiscordUserProfile;
 
 /**
  * Full auth response with tokens and user profile.

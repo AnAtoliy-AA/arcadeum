@@ -1,5 +1,7 @@
 name: Deploy Android Preview
 
+permissions: read-all
+
 on:
   push:
     branches:

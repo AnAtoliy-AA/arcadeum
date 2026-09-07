@@ -17,6 +17,9 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import type { rewardsEn } from '@/shared/i18n/messages/pages/rewards/en';
 import { SocialRewardsSection } from '@/features/social-rewards/ui/SocialRewardsSection';
 import type { SocialRewardsStatus } from '@/features/social-rewards/server/social-rewards.types';
+import type { DailyRewardStatus } from '@/features/daily-rewards/server/daily-rewards.types';
+import { ClaimButton } from '@/features/daily-rewards/ui/ClaimButton';
+import { dailyRewardsEn } from '@/shared/i18n/messages/pages/daily-rewards/en';
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
@@ -33,21 +36,23 @@ export type RewardsMessages = DeepPartial<typeof rewardsEn>;
 export interface RewardsPageContentProps {
   t?: RewardsMessages;
   socialRewardsStatus?: SocialRewardsStatus | null;
+  dailyRewardStatus?: DailyRewardStatus | null;
 }
 
-const STREAK_DAYS = [
-  { day: 1, reward: '50 Coins', claimed: true },
-  { day: 2, reward: '75 Coins', claimed: true },
-  { day: 3, reward: '100 Coins', claimed: true },
-  { day: 4, reward: '150 Coins', ready: true },
-  { day: 5, reward: '200 Coins' },
-  { day: 6, reward: '300 Coins' },
-  { day: 7, reward: 'Mystery Chest 🎁' },
-];
+const STREAK_REWARDS = [
+  { day: 1, amount: 10 },
+  { day: 2, amount: 20 },
+  { day: 3, amount: 35 },
+  { day: 4, amount: 55 },
+  { day: 5, amount: 80 },
+  { day: 6, amount: 110 },
+  { day: 7, amount: 150, gemBonus: 1 },
+] as const;
 
 export default function RewardsPageContent({
   t: initialT,
   socialRewardsStatus,
+  dailyRewardStatus,
 }: RewardsPageContentProps) {
   const { messages } = useLanguage();
   const routes = useRoutes();
@@ -104,48 +109,107 @@ export default function RewardsPageContent({
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-                {STREAK_DAYS.map((item) => (
-                  <GlassCard
-                    key={item.day}
-                    className={cx(
-                      'flex flex-col items-center justify-between gap-3 p-4 text-center transition-all duration-200',
-                      item.ready
-                        ? 'border-[var(--primary)] bg-[var(--glassBg)] ring-2 ring-[var(--primary)]/30'
-                        : item.claimed
-                          ? 'border-[var(--success)]/40 bg-[var(--glassBg)] opacity-75'
-                          : 'border-[var(--borderColor)] opacity-90',
-                    )}
-                  >
-                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--colorMuted)]">
-                      {dailyStreak?.day
-                        ? dailyStreak.day.replace('{day}', String(item.day))
-                        : `Day ${item.day}`}
-                    </span>
-                    <span className="text-2xl">
-                      {item.day === 7 ? '🎁' : item.claimed ? '✅' : '🪙'}
-                    </span>
-                    <Typography variant="label" uiSize="xs" weight="700">
-                      {item.reward}
-                    </Typography>
-                    <span
+                {STREAK_REWARDS.map((item) => {
+                  const isClaimed =
+                    dailyRewardStatus != null &&
+                    item.day <= dailyRewardStatus.currentStreak;
+                  const isActive =
+                    dailyRewardStatus?.canClaim === true &&
+                    item.day === dailyRewardStatus.nextDay;
+                  const rewardLabel =
+                    item.day === 7
+                      ? `${item.amount} Coins + ${item.gemBonus} 💎`
+                      : `${item.amount} Coins`;
+
+                  return (
+                    <GlassCard
+                      key={item.day}
                       className={cx(
-                        'rounded-full px-2.5 py-0.5 text-[11px] font-semibold',
-                        item.claimed
-                          ? 'bg-[var(--success)]/20 text-[var(--success)]'
-                          : item.ready
-                            ? 'bg-[var(--primary)] text-white'
-                            : 'bg-white/5 text-[var(--colorMuted)]',
+                        'flex flex-col items-center justify-between gap-3 p-4 text-center transition-all duration-200',
+                        isActive
+                          ? 'border-[var(--primary)] bg-[var(--glassBg)] ring-2 ring-[var(--primary)]/30'
+                          : isClaimed
+                            ? 'border-[var(--success)]/40 bg-[var(--glassBg)] opacity-75'
+                            : 'border-[var(--borderColor)] opacity-90',
                       )}
                     >
-                      {item.claimed
-                        ? (dailyStreak?.claimed ?? 'Claimed')
-                        : item.ready
-                          ? (dailyStreak?.ready ?? 'Ready')
-                          : 'Upcoming'}
-                    </span>
-                  </GlassCard>
-                ))}
+                      <span className="text-xs font-bold uppercase tracking-wider text-[var(--colorMuted)]">
+                        {dailyStreak?.day
+                          ? dailyStreak.day.replace('{day}', String(item.day))
+                          : `Day ${item.day}`}
+                      </span>
+                      <span className="text-2xl">
+                        {item.day === 7 ? '🎁' : isClaimed ? '✅' : '🪙'}
+                      </span>
+                      <Typography variant="label" uiSize="xs" weight="700">
+                        {rewardLabel}
+                      </Typography>
+                      <span
+                        className={cx(
+                          'rounded-full px-2.5 py-0.5 text-[11px] font-semibold',
+                          isClaimed
+                            ? 'bg-[var(--success)]/20 text-[var(--success)]'
+                            : isActive
+                              ? 'bg-[var(--primary)] text-white'
+                              : 'bg-white/5 text-[var(--colorMuted)]',
+                        )}
+                      >
+                        {isClaimed
+                          ? (dailyStreak?.claimed ?? 'Claimed')
+                          : isActive
+                            ? (dailyStreak?.ready ?? 'Ready')
+                            : 'Upcoming'}
+                      </span>
+                    </GlassCard>
+                  );
+                })}
               </div>
+
+              {dailyRewardStatus && (
+                <div className="flex flex-col items-center gap-3">
+                  <ClaimButton
+                    canClaim={dailyRewardStatus.canClaim}
+                    nextRewardCoins={dailyRewardStatus.nextRewardCoins}
+                    nextRewardGems={dailyRewardStatus.nextRewardGems}
+                    labels={{
+                      claim:
+                        messages.pages?.dailyRewards?.claim ??
+                        dailyRewardsEn.claim,
+                      gemBonusSuffix:
+                        messages.pages?.dailyRewards?.gemBonusSuffix ??
+                        dailyRewardsEn.gemBonusSuffix,
+                      claimed:
+                        messages.pages?.dailyRewards?.claimed ??
+                        dailyRewardsEn.claimed,
+                      toastClaimed:
+                        messages.pages?.dailyRewards?.toasts?.claimed ??
+                        dailyRewardsEn.toasts.claimed,
+                      toastGemBonusSuffix:
+                        messages.pages?.dailyRewards?.toasts?.gemBonusSuffix ??
+                        dailyRewardsEn.toasts.gemBonusSuffix,
+                      errorAlreadyClaimed:
+                        messages.pages?.dailyRewards?.errors?.alreadyClaimed ??
+                        dailyRewardsEn.errors.alreadyClaimed,
+                      errorUnauthorized:
+                        messages.pages?.dailyRewards?.errors?.unauthorized ??
+                        dailyRewardsEn.errors.unauthorized,
+                      errorGeneric:
+                        messages.pages?.dailyRewards?.errors?.generic ??
+                        dailyRewardsEn.errors.generic,
+                    }}
+                  />
+                </div>
+              )}
+
+              {!dailyRewardStatus && (
+                <div className="flex justify-center">
+                  <Link href="/auth">
+                    <Button variant="primary" size="md">
+                      {dailyStreak?.claim ?? 'Claim Reward'}
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </Section>
 

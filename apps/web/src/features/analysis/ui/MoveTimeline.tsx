@@ -15,6 +15,8 @@ const QUALITY_CLASSES: Record<MoveQuality, string> = {
   inaccuracy: 'text-[#f59e0b]',
   mistake: 'text-[#f97316]',
   blunder: 'text-[#ef4444]',
+  brilliant: 'text-[#22c55e]',
+  great: 'text-[#10b981]',
 };
 
 interface MovePair {

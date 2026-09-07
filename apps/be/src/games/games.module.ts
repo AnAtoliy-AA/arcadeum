@@ -84,6 +84,19 @@ import { CascadeBotService } from './cascade/cascade-bot.service';
 import { ChessGateway } from './chess.gateway';
 import { ChessService } from './chess/chess.service';
 import { ChessBotService } from './engines/chess/chess-bot.service';
+import { ChessStockfishModule } from './chess/engine/chess-stockfish.module';
+import { ChessStockfishController } from './chess/engine/chess-stockfish.controller';
+import { ChessPuzzlesModule } from './chess/puzzles/chess-puzzles.module';
+import { ChessOpeningsModule } from './chess/openings/chess-openings.module';
+import { ChessTournamentModule } from './chess/tournaments/chess-tournament.module';
+import { ChessProfilesModule } from './chess/profiles/chess-profiles.module';
+import { ChessClubsModule } from './chess/clubs/chess-clubs.module';
+import { ChessAnticheatModule } from './chess/anticheat/chess-anticheat.module';
+import { ChessSubscriptionModule } from './chess/subscription/chess-subscription.module';
+import { ChessCosmeticsModule } from './chess/cosmetics/chess-cosmetics.module';
+import { ChessBattlePassModule } from './chess/battlepass/chess-battlepass.module';
+import { ChessBroadcastModule } from './chess/broadcast/chess-broadcast.module';
+import { TablebaseModule } from './chess/engine/tablebase.module';
 import { CheckersGateway } from './checkers.gateway';
 import { CheckersService } from './checkers/checkers.service';
 import { CheckersBotService } from './checkers/checkers-bot.service';
@@ -123,6 +136,7 @@ import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
 import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.module';
 import { GameRuleVisibilityModule } from '../admin/game-visibility/game-rule-visibility.module';
+import { BattlePassModule } from '../battle-pass/battle-pass.module';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 // Note: GamesModule ↔ LeaderboardsModule is a circular dep
 // (LeaderboardsService.markInMatch is called from GamesService when matches
@@ -185,6 +199,19 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     DailyChallengesModule,
     AchievementsModule,
     NotificationsModule,
+    BattlePassModule,
+    ChessStockfishModule,
+    ChessPuzzlesModule,
+    ChessOpeningsModule,
+    ChessTournamentModule,
+    ChessProfilesModule,
+    ChessClubsModule,
+    ChessAnticheatModule,
+    ChessSubscriptionModule,
+    ChessCosmeticsModule,
+    ChessBattlePassModule,
+    ChessBroadcastModule,
+    TablebaseModule,
   ],
   controllers: [
     GamesController,
@@ -192,6 +219,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameReplayController,
     LiveStatsController,
     SoloScoresController,
+    ChessStockfishController,
   ],
   providers: [
     LiveStatsService,

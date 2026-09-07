@@ -41,6 +41,7 @@ services:
       - ./apps/be/.env
     environment:
       REDIS_URL: redis://redis:6379
+      STOCKFISH_POOL_SIZE: '1'
     expose:
       - '4000'
     depends_on:
@@ -51,8 +52,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2g
-          cpus: '1.5'
+          memory: 2560m
+          cpus: '2'
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://localhost:4000/ready']
       interval: 30s
@@ -70,6 +71,7 @@ services:
       - ./apps/be/.env
     environment:
       REDIS_URL: redis://redis:6379
+      STOCKFISH_POOL_SIZE: '1'
     expose:
       - '4000'
     depends_on:
@@ -80,8 +82,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2g
-          cpus: '1.5'
+          memory: 2560m
+          cpus: '2'
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://localhost:4000/ready']
       interval: 30s

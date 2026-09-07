@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback, useMemo } from 'react';
 import { ChessBoard } from './ChessBoard';
 import { MoveList } from './MoveList';
 import {
@@ -10,6 +10,8 @@ import {
   ActionsBar,
 } from './ChessPanelComponents';
 import { CoachControls } from '@/features/coach/ui/CoachControls';
+import { LiveEvalDisplay } from './LiveEvalDisplay';
+import { OpeningExplorer } from '@/features/analysis/ui/OpeningExplorer';
 import type { UseChessCoachResult } from '../hooks/useChessCoach';
 import type { ChessClientState, BoardPosition, File, Rank } from '../types';
 import type { TranslationKey } from '@/shared/lib/useTranslation';
@@ -45,6 +47,25 @@ interface ChessBoardPanelProps {
   onOfferDraw: () => void;
   onResign: () => void;
   onAcceptDraw: () => void;
+  onOfferTakeback: () => void;
+  onAcceptTakeback: () => void;
+  onDeclineTakeback: () => void;
+  liveEval?: {
+    cp: number | null;
+    mate: number | null;
+    pv: string[];
+    depth: number;
+    selDepth: number;
+    nodes: number;
+    nps: number;
+    timeMs: number;
+  } | null;
+  liveEvalAnalyzing?: boolean;
+  onFlipBoard?: () => void;
+  onExportPgn?: () => void;
+  onToggleConfirmMoves?: () => void;
+  confirmMoves?: boolean;
+  moveCandidates?: Array<{ move: string; cp: number | null; mate: number | null; pv: string[] }> | null;
 }
 
 function ChessBoardPanelImpl({
@@ -68,11 +89,30 @@ function ChessBoardPanelImpl({
   onOfferDraw,
   onResign,
   onAcceptDraw,
+  onOfferTakeback,
+  onAcceptTakeback,
+  onDeclineTakeback,
+  liveEval,
+  liveEvalAnalyzing,
+  onFlipBoard,
+  onExportPgn,
+  onToggleConfirmMoves,
+  confirmMoves,
+  moveCandidates,
 }: ChessBoardPanelProps) {
   const [hoveredMoveIdx, setHoveredMoveIdx] = useState<number | null>(null);
+  const [spectatorPerspective, setSpectatorPerspective] = useState<'white' | 'black'>('white');
   const handleMoveHover = useCallback((idx: number | null) => {
     setHoveredMoveIdx(idx);
   }, []);
+  const togglePerspective = useCallback(() => {
+    setSpectatorPerspective((p) => (p === 'white' ? 'black' : 'white'));
+  }, []);
+
+  const currentFen = useMemo(() => {
+    if (!snapshot?.positionHistory?.length) return null;
+    return snapshot.positionHistory[snapshot.positionHistory.length - 1];
+  }, [snapshot]);
 
   if (!snapshot) return null;
 
@@ -148,19 +188,91 @@ function ChessBoardPanelImpl({
           timeControl={snapshot.timeControl}
         />
 
-        <GameInfoPanel snapshot={snapshot} t={t} />
+        <GameInfoPanel
+          snapshot={snapshot}
+          liveEval={liveEval}
+          analyzing={liveEvalAnalyzing}
+          myColor={myColor}
+          isSpectator={isSpectator}
+          spectatorPerspective={isSpectator ? spectatorPerspective : undefined}
+          onTogglePerspective={isSpectator ? togglePerspective : undefined}
+          t={t}
+        />
+
+        <LiveEvalDisplay
+          eval_={liveEval ?? null}
+          analyzing={!!liveEvalAnalyzing}
+          myColor={myColor}
+          isSpectator={isSpectator}
+          spectatorPerspective={isSpectator ? spectatorPerspective : undefined}
+          onTogglePerspective={isSpectator ? togglePerspective : undefined}
+        />
+
+        {moveCandidates && moveCandidates.length > 0 && (
+          <div className="bg-[var(--glassBg)] border border-[var(--glassBorder)] rounded-lg p-2">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--textSecondary)] mb-1">Move Candidates</div>
+            {moveCandidates.map((alt, i) => (
+              <div key={i} className="flex items-center justify-between text-xs py-0.5">
+                <span className="font-mono text-[var(--color)]">{alt.move}</span>
+                <span className="text-[var(--textSecondary)]">
+                  {alt.mate !== null ? `M${alt.mate}` : alt.cp !== null ? `${(alt.cp / 100).toFixed(1)}` : '—'}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex gap-1.5">
+          {onFlipBoard && (
+            <button
+              onClick={onFlipBoard}
+              className="flex-1 text-[10px] py-1.5 px-2 rounded bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)] transition-colors"
+            >
+              ↻ Flip
+            </button>
+          )}
+          {onExportPgn && (
+            <button
+              onClick={onExportPgn}
+              className="flex-1 text-[10px] py-1.5 px-2 rounded bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)] transition-colors"
+            >
+              ↓ PGN
+            </button>
+          )}
+          {onToggleConfirmMoves && (
+            <button
+              onClick={onToggleConfirmMoves}
+              className={`flex-1 text-[10px] py-1.5 px-2 rounded border transition-colors ${
+                confirmMoves
+                  ? 'bg-[var(--primary)]/15 border-[var(--primary)] text-[var(--primary)]'
+                  : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)]'
+              }`}
+            >
+              {confirmMoves ? '✓ Confirm' : 'Confirm'}
+            </button>
+          )}
+        </div>
+
+        {currentFen && (
+          <OpeningExplorer fen={currentFen} />
+        )}
 
         <MoveList state={snapshot} t={t} onMoveHover={handleMoveHover} />
 
         <ActionsBar
           hasDrawOffer={hasDrawOffer}
           isMyDrawOffer={isMyDrawOffer}
+          hasTakebackOffer={!!snapshot?.takebackOfferedBy}
+          isMyTakebackOffer={snapshot?.takebackOfferedBy === currentUserId}
           isGameOver={isGameOver}
           isSpectator={isSpectator}
           currentUserId={currentUserId}
           onResign={onResign}
           onOfferDraw={onOfferDraw}
           onAcceptDraw={onAcceptDraw}
+          onOfferTakeback={onOfferTakeback}
+          onAcceptTakeback={onAcceptTakeback}
+          onDeclineTakeback={onDeclineTakeback}
           t={t}
         />
 

@@ -71,6 +71,7 @@ export default function robots(): MetadataRoute.Robots {
           'meta-externalagent',
           'FacebookBot',
           'Applebot-Extended',
+          'CCBot',
         ],
         allow: '/',
         disallow: [

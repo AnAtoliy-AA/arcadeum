@@ -6,12 +6,12 @@
 
 export interface EnvConfig {
   // Database
-  MONGODB_URI: string;
+  MONGODB_OCI_URI: string;
 
   // Authentication
   AUTH_JWT_SECRET: string;
-  OAUTH_WEB_CLIENT_ID_GOOGLE: string;
-  OAUTH_WEB_CLIENT_SECRET_GOOGLE: string;
+  OAUTH_WEB_CLIENT_ID: string;
+  OAUTH_WEB_CLIENT_SECRET: string;
 
   // Apple OAuth (optional)
   APPLE_CLIENT_ID?: string;
@@ -41,10 +41,10 @@ export interface EnvConfig {
 }
 
 const REQUIRED_VARS: (keyof EnvConfig)[] = [
-  'MONGODB_URI',
+  'MONGODB_OCI_URI',
   'AUTH_JWT_SECRET',
-  'OAUTH_WEB_CLIENT_ID_GOOGLE',
-  'OAUTH_WEB_CLIENT_SECRET_GOOGLE',
+  'OAUTH_WEB_CLIENT_ID',
+  'OAUTH_WEB_CLIENT_SECRET',
 ];
 
 const warnings: string[] = [];
@@ -96,15 +96,15 @@ export function validateEnv(): EnvConfig {
     }
   }
 
-  // Validate MONGODB_URI format
-  const mongoUri = process.env.MONGODB_URI;
+  // Validate MONGODB_OCI_URI format
+  const mongoUri = process.env.MONGODB_OCI_URI;
   if (
     mongoUri &&
     !mongoUri.startsWith('mongodb://') &&
     !mongoUri.startsWith('mongodb+srv://')
   ) {
     errors.push(
-      `Invalid MONGODB_URI format. Must start with mongodb:// or mongodb+srv://`,
+      `Invalid MONGODB_OCI_URI format. Must start with mongodb:// or mongodb+srv://`,
     );
   }
 
@@ -124,10 +124,10 @@ export function validateEnv(): EnvConfig {
   }
 
   return {
-    MONGODB_URI: process.env.MONGODB_URI!,
+    MONGODB_OCI_URI: process.env.MONGODB_OCI_URI!,
     AUTH_JWT_SECRET: process.env.AUTH_JWT_SECRET!,
-    OAUTH_WEB_CLIENT_ID_GOOGLE: process.env.OAUTH_WEB_CLIENT_ID_GOOGLE!,
-    OAUTH_WEB_CLIENT_SECRET_GOOGLE: process.env.OAUTH_WEB_CLIENT_SECRET_GOOGLE!,
+    OAUTH_WEB_CLIENT_ID: process.env.OAUTH_WEB_CLIENT_ID!,
+    OAUTH_WEB_CLIENT_SECRET: process.env.OAUTH_WEB_CLIENT_SECRET!,
     APPLE_CLIENT_ID: process.env.APPLE_CLIENT_ID,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,

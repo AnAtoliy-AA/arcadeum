@@ -140,18 +140,18 @@ export function handleError(
   context: { action: string; roomId: string; userId: string },
   defaultMessage: string,
 ): never {
-  const message =
+  const internalMessage =
     error instanceof Error && typeof error.message === 'string'
       ? error.message
       : defaultMessage;
 
   if (process.env.NODE_ENV !== 'test') {
     logger.warn(
-      `Failed to ${context.action} for room ${context.roomId}, user ${context.userId}: ${message}`,
+      `Failed to ${context.action} for room ${context.roomId}, user ${context.userId}: ${internalMessage}`,
     );
   }
 
-  throw new WsException(message);
+  throw new WsException(defaultMessage);
 }
 
 export function extractCollectionComboPayload(

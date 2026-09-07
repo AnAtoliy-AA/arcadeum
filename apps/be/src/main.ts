@@ -131,8 +131,6 @@ async function bootstrap() {
     res.json({
       status: 'ok',
       timestamp: new Date().toISOString(),
-      pid: process.pid,
-      uptime: process.uptime(),
     });
   });
 

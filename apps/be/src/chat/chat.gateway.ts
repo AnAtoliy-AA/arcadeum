@@ -14,6 +14,7 @@ import { Server, Socket } from 'socket.io';
 import { plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { ChatDTO, MessageDTO } from './dtos';
+import { createChatRateLimiter } from '../games/common/socket-rate-limiter';
 import {
   maybeEncrypt,
   maybeDecrypt,
@@ -66,6 +67,7 @@ export class ChatGateway {
   ) {}
 
   private readonly logger = new Logger(ChatGateway.name);
+  private readonly rateLimiter = createChatRateLimiter();
 
   @WebSocketServer() server: Server;
 
@@ -115,6 +117,11 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     const authUserId = requireAuthUserId(client);
+
+    if (!this.rateLimiter.check(client.id)) {
+      client.emit('error', { message: 'Rate limit exceeded' });
+      return;
+    }
 
     const raw = maybeDecrypt<unknown>(payload);
     const messageDTO = await parseWsDto(MessageDTO, raw);

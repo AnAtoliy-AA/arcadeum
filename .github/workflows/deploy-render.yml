@@ -18,8 +18,6 @@ on:
           - prod
           - dev
 
-permissions: {}
-
 jobs:
   deploy-backend:
     name: Deploy Backend (${{ inputs.service || (github.ref_name == 'main' && 'prod' || 'dev') }})

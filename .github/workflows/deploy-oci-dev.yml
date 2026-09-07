@@ -18,8 +18,6 @@ on:
         required: true
         default: 'staging'
 
-permissions: {}
-
 jobs:
   changes:
     name: Detect changes

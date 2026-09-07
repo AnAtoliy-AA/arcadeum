@@ -21,8 +21,6 @@ on:
         required: true
         default: 'main'
 
-permissions: {}
-
 jobs:
   changes:
     name: Detect changes

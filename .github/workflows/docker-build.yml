@@ -16,14 +16,13 @@ env:
   IMAGE_NAME: ${{ github.repository }}/be
   WORKER_IMAGE_NAME: ${{ github.repository }}/be-worker
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   build-and-push:
     name: Build & Push Docker Images
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7

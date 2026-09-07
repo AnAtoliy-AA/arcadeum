@@ -14,8 +14,6 @@ on:
         required: false
         type: string
 
-permissions: read-all
-
 jobs:
   daily-post:
     name: Daily Develop Changelog Poster

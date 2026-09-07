@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.36] - 2026-09-07
+
+### Fixed
+- remove duplicate top-level permissions blocks from workflows
+
+
 ## [1.28.35] - 2026-09-07
 
 ### Changed

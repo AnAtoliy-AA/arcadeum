@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.29.45] - 2026-09-13
+
+### Added
+- add gift previews, friends list gift button, and gift notifications (ARC-960) (ARC-960)
+
+
 ## [1.29.44] - 2026-09-13
 
 ### Added

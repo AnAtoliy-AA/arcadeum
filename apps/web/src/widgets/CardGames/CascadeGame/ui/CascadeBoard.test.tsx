@@ -5,7 +5,7 @@ import { CascadeBoard } from './CascadeBoard';
 import { CascadeThemeProvider } from '../lib/CascadeThemeContext';
 import type { CascadeClientState } from '../types';
 
-vi.mock('@/shared/lib/useTranslation', () => {
+vi.mock('@/shared/i18n/useTranslation', () => {
   const TRANSLATIONS: Record<string, string> = {
     'games.cascade_v1.cardColors.R': 'Red',
     'games.cascade_v1.cardColors.B': 'Blue',

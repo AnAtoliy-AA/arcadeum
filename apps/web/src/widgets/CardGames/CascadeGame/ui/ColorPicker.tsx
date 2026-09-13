@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import { ACTIVE_COLORS, type ActiveColor } from '../types';
 import styles from './CascadeGame.module.css';

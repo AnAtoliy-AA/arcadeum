@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import SolitaireGame from './Game';
 import { useSolitaireStore } from '../store/solitaireStore';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

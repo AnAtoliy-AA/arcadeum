@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { Button, GlassCard } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatDateTime, formatNumber } from '@/shared/i18n/formatters';
 import {
   type EffectiveTournamentStatus,

@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { useRouter } from 'next/navigation';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import {
   PageLayout,

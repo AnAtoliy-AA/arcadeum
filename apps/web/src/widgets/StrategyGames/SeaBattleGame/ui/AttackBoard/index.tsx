@@ -7,7 +7,7 @@ import type {
 } from '../../types';
 import { MainGameArea } from '../styles';
 import { SeaBattleGrids } from '../SeaBattleGrids';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useSeaBattleTheme } from '../../lib/SeaBattleThemeContext';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { AttackPlayerBoard } from './AttackPlayerBoard';

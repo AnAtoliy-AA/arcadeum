@@ -17,7 +17,7 @@ import {
 import type { UseChessCoachResult } from '../hooks/useChessCoach';
 import './styles/chess-arena.scss';
 import type { ChessClientState, BoardPosition, File, Rank } from '../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 type TranslateFn = (
   key: TranslationKey,

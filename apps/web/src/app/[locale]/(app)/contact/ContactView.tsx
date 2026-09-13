@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactNode, useEffect } from 'react';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useLiveStatsStore } from '@/features/live-stats';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { Container } from '@arcadeum/ui/components/Container/Container';

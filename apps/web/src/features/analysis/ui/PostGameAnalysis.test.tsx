@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { PostGameAnalysis } from './PostGameAnalysis';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import * as stockfishApi from '../lib/stockfish-api';
 
 const t = (key: TranslationKey) => key;

@@ -7,7 +7,7 @@ import {
   Typography,
   InfiniteScroll,
 } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import {
   type AdminTournamentItem,
   type TournamentGameType,

@@ -15,7 +15,7 @@ import { detectOpening } from '../lib/eco-openings';
 import type { ChessPieceStyle } from '../lib/piece-style';
 import type { UseChessCoachResult } from '../hooks/useChessCoach';
 import type { ChessClientState } from '../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 type TranslateFn = (
   key: TranslationKey,

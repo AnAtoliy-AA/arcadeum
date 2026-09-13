@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { TimeControl } from '@/widgets/BoardGames/ChessGame/types';
 import { TIME_CONTROLS } from '@/widgets/BoardGames/ChessGame/types';
 
@@ -11,7 +11,10 @@ interface ChallengeButtonProps {
   onChallengeSent?: () => void;
 }
 
-export function ChallengeButton({ targetUserId, onChallengeSent }: ChallengeButtonProps) {
+export function ChallengeButton({
+  targetUserId,
+  onChallengeSent,
+}: ChallengeButtonProps) {
   const { t } = useTranslation();
   const [showPicker, setShowPicker] = useState(false);
   const [sending, setSending] = useState(false);

@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { interpolate } from '@arcadeum/games-core';
 
 import { useSettings, type LanguagePreference } from '@/stores/settings';
 
@@ -39,20 +40,6 @@ function resolveKey(
   return resolveKey(nextValue, remainingSegments);
 }
 
-function applyReplacements(
-  template: string,
-  replacements: Replacements,
-): string {
-  if (!replacements) {
-    return template;
-  }
-
-  return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-    const value = replacements[key];
-    return typeof value === 'undefined' ? match : String(value);
-  });
-}
-
 export function translate(
   locale: LanguagePreference,
   key: TranslationKey,
@@ -62,7 +49,7 @@ export function translate(
   const localeTemplate = resolveKey(translations[locale], segments);
   const fallbackTemplate = resolveKey(translations.en, segments);
   const template = localeTemplate ?? fallbackTemplate ?? key;
-  return applyReplacements(template, replacements);
+  return replacements ? interpolate(template, replacements) : template;
 }
 
 export function useTranslation() {

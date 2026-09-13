@@ -3,7 +3,7 @@
 import { useMemo, useCallback } from 'react';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { Select } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
 
 const LOCALES_LABELS: Record<Locale, string> = {

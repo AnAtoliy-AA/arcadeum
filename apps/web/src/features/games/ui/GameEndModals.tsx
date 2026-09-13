@@ -6,7 +6,7 @@ import { RematchInvitationModal } from './RematchInvitationModal';
 import type { GameResultStats } from './GameResultStatsGrid';
 import type { UseGameEndStateResult } from '../hooks/useGameEndState';
 import type { GameTheme } from '../lib/shared-themes';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface GameEndModalsProps {
   gameEnd: UseGameEndStateResult;

@@ -7,7 +7,7 @@ import type { CascadeCard } from '../types';
 // Map the themed-card translation keys to their EN bundle values so the
 // Card's aria-label can be asserted against the themed name without booting
 // the full i18n stack.
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const THEMED_NAMES: Record<string, string> = {

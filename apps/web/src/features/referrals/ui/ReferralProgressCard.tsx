@@ -1,7 +1,7 @@
 'use client';
 
 import { GlassCard, ProgressBar } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { ReferralStats } from '../types';
 import {
   CardTitle,

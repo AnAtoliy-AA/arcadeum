@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 import { useSound } from '@/shared/lib/sound';
 import { CloseButton } from './SharedModal';
 import { VictoryCelebration } from './VictoryCelebration';

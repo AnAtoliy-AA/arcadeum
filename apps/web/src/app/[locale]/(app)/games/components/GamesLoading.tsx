@@ -1,4 +1,4 @@
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ServerLoadingNotice } from '@arcadeum/ui';
 import { Loading, ServerWakeUpContainer, Spinner } from '../styles';
 

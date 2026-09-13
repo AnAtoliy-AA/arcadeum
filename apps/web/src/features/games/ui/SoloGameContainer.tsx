@@ -15,7 +15,7 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameRulesModal } from '@/features/games/ui/GameRulesModal';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';

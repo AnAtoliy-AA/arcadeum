@@ -15,7 +15,7 @@ import { getPlayer } from '@/shared/api/leaderboard';
 import { useQuery } from '@/shared/hooks/useQuery';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { SeasonBanner } from '@/features/seasons/ui';
 import { PlayerStatsOverview } from './ui/PlayerStatsOverview';

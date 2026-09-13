@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { SoloPersonalBests } from './SoloPersonalBests';
 import { SoloGlobalLeaderboard } from './SoloGlobalLeaderboard';

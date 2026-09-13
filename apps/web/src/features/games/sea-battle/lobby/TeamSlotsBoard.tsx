@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Badge, Button, Card, Input, Typography } from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import {

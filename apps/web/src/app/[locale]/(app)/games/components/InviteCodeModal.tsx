@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@/shared/hooks/useMutation';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {

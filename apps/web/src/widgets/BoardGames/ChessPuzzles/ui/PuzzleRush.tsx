@@ -3,9 +3,12 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { PuzzleBoard } from './PuzzleBoard';
 import { PuzzleControls } from './PuzzleControls';
-import type { ChessPuzzle, PuzzleSolveResult } from '@/features/chess/lib/puzzle-api';
+import type {
+  ChessPuzzle,
+  PuzzleSolveResult,
+} from '@/features/chess/lib/puzzle-api';
 import { getRandomPuzzle, solvePuzzle } from '@/features/chess/lib/puzzle-api';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 type RushMode = 'survival' | 'timed';
 type RushPhase = 'menu' | 'playing' | 'gameover';
@@ -19,7 +22,9 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
   const [phase, setPhase] = useState<RushPhase>('menu');
   const [mode, setMode] = useState<RushMode>(initialMode ?? 'survival');
   const [puzzle, setPuzzle] = useState<ChessPuzzle | null>(null);
-  const [puzzlePhase, setPuzzlePhase] = useState<'waiting' | 'opponent' | 'player' | 'solved' | 'failed'>('waiting');
+  const [puzzlePhase, setPuzzlePhase] = useState<
+    'waiting' | 'opponent' | 'player' | 'solved' | 'failed'
+  >('waiting');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [timeLeft, setTimeLeft] = useState(180);
@@ -193,20 +198,36 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
         </h2>
         <div className="grid grid-cols-2 gap-3 w-full">
           <div className="flex flex-col items-center p-3 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)]">
-            <span className="text-3xl font-black text-[var(--color)]">{score}</span>
-            <span className="text-[10px] text-[var(--textSecondary)]">Score</span>
+            <span className="text-3xl font-black text-[var(--color)]">
+              {score}
+            </span>
+            <span className="text-[10px] text-[var(--textSecondary)]">
+              Score
+            </span>
           </div>
           <div className="flex flex-col items-center p-3 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)]">
-            <span className="text-3xl font-black text-orange-400">{bestStreak}</span>
-            <span className="text-[10px] text-[var(--textSecondary)]">Best Streak</span>
+            <span className="text-3xl font-black text-orange-400">
+              {bestStreak}
+            </span>
+            <span className="text-[10px] text-[var(--textSecondary)]">
+              Best Streak
+            </span>
           </div>
           <div className="flex flex-col items-center p-3 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)]">
-            <span className="text-3xl font-black text-sky-400">{totalTime}s</span>
-            <span className="text-[10px] text-[var(--textSecondary)]">Time</span>
+            <span className="text-3xl font-black text-sky-400">
+              {totalTime}s
+            </span>
+            <span className="text-[10px] text-[var(--textSecondary)]">
+              Time
+            </span>
           </div>
           <div className="flex flex-col items-center p-3 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)]">
-            <span className="text-3xl font-black text-purple-400">{rating}</span>
-            <span className="text-[10px] text-[var(--textSecondary)]">Rating</span>
+            <span className="text-3xl font-black text-purple-400">
+              {rating}
+            </span>
+            <span className="text-[10px] text-[var(--textSecondary)]">
+              Rating
+            </span>
           </div>
         </div>
         <button
@@ -223,11 +244,7 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-start gap-3 w-full max-w-[900px] mx-auto p-3">
       <div className="flex flex-col gap-2 md:flex-none md:w-[min(70vmin,560px)] md:sticky md:top-3">
-        <PuzzleBoard
-          puzzle={puzzle!}
-          phase={puzzlePhase}
-          onMove={handleMove}
-        />
+        <PuzzleBoard puzzle={puzzle!} phase={puzzlePhase} onMove={handleMove} />
       </div>
       <div className="flex flex-col gap-3 flex-1 min-w-0 md:max-w-[280px]">
         <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)]">
@@ -250,7 +267,8 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
           )}
           {mode === 'timed' && (
             <div className="text-sm font-bold text-sky-400 tabular-nums">
-              {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+              {Math.floor(timeLeft / 60)}:
+              {(timeLeft % 60).toString().padStart(2, '0')}
             </div>
           )}
         </div>

@@ -14,7 +14,7 @@ import {
 } from '@arcadeum/ui/components/Icons/index';
 import { Footer, type SocialLink } from '@arcadeum/ui/components/Footer/Footer';
 import { appConfig } from '@/shared/config/app-config';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 
 const SOCIAL_MAPPING = [

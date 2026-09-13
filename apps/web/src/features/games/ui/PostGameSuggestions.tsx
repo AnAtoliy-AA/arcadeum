@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes, useLocale } from '@/shared/config/useRoutes';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { shareLink, buildChallengeShareText } from '@/shared/lib/share';

@@ -9,7 +9,7 @@ import { TurnIndicator, resolveTurnStatus } from './TurnIndicator';
 import { EmoteBubble } from './EmoteBubble';
 import type { EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
 import { LiveRegion } from '@/shared/lib/a11y';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameResultStore } from '../store/gameResultStore';
 import {
   WidgetFullscreenContext,

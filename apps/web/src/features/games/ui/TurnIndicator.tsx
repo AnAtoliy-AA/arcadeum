@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameChatStore } from '@/widgets/GameChat';
 import { InGameAvatar } from './InGameAvatar';
 import type { TurnStatusVariant } from './GameWidgetContainer';

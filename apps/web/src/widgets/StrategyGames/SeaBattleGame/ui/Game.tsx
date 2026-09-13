@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useMemo, memo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import type { SeaBattleGameProps } from '../types';
 import { MIN_PLAYERS } from '../types';
 import { useSeaBattleState } from '../hooks/useSeaBattleState';

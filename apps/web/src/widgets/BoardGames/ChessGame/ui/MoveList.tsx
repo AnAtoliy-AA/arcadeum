@@ -20,7 +20,7 @@ const QUALITY_BADGE: Record<MoveQuality, { symbol: string; color: string }> = {
 interface MoveListProps {
   state: ChessClientState;
   t: (
-    key: import('@/shared/lib/useTranslation').TranslationKey,
+    key: import('@/shared/i18n/useTranslation').TranslationKey,
     params?: Record<string, string | number>,
   ) => string;
   onMoveHover?: (moveIndex: number | null) => void;

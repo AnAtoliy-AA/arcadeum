@@ -1,4 +1,4 @@
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface AmountDisplayProps {
   amount: string;

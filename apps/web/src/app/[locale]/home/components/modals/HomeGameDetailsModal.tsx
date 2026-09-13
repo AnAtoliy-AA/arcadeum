@@ -14,8 +14,8 @@ import { useRoutes } from '@/shared/config/useRoutes';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
-import { useLanguage } from '@/shared/i18n/context';
+} from '@/shared/i18n/useTranslation';
+import { useLanguage } from '@/shared/i18n';
 import { FALLBACK_ACCENT, GameSymbol } from '../featured-games/gameMeta';
 import { featuredGames } from '../../data/games';
 

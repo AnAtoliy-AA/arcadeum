@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatedDice } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface DiceOverlayProps {
   canRoll: boolean;

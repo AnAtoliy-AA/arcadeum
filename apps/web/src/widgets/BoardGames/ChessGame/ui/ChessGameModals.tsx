@@ -1,7 +1,7 @@
 'use client';
 
 import { RematchInvitationModal } from '@/features/games/ui/RematchInvitationModal';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { ChessClientState, PieceType, BoardPosition } from '../types';
 import type {
   SharedResult,

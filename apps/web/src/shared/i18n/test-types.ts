@@ -1,4 +1,4 @@
-import type { EnglishTranslations } from '../i18n/translations';
+import type { EnglishTranslations } from './messages';
 import type { Paths, PathValue, StringPaths } from './translation-paths';
 import type { TranslationKey } from './useTranslation';
 
@@ -108,7 +108,7 @@ export type {
 export async function validateTranslationKey(
   key: TranslationKey,
 ): Promise<boolean> {
-  const { loadMessages } = await import('../i18n/messages');
+  const { loadMessages } = await import('./messages');
   const messages = await loadMessages('en');
   const keys = key.split('.');
   let value: unknown = messages;
@@ -128,7 +128,7 @@ export async function validateTranslationKey(
  * Gets all valid translation keys (for testing/debugging)
  */
 export async function getAllTranslationKeys(): Promise<TranslationKey[]> {
-  const { loadMessages } = await import('../i18n/messages');
+  const { loadMessages } = await import('./messages');
   const messages = await loadMessages('en');
   const keys: string[] = [];
 

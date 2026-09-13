@@ -1,4 +1,4 @@
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 
 export interface FeaturedGame {
   id: string;

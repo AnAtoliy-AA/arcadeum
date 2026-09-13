@@ -3,7 +3,7 @@
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import type { SeasonRewardTier } from '../model/types';
 
 /**
@@ -49,7 +49,9 @@ export function SeasonRewards({
             <span className="text-[13px] font-semibold tabular-nums">
               {rankRange(tier)}
             </span>
-            <span className="text-[13px] opacity-[0.8]">{kindLabel(tier.kind, t)}</span>
+            <span className="text-[13px] opacity-[0.8]">
+              {kindLabel(tier.kind, t)}
+            </span>
           </li>
         ))}
       </ul>

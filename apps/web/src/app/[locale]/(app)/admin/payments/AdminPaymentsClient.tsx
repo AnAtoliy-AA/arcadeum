@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useAdminPaymentNotes } from '@/features/admin-payments/hooks';
 import type {
   AdminNotesVisibility,

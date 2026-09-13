@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Typography } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { DialogShell } from './dialogShell';
 import { purchaseItemAction } from '../server/shop.actions';

@@ -2,7 +2,7 @@
 
 import { useMemo, type CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { getSourceCards, isValidMove } from '../lib/engine';
 import { useSolitaireTheme } from '../lib/SolitaireThemeContext';
 import type { SolitaireTheme } from '../lib/theme';

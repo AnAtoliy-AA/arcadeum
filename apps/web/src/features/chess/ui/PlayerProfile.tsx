@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { GlassCard, Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface PlayerProfileData {
   userId: string;
@@ -31,7 +31,10 @@ interface PlayerProfileProps {
   isOwnProfile?: boolean;
 }
 
-export function PlayerProfile({ userId, isOwnProfile: _isOwnProfile = false }: PlayerProfileProps) {
+export function PlayerProfile({
+  userId,
+  isOwnProfile: _isOwnProfile = false,
+}: PlayerProfileProps) {
   const { t } = useTranslation();
   const [profile, setProfile] = useState<PlayerProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,14 +67,23 @@ export function PlayerProfile({ userId, isOwnProfile: _isOwnProfile = false }: P
   if (!profile) {
     return (
       <GlassCard className="p-6">
-        <Typography variant="body">{t('games.chess_v1.profile.notFound')}</Typography>
+        <Typography variant="body">
+          {t('games.chess_v1.profile.notFound')}
+        </Typography>
       </GlassCard>
     );
   }
 
-  const totalGames = Object.values(profile.perGameStats).reduce((a, s) => a + s.games, 0);
-  const totalWins = Object.values(profile.perGameStats).reduce((a, s) => a + s.wins, 0);
-  const winRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
+  const totalGames = Object.values(profile.perGameStats).reduce(
+    (a, s) => a + s.games,
+    0,
+  );
+  const totalWins = Object.values(profile.perGameStats).reduce(
+    (a, s) => a + s.wins,
+    0,
+  );
+  const winRate =
+    totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
 
   return (
     <GlassCard className="p-6">
@@ -89,7 +101,11 @@ export function PlayerProfile({ userId, isOwnProfile: _isOwnProfile = false }: P
             )}
           </div>
           {profile.bio && (
-            <Typography variant="body" uiSize="sm" className="mt-1 text-[var(--textMuted)]">
+            <Typography
+              variant="body"
+              uiSize="sm"
+              className="mt-1 text-[var(--textMuted)]"
+            >
               {profile.bio}
             </Typography>
           )}
@@ -98,20 +114,36 @@ export function PlayerProfile({ userId, isOwnProfile: _isOwnProfile = false }: P
 
       <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="text-center">
-          <Typography variant="heading" uiSize="md">{totalGames}</Typography>
-          <Typography variant="caption">{t('games.chess_v1.profile.games')}</Typography>
+          <Typography variant="heading" uiSize="md">
+            {totalGames}
+          </Typography>
+          <Typography variant="caption">
+            {t('games.chess_v1.profile.games')}
+          </Typography>
         </div>
         <div className="text-center">
-          <Typography variant="heading" uiSize="md">{winRate}%</Typography>
-          <Typography variant="caption">{t('games.chess_v1.profile.winRate')}</Typography>
+          <Typography variant="heading" uiSize="md">
+            {winRate}%
+          </Typography>
+          <Typography variant="caption">
+            {t('games.chess_v1.profile.winRate')}
+          </Typography>
         </div>
         <div className="text-center">
-          <Typography variant="heading" uiSize="md">{profile.puzzleRating}</Typography>
-          <Typography variant="caption">{t('games.chess_v1.profile.puzzleRating')}</Typography>
+          <Typography variant="heading" uiSize="md">
+            {profile.puzzleRating}
+          </Typography>
+          <Typography variant="caption">
+            {t('games.chess_v1.profile.puzzleRating')}
+          </Typography>
         </div>
         <div className="text-center">
-          <Typography variant="heading" uiSize="md">{profile.totalPuzzlesSolved}</Typography>
-          <Typography variant="caption">{t('games.chess_v1.profile.puzzlesSolved')}</Typography>
+          <Typography variant="heading" uiSize="md">
+            {profile.totalPuzzlesSolved}
+          </Typography>
+          <Typography variant="caption">
+            {t('games.chess_v1.profile.puzzlesSolved')}
+          </Typography>
         </div>
       </div>
 
@@ -126,7 +158,11 @@ export function PlayerProfile({ userId, isOwnProfile: _isOwnProfile = false }: P
                 key={gameType}
                 className="rounded-lg border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 py-2 text-center"
               >
-                <Typography variant="caption" uiSize="xs" className="capitalize">
+                <Typography
+                  variant="caption"
+                  uiSize="xs"
+                  className="capitalize"
+                >
                   {gameType}
                 </Typography>
                 <Typography variant="body" uiSize="sm">

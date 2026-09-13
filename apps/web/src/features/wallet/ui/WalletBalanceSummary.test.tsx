@@ -3,12 +3,13 @@ import { render, screen } from '@testing-library/react';
 import { WalletBalanceSummary } from './WalletBalanceSummary';
 import type { WalletBalance } from '../server/wallet.types';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
         'wallet.balance.title': 'Your Wallet',
-        'wallet.balance.subtitle': 'Coins are earned through play. Gems are purchased.',
+        'wallet.balance.subtitle':
+          'Coins are earned through play. Gems are purchased.',
         'wallet.balance.coins': 'Coins',
         'wallet.balance.gems': 'Gems',
         'wallet.balance.arcadeum': 'ARCADEUM',
@@ -31,7 +32,9 @@ describe('WalletBalanceSummary', () => {
   });
 
   it('renders zero balances for an empty wallet', () => {
-    render(<WalletBalanceSummary balance={{ coins: 0, gems: 0, arcadeum: 0 }} />);
+    render(
+      <WalletBalanceSummary balance={{ coins: 0, gems: 0, arcadeum: 0 }} />,
+    );
     expect(screen.getByTestId('balance-coins-value').textContent).toContain(
       '0',
     );

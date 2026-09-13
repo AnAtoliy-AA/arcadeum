@@ -8,7 +8,7 @@ import {
   useSyncExternalStore,
 } from 'react';
 
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import {
   deletableUrlsFor,
   useOfflineDownloadsStore,

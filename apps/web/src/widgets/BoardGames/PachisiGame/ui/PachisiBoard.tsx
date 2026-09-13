@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
 import { usePachisiTheme } from '../lib/PachisiThemeContext';

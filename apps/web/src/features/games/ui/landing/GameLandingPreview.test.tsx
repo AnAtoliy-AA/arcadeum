@@ -7,7 +7,7 @@ import {
 } from './GameLandingThemeContext';
 import { GameLandingPreview } from './GameLandingPreview';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => (key.startsWith('games.') ? key.split('.').pop() : key),
   }),

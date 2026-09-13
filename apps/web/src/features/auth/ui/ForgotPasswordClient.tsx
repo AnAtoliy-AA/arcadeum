@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
-import { useLanguage, formatMessage } from '@/shared/i18n/context';
+import { useLanguage, formatMessage } from '@/shared/i18n';
 import type { AuthMessages } from '@/shared/i18n/types';
 import { isValidEmail } from '../lib/utils';
 import { requestPasswordReset } from '@/entities/session/api/authApi';

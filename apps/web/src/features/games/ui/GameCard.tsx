@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import type { GameMetadata } from '../types';
 import { Card as SharedCard, Badge } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';

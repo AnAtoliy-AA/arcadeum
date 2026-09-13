@@ -21,7 +21,7 @@ vi.mock('../team-mode.api', () => ({
   emitSetTeamConfig: (env: SetTeamConfigEnv) => emitSetTeamConfig(env),
 }));
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, string | number>): string => {
       if (!params) return key;

@@ -1,7 +1,7 @@
 'use client';
 
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { RoadmapData } from '../roadmap-parser';
 
 export function RoadmapHero({ stats }: { stats: RoadmapData['stats'] }) {

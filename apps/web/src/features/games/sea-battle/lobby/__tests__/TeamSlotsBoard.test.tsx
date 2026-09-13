@@ -39,7 +39,7 @@ vi.mock('../team-controls', () => ({
   SizeStepper: () => null,
 }));
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, string | number>) =>
       params ? `${key}:${JSON.stringify(params)}` : key,

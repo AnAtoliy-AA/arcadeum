@@ -14,7 +14,7 @@ import {
 } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { xpProgress, toRoman } from '@/shared/lib/xp-level';
 import {
   getUserProfile,

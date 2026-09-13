@@ -5,7 +5,7 @@ import type { PlayerStats } from '@/features/history/api';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { Card, SkeletonText, ProgressCircle } from '@arcadeum/ui';
 
 interface StatsOverviewProps {

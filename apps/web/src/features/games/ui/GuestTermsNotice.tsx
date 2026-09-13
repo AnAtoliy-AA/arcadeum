@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { appConfig } from '@/shared/config/app-config';
 
 export function GuestTermsNotice() {

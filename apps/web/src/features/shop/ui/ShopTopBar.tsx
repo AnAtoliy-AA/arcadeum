@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Typography } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { buildRoutes } from '@/shared/config/routes';
 import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';

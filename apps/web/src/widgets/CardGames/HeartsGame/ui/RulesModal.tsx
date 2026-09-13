@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { GameRulesModal } from '@/features/games/ui/GameRulesModal';
 
 interface RulesModalProps {

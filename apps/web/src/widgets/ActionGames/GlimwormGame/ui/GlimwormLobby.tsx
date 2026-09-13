@@ -14,7 +14,7 @@ import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { gameSocket } from '@/shared/lib/socket';
 import { GLIMWORM_VARIANTS } from '@/features/games/lib/glimwormVariants';
 import { gamesApi } from '@/features/games/api';

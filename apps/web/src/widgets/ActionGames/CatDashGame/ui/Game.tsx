@@ -16,7 +16,7 @@ import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import type { CatDashGameProps } from '../types';
 import { useCatDashState } from '../hooks/useCatDashState';

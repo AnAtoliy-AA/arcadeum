@@ -3,7 +3,7 @@
 import { HintButton } from './HintButton';
 import { chessHintLabel } from './hint-label';
 import type { ChessHint } from '../lib/hint-generator';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 type TranslateFn = (
   key: TranslationKey,

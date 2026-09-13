@@ -16,7 +16,7 @@ import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import type { Board, CheckersGameProps, MoveStep, Mode } from '../types';

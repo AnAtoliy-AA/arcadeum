@@ -1,6 +1,6 @@
 'use client';
 
-import { useLanguage, formatMessage } from '@/shared/i18n/context';
+import { useLanguage, formatMessage } from '@/shared/i18n';
 import { appConfig } from '@/shared/config/app-config';
 import { usePWAInstallProps } from '@/features/pwa';
 import { StaticDownloadButtons } from './StaticDownloadButtons';

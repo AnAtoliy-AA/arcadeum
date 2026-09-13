@@ -14,7 +14,7 @@ import {
   RowLabels,
 } from '../styles';
 import { IdleBadge } from '@arcadeum/ui';
-import { type TranslationKey } from '@/shared/lib/useTranslation';
+import { type TranslationKey } from '@/shared/i18n/useTranslation';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import type { SeaBattleTheme } from '../../lib/theme';
 import { AttackBoardCell } from './AttackBoardCell';

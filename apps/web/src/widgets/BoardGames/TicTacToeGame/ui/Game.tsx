@@ -16,7 +16,7 @@ import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useGameChatStore } from '@/widgets/GameChat';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import type { TicTacToeGameProps } from '../types';

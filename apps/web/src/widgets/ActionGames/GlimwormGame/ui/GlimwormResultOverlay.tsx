@@ -3,7 +3,10 @@
 import { useMemo, useState } from 'react';
 import { useGlimwormStore } from '../store/glimwormStore';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
-import { useTranslation, type TranslationKey } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 
 interface GlimwormResultOverlayProps {

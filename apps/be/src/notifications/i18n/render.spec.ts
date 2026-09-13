@@ -50,14 +50,14 @@ describe('renderNotification', () => {
     ).toBe('notifications.unknown_category.title');
   });
 
-  it('replaces missing params with empty string instead of leaving placeholder', () => {
+  it('keeps placeholder when a param is missing', () => {
     expect(
       renderNotification(
         'notifications.tournament_starting_soon.title',
         { name: 'Cup' },
         'en',
       ),
-    ).toBe('Cup starts in  min');
+    ).toBe('Cup starts in {{minutes}} min');
   });
 });
 

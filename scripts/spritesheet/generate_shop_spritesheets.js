@@ -22,10 +22,10 @@ const OUT_TS_MAP = path.resolve(
   '../../packages/ui/src/components/PlayerAvatar/sprite-maps.ts',
 );
 
-const AVATAR_SIZE = 512;
+const AVATAR_SIZE = 128;
 const AVATAR_COLS = 6;
 
-const BADGE_SIZE = 256;
+const BADGE_SIZE = 96;
 const BADGE_COLS = 4;
 
 async function processCategory({ dir, cols, tileSize, outputPath, urlPrefix }) {

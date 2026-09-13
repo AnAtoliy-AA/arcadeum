@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
 import dynamic from 'next/dynamic';
 import { routes } from '@/shared/config/routes';

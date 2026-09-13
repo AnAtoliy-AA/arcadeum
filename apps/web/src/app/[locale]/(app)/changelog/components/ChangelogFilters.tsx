@@ -1,7 +1,7 @@
 'use client';
 
 import { Typography, FilterChip, Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 type CategoryCount = {
   type: string;

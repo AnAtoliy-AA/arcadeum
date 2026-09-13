@@ -3,7 +3,7 @@
 import { memo } from 'react';
 import type { ShipConfig } from '../../types';
 import { ActionButton, RotateButton, PlacementActions } from '../styles';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface PlacementActionsSectionProps {
   isMobile: boolean;

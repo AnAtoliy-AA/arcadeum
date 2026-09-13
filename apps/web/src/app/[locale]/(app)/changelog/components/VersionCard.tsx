@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { ChangelogEntry } from '../page';
 
 const SECTION_COLOR_CONFIG: Record<

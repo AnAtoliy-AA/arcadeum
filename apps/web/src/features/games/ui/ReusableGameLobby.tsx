@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { gamesApi } from '@/features/games/api';
 import {

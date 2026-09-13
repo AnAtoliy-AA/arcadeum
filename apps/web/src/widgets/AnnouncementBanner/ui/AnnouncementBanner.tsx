@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { addDismissed, writeDismissedCookie } from '../lib/dismissedStorage';
 import { isSafeCtaHref } from '../lib/ctaHrefSafety';
 import type { AnnouncementPublicItem, AnnouncementSeverity } from '../api';

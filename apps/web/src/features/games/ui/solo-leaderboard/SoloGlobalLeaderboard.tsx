@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   soloScoresApi,
   type SoloLeaderboardEntry,

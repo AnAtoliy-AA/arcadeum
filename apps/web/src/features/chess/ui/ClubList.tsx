@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { GlassCard, Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface Club {
   _id: string;
@@ -52,7 +52,10 @@ export function ClubList({ onClubSelect }: ClubListProps) {
       {loading ? (
         <div className="flex flex-col gap-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-lg bg-[var(--glassBg)]" />
+            <div
+              key={i}
+              className="h-16 animate-pulse rounded-lg bg-[var(--glassBg)]"
+            />
           ))}
         </div>
       ) : clubs.length === 0 ? (
@@ -75,7 +78,11 @@ export function ClubList({ onClubSelect }: ClubListProps) {
                     {club.name}
                   </Typography>
                   {club.description && (
-                    <Typography variant="caption" uiSize="xs" className="text-[var(--textMuted)]">
+                    <Typography
+                      variant="caption"
+                      uiSize="xs"
+                      className="text-[var(--textMuted)]"
+                    >
                       {club.description}
                     </Typography>
                   )}

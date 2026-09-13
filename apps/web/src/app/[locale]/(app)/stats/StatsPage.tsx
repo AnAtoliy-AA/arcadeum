@@ -19,7 +19,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
 import { historyApi } from '@/features/history/api';
 import { useStats } from './hooks/useStats';

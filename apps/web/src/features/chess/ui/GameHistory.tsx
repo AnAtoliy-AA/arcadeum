@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { GlassCard, Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface GameRecord {
   sessionId: string;
@@ -79,7 +79,11 @@ export function GameHistory({ userId }: GameHistoryProps) {
                       : 'text-yellow-500'
                 }`}
               >
-                {game.result === 'won' ? 'W' : game.result === 'lost' ? 'L' : 'D'}
+                {game.result === 'won'
+                  ? 'W'
+                  : game.result === 'lost'
+                    ? 'L'
+                    : 'D'}
               </span>
               <Typography variant="body" uiSize="sm">
                 {game.opponent}
@@ -92,7 +96,11 @@ export function GameHistory({ userId }: GameHistoryProps) {
               <Typography variant="caption" uiSize="xs">
                 {game.moves} moves
               </Typography>
-              <Typography variant="caption" uiSize="xs" className="text-[var(--textMuted)]">
+              <Typography
+                variant="caption"
+                uiSize="xs"
+                className="text-[var(--textMuted)]"
+              >
                 {new Date(game.timestamp).toLocaleDateString()}
               </Typography>
             </div>

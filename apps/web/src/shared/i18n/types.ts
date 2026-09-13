@@ -62,6 +62,15 @@ export type {
   LegalMessages,
 } from './messages/legal/types';
 
+// Re-export page translation types for convenience
+export type {
+  PageFeature as PageFeatureBase,
+  PageSection,
+  PageFaqItem,
+  PageFaq,
+  PageTranslations,
+} from './page-translations';
+
 // Legacy helper types used in index.ts and elsewhere
 export type ThemeOptionMessages = {
   label?: string;

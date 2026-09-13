@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useScenePalette } from './ScenePaletteContext';
 import { useIsNarrow } from '../lib/useNarrowViewport';
 

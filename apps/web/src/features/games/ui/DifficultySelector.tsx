@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { BotCountSelector, BotCountLabel } from './lobbyStyles';
 
 export type BotDifficulty =

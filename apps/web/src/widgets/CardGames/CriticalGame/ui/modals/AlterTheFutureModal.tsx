@@ -33,7 +33,7 @@ import {
 } from '../styles';
 import { CardImage } from '../styles/card-image';
 import { type GameVariant } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface SortableCardWrapperProps {
   isDragging?: boolean;

@@ -5,7 +5,7 @@ import { useQuery } from '@/shared/hooks/useQuery';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { seasonsApi } from '../api';
 import { daysRemaining, seasonAccent, seasonProgress } from '../lib/progress';
 import { SeasonRewards } from './SeasonRewards';

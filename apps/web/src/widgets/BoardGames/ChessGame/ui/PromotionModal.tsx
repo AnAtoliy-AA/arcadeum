@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { Button } from '@arcadeum/ui';
 import { PROMOTION_PIECES, type PieceType, type PieceColor } from '../types';
 import { ChessPieceIcon } from './ChessPieceIcon';

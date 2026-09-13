@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   BOARD_SIZES,
   MAX_PLAYERS_BY_BOARD_SIZE,

@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { GlassCard, Button, Typography } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { TournamentStandings } from './TournamentStandings';
 import { TournamentTimer } from './TournamentTimer';
 
@@ -193,16 +193,15 @@ function TournamentCard({
           : 'text-yellow-400';
 
   return (
-    <GlassCard
-      className="p-3 cursor-pointer hover:border-[var(--primary)] transition-colors"
-    >
-      <div className="flex items-center justify-between" onClick={() => onSelect(tournament.id)}>
+    <GlassCard className="p-3 cursor-pointer hover:border-[var(--primary)] transition-colors">
+      <div
+        className="flex items-center justify-between"
+        onClick={() => onSelect(tournament.id)}
+      >
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <span className="font-bold text-[15px]">{tournament.name}</span>
-            <span
-              className={`text-[11px] font-bold uppercase ${statusColor}`}
-            >
+            <span className={`text-[11px] font-bold uppercase ${statusColor}`}>
               {tournament.status === 'live'
                 ? 'LIVE'
                 : tournament.status === 'registration_open'

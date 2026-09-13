@@ -2,7 +2,7 @@
 
 import './support.scss';
 
-import { useLanguage, formatMessage } from '@/shared/i18n/context';
+import { useLanguage, formatMessage } from '@/shared/i18n';
 
 import { PageTitle } from '@arcadeum/ui';
 import type {

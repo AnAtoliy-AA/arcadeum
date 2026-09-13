@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { PageLayout, Container, PageTitle, Typography } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import { useSessionStore } from '@/entities/session/store/sessionStore';

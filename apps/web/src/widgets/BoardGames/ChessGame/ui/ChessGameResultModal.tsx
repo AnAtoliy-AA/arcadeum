@@ -5,7 +5,7 @@ import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { PostGameAnalysis } from '@/features/analysis/ui/PostGameAnalysis';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import type { GameTheme } from '@/features/games/lib/shared-themes';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { ChessClientState } from '../types';
 import type { SharedResult } from '@/features/games/hooks/useGameResultModal';
 

@@ -1,7 +1,7 @@
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { GameCreationConfigProps } from '@/features/games/types';
 import { Section } from '@arcadeum/ui/components/Section/Section';
 import { Button } from '@arcadeum/ui/components/Button/Button';

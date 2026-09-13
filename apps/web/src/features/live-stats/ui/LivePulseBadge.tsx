@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useLiveStatsStore } from '../store/liveStatsStore';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export function LivePulseBadge() {
   const { t } = useTranslation();

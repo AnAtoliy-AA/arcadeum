@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useLanguage } from '@/shared/i18n/context';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useLanguage } from '@/shared/i18n';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import {
   fetchTokenMetadata,

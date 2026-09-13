@@ -4,7 +4,7 @@ import { useQuery } from '@/shared/hooks/useQuery';
 import { useMutation } from '@/shared/hooks/useMutation';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import {
   fetchPublicTournaments,
   fetchTournamentBracket,

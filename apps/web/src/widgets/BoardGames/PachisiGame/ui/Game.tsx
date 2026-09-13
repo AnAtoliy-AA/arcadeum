@@ -13,7 +13,7 @@ import {
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { PachisiGameProps, PachisiOptions, PachisiTheme } from '../types';

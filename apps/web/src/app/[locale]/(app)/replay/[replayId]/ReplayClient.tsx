@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useReplayStore } from '@/features/replay/store/replayStore';
 import { replayApi } from '@/features/replay/api';
 import { ReplayHeader } from '@/features/replay/ui/ReplayHeader';

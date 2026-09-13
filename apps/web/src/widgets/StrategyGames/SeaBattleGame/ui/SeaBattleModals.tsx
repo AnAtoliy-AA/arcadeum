@@ -3,7 +3,7 @@
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { RulesModal } from './RulesModal';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';

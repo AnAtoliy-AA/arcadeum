@@ -2,7 +2,7 @@
 
 import { useMemo, type CSSProperties } from 'react';
 import { ShieldIcon } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { CriticalCard } from '../types';
 
 interface ThreatStripProps {

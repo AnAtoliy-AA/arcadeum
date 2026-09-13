@@ -6,8 +6,8 @@ import { Badge, Typography } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
-import { useLanguage } from '@/shared/i18n/context';
+} from '@/shared/i18n/useTranslation';
+import { useLanguage } from '@/shared/i18n';
 import { formatNumber } from '@/shared/i18n/formatters';
 import { track } from '@/shared/lib/analytics';
 import { useShopPreviewStore } from '../store/shopPreviewStore';

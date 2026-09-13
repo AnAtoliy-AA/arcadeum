@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import type { SoloPauseState } from './useSoloPause';

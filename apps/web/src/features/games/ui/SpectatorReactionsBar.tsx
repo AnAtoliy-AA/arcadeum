@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 import { EMOTES, type EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 // ARC-926: fixed, compact reaction set for spectators — a subset of the
 // full EmotePicker catalog, filtered by id (never redefined).

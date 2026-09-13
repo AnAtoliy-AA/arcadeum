@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { useLanguage, formatMessage } from '@/shared/i18n/context';
+import { useLanguage, formatMessage } from '@/shared/i18n';
 import { useThemeController } from '@/app/theme/ThemeContext';
 import { useHapticsSetting } from '@/shared/hooks/useHapticsSetting';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';

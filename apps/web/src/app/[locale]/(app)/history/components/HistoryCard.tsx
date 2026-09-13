@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { HistorySummary, HistoryParticipant } from '../types';
 import { getGameDisplayName } from '../utils';
 import {

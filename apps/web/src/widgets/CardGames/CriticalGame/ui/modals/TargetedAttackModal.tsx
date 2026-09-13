@@ -14,7 +14,7 @@ import {
 } from '../styles';
 import { type GameVariant } from '@arcadeum/ui';
 import type { CriticalCard } from '../../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface TargetedAttackModalProps {
   isOpen: boolean;

@@ -2,7 +2,7 @@
 
 import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import styles from './CascadeGame.module.css';
 import type { ActiveColor } from '../types';

@@ -8,7 +8,7 @@ import type { GameRoomSummary } from '@/shared/types/games';
 vi.mock('@/features/games/api', () => ({
   gamesApi: { getCatalog: vi.fn(() => Promise.resolve({ games: [] })) },
 }));
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 vi.mock('@/shared/lib/socket', () => ({

@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { ModalButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Modal, ModalContent, ModalTitle, ModalActions } from './SharedModal';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface RematchInvitationModalProps {
   isOpen: boolean;

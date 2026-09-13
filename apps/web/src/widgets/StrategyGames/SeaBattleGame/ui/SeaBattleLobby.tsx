@@ -11,7 +11,7 @@ import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { MIN_PLAYERS, getDefaultShipCount } from '../types';
 import { SEA_BATTLE_THEMES } from '../lib/constants';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 import { SeaBattleThemePreview } from './SeaBattleThemePreview';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { SeaBattleTeamPanel } from './SeaBattleTeamPanel';

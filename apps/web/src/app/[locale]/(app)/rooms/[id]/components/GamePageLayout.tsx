@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
 import { GamesControlPanel } from '@/widgets/GamesControlPanel';

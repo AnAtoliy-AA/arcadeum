@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { TEAM_PRESETS } from '../lib/teamPresets';
 

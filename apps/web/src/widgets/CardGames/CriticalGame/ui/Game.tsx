@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { CriticalGameProps } from '../types';
 import { useCriticalState, useRematch } from '../hooks';
 import { useGameRoomActions } from '@/features/games/hooks';

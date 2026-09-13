@@ -4,8 +4,8 @@ import { useCallback, useMemo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
-import { useLanguage } from '@/shared/i18n/useLanguage';
+} from '@/shared/i18n/useTranslation';
+import { useLanguage } from '@/shared/i18n';
 import { formatRelative } from '@/shared/i18n/formatters';
 import { GAME_ROOM_STATUS, type GameRoomSummary } from '@/shared/types/games';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';

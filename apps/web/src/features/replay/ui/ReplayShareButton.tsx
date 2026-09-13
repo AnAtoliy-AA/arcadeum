@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface ReplayShareButtonProps {
   replayId: string;

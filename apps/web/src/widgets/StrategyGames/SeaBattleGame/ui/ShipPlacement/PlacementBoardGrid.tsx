@@ -15,7 +15,7 @@ import {
   PlayerName,
 } from '../styles';
 import type { SeaBattleTheme } from '../../lib/theme';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 
@@ -386,10 +386,7 @@ export const PlacementBoardGrid = memo(
                     onDragOver={onDragOver}
                     onDrop={onDrop}
                     onDragLeave={onDragLeave}
-                    cellFocusProps={boardKeyboard.getCellProps(
-                      rIndex,
-                      cIndex,
-                    )}
+                    cellFocusProps={boardKeyboard.getCellProps(rIndex, cIndex)}
                   />
                 );
               }),

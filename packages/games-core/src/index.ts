@@ -8,6 +8,7 @@
  *   import { ChessEngine } from '@arcadeum/games-core/games/chess/chess.engine';
  */
 export * from './base/game-engine.interface';
+export * from './lib/interpolate';
 export * from './lib/logger';
 export * from './lib/random';
 export * from './lib/shared-theme-id';

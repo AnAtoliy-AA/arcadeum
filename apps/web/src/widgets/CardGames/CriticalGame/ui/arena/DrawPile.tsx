@@ -1,5 +1,5 @@
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { CriticalCard } from '../../types';
 import { DeckDisplay } from '../DeckDisplay';
 import { CardSlot } from '../styles';

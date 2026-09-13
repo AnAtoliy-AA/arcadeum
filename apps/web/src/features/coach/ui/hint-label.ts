@@ -1,5 +1,5 @@
 import { PIECE_SYMBOLS } from '@/widgets/BoardGames/ChessGame/types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { ChessHint } from '../lib/hint-generator';
 
 /**

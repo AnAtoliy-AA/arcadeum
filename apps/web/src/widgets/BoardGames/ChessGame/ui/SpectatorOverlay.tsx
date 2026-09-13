@@ -1,7 +1,7 @@
 'use client';
 
 import { GlassCard, Typography, Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface SpectatorOverlayProps {
   viewerCount: number;
@@ -30,7 +30,11 @@ export function SpectatorOverlay({
           </Typography>
         </div>
         {engineEval && (
-          <Typography variant="caption" uiSize="xs" className="text-[var(--color)]">
+          <Typography
+            variant="caption"
+            uiSize="xs"
+            className="text-[var(--color)]"
+          >
             {engineEval}
           </Typography>
         )}

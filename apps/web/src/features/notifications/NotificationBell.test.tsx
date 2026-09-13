@@ -3,7 +3,9 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { NotificationBell } from './NotificationBell';
 import { useNotificationsStore } from './notifications.store';
 
-const socketListeners = vi.hoisted(() => new Map<string, (payload: unknown) => void>());
+const socketListeners = vi.hoisted(
+  () => new Map<string, (payload: unknown) => void>(),
+);
 
 vi.mock('@/entities/session/model/useSessionTokens', () => ({
   useSessionTokens: () => ({
@@ -11,7 +13,7 @@ vi.mock('@/entities/session/model/useSessionTokens', () => ({
   }),
 }));
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (k: string) => k,
   }),

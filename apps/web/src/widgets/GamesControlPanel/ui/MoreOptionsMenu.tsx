@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { MusicOnIcon, MusicOffIcon } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui';
 

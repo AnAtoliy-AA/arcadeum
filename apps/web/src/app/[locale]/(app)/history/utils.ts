@@ -1,6 +1,6 @@
 import { mapToGameType } from '@/features/games/lib/gameIdMapping';
 import { CARD_VARIANTS } from '@/features/games/ui/create/constants';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 
 /**
  * Get the display name for a game ID, handling aliases and translations.

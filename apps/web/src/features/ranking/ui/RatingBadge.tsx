@@ -3,7 +3,7 @@
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { RankingTier } from '../model/types';
 import { tierMeta } from '../lib/tiers';

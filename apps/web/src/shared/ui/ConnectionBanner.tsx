@@ -1,7 +1,7 @@
 'use client';
 
 import { useSocketStatus } from '@/shared/lib/socket-status';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export function ConnectionBanner() {
   const { isConnected, hasEverConnected, reconnectAttempts } =

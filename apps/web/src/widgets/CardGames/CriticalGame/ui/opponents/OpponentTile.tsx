@@ -1,5 +1,5 @@
 import { CardsIcon, SkullIcon, IdleBadge, Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { CriticalPlayerTableState, CriticalLogEntry } from '../../types';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { ChatBubble } from '../ChatBubble';

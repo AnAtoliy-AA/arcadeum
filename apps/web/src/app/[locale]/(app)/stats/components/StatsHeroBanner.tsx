@@ -7,7 +7,7 @@ import { xpProgress } from '@/shared/lib/xp-level';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import type { SessionTokensSnapshot } from '@/entities/session/model/types';
 import type { PlayerStats } from '@/features/history/api';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { GlassCard } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { ReferralTier } from '../types';
 import { TIER_COIN_BONUS } from '../lib/coin-rewards';
 import {

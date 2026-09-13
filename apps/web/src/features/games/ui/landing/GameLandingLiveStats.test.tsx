@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { GameLandingLiveStats } from './GameLandingLiveStats';
 import { useLiveStatsStore } from '@/features/live-stats';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

@@ -5,7 +5,7 @@ import { Typography } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { ItemAsset } from './ItemAsset';
 import type { EffectiveShopItem, ShopCategory } from '../server/shop.types';
 

@@ -3,7 +3,7 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { Badge, IconButton, LinkButton } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes, useLocale } from '@/shared/config/useRoutes';
 import type { Routes } from '@/shared/config/routes';
 import type { Locale } from '@/shared/i18n';

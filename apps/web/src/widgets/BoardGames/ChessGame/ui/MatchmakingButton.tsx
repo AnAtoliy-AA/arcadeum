@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useMatchmaking } from '../hooks/useMatchmaking';
 
 interface MatchmakingButtonProps {
@@ -30,12 +30,14 @@ export function MatchmakingButton({
     [router, locale],
   );
 
-  const { queued, waitTime, queueSize, joinQueue, leaveQueue } = useMatchmaking({
-    userId,
-    rating,
-    timeControlType,
-    onMatched: handleMatched,
-  });
+  const { queued, waitTime, queueSize, joinQueue, leaveQueue } = useMatchmaking(
+    {
+      userId,
+      rating,
+      timeControlType,
+      onMatched: handleMatched,
+    },
+  );
 
   const handleToggle = useCallback(() => {
     if (queued) {
@@ -69,9 +71,7 @@ export function MatchmakingButton({
           <span>
             {t('games.chess_v1.matchmaking.position', { position: queueSize })}
           </span>
-          <span>
-            {t('games.chess_v1.matchmaking.rating', { rating })}
-          </span>
+          <span>{t('games.chess_v1.matchmaking.rating', { rating })}</span>
         </div>
       </div>
     );

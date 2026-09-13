@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useQuery } from '@/shared/hooks/useQuery';
-import { useTranslation } from '@/shared/lib/useTranslation';
-import { useLanguage } from '@/shared/i18n/context';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { useLanguage } from '@/shared/i18n';
 import { formatDateTime } from '@/shared/i18n/formatters';
 import { historyApi } from '@/features/history/api';
 import { useHistoryStore } from '../store/historyStore';

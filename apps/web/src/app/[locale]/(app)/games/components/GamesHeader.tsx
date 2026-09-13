@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { Header, HeaderControls, Title, ViewToggle } from '../styles';
 import { Button, CreateRoomLinkButton } from '@arcadeum/ui';

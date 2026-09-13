@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.29.44] - 2026-09-13
 
 ### Added
-- remove redundant battle pass XP bonus and add admin backfill tool (ARC-xp-backfill)
 
+- remove redundant battle pass XP bonus and add admin backfill tool (ARC-xp-backfill)
 
 ## [1.29.43] - 2026-09-13
 

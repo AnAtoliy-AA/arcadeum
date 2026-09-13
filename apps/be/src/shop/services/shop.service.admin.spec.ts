@@ -40,6 +40,13 @@ describe('ShopService — admin paths', () => {
       expect(h.auditModel.rows.length).toBe(1);
       expect(h.userModel.users.get(h.userId)!.equippedBadgeId).toBeNull();
       expect(result.inventoryItem.acquiredVia).toBe('grant');
+      expect(h.dispatcher.dispatch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: h.userId,
+          category: 'gift_received',
+          url: '/shop/inventory',
+        }),
+      );
     });
 
     it('is idempotent on repeated nonce', async () => {

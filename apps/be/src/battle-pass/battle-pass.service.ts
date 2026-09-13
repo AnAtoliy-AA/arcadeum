@@ -118,29 +118,6 @@ export class BattlePassService {
     }
   }
 
-  /**
-   * Award XP to a player after a game. XP is persisted on the user document
-   * so it survives across sessions and seasons. The formula mirrors the
-   * original derivation: 10 XP per game played + 40 XP bonus for a win.
-   */
-  async awardGameXp(playerIds: string[], winners: string[]): Promise<void> {
-    const humanIds = playerIds.filter((id) => !id.startsWith('bot-'));
-    if (humanIds.length === 0) return;
-
-    const bulkOps = humanIds.map((userId) => {
-      const isWinner = winners.includes(userId);
-      const xpGain = 10 + (isWinner ? 40 : 0);
-      return {
-        updateOne: {
-          filter: { _id: userId },
-          update: { $inc: { xp: xpGain } },
-        },
-      };
-    });
-
-    await this.userModel.bulkWrite(bulkOps);
-  }
-
   async claim(userId: string, tier: number): Promise<ClaimResultDto> {
     const tierDef = CURRENT_SEASON.tiers.find((t) => t.tier === tier);
     if (!tierDef) {

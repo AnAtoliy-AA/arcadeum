@@ -17,6 +17,7 @@ import { adminGamesEs } from './admin-games/es';
 import { adminBlockedIpsEs } from './admin-blocked-ips/es';
 import { adminUsersEs } from './admin-users/es';
 import { adminBulkRewardsEs } from './admin-bulk-rewards/es';
+import { adminXpBackfillEs } from './admin-xp-backfill/es';
 import { friendsEs } from './friends/es';
 import { clansEs } from './clans/es';
 import { eventsEs } from './events/es';
@@ -50,6 +51,7 @@ export const es = {
       games: 'Juegos',
       gameRules: 'Reglas del Juego',
       bulkRewards: 'Recompensas Masivas',
+      xpBackfill: 'XP Backfill',
       blockedIps: 'IPs Bloqueados',
       geoBlock: 'Bloqueo Geográfico',
       comingSoon: 'Próximamente',
@@ -220,6 +222,7 @@ export const es = {
     wallet: adminWalletEs,
     blockedIps: adminBlockedIpsEs,
     bulkRewards: adminBulkRewardsEs,
+    adminXpBackfill: adminXpBackfillEs,
   },
   tournaments: tournamentsEs,
   blog: blogEs,

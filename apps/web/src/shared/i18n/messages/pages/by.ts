@@ -17,6 +17,7 @@ import { adminGamesBy } from './admin-games/by';
 import { adminBlockedIpsBy } from './admin-blocked-ips/by';
 import { adminUsersBy } from './admin-users/by';
 import { adminBulkRewardsBy } from './admin-bulk-rewards/by';
+import { adminXpBackfillBy } from './admin-xp-backfill/by';
 import { friendsBy } from './friends/by';
 import { clansBy } from './clans/by';
 import { eventsBy } from './events/by';
@@ -50,6 +51,7 @@ export const by = {
       games: 'Гульні',
       gameRules: 'Правілы гульняў',
       bulkRewards: 'Масавыя Ўзнагароды',
+      xpBackfill: 'XP Backfill',
       blockedIps: 'Заблакіраваныя IP',
       geoBlock: 'Геаблакіроўка',
       comingSoon: 'Хутка',
@@ -219,6 +221,7 @@ export const by = {
     wallet: adminWalletBy,
     blockedIps: adminBlockedIpsBy,
     bulkRewards: adminBulkRewardsBy,
+    adminXpBackfill: adminXpBackfillBy,
   },
   tournaments: tournamentsBy,
   blog: blogBy,

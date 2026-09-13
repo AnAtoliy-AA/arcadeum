@@ -14,6 +14,7 @@ describe('NotificationCategory', () => {
       'friend_request',
       'friend_accepted',
       'game_invitation',
+      'gift_received',
     ]);
   });
 

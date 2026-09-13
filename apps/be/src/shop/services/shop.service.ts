@@ -20,12 +20,13 @@ import {
 } from '../schemas/shop-admin-audit.schema';
 import { CatalogService } from './catalog.service';
 import { InventoryService } from './inventory.service';
+import { NotificationDispatcher } from '../../notifications/notifications.dispatcher';
 import { equipKeyFor } from '../lib/shop-types';
 import { getCatalogItem } from '../lib/shop-catalog';
+import { equippedFromUser, toInventoryItemView } from '../lib/shop-views.util';
 import type {
   EquippedView,
   GrantResult,
-  InventoryItemView,
   InventoryRowSnapshot,
   LeanUser,
   PurchaseResult,
@@ -48,6 +49,7 @@ export class ShopService {
     private readonly inventory: InventoryService,
     private readonly wallet: WalletService,
     private readonly economy: EconomySettingsService,
+    private readonly dispatcher: NotificationDispatcher,
   ) {}
 
   async purchase(
@@ -66,7 +68,7 @@ export class ShopService {
       const equipped = await this.loadEquipped(userId);
       const balance = await this.wallet.getBalance(userId);
       return {
-        inventoryItem: this.toInventoryItemView(prior),
+        inventoryItem: toInventoryItemView(prior),
         equipped,
         balance,
       };
@@ -86,14 +88,14 @@ export class ShopService {
       const equipped = await this.ensureEquipped(userId, effective);
       const balance = await this.wallet.getBalance(userId);
       return {
-        inventoryItem: this.toInventoryItemView(existing),
+        inventoryItem: toInventoryItemView(existing),
         equipped,
         balance,
       };
     }
 
     let inventoryRow!: InventoryRowSnapshot;
-    let equipped: EquippedView = this.equippedFromUser(null);
+    let equipped: EquippedView = equippedFromUser(null);
 
     await runInTransaction(this.connection, async (session) => {
       // Re-check INSIDE the transaction — without this two concurrent
@@ -148,7 +150,7 @@ export class ShopService {
     this.wallet.emitAfterCommit(userId, balance);
 
     return {
-      inventoryItem: this.toInventoryItemView(inventoryRow),
+      inventoryItem: toInventoryItemView(inventoryRow),
       equipped,
       balance,
     };
@@ -296,7 +298,36 @@ export class ShopService {
       );
     });
 
-    return { inventoryItem: this.toInventoryItemView(row) };
+    const adminUser = await this.userModel
+      .findById(adminUserId, { username: 1, displayName: 1 })
+      .lean<{ username?: string; displayName?: string } | null>();
+    const senderName = adminUser?.displayName || adminUser?.username || 'Admin';
+
+    void this.dispatcher
+      .dispatch({
+        userId,
+        category: 'gift_received',
+        titleKey: 'notifications.gift_received.title',
+        bodyKey: 'notifications.gift_received.body',
+        i18nParams: {
+          senderName,
+          itemName: effective.id,
+          nameKey: effective.nameKey,
+          message: reason,
+        },
+        url: '/shop/inventory',
+        data: {
+          itemId: effective.id,
+          nameKey: effective.nameKey,
+          senderId: adminUserId,
+          senderName,
+          message: reason,
+        },
+        skipCategoryCheck: true,
+      })
+      .catch(() => {});
+
+    return { inventoryItem: toInventoryItemView(row) };
   }
 
   async revoke(
@@ -352,7 +383,7 @@ export class ShopService {
       .findById(row._id)
       .lean<InventoryRowSnapshot | null>();
     return {
-      inventoryItem: this.toInventoryItemView(refreshed ?? row),
+      inventoryItem: toInventoryItemView(refreshed ?? row),
       equipped,
     };
   }
@@ -424,7 +455,7 @@ export class ShopService {
       )
       .lean<LeanUser | null>();
     if (!updated) throw new NotFoundException('users.notFound');
-    return this.equippedFromUser(updated);
+    return equippedFromUser(updated);
   }
 
   private async loadEquipped(
@@ -447,32 +478,6 @@ export class ShopService {
         { session },
       )
       .lean<LeanUser | null>();
-    return this.equippedFromUser(user);
-  }
-
-  private equippedFromUser(user: LeanUser | null | undefined): EquippedView {
-    return {
-      avatar: user?.equippedAvatarId ?? null,
-      badge: user?.equippedBadgeId ?? null,
-      name_color: user?.equippedNameColorId ?? null,
-      game_skin: user?.equippedGameSkinId ?? null,
-      banner: user?.equippedBannerId ?? null,
-      aura: user?.equippedAuraId ?? null,
-      frame: user?.equippedFrameId ?? null,
-      background: user?.equippedBackgroundId ?? null,
-    };
-  }
-
-  private toInventoryItemView(row: InventoryRowSnapshot): InventoryItemView {
-    return {
-      rowId: row._id.toString(),
-      itemId: row.itemId,
-      purchaseId: row.purchaseId,
-      acquiredVia: row.acquiredVia,
-      paidAmount: row.paidAmount ?? null,
-      paidCurrency: row.paidCurrency ?? null,
-      soldAt: row.soldAt ? row.soldAt.toISOString() : null,
-      createdAt: (row.createdAt ?? new Date()).toISOString(),
-    };
+    return equippedFromUser(user);
   }
 }

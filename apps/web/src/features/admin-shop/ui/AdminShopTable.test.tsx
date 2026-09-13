@@ -84,9 +84,7 @@ describe('AdminShopTable with Infinite Scroll', () => {
     expect(
       screen.queryByTestId('admin-shop-row-item-11'),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByTestId('infinite-scroll-trigger'),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('infinite-scroll-trigger')).toBeInTheDocument();
     expect(mockObserve).toHaveBeenCalled();
   });
 
@@ -153,5 +151,12 @@ describe('AdminShopTable with Infinite Scroll', () => {
       'Showing 20 of 25 items',
     );
     expect(screen.getByTestId('admin-shop-row-item-15')).toBeInTheDocument();
+  });
+
+  it('renders item preview and human-readable name', () => {
+    const mockCatalog: EffectiveShopItem[] = [createMockItem(1)];
+    render(<AdminShopTable catalog={mockCatalog} labels={adminShopEn} />);
+    expect(screen.getByTestId('admin-shop-row-item-1')).toBeInTheDocument();
+    expect(screen.getAllByText('item-1').length).toBe(2);
   });
 });

@@ -13,6 +13,10 @@ import type { adminShopEn } from '@/shared/i18n/messages/pages/admin-shop/en';
 import { AdminShopEditDialog } from './AdminShopEditDialog';
 import { AdminShopGrantDialog } from './AdminShopGrantDialog';
 import { AdminShopItemPreview } from './AdminShopItemPreview';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 
 type Labels = typeof adminShopEn;
 
@@ -29,6 +33,7 @@ export function AdminShopTable({
   initialBatchSize = 10,
   batchSize = 10,
 }: Props) {
+  const { t } = useTranslation();
   const [visibleCount, setVisibleCount] = useState(
     Math.min(catalog.length, initialBatchSize),
   );
@@ -108,7 +113,9 @@ export function AdminShopTable({
           >
             <thead>
               <tr className="border-b border-[var(--borderColor)] bg-[var(--backgroundFocus)] text-[var(--colorTextSecondary,#a1a1aa)] text-xs uppercase tracking-wider">
-                <th className="py-3 px-4 font-bold">{labels.columns.id}</th>
+                <th className="py-3 px-4 font-bold">
+                  {labels.columns.name ?? labels.columns.id}
+                </th>
                 <th className="py-3 px-4 font-bold">
                   {labels.columns.category}
                 </th>
@@ -130,6 +137,13 @@ export function AdminShopTable({
             <tbody className="divide-y divide-[var(--borderColor)]">
               {visibleItems.map((item) => {
                 const overridden = item.overridden;
+                const translatedName = item.nameKey
+                  ? t(`pages.shop.${item.nameKey}` as TranslationKey)
+                  : undefined;
+                const itemName =
+                  translatedName && !translatedName.startsWith('pages.shop.')
+                    ? translatedName
+                    : item.id;
                 return (
                   <tr
                     key={item.id}
@@ -139,14 +153,20 @@ export function AdminShopTable({
                     <td className="py-3 px-4">
                       <div className="flex flex-row items-center gap-3">
                         <AdminShopItemPreview
+                          item={item}
                           size={32}
                           colorValue={item.colorValue}
                           assetUrl={item.assetUrl}
                           itemId={item.id}
                         />
-                        <code className="text-xs bg-[rgba(255,255,255,0.08)] px-1.5 py-0.5 rounded font-mono text-[var(--colorText)]">
-                          {item.id}
-                        </code>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold text-[var(--colorText)]">
+                            {itemName}
+                          </span>
+                          <code className="text-xs bg-[rgba(255,255,255,0.08)] px-1.5 py-0.5 rounded font-mono text-[var(--colorTextSecondary,#a1a1aa)] w-fit">
+                            {item.id}
+                          </code>
+                        </div>
                       </div>
                     </td>
                     <td className="py-3 px-4 text-[var(--colorText)]">

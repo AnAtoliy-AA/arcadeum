@@ -59,6 +59,10 @@ export const en = {
       label: 'Game invitations',
       description: 'Notifies you when someone invites you to a game room.',
     },
+    gift_received: {
+      label: 'Gifts',
+      description: 'Notifies you when someone sends you a gift.',
+    },
   },
   daily_reward_ready: {
     title: 'Daily reward ready',
@@ -87,6 +91,10 @@ export const en = {
   game_invitation: {
     title: 'Game invitation',
     body: '{{hostName}} invited you to play {{gameId}}.',
+  },
+  gift_received: {
+    title: 'Gift from {{senderName}}',
+    body: '{{itemName}}: {{message}}',
   },
 };
 
@@ -142,6 +150,10 @@ export const ru: DeepPartial<NotificationsMessages> = {
       label: 'Приглашения в игру',
       description: 'Уведомляет, когда кто-то приглашает вас в игровую комнату.',
     },
+    gift_received: {
+      label: 'Подарки',
+      description: 'Уведомляет, когда кто-то дарит вам подарок.',
+    },
   },
   daily_reward_ready: {
     title: 'Награда дня готова',
@@ -170,6 +182,10 @@ export const ru: DeepPartial<NotificationsMessages> = {
   game_invitation: {
     title: 'Приглашение в игру',
     body: '{{hostName}} пригласил вас в игру {{gameId}}.',
+  },
+  gift_received: {
+    title: 'Подарок от {{senderName}}',
+    body: '{{itemName}}: {{message}}',
   },
 };
 
@@ -224,6 +240,10 @@ export const es: DeepPartial<NotificationsMessages> = {
       label: 'Invitaciones a jugar',
       description: 'Te avisa cuando alguien te invita a una sala de juego.',
     },
+    gift_received: {
+      label: 'Regalos',
+      description: 'Te avisa cuando alguien te envía un regalo.',
+    },
   },
   daily_reward_ready: {
     title: 'Recompensa diaria lista',
@@ -252,6 +272,10 @@ export const es: DeepPartial<NotificationsMessages> = {
   game_invitation: {
     title: 'Invitación a jugar',
     body: '{{hostName}} te invitó a jugar {{gameId}}.',
+  },
+  gift_received: {
+    title: 'Regalo de {{senderName}}',
+    body: '{{itemName}}: {{message}}',
   },
 };
 
@@ -307,6 +331,10 @@ export const fr: DeepPartial<NotificationsMessages> = {
       label: 'Invitations à jouer',
       description: "T'avertit quand quelqu'un t'invite dans une salle de jeu.",
     },
+    gift_received: {
+      label: 'Cadeaux',
+      description: "T'avertit quand quelqu'un t'envoie un cadeau.",
+    },
   },
   daily_reward_ready: {
     title: 'Récompense quotidienne prête',
@@ -335,6 +363,10 @@ export const fr: DeepPartial<NotificationsMessages> = {
   game_invitation: {
     title: 'Invitation à jouer',
     body: '{{hostName}} vous a invité à jouer à {{gameId}}.',
+  },
+  gift_received: {
+    title: 'Cadeau de {{senderName}}',
+    body: '{{itemName}}: {{message}}',
   },
 };
 
@@ -388,6 +420,10 @@ export const by: DeepPartial<NotificationsMessages> = {
       label: 'Запрашэнні ў гульню',
       description: 'Паведамляе, калі хтосьці запрашае вас у ігравы пакой.',
     },
+    gift_received: {
+      label: 'Падарункі',
+      description: 'Паведамляе, калі хтосьці дорыць вам падарунак.',
+    },
   },
   daily_reward_ready: {
     title: 'Узнагарода дня гатовая',
@@ -416,5 +452,9 @@ export const by: DeepPartial<NotificationsMessages> = {
   game_invitation: {
     title: 'Запрашэнне ў гульню',
     body: '{{hostName}} запрасіў вас пагуляць у {{gameId}}.',
+  },
+  gift_received: {
+    title: 'Падарунак ад {{senderName}}',
+    body: '{{itemName}}: {{message}}',
   },
 };

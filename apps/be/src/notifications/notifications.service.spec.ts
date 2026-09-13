@@ -106,6 +106,7 @@ describe('NotificationsService', () => {
         friend_request: false,
         friend_accepted: false,
         game_invitation: false,
+        gift_received: false,
       });
     });
 
@@ -148,6 +149,7 @@ describe('NotificationsService', () => {
         friend_request: false,
         friend_accepted: false,
         game_invitation: false,
+        gift_received: false,
       });
     });
 

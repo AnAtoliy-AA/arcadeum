@@ -4,14 +4,19 @@ import { useCallback, useEffect, useState, useTransition } from 'react';
 import { Button, Spinner } from '@arcadeum/ui';
 import { DialogShell } from '@/features/shop/ui/dialogShell';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { useTranslation } from '@/shared/lib/useTranslation';
-import { apiClient } from '@/shared/lib/api-client';
 import {
-  sendGiftAction,
-  type ShopActionError,
-} from '@/features/shop/server/shop.actions';
-import type { InventoryItemView } from '@/features/shop/server/shop.types';
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
+import { apiClient } from '@/shared/lib/api-client';
+
+import type {
+  InventoryItemView,
+  EffectiveShopItem,
+} from '@/features/shop/server/shop.types';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
+import { loadCatalog } from '@/features/shop/lib/catalogCache';
+import { AdminShopItemPreview } from '@/features/admin-shop/ui/AdminShopItemPreview';
 
 interface GiftDialogProps {
   open: boolean;
@@ -31,10 +36,13 @@ export function GiftDialog({
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
   const [inventory, setInventory] = useState<InventoryItemView[]>([]);
+  const [catalogMap, setCatalogMap] = useState<Map<string, EffectiveShopItem>>(
+    new Map(),
+  );
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [message, setMessage] = useState('');
-  const [error, setError] = useState<ShopActionError | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -42,14 +50,21 @@ export function GiftDialog({
     if (!open || !snapshot.accessToken) return;
     let cancelled = false;
 
-    apiClient
-      .get<{ items: InventoryItemView[] }>('/shop/inventory', {
+    Promise.all([
+      apiClient.get<{ items: InventoryItemView[] }>('/shop/inventory', {
         token: snapshot.accessToken,
-      })
-      .then((data) => {
+      }),
+      loadCatalog(),
+    ])
+      .then(([invData, catData]) => {
         if (!cancelled) {
+          const map = new Map<string, EffectiveShopItem>();
+          for (const item of catData) {
+            map.set(item.id, item);
+          }
+          setCatalogMap(map);
           setInventory(
-            (data.items ?? []).filter(
+            (invData.items ?? []).filter(
               (item) => item.acquiredVia !== 'starter' && item.soldAt === null,
             ),
           );
@@ -69,19 +84,24 @@ export function GiftDialog({
     if (!selectedItem || !message.trim()) return;
     setError(null);
     startTransition(async () => {
-      const result = await sendGiftAction({
-        recipientId,
-        itemId: selectedItem,
-        message: message.trim(),
-      });
-      if (result.ok) {
+      try {
+        await apiClient.post(
+          '/shop/gift',
+          {
+            recipientId,
+            itemId: selectedItem,
+            message: message.trim(),
+          },
+          { token: snapshot.accessToken ?? undefined },
+        );
         setSuccess(true);
         setTimeout(() => onClose(), 1500);
-      } else {
-        setError(result.error);
+      } catch (err: unknown) {
+        const errorKey = err instanceof Error ? err.message : 'generic';
+        setError(errorKey);
       }
     });
-  }, [selectedItem, message, recipientId, onClose]);
+  }, [selectedItem, message, recipientId, onClose, snapshot.accessToken]);
 
   const errorMessages: Record<string, string> = {
     not_friends: t('pages.friends.gift.error.notFriends'),
@@ -95,10 +115,7 @@ export function GiftDialog({
 
   return (
     <DialogShell open onClose={onClose} testId="gift-dialog">
-      <div
-        className="flex flex-col items-stretch gap-3"
-        style={{ minWidth: 320 }}
-      >
+      <div className="flex flex-col items-stretch gap-3 min-w-[320px]">
         <span className="text-[20px] font-bold">
           {t('pages.friends.gift.title')}
         </span>
@@ -132,27 +149,53 @@ export function GiftDialog({
             <span className="text-[14px] text-[var(--color)]">
               {t('pages.friends.gift.selectItem')}
             </span>
-            <div className="flex flex-col gap-1 max-h-[200px] overflow-auto">
-              {inventory.map((item) => (
-                <button
-                  key={item.rowId}
-                  type="button"
-                  className={`flex items-center gap-2 p-2 rounded-lg transition-colors text-left ${
-                    selectedItem === item.itemId
-                      ? 'bg-[var(--primary)] bg-opacity-20 border border-[var(--primary)]'
-                      : 'hover:bg-[var(--glassBg)] border border-transparent'
-                  }`}
-                  onClick={() => setSelectedItem(item.itemId)}
-                  data-testid={`gift-item-${item.itemId}`}
-                >
-                  <span className="text-[13px] font-medium flex-1 truncate">
-                    {item.itemId}
-                  </span>
-                  <span className="text-[11px] text-[var(--textSecondary)]">
-                    {item.acquiredVia}
-                  </span>
-                </button>
-              ))}
+            <div className="flex flex-col gap-1 max-h-[220px] overflow-auto">
+              {inventory.map((item) => {
+                const def = catalogMap.get(item.itemId);
+                const translatedName = def?.nameKey
+                  ? t(`pages.shop.${def.nameKey}` as TranslationKey)
+                  : undefined;
+                const itemName =
+                  translatedName && !translatedName.startsWith('pages.shop.')
+                    ? translatedName
+                    : item.itemId;
+
+                return (
+                  <button
+                    key={item.rowId}
+                    type="button"
+                    className={`flex items-center gap-2 p-2 rounded-lg transition-colors text-left ${
+                      selectedItem === item.itemId
+                        ? 'bg-[var(--primary)] bg-opacity-20 border border-[var(--primary)]'
+                        : 'hover:bg-[var(--glassBg)] border border-transparent'
+                    }`}
+                    onClick={() => setSelectedItem(item.itemId)}
+                    data-testid={`gift-item-${item.itemId}`}
+                  >
+                    <AdminShopItemPreview
+                      item={def}
+                      size={32}
+                      colorValue={def?.colorValue}
+                      assetUrl={def?.assetUrl}
+                      itemId={item.itemId}
+                    />
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <span className="text-sm font-semibold truncate text-[var(--colorText)]">
+                        {itemName}
+                      </span>
+                      <span className="text-[11px] text-[var(--textSecondary)] flex items-center gap-1.5">
+                        <code className="font-mono">{item.itemId}</code>
+                        {def && (
+                          <>
+                            <span>•</span>
+                            <span className="capitalize">{def.category}</span>
+                          </>
+                        )}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             <div className="flex flex-col gap-1">

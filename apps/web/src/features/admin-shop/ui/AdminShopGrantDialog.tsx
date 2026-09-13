@@ -12,6 +12,10 @@ import {
 import type { adminShopEn } from '@/shared/i18n/messages/pages/admin-shop/en';
 import type { EffectiveShopItem } from '@/features/shop/server/shop.types';
 import { AdminShopItemPreview } from './AdminShopItemPreview';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/lib/useTranslation';
 
 type Labels = typeof adminShopEn;
 
@@ -56,6 +60,7 @@ function AdminShopGrantDialogInner({
   catalog,
   defaultItemId,
 }: Omit<Props, 'open'>) {
+  const { t } = useTranslation();
   const router = useRouter();
   // Stable per-mount UUID — regenerated on each fresh mount.
   const nonceRef = useRef<string>(uuid());
@@ -127,24 +132,18 @@ function AdminShopGrantDialogInner({
     });
   };
 
-  const inputStyle: React.CSSProperties = {
-    padding: '8px 10px',
-    background: 'var(--backgroundFocus)',
-    border: '1px solid var(--borderColor)',
-    borderRadius: 6,
-    color: 'inherit',
-    fontSize: 14,
-    width: '100%',
-  };
-
   const itemInfo = catalog.find((i) => i.id === itemId);
+  const itemTranslatedName = itemInfo?.nameKey
+    ? t(`pages.shop.${itemInfo.nameKey}` as TranslationKey)
+    : undefined;
+  const selectedItemDisplayName =
+    itemTranslatedName && !itemTranslatedName.startsWith('pages.shop.')
+      ? itemTranslatedName
+      : itemId;
 
   return (
     <DialogShell open onClose={onClose} testId="admin-shop-grant-dialog">
-      <div
-        className="flex flex-col items-stretch gap-3"
-        style={{ minWidth: 320 }}
-      >
+      <div className="flex flex-col items-stretch gap-3 min-w-[320px]">
         <span className="text-[24px] font-bold">
           {labels.grantDialog.title}
         </span>
@@ -188,7 +187,7 @@ function AdminShopGrantDialogInner({
                 aria-label={labels.grantDialog.searchUserPlaceholder}
                 data-testid="admin-shop-grant-user"
                 autoComplete="new-password"
-                style={inputStyle}
+                className="w-full px-2.5 py-2 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-sm text-inherit outline-none"
               />
               {(isUserSearching ||
                 (userSearchQuery.trim().length > 0 &&
@@ -240,6 +239,7 @@ function AdminShopGrantDialogInner({
           {itemId ? (
             <div className="flex flex-row p-3 bg-[var(--backgroundHover)] rounded-lg border border-[var(--borderColor)] items-center gap-3">
               <AdminShopItemPreview
+                item={itemInfo}
                 size={48}
                 colorValue={itemInfo?.colorValue}
                 assetUrl={itemInfo?.assetUrl}
@@ -247,9 +247,14 @@ function AdminShopGrantDialogInner({
               />
 
               <div className="flex flex-col items-stretch flex-1">
-                <span className="text-[16px] font-bold">{itemId}</span>
+                <span className="text-[16px] font-bold">
+                  {selectedItemDisplayName}
+                </span>
+                <code className="text-xs text-[var(--colorTextSecondary,#a1a1aa)] font-mono">
+                  {itemId}
+                </code>
                 {itemInfo && (
-                  <span className="text-[12px] text-[var(--colorPress)]">
+                  <span className="text-[12px] text-[var(--colorPress)] mt-0.5">
                     {labels.category[itemInfo.category]} •{' '}
                     {labels.rarity[itemInfo.rarity]} • {itemInfo.priceAmount}{' '}
                     {itemInfo.priceCurrency}
@@ -275,45 +280,66 @@ function AdminShopGrantDialogInner({
                 aria-label={labels.grantDialog.searchItemPlaceholder}
                 data-testid="admin-shop-grant-item"
                 autoComplete="new-password"
-                style={inputStyle}
+                className="w-full px-2.5 py-2 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-sm text-inherit outline-none"
               />
               {itemSearchQuery.trim().length > 0 && (
                 <div className="flex flex-col items-stretch absolute top-full left-0 right-0 bg-[var(--background)] border border-[var(--borderColor)] rounded-xl max-h-[200px] overflow-y-auto z-[100] -mt-1">
                   {catalog
                     .filter((item) => {
                       const query = itemSearchQuery.toLowerCase();
+                      const trans = item.nameKey
+                        ? t(`pages.shop.${item.nameKey}` as TranslationKey)
+                        : '';
+                      const localizedName =
+                        trans && !trans.startsWith('pages.shop.')
+                          ? trans.toLowerCase()
+                          : '';
                       return (
                         item.id.toLowerCase().includes(query) ||
+                        localizedName.includes(query) ||
                         item.category.toLowerCase().includes(query) ||
                         item.rarity.toLowerCase().includes(query)
                       );
                     })
-                    .map((item) => (
-                      <div
-                        className="flex flex-row p-2 hover:bg-[var(--backgroundHover)] cursor-pointer items-center gap-2"
-                        onClick={() => {
-                          setItemId(item.id);
-                          setItemSearchQuery('');
-                        }}
-                        key={item.id}
-                      >
-                        <AdminShopItemPreview
-                          size={24}
-                          colorValue={item.colorValue}
-                          assetUrl={item.assetUrl}
-                          itemId={item.id}
-                        />
-                        <div className="flex flex-col items-stretch">
-                          <span className="text-[16px] font-bold">
-                            {item.id}
-                          </span>
-                          <span className="text-[12px] text-[var(--colorPress)]">
-                            {labels.category[item.category]} •{' '}
-                            {labels.rarity[item.rarity]}
-                          </span>
+                    .map((item) => {
+                      const trans = item.nameKey
+                        ? t(`pages.shop.${item.nameKey}` as TranslationKey)
+                        : undefined;
+                      const itemName =
+                        trans && !trans.startsWith('pages.shop.')
+                          ? trans
+                          : item.id;
+                      return (
+                        <div
+                          className="flex flex-row p-2 hover:bg-[var(--backgroundHover)] cursor-pointer items-center gap-2"
+                          onClick={() => {
+                            setItemId(item.id);
+                            setItemSearchQuery('');
+                          }}
+                          key={item.id}
+                        >
+                          <AdminShopItemPreview
+                            item={item}
+                            size={32}
+                            colorValue={item.colorValue}
+                            assetUrl={item.assetUrl}
+                            itemId={item.id}
+                          />
+                          <div className="flex flex-col items-stretch flex-1 min-w-0">
+                            <span className="text-[14px] font-bold truncate">
+                              {itemName}
+                            </span>
+                            <span className="text-[12px] text-[var(--colorPress)]">
+                              <code className="font-mono text-[11px] mr-1">
+                                {item.id}
+                              </code>{' '}
+                              • {labels.category[item.category]} •{' '}
+                              {labels.rarity[item.rarity]}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
               )}
             </div>
@@ -332,7 +358,7 @@ function AdminShopGrantDialogInner({
             aria-label={labels.grantDialog.reason}
             data-testid="admin-shop-grant-reason"
             autoComplete="new-password"
-            style={inputStyle}
+            className="w-full px-2.5 py-2 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-sm text-inherit outline-none"
           />
           <span className="text-[12px] text-[var(--colorPress)] -mt-1">
             {labels.grantDialog.suggestedReasonsLabel}

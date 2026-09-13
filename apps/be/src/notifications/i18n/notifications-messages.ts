@@ -27,6 +27,7 @@ export type NotificationBundle = {
     friend_request: { title: string; body: string };
     friend_accepted: { title: string; body: string };
     game_invitation: { title: string; body: string };
+    gift_received: { title: string; body: string };
   };
 };
 
@@ -59,6 +60,10 @@ const en: NotificationBundle = {
     game_invitation: {
       title: 'Game invitation',
       body: '{{hostName}} invited you to play {{gameId}}.',
+    },
+    gift_received: {
+      title: 'Gift from {{senderName}}',
+      body: '{{itemName}}: {{message}}',
     },
   },
 };
@@ -93,6 +98,10 @@ const ru: NotificationBundle = {
       title: 'Приглашение в игру',
       body: '{{hostName}} пригласил вас в игру {{gameId}}.',
     },
+    gift_received: {
+      title: 'Подарок от {{senderName}}',
+      body: '{{itemName}}: {{message}}',
+    },
   },
 };
 
@@ -125,6 +134,10 @@ const es: NotificationBundle = {
     game_invitation: {
       title: 'Invitación a jugar',
       body: '{{hostName}} te invitó a jugar {{gameId}}.',
+    },
+    gift_received: {
+      title: 'Regalo de {{senderName}}',
+      body: '{{itemName}}: {{message}}',
     },
   },
 };
@@ -159,6 +172,10 @@ const fr: NotificationBundle = {
       title: 'Invitation à jouer',
       body: '{{hostName}} vous a invité à jouer à {{gameId}}.',
     },
+    gift_received: {
+      title: 'Cadeau de {{senderName}}',
+      body: '{{itemName}}: {{message}}',
+    },
   },
 };
 
@@ -191,6 +208,10 @@ const by: NotificationBundle = {
     game_invitation: {
       title: 'Запрашэнне ў гульню',
       body: '{{hostName}} запрасіў вас пагуляць у {{gameId}}.',
+    },
+    gift_received: {
+      title: 'Падарунак ад {{senderName}}',
+      body: '{{itemName}}: {{message}}',
     },
   },
 };

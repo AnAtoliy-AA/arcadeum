@@ -9,6 +9,7 @@ import { EconomySettingsService } from '../../economy/economy-settings.service';
 import { User } from '../../auth/schemas/user.schema';
 import { UserInventoryItem } from '../schemas/user-inventory-item.schema';
 import { ShopAdminAudit } from '../schemas/shop-admin-audit.schema';
+import { NotificationDispatcher } from '../../notifications/notifications.dispatcher';
 
 export interface FakeRow {
   _id: Types.ObjectId;
@@ -162,6 +163,7 @@ export interface ShopServiceHarness {
   catalog: jest.Mocked<CatalogService>;
   inventory: jest.Mocked<InventoryService>;
   economy: jest.Mocked<EconomySettingsService>;
+  dispatcher: jest.Mocked<NotificationDispatcher>;
   userId: string;
   adminId: string;
 }
@@ -205,6 +207,10 @@ export async function buildShopHarness(): Promise<ShopServiceHarness> {
   });
   const adminId = new Types.ObjectId().toString();
 
+  const dispatcher = {
+    dispatch: jest.fn().mockResolvedValue(undefined),
+  } as unknown as jest.Mocked<NotificationDispatcher>;
+
   const module = await Test.createTestingModule({
     providers: [
       ShopService,
@@ -219,11 +225,16 @@ export async function buildShopHarness(): Promise<ShopServiceHarness> {
       { provide: InventoryService, useValue: inventory },
       { provide: WalletService, useValue: wallet },
       { provide: EconomySettingsService, useValue: economy },
+      {
+        provide: NotificationDispatcher,
+        useValue: dispatcher,
+      },
     ],
   }).compile();
 
   return {
     service: module.get(ShopService),
+    dispatcher,
     inventoryModel,
     auditModel,
     userModel,

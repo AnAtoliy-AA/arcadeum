@@ -8,6 +8,7 @@ import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
 import { SolanaModule } from '../solana/solana.module';
 import { FriendsModule } from '../friends/friends.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import {
   ShopItemOverride,
   ShopItemOverrideSchema,
@@ -36,6 +37,7 @@ import { AdminShopController } from './admin-shop.controller';
     forwardRef(() => WalletModule),
     forwardRef(() => SolanaModule),
     forwardRef(() => FriendsModule),
+    forwardRef(() => NotificationsModule),
     EconomyModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },

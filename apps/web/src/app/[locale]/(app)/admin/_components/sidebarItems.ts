@@ -13,6 +13,7 @@ export interface AdminSidebarItem {
     | 'games'
     | 'gameRules'
     | 'bulkRewards'
+    | 'xpBackfill'
     | 'blockedIps'
     | 'geoBlock';
   href: string | null;
@@ -30,6 +31,7 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'gemPackages', href: '/admin/gem-packages', enabled: true },
   { id: 'shop', href: '/admin/shop', enabled: true },
   { id: 'bulkRewards', href: '/admin/bulk-rewards', enabled: true },
+  { id: 'xpBackfill', href: '/admin/xp-backfill', enabled: true },
   { id: 'games', href: '/admin/games', enabled: true },
   { id: 'gameRules', href: '/admin/game-rules', enabled: true },
   { id: 'announcements', href: '/admin/announcements', enabled: true },

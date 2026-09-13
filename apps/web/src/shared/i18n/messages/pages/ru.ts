@@ -17,6 +17,7 @@ import { adminGamesRu } from './admin-games/ru';
 import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
 import { adminUsersRu } from './admin-users/ru';
 import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
+import { adminXpBackfillRu } from './admin-xp-backfill/ru';
 import { friendsRu } from './friends/ru';
 import { clansRu } from './clans/ru';
 import { eventsRu } from './events/ru';
@@ -50,6 +51,7 @@ export const ru = {
       games: 'Игры',
       gameRules: 'Правила игр',
       bulkRewards: 'Массовые Награды',
+      xpBackfill: 'XP Backfill',
       blockedIps: 'Заблокированные IP',
       geoBlock: 'Геоблокировка',
       comingSoon: 'Скоро',
@@ -221,6 +223,7 @@ export const ru = {
     wallet: adminWalletRu,
     blockedIps: adminBlockedIpsRu,
     bulkRewards: adminBulkRewardsRu,
+    adminXpBackfill: adminXpBackfillRu,
   },
   tournaments: tournamentsRu,
   blog: blogRu,

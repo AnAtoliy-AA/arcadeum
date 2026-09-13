@@ -21,6 +21,12 @@ import {
 import { WalletModule } from '../wallet/wallet.module';
 import { LevelRewardsService } from './level-rewards.service';
 import { LevelRewardsController } from './level-rewards.controller';
+import { BackfillXpService } from './backfill-xp.service';
+import { AdminXpBackfillController } from './admin-xp-backfill.controller';
+import {
+  PlayerStats,
+  PlayerStatsSchema,
+} from '../games/schemas/player-stats.schema';
 
 @Module({
   imports: [
@@ -30,18 +36,21 @@ import { LevelRewardsController } from './level-rewards.controller';
       { name: User.name, schema: UserSchema },
       { name: XpSettings.name, schema: XpSettingsSchema },
       { name: UserInventoryItem.name, schema: UserInventoryItemSchema },
+      { name: PlayerStats.name, schema: PlayerStatsSchema },
     ]),
   ],
   providers: [
     XpSettingsService,
     PrestigeService,
     LevelRewardsService,
+    BackfillXpService,
     RolesGuard,
   ],
   controllers: [
     AdminXpSettingsController,
     PrestigeController,
     LevelRewardsController,
+    AdminXpBackfillController,
   ],
   exports: [XpSettingsService, PrestigeService, LevelRewardsService],
 })

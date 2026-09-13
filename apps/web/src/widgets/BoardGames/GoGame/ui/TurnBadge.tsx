@@ -3,7 +3,7 @@
 import { memo } from 'react';
 import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface TurnBadgeProps {
   currentPlayerId: string | null;

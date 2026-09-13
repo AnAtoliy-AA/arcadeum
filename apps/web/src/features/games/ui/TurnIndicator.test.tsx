@@ -5,7 +5,7 @@ import { useGameChatStore } from '@/widgets/GameChat';
 
 // Translate keys to their final form with `{{name}}` interpolation so we can
 // assert on rendered copy without coupling to a specific locale string.
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, string | number>) => {
       const labels: Record<string, string> = {

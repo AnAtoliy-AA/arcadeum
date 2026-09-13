@@ -1,3 +1,4 @@
+import { interpolate } from '@arcadeum/games-core';
 import {
   NOTIFICATIONS_MESSAGES,
   SUPPORTED_LOCALES,
@@ -50,19 +51,4 @@ function lookup(key: string, locale: SupportedLocale): string | null {
     }
   }
   return typeof current === 'string' ? current : null;
-}
-
-function interpolate(
-  template: string,
-  params: Record<string, unknown>,
-): string {
-  return template.replace(/\{\{\s*([\w]+)\s*\}\}/g, (_, name: string) => {
-    const value = params[name];
-    if (value === undefined || value === null) return '';
-    if (typeof value === 'string') return value;
-    if (typeof value === 'number' || typeof value === 'boolean') {
-      return String(value);
-    }
-    return '';
-  });
 }

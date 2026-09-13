@@ -5,7 +5,7 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import { useReplayStore } from '../store/replayStore';
 import type { PlaybackSpeed } from '../lib/types';
 import { PLAYBACK_SPEEDS } from '../lib/types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface ReplayControlsProps {
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;

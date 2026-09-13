@@ -11,7 +11,7 @@ import {
   Section,
   Button,
 } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { Locale } from '@/shared/i18n';

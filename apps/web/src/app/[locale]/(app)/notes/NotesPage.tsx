@@ -11,8 +11,8 @@ import {
   EmptyState,
   Skeleton,
 } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
-import { useLanguage } from '@/shared/i18n/context';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { useLanguage } from '@/shared/i18n';
 import { formatCurrency, formatDate } from '@/shared/i18n/formatters';
 import {
   paymentApi,

@@ -16,7 +16,7 @@ import { AdminShopItemPreview } from './AdminShopItemPreview';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 
 type Labels = typeof adminShopEn;
 

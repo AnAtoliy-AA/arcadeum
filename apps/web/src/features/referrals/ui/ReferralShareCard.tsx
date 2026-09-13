@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { GlassCard } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   CardTitle,
   CodeContainer,

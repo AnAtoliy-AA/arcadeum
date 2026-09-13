@@ -2,7 +2,7 @@
 
 import { Typography } from '@arcadeum/ui';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { useDraggable } from '../hooks/useDraggable';
 import {

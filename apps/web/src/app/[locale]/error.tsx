@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { ErrorState } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export default function Error({
   error,

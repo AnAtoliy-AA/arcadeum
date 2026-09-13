@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useLiveStatsStore } from '@/features/live-stats';
 import { appConfig } from '@/shared/config/app-config';
@@ -208,7 +208,12 @@ export default function CommunityPageContent({
               </PageTitle>
 
               {t?.subtitle && (
-                <Typography variant="heading" uiSize="md" alpha="high" style={{color:"white"}}>
+                <Typography
+                  variant="heading"
+                  uiSize="md"
+                  alpha="high"
+                  style={{ color: 'white' }}
+                >
                   {t.subtitle}
                 </Typography>
               )}
@@ -216,7 +221,8 @@ export default function CommunityPageContent({
               <Typography
                 variant="body"
                 uiSize="lg"
-                alpha="high" style={{color:"white !important"}}
+                alpha="high"
+                style={{ color: 'white !important' }}
                 className="mt-2"
               >
                 {t?.description}
@@ -236,7 +242,11 @@ export default function CommunityPageContent({
                 >
                   {displayPlayersCount}
                 </Typography>
-                <Typography variant="caption" alpha="high" style={{color:"white !important"}}>
+                <Typography
+                  variant="caption"
+                  alpha="high"
+                  style={{ color: 'white !important' }}
+                >
                   {stats.playersLabel ?? 'Active Players'}
                 </Typography>
               </div>
@@ -253,7 +263,11 @@ export default function CommunityPageContent({
                 >
                   {displayDiscordCount}
                 </Typography>
-                <Typography variant="caption" alpha="high" style={{color:"white !important"}}>
+                <Typography
+                  variant="caption"
+                  alpha="high"
+                  style={{ color: 'white !important' }}
+                >
                   {stats.discordLabel ?? 'Discord Gamers'}
                 </Typography>
               </div>
@@ -270,7 +284,11 @@ export default function CommunityPageContent({
                 >
                   {stats.githubStars ?? 'Open Source'}
                 </Typography>
-                <Typography variant="caption" alpha="high" style={{color:"white !important"}}>
+                <Typography
+                  variant="caption"
+                  alpha="high"
+                  style={{ color: 'white !important' }}
+                >
                   {stats.githubLabel ?? 'Community Driven'}
                 </Typography>
               </div>
@@ -309,7 +327,11 @@ export default function CommunityPageContent({
               <Typography variant="heading" uiSize="md">
                 Official Networks & Socials
               </Typography>
-              <Typography variant="caption" alpha="high" style={{color:"white !important"}}>
+              <Typography
+                variant="caption"
+                alpha="high"
+                style={{ color: 'white !important' }}
+              >
                 {NETWORK_CONFIGS.length} Channels Connected
               </Typography>
             </div>
@@ -363,7 +385,8 @@ export default function CommunityPageContent({
                           <Typography
                             variant="heading"
                             uiSize="sm"
-                            style={{color:'white'}} className="font-bold"
+                            style={{ color: 'white' }}
+                            className="font-bold"
                           >
                             {title}
                           </Typography>
@@ -372,7 +395,8 @@ export default function CommunityPageContent({
                               variant="body"
                               uiSize="sm"
                               alpha="high"
-                              style={{color:'white'}} className="line-clamp-3 text-xs leading-relaxed"
+                              style={{ color: 'white' }}
+                              className="line-clamp-3 text-xs leading-relaxed"
                             >
                               {description}
                             </Typography>
@@ -380,13 +404,8 @@ export default function CommunityPageContent({
                         </div>
                       </div>
 
-                      <div
-                        className="flex items-center gap-2 mt-4 font-semibold text-xs"
-                      >
-                        <Typography
-                          variant="caption"
-                          className="font-bold"
-                        >
+                      <div className="flex items-center gap-2 mt-4 font-semibold text-xs">
+                        <Typography variant="caption" className="font-bold">
                           {actionText} →
                         </Typography>
                       </div>

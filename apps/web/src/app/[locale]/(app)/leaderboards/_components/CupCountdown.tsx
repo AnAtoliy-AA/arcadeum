@@ -2,7 +2,7 @@
 import { CountdownClock, LiveChip } from '@arcadeum/ui';
 import type { CupSnapshot } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatCurrency, formatNumber } from '@/shared/i18n/formatters';
 
 // Temporary: tournaments aren't live yet. Flip to `true` to render the

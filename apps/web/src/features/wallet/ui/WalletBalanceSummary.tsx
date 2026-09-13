@@ -2,7 +2,7 @@
 
 import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';
 import { AnimatedNumber } from '@/shared/ui/AnimatedNumber';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import Link from 'next/link';
 import type { WalletBalance } from '../server/wallet.types';
 

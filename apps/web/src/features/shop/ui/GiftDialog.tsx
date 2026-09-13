@@ -7,7 +7,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { apiClient } from '@/shared/lib/api-client';
 
 import type {

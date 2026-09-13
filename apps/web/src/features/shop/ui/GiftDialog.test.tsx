@@ -25,7 +25,7 @@ vi.mock('@/features/shop/lib/catalogCache', () => ({
   loadCatalog: vi.fn(),
 }));
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       if (key === 'pages.shop.items.avatar.fox01.name') return 'Fox';

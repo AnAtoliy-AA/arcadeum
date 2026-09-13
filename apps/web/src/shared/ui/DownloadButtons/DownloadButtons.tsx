@@ -3,7 +3,7 @@ import {
   DownloadButtons as SharedDownloadButtons,
   DownloadButtonsProps as SharedProps,
 } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export type DownloadButtonsProps = Omit<SharedProps, 'labels'>;
 

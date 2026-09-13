@@ -11,7 +11,7 @@ import {
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useMilestoneBadgeEquip } from '../hooks/useMilestoneBadgeEquip';
 
 interface LevelRewardCellProps {

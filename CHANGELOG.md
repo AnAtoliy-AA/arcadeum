@@ -7,84 +7,107 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.29.44] - 2026-09-13
+
+### Added
+
+- remove redundant battle pass XP bonus and add admin backfill tool (ARC-xp-backfill)
+
+## [1.29.43] - 2026-09-13
+
+### Fixed
+
+- update 4 new files from develop that still used old import path
+
+### Refactored
+
+- consolidate 4 duplicate interpolation functions into shared @arcadeum/games-core
+
 ## [1.29.42] - 2026-09-13
 
 ### Added
+
 - optimize spritesheets to webp and introduce CosmeticSprite (ARC-sprites-mobile-profile)
 
 ### Fixed
+
 - support anonId in socket auth and isolate redis adapter (ARC-sprites-mobile-profile)
 - show guest profile card in mobile menu for anonymous players (ARC-sprites-mobile-profile)
 
 ### Improved
-- optimize spritesheet tile sizes (ARC-sprites-mobile-profile)
 
+- optimize spritesheet tile sizes (ARC-sprites-mobile-profile)
 
 ## [1.29.41] - 2026-09-12
 
 ### Added
+
 - add platform growth features — achievement sharing, result cards, activity feed, embeddable widgets
 
 ### Fixed
+
 - use array includes and origin equality check in embed handler (ARC-900) (ARC-900)
 - verify message origin in embed postMessage handler (ARC-900) (ARC-900)
 - import ActivityFeedModule in GamesModule to resolve dependency injection
 
 ### Documentation
-- mark achievement sharing, result cards, activity feed, embeddable widgets as done in roadmap
 
+- mark achievement sharing, result cards, activity feed, embeddable widgets as done in roadmap
 
 ## [1.29.40] - 2026-09-12
 
 ### Added
+
 - optimize LCP and SSR on chess coordinate trainer (ARC-header-auth-declutter)
 - declutter header and improve profile button UI/UX
 
 ### Fixed
-- keep quickplay in lobby and prevent duplicate bots
 
+- keep quickplay in lobby and prevent duplicate bots
 
 ## [1.29.39] - 2026-09-12
 
 ### Added
+
 - rework statistics page UI and UX with modern player hub
 - add level up modal with rewards and coins per level
 - add badges showcase with 1-click equip and profile navigation
 - add exclusive level badges progression and unbuyable badges
 
 ### Fixed
+
 - resolve e2e tests for level rewards and shop badges
 
 ### Refactored
-- use shared modal for level up and standard placeholder syntax
 
+- use shared modal for level up and standard placeholder syntax
 
 ## [1.29.38] - 2026-09-12
 
 ### Fixed
-- fix Firefox e2e test failures
 
+- fix Firefox e2e test failures
 
 ## [1.29.37] - 2026-09-12
 
 ### Fixed
+
 - fix mobile viewport failures for support and streak tests
 - fix React hydration error #418 by moving anonId to Zustand store
-
 
 ## [1.29.36] - 2026-09-11
 
 ### Fixed
+
 - fix DI crash and skip XP for solo undo
 - sanitize XP scope param and fix DI for e2e tests
 - add level and prestige to mock PlayerProfile
 
-
 ## [1.29.35] - 2026-09-11
 
 ### Added
-- add Leaderboards tab to desktop and mobile navigation (ARC-959) (ARC-959)
 
+- add Leaderboards tab to desktop and mobile navigation (ARC-959) (ARC-959)
 
 ## [1.29.34] - 2026-09-11
 

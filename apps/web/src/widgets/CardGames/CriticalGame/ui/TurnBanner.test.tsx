@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { ScenePaletteProvider } from './ScenePaletteContext';
 import { getVariantStyles } from './styles/variants';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, string | number>) => {
       if (key === 'games.table.players.yourMove') return 'Your move';

@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 export interface GameStatItem {
   id: string;

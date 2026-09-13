@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { gameFactory, type BaseGameWidgetProps } from '@/features/games';
 import { GameWidgetErrorBoundary } from '@/features/games/ui/GameWidgetErrorBoundary';
 import { type GameType } from '@/features/games/hooks';

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { logoutSession } from '@/entities/session/api/authApi';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
 import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
 import { useRoutes } from '@/shared/config/useRoutes';

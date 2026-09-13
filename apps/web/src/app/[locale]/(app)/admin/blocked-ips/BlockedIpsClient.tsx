@@ -1,7 +1,7 @@
 'use client';
 
 import { Container, PageLayout, PageTitle } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import {
   useBlockedIps,
   useUnblockIp,

@@ -19,7 +19,7 @@ import { Typography, type GameVariant } from '@arcadeum/ui';
 import { CardImage } from './styles/card-image';
 import { getCardTranslationKey } from '../lib/cardUtils';
 import type { OmniscienceModalState } from '../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface OmniscienceModalProps {
   omniscienceModal: OmniscienceModalState | null;

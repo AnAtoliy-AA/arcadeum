@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactElement } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { cx } from '@arcadeum/ui/utils/cx';
 
 export interface ShareChannel {

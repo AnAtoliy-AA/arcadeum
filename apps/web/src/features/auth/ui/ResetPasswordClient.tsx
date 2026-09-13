@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { Typography } from '@arcadeum/ui/components/Typography/Typography';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { FloatingLabelInput } from '@arcadeum/ui/components/FloatingLabelInput';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import type { AuthMessages } from '@/shared/i18n/types';
 import { confirmPasswordReset } from '@/entities/session/api/authApi';
 

@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { ComboKind } from '../../lib/combo';
 
 interface HandRailProps {

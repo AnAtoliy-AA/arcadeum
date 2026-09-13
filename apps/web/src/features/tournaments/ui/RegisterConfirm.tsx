@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { Button } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatNumber } from '@/shared/i18n/formatters';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

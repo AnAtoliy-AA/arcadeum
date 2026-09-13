@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
   LobbyOptionSection,

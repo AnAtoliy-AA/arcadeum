@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { Typography, FilterChip, EmptyState } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { Tier, TierFeature } from '../roadmap-data';
 import { StatusBadge } from '../TierCard';
 

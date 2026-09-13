@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.29.43] - 2026-09-13
+
+### Fixed
+- update 4 new files from develop that still used old import path
+
+### Refactored
+- consolidate 4 duplicate interpolation functions into shared @arcadeum/games-core
+
+
 ## [1.29.42] - 2026-09-13
 
 ### Added

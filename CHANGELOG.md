@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.29.42] - 2026-09-13
+
+### Added
+- optimize spritesheets to webp and introduce CosmeticSprite (ARC-sprites-mobile-profile)
+
+### Fixed
+- support anonId in socket auth and isolate redis adapter (ARC-sprites-mobile-profile)
+- show guest profile card in mobile menu for anonymous players (ARC-sprites-mobile-profile)
+
+### Improved
+- optimize spritesheet tile sizes (ARC-sprites-mobile-profile)
+
+
 ## [1.29.41] - 2026-09-12
 
 ### Added

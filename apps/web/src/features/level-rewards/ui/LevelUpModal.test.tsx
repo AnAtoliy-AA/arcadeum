@@ -10,7 +10,7 @@ vi.mock('../api/level-rewards.api', () => ({
   getLevelRewardsStatus: vi.fn(),
 }));
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: { level?: string }) => {
       if (params?.level)

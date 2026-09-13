@@ -36,6 +36,8 @@ export const buildRoutes = (locale: Locale) => {
     chessLanding: `/${locale}/${s('games')}/chess`,
     chessPuzzles: `/${locale}/${s('games')}/chess/puzzles`,
     chessDailyPuzzle: `/${locale}/${s('games')}/chess/puzzles/daily`,
+    chessPuzzleRush: `/${locale}/${s('games')}/chess/puzzles/rush`,
+    chessCoordinates: `/${locale}/${s('games')}/chess/learn`,
     checkers: `/${locale}/${s('games')}/checkers`,
     checkersLanding: `/${locale}/${s('games')}/checkers`,
     catDash: `/${locale}/${s('games')}/cat-dash`,

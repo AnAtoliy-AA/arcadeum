@@ -193,6 +193,12 @@ export default async function ChessLandingRoute({ params }: PageProps) {
             { name?: string; description?: string } | undefined
           >
         }
+        puzzleHrefs={{
+          daily: routes.chessDailyPuzzle,
+          rated: routes.chessPuzzles,
+          rush: routes.chessPuzzleRush,
+          coordinates: routes.chessCoordinates,
+        }}
       />
     </>
   );

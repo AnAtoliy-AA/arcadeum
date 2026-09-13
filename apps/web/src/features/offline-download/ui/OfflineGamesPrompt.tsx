@@ -12,7 +12,7 @@ import {
   ModalFooter,
 } from '@arcadeum/ui/components/Modal/Modal';
 import { Button } from '@arcadeum/ui/components/Button/Button';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useOfflineDownloads } from '../hooks/useOfflineDownloads';
 
 const DISMISS_KEY = 'arcadeum-offline-prompt-dismissed';

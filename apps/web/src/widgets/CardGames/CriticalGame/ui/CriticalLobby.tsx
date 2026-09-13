@@ -13,7 +13,7 @@ import { Typography } from '@arcadeum/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { CARD_VARIANTS, RANDOM_VARIANT } from '../lib/constants';
 import { RulesModal } from './RulesModal';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 const getCriticalTheme = (variant?: string): GameLobbyTheme => {

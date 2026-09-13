@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import type { ChessClientState } from '../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 type TranslateFn = (
   key: TranslationKey,

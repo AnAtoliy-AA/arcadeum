@@ -19,6 +19,7 @@ import {
 } from '../schemas/shop-admin-audit.schema';
 import { InventoryService } from './inventory.service';
 import { FriendsService } from '../../friends/friends.service';
+import { NotificationDispatcher } from '../../notifications/notifications.dispatcher';
 import { equipKeyFor } from '../lib/shop-types';
 import { getCatalogItem } from '../lib/shop-catalog';
 import type { GiftResult } from '../interfaces/shop-views';
@@ -56,6 +57,7 @@ export class GiftService {
     private readonly auditModel: Model<ShopAdminAuditDocument>,
     private readonly inventory: InventoryService,
     private readonly friends: FriendsService,
+    private readonly dispatcher: NotificationDispatcher,
   ) {}
 
   async gift(
@@ -153,6 +155,35 @@ export class GiftService {
         }
       }
     }
+
+    const sender = await this.userModel
+      .findById(safeSenderId, { username: 1, displayName: 1 })
+      .lean<{ username?: string; displayName?: string } | null>();
+    const senderName = sender?.displayName || sender?.username || 'A friend';
+
+    void this.dispatcher
+      .dispatch({
+        userId: safeRecipientId,
+        category: 'gift_received',
+        titleKey: 'notifications.gift_received.title',
+        bodyKey: 'notifications.gift_received.body',
+        i18nParams: {
+          senderName,
+          itemName: def.id,
+          nameKey: def.nameKey,
+          message,
+        },
+        url: '/shop/inventory',
+        data: {
+          itemId: def.id,
+          nameKey: def.nameKey,
+          senderId: safeSenderId,
+          senderName,
+          message,
+        },
+        skipCategoryCheck: true,
+      })
+      .catch(() => {});
 
     return {
       inventoryItem: {

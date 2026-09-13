@@ -37,8 +37,7 @@ export function sanitizeCriticalStateForPlayer(
     };
   });
 
-  // Filter logs based on scope and player status
-  sanitized.logs = sanitized.logs.filter((log) => {
+  sanitized.logs = (sanitized.logs ?? []).filter((log) => {
     // Public messages visible to everyone (players + spectators)
     if (log.scope === 'all' || log.scope === undefined) return true;
     // Player-only messages visible only to game participants

@@ -6,7 +6,7 @@ import type { PlayerStats } from '@/features/history/api';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { SkeletonCircle, SkeletonText, ProgressBar, Card } from '@arcadeum/ui';
 import { gameMetadata } from '@/features/games/registry';
 import type { GameSlug } from '@/features/games/registry.types';

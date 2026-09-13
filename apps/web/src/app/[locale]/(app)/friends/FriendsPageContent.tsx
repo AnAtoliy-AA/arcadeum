@@ -31,8 +31,10 @@ import {
 } from '@/shared/api/friends';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
 import { UserIcon } from '@arcadeum/ui/components/Icons/index';
-import { chatApi } from '@/features/chat/api';
 import { AddFriendCard } from './AddFriendCard';
+import { FriendCard } from './FriendCard';
+import { GiftDialog } from '@/features/shop/ui/GiftDialog';
+import { chatApi } from '@/features/chat/api';
 
 const GamePickerModal = lazy(() =>
   import('@/features/games/ui/GamePickerModal').then((m) => ({
@@ -70,6 +72,10 @@ type FriendsTranslations = {
   loginButton?: string;
   loading?: string;
   cancel?: string;
+  gift?: {
+    button?: string;
+    title?: string;
+  };
 };
 
 export default function FriendsPageContent({
@@ -92,6 +98,7 @@ export default function FriendsPageContent({
   }>({ incoming: [], outgoing: [] });
   const [error, setError] = useState<string | null>(null);
   const [removeTarget, setRemoveTarget] = useState<Friend | null>(null);
+  const [giftTarget, setGiftTarget] = useState<Friend | null>(null);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
 
@@ -105,8 +112,11 @@ export default function FriendsPageContent({
         getFriends(token),
         getPendingRequests(token),
       ]);
-      setFriends(friendsData);
-      setPending(pendingData);
+      setFriends(Array.isArray(friendsData) ? friendsData : []);
+      setPending({
+        incoming: pendingData?.incoming ?? [],
+        outgoing: pendingData?.outgoing ?? [],
+      });
       setError(null);
     } catch {
       setError('Failed to load friends');
@@ -385,60 +395,16 @@ export default function FriendsPageContent({
                   {tt.title ?? 'Friends'}
                 </span>
                 {friends.map((friend) => (
-                  <Card key={friend.id} variant="default">
-                    <div className="flex flex-row gap-3 items-center">
-                      <EquippedPlayerAvatar
-                        name={friend.displayName ?? friend.username}
-                        equippedAvatarId={friend.equippedAvatarId}
-                        equippedBadgeId={null}
-                        size="sm"
-                      />
-                      <div
-                        className="flex flex-col items-stretch flex-1 gap-1 cursor-pointer"
-                        onClick={() =>
-                          router.push(routes.profile(friend.userId))
-                        }
-                      >
-                        <span className="text-[16px] font-semibold hover:underline">
-                          {friend.displayName ?? friend.username}
-                        </span>
-                        <div className="flex flex-row items-center gap-2">
-                          <Badge
-                            variant={friend.online ? 'success' : 'neutral'}
-                            size="sm"
-                          >
-                            {friend.online
-                              ? (tt.online ?? 'Online')
-                              : (tt.offline ?? 'Offline')}
-                          </Badge>
-                        </div>
-                      </div>
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => handleInviteToGame(friend.userId)}
-                        data-testid={`invite-${friend.userId}`}
-                      >
-                        {tt.inviteToGame ?? 'Invite'}
-                      </Button>
-                      <Button
-                        variant="glass"
-                        size="sm"
-                        onClick={() => handleStartChat(friend)}
-                        data-testid={`chat-${friend.userId}`}
-                      >
-                        {tt.chat ?? 'Chat'}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setRemoveTarget(friend)}
-                        data-testid={`remove-${friend.userId}`}
-                      >
-                        {tt.removeFriend ?? 'Remove'}
-                      </Button>
-                    </div>
-                  </Card>
+                  <FriendCard
+                    key={friend.id}
+                    friend={friend}
+                    labels={tt}
+                    onProfile={(userId) => router.push(routes.profile(userId))}
+                    onInvite={handleInviteToGame}
+                    onGift={(target) => setGiftTarget(target)}
+                    onChat={handleStartChat}
+                    onRemove={(target) => setRemoveTarget(target)}
+                  />
                 ))}
               </div>
             )}
@@ -483,6 +449,16 @@ export default function FriendsPageContent({
           title={tt.inviteGameTitle ?? 'Pick a game to invite a friend'}
         />
       </Suspense>
+
+      {giftTarget && (
+        <GiftDialog
+          open={!!giftTarget}
+          onClose={() => setGiftTarget(null)}
+          recipientId={giftTarget.userId}
+          recipientName={giftTarget.displayName ?? giftTarget.username}
+          recipientAvatarId={giftTarget.equippedAvatarId}
+        />
+      )}
     </div>
   );
 }

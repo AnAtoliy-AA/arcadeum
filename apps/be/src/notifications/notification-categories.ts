@@ -6,6 +6,7 @@ export const NOTIFICATION_CATEGORIES = [
   'friend_request',
   'friend_accepted',
   'game_invitation',
+  'gift_received',
 ] as const;
 
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];

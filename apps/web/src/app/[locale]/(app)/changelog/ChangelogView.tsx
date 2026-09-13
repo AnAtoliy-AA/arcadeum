@@ -10,7 +10,7 @@ import {
   EmptyState,
   InfiniteScroll,
 } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { ChangelogEntry } from './page';
 import { ChangelogStats } from './components/ChangelogStats';
 import { ChangelogFilters } from './components/ChangelogFilters';

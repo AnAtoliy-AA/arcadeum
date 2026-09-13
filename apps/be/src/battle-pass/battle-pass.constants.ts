@@ -1,8 +1,8 @@
 /**
  * Static definition of the current Battle Pass season. Seasons are not
  * admin-managed yet — the active one lives here. XP is stored on the user
- * document and incremented on game completion (10 per game + 40 bonus for
- * wins). See {@link BattlePassService.awardGameXp} for the write path.
+ * document and incremented by XpSettingsService after each game. Battle pass
+ * tiers are derived from the same user.xp field.
  */
 
 export type BattlePassReward = {

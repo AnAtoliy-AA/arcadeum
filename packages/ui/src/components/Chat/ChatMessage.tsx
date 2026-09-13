@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Avatar } from '../Avatar/Avatar';
+import { CosmeticSprite } from '../CosmeticSprite';
 import { Typography } from '../Typography/Typography';
 import { cx } from '../../utils/cx';
 
@@ -149,13 +150,7 @@ export const ChatMessage = memo(function ChatMessage({
               <Avatar name={senderName} size="sm" src={avatarUrl} />
               {badgeUrl ? (
                 <div className="h-4 w-4">
-                  <img
-                    src={badgeUrl}
-                    alt=""
-                    width={16}
-                    height={16}
-                    style={{ objectFit: 'contain' }}
-                  />
+                  <CosmeticSprite src={badgeUrl} size={16} />
                 </div>
               ) : null}
             </div>

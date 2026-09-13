@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { Ship, getActiveShips } from '../types';
 import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 

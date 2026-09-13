@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import dynamic from 'next/dynamic';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { TokenMetadata } from '@/shared/api/tokenMetadata';

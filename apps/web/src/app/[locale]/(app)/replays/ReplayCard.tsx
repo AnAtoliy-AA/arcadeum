@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { ReplaySummary } from '@/features/replay/lib/types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface ReplayCardProps {
   replay: ReplaySummary;

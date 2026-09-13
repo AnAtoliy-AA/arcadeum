@@ -7,7 +7,7 @@ import { Button } from '@arcadeum/ui/components/Button/Button';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useNotificationSocket } from '@/shared/lib/socket';
 import { useNotificationsStore } from './notifications.store';
@@ -189,9 +189,18 @@ const NotificationRow = memo(function NotificationRow({
   const resolvedGameId = gameId
     ? t(`games.${gameId}.name` as TranslationKey) || String(gameId)
     : undefined;
+  const nameKey = item.i18nParams?.nameKey;
+  const translatedName = nameKey
+    ? t(`pages.shop.${nameKey}` as TranslationKey)
+    : undefined;
+  const resolvedItemName =
+    translatedName && !translatedName.startsWith('pages.shop.')
+      ? translatedName
+      : (item.i18nParams?.itemName as string | undefined);
   const params = {
     ...item.i18nParams,
     ...(resolvedGameId && { gameId: resolvedGameId }),
+    ...(resolvedItemName && { itemName: resolvedItemName }),
   };
   const title = t(item.titleKey, params as Record<string, string>);
   const body = t(item.bodyKey, params as Record<string, string>);

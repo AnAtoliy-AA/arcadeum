@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@arcadeum/ui';
 import { useCallback, useRef, type FC } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   getCardTranslationKey,
   getCardDescriptionKey,

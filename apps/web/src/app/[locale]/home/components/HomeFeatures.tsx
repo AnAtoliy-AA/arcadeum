@@ -1,6 +1,6 @@
 'use client';
 
-import { useLanguage, formatMessage } from '@/shared/i18n/context';
+import { useLanguage, formatMessage } from '@/shared/i18n';
 import { appConfig } from '@/shared/config/app-config';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 

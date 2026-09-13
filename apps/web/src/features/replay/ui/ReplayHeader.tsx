@@ -2,7 +2,7 @@
 
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { ReplayDetail } from '../lib/types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface ReplayHeaderProps {
   replay: ReplayDetail;

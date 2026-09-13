@@ -5,65 +5,65 @@
  * Run `tsc --noEmit` to see type checking in action.
  */
 
-import type { TranslationKey } from "../useTranslation";
+import type { TranslationKey } from '../useTranslation';
 
 // ✅ VALID KEYS - These will compile successfully
 const _validKeys: TranslationKey[] = [
   // Common
-  "common.actions.login",
-  "common.actions.register",
-  "common.labels.email",
-  "common.labels.password",
+  'common.actions.login',
+  'common.actions.register',
+  'common.labels.email',
+  'common.labels.password',
 
   // Navigation
-  "navigation.chatsTab",
-  "navigation.gamesTab",
-  "navigation.historyTab",
+  'navigation.chatsTab',
+  'navigation.gamesTab',
+  'navigation.historyTab',
 
   // Chat
-  "chat.notFound",
-  "chat.status.connected",
-  "chat.status.connecting",
-  "chat.input.placeholder",
-  "chat.send",
+  'chat.notFound',
+  'chat.status.connected',
+  'chat.status.connecting',
+  'chat.input.placeholder',
+  'chat.send',
 
   // Chat List
-  "chatList.search.placeholder",
-  "chatList.empty.noChats",
-  "chatList.empty.unauthenticated",
+  'chatList.search.placeholder',
+  'chatList.empty.noChats',
+  'chatList.empty.unauthenticated',
 
   // Games
-  "games.lounge.activeTitle",
-  "games.lounge.filters.statusLabel",
-  "games.lounge.filters.status.all",
-  "games.lounge.filters.status.lobby",
-  "games.lounge.filters.participation.hosting",
-  "games.common.createRoom",
-  "games.create.title",
-  "games.create.fieldName",
-  "games.rooms.status.lobby",
+  'games.lounge.activeTitle',
+  'games.lounge.filters.statusLabel',
+  'games.lounge.filters.status.all',
+  'games.lounge.filters.status.lobby',
+  'games.lounge.filters.participation.hosting',
+  'games.common.createRoom',
+  'games.create.title',
+  'games.create.fieldName',
+  'games.rooms.status.lobby',
 
   // History
-  "history.list.emptyNoEntries",
-  "history.status.completed",
+  'history.list.emptyNoEntries',
+  'history.status.completed',
 
   // Payments
-  "payments.title",
-  "payments.amountLabel",
-  "payments.errors.invalidAmount",
-  "payments.errors.amountTooLarge",
-  "payments.status.success",
+  'payments.title',
+  'payments.amountLabel',
+  'payments.errors.invalidAmount',
+  'payments.errors.amountTooLarge',
+  'payments.status.success',
 
   // Settings
-  "settings.title",
-  "settings.appearanceTitle",
-  "settings.themeOptions.dark.label",
+  'settings.title',
+  'settings.appearanceTitle',
+  'settings.themeOptions.dark.label',
 
   // Auth
-  "auth.title",
-  "auth.badge",
-  "auth.oauth.loginButton",
-  "auth.statusCard.heading",
+  'auth.title',
+  'auth.badge',
+  'auth.oauth.loginButton',
+  'auth.statusCard.heading',
 ];
 
 // ❌ INVALID KEYS - Uncomment to see TypeScript errors
@@ -82,11 +82,9 @@ const invalidKeys: TranslationKey[] = [
 function _ExampleComponent() {
   // This would work in a real component with useTranslation()
   // const { t } = useTranslation();
-
   // ✅ These will autocomplete and type-check
   // const loginLabel = t("common.actions.login");
   // const errorMsg = t("payments.errors.invalidAmount");
-
   // ❌ This will show TypeScript error
   // const invalid = t("common.notExisting.key");
 }
@@ -97,9 +95,9 @@ function translateMultiple(_keys: TranslationKey[]): void {
 }
 
 translateMultiple([
-  "common.actions.login",
-  "games.lounge.activeTitle",
-  "payments.title",
+  'common.actions.login',
+  'games.lounge.activeTitle',
+  'payments.title',
 ]);
 
 // ❌ This will error at compile time

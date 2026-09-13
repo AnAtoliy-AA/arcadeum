@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { AppleIcon, AndroidIcon, SmartphoneIcon } from '@arcadeum/ui';
 
 export interface StaticDownloadButtonsProps {

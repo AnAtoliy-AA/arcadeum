@@ -66,10 +66,14 @@ const PIECE_GLYPHS: Record<string, string> = {
 };
 
 interface ChessPuzzleTeaserProps {
-  playHref: string;
+  dailyPuzzleHref: string;
+  puzzleRushHref: string;
 }
 
-export function ChessPuzzleTeaser({ playHref }: ChessPuzzleTeaserProps) {
+export function ChessPuzzleTeaser({
+  dailyPuzzleHref,
+  puzzleRushHref,
+}: ChessPuzzleTeaserProps) {
   const [isSolved, setIsSolved] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
@@ -201,9 +205,15 @@ export function ChessPuzzleTeaser({ playHref }: ChessPuzzleTeaserProps) {
               </Button>
             )}
 
-            <Link href={playHref} className="inline-flex">
+            <Link href={dailyPuzzleHref} className="inline-flex">
+              <Button variant="primary" size="sm">
+                Daily Puzzle ➔
+              </Button>
+            </Link>
+
+            <Link href={puzzleRushHref} className="inline-flex">
               <Button variant="victory" size="sm">
-                Play Puzzle Rush ➔
+                Puzzle Rush ➔
               </Button>
             </Link>
           </div>

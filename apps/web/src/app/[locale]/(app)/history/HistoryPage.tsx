@@ -9,7 +9,7 @@ import {
   Container,
 } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useHistoryFetch, useHistoryDetail, useHistoryActions } from './hooks';
 import {
   HistoryHeader,

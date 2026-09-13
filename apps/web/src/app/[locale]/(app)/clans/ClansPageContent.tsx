@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useClansStore } from '@/features/clans/store/clansStore';
@@ -10,7 +9,7 @@ import { ClanMembers } from '@/features/clans/ui/ClanMembers';
 import { CreateClanModal } from '@/features/clans/ui/CreateClanModal';
 import { JoinClanModal } from '@/features/clans/ui/JoinClanModal';
 import { InviteModal } from '@/features/clans/ui/InviteModal';
-import { Button } from '@arcadeum/ui';
+import { Button, CosmeticSprite } from '@arcadeum/ui';
 import { useClanSocket } from '@/features/clans/hooks/useClanSocket';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
@@ -140,12 +139,11 @@ export default function ClansPageContent({
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--primary)]/10 text-xl font-bold text-[var(--color)]">
               {myClan.avatarUrl ? (
-                <Image
+                <CosmeticSprite
                   src={myClan.avatarUrl}
                   alt={myClan.name}
-                  width={56}
-                  height={56}
-                  className="h-14 w-14 rounded-full object-cover"
+                  size={56}
+                  className="rounded-full object-cover"
                 />
               ) : (
                 myClan.tag.slice(0, 2).toUpperCase()

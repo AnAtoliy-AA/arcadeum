@@ -12,7 +12,7 @@ import { gamesApi } from '@/features/games/api';
 vi.mock('@/features/games/api', () => ({
   gamesApi: { getCatalog: vi.fn() },
 }));
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 

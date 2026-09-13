@@ -10,7 +10,7 @@ import {
   ModalHeader,
   ModalTitle,
 } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
 import { buildInviteUrl } from './ShareGameMenu';
 

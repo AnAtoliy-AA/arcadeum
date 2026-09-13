@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { CSSProperties } from 'react';
 import type { GameRoomMemberSummary } from '@/shared/types/games';

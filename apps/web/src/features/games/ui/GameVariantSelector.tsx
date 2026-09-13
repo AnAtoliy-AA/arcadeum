@@ -3,7 +3,7 @@ import { Select } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 
 export interface GameVariantOption {

@@ -1,4 +1,4 @@
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { TutorialDefinition } from './tutorial-types';
 
 /**

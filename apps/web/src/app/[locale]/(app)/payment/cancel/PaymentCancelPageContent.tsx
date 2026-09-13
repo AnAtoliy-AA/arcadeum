@@ -1,7 +1,7 @@
 'use client';
 
 import { PageLayout, Container, PageTitle, LinkButton } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 const cancelStyles = `
   @keyframes cancelFadeIn {

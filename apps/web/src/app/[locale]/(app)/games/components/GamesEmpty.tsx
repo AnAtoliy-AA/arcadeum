@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 import { Empty } from '../styles';
 

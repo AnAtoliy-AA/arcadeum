@@ -54,6 +54,8 @@ function getItemIcon(id: AdminSidebarItem['id']): ReactElement {
       return <GiftIcon size={18} />;
     case 'bulkRewards':
       return <GiftIcon size={18} />;
+    case 'xpBackfill':
+      return <BarChartIcon size={18} />;
     case 'games':
       return <SettingsIcon size={18} />;
     case 'gameRules':

@@ -8,6 +8,7 @@ import type { Locale } from '@/shared/i18n';
 import { ChessLandingPreview } from './ChessLandingPreview';
 import { ChessAdvantages } from './ChessAdvantages';
 import { ChessPuzzleTeaser } from './ChessPuzzleTeaser';
+import { ChessPuzzleQuickAccess } from './ChessPuzzleQuickAccess';
 
 type ChessMsg = ChessMessages['chess_v1'];
 type Landing = ChessMsg['landing'];
@@ -31,6 +32,12 @@ interface Props {
     { name?: string; description?: string } | undefined
   >;
   comingSoon?: boolean;
+  puzzleHrefs?: {
+    daily: string;
+    rated: string;
+    rush: string;
+    coordinates: string;
+  };
 }
 
 export default function ChessLanding({
@@ -45,6 +52,7 @@ export default function ChessLanding({
   comingSoon = false,
   navTranslations,
   translatedGames,
+  puzzleHrefs,
 }: Props) {
   if (!landing) return null;
 
@@ -388,7 +396,20 @@ export default function ChessLanding({
       }}
       extraSection={
         <div className="flex flex-col gap-16">
-          <ChessPuzzleTeaser playHref={roomsHref} />
+          {puzzleHrefs ? (
+            <ChessPuzzleQuickAccess
+              dailyPuzzleHref={puzzleHrefs.daily}
+              ratedPuzzlesHref={puzzleHrefs.rated}
+              puzzleRushHref={puzzleHrefs.rush}
+              coordinatesHref={puzzleHrefs.coordinates}
+            />
+          ) : null}
+          {puzzleHrefs ? (
+            <ChessPuzzleTeaser
+              dailyPuzzleHref={puzzleHrefs.daily}
+              puzzleRushHref={puzzleHrefs.rush}
+            />
+          ) : null}
           {landing.advantages ? (
             <ChessAdvantages advantages={landing.advantages} />
           ) : null}

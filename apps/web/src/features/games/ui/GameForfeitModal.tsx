@@ -3,7 +3,7 @@
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { ConfirmationModal } from './ConfirmationModal';
 
 export interface GameForfeitModalProps {

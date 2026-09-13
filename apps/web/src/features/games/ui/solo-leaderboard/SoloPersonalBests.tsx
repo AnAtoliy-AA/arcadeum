@@ -1,8 +1,8 @@
 'use client';
 
 import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
-import { useTranslation } from '@/shared/lib/useTranslation';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { formatDuration } from '../SoloGameStats';
 

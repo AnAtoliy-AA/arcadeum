@@ -1,12 +1,17 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import Image from 'next/image';
-import { Button, CloseIcon, Modal, ModalContent } from '@arcadeum/ui';
+import {
+  Button,
+  CloseIcon,
+  CosmeticSprite,
+  Modal,
+  ModalContent,
+} from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getRewardForLevel } from '@/shared/lib/level-rewards';
 import { useLevelUpModalStore } from '../store/levelUpModalStore';
@@ -98,12 +103,11 @@ export function LevelUpModal() {
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center">
-                    <Image
+                    <CosmeticSprite
                       src={reward.assetUrl}
                       alt={reward.badgeId}
-                      width={36}
-                      height={36}
-                      className="object-contain"
+                      size={36}
+                      data-testid="badge-image"
                     />
                   </div>
                   <div className="flex flex-col text-left">

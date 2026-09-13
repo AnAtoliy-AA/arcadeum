@@ -122,10 +122,11 @@ export class GamesGateway {
       );
       void this.realtime.trackSocket(authUserId, client.id);
     } else {
+      const h = client.handshake;
+      const a = (h?.auth as Record<string, unknown> | undefined)?.anonId;
+      const q = (h?.query as Record<string, unknown> | undefined)?.anonId;
       const anonId =
-        typeof client.handshake?.query?.anonId === 'string'
-          ? client.handshake.query.anonId
-          : undefined;
+        typeof a === 'string' ? a : typeof q === 'string' ? q : undefined;
       const guestId = anonId || `guest_${client.id}`;
       (client.data as Record<string, unknown>).anonId = guestId;
       void this.realtime.trackSocket(guestId, client.id);
@@ -135,12 +136,9 @@ export class GamesGateway {
     }
 
     if (isSocketEncryptionEnabled()) {
-      const hasIdentity =
-        authUserId ||
-        (typeof client.handshake?.query?.anonId === 'string' &&
-          client.handshake.query.anonId.startsWith('anon_'));
-
-      if (hasIdentity) {
+      const aid = (client.data as Record<string, unknown>)?.anonId as
+        string | undefined;
+      if (authUserId || (aid !== undefined && aid.startsWith('anon_'))) {
         try {
           const encryptionKey = getEncryptionKeyHex();
           client.emit('socket.encryption_key', { key: encryptionKey });

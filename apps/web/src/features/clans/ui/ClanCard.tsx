@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import type { Clan } from '../model/types';
-import { Button } from '@arcadeum/ui';
+import { Button, CosmeticSprite } from '@arcadeum/ui';
 
 interface ClanCardProps {
   clan: Clan;
@@ -24,12 +23,11 @@ export function ClanCard({
     >
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary)]/10 text-lg font-bold text-[var(--color)]">
         {clan.avatarUrl ? (
-          <Image
+          <CosmeticSprite
             src={clan.avatarUrl}
             alt={clan.name}
-            width={48}
-            height={48}
-            className="h-12 w-12 rounded-full object-cover"
+            size={48}
+            className="rounded-full object-cover"
           />
         ) : (
           clan.tag.slice(0, 2).toUpperCase()

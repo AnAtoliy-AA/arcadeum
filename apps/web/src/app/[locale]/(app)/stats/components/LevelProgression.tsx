@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
-import { Card, Button } from '@arcadeum/ui';
+import { Card, Button, CosmeticSprite } from '@arcadeum/ui';
 import { xpForLevel } from '@/shared/lib/xp-level';
 import {
   getRewardForLevel,
@@ -44,13 +43,7 @@ function LevelRewardCell({
       className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-[var(--borderColor)] bg-[var(--surfaceSecondary)] shadow-sm"
       data-testid={`level-reward-${level}`}
     >
-      <Image
-        src={reward.assetUrl}
-        alt={reward.badgeId}
-        width={20}
-        height={20}
-        className="object-contain"
-      />
+      <CosmeticSprite src={reward.assetUrl} alt={reward.badgeId} size={20} />
       <span className="text-[11px] font-semibold text-[var(--color)]">
         {t(`pages.shop.${reward.nameKey}` as TranslationKey)}
       </span>

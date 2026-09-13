@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { CosmeticSprite } from '@arcadeum/ui';
 
 interface Props {
   size: number;
@@ -15,27 +15,16 @@ export function AdminShopItemPreview({
   assetUrl,
   itemId,
 }: Props) {
-  // Determine text font size based on preview square size
-  const fontSize = size >= 48 ? '$5' : size >= 32 ? '$3' : '$1';
+  const fontSize = size >= 48 ? '20px' : size >= 32 ? '16px' : '12px';
 
   return (
     <div className="flex flex-col bg-[var(--backgroundFocus)] rounded-lg items-center justify-center overflow-hidden">
       {colorValue ? (
-        <span className="font-extrabold" style={{ fontSize: fontSize }}>
+        <span className="font-extrabold" style={{ fontSize }}>
           Aa
         </span>
       ) : assetUrl ? (
-        <Image
-          src={assetUrl}
-          alt={itemId}
-          width={size}
-          height={size}
-          unoptimized
-          style={{ objectFit: 'contain' }}
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-          }}
-        />
+        <CosmeticSprite src={assetUrl} alt={itemId} size={size} />
       ) : (
         <span className="text-[12px]">?</span>
       )}

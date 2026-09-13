@@ -55,13 +55,16 @@ export function getGamesSocket(): AuthenticatedSocket {
     _gamesSocket = getManager().socket('/games') as AuthenticatedSocket;
     guardSocket(_gamesSocket);
     setupEncryptionKeyHandler(_gamesSocket);
-    // Re-apply anonId on reconnect — query params can be lost during transport upgrade
-    _gamesSocket.io?.on('reconnect_attempt', () => {
-      if (currentAnonId && _gamesSocket?.io?.opts) {
-        _gamesSocket.io.opts.query = {
-          ...(_gamesSocket.io.opts.query as Record<string, string>),
-          anonId: currentAnonId,
-        };
+    const sock = _gamesSocket;
+    sock.io?.on('reconnect_attempt', () => {
+      if (currentAnonId) {
+        sock.auth = { anonId: currentAnonId };
+        if (sock.io?.opts) {
+          sock.io.opts.query = {
+            ...(sock.io.opts.query as Record<string, string>),
+            anonId: currentAnonId,
+          };
+        }
       }
     });
   }
@@ -306,7 +309,7 @@ export function connectSocketsAnonymous(userId?: string): void {
   if (currentAuthToken) disconnectSockets();
   const gamesSock = getGamesSocket();
   currentAnonId = targetAnonId;
-  gamesSock.auth = {};
+  gamesSock.auth = targetAnonId ? { anonId: targetAnonId } : {};
 
   // Apply anonId to Manager's query params and force a fresh transport
   if (gamesSock.io?.opts) {

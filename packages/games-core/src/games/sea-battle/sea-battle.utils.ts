@@ -135,7 +135,7 @@ export function sanitizeSeaBattleState(
     }
   }
 
-  sanitized.logs = sanitized.logs.filter((log) => {
+  sanitized.logs = (sanitized.logs ?? []).filter((log) => {
     if (log.scope === 'private') {
       return log.senderId === playerId;
     }

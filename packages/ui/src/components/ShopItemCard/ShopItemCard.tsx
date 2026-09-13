@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import type { ReactElement } from 'react';
+import { CosmeticSprite } from '../CosmeticSprite';
 import { RarityBorder, type ShopRarity } from '../RarityBorder/RarityBorder';
 import { cx } from '../../utils/cx';
 
@@ -163,21 +164,14 @@ export const ShopItemCard = memo(function ShopItemCard({
               Aa
             </div>
           ) : (
-            <img
+            <CosmeticSprite
               src={assetUrl}
               alt={name}
+              size={96}
               data-testid={`shop-item-image-${itemId}`}
-              style={{
-                width: '70%',
-                height: '70%',
-                objectFit: 'contain',
-                filter: equipped
-                  ? 'drop-shadow(0 0 8px rgba(16,185,129,0.6))'
-                  : undefined,
-              }}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
+              className={cx(
+                equipped && 'drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]',
+              )}
             />
           )}
           <span

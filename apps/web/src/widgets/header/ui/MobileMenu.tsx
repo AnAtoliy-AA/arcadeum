@@ -94,6 +94,19 @@ export default function MobileMenu({
   const routes = useRoutes();
   const mounted = useIsMounted();
   const { isAuthenticated, displayName } = useHeaderAuth();
+  const isAnonymous = !snapshot.accessToken;
+  const anonSuffix = snapshot.userId?.startsWith('anon_')
+    ? snapshot.userId.slice(5, 9)
+    : snapshot.userId
+      ? snapshot.userId.slice(0, 4)
+      : '';
+  const guestName = anonSuffix ? `Guest #${anonSuffix}` : 'Guest';
+  const resolvedDisplayName =
+    displayName ||
+    snapshot.displayName ||
+    snapshot.username ||
+    snapshot.email ||
+    guestName;
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
   const pwa = usePWAOptional();
@@ -134,44 +147,55 @@ export default function MobileMenu({
 
   return (
     <MobileNav data-mobile-menu data-testid="mobile-nav">
-      {isAuthenticated && displayName ? (
-        <Link
-          href={
-            snapshot.userId ? routes.profile(snapshot.userId) : routes.settings
-          }
-          className="block link-no-decoration"
-          data-testid="mobile-user-card-link"
-        >
-          <MobileUserCard data-testid="mobile-user-card">
-            <EquippedPlayerAvatar
-              name={displayName}
-              size="md"
-              equippedAvatarId={snapshot.equippedAvatarId}
-              equippedBadgeId={snapshot.equippedBadgeId}
-              equippedNameColorId={snapshot.equippedNameColorId}
-              equippedFrameId={snapshot.equippedFrameId}
-              equippedAuraId={snapshot.equippedAuraId}
-              equippedBannerId={snapshot.equippedBannerId}
-              equippedGameSkinId={snapshot.equippedGameSkinId}
-            />
-            <div className="flex min-w-[120px] flex-1 flex-col gap-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <UserNameEllipsis>{displayName}</UserNameEllipsis>
-                {role !== 'free' && (
-                  <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
-                )}
-              </div>
-              {cosmeticBadges?.length ? (
-                <div className="flex flex-wrap gap-1">
-                  {cosmeticBadges.map((badgeId) => (
-                    <CosmeticBadge key={badgeId} badgeId={badgeId} />
-                  ))}
-                </div>
-              ) : null}
+      <Link
+        href={
+          !isAnonymous &&
+          snapshot.userId &&
+          typeof routes.profile === 'function'
+            ? routes.profile(snapshot.userId)
+            : routes.auth || '/auth'
+        }
+        className="block link-no-decoration"
+        data-testid="mobile-user-card-link"
+      >
+        <MobileUserCard data-testid="mobile-user-card">
+          <EquippedPlayerAvatar
+            name={resolvedDisplayName}
+            size="md"
+            equippedAvatarId={snapshot.equippedAvatarId}
+            equippedBadgeId={snapshot.equippedBadgeId}
+            equippedNameColorId={snapshot.equippedNameColorId}
+            equippedFrameId={snapshot.equippedFrameId}
+            equippedAuraId={snapshot.equippedAuraId}
+            equippedBannerId={snapshot.equippedBannerId}
+            equippedGameSkinId={snapshot.equippedGameSkinId}
+            fallbackAvatarUrl={
+              isAnonymous ? '/shop/avatars/default-01.png' : undefined
+            }
+          />
+          <div className="flex min-w-[120px] flex-1 flex-col gap-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <UserNameEllipsis>{resolvedDisplayName}</UserNameEllipsis>
+              {!isAnonymous && role !== 'free' && (
+                <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
+              )}
             </div>
-          </MobileUserCard>
-        </Link>
-      ) : (
+            {isAnonymous ? (
+              <span className="text-[11px] text-[var(--textSecondary)]">
+                {t('common.actions.login')} &rarr;
+              </span>
+            ) : cosmeticBadges?.length ? (
+              <div className="flex flex-wrap gap-1">
+                {cosmeticBadges.map((badgeId) => (
+                  <CosmeticBadge key={badgeId} badgeId={badgeId} />
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </MobileUserCard>
+      </Link>
+
+      {isAnonymous && (
         <LinkButton
           href={routes.auth}
           variant="primary"

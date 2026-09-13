@@ -133,6 +133,12 @@ describe('socket', () => {
     expect(mockSocket.auth).toEqual({});
   });
 
+  it('connects sockets anonymously with userId in auth', () => {
+    connectSocketsAnonymous('anon_1234567890abcdef');
+    expect(mockSocket.connect).toHaveBeenCalled();
+    expect(mockSocket.auth).toEqual({ anonId: 'anon_1234567890abcdef' });
+  });
+
   it('handles invalid encryption key from server', async () => {
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 

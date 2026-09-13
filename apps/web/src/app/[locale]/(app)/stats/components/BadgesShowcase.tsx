@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
-import { Card, Button, ProgressBar } from '@arcadeum/ui';
+import { Card, Button, ProgressBar, CosmeticSprite } from '@arcadeum/ui';
 import { LEVEL_BADGE_REWARDS } from '@/shared/lib/level-rewards';
 import {
   useTranslation,
@@ -95,12 +94,12 @@ export function BadgesShowcase({ currentLevel }: BadgesShowcaseProps) {
               )}
 
               <div className="mt-4 mb-2 flex h-[72px] w-[72px] items-center justify-center">
-                <Image
+                <CosmeticSprite
                   src={reward.assetUrl}
                   alt={reward.badgeId}
-                  width={64}
-                  height={64}
-                  className={`object-contain transition-transform duration-200 group-hover:scale-110 ${
+                  size={64}
+                  data-testid={`milestone-badge-img-${reward.level}`}
+                  className={`transition-transform duration-200 group-hover:scale-110 ${
                     !isUnlocked
                       ? 'grayscale brightness-75 contrast-75'
                       : 'drop-shadow-md'

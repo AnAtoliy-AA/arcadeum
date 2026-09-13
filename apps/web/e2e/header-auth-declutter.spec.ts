@@ -79,4 +79,25 @@ test.describe('Header Decluttering for Authenticated User', () => {
     const logoutButton = page.getByTestId('desktop-logout-button');
     await expect(logoutButton).not.toBeVisible();
   });
+
+  test('guest mobile menu shows user profile card with fallback avatar and guest name', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await navigateTo(page, '/');
+
+    const mobileMenuButton = page.getByTestId('mobile-menu-button');
+    await expect(mobileMenuButton).toBeVisible();
+    await mobileMenuButton.click();
+
+    const mobileNav = page.getByTestId('mobile-nav');
+    await expect(mobileNav).toBeVisible();
+
+    const userCard = page.getByTestId('mobile-user-card');
+    await expect(userCard).toBeVisible();
+    await expect(userCard).toContainText(/Guest/);
+
+    const loginButton = page.getByTestId('mobile-login-button');
+    await expect(loginButton).toBeVisible();
+  });
 });

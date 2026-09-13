@@ -8,7 +8,7 @@ import { gameSocket, emitEncrypted, useSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getOrCreateAnonymousId } from '@/shared/lib/api-client';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   trackSocialMatchmakingJoined,
   trackSocialMatchmakingMatched,

@@ -18,7 +18,7 @@ vi.mock('@/entities/session/api/authApi', () => ({
   logoutSession: vi.fn().mockResolvedValue({}),
 }));
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (k: string) => k,
   }),

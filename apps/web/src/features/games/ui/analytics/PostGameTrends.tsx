@@ -1,5 +1,5 @@
 import { cx } from '@arcadeum/ui/utils/cx';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { TrendsResponse } from '@/features/history/api';
 
 interface PostGameTrendsProps {

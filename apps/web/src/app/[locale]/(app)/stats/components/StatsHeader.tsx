@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { PageTitle, Button } from '@arcadeum/ui';
 
 interface StatsHeaderProps {

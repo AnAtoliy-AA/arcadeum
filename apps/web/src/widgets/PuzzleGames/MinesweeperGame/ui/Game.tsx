@@ -3,8 +3,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Button, Select } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import {

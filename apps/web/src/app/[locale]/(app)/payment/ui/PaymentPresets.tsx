@@ -1,5 +1,5 @@
 import { Typography, Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface PaymentPresetsProps {
   amount: string;

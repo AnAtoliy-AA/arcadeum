@@ -1,5 +1,5 @@
-import type { TranslationKey } from '@/shared/lib/useTranslation';
-import { formatMessage } from '@/shared/i18n/context';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
+import { formatMessage } from '@/shared/i18n/interpolate';
 
 export function buildLabels(t: (k: TranslationKey) => string) {
   const tr = (key: string, fallback: string): string =>

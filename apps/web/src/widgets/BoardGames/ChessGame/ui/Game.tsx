@@ -9,7 +9,7 @@ import {
   useGameResultModal,
   useGameResult,
 } from '@/features/games/hooks';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import {
   FILES,

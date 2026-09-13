@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { useMutation } from '@/shared/hooks/useMutation';
 import { useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { isValidPaymentUrl, parseAmount } from '@/shared/config/payment-config';
 import { paymentApi } from '@/features/payment/api';
 import { Button } from '@arcadeum/ui/components/Button/Button';

@@ -1,5 +1,5 @@
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
 
 export const CHESS_MODES = [

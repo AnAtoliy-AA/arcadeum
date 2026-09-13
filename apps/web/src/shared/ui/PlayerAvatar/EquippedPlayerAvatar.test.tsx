@@ -7,7 +7,7 @@ vi.mock('@/features/shop/hooks/useEquippedCosmetics');
 
 // No LanguageProvider here, so stub the translator: resolve the skin-chip
 // prefix to a known word and pass every other key through unchanged.
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => (key === 'common.cosmetics.skin' ? 'Skin' : key),
   }),

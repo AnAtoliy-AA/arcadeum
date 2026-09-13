@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGlimwormStore } from '../store/glimwormStore';
 
 export function GlimwormDeathOverlay(): React.JSX.Element | null {

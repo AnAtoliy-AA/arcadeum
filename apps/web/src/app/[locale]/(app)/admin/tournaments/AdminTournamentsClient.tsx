@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Container, PageLayout, PageTitle, Button } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import {
   useAdminTournaments,
   useCreateTournament,

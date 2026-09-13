@@ -7,7 +7,7 @@ import { Button } from '@arcadeum/ui/components/Button/Button';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useNotificationSocket } from '@/shared/lib/socket';
 import { useNotificationsStore } from './notifications.store';

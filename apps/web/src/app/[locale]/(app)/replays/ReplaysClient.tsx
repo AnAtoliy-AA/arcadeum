@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { replayApi } from '@/features/replay/api';
 import { ReplayCard } from './ReplayCard';
 import type { ReplaySummary } from '@/features/replay/lib/types';

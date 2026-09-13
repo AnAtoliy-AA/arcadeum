@@ -1,7 +1,7 @@
 'use client';
 
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 const LIVE_HIGHLIGHTS = [
   { icon: '🎮', key: 'gamesLive' as const, label: '8 games live' },

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@arcadeum/ui';
 import { appConfig } from '@/shared/config/app-config';
-import { useLanguage, formatMessage } from '@/shared/i18n/context';
+import { useLanguage, formatMessage } from '@/shared/i18n';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 
 export default function HomePresentation() {

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useLiveStatsStore, type LiveRoomItem } from '../store/liveStatsStore';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 
 interface LiveActivityPopoverProps {

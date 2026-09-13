@@ -5,7 +5,7 @@ import { PlayerAvatar, Typography } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { RARITY_GLOW } from '../lib/rarity';
 import type { EffectiveShopItem, ShopCategory } from '../server/shop.types';
 

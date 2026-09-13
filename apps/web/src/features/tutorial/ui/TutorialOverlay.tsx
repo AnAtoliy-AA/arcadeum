@@ -12,7 +12,7 @@ import { createPortal } from 'react-dom';
 import { Button } from '@arcadeum/ui';
 import { ProgressBar } from '@arcadeum/ui/components/Progress/Progress';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { TUTORIAL_UI_KEYS, getTutorialDefinition } from '../lib/tutorial-steps';
 import {
   TUTORIAL_TARGET_SELECTORS,

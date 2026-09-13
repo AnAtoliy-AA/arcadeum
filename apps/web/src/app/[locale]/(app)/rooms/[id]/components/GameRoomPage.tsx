@@ -15,7 +15,7 @@ import { GamePageLayout } from './GamePageLayout';
 import { gamesApi } from '@/features/games/api';
 import { useGameRoom } from '@/features/games/hooks/useGameRoom';
 import type { GameType } from '@/features/games/hooks/useGameActions';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   trackSocialInviteAccepted,
   trackSocialInviteLanded,

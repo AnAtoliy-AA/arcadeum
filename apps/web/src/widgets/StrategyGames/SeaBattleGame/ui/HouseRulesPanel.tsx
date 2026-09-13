@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { getDefaultShipCount } from '../types';
 
 function getShipCountOptions(gridSize: number): number[] {

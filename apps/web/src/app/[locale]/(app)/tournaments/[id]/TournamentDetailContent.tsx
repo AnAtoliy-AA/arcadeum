@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { Container, PageLayout, PageTitle, Typography } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import { useRoutes } from '@/shared/config/useRoutes';

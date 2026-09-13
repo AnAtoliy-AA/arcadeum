@@ -6,7 +6,7 @@ import { CatDashRulesModal } from '../ui/RulesModal';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
 import type { CatDashClientState } from '../types';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const map: Record<string, string> = {

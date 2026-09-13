@@ -1,7 +1,7 @@
 'use client';
 
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { Tier, TierFeature } from './roadmap-data';
 
 export function StatusBadge({ status }: { status: TierFeature['status'] }) {

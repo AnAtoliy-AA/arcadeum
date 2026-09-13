@@ -1,4 +1,4 @@
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
 import type { CheckersTheme } from '../types';
 

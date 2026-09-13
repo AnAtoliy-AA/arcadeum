@@ -1,5 +1,6 @@
-import { useLanguage } from '@/shared/i18n/useLanguage';
-import type { EnglishTranslations } from '../i18n/translations';
+import { interpolate } from '@arcadeum/games-core';
+import { useLanguage } from './useLanguage';
+import type { EnglishTranslations } from './messages';
 import type { StringPaths } from './translation-paths';
 
 /**
@@ -22,52 +23,6 @@ function warnMissingTranslation(key: TranslationKey, locale: string): void {
       `[Translation] Missing translation for key "${key}" in locale "${locale}". Falling back to key.`,
     );
   }
-}
-
-/**
- * Interpolates parameters into a translation string
- * Handles multiple occurrences of the same placeholder and missing placeholders
- * @param template - The translation string with placeholders like {name}
- * @param params - Object with parameter values
- * @returns Interpolated string with all placeholders replaced
- */
-function interpolateParams(
-  template: string,
-  params: Record<string, string | number>,
-): string {
-  let result = template;
-  const usedParams = new Set<string>();
-
-  // Replace all occurrences of each parameter
-  for (const [key, value] of Object.entries(params)) {
-    const placeholder = `{{${key}}}`;
-    if (result.includes(placeholder)) {
-      // Replace all occurrences (global replace)
-      result = result.split(placeholder).join(String(value));
-      usedParams.add(key);
-    }
-  }
-
-  // Warn about unused parameters in development
-  if (isDevelopment) {
-    const unusedParams = Object.keys(params).filter((k) => !usedParams.has(k));
-    if (unusedParams.length > 0) {
-      console.warn(
-        `[Translation] Unused parameters provided: ${unusedParams.join(', ')}`,
-      );
-    }
-
-    // Warn about missing placeholders
-    const missingPlaceholders = result.match(/\{\{[^}]+\}\}/g);
-    if (missingPlaceholders) {
-      const uniqueMissing = [...new Set(missingPlaceholders)];
-      console.warn(
-        `[Translation] Missing parameter values for placeholders: ${uniqueMissing.join(', ')}`,
-      );
-    }
-  }
-
-  return result;
 }
 
 /**
@@ -107,7 +62,36 @@ export function useTranslation() {
     // If we found a string value, interpolate parameters if provided
     if (typeof value === 'string') {
       if (params && Object.keys(params).length > 0) {
-        return interpolateParams(value, params);
+        const result = interpolate(value, params);
+
+        if (isDevelopment) {
+          // Warn about unused parameters
+          const usedParams = new Set<string>();
+          for (const k of Object.keys(params)) {
+            if (value.includes(`{{${k}}}`)) {
+              usedParams.add(k);
+            }
+          }
+          const unusedParams = Object.keys(params).filter(
+            (k) => !usedParams.has(k),
+          );
+          if (unusedParams.length > 0) {
+            console.warn(
+              `[Translation] Unused parameters provided: ${unusedParams.join(', ')}`,
+            );
+          }
+
+          // Warn about missing placeholders
+          const missingPlaceholders = result.match(/\{\{[^}]+\}\}/g);
+          if (missingPlaceholders) {
+            const uniqueMissing = [...new Set(missingPlaceholders)];
+            console.warn(
+              `[Translation] Missing parameter values for placeholders: ${uniqueMissing.join(', ')}`,
+            );
+          }
+        }
+
+        return result;
       }
       return value;
     }

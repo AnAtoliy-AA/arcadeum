@@ -11,7 +11,7 @@ import { useQuery } from '@/shared/hooks/useQuery';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import {

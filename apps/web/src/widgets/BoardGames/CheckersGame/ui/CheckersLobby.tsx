@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
   LobbyOptionSection,
@@ -16,7 +16,7 @@ import { CHECKERS_THEMES } from '../lib/constants';
 import type { CheckersOptions, CheckersTheme, Mode } from '../types';
 import { MODE_CONFIGS } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 const CHECKERS_LOBBY_THEME = {
   fallbackLightGradient:

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { CriticalCard } from '../../types';
 import { LastPlayedCardDisplay } from '../LastPlayedCardDisplay';
 import { CardSlot } from '../styles';

@@ -15,7 +15,7 @@ vi.mock('../hooks/useMilestoneBadgeEquip', () => ({
   }),
 }));
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: { level?: string }) => {
       if (params?.level) return `Requires Lv. ${params.level}`;

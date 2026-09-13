@@ -17,7 +17,7 @@ import { useRoutes, useLocale } from '@/shared/config/useRoutes';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { featuredGames } from '@/app/[locale]/home/data/games';
 import { GamePickerCard, type GamePickerItem } from './GamePickerCard';
 

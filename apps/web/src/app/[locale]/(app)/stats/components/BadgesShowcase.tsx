@@ -6,7 +6,7 @@ import { LEVEL_BADGE_REWARDS } from '@/shared/lib/level-rewards';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useMilestoneBadgeEquip } from '../hooks/useMilestoneBadgeEquip';
 
 interface BadgesShowcaseProps {

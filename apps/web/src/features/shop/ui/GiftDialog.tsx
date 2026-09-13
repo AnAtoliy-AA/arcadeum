@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, useTransition } from 'react';
 import { Button, Spinner } from '@arcadeum/ui';
 import { DialogShell } from '@/features/shop/ui/dialogShell';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { apiClient } from '@/shared/lib/api-client';
 import {
   sendGiftAction,

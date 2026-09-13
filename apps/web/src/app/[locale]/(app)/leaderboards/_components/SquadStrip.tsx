@@ -1,7 +1,7 @@
 'use client';
 import type { Squad } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatNumber } from '@/shared/i18n/formatters';
 
 export function SquadStrip({

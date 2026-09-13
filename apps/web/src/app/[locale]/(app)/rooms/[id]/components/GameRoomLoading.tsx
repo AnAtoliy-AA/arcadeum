@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ServerLoadingNotice } from '@arcadeum/ui/components/ServerLoadingNotice/ServerLoadingNotice';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
 import { useRoutes } from '@/shared/config/useRoutes';

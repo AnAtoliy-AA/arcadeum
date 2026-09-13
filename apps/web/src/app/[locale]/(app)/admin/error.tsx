@@ -1,7 +1,7 @@
 'use client';
 
 import { GlassCard, Typography, Button } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 
 interface AdminErrorTranslations {
   title?: string;

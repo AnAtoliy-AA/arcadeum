@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { Card, Typography } from '@arcadeum/ui';
 import { ShipPlacementBoard } from './ShipPlacementBoard';
 import { AttackBoard } from './AttackBoard';

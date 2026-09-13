@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import s from './GameCreateView.module.scss';
 import type { GameId } from './data/themes';
 
@@ -134,10 +134,7 @@ export function RulesAccess({ gameId, themeId }: Props) {
         {label}
       </button>
       {gameId === 'sea_battle_v1' ? (
-        <SeaBattleRulesModal
-          isOpen={open}
-          onClose={() => setOpen(false)}
-        />
+        <SeaBattleRulesModal isOpen={open} onClose={() => setOpen(false)} />
       ) : null}
       {gameId === 'critical_v1' ? (
         <CriticalRulesModal

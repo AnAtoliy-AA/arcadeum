@@ -6,7 +6,7 @@ import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 
 export interface EquippedPlayerAvatarProps {
   name: string;

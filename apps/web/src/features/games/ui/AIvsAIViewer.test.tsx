@@ -14,7 +14,7 @@ vi.mock('@/shared/config/useRoutes', () => ({
   }),
 }));
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 

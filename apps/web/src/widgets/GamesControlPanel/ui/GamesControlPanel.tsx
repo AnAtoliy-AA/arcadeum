@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { gameSocket } from '@/shared/lib/socket';

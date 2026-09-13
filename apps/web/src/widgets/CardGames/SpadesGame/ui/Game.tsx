@@ -14,7 +14,7 @@ import {
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import type { SpadesGameProps } from '../types';
 import { useSpadesState } from '../hooks/useSpadesState';

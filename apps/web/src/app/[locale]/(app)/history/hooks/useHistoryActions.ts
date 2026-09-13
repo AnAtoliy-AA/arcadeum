@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@/shared/hooks/useMutation';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { historyApi } from '@/features/history/api';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useHistoryStore } from '../store/historyStore';

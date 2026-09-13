@@ -7,7 +7,7 @@ import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import type {
   CriticalCard,

@@ -11,7 +11,7 @@ import {
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getRewardForLevel } from '@/shared/lib/level-rewards';
 import { useLevelUpModalStore } from '../store/levelUpModalStore';

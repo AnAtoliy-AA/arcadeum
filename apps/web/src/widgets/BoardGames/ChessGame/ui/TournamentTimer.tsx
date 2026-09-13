@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { GlassCard, Typography } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 
 interface TournamentTimerProps {
   tournamentId: string;

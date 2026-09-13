@@ -2,7 +2,7 @@
 
 import { useMemo, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { usePendingFriendRequestCount } from '@/shared/hooks/usePendingFriendRequestCount';
 import { getNotificationsSocket } from '@/shared/lib/socket';

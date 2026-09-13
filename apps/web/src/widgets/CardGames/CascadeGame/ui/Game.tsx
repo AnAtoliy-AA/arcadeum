@@ -16,7 +16,7 @@ import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import type { CascadeGameProps } from '../types';
 import { useCascadeState } from '../hooks/useCascadeState';
 import { useCascadeActions } from '../hooks/useCascadeActions';

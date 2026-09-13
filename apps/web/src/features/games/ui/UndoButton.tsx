@@ -7,7 +7,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 
 interface UndoButtonProps {
   /** When true, the button is disabled (e.g. game over) */

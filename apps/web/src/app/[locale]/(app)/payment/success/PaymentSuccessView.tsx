@@ -10,7 +10,7 @@ import {
   Card,
   LinkButton,
 } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { paymentApi } from '@/features/payment/api';
 import { particles } from './confetti-particles';

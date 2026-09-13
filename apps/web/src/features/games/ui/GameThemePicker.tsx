@@ -6,7 +6,7 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import {
   SHARED_THEMES,
   type GameTheme,

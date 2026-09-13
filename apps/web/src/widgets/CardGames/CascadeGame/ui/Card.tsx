@@ -4,7 +4,7 @@ import { memo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import type { CascadeCard, CascadeTheme } from '../types';
 import styles from './CascadeGame.module.css';

@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { GlobeIcon } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
 
 const LOCALE_LABEL: Record<Locale, string> = {

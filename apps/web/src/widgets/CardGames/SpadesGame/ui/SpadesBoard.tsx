@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { CSSProperties } from 'react';
 import type { GameRoomMemberSummary } from '@/shared/types/games';
 import type { SpadesClientState } from '../types';

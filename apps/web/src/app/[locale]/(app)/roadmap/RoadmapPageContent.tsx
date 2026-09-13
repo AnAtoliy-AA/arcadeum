@@ -8,7 +8,7 @@ import {
   Section,
   Button,
 } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { RoadmapData } from './roadmap-parser';
 import { TIERS, PHASES, STATS } from './roadmap-data';
 import { TierCard } from './TierCard';

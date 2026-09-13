@@ -1,5 +1,5 @@
 import { Typography, PageTitle } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export function PaymentHeader() {
   const { t } = useTranslation();

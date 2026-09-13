@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import { Card } from './Card';
 import { ColorPicker } from './ColorPicker';

@@ -30,6 +30,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@arcadeum/games-core": "workspace:*",
     "@expo/metro-runtime": "~57.0.15",
     "@expo/vector-icons": "^15.1.1",
     "@noble/ciphers": "^2.4.0",

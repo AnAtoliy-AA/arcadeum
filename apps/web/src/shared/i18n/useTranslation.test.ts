@@ -3,12 +3,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { TranslationKey } from './useTranslation';
 
 const mockUseLanguage = vi.hoisted(() =>
-  vi
-    .fn()
-    .mockReturnValue({
-      locale: 'en' as string,
-      messages: {} as Record<string, unknown>,
-    }),
+  vi.fn().mockReturnValue({
+    locale: 'en' as string,
+    messages: {} as Record<string, unknown>,
+  }),
 );
 
 vi.mock('./useLanguage', () => ({

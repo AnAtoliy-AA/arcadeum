@@ -140,7 +140,6 @@ import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
 import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.module';
 import { GameRuleVisibilityModule } from '../admin/game-visibility/game-rule-visibility.module';
-import { BattlePassModule } from '../battle-pass/battle-pass.module';
 import { XpModule } from '../xp/xp.module';
 import { FriendsModule } from '../friends/friends.module';
 import { ActivityFeedModule } from './activity-feed/activity-feed.module';
@@ -207,7 +206,6 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     DailyChallengesModule,
     AchievementsModule,
     NotificationsModule,
-    BattlePassModule,
     XpModule,
     FriendsModule,
     ActivityFeedModule,

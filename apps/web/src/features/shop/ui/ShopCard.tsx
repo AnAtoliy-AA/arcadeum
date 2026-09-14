@@ -23,6 +23,8 @@ import { ItemAsset } from './ItemAsset';
 import { ShopArcPaymentOverlay } from './ShopArcPaymentOverlay';
 import { useArcPricing } from '@/features/solana-pay/hooks/useArcPricing';
 import { CardFrame, ArtBox, Chip, ActionButton, uuid } from './shopCardStyles';
+import { buildRoutes } from '@/shared/config/routes';
+import { getLevelForBadge } from '@/shared/lib/level-rewards';
 import type {
   EffectiveShopItem,
   WalletBalanceView,
@@ -35,6 +37,9 @@ export interface ShopCardLabels {
   equip: string;
   unequip: string;
   sell: string;
+  progressionReward?: string;
+  unlockedAtLevel?: string;
+  viewInStats?: string;
 }
 
 export type ShopCardMode = 'shop' | 'inventory';
@@ -79,7 +84,7 @@ export interface ShopCardProps {
   token?: string;
 }
 
-type CardAction = 'buy' | 'equip' | 'unequip';
+type CardAction = 'buy' | 'equip' | 'unequip' | 'progression';
 
 export function ShopCard({
   item,
@@ -98,6 +103,7 @@ export function ShopCard({
   const router = useRouter();
   const { t } = useTranslation();
   const { locale } = useLanguage();
+  const routes = buildRoutes(locale);
   const setHover = useShopPreviewStore((s) => s.setHover);
   const scheduleClear = useShopPreviewStore((s) => s.scheduleClear);
   const [hovered, setHovered] = useState(false);
@@ -117,13 +123,25 @@ export function ShopCard({
   const balanceFor = item.priceCurrency === 'coins' ? coins : gems;
   const affordable = balanceFor >= item.priceAmount;
 
-  const action: CardAction = equipped ? 'unequip' : owned ? 'equip' : 'buy';
+  const badgeLevel =
+    item.category === 'badge' ? getLevelForBadge(item.id) : null;
+  const isProgression = item.purchasable === false;
+
+  const action: CardAction = equipped
+    ? 'unequip'
+    : owned
+      ? 'equip'
+      : isProgression
+        ? 'progression'
+        : 'buy';
   const actionLabel =
     action === 'unequip'
       ? labels.unequip
       : action === 'equip'
         ? labels.equip
-        : labels.buyEquip;
+        : action === 'progression'
+          ? (labels.viewInStats ?? 'View in Stats')
+          : labels.buyEquip;
 
   const shopUsdValue = item.priceAmount * (pricing?.gemToUsdRate ?? 0.1);
   const arcPrice = calculateArcPrice(shopUsdValue);
@@ -202,6 +220,7 @@ export function ShopCard({
     if (isPending) return;
     if (action === 'unequip') runUnequip();
     else if (action === 'equip') runEquip();
+    else if (action === 'progression') router.push(routes.stats);
     else runBuy();
   };
 
@@ -212,8 +231,6 @@ export function ShopCard({
     }
   };
 
-  // The action button is the focus / click target. The outer card is just a
-  // visual hover surface so pointer-enter still drives the mannequin preview.
   return (
     <CardFrame
       small={small}
@@ -275,23 +292,34 @@ export function ShopCard({
           <Badge accent={accent} dot>
             {item.rarity}
           </Badge>
-          <div className="flex flex-row items-center gap-4">
-            <Typography uiSize="xs">
-              {CURRENCY_GLYPH[item.priceCurrency]}
+          {isProgression ? (
+            <Typography uiSize="xs" weight="800" color="var(--color)">
+              {badgeLevel
+                ? (labels.unlockedAtLevel ?? 'Lv. {level} Reward').replace(
+                    '{level}',
+                    String(badgeLevel),
+                  )
+                : (labels.progressionReward ?? 'Progression')}
             </Typography>
-            <Typography
-              uiSize="xs"
-              weight="800"
-              color={CURRENCY_COLOR[item.priceCurrency]}
-            >
-              {formatNumber(item.priceAmount, locale)}
-            </Typography>
-          </div>
+          ) : (
+            <div className="flex flex-row items-center gap-4">
+              <Typography uiSize="xs">
+                {CURRENCY_GLYPH[item.priceCurrency]}
+              </Typography>
+              <Typography
+                uiSize="xs"
+                weight="800"
+                color={CURRENCY_COLOR[item.priceCurrency]}
+              >
+                {formatNumber(item.priceAmount, locale)}
+              </Typography>
+            </div>
+          )}
         </div>
 
         <ActionButton
-          intent={action}
-          affordable={affordable}
+          intent={action === 'progression' ? 'buy' : action}
+          affordable={action === 'progression' ? true : affordable}
           pending={isPending}
           role="button"
           tabIndex={0}
@@ -316,8 +344,8 @@ export function ShopCard({
           </Typography>
         </ActionButton>
 
-        {/* ARC payment option */}
         {!owned &&
+          !isProgression &&
           item.priceCurrency === 'gems' &&
           arcPrice > 0 &&
           pricing?.shopAllowArc !== false && (
@@ -362,15 +390,10 @@ export function ShopCard({
           />
         )}
 
-        {/* Inventory-mode secondary action. Hidden in catalog (shop) mode.
-            Also hidden when the row is missing, the item is a starter
-            (BE rejects with shop.starterNotSellable), or it's currently
-            equipped (BE rejects with shop.unequipFirst — user must
-            Unequip first). Click hands the inventory row up to the page
-            which owns the SellConfirmDialog. */}
         {mode === 'inventory' &&
         inventoryRow &&
         !item.starter &&
+        !isProgression &&
         !equipped &&
         onSellRequest ? (
           <Typography

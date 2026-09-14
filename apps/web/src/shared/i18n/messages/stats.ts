@@ -50,6 +50,8 @@ export const en = {
   claimReward: 'Claim Reward',
   rewardClaimed: 'Claimed!',
   milestoneBadgeUnlocked: 'Milestone Badge Unlocked!',
+  equipBadge: 'Equip Badge',
+  viewInInventory: 'View in Inventory',
   // Game breakdown
   gameBreakdownTitle: 'Game Breakdown',
   game: 'Game',
@@ -116,6 +118,8 @@ export const es = {
   claimReward: 'Reclamar Recompensa',
   rewardClaimed: '¡Reclamado!',
   milestoneBadgeUnlocked: '¡Insignia de Hito Desbloqueada!',
+  equipBadge: 'Equipar insignia',
+  viewInInventory: 'Ver en inventario',
   // Game breakdown
   gameBreakdownTitle: 'Desglose por Juego',
   game: 'Juego',
@@ -182,6 +186,8 @@ export const fr = {
   claimReward: 'Réclamer la Récompense',
   rewardClaimed: 'Réclamé !',
   milestoneBadgeUnlocked: 'Badge de Palier Débloqué !',
+  equipBadge: 'Équiper le badge',
+  viewInInventory: "Voir dans l'inventaire",
   // Game breakdown
   gameBreakdownTitle: 'Détail par Jeu',
   game: 'Jeu',
@@ -248,6 +254,8 @@ export const ru = {
   claimReward: 'Забрать награду',
   rewardClaimed: 'Получено!',
   milestoneBadgeUnlocked: 'Получен значок уровня!',
+  equipBadge: 'Надеть значок',
+  viewInInventory: 'В инвентарь',
   // Game breakdown
   gameBreakdownTitle: 'Детализация по играм',
   game: 'Игра',
@@ -314,6 +322,8 @@ export const by = {
   claimReward: 'Забраць узнагароду',
   rewardClaimed: 'Атрымана!',
   milestoneBadgeUnlocked: 'Атрыманы значок узроўню!',
+  equipBadge: 'Апрануць значок',
+  viewInInventory: 'У інвентар',
   // Game breakdown
   gameBreakdownTitle: 'Дэталізацыя па гульнях',
   game: 'Гульня',

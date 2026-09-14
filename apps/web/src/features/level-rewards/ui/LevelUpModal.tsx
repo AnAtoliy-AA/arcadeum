@@ -8,6 +8,9 @@ import {
   Modal,
   ModalContent,
 } from '@arcadeum/ui';
+import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/shared/i18n';
+import { buildRoutes } from '@/shared/config/routes';
 import {
   useTranslation,
   type TranslationKey,
@@ -18,6 +21,9 @@ import { useLevelUpModalStore } from '../store/levelUpModalStore';
 import { claimLevelRewards } from '../api/level-rewards.api';
 
 export function LevelUpModal() {
+  const router = useRouter();
+  const { locale } = useLanguage();
+  const routes = buildRoutes(locale);
   const { t } = useTranslation();
   const { snapshot } = useSessionTokens();
   const {
@@ -126,31 +132,40 @@ export function LevelUpModal() {
             )}
           </div>
 
-          <div className="w-full">
-            {isClaimed ? (
+          <div className="w-full flex flex-col gap-2">
+            {isClaimed && reward && (
               <Button
-                variant="primary"
-                size="lg"
+                variant="secondary"
+                size="md"
                 fullWidth
-                onClick={closeModal}
-                data-testid="level-up-claim-btn"
-                className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold"
+                onClick={() => {
+                  closeModal();
+                  router.push(`${routes.shopInventory}#row-badges`);
+                }}
+                data-testid="level-up-view-inventory-btn"
               >
-                {t('stats.rewardClaimed' as TranslationKey)}
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                size="lg"
-                fullWidth
-                disabled={isClaiming}
-                onClick={handleClaim}
-                data-testid="level-up-claim-btn"
-                className="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-black font-black uppercase tracking-wider shadow-[0_0_20px_rgba(245,158,11,0.4)]"
-              >
-                {isClaiming ? '...' : t('stats.claimReward' as TranslationKey)}
+                ✨ {t('stats.viewInInventory' as TranslationKey)}
               </Button>
             )}
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              disabled={isClaiming}
+              onClick={isClaimed ? closeModal : handleClaim}
+              data-testid="level-up-claim-btn"
+              className={
+                isClaimed
+                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white font-bold'
+                  : 'bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-black font-black uppercase tracking-wider shadow-[0_0_20px_rgba(245,158,11,0.4)]'
+              }
+            >
+              {isClaimed
+                ? t('stats.rewardClaimed' as TranslationKey)
+                : isClaiming
+                  ? '...'
+                  : t('stats.claimReward' as TranslationKey)}
+            </Button>
           </div>
         </div>
       </ModalContent>

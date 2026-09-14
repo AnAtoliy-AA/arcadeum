@@ -47,6 +47,21 @@ test.describe('Level Badge Rewards', () => {
           priceCurrency: 'coins',
           overridden: false,
         },
+        {
+          id: 'badge-scout',
+          category: 'badge',
+          rarity: 'common',
+          nameKey: 'items.badge.scout.name',
+          descKey: 'items.badge.scout.desc',
+          assetUrl: '/shop/badges/scout.png',
+          defaultPriceAmount: 0,
+          defaultPriceCurrency: 'coins',
+          available: true,
+          purchasable: false,
+          priceAmount: 0,
+          priceCurrency: 'coins',
+          overridden: false,
+        },
       ]);
     });
   });
@@ -78,13 +93,19 @@ test.describe('Level Badge Rewards', () => {
     await expect(page.getByTestId('level-reward-99')).toBeVisible();
   });
 
-  test('badges are not available for sale in shop catalog', async ({
+  test('badges are shown in shop catalog as unpurchasable progression rewards', async ({
     page,
   }) => {
     await navigateTo(page, '/shop');
 
-    await expect(page.locator('#row-badges')).toHaveCount(0);
-    await expect(page.getByTestId('shop-buy-badge-newcomer')).toHaveCount(0);
+    await expect(page.locator('#row-badges')).toBeVisible();
+    await expect(page.getByTestId('shop-card-badge-scout')).toBeVisible();
+    await expect(page.getByTestId('shop-card-badge-scout')).toHaveText(
+      /lv\. 5/i,
+    );
+    await expect(page.getByTestId('shop-card-action-badge-scout')).toHaveText(
+      /view in stats/i,
+    );
     await expect(page.getByTestId('shop-buy-badge-scout')).toHaveCount(0);
   });
 
@@ -169,5 +190,6 @@ test.describe('Level Badge Rewards', () => {
     await claimBtn.click();
 
     await expect(claimBtn).toHaveText(/claimed/i);
+    await expect(page.getByTestId('level-up-view-inventory-btn')).toBeVisible();
   });
 });

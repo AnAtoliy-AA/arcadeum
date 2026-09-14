@@ -133,6 +133,7 @@ describe('CatalogService', () => {
   describe('listEffective', () => {
     it('filters by category', async () => {
       const list = await service.listEffective({ category: 'badge' });
+      expect(list.length).toBeGreaterThan(0);
       expect(list.every((i) => i.category === 'badge')).toBe(true);
     });
 

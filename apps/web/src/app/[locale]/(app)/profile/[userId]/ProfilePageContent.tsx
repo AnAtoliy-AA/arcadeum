@@ -14,7 +14,10 @@ import {
 } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { useTranslation } from '@/shared/i18n/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 import { xpProgress, toRoman } from '@/shared/lib/xp-level';
 import {
   getUserProfile,
@@ -216,6 +219,20 @@ export default function ProfilePageContent() {
                   )}
                 </div>
               </div>
+              {isOwnProfile && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() =>
+                    router.push(`${routes.shopInventory}#row-badges`)
+                  }
+                  data-testid="profile-customize-badges"
+                >
+                  ✨{' '}
+                  {t('pages.shop.topBar.nav.inventory' as TranslationKey) ||
+                    'Inventory'}
+                </Button>
+              )}
               {!isOwnProfile && snapshot.accessToken && (
                 <>
                   {isAlreadyFriend ? (

@@ -160,6 +160,17 @@ export function getRewardForLevel(level: number): LevelBadgeReward | undefined {
   return LEVEL_BADGE_REWARDS.find((r) => r.level === level);
 }
 
+export function getRewardForBadge(
+  badgeId: string,
+): LevelBadgeReward | undefined {
+  return LEVEL_BADGE_REWARDS.find((r) => r.badgeId === badgeId);
+}
+
+export function getLevelForBadge(badgeId: string): number | null {
+  const reward = getRewardForBadge(badgeId);
+  return reward ? reward.level : null;
+}
+
 export function getCoinsForLevel(level: number): number {
   return level * 50;
 }

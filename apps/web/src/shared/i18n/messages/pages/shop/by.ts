@@ -161,6 +161,9 @@ export const shopBy = {
     equip: 'Апрануць',
     unequip: 'Зняць',
     sell: 'Прадаць · 50%',
+    progressionReward: 'Узнагарода за ўзровень',
+    unlockedAtLevel: 'Узр. {level}',
+    viewInStats: 'У статыстыку',
   },
   inventory: {
     title: 'Інвентар',

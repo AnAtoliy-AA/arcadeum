@@ -10,6 +10,7 @@ import {
   emitGameStarted as emitGameStartedFn,
   emitActionExecuted as emitActionExecutedFn,
 } from './games.session-emitters';
+import { PeakTracker, type PeakData } from './games.realtime.peaks';
 
 const REMATCH_INVITATION_TIMEOUT_SECONDS = 30;
 const ONLINE_USERS_KEY = 'arcadeum:online:users';
@@ -28,6 +29,7 @@ export class GamesRealtimeService implements OnModuleDestroy {
   private readonly userIdToSockets = new Map<string, Set<string>>();
 
   private redis: Redis | null = null;
+  private readonly peakTracker: PeakTracker;
 
   constructor() {
     const redisUrl = process.env.REDIS_URL;
@@ -52,6 +54,7 @@ export class GamesRealtimeService implements OnModuleDestroy {
         this.redis = null;
       });
     }
+    this.peakTracker = new PeakTracker(this.redis);
   }
 
   async onModuleDestroy(): Promise<void> {
@@ -117,6 +120,7 @@ export class GamesRealtimeService implements OnModuleDestroy {
   }
 
   async getConnectedUsersCount(): Promise<number> {
+    let count: number;
     if (this.redis) {
       try {
         const staleThreshold = Date.now() - ONLINE_TTL_MS;
@@ -128,12 +132,24 @@ export class GamesRealtimeService implements OnModuleDestroy {
         if (stale.length > 0) {
           await this.redis.zrem(ONLINE_USERS_KEY, ...stale);
         }
-        return await this.redis.zcard(ONLINE_USERS_KEY);
+        count = await this.redis.zcard(ONLINE_USERS_KEY);
+        void this.peakTracker.trackPeakOnline(count);
+        return count;
       } catch {
         // fall through to in-memory
       }
     }
-    return this.userIdToSockets.size;
+    count = this.userIdToSockets.size;
+    void this.peakTracker.trackPeakOnline(count);
+    return count;
+  }
+
+  async trackPeakRooms(currentCount: number): Promise<void> {
+    return this.peakTracker.trackPeakRooms(currentCount);
+  }
+
+  async getPeaks(): Promise<PeakData> {
+    return this.peakTracker.getPeaks();
   }
 
   roomChannel(roomId: string): string {

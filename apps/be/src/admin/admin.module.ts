@@ -33,11 +33,13 @@ import { GameRuleVisibilityModule } from './game-visibility/game-rule-visibility
 import { AdminBlockedIpsController } from './admin-blocked-ips.controller';
 import { IpBlockService } from '../common/guards/ip-block.guard';
 import { RateStateModule } from '../common/rate-state';
+import { GamesModule } from '../games/games.module';
 
 @Module({
   imports: [
     AuthModule,
     RateStateModule,
+    GamesModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: GameSession.name, schema: GameSessionSchema },

@@ -35,11 +35,15 @@ import {
 } from './games.gateway.room';
 import { registerChatHandlers } from './games.gateway.chat-handlers';
 // prettier-ignore
-import { maybeEncrypt, isSocketEncryptionEnabled, getEncryptionKeyHex } from '../common/utils/socket-encryption.util';
+import { isSocketEncryptionEnabled, getEncryptionKeyHex } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import type { GameMessageHandler } from './game-message-handler.interface';
 import { GAME_GATEWAYS } from './game-message-handler.interface';
+import {
+  handleMatchmakingJoin,
+  handleMatchmakingLeave,
+} from './games.gateway.matchmaking';
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -153,6 +157,11 @@ export class GamesGateway {
       }
     }
     void client.join(this.realtime.lobbyChannel());
+
+    void this.realtime.getConnectedUsersCount().then((count) => {
+      client.emit('games.live_stats', { onlineUsers: count });
+    });
+
     client.on('ping', () => {
       const uid = (client.data as Record<string, unknown>)?.userId as
         string | undefined;
@@ -442,7 +451,7 @@ export class GamesGateway {
     );
   }
   @SubscribeMessage('games.matchmaking.join')
-  handleMatchmakingJoin(
+  onMatchmakingJoin(
     @ConnectedSocket() client: Socket,
     @MessageBody()
     payload: {
@@ -453,44 +462,27 @@ export class GamesGateway {
       rating?: number;
     },
   ): void {
-    const userId = extractString(payload, 'userId');
-    const gameId = extractString(payload, 'gameId');
-    const variant = payload.variant ? String(payload.variant) : undefined;
-    const ranked = payload.ranked === true;
-    const rating =
-      typeof payload.rating === 'number' ? payload.rating : undefined;
-    this.validateUserId(client, userId);
-    const ipHeader = client.handshake.headers['x-forwarded-for'];
-    const ip =
-      typeof ipHeader === 'string'
-        ? ipHeader.split(',')[0].trim()
-        : client.handshake.address;
-    void this.matchmakingService.joinQueue(
-      userId,
-      client.id,
-      gameId,
-      variant,
-      ranked,
-      undefined,
-      ip,
-      rating,
-    );
-    client.emit(
-      'games.matchmaking.joined',
-      maybeEncrypt({ gameId, variant, ranked }),
+    handleMatchmakingJoin(
+      this.logger,
+      client,
+      this.matchmakingService,
+      (c, u) => this.validateUserId(c, u),
+      payload,
     );
   }
   @SubscribeMessage('games.matchmaking.leave')
-  handleMatchmakingLeave(
+  onMatchmakingLeave(
     @ConnectedSocket() client: Socket,
     @MessageBody()
     payload: {
       userId: string;
     },
   ): void {
-    const userId = extractString(payload, 'userId');
-    this.validateUserId(client, userId);
-    void this.matchmakingService.leaveQueue(userId);
-    client.emit('games.matchmaking.left', maybeEncrypt({}));
+    handleMatchmakingLeave(
+      client,
+      this.matchmakingService,
+      (c, u) => this.validateUserId(c, u),
+      payload,
+    );
   }
 }

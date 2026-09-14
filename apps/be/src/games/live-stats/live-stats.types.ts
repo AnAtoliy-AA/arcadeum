@@ -43,4 +43,10 @@ export interface LiveStatsResponse {
   popularGames: LivePopularGame[];
   openRooms: LiveRoomItem[];
   recentActivity: LiveActivityItem[];
+  peaks: {
+    peakOnlineUsers: number;
+    peakOnlineUsersAt: number;
+    peakActiveRooms: number;
+    peakActiveRoomsAt: number;
+  };
 }
